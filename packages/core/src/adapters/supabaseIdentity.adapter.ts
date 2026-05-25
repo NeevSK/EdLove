@@ -1,3 +1,4 @@
+import { registerTokenResolver } from '../api/contract';
 import type { Identity } from '../api/identity.generated';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import { storage } from '../lib/storage';
@@ -5,6 +6,17 @@ import type { IIdentityPort } from '../logic/ports/identity.port';
 import { APIError } from '../types/API';
 import type { Bond, Capacity, Perspective } from '../types/Identity';
 import type { User } from '../types/User';
+
+// Automatically register the token resolver for Sovereign clients
+registerTokenResolver(async () => {
+  try {
+    const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getSession();
+    return data?.session?.access_token ?? null;
+  } catch (err) {
+    console.warn('[Sovereign Client] Failed to retrieve Supabase session token:', err);
+    return null;
+  }
+});
 
 /**
  * SupabaseIdentityAdapter: The bridge between Supabase Auth/DB and the Identity Port.
@@ -280,16 +292,90 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
       }
     }
 
+    // Sanitization & Validation to satisfy database CHECK constraints:
+    // 1. username must match '^[a-z0-9_-]{3,30}$' or be NULL (empty strings violate check constraint)
+    let username =
+      typeof context.username === 'string' ? context.username.trim().toLowerCase() : null;
+    if (username && !/^[a-z0-9_-]{3,30}$/.test(username)) {
+      username = null;
+    }
+
+    // 2. full_name must be non-nullable, non-empty, and trimmed: char_length(TRIM(BOTH FROM full_name)) > 0
+    let full_name = typeof context.fullName === 'string' ? context.fullName.trim() : '';
+    if (!full_name) {
+      // Derive from other context fields if available
+      const first = typeof context.firstName === 'string' ? context.firstName.trim() : '';
+      const last = typeof context.lastName === 'string' ? context.lastName.trim() : '';
+      full_name = [first, last].filter(Boolean).join(' ');
+    }
+    if (!full_name) {
+      full_name =
+        typeof context.displayName === 'string' ? context.displayName.trim() : 'Sanctuary User';
+    }
+    if (!full_name || full_name.length === 0) {
+      full_name = 'Sanctuary User';
+    }
+
+    // 3. display_name sanitization
+    const display_name =
+      typeof context.displayName === 'string' && context.displayName.trim()
+        ? context.displayName.trim()
+        : full_name || 'Gurudevi User';
+
+    // 1. Check if authenticated but has no school context: initialize their Personal Classroom in db!
+    let finalPersonalClassroomId: string | null = null;
+    if (citizenship === 'SECOND_CLASS' && !schoolId) {
+      const isTeacherOrPrincipal = [
+        'teacher',
+        'principal',
+        'section_head',
+        'grade_head',
+        'founder',
+        'assistant_principal',
+        'developer',
+      ].includes(orientation);
+
+      let classroomType = 'unrelated_classroom';
+      let classroomName = `${display_name}'s Personal Workspace`;
+
+      if (isTeacherOrPrincipal) {
+        classroomType = 'teacher_classroom';
+        classroomName = `${display_name}'s Classroom`;
+      } else if (orientation === 'student') {
+        classroomType = 'student_classroom';
+        classroomName = `${display_name}'s Student Workspace`;
+      }
+
+      const { data: newPersonalClassroom, error: pcErr } =
+        await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+          .from('personal_classrooms')
+          .insert({
+            name: classroomName,
+            type: classroomType,
+            user_id: userId,
+          })
+          .select('id')
+          .single();
+
+      if (pcErr) {
+        console.error('[createInitialBond] Failed to initialize personal classroom record:', pcErr);
+      } else if (newPersonalClassroom) {
+        finalPersonalClassroomId = newPersonalClassroom.id;
+      }
+    }
+
     const { error: profileError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('users')
       .update({
-        display_name: context.displayName || 'Gurudevi User',
+        display_name,
+        full_name,
         first_name: context.firstName ?? null,
         last_name: context.lastName ?? null,
-        username: context.username ?? null,
+        username,
         identity_state: isSupabaseAnonymous ? 'anonymous' : 'identifying', // Transitioning state
-        school_id: schoolId,
+        school_id: schoolId, // Remains null for personal workspaces
         citizenship,
+        capacity: orientation,
       })
       .eq('id', userId);
 
@@ -302,16 +388,21 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
     // Create the formal Bond
     // 1. Wanderer/Anonymous -> PLATFORM bond to GLOBAL
-    // 2. 2nd Class Citizen (Authenticated, no school) -> PERSONAL bond to Personal Workspace
+    // 2. 2nd Class Citizen (Authenticated, no school) -> PERSONAL_CLASSROOM bond to Personal Classroom
     // 3. 1st Class Citizen (Authenticated, has school) -> SCHOOL bond
 
     const entity_type =
       citizenship === 'FIRST_CLASS'
         ? 'SCHOOL'
         : citizenship === 'SECOND_CLASS'
-          ? 'PERSONAL'
+          ? 'PERSONAL_CLASSROOM'
           : 'PLATFORM';
-    const entity_id = schoolId || (citizenship === 'WANDERER' ? 'GLOBAL' : 'PERSONAL_WORKSPACE');
+    const entity_id =
+      citizenship === 'FIRST_CLASS'
+        ? schoolId
+        : citizenship === 'SECOND_CLASS'
+          ? finalPersonalClassroomId || 'PERSONAL_WORKSPACE'
+          : 'GLOBAL';
 
     const { error: bondError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('bonds')

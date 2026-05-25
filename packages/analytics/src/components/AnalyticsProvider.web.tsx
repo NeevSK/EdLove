@@ -4,6 +4,7 @@ import { posthogAnalytics } from '../engine/PostHogAnalytics.web';
 interface Props {
   children: ReactNode;
   apiKey?: string;
+  enabled?: boolean;
   options?: {
     host?: string;
     debug?: boolean;
@@ -12,12 +13,13 @@ interface Props {
 
 import { ActivityPulseProvider } from '../context/ActivityPulseContext';
 
-export function AnalyticsProvider({ children, apiKey, options }: Props) {
+export function AnalyticsProvider({ children, apiKey, enabled = true, options }: Props) {
   useEffect(() => {
-    if (apiKey) {
+    const isPostHogEnabled = enabled && process.env.EXPO_PUBLIC_POSTHOG_ENABLED !== 'false';
+    if (apiKey && isPostHogEnabled) {
       posthogAnalytics.initialize(apiKey, options);
     }
-  }, [apiKey, options]);
+  }, [apiKey, enabled, options]);
 
   return <ActivityPulseProvider>{children}</ActivityPulseProvider>;
 }

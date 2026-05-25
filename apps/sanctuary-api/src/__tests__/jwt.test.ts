@@ -49,7 +49,15 @@ describe('Asymmetric JWT Verification Engine', () => {
     const payloadB64 = Buffer.from(JSON.stringify(payload)).toString('base64url');
     const data = `${headerB64}.${payloadB64}`;
 
-    const signature = crypto.sign('sha256', Buffer.from(data), privateKey);
+    const signOptions: any = {};
+    if (alg === 'ES256') {
+      signOptions.dsaEncoding = 'ieee-p1363';
+    }
+
+    const signature = crypto.sign('sha256', Buffer.from(data), {
+      key: privateKey,
+      ...signOptions,
+    });
     const signatureB64 = signature.toString('base64url');
     return `${data}.${signatureB64}`;
   }

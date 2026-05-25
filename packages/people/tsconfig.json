@@ -3,11 +3,8 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "baseUrl": ".",
     "types": ["@repo/types-shim"],
     "paths": {
-      "@powersync/react-native": ["../core/src/adapters/powersync/powersync-shim.ts"],
-      "@powersync/react": ["../core/src/adapters/powersync/powersync-react-shim.ts"],
       "@repo/people/*": ["./src/*"]
     }
   },

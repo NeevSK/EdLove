@@ -47,21 +47,21 @@ export function SanctuaryBackground() {
   }));
 
   return (
-    <View pointerEvents="none" style={StyleSheet.absoluteFillObject}>
+    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       {/* Layer 0: Previous phase (fades out) */}
       <LinearGradient
         colors={prevNodes.current}
         start={{ x: 0.1, y: 0 }}
         end={{ x: 0.9, y: 1 }}
-        style={StyleSheet.absoluteFillObject}
+        style={StyleSheet.absoluteFill}
       />
       {/* Layer 1: Current phase (fades in) */}
-      <Reanimated.View pointerEvents="none" style={[StyleSheet.absoluteFillObject, animatedStyle]}>
+      <Reanimated.View pointerEvents="none" style={[StyleSheet.absoluteFill, animatedStyle]}>
         <LinearGradient
           colors={currentNodes.current}
           start={{ x: 0.2, y: 0 }}
           end={{ x: 0.8, y: 1 }}
-          style={StyleSheet.absoluteFillObject}
+          style={StyleSheet.absoluteFill}
         />
       </Reanimated.View>
     </View>

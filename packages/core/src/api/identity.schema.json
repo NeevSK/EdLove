@@ -3,14 +3,65 @@
   "title": "GuruDevi Identity Schema",
   "description": "Canonical definitions for identities and faceted profiles in the GuruDevi environment.",
   "definitions": {
+    "Capacity": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "founder",
+        "developer",
+        "teacher",
+        "student",
+        "principal",
+        "assistantPrincipal",
+        "gradeHead",
+        "sectionHead",
+        "parent",
+        "guardian",
+        "librarian",
+        "nurse",
+        "staff",
+        "member"
+      ]
+    },
+    "Bond": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "user_id": { "type": "string", "format": "uuid" },
+        "entity_id": { "type": "string" },
+        "entity_type": {
+          "type": "string",
+          "enum": ["PLATFORM", "SCHOOL", "CLASSROOM", "COMMUNITY", "PERSONAL", "PERSONAL_CLASSROOM"]
+        },
+        "capacity": { "$ref": "#/definitions/Capacity" },
+        "status": {
+          "type": "string",
+          "enum": ["active", "archived", "pending"]
+        },
+        "metadata": { "type": "object" }
+      },
+      "required": ["id", "user_id", "entity_id", "entity_type", "capacity", "status"]
+    },
     "Identity": {
       "type": "object",
       "properties": {
         "id": { "type": "string", "format": "uuid" },
         "email": { "type": "string", "format": "email" },
-        "name": { "type": "string" }
+        "name": { "type": "string" },
+        "display_name": { "type": "string" },
+        "first_name": { "type": "string" },
+        "last_name": { "type": "string" },
+        "identity_state": { "type": "string" },
+        "activeBond": {
+          "type": ["object", "null"],
+          "$ref": "#/definitions/Bond"
+        },
+        "availableBonds": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Bond" }
+        }
       },
-      "required": ["id", "email"]
+      "required": ["id", "email", "availableBonds"]
     },
     "FacetedProfile": {
       "type": "object",
@@ -18,6 +69,10 @@
         "school_id": { "type": ["string", "null"], "format": "uuid" },
         "profile_completed": { "type": "boolean" },
         "full_name": { "type": "string" },
+        "display_name": { "type": "string" },
+        "first_name": { "type": "string" },
+        "last_name": { "type": "string" },
+        "identity_state": { "type": "string" },
         "email": { "type": "string", "format": "email" },
         "tenant_kind": { "type": "string" },
         "onboarding_completed": { "type": "boolean" }

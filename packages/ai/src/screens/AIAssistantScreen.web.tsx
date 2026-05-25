@@ -110,7 +110,11 @@ export default function AIAssistantScreen() {
           The AI assistant is personalised to your role, school, and learning orientation. Sign in
           to begin.
         </p>
-        <button type="button" className="premium-button" onClick={() => navigation.navigate('Auth')}>
+        <button
+          type="button"
+          className="premium-button"
+          onClick={() => navigation.navigate('Auth')}
+        >
           Sign In
         </button>
       </div>

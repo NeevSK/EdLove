@@ -64,12 +64,12 @@ export function createPOAProxy(
 
           const metadata = route?.metadata;
 
-          const shouldBypassBootstrapEnforcement =
-            isWeb && browserBootstrapModules.has(moduleName);
+          const shouldBypassBootstrapEnforcement = isWeb && browserBootstrapModules.has(moduleName);
 
           if (metadata && typeof metadata === 'object' && 'policy' in metadata) {
             if (!shouldBypassBootstrapEnforcement) {
-              if (__DEV__) console.log(`[POA] Dispatching ${moduleName}.${prop} -> ${internalName}`);
+              if (__DEV__)
+                console.log(`[POA] Dispatching ${moduleName}.${prop} -> ${internalName}`);
               await AuthorityInterceptor.enforce(context, metadata);
             }
           } else if (options.strictUnmappedMethods !== false && !shouldBypassBootstrapEnforcement) {

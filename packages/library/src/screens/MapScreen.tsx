@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { FeatureGuard, usePermissions, useStore } from '@repo/core/logic';
+import { FeatureGuard, useStore } from '@repo/core/logic';
 import {
   CaptureEngine,
   getAvailablePerspectives as getEnginePerspectives,
@@ -89,7 +89,6 @@ const PERSPECTIVES: Perspective[] = [
 ];
 export default function MapScreen() {
   const theme = useTheme();
-  const { can, flags } = usePermissions();
   const navigation = useNavigation();
   const { width, height } = useResponsive();
   const showToast = useStore((state) => state.showToast);
@@ -115,7 +114,7 @@ export default function MapScreen() {
         setLoading(false);
       }
     };
-    fetchData();
+    void fetchData();
   }, []);
   const availablePerspectives = useMemo(() => {
     if (!data) return PERSPECTIVES;
@@ -239,7 +238,7 @@ export default function MapScreen() {
         rightAction={
           <FeatureGuard feature="isProMember">
             <Pressable
-              onPress={handleExport}
+              onPress={() => { void handleExport(); }}
               disabled={isExporting}
               className="flex-row items-center px-4 py-2 rounded-xl mr-3"
               style={({ pressed }) => ({

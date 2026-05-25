@@ -24,6 +24,7 @@ const tableToModelMap: Record<string, string> = {
   community_reactions: 'communityReaction',
   lesson: 'lesson',
   lessons: 'lesson',
+  lesson_materials: 'material',
   classroom_resources: 'material',
   attendance_record: 'attendanceRecord',
   attendance_records: 'attendanceRecord',

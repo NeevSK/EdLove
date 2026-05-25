@@ -31,7 +31,9 @@ interface Props {
 import { ActivityPulseProvider } from '../context/ActivityPulseContext';
 
 export function AnalyticsProvider({ children, apiKey, enabled = true, options }: Props) {
-  if (!apiKey || !enabled) {
+  const isPostHogEnabled = enabled && process.env.EXPO_PUBLIC_POSTHOG_ENABLED !== 'false';
+
+  if (!apiKey || !isPostHogEnabled) {
     return <ActivityPulseProvider>{children}</ActivityPulseProvider>;
   }
 

@@ -121,8 +121,12 @@ export function PerformanceDashboard({
               Insights
             </Text>
             <VStack className="gap-2">
-              {insights.map((insight, index) => (
-                <Text key={index} className="text-sm leading-5" style={{ color: themeColors.text }}>
+              {insights.map((insight) => (
+                <Text
+                  key={insight}
+                  className="text-sm leading-5"
+                  style={{ color: themeColors.text }}
+                >
                   • {insight}
                 </Text>
               ))}
@@ -137,7 +141,11 @@ export function PerformanceDashboard({
             </Text>
             <VStack className="gap-2">
               {recommendations.map((recommendation, index) => (
-                <Text key={index} className="text-sm leading-5" style={{ color: themeColors.text }}>
+                <Text
+                  key={recommendation}
+                  className="text-sm leading-5"
+                  style={{ color: themeColors.text }}
+                >
                   {index + 1}. {recommendation}
                 </Text>
               ))}

@@ -133,6 +133,36 @@ export type ClassroomGetPayload<
   Args extends $SelectIncludeOmit<$Schema, 'Classroom', true>,
   Options extends $QueryOptions<$Schema> = $QueryOptions<$Schema>,
 > = $Result<$Schema, 'Classroom', Args, Options>;
+export type PersonalClassroomFindManyArgs = $FindManyArgs<$Schema, 'PersonalClassroom'>;
+export type PersonalClassroomFindUniqueArgs = $FindUniqueArgs<$Schema, 'PersonalClassroom'>;
+export type PersonalClassroomFindFirstArgs = $FindFirstArgs<$Schema, 'PersonalClassroom'>;
+export type PersonalClassroomExistsArgs = $ExistsArgs<$Schema, 'PersonalClassroom'>;
+export type PersonalClassroomCreateArgs = $CreateArgs<$Schema, 'PersonalClassroom'>;
+export type PersonalClassroomCreateManyArgs = $CreateManyArgs<$Schema, 'PersonalClassroom'>;
+export type PersonalClassroomCreateManyAndReturnArgs = $CreateManyAndReturnArgs<
+  $Schema,
+  'PersonalClassroom'
+>;
+export type PersonalClassroomUpdateArgs = $UpdateArgs<$Schema, 'PersonalClassroom'>;
+export type PersonalClassroomUpdateManyArgs = $UpdateManyArgs<$Schema, 'PersonalClassroom'>;
+export type PersonalClassroomUpdateManyAndReturnArgs = $UpdateManyAndReturnArgs<
+  $Schema,
+  'PersonalClassroom'
+>;
+export type PersonalClassroomUpsertArgs = $UpsertArgs<$Schema, 'PersonalClassroom'>;
+export type PersonalClassroomDeleteArgs = $DeleteArgs<$Schema, 'PersonalClassroom'>;
+export type PersonalClassroomDeleteManyArgs = $DeleteManyArgs<$Schema, 'PersonalClassroom'>;
+export type PersonalClassroomCountArgs = $CountArgs<$Schema, 'PersonalClassroom'>;
+export type PersonalClassroomAggregateArgs = $AggregateArgs<$Schema, 'PersonalClassroom'>;
+export type PersonalClassroomGroupByArgs = $GroupByArgs<$Schema, 'PersonalClassroom'>;
+export type PersonalClassroomWhereInput = $WhereInput<$Schema, 'PersonalClassroom'>;
+export type PersonalClassroomSelect = $SelectInput<$Schema, 'PersonalClassroom'>;
+export type PersonalClassroomInclude = $IncludeInput<$Schema, 'PersonalClassroom'>;
+export type PersonalClassroomOmit = $OmitInput<$Schema, 'PersonalClassroom'>;
+export type PersonalClassroomGetPayload<
+  Args extends $SelectIncludeOmit<$Schema, 'PersonalClassroom', true>,
+  Options extends $QueryOptions<$Schema> = $QueryOptions<$Schema>,
+> = $Result<$Schema, 'PersonalClassroom', Args, Options>;
 export type ClassroomStudentFindManyArgs = $FindManyArgs<$Schema, 'ClassroomStudent'>;
 export type ClassroomStudentFindUniqueArgs = $FindUniqueArgs<$Schema, 'ClassroomStudent'>;
 export type ClassroomStudentFindFirstArgs = $FindFirstArgs<$Schema, 'ClassroomStudent'>;

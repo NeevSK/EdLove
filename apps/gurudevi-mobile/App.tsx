@@ -1,4 +1,14 @@
 import 'react-native-url-polyfill/auto';
+import { Platform } from 'react-native';
+import { StyleSheet as CSSStyleSheet } from 'react-native-css-interop';
+
+if (
+  Platform.OS !== 'web' &&
+  'setFlag' in CSSStyleSheet &&
+  typeof (CSSStyleSheet as any).setFlag === 'function'
+) {
+  (CSSStyleSheet as any).setFlag('darkMode', 'class');
+}
 import './src/i18n/config'; // Initialize i18n
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -42,8 +52,7 @@ import { ToastProvider } from '@repo/ui/providers';
 import { OnboardingWrapper } from '@repo/ui/screens/OnboardingWrapper';
 import { sanctuarySaffron } from '@repo/ui/theme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { lazy, Suspense, useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import CommandPalette from './src/components/web/CommandPalette';
 import { PWAInstallBanner } from './src/components/web/PWAInstallBanner';
@@ -104,13 +113,22 @@ function FullScreenFallback() {
 }
 
 function WelcomeRouteScreen() {
+  const handleLogin = useCallback(() => {
+    if (navigationRef.isReady()) {
+      navigationRef.navigate('Auth' as never);
+    }
+  }, []);
+
+  const handleGuest = useCallback(() => {
+    if (navigationRef.isReady()) {
+      navigationRef.navigate('Onboarding' as never);
+    }
+  }, []);
+
   return (
     <ErrorBoundary name="Welcome Screen">
       <Suspense fallback={<FullScreenFallback />}>
-        <WelcomeScreen
-          onLogin={() => navigationRef.isReady() && navigationRef.navigate('Auth' as never)}
-          onGuest={() => navigationRef.isReady() && navigationRef.navigate('Onboarding' as never)}
-        />
+        <WelcomeScreen onLogin={handleLogin} onGuest={handleGuest} />
       </Suspense>
     </ErrorBoundary>
   );
@@ -119,12 +137,19 @@ function WelcomeRouteScreen() {
 function AuthRouteScreen() {
   const navigation = useNavigation<{ goBack: () => void }>();
 
+  const handleSuccess = useCallback(() => {
+    if (navigationRef.isReady()) {
+      navigationRef.navigate('Onboarding' as never);
+    }
+  }, []);
+
+  const handleBack = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
+
   return (
     <Suspense fallback={<FullScreenFallback />}>
-      <AuthScreen
-        onSuccess={() => navigationRef.isReady() && navigationRef.navigate('Onboarding' as never)}
-        onBack={() => navigation.goBack()}
-      />
+      <AuthScreen onSuccess={handleSuccess} onBack={handleBack} />
     </Suspense>
   );
 }
@@ -189,7 +214,8 @@ function App() {
     initSentry();
 
     const posthogApiKey = process.env.EXPO_PUBLIC_POSTHOG_API_KEY;
-    if (posthogApiKey) {
+    const posthogEnabled = process.env.EXPO_PUBLIC_POSTHOG_ENABLED !== 'false';
+    if (posthogApiKey && posthogEnabled) {
       const posthogHost = process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com';
       void initPostHog(posthogApiKey, { host: posthogHost }).then(() => {
         trackEvent('app_initialized', { platform: Platform.OS });
@@ -326,6 +352,16 @@ function AppContent({
     onboardingCompleted,
   });
 
+  const handleNavigationReady = useCallback(() => {
+    if (navigationRef.isReady()) {
+      updateWebPageTitle(navigationRef.current?.getRootState());
+    }
+  }, []);
+
+  const handleNavigationStateChange = useCallback((state: any) => {
+    updateWebPageTitle(state);
+  }, []);
+
   if (loading) {
     return <FullScreenFallback />;
   }
@@ -337,14 +373,8 @@ function AppContent({
           <ErrorBoundary name="App Root">
             <NavigationContainer
               ref={navigationRef}
-              onReady={() => {
-                if (navigationRef.isReady()) {
-                  updateWebPageTitle(navigationRef.current?.getRootState());
-                }
-              }}
-              onStateChange={(state) => {
-                updateWebPageTitle(state);
-              }}
+              onReady={handleNavigationReady}
+              onStateChange={handleNavigationStateChange}
               linking={{
                 prefixes: deepLink.getPrefixes(),
                 config: deepLink.getNavigationConfig(),

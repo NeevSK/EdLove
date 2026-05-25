@@ -104,8 +104,12 @@ export function GPAInsights({
           </Text>
           <VStack className="gap-2">
             {generateRecommendations(currentGPA, trendDirection, gapToTarget).map(
-              (recommendation, index) => (
-                <Text key={index} className="text-sm leading-5" style={{ color: colors.text }}>
+              (recommendation) => (
+                <Text
+                  key={recommendation}
+                  className="text-sm leading-5"
+                  style={{ color: colors.text }}
+                >
                   • {recommendation}
                 </Text>
               ),

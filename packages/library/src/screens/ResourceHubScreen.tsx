@@ -44,16 +44,21 @@ function ActionButton({
   onPress,
   accent = false,
   textColor,
+  accessibilityHint = 'Triggers action',
 }: {
   label: string;
   icon: React.ReactNode;
   onPress: () => void;
   accent?: boolean;
   textColor?: string;
+  accessibilityHint?: string;
 }) {
   return (
     <Pressable
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label || 'action'}
+      accessibilityHint={accessibilityHint}
       className={`min-h-[44px] rounded-2xl border px-3.5 py-2.5 flex-row items-center justify-center gap-2 ${
         accent ? 'bg-phase-accent border-phase-accent' : 'bg-phase-surface/80 border-phase-border'
       }`}
@@ -82,9 +87,16 @@ function CompanionLinkCard({
   textColor: string;
   secondaryTextColor: string;
 }) {
+  const handlePress = useCallback(() => {
+    onPress(link);
+  }, [link, onPress]);
+
   return (
     <Pressable
-      onPress={() => onPress(link)}
+      onPress={handlePress}
+      accessibilityRole="button"
+      accessibilityLabel={link.label}
+      accessibilityHint={link.description}
       className="rounded-[22px] border border-phase-border bg-white dark:bg-phase-surface p-4 active:opacity-80"
     >
       <HStack className="items-center justify-between gap-3">
@@ -97,6 +109,38 @@ function CompanionLinkCard({
           </Text>
         </VStack>
         <SanctuaryIcon as={ExternalLink} size={18} color={secondaryTextColor} />
+      </HStack>
+    </Pressable>
+  );
+}
+
+function RelatedResourceCard({
+  item,
+  onPress,
+}: {
+  item: LibraryResource;
+  onPress: (item: LibraryResource) => void;
+}) {
+  const handlePress = useCallback(() => {
+    onPress(item);
+  }, [item, onPress]);
+
+  return (
+    <Pressable
+      onPress={handlePress}
+      accessibilityRole="button"
+      accessibilityLabel={item.title}
+      accessibilityHint="Navigates to the details page for this resource"
+      className="rounded-[22px] border border-phase-border bg-white dark:bg-phase-surface p-4 active:opacity-80"
+    >
+      <HStack className="items-center justify-between gap-3">
+        <VStack className="flex-1 gap-1">
+          <Text className="text-[15px] font-bold text-phaseText-primary">{item.title}</Text>
+          <Text className="text-[13px] leading-5 text-phaseText-secondary">
+            {item.topics?.[0] || item.subjects?.[0] || 'Related resource'}
+          </Text>
+        </VStack>
+        <SanctuaryIcon as={Sparkles} size={18} color={Theme.colors.sanctuarySaffron} />
       </HStack>
     </Pressable>
   );
@@ -252,6 +296,39 @@ export default function ResourceHubScreen() {
     });
   }, []);
 
+  const handleRetry = useCallback(() => {
+    void refetch();
+  }, [refetch]);
+
+  const handlePrimaryPress = useCallback(() => {
+    if (resource) {
+      handlePrimaryAction(resource);
+    }
+  }, [resource, handlePrimaryAction]);
+
+  const handleSharePress = useCallback(() => {
+    if (resource) {
+      void handleShare(resource);
+    }
+  }, [resource, handleShare]);
+
+  const handleShowQr = useCallback(() => {
+    setQrVisible(true);
+  }, []);
+
+  const handleHideQr = useCallback(() => {
+    setQrVisible(false);
+  }, []);
+
+  const handleRelatedPress = useCallback(
+    (item: LibraryResource) => {
+      navigateIntoLibrary('ResourceHub', {
+        resourceId: item.id,
+      });
+    },
+    [navigateIntoLibrary],
+  );
+
   if (!resourceId) {
     return (
       <ScreenWrapper>
@@ -287,7 +364,7 @@ export default function ResourceHubScreen() {
       <ScreenWrapper>
         <VStack className="flex-1 items-center justify-center gap-3.5 px-6">
           <Text className="text-xl font-extrabold text-phaseText-primary">
-            We couldn't load this resource
+            We couldn{"'"}t load this resource
           </Text>
           <Text className="text-center text-phaseText-secondary">
             {String((error as Error)?.message || 'The resource may have moved or been removed.')}
@@ -301,7 +378,7 @@ export default function ResourceHubScreen() {
             <ActionButton
               label="Retry"
               icon={<SanctuaryIcon as={Sparkles} size={16} color="white" />}
-              onPress={() => refetch()}
+              onPress={handleRetry}
               accent
             />
           </HStack>
@@ -316,6 +393,9 @@ export default function ResourceHubScreen() {
         <Box className="px-4 pt-4">
           <Pressable
             onPress={handleBack}
+            accessibilityRole="button"
+            accessibilityLabel="Back to Library"
+            accessibilityHint="Navigates back to the library screen"
             className="min-h-[42px] self-start rounded-2xl border border-phase-border bg-phase-surface/50 px-3.5 py-2.5 flex-row items-center gap-2"
           >
             <SanctuaryIcon as={ArrowLeft} size={16} color={colors.textPrimary} />
@@ -382,18 +462,18 @@ export default function ResourceHubScreen() {
                     <SanctuaryIcon as={ExternalLink} size={16} color="white" />
                   )
                 }
-                onPress={() => handlePrimaryAction(resource)}
+                onPress={handlePrimaryPress}
                 accent
               />
               <ActionButton
                 label="Share link"
                 icon={<SanctuaryIcon as={Share2} size={16} color={colors.textPrimary} />}
-                onPress={() => handleShare(resource)}
+                onPress={handleSharePress}
               />
               <ActionButton
                 label=""
                 icon={<SanctuaryIcon as={QrCode} size={16} color={colors.textPrimary} />}
-                onPress={() => setQrVisible(true)}
+                onPress={handleShowQr}
               />
             </HStack>
           </Box>
@@ -440,38 +520,14 @@ export default function ResourceHubScreen() {
             {relatedResources && relatedResources.length > 0 ? (
               <VStack className="gap-3">
                 {relatedResources.map((item: LibraryResource) => (
-                  <Pressable
-                    key={item.id}
-                    onPress={() =>
-                      navigateIntoLibrary('ResourceHub', {
-                        resourceId: item.id,
-                      })
-                    }
-                    className="rounded-[22px] border border-phase-border bg-white dark:bg-phase-surface p-4 active:opacity-80"
-                  >
-                    <HStack className="items-center justify-between gap-3">
-                      <VStack className="flex-1 gap-1">
-                        <Text className="text-[15px] font-bold text-phaseText-primary">
-                          {item.title}
-                        </Text>
-                        <Text className="text-[13px] leading-5 text-phaseText-secondary">
-                          {item.topics?.[0] || item.subjects?.[0] || 'Related resource'}
-                        </Text>
-                      </VStack>
-                      <SanctuaryIcon
-                        as={Sparkles}
-                        size={18}
-                        color={Theme.colors.sanctuarySaffron}
-                      />
-                    </HStack>
-                  </Pressable>
+                  <RelatedResourceCard key={item.id} item={item} onPress={handleRelatedPress} />
                 ))}
               </VStack>
             ) : (
               <Box className="p-4 rounded-[22px] bg-white dark:bg-phase-surface border border-phase-border">
                 <Text className="text-[13px] leading-5 text-phaseText-secondary">
-                  We don't have companion Gurudevi resources clustered around this one yet. As the
-                  library grows, this hub will deepen.
+                  We don{"'"}t have companion Gurudevi resources clustered around this one yet. As
+                  the library grows, this hub will deepen.
                 </Text>
               </Box>
             )}
@@ -481,7 +537,7 @@ export default function ResourceHubScreen() {
 
       <ResourceShareQRModal
         visible={qrVisible}
-        onClose={() => setQrVisible(false)}
+        onClose={handleHideQr}
         resourceId={resource.id}
         resourceTitle={resource.title}
         resourceType={resource.type}

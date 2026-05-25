@@ -40,6 +40,9 @@ spawnSync('pnpm', ['run', 'check:unused'], {
 // 3. Architecture Boundaries
 runAudit('Architecture Boundaries', 'check:architecture');
 
+// 4. Schema Drift Alignment
+runAudit('Schema Drift Alignment', 'check:schema-drift');
+
 if (hasErrors) {
   console.log("\n⚠️  Hygiene checks failed. Please review the reports in the 'reports/' directory.");
   console.log('\n>>> FACILITATION & HEALING SUGGESTIONS <<<');

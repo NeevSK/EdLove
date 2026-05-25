@@ -17,7 +17,7 @@ import {
   File,
   FileText,
   Link,
-  Map,
+  Map as MapIcon,
   Play,
   Sparkles,
   StickyNote,
@@ -56,7 +56,7 @@ export const RESOURCE_TYPE_CONFIG: Record<
   link: { icon: Link, color: Theme.colors.sanctuarySaffron, label: 'Link' },
   doc: { icon: FileText, color: Theme.colors.ink, label: 'Doc' },
   note: { icon: StickyNote, color: Theme.colors.sageGreen, label: 'Note' },
-  map: { icon: Map, color: '#10B981', label: 'Map' },
+  map: { icon: MapIcon, color: '#10B981', label: 'Map' },
   infographic: { icon: BarChart2, color: '#F59E0B', label: 'Visual' },
   story: {
     icon: BookMarked,

@@ -19,11 +19,25 @@ function createMockDelegate(name: string): any {
     {},
     {
       get(_target, prop) {
-        if (prop === 'findUnique' && name === 'school') {
-          return async () => ({
-            id: 'mock-school',
-            name: 'Mock School',
-            _count: { classrooms: 0, bonds: 0 },
+        if (prop === 'findUnique') {
+          if (name === 'school') {
+            return async () => ({
+              id: 'mock-school',
+              name: 'Mock School',
+              _count: { classrooms: 0, bonds: 0 },
+            });
+          }
+          if (name === 'user') {
+            return async (args: any = {}) => ({
+              id: args?.where?.id ?? 'mock-user-id',
+              email: 'mock-user@example.com',
+              full_name: 'Mock User',
+              onboarding_completed: true,
+              onboarding_state: 'COMPLETED',
+            });
+          }
+          return async (args: any = {}) => ({
+            id: args?.where?.id ?? `${name}-mock-id`,
           });
         }
 
@@ -56,6 +70,9 @@ const mockDb = new Proxy(
   {},
   {
     get(_target, prop) {
+      if (prop === '$transaction') {
+        return async (callback: (tx: any) => Promise<any>) => callback(mockDb);
+      }
       return createMockDelegate(String(prop));
     },
   },

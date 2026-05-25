@@ -7,11 +7,6 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "scheme": "gurudevi",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.edlove.gurudevi",
@@ -109,7 +104,6 @@
       ],
       "expo-web-browser",
       "expo-image",
-      "expo-router",
       "expo-sharing",
       "expo-sqlite",
       "expo-video",

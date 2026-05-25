@@ -1,5 +1,33 @@
 import type { Context } from 'hono';
 
+const mapToIdentityPayload = (user: any) => {
+  const dbBonds = user.bonds || [];
+  const availableBonds = dbBonds.map((b: any) => ({
+    id: b.id,
+    user_id: b.user_id,
+    entity_id: b.entity_id,
+    entity_type: b.entity_type,
+    capacity: b.capacity,
+    status: b.status || 'active',
+    metadata: b.metadata || {},
+  }));
+
+  const activeBond =
+    availableBonds.find((b: any) => b.capacity === user.capacity) || availableBonds[0] || null;
+
+  return {
+    id: user.id,
+    email: user.email || '',
+    name: user.display_name || user.full_name || '',
+    display_name: user.display_name || user.full_name || '',
+    activeBond,
+    availableBonds,
+    onboarding_completed: !!user.onboarding_completed,
+    schoolId: user.school_id || null,
+    school_id: user.school_id || null,
+  };
+};
+
 /**
  * Identity Domain Handlers (Hono + ZenStack ReBAC)
  */
@@ -16,12 +44,14 @@ export const identityHandlers = {
         {
           id: user.id,
           email: '',
-          full_name: null,
-          display_name: null,
+          name: '',
+          display_name: '',
           school_id: null,
+          schoolId: null,
           onboarding_completed: false,
           onboarding_state: 'pending',
-          bonds: [],
+          activeBond: null,
+          availableBonds: [],
         },
         200,
       );
@@ -30,14 +60,12 @@ export const identityHandlers = {
     const identity = await db.user.findUnique({
       where: { id: user.id },
       include: {
-        bonds: {
-          select: { capacity: true, entity_id: true, entity_type: true },
-        },
+        bonds: true,
       },
     });
 
     if (!identity) return c.json({ message: 'Identity not found' }, 404);
-    return c.json(identity, 200);
+    return c.json(mapToIdentityPayload(identity), 200);
   },
 
   /**
@@ -50,14 +78,12 @@ export const identityHandlers = {
     const profile = await db.user.findUnique({
       where: { id },
       include: {
-        bonds: {
-          select: { capacity: true, entity_id: true, entity_type: true },
-        },
+        bonds: true,
       },
     });
 
     if (!profile) return c.json({ message: 'Profile not found' }, 404);
-    return c.json(profile, 200);
+    return c.json(mapToIdentityPayload(profile), 200);
   },
 
   /**
@@ -117,8 +143,11 @@ export const identityHandlers = {
     const updated = await db.user.update({
       where: { id },
       data: body,
+      include: {
+        bonds: true,
+      },
     });
 
-    return c.json(updated, 200);
+    return c.json(mapToIdentityPayload(updated), 200);
   },
 };

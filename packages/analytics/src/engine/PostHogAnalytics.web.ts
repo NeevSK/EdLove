@@ -2,6 +2,7 @@ import posthog from 'posthog-js';
 
 export class PostHogAnalytics {
   private isInitialized = false;
+  private isDisabled = process.env.EXPO_PUBLIC_POSTHOG_ENABLED === 'false';
 
   async initialize(
     apiKey: string,
@@ -10,6 +11,7 @@ export class PostHogAnalytics {
       debug?: boolean;
     },
   ) {
+    if (this.isDisabled) return;
     if (this.isInitialized) return;
     if (!apiKey) {
       console.warn('[PostHog Web] Missing API key. Initialization skipped.');
@@ -34,6 +36,7 @@ export class PostHogAnalytics {
   }
 
   track(event: string, properties?: Record<string, any>) {
+    if (this.isDisabled || !this.isInitialized) return;
     try {
       posthog.capture(event, properties);
     } catch (error) {
@@ -46,6 +49,7 @@ export class PostHogAnalytics {
   }
 
   identify(userId: string, properties?: Record<string, any>) {
+    if (this.isDisabled || !this.isInitialized) return;
     try {
       posthog.identify(userId, properties);
     } catch (error) {
@@ -54,6 +58,7 @@ export class PostHogAnalytics {
   }
 
   screen(screenName: string, properties?: Record<string, any>) {
+    if (this.isDisabled || !this.isInitialized) return;
     try {
       // In web, we treat screen as a pageview or custom event
       posthog.capture('$pageview', {
@@ -66,6 +71,7 @@ export class PostHogAnalytics {
   }
 
   reset() {
+    if (this.isDisabled || !this.isInitialized) return;
     try {
       posthog.reset();
     } catch (error) {

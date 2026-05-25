@@ -1,6 +1,4 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import FounderDashboard from '@repo/admin/screens/FounderDashboard';
-import FounderSchoolDashboard from '@repo/admin/screens/FounderSchoolDashboard';
 import SchoolCreationScreen from '@repo/admin/screens/SchoolCreationScreen';
 import {
   AttendanceScreen,
@@ -29,8 +27,6 @@ export default function ClassroomStackNavigator() {
       <Stack.Screen name="Attendance" component={AttendanceScreen} />
       <Stack.Screen name="Gradebook" component={GradebookScreen as any} />
       <Stack.Screen name="SchoolCreation" component={SchoolCreationScreen} />
-      <Stack.Screen name="FounderDashboard" component={FounderDashboard} />
-      <Stack.Screen name="FounderSchoolView" component={FounderSchoolDashboard as any} />
     </Stack.Navigator>
   );
 }

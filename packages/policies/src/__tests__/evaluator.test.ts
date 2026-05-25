@@ -231,6 +231,55 @@ describe('Sovereign Authorization Engine', () => {
     ).toBe(false);
   });
 
+  it('should allow any user to read and update their own User resource regardless of capacity', () => {
+    const principalUser = {
+      type: 'principal',
+      id: 'principal-1',
+      attributes: {
+        school_id: '',
+        capacity: 'principal',
+      },
+    };
+
+    const ownUserResource = {
+      type: 'User',
+      id: 'principal-1',
+      attributes: {
+        id: 'principal-1',
+        school_id: '',
+        capacity: 'principal',
+      },
+    };
+
+    const otherUserResource = {
+      type: 'User',
+      id: 'other-user-2',
+      attributes: {
+        id: 'other-user-2',
+        school_id: 'school-a',
+        capacity: 'teacher',
+      },
+    };
+
+    // Allowed to read own User profile even during onboarding (empty school_id)
+    expect(
+      check({
+        principal: principalUser,
+        action: 'read',
+        resource: ownUserResource,
+      }).permitted,
+    ).toBe(true);
+
+    // Denied to read other User profiles
+    expect(
+      check({
+        principal: principalUser,
+        action: 'read',
+        resource: otherUserResource,
+      }).permitted,
+    ).toBe(false);
+  });
+
   it('should generate a robust offline permission snapshot', () => {
     const principalUser = {
       id: 'principal-1',

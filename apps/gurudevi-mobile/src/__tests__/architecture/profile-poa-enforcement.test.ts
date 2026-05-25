@@ -1,44 +1,51 @@
-import { useStore } from '@repo/core/logic';
+import { profileAPI as rawProfileAPI } from '@repo/core/api/profile';
+import { profile, useStore } from '@repo/core/logic';
 import type { TotalState } from '@repo/core/store';
 
-import { profileAPI } from '@repo/profile/api/profile';
-import { socialAPI } from '@repo/profile/api/social';
-import { profileServices } from '@repo/profile/domains/profile/runtime';
+import { profileAPI } from '@repo/profile/api';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+// Mock checkLocalPermission to bypass dynamic WASM/database sync in headless testing
+vi.mock('@repo/core/logic/permissions/localEvaluator', () => ({
+  checkLocalPermission: vi.fn(async (params) => {
+    const isAnonymous = !params.userContext || params.userContext.isAnonymous;
+    return !isAnonymous;
+  }),
+}));
 
 const USER_ID = '11111111-1111-4111-8111-111111111111';
 const SCHOOL_ID = '22222222-2222-4222-8222-222222222222';
 
 describe('profile POA enforcement', () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('blocks profile update for guests before service execution', async () => {
-    jest.spyOn(useStore, 'getState').mockReturnValue({
+    vi.spyOn(useStore, 'getState').mockReturnValue({
       user: null,
       schoolType: null,
     } as unknown as TotalState);
 
-    const updateSpy = jest.spyOn(profileServices, 'updateProfile');
+    const updateSpy = vi.spyOn(rawProfileAPI, 'updateProfile');
 
     await expect(profileAPI.updateProfile(USER_ID, { bio: 'forbidden' })).rejects.toThrow(
-      'Forbidden',
+      'Access Denied',
     );
 
     expect(updateSpy).not.toHaveBeenCalled();
   });
 
   it('blocks social link mutation for guests before service execution', async () => {
-    jest.spyOn(useStore, 'getState').mockReturnValue({
+    vi.spyOn(useStore, 'getState').mockReturnValue({
       user: null,
       schoolType: null,
     } as unknown as TotalState);
 
-    const socialSpy = jest.spyOn(profileServices, 'upsertSocialLink');
+    const socialSpy = vi.spyOn(profile, 'upsertSocialLink');
 
     await expect(
-      socialAPI.upsertSocialLink({
-        user_id: USER_ID,
+      profileAPI.upsertSocialLink(USER_ID, {
         platform: 'website',
         url: 'https://example.com',
         is_public: true,
@@ -51,7 +58,7 @@ describe('profile POA enforcement', () => {
   });
 
   it('allows an authenticated teacher to update their profile through the service boundary', async () => {
-    jest.spyOn(useStore, 'getState').mockReturnValue({
+    vi.spyOn(useStore, 'getState').mockReturnValue({
       user: {
         id: USER_ID,
         email: 'teacher@example.com',
@@ -63,7 +70,7 @@ describe('profile POA enforcement', () => {
       schoolType: 'school_workspace',
     } as unknown as TotalState);
 
-    const updateSpy = jest.spyOn(profileServices, 'updateProfile').mockResolvedValue({
+    const updateSpy = vi.spyOn(rawProfileAPI, 'updateProfile').mockResolvedValue({
       id: USER_ID,
       display_name: 'Teacher',
       capacity: 'teacher',

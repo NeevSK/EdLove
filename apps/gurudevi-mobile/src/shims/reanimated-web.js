@@ -50,11 +50,52 @@ const Easing = {
   inOut: (f) => f,
 };
 
+const React = require('react');
+const {
+  View: RNView,
+  Text: RNText,
+  ScrollView: RNScrollView,
+  Image: RNImage,
+} = require('react-native');
+
+const filterReanimatedProps = (props) => {
+  const {
+    entering,
+    exiting,
+    layout,
+    sharedTransitionTag,
+    sharedTransitionStyle,
+    adapters,
+    ...rest
+  } = props;
+  return rest;
+};
+
+const AnimatedView = React.forwardRef((props, ref) => {
+  return React.createElement(RNView, { ref, ...filterReanimatedProps(props) });
+});
+AnimatedView.displayName = 'Animated.View';
+
+const AnimatedText = React.forwardRef((props, ref) => {
+  return React.createElement(RNText, { ref, ...filterReanimatedProps(props) });
+});
+AnimatedText.displayName = 'Animated.Text';
+
+const AnimatedScrollView = React.forwardRef((props, ref) => {
+  return React.createElement(RNScrollView, { ref, ...filterReanimatedProps(props) });
+});
+AnimatedScrollView.displayName = 'Animated.ScrollView';
+
+const AnimatedImage = React.forwardRef((props, ref) => {
+  return React.createElement(RNImage, { ref, ...filterReanimatedProps(props) });
+});
+AnimatedImage.displayName = 'Animated.Image';
+
 const Animated = {
-  View: 'div',
-  Text: 'span',
-  ScrollView: 'div',
-  Image: 'img',
+  View: AnimatedView,
+  Text: AnimatedText,
+  ScrollView: AnimatedScrollView,
+  Image: AnimatedImage,
   createAnimatedComponent: (Component) => Component,
 };
 
@@ -91,8 +132,9 @@ const reanimatedShim = bridge('react-native-reanimated', {
 const handler = {
   get(target, prop) {
     if (prop === '__esModule') return true;
-    if (prop === 'default') return module.exports;
+    if (prop === 'default') return Animated;
     if (prop in target) return target[prop];
+    if (prop in Animated) return Animated[prop];
     // catch-all: return a no-op proxy for ANYTHING including 'experiment'
     return new Proxy(() => {}, {
       get(_, _p) {
@@ -107,5 +149,5 @@ const handler = {
 
 module.exports = new Proxy(reanimatedShim, handler);
 module.exports.__esModule = true;
-module.exports.default = module.exports;
+module.exports.default = Animated;
 module.exports.experiment = {}; // explicit  belt AND suspenders

@@ -2,16 +2,21 @@ import { createClient } from '@supabase/supabase-js';
 import { storage } from '../lib/storage';
 
 // Configuration from environment variables
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
-const supabasePublishableKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+let supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+let supabasePublishableKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 const baseFetch = globalThis.fetch.bind(globalThis);
 
 // Validate environment variables
 if (!supabaseUrl || !supabasePublishableKey) {
-  throw new Error(
-    'Missing Supabase credentials. Please check your .env file.\n' +
-      'Required: EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY',
-  );
+  if (process.env.NODE_ENV === 'test') {
+    supabaseUrl = 'https://mock-supabase-url.supabase.co';
+    supabasePublishableKey = 'mock-supabase-key';
+  } else {
+    throw new Error(
+      'Missing Supabase credentials. Please check your .env file.\n' +
+        'Required: EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY',
+    );
+  }
 }
 
 const supabaseOptions: any = {

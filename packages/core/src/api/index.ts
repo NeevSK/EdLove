@@ -23,7 +23,7 @@ import { growthAPI, growthStateAPI, missionsAPI, proAPI, ripplesAPI } from './or
 import { presenceAPI } from './presence';
 import { principalNotesAPI } from './principalNotes';
 import { privacyAPI } from './privacy';
-import { profileAPI } from './profile';
+// profileAPI is imported from orchestration/identity below to use the proxied version
 import { resourcesAPI } from './resources';
 import { rewardsAPI } from './rewards';
 import { schoolForestAPI } from './schoolForest';
@@ -60,7 +60,7 @@ import {
 } from './orchestration/educational';
 import { accountingAPI, paymentsAPI } from './orchestration/erp';
 // --- Orchestrated APIs (Extracted Domains) ---
-import { identityAPI } from './orchestration/identity';
+import { identityAPI, profileAPI } from './orchestration/identity';
 import {
   attendanceAPI,
   inventoryAPI,

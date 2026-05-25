@@ -8,6 +8,8 @@ import { Key } from 'lucide-react-native';
 import { memo, useCallback, useEffect, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BreathAnimation } from '../components/BreathAnimation';
+import { GatewayFooter } from '../components/GatewayFooter.web';
+import { GatewayHeader } from '../components/GatewayHeader.web';
 import { LivingGlow } from '../components/LivingGlow';
 import { SanctuaryBackground } from '../components/SanctuaryBackground';
 import { Box } from '../components/ui/box';
@@ -291,6 +293,22 @@ export const AuthScreenWeb = memo(
       }
     }, [onContinueAsGuest, showToast]);
 
+    const handleGooglePress = useCallback(() => {
+      void handleGoogleAuth();
+    }, [handleGoogleAuth]);
+
+    const handlePasskeyPress = useCallback(() => {
+      void handlePasskeyAuth();
+    }, [handlePasskeyAuth]);
+
+    const handleEmailPress = useCallback(() => {
+      void handleEmailAuth();
+    }, [handleEmailAuth]);
+
+    const handleGuestPress = useCallback(() => {
+      void handleGuest();
+    }, [handleGuest]);
+
     const switchToSignup = useCallback(() => {
       dispatch({ type: 'SET_MODE', mode: 'signup' });
     }, []);
@@ -331,7 +349,8 @@ export const AuthScreenWeb = memo(
     );
 
     return (
-      <Box className="flex-1 min-h-screen relative overflow-hidden bg-phase-world">
+      <Box className="flex flex-col min-h-screen justify-between relative overflow-y-auto bg-phase-world">
+        <GatewayHeader />
         <SanctuaryBackground />
 
         <Box className="flex-1 z-10 w-full max-w-[1180px] mx-auto p-8 lg:p-12">
@@ -462,9 +481,7 @@ export const AuthScreenWeb = memo(
                 <VStack className="gap-4 w-full">
                   <Button
                     size="lg"
-                    onPress={() => {
-                      void handleGoogleAuth();
-                    }}
+                    onPress={handleGooglePress}
                     isDisabled={loading}
                     className="h-[60px] rounded-2xl bg-phase-primary shadow-xl hover:translate-y-[-1px] transition-transform"
                   >
@@ -480,9 +497,7 @@ export const AuthScreenWeb = memo(
                   <Button
                     size="lg"
                     variant="outline"
-                    onPress={() => {
-                      void handlePasskeyAuth();
-                    }}
+                    onPress={handlePasskeyPress}
                     isDisabled={loading}
                     className="h-[60px] rounded-2xl border-phase-border bg-phase-surface/50"
                   >
@@ -561,9 +576,7 @@ export const AuthScreenWeb = memo(
 
                           <Button
                             size="lg"
-                            onPress={() => {
-                              void handleEmailAuth();
-                            }}
+                            onPress={handleEmailPress}
                             isDisabled={loading}
                             className="h-[56px] rounded-2xl bg-phase-primary mt-2"
                           >
@@ -587,13 +600,7 @@ export const AuthScreenWeb = memo(
                   )}
 
                   {mode === 'login' && !showEmailForm && (
-                    <Button
-                      variant="ghost"
-                      onPress={() => {
-                        void handleGuest();
-                      }}
-                      className="h-auto py-2"
-                    >
+                    <Button variant="ghost" onPress={handleGuestPress} className="h-auto py-2">
                       <ButtonText className="text-phase-secondary font-medium">
                         Continue as Guest
                       </ButtonText>
@@ -610,9 +617,12 @@ export const AuthScreenWeb = memo(
             </Box>
           </Box>
         </Box>
+        <GatewayFooter />
       </Box>
     );
   },
 );
+
+AuthScreenWeb.displayName = 'AuthScreenWeb';
 
 export default AuthScreenWeb;

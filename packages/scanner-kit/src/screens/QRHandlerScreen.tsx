@@ -40,61 +40,64 @@ export default function QRHandlerScreen() {
 
   const payload = route.params?.payload;
 
-  const executeAction = useCallback(async (p: QRPayload) => {
-    try {
-      const myId = await identityAPI.getMyInternalId();
-      if (!myId) {
-        // Store and redirect to auth
-        await AsyncStorage.setItem('pending_qr_action', JSON.stringify(p));
-        navigation.navigate('Auth');
-        return;
-      }
+  const executeAction = useCallback(
+    async (p: QRPayload) => {
+      try {
+        const myId = await identityAPI.getMyInternalId();
+        if (!myId) {
+          // Store and redirect to auth
+          await AsyncStorage.setItem('pending_qr_action', JSON.stringify(p));
+          navigation.navigate('Auth');
+          return;
+        }
 
-      const result = await FlowResolver.resolveQR(p, myId);
+        const result = await FlowResolver.resolveQR(p, myId);
 
-      if (result.outcome === 'success') {
-        hapticSuccess();
-        setStatus('success');
-        setMessage(t('qrHandler.actionSuccess'));
+        if (result.outcome === 'success') {
+          hapticSuccess();
+          setStatus('success');
+          setMessage(t('qrHandler.actionSuccess'));
 
-        if (result.intent) {
-          // Map Abstract Core Intent -> Mobile Specific Navigation
-          const intentMap: Record<string, () => void> = {
-            GOTO_CLASSROOM: () => navigation.navigate('Main', { screen: 'Classroom' }),
-            GOTO_COMMUNITY: () => navigation.navigate('Main', { screen: 'Community' }),
-            GOTO_SELF: () => navigation.navigate('Main', { screen: 'Self' }),
-            GOTO_THUTHIMAL_CLAIM: () => navigation.replace('ThuthimalClaim', result.params),
-          };
+          if (result.intent) {
+            // Map Abstract Core Intent -> Mobile Specific Navigation
+            const intentMap: Record<string, () => void> = {
+              GOTO_CLASSROOM: () => navigation.navigate('Main', { screen: 'Classroom' }),
+              GOTO_COMMUNITY: () => navigation.navigate('Main', { screen: 'Community' }),
+              GOTO_SELF: () => navigation.navigate('Main', { screen: 'Self' }),
+              GOTO_THUTHIMAL_CLAIM: () => navigation.replace('ThuthimalClaim', result.params),
+            };
 
-          const action = intentMap[result.intent];
-          if (action) {
-            setTimeout(action, 1500);
+            const action = intentMap[result.intent];
+            if (action) {
+              setTimeout(action, 1500);
+            }
           }
+        } else if (result.outcome === 'redirect') {
+          setStatus('success');
+          setMessage(t('qrHandler.actionSuccess'));
+          if (result.intent === 'GOTO_THUTHIMAL_CLAIM') {
+            navigation.replace('ThuthimalClaim', result.params);
+          }
+        } else {
+          throw new Error(result.message);
         }
-      } else if (result.outcome === 'redirect') {
-        setStatus('success');
-        setMessage(t('qrHandler.actionSuccess'));
-        if (result.intent === 'GOTO_THUTHIMAL_CLAIM') {
-          navigation.replace('ThuthimalClaim', result.params);
-        }
-      } else {
-        throw new Error(result.message);
+      } catch (err) {
+        console.error('QRHandlerScreen error:', err);
+        hapticError();
+        setStatus('error');
+        setMessage(t('qrHandler.somethingWrong'));
+        setTimeout(() => navigation.goBack(), 2500);
       }
-    } catch (err) {
-      console.error('QRHandlerScreen error:', err);
-      hapticError();
-      setStatus('error');
-      setMessage(t('qrHandler.somethingWrong'));
-      setTimeout(() => navigation.goBack(), 2500);
-    }
-  }, [navigation, t]);
+    },
+    [navigation, t],
+  );
 
   useEffect(() => {
     if (!payload) {
       navigation.goBack();
       return;
     }
-    executeAction(payload);
+    void executeAction(payload);
   }, [payload, navigation, executeAction]);
 
   return (

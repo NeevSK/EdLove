@@ -32,7 +32,8 @@ import {
   ThumbsUp,
   Video,
 } from 'lucide-react-native';
-import React from 'react';
+import type React from 'react';
+import { memo, useCallback } from 'react';
 
 import type { LibraryResource } from '../types';
 
@@ -133,7 +134,7 @@ export interface LibraryThumbnailCardProps {
   target?: '_blank' | '_self';
 }
 
-export const LibraryThumbnailCard = React.memo(
+export const LibraryThumbnailCard = memo(
   ({
     resource,
     title: manualTitle,
@@ -173,15 +174,15 @@ export const LibraryThumbnailCard = React.memo(
     const Icon = cfg.icon;
 
     // Stable Handlers
-    const handlePress = React.useCallback(() => {
+    const handlePress = useCallback(() => {
       onPress(resource || ({} as LibraryResource));
     }, [resource, onPress]);
 
-    const handleLongPress = React.useCallback(() => {
+    const handleLongPress = useCallback(() => {
       if (resource && onLongPress) onLongPress(resource);
     }, [resource, onLongPress]);
 
-    const handleBookmarkToggle = React.useCallback(
+    const handleBookmarkToggle = useCallback(
       (event: any) => {
         if (coreRuntime.device.getMetadata().platform === 'web') event.stopPropagation();
         if (resource && onBookmarkToggle) void onBookmarkToggle(resource);

@@ -20,7 +20,7 @@ export const usePermissions = () => {
   // Build a single canonical context from the current identity state.
   const context: UserContext = useMemo(() => {
     const activePerspective = useAuthStore.getState().activePerspective;
-    const availableBonds = useAuthStore.getState().availableBonds;
+    const availableBonds = useAuthStore.getState().availableBonds || [];
     const activeBond = activePerspective?.activeBond ?? null;
     const isPersonal = schoolType === 'personal_workspace';
 

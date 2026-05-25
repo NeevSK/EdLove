@@ -39,7 +39,9 @@ export const WebScreenHeader: React.FC<WebScreenHeaderProps> = ({
   let displayTimeText = timeText || greetingText;
   if (showPersonalizedGreeting) {
     const userName =
-      (user as any)?.user_metadata?.display_name?.split(' ')[0] ||
+      (
+        user as unknown as { user_metadata?: { display_name?: string } }
+      )?.user_metadata?.display_name?.split(' ')[0] ||
       user?.display_name?.split(' ')[0] ||
       '';
     const capacity = context.activeBond?.capacity || '';
@@ -64,7 +66,7 @@ export const WebScreenHeader: React.FC<WebScreenHeaderProps> = ({
       }}
     >
       <div aria-live="polite" aria-atomic="true">
-        <div className="greeting-time" aria-label={`${displayTimeText} ${emoji}`}>
+        <div className="greeting-time">
           {displayTimeText} {emoji}
         </div>
         <h1 className="greeting-main">{title}</h1>

@@ -546,6 +546,7 @@ export default function LibraryScreenWeb() {
             >
               {canContribute && (
                 <button
+                  type="button"
                   className="premium-button"
                   style={{
                     display: 'inline-flex',
@@ -568,6 +569,7 @@ export default function LibraryScreenWeb() {
               )}
               {canContribute && (
                 <button
+                  type="button"
                   className="secondary-button"
                   style={{
                     display: 'inline-flex',
@@ -585,6 +587,7 @@ export default function LibraryScreenWeb() {
                 </button>
               )}
               <button
+                type="button"
                 className="secondary-button"
                 style={{
                   display: 'inline-flex',
@@ -634,6 +637,7 @@ export default function LibraryScreenWeb() {
               />
               {searchQuery && (
                 <button
+                  type="button"
                   onClick={() => dispatch({ type: 'SET_SEARCH', query: '' })}
                   style={{
                     background: 'none',
@@ -691,6 +695,7 @@ export default function LibraryScreenWeb() {
               }}
             >
               <button
+                type="button"
                 onClick={() => dispatch({ type: 'SET_VIEW_MODE', mode: 'shelf' })}
                 style={{
                   padding: '10px 14px',
@@ -707,6 +712,7 @@ export default function LibraryScreenWeb() {
                 <Layers size={16} />
               </button>
               <button
+                type="button"
                 onClick={() => dispatch({ type: 'SET_VIEW_MODE', mode: 'grid' })}
                 style={{
                   padding: '10px 14px',
@@ -723,6 +729,7 @@ export default function LibraryScreenWeb() {
                 <LayoutGrid size={16} />
               </button>
               <button
+                type="button"
                 onClick={() => dispatch({ type: 'SET_VIEW_MODE', mode: 'list' })}
                 style={{
                   padding: '10px 14px',
@@ -739,6 +746,7 @@ export default function LibraryScreenWeb() {
                 <List size={16} />
               </button>
               <button
+                type="button"
                 onClick={() => dispatch({ type: 'SET_VIEW_MODE', mode: 'map' })}
                 style={{
                   padding: '10px 14px',
@@ -778,6 +786,7 @@ export default function LibraryScreenWeb() {
                       : Clock;
               return (
                 <button
+                  type="button"
                   key={id}
                   className={`top-tab ${selectedCategoryId === id ? 'active' : ''}`}
                   onClick={() => dispatch({ type: 'SET_CATEGORY', id })}
@@ -802,6 +811,7 @@ export default function LibraryScreenWeb() {
             />
             {LIBRARY_UI_CATEGORIES.map((cat) => (
               <button
+                type="button"
                 key={cat.id}
                 className={`top-tab ${selectedCategoryId === cat.id ? 'active' : ''}`}
                 onClick={() => dispatch({ type: 'SET_CATEGORY', id: cat.id })}
@@ -948,7 +958,7 @@ export default function LibraryScreenWeb() {
                     onOpenResourceOptions={handleOpenResourceOptions}
                     onEndReached={handleEndReached}
                     refreshing={loading}
-                    onRefresh={fetchResources}
+                    onRefresh={() => { void fetchResources(); }}
                   />
                 )}
 
@@ -1073,9 +1083,10 @@ export default function LibraryScreenWeb() {
 
             {hasNextResources && (
               <button
+                type="button"
                 className="top-tab"
                 style={{ alignSelf: 'center', padding: '12px 32px' }}
-                onClick={() => fetchNextResources()}
+                onClick={() => { void fetchNextResources(); }}
                 disabled={isFetchingNextResources}
               >
                 {isFetchingNextResources ? t('library.loadingMore') : t('library.loadMoreFindings')}
@@ -1089,7 +1100,7 @@ export default function LibraryScreenWeb() {
         visible={isCollectionPickerVisible}
         onClose={() => dispatch({ type: 'SET_MODAL', name: 'picker', isOpen: false })}
         collections={collections}
-        onSelect={handleAddToCollection}
+        onSelect={(col) => { void handleAddToCollection(col); }}
         isAdding={isAddingToCollection}
       />
 
@@ -1126,49 +1137,51 @@ export default function LibraryScreenWeb() {
         isOpen={isAssetCreationVisible}
         onClose={() => dispatch({ type: 'SET_MODAL', name: 'assetCreation', isOpen: false })}
         title={selectedCategoryId === 'All' ? 'Add New Resource' : `Add ${selectedCategoryId}`}
-        onAdd={async (data) => {
-          if (!user?.id) return;
-          try {
-            const input: CreateResourceInput = {
-              title: data.title,
-              description: data.description,
-              type: (selectedCategoryId === 'All' ? 'lesson' : selectedCategoryId) as ResourceType,
-              format:
-                data.url.includes('youtube') ||
-                data.url.includes('youtu.be') ||
-                data.url.includes('vimeo')
-                  ? 'video'
-                  : data.url.match(/\.pdf(\?|$)/i)
-                    ? 'document'
-                    : 'document',
-              url: data.url,
-              subject: data.tags?.[0] ?? 'General',
-              topics: data.tags,
-              grades: [],
-              difficulty: 'intermediate',
-              language: 'english',
-              visibility: 'school',
-            };
-            const created = await libraryAPI.createResource(
-              input,
-              user.id,
-              (user as User & { authority?: string }).authority || 'student',
-            );
-            supabase.functions
-              .invoke('library-etl', {
-                body: { resourceId: created.id, action: 'enrich' },
-              })
-              .catch((err) => console.warn('[LibraryScreen] ETL enrichment failed:', err));
-            dispatch({
-              type: 'SET_MODAL',
-              name: 'assetCreation',
-              isOpen: false,
-            });
-            showToast('Resource contributed! It will be reviewed before publishing.', 'success');
-            void fetchResources();
-          } catch (err: unknown) {
-            showToast((err as Error).message ?? 'Failed to add resource', 'error');
-          }
+        onAdd={(data) => {
+          void (async () => {
+            if (!user?.id) return;
+            try {
+              const input: CreateResourceInput = {
+                title: data.title,
+                description: data.description,
+                type: (selectedCategoryId === 'All' ? 'lesson' : selectedCategoryId) as ResourceType,
+                format:
+                  data.url.includes('youtube') ||
+                  data.url.includes('youtu.be') ||
+                  data.url.includes('vimeo')
+                    ? 'video'
+                    : data.url.match(/\.pdf(\?|$)/i)
+                      ? 'document'
+                      : 'document',
+                url: data.url,
+                subject: data.tags?.[0] ?? 'General',
+                topics: data.tags,
+                grades: [],
+                difficulty: 'intermediate',
+                language: 'english',
+                visibility: 'school',
+              };
+              const created = await libraryAPI.createResource(
+                input,
+                user.id,
+                (user as User & { authority?: string }).authority || 'student',
+              );
+              supabase.functions
+                .invoke('library-etl', {
+                  body: { resourceId: created.id, action: 'enrich' },
+                })
+                .catch((err) => console.warn('[LibraryScreen] ETL enrichment failed:', err));
+              dispatch({
+                type: 'SET_MODAL',
+                name: 'assetCreation',
+                isOpen: false,
+              });
+              showToast('Resource contributed! It will be reviewed before publishing.', 'success');
+              void fetchResources();
+            } catch (err: unknown) {
+              showToast((err as Error).message ?? 'Failed to add resource', 'error');
+            }
+          })();
         }}
       />
 
@@ -1180,7 +1193,7 @@ export default function LibraryScreenWeb() {
             ...selectedResource,
             has_bookmarked: bookmarkedIds.has(selectedResource.id),
           }}
-          onBookmark={() => handleBookmark(selectedResource)}
+          onBookmark={() => { void handleBookmark(selectedResource); }}
           onShare={() => {
             if (!selectedResource.url) return;
             void navigator.clipboard.writeText(selectedResource.url);

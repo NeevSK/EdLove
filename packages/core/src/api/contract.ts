@@ -90,12 +90,44 @@ export function adaptToHono(route: SovereignRoute) {
   });
 }
 
+let tokenResolver: (() => Promise<string | null>) | null = null;
+
+/**
+ * registerTokenResolver
+ * Registers a function to resolve the current user's session token.
+ * This decouples the shared contract from direct client-side Supabase/storage imports.
+ */
+export function registerTokenResolver(resolver: () => Promise<string | null>) {
+  tokenResolver = resolver;
+}
+
 /**
  * createSovereignClient
  * Creates a type-safe RPC client for the Sovereign API.
  */
 export function createSovereignClient<T extends import('hono').Hono<any, any, any>>(
   baseUrl: string,
-) {
-  return hc<T>(baseUrl);
+): ReturnType<typeof hc<T>> {
+  return hc<T>(baseUrl, {
+    fetch: async (input: RequestInfo | URL, requestInit?: RequestInit) => {
+      let token: string | null = null;
+      if (tokenResolver) {
+        try {
+          token = await tokenResolver();
+        } catch (err) {
+          console.warn('[Sovereign Client] Failed to retrieve session token via resolver:', err);
+        }
+      }
+
+      const headers = new Headers(requestInit?.headers);
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+
+      return fetch(input, {
+        ...requestInit,
+        headers,
+      });
+    },
+  });
 }

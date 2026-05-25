@@ -1,10 +1,5 @@
 import PostHog from 'posthog-react-native';
 
-interface AnalyticsEvent {
-  event: string;
-  properties?: Record<string, any>;
-}
-
 interface UserProperties {
   [key: string]: any;
 }
@@ -12,6 +7,7 @@ interface UserProperties {
 export class PostHogAnalytics {
   private posthog: PostHog | null = null;
   private isInitialized = false;
+  private isDisabled = process.env.EXPO_PUBLIC_POSTHOG_ENABLED === 'false';
 
   constructor(
     apiKey?: string,
@@ -32,6 +28,9 @@ export class PostHogAnalytics {
       debug?: boolean;
     },
   ): Promise<void> {
+    if (this.isDisabled) {
+      return;
+    }
     if (this.isInitialized) {
       return;
     }
@@ -52,6 +51,9 @@ export class PostHogAnalytics {
   }
 
   track(event: string, properties?: Record<string, any>): void {
+    if (this.isDisabled) {
+      return;
+    }
     if (!this.isInitialized || !this.posthog) {
       console.warn('PostHog not initialized. Event not tracked:', event);
       return;
@@ -69,6 +71,9 @@ export class PostHogAnalytics {
   }
 
   identify(userId: string, userProperties?: UserProperties): void {
+    if (this.isDisabled) {
+      return;
+    }
     if (!this.isInitialized || !this.posthog) {
       console.warn('PostHog not initialized. User not identified:', userId);
       return;
@@ -85,7 +90,7 @@ export class PostHogAnalytics {
   }
 
   reset(): void {
-    if (!this.isInitialized || !this.posthog) {
+    if (this.isDisabled || !this.isInitialized || !this.posthog) {
       return;
     }
 
@@ -97,6 +102,9 @@ export class PostHogAnalytics {
   }
 
   screen(screenName: string, properties?: Record<string, any>): void {
+    if (this.isDisabled) {
+      return;
+    }
     if (!this.isInitialized || !this.posthog) {
       console.warn('PostHog not initialized. Screen not tracked:', screenName);
       return;

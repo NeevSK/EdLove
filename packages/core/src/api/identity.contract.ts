@@ -9,7 +9,7 @@ export const OnboardingStateSchema = z.enum([
   'COMPLETED',
 ]);
 
-export const ClassroomRoleSummarySchema = z.strictObject({
+export const ClassroomCapacitySummarySchema = z.strictObject({
   user_id: z.uuid(),
   school_id: z.uuid().nullable(),
   profile_completed: z.boolean(),
@@ -66,7 +66,7 @@ export const identityContract = {
     },
     responses: {
       200: {
-        schema: ClassroomRoleSummarySchema,
+        schema: ClassroomCapacitySummarySchema,
         description: 'Get capacity summary',
       },
     },

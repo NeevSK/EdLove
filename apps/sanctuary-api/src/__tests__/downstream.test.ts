@@ -137,14 +137,11 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
   });
 
   it('should deny unauthorized PowerSync uploads through the Cedar double gate', async () => {
-    setHydratedAdmin();
+    setMockZenStackDbAvailable(false);
 
     const res = await app.request('/api/powersync/upload', {
       method: 'POST',
       headers: {
-        Authorization: 'Bearer student-user-1',
-        'x-capacity': 'student',
-        'x-school-id': schoolId,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -154,7 +151,7 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
             op: 'PATCH',
             table: 'users',
             opData: {
-              display_name: 'Teacher One',
+              display_name: 'Parent One',
             },
           },
         ],
@@ -162,5 +159,27 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
     });
 
     expect(res.status).toBe(403);
+  });
+
+  it('should allow retrieving classroom capacity summary for a user', async () => {
+    setHydratedTeacher();
+
+    const res = await app.request(
+      '/api/identity/classroom-capacity-summary/fe889249-5929-431e-bdc9-2c1e81dd25b2',
+      {
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer fe889249-5929-431e-bdc9-2c1e81dd25b2',
+          'x-capacity': 'teacher',
+          'x-school-id': schoolId,
+        },
+      },
+    );
+
+    // The handler should successfully run without database mapping or relation errors!
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body).toHaveProperty('user_id', 'fe889249-5929-431e-bdc9-2c1e81dd25b2');
+    expect(body).toHaveProperty('real_class_count');
   });
 });

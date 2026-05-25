@@ -2,13 +2,12 @@
   "extends": "../../packages/typescript-config/base.json",
   "compilerOptions": {
     "outDir": "dist",
-    "baseUrl": ".",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "paths": {
-      "@/*": ["src/*"],
-      "@intuitui-labs/form-builder-engine": ["../form-builder-engine/src"]
-    }
+      "@/*": ["./src/*"]
+    },
+    "rootDir": "./src"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

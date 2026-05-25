@@ -1,7 +1,7 @@
 import { community, educational, identity, notification, profile } from '../logic/managers/factory';
 import type { Capacity } from '../logic/schemas/capacity.schema';
-import type { ClassroomJoinRequest, RequestStatus, SchoolJoinRequest } from '../types/Onboarding';
 import type { Perspective } from '../types/Identity';
+import type { ClassroomJoinRequest, RequestStatus, SchoolJoinRequest } from '../types/Onboarding';
 
 /**
  * Onboarding API (Sovereign Orchestration)

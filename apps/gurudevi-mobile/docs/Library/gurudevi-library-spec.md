@@ -53,8 +53,8 @@ Gurudevi/
   apps/
     gurudevi-mobile/     ← Expo 55, RN 0.83
                             iOS + Android
-                            expo-router
-    gurudevi-marketingWeb/        ← either expo-router web
+                            React Navigation / Metro web
+    gurudevi-marketingWeb/        ← separate web app or web shell
                             OR React + Vite (TBD)
                             keep components compatible
   packages/
@@ -78,7 +78,7 @@ Gurudevi/
 RUNTIME
   React Native 0.83.2
   Expo SDK 55
-  expo-router (navigation)
+  React Navigation (navigation)
   New Architecture enabled (both iOS + Android)
   Hermes engine
 

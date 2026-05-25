@@ -64,7 +64,7 @@ export const operationsHandlers = {
     const db = c.get('db');
     const records = await c.req.json();
 
-    const results = [];
+    const results: any[] = [];
     for (const item of records) {
       const record = await db.attendanceRecord.upsert({
         where: {

@@ -87,7 +87,7 @@ export class Predictor {
 
   private async predictDropoutRisk(request: PredictionRequest): Promise<PredictionResult> {
     // Fetch comprehensive student data
-    const { data: studentData } = await this.db
+    const { data: _studentData } = await this.db
       .from('student_profiles')
       .select('*')
       .eq('student_id', request.studentId)

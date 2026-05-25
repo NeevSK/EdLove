@@ -48,8 +48,8 @@ const normalizeUserContextInput = (value: unknown) => {
 export const UserContextSchema = z.preprocess(
   normalizeUserContextInput,
   z.object({
-    userId: z.string().uuid().nullish().default(null),
-    email: z.string().email().nullish().default(null),
+    userId: z.uuid().nullish().default(null),
+    email: z.email().or(z.literal('')).nullish().default(null),
 
     // Sovereign ReBAC Context
     bonds: z
@@ -62,7 +62,7 @@ export const UserContextSchema = z.preprocess(
     capacity: CapacitySchema.nullish().default(null),
     traits: z.array(z.string()).nullish().default([]),
 
-    schoolId: z.string().uuid().nullish().default(null),
+    schoolId: z.uuid().nullish().default(null),
     tenancyName: z.string().nullish().default(null),
     tenancy: z
       .object({
@@ -73,9 +73,9 @@ export const UserContextSchema = z.preprocess(
       .default(null),
     tenantKind: TenantKindSchema.nullish().default('customer'),
 
-    sectionId: z.string().uuid().nullish().default(null),
-    gradeId: z.string().uuid().nullish().default(null),
-    classroomId: z.string().uuid().nullish().default(null),
+    sectionId: z.uuid().nullish().default(null),
+    gradeId: z.uuid().nullish().default(null),
+    classroomId: z.uuid().nullish().default(null),
 
     // Metadata & Flags
     isAnonymous: z.boolean().nullish().default(false),

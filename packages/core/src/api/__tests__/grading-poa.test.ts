@@ -4,6 +4,19 @@ import { useTemporalStore } from '../../store/useTemporalStore';
 import { gradingAPI } from '../orchestration/specialized';
 
 vi.mock('../supabase', () => ({
+  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__: {
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          in: vi.fn(() => ({
+            in: vi.fn(() => Promise.resolve({ data: [], error: null })),
+          })),
+          single: vi.fn(() => Promise.resolve({ data: { id: 'test-1' }, error: null })),
+        })),
+        insert: vi.fn(() => Promise.resolve({ data: { id: 'test-1' }, error: null })),
+      })),
+    })),
+  },
   supabase: {
     from: vi.fn(() => ({
       select: vi.fn(() => ({

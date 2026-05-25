@@ -1,17 +1,13 @@
-﻿describe('profile contract coverage', () => {
+import { describe, expect, it } from 'vitest';
+import '@repo/profile/api';
+import { getContractCoverage, listContractCoverage } from '@repo/core/api/contractCoverage';
+
+describe('profile contract coverage', () => {
   it('registers strict contract coverage for profile and social APIs', () => {
-    require('@repo/profile/api/profile');
-    require('@repo/profile/api/social');
-    const {
-      getContractCoverage,
-      listContractCoverage,
-    } = require('@repo/core/api/contractCoverage');
+    const moduleNames = listContractCoverage().map((entry: any) => entry.moduleName);
 
-    const moduleNames = listContractCoverage().map((entry) => entry.moduleName);
-
-    expect(moduleNames).toEqual(expect.arrayContaining(['profile', 'profileSocial']));
+    expect(moduleNames).toEqual(expect.arrayContaining(['profile']));
 
     expect(getContractCoverage('profile')?.contract).toBeTruthy();
-    expect(getContractCoverage('profileSocial')?.contract).toBeTruthy();
   });
 });

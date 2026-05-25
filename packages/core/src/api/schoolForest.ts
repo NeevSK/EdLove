@@ -183,7 +183,7 @@ function forestNarrative(
   const needsRain = trees.filter((t) => t.needs_rain).length;
   const hasThuthimal = trees.filter((t) => t.has_thuthimal).length;
 
-  const lines = [];
+  const lines: string[] = [];
 
   switch (weather) {
     case 'radiant':

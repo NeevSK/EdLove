@@ -34,7 +34,7 @@ What is already healthy:
 - platform-specific files exist for several web shims
 - the entrypoint is using `registerRootComponent`
 - there is an established `bootstrapPlatform()` boundary in `@repo/core/native`
-- React Navigation 7 is already the router layer in the app
+- React Navigation 7 is already the router layer in the app, and React Navigation 8 is being evaluated separately rather than treated as the default runtime.
 
 What is still brittle:
 
@@ -105,7 +105,7 @@ The UI should not care whether a capability came from Expo, browser APIs, or a r
 
 ### 5. Navigation Stays on React Navigation 7
 
-We should keep the navigation model centered on React Navigation 7.
+We should keep the navigation model centered on React Navigation 7 for the current runtime.
 
 That means:
 
@@ -137,7 +137,7 @@ We will know the bridge is working when:
 - web and mobile entrypoints can be loaded safely
 - `coreRuntime` access is lazy and guarded
 - platform shims are the default, not the exception
-- React Navigation 7 remains the sole navigation layer
+- React Navigation 7 remains the sole navigation layer for the current app runtime
 - bootstrap logic is small enough that a new contributor can explain it in one minute
 
 ## Next Step

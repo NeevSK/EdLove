@@ -4,6 +4,7 @@ import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image } from 'react-native';
 import ScreenWrapper from '../components/ScreenWrapper';
+import { useTheme } from '../hooks/useTheme';
 import {
   Box,
   Button,
@@ -20,12 +21,13 @@ import {
   Spinner,
   Text,
   VStack,
-} from '../gluestack';
-import { useTheme } from '../hooks/useTheme';
+} from '../primitives';
 import { useSanctuaryToast } from '../providers/ToastProvider';
 import { Theme } from '../theme/Theme';
+import { EXTERNAL_URLS } from '../utils';
 import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const LOGO = require('../../assets/icon.png');
 
 const LANGUAGES = [
@@ -78,9 +80,9 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
   const [isConnecting, setIsConnecting] = useState(false);
   const { showToast } = useSanctuaryToast();
 
-  const changeLanguage = useCallback(async (langCode: string) => {
+  const changeLanguage = useCallback((langCode: string) => {
     hapticLight();
-    await LanguageUtils.setLanguage(langCode as 'en' | 'si' | 'ta');
+    void LanguageUtils.setLanguage(langCode as 'en' | 'si' | 'ta');
   }, []);
 
   const showTermsToast = useCallback(() => {
@@ -116,6 +118,10 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
       setIsConnecting(false);
     }
   }, [acceptedTerms, onGuest, showTermsToast, showToast, t]);
+
+  const handleStartExploringPress = useCallback(() => {
+    void handleStartExploring();
+  }, [handleStartExploring]);
 
   const handleLogin = useCallback(() => {
     if (!acceptedTerms) {
@@ -255,7 +261,7 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
                     <Text className="text-sm text-phase-text-secondary">
                       {t('welcome.acceptTerms')}
                     </Text>
-                    <Link href="https://neevsk.org/privacy" isExternal>
+                    <Link href={EXTERNAL_URLS.privacy} isExternal>
                       <LinkText className="text-sm">{t('welcome.privacyPactLink')}</LinkText>
                     </Link>
                   </HStack>
@@ -263,7 +269,7 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
 
                 <VStack className="gap-3">
                   <Button
-                    onPress={handleStartExploring}
+                    onPress={handleStartExploringPress}
                     isDisabled={isConnecting || !acceptedTerms}
                     className={`h-[64px] rounded-2xl shadow-md ${acceptedTerms ? 'bg-phase-accent' : 'bg-phase-text-secondary opacity-50'}`}
                   >

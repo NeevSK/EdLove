@@ -116,7 +116,8 @@ const api = {
   },
 } satisfies ApiPort;
 
-const FeatureGuard: FeatureGuardPort = ({ children }) => React.createElement(React.Fragment, null, children);
+const FeatureGuard: FeatureGuardPort = ({ children }) =>
+  React.createElement(React.Fragment, null, children);
 
 const QRCodeGenerator: QRCodeGeneratorPort = ({ value }) =>
   React.createElement('code', { className: 'break-all text-xs' }, value);

@@ -35,6 +35,18 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
     (navigation as any).goBack();
   }, [navigation]);
 
+  const handleDownload = useCallback(() => {
+    void startDownload();
+  }, [startDownload]);
+
+  const handleOpen = useCallback(() => {
+    void openInNativeViewer();
+  }, [openInNativeViewer]);
+
+  const handleToggleBookmark = useCallback(() => {
+    setIsBookmarked((b) => !b);
+  }, []);
+
   return (
     <PdfViewer
       title={title}
@@ -42,11 +54,11 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
       downloadState={downloadState}
       progress={progress}
       errorMsg={errorMsg}
-      onDownload={startDownload}
-      onOpen={openInNativeViewer}
+      onDownload={handleDownload}
+      onOpen={handleOpen}
       onBack={handleBack}
       isBookmarked={isBookmarked}
-      onToggleBookmark={() => setIsBookmarked((b) => !b)}
+      onToggleBookmark={handleToggleBookmark}
     />
   );
 }

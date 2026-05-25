@@ -14,7 +14,7 @@ import {
   Users,
   Wifi,
 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   type ClimateSensingData,
   createClimateSensingSchema,
@@ -25,9 +25,7 @@ interface ClimateSensingWebProps {
   initialSchoolId?: string;
   initialSchoolName?: string;
   services?: {
-    searchSchools?: (
-      query: string,
-    ) => Promise<
+    searchSchools?: (query: string) => Promise<
       Array<{
         id: string;
         name: string;
@@ -100,11 +98,13 @@ export const ClimateSensingScreenWeb = ({
       }
     };
 
-    const timer = setTimeout(searchSchools, 400);
+    const timer = setTimeout(() => {
+      void searchSchools();
+    }, 400);
     return () => clearTimeout(timer);
   }, [searchQuery, services]);
 
-  const handleSubmit = async (values: ClimateSensingData) => {
+  const handleSubmit = useCallback(async (values: ClimateSensingData) => {
     if (!selectedSchool) return;
     setIsSubmitting(true);
     setSubmitError(null);
@@ -167,10 +167,10 @@ export const ClimateSensingScreenWeb = ({
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [selectedSchool, services]);
 
   const manager = useMemo(
-    () => new FormManager(createClimateSensingSchema(handleSubmit)),
+    () => new FormManager(createClimateSensingSchema((values) => { void handleSubmit(values); })),
     [handleSubmit],
   );
 
@@ -200,7 +200,9 @@ export const ClimateSensingScreenWeb = ({
             <button
               type="button"
               className="group flex items-center justify-center gap-3 rounded-2xl bg-teal-700 px-6 py-4 text-base font-bold text-white transition-all hover:bg-teal-800 hover:shadow-lg active:scale-[0.98]"
-              onClick={() => window.open('https://gurudevi.edlove.org/map', '_blank', 'noopener,noreferrer')}
+              onClick={() =>
+                window.open('https://gurudevi.edlove.org/map', '_blank', 'noopener,noreferrer')
+              }
             >
               <MapIcon size={20} />
               View National Map
@@ -212,10 +214,12 @@ export const ClimateSensingScreenWeb = ({
             <button
               type="button"
               className="flex items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-6 py-4 text-base font-bold text-slate-900 transition-all hover:border-slate-300 hover:bg-slate-50 active:scale-[0.98]"
-              onClick={async () => {
-                await navigator.clipboard.writeText(shareUrl);
-                setCopied(true);
-                window.setTimeout(() => setCopied(false), 2000);
+              onClick={() => {
+                void (async () => {
+                  await navigator.clipboard.writeText(shareUrl);
+                  setCopied(true);
+                  window.setTimeout(() => setCopied(false), 2000);
+                })();
               }}
             >
               <LinkIcon size={20} className="text-slate-400" />
@@ -348,6 +352,7 @@ export const ClimateSensingScreenWeb = ({
 
           <div className="relative z-10">
             <button
+              type="button"
               onClick={() => setSelectedSchool(null)}
               className="mb-8 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-teal-200/60 hover:text-white transition-colors"
             >
@@ -390,7 +395,10 @@ export const ClimateSensingScreenWeb = ({
                 <p className="text-sm font-bold">{submitError}</p>
               </div>
             )}
-            <NativeForm manager={manager} submitLabel={isSubmitting ? 'Broadcasting...' : 'Broadcast Resonance Pulse'} />
+            <NativeForm
+              manager={manager}
+              submitLabel={isSubmitting ? 'Broadcasting...' : 'Broadcast Resonance Pulse'}
+            />
           </div>
 
           <div className="bg-slate-50 border-l border-slate-100 p-8 md:p-12">

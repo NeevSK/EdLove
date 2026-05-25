@@ -99,7 +99,10 @@ export async function verifySupabaseJwt(token: string): Promise<VerifiedJwtPaylo
   const isTestOrDev = process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development';
   if (
     isTestOrDev &&
-    (token === 'admin-user-1' || token === 'student-user-1' || token === 'teacher-user-1')
+    (token === 'admin-user-1' ||
+      token === 'student-user-1' ||
+      token === 'teacher-user-1' ||
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(token))
   ) {
     console.log(`[JWT] 🧪 Bypassing cryptographic check for integration test identity: "${token}"`);
     return { sub: token, role: 'authenticated' };
@@ -194,16 +197,28 @@ export async function verifySupabaseJwt(token: string): Promise<VerifiedJwtPaylo
     const dataToVerify = Buffer.from(`${headerB64}.${payloadB64}`);
     const signature = Buffer.from(signatureB64, 'base64url');
 
+    // Resolve ECDSA P-1363 raw signature encoding if using ES256
+    const verifyOptions: any = {
+      key: publicKey,
+    };
+    if (header.alg === 'ES256') {
+      verifyOptions.dsaEncoding = 'ieee-p1363';
+    }
+
     const isVerified = crypto.verify(
       'sha256', // RS256 & ES256 both use SHA-256 hash
       dataToVerify,
-      publicKey,
+      verifyOptions,
       signature,
     );
 
     if (!isVerified) {
       console.warn(
         '[JWT] ❌ Asymmetric signature verification failed. Cryptographic identity spoofing suspected.',
+        '\nHeader:',
+        JSON.stringify(header),
+        '\nPayload:',
+        JSON.stringify(payload),
       );
       return null;
     }

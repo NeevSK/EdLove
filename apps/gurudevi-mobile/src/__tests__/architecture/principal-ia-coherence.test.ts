@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { PRINCIPAL_FEATURE_REGISTRY } from '@repo/admin/screens/principal/PrincipalFeatureRegistry';
 import { PRINCIPAL_FEATURE_SCOPE_MAP } from '@repo/admin/screens/principal/PrincipalIAScope';
+import { describe, expect, it } from 'vitest';
 
 const APP_ROOT = path.resolve(__dirname, '../../..');
 const WORKSPACE_ROOT = path.resolve(APP_ROOT, '..', '..');
@@ -42,7 +43,9 @@ function get(obj: Record<string, unknown>, keyPath: string): unknown {
 
 describe('Principal IA coherence', () => {
   it('covers every feature registry item with scope metadata', () => {
-    const featureIds = Object.keys(PRINCIPAL_FEATURE_REGISTRY);
+    const featureIds = Object.keys(
+      PRINCIPAL_FEATURE_REGISTRY,
+    ) as (keyof typeof PRINCIPAL_FEATURE_REGISTRY & keyof typeof PRINCIPAL_FEATURE_SCOPE_MAP)[];
     for (const featureId of featureIds) {
       expect(PRINCIPAL_FEATURE_SCOPE_MAP[featureId]).toBeDefined();
       expect(PRINCIPAL_FEATURE_REGISTRY[featureId]?.scope).toBeDefined();

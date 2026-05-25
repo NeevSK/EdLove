@@ -83,7 +83,9 @@ export class DocumentService {
       sections.push('### 📈 Key Metrics');
       sections.push('| Metric | Value |');
       sections.push('| :--- | :--- |');
-      data.stats.forEach((s) => sections.push(`| **${s.label}** | ${s.value} |`));
+      data.stats.forEach((s) => {
+        sections.push(`| **${s.label}** | ${s.value} |`);
+      });
       sections.push('');
     }
 
@@ -102,7 +104,9 @@ export class DocumentService {
       const sortedPkgs = Array.from(topPackages.entries()).sort((a, b) => b[1] - a[1]);
       sections.push('| Package | Density |');
       sections.push('| :--- | :--- |');
-      sortedPkgs.forEach(([pkg, count]) => sections.push(`| ${pkg} | ${count} matches |`));
+      sortedPkgs.forEach(([pkg, count]) => {
+        sections.push(`| ${pkg} | ${count} matches |`);
+      });
       sections.push('');
 
       if (data.heatmap.length > 10) {
@@ -176,7 +180,9 @@ export class DocumentService {
     // 8. Recommendations (Next Steps)
     if (data.recommendations && data.recommendations.length > 0) {
       sections.push('## 🚀 Recommended Next Steps');
-      data.recommendations.forEach((r) => sections.push(`- [ ] ${r}`));
+      data.recommendations.forEach((r) => {
+        sections.push(`- [ ] ${r}`);
+      });
       sections.push('');
     }
 

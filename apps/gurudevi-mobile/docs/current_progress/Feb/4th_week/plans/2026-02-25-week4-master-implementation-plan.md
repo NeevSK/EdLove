@@ -4,7 +4,7 @@
 
 **Goal:** Implement every remaining unchecked item in `apps/gurudevi-mobile/docs/current_progress/4th_week/tasks.md`.
 
-**Architecture:** Turbo monorepo. App: `apps/gurudevi-mobile/`. Shared packages: `packages/{classroom,community,core,library,profile,self,scanner-kit,ui}/`. All design tokens in `packages/ui/src/theme/Theme.ts`. Supabase backend, React Query v5, Zustand, Reanimated 2, React Navigation v6, i18next, GlueStack UI, PostHog, Sentry.
+**Architecture:** Turbo monorepo. App: `apps/gurudevi-mobile/`. Shared packages: `packages/{classroom,community,core,library,profile,self,scanner-kit,ui}/`. All design tokens in `packages/ui/src/theme/Theme.ts`. Supabase backend, React Query v5, Zustand, Reanimated 2, React Navigation v7, i18next, GlueStack UI, PostHog, Sentry. React Navigation v8 is being evaluated separately and is not the default runtime yet.
 
 **Tech Stack:** React Native (Expo SDK 51), TypeScript strict, Supabase Realtime, React Query infinite queries, `react-native-reanimated` v3, `@gluestack-ui/themed`.
 

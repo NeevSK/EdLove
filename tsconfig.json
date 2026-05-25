@@ -1,20 +1,46 @@
 {
-  "files": ["eslint.config.js", "commitlint.config.js"],
+  "files": [
+    "eslint.config.js",
+    "commitlint.config.js",
+    "packages/eslint-config/next.js",
+    "packages/eslint-config/react-internal.js"
+  ],
   "references": [
-    { "path": "./packages/analytics" },
-    { "path": "./packages/ui" },
-    { "path": "./packages/graphics" },
-    { "path": "./packages/admin" },
-    { "path": "./packages/classroom" },
-    { "path": "./packages/core" },
-    { "path": "./packages/schema" },
-    { "path": "./packages/database" },
-    { "path": "./packages/self" },
-    { "path": "./packages/form-builder-engine" },
-    { "path": "./packages/form-builder" }
+    {
+      "path": "./packages/analytics"
+    },
+    {
+      "path": "./packages/ui"
+    },
+    {
+      "path": "./packages/graphics"
+    },
+    {
+      "path": "./packages/admin"
+    },
+    {
+      "path": "./packages/classroom"
+    },
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./packages/schema"
+    },
+    {
+      "path": "./packages/database"
+    },
+    {
+      "path": "./packages/self"
+    },
+    {
+      "path": "./packages/form-builder-engine"
+    },
+    {
+      "path": "./packages/form-builder"
+    }
   ],
   "compilerOptions": {
-    "baseUrl": ".",
     "resolveJsonModule": true,
     "paths": {
       "@repo/analytics": ["./packages/analytics/src"],

@@ -15,8 +15,14 @@
   ],
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "types": "./src/*.ts",
+      "import": "./src/*.js",
+      "default": "./src/*.js"
     },
     "./package.json": "./package.json"
   },
@@ -44,7 +50,7 @@
     "design-system"
   ],
   "peerDependencies": {
-    "@shopify/react-native-skia": "2.4.18",
+    "@shopify/react-native-skia": "2.6.2",
     "react": "*",
     "react-native": "*",
     "react-native-nitro-modules": ">= 0.20.0",
@@ -62,7 +68,7 @@
     "react-native-wgpu": "~0.1.5",
     "rimraf": "^6.0.1",
     "typegpu": "~0.3.2",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "@repo/typescript-config": "workspace:*",
     "vitest": "^2.1.9",
     "vite-tsconfig-paths": "^6.1.1"

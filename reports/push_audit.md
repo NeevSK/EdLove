@@ -1,107 +1,106 @@
 # Sovereign Monorepo Hygiene Audit Report
 
-> **Generated:** 5/20/2026, 11:21:45 AM
+> **Generated:** 5/22/2026, 2:48:55 PM
 > **Command:** pnpm exec commitlint --from=HEAD~1 --to=HEAD; pnpm run lint; pnpm run check-types; pnpm run check:hygiene; pnpm run identity:check; pnpm run i18n:check
-> **Duration:** 301.0s
+> **Duration:** 304.7s
 > **Status:** ❌ Failed
 
 ## Executive Summary
 
 | Category | Findings |
 | :--- | :---: |
-| General | 88 |
+| General | 89 |
 | apps/edlove-web | 15 |
 | apps/gurudevi-marketingWeb | 9 |
-| apps/gurudevi-mobile | 58 |
+| apps/gurudevi-mobile | 60 |
 | apps/intuitui-web | 6 |
 | apps/neevsk-web | 18 |
-| apps/sanctuary-api | 3 |
-| packages/admin | 18 |
+| packages/admin | 6 |
 | packages/analytics | 21 |
-| packages/community | 3 |
-| packages/core | 16 |
+| packages/core | 26 |
 | packages/library | 6 |
 | packages/lk-edu-geo | 3 |
-| packages/profile | 9 |
+| packages/profile | 3 |
 | packages/scanner-kit | 3 |
 | packages/self | 4 |
 | packages/trube-art | 3 |
-| packages/ui | 26 |
+| packages/ui | 24 |
 
 ## Detailed Findings
 
 ### Category: General
-- M scripts/refactor/analyze-errors.mjs
-- M scratch/test_audit_error.mjs
-- [1m[31m✖[39m   found 1 problems, 0 warnings[22m
-- @repo/analytics:lint:biome: Found 4 errors.
-- @repo/analytics:lint:biome: Found 84 warnings.
-- @repo/analytics:lint:biome:   × Some errors were emitted while running checks.
-- @repo/workforce:lint:biome: Found 1 error.
-- @repo/workforce:lint:biome:   × Some errors were emitted while running checks.
-- @repo/profile:lint:biome:     77 │       setError(err?.message || 'Failed to save');
-- apps-intuitui-web:lint:biome: Found 14 errors.
-- apps-intuitui-web:lint:biome: Found 18 warnings.
-- @repo/profile:lint:biome:     18    │ - ··const·{·instance,·isLoading,·error·}·=·useEntity(type·as·EntityType,·id);␍
-- @repo/profile:lint:biome:     32    │ - ··········Profile·Not·Found·or·Error·Loading␍
-- @repo/profile:lint:biome:     52    │ - ··if·(error·||·!instance)·{␍
-- @repo/profile:lint:biome:     54    │ - ······<Box·className="p-10·text-center·text-text-tertiary">Profile·Not·Found·or·Error·Loading</Box>␍
-- @repo/profile:lint:biome:        18 │ + ··const·{·instance,·isLoading,·error·}·=·useEntity(type·as·EntityType,·id);
-- @repo/profile:lint:biome:        32 │ + ··········Profile·Not·Found·or·Error·Loading
-- apps-intuitui-web:lint:biome:      52     │ - → → import('astro').LiveDataCollectionResult<LiveLoaderDataType<C>,·LiveLoaderErrorType<C>>
-- apps-intuitui-web:lint:biome:          52 │ + ····import('astro').LiveDataCollectionResult<LiveLoaderDataType<C>,·LiveLoaderErrorType<C>>
-- apps-intuitui-web:lint:biome:      77     │ - → ):·Promise<import('astro').LiveDataEntryResult<LiveLoaderDataType<C>,·LiveLoaderErrorType<C>>>;
-- @repo/profile:lint:biome:        52 │ + ··if·(error·||·!instance)·{
-- @repo/profile:lint:biome: Found 18 errors.
-- @repo/profile:lint:biome: Found 45 warnings.
-- @repo/profile:lint:biome:        54 │ + ······<Box·className="p-10·text-center·text-text-tertiary">Profile·Not·Found·or·Error·Loading</Box>
-- apps-intuitui-web:lint:biome:          77 │ + ··):·Promise<import('astro').LiveDataEntryResult<LiveLoaderDataType<C>,·LiveLoaderErrorType<C>>>;
-- @repo/profile:lint:biome:      23     │ - import·{·hapticError,·hapticSuccess·}·from·'@repo/ui/utils/haptics';␍
-- @repo/profile:lint:biome:      44     │ - type·ClaimState·=·'loading'·|·'success'·|·'already_claimed'·|·'error';␍
-- @repo/profile:lint:biome:      90     │ - ········}·else·if·(result.error·===·'already_claimed_or_invalid')·{␍
-- @repo/profile:lint:biome:      92     │ - ··········hapticError();␍
-- @repo/profile:lint:biome:      94     │ - ··········setClaimState('error');␍
-- @repo/profile:lint:biome:      95     │ - ··········hapticError();␍
-- @repo/profile:lint:biome:      98     │ - ········console.error('ThuthimalClaimScreen·error:',·err);␍
-- @repo/profile:lint:biome:      99     │ - ········setClaimState('error');␍
-- @repo/profile:lint:biome:     100     │ - ········hapticError();␍
-- apps-intuitui-web:lint:biome:   × Some errors were emitted while running checks.
-- @repo/profile:lint:biome:   × Some errors were emitted while running checks.
-- @repo/community:lint:biome:     35 │     if (error) throw error;
-- @repo/payments:lint:biome: Found 1 error.
-- @repo/payments:lint:biome: Found 5 warnings.
-- @repo/payments:lint:biome:   × Some errors were emitted while running checks.
-- @intuitui-labs/lk-edu-geo:lint:biome: Found 5 errors.
-- @repo/community:lint:biome:     86 │     if (error) throw error;
-- @repo/community:lint:biome:     124 │     const { data, error } = await supabase
-- @repo/community:lint:biome:     142 │     const { data, error } = await supabase
-- @repo/community:lint:biome:     157 │     const { data: created, error: groupErr } = await supabase
-- @repo/community:lint:biome: Found 19 errors.
-- @repo/community:lint:biome: Found 65 warnings.
-- @repo/community:lint:biome:     215 │     if (error) throw error;
-- @intuitui-labs/lk-edu-geo:lint:biome: Found 15 warnings.
+- - Fixed linting error in principalWorkspaceRepository.ts by replacing Math.random() with crypto.randomUUID()
+- [1m[31m✖[39m   found 3 problems, 0 warnings[22m
+- @repo/database:lint:biome: Found 2 errors.
+- @repo/database:lint:biome:     15    │ - ····throw·new·Error('DATABASE_URL·is·required·to·initialize·the·ZenStack·client');␍
 - @repo/types-shim:lint:biome: Found 1 error.
+- @repo/database:lint:biome:        15 │ + ····throw·new·Error('DATABASE_URL·is·required·to·initialize·the·ZenStack·client');
 - @repo/types-shim:lint:biome: Found 1 warning.
+- @repo/database:lint:biome:   × Some errors were emitted while running checks.
 - @repo/types-shim:lint:biome:   × Some errors were emitted while running checks.
-- @repo/community:lint:biome:     309 │     if (error) throw error;
-- @repo/community:lint:biome:     379 │     if (fetchErr) throw new Error(fetchErr.message);
-- @repo/community:lint:biome:     449 │     if (error) throw error;
-- @repo/community:lint:biome:     540 │     const { data, error } = await supabase
+- @repo/payments:lint:biome: Found 5 warnings.
+- apps-gurudevi-marketing-web:lint:biome:     37    │ - ··const·{·error·}·=·await·supabase.from('audit_logs').insert({␍
+- apps-gurudevi-marketing-web:lint:biome:     51    │ - ··if·(error)·throw·error;␍
+- apps-gurudevi-marketing-web:lint:biome:        37 │ + ··const·{·error·}·=·await·supabase.from('audit_logs').insert({
+- apps-gurudevi-marketing-web:lint:biome:        51 │ + ··if·(error)·throw·error;
+- apps-gurudevi-marketing-web:lint:biome:   × Code formatting aborted due to parsing errors. To format code with errors, enable the 'formatter.formatWithErrors' option.
+- apps-gurudevi-marketing-web:lint:biome: Found 19 errors.
+- apps-gurudevi-marketing-web:lint:biome: Found 23 warnings.
+- apps-gurudevi-marketing-web:lint:biome:   × Some errors were emitted while running checks.
+- @repo/core:lint:biome:    > 99 │         const errorData = (await res.json()) as any;
+- @repo/core:lint:biome:     100 │         throw new Error(errorData.message || `Sanctuary API sync failed with status ${res.status}`);
+- @repo/self:lint:biome: lint_results.json internalError/io  INTERNAL  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- @repo/self:lint:biome: Found 226 errors.
+- @repo/self:lint:biome: Found 61 warnings.
+- @repo/self:lint:biome:   ! This diagnostic was derived from an internal Biome error. Potential bug, please report it if necessary.
+- @repo/self:lint:biome:   > 1 │ �node.exe : npm warn Unknown project config·
+- @repo/self:lint:biome:   > 1 │ �node.exe : npm warn Unknown project config·
+- @repo/self:lint:biome:   > 1 │ �node.exe : npm warn Unknown project config·
+- @repo/self:lint:biome:   > 1 │ �node.exe : npm warn Unknown project config·
+- @repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+- @repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+- @repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+- @repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+- @repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+- @repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+- @repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+- @repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+- @repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+- @repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+- @repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+- @repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+- @repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+- @repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+- @repo/self:lint:biome:   × Some errors were emitted while running checks.
+- @repo/library:lint:biome:     190 │       throw new APIError('Failed to fetch resources', error.code, error);
+- @repo/library:lint:biome:     205 │     const { data, error } = await supabase.rpc('search_map_universe', {
+- @repo/library:lint:biome:     231 │       if (error) throw error;
+- @repo/library:lint:biome:     268 │       throw new APIError('Failed to search knowledge universe', error.code, error);
+- @repo/library:lint:biome:     680 │           const { data: membershipData, error: membershipError } = await supabase.rpc(
+- @repo/core:lint:biome: scratch\extract_errors.cjs format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- @intuitui-labs/lk-edu-geo:lint:biome: Found 4 errors.
+- @intuitui-labs/lk-edu-geo:lint:biome: Found 15 warnings.
 - @intuitui-labs/lk-edu-geo:lint:biome:   × Some errors were emitted while running checks.
-- @repo/community:lint:biome:   × Some errors were emitted while running checks.
-- gurudevi-mobile:lint:biome:     74 │         setError(e?.message || 'Failed to load students');
-- gurudevi-mobile:lint:biome:     118 │       setError(e?.message || 'Failed to save attendance');
-- gurudevi-mobile:lint:biome: Found 716 errors.
-- gurudevi-mobile:lint:biome: Found 472 warnings.
-- gurudevi-mobile:lint:biome:   × Some errors were emitted while running checks.
-- apps-edlove-web:lint:biome: Found 23 errors.
-- apps-edlove-web:lint:biome: Found 94 warnings.
-- apps-edlove-web:lint:biome:   × Some errors were emitted while running checks.
-- ERROR
+- @repo/library:lint:biome: Found 24 errors.
+- @repo/library:lint:biome: Found 126 warnings.
+- @repo/library:lint:biome:   × Some errors were emitted while running checks.
+- @repo/core:lint:biome:     143     │ - ········console.warn(␍
+- @repo/core:lint:biome:      46     │ - ······error:·null,␍
+- @repo/core:lint:biome:      63     │ - ······error:·null,␍
+- @repo/core:lint:biome:      93     │ - ······error:·null,␍
+- @repo/core:lint:biome:     113     │ - ······error:·null,␍
+- @repo/core:lint:biome:     132     │ - ······error:·null,␍
+- @repo/core:lint:biome:     56    │ - ····if·(!credentials)·throw·new·Error('Hardware·identity·access·denied.');␍
+- @repo/core:lint:biome:        56 │ + ····if·(!credentials)·throw·new·Error('Hardware·identity·access·denied.');
+- @repo/ui:lint:biome:     4 │ [{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\eslint.config.mjs","messages":[],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":0,"fixableErrorCount":0,"fixableWarningCount":0,"usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\nativewind-env.d.ts","messages":[],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":0,"fixableErrorCount":0,"fixableWarningCount":0,"usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\scripts\\audit-theme.ts","messages":[{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'colors' is defined but never used.","line":8,"column":10,"nodeType":"Identifier","messageId":"unusedVar","endLine":8,"endColumn":16,"suggestions":[{"messageId":"removeUnusedVar","data":{"varName":"colors"},"fix":{"range":[175,182],"text":""},"desc":"Remove unused variable \"colors\"."}]},{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'phaseMatrix' is defined but never used.","line":8,"column":18,"nodeType":"Identifier","messageId":"unusedVar","endLine":8,"endColumn":29,"suggestions":[{"messageId":"removeUnusedVar","data":{"varName":"phaseMatrix"},"fix":{"range":[181,194],"text":""},"desc":"Remove unused variable \"phaseMatrix\"."}]}],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":2,"fixableErrorCount":0,"fixableWarningCount":0,"source":"/**\n * Sanctuary Theme Auditor\n *\n * Scans Theme.ts and phaseMatrix for contrast violations using APCA and WCAG 2.1.\n * Run with: npx tsx scripts/audit-theme.ts\n */\n\nimport { colors, phaseMatrix, resolvePhaseTokens } from '../src/theme/Theme';\nimport { checkAccessibility, toHex } from '../src/utils/a11yUtils';\nimport { TemporalPhase } from '../src/context/types';\n\nconst PHASES: TemporalPhase[] = ['predawn', 'dawn', 'morning', 'afternoon', 'dusk', 'night'];\nconst MODES: ('light' | 'dark')[] = ['light', 'dark'];\n\nconsole.log('\\x1b[36m%s\\x1b[0m', '--- GURUDEVI THEME ACCESSIBILITY AUDIT ---');\nconsole.log('Validating Sanctuary tokens against WCAG 2.1 and APCA Standards...\\n');\n\nlet violations = 0;\nlet totalChecks = 0;\n\nfunction report(\n  label: string,\n  fg: string,\n  bg: string,\n  requirement: { wcag?: number; apca?: number },\n) {\n  totalChecks++;\n  const fgHex = toHex(fg);\n  const bgHex = toHex(bg);\n  const { ratio, apca, apcaRating } = checkAccessibility(fgHex, bgHex);\n\n  let failed = false;\n  const details = [];\n\n  if (requirement.wcag && ratio < requirement.wcag) {\n    failed = true;\n    details.push(`WCAG: ${ratio.toFixed(2)}:1 (Min ${requirement.wcag})`);\n  }\n\n  if (requirement.apca && Math.abs(apca) < requirement.apca) {\n    failed = true;\n    details.push(`APCA: ${apca.toFixed(1)} Lc (Min ${requirement.apca} - ${apcaRating})`);\n  }\n\n  if (failed) {\n    violations++;\n    console.log(`\\x1b[31m[FAIL]\\x1b[0m ${label}`);\n    console.log(`       - BG: ${bgHex}, FG: ${fgHex}`);\n    console.log(`       - ${details.join(' | ')}`);\n  }\n}\n\n// 1. Audit Phase Matrix\nPHASES.forEach((phase) => {\n  MODES.forEach((mode) => {\n    const isDark = mode === 'dark';\n    const tokens = resolvePhaseTokens(phase, isDark);\n\n    // Primary Text Contrast\n    report(`${phase}/${mode} Primary Text`, tokens.text.primary, tokens.gradientNodes[0], {\n      wcag: 4.5,\n      apca: 75,\n    });\n\n    // Secondary Text Contrast\n    report(`${phase}/${mode} Secondary Text`, tokens.text.secondary, tokens.gradientNodes[0], {\n      wcag: 3.0,\n      apca: 60,\n    });\n\n    // Accent Action Contrast\n    report(`${phase}/${mode} Accent Action`, tokens.text.inverse, tokens.accent.action, {\n      wcag: 4.5,\n      apca: 60,\n    });\n  });\n});\n\nconsole.log('\\n--- AUDIT SUMMARY ---');\nif (violations === 0) {\n  console.log(`\\x1b[32mSUCCESS: All ${totalChecks} checks passed.\\x1b[0m`);\n  process.exit(0);\n} else {\n  console.log(\n    `\\x1b[31mWARNING: Found ${violations} accessibility violations across ${totalChecks} checks.\\x1b[0m`,\n  );\n  // We don't exit with 1 yet to avoid breaking builds until we fix the colors\n  process.exit(0);\n}\n","usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\__tests__\\useTheme.test.js","messages":[{"ruleId":"@typescript-eslint/no-require-imports","severity":1,"message":"A `require()` style import is forbidden.","line":1,"column":54,"nodeType":"CallExpression","messageId":"noRequireImports","endLine":1,"endColumn":79},{"ruleId":"no-undef","severity":1,"message":"'require' is not defined.","line":1,"column":54,"nodeType":"Identifier","messageId":"undef","endLine":1,"endColumn":61},{"ruleId":"no-undef","severity":1,"message":"'describe' is not defined.","line":3,"column":1,"nodeType":"Identifier","messageId":"undef","endLine":3,"endColumn":9},{"ruleId":"no-undef","severity":1,"message":"'it' is not defined.","line":4,"column":3,"nodeType":"Identifier","messageId":"undef","endLine":4,"endColumn":5},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":7,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":7,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":8,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":8,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":9,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":9,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":10,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":10,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":11,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":11,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'it' is not defined.","line":14,"column":3,"nodeType":"Identifier","messageId":"undef","endLine":14,"endColumn":5},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":17,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":17,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":18,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":18,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":19,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":19,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":20,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":20,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":21,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":21,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'it' is not defined.","line":24,"column":3,"nodeType":"Identifier","messageId":"undef","endLine":24,"endColumn":5},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":28,"column":7,"nodeType":"Identifier","messageId":"undef","endLine":28,"endColumn":13},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":29,"column":7,"nodeType":"Identifier","messageId":"undef","endLine":29,"endColumn":13},{"ruleId":"no-undef","severity":1,"message":"'it' is not defined.","line":33,"column":3,"nodeType":"Identifier","messageId":"undef","endLine":33,"endColumn":5},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":37,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":37,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":38,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":38,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":39,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":39,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":40,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":40,"endColumn":11}],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":23,"fixableErrorCount":0,"fixableWarningCount":0,"source":"const { resolveClassicTokens, resolvePhaseTokens } = require('../theme/Theme');\n\ndescribe('resolvePhaseTokens', () => {\n  it('returns scene tokens for night/dark', () => {\n    const tokens = resolvePhaseTokens('night', true);\n\n    expect(tokens.scene.world.bg).toBe('#0F131C');\n    expect(tokens.scene.chrome.bg).toBe(tokens.glass.surface.bg);\n    expect(tokens.scene.elevated.bg).toBe(tokens.glass.modal.bg);\n    expect(tokens.text.onWorld).toBe('#FCF9F2');\n    expect(tokens.accent.action).toBe('#FDD925');\n  });\n\n  it('returns scene tokens for morning/light', () => {\n    const tokens = resolvePhaseTokens('morning', false);\n\n    expect(tokens.scene.world.bg).toBe('#F5EDD6');\n    expect(tokens.scene.canvas.bg).toBe('#DCFCE7');\n    expect(tokens.text.onCanvas).toBe('#2A2318');\n    expect(tokens.accent.action).toBe('#8BBF7A');\n    expect(tokens.text.onAccent).toBe(tokens.text.inverse);\n  });\n\n  it('all six phases resolve without throwing in both worlds', () => {\n    const phases = ['predawn', 'dawn', 'morning', 'afternoon', 'dusk', 'night'];\n\n    phases.forEach((phase) => {\n      expect(() => resolvePhaseTokens(phase, false)).not.toThrow();\n      expect(() => resolvePhaseTokens(phase, true)).not.toThrow();\n    });\n  });\n\n  it('classic tokens project into the same scene contract', () => {\n    const lightClassic = resolveClassicTokens(false);\n    const darkClassic = resolveClassicTokens(true);\n\n    expect(lightClassic.scene.canvas.bg).toBe('#FAF7ED');\n    expect(lightClassic.text.onCanvas).toBe('#2A2318');\n    expect(darkClassic.scene.world.bg).toBe('#0F131C');\n    expect(darkClassic.text.onWorld).toBe('#FCF9F2');\n  });\n});\n","usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\archive\\LotusPetalFAB.complex.tsx","messages":[{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'runOnJS' is defined but never used.","line":27,"column":3,"nodeType":"Identifier","messageId":"unusedVar","endLine":27,"endColumn":10,"suggestions":[{"messageId":"removeUnusedVar","data":{"varName":"runOnJS"},"fix":{"range":[709,720],"text":""},"desc":"Remove unused variable \"runOnJS\"."}]},{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'FAB_HIT_SLOP' is assigned a value but never used.","line":61,"column":7,"nodeType":"Identifier","messageId":"unusedVar","endLine":61,"endColumn":19},{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'ACTION_BUBBLE_SIZE' is assigned a value but never used.","line":62,"column":7,"nodeType":"Identifier","messageId":"unusedVar","endLine":62,"endColumn":25},{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'SCREEN_WIDTH' is assigned a value but never used.","line":65,"column":7,"nodeType":"Identifier","messageId":"unusedVar","endLine":65,"endColumn":19},{"ruleId":"@typescript-eslint/no-require-imports","severity":1,"message":"A `require()` style import is forbidden.","line":93,"column":21,"nodeType":"CallExpression","messageId":"noRequireImports","endLine":93,"endColumn":67},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useSharedValue\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":114,"column":22,"nodeType":"Identifier","endLine":114,"endColumn":36},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useSharedValue\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":116,"column":26,"nodeType":"Identifier","endLine":116,"endColumn":40},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useSharedValue\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":118,"column":22,"nodeType":"Identifier","endLine":118,"endColumn":36},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useSharedValue\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":119,"column":22,"nodeType":"Identifier","endLine":119,"endColumn":36},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useRef\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":121,"column":17,"nodeType":"Identifier","endLine":121,"endColumn":23},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useRef\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":122,"column":17,"nodeType":"Identifier","endLine":122,"endColumn":23},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useState\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":124,"column":41,"nodeType":"Identifier","endLine":124,"endColumn":49},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useSharedValue\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":125,"column":27,"nodeType":"Identifier","endLine":125,"endColumn":41},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useRef\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":127,"column":26,"nodeType":"Identifier","endLine":127,"endColumn":32},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useState\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":128,"column":39,"nodeType":"Identifier","endLine":128,"endColumn":47},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useMemo\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":131,"column":18,"nodeType":"Identifier","endLine":131,"endColumn":25},{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'IconComponent' is assigned a value but never used.","line":132,"column":9,"nodeType":"Identifier","messageId":"unusedVar","endLine":132,"endColumn":22},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useCallback\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":135,"column":25,"nodeType":"Identifier","endLine":135,"endColumn":36},{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'error' is defined but never used.","line":138,"column":14,"nodeType":"Identifier","messageId":"unusedVar","endLine":138,"endColumn":19},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useRef\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":144,"column":24,"nodeType":"Identifier","endLine":144,"endColumn":30},{"ruleId":"react-hooks/refs","severity":1,"message":"Error: Cannot access refs during render\n\nReact refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).\n\nC:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\archive\\LotusPetalFAB.complex.tsx:145:25\n  143 |   // Pan responder for drag functionality\n  144 |   const panResponder = useRef(\n> 145 |     PanResponder.create({\n      |                         ^\n> 146 |       onStartShouldSetPanResponder: () => true,\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 147 |       onMoveShouldSetPanResponder: (_, gestureState) => {\n      ΓÇª\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 184 |       },\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 185 |     }),\n      | ^^^^^^ Passing a ref to a function may read its value during render\n  186 |   ).current;\n  187 |\n  188 |   // ============================================================================","line":145,"column":25,"nodeType":null,"endLine":185,"endColumn":6},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useEffect\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":192,"column":3,"nodeType":"Identifier","endLine":192,"endColumn":12},{"ruleId":"react-hooks/exhaustive-deps","severity":1,"message":"React Hook useEffect has a missing dependency: 'breathingScale'. Either include it or remove the dependency array.","line":206,"column":6,"nodeType":"ArrayExpression","endLine":206,"endColumn":39,"suggestions":[{"desc":"Update the dependencies array to be: [breathingScale, disabled, isReduceMotionEnabled]","fix":{"range":[6445,6478],"text":"[breathingScale, disabled, isReduceMotionEnabled]"}}]},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useAnimatedStyle\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":212,"column":26,"nodeType":"Identifier","endLine":212,"endColumn":42},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useAnimatedStyle\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":218,"column":22,"nodeType":"Identifier","endLine":218,"endColumn":38},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useCallback\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":224,"column":23,"nodeType":"Identifier","endLine":224,"endColumn":34},{"ruleId":"react-hooks/immutability","severity":1,"message":"Error: This value cannot be modified\n\nThis modifies a variable that React considers immutable.\n\nC:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\archive\\LotusPetalFAB.complex.tsx:240:7\n  238 |     if (onPress) {\n  239 |       triggerHaptic();\n> 240 |       pressScale.value = withSequence(\n      |       ^^^^^^^^^^ `pressScale` cannot be modified\n  241 |         withTiming(0.85, { duration: 100 }),\n  242 |         withSpring(1.0, { damping: 12, stiffness: 200 }),\n  243 |       );","line":240,"column":7,"nodeType":null,"endLine":240,"endColumn":17},{"ruleId":"react-hooks/exhaustive-deps","severity":1,"message":"React Hook useCallback has missing dependencies: 'actionMenuScale', 'announce', and 'pressScale'. Either include them or remove the dependency array.","line":246,"column":6,"nodeType":"ArrayExpression","endLine":246,"endColumn":62,"suggestions":[{"desc":"Update the dependencies array to be: [disabled, actions, onPress, triggerHaptic, showActions, actionMenuScale, announce, pressScale]","fix":{"range":[7526,7582],"text":"[disabled, actions, onPress, triggerHaptic, showActions, actionMenuScale, announce, pressScale]"}}]},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useAnimatedStyle\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":248,"column":27,"nodeType":"Identifier","endLine":248,"endColumn":43},{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":252,"column":10,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":252,"endColumn":13,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[7790,7793],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[7790,7793],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useEffect\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":255,"column":3,"nodeType":"Identifier","endLine":255,"endColumn":12},{"ruleId":"react-hooks/immutability","severity":1,"message":"Error: This value cannot be modified\n\nModifying a value previously passed as an argument to a hook is not allowed. Consider moving the modification before calling the hook.\n\nC:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\archive\\LotusPetalFAB.complex.tsx:256:5\n  254 |\n  255 |   useEffect(() => {\n> 256 |     actionMenuScale.value = withSpring(showActions ? 1 : 0, {\n      |     ^^^^^^^^^^^^^^^ `actionMenuScale` cannot be modified\n  257 |       damping: 15,\n  258 |       stiffness: 150,\n  259 |     });","line":256,"column":5,"nodeType":null,"endLine":256,"endColumn":20},{"ruleId":"react-hooks/exhaustive-deps","severity":1,"message":"React Hook useEffect has a missing dependency: 'actionMenuScale'. Either include it or remove the dependency array.","line":260,"column":6,"nodeType":"ArrayExpression","endLine":260,"endColumn":19,"suggestions":[{"desc":"Update the dependencies array to be: [actionMenuScale, showActions]","fix":{"range":[7938,7951],"text":"[actionMenuScale, showActions]"}}]},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useEffect\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":262,"column":3,"nodeType":"Identifier","endLine":262,"endColumn":12},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useAnimatedStyle\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":270,"column":23,"nodeType":"Identifier","endLine":270,"endColumn":39},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useAnimatedStyle\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":282,"column":21,"nodeType":"Identifier","endLine":282,"endColumn":37},{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":285,"column":10,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":285,"endColumn":13,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[8586,8589],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[8586,8589],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useMemo\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":288,"column":26,"nodeType":"Identifier","endLine":288,"endColumn":33},{"ruleId":"react-hooks/refs","severity":1,"message":"Error: Cannot access refs during render\n\nReact refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).\n\nC:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\archive\\LotusPetalFAB.complex.tsx:303:11\n  301 |   return (\n  302 |     <Animated.View\n> 303 |       {...panResponder.panHandlers}\n      |           ^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render\n  304 |       style={containerStyle}\n  305 |       accessible={true}\n  306 |       accessibilityRole=\"image\" // The FAB itself is an image/button","line":303,"column":11,"nodeType":null,"endLine":303,"endColumn":35},{"ruleId":"react-native-a11y/has-valid-accessibility-ignores-invert-colors","severity":1,"message":"Found an element which will be inverted. Add the accessibilityIgnoresInvertColors prop","line":318,"column":9,"nodeType":"JSXElement","endLine":318,"endColumn":86},{"ruleId":"react-native-a11y/has-accessibility-hint","severity":1,"message":"has accessibilityLabel prop but no accessibilityHint","line":332,"column":13,"nodeType":"JSXOpeningElement","endLine":342,"endColumn":14}],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":41,"fixableErrorCount":0,"fixableWarningCount":0,"source":"/**\n * LOTUS PETAL FAB - Floating Action Button\n *\n * A petal-shaped floating action button with:\n * - Golden Lotus Art image\n * - Breathing animation (4-second cycle)\n * - Context-aware icons per tab\n * - Press animation with haptic feedback\n * - Floating bubble physics for dragging\n *\n * Philosophy: Organic, living UI that breathes with intention\n */\n\nimport React, { FC, useMemo, useEffect, useCallback, useState, useRef } from 'react';\nimport { View, Pressable, StyleSheet, Text, PanResponder, Dimensions, Image } from 'react-native';\nimport Animated, {\n  useAnimatedStyle,\n  withRepeat,\n  withTiming,\n  withSequence,\n  withSpring,\n  interpolate,\n  SharedValue,\n  Extrapolate,\n  useSharedValue,\n  Easing,\n  runOnJS,\n} from 'react-native-reanimated';\nimport * as Haptics from 'expo-haptics';\nimport { Flower2, Plus, MessageCircle, Upload, Edit } from 'lucide-react-native';\nimport { Theme } from '../theme/Theme';\nimport { useAccessibility } from '../hooks/useAccessibility';\n\n// ============================================================================\n// TYPES\n// ============================================================================\n\ntype TabType = 'self' | 'classroom' | 'community' | 'library' | 'profile';\n\nexport interface ActionItem {\n  label: string;\n  onPress: () => void;\n  icon?: React.ComponentType<{ size: number; color: string; strokeWidth: number }>;\n}\n\ninterface LotusPetalFABProps {\n  currentTab?: TabType;\n  onPress?: () => void;\n  icon?: React.ReactNode;\n  actions?: ActionItem[];\n  scrollY?: SharedValue<number>;\n  disabled?: boolean;\n  bottomInset?: number; // New prop for safe area handling\n}\n\n// ============================================================================\n// CONSTANTS\n// ============================================================================\n\nconst FAB_SIZE = 72; // Slightly larger for the art\nconst FAB_HIT_SLOP = 10;\nconst ACTION_BUBBLE_SIZE = 48;\nconst ACTION_BUBBLE_SPACING = 12;\nconst LONG_PRESS_DURATION = 400; // milliseconds\nconst SCREEN_WIDTH = Dimensions.get('window').width;\n\n// Context-aware configuration\ntype IconComponentType = React.ComponentType<{ size: number; color: string; strokeWidth: number }>;\n\nconst fabConfig: Record<TabType, { IconComponent: IconComponentType; label: string }> = {\n  self: {\n    IconComponent: Flower2,\n    label: 'Log mood',\n  },\n  classroom: {\n    IconComponent: Plus,\n    label: 'Create lesson',\n  },\n  community: {\n    IconComponent: MessageCircle,\n    label: 'Post announcement',\n  },\n  library: {\n    IconComponent: Upload,\n    label: 'Upload resource',\n  },\n  profile: {\n    IconComponent: Edit,\n    label: 'Edit profile',\n  },\n};\n\nconst LOTUS_IMAGE = require('../../assets/images/lotus_bloom.png');\n\n// ============================================================================\n// MAIN COMPONENT\n// ============================================================================\n\nconst LotusPetalFAB: FC<LotusPetalFABProps> = ({\n  currentTab = 'self',\n  onPress,\n  icon,\n  actions,\n  scrollY,\n  disabled = true,\n  bottomInset = Theme.spacing.lg, // Default value if not provided\n}) => {\n  const { isReduceMotionEnabled, announce } = useAccessibility();\n\n  // TEMPORARY: Return null if disabled to completely hide the FAB\n  if (disabled) return null;\n\n  // Shared value for press animation\n  const pressScale = useSharedValue(1);\n  // Shared value for breathing animation\n  const breathingScale = useSharedValue(0.95);\n  // Position for dragging\n  const translateX = useSharedValue(0);\n  const translateY = useSharedValue(0);\n  // Base position accumulator\n  const baseX = useRef(0);\n  const baseY = useRef(0);\n  // State for showing action menu\n  const [showActions, setShowActions] = useState(false);\n  const actionMenuScale = useSharedValue(0);\n  // Track long press\n  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);\n  const [isDragging, setIsDragging] = useState(false);\n\n  // Memoize current configuration to avoid unnecessary recalculations\n  const config = useMemo(() => fabConfig[currentTab], [currentTab]);\n  const IconComponent = config.IconComponent;\n\n  // Safe haptic feedback wrapper\n  const triggerHaptic = useCallback(async () => {\n    try {\n      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);\n    } catch (error) {\n      console.warn('Haptic feedback not available');\n    }\n  }, []);\n\n  // Pan responder for drag functionality\n  const panResponder = useRef(\n    PanResponder.create({\n      onStartShouldSetPanResponder: () => true,\n      onMoveShouldSetPanResponder: (_, gestureState) => {\n        return isDragging || Math.abs(gestureState.dx) > 5 || Math.abs(gestureState.dy) > 5;\n      },\n      onPanResponderGrant: () => {\n        longPressTimer.current = setTimeout(() => {\n          setIsDragging(true);\n          triggerHaptic();\n          // Slight lift effect\n          pressScale.value = withSpring(1.1);\n        }, LONG_PRESS_DURATION);\n      },\n      onPanResponderMove: (_, gestureState) => {\n        if (isDragging) {\n          translateX.value = baseX.current + gestureState.dx;\n          translateY.value = baseY.current + gestureState.dy;\n        }\n      },\n      onPanResponderRelease: (_, gestureState) => {\n        if (longPressTimer.current) {\n          clearTimeout(longPressTimer.current);\n          longPressTimer.current = null;\n        }\n\n        if (isDragging) {\n          baseX.current += gestureState.dx;\n          baseY.current += gestureState.dy;\n          setIsDragging(false);\n          // Spring back slightly on release (bubble effect)\n          pressScale.value = withSpring(1.0);\n\n          // Optional: Snap back if near edge? For now, free floating.\n        } else {\n          const moved = Math.abs(gestureState.dx) > 5 || Math.abs(gestureState.dy) > 5;\n          if (!moved) {\n            handlePress();\n          }\n        }\n      },\n    }),\n  ).current;\n\n  // ============================================================================\n  // ANIMATION INITIALIZATION\n  // ============================================================================\n\n  useEffect(() => {\n    if (!disabled && !isReduceMotionEnabled) {\n      breathingScale.value = 0.95;\n      breathingScale.value = withRepeat(\n        withTiming(1.02, {\n          duration: 3000,\n          easing: Easing.inOut(Easing.ease),\n        }),\n        -1,\n        true,\n      );\n    } else {\n      breathingScale.value = withTiming(1.0, { duration: 200 });\n    }\n  }, [disabled, isReduceMotionEnabled]);\n\n  // ============================================================================\n  // ANIMATION STYLES\n  // ============================================================================\n\n  const breathingStyle = useAnimatedStyle(() => {\n    return {\n      transform: [{ scale: breathingScale.value }],\n    };\n  });\n\n  const pressStyle = useAnimatedStyle(() => {\n    return {\n      transform: [{ scale: pressScale.value }],\n    };\n  });\n\n  const handlePress = useCallback(() => {\n    if (disabled) return;\n\n    if (actions && actions.length > 0) {\n      triggerHaptic();\n      setShowActions(!showActions);\n      actionMenuScale.value = withSpring(showActions ? 0 : 1, {\n        damping: 15,\n        stiffness: 150,\n      });\n      announce(showActions ? 'Actions menu closed' : 'Actions menu opened');\n      return;\n    }\n\n    if (onPress) {\n      triggerHaptic();\n      pressScale.value = withSequence(\n        withTiming(0.85, { duration: 100 }),\n        withSpring(1.0, { damping: 12, stiffness: 200 }),\n      );\n      onPress();\n    }\n  }, [disabled, onPress, actions, showActions, triggerHaptic]);\n\n  const actionMenuStyle = useAnimatedStyle(() => {\n    return {\n      transform: [{ scale: actionMenuScale.value }, { translateY: -10 }], // Pop up slightly\n      opacity: actionMenuScale.value,\n    } as any;\n  });\n\n  useEffect(() => {\n    actionMenuScale.value = withSpring(showActions ? 1 : 0, {\n      damping: 15,\n      stiffness: 150,\n    });\n  }, [showActions]);\n\n  useEffect(() => {\n    return () => {\n      if (longPressTimer.current) {\n        clearTimeout(longPressTimer.current);\n      }\n    };\n  }, []);\n\n  const scrollStyle = useAnimatedStyle(() => {\n    if (!scrollY) return {};\n    return {\n      transform: [\n        {\n          translateY: interpolate(scrollY.value, [0, 100], [0, 100], Extrapolate.CLAMP),\n        },\n      ],\n      opacity: interpolate(scrollY.value, [0, 50, 100], [1, 0.5, 0], Extrapolate.CLAMP),\n    };\n  });\n\n  const dragStyle = useAnimatedStyle(() => {\n    return {\n      transform: [{ translateX: translateX.value }, { translateY: translateY.value }],\n    } as any;\n  });\n\n  const containerStyle = useMemo(\n    () => [\n      styles.container,\n      { bottom: bottomInset }, // Override bottom with prop\n      breathingStyle,\n      pressStyle,\n      scrollStyle,\n      dragStyle,\n      disabled && styles.disabled,\n    ],\n    [bottomInset, breathingStyle, pressStyle, scrollStyle, dragStyle, disabled],\n  );\n\n  return (\n    <Animated.View\n      {...panResponder.panHandlers}\n      style={containerStyle}\n      accessible={true}\n      accessibilityRole=\"image\" // The FAB itself is an image/button\n      accessibilityLabel={config.label}\n      accessibilityHint={actions && actions.length > 0 ? 'Double tap to view actions' : undefined}\n      accessibilityState={{ disabled, expanded: showActions }}\n      accessibilityActions={[{ name: 'activate', label: 'Activate' }]}\n      onAccessibilityAction={handlePress}\n    >\n      <View style={styles.contentContainer}>\n        {/* Glow Behind */}\n        <View style={styles.glow} />\n\n        {/* Lotus Image */}\n        <Image source={LOTUS_IMAGE} style={styles.lotusImage} resizeMode=\"contain\" />\n\n        {/* Optional Icon Overlay */}\n        {icon && (\n          <View style={styles.iconOverlay}>\n            <>{icon}</>\n          </View>\n        )}\n      </View>\n\n      {/* Action Menu */}\n      {actions && actions.length > 0 && (\n        <Animated.View style={[styles.actionMenu, actionMenuStyle]}>\n          {actions.map((action, index) => (\n            <Pressable\n              key={index}\n              style={styles.actionBubble}\n              onPress={() => {\n                triggerHaptic();\n                action.onPress();\n              }}\n              accessible={true}\n              accessibilityRole=\"button\"\n              accessibilityLabel={action.label}\n            >\n              <View style={styles.actionBubbleContent}>\n                {action.icon && (\n                  <action.icon size={18} color={Theme.colors.lotusDeepPink} strokeWidth={2} />\n                )}\n                <Text style={styles.actionLabel}>{action.label}</Text>\n              </View>\n            </Pressable>\n          ))}\n        </Animated.View>\n      )}\n    </Animated.View>\n  );\n};\n\n// ============================================================================\n// STYLES\n// ============================================================================\n\nconst styles = StyleSheet.create({\n  container: {\n    position: 'absolute',\n    // bottom set dynamically\n    right: Theme.spacing.lg,\n    zIndex: Theme.zIndex.fab,\n    alignItems: 'center',\n    justifyContent: 'center',\n  },\n  contentContainer: {\n    width: FAB_SIZE,\n    height: FAB_SIZE,\n    alignItems: 'center',\n    justifyContent: 'center',\n  },\n  lotusImage: {\n    width: '100%',\n    height: '100%',\n    zIndex: 2,\n    backgroundColor: 'transparent',\n  },\n  iconOverlay: {\n    position: 'absolute',\n    zIndex: 3,\n    alignItems: 'center',\n    justifyContent: 'center',\n  },\n  glow: {\n    position: 'absolute',\n    width: FAB_SIZE * 0.8,\n    height: FAB_SIZE * 0.8,\n    borderRadius: FAB_SIZE,\n    backgroundColor: Theme.colors.sanctuarySaffron,\n    opacity: 0.4,\n    shadowColor: Theme.colors.sanctuarySaffron,\n    shadowOffset: { width: 0, height: 0 },\n    shadowOpacity: 0.8,\n    shadowRadius: 20,\n    elevation: 10,\n    zIndex: 1,\n  },\n  disabled: {\n    opacity: 0.5,\n  },\n  actionMenu: {\n    position: 'absolute',\n    bottom: FAB_SIZE + ACTION_BUBBLE_SPACING,\n    right: 0,\n    alignItems: 'flex-end',\n  },\n  actionBubble: {\n    backgroundColor: Theme.colors.ink,\n    borderRadius: 24,\n    marginBottom: ACTION_BUBBLE_SPACING,\n    paddingHorizontal: 16,\n    paddingVertical: 10,\n    ...Theme.shadows.md,\n    minWidth: 100,\n    borderColor: 'rgba(255,255,255,0.1)',\n    borderWidth: 1,\n  },\n  actionBubbleContent: {\n    flexDirection: 'row',\n    alignItems: 'center',\n    justifyContent: 'flex-end',\n    gap: 8,\n  },\n  actionLabel: {\n    color: Theme.colors.sacredWhite,\n    fontSize: 14,\n    fontWeight: '600',\n  },\n});\n\nexport default LotusPetalFAB;\n","usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\button.tsx","messages":[],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":0,"fixableErrorCount":0,"fixableWarningCount":0,"usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\card.tsx","messages":[],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":0,"fixableErrorCount":0,"fixableWarningCount":0,"usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\code.tsx","messages":[],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":0,"fixableErrorCount":0,"fixableWarningCount":0,"usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\components-legacy\\box\\index.tsx","messages":[{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":18,"column":35,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":18,"endColumn":38,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[407,410],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[407,410],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]}],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":1,"fixableErrorCount":0,"fixableWarningCount":0,"source":"import React from 'react';\nimport { View, type ViewProps } from 'react-native';\nimport { cssInterop } from 'nativewind';\n\nconst StyledView = View;\n\ncssInterop(StyledView, {\n  className: {\n    target: 'style',\n  },\n});\n\nexport interface IBoxProps extends ViewProps {\n  className?: string;\n}\n\nconst Box = React.forwardRef<View, IBoxProps>(({ className, ...props }, ref) => {\n  const Component = StyledView as any;\n  return <Component {...props} ref={ref} className={className} />;\n});\n\nBox.displayName = 'Box';\n\nexport { Box };\n","usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\components-legacy\\button\\index.tsx","messages":[{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":18,"column":33,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":18,"endColumn":36,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[439,442],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[439,442],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]},{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":19,"column":45,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":19,"endColumn":48,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[488,491],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[488,491],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]},{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":20,"column":41,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":20,"endColumn":44,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[533,536],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[533,536],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]},{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":29,"column":33,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":29,"endColumn":36,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[753,756],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[753,756],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]},{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'variant' is assigned a value but never used.","line":30,"column":17,"nodeType":"Identifier","messageId":"unusedVar","endLine":30,"endColumn":24},{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'size' is assigned a value but never used.","line":30,"column":36,"nodeType":"Identifier","messageId":"unusedVar","endLine":30,"endColumn":40}],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":6,"fixableErrorCount":0,"fixableWarningCount":0,"source":"import React from 'react';\nimport {\n  Pressable as RNPressable,\n  Text as RNText,\n  type PressableProps,\n  type TextProps,\n  View as BaseView,\n  ScrollView as BaseScrollView,\n} from 'react-native';\nimport { cssInterop } from 'nativewind';\n\nconst StyledPressable = RNPressable;\nconst StyledText = RNText;\n\ncssInterop(StyledPressable, { className: 'style' });\ncssInterop(StyledText, { className: 'style' });\n\nexport const View = BaseView as any;\nexport const ScrollView = BaseScrollView as any;\nexport const Pressable = RNPressable as any;\n\nexport interface IButtonProps extends PressableProps {\n  className?: string;\n  variant?: 'solid' | 'outline' | 'link';\n  size?: 'xs' | 'sm' | 'md' | 'lg';\n  isDisabled?: boolean;\n}\n\nconst Button = React.forwardRef<any, IButtonProps>(\n  ({ className, variant = 'solid', size = 'md', isDisabled, ...props }, ref) => {\n    return (\n      <StyledPressable\n        {...props}\n        ref={ref}\n        disabled={isDisabled}\n        className={`flex-row items-center justify-center rounded-comfortable ${className || ''}`}\n      />\n    );\n  },\n);\n\nexport interface IButtonTextProps extends TextProps {\n  className?: string;\n}\n\nconst ButtonText = React.forwardRef<RNText, IButtonTextProps>(({ className, ...props }, ref) => {\n  return (\n    <StyledText {...props} ref={ref} className={`font-medium text-inherit ${className || ''}`} />\n  );\n});\n\nButton.displayName = 'Button';\nButtonText.displayName = 'ButtonText';\n\nexport { Button, ButtonText };\n","usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\components-legacy\\center\\index.tsx","messages":[{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":18,"column":35,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":18,"endColumn":38,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[416,419],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[416,419],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]}],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":1,"fixableErrorCount":0,"fixableWarningCount":0,"source":"import React from 'react';\nimport { View, type ViewProps } from 'react-native';\nimport { cssInterop } from 'nativewind';\n\nconst StyledView = View;\n\ncssInterop(StyledView, {\n  className: {\n    target: 'style',\n  },\n});\n\nexport interface ICenterProps extends ViewProps {\n  className?: string;\n}\n\nconst Center = React.forwardRef<View, ICenterProps>(({ className, ...props }, ref) => {\n  const Component = StyledView as any;\n  return (\n    <Component {...props} ref={ref} className={`items-center justify-center ${className || ''}`} />\n  );\n});\n\nCenter.displayName = 'Center';\n\nexport { Center };\n","usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\components-legacy\\divider\\index.tsx","messages":[{"ruleId":"react/display-name","severity":1,"message":"Component definition is missing display name","line":14,"column":24,"nodeType":"CallExpression","messageId":"noDisplayName","endLine":18,"endColumn":2}],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":1,"fixableErrorCount":0,"fixableWarningCount":0,"source":"import React from 'react';\nimport {\n  Text as RNText,\n  View,\n  ActivityIndicator,\n  type TextProps,\n  type ViewProps,\n  type ActivityIndicatorProps,\n} from 'react-native';\nimport { cssInterop } from 'nativewind';\n\ncssInterop(ActivityIndicator, { className: 'style' });\n\nexport const Heading = React.forwardRef<RNText, TextProps & { className?: string }>(\n  ({ className, ...props }, ref) => (\n    <RNText {...props} ref={ref} className={`font-bold text-xl ${className || ''}`} />\n  ),\n);\n\nexport const Divider = ({ className, ...props }: ViewProps & { className?: string }) => (\n  <View {...props} className={`h-[1px] w-full bg-border ${className || ''}`} />\n);\n\nexport const Spinner = ({\n  className,\n  ...props\n}: ActivityIndicatorProps & { className?: string }) => (\n  <ActivityIndicator {...props} className={className} />\n);\n","usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\components-legacy\\form-control\\index.tsx","messages":[{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":59,"column":86,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":59,"endColumn":89,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[1817,1820],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[1817,1820],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]}],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":1,"fixableErrorCount":0,"fixableWarningCount":0,"source":"import React, { createContext, useContext } from 'react';\nimport { View, Text as RNText, type ViewProps, type TextProps } from 'react-native';\nimport { cssInterop } from 'nativewind';\n\ncssInterop(View, { className: 'style' });\ncssInterop(RNText, { className: 'style' });\n\nexport interface IFormControlProps extends ViewProps {\n  isInvalid?: boolean;\n  isDisabled?: boolean;\n  className?: string;\n  children?: React.ReactNode;\n}\n\ntype FormControlContextType = Pick<IFormControlProps, 'isInvalid' | 'isDisabled'>;\n\nconst FormControlContext = createContext<FormControlContextType>({});\n\nexport const FormControl = ({\n  isInvalid,\n  isDisabled,\n  className,\n  children,\n  ...props\n}: ViewProps & {\n  isInvalid?: boolean;\n  isDisabled?: boolean;\n  className?: string;\n  children?: React.ReactNode;\n}) => {\n  return (\n    <FormControlContext.Provider value={{ isInvalid, isDisabled }}>\n      <View {...props} className={`w-full ${className || ''}`}>\n        {children}\n      </View>\n    </FormControlContext.Provider>\n  );\n};\n\nexport const useFormControl = () => useContext(FormControlContext);\n\nexport const FormControlLabel = ({ className, ...props }: ViewProps & { className?: string }) => (\n  <View {...props} className={`mb-2 ${className || ''}`} />\n);\n\nexport const FormControlLabelText = ({\n  className,\n  ...props\n}: TextProps & { className?: string }) => (\n  <RNText {...props} className={`text-sm font-medium text-textSecondary ${className || ''}`} />\n);\n\nexport const FormControlError = ({ className, ...props }: ViewProps & { className?: string }) => {\n  const { isInvalid } = useFormControl();\n  if (!isInvalid) return null;\n  return <View {...props} className={`mt-1 flex-row items-center gap-1 ${className || ''}`} />;\n};\n\nexport const FormControlErrorIcon = ({ as: Icon, className, color, size, ...props }: any) => {\n  const { isInvalid } = useFormControl();\n  if (!isInvalid || !Icon) return null;\n  return <Icon {...props} size={size || 16} color={color || '#EF4444'} className={className} />;\n};\n\nexport const FormControlErrorText = ({\n  className,\n  ...props\n}: TextProps & { className?: string }) => (\n  <RNText {...props} className={`text-xs text-error ${className || ''}`} />\n);\n\nexport const FormControlHelper = ({ className, ...props }: ViewProps & { className?: string }) => (\n  <View {...props} className={`mt-1 ${className || ''}`} />\n);\n\nexport const FormControlHelperText = ({\n  className,\n  ...props\n}: TextProps & { className?: string }) => (\n  <RNText {...props} className={`mt-1 text-xs text-textSecondary ${className || ''}`} />\n);\n","usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\components-legacy\\hstack\\index.tsx","messages":[{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":24,"column":37,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":24,"endColumn":40,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[627,630],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[627,630],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]}],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":1,"fixableErrorCount":0,"fixableWarningCount":0,"source":"import React from 'react';\nimport { View, type ViewProps } from 'react-native';\nimport { cssInterop } from 'nativewind';\n\nconst StyledView = View;\n\ncssInterop(StyledView, {\n  className: {\n    target: 'style',\n  },\n});\n\nexport interface IHStackProps extends ViewProps {\n  className?: string;\n  space?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';\n  reversed?: boolean;\n}\n\nconst HStack = React.forwardRef<View, IHStackProps>(\n  ({ className, space, reversed, ...props }, ref) => {\n    const spaceClass = space ? `gap-${space}` : '';\n    const reversedClass = reversed ? 'flex-row-reverse' : 'flex-row';\n\n    const Component = StyledView as any;\n\n    return (\n      <Component\n        {...props}\n        ref={ref}\n        className={`${reversedClass} items-center ${spaceClass} ${classNa
+- ERROR  @repo/database#lint:biome: command (C:\Users\Naween\projects\polymath-platform\packages\database) C:\Users\Naween\AppData\Roaming\npm\pnpm.cmd run lint:biome exited (1)
 - ERROR  run failed: command  exited (1)
-- x 71 dependency violations (0 errors, 71 warnings). 2063 modules, 6511 dependencies cruised.
-- x 71 dependency violations (0 errors, 71 warnings). 2063 modules, 6511 dependencies cruised.
-- x 71 dependency violations (0 errors, 71 warnings). 2063 modules, 6511 dependencies cruised.
+- warn no-orp
+- x 69 dependency violations (0 errors, 69 warnings). 2087 modules, 6531 dependencies cruised.
+- warn no-orp
+- x 69 dependency violations (0 errors, 69 warnings). 2087 modules, 6531 dependencies cruised.
+- warn no-orp
+- x 69 dependency violations (0 errors, 69 warnings). 2087 modules, 6531 dependencies cruised.
 - - fireJournal.errorSaving
 - - invite.error.invalid
 - - invite.error.noCode
@@ -149,9 +148,9 @@
 - warn no-orphans: apps/gurudevi-marketingWeb/.astro/content-assets.mjs
 
 ### Category: apps/gurudevi-mobile
-- M apps/gurudevi-mobile/src/screens/ErrorMessageDemo.tsx
 - warn no-orphans: apps/gurudevi-mobile/src/utils/validators.ts
 - warn no-orphans: apps/gurudevi-mobile/src/utils/usePWAInstallPrompt.ts
+- warn no-orphans: apps/gurudevi-mobile/src/lib/backgroundSync.web.ts
 - warn no-orphans: apps/gurudevi-mobile/src/components/web/WebSkeleton.web.tsx
 - warn no-orphans: apps/gurudevi-mobile/src/components/web/WebSkeleton.tsx
 - warn no-orphans: apps/gurudevi-mobile/src/components/web/WebScreenShimmer.web.tsx
@@ -171,6 +170,7 @@
 - warn no-orphans: apps/gurudevi-mobile/__mocks__/@sentry/react-native.js
 - warn no-orphans: apps/gurudevi-mobile/src/utils/validators.ts
 - warn no-orphans: apps/gurudevi-mobile/src/utils/usePWAInstallPrompt.ts
+- warn no-orphans: apps/gurudevi-mobile/src/lib/backgroundSync.web.ts
 - warn no-orphans: apps/gurudevi-mobile/src/components/web/WebSkeleton.web.tsx
 - warn no-orphans: apps/gurudevi-mobile/src/components/web/WebSkeleton.tsx
 - warn no-orphans: apps/gurudevi-mobile/src/components/web/WebScreenShimmer.web.tsx
@@ -190,6 +190,7 @@
 - warn no-orphans: apps/gurudevi-mobile/__mocks__/@sentry/react-native.js
 - warn no-orphans: apps/gurudevi-mobile/src/utils/validators.ts
 - warn no-orphans: apps/gurudevi-mobile/src/utils/usePWAInstallPrompt.ts
+- warn no-orphans: apps/gurudevi-mobile/src/lib/backgroundSync.web.ts
 - warn no-orphans: apps/gurudevi-mobile/src/components/web/WebSkeleton.web.tsx
 - warn no-orphans: apps/gurudevi-mobile/src/components/web/WebSkeleton.tsx
 - warn no-orphans: apps/gurudevi-mobile/src/components/web/WebScreenShimmer.web.tsx
@@ -236,30 +237,13 @@
 - warn no-orphans: apps/neevsk-web/.astro/content-modules.mjs
 - warn no-orphans: apps/neevsk-web/.astro/content-assets.mjs
 
-### Category: apps/sanctuary-api
-- warn L0-L1-subpath-only: apps/sanctuary-api/src/index.ts → packages/core/src/index.ts
-- warn L0-L1-subpath-only: apps/sanctuary-api/src/index.ts → packages/core/src/index.ts
-- warn L0-L1-subpath-only: apps/sanctuary-api/src/index.ts → packages/core/src/index.ts
-
 ### Category: packages/admin
 - warn no-orphans: packages/admin/src/screens/principal/types.ts
 - warn no-orphans: packages/admin/src/screens/index.ts
-- warn L0-L1-subpath-only: packages/admin/src/screens/GuardianDashboard.tsx → packages/core/src/index.ts
-- warn L0-L1-subpath-only: packages/admin/src/principal/usePrincipalWorkspaceCanvas.tsx → packages/core/src/index.ts
-- warn L0-L1-subpath-only: packages/admin/src/guardian/useGuardianWorkspaceCanvas.tsx → packages/core/src/index.ts
-- warn L0-L1-subpath-only: packages/admin/src/founder/useFounderWorkspaceCanvas.tsx → packages/core/src/index.ts
 - warn no-orphans: packages/admin/src/screens/principal/types.ts
 - warn no-orphans: packages/admin/src/screens/index.ts
-- warn L0-L1-subpath-only: packages/admin/src/screens/GuardianDashboard.tsx → packages/core/src/index.ts
-- warn L0-L1-subpath-only: packages/admin/src/principal/usePrincipalWorkspaceCanvas.tsx → packages/core/src/index.ts
-- warn L0-L1-subpath-only: packages/admin/src/guardian/useGuardianWorkspaceCanvas.tsx → packages/core/src/index.ts
-- warn L0-L1-subpath-only: packages/admin/src/founder/useFounderWorkspaceCanvas.tsx → packages/core/src/index.ts
 - warn no-orphans: packages/admin/src/screens/principal/types.ts
 - warn no-orphans: packages/admin/src/screens/index.ts
-- warn L0-L1-subpath-only: packages/admin/src/screens/GuardianDashboard.tsx → packages/core/src/index.ts
-- warn L0-L1-subpath-only: packages/admin/src/principal/usePrincipalWorkspaceCanvas.tsx → packages/core/src/index.ts
-- warn L0-L1-subpath-only: packages/admin/src/guardian/useGuardianWorkspaceCanvas.tsx → packages/core/src/index.ts
-- warn L0-L1-subpath-only: packages/admin/src/founder/useFounderWorkspaceCanvas.tsx → packages/core/src/index.ts
 
 ### Category: packages/analytics
 - warn no-orphans: packages/analytics/src/utils/analyticsHelpers.ts
@@ -284,27 +268,32 @@
 - warn no-orphans: packages/analytics/src/engine/PostHogAnalytics.native.js
 - warn no-orphans: packages/analytics/src/context/ActivityPulseContext.tsx
 
-### Category: packages/community
-- warn L0-L1-subpath-only: packages/community/src/screens/GroupsScreen.tsx → packages/core/src/index.ts
-- warn L0-L1-subpath-only: packages/community/src/screens/GroupsScreen.tsx → packages/core/src/index.ts
-- warn L0-L1-subpath-only: packages/community/src/screens/GroupsScreen.tsx → packages/core/src/index.ts
-
 ### Category: packages/core
 - M packages/core/scratch/extract_errors.cjs
-- M packages/core/src/lib/errors.ts
-- M packages/core/src/logic/utils/errorNormalizer.ts
 - M packages/core/src/types/Errors.ts
+- warn no-orphans: packages/core/src/utils/temporal.ts
 - warn no-orphans: packages/core/src/utils/idempotency.ts
 - warn no-orphans: packages/core/src/native/sentry.ts
+- warn no-orphans: packages/core/src/logic/forms/dynamic-loader.ts
+- warn no-orphans: packages/core/src/logic/forms/analytics.ts
 - warn no-orphans: packages/core/src/hooks/useSovereignEffect.ts
+- warn no-orphans: packages/core/src/hooks/useMediaDownloader.web.ts
 - warn no-orphans: packages/core/src/api/growthSignals.generated.zod.ts
+- warn no-orphans: packages/core/src/utils/temporal.ts
 - warn no-orphans: packages/core/src/utils/idempotency.ts
 - warn no-orphans: packages/core/src/native/sentry.ts
+- warn no-orphans: packages/core/src/logic/forms/dynamic-loader.ts
+- warn no-orphans: packages/core/src/logic/forms/analytics.ts
 - warn no-orphans: packages/core/src/hooks/useSovereignEffect.ts
+- warn no-orphans: packages/core/src/hooks/useMediaDownloader.web.ts
 - warn no-orphans: packages/core/src/api/growthSignals.generated.zod.ts
+- warn no-orphans: packages/core/src/utils/temporal.ts
 - warn no-orphans: packages/core/src/utils/idempotency.ts
 - warn no-orphans: packages/core/src/native/sentry.ts
+- warn no-orphans: packages/core/src/logic/forms/dynamic-loader.ts
+- warn no-orphans: packages/core/src/logic/forms/analytics.ts
 - warn no-orphans: packages/core/src/hooks/useSovereignEffect.ts
+- warn no-orphans: packages/core/src/hooks/useMediaDownloader.web.ts
 - warn no-orphans: packages/core/src/api/growthSignals.generated.zod.ts
 
 ### Category: packages/library
@@ -321,14 +310,8 @@
 - warn no-orphans: packages/lk-edu-geo/src/constants.ts
 
 ### Category: packages/profile
-- warn L0-L1-subpath-only: packages/profile/src/hooks/useTeacherProfessionalHistory.ts → packages/core/src/index.ts
-- warn L0-L1-subpath-only: packages/profile/src/hooks/useStudentAcademicHistory.ts → packages/core/src/index.ts
 - warn L0-L1-subpath-only: packages/profile/src/hooks/useNotificationPreferences.ts → packages/ui/src/index.ts
-- warn L0-L1-subpath-only: packages/profile/src/hooks/useTeacherProfessionalHistory.ts → packages/core/src/index.ts
-- warn L0-L1-subpath-only: packages/profile/src/hooks/useStudentAcademicHistory.ts → packages/core/src/index.ts
 - warn L0-L1-subpath-only: packages/profile/src/hooks/useNotificationPreferences.ts → packages/ui/src/index.ts
-- warn L0-L1-subpath-only: packages/profile/src/hooks/useTeacherProfessionalHistory.ts → packages/core/src/index.ts
-- warn L0-L1-subpath-only: packages/profile/src/hooks/useStudentAcademicHistory.ts → packages/core/src/index.ts
 - warn L0-L1-subpath-only: packages/profile/src/hooks/useNotificationPreferences.ts → packages/ui/src/index.ts
 
 ### Category: packages/scanner-kit
@@ -343,456 +326,157 @@
 - warn L0-L1-subpath-only: packages/self/src/api/wellbeingRepository.ts → packages/core/src/index.ts
 
 ### Category: packages/trube-art
-- warn no-orphans: packages/trube-art/src
-- warn no-orphans: packages/trube-art/src
-- warn no-orphans: packages/trube-art/src
+- warn no-orphans: packages/trube-art/src/native/renderers/SoulLibrary.ts
+- warn no-orphans: packages/trube-art/src/native/renderers/SoulLibrary.ts
+- warn no-orphans: packages/trube-art/src/native/renderers/SoulLibrary.ts
 
 ### Category: packages/ui
-- M packages/ui/src/components/ErrorBoundary.tsx
-- M packages/ui/src/providers/ErrorResolutionProvider.tsx
 - warn no-orphans: packages/ui/src/utils/shareAction.web.ts
 - warn no-orphans: packages/ui/src/utils/SanctuaryLocation.web.ts
 - warn no-orphans: packages/ui/src/utils/haptics.web.ts
 - warn no-orphans: packages/ui/src/utils/dialogs.web.ts
 - warn no-orphans: packages/ui/src/components/ui/list/index.tsx
 - warn no-orphans: packages/ui/src/components/SkeletonLoader.web.tsx
+- warn no-orphans: packages/ui/src/components-native/NoiseOverlay.web.tsx
 - warn no-orphans: packages/ui/src/code.tsx
-- warn no-orphans: packages/ui/src/button.tsx
 - warn no-orphans: packages/ui/src/utils/shareAction.web.ts
 - warn no-orphans: packages/ui/src/utils/SanctuaryLocation.web.ts
 - warn no-orphans: packages/ui/src/utils/haptics.web.ts
 - warn no-orphans: packages/ui/src/utils/dialogs.web.ts
 - warn no-orphans: packages/ui/src/components/ui/list/index.tsx
 - warn no-orphans: packages/ui/src/components/SkeletonLoader.web.tsx
+- warn no-orphans: packages/ui/src/components-native/NoiseOverlay.web.tsx
 - warn no-orphans: packages/ui/src/code.tsx
-- warn no-orphans: packages/ui/src/button.tsx
 - warn no-orphans: packages/ui/src/utils/shareAction.web.ts
 - warn no-orphans: packages/ui/src/utils/SanctuaryLocation.web.ts
 - warn no-orphans: packages/ui/src/utils/haptics.web.ts
 - warn no-orphans: packages/ui/src/utils/dialogs.web.ts
 - warn no-orphans: packages/ui/src/components/ui/list/index.tsx
 - warn no-orphans: packages/ui/src/components/SkeletonLoader.web.tsx
+- warn no-orphans: packages/ui/src/components-native/NoiseOverlay.web.tsx
 - warn no-orphans: packages/ui/src/code.tsx
-- warn no-orphans: packages/ui/src/button.tsx
 
 ## Raw Output
 
 ```text
-[90m⧗[39m   input: [1mfeat(powersync): secure offline-first local database proxy & decouple circular permission evaluator
+[90m⧗[39m   input: [1mFix Expo dependency resolution and update workspace
+
+- Updated expo-modules-core from 55.0.18 to 55.0.17 in package.json overrides
+- Added overrides for deprecated packages (rimraf@^6.0.0, glob@^11.0.0)
+- Added overrides for expo-audio, expo-linking, expo-sqlite, expo-video to ensure consistent versions
+- All 17/17 expo-doctor checks now pass
+- Updated various source files and documentation across the workspace
+- Fixed linting error in principalWorkspaceRepository.ts by replacing Math.random() with crypto.randomUUID()
 
 [STAGED CHANGES SUMMARY]
 [APP] edlove-web
-  M apps/edlove-web/astro.config.mjs
-  M apps/edlove-web/src/components/CinematicBackground.astro
-  M apps/edlove-web/src/components/ExpandableContent.astro
+  M apps/edlove-web/src/components/Footer.astro
   M apps/edlove-web/src/components/Navigation.astro
   M apps/edlove-web/src/components/StructuredData.astro
   M apps/edlove-web/src/components/Welcome.astro
-  M apps/edlove-web/src/constants/Theme.ts
-  M apps/edlove-web/src/content.config.ts
-  M apps/edlove-web/src/env.d.ts
   M apps/edlove-web/src/layouts/Layout.astro
   M apps/edlove-web/src/lib/api.ts
-  M apps/edlove-web/src/lib/site.ts
   M apps/edlove-web/src/pages/community/index.astro
   M apps/edlove-web/src/pages/cosmos/[slug].astro
   M apps/edlove-web/src/pages/cosmos/index.astro
   M apps/edlove-web/src/pages/gurudevi/index.astro
   M apps/edlove-web/src/pages/index.astro
-  M apps/edlove-web/src/pages/knowledge.json.ts
   M apps/edlove-web/src/pages/library/index.astro
-  M apps/edlove-web/src/pages/llms.txt.ts
   M apps/edlove-web/src/pages/privacy.astro
   M apps/edlove-web/src/pages/resources/gallery.astro
   M apps/edlove-web/src/pages/resources/index.astro
-  M apps/edlove-web/src/pages/robots.txt.ts
   M apps/edlove-web/src/pages/si/index.astro
   M apps/edlove-web/src/pages/sri-lanka/index.astro
   M apps/edlove-web/src/pages/ta/index.astro
   M apps/edlove-web/src/pages/terms.astro
   M apps/edlove-web/src/pages/vision.astro
   M apps/edlove-web/src/styles/global.css
-  M apps/edlove-web/src/types/index.ts
-  M apps/edlove-web/src/utils/helpers.ts
-  M apps/edlove-web/svelte.config.js
-  M apps/edlove-web/tsconfig.json
-  M apps/edlove-web/vercel.json
 
 [APP] gurudevi-marketingWeb
-  M apps/gurudevi-marketingWeb/.astro/data-store.json
-  M apps/gurudevi-marketingWeb/.astro/settings.json
-  M apps/gurudevi-marketingWeb/astro.config.mjs
-  M apps/gurudevi-marketingWeb/public/manifest.json
-  M apps/gurudevi-marketingWeb/public/sw.js
+  M apps/gurudevi-marketingWeb/.astro/content.d.ts
+  M apps/gurudevi-marketingWeb/.astro/types.d.ts
+  M apps/gurudevi-marketingWeb/src/components/Footer.astro
   M apps/gurudevi-marketingWeb/src/components/Header.astro
-  M apps/gurudevi-marketingWeb/src/components/SEO.astro
-  M apps/gurudevi-marketingWeb/src/components/StatItem.astro
   M apps/gurudevi-marketingWeb/src/components/StatsSection.svelte
-  M apps/gurudevi-marketingWeb/src/components/StoryCard.astro
   M apps/gurudevi-marketingWeb/src/components/StructuredData.astro
-  M apps/gurudevi-marketingWeb/src/components/SupportForm.svelte
-  M apps/gurudevi-marketingWeb/src/inngest/functions/attendanceHandlers.ts
-  M apps/gurudevi-marketingWeb/src/inngest/functions/classroomHandlers.ts
-  M apps/gurudevi-marketingWeb/src/inngest/functions/durableAgentHandlers.ts
-  M apps/gurudevi-marketingWeb/src/inngest/functions/gradingHandlers.ts
   M apps/gurudevi-marketingWeb/src/inngest/functions/mutationHandlers.ts
-  M apps/gurudevi-marketingWeb/src/inngest/functions/studentSupportHandlers.ts
-  M apps/gurudevi-marketingWeb/src/inngest/functions/wellbeingHandlers.ts
   M apps/gurudevi-marketingWeb/src/inngest/lib/workerObservability.ts
   M apps/gurudevi-marketingWeb/src/layouts/Layout.astro
   M apps/gurudevi-marketingWeb/src/lib/durableAgents/durableAgentRuns.ts
   M apps/gurudevi-marketingWeb/src/lib/durableAgents/llmProvider.ts
-  M apps/gurudevi-marketingWeb/src/lib/durableAgents/studentSupportAgent.ts
-  M apps/gurudevi-marketingWeb/src/lib/durableAgents/teacherSummaryAgent.ts
   M apps/gurudevi-marketingWeb/src/lib/inngest.ts
-  M apps/gurudevi-marketingWeb/src/lib/inngestEvents.ts
-  M apps/gurudevi-marketingWeb/src/lib/site.ts
   M apps/gurudevi-marketingWeb/src/lib/supabase.ts
-  M apps/gurudevi-marketingWeb/src/middleware.ts
   M apps/gurudevi-marketingWeb/src/pages/about.astro
-  M apps/gurudevi-marketingWeb/src/pages/api/durable-agents/runs.ts
-  M apps/gurudevi-marketingWeb/src/pages/api/durable-agents/runs/[runId].ts
-  M apps/gurudevi-marketingWeb/src/pages/api/durable-agents/runs/[runId]/promote.ts
-  M apps/gurudevi-marketingWeb/src/pages/api/durable-agents/student-support.ts
-  M apps/gurudevi-marketingWeb/src/pages/api/durable-agents/teacher-summary.ts
-  M apps/gurudevi-marketingWeb/src/pages/api/inngest.ts
-  M apps/gurudevi-marketingWeb/src/pages/api/inngest/trace.ts
   M apps/gurudevi-marketingWeb/src/pages/delete-account.astro
   M apps/gurudevi-marketingWeb/src/pages/durable-agents.astro
   M apps/gurudevi-marketingWeb/src/pages/faq.astro
   M apps/gurudevi-marketingWeb/src/pages/index.astro
-  M apps/gurudevi-marketingWeb/src/pages/knowledge.json.ts
-  M apps/gurudevi-marketingWeb/src/pages/llms.txt.ts
   M apps/gurudevi-marketingWeb/src/pages/privacy.astro
-  M apps/gurudevi-marketingWeb/src/pages/robots.txt.ts
   M apps/gurudevi-marketingWeb/src/pages/sensing/[schoolId].astro
   M apps/gurudevi-marketingWeb/src/pages/sensing/index.astro
   M apps/gurudevi-marketingWeb/src/pages/support.astro
   M apps/gurudevi-marketingWeb/src/pages/thuthimal.astro
-  M apps/gurudevi-marketingWeb/src/shims/expo-linear-gradient.tsx
   M apps/gurudevi-marketingWeb/src/styles/global.css
-  M apps/gurudevi-marketingWeb/tsconfig.json
 
 [APP] gurudevi-mobile
   M apps/gurudevi-mobile/App.tsx
-  M apps/gurudevi-mobile/__mocks__/@sentry/react-native.js
-  M apps/gurudevi-mobile/__mocks__/@shopify/react-native-skia.js
-  M apps/gurudevi-mobile/__mocks__/EnvironmentContext.js
-  M apps/gurudevi-mobile/__mocks__/expo-camera.js
-  M apps/gurudevi-mobile/__mocks__/expo-image-picker.js
-  M apps/gurudevi-mobile/__mocks__/gluestack-themed.js
-  M apps/gurudevi-mobile/__mocks__/react-native-reanimated.js
-  M apps/gurudevi-mobile/app.json
-  M apps/gurudevi-mobile/archives/ai/AIAssistantScreen.tsx
-  M apps/gurudevi-mobile/archives/ai/AIAssistantScreen.web.tsx
-  M apps/gurudevi-mobile/archives/auth/AuthScreen.tsx
-  M apps/gurudevi-mobile/archives/auth/AuthScreen.web.tsx
-  M apps/gurudevi-mobile/archives/classroom/AttendanceScreen.web.tsx
-  M apps/gurudevi-mobile/archives/classroom/ClassroomDetailScreen.web.tsx
-  M apps/gurudevi-mobile/archives/classroom/DemoPlaygroundPanel.web.tsx
-  M apps/gurudevi-mobile/archives/classroom/GradebookScreen.web.tsx
-  M apps/gurudevi-mobile/archives/classroom/NoSchoolView.web.tsx
-  M apps/gurudevi-mobile/archives/classroom/SchoolCreationScreen.tsx
-  M apps/gurudevi-mobile/archives/classroom/SchoolForestScreen.web.tsx
-  M apps/gurudevi-mobile/archives/classroom/TimetableScreen.web.tsx
-  M apps/gurudevi-mobile/archives/classroom/screens/AcademicCycleManager.tsx
-  M apps/gurudevi-mobile/archives/classroom/screens/FounderDashboard.web.tsx
-  M apps/gurudevi-mobile/archives/classroom/screens/GradeHeadDashboard.tsx
-  M apps/gurudevi-mobile/archives/classroom/screens/SectionHeadDashboard.tsx
-  M apps/gurudevi-mobile/archives/classroom/src/components/GlobalCreateModal.web.tsx
-  M apps/gurudevi-mobile/archives/classroom/src/components/principal/CurriculumPulse.tsx
-  M apps/gurudevi-mobile/archives/classroom/src/components/principal/DashboardEcho.tsx
-  M apps/gurudevi-mobile/archives/classroom/src/components/principal/HierarchyBuilder.tsx
-  M apps/gurudevi-mobile/archives/classroom/src/components/principal/InstitutionalCalendarSection.tsx
-  M apps/gurudevi-mobile/archives/classroom/src/components/principal/InviteManager.tsx
-  M apps/gurudevi-mobile/archives/classroom/src/components/principal/LeaveApprovalSection.tsx
-  M apps/gurudevi-mobile/archives/classroom/src/components/principal/ManagementStation.tsx
-  M apps/gurudevi-mobile/archives/classroom/src/components/principal/MorningSituationalBrief.tsx
-  M apps/gurudevi-mobile/archives/classroom/src/components/principal/PrincipalNotes.tsx
-  M apps/gurudevi-mobile/archives/classroom/src/components/principal/PrincipalObservationsSection.tsx
-  M apps/gurudevi-mobile/archives/classroom/src/components/principal/PulseDashboard.tsx
-  M apps/gurudevi-mobile/archives/classroom/src/components/principal/ResourceNeedsDashboard.tsx
-  M apps/gurudevi-mobile/archives/classroom/src/components/principal/TeacherCarousel.tsx
-  M apps/gurudevi-mobile/archives/classroom/src/screens/FounderDashboard.tsx
-  M apps/gurudevi-mobile/archives/classroom/src/screens/PrincipalDashboard.web.tsx
-  M apps/gurudevi-mobile/archives/classroom/src/screens/principal/DashboardContent.tsx
-  M apps/gurudevi-mobile/archives/classroom/src/screens/principal/StudentPulse.tsx
-  M apps/gurudevi-mobile/archives/classroom/src/screens/principal/index.ts
-  M apps/gurudevi-mobile/archives/classroom/src/screens/principal/types.ts
   M apps/gurudevi-mobile/archives/classroom/src/workspace/usePrincipalWorkspaceSurfaces.tsx
-  M apps/gurudevi-mobile/archives/community/AnnouncementsScreen.tsx
-  M apps/gurudevi-mobile/archives/community/CommunityScreen.tsx
-  M apps/gurudevi-mobile/archives/community/CommunityScreen.web.tsx
-  M apps/gurudevi-mobile/archives/components/trube/TrubeBackdrop.archive.tsx
-  M apps/gurudevi-mobile/archives/library/LibraryScreen.tsx
-  M apps/gurudevi-mobile/archives/library/LibraryScreen.web.tsx
-  M apps/gurudevi-mobile/archives/metro.config.backup.js
-  M apps/gurudevi-mobile/archives/misc/NotificationsScreen.web.tsx
-  M apps/gurudevi-mobile/archives/misc/QRHandlerScreen.tsx
-  M apps/gurudevi-mobile/archives/misc/SelfScreen.tsx
-  M apps/gurudevi-mobile/archives/misc/SelfScreen.web.tsx
-  M apps/gurudevi-mobile/archives/multiAccountDraft.archive.ts
-  M apps/gurudevi-mobile/archives/onboarding/InvitationWelcomeScreen.tsx
-  M apps/gurudevi-mobile/archives/onboarding/InviteCodeEntry.tsx
-  M apps/gurudevi-mobile/archives/onboarding/OnboardingScreen.tsx
-  M apps/gurudevi-mobile/archives/onboarding/OnboardingScreen.web.tsx
-  M apps/gurudevi-mobile/archives/onboarding/WelcomeScreen.tsx
-  M apps/gurudevi-mobile/archives/onboarding/WelcomeScreen.web.tsx
-  M apps/gurudevi-mobile/archives/packages/scanner-kit/src/qr/QRBuilder.ts
-  M apps/gurudevi-mobile/archives/packages/scanner-kit/src/qr/QRPayload.ts
-  M apps/gurudevi-mobile/archives/packages/scanner-kit/src/qr/QRResolver.ts
-  M apps/gurudevi-mobile/archives/packages/ui/src/qr/QRBuilder.ts
-  M apps/gurudevi-mobile/archives/packages/ui/src/qr/QRResolver.ts
-  M apps/gurudevi-mobile/archives/people/src/api/staff.ts
-  M apps/gurudevi-mobile/archives/people/src/components/PrincipalAdminWidget.tsx
-  M apps/gurudevi-mobile/archives/people/src/components/StaffPresencePulse.tsx
-  M apps/gurudevi-mobile/archives/people/src/components/StudentPulseSection.tsx
-  M apps/gurudevi-mobile/archives/people/src/hooks/useStaffPresence.ts
-  M apps/gurudevi-mobile/archives/people/src/staff.ts
-  M apps/gurudevi-mobile/archives/profile/FullProfileScreen.tsx
-  M apps/gurudevi-mobile/archives/profile/ProfileScreen.tsx
-  M apps/gurudevi-mobile/archives/profile/ProfileScreen.web.tsx
-  M apps/gurudevi-mobile/archives/profile/ThuthimalClaimScreen.tsx
   M apps/gurudevi-mobile/archives/screens/ClassroomScreen.tsx
   M apps/gurudevi-mobile/archives/screens/CommunityScreen.tsx
-  M apps/gurudevi-mobile/archives/screens/LibraryScreen.tsx
-  M apps/gurudevi-mobile/archives/screens/NotificationsScreen.tsx
-  M apps/gurudevi-mobile/archives/screens/OnboardingScreen.tsx
   M apps/gurudevi-mobile/archives/screens/ProfileScreen.tsx
   M apps/gurudevi-mobile/archives/screens/QRHandlerScreen.tsx
   M apps/gurudevi-mobile/archives/screens/SchoolCreationScreen.tsx
-  M apps/gurudevi-mobile/archives/screens/SelfScreen.tsx
-  M apps/gurudevi-mobile/archives/screens/TrubeLabScreen.archive.tsx
-  M apps/gurudevi-mobile/archives/screens/WelcomeScreen.tsx
-  M apps/gurudevi-mobile/archives/settings/AppSettingsScreen.tsx
-  M apps/gurudevi-mobile/archives/settings/AppSettingsScreen.web.tsx
-  M apps/gurudevi-mobile/babel.config.js
-  M apps/gurudevi-mobile/check_schools.js
-  M apps/gurudevi-mobile/docs/architecture/Sovereign_Resilience_Architecture_2026.md
-  A apps/gurudevi-mobile/docs/architecture/future-patterns-and-standards.md
-  A apps/gurudevi-mobile/docs/architecture/local-first-transition-spec.md
-  M apps/gurudevi-mobile/docs/school_erp/web-mobile-package-migration.manifest.json
-  M apps/gurudevi-mobile/eas.json
-  M apps/gurudevi-mobile/eslint.config.mjs
-  M apps/gurudevi-mobile/gluestack-ui.config.ts
+  A apps/gurudevi-mobile/docs/Core/20260521_AUTH_EVENTS_AND_MFA_ARCHITECTURE.md
+  M apps/gurudevi-mobile/docs/Core/FEATURE_ENGINE_ARCHITECTURE.md
+  M apps/gurudevi-mobile/docs/architecture/authority.md
+  A apps/gurudevi-mobile/docs/architecture/modern-runtime-vision.md
+  M apps/gurudevi-mobile/docs/current_progress/Feb/4th_week/plans/2026-02-25-profile-completion-implementation.md
+  M apps/gurudevi-mobile/docs/current_progress/Feb/4th_week/plans/2026-02-25-week4-master-implementation-plan.md
   M apps/gurudevi-mobile/index.ts
-  M apps/gurudevi-mobile/jest-native-setup.js
-  M apps/gurudevi-mobile/jest-setup.ts
-  M apps/gurudevi-mobile/jest.config.js
   M apps/gurudevi-mobile/metro.config.js
   M apps/gurudevi-mobile/package.json
-  M apps/gurudevi-mobile/playwright.config.ts
-  M apps/gurudevi-mobile/plugins/withAndroidCruncherDisabled.js
-  M apps/gurudevi-mobile/plugins/withGradleProperties.js
-  M apps/gurudevi-mobile/plugins/withSentryGradleDisabled.js
-  M apps/gurudevi-mobile/plugins/withSentryProperties.js
-  M apps/gurudevi-mobile/public/manifest.json
-  M apps/gurudevi-mobile/public/sw.js
-  M apps/gurudevi-mobile/scripts/add-web-shim.mjs
-  M apps/gurudevi-mobile/scripts/audit-web-deps.mjs
-  M apps/gurudevi-mobile/scripts/check-native-leaks.mjs
-  M apps/gurudevi-mobile/scripts/etl/discovery/index.ts
-  M apps/gurudevi-mobile/scripts/etl/discovery/sources/ai-search.ts
-  M apps/gurudevi-mobile/scripts/etl/discovery/sources/youtube.ts
-  M apps/gurudevi-mobile/scripts/etl/utils/supabase.ts
-  M apps/gurudevi-mobile/scripts/extract-module.mjs
-  M apps/gurudevi-mobile/scripts/increment-version.js
-  M apps/gurudevi-mobile/src/__tests__/architecture/classroom-surface-entrypoints.test.ts
-  M apps/gurudevi-mobile/src/__tests__/architecture/educational-contract-coverage.test.ts
-  M apps/gurudevi-mobile/src/__tests__/architecture/founder-stack-boundaries.test.ts
-  M apps/gurudevi-mobile/src/__tests__/architecture/inventory-resource-split-guardrails.test.ts
-  M apps/gurudevi-mobile/src/__tests__/architecture/lazy-package-boundaries.test.ts
-  M apps/gurudevi-mobile/src/__tests__/architecture/package-boundaries.test.ts
-  M apps/gurudevi-mobile/src/__tests__/architecture/poa_enforcement.test.ts
-  M apps/gurudevi-mobile/src/__tests__/architecture/principal-boundaries.test.ts
-  M apps/gurudevi-mobile/src/__tests__/architecture/principal-governance-guardrails.test.ts
-  M apps/gurudevi-mobile/src/__tests__/architecture/principal-ia-coherence.test.ts
-  M apps/gurudevi-mobile/src/__tests__/architecture/profile-contract-coverage.test.ts
-  M apps/gurudevi-mobile/src/__tests__/architecture/profile-poa-enforcement.test.ts
-  M apps/gurudevi-mobile/src/__tests__/architecture/profile-route-capabilities.test.ts
-  M apps/gurudevi-mobile/src/__tests__/architecture/social-knowledge-contract-coverage.test.ts
-  M apps/gurudevi-mobile/src/__tests__/architecture/web-route-adapters.test.ts
-  M apps/gurudevi-mobile/src/__tests__/components/OnboardingScreen.test.tsx
-  M apps/gurudevi-mobile/src/__tests__/components/ProgressIndicator.test.tsx
-  M apps/gurudevi-mobile/src/__tests__/components/WelcomeScreen.test.tsx
-  M apps/gurudevi-mobile/src/__tests__/mocks/supabase.ts
-  M apps/gurudevi-mobile/src/components/RedirectToApp.tsx
-  M apps/gurudevi-mobile/src/components/RedirectToApp.web.tsx
-  M apps/gurudevi-mobile/src/components/school/StepBasicInfo.tsx
-  M apps/gurudevi-mobile/src/components/school/StepDemographics.tsx
-  M apps/gurudevi-mobile/src/components/school/StepHierarchy.tsx
-  M apps/gurudevi-mobile/src/components/school/StepLocation.tsx
-  M apps/gurudevi-mobile/src/components/web/CommandPalette.tsx
   M apps/gurudevi-mobile/src/components/web/CommandPalette.web.tsx
-  M apps/gurudevi-mobile/src/components/web/PWAInstallBanner.tsx
-  M apps/gurudevi-mobile/src/components/web/PWAInstallBanner.web.tsx
-  M apps/gurudevi-mobile/src/components/web/SanctuaryTabBar.tsx
-  M apps/gurudevi-mobile/src/components/web/SanctuaryTabBar.web.tsx
-  M apps/gurudevi-mobile/src/components/web/WebScreenShimmer.tsx
-  M apps/gurudevi-mobile/src/components/web/WebScreenShimmer.web.tsx
-  M apps/gurudevi-mobile/src/components/web/WebSkeleton.tsx
-  M apps/gurudevi-mobile/src/components/web/WebSkeleton.web.tsx
-  M apps/gurudevi-mobile/src/constants/Fonts.ts
-  M apps/gurudevi-mobile/src/i18n/config.ts
-  M apps/gurudevi-mobile/src/i18n/locales/en.json
-  M apps/gurudevi-mobile/src/i18n/locales/si.json
-  M apps/gurudevi-mobile/src/i18n/locales/ta.json
-  M apps/gurudevi-mobile/src/lib/backgroundSync.ts
+  A apps/gurudevi-mobile/src/lib/backgroundSync.web.ts
   M apps/gurudevi-mobile/src/lib/inngest.ts
-  M apps/gurudevi-mobile/src/lib/inngestEvents.ts
-  M apps/gurudevi-mobile/src/navigation/ClassroomStackNavigator.tsx
-  M apps/gurudevi-mobile/src/navigation/ClassroomStackNavigator.web.tsx
-  M apps/gurudevi-mobile/src/navigation/CommunityStackNavigator.tsx
-  M apps/gurudevi-mobile/src/navigation/CommunityStackNavigator.web.tsx
-  M apps/gurudevi-mobile/src/navigation/FounderStackNavigator.tsx
-  M apps/gurudevi-mobile/src/navigation/FounderStackNavigator.web.tsx
-  M apps/gurudevi-mobile/src/navigation/GuardianStackNavigator.tsx
-  M apps/gurudevi-mobile/src/navigation/GuardianStackNavigator.web.tsx
-  M apps/gurudevi-mobile/src/navigation/LibraryStackNavigator.tsx
-  M apps/gurudevi-mobile/src/navigation/LibraryStackNavigator.web.tsx
-  M apps/gurudevi-mobile/src/navigation/PrincipalStackNavigator.tsx
-  M apps/gurudevi-mobile/src/navigation/PrincipalStackNavigator.web.tsx
-  M apps/gurudevi-mobile/src/navigation/ProfileStackNavigator.tsx
   M apps/gurudevi-mobile/src/navigation/ProfileStackNavigator.web.tsx
-  M apps/gurudevi-mobile/src/navigation/SelfStackNavigator.tsx
-  M apps/gurudevi-mobile/src/navigation/SelfStackNavigator.web.tsx
   M apps/gurudevi-mobile/src/navigation/TabNavigator.tsx
   M apps/gurudevi-mobile/src/navigation/TabNavigator.web.tsx
-  M apps/gurudevi-mobile/src/navigation/navigationRef.ts
   M apps/gurudevi-mobile/src/navigation/useAppEntryGate.ts
-  M apps/gurudevi-mobile/src/providers/AssetProvider.tsx
   M apps/gurudevi-mobile/src/providers/DeepLinkProvider.tsx
-  A apps/gurudevi-mobile/src/providers/PowerSyncProvider.tsx
+  M apps/gurudevi-mobile/src/providers/PowerSyncProvider.tsx
   M apps/gurudevi-mobile/src/providers/SanctuaryProvider.tsx
-  M apps/gurudevi-mobile/src/screens/AttendanceScreen.web.tsx
-  M apps/gurudevi-mobile/src/screens/AuthScreen.tsx
-  M apps/gurudevi-mobile/src/screens/ClassroomDetailScreen.web.tsx
-  M apps/gurudevi-mobile/src/screens/ErrorMessageDemo.tsx
-  M apps/gurudevi-mobile/src/screens/GradebookScreen.web.tsx
-  M apps/gurudevi-mobile/src/screens/InvitationWelcomeScreen.tsx
-  M apps/gurudevi-mobile/src/screens/InviteCodeEntry.tsx
-  M apps/gurudevi-mobile/src/screens/QRHandlerScreen.tsx
-  M apps/gurudevi-mobile/src/screens/SchoolCreationScreen.tsx
-  M apps/gurudevi-mobile/src/screens/SchoolForestScreen.web.tsx
-  M apps/gurudevi-mobile/src/screens/ThuthimalClaimScreen.tsx
-  M apps/gurudevi-mobile/src/screens/TimetableScreen.web.tsx
-  M apps/gurudevi-mobile/src/screens/classroom/DemoPlaygroundPanel.web.tsx
-  M apps/gurudevi-mobile/src/screens/classroom/NoSchoolView.web.tsx
-  M apps/gurudevi-mobile/src/screens/community/AnnouncementsScreen.tsx
-  M apps/gurudevi-mobile/src/screens/index.ts
-  M apps/gurudevi-mobile/src/screens/profile/FullProfileScreen.tsx
-  M apps/gurudevi-mobile/src/services/FeatureSyncManager.tsx
-  M apps/gurudevi-mobile/src/shims/codegen-web.js
-  M apps/gurudevi-mobile/src/shims/crypto-web.js
-  M apps/gurudevi-mobile/src/shims/database-shim.js
-  M apps/gurudevi-mobile/src/shims/events-web.js
-  M apps/gurudevi-mobile/src/shims/expo-application-web.js
-  M apps/gurudevi-mobile/src/shims/expo-audio-web.js
-  M apps/gurudevi-mobile/src/shims/expo-av-web.js
-  M apps/gurudevi-mobile/src/shims/expo-camera-web.js
-  M apps/gurudevi-mobile/src/shims/expo-device-web.js
-  M apps/gurudevi-mobile/src/shims/expo-file-system-web.js
-  M apps/gurudevi-mobile/src/shims/expo-haptics-web.js
-  M apps/gurudevi-mobile/src/shims/expo-image-manipulator-web.js
-  M apps/gurudevi-mobile/src/shims/expo-image-picker-web.js
-  M apps/gurudevi-mobile/src/shims/expo-location-web.js
-  M apps/gurudevi-mobile/src/shims/expo-secure-store-web.js
-  M apps/gurudevi-mobile/src/shims/expo-sharing-web.js
-  M apps/gurudevi-mobile/src/shims/expo-sqlite-web.js
-  M apps/gurudevi-mobile/src/shims/expo-updates-web.js
-  M apps/gurudevi-mobile/src/shims/expo-video-web.js
-  M apps/gurudevi-mobile/src/shims/fs-web.js
-  M apps/gurudevi-mobile/src/shims/gesture-handler-web.js
-  M apps/gurudevi-mobile/src/shims/lk-edu-geo-web.js
   M apps/gurudevi-mobile/src/shims/lucide-react-native-web.js
-  M apps/gurudevi-mobile/src/shims/maplibre-web.js
-  M apps/gurudevi-mobile/src/shims/maps-web.js
-  M apps/gurudevi-mobile/src/shims/ml-kit-barcode-scanning-web.js
-  M apps/gurudevi-mobile/src/shims/ml-kit-text-recognition-web.js
-  M apps/gurudevi-mobile/src/shims/mmkv-web.js
-  M apps/gurudevi-mobile/src/shims/netinfo-web.js
-  M apps/gurudevi-mobile/src/shims/nitro-modules-web.js
-  M apps/gurudevi-mobile/src/shims/node-globals-shim.js
-  M apps/gurudevi-mobile/src/shims/node-net-shim.js
-  M apps/gurudevi-mobile/src/shims/node-shims-bundle.js
-  M apps/gurudevi-mobile/src/shims/os-web.js
-  M apps/gurudevi-mobile/src/shims/path-web.js
-  M apps/gurudevi-mobile/src/shims/postalcode-backend-web.js
-  M apps/gurudevi-mobile/src/shims/posthog-web.js
-  M apps/gurudevi-mobile/src/shims/react-native-web-augmented.js
-  M apps/gurudevi-mobile/src/shims/reanimated-web.js
-  M apps/gurudevi-mobile/src/shims/screens-web.js
-  M apps/gurudevi-mobile/src/shims/sentry-web.js
-  M apps/gurudevi-mobile/src/shims/skia-web.js
-  M apps/gurudevi-mobile/src/shims/srilanka-geographics-web.js
-  M apps/gurudevi-mobile/src/shims/stream-web.js
-  M apps/gurudevi-mobile/src/shims/svg-web.js
-  M apps/gurudevi-mobile/src/shims/universal-bridge.js
-  M apps/gurudevi-mobile/src/shims/util-web.js
-  M apps/gurudevi-mobile/src/shims/wgpu-web.js
-  M apps/gurudevi-mobile/src/shims/worklets-web.js
-  M apps/gurudevi-mobile/src/types/expo-background-task.d.ts
-  M apps/gurudevi-mobile/src/types/gluestack-ui.d.ts
-  M apps/gurudevi-mobile/src/types/navigation.ts
-  M apps/gurudevi-mobile/src/types/react-native-gifted-charts.d.ts
-  M apps/gurudevi-mobile/src/utils/LanguageUtils.ts
-  M apps/gurudevi-mobile/src/utils/device.ts
-  M apps/gurudevi-mobile/src/utils/time.ts
-  M apps/gurudevi-mobile/src/utils/usePWAInstallPrompt.ts
-  M apps/gurudevi-mobile/src/utils/useWebPageTitle.ts
-  M apps/gurudevi-mobile/src/utils/validators.ts
-  M apps/gurudevi-mobile/supabase/functions/ai-assistant/index.ts
-  M apps/gurudevi-mobile/supabase/functions/deno.json
-  M apps/gurudevi-mobile/supabase/functions/enrich-staging/index.ts
-  M apps/gurudevi-mobile/supabase/functions/import_map.json
-  M apps/gurudevi-mobile/supabase/functions/library-etl/index.ts
-  M apps/gurudevi-mobile/supabase/functions/ocr-proxy/index.ts
-  M apps/gurudevi-mobile/supabase/functions/publish-resource/index.ts
-  M apps/gurudevi-mobile/tailwind.config.js
-  M apps/gurudevi-mobile/test-resolution.js
-  M apps/gurudevi-mobile/tests/e2e/navigation.spec.ts
-  M apps/gurudevi-mobile/tsconfig.json
-  M apps/gurudevi-mobile/verify-metro.js
+  M apps/gurudevi-mobile/supabase/config.toml
+  A apps/gurudevi-mobile/supabase/migrations/20260521000000_auth_events_read_model.sql
 
 [APP] intuitui-web
-  M apps/intuitui-web/.astro/settings.json
-  M apps/intuitui-web/astro.config.mjs
-  M apps/intuitui-web/src/components/StructuredData.astro
-  M apps/intuitui-web/src/components/SystemsGrid.astro
+  M apps/intuitui-web/.astro/content.d.ts
+  M apps/intuitui-web/.astro/types.d.ts
   M apps/intuitui-web/src/layouts/MainLayout.astro
-  M apps/intuitui-web/src/lib/site.ts
   M apps/intuitui-web/src/pages/about.astro
   M apps/intuitui-web/src/pages/index.astro
-  M apps/intuitui-web/src/pages/knowledge.json.ts
-  M apps/intuitui-web/src/pages/llms.txt.ts
   M apps/intuitui-web/src/pages/projects.astro
-  M apps/intuitui-web/src/pages/robots.txt.ts
   M apps/intuitui-web/src/pages/studio.astro
   M apps/intuitui-web/src/styles/global.css
-  M apps/intuitui-web/tsconfig.json
 
 [APP] neevsk-web
+  M apps/neevsk-web/.astro/collections/archive.schema.json
+  M apps/neevsk-web/.astro/collections/hall-of-flame.schema.json
+  M apps/neevsk-web/.astro/collections/projects.schema.json
   M apps/neevsk-web/.astro/content-assets.mjs
-  M apps/neevsk-web/.astro/data-store.json
-  M apps/neevsk-web/.astro/settings.json
-  M apps/neevsk-web/astro.config.mjs
-  M apps/neevsk-web/src/components/FlameCard.astro
-  M apps/neevsk-web/src/components/Navigation.astro
-  M apps/neevsk-web/src/components/StructuredData.astro
+  M apps/neevsk-web/.astro/content-modules.mjs
+  M apps/neevsk-web/.astro/content.d.ts
+  M apps/neevsk-web/.astro/types.d.ts
+  M apps/neevsk-web/playwright.config.ts
   M apps/neevsk-web/src/components/common/Button.astro
-  M apps/neevsk-web/src/components/common/Card.astro
-  M apps/neevsk-web/src/components/common/Navigation.astro
   M apps/neevsk-web/src/components/sections/CurrentFocus.astro
-  M apps/neevsk-web/src/components/sections/FiveDoors.astro
   M apps/neevsk-web/src/components/sections/HeroHome.astro
-  M apps/neevsk-web/src/content.config.ts
   M apps/neevsk-web/src/layouts/BaseLayout.astro
   M apps/neevsk-web/src/layouts/DigitalNeonLayout.astro
   M apps/neevsk-web/src/layouts/LightTechLayout.astro
   M apps/neevsk-web/src/layouts/NatureLayout.astro
   M apps/neevsk-web/src/layouts/TwilightLayout.astro
   M apps/neevsk-web/src/layouts/WarmArchiveLayout.astro
-  M apps/neevsk-web/src/lib/site.ts
   M apps/neevsk-web/src/pages/archive.astro
   M apps/neevsk-web/src/pages/archive/[slug].astro
   M apps/neevsk-web/src/pages/connect/index.astro
@@ -802,1361 +486,350 @@
   M apps/neevsk-web/src/pages/index.astro
   M apps/neevsk-web/src/pages/intellectual/index.astro
   M apps/neevsk-web/src/pages/journey.astro
-  M apps/neevsk-web/src/pages/knowledge.json.ts
   M apps/neevsk-web/src/pages/library/index.astro
-  M apps/neevsk-web/src/pages/llms.txt.ts
   M apps/neevsk-web/src/pages/personal/hall-of-flame.astro
   M apps/neevsk-web/src/pages/personal/index.astro
   M apps/neevsk-web/src/pages/professional/index.astro
   M apps/neevsk-web/src/pages/projects.astro
-  M apps/neevsk-web/src/pages/robots.txt.ts
-  M apps/neevsk-web/src/scripts/animations.ts
-  M apps/neevsk-web/src/scripts/creative-signatures.ts
-  M apps/neevsk-web/src/scripts/scroll-to-top.ts
-  M apps/neevsk-web/src/scripts/theme-switcher.ts
   M apps/neevsk-web/src/styles/global.css
-  M apps/neevsk-web/tests/e2e/home.spec.ts
-  M apps/neevsk-web/tsconfig.json
 
 [APP] sanctuary-api
+  A apps/sanctuary-api/.env.example
   M apps/sanctuary-api/package.json
-  A apps/sanctuary-api/src/__tests__/dummyShim.ts
-  A apps/sanctuary-api/src/__tests__/jwt.test.ts
-  A apps/sanctuary-api/src/__tests__/setup.ts
+  A apps/sanctuary-api/scratch/api_test.http
+  M apps/sanctuary-api/src/__tests__/downstream.test.ts
+  M apps/sanctuary-api/src/__tests__/jwt.test.ts
+  M apps/sanctuary-api/src/__tests__/setup.ts
   M apps/sanctuary-api/src/index.ts
-  A apps/sanctuary-api/src/jwt.ts
-  M apps/sanctuary-api/tsconfig.json
-  A apps/sanctuary-api/vitest.config.ts
-
-[PKG] accounting
-  M packages/accounting/eslint.config.mjs
-  M packages/accounting/src/budgeting.ts
-  M packages/accounting/src/cheques.ts
-  M packages/accounting/src/index.ts
-  M packages/accounting/src/ledger.ts
-  M packages/accounting/src/types.ts
-  M packages/accounting/tsconfig.json
+  M apps/sanctuary-api/src/jwt.ts
+  M apps/sanctuary-api/vitest.config.ts
 
 [PKG] admin
-  M packages/admin/eslint.config.mjs
-  M packages/admin/src/__tests__/analytics/engine.test.ts
-  M packages/admin/src/__tests__/screens/DocumentListScreen.test.tsx
-  M packages/admin/src/__tests__/screens/GuardianDashboardScreen.test.tsx
-  M packages/admin/src/admin/adminControl.ts
-  M packages/admin/src/admin/adminRepository.ts
-  M packages/admin/src/admin/useAdminWorkspaceCanvas.tsx
-  M packages/admin/src/admin/useAdminWorkspaceData.ts
-  M packages/admin/src/admin/workspace.ts
-  M packages/admin/src/analytics/api.ts
-  M packages/admin/src/analytics/engine.ts
-  M packages/admin/src/analytics/types.ts
-  M packages/admin/src/api/index.ts
-  M packages/admin/src/api/staff.ts
-  M packages/admin/src/approvals.ts
-  M packages/admin/src/bridge/PrincipalNativeDashboardShell.tsx
   M packages/admin/src/bridge/founderWorkspace.ts
-  M packages/admin/src/bridge/principalWorkspaceShell.tsx
-  M packages/admin/src/calendar.ts
-  M packages/admin/src/components/founder/GlobalCreateModal.tsx
-  M packages/admin/src/components/founder/GlobalCreateModal.web.tsx
-  M packages/admin/src/components/guardian/GuardianEvents.tsx
-  M packages/admin/src/components/guardian/GuardianNotifications.tsx
-  M packages/admin/src/components/guardian/GuardianStudentsGrid.tsx
-  M packages/admin/src/components/guardian/index.ts
-  M packages/admin/src/components/index.ts
   M packages/admin/src/components/onboarding/PrincipalOnboardingView.tsx
-  M packages/admin/src/components/poa/GuardianChildrenList.tsx
-  M packages/admin/src/components/poa/GuardianHeader.tsx
-  M packages/admin/src/components/poa/index.ts
-  M packages/admin/src/components/principal/CurriculumPulse.tsx
-  M packages/admin/src/components/principal/DashboardEcho.tsx
   M packages/admin/src/components/principal/HierarchyBuilder.tsx
-  M packages/admin/src/components/principal/InstitutionalCalendarSection.tsx
   M packages/admin/src/components/principal/InviteManager.tsx
-  M packages/admin/src/components/principal/LeaveApprovalSection.tsx
-  M packages/admin/src/components/principal/ManagementStation.tsx
-  M packages/admin/src/components/principal/MorningSituationalBrief.tsx
-  M packages/admin/src/components/principal/PrincipalActions.tsx
   M packages/admin/src/components/principal/PrincipalGovernanceTimeline.tsx
-  M packages/admin/src/components/principal/PrincipalModuleAtlas.tsx
   M packages/admin/src/components/principal/PrincipalNotes.tsx
-  M packages/admin/src/components/principal/PrincipalObservationsSection.tsx
-  M packages/admin/src/components/principal/PrincipalOnboardingView.tsx
-  M packages/admin/src/components/principal/PulseDashboard.tsx
   M packages/admin/src/components/principal/ResourceNeedsDashboard.tsx
-  M packages/admin/src/components/principal/SchoolOverview.tsx
-  M packages/admin/src/components/principal/SchoolStats.tsx
-  M packages/admin/src/components/principal/StaffDirectory.tsx
-  M packages/admin/src/components/principal/StaffPulse.tsx
-  M packages/admin/src/components/principal/StudentEnrollmentPulse.tsx
-  M packages/admin/src/components/principal/TeacherCarousel.tsx
-  M packages/admin/src/components/school/CreateSchoolModal.tsx
-  M packages/admin/src/components/school/StepBasicInfo.tsx
-  M packages/admin/src/components/school/StepDemographics.tsx
-  M packages/admin/src/components/school/StepHierarchy.tsx
-  M packages/admin/src/components/school/StepLocation.tsx
-  M packages/admin/src/constants/adminRegistry.ts
-  M packages/admin/src/document-workflow/api.ts
-  M packages/admin/src/document-workflow/engine.ts
-  M packages/admin/src/document-workflow/types.ts
-  M packages/admin/src/entrypoints/founder.ts
   M packages/admin/src/founder/useFounderWorkspaceCanvas.tsx
-  M packages/admin/src/founder/workspace.ts
-  M packages/admin/src/governance.ts
   M packages/admin/src/guardian/api.ts
   M packages/admin/src/guardian/dashboardProjection.ts
-  M packages/admin/src/guardian/index.ts
   M packages/admin/src/guardian/repository.ts
-  M packages/admin/src/guardian/types.ts
   M packages/admin/src/guardian/useGuardianWorkspaceCanvas.tsx
   M packages/admin/src/guardian/useGuardianWorkspaceData.ts
-  M packages/admin/src/guardian/workspace.ts
-  M packages/admin/src/hooks/index.ts
   M packages/admin/src/hooks/useAdminWorkspaceSurfaces.tsx
   M packages/admin/src/hooks/useDashboardHooks.ts
   M packages/admin/src/hooks/useSchoolStats.ts
-  M packages/admin/src/hooks/useStaffPresence.ts
-  M packages/admin/src/index.ts
-  M packages/admin/src/insights.ts
-  M packages/admin/src/inventory.ts
   M packages/admin/src/invites.ts
-  M packages/admin/src/notes.ts
   M packages/admin/src/observations.ts
   M packages/admin/src/principal/usePrincipalWorkspaceCanvas.tsx
-  M packages/admin/src/principal/usePrincipalWorkspaceSurfaces.tsx
-  M packages/admin/src/principal/workspace.ts
-  M packages/admin/src/principal/workspacePreview.ts
-  M packages/admin/src/reporting.ts
   M packages/admin/src/screens/AcademicCycleManager.tsx
-  M packages/admin/src/screens/AdminAuditLog.tsx
-  M packages/admin/src/screens/AdminAuthorityRepair.tsx
-  M packages/admin/src/screens/AdminDashboard.tsx
-  M packages/admin/src/screens/AdminFeatureRegistry.tsx
-  M packages/admin/src/screens/AdminIncidentQueue.tsx
-  M packages/admin/src/screens/AdminJobControl.tsx
-  M packages/admin/src/screens/AdminReleaseControl.tsx
-  M packages/admin/src/screens/AdminRoomShell.tsx
-  M packages/admin/src/screens/AdminTenantDetail.tsx
-  M packages/admin/src/screens/AnalyticsDashboardScreen.tsx
-  M packages/admin/src/screens/DocumentListScreen.tsx
-  M packages/admin/src/screens/DocumentListScreen.web.tsx
-  M packages/admin/src/screens/EnhancedAnalyticsDashboard.web.tsx
-  M packages/admin/src/screens/FounderDashboard.tsx
-  M packages/admin/src/screens/FounderDashboard.web.tsx
-  M packages/admin/src/screens/FounderSchoolDashboard.tsx
-  M packages/admin/src/screens/FounderVisionScreen.tsx
-  M packages/admin/src/screens/GradeHeadDashboard.tsx
   M packages/admin/src/screens/GuardianDashboard.tsx
-  M packages/admin/src/screens/GuardianDashboardScreen.tsx
-  M packages/admin/src/screens/PrincipalDashboard.tsx
   M packages/admin/src/screens/PrincipalDashboard.web.tsx
-  M packages/admin/src/screens/PrincipalNativeWorkspace.tsx
-  M packages/admin/src/screens/PrincipalWorkspaceContainer.tsx
-  M packages/admin/src/screens/SchoolCreationScreen.tsx
-  M packages/admin/src/screens/SchoolForestScreen.web.tsx
-  M packages/admin/src/screens/SchoolProfileScreen.web.tsx
-  M packages/admin/src/screens/SectionHeadDashboard.tsx
-  M packages/admin/src/screens/guardian/GuardianCommunicationBridgeScreen.tsx
-  M packages/admin/src/screens/guardian/GuardianEventsScreen.tsx
-  M packages/admin/src/screens/guardian/GuardianNotificationsScreen.tsx
-  M packages/admin/src/screens/guardian/GuardianRoomShell.tsx
-  M packages/admin/src/screens/guardian/GuardianStudentDetailScreen.tsx
-  M packages/admin/src/screens/guardian/GuardianStudentsScreen.tsx
-  M packages/admin/src/screens/principal/CommandCenter.tsx
   M packages/admin/src/screens/principal/CyclesDashboard.tsx
-  M packages/admin/src/screens/principal/DashboardContent.tsx
-  M packages/admin/src/screens/principal/HierarchyDashboard.tsx
-  M packages/admin/src/screens/principal/InstitutionalArcCard.tsx
-  M packages/admin/src/screens/principal/InvitesDashboard.tsx
-  M packages/admin/src/screens/principal/LegacyDashboard.tsx
-  M packages/admin/src/screens/principal/LogbookDashboard.tsx
-  M packages/admin/src/screens/principal/PendingApprovals.tsx
-  M packages/admin/src/screens/principal/PrincipalFeatureRegistry.ts
-  M packages/admin/src/screens/principal/PrincipalIAScope.ts
-  M packages/admin/src/screens/principal/PrincipalRoomShell.tsx
-  M packages/admin/src/screens/principal/StudentPulse.tsx
-  M packages/admin/src/sections.ts
   M packages/admin/src/staff.ts
-  M packages/admin/src/structure.ts
-  M packages/admin/tsconfig.json
-
-[PKG] ai
-  M packages/ai/src/api/agents.ts
-  M packages/ai/src/api/index.ts
-  M packages/ai/src/hooks/index.ts
-  M packages/ai/src/hooks/useAIAgent.ts
-  M packages/ai/src/index.ts
-  M packages/ai/src/screens/AIAssistantScreen.tsx
-  M packages/ai/src/screens/AIAssistantScreen.web.tsx
-  M packages/ai/src/screens/index.ts
-  M packages/ai/tsconfig.json
 
 [PKG] analytics
-  M packages/analytics/index.d.ts
-  M packages/analytics/src/components/AnalyticsChart.d.ts
-  M packages/analytics/src/components/AnalyticsChart.js
-  M packages/analytics/src/components/AnalyticsChart.tsx
-  M packages/analytics/src/components/AnalyticsProvider.d.ts
-  M packages/analytics/src/components/AnalyticsProvider.js
-  M packages/analytics/src/components/AnalyticsProvider.tsx
-  M packages/analytics/src/components/AnalyticsProvider.web.d.ts
-  M packages/analytics/src/components/AnalyticsProvider.web.js
-  M packages/analytics/src/components/AnalyticsProvider.web.tsx
-  M packages/analytics/src/components/GPAInsights.d.ts
-  M packages/analytics/src/components/GPAInsights.js
-  M packages/analytics/src/components/GPAInsights.tsx
-  M packages/analytics/src/components/PerformanceDashboard.d.ts
-  M packages/analytics/src/components/PerformanceDashboard.js
-  M packages/analytics/src/components/PerformanceDashboard.tsx
-  M packages/analytics/src/components/index.d.ts
-  M packages/analytics/src/components/index.js
-  M packages/analytics/src/components/index.ts
-  M packages/analytics/src/context/ActivityPulseContext.d.ts
-  M packages/analytics/src/context/ActivityPulseContext.js
-  M packages/analytics/src/context/ActivityPulseContext.tsx
-  M packages/analytics/src/engine/GPACalculator.d.ts
-  M packages/analytics/src/engine/GPACalculator.js
-  M packages/analytics/src/engine/GPACalculator.ts
-  M packages/analytics/src/engine/PerformanceAnalyzer.d.ts
-  M packages/analytics/src/engine/PerformanceAnalyzer.js
-  M packages/analytics/src/engine/PerformanceAnalyzer.ts
-  M packages/analytics/src/engine/PostHogAnalytics.d.ts
-  M packages/analytics/src/engine/PostHogAnalytics.js
-  M packages/analytics/src/engine/PostHogAnalytics.native.d.ts
-  M packages/analytics/src/engine/PostHogAnalytics.native.js
-  M packages/analytics/src/engine/PostHogAnalytics.native.ts
   M packages/analytics/src/engine/PostHogAnalytics.ts
-  M packages/analytics/src/engine/PostHogAnalytics.web.d.ts
-  M packages/analytics/src/engine/PostHogAnalytics.web.js
-  M packages/analytics/src/engine/PostHogAnalytics.web.ts
-  M packages/analytics/src/engine/index.ts
-  M packages/analytics/src/hooks/index.d.ts
-  M packages/analytics/src/hooks/index.js
-  M packages/analytics/src/hooks/index.ts
-  M packages/analytics/src/hooks/queries.d.ts
-  M packages/analytics/src/hooks/queries.js
-  M packages/analytics/src/hooks/queries.ts
-  M packages/analytics/src/hooks/useAnalytics.d.ts
-  M packages/analytics/src/hooks/useAnalytics.js
-  M packages/analytics/src/hooks/useAnalytics.ts
-  M packages/analytics/src/hooks/usePerformanceData.d.ts
-  M packages/analytics/src/hooks/usePerformanceData.js
-  M packages/analytics/src/hooks/usePerformanceData.ts
-  M packages/analytics/src/hooks/usePredictions.d.ts
-  M packages/analytics/src/hooks/usePredictions.js
-  M packages/analytics/src/hooks/usePredictions.ts
-  M packages/analytics/src/index.d.ts
-  M packages/analytics/src/index.js
-  M packages/analytics/src/index.native.d.ts
-  M packages/analytics/src/index.native.js
-  M packages/analytics/src/index.native.ts
-  M packages/analytics/src/index.ts
-  M packages/analytics/src/ml/InsightGenerator.d.ts
-  M packages/analytics/src/ml/InsightGenerator.js
   M packages/analytics/src/ml/InsightGenerator.ts
-  M packages/analytics/src/ml/Predictor.d.ts
-  M packages/analytics/src/ml/Predictor.js
-  M packages/analytics/src/ml/Predictor.ts
-  M packages/analytics/src/ml/index.ts
-  M packages/analytics/src/types/AnalyticsTypes.d.ts
-  M packages/analytics/src/types/AnalyticsTypes.ts
-  M packages/analytics/src/types/GradingTypes.d.ts
-  M packages/analytics/src/types/GradingTypes.js
-  M packages/analytics/src/types/GradingTypes.ts
-  M packages/analytics/src/types/index.ts
-  M packages/analytics/src/ui.d.ts
-  M packages/analytics/src/ui.js
-  M packages/analytics/src/ui.ts
-  M packages/analytics/src/utils/analyticsHelpers.d.ts
-  M packages/analytics/src/utils/analyticsHelpers.js
-  M packages/analytics/src/utils/analyticsHelpers.ts
-  M packages/analytics/src/utils/benchmarking.d.ts
-  M packages/analytics/src/utils/benchmarking.js
-  M packages/analytics/src/utils/benchmarking.ts
-  M packages/analytics/tsconfig.json
 
 [PKG] classroom
-  M packages/classroom/eslint.config.mjs
-  M packages/classroom/src/analytics.ts
-  M packages/classroom/src/components/AddStudentModal.tsx
   M packages/classroom/src/components/AttendanceSheet.tsx
   M packages/classroom/src/components/AttendanceView.tsx
-  M packages/classroom/src/components/BulkStudentCreation.tsx
   M packages/classroom/src/components/ClaimInviteModal.tsx
-  M packages/classroom/src/components/ClassroomEchoSection.tsx
   M packages/classroom/src/components/ClassroomHolisticInsights.tsx
   M packages/classroom/src/components/ClassroomList.tsx
   M packages/classroom/src/components/ClassroomNotes.tsx
   M packages/classroom/src/components/CreateClassroomModal.tsx
   M packages/classroom/src/components/CreateSchoolModal.tsx
   M packages/classroom/src/components/GlobalCreateModal.tsx
-  M packages/classroom/src/components/GradebookView.tsx
-  M packages/classroom/src/components/GroupManager.tsx
-  M packages/classroom/src/components/IdentityInitialState.tsx
   M packages/classroom/src/components/InventoryView.tsx
-  M packages/classroom/src/components/OCRScanner.tsx
-  M packages/classroom/src/components/OCRStudentImport.tsx
-  M packages/classroom/src/components/QuickAnalytics.tsx
   M packages/classroom/src/components/ResourcesView.tsx
-  M packages/classroom/src/components/StudentList.tsx
   M packages/classroom/src/components/SubmissionModal.tsx
-  M packages/classroom/src/components/SubmissionModal.web.tsx
-  M packages/classroom/src/components/grading/GradeEntryForm.tsx
-  M packages/classroom/src/components/grading/GradebookTable.tsx
-  M packages/classroom/src/components/grading/GradingSettings.tsx
-  M packages/classroom/src/components/grading/ReportCard.tsx
-  M packages/classroom/src/components/index.ts
-  M packages/classroom/src/components/onboarding/PrincipalOnboardingView.web.tsx
-  M packages/classroom/src/components/onboarding/StudentOnboardingView.tsx
-  M packages/classroom/src/components/onboarding/StudentOnboardingView.web.tsx
-  M packages/classroom/src/components/onboarding/TeacherOnboardingView.tsx
-  M packages/classroom/src/components/onboarding/TeacherOnboardingView.web.tsx
-  M packages/classroom/src/components/onboarding/index.ts
-  M packages/classroom/src/components/poa/CreateClassroomAction.tsx
-  M packages/classroom/src/components/poa/MyEchoesAction.tsx
-  M packages/classroom/src/components/poa/PrincipalEchoAction.tsx
-  M packages/classroom/src/components/poa/ScanQRAction.tsx
-  M packages/classroom/src/components/poa/TeacherActions.tsx
-  M packages/classroom/src/components/poa/TeacherEchoActions.tsx
-  M packages/classroom/src/components/poa/TeacherPrimaryActions.tsx
-  M packages/classroom/src/components/poa/index.ts
-  M packages/classroom/src/components/student/StudentClassroomList.tsx
-  M packages/classroom/src/components/student/StudentGoals.tsx
-  M packages/classroom/src/components/student/StudentGradesOverview.tsx
-  M packages/classroom/src/components/student/StudentGrowthPoints.tsx
-  M packages/classroom/src/components/student/StudentHeader.tsx
-  M packages/classroom/src/components/student/StudentProgressOverview.tsx
-  M packages/classroom/src/components/student/StudentStats.tsx
-  M packages/classroom/src/components/student/StudentStudySuite.tsx
-  M packages/classroom/src/components/student/StudentUpcomingAssignments.tsx
-  M packages/classroom/src/components/student/index.ts
-  M packages/classroom/src/components/teacher/TeacherAdminActions.tsx
   M packages/classroom/src/components/teacher/TeacherAnalysisWorkspace.tsx
-  M packages/classroom/src/components/teacher/TeacherAssignmentsSidebar.tsx
-  M packages/classroom/src/components/teacher/TeacherAssignmentsWorkspace.tsx
-  M packages/classroom/src/components/teacher/TeacherClassroomList.tsx
-  M packages/classroom/src/components/teacher/TeacherGroupsModal.tsx
   M packages/classroom/src/components/teacher/TeacherObservationsWorkspace.tsx
-  M packages/classroom/src/components/teacher/TeacherSnapshot.tsx
-  M packages/classroom/src/components/teacher/TeacherStats.tsx
-  M packages/classroom/src/components/teacher/TeacherWorkspaceShell.tsx
-  M packages/classroom/src/components/teacher/index.ts
-  M packages/classroom/src/constants/classroomRegistry.ts
-  M packages/classroom/src/entrypoints/core.ts
-  M packages/classroom/src/entrypoints/student.ts
-  M packages/classroom/src/entrypoints/teacher.ts
-  M packages/classroom/src/hooks/index.ts
-  M packages/classroom/src/hooks/useAttendance.ts
-  M packages/classroom/src/hooks/useClassroomProfile.ts
   M packages/classroom/src/hooks/useClassroomRoleData.ts
-  M packages/classroom/src/hooks/useEcosystemStats.ts
-  M packages/classroom/src/hooks/useGradebook.ts
   M packages/classroom/src/hooks/useInventory.ts
-  M packages/classroom/src/hooks/usePrincipalObservations.ts
   M packages/classroom/src/hooks/useResources.ts
-  M packages/classroom/src/hooks/useSchoolInvites.ts
   M packages/classroom/src/hooks/useSchoolStats.ts
-  M packages/classroom/src/hooks/useStudentDashboardHooks.ts
-  M packages/classroom/src/hooks/useTeacherDashboardHooks.ts
-  M packages/classroom/src/index.ts
-  M packages/classroom/src/logic/reportGenerator.ts
   M packages/classroom/src/screens/AttendanceReportScreen.tsx
   M packages/classroom/src/screens/AttendanceScreen.tsx
   M packages/classroom/src/screens/AttendanceScreen.web.tsx
-  M packages/classroom/src/screens/ClassroomDetailScreen.web.tsx
-  M packages/classroom/src/screens/ClassroomProfileScreen.web.tsx
-  M packages/classroom/src/screens/ClassroomScreen.tsx
-  M packages/classroom/src/screens/ClassroomScreen.web.tsx
   M packages/classroom/src/screens/ContentLibrary.tsx
-  M packages/classroom/src/screens/DemoPlaygroundPanel.web.tsx
-  M packages/classroom/src/screens/GradebookScreen.tsx
-  M packages/classroom/src/screens/GradebookScreen.web.tsx
   M packages/classroom/src/screens/LessonFeed.tsx
   M packages/classroom/src/screens/NoSchoolView.web.tsx
-  M packages/classroom/src/screens/PrincipalDashboard.web.tsx
   M packages/classroom/src/screens/StudentClassroomDashboard.tsx
   M packages/classroom/src/screens/StudentDashboard.tsx
   M packages/classroom/src/screens/StudentDashboard.web.tsx
   M packages/classroom/src/screens/StudentProfileScreen.tsx
   M packages/classroom/src/screens/TeacherClassroomDashboard.tsx
   M packages/classroom/src/screens/TeacherClassroomDashboard.web.tsx
-  M packages/classroom/src/screens/TeacherDashboard.tsx
   M packages/classroom/src/screens/TeacherDashboard.web.tsx
-  M packages/classroom/src/screens/TimetableScreen.web.tsx
-  M packages/classroom/src/screens/index.ts
-  M packages/classroom/src/shared/GuestConversionPrompt.tsx
-  M packages/classroom/src/student/workspace.ts
-  M packages/classroom/src/student/workspacePreview.ts
-  M packages/classroom/src/teacher/workspacePreview.ts
-  M packages/classroom/src/types/global.d.ts
-  M packages/classroom/src/types/index.ts
-  M packages/classroom/src/types/workspace.ts
-  M packages/classroom/src/workspace/ClassroomWorkspaceCanvas.tsx
   M packages/classroom/src/workspace/useClassroomWorkspaceInsights.ts
-  M packages/classroom/src/workspace/useClassroomWorkspaceLayout.ts
   M packages/classroom/src/workspace/useClassroomWorkspaceSurfaces.tsx
   M packages/classroom/src/workspace/useStudentClassroomWorkspaceData.ts
-  M packages/classroom/src/workspace/useStudentDashboardSurfaces.tsx
-  M packages/classroom/src/workspace/useStudentWorkspaceCanvas.tsx
-  M packages/classroom/src/workspace/useStudentWorkspaceData.ts
   M packages/classroom/src/workspace/useTeacherClassroomWorkspaceData.ts
-  M packages/classroom/src/workspace/useTeacherDashboardSurfaces.tsx
   M packages/classroom/src/workspace/useTeacherWorkspaceShell.tsx
-  M packages/classroom/tsconfig.json
 
 [PKG] community
-  M packages/community/eslint.config.mjs
-  M packages/community/src/api/community.ts
-  M packages/community/src/api/index.ts
-  M packages/community/src/api/presence.ts
-  M packages/community/src/api/sacredMissions.ts
   M packages/community/src/components/CommentSheet.tsx
-  M packages/community/src/components/CommunityHearth.tsx
-  M packages/community/src/components/CommunityPresence.tsx
-  M packages/community/src/components/CommunityPresence.web.tsx
   M packages/community/src/components/CreateGroupModal.tsx
   M packages/community/src/components/CreatePostModal.tsx
-  M packages/community/src/components/GroupCard.tsx
-  M packages/community/src/components/GroupMemberManagement.tsx
-  M packages/community/src/components/HeaderMoreMenu.tsx
   M packages/community/src/components/ManifestoCard.tsx
-  M packages/community/src/components/PinnedResourcesShelf.tsx
-  M packages/community/src/components/PostCard.tsx
-  M packages/community/src/components/SocialShieldModal.tsx
-  M packages/community/src/components/index.ts
-  M packages/community/src/constants/communityRegistry.ts
-  M packages/community/src/hooks/index.ts
-  M packages/community/src/hooks/useCommunity.ts
-  M packages/community/src/hooks/useCommunityGroups.ts
-  M packages/community/src/hooks/useCommunityPresence.ts
-  M packages/community/src/hooks/useComposerLogic.ts
-  M packages/community/src/hooks/useSocialShield.ts
-  M packages/community/src/index.ts
-  M packages/community/src/nativewind-env.d.ts
   M packages/community/src/screens/AnnouncementsScreen.tsx
   M packages/community/src/screens/BaseChatScreen.tsx
   M packages/community/src/screens/CommunityScreen.tsx
   M packages/community/src/screens/CommunityScreen.web.tsx
-  M packages/community/src/screens/DirectMessageScreen.tsx
   M packages/community/src/screens/DirectMessageScreen.web.tsx
-  M packages/community/src/screens/DirectMessagesListScreen.tsx
-  M packages/community/src/screens/GroupChatScreen.tsx
   M packages/community/src/screens/GroupChatScreen.web.tsx
-  M packages/community/src/screens/GroupDetailsScreen.tsx
-  M packages/community/src/screens/GroupDetailsScreen.web.tsx
   M packages/community/src/screens/GroupsScreen.tsx
-  M packages/community/src/screens/InvitationWelcomeScreen.tsx
-  M packages/community/src/screens/InviteCodeEntry.tsx
-  M packages/community/src/screens/UserPublicProfileScreen.tsx
-  M packages/community/src/screens/UserPublicProfileScreen.web.tsx
-  M packages/community/src/screens/communityWorkspace.shared.ts
-  M packages/community/src/screens/index.ts
-  M packages/community/src/types/Community.ts
-  M packages/community/src/types/global.d.ts
-  M packages/community/src/types/index.ts
-  M packages/community/tsconfig.json
 
 [PKG] core
   M packages/core/package.json
   M packages/core/scratch/analyze_lint.js
   M packages/core/scratch/extract_errors.cjs
   M packages/core/scratch/summarize_eslint.cjs
-  M packages/core/src/__tests__/sanity.test.ts
-  M packages/core/src/__tests__/workspace/canvas.test.ts
-  M packages/core/src/adapters/events/inngest.adapter.ts
-  M packages/core/src/adapters/native/FallbackMMKVStorageAdapter.ts
+  M packages/core/src/__tests__/workspace/layoutSync.test.ts
+  M packages/core/src/accounts/deviceAccounts.ts
+  A packages/core/src/adapters/__tests__/powersync.database.test.ts
+  A packages/core/src/adapters/__tests__/supabase.auth.adapter.test.ts
   M packages/core/src/adapters/native/NativeDeviceIdentityAdapter.ts
-  M packages/core/src/adapters/native/SentryTelemetryAdapter.ts
-  M packages/core/src/adapters/native/SimulatorDeviceIdentityAdapter.ts
   M packages/core/src/adapters/powersync/PowerSyncGate.tsx
   M packages/core/src/adapters/powersync/SupabasePowerSyncConnector.ts
   M packages/core/src/adapters/powersync/database.ts
-  A packages/core/src/adapters/powersync/forms.adapter.ts
-  M packages/core/src/adapters/powersync/hooks.ts
-  M packages/core/src/adapters/powersync/index.ts
-  M packages/core/src/adapters/powersync/schema.ts
+  M packages/core/src/adapters/powersync/forms.adapter.ts
+  M packages/core/src/adapters/powersync/powersync-shim.ts
   M packages/core/src/adapters/realtime/supabase.adapter.ts
   M packages/core/src/adapters/storage/cloudinary.adapter.ts
   M packages/core/src/adapters/storage/supabase.adapter.ts
-  M packages/core/src/adapters/supabase/auditRepository.ts
   M packages/core/src/adapters/supabase/auth.adapter.ts
-  M packages/core/src/adapters/supabase/communityRepository.ts
   M packages/core/src/adapters/supabase/educational/assignmentRepository.ts
-  M packages/core/src/adapters/supabase/educational/attendanceRepository.ts
-  M packages/core/src/adapters/supabase/educational/classroomRepository.ts
-  M packages/core/src/adapters/supabase/educational/enrollmentRepository.ts
-  M packages/core/src/adapters/supabase/educational/gradingRepository.ts
-  M packages/core/src/adapters/supabase/educational/index.ts
-  M packages/core/src/adapters/supabase/educational/lessonRepository.ts
-  M packages/core/src/adapters/supabase/educational/materialRepository.ts
-  M packages/core/src/adapters/supabase/educational/schoolRepository.ts
-  A packages/core/src/adapters/supabase/forms.adapter.ts
-  M packages/core/src/adapters/supabase/globalConfig.adapter.ts
+  M packages/core/src/adapters/supabase/forms.adapter.ts
   M packages/core/src/adapters/supabase/growth.adapter.ts
+  M packages/core/src/adapters/supabase/guardianRepository.ts
   M packages/core/src/adapters/supabase/principalWorkspaceRepository.ts
-  M packages/core/src/adapters/supabase/profileRepository.ts
-  M packages/core/src/adapters/supabase/schoolRepository.ts
-  M packages/core/src/adapters/supabase/teacherRepository.ts
+  M packages/core/src/adapters/supabase/workspaceLayoutRepository.ts
   M packages/core/src/adapters/supabaseDeviceSecurity.adapter.ts
   M packages/core/src/adapters/supabaseIdentity.adapter.ts
-  M packages/core/src/adapters/supabaseNotification.adapter.ts
   M packages/core/src/adapters/supabasePushNotification.adapter.ts
   M packages/core/src/adapters/zenstack/profileRepository.ts
-  M packages/core/src/api/__tests__/attendance-poa.test.ts
-  M packages/core/src/api/__tests__/founder-guardian-poa.test.ts
-  M packages/core/src/api/__tests__/grading-poa.test.ts
-  M packages/core/src/api/__tests__/longitudinal-poa.test.ts
-  M packages/core/src/api/__tests__/principal-workspace-poa.test.ts
+  A packages/core/src/api/__tests__/highways.test.ts
   M packages/core/src/api/__tests__/schemas.test.ts
   M packages/core/src/api/__tests__/simple.test.ts
-  M packages/core/src/api/__tests__/teacher-insights-poa.test.ts
-  M packages/core/src/api/__tests__/workspace-layout-poa.test.ts
-  M packages/core/src/api/academicCycles.ts
   M packages/core/src/api/admin.contract.ts
-  M packages/core/src/api/announcements.ts
-  M packages/core/src/api/assignments.ts
-  M packages/core/src/api/attendance.effect.ts
   M packages/core/src/api/attendance.ts
+  M packages/core/src/api/auth.ts
   M packages/core/src/api/base.ts
   M packages/core/src/api/classroom.ts
-  M packages/core/src/api/classroomGroups.ts
-  M packages/core/src/api/classroomNotes.contract.ts
-  M packages/core/src/api/classroomNotes.ts
-  M packages/core/src/api/classroomStudents.ts
   M packages/core/src/api/classrooms.ts
   M packages/core/src/api/community.contract.ts
   M packages/core/src/api/community.ts
-  M packages/core/src/api/contextualChallenges.ts
-  M packages/core/src/api/contract.ts
+  A packages/core/src/api/dailyContent.contract.ts
   M packages/core/src/api/dailyContent.ts
+  A packages/core/src/api/dataGateway.ts
   M packages/core/src/api/deviceTrust.ts
-  M packages/core/src/api/educational.contract.ts
-  M packages/core/src/api/erp.contract.ts
-  M packages/core/src/api/erp.ts
-  M packages/core/src/api/formTemplates.ts
-  M packages/core/src/api/founder.contract.ts
-  M packages/core/src/api/founder.ts
+  A packages/core/src/api/gateway.ts
   M packages/core/src/api/grading.contract.ts
   M packages/core/src/api/grading.ts
   M packages/core/src/api/groups.ts
-  M packages/core/src/api/growth.contract.ts
-  M packages/core/src/api/growthSignals.generated.ts
-  M packages/core/src/api/growthSignals.ts
-  M packages/core/src/api/guardian.contract.ts
-  M packages/core/src/api/guardian.ts
-  M packages/core/src/api/handlers/admin.ts
-  M packages/core/src/api/handlers/community.ts
-  M packages/core/src/api/handlers/educational.ts
-  M packages/core/src/api/handlers/grading.ts
+  A packages/core/src/api/handlers/dailyContent.ts
   M packages/core/src/api/handlers/identity.ts
-  M packages/core/src/api/handlers/library.ts
-  M packages/core/src/api/handlers/operations.ts
   M packages/core/src/api/handlers/profile.ts
   M packages/core/src/api/handlers/self.ts
-  A packages/core/src/api/handlers/sync.ts
-  M packages/core/src/api/history.ts
-  M packages/core/src/api/hooks/comment.hooks.ts
+  A packages/core/src/api/highways.ts
   M packages/core/src/api/hooks/community.hooks.ts
-  M packages/core/src/api/hooks/notification.hooks.ts
   M packages/core/src/api/hooks/poll.hooks.ts
-  M packages/core/src/api/hooks/presence.hooks.ts
   M packages/core/src/api/identity.contract.ts
-  M packages/core/src/api/identity.generated.ts
   M packages/core/src/api/identity.ts
-  M packages/core/src/api/impactRipples.ts
   M packages/core/src/api/index.ts
-  M packages/core/src/api/inventory.ts
-  M packages/core/src/api/lessonMaterials.ts
-  M packages/core/src/api/library.contract.ts
+  A packages/core/src/api/interceptor.ts
   M packages/core/src/api/library.ts
-  M packages/core/src/api/longitudinal.contract.ts
-  M packages/core/src/api/longitudinal.ts
-  M packages/core/src/api/mapping.ts
-  M packages/core/src/api/media.ts
-  M packages/core/src/api/messaging.ts
-  M packages/core/src/api/mockData.ts
-  M packages/core/src/api/naturePaths.ts
   M packages/core/src/api/onboarding.ts
   M packages/core/src/api/operations.contract.ts
-  M packages/core/src/api/orchestration/community.ts
-  M packages/core/src/api/orchestration/educational.ts
-  M packages/core/src/api/orchestration/growth.ts
-  M packages/core/src/api/orchestration/identity.ts
   M packages/core/src/api/orchestration/operations.ts
-  M packages/core/src/api/orchestration/specialized.ts
   M packages/core/src/api/poaProxy.ts
-  M packages/core/src/api/presence.ts
-  M packages/core/src/api/principalNotes.ts
-  M packages/core/src/api/principalWorkspace.contract.ts
-  M packages/core/src/api/principalWorkspace.ts
-  M packages/core/src/api/pro.contract.ts
   M packages/core/src/api/profile.contract.ts
   M packages/core/src/api/profile.ts
   M packages/core/src/api/resources.ts
-  M packages/core/src/api/runtimes/attendanceProjection.runtime.ts
-  M packages/core/src/api/runtimes/classroomNotes.runtime.ts
-  M packages/core/src/api/runtimes/educational.runtime.ts
-  M packages/core/src/api/runtimes/founder.runtime.ts
-  M packages/core/src/api/runtimes/gradingProjection.runtime.ts
-  M packages/core/src/api/runtimes/guardian.runtime.ts
-  M packages/core/src/api/runtimes/principalWorkspace.runtime.ts
-  M packages/core/src/api/runtimes/teacherInsights.runtime.ts
-  M packages/core/src/api/runtimes/workspaceLayout.runtime.ts
-  M packages/core/src/api/sacredMissions.ts
   M packages/core/src/api/school.ts
-  M packages/core/src/api/schoolForest.ts
-  M packages/core/src/api/self.contract.ts
-  M packages/core/src/api/social.ts
+  A packages/core/src/api/server.ts
   M packages/core/src/api/staffManagement.ts
-  M packages/core/src/api/studentObservations.ts
-  M packages/core/src/api/studentPotential.ts
   M packages/core/src/api/supabase.ts
-  A packages/core/src/api/sync.contract.ts
-  M packages/core/src/api/teacher.ts
-  M packages/core/src/api/teacherInsights.contract.ts
-  M packages/core/src/api/teacherInsights.ts
-  M packages/core/src/api/thuthimal.ts
-  M packages/core/src/api/userGrowthState.ts
   M packages/core/src/api/warmMirror.ts
-  M packages/core/src/api/workspaceLayout.contract.ts
-  M packages/core/src/api/workspaceLayout.ts
-  M packages/core/src/hooks/index.ts
-  M packages/core/src/hooks/useAuthorityFeatures.ts
   M packages/core/src/hooks/useAuthorityLifecycle.ts
-  M packages/core/src/hooks/useBanyanGrowth.ts
-  M packages/core/src/hooks/useDeviceAccounts.ts
+  M packages/core/src/hooks/useClassroomCreation.ts
   M packages/core/src/hooks/useDeviceSecurity.ts
   M packages/core/src/hooks/useFeatureAccess.ts
-  M packages/core/src/hooks/useFeatureRegistry.ts
   M packages/core/src/hooks/useForm.ts
-  M packages/core/src/hooks/useJourneyHistory.ts
-  A packages/core/src/hooks/useLocalPermission.ts
-  M packages/core/src/hooks/useManualSnapshot.ts
-  M packages/core/src/hooks/useNaturePaths.ts
-  M packages/core/src/hooks/useNotifications.ts
-  M packages/core/src/hooks/useSafeMutation.ts
-  M packages/core/src/hooks/useTemporalHeatmap.ts
-  M packages/core/src/hooks/useTenantContext.ts
+  M packages/core/src/hooks/useGroupCreation.ts
+  M packages/core/src/hooks/useIdentity.ts
+  M packages/core/src/hooks/useLocalPermission.ts
+  M packages/core/src/hooks/useMediaDownloader.ts
+  A packages/core/src/hooks/useMediaDownloader.web.ts
+  M packages/core/src/hooks/useTaskActions.ts
+  M packages/core/src/hooks/useTeacherClassroom.ts
+  M packages/core/src/hooks/useTracking.ts
   M packages/core/src/index.ts
   M packages/core/src/lib/authorization.ts
-  M packages/core/src/lib/errors.ts
+  M packages/core/src/lib/cloudinary.ts
   M packages/core/src/lib/gradePublication.ts
-  M packages/core/src/lib/index.ts
-  M packages/core/src/lib/permissions.ts
-  M packages/core/src/lib/sync/delta.ts
-  M packages/core/src/lib/sync/hooks/useSyncStatus.ts
+  M packages/core/src/lib/monitoring/sentry.ts
+  M packages/core/src/lib/supabaseAuthStorage.ts
   M packages/core/src/lib/sync/registry.ts
   M packages/core/src/lib/sync/sync/SyncManager.tsx
-  M packages/core/src/lib/sync/useMutationQueue.ts
-  M packages/core/src/logic/domains/community/ports.ts
-  M packages/core/src/logic/domains/educational/ports.ts
-  M packages/core/src/logic/domains/educational/services.ts
-  M packages/core/src/logic/domains/factory.ts
-  M packages/core/src/logic/domains/profile/index.ts
   M packages/core/src/logic/domains/profile/onboarding.ts
-  M packages/core/src/logic/domains/profile/ports.ts
-  M packages/core/src/logic/domains/teacher/ports.ts
-  M packages/core/src/logic/events/producers.ts
-  M packages/core/src/logic/experience/ActivityPulseContext.tsx
   M packages/core/src/logic/forms/analytics.ts
   M packages/core/src/logic/forms/dynamic-loader.ts
   M packages/core/src/logic/forms/form-manager.ts
   M packages/core/src/logic/forms/index.ts
-  M packages/core/src/logic/i18n/config.ts
-  M packages/core/src/logic/index.ts
-  M packages/core/src/logic/interfaces/deviceIdentity.port.ts
-  M packages/core/src/logic/managers/AuditManager.ts
   M packages/core/src/logic/managers/AuthManager.ts
-  M packages/core/src/logic/managers/CommunityManager.ts
   M packages/core/src/logic/managers/DeepLinkManager.ts
-  M packages/core/src/logic/managers/DeviceIdentityManager.ts
   M packages/core/src/logic/managers/DeviceSecurityManager.ts
   M packages/core/src/logic/managers/EducationalManager.ts
   M packages/core/src/logic/managers/GlobalConfigManager.ts
   M packages/core/src/logic/managers/GrowthManager.ts
-  M packages/core/src/logic/managers/IdentityManager.ts
-  M packages/core/src/logic/managers/MediaManager.ts
-  M packages/core/src/logic/managers/NotificationManager.ts
   M packages/core/src/logic/managers/ProfileManager.ts
   M packages/core/src/logic/managers/PushNotificationManager.ts
-  M packages/core/src/logic/managers/RealtimeManager.ts
-  M packages/core/src/logic/managers/StorageManager.ts
-  M packages/core/src/logic/managers/TeacherInsightsManager.ts
-  M packages/core/src/logic/managers/TeacherManager.ts
+  A packages/core/src/logic/managers/__tests__/AuthManager.test.ts
   M packages/core/src/logic/managers/auth.factory.ts
-  M packages/core/src/logic/managers/community.factory.ts
-  M packages/core/src/logic/managers/educational.factory.ts
-  M packages/core/src/logic/managers/factory.ts
-  M packages/core/src/logic/managers/growth.factory.ts
-  M packages/core/src/logic/managers/identity.factory.ts
-  M packages/core/src/logic/managers/media.factory.ts
-  M packages/core/src/logic/managers/misc.factory.ts
-  M packages/core/src/logic/managers/notification.factory.ts
-  M packages/core/src/logic/managers/profile.factory.ts
-  M packages/core/src/logic/permissions/AuthorityInterceptor.ts
-  M packages/core/src/logic/permissions/abilities/admin.ts
-  M packages/core/src/logic/permissions/abilities/gradeHead.ts
-  M packages/core/src/logic/permissions/abilities/parent.ts
-  M packages/core/src/logic/permissions/abilities/principal.ts
-  M packages/core/src/logic/permissions/abilities/sectionHead.ts
-  M packages/core/src/logic/permissions/abilities/student.ts
-  M packages/core/src/logic/permissions/abilities/teacher.ts
-  D packages/core/src/logic/permissions/composer.test.ts
-  D packages/core/src/logic/permissions/composer.ts
   M packages/core/src/logic/permissions/feature-engine.ts
-  M packages/core/src/logic/permissions/hooks/usePermissions.ts
-  M packages/core/src/logic/permissions/index.ts
   M packages/core/src/logic/permissions/localEvaluator.native.ts
-  A packages/core/src/logic/permissions/localEvaluator.ts
-  A packages/core/src/logic/permissions/signature.ts
+  M packages/core/src/logic/permissions/localEvaluator.ts
   M packages/core/src/logic/ports/auth.port.ts
   M packages/core/src/logic/ports/deviceSecurity.port.ts
-  M packages/core/src/logic/ports/eventBus.port.ts
   M packages/core/src/logic/ports/growth.port.ts
-  M packages/core/src/logic/ports/identity.port.ts
-  M packages/core/src/logic/ports/notification.port.ts
-  M packages/core/src/logic/ports/pushNotification.port.ts
-  M packages/core/src/logic/ports/realtime.port.ts
-  M packages/core/src/logic/ports/storage.port.ts
-  M packages/core/src/logic/runtimeRegistry.ts
-  M packages/core/src/logic/schemas/accounting.schema.ts
-  M packages/core/src/logic/schemas/attendance.schema.ts
-  M packages/core/src/logic/schemas/classroom-note.schema.ts
-  M packages/core/src/logic/schemas/classroom.schema.ts
-  M packages/core/src/logic/schemas/community.schema.ts
-  M packages/core/src/logic/schemas/founder.schema.ts
-  M packages/core/src/logic/schemas/grading.schema.ts
-  M packages/core/src/logic/schemas/growth.schema.ts
-  M packages/core/src/logic/schemas/guardian.schema.ts
   M packages/core/src/logic/schemas/identity.schema.ts
-  M packages/core/src/logic/schemas/index.ts
-  M packages/core/src/logic/schemas/inventory_item.schema.ts
-  M packages/core/src/logic/schemas/lesson.schema.ts
-  M packages/core/src/logic/schemas/library.schema.ts
-  M packages/core/src/logic/schemas/material.schema.ts
-  M packages/core/src/logic/schemas/payments.schema.ts
-  M packages/core/src/logic/schemas/pro.schema.ts
-  M packages/core/src/logic/schemas/school.schema.ts
-  M packages/core/src/logic/schemas/self.schema.ts
-  M packages/core/src/logic/schemas/staff.schema.ts
-  M packages/core/src/logic/schemas/student.schema.ts
-  M packages/core/src/logic/schemas/temporal.schema.ts
   M packages/core/src/logic/schemas/user.schema.ts
-  M packages/core/src/logic/store-slices/auth.slice.ts
   M packages/core/src/logic/utils/QRResolver.ts
-  M packages/core/src/logic/utils/errorNormalizer.ts
-  M packages/core/src/logic/utils/idempotency.ts
-  M packages/core/src/logic/utils/temporalUtils.ts
-  M packages/core/src/logic/workspace/canvas.ts
-  M packages/core/src/logic/workspace/index.ts
+  M packages/core/src/logic/utils/logger.ts
+  M packages/core/src/logic/workspace/workspaceSwitcher.ts
   M packages/core/src/native/bootstrap.ts
   M packages/core/src/native/deviceTrust.ts
-  M packages/core/src/native/flows/FlowResolver.ts
+  M packages/core/src/native/guestDataManager.ts
   M packages/core/src/native/guestDataSync.ts
-  M packages/core/src/native/index.ts
   M packages/core/src/native/runtimeAdapter.ts
   M packages/core/src/native/sentry.ts
+  M packages/core/src/native/supabaseAuthStorage.ts
   M packages/core/src/native/useAuthorityLifecycle.ts
-  M packages/core/src/native/useWorkspaceLayoutSync.ts
-  M packages/core/src/providers/AuthProvider.tsx
-  M packages/core/src/store/index.ts
-  M packages/core/src/store/resetScopedStores.ts
-  M packages/core/src/store/slices/auth.slice.ts
-  M packages/core/src/store/slices/feature.slice.ts
-  M packages/core/src/store/useAuthStore.ts
+  A packages/core/src/providers/index.ts
+  A packages/core/src/shared/index.ts
   M packages/core/src/store/useConflictStore.ts
   M packages/core/src/store/useDeviceSecurityStore.ts
-  M packages/core/src/store/useNotificationStore.ts
-  A packages/core/src/store/usePermissionStore.ts
-  M packages/core/src/store/useStore.ts
-  M packages/core/src/types/API.ts
-  M packages/core/src/types/Authority.ts
   M packages/core/src/types/Errors.ts
-  M packages/core/src/types/Growth.ts
-  M packages/core/src/types/Identity.ts
-  M packages/core/src/types/School.ts
   M packages/core/src/types/User.ts
-  M packages/core/src/types/external-modules.d.ts
+  M packages/core/src/types/Workspace.ts
   M packages/core/src/types/index.ts
-  M packages/core/src/types/runtime.ts
-  M packages/core/src/utils/random.ts
-  M packages/core/s
-rc/utils/temporal.ts
-  M packages/core/tsconfig.json
-  M packages/core/vitest.config.ts
+  M packages/core/src/utils/temporal.ts
+
+[PKG] database
+  M packages/database/package.json
+  M packages/database/src/client.ts
 
 [PKG] eslint-config
   M packages/eslint-config/base.js
   M packages/eslint-config/next.js
   M packages/eslint-config/react-internal.js
-  M packages/eslint-config/rules/max-use-state.js
 
 [PKG] form-builder
-  A packages/form-builder-engine/package.json
-  A packages/form-builder-engine/src/adapters/interfaces.ts
-  A packages/form-builder-engine/src/analytics/AnalyticsEngine.ts
-  A packages/form-builder-engine/src/hydrator/FormHydrator.ts
-  A packages/form-builder-engine/src/index.ts
-  A packages/form-builder-engine/src/manager/FormManager.ts
-  A packages/form-builder-engine/src/schema/FormSchema.ts
-  A packages/form-builder-engine/src/validation/ValidationEngine.ts
-  A packages/form-builder-engine/tsconfig.json
-  M packages/form-builder/docs/form-builder-operationalization.md
-  M packages/form-builder/eslint.config.mjs
+  A packages/form-builder-engine/PUBLISH_CHECKLIST.md
+  A packages/form-builder-engine/README.md
+  M packages/form-builder-engine/package.json
+  M packages/form-builder-engine/src/adapters/interfaces.ts
+  M packages/form-builder-engine/src/analytics/AnalyticsEngine.ts
+  A packages/form-builder-engine/src/analytics/index.ts
+  A packages/form-builder-engine/src/core/index.ts
+  A packages/form-builder-engine/src/hydration/index.ts
+  M packages/form-builder-engine/src/hydrator/FormHydrator.ts
+  M packages/form-builder-engine/src/index.ts
+  M packages/form-builder-engine/src/manager/FormManager.ts
+  A packages/form-builder-engine/src/ports/index.ts
+  M packages/form-builder-engine/src/schema/FormSchema.ts
+  A packages/form-builder-engine/src/schema/index.ts
+  M packages/form-builder-engine/src/validation/ValidationEngine.ts
+  A packages/form-builder-engine/src/validation/index.ts
+  M packages/form-builder/README.md
   M packages/form-builder/package.json
   M packages/form-builder/src/DynamicFormDemo.tsx
   M packages/form-builder/src/FormBuilder.tsx
   M packages/form-builder/src/NativeForm.tsx
-  M packages/form-builder/src/apps/index.ts
   M packages/form-builder/src/apps/resilience-sensing-schema.ts
-  M packages/form-builder/src/components/FormLikert.tsx
-  M packages/form-builder/src/components/FormSelect.tsx
-  M packages/form-builder/src/components/FormSlider.tsx
-  M packages/form-builder/src/components/index.ts
-  M packages/form-builder/src/engine/index.ts
-  M packages/form-builder/src/index.ts
   M packages/form-builder/src/screens/ClimateSensingScreen.tsx
   M packages/form-builder/src/screens/ClimateSensingScreen.web.tsx
-  M packages/form-builder/src/screens/FormBuilderScreen.web.tsx
   M packages/form-builder/src/screens/PublicFormScreen.web.tsx
-  M packages/form-builder/src/screens/index.ts
-  M packages/form-builder/tsconfig.json
+  A packages/form-builder/src/services.ts
 
 [PKG] graphics
-  M packages/graphics/eslint.config.mjs
-  M packages/graphics/src/algorithms/CaptureEngine.ts
-  M packages/graphics/src/algorithms/CatchmentAnalysis.ts
-  M packages/graphics/src/algorithms/GeoThematicEngine.ts
-  M packages/graphics/src/algorithms/KnowledgeParser.ts
-  M packages/graphics/src/algorithms/index.ts
-  M packages/graphics/src/algorithms/perspective.ts
-  M packages/graphics/src/charts/AnalyticsCharts.tsx
-  M packages/graphics/src/charts/AnalyticsEngine.tsx
-  M packages/graphics/src/charts/GiftedCharts.tsx
-  M packages/graphics/src/charts/HeatmapChart.tsx
-  M packages/graphics/src/charts/InteractiveChat.tsx
-  M packages/graphics/src/charts/RadarSpiderChart.tsx
-  M packages/graphics/src/charts/SankeyDiagram.tsx
-  M packages/graphics/src/charts/TimelineChart.tsx
-  M packages/graphics/src/charts/index.ts
-  M packages/graphics/src/components/CollaborativeGrove.tsx
-  M packages/graphics/src/components/ResonanceVisualizer.tsx
-  M packages/graphics/src/components/SanctuaryCanvas.tsx
-  M packages/graphics/src/components/index.ts
-  M packages/graphics/src/components/maps/CatchmentOverlay.tsx
-  M packages/graphics/src/components/maps/GeographicPerspective.tsx
   M packages/graphics/src/components/maps/GeospatialStudio.tsx
-  M packages/graphics/src/components/maps/SriLankaMap.tsx
-  M packages/graphics/src/data/AdministrativeHierarchy.ts
-  M packages/graphics/src/data/PostalCodes.ts
-  M packages/graphics/src/data/index.ts
-  M packages/graphics/src/hooks/index.ts
-  M packages/graphics/src/hooks/useGeoData.ts
-  M packages/graphics/src/hooks/useSriLankaLocation.ts
-  M packages/graphics/src/index.ts
-  M packages/graphics/src/layouts/forceLayout.ts
-  M packages/graphics/src/layouts/geoLayout.ts
-  M packages/graphics/src/layouts/index.ts
-  M packages/graphics/src/layouts/pathLayout.ts
-  M packages/graphics/src/layouts/radarLayout.ts
-  M packages/graphics/src/layouts/treeLayout.ts
-  M packages/graphics/src/srilankan-postalcode-backend.d.ts
-  M packages/graphics/src/types-shim.d.ts
-  M packages/graphics/src/types/PerspectiveRenderer.ts
-  M packages/graphics/src/types/index.ts
-  M packages/graphics/src/types/modules.d.ts
-  M packages/graphics/src/types/vendor.d.ts
-  M packages/graphics/tsconfig.json
 
 [PKG] library
-  M packages/library/eslint.config.mjs
-  M packages/library/src/api/database.ts
-  M packages/library/src/api/database.web.ts
-  M packages/library/src/api/index.ts
-  M packages/library/src/api/library.ts
-  M packages/library/src/api/sync.ts
-  M packages/library/src/components/CollectionPickerModal.tsx
-  M packages/library/src/components/LibraryResourceCard.tsx
-  M packages/library/src/components/LibraryThumbnailCard.tsx
-  M packages/library/src/components/LibraryThumbnailCard.web.tsx
-  M packages/library/src/components/ResourceList.tsx
-  M packages/library/src/components/ResourceRow.tsx
-  M packages/library/src/components/ResourceShareQRModal.tsx
-  M packages/library/src/components/index.ts
-  M packages/library/src/components/modals/StudentAnalysisModal.tsx
-  M packages/library/src/components/modals/index.ts
-  M packages/library/src/constants/categories.ts
-  M packages/library/src/constants/libraryRegistry.ts
-  M packages/library/src/constants/shelf.ts
-  M packages/library/src/gesture-handler.d.ts
-  M packages/library/src/hooks/index.ts
-  M packages/library/src/hooks/useLibrary.ts
-  M packages/library/src/hooks/useMapPresence.ts
-  M packages/library/src/hooks/useMappingSync.ts
-  M packages/library/src/hooks/usePerspectiveLayout.ts
-  M packages/library/src/hooks/useTopologyPulse.ts
-  M packages/library/src/index.ts
-  M packages/library/src/screens/CollectionDetailScreen.tsx
   M packages/library/src/screens/CollectionDetailScreen.web.tsx
-  M packages/library/src/screens/CuratorReviewScreen.tsx
-  M packages/library/src/screens/DocumentViewerScreen.tsx
-  M packages/library/src/screens/LibraryScreen.tsx
   M packages/library/src/screens/LibraryScreen.web.tsx
-  M packages/library/src/screens/MapScreen.tsx
-  M packages/library/src/screens/MapScreen.web.tsx
-  M packages/library/src/screens/PDFViewerScreen.tsx
-  M packages/library/src/screens/PDFViewerScreen.web.tsx
-  M packages/library/src/screens/ResourceHubScreen.tsx
-  M packages/library/src/screens/VideoPlayerScreen.tsx
-  M packages/library/src/screens/VideoPlayerScreen.web.tsx
-  M packages/library/src/screens/index.ts
-  M packages/library/src/shims/native-shim.web.ts
-  M packages/library/src/types/Library.ts
-  M packages/library/src/types/global.d.ts
-  M packages/library/src/types/index.ts
-  M packages/library/src/utils/externalLinks.ts
-  M packages/library/src/utils/index.ts
-  M packages/library/src/utils/resourceLinks.ts
-  M packages/library/tsconfig.json
-
-[PKG] lk-edu-geo
-  M packages/lk-edu-geo/scripts/admin-hierarchy.json
-  M packages/lk-edu-geo/scripts/extract-geo.ts
-  M packages/lk-edu-geo/scripts/extract-gn.ts
-  M packages/lk-edu-geo/scripts/generate-sql-seeds.ts
-  M packages/lk-edu-geo/scripts/import-xlsx.ts
-  M packages/lk-edu-geo/scripts/inspect-xlsx.ts
-  M packages/lk-edu-geo/scripts/verify-final.ts
-  M packages/lk-edu-geo/scripts/verify-phase4.ts
-  M packages/lk-edu-geo/scripts/verify-phase5.ts
-  M packages/lk-edu-geo/scripts/verify-phase8.ts
-  M packages/lk-edu-geo/scripts/verify.ts
-  M packages/lk-edu-geo/src/constants.ts
-  M packages/lk-edu-geo/src/index.ts
-  M packages/lk-edu-geo/src/types.ts
-  M packages/lk-edu-geo/src/types/modules.d.ts
-  M packages/lk-edu-geo/tsconfig.json
-
-[PKG] payments
-  M packages/payments/eslint.config.mjs
-  M packages/payments/src/index.ts
-  M packages/payments/src/plugins/payhere.ts
-  M packages/payments/src/plugins/stripe.ts
-  M packages/payments/src/registry.ts
-  M packages/payments/src/service.ts
-  M packages/payments/src/types.ts
-  M packages/payments/tsconfig.json
-
-[PKG] people
-  M packages/people/eslint.config.mjs
-  M packages/people/src/components/StaffPresencePulse.tsx
-  M packages/people/src/components/TeacherAdminPortalModal.tsx
-  M packages/people/src/components/TeacherAdminWidget.tsx
-  M packages/people/src/components/TeacherEchoHistoryModal.tsx
-  M packages/people/src/components/TeacherFeedbackModal.tsx
-  M packages/people/src/components/index.ts
-  M packages/people/src/directory.ts
-  M packages/people/src/feedback.ts
-  M packages/people/src/hooks/index.ts
-  M packages/people/src/hooks/useStaffPresence.ts
-  M packages/people/src/index.ts
-  M packages/people/src/memberships.ts
-  M packages/people/src/staff.ts
-  M packages/people/tsconfig.json
 
 [PKG] platform-mcp
   M packages/platform-mcp/src/index.ts
-  M packages/platform-mcp/src/services/AuditService.ts
-  M packages/platform-mcp/src/services/DiscoveryService.ts
-  M packages/platform-mcp/src/services/DocumentService.ts
-  M packages/platform-mcp/src/services/HelpService.ts
-  M packages/platform-mcp/src/services/JinaService.ts
-  M packages/platform-mcp/src/services/MaintenanceService.ts
-  M packages/platform-mcp/src/services/ScoutService.ts
-  M packages/platform-mcp/src/utils/constants.ts
-  M packages/platform-mcp/src/utils/execution.ts
-  M packages/platform-mcp/src/utils/pathUtils.ts
-  M packages/platform-mcp/tsconfig.json
 
 [PKG] policies
-  A packages/policies/package.json
-  A packages/policies/src/__tests__/evaluator.test.ts
-  A packages/policies/src/engine/evaluator.ts
-  A packages/policies/src/engine/types.ts
-  A packages/policies/src/index.ts
-  A packages/policies/src/policies/guest/wanderer.cedar
-  A packages/policies/src/policies/platform/admin.cedar
-  A packages/policies/src/policies/school/assistantPrincipal.cedar
-  A packages/policies/src/policies/school/gradeHead.cedar
-  A packages/policies/src/policies/school/parent.cedar
-  A packages/policies/src/policies/school/principal.cedar
-  A packages/policies/src/policies/school/sectionHead.cedar
-  A packages/policies/src/policies/school/staff.cedar
-  A packages/policies/src/policies/school/student.cedar
-  M packages/policies/src/policies/school/teacher.cedar
-  A packages/policies/src/snapshot/generator.ts
-  A packages/policies/src/snapshot/types.ts
-  A packages/policies/tsconfig.json
+  M packages/policies/src/__tests__/evaluator.test.ts
+  M packages/policies/src/engine/evaluator.ts
+  A packages/policies/src/policies/guest/personal.cedar
+  D packages/policies/src/policies/guest/wanderer.cedar
+  M packages/policies/src/snapshot/generator.ts
 
 [PKG] profile
-  M packages/profile/eslint.config.mjs
-  M packages/profile/src/components/AchievementGallery.tsx
-  M packages/profile/src/components/AddSocialLinkModal.tsx
-  M packages/profile/src/components/AvatarDisplay.tsx
-  M packages/profile/src/components/ContactLinktree.tsx
-  M packages/profile/src/components/ControlScroll.tsx
   M packages/profile/src/components/EditProfileModal.tsx
-  M packages/profile/src/components/EditableItem.tsx
-  M packages/profile/src/components/GiveThuthimalModal.tsx
-  M packages/profile/src/components/InlineSocialLinkEditor.tsx
-  M packages/profile/src/components/LivingJourneyPanel.tsx
-  M packages/profile/src/components/ProfileListItem.tsx
-  M packages/profile/src/components/ProfileSkeleton.tsx
-  M packages/profile/src/components/SocialSanctuary.tsx
-  M packages/profile/src/components/SupportSection.tsx
-  M packages/profile/src/components/ThuthimalBadge.tsx
-  M packages/profile/src/components/UserStatsCard.tsx
-  M packages/profile/src/components/index.ts
-  M packages/profile/src/config/profileSections.ts
-  M packages/profile/src/hooks/index.ts
-  M packages/profile/src/hooks/useCommunityProfile.ts
-  M packages/profile/src/hooks/useInstitutionalHistory.ts
-  M packages/profile/src/hooks/usePrincipalGovernanceHistory.ts
   M packages/profile/src/hooks/useSchoolProfile.ts
   M packages/profile/src/hooks/useStudentAcademicHistory.ts
   M packages/profile/src/hooks/useTeacherProfessionalHistory.ts
-  M packages/profile/src/index.ts
-  M packages/profile/src/lib/isFieldFilled.ts
-  M packages/profile/src/lib/validator.ts
-  M packages/profile/src/navigation/ProfileNavigationContext.tsx
   M packages/profile/src/navigation/fullProfileParams.ts
-  M packages/profile/src/navigation/index.ts
-  M packages/profile/src/screens/FullProfileScreen.tsx
-  M packages/profile/src/screens/FullProfileScreen.web.tsx
-  M packages/profile/src/screens/MuteHubScreen.tsx
   M packages/profile/src/screens/ProfileScreen.tsx
-  M packages/profile/src/screens/ProfileScreen.web.tsx
-  M packages/profile/tsconfig.json
-
-[PKG] scanner-kit
-  M packages/scanner-kit/eslint.config.mjs
-  M packages/scanner-kit/src/OCRScanner.tsx
-  M packages/scanner-kit/src/QRCodeGenerator.tsx
-  M packages/scanner-kit/src/ScannerModal.tsx
-  M packages/scanner-kit/src/ScannerModal.web.tsx
-  M packages/scanner-kit/src/hooks/useQRDeepLink.ts
-  M packages/scanner-kit/src/index.ts
-  M packages/scanner-kit/src/ocr/OCRPipeline.ts
-  M packages/scanner-kit/src/ocr/index.ts
-  M packages/scanner-kit/src/ocr/parsers/StudentParser.ts
-  M packages/scanner-kit/src/ocr/parsers/TableParser.ts
-  M packages/scanner-kit/src/ocr/providers/GoogleVisionProvider.ts
-  M packages/scanner-kit/src/ocr/providers/MLKitProvider.ts
-  M packages/scanner-kit/src/ocr/providers/OpenAIVisionProvider.ts
-  M packages/scanner-kit/src/ocr/types.ts
-  M packages/scanner-kit/src/qr/QRShareButton.tsx
-  M packages/scanner-kit/src/qr/index.ts
-  M packages/scanner-kit/src/screens/QRHandlerScreen.tsx
-  M packages/scanner-kit/src/types.ts
-  M packages/scanner-kit/src/types/optional-native-modules.d.ts
-  M packages/scanner-kit/tsconfig.json
 
 [PKG] schema
-  M packages/schema/input.ts
-  M packages/schema/models.ts
-  M packages/schema/schema.ts
-  M packages/schema/src/generated/orm/schema.ts
-  M packages/schema/src/index.ts
-
-[PKG] scripts
-  M packages/scripts/audit-package-architecture.mjs
-  M packages/scripts/check-classroom-boundaries.mjs
+  M packages/schema/src/generated/orm/input.ts
+  M packages/schema/src/generated/orm/models.ts
 
 [PKG] self
-  M packages/self/eslint.config.mjs
-  M packages/self/package.json
-  M packages/self/scripts/toast-heal.js
-  M packages/self/scripts/v3-heal-v2.js
-  M packages/self/scripts/v3-heal.js
   M packages/self/src/api/dailyContent.ts
-  M packages/self/src/api/index.ts
-  M packages/self/src/api/self.ts
-  M packages/self/src/api/selfFeatureRepository.ts
-  M packages/self/src/api/selfInsightsRepository.ts
-  M packages/self/src/api/wellbeingRepository.ts
   M packages/self/src/components/AcademicHistoryTimeline.tsx
   M packages/self/src/components/BaseSelfView.tsx
-  M packages/self/src/components/BaseSelfView.types.ts
   M packages/self/src/components/BaseSelfView.web.tsx
   M packages/self/src/components/BreathGuide.tsx
   M packages/self/src/components/BreathGuide.web.tsx
   M packages/self/src/components/ClassroomLegacyTimeline.tsx
-  M packages/self/src/components/CommunityPresence.tsx
-  M packages/self/src/components/CommunityPresence.web.tsx
-  M packages/self/src/components/DailyContentCard.tsx
-  M packages/self/src/components/DailyContentCard.web.tsx
-  M packages/self/src/components/DailyRhythm.tsx
-  M packages/self/src/components/DailyRhythm.web.tsx
-  M packages/self/src/components/DecisionJournalSection.tsx
-  M packages/self/src/components/EnergyBarChart.tsx
-  M packages/self/src/components/EnergyBarChart.web.tsx
-  M packages/self/src/components/EnergyForecast.tsx
-  M packages/self/src/components/EnergyForecast.web.tsx
   M packages/self/src/components/FeatureErrorBoundary.tsx
-  M packages/self/src/components/FeatureRegistry.tsx
-  M packages/self/src/components/FireJournal.tsx
-  M packages/self/src/components/FireJournal.web.tsx
-  M packages/self/src/components/GenesisNode.tsx
   M packages/self/src/components/GovernanceHistoryTimeline.tsx
-  M packages/self/src/components/GratitudeGlimmers.tsx
-  M packages/self/src/components/GratitudeGlimmers.web.tsx
-  M packages/self/src/components/ImpactRipplesCard.tsx
-  M packages/self/src/components/ImpactRipplesCard.web.tsx
-  M packages/self/src/components/JoyJar.tsx
-  M packages/self/src/components/JoyJar.web.tsx
-  M packages/self/src/components/MoodLotus.tsx
-  M packages/self/src/components/MoodLotus.web.tsx
-  M packages/self/src/components/MoodPickerCard.tsx
   M packages/self/src/components/MyGradesView.tsx
   M packages/self/src/components/MyGradesView.web.tsx
-  M packages/self/src/components/OrientationCaptureStep.tsx
-  M packages/self/src/components/ProgressTree.tsx
-  M packages/self/src/components/ProgressTree.web.tsx
-  M packages/self/src/components/PulseDashboard.tsx
-  M packages/self/src/components/RemindersManager.tsx
-  M packages/self/src/components/RemindersManager.web.tsx
-  M packages/self/src/components/ResonancePatternCard.tsx
-  M packages/self/src/components/ResonancePatternCard.web.tsx
-  M packages/self/src/components/ResonanceTimeline.tsx
   M packages/self/src/components/SchoolLegacyTimeline.tsx
-  M packages/self/src/components/SleepTracker.tsx
-  M packages/self/src/components/SleepTracker.web.tsx
-  M packages/self/src/components/SpotlightEmpty.tsx
-  M packages/self/src/components/StudentGoals.tsx
-  M packages/self/src/components/StudentGoals.web.tsx
   M packages/self/src/components/TeachingHistoryTimeline.tsx
-  M packages/self/src/components/TimelineEvent.tsx
-  M packages/self/src/components/TomorrowPrep.tsx
-  M packages/self/src/components/TomorrowPrep.web.tsx
-  M packages/self/src/components/VoiceJournaling.tsx
-  M packages/self/src/components/VoiceJournaling.web.tsx
-  M packages/self/src/components/WarmMirrorCard.tsx
-  M packages/self/src/components/WarmMirrorCard.web.tsx
-  M packages/self/src/components/WelcomeModal.tsx
-  M packages/self/src/components/WelcomeModal.web.tsx
-  M packages/self/src/components/WindDownRitual.tsx
   M packages/self/src/components/WindDownRitual.web.tsx
-  M packages/self/src/components/WisdomSeeds.tsx
-  M packages/self/src/components/WisdomSeeds.web.tsx
-  M packages/self/src/components/archive/ShadowAgentDrawer.tsx
-  M packages/self/src/components/archive/ShadowAgentDrawer.web.tsx
-  M packages/self/src/components/index.ts
-  M packages/self/src/constants/selfRegistry.ts
-  M packages/self/src/constants/wellbeing.ts
-  M packages/self/src/hooks/index.ts
-  M packages/self/src/hooks/useCommunityPresence.ts
-  M packages/self/src/hooks/useDecisionJournal.ts
-  M packages/self/src/hooks/useDynamicSelfFeatures.ts
-  M packages/self/src/hooks/useEnergyForecast.ts
-  M packages/self/src/hooks/useFeatureActivity.ts
-  M packages/self/src/hooks/useFireJournal.ts
-  M packages/self/src/hooks/useGratitude.ts
-  M packages/self/src/hooks/useJournalEntries.ts
-  M packages/self/src/hooks/useJourneyData.ts
-  M packages/self/src/hooks/useJoyJar.ts
-  M packages/self/src/hooks/useMoodLogs.ts
   M packages/self/src/hooks/useOrientationInference.ts
-  A packages/self/src/hooks/useProgressTree.ts
-  M packages/self/src/hooks/useSanctuaryRegistry.ts
-  M packages/self/src/hooks/useSleepTracker.ts
-  M packages/self/src/hooks/useStudentGoals.ts
-  A packages/self/src/hooks/useStudentGrades.ts
-  M packages/self/src/hooks/useTimetable.ts
-  M packages/self/src/hooks/useTomorrowPrep.ts
-  M packages/self/src/hooks/useWellbeingEnrichment.ts
-  M packages/self/src/hooks/useWisdom.ts
-  M packages/self/src/index.ts
-  M packages/self/src/screens/PrivacyLedgerScreen.tsx
-  M packages/self/src/screens/SelfScreen.tsx
-  M packages/self/src/screens/SelfScreen.web.tsx
-  M packages/self/src/screens/index.ts
-  M packages/self/src/screens/self/AdminSelfView.tsx
   M packages/self/src/screens/self/FounderSelfView.tsx
-  M packages/self/src/screens/self/FounderSelfView.web.tsx
-  M packages/self/src/screens/self/GuardianSelfView.tsx
-  M packages/self/src/screens/self/GuardianSelfView.web.tsx
-  M packages/self/src/screens/self/PrincipalSelfView.tsx
-  M packages/self/src/screens/self/PrincipalSelfView.web.tsx
   M packages/self/src/screens/self/StudentSelfView.tsx
-  M packages/self/src/screens/self/StudentSelfView.web.tsx
   M packages/self/src/screens/self/TeacherSelfView.tsx
-  M packages/self/src/screens/self/TeacherSelfView.web.tsx
-  M packages/self/src/screens/self/index.ts
-  M packages/self/src/screens/self/index.web.ts
-  M packages/self/src/types/Wellbeing.ts
-  M packages/self/src/types/index.ts
-  M packages/self/src/views/index.ts
-  M packages/self/src/views/sections.tsx
-  M packages/self/tsconfig.json
 
 [PKG] trube-art
-  M packages/trube-art/artifacts/approval-manifest.json
-  M packages/trube-art/eslint.config.mjs
-  M packages/trube-art/nitro.json
-  M packages/trube-art/scripts/generate-approval-artifacts.mjs
-  M packages/trube-art/src/core/color.ts
-  M packages/trube-art/src/core/motif.ts
-  M packages/trube-art/src/core/ornament.ts
-  M packages/trube-art/src/core/presets.ts
-  M packages/trube-art/src/core/render-plan.ts
-  M packages/trube-art/src/core/scores.ts
-  M packages/trube-art/src/core/soul/AuroraSoul.ts
-  M packages/trube-art/src/core/soul/EveningSkySoul.ts
-  M packages/trube-art/src/core/soul/MistSoul.ts
-  M packages/trube-art/src/core/soul/MotifLibrary.ts
-  M packages/trube-art/src/core/soul/OrnamentLibrary.ts
-  M packages/trube-art/src/core/soul/ScoreComposer.ts
-  M packages/trube-art/src/core/soul/SilkSoul.ts
-  M packages/trube-art/src/core/soul/SkymorphicSoul.ts
-  M packages/trube-art/src/core/soul/SoulLibrary.ts
-  M packages/trube-art/src/core/soul/TimeLayer.ts
-  M packages/trube-art/src/core/soul/WaterSurfaceSoul.ts
-  M packages/trube-art/src/core/soul/WaterfallSoul.ts
-  M packages/trube-art/src/core/soul/YoungLeafSoul.ts
-  M packages/trube-art/src/core/soul/compiler.ts
-  M packages/trube-art/src/core/soul/sksl-shaders.ts
-  M packages/trube-art/src/core/soul/tsl.ts
-  M packages/trube-art/src/core/stage.ts
-  M packages/trube-art/src/core/surface.ts
-  M packages/trube-art/src/core/types.ts
-  M packages/trube-art/src/core/useGPUPrewarm.ts
-  M packages/trube-art/src/core/useTrubeFrameLoop.ts
-  M packages/trube-art/src/index.ts
-  M packages/trube-art/src/native/DriverManager.ts
-  M packages/trube-art/src/native/SkiaDriver.ts
-  M packages/trube-art/src/native/TrubeCanvas.tsx
-  M packages/trube-art/src/native/TrubeDriver.nitro.ts
-  M packages/trube-art/src/native/TrubeMotif.tsx
-  M packages/trube-art/src/native/TrubeOrnament.tsx
-  M packages/trube-art/src/native/TrubeProvider.tsx
-  M packages/trube-art/src/native/TrubeStage.tsx
-  M packages/trube-art/src/native/TrubeView.tsx
-  M packages/trube-art/src/native/WebGPUDriver.ts
-  M packages/trube-art/src/native/index.ts
-  M packages/trube-art/src/native/plugin/types.d.ts
-  M packages/trube-art/src/native/plugin/withTrubeArt.ts
-  M packages/trube-art/src/native/renderers/AuroraRenderer.skia.tsx
-  M packages/trube-art/src/native/renderers/AuroraRenderer.vulkan.tsx
-  M packages/trube-art/src/native/renderers/CompatibilityRenderer.tsx
-  M packages/trube-art/src/native/renderers/EveningSkyRenderer.skia.tsx
-  M packages/trube-art/src/native/renderers/EveningSkyRenderer.vulkan.tsx
-  M packages/trube-art/src/native/renderers/MistRenderer.skia.tsx
-  M packages/trube-art/src/native/renderers/MistRenderer.vulkan.tsx
-  M packages/trube-art/src/native/renderers/NativeSubstrateRenderer.tsx
-  M packages/trube-art/src/native/renderers/PerformanceOverlay.tsx
-  M packages/trube-art/src/native/renderers/SilkRenderer.skia.tsx
-  M packages/trube-art/src/native/renderers/SilkRenderer.vulkan.tsx
-  M packages/trube-art/src/native/renderers/SkymorphicRenderer.skia.tsx
-  M packages/trube-art/src/native/renderers/SkymorphicRenderer.vulkan.tsx
-  M packages/trube-art/src/native/renderers/SoulLibrary.ts
-  M packages/trube-art/src/native/renderers/UnifiedRenderer.tsx
-  M packages/trube-art/src/native/renderers/WaterSurfaceRenderer.skia.tsx
-  M packages/trube-art/src/native/renderers/WaterSurfaceRenderer.vulkan.tsx
-  M packages/trube-art/src/native/renderers/WaterfallRenderer.skia.tsx
-  M packages/trube-art/src/native/renderers/WaterfallRenderer.vulkan.tsx
-  M packages/trube-art/src/native/renderers/YoungLeafRenderer.skia.tsx
-  M packages/trube-art/src/native/renderers/YoungLeafRenderer.vulkan.tsx
-  M packages/trube-art/src/native/renderers/types.ts
   M packages/trube-art/src/screens/TrubeLabScreen.tsx
-  M packages/trube-art/tsconfig.json
 
 [PKG] typescript-config
   M packages/typescript-config/base.json
-  M packages/typescript-config/nextjs.json
-  M packages/typescript-config/react-library.json
-
-[PKG] types-shim
-  M packages/types-shim/index.d.ts
-  M packages/types-shim/tsconfig.json
 
 [PKG] ui
-  M packages/ui/src/archive/LotusPetalFAB.complex.tsx
-  M packages/ui/src/components-legacy/box/index.tsx
-  M packages/ui/src/components-legacy/center/index.tsx
-  M packages/ui/src/components-legacy/divider/index.tsx
-  M packages/ui/src/components-legacy/hstack/index.tsx
-  M packages/ui/src/components-legacy/input/index.tsx
-  M packages/ui/src/components-legacy/modal/index.tsx
-  M packages/ui/src/components-legacy/vstack/index.tsx
-  M packages/ui/src/components-native/LivingCard.tsx
-  M packages/ui/src/components/AccountPinModal.tsx
-  M packages/ui/src/components/AdaptiveLayout.tsx
-  M packages/ui/src/components/BreathAnimation.tsx
-  M packages/ui/src/components/BreathingLoader.tsx
-  M packages/ui/src/components/CollectionCard.tsx
+  M packages/ui/src/__tests__/Input.test.tsx
+  M packages/ui/src/components-native/NoiseOverlay.web.tsx
   M packages/ui/src/components/ConflictResolver.tsx
   M packages/ui/src/components/DeviceAccountManager.tsx
   M packages/ui/src/components/DeviceSecurityCenter.tsx
-  M packages/ui/src/components/ErrorBoundary.tsx
-  M packages/ui/src/components/FounderGlow.tsx
-  M packages/ui/src/components/GlobalHeader.tsx
-  M packages/ui/src/components/IdentityCard.tsx
-  M packages/ui/src/components/InteractiveRadarChart.tsx
-  M packages/ui/src/components/InternalBrowser.tsx
-  M packages/ui/src/components/InternalBrowser.web.tsx
-  M packages/ui/src/components/JourneyHistoryCard.tsx
-  M packages/ui/src/components/LifecycleMonitor.tsx
-  M packages/ui/src/components/LotusDropdown.tsx
-  M packages/ui/src/components/LotusLoader.tsx
-  M packages/ui/src/components/LotusPetalFAB.tsx
   M packages/ui/src/components/NotificationDrawer.tsx
-  M packages/ui/src/components/NotificationSettingsPanel.tsx
-  M packages/ui/src/components/PollWidget.tsx
-  M packages/ui/src/components/PredictiveButton.tsx
-  M packages/ui/src/components/QRCodeGenerator.tsx
-  M packages/ui/src/components/ResonantHeatmap.tsx
-  M packages/ui/src/components/SafeButton.tsx
-  M packages/ui/src/components/SanctuaryBackground.tsx
-  M packages/ui/src/components/SanctuaryChip.tsx
-  M packages/ui/src/components/SanctuaryFlashList.tsx
-  M packages/ui/src/components/SanctuaryFlashList.web.tsx
-  M packages/ui/src/components/SanctuaryInput.tsx
-  M packages/ui/src/components/SanctuaryModal.tsx
-  M packages/ui/src/components/SanctuaryModal.web.tsx
-  M packages/ui/src/components/SanctuaryNudge.tsx
   M packages/ui/src/components/SanctuaryProgressBar.tsx
   M packages/ui/src/components/SanctuarySignal.tsx
-  M packages/ui/src/components/SanctuaryToast.tsx
-  M packages/ui/src/components/ScreenWrapper.web.tsx
-  M packages/ui/src/components/SkeletonLoader.tsx
   M packages/ui/src/components/SkeletonLoader.web.tsx
-  M packages/ui/src/components/SmartShelf.tsx
-  M packages/ui/src/components/TemporalNavigator.tsx
-  M packages/ui/src/components/TemporalPilot.tsx
-  M packages/ui/src/components/TemporalProvider.tsx
-  M packages/ui/src/components/WebScreenHeader.web.tsx
-  M packages/ui/src/components/index.ts
   M packages/ui/src/components/media/AssetCreationPortal.tsx
-  M packages/ui/src/components/media/VideoPlayer.tsx
-  M packages/ui/src/components/media/VideoPlayer.web.tsx
-  M packages/ui/src/components/ui/portal/index.tsx
-  M packages/ui/src/components/ui/toast/index.tsx
-  M packages/ui/src/components/workspace/CanvasSurfaceCard.tsx
-  M packages/ui/src/components/workspace/CanvasZoneColumn.tsx
-  M packages/ui/src/components/workspace/DraggableCanvasSurface.tsx
-  M packages/ui/src/components/workspace/shared.tsx
-  M packages/ui/src/context/EnvironmentContext.tsx
-  M packages/ui/src/context/ExternalLinkContext.tsx
-  M packages/ui/src/hooks/index.ts
-  M packages/ui/src/hooks/useAccessibility.ts
-  M packages/ui/src/hooks/useNotificationPreferences.ts
-  M packages/ui/src/hooks/useSafeAction.ts
-  M packages/ui/src/hooks/useTheme.ts
-  M packages/ui/src/index.ts
-  M packages/ui/src/primitives.ts
-  M packages/ui/src/providers/ErrorResolutionProvider.tsx
+  M packages/ui/src/components/ui/actionsheet/index.tsx
+  M packages/ui/src/context/utils.ts
+  M packages/ui/src/hooks/useDemoBridge.ts
   M packages/ui/src/providers/ToastProvider.tsx
-  M packages/ui/src/qr/QRShareButton.tsx
+  A packages/ui/src/screens/AppSettingsScreen.shared.tsx
   M packages/ui/src/screens/AppSettingsScreen.tsx
   M packages/ui/src/screens/AppSettingsScreen.web.tsx
   M packages/ui/src/screens/AuthScreen.tsx
@@ -2165,156 +838,54 @@ rc/utils/temporal.ts
   M packages/ui/src/screens/OnboardingScreen.tsx
   M packages/ui/src/screens/OnboardingScreen.web.tsx
   M packages/ui/src/screens/OnboardingWrapper.tsx
-  M packages/ui/src/screens/WelcomeScreen.tsx
-  M packages/ui/src/screens/WelcomeScreen.web.tsx
-
-[PKG] workforce
-  M packages/workforce/eslint.config.mjs
-  M packages/workforce/src/WorkforceShell.tsx
-  M packages/workforce/src/index.ts
-  M packages/workforce/tsconfig.json
+  M packages/ui/src/svelte/SvelteForm.svelte
+  M packages/ui/src/utils/DeviceUtils.ts
+  M packages/ui/src/utils/SanctuaryLocation.ts
+  M packages/ui/src/utils/linking.ts
+  A packages/ui/src/utils/linking.web.ts
 
 [TOOL] Engineering & Tooling
-  M .size-limit.json
   M package.json
   M pnpm-lock.yaml
-  M scripts/analyze-contrast.mjs
-  M scripts/architect-mapper.mjs
-  M scripts/audit-bundle-leak.mjs
-  M scripts/audit-colors.js
-  M scripts/audit-deps.js
-  M scripts/audit-export-integrity.mjs
-  M scripts/audit-feature-fidelity.mjs
-  M scripts/audit-feature-flags.mjs
-  M scripts/audit-imports.mjs
   M scripts/audit-package-architecture.mjs
-  M scripts/audit-ui-api.mjs
-  M scripts/bridge-schema-zod.mjs
-  M scripts/check-classroom-boundaries.mjs
-  M scripts/check-hygiene.mjs
-  M scripts/check-identity-alignment.mjs
-  A scripts/check-monorepo-boundaries.mjs
-  M scripts/check-schema-drift.mjs
-  M scripts/check-self-boundaries.mjs
+  M scripts/check-monorepo-boundaries.mjs
   M scripts/check-shiny-tools.mjs
-  M scripts/debug-metro-id.mjs
-  M scripts/find-native-leaks.mjs
-  M scripts/fix-package-scripts.mjs
-  M scripts/fix-syntax.js
   M scripts/generate-debt-lens.mjs
-  M scripts/generate-growth-signals.mjs
-  M scripts/generate-inventory.mjs
   M scripts/generate-luminosity-lens.mjs
-  M scripts/generate-readme-usage.mjs
   M scripts/generate-skeleton-lens.mjs
   M scripts/harden-monorepo.mjs
-  M scripts/heal-admin-icons.mjs
-  M scripts/heal-admin-subscriptions.mjs
-  M scripts/heal-architecture.mjs
-  M scripts/heal-icons.mjs
-  M scripts/i18n-fallback-policy-check.mjs
-  M scripts/i18n-key-coverage-check.mjs
-  M scripts/i18n/audit-i18n.js
-  M scripts/i18n/audit-keys.mjs
-  M scripts/i18n/check-inline-fallbacks.js
-  M scripts/mcp-call.mjs
-  M scripts/mcp-proxy.mjs
-  M scripts/normalize-imports.mjs
-  M scripts/purge-stale-artifacts.mjs
-  M scripts/recovery/fix-gurudevi-mobile-parse.mjs
-  M scripts/refactor/analyze-errors.mjs
-  M scripts/refactor/apply-web-migration-codemod.mjs
-  M scripts/refactor/check-barrel-imports.mjs
-  M scripts/refactor/check-web-boundaries.mjs
-  M scripts/refactor/debug-parse.mjs
-  M scripts/refactor/find-app-domain-imports.mjs
-  M scripts/refactor/fix-userid-typos.mjs
-  M scripts/refactor/generate-barrels.mjs
-  M scripts/refactor/generate-web-migration-manifest.mjs
-  M scripts/refactor/gluestack-v3-migrator.mjs
   M scripts/refactor/identity-migration.mjs
-  M scripts/refactor/mapping-sweep.mjs
-  M scripts/refactor/relocate-imports.mjs
-  M scripts/refactor/repair-core-subpath-imports.mjs
-  M scripts/refactor/repair-ui-subpath-imports.mjs
   M scripts/refactor/rewrite-ui-root-imports.mjs
   M scripts/refactor/sovereign-cycle-checker.mjs
   M scripts/refactor/sovereign-healer.mjs
   M scripts/refactor/sovereign-repair-engine.mjs
   M scripts/refactor/sovereign-sentinel-v2.mjs
-  M scripts/refactor/sweep-sx.mjs
-  M scripts/refactor/sweep-typography.mjs
-  M scripts/refactor/universal-sweep.mjs
-  M scripts/report-cognitive-load.mjs
-  M scripts/reports/purge_stale_artifacts_2026-04-24T16-02-32-634Z.json
-  M scripts/scaffold-feature-context.mjs
-  M scripts/scaffold-mocks.mjs
-  M scripts/setup-mcp.ts
   M scripts/shiny-sink-audit.mjs
   M scripts/simulate-impact.mjs
-  M scripts/smart-changeset.mjs
   M scripts/sovereign-audit.mjs
   M scripts/sovereign-ui-healer.mjs
   M scripts/surgical-check.mjs
-  M scripts/surgical-repair-v2.js
-  M scripts/surgical-repair.js
-  M scripts/test-sleekness.ts
-  M scripts/trace-deletion-impact.mjs
-  M scripts/ts-fix.mjs
-  M scripts/unicode-shield.mjs
-  M scripts/utils/execution.mjs
-  M tsconfig.json
 
 [MISC] Miscellaneous Files
-  M .changeset/config.json
   M .dependency-cruiser.cjs
-  M .github/maintainer/config.json
-  M .github/maintainer/index/graph.json
-  M .github/maintainer/index/items.json
-  M .github/maintainer/semantics.generated.json
-  M .github/maintainer/state.json
-  M .lintstagedrc.cjs
-  M .pnpmfile.cjs
-  M app.json
-  M commitlint.config.cjs
-  M dagger.ts
-  M docs/.obsidian/core-plugins.json
-  M docs/.obsidian/workspace.json
-  A docs/GURUDEVI_ACTOR_RESOURCE_MATRIX_AUDIT_2026-05-16.md
-  A docs/GURUDEVI_ARCHITECTURE_AUDIT_2026-05-16.md
-  A docs/GURUDEVI_AUTHORIZATION_ARCHITECTURE_AUDIT_2026-05-16.md
-  A docs/GURUDEVI_OFFLINE_IAM_AND_WRITE_SAFETY_AUDIT_2026-05-20.md
-  M docs/SOVEREIGN_IDENTITY_FABRIC_2026.md
-  M docs_general/.obsidian/core-plugins.json
-  M docs_general/.obsidian/graph.json
-  M docs_general/.obsidian/workspace.json
-  M eslint.config.js
-  M knip.json
-  M renovate.json
-  M reports/audit_feature_fidelity_2026-05-08T18-54-57-919Z.json
-  M reports/audit_feature_fidelity_2026-05-08T18-54-58-307Z.json
-  M reports/push_audit.md
-  M runbyte.json
+  A docs/LOCAL_DEVELOPMENT_PLAYBOOK.md
+  A docs/OFFLINE_FIRST_SUPABASE_GATEWAY_MOSCOW.md
+  M docs/SOVEREIGN_REBAC_DEVELOPER_GUIDE.md
+  A docs/architecture/AUTH_ONBOARDING_HIGHWAY_BOUNDARIES.md
+  A docs/architecture/DATA_HIGHWAYS_AND_SYNC_BOUNDARIES.md
+  A docs/architecture/DATA_HIGHWAYS_MIGRATION_CHECKLIST.md
+  A docs/architecture/bootstrap-and-entrypoint-standard.md
+  M docs/guides/biome.md
   M scratch/check-all-cycles-deep.mjs
-  M scratch/check-global-cycles.mjs
   M scratch/check_balance.js
-  M scratch/convert-aliases.mjs
-  M scratch/debug_regex.js
-  M scratch/debug_schema.ts
-  M scratch/fix-rel-imports-v3.mjs
-  M scratch/fix-rel-imports.mjs
-  M scratch/full_deps.json
-  M scratch/migrate-ui-imports.mjs
-  M scratch/test-proxy-env.mjs
-  M scratch/test-scout.mjs
-  M scratch/test-spaces.mjs
-  M scratch/test-spawn.mjs
-  M scratch/test-zod.ts
-  M scratch/test_audit_error.mjs
-  M scratch/verify_fix.ts[22m
+  D tmp/depcruise-ui-admin.json
+  D tmp/depcruise.json
+  D tmp/depcruise_utf8.json[22m
 [31m✖[39m   body's lines must not be longer than 100 characters [90m[body-max-line-length][39m
+[31m✖[39m   subject may not be empty [90m[subject-empty][39m
+[31m✖[39m   type may not be empty [90m[type-empty][39m
 
-[1m[31m✖[39m   found 1 problems, 0 warnings[22m
+[1m[31m✖[39m   found 3 problems, 0 warnings[22m
 ⓘ   Get help: https://github.com/conventional-changelog/commitlint/#what-is-commitlint
 
 
@@ -2323,1827 +894,544 @@ rc/utils/temporal.ts
 > pnpm turbo run lint
 
 
-• turbo 2.9.4
+• turbo 2.9.14
 
 
 
    • Packages in scope: @intuitui-labs/form-builder-engine, @intuitui-labs/lk-edu-geo, @repo/accounting, @repo/admin, @repo/ai, @repo/analytics, @repo/classroom, @repo/community, @repo/core, @repo/database, @repo/eslint-config, @repo/form-builder, @repo/graphics, @repo/library, @repo/payments, @repo/people, @repo/platform-mcp, @repo/policies, @repo/profile, @repo/sanctuary-api, @repo/scanner-kit, @repo/schema, @repo/self, @repo/types-shim, @repo/typescript-config, @repo/ui, @repo/workforce, apps-edlove-web, apps-gurudevi-marketing-web, apps-intuitui-web, apps-neevsk-web, gurudevi-mobile
+
    • Running lint in 32 packages
    • Remote caching disabled
 
 
-@repo/analytics:lint:biome: cache miss, executing e65f8985faf273f0
+@intuitui-labs/lk-edu-geo:lint:biome: cache miss, executing 89cc58e04ee1f243
 
-gurudevi-mobile:lint:biome: cache miss, executing 221198a5a71b1d0e
+@repo/database:lint:biome: cache miss, executing 416548f91048cd24
 
-apps-edlove-web:lint:biome: cache miss, executing ab56ba433eea2b7e
+@repo/payments:lint:biome: cache miss, executing f85d17b8ff9509c8
 
-@repo/payments:lint:biome: cache miss, executing c1044823121b291d
+@repo/workforce:lint:biome: cache miss, executing 078bb6467d713bcf
 
-@repo/community:lint:biome: cache miss, executing 42bf34c1fdf1e64e
+@repo/ui:lint:biome: cache miss, executing ebbe0ed93da22c56
 
-@repo/types-shim:lint:biome: cache miss, executing 868c3aae2607a4aa
+@repo/types-shim:lint:biome: cache miss, executing 9d0b60a5f4c24eab
 
-@intuitui-labs/lk-edu-geo:lint:biome: cache miss, executing 0e99c8b98b056510
+@repo/core:lint:biome: cache miss, executing e0841c39d4b6f52b
 
-@repo/workforce:lint:biome: cache miss, executing f6d74426fede0f2e
-apps-intuitui-web:lint:biome: cache miss, executing 6624bdda6f03c817
+apps-gurudevi-marketing-web:lint:biome: cache miss, executing c9a45d47022fb6e0
 
-@repo/profile:lint:biome: cache miss, executing d7c8fc653714c334
+@repo/library:lint:biome: cache miss, executing fa3f7412a6c4a95e
 
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: > apps-intuitui-web@0.0.2 lint:biome C:\Users\Naween\projects\polymath-platform\apps\intuitui-web
-apps-intuitui-web:lint:biome: > biome check .
-apps-intuitui-web:lint:biome: 
+@repo/self:lint:biome: cache miss, executing edff04596beb9547
 
-@repo/workforce:lint:biome: 
-@repo/workforce:lint:biome: > @repo/workforce@0.0.2 lint:biome C:\Users\Naween\projects\polymath-platform\packages\workforce
-@repo/workforce:lint:biome: > biome check .
-@repo/workforce:lint:biome: 
+@repo/ui:lint:biome: 
+@repo/ui:lint:biome: > @repo/ui@1.1.0 lint:biome C:\Users\Naween\projects\polymath-platform\packages\ui
+@repo/ui:lint:biome: > biome check .
+@repo/ui:lint:biome: 
 
-@repo/types-shim:lint:biome: 
-
-@repo/types-shim:lint:biome: > @repo/types-shim@0.0.2 lint:biome C:\Users\Naween\projects\polymath-platform\packages\types-shim
-
-@repo/types-shim:lint:biome: > biome check .
-@repo/types-shim:lint:biome: 
-@repo/analytics:lint:biome: 
-
-@repo/analytics:lint:biome: > @repo/analytics@1.0.0 lint:biome C:\Users\Naween\projects\polymath-platform\packages\analytics
-@repo/analytics:lint:biome: > biome check .
-@repo/analytics:lint:biome: 
-
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: > @repo/profile@1.0.0 lint:biome C:\Users\Naween\projects\polymath-platform\packages\profile
-@repo/profile:lint:biome: > biome check .
-@repo/profile:lint:biome: 
+@repo/database:lint:biome: 
+@repo/database:lint:biome: > @repo/database@1.0.1 lint:biome C:\Users\Naween\projects\polymath-platform\packages\database
+@repo/database:lint:biome: > biome check .
+@repo/database:lint:biome: 
 
 @repo/payments:lint:biome: 
 @repo/payments:lint:biome: > @repo/payments@0.0.2 lint:biome C:\Users\Naween\projects\polymath-platform\packages\payments
 @repo/payments:lint:biome: > biome check .
 @repo/payments:lint:biome: 
+@repo/core:lint:biome: 
+@repo/core:lint:biome: > @repo/core@0.1.0 lint:biome C:\Users\Naween\projects\polymath-platform\packages\core
+@repo/core:lint:biome: > biome check .
+@repo/core:lint:biome: 
+@repo/library:lint:biome: 
+@repo/library:lint:biome: > @repo/library@1.0.0 lint:biome C:\Users\Naween\projects\polymath-platform\packages\library
+@repo/library:lint:biome: > biome check .
+@repo/library:lint:biome: 
 
 @intuitui-labs/lk-edu-geo:lint:biome: 
 @intuitui-labs/lk-edu-geo:lint:biome: > @intuitui-labs/lk-edu-geo@1.0.1 lint:biome C:\Users\Naween\projects\polymath-platform\packages\lk-edu-geo
 @intuitui-labs/lk-edu-geo:lint:biome: > biome check .
 @intuitui-labs/lk-edu-geo:lint:biome: 
 
-gurudevi-mobile:lint:biome: 
+@repo/self:lint:biome: 
+@repo/self:lint:biome: > @repo/self@1.0.0 lint:biome C:\Users\Naween\projects\polymath-platform\packages\self
+@repo/self:lint:biome: > biome check .
+@repo/self:lint:biome: 
 
-gurudevi-mobile:lint:biome: > gurudevi-mobile@1.1.0 lint:biome C:\Users\Naween\projects\polymath-platform\apps\gurudevi-mobile
-
-gurudevi-mobile:lint:biome: > biome check .
-
-gurudevi-mobile:lint:biome: 
-
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome: > apps-edlove-web@0.0.2 lint:biome C:\Users\Naween\projects\polymath-platform\apps\edlove-web
-apps-edlove-web:lint:biome: > biome check .
-apps-edlove-web:lint:biome: 
-
-@repo/community:lint:biome: 
-@repo/community:lint:biome: > @repo/community@1.0.0 lint:biome C:\Users\Naween\projects\polymath-platform\packages\community
-@repo/community:lint:biome: > biome check .
-@repo/community:lint:biome: 
-
-@repo/analytics:lint:biome: The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
-
-@repo/analytics:lint:biome: Diagnostics not shown: 71.
-
-@repo/analytics:lint:biome: Checked 86 files in 438ms. No fixes applied.
-
-@repo/analytics:lint:biome: Found 4 errors.
-
-@repo/analytics:lint:biome: Found 84 warnings.
-
-@repo/analytics:lint:biome: Found 3 infos.
-
-@repo/analytics:lint:biome: src\components\AnalyticsProvider.d.ts:3:39 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     1 │ import { type ReactNode } from 'react';
-@repo/analytics:lint:biome:     2 │ interface AnalyticsContextProps {
-
-@repo/analytics:lint:biome:   > 3 │   track: (event: string, properties?: any) => void;
-@repo/analytics:lint:biome:       │                                       ^^^
-@repo/analytics:lint:biome:     4 │   identify: (userId: string, properties?: any) => void;
-@repo/analytics:lint:biome:     5 │   screen: (name: string, properties?: any) => void;
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome: src\components\AnalyticsProvider.d.ts:4:43 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     2 │ interface AnalyticsContextProps {
-@repo/analytics:lint:biome:     3 │   track: (event: string, properties?: any) => void;
-@repo/analytics:lint:biome:   > 4 │   identify: (userId: string, properties?: any) => void;
-@repo/analytics:lint:biome:       │                                           ^^^
-@repo/analytics:lint:biome:     5 │   screen: (name: string, properties?: any) => void;
-@repo/analytics:lint:biome:     6 │   reset: () => void;
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome: src\components\AnalyticsProvider.d.ts:5:39 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     3 │   track: (event: string, properties?: any) => void;
-@repo/analytics:lint:biome:     4 │   identify: (userId: string, properties?: any) => void;
-@repo/analytics:lint:biome:   > 5 │   screen: (name: string, properties?: any) => void;
-@repo/analytics:lint:biome:       │                                       ^^^
-@repo/analytics:lint:biome:     6 │   reset: () => void;
-@repo/analytics:lint:biome:     7 │ }
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-
-@repo/analytics:lint:biome: src\components\AnalyticsProvider.tsx:5:39 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     4 │ interface AnalyticsContextProps {
-
-@repo/analytics:lint:biome:   > 5 │   track: (event: string, properties?: any) => void;
-@repo/analytics:lint:biome:       │                                       ^^^
-@repo/analytics:lint:biome:     6 │   identify: (userId: string, properties?: any) => void;
-@repo/analytics:lint:biome:     7 │   screen: (name: string, properties?: any) => void;
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome: src\components\AnalyticsProvider.tsx:6:43 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     4 │ interface AnalyticsContextProps {
-@repo/analytics:lint:biome:     5 │   track: (event: string, properties?: any) => void;
-@repo/analytics:lint:biome:   > 6 │   identify: (userId: string, properties?: any) => void;
-@repo/analytics:lint:biome:       │                                           ^^^
-@repo/analytics:lint:biome:     7 │   screen: (name: string, properties?: any) => void;
-@repo/analytics:lint:biome:     8 │   reset: () => void;
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome: src\components\AnalyticsProvider.tsx:7:39 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     5 │   track: (event: string, properties?: any) => void;
-@repo/analytics:lint:biome:     6 │   identify: (userId: string, properties?: any) => void;
-@repo/analytics:lint:biome:   > 7 │   screen: (name: string, properties?: any) => void;
-@repo/analytics:lint:biome:       │                                       ^^^
-@repo/analytics:lint:biome:     8 │   reset: () => void;
-@repo/analytics:lint:biome:     9 │ }
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome: src\engine\GPACalculator.d.ts:78:22 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/analytics:lint:biome:   
-
-@repo/analytics:lint:biome:     76 │       id: string;
-@repo/analytics:lint:biome:     77 │       marks: number;
-@repo/analytics:lint:biome:   > 78 │       [key: string]: any;
-@repo/analytics:lint:biome:        │                      ^^^
-@repo/analytics:lint:biome:     79 │     }[],
-@repo/analytics:lint:biome:     80 │   ): {
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome: src\engine\GPACalculator.d.ts:84:20 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     82 │     marks: number;
-@repo/analytics:lint:biome:     83 │     rank: number;
-@repo/analytics:lint:biome:   > 84 │     [key: string]: any;
-@repo/analytics:lint:biome:        │                    ^^^
-@repo/analytics:lint:biome:     85 │   }[];
-@repo/analytics:lint:biome:     86 │ }
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome: src\engine\GPACalculator.ts:226:57 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     224 │    */
-@repo/analytics:lint:biome:     225 │   public calculateRanks(
-@repo/analytics:lint:biome:   > 226 │     grades: { id: string; marks: number; [key: string]: any }[],
-@repo/analytics:lint:biome:         │                                                         ^^^
-@repo/analytics:lint:biome:     227 │   ): { id: string; marks: number; rank: number; [key: string]: any }[] {
-@repo/analytics:lint:biome:     228 │     const sorted = [...grades].sort((a, b) => b.marks - a.marks);
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome: src\engine\GPACalculator.ts:227:64 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     225 │   public calculateRanks(
-@repo/analytics:lint:biome:     226 │     grades: { id: string; marks: number; [key: string]: any }[],
-@repo/analytics:lint:biome:   > 227 │   ): { id: string; marks: number; rank: number; [key: string]: any }[] {
-@repo/analytics:lint:biome:         │                                                                ^^^
-@repo/analytics:lint:biome:     228 │     const sorted = [...grades].sort((a, b) => b.marks - a.marks);
-@repo/analytics:lint:biome:     229 │     return grades.map((grade) => {
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome: src\engine\PerformanceAnalyzer.d.ts:3:28 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     1 │ import { type ClassAnalytics, type StudentPerformanceMetrics } from '../types/AnalyticsTypes';
-@repo/analytics:lint:biome:     2 │ export interface DatabaseClient {
-@repo/analytics:lint:biome:   > 3 │   from: (table: string) => any;
-@repo/analytics:lint:biome:       │                            ^^^
-@repo/analytics:lint:biome:     4 │ }
-@repo/analytics:lint:biome:     5 │ export declare class PerformanceAnalyzer {
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome: src\engine\PostHogAnalytics.d.ts:16:52 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     14 │     },
-@repo/analytics:lint:biome:     15 │   ): Promise<void>;
-@repo/analytics:lint:biome:   > 16 │   track(event: string, properties?: Record<string, any>): void;
-@repo/analytics:lint:biome:        │                                                    ^^^
-@repo/analytics:lint:biome:     17 │   identify(userId: string, properties?: Record<string, any>): void;
-@repo/analytics:lint:biome:     18 │   screen(name: string, properties?: Record<string, any>): void;
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome: src\engine\PostHogAnalytics.d.ts:17:56 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     15 │   ): Promise<void>;
-@repo/analytics:lint:biome:     16 │   track(event: string, properties?: Record<string, any>): void;
-@repo/analytics:lint:biome:   > 17 │   identify(userId: string, properties?: Record<string, any>): void;
-@repo/analytics:lint:biome:        │                                                        ^^^
-@repo/analytics:lint:biome:     18 │   screen(name: string, properties?: Record<string, any>): void;
-@repo/analytics:lint:biome:     19 │   reset(): void;
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome: src\engine\PostHogAnalytics.d.ts:18:52 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   ! Unexpected any. Specify a different type.
-
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     16 │   track(event: string, properties?: Record<string, any>): void;
-@repo/analytics:lint:biome:     17 │   identify(userId: string, properties?: Record<string, any>): void;
-
-@repo/analytics:lint:biome:   > 18 │   screen(name: string, properties?: Record<string, any>): void;
-@repo/analytics:lint:biome:        │                                                    ^^^
-@repo/analytics:lint:biome:     19 │   reset(): void;
-@repo/analytics:lint:biome:     20 │   capture(event: string, properties?: Record<string, any>): void;
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome: src\engine\PostHogAnalytics.d.ts:20:54 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     18 │   screen(name: string, properties?: Record<string, any>): void;
-@repo/analytics:lint:biome:     19 │   reset(): void;
-@repo/analytics:lint:biome:   > 20 │   capture(event: string, properties?: Record<string, any>): void;
-@repo/analytics:lint:biome:        │                                                      ^^^
-@repo/analytics:lint:biome:     21 │   flush(): Promise<void>;
-@repo/analytics:lint:biome:     22 │ }
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome: src\engine\PostHogAnalytics.native.ts:5:31 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   ! Unexpected any. Specify a different type.
-
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     3 │ interface AnalyticsEvent {
-@repo/analytics:lint:biome:     4 │   event: string;
-@repo/analytics:lint:biome:   > 5 │   properties?: Record<string, any>;
-@repo/analytics:lint:biome:       │                               ^^^
-@repo/analytics:lint:biome:     6 │ }
-@repo/analytics:lint:biome:     7 │ 
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome: src\components\AnalyticsChart.tsx:102:21 lint/suspicious/noArrayIndexKey ━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   × Avoid using the index of an array as key property in an element.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     100 │       <HStack className="justify-around gap-3">
-
-@repo/analytics:lint:biome:     101 │         {series.map((entry, index) => (
-@repo/analytics:lint:biome:   > 102 │           <Box key={index} className="flex-1 items-center">
-@repo/analytics:lint:biome:         │                     ^^^^^
-@repo/analytics:lint:biome:     103 │             <Text
-@repo/analytics:lint:biome:     104 │               className="mb-2 text-center text-xs font-semibold"
-@repo/analytics:lint:biome:   
-
-@repo/analytics:lint:biome:   i This is the source of the key value.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:      99 │       ) : null}
-
-@repo/analytics:lint:biome:     100 │       <HStack className="justify-around gap-3">
-@repo/analytics:lint:biome:   > 101 │         {series.map((entry, index) => (
-@repo/analytics:lint:biome:         │                             ^^^^^
-@repo/analytics:lint:biome:     102 │           <Box key={index} className="flex-1 items-center">
-@repo/analytics:lint:biome:     103 │             <Text
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i The order of the items may change, and this also affects performances and component state.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i Check the React documentation. 
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome: src\components\GPAInsights.tsx:108:28 lint/suspicious/noArrayIndexKey ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   × Avoid using the index of an array as key property in an element.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     106 │             {generateRecommendations(currentGPA, trendDirection, gapToTarget).map(
-@repo/analytics:lint:biome:     107 │               (recommendation, index) => (
-@repo/analytics:lint:biome:   > 108 │                 <Text key={index} className="text-sm leading-5" style={{ color: colors.text }}>
-@repo/analytics:lint:biome:         │                            ^^^^^
-@repo/analytics:lint:biome:     109 │                   • {recommendation}
-@repo/analytics:lint:biome:     110 │                 </Text>
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i This is the source of the key value.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     105 │           <VStack className="gap-2">
-@repo/analytics:lint:biome:     106 │             {generateRecommendations(currentGPA, trendDirection, gapToTarget).map(
-@repo/analytics:lint:biome:   > 107 │               (recommendation, index) => (
-
-@repo/analytics:lint:biome:         │                                ^^^^^
-
-@repo/analytics:lint:biome:     108 │                 <Text key={index} className="text-sm leading-5" style={{ color: colors.text }}>
-@repo/analytics:lint:biome:     109 │                   • {recommendation}
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i The order of the items may change, and this also affects performances and component state.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i Check the React documentation. 
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome: src\components\PerformanceDashboard.tsx:125:28 lint/suspicious/noArrayIndexKey ━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   × Avoid using the index of an array as key property in an element.
-
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     123 │             <VStack className="gap-2">
-@repo/analytics:lint:biome:     124 │               {insights.map((insight, index) => (
-@repo/analytics:lint:biome:   > 125 │                 <Text key={index} className="text-sm leading-5" style={{ color: themeColors.text }}>
-@repo/analytics:lint:biome:         │                            ^^^^^
-@repo/analytics:lint:biome:     126 │                   • {insight}
-@repo/analytics:lint:biome:     127 │                 </Text>
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i This is the source of the key value.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     122 │             </Text>
-@repo/analytics:lint:biome:     123 │             <VStack className="gap-2">
-
-@repo/analytics:lint:biome:   > 124 │               {insights.map((insight, index) => (
-@repo/analytics:lint:biome:         │                                       ^^^^^
-@repo/analytics:lint:biome:     125 │                 <Text key={index} className="text-sm leading-5" style={{ color: themeColors.text }}>
-@repo/analytics:lint:biome:     126 │                   • {insight}
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i The order of the items may change, and this also affects performances and component state.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i Check the React documentation. 
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-
-@repo/analytics:lint:biome: src\components\PerformanceDashboard.tsx:140:28 lint/suspicious/noArrayIndexKey ━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   × Avoid using the index of an array as key property in an element.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     138 │             <VStack className="gap-2">
-@repo/analytics:lint:biome:     139 │               {recommendations.map((recommendation, index) => (
-@repo/analytics:lint:biome:   > 140 │                 <Text key={index} className="text-sm leading-5" style={{ color: themeColors.text }}>
-@repo/analytics:lint:biome:         │                            ^^^^^
-@repo/analytics:lint:biome:     141 │                   {index + 1}. {recommendation}
-@repo/analytics:lint:biome:     142 │                 </Text>
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i This is the source of the key value.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:     137 │             </Text>
-@repo/analytics:lint:biome:     138 │             <VStack className="gap-2">
-@repo/analytics:lint:biome:   > 139 │               {recommendations.map((recommendation, index) => (
-@repo/analytics:lint:biome:         │                                                     ^^^^^
-@repo/analytics:lint:biome:     140 │                 <Text key={index} className="text-sm leading-5" style={{ color: themeColors.text }}>
-@repo/analytics:lint:biome:     141 │                   {index + 1}. {recommendation}
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i The order of the items may change, and this also affects performances and component state.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome:   i Check the React documentation. 
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome: check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/analytics:lint:biome: 
-@repo/analytics:lint:biome:   × Some errors were emitted while running checks.
-@repo/analytics:lint:biome:   
-@repo/analytics:lint:biome: 
-
-@repo/workforce:lint:biome: eslint.config.mjs format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/workforce:lint:biome: 
+@repo/workforce:lint:biome: > @repo/workforce@0.0.2 lint:biome C:\Users\Naween\projects\polymath-platform\packages\workforce
+@repo/workforce:lint:biome: > biome check .
 @repo/workforce:lint:biome: 
 
-@repo/workforce:lint:biome: Checked 6 files in 148ms. No fixes applied.
-@repo/workforce:lint:biome: Found 1 error.
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: > apps-gurudevi-marketing-web@0.0.2 lint:biome C:\Users\Naween\projects\polymath-platform\apps\gurudevi-marketingWeb
 
-@repo/workforce:lint:biome:   × Formatter would have printed the following content:
-@repo/workforce:lint:biome:   
-@repo/workforce:lint:biome:     1   │ - import·{·config·}·from·'@repo/eslint-config/base';␍
+apps-gurudevi-marketing-web:lint:biome: > biome check .
+apps-gurudevi-marketing-web:lint:biome: 
 
-@repo/workforce:lint:biome:     2   │ - ␍
-@repo/workforce:lint:biome:     3   │ - /**·@type·{import("eslint").Linter.Config[]}·*/␍
-@repo/workforce:lint:biome:     4   │ - export·default·[...config];␍
-@repo/workforce:lint:biome:       1 │ + import·{·config·}·from·'@repo/eslint-config/base';
-@repo/workforce:lint:biome:       2 │ + 
-@repo/workforce:lint:biome:       3 │ + /**·@type·{import("eslint").Linter.Config[]}·*/
-@repo/workforce:lint:biome:       4 │ + export·default·[...config];
-@repo/workforce:lint:biome:     5 5 │   
-@repo/workforce:lint:biome:   
-@repo/workforce:lint:biome: 
-@repo/workforce:lint:biome: check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/workforce:lint:biome: 
-@repo/workforce:lint:biome:   × Some errors were emitted while running checks.
-@repo/workforce:lint:biome:   
-@repo/workforce:lint:biome: 
+@repo/types-shim:lint:biome: 
+@repo/types-shim:lint:biome: > @repo/types-shim@0.0.2 lint:biome C:\Users\Naween\projects\polymath-platform\packages\types-shim
+@repo/types-shim:lint:biome: > biome check .
+@repo/types-shim:lint:biome: 
 
-apps-intuitui-web:lint:biome: .astro\content.d.ts:5:43 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/workforce:lint:biome: Checked 6 files in 406ms. No fixes applied.
 
-apps-intuitui-web:lint:biome: 
+@repo/database:lint:biome: package.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/database:lint:biome: 
+@repo/database:lint:biome: Checked 7 files in 512ms. No fixes applied.
+@repo/database:lint:biome: Found 2 errors.
+@repo/database:lint:biome:   × Formatter would have printed the following content:
 
-apps-intuitui-web:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/database:lint:biome:   
+@repo/database:lint:biome:      1    │ - {␍
+@repo/database:lint:biome:      2    │ - ··"name":·"@repo/database",␍
+@repo/database:lint:biome:      3    │ - ··"version":·"1.0.1",␍
+@repo/database:lint:biome:      4    │ - ··"private":·true,␍
+@repo/database:lint:biome:      5    │ - ··"type":·"module",␍
+@repo/database:lint:biome:      6    │ - ··"main":·"./src/index.ts",␍
+@repo/database:lint:biome:      7    │ - ··"types":·"./src/index.ts",␍
+@repo/database:lint:biome:      8    │ - ··"exports":·{␍
+@repo/database:lint:biome:      9    │ - ····".":·"./src/index.ts",␍
+@repo/database:lint:biome:     10    │ - ····"./package.json":·"./package.json"␍
+@repo/database:lint:biome:     11    │ - ··},␍
+@repo/database:lint:biome:     12    │ - ··"scripts":·{␍
+@repo/database:lint:biome:     13    │ - ····"lint":·"pnpm·run·lint:biome·&&·pnpm·run·lint:eslint",␍
+@repo/database:lint:biome:     14    │ - ····"check-types":·"pnpm·exec·tsc·--noEmit",␍
+@repo/database:lint:biome:     15    │ - ····"generate":·"pnpm·exec·zen·generate·--schema·zenstack/schema.zmodel·--output·../core/src/logic/generated",␍
+@repo/database:lint:biome:     16    │ - ····"db:push":·"pnpm·exec·zen·db·push·--schema·zenstack/schema.zmodel",␍
+@repo/database:lint:biome:     17    │ - ····"db:studio":·"pnpm·exec·zen·studio·--schema·zenstack/schema.zmodel",␍
+@repo/database:lint:biome:     18    │ - ····"db:migrate":·"pnpm·exec·zen·migrate·dev·--schema·zenstack/schema.zmodel",␍
+@repo/database:lint:biome:     19    │ - ····"lint:biome":·"biome·check·.",␍
+@repo/database:lint:biome:     20    │ - ····"lint:eslint":·"eslint·.",␍
+@repo/database:lint:biome:     21    │ - ····"format":·"biome·format·--write·.",␍
+@repo/database:lint:biome:     22    │ - ····"check-cycles":·"node·../../scripts/refactor/sovereign-cycle-checker.mjs",␍
+@repo/database:lint:biome:     23    │ - ····"test":·"vitest·run",␍
+@repo/database:lint:biome:     24    │ - ····"test:watch":·"vitest",␍
+@repo/database:lint:biome:     25    │ - ····"test:ui":·"vitest·--ui",␍
+@repo/database:lint:biome:     26    │ - ····"clean":·"rm·-rf·.turbo·node_modules·dist"␍
+@repo/database:lint:biome:     27    │ - ··},␍
+@repo/database:lint:biome:     28    │ - ··"dependencies":·{␍
+@repo/database:lint:biome:     29    │ - ····"@repo/schema":·"workspace:*",␍
+@repo/database:lint:biome:     30    │ - ····"@zenstackhq/orm":·"3.6.4",␍
+@repo/database:lint:biome:     31    │ - ····"kysely":·"0.28.16",␍
+@repo/database:lint:biome:     32    │ - ····"zod":·"4.3.6",␍
+@repo/database:lint:biome:     33    │ - ····"pg":·"^8.13.3",␍
+@repo/database:lint:biome:     34    │ - ····"@zenstackhq/schema":·"3.6.4"␍
+@repo/database:lint:biome:     35    │ - ··},␍
+@repo/database:lint:biome:     36    │ - ··"devDependencies":·{␍
+@repo/database:lint:biome:     37    │ - ····"@types/pg":·"^8.20.0",␍
+@repo/database:lint:biome:     38    │ - ····"@zenstackhq/cli":·"3.6.4",␍
+@repo/database:lint:biome:     39    │ - ····"@zenstackhq/language":·"3.6.4",␍
+@repo/database:lint:biome:     40    │ - ····"@zenstackhq/plugin-policy":·"3.6.4",␍
+@repo/database:lint:biome:     41    │ - ····"@zenstackhq/sdk":·"3.6.4",␍
+@repo/database:lint:biome:     42    │ - ····"@zenstackhq/zod":·"3.6.4",␍
+@repo/database:lint:biome:     43    │ - ····"@repo/eslint-config":·"workspace:^",␍
+@repo/database:lint:biome:     44    │ - ····"@repo/typescript-config":·"workspace:*",␍
+@repo/database:lint:biome:     45    │ - ····"vitest":·"^2.1.9",␍
+@repo/database:lint:biome:     46    │ - ····"vite-tsconfig-paths":·"^6.1.1",␍
+@repo/database:lint:biome:     47    │ - ····"typescript":·"^5.9.3",␍
+@repo/database:lint:biome:     48    │ - ····"eslint":·"^9.38.0"␍
+@repo/database:lint:biome:     49    │ - ··}␍
+@repo/database:lint:biome:     50    │ - }␍
+@repo/database:lint:biome:         1 │ + {
+@repo/database:lint:biome:         2 │ + ··"name":·"@repo/database",
+@repo/database:lint:biome:         3 │ + ··"version":·"1.0.1",
+@repo/database:lint:biome:         4 │ + ··"private":·true,
+@repo/database:lint:biome:         5 │ + ··"type":·"module",
+@repo/database:lint:biome:         6 │ + ··"main":·"./src/index.ts",
+@repo/database:lint:biome:         7 │ + ··"types":·"./src/index.ts",
+@repo/database:lint:biome:         8 │ + ··"exports":·{
+@repo/database:lint:biome:         9 │ + ····".":·"./src/index.ts",
+@repo/database:lint:biome:        10 │ + ····"./package.json":·"./package.json"
+@repo/database:lint:biome:        11 │ + ··},
+@repo/database:lint:biome:        12 │ + ··"scripts":·{
+@repo/database:lint:biome:        13 │ + ····"lint":·"pnpm·run·lint:biome·&&·pnpm·run·lint:eslint",
+@repo/database:lint:biome:        14 │ + ····"check-types":·"pnpm·exec·tsc·--noEmit",
+@repo/database:lint:biome:        15 │ + ····"generate":·"pnpm·exec·zen·generate·--schema·zenstack/schema.zmodel·--output·../core/src/logic/generated",
+@repo/database:lint:biome:        16 │ + ····"db:push":·"pnpm·exec·zen·db·push·--schema·zenstack/schema.zmodel",
+@repo/database:lint:biome:        17 │ + ····"db:studio":·"pnpm·exec·zen·studio·--schema·zenstack/schema.zmodel",
+@repo/database:lint:biome:        18 │ + ····"db:migrate":·"pnpm·exec·zen·migrate·dev·--schema·zenstack/schema.zmodel",
+@repo/database:lint:biome:        19 │ + ····"lint:biome":·"biome·check·.",
+@repo/database:lint:biome:        20 │ + ····"lint:eslint":·"eslint·.",
+@repo/database:lint:biome:        21 │ + ····"format":·"biome·format·--write·.",
+@repo/database:lint:biome:        22 │ + ····"check-cycles":·"node·../../scripts/refactor/sovereign-cycle-checker.mjs",
+@repo/database:lint:biome:        23 │ + ····"test":·"vitest·run",
+@repo/database:lint:biome:        24 │ + ····"test:watch":·"vitest",
+@repo/database:lint:biome:        25 │ + ····"test:ui":·"vitest·--ui",
+@repo/database:lint:biome:        26 │ + ····"clean":·"rm·-rf·.turbo·node_modules·dist"
+@repo/database:lint:biome:        27 │ + ··},
+@repo/database:lint:biome:        28 │ + ··"dependencies":·{
+@repo/database:lint:biome:        29 │ + ····"@repo/schema":·"workspace:*",
+@repo/database:lint:biome:        30 │ + ····"@zenstackhq/orm":·"3.6.4",
+@repo/database:lint:biome:        31 │ + ····"kysely":·"0.28.16",
+@repo/database:lint:biome:        32 │ + ····"zod":·"4.3.6",
+@repo/database:lint:biome:        33 │ + ····"pg":·"^8.13.3",
+@repo/database:lint:biome:        34 │ + ····"@zenstackhq/schema":·"3.6.4"
+@repo/database:lint:biome:        35 │ + ··},
+@repo/database:lint:biome:        36 │ + ··"devDependencies":·{
+@repo/database:lint:biome:        37 │ + ····"@types/pg":·"^8.20.0",
+@repo/database:lint:biome:        38 │ + ····"@zenstackhq/cli":·"3.6.4",
+@repo/database:lint:biome:        39 │ + ····"@zenstackhq/language":·"3.6.4",
+@repo/database:lint:biome:        40 │ + ····"@zenstackhq/plugin-policy":·"3.6.4",
+@repo/database:lint:biome:        41 │ + ····"@zenstackhq/sdk":·"3.6.4",
+@repo/database:lint:biome:        42 │ + ····"@zenstackhq/zod":·"3.6.4",
+@repo/database:lint:biome:        43 │ + ····"@repo/eslint-config":·"workspace:^",
+@repo/database:lint:biome:        44 │ + ····"@repo/typescript-config":·"workspace:*",
+@repo/database:lint:biome:        45 │ + ····"vitest":·"^2.1.9",
+@repo/database:lint:biome:        46 │ + ····"vite-tsconfig-paths":·"^6.1.1",
+@repo/database:lint:biome:        47 │ + ····"typescript":·"^5.9.3",
+@repo/database:lint:biome:        48 │ + ····"eslint":·"^9.38.0"
+@repo/database:lint:biome:        49 │ + ··}
+@repo/database:lint:biome:        50 │ + }
+@repo/database:lint:biome:     51 51 │   
+@repo/database:lint:biome:   
+@repo/database:lint:biome: 
+@repo/database:lint:biome: src\client.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/database:lint:biome: 
+@repo/database:lint:biome:   × Formatter would have printed the following content:
+@repo/database:lint:biome:   
+@repo/database:lint:biome:      1    │ - import·{·schema·}·from·'@repo/schema';␍
+@repo/database:lint:biome:      2    │ - import·{·ZenStackClient·}·from·'@zenstackhq/orm';␍
+@repo/database:lint:biome:      3    │ - import·{·PostgresDialect·}·from·'kysely';␍
+@repo/database:lint:biome:      4    │ - import·{·Pool·}·from·'pg';␍
+@repo/database:lint:biome:      5    │ - ␍
+@repo/database:lint:biome:      6    │ - type·AuthUser·=·{␍
+@repo/database:lint:biome:      7    │ - ··id:·string;␍
+@repo/database:lint:biome:      8    │ - };␍
+@repo/database:lint:biome:      9    │ - ␍
+@repo/database:lint:biome:     10    │ - let·sharedPool:·Pool·|·null·=·null;␍
+@repo/database:lint:biome:     11    │ - ␍
+@repo/database:lint:biome:     12    │ - const·getPool·=·()·=>·{␍
+@repo/database:lint:biome:     13    │ - ··const·DATABASE_URL·=·process.env.DATABASE_URL;␍
+@repo/database:lint:biome:     14    │ - ··if·(!DATABASE_URL)·{␍
+@repo/database:lint:biome:     15    │ - ····throw·new·Error('DATABASE_URL·is·required·to·initialize·the·ZenStack·client');␍
+@repo/database:lint:biome:     16    │ - ··}␍
+@repo/database:lint:biome:     17    │ - ␍
+@repo/database:lint:biome:     18    │ - ··if·(!sharedPool)·{␍
+@repo/database:lint:biome:     19    │ - ····sharedPool·=·new·Pool({␍
+@repo/database:lint:biome:     20    │ - ······connectionString:·DATABASE_URL,␍
+@repo/database:lint:biome:     21    │ - ····});␍
+@repo/database:lint:biome:     22    │ - ··}␍
+@repo/database:lint:biome:     23    │ - ␍
+@repo/database:lint:biome:     24    │ - ··return·sharedPool;␍
+@repo/database:lint:biome:     25    │ - };␍
+@repo/database:lint:biome:     26    │ - ␍
+@repo/database:lint:biome:     27    │ - export·const·createZenStackDb·=·(user:·AuthUser)·=>·{␍
+@repo/database:lint:biome:     28    │ - ··const·dialect·=·new·PostgresDialect({␍
+@repo/database:lint:biome:     29    │ - ····pool:·getPool(),␍
+@repo/database:lint:biome:     30    │ - ··});␍
+@repo/database:lint:biome:     31    │ - ␍
+@repo/database:lint:biome:     32    │ - ··return·new·ZenStackClient(schema,·{␍
+@repo/database:lint:biome:     33    │ - ····dialect,␍
+@repo/database:lint:biome:     34    │ - ····user:·{␍
+@repo/database:lint:biome:     35    │ - ······id:·user.id,␍
+@repo/database:lint:biome:     36    │ - ····},␍
+@repo/database:lint:biome:     37    │ - ··});␍
+@repo/database:lint:biome:     38    │ - };␍
+@repo/database:lint:biome:     39    │ - ␍
+@repo/database:lint:biome:     40    │ - export·const·canUseZenStackDb·=·()·=>·Boolean(process.env.DATABASE_URL);␍
+@repo/database:lint:biome:         1 │ + import·{·schema·}·from·'@repo/schema';
+@repo/database:lint:biome:         2 │ + import·{·ZenStackClient·}·from·'@zenstackhq/orm';
+@repo/database:lint:biome:         3 │ + import·{·PostgresDialect·}·from·'kysely';
+@repo/database:lint:biome:         4 │ + import·{·Pool·}·from·'pg';
+@repo/database:lint:biome:         5 │ + 
+@repo/database:lint:biome:         6 │ + type·AuthUser·=·{
+@repo/database:lint:biome:         7 │ + ··id:·string;
+@repo/database:lint:biome:         8 │ + };
+@repo/database:lint:biome:         9 │ + 
+@repo/database:lint:biome:        10 │ + let·sharedPool:·Pool·|·null·=·null;
+@repo/database:lint:biome:        11 │ + 
+@repo/types-shim:lint:biome: Checked 5 files in 384ms. No fixes applied.
+@repo/database:lint:biome:        12 │ + const·getPool·=·()·=>·{
+@repo/types-shim:lint:biome: Found 1 error.
+@repo/database:lint:biome:        13 │ + ··const·DATABASE_URL·=·process.env.DATABASE_URL;
+@repo/types-shim:lint:biome: index.d.ts:1:1 suppressions/incorrect ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/database:lint:biome:        14 │ + ··if·(!DATABASE_URL)·{
+@repo/types-shim:lint:biome: 
+@repo/database:lint:biome:        15 │ + ····throw·new·Error('DATABASE_URL·is·required·to·initialize·the·ZenStack·client');
+@repo/types-shim:lint:biome: Found 1 warning.
+@repo/database:lint:biome:        16 │ + ··}
+@repo/database:lint:biome:        17 │ + 
+@repo/database:lint:biome:        18 │ + ··if·(!sharedPool)·{
+@repo/database:lint:biome:        19 │ + ····sharedPool·=·new·Pool({
+@repo/types-shim:lint:biome:   ! Range suppressions must have a matching biome-ignore-end
+@repo/database:lint:biome:        20 │ + ······connectionString:·DATABASE_URL,
+@repo/types-shim:lint:biome:   
+@repo/database:lint:biome:        21 │ + ····});
+@repo/types-shim:lint:biome:   > 1 │ // biome-ignore-start lint/suspicious/noExplicitAny: shims intentionally use explicit any
+@repo/database:lint:biome:        22 │ + ··}
+@repo/types-shim:lint:biome:       │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+@repo/database:lint:biome:        23 │ + 
+@repo/types-shim:lint:biome:     2 │ // This is an empty type definition file to satisfy legacy peer dependencies.
+@repo/database:lint:biome:        24 │ + ··return·sharedPool;
+@repo/types-shim:lint:biome:     3 │ // React Native 0.83+ provides its own types.
+@repo/database:lint:biome:        25 │ + };
+@repo/types-shim:lint:biome:   
+@repo/database:lint:biome:        26 │ + 
+@repo/types-shim:lint:biome: 
+@repo/database:lint:biome:        27 │ + export·const·createZenStackDb·=·(user:·AuthUser)·=>·{
+@repo/types-shim:lint:biome: index.d.ts:96:21 suppressions/parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/database:lint:biome:        28 │ + ··const·dialect·=·new·PostgresDialect({
+@repo/types-shim:lint:biome: 
+@repo/database:lint:biome:        29 │ + ····pool:·getPool(),
+@repo/types-shim:lint:biome:   × Unexpected token, expected one of ':', '(' or whitespace
+@repo/database:lint:biome:        30 │ + ··});
+@repo/types-shim:lint:biome:   
+@repo/database:lint:biome:        31 │ + 
+@repo/types-shim:lint:biome:     94 │ export {};
+@repo/database:lint:biome:        32 │ + ··return·new·ZenStackClient(schema,·{
+@repo/types-shim:lint:biome:     95 │ 
+@repo/database:lint:biome:        33 │ + ····dialect,
+@repo/types-shim:lint:biome:   > 96 │ // biome-ignore-end lint/suspicious/noExplicitAny
+@repo/database:lint:biome:        34 │ + ····user:·{
+@repo/database:lint:biome:        35 │ + ······id:·user.id,
+@repo/database:lint:biome:        36 │ + ····},
+@repo/database:lint:biome:        37 │ + ··});
+@repo/database:lint:biome:        38 │ + };
+@repo/database:lint:biome:        39 │ + 
+@repo/database:lint:biome:        40 │ + export·const·canUseZenStackDb·=·()·=>·Boolean(process.env.DATABASE_URL);
+@repo/database:lint:biome:     41 41 │   
+@repo/database:lint:biome:   
+@repo/database:lint:biome: 
+@repo/database:lint:biome: check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/database:lint:biome: 
+@repo/database:lint:biome:   × Some errors were emitted while running checks.
+@repo/database:lint:biome:   
+@repo/database:lint:biome: 
+@repo/types-shim:lint:biome:        │                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+@repo/types-shim:lint:biome:     97 │ 
+@repo/types-shim:lint:biome:   
+@repo/types-shim:lint:biome:   i A colon is required after the category.
+@repo/types-shim:lint:biome:   
+@repo/types-shim:lint:biome:   i Example of suppression: // biome-ignore lint: reason
+@repo/types-shim:lint:biome:   
+@repo/types-shim:lint:biome: 
+@repo/types-shim:lint:biome: check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/types-shim:lint:biome: 
+@repo/types-shim:lint:biome:   × Some errors were emitted while running checks.
+@repo/types-shim:lint:biome:   
+@repo/types-shim:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: src\components\SEO.astro:10:3 lint/correctness/noUnusedVariables ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   ! This variable title is unused.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:      9 │ const {
+apps-gurudevi-marketing-web:lint:biome:   > 10 │   title,
+apps-gurudevi-marketing-web:lint:biome:        │   ^^^^^
+apps-gurudevi-marketing-web:lint:biome:     11 │   description,
+apps-gurudevi-marketing-web:lint:biome:     12 │   image = '/og-image.jpg',
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:   i Unused variables are often the result of typos, incomplete refactors, or other sources of bugs.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: src\components\StatItem.astro:8:9 lint/correctness/noUnusedVariables ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   ! This variable value is unused.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:      6 │ }
+apps-gurudevi-marketing-web:lint:biome:      7 │ 
+apps-gurudevi-marketing-web:lint:biome:    > 8 │ const { value, label, icon } = Astro.props;
+apps-gurudevi-marketing-web:lint:biome:        │         ^^^^^
+apps-gurudevi-marketing-web:lint:biome:      9 │ ---
+apps-gurudevi-marketing-web:lint:biome:     10 │ 
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:   i Unused variables are often the result of typos, incomplete refactors, or other sources of bugs.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: src\components\StatItem.astro:8:16 lint/correctness/noUnusedVariables ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   ! This variable label is unused.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:      6 │ }
+apps-gurudevi-marketing-web:lint:biome:      7 │ 
+apps-gurudevi-marketing-web:lint:biome:    > 8 │ const { value, label, icon } = Astro.props;
+apps-gurudevi-marketing-web:lint:biome:        │                ^^^^^
+apps-gurudevi-marketing-web:lint:biome:      9 │ ---
+apps-gurudevi-marketing-web:lint:biome:     10 │ 
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:   i Unused variables are often the result of typos, incomplete refactors, or other sources of bugs.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: src\components\StatItem.astro:8:23 lint/correctness/noUnusedVariables ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   ! This variable icon is unused.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:      6 │ }
+apps-gurudevi-marketing-web:lint:biome:      7 │ 
+apps-gurudevi-marketing-web:lint:biome:    > 8 │ const { value, label, icon } = Astro.props;
+apps-gurudevi-marketing-web:lint:biome:        │                       ^^^^
+apps-gurudevi-marketing-web:lint:biome:      9 │ ---
+apps-gurudevi-marketing-web:lint:biome:     10 │ 
+apps-gurudevi-marketing-web:lint:biome:   
 
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:     3 │ 		Content: import('astro/runtime/server/index.js').AstroComponentFactory;
-apps-intuitui-web:lint:biome:     4 │ 		headings: import('astro').MarkdownHeading[];
-apps-intuitui-web:lint:biome:   > 5 │ 		remarkPluginFrontmatter: Record<string, any>;
-apps-intuitui-web:lint:biome:       │ 		                                        ^^^
-apps-intuitui-web:lint:biome:     6 │ 	}
-apps-intuitui-web:lint:biome:     7 │ 	interface Render {
-apps-intuitui-web:lint:biome:   
-
-apps-intuitui-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: .astro\content.d.ts:24:34 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome:   ! Unexpected any. Specify a different type.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:     22 │ 	export type CollectionEntry<C extends CollectionKey> = Flatten<DataEntryMap[C]>;
-apps-intuitui-web:lint:biome:     23 │ 
-apps-intuitui-web:lint:biome:   > 24 │ 	type AllValuesOf<T> = T extends any ? T[keyof T] : never;
-apps-intuitui-web:lint:biome:        │ 	                                ^^^
-apps-intuitui-web:lint:biome:     25 │ 
-
-apps-intuitui-web:lint:biome:     26 │ 	export type ReferenceDataEntry<
-
-@repo/profile:lint:biome: src\components\AchievementGallery.tsx:9:9 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome:   ! Unexpected any. Specify a different type.
-
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:      7 │   title: string;
-@repo/profile:lint:biome:      8 │   description: string;
-@repo/profile:lint:biome:    > 9 │   icon: any;
-@repo/profile:lint:biome:        │         ^^^
-@repo/profile:lint:biome:     10 │   unlocked: boolean;
-@repo/profile:lint:biome:     11 │ }
-@repo/profile:lint:biome:   
-
-apps-intuitui-web:lint:biome:   
-
-apps-intuitui-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: .astro\content.d.ts:110:53 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome:   ! Unexpected any. Specify a different type.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:     108 │ 	>;
-apps-intuitui-web:lint:biome:     109 │ 
-apps-intuitui-web:lint:biome:   > 110 │ 	type ReturnTypeOrOriginal<T> = T extends (...args: any[]) => infer R ? R : T;
-apps-intuitui-web:lint:biome:         │ 	                                                   ^^^
-apps-intuitui-web:lint:biome:     111 │ 	type InferEntrySchema<C extends keyof DataEntryMap> = import('astro/zod').infer<
-apps-intuitui-web:lint:biome:     112 │ 		ReturnTypeOrOriginal<Required<ContentConfig['collections'][C]>['schema']>
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: .astro\content.d.ts:120:5 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome:   ! Unexpected any. Specify a different type.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:     118 │ 	> = L extends { schema: import('astro/zod').ZodSchema }
-apps-intuitui-web:lint:biome:     119 │ 		? import('astro/zod').infer<L['schema']>
-apps-intuitui-web:lint:biome:   > 120 │ 		: any;
-apps-intuitui-web:lint:biome:         │ 		  ^^^
-apps-intuitui-web:lint:biome:     121 │ 
-apps-intuitui-web:lint:biome:     122 │ 	type DataEntryMap = {
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: .astro\content.d.ts:122:22 lint/complexity/noBannedTypes ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome:   ! Don't use '{}' as a type.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:     120 │ 		: any;
-apps-intuitui-web:lint:biome:     121 │ 
-apps-intuitui-web:lint:biome:   > 122 │ 	type DataEntryMap = {
-apps-intuitui-web:lint:biome:         │ 	                    ^
-apps-intuitui-web:lint:biome:   > 123 │ 		
-apps-intuitui-web:lint:biome:   > 124 │ 	};
-apps-intuitui-web:lint:biome:         │ 	^
-
-apps-intuitui-web:lint:biome:     125 │ 
-apps-intuitui-web:lint:biome:     126 │ 	type ExtractLoaderTypes<T> = T extends import('astro/loaders').LiveLoader<
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:   i '{}' accepts any non-nullish value, including non-object primitives like '123' and 'true'.
-apps-intuitui-web:lint:biome:     - If you want a type meaning "any arbitrary object", use 'object' instead.
-apps-intuitui-web:lint:biome:     - If you want a type meaning "any value", use 'unknown' instead.
-apps-intuitui-web:lint:biome:     - If you want a type meaning "an object whose properties cannot be used", use '{ [k: keyof any]: never }' or 'Record<keyof any, never>' instead.
-apps-intuitui-web:lint:biome:     - If you want a type meaning "an object that cannot contain any properties whatsoever", use '{ [uniqueSymbol]?: never }' with an unexported unique symbol in the same file.
-
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:   i If that's really what you want, use an inline disable comment.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: src\components\StructuredData.astro:3:24 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome:   ! Unexpected any. Specify a different type.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:     1 │ ---
-apps-intuitui-web:lint:biome:     2 │ interface Props {
-apps-intuitui-web:lint:biome:   > 3 │   data: Record<string, any> | Array<Record<string, any>>;
-apps-intuitui-web:lint:biome:       │                        ^^^
-apps-intuitui-web:lint:biome:     4 │ }
-apps-intuitui-web:lint:biome:     5 │ 
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome: 
-
-apps-intuitui-web:lint:biome: src\components\StructuredData.astro:3:52 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-@repo/profile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: src\components\AddSocialLinkModal.tsx:44:9 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:     42 │   labelKey: string;
-@repo/profile:lint:biome:     43 │   value: SocialPlatform;
-@repo/profile:lint:biome:   > 44 │   icon: any;
-@repo/profile:lint:biome:        │         ^^^
-@repo/profile:lint:biome:     45 │   color: string;
-@repo/profile:lint:biome:     46 │ }[] = [
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: src\components\AddSocialLinkModal.tsx:81:9 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-
-@repo/profile:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:     79 │ const PRIVACY_LEVELS: {
-@repo/profile:lint:biome:     80 │   value: PrivacyLevel;
-@repo/profile:lint:biome:   > 81 │   icon: any;
-@repo/profile:lint:biome:        │         ^^^
-@repo/profile:lint:biome:     82 │   labelKey: string;
-@repo/profile:lint:biome:     83 │   descKey: string;
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: src\components\AvatarDisplay.tsx:23:11 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/profile:lint:biome:   
-
-@repo/profile:lint:biome:     21 │   editable?: boolean;
-@repo/profile:lint:biome:     22 │   onAvatarSelected?: (localUri: string) => Promise<void>;
-@repo/profile:lint:biome:   > 23 │   style?: any;
-@repo/profile:lint:biome:        │           ^^^
-@repo/profile:lint:biome:     24 │   peekable?: boolean;
-@repo/profile:lint:biome:     25 │   peekType?: 'user' | 'school' | 'classroom' | 'community';
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: src\components\ContactLinktree.tsx:54:31 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:     52 │   string,
-@repo/profile:lint:biome:     53 │   {
-@repo/profile:lint:biome:   > 54 │     icon: React.ComponentType<any>;
-@repo/profile:lint:biome:        │                               ^^^
-@repo/profile:lint:biome:     55 │     color: string;
-@repo/profile:lint:biome:     56 │     label: string;
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: src\components\ContactLinktree.tsx:371:24 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:     369 │                     user_id: userId!,
-@repo/profile:lint:biome:     370 │                     order_index: links.length,
-@repo/profile:lint:biome:   > 371 │                   } as any);
-@repo/profile:lint:biome:         │                        ^^^
-@repo/profile:lint:biome:     372 │                   setInlineAdding(false);
-@repo/profile:lint:biome:     373 │                 }}
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: src\components\ControlScroll.tsx:59:53 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-
-@repo/profile:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:     57 │   };
-@repo/profile:lint:biome:     58 │ 
-@repo/profile:lint:biome:   > 59 │   const renderThemeOption = (mode: ThemeMode, Icon: any, label: string, description: string) => {
-@repo/profile:lint:biome:        │                                                     ^^^
-@repo/profile:lint:biome:     60 │     const isActive = themeMode === mode;
-@repo/profile:lint:biome:     61 │ 
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: src\components\EditableItem.tsx:9:9 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:      8 │ interface EditableItemProps {
-@repo/profile:lint:biome:    > 9 │   icon: any;
-@repo/profile:lint:biome:        │         ^^^
-@repo/profile:lint:biome:     10 │   label: string;
-@repo/profile:lint:biome:     11 │   value?: string;
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: src\components\EditableItem.tsx:14:34 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:     12 │   field: string;
-@repo/profile:lint:biome:     13 │   placeholder?: string;
-@repo/profile:lint:biome:   > 14 │   onSave: (field: string, value: any) => Promise<any>;
-@repo/profile:lint:biome:        │                                  ^^^
-@repo/profile:lint:biome:     15 │   multiline?: boolean;
-@repo/profile:lint:biome:     16 │   disabled?: boolean;
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: src\components\EditableItem.tsx:14:50 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:     12 │   field: string;
-@repo/profile:lint:biome:     13 │   placeholder?: string;
-@repo/profile:lint:biome:   > 14 │   onSave: (field: string, value: any) => Promise<any>;
-@repo/profile:lint:biome:        │                                                  ^^^
-@repo/profile:lint:biome:     15 │   multiline?: boolean;
-@repo/profile:lint:biome:     16 │   disabled?: boolean;
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: src\components\EditableItem.tsx:76:19 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:     74 │       await onSave(field, editValue);
-@repo/profile:lint:biome:     75 │       setIsEditing(false);
-@repo/profile:lint:biome:   > 76 │     } catch (err: any) {
-@repo/profile:lint:biome:        │                   ^^^
-@repo/profile:lint:biome:     77 │       setError(err?.message || 'Failed to save');
-@repo/profile:lint:biome:     78 │     } finally {
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: src\screens\ThuthimalClaimScreen.tsx:47:36 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:     46 │ export default function ThuthimalClaimScreen() {
-@repo/profile:lint:biome:   > 47 │   const navigation = useNavigation<any>();
-@repo/profile:lint:biome:        │                                    ^^^
-@repo/profile:lint:biome:     48 │   const route = useRoute<RouteProp<ClaimRouteParams, 'ThuthimalClaim'>>();
-@repo/profile:lint:biome:     49 │   const { t } = useTranslation();
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: eslint.config.mjs format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome:   × Formatter would have printed the following content:
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:     1   │ - import·{·config·}·from·'@repo/eslint-config/react-internal';␍
-@repo/profile:lint:biome:     2   │ - ␍
-@repo/profile:lint:biome:     3   │ - /**·@type·{import("eslint").Linter.Config[]}·*/␍
-@repo/profile:lint:biome:     4   │ - export·default·[...config];␍
-@repo/profile:lint:biome:       1 │ + import·{·config·}·from·'@repo/eslint-config/react-internal';
-@repo/profile:lint:biome:       2 │ + 
-@repo/profile:lint:biome:       3 │ + /**·@type·{import("eslint").Linter.Config[]}·*/
-@repo/profile:lint:biome:       4 │ + export·default·[...config];
-@repo/profile:lint:biome:     5 5 │   
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: src\api\index.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome:   × Formatter would have printed the following content:
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:     1   │ - export·{·profileAPI,·socialAPI·}·from·'@repo/core/api';␍
-@repo/profile:lint:biome:       1 │ + export·{·profileAPI,·socialAPI·}·from·'@repo/core/api';
-@repo/profile:lint:biome:     2 2 │   
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: src\components\AddSocialLinkModal.tsx:135:9 lint/suspicious/noImplicitAnyLet ━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome:   × This variable implicitly has the any type.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:     133 │     setLoading(true);
-@repo/profile:lint:biome:     134 │ 
-@repo/profile:lint:biome:   > 135 │     let result;
-@repo/profile:lint:biome:         │         ^^^^^^
-@repo/profile:lint:biome:     136 │     if (initialLink) {
-@repo/profile:lint:biome:     137 │       result = await updateLink(initialLink.id, {
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:   i Variable declarations without type annotation and initialization implicitly have the any type. Declare a type or initialize the variable with some value.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: src\components\ContactLinktree.tsx:307:40 lint/suspicious/noArrayIndexKey ━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome:   × Avoid using the index of an array as key property in an element.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:     305 │           return (
-@repo/profile:lint:biome:     306 │             <Animated.View
-@repo/profile:lint:biome:   > 307 │               key={`${link.platform}-${index}`}
-@repo/profile:lint:biome:         │                                        ^^^^^
-@repo/profile:lint:biome:     308 │               entering={FadeInDown.delay(index * 100).springify()}
-@repo/profile:lint:biome:     309 │             >
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:   i This is the source of the key value.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:     279 │       {/* Link List */}
-apps-intuitui-web:lint:biome: The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
-apps-intuitui-web:lint:biome: Diagnostics not shown: 12.
-apps-intuitui-web:lint:biome: Checked 24 files in 270ms. No fixes applied.
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: Found 14 errors.
-apps-intuitui-web:lint:biome: Found 18 warnings.
-apps-intuitui-web:lint:biome:   ! Unexpected any. Specify a different type.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:     1 │ ---
-apps-intuitui-web:lint:biome:     2 │ interface Props {
-apps-intuitui-web:lint:biome:   > 3 │   data: Record<string, any> | Array<Record<string, any>>;
-apps-intuitui-web:lint:biome:       │                                                    ^^^
-apps-intuitui-web:lint:biome:     4 │ }
-apps-intuitui-web:lint:biome:     5 │ 
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: src\components\SystemsGrid.astro:7:9 lint/correctness/noUnusedVariables ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome:   ! This variable columns is unused.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:     5 │ }
-apps-intuitui-web:lint:biome:     6 │ 
-apps-intuitui-web:lint:biome:   > 7 │ const { columns = 3, className = '' } = Astro.props;
-apps-intuitui-web:lint:biome:       │         ^^^^^^^
-apps-intuitui-web:lint:biome:     8 │ ---
-apps-intuitui-web:lint:biome:     9 │ 
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:   i Unused variables are often the result of typos, incomplete refactors, or other sources of bugs.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: src\components\SystemsGrid.astro:7:22 lint/correctness/noUnusedVariables ━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome:   ! This variable className is unused.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:     5 │ }
-apps-intuitui-web:lint:biome:     6 │ 
-apps-intuitui-web:lint:biome:   > 7 │ const { columns = 3, className = '' } = Astro.props;
-apps-intuitui-web:lint:biome:       │                      ^^^^^^^^^
-apps-intuitui-web:lint:biome:     8 │ ---
-apps-intuitui-web:lint:biome:     9 │ 
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:   i Unused variables are often the result of typos, incomplete refactors, or other sources of bugs.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: src\layouts\MainLayout.astro:20:35 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome:   ! Unexpected any. Specify a different type.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:     18 │   image?: string;
-apps-intuitui-web:lint:biome:     19 │   noindex?: boolean;
-apps-intuitui-web:lint:biome:   > 20 │   structuredData?: Record<string, any> | Array<Record<string, any>>;
-apps-intuitui-web:lint:biome:        │                                   ^^^
-apps-intuitui-web:lint:biome:     21 │ }
-apps-intuitui-web:lint:biome:     22 │ 
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: src\layouts\MainLayout.astro:20:63 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome:   ! Unexpected any. Specify a different type.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:     18 │   image?: string;
-apps-intuitui-web:lint:biome:     19 │   noindex?: boolean;
-apps-intuitui-web:lint:biome:   > 20 │   structuredData?: Record<string, any> | Array<Record<string, any>>;
-apps-intuitui-web:lint:biome:        │                                                               ^^^
-apps-intuitui-web:lint:biome:     21 │ }
-apps-intuitui-web:lint:biome:     22 │ 
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: src\layouts\MainLayout.astro:3:8 lint/correctness/noUnusedImports  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome:   ! This import is unused.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:     1 │ ---
-apps-intuitui-web:lint:biome:     2 │ import '../styles/global.css';
-apps-intuitui-web:lint:biome:   > 3 │ import StructuredData from '../components/StructuredData.astro';
-apps-intuitui-web:lint:biome:       │        ^^^^^^^^^^^^^^
-apps-intuitui-web:lint:biome:     4 │ import {
-apps-intuitui-web:lint:biome:     5 │   defaultOgImage,
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:   i Unused imports might be the result of an incomplete refactoring.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:   i Unsafe fix: Remove the unused imports.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:       1   1 │   
-apps-intuitui-web:lint:biome:       2     │ - import·'../styles/global.css';␍
-apps-intuitui-web:lint:biome:       3     │ - import·StructuredData·from·'../components/StructuredData.astro';␍
-apps-intuitui-web:lint:biome:           2 │ + import·'../styles/global.css';␍
-apps-intuitui-web:lint:biome:       4   3 │   import {␍
-apps-intuitui-web:lint:biome:       5   4 │     defaultOgImage,␍
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: src\layouts\MainLayout.astro:8:3 lint/correctness/noUnusedImports  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome:   ! Several of these imports are unused.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:      6 │   ORGANIZATION,
-apps-intuitui-web:lint:biome:      7 │   SITE_DESCRIPTION,
-apps-intuitui-web:lint:biome:    > 8 │   SITE_KEYWORDS,
-apps-intuitui-web:lint:biome:        │   ^^^^^^^^^^^^^
-apps-intuitui-web:lint:biome:      9 │   SITE_NAME,
-apps-intuitui-web:lint:biome:     10 │   SITE_TITLE,
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:   i Unused imports might be the result of an incomplete refactoring.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:   i Unsafe fix: Remove the unused imports.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:       5   5 │     defaultOgImage,␍
-apps-intuitui-web:lint:biome:       6   6 │     ORGANIZATION,␍
-apps-intuitui-web:lint:biome:       7     │ - ··SITE_DESCRIPTION,␍
-apps-intuitui-web:lint:biome:       8     │ - ··SITE_KEYWORDS,␍
-apps-intuitui-web:lint:biome:           7 │ + ··SITE_DESCRIPTION,␍
-apps-intuitui-web:lint:biome:       9   8 │     SITE_NAME,␍
-apps-intuitui-web:lint:biome:      10   9 │     SITE_TITLE,␍
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: src\pages\about.astro:2:8 lint/correctness/noUnusedImports  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome:   ! This import is unused.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:     1 │ ---
-@repo/profile:lint:biome:     280 │       <VStack space="md">
-@repo/profile:lint:biome:   > 281 │         {displayLinks.map((link, index) => {
-@repo/profile:lint:biome:         │                                  ^^^^^
-@repo/profile:lint:biome:     282 │           if (inline && inlineEditingId === link.id) {
-@repo/profile:lint:biome:     283 │             return (
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:   i The order of the items may change, and this also affects performances and component state.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:   i Check the React documentation. 
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: src\screens\PublicProfileScreen.web.tsx format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome:   × Formatter would have printed the following content:
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:      1    │ - �import·{·type·RouteProp,·useRoute·}·from·'@react-navigation/native';␍
-@repo/profile:lint:biome:      2    │ - import·{·useEntity·}·from·'@repo/core/hooks';␍
-@repo/profile:lint:biome:      3    │ - import·type·{·EntityType·}·from·'@repo/core/logic';␍
-@repo/profile:lint:biome:      4    │ - import·IdentityCard,·{·type·IdentityData·}·from·'@repo/ui/components/IdentityCard';␍
-@repo/profile:lint:biome:      5    │ - import·{·Box,·Center,·Spinner·}·from·'@repo/ui/primitives';␍
-@repo/profile:lint:biome:      6    │ - import·{·useProfile·}·from·'../hooks/useProfile';␍
-@repo/profile:lint:biome:      7    │ - ␍
-@repo/profile:lint:biome:      8    │ - type·PublicProfileRouteProp·=·RouteProp<␍
-@repo/profile:lint:biome:      9    │ - ··{·PublicProfile:·{·id:·string;·type:·EntityType·}·},␍
-@repo/profile:lint:biome:     10    │ - ··'PublicProfile'␍
-@repo/profile:lint:biome:     11    │ - >;␍
-@repo/profile:lint:biome:     12    │ - ␍
-@repo/profile:lint:biome:     13    │ - export·default·function·PublicProfileScreenWeb()·{␍
-@repo/profile:lint:biome:     14    │ - ··const·route·=·useRoute<PublicProfileRouteProp>();␍
-@repo/profile:lint:biome:     15    │ - ··const·{·id,·type·}·=·route.params·||·{};␍
-@repo/profile:lint:biome:     16    │ - ␍
-@repo/profile:lint:biome:     17    │ - ··const·{·profile,·loading:·isProfileLoading·}·=·useProfile(type·===·'user'·?·id·:·undefined);␍
-@repo/profile:lint:biome:     18    │ - ··const·{·instance,·isLoading,·error·}·=·useEntity(type·as·EntityType,·id);␍
-@repo/profile:lint:biome:     19    │ - ␍
-@repo/profile:lint:biome:     20    │ - ··if·(type·===·'user')·{␍
-@repo/profile:lint:biome:     21    │ - ····if·(isProfileLoading)·{␍
-@repo/profile:lint:biome:     22    │ - ······return·(␍
-@repo/profile:lint:biome:     23    │ - ········<Center·className="h-screen">␍
-@repo/profile:lint:biome:     24    │ - ··········<Spinner·size="large"·/>␍
-@repo/profile:lint:biome:     25    │ - ········</Center>␍
-@repo/profile:lint:biome:     26    │ - ······);␍
-@repo/profile:lint:biome:     27    │ - ····}␍
-@repo/profile:lint:biome:     28    │ - ␍
-@repo/profile:lint:biome:     29    │ - ····if·(!profile)·{␍
-@repo/profile:lint:biome:     30    │ - ······return·(␍
-@repo/profile:lint:biome:     31    │ - ········<Box·className="p-10·text-center·text-text-tertiary">␍
-@repo/profile:lint:biome:     32    │ - ··········Profile·Not·Found·or·Error·Loading␍
-@repo/profile:lint:biome:     33    │ - ········</Box>␍
-@repo/profile:lint:biome:     34    │ - ······);␍
-@repo/profile:lint:biome:     35    │ - ····}␍
-@repo/profile:lint:biome:     36    │ - ␍
-@repo/profile:lint:biome:     37    │ - ····return·(␍
-@repo/profile:lint:biome:     38    │ - ······<Box·className="max-w-[1200px]·mx-auto·p-6">␍
-@repo/profile:lint:biome:     39    │ - ········<IdentityCard·data={profile·as·unknown·as·IdentityData}·/>␍
-@repo/profile:lint:biome:     40    │ - ······</Box>␍
-@repo/profile:lint:biome:     41    │ - ····);␍
-@repo/profile:lint:biome:     42    │ - ··}␍
-@repo/profile:lint:biome:     43    │ - ␍
-@repo/profile:lint:biome:     44    │ - ··if·(isLoading)·{␍
-@repo/profile:lint:biome:     45    │ - ····return·(␍
-@repo/profile:lint:biome:     46    │ - ······<Center·className="h-screen">␍
-@repo/profile:lint:biome:     47    │ - ········<Spinner·size="large"·/>␍
-@repo/profile:lint:biome:     48    │ - ······</Center>␍
-@repo/profile:lint:biome:     49    │ - ····);␍
-@repo/profile:lint:biome:     50    │ - ··}␍
-@repo/profile:lint:biome:     51    │ - ␍
-@repo/profile:lint:biome:     52    │ - ··if·(error·||·!instance)·{␍
-@repo/profile:lint:biome:     53    │ - ····return·(␍
-@repo/profile:lint:biome:     54    │ - ······<Box·className="p-10·text-center·text-text-tertiary">Profile·Not·Found·or·Error·Loading</Box>␍
-@repo/profile:lint:biome:     55    │ - ····);␍
-@repo/profile:lint:biome:     56    │ - ··}␍
-@repo/profile:lint:biome:     57    │ - ␍
-@repo/profile:lint:biome:     58    │ - ··//·Fallback·for·other·entity·types·if·needed,·or·structured·entity·view␍
-@repo/profile:lint:biome:     59    │ - ··return·(␍
-@repo/profile:lint:biome:     60    │ - ····<Box·className="max-w-[1200px]·mx-auto·p-6">␍
-@repo/profile:lint:biome:     61    │ - ······<IdentityCard·data={instance·as·unknown·as·IdentityData}·/>␍
-@repo/profile:lint:biome:     62    │ - ····</Box>␍
-@repo/profile:lint:biome:     63    │ - ··);␍
-@repo/profile:lint:biome:     64    │ - }␍
-@repo/profile:lint:biome:         1 │ + �import·{·type·RouteProp,·useRoute·}·from·'@react-navigation/native';
-@repo/profile:lint:biome:         2 │ + import·{·useEntity·}·from·'@repo/core/hooks';
-@repo/profile:lint:biome:         3 │ + import·type·{·EntityType·}·from·'@repo/core/logic';
-@repo/profile:lint:biome:         4 │ + import·IdentityCard,·{·type·IdentityData·}·from·'@repo/ui/components/IdentityCard';
-@repo/profile:lint:biome:         5 │ + import·{·Box,·Center,·Spinner·}·from·'@repo/ui/primitives';
-@repo/profile:lint:biome:         6 │ + import·{·useProfile·}·from·'../hooks/useProfile';
-@repo/profile:lint:biome:         7 │ + 
-@repo/profile:lint:biome:         8 │ + type·PublicProfileRouteProp·=·RouteProp<
-@repo/profile:lint:biome:         9 │ + ··{·PublicProfile:·{·id:·string;·type:·EntityType·}·},
-@repo/profile:lint:biome:        10 │ + ··'PublicProfile'
-@repo/profile:lint:biome:        11 │ + >;
-@repo/profile:lint:biome:        12 │ + 
-@repo/profile:lint:biome:        13 │ + export·default·function·PublicProfileScreenWeb()·{
-@repo/profile:lint:biome:        14 │ + ··const·route·=·useRoute<PublicProfileRouteProp>();
-@repo/profile:lint:biome:        15 │ + ··const·{·id,·type·}·=·route.params·||·{};
-@repo/profile:lint:biome:        16 │ + 
-@repo/profile:lint:biome:        17 │ + ··const·{·profile,·loading:·isProfileLoading·}·=·useProfile(type·===·'user'·?·id·:·undefined);
-@repo/profile:lint:biome:        18 │ + ··const·{·instance,·isLoading,·error·}·=·useEntity(type·as·EntityType,·id);
-@repo/profile:lint:biome:        19 │ + 
-@repo/profile:lint:biome:        20 │ + ··if·(type·===·'user')·{
-@repo/profile:lint:biome:        21 │ + ····if·(isProfileLoading)·{
-@repo/profile:lint:biome:        22 │ + ······return·(
-@repo/profile:lint:biome:        23 │ + ········<Center·className="h-screen">
-@repo/profile:lint:biome:        24 │ + ··········<Spinner·size="large"·/>
-@repo/profile:lint:biome:        25 │ + ········</Center>
-@repo/profile:lint:biome:        26 │ + ······);
-@repo/profile:lint:biome:        27 │ + ····}
-@repo/profile:lint:biome:        28 │ + 
-@repo/profile:lint:biome:        29 │ + ····if·(!profile)·{
-@repo/profile:lint:biome:        30 │ + ······return·(
-@repo/profile:lint:biome:        31 │ + ········<Box·className="p-10·text-center·text-text-tertiary">
-@repo/profile:lint:biome:        32 │ + ··········Profile·Not·Found·or·Error·Loading
-@repo/profile:lint:biome:        33 │ + ········</Box>
-@repo/profile:lint:biome:        34 │ + ······);
-@repo/profile:lint:biome:        35 │ + ····}
-@repo/profile:lint:biome:        36 │ + 
-@repo/profile:lint:biome:        37 │ + ····return·(
-@repo/profile:lint:biome:        38 │ + ······<Box·className="max-w-[1200px]·mx-auto·p-6">
-@repo/profile:lint:biome:        39 │ + ········<IdentityCard·data={profile·as·unknown·as·IdentityData}·/>
-@repo/profile:lint:biome:        40 │ + ······</Box>
-@repo/profile:lint:biome:        41 │ + ····);
-@repo/profile:lint:biome:        42 │ + ··}
-@repo/profile:lint:biome:        43 │ + 
-@repo/profile:lint:biome:        44 │ + ··if·(isLoading)·{
-@repo/profile:lint:biome:        45 │ + ····return·(
-@repo/profile:lint:biome:        46 │ + ······<Center·className="h-screen">
-@repo/profile:lint:biome:        47 │ + ········<Spinner·size="large"·/>
-@repo/profile:lint:biome:        48 │ + ······</Center>
-@repo/profile:lint:biome:        49 │ + ····);
-@repo/profile:lint:biome:        50 │ + ··}
-
-apps-intuitui-web:lint:biome:   > 2 │ import MainLayout from '../layouts/MainLayout.astro';
-apps-intuitui-web:lint:biome:       │        ^^^^^^^^^^
-apps-intuitui-web:lint:biome:     3 │ ---
-apps-intuitui-web:lint:biome:     4 │ 
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:   i Unused imports might be the result of an incomplete refactoring.
-
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:   i Unsafe fix: Remove the unused imports.
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:     1   │ - 
-apps-intuitui-web:lint:biome:     2   │ - import·MainLayout·from·'../layouts/MainLayout.astro';␍
-apps-intuitui-web:lint:biome:       1 │ + ␍
-apps-intuitui-web:lint:biome:     3 2 │   
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: .astro\content.d.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome:   × Formatter would have printed the following content:
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:       1   1 │   declare module 'astro:content' {
-apps-intuitui-web:lint:biome:       2     │ - → export·interface·RenderResult·{
-apps-intuitui-web:lint:biome:       3     │ - → → Content:·import('astro/runtime/server/index.js').AstroComponentFactory;
-apps-intuitui-web:lint:biome:       4     │ - → → headings:·import('astro').MarkdownHeading[];
-apps-intuitui-web:lint:biome:       5     │ - → → remarkPluginFrontmatter:·Record<string,·any>;
-apps-intuitui-web:lint:biome:       6     │ - → }
-apps-intuitui-web:lint:biome:       7     │ - → interface·Render·{
-apps-intuitui-web:lint:biome:       8     │ - → → '.md':·Promise<RenderResult>;
-apps-intuitui-web:lint:biome:       9     │ - → }
-apps-intuitui-web:lint:biome:           2 │ + ··export·interface·RenderResult·{
-apps-intuitui-web:lint:biome:           3 │ + ····Content:·import('astro/runtime/server/index.js').AstroComponentFactory;
-apps-intuitui-web:lint:biome:           4 │ + ····headings:·import('astro').MarkdownHeading[];
-apps-intuitui-web:lint:biome:           5 │ + ····remarkPluginFrontmatter:·Record<string,·any>;
-apps-intuitui-web:lint:biome:           6 │ + ··}
-apps-intuitui-web:lint:biome:           7 │ + ··interface·Render·{
-apps-intuitui-web:lint:biome:           8 │ + ····'.md':·Promise<RenderResult>;
-apps-intuitui-web:lint:biome:           9 │ + ··}
-apps-intuitui-web:lint:biome:      10  10 │   
-apps-intuitui-web:lint:biome:      11     │ - → export·interface·RenderedContent·{
-apps-intuitui-web:lint:biome:      12     │ - → → html:·string;
-apps-intuitui-web:lint:biome:      13     │ - → → metadata?:·{
-apps-intuitui-web:lint:biome:      14     │ - → → → imagePaths:·Array<string>;
-apps-intuitui-web:lint:biome:      15     │ - → → → [key:·string]:·unknown;
-apps-intuitui-web:lint:biome:      16     │ - → → };
-apps-intuitui-web:lint:biome:      17     │ - → }
-apps-intuitui-web:lint:biome:          11 │ + ··export·interface·RenderedContent·{
-apps-intuitui-web:lint:biome:          12 │ + ····html:·string;
-apps-intuitui-web:lint:biome:          13 │ + ····metadata?:·{
-apps-intuitui-web:lint:biome:          14 │ + ······imagePaths:·Array<string>;
-apps-intuitui-web:lint:biome:          15 │ + ······[key:·string]:·unknown;
-apps-intuitui-web:lint:biome:          16 │ + ····};
-apps-intuitui-web:lint:biome:          17 │ + ··}
-apps-intuitui-web:lint:biome:      18  18 │   
-apps-intuitui-web:lint:biome:      19     │ - → type·Flatten<T>·=·T·extends·{·[K:·string]:·infer·U·}·?·U·:·never;
-apps-intuitui-web:lint:biome:          19 │ + ··type·Flatten<T>·=·T·extends·{·[K:·string]:·infer·U·}·?·U·:·never;
-apps-intuitui-web:lint:biome:      20  20 │   
-apps-intuitui-web:lint:biome:      21     │ - → export·type·CollectionKey·=·keyof·DataEntryMap;
-apps-intuitui-web:lint:biome:      22     │ - → export·type·CollectionEntry<C·extends·CollectionKey>·=·Flatten<DataEntryMap[C]>;
-
-apps-intuitui-web:lint:biome:          21 │ + ··export·type·CollectionKey·=·keyof·DataEntryMap;
-apps-intuitui-web:lint:biome:          22 │ + ··export·type·CollectionEntry<C·extends·CollectionKey>·=·Flatten<DataEntryMap[C]>;
-apps-intuitui-web:lint:biome:      23  23 │   
-apps-intuitui-web:lint:biome:      24     │ - → type·AllValuesOf<T>·=·T·extends·any·?·T[keyof·T]·:·never;
-apps-intuitui-web:lint:biome:          24 │ + ··type·AllValuesOf<T>·=·T·extends·any·?·T[keyof·T]·:·never;
-apps-intuitui-web:lint:biome:      25  25 │   
-apps-intuitui-web:lint:biome:      26     │ - → export·type·ReferenceDataEntry<
-apps-intuitui-web:lint:biome:      27     │ - → → C·extends·CollectionKey,
-apps-intuitui-web:lint:biome:      28     │ - → → E·extends·keyof·DataEntryMap[C]·=·string,
-apps-intuitui-web:lint:biome:      29     │ - → >·=·{
-apps-intuitui-web:lint:biome:      30     │ - → → collection:·C;
-apps-intuitui-web:lint:biome:      31     │ - → → id:·E;
-apps-intuitui-web:lint:biome:      32     │ - → };
-apps-intuitui-web:lint:biome:          26 │ + ··export·type·ReferenceDataEntry<
-apps-intuitui-web:lint:biome:          27 │ + ····C·extends·CollectionKey,
-apps-intuitui-web:lint:biome:          28 │ + ····E·extends·keyof·DataEntryMap[C]·=·string,
-apps-intuitui-web:lint:biome:          29 │ + ··>·=·{
-apps-intuitui-web:lint:biome:          30 │ + ····collection:·C;
-apps-intuitui-web:lint:biome:          31 │ + ····id:·E;
-apps-intuitui-web:lint:biome:          32 │ + ··};
-apps-intuitui-web:lint:biome:      33  33 │   
-apps-intuitui-web:lint:biome:      34     │ - → export·type·ReferenceLiveEntry<C·extends·keyof·LiveContentConfig['collections']>·=·{
-apps-intuitui-web:lint:biome:      35     │ - → → collection:·C;
-apps-intuitui-web:lint:biome:      36     │ - → → id:·string;
-apps-intuitui-web:lint:biome:      37     │ - → };
-apps-intuitui-web:lint:biome:          34 │ + ··export·type·ReferenceLiveEntry<C·extends·keyof·LiveContentConfig['collections']>·=·{
-apps-intuitui-web:lint:biome:          35 │ + ····collection:·C;
-apps-intuitui-web:lint:biome:          36 │ + ····id:·string;
-apps-intuitui-web:lint:biome:          37 │ + ··};
-apps-intuitui-web:lint:biome:      38  38 │   
-apps-intuitui-web:lint:biome:      39     │ - → export·function·getCollection<C·extends·keyof·DataEntryMap,·E·extends·CollectionEntry<C>>(
-apps-intuitui-web:lint:biome:      40     │ - → → collection:·C,
-apps-intuitui-web:lint:biome:      41     │ - → → filter?:·(entry:·CollectionEntry<C>)·=>·entry·is·E,
-apps-intuitui-web:lint:biome:      42     │ - → ):·Promise<E[]>;
-apps-intuitui-web:lint:biome:      43     │ - → export·function·getCollection<C·extends·keyof·DataEntryMap>(
-apps-intuitui-web:lint:biome:      44     │ - → → collection:·C,
-apps-intuitui-web:lint:biome:      45     │ - → → filter?:·(entry:·CollectionEntry<C>)·=>·unknown,
-apps-intuitui-web:lint:biome:      46     │ - → ):·Promise<CollectionEntry<C>[]>;
-apps-intuitui-web:lint:biome:          39 │ + ··export·function·getCollection<C·extends·keyof·DataEntryMap,·E·extends·CollectionEntry<C>>(
-apps-intuitui-web:lint:biome:          40 │ + ····collection:·C,
-apps-intuitui-web:lint:biome:          41 │ + ····filter?:·(entry:·CollectionEntry<C>)·=>·entry·is·E,
-apps-intuitui-web:lint:biome:          42 │ + ··):·Promise<E[]>;
-apps-intuitui-web:lint:biome:          43 │ + ··export·function·getCollection<C·extends·keyof·DataEntryMap>(
-apps-intuitui-web:lint:biome:          44 │ + ····collection:·C,
-apps-intuitui-web:lint:biome:          45 │ + ····filter?:·(entry:·CollectionEntry<C>)·=>·unknown,
-apps-intuitui-web:lint:biome:          46 │ + ··):·Promise<CollectionEntry<C>[]>;
-apps-intuitui-web:lint:biome:      47  47 │   
-apps-intuitui-web:lint:biome:      48     │ - → export·function·getLiveCollection<C·extends·keyof·LiveContentConfig['collections']>(
-apps-intuitui-web:lint:biome:      49     │ - → → collection:·C,
-apps-intuitui-web:lint:biome:      50     │ - → → filter?:·LiveLoaderCollectionFilterType<C>,
-apps-intuitui-web:lint:biome:      51     │ - → ):·Promise<
-apps-intuitui-web:lint:biome:      52     │ - → → import('astro').LiveDataCollectionResult<LiveLoaderDataType<C>,·LiveLoaderErrorType<C>>
-apps-intuitui-web:lint:biome:      53     │ - → >;
-apps-intuitui-web:lint:biome:          48 │ + ··export·function·getLiveCollection<C·extends·keyof·LiveContentConfig['collections']>(
-apps-intuitui-web:lint:biome:          49 │ + ····collection:·C,
-apps-intuitui-web:lint:biome:          50 │ + ····filter?:·LiveLoaderCollectionFilterType<C>,
-apps-intuitui-web:lint:biome:          51 │ + ··):·Promise<
-apps-intuitui-web:lint:biome:          52 │ + ····import('astro').LiveDataCollectionResult<LiveLoaderDataType<C>,·LiveLoaderErrorType<C>>
-apps-intuitui-web:lint:biome:          53 │ + ··>;
-apps-intuitui-web:lint:biome:      54  54 │   
-apps-intuitui-web:lint:biome:      55     │ - → export·function·getEntry<
-apps-intuitui-web:lint:biome:      56     │ - → → C·extends·keyof·DataEntryMap,
-apps-intuitui-web:lint:biome:      57     │ - → → E·extends·keyof·DataEntryMap[C]·|·(string·&·{}),
-apps-intuitui-web:lint:biome:      58     │ - → >(
-apps-intuitui-web:lint:biome:      59     │ - → → entry:·ReferenceDataEntry<C,·E>,
-apps-intuitui-web:lint:biome:      60     │ - → ):·E·extends·keyof·DataEntryMap[C]
-apps-intuitui-web:lint:biome:      61     │ - → → ?·Promise<DataEntryMap[C][E]>
-
-apps-intuitui-web:lint:biome:      62     │ - → → :·Promise<CollectionEntry<C>·|·undefined>;
-apps-intuitui-web:lint:biome:      63     │ - → export·function·getEntry<
-apps-intuitui-web:lint:biome:      64     │ - → → C·extends·keyof·DataEntryMap,
-apps-intuitui-web:lint:biome:      65     │ - → → E·extends·keyof·DataEntryMap[C]·|·(string·&·{}),
-apps-intuitui-web:lint:biome:      66     │ - → >(
-apps-intuitui-web:lint:biome:      67     │ - → → collection:·C,
-apps-intuitui-web:lint:biome:      68     │ - → → id:·E,
-apps-intuitui-web:lint:biome:      69     │ - → ):·E·extends·keyof·DataEntryMap[C]
-apps-intuitui-web:lint:biome:      70     │ - → → ?·string·extends·keyof·DataEntryMap[C]
-apps-intuitui-web:lint:biome:      71     │ - → → → ?·Promise<DataEntryMap[C][E]>·|·undefined
-apps-intuitui-web:lint:biome:      72     │ - → → → :·Promise<DataEntryMap[C][E]>
-apps-intuitui-web:lint:biome:      73     │ - → → :·Promise<CollectionEntry<C>·|·undefined>;
-apps-intuitui-web:lint:biome:      74     │ - → export·function·getLiveEntry<C·extends·keyof·LiveContentConfig['collections']>(
-apps-intuitui-web:lint:biome:      75     │ - → → collection:·C,
-apps-intuitui-web:lint:biome:      76     │ - → → filter:·string·|·LiveLoaderEntryFilterType<C>,
-apps-intuitui-web:lint:biome:      77     │ - → ):·Promise<import('astro').LiveDataEntryResult<LiveLoaderDataType<C>,·LiveLoaderErrorType<C>>>;
-apps-intuitui-web:lint:biome:          55 │ + ··export·function·getEntry<
-apps-intuitui-web:lint:biome:          56 │ + ····C·extends·keyof·DataEntryMap,
-apps-intuitui-web:lint:biome:          57 │ + ····E·extends·keyof·DataEntryMap[C]·|·(string·&·{}),
-apps-intuitui-web:lint:biome:          58 │ + ··>(
-apps-intuitui-web:lint:biome:          59 │ + ····entry:·ReferenceDataEntry<C,·E>,
-apps-intuitui-web:lint:biome:          60 │ + ··):·E·extends·keyof·DataEntryMap[C]
-apps-intuitui-web:lint:biome:          61 │ + ····?·Promise<DataEntryMap[C][E]>
-apps-intuitui-web:lint:biome:          62 │ + ····:·Promise<CollectionEntry<C>·|·undefined>;
-apps-intuitui-web:lint:biome:          63 │ + ··export·function·getEntry<
-apps-intuitui-web:lint:biome:          64 │ + ····C·extends·keyof·DataEntryMap,
-@repo/profile:lint:biome:        51 │ + 
-@repo/profile:lint:biome:        52 │ + ··if·(error·||·!instance)·{
-@repo/profile:lint:biome: The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
-@repo/profile:lint:biome: Diagnostics not shown: 67.
-@repo/profile:lint:biome: Checked 53 files in 412ms. No fixes applied.
-@repo/profile:lint:biome: Found 18 errors.
-@repo/profile:lint:biome: Found 45 warnings.
-@repo/profile:lint:biome: Found 24 infos.
-@repo/profile:lint:biome:        53 │ + ····return·(
-@repo/profile:lint:biome:        54 │ + ······<Box·className="p-10·text-center·text-text-tertiary">Profile·Not·Found·or·Error·Loading</Box>
-@repo/profile:lint:biome:        55 │ + ····);
-@repo/profile:lint:biome:        56 │ + ··}
-@repo/profile:lint:biome:        57 │ + 
-@repo/profile:lint:biome:        58 │ + ··//·Fallback·for·other·entity·types·if·needed,·or·structured·entity·view
-@repo/profile:lint:biome:        59 │ + ··return·(
-@repo/profile:lint:biome:        60 │ + ····<Box·className="max-w-[1200px]·mx-auto·p-6">
-@repo/profile:lint:biome:        61 │ + ······<IdentityCard·data={instance·as·unknown·as·IdentityData}·/>
-@repo/profile:lint:biome:        62 │ + ····</Box>
-@repo/profile:lint:biome:        63 │ + ··);
-@repo/profile:lint:biome:        64 │ + }
-@repo/profile:lint:biome:     65 65 │   
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: src\screens\ThuthimalClaimScreen.tsx format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome:   × Formatter would have printed the following content:
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:       1     │ - /**␍
-@repo/profile:lint:biome:       2     │ - ·*·ThuthimalClaimScreen·—·Flower·of·Gratitude·gift·claim·experience␍
-@repo/profile:lint:biome:       3     │ - ·*␍
-@repo/profile:lint:biome:       4     │ - ·*·Navigated·to·from·QRHandlerScreen·when·a·thuthimal_gift·QR·is·scanned.␍
-@repo/profile:lint:biome:       5     │ - ·*·Philosophy:·Non-transactional,·dignified,·honors·teaching·as·sacred·work.␍
-@repo/profile:lint:biome:       6     │ - ·*/␍
-@repo/profile:lint:biome:       7     │ - ␍
-@repo/profile:lint:biome:       8     │ - import·{·type·RouteProp,·useNavigation,·useRoute·}·from·'@react-navigation/native';␍
-@repo/profile:lint:biome:       9     │ - import·{·identityAPI,·thuthimalAPI·}·from·'@repo/core/api';␍
-@repo/profile:lint:biome:      10     │ - ␍
-apps-intuitui-web:lint:biome:          65 │ + ····E·extends·keyof·DataEntryMap[C]·|·(string·&·{}),
-apps-intuitui-web:lint:biome:          66 │ + ··>(
-apps-intuitui-web:lint:biome:          67 │ + ····collection:·C,
-apps-intuitui-web:lint:biome:          68 │ + ····id:·E,
-apps-intuitui-web:lint:biome:          69 │ + ··):·E·extends·keyof·DataEntryMap[C]
-apps-intuitui-web:lint:biome:          70 │ + ····?·string·extends·keyof·DataEntryMap[C]
-apps-intuitui-web:lint:biome:          71 │ + ······?·Promise<DataEntryMap[C][E]>·|·undefined
-apps-intuitui-web:lint:biome:          72 │ + ······:·Promise<DataEntryMap[C][E]>
-apps-intuitui-web:lint:biome:          73 │ + ····:·Promise<CollectionEntry<C>·|·undefined>;
-apps-intuitui-web:lint:biome:          74 │ + ··export·function·getLiveEntry<C·extends·keyof·LiveContentConfig['collections']>(
-apps-intuitui-web:lint:biome:          75 │ + ····collection:·C,
-apps-intuitui-web:lint:biome:          76 │ + ····filter:·string·|·LiveLoaderEntryFilterType<C>,
-apps-intuitui-web:lint:biome:          77 │ + ··):·Promise<import('astro').LiveDataEntryResult<LiveLoaderDataType<C>,·LiveLoaderErrorType<C>>>;
-apps-intuitui-web:lint:biome:      78  78 │   
-apps-intuitui-web:lint:biome:      79     │ - → /**·Resolve·an·array·of·entry·references·from·the·same·collection·*/
-apps-intuitui-web:lint:biome:      80     │ - → export·function·getEntries<C·extends·keyof·DataEntryMap>(
-apps-intuitui-web:lint:biome:      81     │ - → → entries:·ReferenceDataEntry<C,·keyof·DataEntryMap[C]>[],
-apps-intuitui-web:lint:biome:      82     │ - → ):·Promise<CollectionEntry<C>[]>;
-apps-intuitui-web:lint:biome:          79 │ + ··/**·Resolve·an·array·of·entry·references·from·the·same·collection·*/
-apps-intuitui-web:lint:biome:   138 more lines truncated
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: .astro\types.d.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome:   × Formatter would have printed the following content:
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:     1 1 │   /// <reference types="astro/client" />
-apps-intuitui-web:lint:biome:     2   │ - ///·<reference·path="content.d.ts"·/>
-apps-intuitui-web:lint:biome:       2 │ + ///·<reference·path="content.d.ts"·/>
-apps-intuitui-web:lint:biome:       3 │ + 
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: astro.config.mjs format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome:   × Formatter would have printed the following content:
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:      1    │ - //·@ts-check␍
-apps-intuitui-web:lint:biome:      2    │ - ␍
-apps-intuitui-web:lint:biome:      3    │ - import·sitemap·from·'@astrojs/sitemap';␍
-apps-intuitui-web:lint:biome:      4    │ - import·svelte·from·'@astrojs/svelte';␍
-apps-intuitui-web:lint:biome:      5    │ - import·tailwindcss·from·'@tailwindcss/vite';␍
-apps-intuitui-web:lint:biome:      6    │ - import·{·defineConfig·}·from·'astro/config';␍
-apps-intuitui-web:lint:biome:      7    │ - ␍
-apps-intuitui-web:lint:biome:      8    │ - //·https://astro.build/config␍
-apps-intuitui-web:lint:biome:      9    │ - export·default·defineConfig({␍
-apps-intuitui-web:lint:biome:     10    │ - ··site:·'https://intuituilabs.edlove.org',␍
-apps-intuitui-web:lint:biome:     11    │ - ··vite:·{␍
-apps-intuitui-web:lint:biome:     12    │ - ····plugins:·[tailwindcss()],␍
-apps-intuitui-web:lint:biome:     13    │ - ··},␍
-apps-intuitui-web:lint:biome:     14    │ - ··integrations:·[svelte(),·sitemap()],␍
-apps-intuitui-web:lint:biome:     15    │ - });␍
-apps-intuitui-web:lint:biome:         1 │ + //·@ts-check
-apps-intuitui-web:lint:biome:         2 │ + 
-apps-intuitui-web:lint:biome:         3 │ + import·sitemap·from·'@astrojs/sitemap';
-apps-intuitui-web:lint:biome:         4 │ + import·svelte·from·'@astrojs/svelte';
-apps-intuitui-web:lint:biome:         5 │ + import·tailwindcss·from·'@tailwindcss/vite';
-apps-intuitui-web:lint:biome:         6 │ + import·{·defineConfig·}·from·'astro/config';
-apps-intuitui-web:lint:biome:         7 │ + 
-apps-intuitui-web:lint:biome:         8 │ + //·https://astro.build/config
-apps-intuitui-web:lint:biome:         9 │ + export·default·defineConfig({
-apps-intuitui-web:lint:biome:        10 │ + ··site:·'https://intuituilabs.edlove.org',
-apps-intuitui-web:lint:biome:        11 │ + ··vite:·{
-apps-intuitui-web:lint:biome:        12 │ + ····plugins:·[tailwindcss()],
-apps-intuitui-web:lint:biome:        13 │ + ··},
-apps-intuitui-web:lint:biome:        14 │ + ··integrations:·[svelte(),·sitemap()],
-apps-intuitui-web:lint:biome:        15 │ + });
-apps-intuitui-web:lint:biome:     16 16 │   
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: src\components\StructuredData.astro format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome:   × Formatter would have printed the following content:
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:      1  1 │   ---␍
-apps-intuitui-web:lint:biome:      2    │ - interface·Props·{␍
-apps-intuitui-web:lint:biome:      3    │ - ··data:·Record<string,·any>·|·Array<Record<string,·any>>;␍
-apps-intuitui-web:lint:biome:      4    │ - }␍
-apps-intuitui-web:lint:biome:      5    │ - ␍
-apps-intuitui-web:lint:biome:      6    │ - const·{·data·}·=·Astro.props;␍
-apps-intuitui-web:lint:biome:      7    │ - const·_normalized·=·Array.isArray(data)·?·data·:·[data];␍
-apps-intuitui-web:lint:biome:         2 │ + interface·Props·{
-apps-intuitui-web:lint:biome:         3 │ + ··data:·Record<string,·any>·|·Array<Record<string,·any>>;
-apps-intuitui-web:lint:biome:         4 │ + }
-apps-intuitui-web:lint:biome:         5 │ + 
-apps-intuitui-web:lint:biome:         6 │ + const·{·data·}·=·Astro.props;
-apps-intuitui-web:lint:biome:         7 │ + const·_normalized·=·Array.isArray(data)·?·data·:·[data];
-apps-intuitui-web:lint:biome:      8  8 │   ---␍
-apps-intuitui-web:lint:biome:      9  9 │   ␍
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: src\components\SystemsGrid.astro format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome:   × Formatter would have printed the following content:
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:      1  1 │   ---␍
-apps-intuitui-web:lint:biome:      2    │ - interface·Props·{␍
-apps-intuitui-web:lint:biome:      3    │ - ··columns?:·number;␍
-apps-intuitui-web:lint:biome:      4    │ - ··className?:·string;␍
-apps-intuitui-web:lint:biome:      5    │ - }␍
-apps-intuitui-web:lint:biome:      6    │ - ␍
-apps-intuitui-web:lint:biome:      7    │ - const·{·columns·=·3,·className·=·''·}·=·Astro.props;␍
-apps-intuitui-web:lint:biome:         2 │ + interface·Props·{
-apps-intuitui-web:lint:biome:         3 │ + ··columns?:·number;
-apps-intuitui-web:lint:biome:         4 │ + ··className?:·string;
-apps-intuitui-web:lint:biome:         5 │ + }
-apps-intuitui-web:lint:biome:         6 │ + 
-apps-intuitui-web:lint:biome:         7 │ + const·{·columns·=·3,·className·=·''·}·=·Astro.props;
-apps-intuitui-web:lint:biome:      8  8 │   ---␍
-apps-intuitui-web:lint:biome:      9  9 │   ␍
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome: src\layouts\MainLayout.astro format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-intuitui-web:lint:biome: 
-apps-intuitui-web:lint:biome:   × Formatter would have printed the following content:
-apps-intuitui-web:lint:biome:   
-apps-intuitui-web:lint:biome:       1   1 │   ---␍
-apps-intuitui-web:lint:biome:       2     │ - import·'../styles/global.css';␍
-apps-intuitui-web:lint:biome:       3     │ - import·StructuredData·from·'../components/StructuredData.astro';␍
-apps-intuitui-web:lint:biome:       4     │ - import·{␍
-apps-intuitui-web:lint:biome:       5     │ - ··defaultOgImage,␍
-apps-intuitui-web:lint:biome:       6     │ - ··ORGANIZATION,␍
-apps-intuitui-web:lint:biome:       7     │ - ··SITE_DESCRIPTION,␍
-apps-intuitui-web:lint:biome:       8     │ - ··SITE_KEYWORDS,␍
-apps-intuitui-web:lint:biome:       9     │ - ··SITE_NAME,␍
-apps-intuitui-web:lint:biome:      10     │ - ··SITE_TITLE,␍
-apps-intuitui-web:lint:biome:      11     │ - ··SITE_URL,␍
-apps-intuitui-web:lint:biome:      12     │ - }·from·'../lib/site';␍
-apps-intuitui-web:lint:biome:      13     │ - ␍
-apps-intuitui-web:lint:biome:      14     │ - interface·Props·{␍
-apps-intuitui-web:lint:biome:      15     │ - ··title?:·string;␍
-apps-intuitui-web:lint:biome:      16     │ - ··description?:·string;␍
-apps-intuitui-web:lint:biome:      17     │ - ··theme?:·'home'·|·'about'·|·'projects'·|·'studio'·|·'default';␍
-apps-intuitui-web:lint:biome:      18     │ - ··image?:·string;␍
-apps-intuitui-web:lint:biome:      19     │ - ··noindex?:·boolean;␍
-apps-intuitui-web:lint:biome:      20     │ - ··structuredData?:·Record<string,·any>·|·Array<Record<string,·any>>;␍
-apps-intuitui-web:lint:biome:      21     │ - }␍
-apps-intuitui-web:lint:biome:      22     │ - ␍
-apps-intuitui-web:lint:biome:      23     │ - const·{␍
-apps-intuitui-web:lint:biome:      24     │ - ··title·=·SITE_TITLE,␍
-apps-intuitui-web:lint:biome:      25     │ - ··description·=·SITE_DESCRIPTION,␍
-apps-intuitui-web:lint:biome:      26     │ - ··theme·=·'default',␍
-apps-intuitui-web:lint:biome:      27     │ - ··image,␍
-apps-intuitui-web:lint:biome:      28     │ - ··noindex·=·false,␍
-apps-intuitui-web:lint:biome:      29     │ - ··structuredData·=·[],␍
-apps-intuitui-web:lint:biome:      30     │ - }·=·Astro.props;␍
-apps-intuitui-web:lint:biome:      31     │ - ␍
-apps-intuitui-web:lint:biome:      32     │ - const·canonical·=·Astro.url.href;␍
-apps-intuitui-web:lint:biome:      33     │ - const·_ogImage·=·image·??·defaultOgImage(Astro.url.pathname);␍
-apps-intuitui-web:lint:biome:      34     │ - const·_robotsContent·=·noindex·?·'noindex,·nofollow'·:·'index,·follow';␍
-apps-intuitui-web:lint:biome:      35     │ - const·_baseStructuredData·=·[␍
-apps-intuitui-web:lint:biome:      36     │ - ··{␍
-apps-intuitui-web:lint:biome:      37     │ - ····'@context':·'https://schema.org',␍
-apps-intuitui-web:lint:biome:      38     │ - ····'@type':·'Organization',␍
-apps-intuitui-web:lint:biome:      39     │ - ····...ORGANIZATION,␍
-apps-intuitui-web:lint:biome:      40     │ - ··},␍
-apps-intuitui-web:lint:biome:      41     │ - ··{␍
-apps-intuitui-web:lint:biome:      42     │ - ····'@context':·'https://schema.org',␍
-apps-intuitui-web:lint:biome:      43     │ - ····'@type':·'WebSite',␍
-apps-intuitui-web:lint:biome:      44     │ - ····name:·SITE_NAME,␍
-apps-intuitui-web:lint:biome:      45     │ - ····url:·SITE_URL,␍
-apps-intuitui-web:lint:biome:      46     │ - ····description:·SITE_DESCRIPTION,␍
-apps-intuitui-web:lint:biome:      47     │ - ··},␍
-apps-intuitui-web:lint:biome:      48     │ - ··{␍
-apps-intuitui-web:lint:biome:      49     │ - ····'@context':·'https://schema.org',␍
-apps-intuitui-web:lint:biome:      50     │ - ····'@type':·'WebPage',␍
-apps-intuitui-web:lint:biome:      51     │ - ····name:·title,␍
-apps-intuitui-web:lint:biome:      52     │ - ····description,␍
-apps-intuitui-web:lint:biome:      53     │ - ····url:·canonical,␍
-apps-intuitui-web:lint:biome:      54     │ - ····isPartOf:·{␍
-apps-intuitui-web:lint:biome:      55     │ - ······'@type':·'WebSite',␍
-apps-intuitui-web:lint:biome:      56     │ - ······name:·SITE_NAME,␍
-apps-intuitui-web:lint:biome:      57     │ - ······url:·SITE_URL,␍
-apps-intuitui-web:lint:biome:      58     │ - ····},␍
-apps-intuitui-web:lint:biome:      59     │ - ··},␍
-apps-intuitui-web:lint:biome:      60     │ - ]␍
-apps-intuitui-web:lint:biome:      61     │ - ··.concat(Array.isArray(structuredData)·?·structuredData·:·[structuredData])␍
-apps-intuitui-web:lint:biome:      62     │ - ··.filter(Boolean);␍
-apps-intuitui-web:lint:biome:      63     │ - ␍
-apps-intuitui-web:lint:biome:      64     │ - //·Theme-specific·background·configurations·with·parallax·weights␍
-apps-intuitui-web:lint:biome:      65     │ - const·themes·=·{␍
-apps-intuitui-web:lint:biome:      66     │ - ··home:·[␍
-apps-intuitui-web:lint:biome:      67     │ - ····{␍
-apps-intuitui-web:lint:biome:      68     │ - ······color:·'bg-brand-sky/5',␍
-apps-intuitui-web:lint:biome:      69     │ - ······shape:·'w-[70%]·h-[80%]·-top-[20%]·-left-[10%]·-rotate-12',␍
-apps-intuitui-web:lint:biome:      70     │ - ······parallax:·0.1,␍
-apps-intuitui-web:lint:biome:      71     │ - ····},␍
-apps-intuitui-web:lint:biome:      72     │ - ····{␍
-apps-intuitui-web:lint:biome:      73     │ - ······color:·'bg-brand-leaf/5',␍
-apps-intuitui-web:lint:biome:      74     │ - ······shape:·'w-[60%]·h-[70%]·-bottom-[20%]·-right-[10%]·rotate-6',␍
-apps-intuitui-web:lint:biome:      75     │ - ······parallax:·-0.15,␍
-apps-intuitui-web:lint:biome:      76     │ - ····},␍
-apps-intuitui-web:lint:biome:      77     │ - ····{␍
-apps-intuitui-web:lint:biome:      78     │ - ······color:·'bg-brand-sky/3',␍
-apps-intuitui-web:lint:biome:      79     │ - ······shape:·'w-[40%]·h-[50%]·top-1/4·left-1/2·-rotate-45',␍
-apps-intuitui-web:lint:biome:      80     │ - ······parallax:·0.05,␍
-apps-intuitui-web:lint:biome:      81     │ - ····},␍
-apps-intuitui-web:lint:biome:      82     │ - ··],␍
-apps-intuitui-web:lint:biome:      83     │ - ··about:·[␍
-apps-intuitui-web:lint:biome:      84     │ - ····{␍
-apps-intuitui-web:lint:biome:      85     │ - ······color:·'bg-brand-leaf/3',␍
-apps-intuitui-web:lint:biome:      86     │ - ······shape:·'w-[100%]·h-[40%]·-top-[10%]·left-0·rotate-2',␍
-apps-intuitui-web:lint:biome:      87     │ - ······parallax:·0.2,␍
-apps-intuitui-web:lint:biome:      88     │ - ····},␍
-apps-intuitui-web:lint:biome:      89     │ - ····{␍
-apps-intuitui-web:lint:biome:      90     │ - ······color:·'bg-brand-primary/2',␍
-apps-intuitui-web:lint:biome:      91     │ - ······shape:·'w-[50%]·h-[100%]·top-0·-left-[10%]·-rotate-6',␍
-apps-intuitui-web:lint:biome:      92     │ - ······parallax:·-0.1,␍
-apps-intuitui-web:lint:biome:      93     │ - ····},␍
-apps-intuitui-web:lint:biome:      94     │ - ····{␍
-apps-intuitui-web:lint:biome:      95     │ - ······color:·'bg-brand-leaf/5',␍
-apps-intuitui-web:lint:biome:      96     │ - ······shape:·'w-[30%]·h-[30%]·bottom-20·right-20·rotate-45',␍
-apps-intuitui-web:lint:biome:      97     │ - ······parallax:·0.3,␍
-apps-intuitui-web:lint:biome:      98     │ - ····},␍
-apps-intuitui-web:lint:biome:      99     │ - ··],␍
-apps-intuitui-web:lint:biome:     100     │ - ··projects:·[␍
-apps-intuitui-web:lint:biome:     101     │ - ····{␍
-apps-intuitui-web:lint:biome:     102     │ - ······color:·'bg-brand-sky/10',␍
-apps-intuitui-web:lint:biome:     103     │ - ······shape:·'w-[120%]·h-[30%]·top-[40%]·-left-[10%]·rotate-12',␍
-apps-intuitui-web:lint:biome:     104     │ - ······parallax:·0.15,␍
-apps-intuitui-web:lint:biome:     105     │ - ····},␍
-apps-intuitui-web:lint:biome:     106     │ - ····{␍
-apps-intuitui-web:lint:biome:     107     │ - ······color:·'bg-brand-primary/5',␍
-apps-intuitui-web:lint:biome:     108     │ - ······shape:·'w-[40%]·h-[80%]·-top-[10%]·right-[10%]·-rotate-12',␍
-apps-intuitui-web:lint:biome:     109     │ - ······parallax:·-0.05,␍
-apps-intuitui-web:lint:biome:     110     │ - ····},␍
-apps-intuitui-web:lint:biome:     111     │ - ··],␍
-apps-intuitui-web:lint:biome:     112     │ - ··studio:·[␍
-apps-intuitui-web:lint:biome:     113     │ - ····{␍
-apps-intuitui-web:lint:biome:     114     │ - ······color:·'bg-brand-primary/5',␍
-apps-intuitui-web:lint:biome:     115     │ - ······shape:·'w-[100%]·h-[1px]·top-1/4·left-0·rotate-1',␍
-apps-intuitui-web:lint:biome:     116     │ - ······parallax:·0.4,␍
-apps-intuitui-web:lint:biome:     117     │ - ····},␍
-apps-intuitui-web:lint:biome:     118     │ - ····{␍
-apps-intuitui-web:lint:biome:     119     │ - ······color:·'bg-brand-primary/5',␍
-apps-intuitui-web:lint:biome:     120     │ - ······shape:·'w-[100%]·h-[1px]·top-2/3·left-0·-rotate-1',␍
-apps-intuitui-web:lint:biome:     121     │ - ······parallax:·0.6,␍
-apps-intuitui-web:lint:biome:     122     │ - ····},␍
-apps-intuitui-web:lint:biome:     123     │ - ····{␍
-apps-intuitui-web:lint:biome:     124     │ - ······color:·'bg-brand-sky/5',␍
-apps-intuitui-web:lint:biome:     125     │ - ······shape:·'w-[30%]·h-[60%]·top-0·right-0·-rotate-12',␍
-apps-intuitui-web:lint:biome:     126     │ - ······parallax:·0.2,␍
-apps-intuitui-web:lint:biome:     127     │ - ····},␍
-apps-intuitui-web:lint:biome:     128     │ - ··],␍
-apps-intuitui-web:lint:biome:     129     │ - ··default:·[],␍
-apps-intuitui-web:lint:biome:     130     │ - };␍
-apps-intuitui-web:lint:biome:     131     │ - ␍
-apps-intuitui-web:lint:biome:     132     │ - const·_currentBackground·=·themes[theme]·||·themes.default;␍
-apps-intuitui-web:lint:biome:           2 │ + import·'../styles/global.css';
-apps-intuitui-web:lint:biome:           3 │ + import·StructuredData·from·'../components/StructuredData.astro';
-apps-intuitui-web:lint:biome:           4 │ + import·{
-apps-intuitui-web:lint:biome:           5 │ + ··defaultOgImage,
-apps-intuitui-web:lint:biome:           6 │ + ··ORGANIZATION,
-apps-intuitui-web:lint:biome:           7 │ + ··SITE_DESCRIPTION,
-apps-intuitui-web:lint:biome:           8 │ + ··SITE_KEYWORDS,
-apps-intuitui-web:lint:biome:           9 │ + ··SITE_NAME,
-apps-intuitui-web:lint:biome:          10 │ + ··SITE_TITLE,
-apps-intuitui-web:lint:biome:          11 │ + ··SITE_URL,
-apps-intuitui-web:lint:biome:          12 │ + }·from·'../lib/site';
-
-@repo/profile:lint:biome:      11     │ - import·ScreenWrapper·from·'@repo/ui/components/ScreenWrapper';␍
-
-@repo/profile:lint:biome:      12     │ - import·{␍
-@repo/profile:lint:biome:      13     │ - ··AnimatedView,␍
-@repo/profile:lint:biome:      14     │ - ··Box,␍
-@repo/profile:lint:biome:      15     │ - ··Button,␍
-@repo/profile:lint:biome:      16     │ - ··ButtonText,␍
-@repo/profile:lint:biome:      17     │ - ··Heading,␍
-
-@repo/profile:lint:biome:      18     │ - ··HStack,␍
-@repo/profile:lint:biome:      19     │ - ··Spinner,␍
-@repo/profile:lint:biome:      20     │ - ··Text,␍
-@repo/profile:lint:biome:      21     │ - ··VStack,␍
-@repo/profile:lint:biome:      22     │ - }·from·'@repo/ui/primitives';␍
-@repo/profile:lint:biome:      23     │ - import·{·hapticError,·hapticSuccess·}·from·'@repo/ui/utils/haptics';␍
-@repo/profile:lint:biome:      24     │ - ␍
-@repo/profile:lint:biome:      25     │ - import·{·useEffect,·useState·}·from·'react';␍
-@repo/profile:lint:biome:      26     │ - import·{·useTranslation·}·from·'react-i18next';␍
-@repo/profile:lint:biome:      27     │ - import·{␍
-@repo/profile:lint:biome:      28     │ - ··FadeInDown,␍
-@repo/profile:lint:biome:      29     │ - ··useAnimatedStyle,␍
-@repo/profile:lint:biome:      30     │ - ··useSharedValue,␍
-@repo/profile:lint:biome:      31     │ - ··withDelay,␍
-@repo/profile:lint:biome:      32     │ - ··withSequence,␍
-@repo/profile:lint:biome:      33     │ - ··withSpring,␍
-@repo/profile:lint:biome:      34     │ - ··withTiming,␍
-@repo/profile:lint:biome:      35     │ - }·from·'react-native-reanimated';␍
-@repo/profile:lint:biome:      36     │ - ␍
-@repo/profile:lint:biome:      37     │ - type·ClaimRouteParams·=·{␍
-@repo/profile:lint:biome:      38     │ - ··ThuthimalClaim:·{␍
-@repo/profile:lint:biome:      39     │ - ····gift_token:·string;␍
-@repo/profile:lint:biome:      40     │ - ····gifter_name:·string;␍
-@repo/profile:lint:biome:      41     │ - ··};␍
-@repo/profile:lint:biome:      42     │ - };␍
-@repo/profile:lint:biome:      43     │ - ␍
-@repo/profile:lint:biome:      44     │ - type·ClaimState·=·'loading'·|·'success'·|·'already_claimed'·|·'error';␍
-@repo/profile:lint:biome:      45     │ - ␍
-@repo/profile:lint:biome:      46     │ - export·default·function·ThuthimalClaimScreen()·{␍
-@repo/profile:lint:biome:      47     │ - ··const·navigation·=·useNavigation<any>();␍
-@repo/profile:lint:biome:      48     │ - ··const·route·=·useRoute<RouteProp<ClaimRouteParams,·'ThuthimalClaim'>>();␍
-@repo/profile:lint:biome:      49     │ - ··const·{·t·}·=·useTranslation();␍
-@repo/profile:lint:biome:      50     │ - ··const·[claimState,·setClaimState]·=·useState<ClaimState>('loading');␍
-@repo/profile:lint:biome:      51     │ - ··const·[gifterName,·setGifterName]·=·useState(route.params?.gifter_name·??·'Someone·special');␍
-@repo/profile:lint:biome:      52     │ - ␍
-@repo/profile:lint:biome:      53     │ - ··//·Flower·bloom·animation␍
-@repo/profile:lint:biome:      54     │ - ··const·flowerScale·=·useSharedValue(0);␍
-@repo/profile:lint:biome:      55     │ - ··const·flowerOpacity·=·useSharedValue(0);␍
-@repo/profile:lint:biome:      56     │ - ␍
-@repo/profile:lint:biome:      57     │ - ··const·flowerStyle·=·useAnimatedStyle(()·=>·({␍
-@repo/profile:lint:biome:      58     │ - ····transform:·[{·scale:·flowerScale.value·}],␍
-@repo/profile:lint:biome:      59     │ - ····opacity:·flowerOpacity.value,␍
-@repo/profile:lint:biome:      60     │ - ··}));␍
-@repo/profile:lint:biome:      61     │ - ␍
-@repo/profile:lint:biome:      62     │ - ··useEffect(()·=>·{␍
-@repo/profile:lint:biome:      63     │ - ····const·claimGift·=·async·()·=>·{␍
-
-@repo/profile:lint:biome:      64     │ - ······const·{·gift_token·}·=·route.params;␍
-@repo/profile:lint:biome:      65     │ - ······try·{␍
-@repo/profile:lint:biome:      66     │ - ········const·myId·=·await·identityAPI.getMyInternalId();␍
-@repo/profile:lint:biome:      67     │ - ········if·(!myId)·{␍
-@repo/profile:lint:biome:      68     │ - ··········navigation.navigate('Auth');␍
-@repo/profile:lint:biome:      69     │ - ··········return;␍
-@repo/profile:lint:biome:      70     │ - ········}␍
-@repo/profile:lint:biome:      71     │ - ␍
-@repo/profile:lint:biome:      72     │ - ········const·result·=·await·thuthimalAPI.claimGift({␍
-@repo/profile:lint:biome:      73     │ - ··········gift_token,␍
-@repo/profile:lint:biome:      74     │ - ··········recipient_id:·myId,␍
-@repo/profile:lint:biome:      75     │ - ········});␍
-@repo/profile:lint:biome:      76     │ - ␍
-@repo/profile:lint:biome:      77     │ - ········if·(result.success)·{␍
-@repo/profile:lint:biome:      78     │ - ··········setGifterName(result.gifter_name·??·gifterName);␍
-@repo/profile:lint:biome:      79     │ - ··········setClaimState('success');␍
-@repo/profile:lint:biome:      80     │ - ··········hapticSuccess();␍
-@repo/profile:lint:biome:      81     │ - ··········//·Bloom·animation␍
-@repo/profile:lint:biome:      82     │ - ··········flowerScale.value·=·withDelay(␍
-@repo/profile:lint:biome:      83     │ - ············200,␍
-@repo/profile:lint:biome:      84     │ - ············withSequence(␍
-@repo/profile:lint:biome:      85     │ - ··············withSpring(1.3,·{·damping:·8,·stiffness:·100·}),␍
-@repo/profile:lint:biome:      86     │ - ··············withSpring(1.0,·{·damping:·12,·stiffness:·120·}),␍
-@repo/profile:lint:biome:      87     │ - ············),␍
-@repo/profile:lint:biome:      88     │ - ··········);␍
-
-@repo/profile:lint:biome:      89     │ - ··········flowerOpacity.value·=·withTiming(1,·{·duration:·400·});␍
-@repo/profile:lint:biome:      90     │ - ········}·else·if·(result.error·===·'already_claimed_or_invalid')·{␍
-@repo/profile:lint:biome:      91     │ - ··········setClaimState('already_claimed');␍
-@repo/profile:lint:biome:      92     │ - ··········hapticError();␍
-@repo/profile:lint:biome:      93     │ - ········}·else·{␍
-@repo/profile:lint:biome:      94     │ - ··········setClaimState('error');␍
-@repo/profile:lint:biome:      95     │ - ··········hapticError();␍
-@repo/profile:lint:biome:      96     │ - ········}␍
-@repo/profile:lint:biome:      97     │ - ······}·catch·(err)·{␍
-@repo/profile:lint:biome:      98     │ - ········console.error('ThuthimalClaimScreen·error:',·err);␍
-@repo/profile:lint:biome:      99     │ - ········setClaimState('error');␍
-@repo/profile:lint:biome:     100     │ - ········hapticError();␍
-apps-intuitui-web:lint:biome:          13 │ + 
-@repo/profile:lint:biome:     101     │ - ······}␍
-apps-intuitui-web:lint:biome:          14 │ + interface·Props·{
-@repo/profile:lint:biome:     102     │ - ····};␍
-apps-intuitui-web:lint:biome:          15 │ + ··title?:·string;
-@repo/profile:lint:biome:     103     │ - ␍
-apps-intuitui-web:lint:biome:          16 │ + ··description?:·string;
-@repo/profile:lint:biome:     104     │ - ····void·claimGift();␍
-apps-intuitui-web:lint:biome:          17 │ + ··theme?:·'home'·|·'about'·|·'projects'·|·'studio'·|·'default';
-@repo/profile:lint:biome:     105     │ - ··},·[route.params,·navigation,·gifterName,·flowerScale,·flowerOpacity]);␍
-apps-intuitui-web:lint:biome:          18 │ + ··image?:·string;
-@repo/profile:lint:biome:     106     │ - ␍
-apps-intuitui-web:lint:biome:          19 │ + ··noindex?:·boolean;
-@repo/profile:lint:biome:     107     │ - ··const·handleContinue·=·()·=>·{␍
-apps-intuitui-web:lint:biome:   115 more lines truncated
-@repo/profile:lint:biome:     108     │ - ····navigation.navigate('Main',·{·screen:·'Profile'·});␍
-apps-intuitui-web:lint:biome:   
-@repo/profile:lint:biome:     109     │ - ··};␍
-apps-intuitui-web:lint:biome: 
-@repo/profile:lint:biome:     110     │ - ␍
-apps-intuitui-web:lint:biome: check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome:     111     │ - ··if·(claimState·===·'loading')·{␍
-apps-intuitui-web:lint:biome: 
-@repo/profile:lint:biome:     112     │ - ····return·(␍
-apps-intuitui-web:lint:biome:   × Some errors were emitted while running checks.
-@repo/profile:lint:biome:     113     │ - ······<ScreenWrapper>␍
-apps-intuitui-web:lint:biome:   
-@repo/profile:lint:biome:     114     │ - ········<Box·className="flex-1·items-center·justify-center">␍
-apps-intuitui-web:lint:biome: 
-@repo/profile:lint:biome:     115     │ - ··········<VStack·className="items-center"·space="lg">␍
-@repo/profile:lint:biome:     116     │ - ············<Spinner·size="large"·color="#E67E22"·/>␍
-@repo/profile:lint:biome:     117     │ - ············<Text·className="text-phase-text-secondary·text-center">␍
-@repo/profile:lint:biome:     118     │ - ··············{t('thuthimalClaim.loading')}␍
-@repo/profile:lint:biome:     119     │ - ············</Text>␍
-@repo/profile:lint:biome:     120     │ - ··········</VStack>␍
-@repo/profile:lint:biome:     121     │ - ········</Box>␍
-@repo/profile:lint:biome:     122     │ - ······</ScreenWrapper>␍
-@repo/profile:lint:biome:     123     │ - ····);␍
-@repo/profile:lint:biome:     124     │ - ··}␍
-@repo/profile:lint:biome:     125     │ - ␍
-@repo/profile:lint:biome:     126     │ - ··if·(claimState·===·'already_claimed')·{␍
-@repo/profile:lint:biome:     127     │ - ····return·(␍
-@repo/profile:lint:biome:     128     │ - ······<ScreenWrapper>␍
-@repo/profile:lint:biome:     129     │ - ········<Box·className="flex-1·items-center·justify-center·p-8">␍
-@repo/profile:lint:biome:     130     │ - ··········<AnimatedView·entering={FadeInDown.duration(500)}>␍
-@repo/profile:lint:biome:     131     │ - ············<VStack·className="items-center"·space="lg">␍
-@repo/profile:lint:biome:     132     │ - ··············<Text·className="text-[56px]·text-center">🌸</Text>␍
-@repo/profile:lint:biome:     133     │ - ··············<Heading·className="text-center·text-2xl·text-phase-text-primary">␍
-@repo/profile:lint:biome:     134     │ - ················{t('thuthimalClaim.alreadyBloomedTitle')}␍
-@repo/profile:lint:biome:     135     │ - ··············</Heading>␍
-@repo/profile:lint:biome:     136     │ - ··············<Text·className="text-phase-text-secondary·text-center·leading-6">␍
-@repo/profile:lint:biome:     137     │ - ················{t('thuthimalClaim.alreadyBloomedDesc')}␍
-@repo/profile:lint:biome:     138     │ - ··············</Text>␍
-@repo/profile:lint:biome:     139     │ - ··············<Button␍
-@repo/profile:lint:biome:     140     │ - ················size="sm"␍
-@repo/profile:lint:biome:     141     │ - ················variant="outline"␍
-@repo/profile:lint:biome:     142     │ - ················onPress={()·=>·navigation.goBack()}␍
-@repo/profile:lint:biome:     143     │ - ················className="mt-4·border-phase-surface·rounded-2xl"␍
-@repo/profile:lint:biome:     144     │ - ··············>␍
-@repo/profile:lint:biome:     145     │ - ················<ButtonText·className="text-phase-text-primary">␍
-@repo/profile:lint:biome:     146     │ - ··················{t('thuthimalClaim.goBack')}␍
-@repo/profile:lint:biome:     147     │ - ················</ButtonText>␍
-@repo/profile:lint:biome:     148     │ - ··············</Button>␍
-@repo/profile:lint:biome:     149     │ - ············</VStack>␍
-@repo/profile:lint:biome:     150     │ - ··········</AnimatedView>␍
-@repo/profile:lint:biome:   331 more lines truncated
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: src\screens\index.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome:   × Formatter would have printed the following content:
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:     1   │ - import·MuteHubScreen·from·'./MuteHubScreen';␍
-@repo/profile:lint:biome:     2   │ - import·PublicProfileScreenWeb·from·'./PublicProfileScreen.web';␍
-@repo/profile:lint:biome:     3   │ - import·ThuthimalClaimScreen·from·'./ThuthimalClaimScreen';␍
-@repo/profile:lint:biome:     4   │ - ␍
-@repo/profile:lint:biome:     5   │ - export·{·MuteHubScreen,·PublicProfileScreenWeb,·ThuthimalClaimScreen·};␍
-@repo/profile:lint:biome:       1 │ + import·MuteHubScreen·from·'./MuteHubScreen';
-@repo/profile:lint:biome:       2 │ + import·PublicProfileScreenWeb·from·'./PublicProfileScreen.web';
-@repo/profile:lint:biome:       3 │ + import·ThuthimalClaimScreen·from·'./ThuthimalClaimScreen';
-@repo/profile:lint:biome:       4 │ + 
-@repo/profile:lint:biome:       5 │ + export·{·MuteHubScreen,·PublicProfileScreenWeb,·ThuthimalClaimScreen·};
-@repo/profile:lint:biome:     6 6 │   
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: src\types\index.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome:   × Formatter would have printed the following content:
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome:      1    │ - import·type·{·ProfileStats,·User·}·from·'@repo/core/types';␍
-@repo/profile:lint:biome:      2    │ - ␍
-@repo/profile:lint:biome:      3    │ - export·type·{·ProfileStats·};␍
-@repo/profile:lint:biome:      4    │ - export·type·UserProfile·=·User;␍
-@repo/profile:lint:biome:      5    │ - ␍
-@repo/profile:lint:biome:      6    │ - /**␍
-@repo/profile:lint:biome:      7    │ - ·*·OrientationSeeds·is·now·part·of·the·core·User·type.␍
-@repo/profile:lint:biome:      8    │ - ·*·We·re-export·it·here·for·compatibility·during·migration.␍
-@repo/profile:lint:biome:      9    │ - ·*/␍
-@repo/profile:lint:biome:     10    │ - export·type·OrientationSeeds·=·Required<User>['orientation_seeds'];␍
-@repo/profile:lint:biome:         1 │ + import·type·{·ProfileStats,·User·}·from·'@repo/core/types';
-@repo/profile:lint:biome:         2 │ + 
-@repo/profile:lint:biome:         3 │ + export·type·{·ProfileStats·};
-@repo/profile:lint:biome:         4 │ + export·type·UserProfile·=·User;
-@repo/profile:lint:biome:         5 │ + 
-@repo/profile:lint:biome:         6 │ + /**
-@repo/profile:lint:biome:         7 │ + ·*·OrientationSeeds·is·now·part·of·the·core·User·type.
-@repo/profile:lint:biome:         8 │ + ·*·We·re-export·it·here·for·compatibility·during·migration.
-@repo/profile:lint:biome:         9 │ + ·*/
-@repo/profile:lint:biome:        10 │ + export·type·OrientationSeeds·=·Required<User>['orientation_seeds'];
-@repo/profile:lint:biome:     11 11 │   
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome: check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/profile:lint:biome: 
-@repo/profile:lint:biome:   × Some errors were emitted while running checks.
-@repo/profile:lint:biome:   
-@repo/profile:lint:biome: 
-
-@repo/analytics:lint:biome:  ELIFECYCLE  Command failed with exit code 1.
-
+apps-gurudevi-marketing-web:lint:biome:   i Unused variables are often the result of typos, incomplete refactors, or other sources of bugs.
 @repo/payments:lint:biome: src\plugins\payhere.ts:10:16 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 @repo/payments:lint:biome: 
-
-@repo/community:lint:biome: src\api\community.ts:36:44 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-@repo/community:lint:biome: 
-
-@repo/community:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/community:lint:biome:   
-
-@repo/community:lint:biome:     34 │       .order('created_at', { ascending: false });
-
-@repo/community:lint:biome:     35 │     if (error) throw error;
-
-@repo/community:lint:biome:   > 36 │     return (data || []).map((announcement: any) => ({
-
-@repo/community:lint:biome:        │                                            ^^^
-
+@repo/payments:lint:biome: Checked 10 files in 724ms. No fixes applied.
+@repo/payments:lint:biome: Found 5 warnings.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: src\components\StructuredData.astro:3:24 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   ! Unexpected any. Specify a different type.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:     1 │ ---
+apps-gurudevi-marketing-web:lint:biome:     2 │ interface Props {
+apps-gurudevi-marketing-web:lint:biome:   > 3 │   data: Record<string, any> | Array<Record<string, any>>;
+apps-gurudevi-marketing-web:lint:biome:       │                        ^^^
+apps-gurudevi-marketing-web:lint:biome:     4 │ }
+apps-gurudevi-marketing-web:lint:biome:     5 │ 
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: src\components\StructuredData.astro:3:52 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   ! Unexpected any. Specify a different type.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:     1 │ ---
+apps-gurudevi-marketing-web:lint:biome:     2 │ interface Props {
+apps-gurudevi-marketing-web:lint:biome:   > 3 │   data: Record<string, any> | Array<Record<string, any>>;
+apps-gurudevi-marketing-web:lint:biome:       │                                                    ^^^
+apps-gurudevi-marketing-web:lint:biome:     4 │ }
+apps-gurudevi-marketing-web:lint:biome:     5 │ 
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: src\components\StructuredData.astro:7:77 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   ! Unexpected any. Specify a different type.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:     6 │ const { data } = Astro.props;
+apps-gurudevi-marketing-web:lint:biome:   > 7 │ const _normalized = (Array.isArray(data) ? data : [data]) as Record<string, any>[];
+apps-gurudevi-marketing-web:lint:biome:       │                                                                             ^^^
+apps-gurudevi-marketing-web:lint:biome:     8 │ ---
+apps-gurudevi-marketing-web:lint:biome:     9 │ 
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: src\inngest\functions\mutationHandlers.ts:116:27 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   ! Unexpected any. Specify a different type.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:     114 │     triggers: [syncMutationQueuedEvent],
+apps-gurudevi-marketing-web:lint:biome:     115 │   },
+apps-gurudevi-marketing-web:lint:biome:   > 116 │   async ({ event, step }: any) => {
+apps-gurudevi-marketing-web:lint:biome:         │                           ^^^
+apps-gurudevi-marketing-web:lint:biome:     117 │     const { mutationId, action, idempotencyKey, payload, tenantId, correlationId, causationId } =
+apps-gurudevi-marketing-web:lint:biome:     118 │       event.data;
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: src\layouts\Layout.astro:17:35 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   ! Unexpected any. Specify a different type.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:     15 │   image?: string;
+apps-gurudevi-marketing-web:lint:biome:     16 │   noindex?: boolean;
+apps-gurudevi-marketing-web:lint:biome:   > 17 │   structuredData?: Record<string, any> | Array<Record<string, any>>;
+apps-gurudevi-marketing-web:lint:biome:        │                                   ^^^
+apps-gurudevi-marketing-web:lint:biome:     18 │ }
+apps-gurudevi-marketing-web:lint:biome:     19 │ 
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: src\layouts\Layout.astro:17:63 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   ! Unexpected any. Specify a different type.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:     15 │   image?: string;
+apps-gurudevi-marketing-web:lint:biome:     16 │   noindex?: boolean;
+apps-gurudevi-marketing-web:lint:biome:   > 17 │   structuredData?: Record<string, any> | Array<Record<string, any>>;
+apps-gurudevi-marketing-web:lint:biome:        │                                                               ^^^
+apps-gurudevi-marketing-web:lint:biome:     18 │ }
+apps-gurudevi-marketing-web:lint:biome:     19 │ 
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: .astro\types.d.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   × Formatter would have printed the following content:
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:     1   │ - ///·<reference·types="astro/client"·/>␍
+apps-gurudevi-marketing-web:lint:biome:     2   │ - ///·<reference·path="content.d.ts"·/>␍
+apps-gurudevi-marketing-web:lint:biome:       1 │ + ///·<reference·types="astro/client"·/>
+apps-gurudevi-marketing-web:lint:biome:       2 │ + ///·<reference·path="content.d.ts"·/>
+apps-gurudevi-marketing-web:lint:biome:     3 3 │   
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: src\components\Footer.astro format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   × Formatter would have printed the following content:
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:     2 │ const·_currentYear·=·new·Date().getFullYear();␍
+apps-gurudevi-marketing-web:lint:biome:       │                                               
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: src\components\Header.astro format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   × Formatter would have printed the following content:
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:      1  1 │   ---␍
+apps-gurudevi-marketing-web:lint:biome:      2    │ - const·_navItems·=·[␍
+apps-gurudevi-marketing-web:lint:biome:      3    │ - ··{·name:·'About',·href:·'/about'·},␍
+apps-gurudevi-marketing-web:lint:biome:      4    │ - ··{·name:·'Thuthimal',·href:·'/thuthimal'·},␍
+apps-gurudevi-marketing-web:lint:biome:      5    │ - ··{·name:·'FAQ',·href:·'/faq'·},␍
+apps-gurudevi-marketing-web:lint:biome:      6    │ - ··{·name:·'Support',·href:·'/support'·},␍
+apps-gurudevi-marketing-web:lint:biome:      7    │ - ];␍
+apps-gurudevi-marketing-web:lint:biome:         2 │ + const·_navItems·=·[
+apps-gurudevi-marketing-web:lint:biome:         3 │ + ··{·name:·'About',·href:·'/about'·},
+apps-gurudevi-marketing-web:lint:biome:         4 │ + ··{·name:·'Thuthimal',·href:·'/thuthimal'·},
+apps-gurudevi-marketing-web:lint:biome:         5 │ + ··{·name:·'FAQ',·href:·'/faq'·},
+apps-gurudevi-marketing-web:lint:biome:         6 │ + ··{·name:·'Support',·href:·'/support'·},
+apps-gurudevi-marketing-web:lint:biome:         7 │ + ];
+apps-gurudevi-marketing-web:lint:biome:      8  8 │   ---␍
+apps-gurudevi-marketing-web:lint:biome:      9  9 │   ␍
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: src\components\StatsSection.svelte format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   × Formatter would have printed the following content:
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:      1  1 │   <script lang="ts">␍
+apps-gurudevi-marketing-web:lint:biome:      2    │ - const·_statDefs·=·[␍
+apps-gurudevi-marketing-web:lint:biome:      3    │ - ··{␍
+apps-gurudevi-marketing-web:lint:biome:      4    │ - ····key:·'teachers_count'·as·const,␍
+apps-gurudevi-marketing-web:lint:biome:      5    │ - ····label:·'Teachers',␍
+apps-gurudevi-marketing-web:lint:biome:      6    │ - ····icon:·`<svg·viewBox="0·0·24·24"·width="32"·height="32"·fill="currentColor"><path·d="M12·12c2.21·0·4-1.79·4-4s-1.79-4-4-4-4·1.79-4·4·1.79·4·4·4zm0·2c-2.67·0-8·1.34-8·4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`,␍
+apps-gurudevi-marketing-web:lint:biome:      7    │ - ··},␍
+apps-gurudevi-marketing-web:lint:biome:      8    │ - ··{␍
+apps-gurudevi-marketing-web:lint:biome:      9    │ - ····key:·'students_count'·as·const,␍
+apps-gurudevi-marketing-web:lint:biome:     10    │ - ····label:·'Students',␍
+apps-gurudevi-marketing-web:lint:biome:     11    │ - ····icon:·`<svg·viewBox="0·0·24·24"·width="32"·height="32"·fill="currentColor"><path·d="M16·11c1.66·0·2.99-1.34·2.99-3S17.66·8·16·8·13.01·9.34·13.01·11s1.33·3·2.99·3zM9·11c1.66·0·2.99-1.34·2.99-3S10.66·8·9·8·6.01·9.34·6.01·11s1.33·3·2.99·3zm7·3c-2.33·0-7·1.17-7·3.5V19h14v-1.5c0-2.33-4.67-3.5-7-3.5zm-7·0c-2.33·0-7·1.17-7·3.5V19h5v-1.5c0-1.07.36-2.02.93-2.82C9.57·14.25·9.3·14·9·14z"/></svg>`,␍
 @repo/payments:lint:biome:   ! Unexpected any. Specify a different type.
 @repo/payments:lint:biome:   
-
 @repo/payments:lint:biome:      8 │     amount: number,
-
 @repo/payments:lint:biome:      9 │     currency: string,
-
 @repo/payments:lint:biome:   > 10 │     metadata?: any,
-
 @repo/payments:lint:biome:        │                ^^^
-
 @repo/payments:lint:biome:     11 │   ): Promise<PaymentIntent> {
-
 @repo/payments:lint:biome:     12 │     // In a real implementation, this would call PayHere API to get a checkout URL or token.
 @repo/payments:lint:biome:   
-
 @repo/payments:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-
 @repo/payments:lint:biome:   
 @repo/payments:lint:biome: 
-
 @repo/payments:lint:biome: src\plugins\stripe.ts:10:16 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 @repo/payments:lint:biome: 
-
-@repo/workforce:lint:biome:  ELIFECYCLE  Command failed with exit code 1.
-
 @repo/payments:lint:biome:   ! Unexpected any. Specify a different type.
-
 @repo/payments:lint:biome:   
-
 @repo/payments:lint:biome:      8 │     amount: number,
-
 @repo/payments:lint:biome:      9 │     currency: string,
-
 @repo/payments:lint:biome:   > 10 │     metadata?: any,
-
 @repo/payments:lint:biome:        │                ^^^
-
 @repo/payments:lint:biome:     11 │   ): Promise<PaymentIntent> {
-
-@repo/community:lint:biome:     37 │       ...announcement,
-
-@intuitui-labs/lk-edu-geo:lint:biome: scripts\extract-geo.ts:20:49 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-@intuitui-labs/lk-edu-geo:lint:biome: 
-
-@intuitui-labs/lk-edu-geo:lint:biome:   ! Unexpected any. Specify a different type.
-
-@intuitui-labs/lk-edu-geo:lint:biome:   
-
-@intuitui-labs/lk-edu-geo:lint:biome:     19 │     // Enriched Hierarchy
-
-@intuitui-labs/lk-edu-geo:lint:biome:   > 20 │     const enrichedDistricts = districts.map((d: any) => {
-@intuitui-labs/lk-edu-geo:lint:biome:        │                                                 ^^^
-@intuitui-labs/lk-edu-geo:lint:biome:     21 │       // Get cities by district from postal backend
-@intuitui-labs/lk-edu-geo:lint:biome:     22 │       const postalCities = SLPostal.citiesByDistrict(d.name_en) || [];
-@intuitui-labs/lk-edu-geo:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@intuitui-labs/lk-edu-geo:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome: 
-@intuitui-labs/lk-edu-geo:lint:biome: scripts\extract-geo.ts:26:21 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@intuitui-labs/lk-edu-geo:lint:biome: 
-@intuitui-labs/lk-edu-geo:lint:biome:   ! Unexpected any. Specify a different type.
-@intuitui-labs/lk-edu-geo:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome:     24 │       // Match cities from SLGeo with PostalCodes
-@intuitui-labs/lk-edu-geo:lint:biome:     25 │       const matchedCities = cities
-@intuitui-labs/lk-edu-geo:lint:biome:   > 26 │         .filter((c: any) => c.district_id === d.id)
-@intuitui-labs/lk-edu-geo:lint:biome:        │                     ^^^
-@intuitui-labs/lk-edu-geo:lint:biome:     27 │         .map((c: any) => {
-@intuitui-labs/lk-edu-geo:lint:biome:     28 │           const postalMatch = postalCities.find(
-@intuitui-labs/lk-edu-geo:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@intuitui-labs/lk-edu-geo:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome: 
-
-apps-intuitui-web:lint:biome:  ELIFECYCLE  Command failed with exit code 1.
-
-@repo/payments:lint:biome: Checked 10 files in 226ms. No fixes applied.
-@repo/payments:lint:biome: Found 1 error.
-@repo/payments:lint:biome: Found 5 warnings.
-
 @repo/payments:lint:biome:     12 │     // In a real implementation, this would call Stripe API (via Edge Function)
 @repo/payments:lint:biome:   
 @repo/payments:lint:biome:   i any disables many type checking rules. Its use should be avoided.
 @repo/payments:lint:biome:   
-
 @repo/payments:lint:biome: 
 @repo/payments:lint:biome: src\types.ts:10:29 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 @repo/payments:lint:biome: 
@@ -4174,7 +1462,6 @@ apps-intuitui-web:lint:biome:  ELIFECYCLE  Command failed with exit code 1.
 @repo/payments:lint:biome:   
 @repo/payments:lint:biome: 
 @repo/payments:lint:biome: src\types.ts:26:66 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
 @repo/payments:lint:biome: 
 @repo/payments:lint:biome:   ! Unexpected any. Specify a different type.
 @repo/payments:lint:biome:   
@@ -4188,129 +1475,898 @@ apps-intuitui-web:lint:biome:  ELIFECYCLE  Command failed with exit code 1.
 @repo/payments:lint:biome:   i any disables many type checking rules. Its use should be avoided.
 @repo/payments:lint:biome:   
 @repo/payments:lint:biome: 
-@repo/payments:lint:biome: eslint.config.mjs format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/payments:lint:biome: 
-@repo/payments:lint:biome:   × Formatter would have printed the following content:
-@repo/payments:lint:biome:   
-@repo/payments:lint:biome:     1   │ - import·{·config·}·from·'@repo/eslint-config/base';␍
-@repo/payments:lint:biome:     2   │ - ␍
-@repo/payments:lint:biome:     3   │ - /**·@type·{import("eslint").Linter.Config[]}·*/␍
+apps-gurudevi-marketing-web:lint:biome:     12    │ - ··},␍
+apps-gurudevi-marketing-web:lint:biome:     13    │ - ··{␍
+apps-gurudevi-marketing-web:lint:biome:     14    │ - ····key:·'schools_count'·as·const,␍
+apps-gurudevi-marketing-web:lint:biome:     15    │ - ····label:·'Schools',␍
+apps-gurudevi-marketing-web:lint:biome:     16    │ - ····icon:·`<svg·viewBox="0·0·24·24"·width="32"·height="32"·fill="currentColor"><path·d="M5·13.18v4L12·21l7-3.82v-4L12·17l-7-3.82zM12·3L1·9l11·6·9-4.91V17h2V9L12·3z"/></svg>`,␍
+apps-gurudevi-marketing-web:lint:biome:     17    │ - ··},␍
+apps-gurudevi-marketing-web:lint:biome:     18    │ - ··{␍
+apps-gurudevi-marketing-web:lint:biome:     19    │ - ····key:·'lessons_shared_count'·as·const,␍
+apps-gurudevi-marketing-web:lint:biome:     20    │ - ····label:·'Lessons·Shared',␍
+apps-gurudevi-marketing-web:lint:biome:     21    │ - ····icon:·`<svg·viewBox="0·0·24·24"·width="32"·height="32"·fill="currentColor"><path·d="M18·2H6c-1.1·0-2·.9-2·2v16c0·1.1.9·2·2·2h12c1.1·0·2-.9·2-2V4c0-1.1-.9-2-2-2zM9·4h2v5l-1-.75L9·9V4zm9·16H6V4h1v9l3-2.25L13·13V4h5v16z"/></svg>`,␍
+apps-gurudevi-marketing-web:lint:biome:     22    │ - ··},␍
+apps-gurudevi-marketing-web:lint:biome:     23    │ - ];␍
+apps-gurudevi-marketing-web:lint:biome:     24    │ - ␍
+apps-gurudevi-marketing-web:lint:biome:     25    │ - const·_stats·=·{␍
+apps-gurudevi-marketing-web:lint:biome:     26    │ - ··teachers_count:·0,␍
+apps-gurudevi-marketing-web:lint:biome:     27    │ - ··students_count:·0,␍
+apps-gurudevi-marketing-web:lint:biome:     28    │ - ··schools_count:·0,␍
+apps-gurudevi-marketing-web:lint:biome:     29    │ - ··lessons_shared_count:·0,␍
+apps-gurudevi-marketing-web:lint:biome:     30    │ - };␍
+apps-gurudevi-marketing-web:lint:biome:     31    │ - ␍
+apps-gurudevi-marketing-web:lint:biome:     32    │ - function·_formatCount(value:·number):·string·{␍
+apps-gurudevi-marketing-web:lint:biome:     33    │ - ··return·new·Intl.NumberFormat('en-US').format(value);␍
+apps-gurudevi-marketing-web:lint:biome:     34    │ - }␍
+apps-gurudevi-marketing-web:lint:biome:         2 │ + const·_statDefs·=·[
+apps-gurudevi-marketing-web:lint:biome:         3 │ + ··{
+apps-gurudevi-marketing-web:lint:biome:         4 │ + ····key:·'teachers_count'·as·const,
+apps-gurudevi-marketing-web:lint:biome:         5 │ + ····label:·'Teachers',
+apps-gurudevi-marketing-web:lint:biome:         6 │ + ····icon:·`<svg·viewBox="0·0·24·24"·width="32"·height="32"·fill="currentColor"><path·d="M12·12c2.21·0·4-1.79·4-4s-1.79-4-4-4-4·1.79-4·4·1.79·4·4·4zm0·2c-2.67·0-8·1.34-8·4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`,
+apps-gurudevi-marketing-web:lint:biome:         7 │ + ··},
+apps-gurudevi-marketing-web:lint:biome:         8 │ + ··{
+apps-gurudevi-marketing-web:lint:biome:         9 │ + ····key:·'students_count'·as·const,
+apps-gurudevi-marketing-web:lint:biome:        10 │ + ····label:·'Students',
+apps-gurudevi-marketing-web:lint:biome:        11 │ + ····icon:·`<svg·viewBox="0·0·24·24"·width="32"·height="32"·fill="currentColor"><path·d="M16·11c1.66·0·2.99-1.34·2.99-3S17.66·8·16·8·13.01·9.34·13.01·11s1.33·3·2.99·3zM9·11c1.66·0·2.99-1.34·2.99-3S10.66·8·9·8·6.01·9.34·6.01·11s1.33·3·2.99·3zm7·3c-2.33·0-7·1.17-7·3.5V19h14v-1.5c0-2.33-4.67-3.5-7-3.5zm-7·0c-2.33·0-7·1.17-7·3.5V19h5v-1.5c0-1.07.36-2.02.93-2.82C9.57·14.25·9.3·14·9·14z"/></svg>`,
+apps-gurudevi-marketing-web:lint:biome:        12 │ + ··},
+apps-gurudevi-marketing-web:lint:biome:        13 │ + ··{
+apps-gurudevi-marketing-web:lint:biome:        14 │ + ····key:·'schools_count'·as·const,
+apps-gurudevi-marketing-web:lint:biome:        15 │ + ····label:·'Schools',
+apps-gurudevi-marketing-web:lint:biome:        16 │ + ····icon:·`<svg·viewBox="0·0·24·24"·width="32"·height="32"·fill="currentColor"><path·d="M5·13.18v4L12·21l7-3.82v-4L12·17l-7-3.82zM12·3L1·9l11·6·9-4.91V17h2V9L12·3z"/></svg>`,
+apps-gurudevi-marketing-web:lint:biome:        17 │ + ··},
+apps-gurudevi-marketing-web:lint:biome:        18 │ + ··{
+apps-gurudevi-marketing-web:lint:biome:        19 │ + ····key:·'lessons_shared_count'·as·const,
+apps-gurudevi-marketing-web:lint:biome:        20 │ + ····label:·'Lessons·Shared',
+apps-gurudevi-marketing-web:lint:biome:        21 │ + ····icon:·`<svg·viewBox="0·0·24·24"·width="32"·height="32"·fill="currentColor"><path·d="M18·2H6c-1.1·0-2·.9-2·2v16c0·1.1.9·2·2·2h12c1.1·0·2-.9·2-2V4c0-1.1-.9-2-2-2zM9·4h2v5l-1-.75L9·9V4zm9·16H6V4h1v9l3-2.25L13·13V4h5v16z"/></svg>`,
+apps-gurudevi-marketing-web:lint:biome:        22 │ + ··},
+apps-gurudevi-marketing-web:lint:biome:        23 │ + ];
+apps-gurudevi-marketing-web:lint:biome:        24 │ + 
+apps-gurudevi-marketing-web:lint:biome:        25 │ + const·_stats·=·{
+apps-gurudevi-marketing-web:lint:biome:        26 │ + ··teachers_count:·0,
+apps-gurudevi-marketing-web:lint:biome:        27 │ + ··students_count:·0,
+apps-gurudevi-marketing-web:lint:biome:        28 │ + ··schools_count:·0,
+apps-gurudevi-marketing-web:lint:biome:        29 │ + ··lessons_shared_count:·0,
+apps-gurudevi-marketing-web:lint:biome:        30 │ + };
+apps-gurudevi-marketing-web:lint:biome:        31 │ + 
+apps-gurudevi-marketing-web:lint:biome:        32 │ + function·_formatCount(value:·number):·string·{
+apps-gurudevi-marketing-web:lint:biome:        33 │ + ··return·new·Intl.NumberFormat('en-US').format(value);
+apps-gurudevi-marketing-web:lint:biome:        34 │ + }
+apps-gurudevi-marketing-web:lint:biome:     35 35 │   </script>␍
+apps-gurudevi-marketing-web:lint:biome:     36 36 │   ␍
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: src\components\StructuredData.astro format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   × Formatter would have printed the following content:
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:      1  1 │   ---␍
+apps-gurudevi-marketing-web:lint:biome:      2    │ - interface·Props·{␍
+apps-gurudevi-marketing-web:lint:biome:      3    │ - ··data:·Record<string,·any>·|·Array<Record<string,·any>>;␍
+apps-gurudevi-marketing-web:lint:biome:      4    │ - }␍
+apps-gurudevi-marketing-web:lint:biome:      5    │ - ␍
+apps-gurudevi-marketing-web:lint:biome:      6    │ - const·{·data·}·=·Astro.props;␍
+apps-gurudevi-marketing-web:lint:biome:      7    │ - const·_normalized·=·(Array.isArray(data)·?·data·:·[data])·as·Record<string,·any>[];␍
+apps-gurudevi-marketing-web:lint:biome:         2 │ + interface·Props·{
+apps-gurudevi-marketing-web:lint:biome:         3 │ + ··data:·Record<string,·any>·|·Array<Record<string,·any>>;
+apps-gurudevi-marketing-web:lint:biome:         4 │ + }
+apps-gurudevi-marketing-web:lint:biome:         5 │ + 
+apps-gurudevi-marketing-web:lint:biome:         6 │ + const·{·data·}·=·Astro.props;
+apps-gurudevi-marketing-web:lint:biome:         7 │ + const·_normalized·=·(Array.isArray(data)·?·data·:·[data])·as·Record<string,·any>[];
+apps-gurudevi-marketing-web:lint:biome:      8  8 │   ---␍
+apps-gurudevi-marketing-web:lint:biome:      9  9 │   ␍
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: src\inngest\lib\workerObservability.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   × Formatter would have printed the following content:
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:      1    │ - import·{·initPostHog,·trackEvent·}·from·'@repo/analytics';␍
+apps-gurudevi-marketing-web:lint:biome:      2    │ - import·type·{·SupabaseClient·}·from·'@supabase/supabase-js';␍
+apps-gurudevi-marketing-web:lint:biome:      3    │ - ␍
+apps-gurudevi-marketing-web:lint:biome:      4    │ - type·WorkerAuditInput·=·{␍
+apps-gurudevi-marketing-web:lint:biome:      5    │ - ··supabase:·SupabaseClient;␍
+apps-gurudevi-marketing-web:lint:biome:      6    │ - ··id?:·string;␍
+apps-gurudevi-marketing-web:lint:biome:      7    │ - ··action:·string;␍
+apps-gurudevi-marketing-web:lint:biome:      8    │ - ··entityId:·string;␍
+apps-gurudevi-marketing-web:lint:biome:      9    │ - ··entityType:·string;␍
+apps-gurudevi-marketing-web:lint:biome:     10    │ - ··schoolId?:·string·|·null;␍
+apps-gurudevi-marketing-web:lint:biome:     11    │ - ··idempotencyKey?:·string;␍
+apps-gurudevi-marketing-web:lint:biome:     12    │ - ··correlationId?:·string;␍
+apps-gurudevi-marketing-web:lint:biome:     13    │ - ··causationId?:·string;␍
+apps-gurudevi-marketing-web:lint:biome:     14    │ - ··metadata?:·Record<string,·unknown>;␍
+apps-gurudevi-marketing-web:lint:biome:     15    │ - };␍
+apps-gurudevi-marketing-web:lint:biome:     16    │ - ␍
+apps-gurudevi-marketing-web:lint:biome:     17    │ - type·WorkerAnalyticsInput·=·{␍
+apps-gurudevi-marketing-web:lint:biome:     18    │ - ··eventName:·string;␍
+apps-gurudevi-marketing-web:lint:biome:     19    │ - ··distinctId:·string;␍
+apps-gurudevi-marketing-web:lint:biome:     20    │ - ··correlationId?:·string;␍
+apps-gurudevi-marketing-web:lint:biome:     21    │ - ··causationId?:·string;␍
+apps-gurudevi-marketing-web:lint:biome:     22    │ - ··properties?:·Record<string,·unknown>;␍
+apps-gurudevi-marketing-web:lint:biome:     23    │ - };␍
+apps-gurudevi-marketing-web:lint:biome:     24    │ - ␍
+apps-gurudevi-marketing-web:lint:biome:     25    │ - export·async·function·insertWorkerAuditLog({␍
+apps-gurudevi-marketing-web:lint:biome:     26    │ - ··supabase,␍
+apps-gurudevi-marketing-web:lint:biome:     27    │ - ··id,␍
+apps-gurudevi-marketing-web:lint:biome:     28    │ - ··action,␍
+apps-gurudevi-marketing-web:lint:biome:     29    │ - ··entityId,␍
+apps-gurudevi-marketing-web:lint:biome:     30    │ - ··entityType,␍
+apps-gurudevi-marketing-web:lint:biome:     31    │ - ··schoolId,␍
+apps-gurudevi-marketing-web:lint:biome:     32    │ - ··idempotencyKey,␍
+apps-gurudevi-marketing-web:lint:biome:     33    │ - ··correlationId,␍
+apps-gurudevi-marketing-web:lint:biome:     34    │ - ··causationId,␍
+apps-gurudevi-marketing-web:lint:biome:     35    │ - ··metadata,␍
+apps-gurudevi-marketing-web:lint:biome:     36    │ - }:·WorkerAuditInput)·{␍
+apps-gurudevi-marketing-web:lint:biome:     37    │ - ··const·{·error·}·=·await·supabase.from('audit_logs').insert({␍
+apps-gurudevi-marketing-web:lint:biome:     38    │ - ····id,␍
+apps-gurudevi-marketing-web:lint:biome:     39    │ - ····action,␍
+apps-gurudevi-marketing-web:lint:biome:     40    │ - ····entity_id:·entityId,␍
+apps-gurudevi-marketing-web:lint:biome:     41    │ - ····entity_type:·entityType,␍
+apps-gurudevi-marketing-web:lint:biome:     42    │ - ····school_id:·schoolId·??·null,␍
+apps-gurudevi-marketing-web:lint:biome:     43    │ - ····metadata:·{␍
+apps-gurudevi-marketing-web:lint:biome:     44    │ - ······...(metadata·??·{}),␍
+apps-gurudevi-marketing-web:lint:biome:     45    │ - ······correlationId:·correlationId·??·null,␍
+apps-gurudevi-marketing-web:lint:biome:     46    │ - ······causationId:·causationId·??·null,␍
+apps-gurudevi-marketing-web:lint:biome:     47    │ - ····},␍
+apps-gurudevi-marketing-web:lint:biome:     48    │ - ····idempotency_key:·idempotencyKey,␍
+apps-gurudevi-marketing-web:lint:biome:     49    │ - ··});␍
+apps-gurudevi-marketing-web:lint:biome:     50    │ - ␍
+apps-gurudevi-marketing-web:lint:biome:     51    │ - ··if·(error)·throw·error;␍
+apps-gurudevi-marketing-web:lint:biome:     52    │ - }␍
+apps-gurudevi-marketing-web:lint:biome:     53    │ - ␍
+apps-gurudevi-marketing-web:lint:biome:     54    │ - export·async·function·trackWorkerAnalytics({␍
+apps-gurudevi-marketing-web:lint:biome:     55    │ - ··eventName,␍
+apps-gurudevi-marketing-web:lint:biome:     56    │ - ··distinctId,␍
+apps-gurudevi-marketing-web:lint:biome:     57    │ - ··correlationId,␍
+apps-gurudevi-marketing-web:lint:biome:     58    │ - ··causationId,␍
+apps-gurudevi-marketing-web:lint:biome:     59    │ - ··properties,␍
+apps-gurudevi-marketing-web:lint:biome:     60    │ - }:·WorkerAnalyticsInput)·{␍
+apps-gurudevi-marketing-web:lint:biome:     61    │ - ··await·initPostHog(import.meta.env.POSTHOG_API_KEY!,·{␍
+apps-gurudevi-marketing-web:lint:biome:     62    │ - ····host:␍
+apps-gurudevi-marketing-web:lint:biome:     63    │ - ······import.meta.env.POSTHOG_HOST·||␍
+apps-gurudevi-marketing-web:lint:biome:     64    │ - ······import.meta.env.PUBLIC_POSTHOG_HOST·||␍
+apps-gurudevi-marketing-web:lint:biome:     65    │ - ······'https://eu.i.posthog.com',␍
+apps-gurudevi-marketing-web:lint:biome:     66    │ - ··});␍
+apps-gurudevi-marketing-web:lint:biome:     67    │ - ␍
+apps-gurudevi-marketing-web:lint:biome:     68    │ - ··trackEvent(eventName,·{␍
+apps-gurudevi-marketing-web:lint:biome:     69    │ - ····distinctId,␍
+apps-gurudevi-marketing-web:lint:biome:     70    │ - ····correlation_id:·correlationId,␍
+apps-gurudevi-marketing-web:lint:biome:     71    │ - ····causation_id:·causationId,␍
+apps-gurudevi-marketing-web:lint:biome:     72    │ - ····...(properties·??·{}),␍
+apps-gurudevi-marketing-web:lint:biome:     73    │ - ··});␍
+apps-gurudevi-marketing-web:lint:biome:     74    │ - }␍
+apps-gurudevi-marketing-web:lint:biome:         1 │ + import·{·initPostHog,·trackEvent·}·from·'@repo/analytics';
+apps-gurudevi-marketing-web:lint:biome:         2 │ + import·type·{·SupabaseClient·}·from·'@supabase/supabase-js';
+apps-gurudevi-marketing-web:lint:biome:         3 │ + 
+apps-gurudevi-marketing-web:lint:biome:         4 │ + type·WorkerAuditInput·=·{
+apps-gurudevi-marketing-web:lint:biome:         5 │ + ··supabase:·SupabaseClient;
+apps-gurudevi-marketing-web:lint:biome:         6 │ + ··id?:·string;
+apps-gurudevi-marketing-web:lint:biome:         7 │ + ··action:·string;
 
-@repo/payments:lint:biome:     4   │ - export·default·[...config];␍
-@repo/payments:lint:biome:       1 │ + import·{·config·}·from·'@repo/eslint-config/base';
-@repo/payments:lint:biome:       2 │ + 
-@repo/payments:lint:biome:       3 │ + /**·@type·{import("eslint").Linter.Config[]}·*/
-@repo/payments:lint:biome:       4 │ + export·default·[...config];
-@repo/payments:lint:biome:     5 5 │   
-@repo/payments:lint:biome:   
-@repo/payments:lint:biome: 
-@repo/payments:lint:biome: check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/payments:lint:biome: 
-@repo/payments:lint:biome:   × Some errors were emitted while running checks.
-@repo/payments:lint:biome:   
-@repo/payments:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:         8 │ + ··entityId:·string;
+apps-gurudevi-marketing-web:lint:biome:         9 │ + ··entityType:·string;
+apps-gurudevi-marketing-web:lint:biome:        10 │ + ··schoolId?:·string·|·null;
+apps-gurudevi-marketing-web:lint:biome:        11 │ + ··idempotencyKey?:·string;
+apps-gurudevi-marketing-web:lint:biome:        12 │ + ··correlationId?:·string;
+apps-gurudevi-marketing-web:lint:biome:        13 │ + ··causationId?:·string;
+apps-gurudevi-marketing-web:lint:biome:        14 │ + ··metadata?:·Record<string,·unknown>;
+apps-gurudevi-marketing-web:lint:biome:        15 │ + };
+apps-gurudevi-marketing-web:lint:biome:        16 │ + 
+apps-gurudevi-marketing-web:lint:biome:        17 │ + type·WorkerAnalyticsInput·=·{
+apps-gurudevi-marketing-web:lint:biome:        18 │ + ··eventName:·string;
+apps-gurudevi-marketing-web:lint:biome:        19 │ + ··distinctId:·string;
+apps-gurudevi-marketing-web:lint:biome:        20 │ + ··correlationId?:·string;
+apps-gurudevi-marketing-web:lint:biome:        21 │ + ··causationId?:·string;
+apps-gurudevi-marketing-web:lint:biome:        22 │ + ··properties?:·Record<string,·unknown>;
+apps-gurudevi-marketing-web:lint:biome:        23 │ + };
+apps-gurudevi-marketing-web:lint:biome:        24 │ + 
+apps-gurudevi-marketing-web:lint:biome:        25 │ + export·async·function·insertWorkerAuditLog({
+apps-gurudevi-marketing-web:lint:biome:        26 │ + ··supabase,
+apps-gurudevi-marketing-web:lint:biome:        27 │ + ··id,
+apps-gurudevi-marketing-web:lint:biome:        28 │ + ··action,
+apps-gurudevi-marketing-web:lint:biome:        29 │ + ··entityId,
+apps-gurudevi-marketing-web:lint:biome:        30 │ + ··entityType,
+apps-gurudevi-marketing-web:lint:biome:        31 │ + ··schoolId,
+apps-gurudevi-marketing-web:lint:biome:        32 │ + ··idempotencyKey,
+apps-gurudevi-marketing-web:lint:biome:        33 │ + ··correlationId,
+apps-gurudevi-marketing-web:lint:biome:        34 │ + ··causationId,
+apps-gurudevi-marketing-web:lint:biome:        35 │ + ··metadata,
+apps-gurudevi-marketing-web:lint:biome:        36 │ + }:·WorkerAuditInput)·{
+apps-gurudevi-marketing-web:lint:biome:        37 │ + ··const·{·error·}·=·await·supabase.from('audit_logs').insert({
+apps-gurudevi-marketing-web:lint:biome:        38 │ + ····id,
+apps-gurudevi-marketing-web:lint:biome:        39 │ + ····action,
+apps-gurudevi-marketing-web:lint:biome:        40 │ + ····entity_id:·entityId,
+apps-gurudevi-marketing-web:lint:biome:        41 │ + ····entity_type:·entityType,
+apps-gurudevi-marketing-web:lint:biome:        42 │ + ····school_id:·schoolId·??·null,
+apps-gurudevi-marketing-web:lint:biome:        43 │ + ····metadata:·{
+apps-gurudevi-marketing-web:lint:biome:        44 │ + ······...(metadata·??·{}),
+apps-gurudevi-marketing-web:lint:biome:        45 │ + ······correlationId:·correlationId·??·null,
+apps-gurudevi-marketing-web:lint:biome:        46 │ + ······causationId:·causationId·??·null,
+apps-gurudevi-marketing-web:lint:biome:        47 │ + ····},
+apps-gurudevi-marketing-web:lint:biome:        48 │ + ····idempotency_key:·idempotencyKey,
+apps-gurudevi-marketing-web:lint:biome:        49 │ + ··});
+apps-gurudevi-marketing-web:lint:biome:        50 │ + 
+apps-gurudevi-marketing-web:lint:biome:        51 │ + ··if·(error)·throw·error;
 
-@intuitui-labs/lk-edu-geo:lint:biome: The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
-@intuitui-labs/lk-edu-geo:lint:biome: Diagnostics not shown: 2.
-@intuitui-labs/lk-edu-geo:lint:biome: Checked 19 files in 1265ms. No fixes applied.
-@intuitui-labs/lk-edu-geo:lint:biome: Found 5 errors.
-@repo/community:lint:biome:     38 │       author_name: announcement.author?.full_name,
-@repo/community:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:        52 │ + }
+apps-gurudevi-marketing-web:lint:biome:        53 │ + 
 
-@repo/community:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/community:lint:biome:   
-@repo/community:lint:biome: 
-@repo/community:lint:biome: src\api\community.ts:87:37 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/community:lint:biome: 
-@repo/community:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/community:lint:biome:   
-@repo/community:lint:biome:     85 │       .order('created_at', { ascending: false });
-@repo/community:lint:biome:     86 │     if (error) throw error;
-@repo/community:lint:biome:   > 87 │     return (data || []).map((group: any) => ({
-@repo/community:lint:biome:        │                                     ^^^
-@repo/community:lint:biome:     88 │       ...group,
-@repo/community:lint:biome:     89 │       type: group.group_type || group.type || 'general',
-@repo/community:lint:biome:   
-@repo/community:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/community:lint:biome:   
-@repo/community:lint:biome: 
-@repo/community:lint:biome: src\api\community.ts:123:26 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/community:lint:biome: 
-@repo/community:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/community:lint:biome:   
-@repo/community:lint:biome:     121 │     return data as Post[];
-@repo/community:lint:biome:     122 │   },
-@repo/community:lint:biome:   > 123 │   async createPost(post: any, userId: string, userCapacity: string, schoolId: string) {
-@repo/community:lint:biome:         │                          ^^^
-@repo/community:lint:biome:     124 │     const { data, error } = await supabase
-@repo/community:lint:biome:     125 │       .from('community_posts')
-@repo/community:lint:biome:   
-@repo/community:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/community:lint:biome:   
-@repo/community:lint:biome: 
-@repo/community:lint:biome: src\api\community.ts:141:28 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/community:lint:biome: 
-@repo/community:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/community:lint:biome:   
-@repo/community:lint:biome:     139 │     return data as Post;
-@repo/community:lint:biome:     140 │   },
-@repo/community:lint:biome:   > 141 │   async createGroup(group: any, userId: string, _userCapacity: string) {
-@repo/community:lint:biome:         │                            ^^^
-@repo/community:lint:biome:     142 │     const { data, error } = await supabase
-@repo/community:lint:biome:     143 │       .from('community_groups')
-@repo/community:lint:biome:   
-@repo/community:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/community:lint:biome:   
-@repo/community:lint:biome: 
-@repo/community:lint:biome: src\api\community.ts:156:37 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/community:lint:biome: 
-@repo/community:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/community:lint:biome:   
-@repo/community:lint:biome:     154 │     return data as CommunityGroup;
-@repo/community:lint:biome:     155 │   },
-@repo/community:lint:biome:   > 156 │   async createGroupWithOwner(group: any, userId: string): Promise<CommunityGroup> {
-@repo/community:lint:biome:         │                                     ^^^
-@repo/community:lint:biome:     157 │     const { data: created, error: groupErr } = await supabase
-@repo/community:lint:biome:     158 │       .from('community_groups')
-@repo/community:lint:biome:   
-@repo/community:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/community:lint:biome:   
-@repo/community:lint:biome: 
-@repo/community:lint:biome: src\api\community.ts:217:19 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/community:lint:biome: The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
-@repo/community:lint:biome: 
-@repo/community:lint:biome: Diagnostics not shown: 70.
+apps-gurudevi-marketing-web:lint:biome:        54 │ + export·async·function·trackWorkerAnalytics({
+apps-gurudevi-marketing-web:lint:biome:        55 │ + ··eventName,
+apps-gurudevi-marketing-web:lint:biome:        56 │ + ··distinctId,
+apps-gurudevi-marketing-web:lint:biome:        57 │ + ··correlationId,
+apps-gurudevi-marketing-web:lint:biome:        58 │ + ··causationId,
+apps-gurudevi-marketing-web:lint:biome:        59 │ + ··properties,
+apps-gurudevi-marketing-web:lint:biome:        60 │ + }:·WorkerAnalyticsInput)·{
 
-@repo/community:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/community:lint:biome: Checked 52 files in 754ms. No fixes applied.
-@repo/community:lint:biome:   
-@repo/community:lint:biome: Found 19 errors.
-@repo/community:lint:biome: Found 65 warnings.
-@repo/community:lint:biome: Found 6 infos.
-@repo/community:lint:biome:     215 │     if (error) throw error;
-@repo/community:lint:biome:     216 │     return {
-@repo/community:lint:biome:   > 217 │       ...(data as any),
-@repo/community:lint:biome:         │                   ^^^
-@repo/community:lint:biome:     218 │       type: (data as any).group_type || (data as any).type || 'general',
-@repo/community:lint:biome:     219 │     } as CommunityGroup;
-@repo/community:lint:biome:   
-@repo/community:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/community:lint:biome:   
-@repo/community:lint:biome: 
-@repo/community:lint:biome: src\api\community.ts:218:22 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/community:lint:biome: 
-@repo/community:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/community:lint:biome:   
-@repo/community:lint:biome:     216 │     return {
-@repo/community:lint:biome:     217 │       ...(data as any),
-@repo/community:lint:biome:   > 218 │       type: (data as any).group_type || (data as any).type || 'general',
-@repo/community:lint:biome:         │                      ^^^
+apps-gurudevi-marketing-web:lint:biome:        61 │ + ··await·initPostHog(import.meta.env.POSTHOG_API_KEY!,·{
+apps-gurudevi-marketing-web:lint:biome:        62 │ + ····host:
+apps-gurudevi-marketing-web:lint:biome:        63 │ + ······import.meta.env.POSTHOG_HOST·||
+apps-gurudevi-marketing-web:lint:biome:        64 │ + ······import.meta.env.PUBLIC_POSTHOG_HOST·||
+apps-gurudevi-marketing-web:lint:biome:        65 │ + ······'https://eu.i.posthog.com',
+apps-gurudevi-marketing-web:lint:biome:        66 │ + ··});
+apps-gurudevi-marketing-web:lint:biome:        67 │ + 
+apps-gurudevi-marketing-web:lint:biome:        68 │ + ··trackEvent(eventName,·{
+apps-gurudevi-marketing-web:lint:biome:        69 │ + ····distinctId,
+apps-gurudevi-marketing-web:lint:biome:        70 │ + ····correlation_id:·correlationId,
+apps-gurudevi-marketing-web:lint:biome:        71 │ + ····causation_id:·causationId,
+apps-gurudevi-marketing-web:lint:biome:        72 │ + ····...(properties·??·{}),
+apps-gurudevi-marketing-web:lint:biome:        73 │ + ··});
+apps-gurudevi-marketing-web:lint:biome:        74 │ + }
+apps-gurudevi-marketing-web:lint:biome:     75 75 │   
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: src\layouts\Layout.astro format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   × Formatter would have printed the following content:
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:       1   1 │   ---␍
+apps-gurudevi-marketing-web:lint:biome:       2     │ - import·'../styles/global.css';␍
+apps-gurudevi-marketing-web:lint:biome:       3     │ - import·{␍
+apps-gurudevi-marketing-web:lint:biome:       4     │ - ··defaultOgImage,␍
+apps-gurudevi-marketing-web:lint:biome:       5     │ - ··ORGANIZATION,␍
 
-@repo/community:lint:biome:     219 │     } as CommunityGroup;
+apps-gurudevi-marketing-web:lint:biome:       6     │ - ··SITE_DESCRIPTION,␍
 
-@intuitui-labs/lk-edu-geo:lint:biome: Found 15 warnings.
+apps-gurudevi-marketing-web:lint:biome:       7     │ - ··SITE_NAME,␍
+apps-gurudevi-marketing-web:lint:biome:       8     │ - ··SITE_TITLE,␍
+apps-gurudevi-marketing-web:lint:biome:       9     │ - ··SITE_URL,␍
+apps-gurudevi-marketing-web:lint:biome:      10     │ - }·from·'../lib/site';␍
+apps-gurudevi-marketing-web:lint:biome:      11     │ - ␍
+apps-gurudevi-marketing-web:lint:biome:      12     │ - interface·Props·{␍
+apps-gurudevi-marketing-web:lint:biome:      13     │ - ··title?:·string;␍
+apps-gurudevi-marketing-web:lint:biome:      14     │ - ··description?:·string;␍
+apps-gurudevi-marketing-web:lint:biome:      15     │ - ··image?:·string;␍
+apps-gurudevi-marketing-web:lint:biome:      16     │ - ··noindex?:·boolean;␍
+apps-gurudevi-marketing-web:lint:biome:      17     │ - ··structuredData?:·Record<string,·any>·|·Array<Record<string,·any>>;␍
+apps-gurudevi-marketing-web:lint:biome:      18     │ - }␍
+apps-gurudevi-marketing-web:lint:biome:      19     │ - ␍
+apps-gurudevi-marketing-web:lint:biome:      20     │ - const·{␍
+apps-gurudevi-marketing-web:lint:biome:      21     │ - ··title·=·SITE_TITLE,␍
+apps-gurudevi-marketing-web:lint:biome:      22     │ - ··description·=·SITE_DESCRIPTION,␍
+apps-gurudevi-marketing-web:lint:biome:      23     │ - ··image,␍
+apps-gurudevi-marketing-web:lint:biome:      24     │ - ··noindex·=·false,␍
+apps-gurudevi-marketing-web:lint:biome:      25     │ - ··structuredData·=·[],␍
+apps-gurudevi-marketing-web:lint:biome:      26     │ - }·=·Astro.props;␍
+apps-gurudevi-marketing-web:lint:biome:      27     │ - ␍
+apps-gurudevi-marketing-web:lint:biome:      28     │ - const·canonical·=·Astro.url.href;␍
+apps-gurudevi-marketing-web:lint:biome:      29     │ - const·_ogImage·=·image·??·defaultOgImage(Astro.url.pathname);␍
+apps-gurudevi-marketing-web:lint:biome:      30     │ - const·_robotsContent·=·noindex·?·'noindex,·nofollow'·:·'index,·follow';␍
+apps-gurudevi-marketing-web:lint:biome:      31     │ - const·_baseStructuredData·=·[␍
+apps-gurudevi-marketing-web:lint:biome:      32     │ - ··{␍
+apps-gurudevi-marketing-web:lint:biome:      33     │ - ····'@context':·'https://schema.org',␍
+apps-gurudevi-marketing-web:lint:biome:      34     │ - ····'@type':·'Organization',␍
+apps-gurudevi-marketing-web:lint:biome:      35     │ - ····...ORGANIZATION,␍
+apps-gurudevi-marketing-web:lint:biome:      36     │ - ··},␍
+apps-gurudevi-marketing-web:lint:biome:      37     │ - ··{␍
+apps-gurudevi-marketing-web:lint:biome:      38     │ - ····'@context':·'https://schema.org',␍
+apps-gurudevi-marketing-web:lint:biome:      39     │ - ····'@type':·'WebSite',␍
+apps-gurudevi-marketing-web:lint:biome:      40     │ - ····name:·SITE_NAME,␍
+apps-gurudevi-marketing-web:lint:biome:      41     │ - ····url:·SITE_URL,␍
 
-@intuitui-labs/lk-edu-geo:lint:biome: Found 2 infos.
+apps-gurudevi-marketing-web:lint:biome:      42     │ - ····description:·SITE_DESCRIPTION,␍
+apps-gurudevi-marketing-web:lint:biome:      43     │ - ··},␍
+apps-gurudevi-marketing-web:lint:biome:      44     │ - ··{␍
+apps-gurudevi-marketing-web:lint:biome:      45     │ - ····'@context':·'https://schema.org',␍
+apps-gurudevi-marketing-web:lint:biome:      46     │ - ····'@type':·'WebPage',␍
+apps-gurudevi-marketing-web:lint:biome:      47     │ - ····name:·title,␍
+apps-gurudevi-marketing-web:lint:biome:      48     │ - ····description,␍
+apps-gurudevi-marketing-web:lint:biome:      49     │ - ····url:·canonical,␍
+apps-gurudevi-marketing-web:lint:biome:      50     │ - ··},␍
+apps-gurudevi-marketing-web:lint:biome:      51     │ - ]␍
+apps-gurudevi-marketing-web:lint:biome:      52     │ - ··.concat(Array.isArray(structuredData)·?·structuredData·:·[structuredData])␍
+apps-gurudevi-marketing-web:lint:biome:      53     │ - ··.filter(Boolean);␍
+apps-gurudevi-marketing-web:lint:biome:           2 │ + import·'../styles/global.css';
+@repo/database:lint:biome:  ELIFECYCLE  Command failed with exit code 1.
+
+apps-gurudevi-marketing-web:lint:biome:           3 │ + import·{
+apps-gurudevi-marketing-web:lint:biome:           4 │ + ··defaultOgImage,
+apps-gurudevi-marketing-web:lint:biome:           5 │ + ··ORGANIZATION,
+
+apps-gurudevi-marketing-web:lint:biome:           6 │ + ··SITE_DESCRIPTION,
+apps-gurudevi-marketing-web:lint:biome:           7 │ + ··SITE_NAME,
+apps-gurudevi-marketing-web:lint:biome:           8 │ + ··SITE_TITLE,
+apps-gurudevi-marketing-web:lint:biome:           9 │ + ··SITE_URL,
+apps-gurudevi-marketing-web:lint:biome:          10 │ + }·from·'../lib/site';
+apps-gurudevi-marketing-web:lint:biome:          11 │ + 
+apps-gurudevi-marketing-web:lint:biome:          12 │ + interface·Props·{
+apps-gurudevi-marketing-web:lint:biome:          13 │ + ··title?:·string;
+apps-gurudevi-marketing-web:lint:biome:          14 │ + ··description?:·string;
+apps-gurudevi-marketing-web:lint:biome:          15 │ + ··image?:·string;
+apps-gurudevi-marketing-web:lint:biome:          16 │ + ··noindex?:·boolean;
+apps-gurudevi-marketing-web:lint:biome:          17 │ + ··structuredData?:·Record<string,·any>·|·Array<Record<string,·any>>;
+apps-gurudevi-marketing-web:lint:biome:          18 │ + }
+apps-gurudevi-marketing-web:lint:biome:          19 │ + 
+apps-gurudevi-marketing-web:lint:biome:          20 │ + const·{
+apps-gurudevi-marketing-web:lint:biome:          21 │ + ··title·=·SITE_TITLE,
+apps-gurudevi-marketing-web:lint:biome:          22 │ + ··description·=·SITE_DESCRIPTION,
+apps-gurudevi-marketing-web:lint:biome:          23 │ + ··image,
+apps-gurudevi-marketing-web:lint:biome:          24 │ + ··noindex·=·false,
+apps-gurudevi-marketing-web:lint:biome:          25 │ + ··structuredData·=·[],
+apps-gurudevi-marketing-web:lint:biome:          26 │ + }·=·Astro.props;
+apps-gurudevi-marketing-web:lint:biome:          27 │ + 
+
+apps-gurudevi-marketing-web:lint:biome:          28 │ + const·canonical·=·Astro.url.href;
+apps-gurudevi-marketing-web:lint:biome:          29 │ + const·_ogImage·=·image·??·defaultOgImage(Astro.url.pathname);
+
+apps-gurudevi-marketing-web:lint:biome:          30 │ + const·_robotsContent·=·noindex·?·'noindex,·nofollow'·:·'index,·follow';
+apps-gurudevi-marketing-web:lint:biome:          31 │ + const·_baseStructuredData·=·[
+apps-gurudevi-marketing-web:lint:biome:          32 │ + ··{
+apps-gurudevi-marketing-web:lint:biome:          33 │ + ····'@context':·'https://schema.org',
+apps-gurudevi-marketing-web:lint:biome:          34 │ + ····'@type':·'Organization',
+apps-gurudevi-marketing-web:lint:biome:          35 │ + ····...ORGANIZATION,
+apps-gurudevi-marketing-web:lint:biome:          36 │ + ··},
+apps-gurudevi-marketing-web:lint:biome:          37 │ + ··{
+apps-gurudevi-marketing-web:lint:biome:          38 │ + ····'@context':·'https://schema.org',
+apps-gurudevi-marketing-web:lint:biome:          39 │ + ····'@type':·'WebSite',
+apps-gurudevi-marketing-web:lint:biome:          40 │ + ····name:·SITE_NAME,
+apps-gurudevi-marketing-web:lint:biome:          41 │ + ····url:·SITE_URL,
+apps-gurudevi-marketing-web:lint:biome:          42 │ + ····description:·SITE_DESCRIPTION,
+apps-gurudevi-marketing-web:lint:biome:          43 │ + ··},
+apps-gurudevi-marketing-web:lint:biome:          44 │ + ··{
+apps-gurudevi-marketing-web:lint:biome:          45 │ + ····'@context':·'https://schema.org',
+apps-gurudevi-marketing-web:lint:biome:          46 │ + ····'@type':·'WebPage',
+apps-gurudevi-marketing-web:lint:biome:          47 │ + ····name:·title,
+apps-gurudevi-marketing-web:lint:biome:          48 │ + ····description,
+
+apps-gurudevi-marketing-web:lint:biome:          49 │ + ····url:·canonical,
+apps-gurudevi-marketing-web:lint:biome:          50 │ + ··},
+apps-gurudevi-marketing-web:lint:biome:          51 │ + ]
+apps-gurudevi-marketing-web:lint:biome:          52 │ + ··.concat(Array.isArray(structuredData)·?·structuredData·:·[structuredData])
+apps-gurudevi-marketing-web:lint:biome:          53 │ + ··.filter(Boolean);
+apps-gurudevi-marketing-web:lint:biome:      54  54 │   ---␍
+apps-gurudevi-marketing-web:lint:biome:      55  55 │   ␍
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: src\styles\global.css:3:2 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   × Tailwind-specific syntax is disabled.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:      1 │ @import "tailwindcss";
+apps-gurudevi-marketing-web:lint:biome:      2 │ 
+apps-gurudevi-marketing-web:lint:biome:    > 3 │ @theme {
+apps-gurudevi-marketing-web:lint:biome:        │  ^^^^^^^
+apps-gurudevi-marketing-web:lint:biome:    > 4 │   /* Sanctuary Core Tokens (Web) */
+apps-gurudevi-marketing-web:lint:biome:         ...
+apps-gurudevi-marketing-web:lint:biome:   > 32 │   --font-display: "IM Fell English", serif;
+apps-gurudevi-marketing-web:lint:biome:   > 33 │ }
+apps-gurudevi-marketing-web:lint:biome:        │ ^
+apps-gurudevi-marketing-web:lint:biome:     34 │ 
+apps-gurudevi-marketing-web:lint:biome:     35 │ @layer base {
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:   i Enable `tailwindDirectives` in the css parser options, or remove this if you are not using Tailwind CSS.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: src\styles\global.css:42:6 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   × Tailwind-specific syntax is disabled.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:     40 │     color: var(--color-charcoal-truth);
+
+apps-gurudevi-marketing-web:lint:biome:     41 │     font-family: var(--font-content);
+apps-gurudevi-marketing-web:lint:biome:   > 42 │     @apply transition-colors duration-300;
+apps-gurudevi-marketing-web:lint:biome:        │      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+apps-gurudevi-marketing-web:lint:biome:     43 │   }
+apps-gurudevi-marketing-web:lint:biome:     44 │ 
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome:   i Enable `tailwindDirectives` in the css parser options, or remove this if you are not using Tailwind CSS.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: src\styles\global.css format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome:   × Code formatting aborted due to parsing errors. To format code with errors, enable the 'formatter.formatWithErrors' option.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+apps-gurudevi-marketing-web:lint:biome: The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+apps-gurudevi-marketing-web:lint:biome: Diagnostics not shown: 22.
+apps-gurudevi-marketing-web:lint:biome: Checked 63 files in 572ms. No fixes applied.
+apps-gurudevi-marketing-web:lint:biome: Found 19 errors.
+apps-gurudevi-marketing-web:lint:biome: Found 23 warnings.
+
+apps-gurudevi-marketing-web:lint:biome: check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+apps-gurudevi-marketing-web:lint:biome: 
+
+apps-gurudevi-marketing-web:lint:biome:   × Some errors were emitted while running checks.
+apps-gurudevi-marketing-web:lint:biome:   
+apps-gurudevi-marketing-web:lint:biome: 
+
+@repo/types-shim:lint:biome:  ELIFECYCLE  Command failed with exit code 1.
+
+@repo/people:lint:biome: cache miss, executing 07dcbc4ce90f5ad2
+
+@repo/form-builder:lint:biome: cache miss, executing 6eebe5735e251da8
+
+apps-gurudevi-marketing-web:lint:biome:  ELIFECYCLE  Command failed with exit code 1.
+
+@repo/core:lint:biome: src\__tests__\sanity.test.ts:9:28 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome: 
+@repo/core:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/core:lint:biome:   
+@repo/core:lint:biome:      8 │   it('should have access to vitest environment', () => {
+@repo/core:lint:biome:    > 9 │     expect((import.meta as any).env).toBeDefined();
+
+@repo/core:lint:biome:        │                            ^^^
+@repo/core:lint:biome:     10 │   });
+@repo/core:lint:biome:     11 │ });
+@repo/core:lint:biome:   
+@repo/core:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/core:lint:biome:   
+@repo/core:lint:biome: 
+@repo/core:lint:biome: src\adapters\events\inngest.adapter.ts:9:62 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome: 
+@repo/core:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/core:lint:biome:   
+@repo/core:lint:biome:      7 │  * Concrete implementation of IEventBusPort for Inngest.
+@repo/core:lint:biome:      8 │  */
+@repo/core:lint:biome:    > 9 │ export const createInngestEventBusAdapter = (client: Inngest<any>): IEventBusPort => ({
+@repo/core:lint:biome:        │                                                              ^^^
+@repo/core:lint:biome:     10 │   async publish(event: DomainEvent) {
+@repo/core:lint:biome:     11 │     await client.send({
+@repo/core:lint:biome:   
+@repo/core:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/core:lint:biome:   
+@repo/core:lint:biome: 
+@repo/core:lint:biome: src\adapters\events\inngest.adapter.ts:12:27 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome: 
+@repo/core:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/core:lint:biome:   
+@repo/core:lint:biome:     10 │   async publish(event: DomainEvent) {
+@repo/core:lint:biome:     11 │     await client.send({
+@repo/core:lint:biome:   > 12 │       name: event.name as any,
+@repo/core:lint:biome:        │                           ^^^
+@repo/core:lint:biome:     13 │       data: {
+@repo/core:lint:biome:     14 │         ...event.data,
+@repo/core:lint:biome:   
+@repo/core:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/core:lint:biome:   
+@repo/core:lint:biome: 
+@repo/core:lint:biome: src\adapters\native\FallbackMMKVStorageAdapter.ts:26:29 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━
+@repo/core:lint:biome: 
+@repo/core:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/core:lint:biome:   
+@repo/core:lint:biome:     24 │   private readonly fallback: IStorage;
+@repo/core:lint:biome:     25 │ 
+@repo/core:lint:biome:   > 26 │   constructor(private mmkv: any) {
+@repo/core:lint:biome:        │                             ^^^
+@repo/core:lint:biome:     27 │     this.fallback = new AsyncStorageAdapter();
+@repo/core:lint:biome:     28 │   }
+@repo/core:lint:biome:   
+@repo/core:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/core:lint:biome:   
+@repo/core:lint:biome: 
+@repo/core:lint:biome: src\adapters\native\MMKVStorageAdapter.ts:7:29 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome: 
+@repo/core:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/core:lint:biome:   
+@repo/core:lint:biome:     5 │  */
+@repo/core:lint:biome:     6 │ export class MMKVStorageAdapter implements IStorage {
+@repo/core:lint:biome:   > 7 │   constructor(private mmkv: any) {}
+@repo/core:lint:biome:       │                             ^^^
+@repo/core:lint:biome:     8 │ 
+@repo/core:lint:biome:     9 │   set(key: string, value: string | boolean | number) {
+@repo/core:lint:biome:   
+@repo/core:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/core:lint:biome:   
+@repo/core:lint:biome: 
+@repo/core:lint:biome: src\adapters\native\NativeCryptoAdapter.ts:18:60 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome: 
+@repo/core:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/core:lint:biome:   
+@repo/core:lint:biome:     16 │   }
+@repo/core:lint:biome:     17 │ 
+@repo/core:lint:biome:   > 18 │   async setItemAsync(key: string, value: string, options?: any): Promise<void> {
+@repo/core:lint:biome:        │                                                            ^^^
+@repo/core:lint:biome:     19 │     await SecureStore.setItemAsync(key, value, options);
+@repo/core:lint:biome:     20 │   }
+@repo/core:lint:biome:   
+@repo/core:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/core:lint:biome:   
+@repo/core:lint:biome: 
+@repo/core:lint:biome: src\adapters\powersync\SupabasePowerSyncConnector.ts:80:40 lint/suspicious/noExplicitAny ━━━━━━━━━━━
+@repo/core:lint:biome: 
+@repo/core:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/core:lint:biome:   
+@repo/core:lint:biome:     78 │       );
+@repo/core:lint:biome:     79 │ 
+
+@repo/core:lint:biome:   > 80 │       const res = await (client.api as any).powersync.upload.$post(
+
+@repo/core:lint:biome:        │                                        ^^^
+@repo/core:lint:biome:     81 │         {
+@repo/core:lint:biome:     82 │           json: {
+@repo/core:lint:biome:   
+@repo/core:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/core:lint:biome:   
+@repo/core:lint:biome: 
+@repo/core:lint:biome: src\adapters\powersync\SupabasePowerSyncConnector.ts:99:49 lint/suspicious/noExplicitAny ━━━━━━━━━━━
+@repo/core:lint:biome: 
+@repo/core:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/core:lint:biome:   
+@repo/core:lint:biome:      98 │       if (!res.ok) {
+@repo/core:lint:biome:    > 99 │         const errorData = (await res.json()) as any;
+@repo/core:lint:biome:         │                                                 ^^^
+@repo/core:lint:biome:     100 │         throw new Error(errorData.message || `Sanctuary API sync failed with status ${res.status}`);
+@repo/core:lint:biome:     101 │       }
+@repo/core:lint:biome:   
+@repo/core:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/core:lint:biome:   
+@repo/core:lint:biome: 
+@repo/core:lint:biome: src\utils\idempotency.ts:16:58 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome: 
+@repo/core:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/core:lint:biome:   
+@repo/core:lint:biome:     14 │  * Useful for "fire-and-forget" syncs that might trigger multiple times.
+@repo/core:lint:biome:     15 │  */
+@repo/core:lint:biome:   > 16 │ export const getConsistentIdempotencyKey = async (_data: any) => {
+@repo/core:lint:biome:        │                                                          ^^^
+@repo/core:lint:biome:     17 │   // In a real 2026 app, we might use a hash of the data.
+@repo/core:lint:biome:     18 │   // For now, simple UUID is fine if stored in local state.
+@repo/core:lint:biome:   
+@repo/core:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/core:lint:biome:   
+@repo/core:lint:biome: 
+@repo/core:lint:biome: package.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome: 
+@repo/core:lint:biome:   × Formatter would have printed the following content:
+@repo/core:lint:biome:   
+@repo/core:lint:biome:       1     │ - {␍
+@repo/core:lint:biome:       2     │ - ··"name":·"@repo/core",␍
+@repo/core:lint:biome:       3     │ - ··"version":·"0.1.0",␍
+@repo/core:lint:biome:       4     │ - ··"type":·"module",␍
+@repo/core:lint:biome:       5     │ - ··"main":·"src/index.ts",␍
+@repo/core:lint:biome:       6     │ - ··"types":·"src/index.ts",␍
+@repo/core:lint:biome:       7     │ - ··"sideEffects":·false,␍
+@repo/core:lint:biome:       8     │ - ··"engines":·{␍
+@repo/core:lint:biome:       9     │ - ····"node":·">=20.0.0"␍
+@repo/core:lint:biome:      10     │ - ··},␍
+@repo/core:lint:biome:      11     │ - ··"exports":·{␍
+@repo/core:lint:biome:      12     │ - ····".":·{␍
+@repo/core:lint:biome:      13     │ - ······"types":·"./src/index.ts",␍
+@repo/core:lint:biome:      14     │ - ······"import":·"./src/index.ts"␍
+@repo/core:lint:biome:      15     │ - ····},␍
+@repo/core:lint:biome:      16     │ - ····"./shared":·{␍
+@repo/core:lint:biome:      17     │ - ······"types":·"./src/shared/index.ts",␍
+@repo/core:lint:biome:      18     │ - ······"import":·"./src/shared/index.ts"␍
+@repo/core:lint:biome:      19     │ - ····},␍
+@repo/core:lint:biome:      20     │ - ····"./shared/*":·{␍
+@repo/core:lint:biome:      21     │ - ······"types":·"./src/shared/*.ts",␍
+@repo/core:lint:biome:      22     │ - ······"import":·"./src/shared/*.ts"␍
+@repo/core:lint:biome:      23     │ - ····},␍
+@repo/core:lint:biome:      24     │ - ····"./api":·{␍
+@repo/core:lint:biome:      25     │ - ······"types":·"./src/api/index.ts",␍
+@repo/core:lint:biome:      26     │ - ······"import":·"./src/api/index.ts"␍
+@repo/core:lint:biome:      27     │ - ····},␍
+@repo/core:lint:biome:      28     │ - ····"./api/server":·{␍
+@repo/core:lint:biome:      29     │ - ······"types":·"./src/api/server.ts",␍
+@repo/core:lint:biome:      30     │ - ······"import":·"./src/api/server.ts"␍
+@repo/core:lint:biome:      31     │ - ····},␍
+@repo/core:lint:biome:      32     │ - ····"./api/interceptor":·{␍
+@repo/core:lint:biome:      33     │ - ······"types":·"./src/api/interceptor.ts",␍
+@repo/core:lint:biome:      34     │ - ······"import":·"./src/api/interceptor.ts"␍
+@repo/core:lint:biome:      35     │ - ····},␍
+@repo/core:lint:biome:      36     │ - ····"./api/*":·{␍
+@repo/core:lint:biome:      37     │ - ······"types":·"./src/api/*.ts",␍
+@repo/core:lint:biome:      38     │ - ······"import":·"./src/api/*.ts"␍
+@repo/core:lint:biome:      39     │ - ····},␍
+@repo/core:lint:biome:      40     │ - ····"./api/hooks":·{␍
+@repo/core:lint:biome:      41     │ - ······"types":·"./src/api/hooks/index.ts",␍
+@repo/core:lint:biome:      42     │ - ······"import":·"./src/api/hooks/index.ts"␍
+@repo/core:lint:biome:      43     │ - ····},␍
+@repo/core:lint:biome:      44     │ - ····"./api/runtimes/*":·{␍
+@repo/core:lint:biome:      45     │ - ······"types":·"./src/api/runtimes/*.ts",␍
+@repo/core:lint:biome:      46     │ - ······"import":·"./src/api/runtimes/*.ts"␍
+@repo/core:lint:biome:      47     │ - ····},␍
+@repo/core:lint:biome:      48     │ - ····"./logic":·{␍
+@repo/core:lint:biome:      49     │ - ······"types":·"./src/logic/index.ts",␍
+@repo/core:lint:biome:      50     │ - ······"import":·"./src/logic/index.ts"␍
+@repo/core:lint:biome:      51     │ - ····},␍
+@repo/core:lint:biome:      52     │ - ····"./logic/schemas/*":·{␍
+@repo/core:lint:biome:      53     │ - ······"types":·"./src/logic/schemas/*.ts",␍
+@repo/core:lint:biome:      54     │ - ······"import":·"./src/logic/schemas/*.ts"␍
+@repo/core:lint:biome:      55     │ - ····},␍
+@repo/core:lint:biome:      56     │ - ····"./zen":·{␍
+@repo/core:lint:biome:      57     │ - ······"types":·"./src/logic/generated/index.ts",␍
+@repo/core:lint:biome:      58     │ - ······"import":·"./src/logic/generated/index.ts"␍
+@intuitui-labs/lk-edu-geo:lint:biome: src\data\lk-edu-data.json check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@intuitui-labs/lk-edu-geo:lint:biome: 
+@intuitui-labs/lk-edu-geo:lint:biome:   i The size of the file is 11.9 MiB, which exceeds the configured maximum of 1.0 MiB for this project.
+@intuitui-labs/lk-edu-geo:lint:biome:     Use the `files.maxSize` configuration to change the maximum size of files processed, or `files.includes` to ignore the file.
+@intuitui-labs/lk-edu-geo:lint:biome:   
+@intuitui-labs/lk-edu-geo:lint:biome: 
+@intuitui-labs/lk-edu-geo:lint:biome: scripts\extract-geo.ts:20:49 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@intuitui-labs/lk-edu-geo:lint:biome: 
+@intuitui-labs/lk-edu-geo:lint:biome:   ! Unexpected any. Specify a different type.
+@intuitui-labs/lk-edu-geo:lint:biome:   
+@intuitui-labs/lk-edu-geo:lint:biome:     19 │     // Enriched Hierarchy
+@intuitui-labs/lk-edu-geo:lint:biome:   > 20 │     const enrichedDistricts = districts.map((d: any) => {
+@intuitui-labs/lk-edu-geo:lint:biome:        │                                                 ^^^
+@intuitui-labs/lk-edu-geo:lint:biome:     21 │       // Get cities by district from postal backend
+@intuitui-labs/lk-edu-geo:lint:biome:     22 │       const postalCities = SLPostal.citiesByDistrict(d.name_en) || [];
+@intuitui-labs/lk-edu-geo:lint:biome:   
+@intuitui-labs/lk-edu-geo:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@intuitui-labs/lk-edu-geo:lint:biome:   
+@intuitui-labs/lk-edu-geo:lint:biome: 
+
+@repo/core:lint:biome:      59     │ - ····},␍
+@intuitui-labs/lk-edu-geo:lint:biome: scripts\extract-geo.ts:26:21 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@intuitui-labs/lk-edu-geo:lint:biome: 
+@intuitui-labs/lk-edu-geo:lint:biome:   ! Unexpected any. Specify a different type.
+@intuitui-labs/lk-edu-geo:lint:biome:   
+@repo/self:lint:biome: lint_results.json internalError/io  INTERNAL  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × stream did not contain valid UTF-8
+@repo/self:lint:biome:   
+@repo/self:lint:biome: The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+@repo/self:lint:biome: Diagnostics not shown: 268.
+@repo/self:lint:biome: Checked 129 files in 2s. No fixes applied.
+@repo/self:lint:biome: Found 226 errors.
+@repo/self:lint:biome: Found 61 warnings.
+
+@intuitui-labs/lk-edu-geo:lint:biome:     24 │       // Match cities from SLGeo with PostalCodes
+@repo/self:lint:biome:   ! This diagnostic was derived from an internal Biome error. Potential bug, please report it if necessary.
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: lint_results_utf8.json:1:2 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × String values must be double quoted.
+@repo/self:lint:biome:   
+@repo/self:lint:biome:   > 1 │ �node.exe : npm warn Unknown project config·
+@repo/self:lint:biome:       │  ^^^^
+@repo/self:lint:biome:     2 │ "public-hoist-pattern". This will stop working in the·
+@repo/self:lint:biome:     3 │ next major version of npm.
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: lint_results_utf8.json:1:6 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × unexpected character `.`
+@repo/self:lint:biome:   
+@repo/self:lint:biome:   > 1 │ �node.exe : npm warn Unknown project config·
+@repo/self:lint:biome:       │      ^
+@repo/self:lint:biome:     2 │ "public-hoist-pattern". This will stop working in the·
+@repo/self:lint:biome:     3 │ next major version of npm.
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: lint_results_utf8.json:1:7 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × String values must be double quoted.
+@repo/self:lint:biome:   
+@repo/self:lint:biome:   > 1 │ �node.exe : npm warn Unknown project config·
+@repo/self:lint:biome:       │       ^^^
+@repo/self:lint:biome:     2 │ "public-hoist-pattern". This will stop working in the·
+@repo/self:lint:biome:     3 │ next major version of npm.
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: lint_results_utf8.json:1:11 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × End of file expected
+@repo/self:lint:biome:   
+@repo/self:lint:biome:   > 1 │ �node.exe : npm warn Unknown project config·
+@repo/self:lint:biome:       │           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+@repo/self:lint:biome:     2 │ "public-hoist-pattern". This will stop working in the·
+@repo/self:lint:biome:     3 │ next major version of npm.
+@repo/self:lint:biome:   
+@repo/self:lint:biome:   i Use an array for a sequence of values: `[1, 2]`
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: lint_results_utf8.json:2:1 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × End of file expected
+@repo/self:lint:biome:   
+@repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+@repo/self:lint:biome:   > 2 │ "public-hoist-pattern". This will stop working in the·
+@repo/self:lint:biome:       │ ^^^^^^^^^^^^^^^^^^^^^^
+@repo/self:lint:biome:     3 │ next major version of npm.
+@repo/self:lint:biome:     4 │ At line:1 char:1
+@repo/self:lint:biome:   
+@repo/self:lint:biome:   i Use an array for a sequence of values: `[1, 2]`
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: lint_results_utf8.json:2:23 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × unexpected character `.`
+@repo/self:lint:biome:   
+@repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+@repo/self:lint:biome:   > 2 │ "public-hoist-pattern". This will stop working in the·
+@repo/self:lint:biome:       │                       ^
+@repo/self:lint:biome:     3 │ next major version of npm.
+@repo/self:lint:biome:     4 │ At line:1 char:1
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: lint_results_utf8.json:2:25 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × String values must be double quoted.
+@repo/self:lint:biome:   
+@repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+@repo/self:lint:biome:   > 2 │ "public-hoist-pattern". This will stop working in the·
+@repo/self:lint:biome:       │                         ^^^^
+@repo/self:lint:biome:     3 │ next major version of npm.
+@repo/self:lint:biome:     4 │ At line:1 char:1
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: lint_results_utf8.json:2:30 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × String values must be double quoted.
+@repo/self:lint:biome:   
+@repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+@repo/self:lint:biome:   > 2 │ "public-hoist-pattern". This will stop working in the·
+@repo/self:lint:biome:       │                              ^^^^
+@repo/self:lint:biome:     3 │ next major version of npm.
+@repo/self:lint:biome:     4 │ At line:1 char:1
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: lint_results_utf8.json:2:35 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × String values must be double quoted.
+@repo/self:lint:biome:   
+@repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+@repo/self:lint:biome:   > 2 │ "public-hoist-pattern". This will stop working in the·
+@repo/self:lint:biome:       │                                   ^^^^
+@repo/self:lint:biome:     3 │ next major version of npm.
+@repo/self:lint:biome:     4 │ At line:1 char:1
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: lint_results_utf8.json:2:40 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × String values must be double quoted.
+@repo/self:lint:biome:   
+@repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+@repo/self:lint:biome:   > 2 │ "public-hoist-pattern". This will stop working in the·
+@repo/self:lint:biome:       │                                        ^^^^^^^
+@repo/self:lint:biome:     3 │ next major version of npm.
+@repo/self:lint:biome:     4 │ At line:1 char:1
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: lint_results_utf8.json:2:48 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × String values must be double quoted.
+@repo/self:lint:biome:   
+@repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+@repo/self:lint:biome:   > 2 │ "public-hoist-pattern". This will stop working in the·
+@repo/self:lint:biome:       │                                                ^^
+@repo/self:lint:biome:     3 │ next major version of npm.
+@repo/self:lint:biome:     4 │ At line:1 char:1
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: lint_results_utf8.json:2:51 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × String values must be double quoted.
+@repo/self:lint:biome:   
+@repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+@repo/self:lint:biome:   > 2 │ "public-hoist-pattern". This will stop working in the·
+@repo/self:lint:biome:       │                                                   ^^^
+@repo/self:lint:biome:     3 │ next major version of npm.
+@repo/self:lint:biome:     4 │ At line:1 char:1
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: lint_results_utf8.json:3:1 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × String values must be double quoted.
+@repo/self:lint:biome:   
+@repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+@repo/self:lint:biome:     2 │ "public-hoist-pattern". This will stop working in the·
+@repo/self:lint:biome:   > 3 │ next major version of npm.
+@repo/self:lint:biome:       │ ^^^^
+@repo/self:lint:biome:     4 │ At line:1 char:1
+@repo/self:lint:biome:     5 │ + & "C:\Program Files\nodejs/node.exe" "C:\Program·
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: lint_results_utf8.json:3:6 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × String values must be double quoted.
+@repo/self:lint:biome:   
+@repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+@repo/self:lint:biome:     2 │ "public-hoist-pattern". This will stop working in the·
+@repo/self:lint:biome:   > 3 │ next major version of npm.
+@repo/self:lint:biome:       │      ^^^^^
+@repo/self:lint:biome:     4 │ At line:1 char:1
+@repo/self:lint:biome:     5 │ + & "C:\Program Files\nodejs/node.exe" "C:\Program·
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: lint_results_utf8.json:3:12 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × String values must be double quoted.
+@repo/self:lint:biome:   
+@repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+@repo/self:lint:biome:     2 │ "public-hoist-pattern". This will stop working in the·
+@repo/self:lint:biome:   > 3 │ next major version of npm.
+@repo/self:lint:biome:       │            ^^^^^^^
+@repo/self:lint:biome:     4 │ At line:1 char:1
+@repo/self:lint:biome:     5 │ + & "C:\Program Files\nodejs/node.exe" "C:\Program·
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: lint_results_utf8.json:3:20 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × String values must be double quoted.
+@repo/self:lint:biome:   
+@repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+@repo/self:lint:biome:     2 │ "public-hoist-pattern". This will stop working in the·
+@repo/self:lint:biome:   > 3 │ next major version of npm.
+@repo/self:lint:biome:       │                    ^^
+@repo/self:lint:biome:     4 │ At line:1 char:1
+@repo/self:lint:biome:     5 │ + & "C:\Program Files\nodejs/node.exe" "C:\Program·
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: lint_results_utf8.json:3:23 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × String values must be double quoted.
+@repo/self:lint:biome:   
+@repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+@repo/self:lint:biome:     2 │ "public-hoist-pattern". This will stop working in the·
+@repo/self:lint:biome:   > 3 │ next major version of npm.
+@repo/self:lint:biome:       │                       ^^^
+@repo/self:lint:biome:     4 │ At line:1 char:1
+@repo/self:lint:biome:     5 │ + & "C:\Program Files\nodejs/node.exe" "C:\Program·
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: lint_results_utf8.json:3:26 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × unexpected character `.`
+@repo/self:lint:biome:   
+@repo/self:lint:biome:     1 │ �node.exe : npm warn Unknown project config·
+@repo/self:lint:biome:     2 │ "public-hoist-pattern". This will stop working in the·
+@repo/self:lint:biome:   > 3 │ next major version of npm.
+@repo/self:lint:biome:       │                          ^
+@repo/self:lint:biome:     4 │ At line:1 char:1
+@repo/self:lint:biome:     5 │ + & "C:\Program Files\nodejs/node.exe" "C:\Program·
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: lint_results_utf8.json:4:1 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × String values must be double quoted.
+@repo/self:lint:biome:   
+@repo/self:lint:biome:     2 │ "public-hoist-pattern". This will stop working in the·
+@repo/self:lint:biome:     3 │ next major version of npm.
+@repo/self:lint:biome:   > 4 │ At line:1 char:1
+@repo/self:lint:biome:       │ ^^
+@repo/self:lint:biome:     5 │ + & "C:\Program Files\nodejs/node.exe" "C:\Program·
+@repo/self:lint:biome:     6 │ Files\nodejs/node_mo ...
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@repo/self:lint:biome: check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/self:lint:biome: 
+@repo/self:lint:biome:   × Some errors were emitted while running checks.
+@repo/self:lint:biome:   
+@repo/self:lint:biome: 
+@intuitui-labs/lk-edu-geo:lint:biome:     25 │       const matchedCities = cities
+@intuitui-labs/lk-edu-geo:lint:biome:   > 26 │         .filter((c: any) => c.district_id === d.id)
+@intuitui-labs/lk-edu-geo:lint:biome:        │                     ^^^
+@intuitui-labs/lk-edu-geo:lint:biome:     27 │         .map((c: any) => {
+@repo/core:lint:biome:      60     │ - ····"./native":·{␍
+@repo/core:lint:biome:      61     │ - ······"types":·"./src/native/index.ts",␍
+@repo/core:lint:biome:      62     │ - ······"import":·"./src/native/index.ts"␍
+@repo/core:lint:biome:      63     │ - ····},␍
+@repo/core:lint:biome:      64     │ - ····"./hooks":·{␍
+@repo/core:lint:biome:      65     │ - ······"types":·"./src/hooks/index.ts",␍
+
+@repo/core:lint:biome:      66     │ - ······"import":·"./src/hooks/index.ts"␍
+@repo/core:lint:biome:      67     │ - ····},␍
+@repo/core:lint:biome:      68     │ - ····"./hooks/*":·{␍
+@repo/core:lint:biome:      69     │ - ······"types":·"./src/hooks/*.ts",␍
+@repo/core:lint:biome:      70     │ - ······"import":·"./src/hooks/*.ts"␍
+@intuitui-labs/lk-edu-geo:lint:biome:     28 │           const postalMatch = postalCities.find(
+@intuitui-labs/lk-edu-geo:lint:biome:   
+@intuitui-labs/lk-edu-geo:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@intuitui-labs/lk-edu-geo:lint:biome:   
+@intuitui-labs/lk-edu-geo:lint:biome: 
 @intuitui-labs/lk-edu-geo:lint:biome: scripts\extract-geo.ts:27:18 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 @intuitui-labs/lk-edu-geo:lint:biome: 
 @intuitui-labs/lk-edu-geo:lint:biome:   ! Unexpected any. Specify a different type.
@@ -4322,83 +2378,601 @@ apps-intuitui-web:lint:biome:  ELIFECYCLE  Command failed with exit code 1.
 @intuitui-labs/lk-edu-geo:lint:biome:     28 │           const postalMatch = postalCities.find(
 @intuitui-labs/lk-edu-geo:lint:biome:     29 │             (pc: any) => pc.city.toLowerCase() === c.name_en.toLowerCase(),
 @intuitui-labs/lk-edu-geo:lint:biome:   
-
 @intuitui-labs/lk-edu-geo:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-
 @intuitui-labs/lk-edu-geo:lint:biome:   
-
 @intuitui-labs/lk-edu-geo:lint:biome: 
-
 @intuitui-labs/lk-edu-geo:lint:biome: scripts\extract-geo.ts:29:18 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
 @intuitui-labs/lk-edu-geo:lint:biome: 
-
 @intuitui-labs/lk-edu-geo:lint:biome:   ! Unexpected any. Specify a different type.
-
 @intuitui-labs/lk-edu-geo:lint:biome:   
-
 @intuitui-labs/lk-edu-geo:lint:biome:     27 │         .map((c: any) => {
-
 @intuitui-labs/lk-edu-geo:lint:biome:     28 │           const postalMatch = postalCities.find(
-
+@repo/library:lint:biome: src\api\database.web.ts:134:41 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/library:lint:biome: 
+@repo/library:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/library:lint:biome:   
+@repo/library:lint:biome:     133 │   // Shim for compatibility with sync logic that uses SQLite methods
+@repo/library:lint:biome:   > 134 │   async runAsync(query: string, params: any[]) {
+@repo/library:lint:biome:         │                                         ^^^
+@repo/library:lint:biome:     135 │     if (!this.db) await this.init();
+@repo/library:lint:biome:     136 │     if (!this.db) return;
+@repo/library:lint:biome:   
+@repo/library:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/library:lint:biome:   
+@repo/library:lint:biome: 
+@repo/library:lint:biome: src\api\database.web.ts:161:49 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/library:lint:biome: 
+@repo/library:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/library:lint:biome:   
+@repo/library:lint:biome:     159 │   },
+@repo/library:lint:biome:     160 │ 
+@repo/library:lint:biome:   > 161 │   async getFirstAsync<T>(query: string, params: any[]): Promise<T | null> {
+@repo/library:lint:biome:         │                                                 ^^^
+@repo/library:lint:biome:     162 │     if (!this.db) await this.init();
+@repo/library:lint:biome:     163 │     if (!this.db) return null;
+@repo/library:lint:biome:   
+@repo/library:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/library:lint:biome:   
+@repo/library:lint:biome: 
+@repo/core:lint:biome:      71     │ - ····},␍
+@repo/library:lint:biome: src\api\library.ts:192:40 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/library:lint:biome: 
+@repo/core:lint:biome:      72     │ - ····"./providers":·{␍
 @intuitui-labs/lk-edu-geo:lint:biome:   > 29 │             (pc: any) => pc.city.toLowerCase() === c.name_en.toLowerCase(),
-
 @intuitui-labs/lk-edu-geo:lint:biome:        │                  ^^^
-
+@repo/library:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/core:lint:biome:      73     │ - ······"types":·"./src/providers/index.ts",␍
 @intuitui-labs/lk-edu-geo:lint:biome:     30 │           );
-
+@repo/library:lint:biome:   
+@repo/library:lint:biome:     190 │       throw new APIError('Failed to fetch resources', error.code, error);
+@repo/core:lint:biome:      74     │ - ······"import":·"./src/providers/index.ts"␍
+@repo/core:lint:biome:      75     │ - ····},␍
+@repo/core:lint:biome:      76     │ - ····"./store":·{␍
+@repo/core:lint:biome:      77     │ - ······"types":·"./src/store/index.ts",␍
+@repo/core:lint:biome:      78     │ - ······"import":·"./src/store/index.ts"␍
+@repo/ui:lint:biome: report_final.json:1:2 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/ui:lint:biome: 
+@repo/ui:lint:biome:   × unexpected character `>`
+@repo/ui:lint:biome:   
+@repo/core:lint:biome:      79     │ - ····},␍
+@repo/ui:lint:biome:   > 1 │ �> @repo/ui@1.0.0 lint:eslint C:\Users\Naween\projects\polymath-platform\packages\ui
+@repo/ui:lint:biome:       │  ^
+@repo/ui:lint:biome:     2 │ > eslint . "--format" "json"
+@repo/ui:lint:biome:     3 │ 
+@repo/ui:lint:biome:   
+@repo/ui:lint:biome: 
+@repo/ui:lint:biome: report_final.json:1:4 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/ui:lint:biome: 
+@repo/ui:lint:biome:   × unexpected character `@`
+@repo/ui:lint:biome:   
 @intuitui-labs/lk-edu-geo:lint:biome:     31 │           return {
-
 @intuitui-labs/lk-edu-geo:lint:biome:   
-
 @intuitui-labs/lk-edu-geo:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-
 @intuitui-labs/lk-edu-geo:lint:biome:   
-
 @intuitui-labs/lk-edu-geo:lint:biome: 
+@repo/ui:lint:biome:   > 1 │ �> @repo/ui@1.0.0 lint:eslint C:\Users\Naween\projects\polymath-platform\packages\ui
+@repo/ui:lint:biome:       │    ^
+@repo/core:lint:biome:      80     │ - ····"./store/*":·{␍
 
+@repo/ui:lint:biome:     2 │ > eslint . "--format" "json"
+@repo/ui:lint:biome:     3 │ 
+@repo/ui:lint:biome:   
+@repo/ui:lint:biome: 
+@repo/library:lint:biome:     191 │     }
+@repo/library:lint:biome:   > 192 │     return (data || []).map((resource: any) => ({
+@repo/core:lint:biome:      81     │ - ······"types":·"./src/store/*.ts",␍
 @intuitui-labs/lk-edu-geo:lint:biome: scripts\extract-gn.ts:25:15 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
 @intuitui-labs/lk-edu-geo:lint:biome: 
-
 @intuitui-labs/lk-edu-geo:lint:biome:   ! Unexpected any. Specify a different type.
-
 @intuitui-labs/lk-edu-geo:lint:biome:   
+@repo/ui:lint:biome: report_final.json:1:5 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/ui:lint:biome: 
+@repo/ui:lint:biome:   × String values must be double quoted.
+@repo/ui:lint:biome:   
+@repo/library:lint:biome:         │                                        ^^^
+@repo/library:lint:biome:     193 │       ...resource,
+@repo/ui:lint:biome:   > 1 │ �> @repo/ui@1.0.0 lint:eslint C:\Users\Naween\projects\polymath-platform\packages\ui
+@repo/ui:lint:biome:       │     ^^^^
+@repo/ui:lint:biome:     2 │ > eslint . "--format" "json"
+@repo/ui:lint:biome:     3 │ 
+@repo/ui:lint:biome:   
+@repo/ui:lint:biome: 
+@repo/core:lint:biome:      82     │ - ······"import":·"./src/store/*.ts"␍
+@repo/core:lint:biome:      83     │ - ····},␍
+@repo/core:lint:biome:      84     │ - ····"./native/*":·{␍
+@repo/core:lint:biome:      85     │ - ······"types":·"./src/native/*.ts",␍
+@repo/library:lint:biome:     194 │       creator_name: resource.creator?.full_name || resource.creator_name || 'System',
+@repo/library:lint:biome:   
 
+@repo/ui:lint:biome: report_final.json:1:9 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/ui:lint:biome: 
+@repo/ui:lint:biome:   × unexpected character `/`
+@repo/ui:lint:biome:   
+@repo/core:lint:biome:      86     │ - ······"import":·"./src/native/*.ts"␍
+@repo/core:lint:biome:      87     │ - ····},␍
 @intuitui-labs/lk-edu-geo:lint:biome:     23 │   const workbook = XLSX.readFile(FILE_PATH);
-
 @intuitui-labs/lk-edu-geo:lint:biome:     24 │   const sheet = workbook.Sheets.lka_admin4;
+
+@repo/ui:lint:biome:   > 1 │ �> @repo/ui@1.0.0 lint:eslint C:\Users\Naween\projects\polymath-platform\packages\ui
+
+@repo/ui:lint:biome:       │         ^
+
+@repo/ui:lint:biome:     2 │ > eslint . "--format" "json"
+
+@repo/ui:lint:biome:     3 │ 
+@repo/ui:lint:biome:   
+@repo/ui:lint:biome: 
+
+@repo/core:lint:biome:      88     │ - ····"./sync/*":·{␍
 
 @intuitui-labs/lk-edu-geo:lint:biome:   > 25 │   const data: any[] = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
+@repo/ui:lint:biome: report_final.json:1:10 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+@repo/ui:lint:biome: 
+
+@repo/ui:lint:biome:   × String values must be double quoted.
+@repo/ui:lint:biome:   
+
+@repo/core:lint:biome:      89     │ - ······"types":·"./src/lib/sync/*.ts",␍
+
+@repo/core:lint:biome:      90     │ - ······"import":·"./src/lib/sync/*.ts"␍
+
+@repo/core:lint:biome:      91     │ - ····},␍
+
+@repo/core:lint:biome:      92     │ - ····"./lib/*":·{␍
+
+@repo/core:lint:biome:      93     │ - ······"types":·"./src/lib/*.ts",␍
+
 @intuitui-labs/lk-edu-geo:lint:biome:        │               ^^^
+
+@repo/library:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/library:lint:biome:   
+@repo/library:lint:biome: 
 
 @intuitui-labs/lk-edu-geo:lint:biome:     26 │ 
 
 @intuitui-labs/lk-edu-geo:lint:biome:     27 │   const headers = data[0];
-
 @intuitui-labs/lk-edu-geo:lint:biome:   
 
 @intuitui-labs/lk-edu-geo:lint:biome:   i any disables many type checking rules. Its use should be avoided.
 
 @intuitui-labs/lk-edu-geo:lint:biome:   
-
 @intuitui-labs/lk-edu-geo:lint:biome: 
 
 @intuitui-labs/lk-edu-geo:lint:biome: scripts\generate-sql-seeds.ts:23:14 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
 @intuitui-labs/lk-edu-geo:lint:biome: 
 
-@intuitui-labs/lk-edu-geo:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/self:lint:biome:  ELIFECYCLE  Command failed with exit code 1.
 
+@repo/core:lint:biome:      94     │ - ······"import":·"./src/lib/*.ts"␍
+@intuitui-labs/lk-edu-geo:lint:biome:   ! Unexpected any. Specify a different type.
 @intuitui-labs/lk-edu-geo:lint:biome:   
 
+@repo/core:lint:biome:      95     │ - ····},␍
+@repo/core:lint:biome:      96     │ - ····"./adapters/*":·{␍
+
+@repo/core:lint:biome:      97     │ - ······"types":·"./src/adapters/*.ts",␍
+@repo/core:lint:biome:      98     │ - ······"import":·"./src/adapters/*.ts"␍
+@repo/core:lint:biome:      99     │ - ····},␍
+@repo/core:lint:biome:     100     │ - ····"./types":·{␍
+@repo/core:lint:biome:     101     │ - ······"types":·"./src/types/index.ts",␍
+@repo/core:lint:biome:     102     │ - ······"import":·"./src/types/index.ts"␍
+@repo/core:lint:biome:     103     │ - ····},␍
+@repo/core:lint:biome:     104     │ - ····"./types/*":·{␍
+
+@repo/ui:lint:biome:   > 1 │ �> @repo/ui@1.0.0 lint:eslint C:\Users\Naween\projects\polymath-platform\packages\ui
+@repo/ui:lint:biome:       │          ^^
+@repo/ui:lint:biome:     2 │ > eslint . "--format" "json"
+@repo/ui:lint:biome:     3 │ 
+@repo/ui:lint:biome:   
+@repo/ui:lint:biome: 
+@repo/ui:lint:biome: report_final.json:1:12 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/ui:lint:biome: 
+@repo/ui:lint:biome:   × unexpected character `@`
+@repo/ui:lint:biome:   
+@repo/ui:lint:biome:   > 1 │ �> @repo/ui@1.0.0 lint:eslint C:\Users\Naween\projects\polymath-platform\packages\ui
+@repo/ui:lint:biome:       │            ^
+@repo/ui:lint:biome:     2 │ > eslint . "--format" "json"
+@repo/ui:lint:biome:     3 │ 
+@repo/ui:lint:biome:   
+@repo/ui:lint:biome: 
+
+@repo/library:lint:biome: src\api\library.ts:204:71 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/library:lint:biome: 
+@repo/library:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/library:lint:biome:   
+@repo/library:lint:biome:     202 │    * @authority read Library
+@repo/library:lint:biome:     203 │    */
+@repo/library:lint:biome:   > 204 │   async searchMapUniverse(query: string, limit: number = 10): Promise<any[]> {
+@repo/library:lint:biome:         │                                                                       ^^^
+@repo/library:lint:biome:     205 │     const { data, error } = await supabase.rpc('search_map_universe', {
+@repo/library:lint:biome:     206 │       query_text: query,
+@repo/library:lint:biome:   
+@repo/library:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/library:lint:biome:   
+@repo/library:lint:biome: 
+@repo/library:lint:biome: src\api\library.ts:233:50 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/library:lint:biome: 
+@repo/library:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/library:lint:biome:   
+@repo/library:lint:biome:     231 │       if (error) throw error;
+@repo/library:lint:biome:     232 │       // Sort results by the order returned from SQLite
+@repo/library:lint:biome:   > 233 │       const idMap = new Map((data || []).map((r: any) => [r.id, r]));
+@repo/library:lint:biome:         │                                                  ^^^
+@repo/library:lint:biome:     234 │       return ids
+@repo/library:lint:biome:     235 │         .map((id) => idMap.get(id))
+
+@repo/library:lint:biome:   
+@repo/library:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/library:lint:biome:   
+@repo/library:lint:biome: 
+@repo/library:lint:biome: src\api\library.ts:270:40 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/library:lint:biome: 
+@repo/library:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/library:lint:biome:   
+@repo/library:lint:biome:     268 │       throw new APIError('Failed to search knowledge universe', error.code, error);
+@repo/library:lint:biome:     269 │     }
+@repo/library:lint:biome:   > 270 │     return (data || []).map((resource: any) => ({
+@repo/library:lint:biome:         │                                        ^^^
+@repo/library:lint:biome:     271 │       ...resource,
+@repo/library:lint:biome:     272 │       creator_name: resource.creator_name || 'System',
+@repo/library:lint:biome:   
+@repo/library:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/library:lint:biome:   
+@repo/library:lint:biome: 
+@repo/library:lint:biome: src\api\library.ts:304:48 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/library:lint:biome: 
+@repo/library:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/library:lint:biome:   
+@repo/library:lint:biome:     302 │         .in('engagement_type', ['endorse', 'bookmark']);
+@repo/library:lint:biome:     303 │       if (engagementData) {
+@repo/library:lint:biome:   > 304 │         has_endorsed = engagementData.some((e: any) => e.engagement_type === 'endorse');
+@repo/library:lint:biome:         │                                                ^^^
+@repo/library:lint:biome:     305 │         has_bookmarked = engagementData.some((e: any) => e.engagement_type === 'bookmark');
+@repo/library:lint:biome:     306 │       }
+@repo/library:lint:biome:   
+@repo/library:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/library:lint:biome:   
+@repo/library:lint:biome: 
+@repo/library:lint:biome: src\api\library.ts:305:50 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/library:lint:biome: 
+@repo/library:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/library:lint:biome:   
+@repo/library:lint:biome:     303 │       if (engagementData) {
+@repo/library:lint:biome:     304 │         has_endorsed = engagementData.some((e: any) => e.engagement_type === 'endorse');
+@repo/library:lint:biome:   > 305 │         has_bookmarked = engagementData.some((e: any) => e.engagement_type === 'bookmark');
+@repo/library:lint:biome:         │                                                  ^^^
+@repo/library:lint:biome:     306 │       }
+@repo/library:lint:biome:     307 │     }
+@repo/library:lint:biome:   
+@repo/library:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/core:lint:biome:     105     │ - ······"types":·"./src/types/*.ts",␍
+@repo/library:lint:biome:   
+@repo/core:lint:biome:     106     │ - ······"import":·"./src/types/*.ts"␍
+@repo/library:lint:biome: 
+@repo/core:lint:biome:     107     │ - ····},␍
+@repo/library:lint:biome: src\api\library.ts:612:19 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome:     108     │ - ····"./auth":·{␍
+@repo/library:lint:biome: 
+@repo/core:lint:biome:     109     │ - ······"types":·"./src/api/auth.ts",␍
+@repo/library:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/core:lint:biome:     110     │ - ······"import":·"./src/api/auth.ts"␍
+@repo/library:lint:biome:   
+@repo/core:lint:biome:     111     │ - ····},␍
+@repo/library:lint:biome:     610 │     }
+@repo/core:lint:biome:     112     │ - ····"./identity":·{␍
+@repo/library:lint:biome:     611 │     return (data || [])
+@repo/core:lint:biome:     113     │ - ······"types":·"./src/api/identity.ts",␍
+@repo/library:lint:biome:   > 612 │       .map((item: any) => {
+@repo/core:lint:biome:     114     │ - ······"import":·"./src/api/identity.ts"␍
+@repo/library:lint:biome:         │                   ^^^
+@repo/core:lint:biome:     115     │ - ····},␍
+@repo/library:lint:biome:     613 │         const resource = Array.isArray(item.resource) ? item.resource[0] : item.resource;
+@repo/core:lint:biome:     116     │ - ····"./storage":·{␍
+@repo/library:lint:biome:     614 │         if (!resource) return null;
+@repo/core:lint:biome:     117     │ - ······"types":·"./src/native/storage.ts",␍
+@repo/library:lint:biome:   
+@repo/core:lint:biome:     118     │ - ······"import":·"./src/native/storage.ts"␍
+@repo/library:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/core:lint:biome:     119     │ - ····},␍
+@repo/library:lint:biome:   
+@repo/core:lint:biome:     120     │ - ····"./supabase":·{␍
+@repo/library:lint:biome: 
+@repo/core:lint:biome:     121     │ - ······"types":·"./src/api/supabase.ts",␍
+@repo/library:lint:biome: src\api\library.ts:621:19 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome:     122     │ - ······"import":·"./src/api/supabase.ts"␍
+@repo/library:lint:biome: 
+@repo/core:lint:biome:     123     │ - ····},␍
+@repo/library:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/core:lint:biome:     124     │ - ····"./monitoring":·{␍
+@repo/library:lint:biome:   
+@repo/core:lint:biome:     125     │ - ······"types":·"./src/lib/monitoring/index.ts",␍
+@repo/library:lint:biome:     619 │         } as LibraryResource;
+@repo/core:lint:biome:     126     │ - ······"import":·"./src/lib/monitoring/index.ts"␍
+@repo/library:lint:biome:     620 │       })
+@repo/core:lint:biome:     127     │ - ····},␍
+@repo/library:lint:biome:   > 621 │       .filter((r: any): r is LibraryResource => r !== null);
+@repo/core:lint:biome:     128     │ - ····"./sync":·{␍
+@repo/library:lint:biome:         │                   ^^^
+@repo/core:lint:biome:     129     │ - ······"types":·"./src/lib/sync/index.ts",␍
+@repo/library:lint:biome:     622 │   },
+@repo/core:lint:biome:     130     │ - ······"import":·"./src/lib/sync/index.ts"␍
+@repo/library:lint:biome:     623 │   // ========================================================================
+@repo/core:lint:biome:     131     │ - ····},␍
+@repo/library:lint:biome:   
+@repo/core:lint:biome:     132     │ - ····"./powersync":·{␍
+@repo/library:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/core:lint:biome:     133     │ - ······"types":·"./src/adapters/powersync/index.ts",␍
+@repo/library:lint:biome:   
+@repo/core:lint:biome:     134     │ - ······"import":·"./src/adapters/powersync/index.ts"␍
+@repo/library:lint:biome: 
+@repo/core:lint:biome:     135     │ - ····},␍
+@repo/library:lint:biome: src\api\library.ts:677:44 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome:     136     │ - ····"./utils":·{␍
+@repo/library:lint:biome: 
+@repo/core:lint:biome:     137     │ - ······"types":·"./src/logic/utils/index.ts",␍
+@repo/library:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/core:lint:biome:     138     │ - ······"import":·"./src/logic/utils/index.ts"␍
+@repo/library:lint:biome:   
+@repo/core:lint:biome:     139     │ - ····},␍
+@repo/library:lint:biome:     675 │     // Map explicit collections with their resources
+@repo/core:lint:biome:     140     │ - ····"./constants":·{␍
+@repo/library:lint:biome:     676 │     const explicitCollections = await Promise.all(
+@repo/core:lint:biome:     141     │ - ······"types":·"./src/constants/index.ts",␍
+@repo/library:lint:biome:   > 677 │       (explicitData || []).map(async (col: any) => {
+@repo/core:lint:biome:     142     │ - ······"import":·"./src/constants/index.ts"␍
+@repo/library:lint:biome:         │                                            ^^^
+@repo/core:lint:biome:     143     │ - ····},␍
+@repo/library:lint:biome:     678 │         let nodeIds = (col.collection_nodes || []).map((cn: any) => cn.node_id);
+@repo/core:lint:biome:     144     │ - ····"./constants/*":·{␍
+@repo/library:lint:biome:     679 │         if (asOf) {
+@repo/core:lint:biome:     145     │ - ······"types":·"./src/constants/*.ts",␍
+@repo/library:lint:biome:   
+@repo/core:lint:biome:     146     │ - ······"import":·"./src/constants/*.ts"␍
+@repo/library:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/core:lint:biome:     147     │ - ····},␍
+@repo/library:lint:biome:   
+@repo/core:lint:biome:     148     │ - ····"./grading":·{␍
+@repo/library:lint:biome: 
+@repo/core:lint:biome:     149     │ - ······"types":·"./src/logic/grading/index.ts",␍
+@repo/library:lint:biome: src\api\library.ts:678:61 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome:     150     │ - ······"import":·"./src/logic/grading/index.ts"␍
+@repo/library:lint:biome: 
+@repo/core:lint:biome:   413 more lines truncated
+@repo/library:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/core:lint:biome:   
+@repo/library:lint:biome:   
+@repo/core:lint:biome: 
+@repo/library:lint:biome:     676 │     const explicitCollections = await Promise.all(
+@repo/core:lint:biome: scratch\analyze_lint.js format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/library:lint:biome:     677 │       (explicitData || []).map(async (col: any) => {
+@repo/core:lint:biome: 
+@repo/library:lint:biome:   > 678 │         let nodeIds = (col.collection_nodes || []).map((cn: any) => cn.node_id);
+@repo/core:lint:biome:   × Formatter would have printed the following content:
+@repo/library:lint:biome:         │                                                             ^^^
+@repo/core:lint:biome:   
+@repo/library:lint:biome:     679 │         if (asOf) {
+@repo/core:lint:biome:      1    │ - /*·eslint-disable·*/␍
+@repo/library:lint:biome:     680 │           const { data: membershipData, error: membershipError } = await supabase.rpc(
+@repo/core:lint:biome:      2    │ - import·fs·from·'node:fs';␍
+@repo/library:lint:biome:   
+@repo/core:lint:biome:      3    │ - ␍
+@repo/library:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/core:lint:biome:      4    │ - const·reportPath·=·'eslint_report_honest_final.json';␍
+@repo/library:lint:biome:   
+@repo/core:lint:biome:      5    │ - const·report·=·JSON.parse(fs.readFileSync(reportPath,·'utf8'));␍
+@repo/library:lint:biome: 
+@repo/core:lint:biome:      6    │ - ␍
+@repo/library:lint:biome: src\api\library.ts:694:56 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome:      7    │ - const·hydrationIssues·=·report.filter((file)·=>␍
+@repo/library:lint:biome: 
+@repo/core:lint:biome:      8    │ - ··file.messages.some(␍
+@repo/library:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/core:lint:biome:      9    │ - ····(msg)·=>·msg.message.includes('hydration')·||·msg.message.includes('non-deterministic'),␍
+@repo/library:lint:biome:   
+@repo/core:lint:biome:     10    │ - ··),␍
+@repo/library:lint:biome:     692 │             );
+@repo/core:lint:biome:     11    │ - );␍
+@repo/library:lint:biome:     693 │           }
+@repo/core:lint:biome:     12    │ - ␍
+@repo/core:lint:biome:     13    │ - const·anyUsage·=·report.filter((file)·=>␍
+@repo/core:lint:biome:     14    │ - ··file.messages.some((msg)·=>·msg.ruleId·===·'@typescript-eslint/no-explicit-any'),␍
+@repo/core:lint:biome:     15    │ - );␍
+@repo/core:lint:biome:     16    │ - ␍
+@repo/core:lint:biome:     17    │ - console.log(`Total·files·with·hydration·issues:·${hydrationIssues.length}`);␍
+@repo/core:lint:biome:     18    │ - console.log(`Total·files·with·'any'·usage:·${anyUsage.length}`);␍
+@repo/core:lint:biome:     19    │ - ␍
+@repo/core:lint:biome:     20    │ - const·targetFiles·=·[␍
+@repo/core:lint:biome:     21    │ - ··'presence.ts',␍
+@repo/core:lint:biome:     22    │ - ··'resilience.ts',␍
+@repo/core:lint:biome:     23    │ - ··'comment.hooks.ts',␍
+@repo/core:lint:biome:     24    │ - ··'notification.hooks.ts',␍
+@repo/core:lint:biome:     25    │ - ··'assignmentRepository.ts',␍
+@repo/core:lint:biome:     26    │ - ];␍
+@repo/core:lint:biome:     27    │ - ␍
+@repo/core:lint:biome:     28    │ - targetFiles.forEach((target)·=>·{␍
+@repo/core:lint:biome:     29    │ - ··const·fileReport·=·report.find((f)·=>·f.filePath.endsWith(target));␍
+@repo/core:lint:biome:     30    │ - ··if·(fileReport)·{␍
+@repo/core:lint:biome:     31    │ - ····console.log(`\n---·Status·for·${target}·---`);␍
+@repo/core:lint:biome:     32    │ - ····fileReport.messages.forEach((msg)·=>·{␍
+@repo/core:lint:biome:     33    │ - ······console.log(`··Line·${msg.line}:·[${msg.ruleId}]·${msg.message}`);␍
+@repo/core:lint:biome:     34    │ - ····});␍
+@repo/core:lint:biome:     35    │ - ····if·(fileReport.messages.length·===·0)·console.log('··Clean!');␍
+@repo/core:lint:biome:     36    │ - ··}·else·{␍
+@repo/core:lint:biome:     37    │ - ····console.log(`\n---·${target}·not·found·in·report·(might·be·clean·or·excluded)·---`);␍
+@repo/core:lint:biome:     38    │ - ··}␍
+@repo/core:lint:biome:     39    │ - });␍
+@repo/core:lint:biome:         1 │ + /*·eslint-disable·*/
+@repo/core:lint:biome:         2 │ + import·fs·from·'node:fs';
+@repo/core:lint:biome:         3 │ + 
+@repo/core:lint:biome:         4 │ + const·reportPath·=·'eslint_report_honest_final.json';
+@repo/core:lint:biome:         5 │ + const·report·=·JSON.parse(fs.readFileSync(reportPath,·'utf8'));
+@repo/core:lint:biome:         6 │ + 
+@repo/core:lint:biome:         7 │ + const·hydrationIssues·=·report.filter((file)·=>
+@repo/library:lint:biome:   > 694 │           nodeIds = (membershipData || []).map((entry: any) => entry.node_id);
+@repo/core:lint:biome:         8 │ + ··file.messages.some(
+@repo/library:lint:biome:         │                                                        ^^^
+@repo/core:lint:biome:         9 │ + ····(msg)·=>·msg.message.includes('hydration')·||·msg.message.includes('non-deterministic'),
+@repo/library:lint:biome:     695 │         }
+@repo/core:lint:biome:        10 │ + ··),
+@repo/library:lint:biome:     696 │         if (nodeIds.length === 0 && col.resource_ids?.length > 0) {
+@repo/core:lint:biome:        11 │ + );
+@repo/library:lint:biome:   
+@repo/core:lint:biome:        12 │ + 
+@repo/library:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/core:lint:biome:        13 │ + const·anyUsage·=·report.filter((file)·=>
+@repo/library:lint:biome:   
+@repo/core:lint:biome:        14 │ + ··file.messages.some((msg)·=>·msg.ruleId·===·'@typescript-eslint/no-explicit-any'),
+@repo/library:lint:biome: 
+@repo/library:lint:biome: src\components\CollectionPickerModal.tsx:49:32 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━
+@repo/library:lint:biome: 
+@repo/library:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/library:lint:biome:   
+@repo/library:lint:biome:     47 │         <FlatList
+@repo/library:lint:biome:     48 │           data={collections}
+@repo/library:lint:biome:   > 49 │           keyExtractor={(item: any) => item.id}
+@repo/library:lint:biome:        │                                ^^^
+@repo/library:lint:biome:     50 │           renderItem={({ item }: { item: any }) => (
+@repo/library:lint:biome:     51 │             <Pressable
+@repo/library:lint:biome:   
+@repo/library:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/library:lint:biome:   
+@repo/library:lint:biome: 
+@repo/library:lint:biome: src\components\CollectionPickerModal.tsx:50:42 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome:        15 │ + );
+@repo/library:lint:biome: 
+@repo/core:lint:biome:        16 │ + 
+@repo/library:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/core:lint:biome:        17 │ + console.log(`Total·files·with·hydration·issues:·${hydrationIssues.length}`);
+@repo/library:lint:biome:   
+@repo/core:lint:biome:        18 │ + console.log(`Total·files·with·'any'·usage:·${anyUsage.length}`);
+@repo/library:lint:biome:     48 │           data={collections}
+@repo/core:lint:biome:        19 │ + 
+@repo/library:lint:biome:     49 │           keyExtractor={(item: any) => item.id}
+@repo/core:lint:biome:        20 │ + const·targetFiles·=·[
+@repo/library:lint:biome:   > 50 │           renderItem={({ item }: { item: any }) => (
+@repo/core:lint:biome:        21 │ + ··'presence.ts',
+@repo/library:lint:biome:        │                                          ^^^
+@repo/core:lint:biome:        22 │ + ··'resilience.ts',
+@repo/library:lint:biome:     51 │             <Pressable
+@repo/core:lint:biome:        23 │ + ··'comment.hooks.ts',
+@repo/library:lint:biome:     52 │               className="flex-row items-center p-5 border-b border-phase-border active:opacity-70"
+@repo/core:lint:biome:        24 │ + ··'notification.hooks.ts',
+@repo/library:lint:biome:   
+@repo/core:lint:biome:        25 │ + ··'assignmentRepository.ts',
+@repo/library:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/core:lint:biome:        26 │ + ];
+@repo/library:lint:biome:   
+@repo/core:lint:biome:        27 │ + 
+@repo/library:lint:biome: 
+@repo/core:lint:biome:        28 │ + targetFiles.forEach((target)·=>·{
+@repo/library:lint:biome: src\components\LibraryThumbnailCard.tsx:166:22 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome:        29 │ + ··const·fileReport·=·report.find((f)·=>·f.filePath.endsWith(target));
+@repo/library:lint:biome: 
+@repo/core:lint:biome:        30 │ + ··if·(fileReport)·{
+@repo/library:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/core:lint:biome:        31 │ + ····console.log(`\n---·Status·for·${target}·---`);
+@repo/library:lint:biome:   
+@repo/core:lint:biome:        32 │ + ····fileReport.messages.forEach((msg)·=>·{
+@repo/library:lint:biome:     164 │     const thumbnailUrl = resource
+@repo/core:lint:biome:        33 │ + ······console.log(`··Line·${msg.line}:·[${msg.ruleId}]·${msg.message}`);
+@repo/library:lint:biome:     165 │       ? resource.media?.url ||
+@repo/core:lint:biome:        34 │ + ····});
+@repo/library:lint:biome:   > 166 │         (resource as any).thumbnail_url ||
+@repo/core:lint:biome:        35 │ + ····if·(fileReport.messages.length·===·0)·console.log('··Clean!');
+@repo/library:lint:biome:         │                      ^^^
+@repo/core:lint:biome:        36 │ + ··}·else·{
+@repo/library:lint:biome:     167 │         (resource.type === 'video' || resource.type === 'movie_trailer'
+@repo/core:lint:biome:        37 │ + ····console.log(`\n---·${target}·not·found·in·report·(might·be·clean·or·excluded)·---`);
+@repo/library:lint:biome:     168 │           ? getYoutubeThumbnail(resource.url)
+@repo/core:lint:biome:        38 │ + ··}
+@repo/library:lint:biome:   
+@repo/core:lint:biome:        39 │ + });
+@repo/core:lint:biome:     40 40 │   
+@repo/core:lint:biome:   
+@repo/core:lint:biome: 
+@repo/core:lint:biome: scratch\extract_errors.cjs format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome: 
+@repo/core:lint:biome:   × Formatter would have printed the following content:
+@repo/core:lint:biome:   
+@repo/core:lint:biome:      1    │ - const·fs·=·require('node:fs');␍
+@repo/core:lint:biome:      2    │ - const·results·=·JSON.parse(␍
+@repo/core:lint:biome:      3    │ - ··fs.readFileSync('eslint_output_fresh.json',·'utf8').replace(/^\uFEFF/,·''),␍
+@repo/core:lint:biome:      4    │ - );␍
+@repo/core:lint:biome:      5    │ - ␍
+@repo/core:lint:biome:      6    │ - const·fileResult·=·results.find(␍
+@repo/core:lint:biome:      7    │ - ··(r)·=>·r.filePath.endsWith('src\\api\\index.ts')·||·r.filePath.endsWith('src/api/index.ts'),␍
+@repo/core:lint:biome:      8    │ - );␍
+@repo/core:lint:biome:      9    │ - if·(fileResult)·{␍
+@repo/core:lint:biome:     10    │ - ··console.log(␍
+@repo/core:lint:biome:     11    │ - ····JSON.stringify(␍
+@repo/core:lint:biome:     12    │ - ······fileResult.messages.filter((m)·=>·m.ruleId·===·'import-x/export'),␍
+@repo/core:lint:biome:     13    │ - ······null,␍
+@repo/core:lint:biome:     14    │ - ······2,␍
+@repo/core:lint:biome:     15    │ - ····),␍
+@repo/core:lint:biome:     16    │ - ··);␍
+@repo/core:lint:biome:     17    │ - }·else·{␍
+@repo/core:lint:biome:     18    │ - ··console.log('File·not·found');␍
+@repo/core:lint:biome:     19    │ - }␍
+@repo/library:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/library:lint:biome:   
+@repo/library:lint:biome: 
+@repo/library:lint:biome: src\components\LibraryThumbnailCard.tsx:185:15 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━
+@repo/library:lint:biome: 
+@repo/library:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/library:lint:biome:   
+@repo/library:lint:biome:     184 │     const handleBookmarkToggle = React.useCallback(
+@repo/library:lint:biome:   > 185 │       (event: any) => {
+@repo/library:lint:biome:         │               ^^^
+@repo/library:lint:biome:     186 │         if (coreRuntime.device.getMetadata().platform === 'web') event.stopPropagation();
+@repo/ui:lint:biome: report_final.json:1:13 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/library:lint:biome:     187 │         if (resource && onBookmarkToggle) void onBookmarkToggle(resource);
+@repo/ui:lint:biome: 
+@repo/library:lint:biome:   
+@repo/library:lint:biome:   i any disables many type checking rules. Its use should be avoided.
+@repo/library:lint:biome:   
+@repo/library:lint:biome: 
+@repo/library:lint:biome: src\api\database.web.ts:107:13 lint/suspicious/useIterableCallbackReturn ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/library:lint:biome: 
+@repo/library:lint:biome:   × This callback passed to forEach() iterable method should not return a value.
+@repo/library:lint:biome:   
+@repo/core:lint:biome:         1 │ + const·fs·=·require('node:fs');
+@repo/library:lint:biome:     105 │       const store = transaction.objectStore(STORE_NAME);
+@repo/core:lint:biome:         2 │ + const·results·=·JSON.parse(
+@repo/library:lint:biome:     106 │ 
+@repo/core:lint:biome:         3 │ + ··fs.readFileSync('eslint_output_fresh.json',·'utf8').replace(/^\uFEFF/,·''),
+@repo/library:lint:biome:   > 107 │       nodes.forEach((node) => store.put(node));
+@repo/core:lint:biome:         4 │ + );
+@repo/core:lint:biome:         5 │ + 
+@repo/core:lint:biome:         6 │ + const·fileResult·=·results.find(
+@repo/core:lint:biome:         7 │ + ··(r)·=>·r.filePath.endsWith('src\\api\\index.ts')·||·r.filePath.endsWith('src/api/index.ts'),
+@repo/core:lint:biome:         8 │ + );
+@repo/core:lint:biome:         9 │ + if·(fileResult)·{
+@repo/core:lint:biome:        10 │ + ··console.log(
+@repo/core:lint:biome:        11 │ + ····JSON.stringify(
+@repo/core:lint:biome:        12 │ + ······fileResult.messages.filter((m)·=>·m.ruleId·===·'import-x/export'),
+@repo/core:lint:biome:        13 │ + ······null,
+@repo/core:lint:biome:        14 │ + ······2,
+@repo/core:lint:biome:        15 │ + ····),
+@repo/core:lint:biome:        16 │ + ··);
+@repo/core:lint:biome:        17 │ + }·else·{
+@repo/core:lint:biome:        18 │ + ··console.log('File·not·found');
+@repo/core:lint:biome:        19 │ + }
+@repo/core:lint:biome:     20 20 │   
+@repo/core:lint:biome:   
+@repo/core:lint:biome: 
+@repo/library:lint:biome:         │             ^^^^^^^
+@repo/library:lint:biome:     108 │ 
+@intuitui-labs/lk-edu-geo:lint:biome: The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+@intuitui-labs/lk-edu-geo:lint:biome: Diagnostics not shown: 1.
+@intuitui-labs/lk-edu-geo:lint:biome: Checked 19 files in 2s. No fixes applied.
+@intuitui-labs/lk-edu-geo:lint:biome: Found 4 errors.
+@intuitui-labs/lk-edu-geo:lint:biome: Found 15 warnings.
+@intuitui-labs/lk-edu-geo:lint:biome: Found 2 infos.
 @intuitui-labs/lk-edu-geo:lint:biome:     21 │   geoSql += `-- Provinces\nINSERT INTO geo_provinces (id, name, name_si, name_ta) VALUES\n`;
-
 @intuitui-labs/lk-edu-geo:lint:biome:     22 │   geoSql += `${provinces
-
 @intuitui-labs/lk-edu-geo:lint:biome:   > 23 │     .map((p: any) => `('${p.id}', '${escape(p.name)}', '${p.name_si || ''}', '${p.name_ta || ''}')`)
-
 @intuitui-labs/lk-edu-geo:lint:biome:        │              ^^^
 @intuitui-labs/lk-edu-geo:lint:biome:     24 │     .join(',\n')}\nON CONFLICT (id) DO NOTHING;\n\n`;
 @intuitui-labs/lk-edu-geo:lint:biome:     25 │ 
@@ -4526,274 +3100,9 @@ apps-intuitui-web:lint:biome:  ELIFECYCLE  Command failed with exit code 1.
 @intuitui-labs/lk-edu-geo:lint:biome:   > 141 │   properties?: Record<string, any>;
 @intuitui-labs/lk-edu-geo:lint:biome:         │                               ^^^
 @intuitui-labs/lk-edu-geo:lint:biome:     142 │ }
-
 @intuitui-labs/lk-edu-geo:lint:biome:     143 │ 
 @intuitui-labs/lk-edu-geo:lint:biome:   
 @intuitui-labs/lk-edu-geo:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-
-@intuitui-labs/lk-edu-geo:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome: 
-@intuitui-labs/lk-edu-geo:lint:biome: package.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@intuitui-labs/lk-edu-geo:lint:biome: 
-@intuitui-labs/lk-edu-geo:lint:biome:   × Formatter would have printed the following content:
-@intuitui-labs/lk-edu-geo:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome:      1    │ - {␍
-@intuitui-labs/lk-edu-geo:lint:biome:      2    │ - ··"name":·"@intuitui-labs/lk-edu-geo",␍
-@intuitui-labs/lk-edu-geo:lint:biome:      3    │ - ··"version":·"1.0.1",␍
-@intuitui-labs/lk-edu-geo:lint:biome:      4    │ - ··"description":·"Sri·Lanka·educational·and·administrative·geo·data",␍
-@intuitui-labs/lk-edu-geo:lint:biome:      5    │ - ··"type":·"module",␍
-@intuitui-labs/lk-edu-geo:lint:biome:      6    │ - ··"exports":·{␍
-@intuitui-labs/lk-edu-geo:lint:biome:      7    │ - ····".":·{␍
-@intuitui-labs/lk-edu-geo:lint:biome:      8    │ - ······"types":·"./dist/index.d.ts",␍
-@intuitui-labs/lk-edu-geo:lint:biome:      9    │ - ······"import":·"./dist/index.js",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     10    │ - ······"require":·"./dist/index.cjs"␍
-@intuitui-labs/lk-edu-geo:lint:biome:     11    │ - ····},␍
-@intuitui-labs/lk-edu-geo:lint:biome:     12    │ - ····"./package.json":·"./package.json"␍
-
-@intuitui-labs/lk-edu-geo:lint:biome:     13    │ - ··},␍
-@intuitui-labs/lk-edu-geo:lint:biome:     14    │ - ··"main":·"./dist/index.cjs",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     15    │ - ··"module":·"./dist/index.js",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     16    │ - ··"types":·"./dist/index.d.ts",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     17    │ - ··"files":·[␍
-@intuitui-labs/lk-edu-geo:lint:biome:     18    │ - ····"dist",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     19    │ - ····"data"␍
-@intuitui-labs/lk-edu-geo:lint:biome:     20    │ - ··],␍
-@intuitui-labs/lk-edu-geo:lint:biome:     21    │ - ··"keywords":·[␍
-@intuitui-labs/lk-edu-geo:lint:biome:     22    │ - ····"sri-lanka",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     23    │ - ····"lk",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     24    │ - ····"education",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     25    │ - ····"geo",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     26    │ - ····"schools",␍
-
-@intuitui-labs/lk-edu-geo:lint:biome:     27    │ - ····"districts",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     28    │ - ····"provinces",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     29    │ - ····"gn-divisions",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     30    │ - ····"educational-zones"␍
-@intuitui-labs/lk-edu-geo:lint:biome:     31    │ - ··],␍
-@intuitui-labs/lk-edu-geo:lint:biome:     32    │ - ··"packageManager":·"pnpm@10.33.0",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     33    │ - ··"scripts":·{␍
-@intuitui-labs/lk-edu-geo:lint:biome:     34    │ - ····"build":·"pnpm·exec·tsup·src/index.ts·--format·esm,cjs·--dts·--clean",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     35    │ - ····"test":·"vitest·run",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     36    │ - ····"validate":·"pnpm·exec·tsx·scripts/validate.ts",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     37    │ - ····"lint":·"pnpm·run·lint:biome·&&·pnpm·run·lint:eslint",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     38    │ - ····"check-types":·"pnpm·exec·tsc·--noEmit",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     39    │ - ····"import:xlsx":·"pnpm·exec·tsx·scripts/import-xlsx.ts",␍
-
-@intuitui-labs/lk-edu-geo:lint:biome:     40    │ - ····"import:pdf":·"pnpm·exec·tsx·scripts/import-pdf.ts",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     41    │ - ····"lint:biome":·"biome·check·.",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     42    │ - ····"lint:eslint":·"eslint·.",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     43    │ - ····"format":·"biome·format·--write·.",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     44    │ - ····"check-cycles":·"node·../../scripts/refactor/sovereign-cycle-checker.mjs",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     45    │ - ····"test:watch":·"vitest",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     46    │ - ····"test:ui":·"vitest·--ui",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     47    │ - ····"clean":·"rm·-rf·.turbo·node_modules·dist"␍
-
-@intuitui-labs/lk-edu-geo:lint:biome:     48    │ - ··},␍
-@intuitui-labs/lk-edu-geo:lint:biome:     49    │ - ··"devDependencies":·{␍
-@intuitui-labs/lk-edu-geo:lint:biome:     50    │ - ····"@nishansanjuka/srilanka_geographics":·"^0.0.1",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     51    │ - ····"@repo/core":·"workspace:*",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     52    │ - ····"@types/node":·"^25.5.0",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     53    │ - ····"@types/glob":·"^9.0.0",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     54    │ - ····"glob":·"^11.0.1",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     55    │ - ····"tsup":·"^8.3.5",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     56    │ - ····"tsx":·"^4.19.2",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     57    │ - ····"typescript":·"^5.9.3",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     58    │ - ····"vitest":·"^2.1.9",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     59    │ - ····"xlsx":·"^0.18.5",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     60    │ - ····"@repo/eslint-config":·"workspace:^",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     61    │ - ····"@repo/typescript-config":·"workspace:*",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     62    │ - ····"vite-tsconfig-paths":·"^6.1.1",␍
-@intuitui-labs/lk-edu-geo:lint:biome:     63    │ - ····"eslint":·"^9.38.0"␍
-@intuitui-labs/lk-edu-geo:lint:biome:     64    │ - ··}␍
-@intuitui-labs/lk-edu-geo:lint:biome:     65    │ - }␍
-gurudevi-mobile:lint:biome: App.tsx:198:41 lint/complexity/useLiteralKeys  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@intuitui-labs/lk-edu-geo:lint:biome:         1 │ + {
-@repo/types-shim:lint:biome: index.d.ts:1:1 suppressions/incorrect ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/types-shim:lint:biome: 
-@repo/types-shim:lint:biome:   ! Range suppressions must have a matching biome-ignore-end
-@repo/types-shim:lint:biome:   
-@repo/types-shim:lint:biome:   > 1 │ // biome-ignore-start lint/suspicious/noExplicitAny: shims intentionally use explicit any
-@repo/types-shim:lint:biome:       │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-@repo/types-shim:lint:biome:     2 │ // This is an empty type definition file to satisfy legacy peer dependencies.
-@repo/types-shim:lint:biome:     3 │ // React Native 0.83+ provides its own types.
-@repo/types-shim:lint:biome: Checked 5 files in 716ms. No fixes applied.
-@repo/types-shim:lint:biome: Found 1 error.
-@repo/types-shim:lint:biome: Found 1 warning.
-@repo/types-shim:lint:biome:   
-@repo/types-shim:lint:biome: 
-@repo/types-shim:lint:biome: index.d.ts:96:21 suppressions/parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/types-shim:lint:biome: 
-@repo/types-shim:lint:biome:   × Unexpected token, expected one of ':', '(' or whitespace
-@repo/types-shim:lint:biome:   
-@repo/types-shim:lint:biome:     94 │ export {};
-@repo/types-shim:lint:biome:     95 │ 
-@repo/types-shim:lint:biome:   > 96 │ // biome-ignore-end lint/suspicious/noExplicitAny
-@repo/types-shim:lint:biome:        │                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-@repo/types-shim:lint:biome:     97 │ 
-@repo/types-shim:lint:biome:   
-@repo/types-shim:lint:biome:   i A colon is required after the category.
-@repo/types-shim:lint:biome:   
-@repo/types-shim:lint:biome:   i Example of suppression: // biome-ignore lint: reason
-@repo/types-shim:lint:biome:   
-@repo/types-shim:lint:biome: 
-@repo/types-shim:lint:biome: check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/types-shim:lint:biome: 
-@repo/types-shim:lint:biome:   × Some errors were emitted while running checks.
-@repo/types-shim:lint:biome:   
-@repo/types-shim:lint:biome: 
-@repo/community:lint:biome:     220 │   },
-gurudevi-mobile:lint:biome: 
-@intuitui-labs/lk-edu-geo:lint:biome:         2 │ + ··"name":·"@intuitui-labs/lk-edu-geo",
-@intuitui-labs/lk-edu-geo:lint:biome:         3 │ + ··"version":·"1.0.1",
-@intuitui-labs/lk-edu-geo:lint:biome:         4 │ + ··"description":·"Sri·Lanka·educational·and·administrative·geo·data",
-@repo/community:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome:         5 │ + ··"type":·"module",
-@repo/community:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@intuitui-labs/lk-edu-geo:lint:biome:         6 │ + ··"exports":·{
-@repo/community:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome:         7 │ + ····".":·{
-@repo/community:lint:biome: 
-@intuitui-labs/lk-edu-geo:lint:biome:         8 │ + ······"types":·"./dist/index.d.ts",
-@repo/community:lint:biome: src\api\community.ts:218:50 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@intuitui-labs/lk-edu-geo:lint:biome:         9 │ + ······"import":·"./dist/index.js",
-@repo/community:lint:biome: 
-@intuitui-labs/lk-edu-geo:lint:biome:        10 │ + ······"require":·"./dist/index.cjs"
-@repo/community:lint:biome:   ! Unexpected any. Specify a different type.
-@intuitui-labs/lk-edu-geo:lint:biome:        11 │ + ····},
-@repo/community:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome:        12 │ + ····"./package.json":·"./package.json"
-@repo/community:lint:biome:     216 │     return {
-@intuitui-labs/lk-edu-geo:lint:biome:        13 │ + ··},
-@repo/community:lint:biome:     217 │       ...(data as any),
-@intuitui-labs/lk-edu-geo:lint:biome:        14 │ + ··"main":·"./dist/index.cjs",
-@repo/community:lint:biome:   > 218 │       type: (data as any).group_type || (data as any).type || 'general',
-@intuitui-labs/lk-edu-geo:lint:biome:        15 │ + ··"module":·"./dist/index.js",
-@repo/community:lint:biome:         │                                                  ^^^
-@intuitui-labs/lk-edu-geo:lint:biome:        16 │ + ··"types":·"./dist/index.d.ts",
-@repo/community:lint:biome:     219 │     } as CommunityGroup;
-@intuitui-labs/lk-edu-geo:lint:biome:        17 │ + ··"files":·[
-@repo/community:lint:biome:     220 │   },
-@intuitui-labs/lk-edu-geo:lint:biome:        18 │ + ····"dist",
-@repo/community:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome:        19 │ + ····"data"
-@repo/community:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@intuitui-labs/lk-edu-geo:lint:biome:        20 │ + ··],
-@repo/community:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome:        21 │ + ··"keywords":·[
-@repo/community:lint:biome: 
-@intuitui-labs/lk-edu-geo:lint:biome:        22 │ + ····"sri-lanka",
-@repo/community:lint:biome: src\api\community.ts:310:36 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@intuitui-labs/lk-edu-geo:lint:biome:        23 │ + ····"lk",
-@repo/community:lint:biome: 
-@intuitui-labs/lk-edu-geo:lint:biome:        24 │ + ····"education",
-@repo/community:lint:biome:   ! Unexpected any. Specify a different type.
-@intuitui-labs/lk-edu-geo:lint:biome:        25 │ + ····"geo",
-@repo/community:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome:        26 │ + ····"schools",
-@repo/community:lint:biome:     308 │       .order('updated_at', { ascending: false });
-@intuitui-labs/lk-edu-geo:lint:biome:        27 │ + ····"districts",
-@intuitui-labs/lk-edu-geo:lint:biome:        28 │ + ····"provinces",
-@repo/community:lint:biome:     309 │     if (error) throw error;
-@intuitui-labs/lk-edu-geo:lint:biome:        29 │ + ····"gn-divisions",
-@repo/community:lint:biome:   > 310 │     return (data || []).map((conv: any) => {
-@intuitui-labs/lk-edu-geo:lint:biome:        30 │ + ····"educational-zones"
-@repo/community:lint:biome:         │                                    ^^^
-@intuitui-labs/lk-edu-geo:lint:biome:        31 │ + ··],
-@repo/community:lint:biome:     311 │       const otherUser = conv.user1_id === userId ? conv.user2 : conv.user1;
-@intuitui-labs/lk-edu-geo:lint:biome:        32 │ + ··"packageManager":·"pnpm@10.33.0",
-@repo/community:lint:biome:     312 │       return {
-@intuitui-labs/lk-edu-geo:lint:biome:        33 │ + ··"scripts":·{
-@repo/community:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome:        34 │ + ····"build":·"pnpm·exec·tsup·src/index.ts·--format·esm,cjs·--dts·--clean",
-@repo/community:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@intuitui-labs/lk-edu-geo:lint:biome:        35 │ + ····"test":·"vitest·run",
-@repo/community:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome:        36 │ + ····"validate":·"pnpm·exec·tsx·scripts/validate.ts",
-@repo/community:lint:biome: 
-@intuitui-labs/lk-edu-geo:lint:biome:        37 │ + ····"lint":·"pnpm·run·lint:biome·&&·pnpm·run·lint:eslint",
-@repo/community:lint:biome: src\api\community.ts:380:62 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@intuitui-labs/lk-edu-geo:lint:biome:        38 │ + ····"check-types":·"pnpm·exec·tsc·--noEmit",
-@repo/community:lint:biome: 
-@intuitui-labs/lk-edu-geo:lint:biome:        39 │ + ····"import:xlsx":·"pnpm·exec·tsx·scripts/import-xlsx.ts",
-@repo/community:lint:biome:   ! Unexpected any. Specify a different type.
-@intuitui-labs/lk-edu-geo:lint:biome:        40 │ + ····"import:pdf":·"pnpm·exec·tsx·scripts/import-pdf.ts",
-@repo/community:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome:        41 │ + ····"lint:biome":·"biome·check·.",
-@repo/community:lint:biome:     378 │       .eq('user_id', myId);
-@intuitui-labs/lk-edu-geo:lint:biome:        42 │ + ····"lint:eslint":·"eslint·.",
-@repo/community:lint:biome:     379 │     if (fetchErr) throw new Error(fetchErr.message);
-@intuitui-labs/lk-edu-geo:lint:biome:        43 │ + ····"format":·"biome·format·--write·.",
-@repo/community:lint:biome:   > 380 │     const existingIds: string[] = (existing ?? []).map((row: any) => row.option_id);
-@intuitui-labs/lk-edu-geo:lint:biome:        44 │ + ····"check-cycles":·"node·../../scripts/refactor/sovereign-cycle-checker.mjs",
-@repo/community:lint:biome:         │                                                              ^^^
-@intuitui-labs/lk-edu-geo:lint:biome:        45 │ + ····"test:watch":·"vitest",
-@repo/community:lint:biome:     381 │     const alreadyVotedThis = existingIds.includes(optionId);
-@intuitui-labs/lk-edu-geo:lint:biome:        46 │ + ····"test:ui":·"vitest·--ui",
-@repo/community:lint:biome:     382 │     if (allowMultiple) {
-@intuitui-labs/lk-edu-geo:lint:biome:        47 │ + ····"clean":·"rm·-rf·.turbo·node_modules·dist"
-@repo/community:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome:        48 │ + ··},
-@repo/community:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@intuitui-labs/lk-edu-geo:lint:biome:        49 │ + ··"devDependencies":·{
-@repo/community:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome:        50 │ + ····"@nishansanjuka/srilanka_geographics":·"^0.0.1",
-@repo/community:lint:biome: 
-@intuitui-labs/lk-edu-geo:lint:biome:        51 │ + ····"@repo/core":·"workspace:*",
-@repo/community:lint:biome: src\api\community.ts:450:38 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@intuitui-labs/lk-edu-geo:lint:biome:        52 │ + ····"@types/node":·"^25.5.0",
-@repo/community:lint:biome: 
-@intuitui-labs/lk-edu-geo:lint:biome:        53 │ + ····"@types/glob":·"^9.0.0",
-@repo/community:lint:biome:   ! Unexpected any. Specify a different type.
-@intuitui-labs/lk-edu-geo:lint:biome:        54 │ + ····"glob":·"^11.0.1",
-@repo/community:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome:        55 │ + ····"tsup":·"^8.3.5",
-@repo/community:lint:biome:     448 │       .order('capacity', { ascending: true });
-@intuitui-labs/lk-edu-geo:lint:biome:        56 │ + ····"tsx":·"^4.19.2",
-@repo/community:lint:biome:     449 │     if (error) throw error;
-@intuitui-labs/lk-edu-geo:lint:biome:        57 │ + ····"typescript":·"^5.9.3",
-@repo/community:lint:biome:   > 450 │     return (data || []).map((member: any) => ({
-@repo/community:lint:biome:         │                                      ^^^
-@repo/community:lint:biome:     451 │       ...member,
-@repo/community:lint:biome:     452 │       capacity: member.capacity || 'member',
-@repo/community:lint:biome:   
-@repo/community:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/community:lint:biome:   
-@repo/community:lint:biome: 
-@repo/community:lint:biome: src\api\community.ts:539:37 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/community:lint:biome: 
-@repo/community:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/community:lint:biome:   
-@repo/community:lint:biome:     537 │     return data;
-@repo/community:lint:biome:     538 │   },
-@repo/community:lint:biome:   > 539 │   async createSanctuaryGroup(input: any) {
-@repo/community:lint:biome:         │                                     ^^^
-@repo/community:lint:biome:     540 │     const { data, error } = await supabase
-@repo/community:lint:biome:     541 │       .from('community_groups')
-@repo/community:lint:biome:   
-@repo/community:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/community:lint:biome:   
-@repo/community:lint:biome: 
-@repo/community:lint:biome: src\api\community.ts:615:24 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/community:lint:biome: 
-@repo/community:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/community:lint:biome:   
-@repo/community:lint:biome:     613 │         .in(
-@intuitui-labs/lk-edu-geo:lint:biome:        58 │ + ····"vitest":·"^2.1.9",
-@repo/community:lint:biome:     614 │           'comment_id',
-@intuitui-labs/lk-edu-geo:lint:biome:        59 │ + ····"xlsx":·"^0.18.5",
-@repo/community:lint:biome:   > 615 │           data.map((c: any) => c.id),
-@intuitui-labs/lk-edu-geo:lint:biome:        60 │ + ····"@repo/eslint-config":·"workspace:^",
-@repo/community:lint:biome:         │                        ^^^
-@intuitui-labs/lk-edu-geo:lint:biome:        61 │ + ····"@repo/typescript-config":·"workspace:*",
-@repo/community:lint:biome:     616 │         );
-@intuitui-labs/lk-edu-geo:lint:biome:        62 │ + ····"vite-tsconfig-paths":·"^6.1.1",
-@intuitui-labs/lk-edu-geo:lint:biome:        63 │ + ····"eslint":·"^9.38.0"
-@repo/community:lint:biome:     617 │       (uv ?? []).forEach((row: any) => upvotedIds.add(row.comment_id));
-@intuitui-labs/lk-edu-geo:lint:biome:        64 │ + ··}
-@repo/community:lint:biome:   
-@intuitui-labs/lk-edu-geo:lint:biome:        65 │ + }
-@repo/community:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@intuitui-labs/lk-edu-geo:lint:biome:     66 66 │   
 @intuitui-labs/lk-edu-geo:lint:biome:   
 @intuitui-labs/lk-edu-geo:lint:biome: 
 @intuitui-labs/lk-edu-geo:lint:biome: scripts\generate-sql-seeds.ts:147:10 lint/suspicious/noShadowRestrictedNames ━━━━━━━━━━━━━━━━━━━━━━━
@@ -4821,27 +3130,6 @@ gurudevi-mobile:lint:biome:
 @intuitui-labs/lk-edu-geo:lint:biome:     85 │ 
 @intuitui-labs/lk-edu-geo:lint:biome:     86 │     while ((match = regex.exec(content)) !== null) {
 @intuitui-labs/lk-edu-geo:lint:biome:   
-@repo/community:lint:biome:   
-@repo/community:lint:biome: 
-@repo/community:lint:biome: src\api\community.ts:617:32 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/community:lint:biome: 
-@repo/community:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/community:lint:biome:   
-@repo/community:lint:biome:     615 │           data.map((c: any) => c.id),
-@repo/community:lint:biome:     616 │         );
-@repo/community:lint:biome:   > 617 │       (uv ?? []).forEach((row: any) => upvotedIds.add(row.comment_id));
-@repo/community:lint:biome:         │                                ^^^
-@repo/community:lint:biome:     618 │     }
-@repo/community:lint:biome:     619 │     return (data ?? []).map(
-@repo/community:lint:biome:   
-@repo/community:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/community:lint:biome:   
-@repo/community:lint:biome: 
-@repo/community:lint:biome: src\api\community.ts:620:11 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/community:lint:biome: 
-@repo/community:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/community:lint:biome:   
-@repo/community:lint:biome:     618 │     }
 @intuitui-labs/lk-edu-geo:lint:biome:   i Variable declarations without type annotation and initialization implicitly have the any type. Declare a type or initialize the variable with some value.
 @intuitui-labs/lk-edu-geo:lint:biome:   
 @intuitui-labs/lk-edu-geo:lint:biome: 
@@ -4886,1181 +3174,954 @@ gurudevi-mobile:lint:biome:
 @intuitui-labs/lk-edu-geo:lint:biome:   × Some errors were emitted while running checks.
 @intuitui-labs/lk-edu-geo:lint:biome:   
 @intuitui-labs/lk-edu-geo:lint:biome: 
+@repo/ui:lint:biome:   × End of file expected
+@repo/ui:lint:biome:   
+@repo/core:lint:biome: scratch\summarize_eslint.cjs format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome: 
+@repo/library:lint:biome:     109 │       transaction.oncomplete = () => resolve();
+@repo/library:lint:biome:   
+@repo/core:lint:biome:   × Formatter would have printed the following content:
+@repo/core:lint:biome:   
+@repo/core:lint:biome:      1    │ - const·fs·=·require('node:fs');␍
+@repo/core:lint:biome:      2    │ - const·results·=·JSON.parse(␍
+@repo/core:lint:biome:      3    │ - ··fs.readFileSync('eslint_output_fresh.json',·'utf8').replace(/^\uFEFF/,·''),␍
+@repo/core:lint:biome:      4    │ - );␍
+@repo/core:lint:biome:      5    │ - ␍
+@repo/core:lint:biome:      6    │ - const·summary·=·{};␍
+@repo/core:lint:biome:      7    │ - results.forEach((result)·=>·{␍
+@repo/core:lint:biome:      8    │ - ··result.messages.forEach((msg)·=>·{␍
 
-@repo/community:lint:biome:     619 │     return (data ?? []).map(
-@repo/community:lint:biome:   > 620 │       (c: any) =>
-@repo/community:lint:biome:         │           ^^^
-@repo/community:lint:biome:     621 │         ({
-@repo/community:lint:biome:     622 │           id: c.id,
-@repo/community:lint:biome:   
-@repo/community:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/community:lint:biome:   
-@repo/community:lint:biome: 
-@repo/community:lint:biome: src\types\Community.ts:29:28 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/community:lint:biome: 
-@repo/community:lint:biome:   ! Unexpected any. Specify a different type.
+@repo/ui:lint:biome:   > 1 │ �> @repo/ui@1.0.0 lint:eslint C:\Users\Naween\projects\polymath-platform\packages\ui
+@repo/ui:lint:biome:       │             ^^^^^
+@repo/ui:lint:biome:     2 │ > eslint . "--format" "json"
+@repo/ui:lint:biome:     3 │ 
+@repo/ui:lint:biome:   
+@repo/ui:lint:biome:   i Use an array for a sequence of values: `[1, 2]`
+@repo/ui:lint:biome:   
+@repo/ui:lint:biome: 
+@repo/ui:lint:biome: report_final.json:1:16 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/ui:lint:biome: 
+@repo/ui:lint:biome:   × Invalid fraction part
+@repo/ui:lint:biome:   
+@repo/ui:lint:biome:   > 1 │ �> @repo/ui@1.0.0 lint:eslint C:\Users\Naween\projects\polymath-platform\packages\ui
+@repo/ui:lint:biome:       │                ^
+@repo/ui:lint:biome:     2 │ > eslint . "--format" "json"
+@repo/ui:lint:biome:     3 │ 
+@repo/ui:lint:biome:   
+@repo/ui:lint:biome: 
+@repo/library:lint:biome:   i Either remove this return or remove the returned value.
+@repo/library:lint:biome:   
+@repo/library:lint:biome:     105 │       const store = transaction.objectStore(STORE_NAME);
+@repo/library:lint:biome:     106 │ 
+@repo/library:lint:biome:   > 107 │       nodes.forEach((node) => store.put(node));
+@repo/library:lint:biome:         │                               ^^^^^^^^^^^^^^^
+@repo/library:lint:biome:     108 │ 
+@repo/library:lint:biome:     109 │       transaction.oncomplete = () => resolve();
+@repo/library:lint:biome:   
+@repo/library:lint:biome: 
+@repo/library:lint:biome: src\api\database.web.ts:192:14 lint/suspicious/useIterableCallbackReturn ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/library:lint:biome: 
+@repo/core:lint:biome:      9    │ - ····const·ruleId·=·msg.ruleId·||·'no-rule-id';␍
+@repo/library:lint:biome:   × This callback passed to forEach() iterable method should not return a value.
+@repo/library:lint:biome:   
+@repo/core:lint:biome:     10    │ - ····if·(!summary[ruleId])·{␍
+@repo/core:lint:biome:     11    │ - ······summary[ruleId]·=·{·count:·0,·files:·new·Set()·};␍
+@repo/core:lint:biome:     12    │ - ····}␍
+@repo/core:lint:biome:     13    │ - ····summary[ruleId].count++;␍
+@repo/core:lint:biome:     14    │ - ····if·(summary[ruleId].files.size·<·5)·{␍
+@repo/core:lint:biome:     15    │ - ······summary[ruleId].files.add(result.filePath);␍
+@repo/core:lint:biome:     16    │ - ····}␍
+@repo/core:lint:biome:     17    │ - ··});␍
+@repo/core:lint:biome:     18    │ - });␍
+@repo/core:lint:biome:     19    │ - ␍
+@repo/core:lint:biome:     20    │ - Object.keys(summary).forEach((ruleId)·=>·{␍
+@repo/core:lint:biome:     21    │ - ··summary[ruleId].files·=·Array.from(summary[ruleId].files);␍
+@repo/core:lint:biome:     22    │ - });␍
+@repo/core:lint:biome:     23    │ - ␍
+@repo/core:lint:biome:     24    │ - console.log(JSON.stringify(summary,·null,·2));␍
+@repo/core:lint:biome:         1 │ + const·fs·=·require('node:fs');
+@repo/core:lint:biome:         2 │ + const·results·=·JSON.parse(
+@repo/core:lint:biome:         3 │ + ··fs.readFileSync('eslint_output_fresh.json',·'utf8').replace(/^\uFEFF/,·''),
+@repo/core:lint:biome:         4 │ + );
+@repo/core:lint:biome:         5 │ + 
+@repo/core:lint:biome:         6 │ + const·summary·=·{};
+@repo/core:lint:biome:         7 │ + results.forEach((result)·=>·{
+@repo/core:lint:biome:         8 │ + ··result.messages.forEach((msg)·=>·{
+@repo/core:lint:biome:         9 │ + ····const·ruleId·=·msg.ruleId·||·'no-rule-id';
+@repo/core:lint:biome:        10 │ + ····if·(!summary[ruleId])·{
+@repo/core:lint:biome:        11 │ + ······summary[ruleId]·=·{·count:·0,·files:·new·Set()·};
+@repo/core:lint:biome:        12 │ + ····}
+@repo/core:lint:biome:        13 │ + ····summary[ruleId].count++;
+@repo/core:lint:biome:        14 │ + ····if·(summary[ruleId].files.size·<·5)·{
+@repo/core:lint:biome:        15 │ + ······summary[ruleId].files.add(result.filePath);
+@repo/core:lint:biome:        16 │ + ····}
+@repo/core:lint:biome:        17 │ + ··});
+@repo/core:lint:biome:        18 │ + });
+@repo/core:lint:biome:        19 │ + 
+@repo/core:lint:biome:        20 │ + Object.keys(summary).forEach((ruleId)·=>·{
+@repo/core:lint:biome:        21 │ + ··summary[ruleId].files·=·Array.from(summary[ruleId].files);
+@repo/core:lint:biome:        22 │ + });
+@repo/core:lint:biome:        23 │ + 
+@repo/core:lint:biome:        24 │ + console.log(JSON.stringify(summary,·null,·2));
+@repo/core:lint:biome:     25 25 │   
+@repo/core:lint:biome:   
+@repo/core:lint:biome: 
+@repo/core:lint:biome: src\__tests__\workspace\layoutSync.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome: 
+@repo/core:lint:biome:   × Formatter would have printed the following content:
+@repo/core:lint:biome:   
+@repo/core:lint:biome:      1    │ - import·{␍
+@repo/core:lint:biome:      2    │ - ··buildWorkspaceLayoutStorageKey,␍
+@repo/core:lint:biome:      3    │ - ··choosePreferredWorkspaceLayout,␍
+@repo/core:lint:biome:      4    │ - ··resolveWorkspaceLayoutTarget,␍
+@repo/core:lint:biome:      5    │ - ··toWorkspaceLayoutRecord,␍
+@repo/core:lint:biome:      6    │ - ··toWorkspaceLayoutUpsert,␍
+@repo/core:lint:biome:      7    │ - }·from·'../../logic/workspace/layoutSync';␍
+@repo/core:lint:biome:      8    │ - ␍
+@repo/core:lint:biome:      9    │ - describe('workspace·layout·sync·helpers',·()·=>·{␍
+@repo/core:lint:biome:     10    │ - ··test('resolves·device-specific·layout·targets',·()·=>·{␍
+@repo/core:lint:biome:     11    │ - ····expect(resolveWorkspaceLayoutTarget('web',·'expanded')).toBe('web');␍
+@repo/core:lint:biome:     12    │ - ····expect(resolveWorkspaceLayoutTarget('web',·'compact')).toBe('mobile');␍
+@repo/core:lint:biome:     13    │ - ····expect(resolveWorkspaceLayoutTarget('native',·'expanded')).toBe('mobile');␍
+@repo/core:lint:biome:     14    │ - ··});␍
+@repo/core:lint:biome:     15    │ - ␍
+@repo/core:lint:biome:     16    │ - ··test('builds·deterministic·local·storage·keys',·()·=>·{␍
+@repo/core:lint:biome:     17    │ - ····expect(␍
+@repo/core:lint:biome:     18    │ - ······buildWorkspaceLayoutStorageKey({␍
+@repo/core:lint:biome:     19    │ - ········userId:·'user-1',␍
+@repo/core:lint:biome:     20    │ - ········workspaceId:·'classroom',␍
+@repo/core:lint:biome:     21    │ - ········layoutTarget:·'web',␍
+@repo/core:lint:biome:     22    │ - ······}),␍
+@repo/core:lint:biome:     23    │ - ····).toBe('workspace-layout:classroom:web:user-1');␍
+@repo/core:lint:biome:     24    │ - ··});␍
+@repo/core:lint:biome:     25    │ - ␍
+@repo/core:lint:biome:     26    │ - ··test('maps·remote·records·into·shared·layout·shape·and·back',·()·=>·{␍
+@repo/core:lint:biome:     27    │ - ····const·record·=·toWorkspaceLayoutRecord({␍
+@repo/core:lint:biome:     28    │ - ······id:·'11111111-1111-1111-1111-111111111111',␍
+@repo/core:lint:biome:     29    │ - ······user_id:·'22222222-2222-2222-2222-222222222222',␍
+@repo/core:lint:biome:     30    │ - ······workspace_id:·'classroom',␍
+@repo/core:lint:biome:     31    │ - ······layout_target:·'web',␍
+@repo/core:lint:biome:     32    │ - ······order:·['principal'],␍
+@repo/core:lint:biome:     33    │ - ······hidden:·[],␍
+@repo/core:lint:biome:     34    │ - ······pinned:·['principal'],␍
+@repo/core:lint:biome:     35    │ - ······zone_by_surface:·{·principal:·'institution'·},␍
+@repo/core:lint:biome:     36    │ - ······layout_version:·1,␍
+@repo/core:lint:biome:     37    │ - ······created_at:·'2026-03-28T10:00:00.000Z',␍
+@repo/core:lint:biome:     38    │ - ······updated_at:·'2026-03-28T10:05:00.000Z',␍
+@repo/core:lint:biome:     39    │ - ····});␍
+@repo/core:lint:biome:     40    │ - ␍
+@repo/core:lint:biome:     41    │ - ····const·upsert·=·toWorkspaceLayoutUpsert(record,·{␍
+@repo/core:lint:biome:     42    │ - ······userId:·record.userId,␍
+@repo/core:lint:biome:     43    │ - ······workspaceId:·record.workspaceId,␍
+@repo/core:lint:biome:     44    │ - ······layoutTarget:·'web',␍
+@repo/core:lint:biome:     45    │ - ····});␍
+@repo/core:lint:biome:     46    │ - ␍
+@repo/core:lint:biome:     47    │ - ····expect(record.workspaceId).toBe('classroom');␍
+@repo/core:lint:biome:     48    │ - ····expect(upsert.layoutTarget).toBe('web');␍
+@repo/core:lint:biome:     49    │ - ····expect(upsert.zoneBySurface.principal).toBe('institution');␍
+@repo/core:lint:biome:     50    │ - ··});␍
+@repo/core:lint:biome:     51    │ - ␍
+@repo/core:lint:biome:     52    │ - ··test('prefers·the·newer·layout·snapshot',·()·=>·{␍
+@repo/core:lint:biome:     53    │ - ····const·local·=·{␍
+@repo/core:lint:biome:     54    │ - ······workspaceId:·'classroom',␍
+@repo/core:lint:biome:     55    │ - ······userId:·'user-1',␍
+@repo/core:lint:biome:     56    │ - ······order:·['teacher'],␍
+@repo/core:lint:biome:     57    │ - ······hidden:·[],␍
+@repo/core:lint:biome:     58    │ - ······pinned:·[],␍
+@repo/core:lint:biome:     59    │ - ······zoneBySurface:·{·teacher:·'work'·as·const·},␍
+@repo/core:lint:biome:     60    │ - ······updatedAt:·'2026-03-28T09:00:00.000Z',␍
+@repo/core:lint:biome:     61    │ - ····};␍
+@repo/core:lint:biome:     62    │ - ····const·remote·=·{␍
+@repo/core:lint:biome:     63    │ - ······workspaceId:·'classroom',␍
+@repo/core:lint:biome:     64    │ - ······userId:·'user-1',␍
+@repo/core:lint:biome:     65    │ - ······order:·['principal'],␍
+@repo/core:lint:biome:     66    │ - ······hidden:·[],␍
+@repo/core:lint:biome:     67    │ - ······pinned:·[],␍
+@repo/core:lint:biome:     68    │ - ······zoneBySurface:·{·principal:·'institution'·as·const·},␍
+@repo/core:lint:biome:     69    │ - ······updatedAt:·'2026-03-28T10:00:00.000Z',␍
+@repo/core:lint:biome:     70    │ - ····};␍
+@repo/core:lint:biome:     71    │ - ␍
+@repo/core:lint:biome:     72    │ - ····expect(choosePreferredWorkspaceLayout({·local,·remote·})).toEqual(remote);␍
+@repo/core:lint:biome:     73    │ - ··});␍
+@repo/core:lint:biome:     74    │ - });␍
+@repo/core:lint:biome:         1 │ + import·{
+@repo/core:lint:biome:         2 │ + ··buildWorkspaceLayoutStorageKey,
+@repo/core:lint:biome:         3 │ + ··choosePreferredWorkspaceLayout,
+@repo/core:lint:biome:         4 │ + ··resolveWorkspaceLayoutTarget,
+@repo/core:lint:biome:         5 │ + ··toWorkspaceLayoutRecord,
+@repo/core:lint:biome:         6 │ + ··toWorkspaceLayoutUpsert,
+@repo/core:lint:biome:         7 │ + }·from·'../../logic/workspace/layoutSync';
+@repo/core:lint:biome:         8 │ + 
+@repo/core:lint:biome:         9 │ + describe('workspace·layout·sync·helpers',·()·=>·{
+@repo/core:lint:biome:        10 │ + ··test('resolves·device-specific·layout·targets',·()·=>·{
+@repo/core:lint:biome:        11 │ + ····expect(resolveWorkspaceLayoutTarget('web',·'expanded')).toBe('web');
+@repo/core:lint:biome:        12 │ + ····expect(resolveWorkspaceLayoutTarget('web',·'compact')).toBe('mobile');
+@repo/core:lint:biome:        13 │ + ····expect(resolveWorkspaceLayoutTarget('native',·'expanded')).toBe('mobile');
+@repo/core:lint:biome:        14 │ + ··});
+@repo/core:lint:biome:        15 │ + 
+@repo/core:lint:biome:        16 │ + ··test('builds·deterministic·local·storage·keys',·()·=>·{
+@repo/core:lint:biome:        17 │ + ····expect(
+@repo/core:lint:biome:        18 │ + ······buildWorkspaceLayoutStorageKey({
+@repo/core:lint:biome:        19 │ + ········userId:·'user-1',
+@repo/core:lint:biome:        20 │ + ········workspaceId:·'classroom',
+@repo/core:lint:biome:        21 │ + ········layoutTarget:·'web',
+@repo/core:lint:biome:        22 │ + ······}),
+@repo/core:lint:biome:        23 │ + ····).toBe('workspace-layout:classroom:web:user-1');
+@repo/core:lint:biome:        24 │ + ··});
+@repo/core:lint:biome:        25 │ + 
+@repo/core:lint:biome:        26 │ + ··test('maps·remote·records·into·shared·layout·shape·and·back',·()·=>·{
+@repo/core:lint:biome:        27 │ + ····const·record·=·toWorkspaceLayoutRecord({
+@repo/core:lint:biome:        28 │ + ······id:·'11111111-1111-1111-1111-111111111111',
+@repo/core:lint:biome:        29 │ + ······user_id:·'22222222-2222-2222-2222-222222222222',
+@repo/core:lint:biome:        30 │ + ······workspace_id:·'classroom',
+@repo/core:lint:biome:        31 │ + ······layout_target:·'web',
+@repo/core:lint:biome:        32 │ + ······order:·['principal'],
+@repo/core:lint:biome:        33 │ + ······hidden:·[],
+@repo/core:lint:biome:        34 │ + ······pinned:·['principal'],
+@repo/core:lint:biome:        35 │ + ······zone_by_surface:·{·principal:·'institution'·},
+@repo/core:lint:biome:        36 │ + ······layout_version:·1,
+@repo/core:lint:biome:        37 │ + ······created_at:·'2026-03-28T10:00:00.000Z',
+@repo/core:lint:biome:        38 │ + ······updated_at:·'2026-03-28T10:05:00.000Z',
+@repo/core:lint:biome:        39 │ + ····});
+@repo/core:lint:biome:        40 │ + 
+@repo/core:lint:biome:        41 │ + ····const·upsert·=·toWorkspaceLayoutUpsert(record,·{
+@repo/core:lint:biome:        42 │ + ······userId:·record.userId,
+@repo/core:lint:biome:        43 │ + ······workspaceId:·record.workspaceId,
+@repo/core:lint:biome:        44 │ + ······layoutTarget:·'web',
+@repo/core:lint:biome:        45 │ + ····});
+@repo/core:lint:biome:        46 │ + 
+@repo/core:lint:biome:        47 │ + ····expect(record.workspaceId).toBe('classroom');
+@repo/core:lint:biome:        48 │ + ····expect(upsert.layoutTarget).toBe('web');
+@repo/core:lint:biome:        49 │ + ····expect(upsert.zoneBySurface.principal).toBe('institution');
+@repo/core:lint:biome:        50 │ + ··});
+@repo/core:lint:biome:        51 │ + 
+@repo/core:lint:biome:        52 │ + ··test('prefers·the·newer·layout·snapshot',·()·=>·{
+@repo/core:lint:biome:        53 │ + ····const·local·=·{
+@repo/core:lint:biome:        54 │ + ······workspaceId:·'classroom',
+@repo/core:lint:biome:        55 │ + ······userId:·'user-1',
+@repo/core:lint:biome:        56 │ + ······order:·['teacher'],
+@repo/core:lint:biome:        57 │ + ······hidden:·[],
+@repo/core:lint:biome:        58 │ + ······pinned:·[],
+@repo/core:lint:biome:        59 │ + ······zoneBySurface:·{·teacher:·'work'·as·const·},
+@repo/core:lint:biome:        60 │ + ······updatedAt:·'2026-03-28T09:00:00.000Z',
+@repo/core:lint:biome:        61 │ + ····};
+@repo/core:lint:biome:        62 │ + ····const·remote·=·{
+@repo/core:lint:biome:        63 │ + ······workspaceId:·'classroom',
+@repo/core:lint:biome:        64 │ + ······userId:·'user-1',
+@repo/core:lint:biome:        65 │ + ······order:·['principal'],
+@repo/core:lint:biome:        66 │ + ······hidden:·[],
+@repo/core:lint:biome:        67 │ + ······pinned:·[],
+@repo/core:lint:biome:        68 │ + ······zoneBySurface:·{·principal:·'institution'·as·const·},
+@repo/core:lint:biome:        69 │ + ······updatedAt:·'2026-03-28T10:00:00.000Z',
+@repo/core:lint:biome:        70 │ + ····};
+@repo/core:lint:biome:        71 │ + 
+@repo/core:lint:biome:        72 │ + ····expect(choosePreferredWorkspaceLayout({·local,·remote·})).toEqual(remote);
+@repo/core:lint:biome:        73 │ + ··});
+@repo/core:lint:biome:        74 │ + });
+@repo/core:lint:biome:     75 75 │   
+@repo/core:lint:biome:   
+@repo/core:lint:biome: 
+@repo/core:lint:biome: src\accounts\deviceAccounts.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome: 
+@repo/core:lint:biome:   × Formatter would have printed the following content:
+@repo/core:lint:biome:   
+@repo/library:lint:biome: The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+@repo/library:lint:biome: Diagnostics not shown: 130.
+@repo/library:lint:biome: Checked 51 files in 2s. No fixes applied.
+@repo/library:lint:biome: Found 24 errors.
+@repo/library:lint:biome: Found 126 warnings.
+@repo/library:lint:biome:     190 │       const store = transaction.objectStore(STORE_NAME);
+@repo/library:lint:biome:     191 │ 
+@repo/library:lint:biome:   > 192 │       layers.forEach((layer) =>
+@repo/library:lint:biome:         │              ^^^^^^^
+@repo/library:lint:biome:     193 │         store.put({
+@repo/library:lint:biome:     194 │           id: layer.id,
+@repo/library:lint:biome:   
+@repo/library:lint:biome:   i Either remove this return or remove the returned value.
+@repo/library:lint:biome:   
+@repo/library:lint:biome:     192 │       layers.forEach((layer) =>
+@repo/library:lint:biome:   > 193 │         store.put({
+@repo/library:lint:biome:         │         ^^^^^^^^^^^
+@repo/library:lint:biome:   > 194 │           id: layer.id,
+@repo/library:lint:biome:          ...
+@repo/library:lint:biome:   > 207 │           updated_at: layer.updated_at,
+@repo/library:lint:biome:   > 208 │         }),
+@repo/library:lint:biome:         │         ^^
+@repo/library:lint:biome:     209 │       );
+@repo/library:lint:biome:     210 │ 
+@repo/library:lint:biome:   
+@repo/library:lint:biome: 
+@repo/library:lint:biome: src\components\LibraryThumbnailCard.tsx:30:3 lint/suspicious/noShadowRestrictedNames ━━━━━━━━━━━━━━━
+@repo/library:lint:biome: 
+@repo/library:lint:biome:   × Do not shadow the global "Map" property.
+@repo/library:lint:biome:   
+@repo/library:lint:biome:     28 │   FileText,
+@repo/library:lint:biome:     29 │   Link,
+@repo/library:lint:biome:   > 30 │   Map,
+@repo/library:lint:biome:        │   ^^^
+@repo/library:lint:biome:     31 │   StickyNote,
+@repo/library:lint:biome:     32 │   ThumbsUp,
+@repo/library:lint:biome:   
+@repo/library:lint:biome:   i Consider renaming this variable. It's easy to confuse the origin of variables when they're named after a known global.
+@repo/library:lint:biome:   
+@repo/library:lint:biome: 
+@repo/library:lint:biome: check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/library:lint:biome: 
+@repo/library:lint:biome:   × Some errors were emitted while running checks.
+@repo/library:lint:biome:   
+@repo/library:lint:biome: 
+@repo/core:lint:biome:       1     │ - import·type·{·Session·}·from·'@supabase/supabase-js';␍
+@repo/core:lint:biome:       2     │ - import·{·deviceTrustAPI·}·from·'../api/deviceTrust';␍
+@repo/ui:lint:biome: report_final.json:1:19 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/ui:lint:biome: 
+@repo/ui:lint:biome:   × String values must be double quoted.
+@repo/ui:lint:biome:   
+@repo/ui:lint:biome:   > 1 │ �> @repo/ui@1.0.0 lint:eslint C:\Users\Naween\projects\polymath-platform\packages\ui
+@repo/ui:lint:biome:       │                   ^^^^
+@repo/ui:lint:biome:     2 │ > eslint . "--format" "json"
+@repo/ui:lint:biome:     3 │ 
+@repo/ui:lint:biome:   
+@repo/ui:lint:biome: 
+@repo/ui:lint:biome: report_final.json:1:23 parse ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/ui:lint:biome: 
+@repo/ui:lint:biome:   × End of file expected
+@repo/ui:lint:biome:   
+@repo/ui:lint:biome:   > 1 │ �> @repo/ui@1.0.0 lint:eslint C:\Users\Naween\projects\polymath-platform\packages\ui
+@repo/ui:lint:biome:       │                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+@repo/ui:lint:biome:   > 2 │ > eslint . "--format" "json"
+@repo/ui:lint:biome:       │ ^^^^^^^^^^
+@repo/ui:lint:biome:     3 │ 
+@repo/core:lint:biome:       3     │ - import·{·assertHighway·}·from·'../api/highways';␍
+@repo/core:lint:biome:       4     │ - import·{·identityAPI·}·from·'../api/identity';␍
+@repo/core:lint:biome:       5     │ - import·{·__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__·}·from·'../api/supabase';␍
+@repo/core:lint:biome:       6     │ - import·{·accountPin·}·from·'../lib/accountPin';␍
+@repo/core:lint:biome:       7     │ - import·{·getActiveAccountId,·setActiveAccountId·}·from·'../lib/accountScope';␍
+@repo/core:lint:biome:       8     │ - import·{·storage·}·from·'../lib/storage';␍
+@repo/core:lint:biome:       9     │ - import·{␍
+@repo/core:lint:biome:      10     │ - ··clearLegacySupabaseSession,␍
+@repo/core:lint:biome:      11     │ - ··getStoredSessionForAccount,␍
+@repo/core:lint:biome:      12     │ - ··removeStoredSessionForAccount,␍
+@repo/core:lint:biome:      13     │ - ··setStoredSessionForAccount,␍
+@repo/core:lint:biome:      14     │ - }·from·'../lib/supabaseAuthStorage';␍
+@repo/core:lint:biome:      15     │ - import·{·rehydrateScopedStores,·resetScopedStores·}·from·'../store/resetScopedStores';␍
+@repo/core:lint:biome:      16     │ - ␍
+@repo/core:lint:biome:      17     │ - const·ACCOUNTS_REGISTRY_KEY·=·'gurudevi-device-accounts';␍
+@repo/core:lint:biome:      18     │ - const·ACTIVE_ACCOUNT_KEY·=·'gurudevi-active-account-id';␍
+@repo/core:lint:biome:      19     │ - ␍
+@repo/core:lint:biome:      20     │ - export·interface·DeviceAccountRecord·{␍
+@repo/core:lint:biome:      21     │ - ··accountId:·string;␍
+@repo/core:lint:biome:      22     │ - ··authUserId:·string;␍
+@repo/core:lint:biome:      23     │ - ··email:·string·|·null;␍
+@repo/core:lint:biome:      24     │ - ··displayName:·string·|·null;␍
+@repo/core:lint:biome:      25     │ - ··avatarUrl:·string·|·null;␍
+@repo/core:lint:biome:      26     │ - ··capacity:·string·|·null;␍
+@repo/core:lint:biome:      27     │ - ··schoolId:·string·|·null;␍
+@repo/core:lint:biome:      28     │ - ··isAnonymous:·boolean;␍
+@repo/core:lint:biome:      29     │ - ··createdAt:·string;␍
+@repo/core:lint:biome:      30     │ - ··lastUsedAt:·string;␍
+@repo/core:lint:biome:      31     │ - }␍
+@repo/core:lint:biome:      32     │ - ␍
+@repo/core:lint:biome:      33     │ - export·interface·DeviceAccountProfile·{␍
+@repo/core:lint:biome:      34     │ - ··id:·string;␍
+@repo/core:lint:biome:      35     │ - ··email:·string·|·null;␍
+@repo/core:lint:biome:      36     │ - ··display_name:·string·|·null;␍
+@repo/core:lint:biome:      37     │ - ··avatar_url:·string·|·null;␍
+@repo/core:lint:biome:      38     │ - ··capacity:·string·|·null;␍
+@repo/core:lint:biome:      39     │ - ··school_id:·string·|·null;␍
+@repo/core:lint:biome:      40     │ - ··is_anonymous?:·boolean;␍
+@repo/core:lint:biome:      41     │ - }␍
+@repo/core:lint:biome:      42     │ - ␍
+@repo/core:lint:biome:      43     │ - async·function·readRegistry()·{␍
+@repo/core:lint:biome:      44     │ - ··const·raw·=·storage.getString(ACCOUNTS_REGISTRY_KEY);␍
+@repo/core:lint:biome:      45     │ - ··if·(!raw)·return·[]·as·DeviceAccountRecord[];␍
+@repo/core:lint:biome:      46     │ - ␍
+@repo/core:lint:biome:      47     │ - ··try·{␍
+@repo/core:lint:biome:      48     │ - ····const·parsed·=·JSON.parse(raw);␍
+@repo/core:lint:biome:      49     │ - ····return·Array.isArray(parsed)·?·(parsed·as·DeviceAccountRecord[])·:·[];␍
+@repo/core:lint:biome:      50     │ - ··}·catch·{␍
+@repo/core:lint:biome:      51     │ - ····return·[];␍
+@repo/core:lint:biome:      52     │ - ··}␍
+@repo/core:lint:biome:      53     │ - }␍
+@repo/core:lint:biome:      54     │ - ␍
+@repo/core:lint:biome:      55     │ - async·function·writeRegistry(accounts:·DeviceAccountRecord[])·{␍
+@repo/core:lint:biome:      56     │ - ··storage.set(ACCOUNTS_REGISTRY_KEY,·JSON.stringify(accounts));␍
+@repo/core:lint:biome:      57     │ - }␍
+@repo/core:lint:biome:      58     │ - ␍
+@repo/core:lint:biome:      59     │ - async·function·setActiveAccount(accountId:·string·|·null)·{␍
+@repo/core:lint:biome:      60     │ - ··setActiveAccountId(accountId);␍
+@repo/core:lint:biome:      61     │ - ␍
+@repo/core:lint:biome:      62     │ - ··if·(accountId)·{␍
+@repo/core:lint:biome:      63     │ - ····storage.set(ACTIVE_ACCOUNT_KEY,·accountId);␍
+@repo/core:lint:biome:      64     │ - ····return;␍
+@repo/core:lint:biome:      65     │ - ··}␍
+@repo/core:lint:biome:      66     │ - ␍
+@repo/core:lint:biome:      67     │ - ··storage.delete(ACTIVE_ACCOUNT_KEY);␍
+@repo/core:lint:biome:      68     │ - }␍
+@repo/core:lint:biome:      69     │ - ␍
+@repo/core:lint:biome:      70     │ - function·toSessionTokens(session:·Session)·{␍
+@repo/core:lint:biome:      71     │ - ··return·{␍
+@repo/core:lint:biome:      72     │ - ····access_token:·session.access_token,␍
+@repo/core:lint:biome:      73     │ - ····refresh_token:·session.refresh_token,␍
+@repo/core:lint:biome:      74     │ - ··};␍
+@repo/core:lint:biome:      75     │ - }␍
+@repo/core:lint:biome:      76     │ - ␍
+@repo/core:lint:biome:      77     │ - export·const·deviceAccounts·=·{␍
+@repo/core:lint:biome:      78     │ - ··async·initialize()·{␍
+@repo/core:lint:biome:      79     │ - ····const·storedActive·=·storage.getString(ACTIVE_ACCOUNT_KEY);␍
+@repo/core:lint:biome:      80     │ - ····setActiveAccountId(storedActive·||·null);␍
+@repo/core:lint:biome:      81     │ - ····return·storedActive;␍
+@repo/core:lint:biome:      82     │ - ··},␍
+@repo/core:lint:biome:      83     │ - ␍
+@repo/core:lint:biome:      84     │ - ··async·list()·{␍
+@repo/core:lint:biome:      85     │ - ····const·accounts·=·await·readRegistry();␍
+@repo/core:lint:biome:      86     │ - ····return·accounts.sort((a,·b)·=>·b.lastUsedAt.localeCompare(a.lastUsedAt));␍
+@repo/core:lint:biome:      87     │ - ··},␍
+@repo/core:lint:biome:      88     │ - ␍
+@repo/core:lint:biome:      89     │ - ··async·getActiveAccountId()·{␍
+@repo/core:lint:biome:      90     │ - ····return·getActiveAccountId();␍
+@repo/core:lint:biome:      91     │ - ··},␍
+@repo/core:lint:biome:      92     │ - ␍
+@repo/core:lint:biome:      93     │ - ··async·captureCurrentAccount(session:·Session·|·null,·profile?:·DeviceAccountProfile·|·null)·{␍
+@repo/core:lint:biome:      94     │ - ····if·(!session?.user)·return·null;␍
+@repo/core:lint:biome:      95     │ - ␍
+@repo/core:lint:biome:      96     │ - ····const·authUserId·=·session.user.id;␍
+@repo/core:lint:biome:      97     │ - ····const·isAnonymous·=␍
+@repo/core:lint:biome:      98     │ - ······session.user.is_anonymous·===·true·||·!session.user.email·||·profile?.is_anonymous·===·true;␍
+@repo/core:lint:biome:      99     │ - ····if·(isAnonymous)·{␍
+@repo/core:lint:biome:     100     │ - ······return·null;␍
+@repo/core:lint:biome:     101     │ - ····}␍
+@repo/core:lint:biome:     102     │ - ␍
+@repo/core:lint:biome:     103     │ - ····assertHighway('identity_bootstrap',·'direct-api');␍
+@repo/core:lint:biome:     104     │ - ····const·identity·=·profile?.id·?·null·:·await·identityAPI.identifyActiveCitizen();␍
+@repo/core:lint:biome:     105     │ - ····const·accountId·=·profile?.id·??·identity?.id;␍
+@repo/core:lint:biome:     106     │ - ␍
+@repo/core:lint:biome:     107     │ - ····if·(!accountId)·return·null;␍
+@repo/core:lint:biome:     108     │ - ␍
+@repo/core:lint:biome:     109     │ - ····await·setStoredSessionForAccount(accountId,·toSessionTokens(session));␍
+@repo/core:lint:biome:     110     │ - ····await·clearLegacySupabaseSession();␍
+@repo/core:lint:biome:     111     │ - ␍
+@repo/core:lint:biome:     112     │ - ····const·now·=·new·Date().toISOString();␍
+@repo/core:lint:biome:     113     │ - ····const·accounts·=·await·readRegistry();␍
+@repo/core:lint:biome:     114     │ - ····const·existing·=·accounts.find((entry)·=>·entry.accountId·===·accountId);␍
+@repo/core:lint:biome:     115     │ - ␍
+@repo/core:lint:biome:     116     │ - ····const·nextRecord:·DeviceAccountRecord·=·{␍
+@repo/core:lint:biome:     117     │ - ······accountId,␍
+@repo/core:lint:biome:     118     │ - ······authUserId,␍
+@repo/core:lint:biome:     119     │ - ······email:·profile?.email·??·session.user.email·??·existing?.email·??·null,␍
+@repo/core:lint:biome:     120     │ - ······displayName:␍
+@repo/core:lint:biome:     121     │ - ········profile?.display_name·??␍
+@repo/core:lint:biome:     122     │ - ········(session.user.user_metadata?.display_name·as·string·|·undefined)·??␍
+@repo/core:lint:biome:     123     │ - ········existing?.displayName·??␍
+@repo/core:lint:biome:     124     │ - ········null,␍
+@repo/core:lint:biome:     125     │ - ······avatarUrl:·profile?.avatar_url·??·existing?.avatarUrl·??·null,␍
+@repo/core:lint:biome:     126     │ - ······capacity:·profile?.capacity·??·existing?.capacity·??·null,␍
+@repo/core:lint:biome:     127     │ - ······schoolId:·profile?.school_id·??·existing?.schoolId·??·null,␍
+@repo/core:lint:biome:     128     │ - ······isAnonymous:·false,␍
+@repo/core:lint:biome:     129     │ - ······createdAt:·existing?.createdAt·??·now,␍
+@repo/core:lint:biome:     130     │ - ······lastUsedAt:·now,␍
+@repo/core:lint:biome:     131     │ - ····};␍
+@repo/core:lint:biome:     132     │ - ␍
+@repo/core:lint:biome:     133     │ - ····const·nextAccounts·=·accounts␍
+@repo/core:lint:biome:     134     │ - ······.filter((entry)·=>·entry.accountId·!==·accountId)␍
+@repo/core:lint:biome:     135     │ - ······.concat(nextRecord);␍
+@repo/core:lint:biome:     136     │ - ␍
+@repo/core:lint:biome:     137     │ - ····await·writeRegistry(nextAccounts);␍
+@repo/core:lint:biome:     138     │ - ····await·setActiveAccount(accountId);␍
+@repo/core:lint:biome:     139     │ - ␍
+@repo/core:lint:biome:     140     │ - ····try·{␍
+@repo/core:lint:biome:     141     │ - ······const·trust·=·await·deviceTrustAPI.syncCurrentAccountDevice(accountId);␍
+@repo/core:lint:biome:     142     │ - ······if·(trust·&&·!trust.isTrusted)·{␍
+@repo/core:lint:biome:     143     │ - ········console.warn(␍
+@repo/core:lint:biome:     144     │ - ··········'Device·trust·API·marked·this·install·as·untrusted.·Phase·1·is·advisory-only,·so·access·is·not·hard-blocked·yet.',␍
+@repo/core:lint:biome:     145     │ - ········);␍
+@repo/core:lint:biome:     146     │ - ······}␍
+@repo/core:lint:biome:     147     │ - ␍
+@repo/core:lint:biome:     148     │ - ······await·deviceTrustAPI.logAuditEvent(␍
+@repo/core:lint:biome:     149     │ - ········'ACCOUNT_CAPTURED_ON_DEVICE',␍
+@repo/core:lint:biome:     150     │ - ········{␍
+@repo/core:lint:biome:   495 more lines truncated
+@repo/core:lint:biome:   
+@repo/core:lint:biome: 
+@repo/core:lint:biome: src\adapters\__tests__\powersync.database.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome: 
+@repo/core:lint:biome:   × Formatter would have printed the following content:
+@repo/core:lint:biome:   
+@repo/core:lint:biome:      1    │ - import·{·afterEach,·describe,·expect,·it,·vi·}·from·'vitest';␍
+@repo/core:lint:biome:      2    │ - ␍
+@repo/core:lint:biome:      3    │ - import·{·getPowerSyncDB·}·from·'../powersync/database';␍
+@repo/core:lint:biome:      4    │ - ␍
+@repo/core:lint:biome:      5    │ - describe('PowerSync·database·bootstrap·guard',·()·=>·{␍
+@repo/core:lint:biome:      6    │ - ··afterEach(()·=>·{␍
+@repo/core:lint:biome:      7    │ - ····vi.unstubAllGlobals();␍
+@repo/core:lint:biome:      8    │ - ··});␍
+@repo/core:lint:biome:      9    │ - ␍
+@repo/core:lint:biome:     10    │ - ··it('fails·loudly·in·the·browser·before·the·runtime·is·registered',·()·=>·{␍
+@repo/core:lint:biome:     11    │ - ····vi.stubGlobal('window',·{});␍
+@repo/core:lint:biome:     12    │ - ␍
+@repo/core:lint:biome:     13    │ - ····expect(()·=>·getPowerSyncDB()).toThrow(␍
+@repo/core:lint:biome:     14    │ - ······/PowerSync·bootstrap·guard:·browser·code·touched·PowerSync·before·the·app·was·ready/i,␍
+@repo/core:lint:biome:     15    │ - ····);␍
+@repo/core:lint:biome:     16    │ - ··});␍
+@repo/core:lint:biome:     17    │ - });␍
+@repo/core:lint:biome:         1 │ + import·{·afterEach,·describe,·expect,·it,·vi·}·from·'vitest';
+@repo/core:lint:biome:         2 │ + 
+@repo/core:lint:biome:         3 │ + import·{·getPowerSyncDB·}·from·'../powersync/database';
+@repo/core:lint:biome:         4 │ + 
+@repo/core:lint:biome:         5 │ + describe('PowerSync·database·bootstrap·guard',·()·=>·{
+@repo/core:lint:biome:         6 │ + ··afterEach(()·=>·{
+@repo/core:lint:biome:         7 │ + ····vi.unstubAllGlobals();
+@repo/core:lint:biome:         8 │ + ··});
+@repo/core:lint:biome:         9 │ + 
+@repo/core:lint:biome:        10 │ + ··it('fails·loudly·in·the·browser·before·the·runtime·is·registered',·()·=>·{
+@repo/core:lint:biome:        11 │ + ····vi.stubGlobal('window',·{});
+@repo/core:lint:biome:        12 │ + 
+@repo/core:lint:biome:        13 │ + ····expect(()·=>·getPowerSyncDB()).toThrow(
+@repo/core:lint:biome:        14 │ + ······/PowerSync·bootstrap·guard:·browser·code·touched·PowerSync·before·the·app·was·ready/i,
+@repo/core:lint:biome:        15 │ + ····);
+@repo/core:lint:biome:        16 │ + ··});
+@repo/core:lint:biome:        17 │ + });
+@repo/core:lint:biome:     18 18 │   
+@repo/core:lint:biome:   
+@repo/core:lint:biome: 
+@repo/core:lint:biome: src\adapters\__tests__\supabase.auth.adapter.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome: 
+@repo/core:lint:biome:   × Formatter would have printed the following content:
+@repo/core:lint:biome:   
+@repo/core:lint:biome:       1     │ - import·{·beforeEach,·describe,·expect,·it,·vi·}·from·'vitest';␍
+@repo/core:lint:biome:       2     │ - ␍
+@repo/core:lint:biome:       3     │ - const·mockAuth·=·vi.hoisted(()·=>·({␍
 
-@repo/community:lint:biome:   
-@repo/community:lint:biome:     27 │   status: ManifestoStatus;
-@repo/community:lint:biome:     28 │   target_date?: Date;
-@repo/community:lint:biome:   > 29 │   metadata: Record<string, any>;
-@repo/community:lint:biome:        │                            ^^^
-@repo/community:lint:biome:     30 │   created_at: Date;
-@repo/community:lint:biome:     31 │   updated_at: Date;
-@repo/community:lint:biome:   
-@repo/community:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/community:lint:biome:   
-@repo/community:lint:biome: 
-@repo/community:lint:biome: src\types\global.d.ts:11:20 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/community:lint:biome: 
-@repo/community:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/community:lint:biome:   
-@repo/community:lint:biome:      9 │   export interface Color {
-@repo/community:lint:biome:     10 │     mode: string;
-@repo/community:lint:biome:   > 11 │     [key: string]: any;
-@repo/community:lint:biome:        │                    ^^^
-@repo/community:lint:biome:     12 │   }
-@repo/community:lint:biome:     13 │ 
-@repo/community:lint:biome:   
-
-@repo/community:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/community:lint:biome:   
-
-@repo/community:lint:biome: 
-@repo/community:lint:biome: src\types\global.d.ts:17:62 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/community:lint:biome: 
-@repo/community:lint:biome:   ! Unexpected any. Specify a different type.
-@repo/community:lint:biome:   
-@repo/community:lint:biome:     15 │   export function formatHex(color: Color): string;
-@repo/community:lint:biome:     16 │   export function formatRgb(color: Color): string;
-@repo/community:lint:biome:   > 17 │   export function converter(mode: string): (color: Color) => any;
-@repo/community:lint:biome:        │                                                              ^^^
-@repo/community:lint:biome:     18 │ }
-@repo/community:lint:biome:     19 │ 
-@repo/community:lint:biome:   
-@repo/community:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-@repo/community:lint:biome:   
-@repo/community:lint:biome: 
-@repo/community:lint:biome: eslint.config.mjs format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/community:lint:biome: 
-@repo/community:lint:biome:   × Formatter would have printed the following content:
-@repo/community:lint:biome:   
-@repo/community:lint:biome:     1   │ - import·{·config·}·from·'@repo/eslint-config/react-internal';␍
-@repo/community:lint:biome:     2   │ - ␍
-@repo/community:lint:biome:     3   │ - /**·@type·{import("eslint").Linter.Config[]}·*/␍
-@repo/community:lint:biome:     4   │ - export·default·[...config];␍
-@repo/community:lint:biome:       1 │ + import·{·config·}·from·'@repo/eslint-config/react-internal';
-@repo/community:lint:biome:       2 │ + 
-@repo/community:lint:biome:       3 │ + /**·@type·{import("eslint").Linter.Config[]}·*/
-@repo/community:lint:biome:       4 │ + export·default·[...config];
-@repo/community:lint:biome:     5 5 │   
-@repo/community:lint:biome:   
-@repo/community:lint:biome: 
-@repo/community:lint:biome: src\api\community.ts:617:18 lint/suspicious/useIterableCallbackReturn ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/community:lint:biome: 
-@repo/community:lint:biome:   × This callback passed to forEach() iterable method should not return a value.
-@repo/community:lint:biome:   
-@repo/community:lint:biome:     615 │           data.map((c: any) => c.id),
-@repo/community:lint:biome:     616 │         );
-@repo/community:lint:biome:   > 617 │       (uv ?? []).forEach((row: any) => upvotedIds.add(row.comment_id));
-@repo/community:lint:biome:         │                  ^^^^^^^
-@repo/community:lint:biome:     618 │     }
-@repo/community:lint:biome:     619 │     return (data ?? []).map(
-@repo/community:lint:biome:   
-@repo/community:lint:biome:   i Either remove this return or remove the returned value.
-@repo/community:lint:biome:   
-@repo/community:lint:biome:     615 │           data.map((c: any) => c.id),
-@repo/community:lint:biome:     616 │         );
-@repo/community:lint:biome:   > 617 │       (uv ?? []).forEach((row: any) => upvotedIds.add(row.comment_id));
-@repo/community:lint:biome:         │                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-@repo/community:lint:biome:     618 │     }
-@repo/community:lint:biome:     619 │     return (data ?? []).map(
-@repo/community:lint:biome:   
-@repo/community:lint:biome: 
-@repo/community:lint:biome: check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-@repo/community:lint:biome: 
-@repo/community:lint:biome:   × Some errors were emitted while running checks.
-@repo/community:lint:biome:   
-@repo/community:lint:biome: 
-
-@repo/profile:lint:biome:  ELIFECYCLE  Command failed with exit code 1.
-
-gurudevi-mobile:lint:biome:   i The computed expression can be simplified without the use of a string literal.
-
-gurudevi-mobile:lint:biome:   
-
-gurudevi-mobile:lint:biome:     196 │       initSentry();
-gurudevi-mobile:lint:biome:     197 │ 
-
-gurudevi-mobile:lint:biome:   > 198 │       const posthogApiKey = process.env['EXPO_PUBLIC_POSTHOG_API_KEY'];
-gurudevi-mobile:lint:biome:         │                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-gurudevi-mobile:lint:biome:     199 │       if (posthogApiKey) {
-gurudevi-mobile:lint:biome:     200 │         const posthogHost = process.env['EXPO_PUBLIC_POSTHOG_HOST'] || 'https://eu.i.posthog.com';
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i Unsafe fix: Use a literal key instead.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:     196 196 │         initSentry();
-gurudevi-mobile:lint:biome:     197 197 │   
-
-gurudevi-mobile:lint:biome:     198     │ - ······const·posthogApiKey·=·process.env['EXPO_PUBLIC_POSTHOG_API_KEY'];
-gurudevi-mobile:lint:biome:         198 │ + ······const·posthogApiKey·=·process.env.EXPO_PUBLIC_POSTHOG_API_KEY;
-gurudevi-mobile:lint:biome:     199 199 │         if (posthogApiKey) {
-gurudevi-mobile:lint:biome:     200 200 │           const posthogHost = process.env['EXPO_PUBLIC_POSTHOG_HOST'] || 'https://eu.i.posthog.com';
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome: App.tsx:200:41 lint/complexity/useLiteralKeys  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome:   i The computed expression can be simplified without the use of a string literal.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:     198 │       const posthogApiKey = process.env['EXPO_PUBLIC_POSTHOG_API_KEY'];
-gurudevi-mobile:lint:biome:     199 │       if (posthogApiKey) {
-
-gurudevi-mobile:lint:biome:   > 200 │         const posthogHost = process.env['EXPO_PUBLIC_POSTHOG_HOST'] || 'https://eu.i.posthog.com';
-gurudevi-mobile:lint:biome:         │                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
-gurudevi-mobile:lint:biome:     201 │         void initPostHog(posthogApiKey, { host: posthogHost }).then(() => {
-gurudevi-mobile:lint:biome:     202 │           trackEvent('app_initialized', { platform: coreRuntime.device.getMetadata().platform });
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i Unsafe fix: Use a literal key instead.
-gurudevi-mobile:lint:biome:   
-
-gurudevi-mobile:lint:biome:     198 198 │         const posthogApiKey = process.env['EXPO_PUBLIC_POSTHOG_API_KEY'];
-gurudevi-mobile:lint:biome:     199 199 │         if (posthogApiKey) {
-gurudevi-mobile:lint:biome:     200     │ - ········const·posthogHost·=·process.env['EXPO_PUBLIC_POSTHOG_HOST']·||·'https://eu.i.posthog.com';
-gurudevi-mobile:lint:biome:         200 │ + ········const·posthogHost·=·process.env.EXPO_PUBLIC_POSTHOG_HOST·||·'https://eu.i.posthog.com';
-gurudevi-mobile:lint:biome:     201 201 │           void initPostHog(posthogApiKey, { host: posthogHost }).then(() => {
-gurudevi-mobile:lint:biome:     202 202 │             trackEvent('app_initialized', { platform: coreRuntime.device.getMetadata().platform });
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome: 
-
-gurudevi-mobile:lint:biome: App.tsx:45:13 lint/correctness/noUnusedImports  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome:   ! This import is unused.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:     43 │ import { sanctuarySaffron } from '@repo/ui/theme';
-gurudevi-mobile:lint:biome:     44 │ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-gurudevi-mobile:lint:biome:   > 45 │ import * as Linking from 'expo-linking';
-gurudevi-mobile:lint:biome:        │             ^^^^^^^
-
-gurudevi-mobile:lint:biome:     46 │ import React, { lazy, Suspense, useEffect, useState } from 'react';
-gurudevi-mobile:lint:biome:     47 │ import { Platform } from 'react-native';
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i Unused imports might be the result of an incomplete refactoring.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i Unsafe fix: Remove the unused imports.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:      43  43 │   import { sanctuarySaffron } from '@repo/ui/theme';
-gurudevi-mobile:lint:biome:      44  44 │   import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
-gurudevi-mobile:lint:biome:      45     │ - import·*·as·Linking·from·'expo-linking';
-gurudevi-mobile:lint:biome:      46  45 │   import React, { lazy, Suspense, useEffect, useState } from 'react';
-gurudevi-mobile:lint:biome:      47  46 │   import { Platform } from 'react-native';
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome: App.tsx:46:8 lint/correctness/noUnusedImports  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome:   ! These imports are unused.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:     44 │ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-gurudevi-mobile:lint:biome:     45 │ import * as Linking from 'expo-linking';
-gurudevi-mobile:lint:biome:   > 46 │ import React, { lazy, Suspense, useEffect, useState } from 'react';
-gurudevi-mobile:lint:biome:        │        ^^^^^
-gurudevi-mobile:lint:biome:     47 │ import { Platform } from 'react-native';
-gurudevi-mobile:lint:biome:     48 │ import { SafeAreaProvider } from 'react-native-safe-area-context';
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i Unused imports might be the result of an incomplete refactoring.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i Unsafe fix: Remove the unused imports.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:     46 │ import·React,·{·lazy,·Suspense,·useEffect,·useState·}·from·'react';
-gurudevi-mobile:lint:biome:        │        -------                                                     
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome: archives\ai\AIAssistantScreen.tsx:59:89 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome:   ! Unexpected any. Specify a different type.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:     57 │         ]}
-gurudevi-mobile:lint:biome:     58 │       >
-gurudevi-mobile:lint:biome:   > 59 │         <Text color={isUser ? gradientNodes[0] : text.primary} sx={{ fontSize: '$md' as any }}>
-gurudevi-mobile:lint:biome:        │                                                                                         ^^^
-gurudevi-mobile:lint:biome:     60 │           {item.content}
-gurudevi-mobile:lint:biome:     61 │         </Text>
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome: archives\ai\AIAssistantScreen.tsx:86:38 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome:   ! Unexpected any. Specify a different type.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:     84 │                 sx={{
-gurudevi-mobile:lint:biome:     85 │                   fontWeight: '700',
-gurudevi-mobile:lint:biome:   > 86 │                   fontSize: '$lg' as any,
-gurudevi-mobile:lint:biome:        │                                      ^^^
-gurudevi-mobile:lint:biome:     87 │                   color: text.primary,
-gurudevi-mobile:lint:biome:     88 │                 }}
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome: archives\ai\AIAssistantScreen.tsx:108:44 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome:   ! Unexpected any. Specify a different type.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:     106 │           ListFooterComponent={
-gurudevi-mobile:lint:biome:     107 │             isThinking ? (
-gurudevi-mobile:lint:biome:   > 108 │               <Box sx={{ padding: '$md' as any, opacity: 0.6 }}>
-gurudevi-mobile:lint:biome:         │                                            ^^^
-gurudevi-mobile:lint:biome:     109 │                 <Text color={text.secondary} italic size="sm">
-gurudevi-mobile:lint:biome:     110 │                   {t('aiAssistant.thinking')}
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome: archives\ai\AIAssistantScreen.tsx:126:47 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome:   ! Unexpected any. Specify a different type.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:     124 │               <TouchableOpacity
-gurudevi-mobile:lint:biome:     125 │                 accessibilityRole="button"
-gurudevi-mobile:lint:biome:   > 126 │                 onPress={() => (navigation as any).navigate('Welcome')}
-gurudevi-mobile:lint:biome:         │                                               ^^^
-gurudevi-mobile:lint:biome:     127 │               >
-gurudevi-mobile:lint:biome:     128 │                 <Text color={accent.action} bold size="sm">
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome: archives\ai\AIAssistantScreen.web.tsx:27:36 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome:   ! Unexpected any. Specify a different type.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:     26 │ export default function AIAssistantScreen() {
-gurudevi-mobile:lint:biome:   > 27 │   const navigation = useNavigation<any>();
-gurudevi-mobile:lint:biome:        │                                    ^^^
-gurudevi-mobile:lint:biome:     28 │   const { t } = useTranslation();
-gurudevi-mobile:lint:biome:     29 │   const user = useStore((state) => state.user);
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome: archives\ai\AIAssistantScreen.web.tsx:65:33 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome:   ! Unexpected any. Specify a different type.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:     63 │   };
-gurudevi-mobile:lint:biome:     64 │ 
-gurudevi-mobile:lint:biome:   > 65 │   const handleGapPrompt = (gap: any) => {
-gurudevi-mobile:lint:biome:        │                                 ^^^
-gurudevi-mobile:lint:biome:     66 │     const prompt = `Help me with: ${gap.title}. Suggested action: ${gap.suggestedAction}.`;
-gurudevi-mobile:lint:biome:     67 │     setDraft(prompt);
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome: archives\classroom\AttendanceScreen.web.tsx:47:26 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome:   ! Unexpected any. Specify a different type.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:     46 │ export default function AttendanceScreenWeb() {
-gurudevi-mobile:lint:biome:   > 47 │   const route = useRoute<any>();
-gurudevi-mobile:lint:biome:        │                          ^^^
-gurudevi-mobile:lint:biome:     48 │   const navigation = useNavigation<any>();
-gurudevi-mobile:lint:biome:     49 │   const { classroomId, classroomName } = route.params ?? {};
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome: archives\classroom\AttendanceScreen.web.tsx:48:36 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome:   ! Unexpected any. Specify a different type.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:     46 │ export default function AttendanceScreenWeb() {
-gurudevi-mobile:lint:biome:     47 │   const route = useRoute<any>();
-gurudevi-mobile:lint:biome:   > 48 │   const navigation = useNavigation<any>();
-gurudevi-mobile:lint:biome:        │                                    ^^^
-gurudevi-mobile:lint:biome:     49 │   const { classroomId, classroomName } = route.params ?? {};
-gurudevi-mobile:lint:biome:     50 │   const { user } = useStore();
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome: archives\classroom\AttendanceScreen.web.tsx:73:19 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome:   ! Unexpected any. Specify a different type.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:     71 │           })),
-gurudevi-mobile:lint:biome:     72 │         );
-gurudevi-mobile:lint:biome:   > 73 │       } catch (e: any) {
-gurudevi-mobile:lint:biome:        │                   ^^^
-gurudevi-mobile:lint:biome:     74 │         setError(e?.message || 'Failed to load students');
-gurudevi-mobile:lint:biome:     75 │       } finally {
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome: archives\classroom\AttendanceScreen.web.tsx:117:17 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome:   ! Unexpected any. Specify a different type.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:     115 │       }
-gurudevi-mobile:lint:biome:     116 │       setSaved(true);
-gurudevi-mobile:lint:biome:   > 117 │     } catch (e: any) {
-gurudevi-mobile:lint:biome:         │                 ^^^
-gurudevi-mobile:lint:biome:     118 │       setError(e?.message || 'Failed to save attendance');
-gurudevi-mobile:lint:biome:     119 │     } finally {
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome: archives\ai\AIAssistantScreen.web.tsx:101:9 lint/a11y/useButtonType ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome:   × Provide an explicit type prop for the button element.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:      99 │           to begin.
-gurudevi-mobile:lint:biome:     100 │         </p>
-gurudevi-mobile:lint:biome:   > 101 │         <button className="premium-button" onClick={() => navigation.navigate('Auth')}>
-gurudevi-mobile:lint:biome:         │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-gurudevi-mobile:lint:biome:     102 │           Sign In
-gurudevi-mobile:lint:biome:     103 │         </button>
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i Allowed button types are: submit, button or reset
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome: archives\ai\AIAssistantScreen.web.tsx:155:17 lint/a11y/useButtonType ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome:   × Provide an explicit type prop for the button element.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:     153 │             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-gurudevi-mobile:lint:biome:     154 │               {activeGaps.map((gap) => (
-gurudevi-mobile:lint:biome:   > 155 │                 <button
-gurudevi-mobile:lint:biome:         │                 ^^^^^^^
-gurudevi-mobile:lint:biome:   > 156 │                   key={gap.id}
-gurudevi-mobile:lint:biome:          ...
-gurudevi-mobile:lint:biome:   > 167 │                   }}
-gurudevi-mobile:lint:biome:   > 168 │                 >
-gurudevi-mobile:lint:biome:         │                 ^
-gurudevi-mobile:lint:biome:     169 │                   <div
-gurudevi-mobile:lint:biome:     170 │                     style={{
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i Allowed button types are: submit, button or reset
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome: archives\ai\AIAssistantScreen.web.tsx:196:11 lint/a11y/useButtonType ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome:   × Provide an explicit type prop for the button element.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:     194 │           }}
-gurudevi-mobile:lint:biome:     195 │         >
-gurudevi-mobile:lint:biome:   > 196 │           <button
-gurudevi-mobile:lint:biome:         │           ^^^^^^^
-gurudevi-mobile:lint:biome:   > 197 │             onClick={clearHistory}
-gurudevi-mobile:lint:biome:          ...
-gurudevi-mobile:lint:biome:   > 208 │             }}
-gurudevi-mobile:lint:biome:   > 209 │           >
-gurudevi-mobile:lint:biome:         │           ^
-gurudevi-mobile:lint:biome:     210 │             🗑 Clear conversation
-gurudevi-mobile:lint:biome:     211 │           </button>
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:   i Allowed button types are: submit, button or reset
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome: archives\ai\AIAssistantScreen.web.tsx:235:11 lint/a11y/useButtonType ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome:   × Provide an explicit type prop for the button element.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:     233 │           }}
-gurudevi-mobile:lint:biome:     234 │         >
-gurudevi-mobile:lint:biome:   > 235 │           <button
-gurudevi-mobile:lint:biome:         │           ^^^^^^^
-gurudevi-mobile:lint:biome:   > 236 │             onClick={() => navigation.goBack()}
-gurudevi-mobile:lint:biome:          ...
-gurudevi-mobile:lint:biome:   > 247 │             }}
-
-gurudevi-mobile:lint:biome:   > 248 │           >
-
-gurudevi-mobile:lint:biome:         │           ^
-
-gurudevi-mobile:lint:biome:     249 │             ← Back
-
-gurudevi-mobile:lint:biome:     250 │           </button>
-
-gurudevi-mobile:lint:biome:   
-
-gurudevi-mobile:lint:biome:   i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
-gurudevi-mobile:lint:biome:   
-
-apps-edlove-web:lint:biome: src\components\ExpandableContent.astro:9:9 lint/correctness/noUnusedVariables ━━━━━━━━━━━━━━━━━━━━━━
-
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome:   ! This variable title is unused.
-
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:      7 │ }
-
-apps-edlove-web:lint:biome:      8 │ 
-
-apps-edlove-web:lint:biome:    > 9 │ const { title, subtitle, icon, mode = 'panel' } = Astro.props;
-
-apps-edlove-web:lint:biome:        │         ^^^^^
-apps-edlove-web:lint:biome:     10 │ ---
-apps-edlove-web:lint:biome:     11 │ 
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:   i Unused variables are often the result of typos, incomplete refactors, or other sources of bugs.
-
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome: src\components\ExpandableContent.astro:9:16 lint/correctness/noUnusedVariables ━━━━━━━━━━━━━━━━━━━━━
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome:   ! This variable subtitle is unused.
-
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:      7 │ }
-
-apps-edlove-web:lint:biome:      8 │ 
-
-apps-edlove-web:lint:biome:    > 9 │ const { title, subtitle, icon, mode = 'panel' } = Astro.props;
-
-apps-edlove-web:lint:biome:        │                ^^^^^^^^
-
-apps-edlove-web:lint:biome:     10 │ ---
-apps-edlove-web:lint:biome:     11 │ 
-apps-edlove-web:lint:biome:   
-
-gurudevi-mobile:lint:biome:   i Allowed button types are: submit, button or reset
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome: archives\ai\AIAssistantScreen.web.tsx:447:11 lint/a11y/useButtonType ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-gurudevi-mobile:lint:biome: 
-
-gurudevi-mobile:lint:biome:   × Provide an explicit type prop for the button element.
-gurudevi-mobile:lint:biome:   
-
-gurudevi-mobile:lint:biome:     445 │             }}
-gurudevi-mobile:lint:biome:     446 │           />
-gurudevi-mobile:lint:biome:   > 447 │           <button
-gurudevi-mobile:lint:biome:         │           ^^^^^^^
-
-gurudevi-mobile:lint:biome:   > 448 │             onClick={handleSend}
-
-gurudevi-mobile:lint:biome:          ...
-
-gurudevi-mobile:lint:biome:   > 465 │             }}
-
-gurudevi-mobile:lint:biome:   > 466 │           >
-
-gurudevi-mobile:lint:biome:         │           ^
-
-apps-edlove-web:lint:biome:   i Unused variables are often the result of typos, incomplete refactors, or other sources of bugs.
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome: src\components\ExpandableContent.astro:9:26 lint/correctness/noUnusedVariables ━━━━━━━━━━━━━━━━━━━━━
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome:   ! This variable icon is unused.
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:      7 │ }
-
-gurudevi-mobile:lint:biome:     467 │             {isThinking ? '…' : '➤'}
-
-gurudevi-mobile:lint:biome:     468 │           </button>
-
-gurudevi-mobile:lint:biome:   
-
-gurudevi-mobile:lint:biome:   i The default type of a button is submit, which causes the submission of a form when placed inside a `form` element. This is likely not the behaviour that you want inside a React application.
-
-gurudevi-mobile:lint:biome:   
-
-gurudevi-mobile:lint:biome:   i Allowed button types are: submit, button or reset
-
-gurudevi-mobile:lint:biome:   
-
-gurudevi-mobile:lint:biome: 
-
-apps-edlove-web:lint:biome:      8 │ 
-
-apps-edlove-web:lint:biome:    > 9 │ const { title, subtitle, icon, mode = 'panel' } = Astro.props;
-
-gurudevi-mobile:lint:biome: package.json:100:5 lint/suspicious/noDuplicateObjectKeys ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-gurudevi-mobile:lint:biome: 
-gurudevi-mobile:lint:biome:   × The key expo-device was already declared.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome:      98 │     "expo-crypto": "~55.0.14",
-
-@repo/payments:lint:biome:  ELIFECYCLE  Command failed with exit code 1.
-
-apps-edlove-web:lint:biome:        │                          ^^^^
-
+@repo/core:lint:biome:       4     │ - ··getSession:·vi.fn(),␍
+@repo/core:lint:biome:       5     │ - ··getUser:·vi.fn(),␍
+@repo/core:lint:biome:       6     │ - ··signInWithPassword:·vi.fn(),␍
+@repo/core:lint:biome:       7     │ - ··signInWithOAuth:·vi.fn(),␍
+@repo/core:lint:biome:       8     │ - ··linkIdentity:·vi.fn(),␍
+@repo/core:lint:biome:       9     │ - ··setSession:·vi.fn(),␍
+@repo/core:lint:biome:      10     │ - ··signUp:·vi.fn(),␍
+@repo/core:lint:biome:      11     │ - ··signInAnonymously:·vi.fn(),␍
 @intuitui-labs/lk-edu-geo:lint:biome:  ELIFECYCLE  Command failed with exit code 1.
-
-apps-edlove-web:lint:biome:     10 │ ---
-
-apps-edlove-web:lint:biome:     11 │ 
-apps-edlove-web:lint:biome:   
-
-gurudevi-mobile:lint:biome:      99 │     "expo-dev-client": "~55.0.28",
-
-gurudevi-mobile:lint:biome:   > 100 │     "expo-device": "*",
-
-gurudevi-mobile:lint:biome:         │     ^^^^^^^^^^^^^
-
-gurudevi-mobile:lint:biome:     101 │     "expo-document-picker": "~55.0.13",
-
-gurudevi-mobile:lint:biome:     102 │     "expo-file-system": "~55.0.17",
-
-gurudevi-mobile:lint:biome:   
-
-@repo/community:lint:biome:  ELIFECYCLE  Command failed with exit code 1.
-
-gurudevi-mobile:lint:biome:   i This is where a duplicated key was declared again.
-
-gurudevi-mobile:lint:biome:   
-
-gurudevi-mobile:lint:biome:     118 │     "expo-video": "~55.0.15",
-gurudevi-mobile:lint:biome:     119 │     "expo-notifications": "~55.0.17",
-gurudevi-mobile:lint:biome:   > 120 │     "expo-device": "~55.0.14",
-gurudevi-mobile:lint:biome:         │     ^^^^^^^^^^^^^
-
-gurudevi-mobile:lint:biome:     121 │     "expo-web-browser": "~55.0.14",
-
-gurudevi-mobile:lint:biome:     122 │     "fast-deep-equal": "^3.1.3",
-gurudevi-mobile:lint:biome:   
-
-gurudevi-mobile:lint:biome:   i If a key is defined multiple times, only the last definition takes effect. Previous definitions are ignored.
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome: 
-
-gurudevi-mobile:lint:biome: The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
-gurudevi-mobile:lint:biome: Diagnostics not shown: 1226.
-
-gurudevi-mobile:lint:biome: Checked 284 files in 1687ms. No fixes applied.
-gurudevi-mobile:lint:biome: Found 716 errors.
-gurudevi-mobile:lint:biome: Found 472 warnings.
-gurudevi-mobile:lint:biome: Found 58 infos.
-
-apps-edlove-web:lint:biome:   i Unused variables are often the result of typos, incomplete refactors, or other sources of bugs.
-
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome: src\components\ExpandableContent.astro:9:32 lint/correctness/noUnusedVariables ━━━━━━━━━━━━━━━━━━━━━
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome:   ! This variable mode is unused.
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:      7 │ }
-
-apps-edlove-web:lint:biome:      8 │ 
-
-apps-edlove-web:lint:biome:    > 9 │ const { title, subtitle, icon, mode = 'panel' } = Astro.props;
-
-apps-edlove-web:lint:biome:        │                                ^^^^
-
-apps-edlove-web:lint:biome:     10 │ ---
-
-apps-edlove-web:lint:biome:     11 │ 
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:   i Unused variables are often the result of typos, incomplete refactors, or other sources of bugs.
-
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome: src\components\Footer.astro:2:7 lint/correctness/noUnusedVariables  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━
-apps-edlove-web:lint:biome: 
-
-@repo/types-shim:lint:biome:  ELIFECYCLE  Command failed with exit code 1.
-
-apps-edlove-web:lint:biome:   ! This variable currentYear is unused.
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:     1 │ ---
-
-gurudevi-mobile:lint:biome: check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-gurudevi-mobile:lint:biome: 
-
-gurudevi-mobile:lint:biome:   × Some errors were emitted while running checks.
-
-gurudevi-mobile:lint:biome:   
-gurudevi-mobile:lint:biome: 
-
-apps-edlove-web:lint:biome:   > 2 │ const currentYear = new Date().getFullYear();
-
-apps-edlove-web:lint:biome:       │       ^^^^^^^^^^^
-
-apps-edlove-web:lint:biome:     3 │ ---
-apps-edlove-web:lint:biome:     4 │ 
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:   i Unused variables are often the result of typos, incomplete refactors, or other sources of bugs.
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:   i Unsafe fix: If this is intentional, prepend currentYear with an underscore.
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:     1 1 │   
-
-apps-edlove-web:lint:biome:     2   │ - const·currentYear·=·new·Date().getFullYear();
-
-apps-edlove-web:lint:biome:       2 │ + const·_currentYear·=·new·Date().getFullYear();
-apps-edlove-web:lint:biome:     3 3 │   
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome: src\components\Navigation.astro:13:7 lint/correctness/noUnusedVariables  FIXABLE  ━━━━━━━━━━━━━━━━━━
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome:   ! This variable links is unused.
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:     11 │ }
-apps-edlove-web:lint:biome:     12 │ 
-apps-edlove-web:lint:biome:   > 13 │ const links: NavLink[] = [
-apps-edlove-web:lint:biome:        │       ^^^^^
-apps-edlove-web:lint:biome:     14 │   { name: 'Cosmos', href: '/cosmos' },
-apps-edlove-web:lint:biome:     15 │   { name: 'Sri Lanka', href: '/sri-lanka' },
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:   i Unused variables are often the result of typos, incomplete refactors, or other sources of bugs.
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:   i Unsafe fix: If this is intentional, prepend links with an underscore.
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:     11 11 │   }␍
-apps-edlove-web:lint:biome:     12 12 │   ␍
-apps-edlove-web:lint:biome:     13    │ - const·links:·NavLink[]·=·[␍
-apps-edlove-web:lint:biome:        13 │ + const·_links:·NavLink[]·=·[␍
-apps-edlove-web:lint:biome:     14 14 │     { name: 'Cosmos', href: '/cosmos' },␍
-apps-edlove-web:lint:biome:     15 15 │     { name: 'Sri Lanka', href: '/sri-lanka' },␍
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome: src\components\Navigation.astro:22:7 lint/correctness/noUnusedVariables  FIXABLE  ━━━━━━━━━━━━━━━━━━
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome:   ! This variable languages is unused.
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:     20 │ ];
-apps-edlove-web:lint:biome:     21 │ 
-apps-edlove-web:lint:biome:   > 22 │ const languages: Language[] = [
-apps-edlove-web:lint:biome:        │       ^^^^^^^^^
-apps-edlove-web:lint:biome:     23 │   { code: 'EN', label: 'English', href: '/' },
-apps-edlove-web:lint:biome:     24 │   { code: 'SI', label: 'Sinhala', href: '/si' },
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:   i Unused variables are often the result of typos, incomplete refactors, or other sources of bugs.
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:   i Unsafe fix: If this is intentional, prepend languages with an underscore.
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:     20 20 │   ];␍
-apps-edlove-web:lint:biome:     21 21 │   ␍
-apps-edlove-web:lint:biome:     22    │ - const·languages:·Language[]·=·[␍
-apps-edlove-web:lint:biome:        22 │ + const·_languages:·Language[]·=·[␍
-apps-edlove-web:lint:biome:     23 23 │     { code: 'EN', label: 'English', href: '/' },␍
-
-apps-edlove-web:lint:biome:     24 24 │     { code: 'SI', label: 'Sinhala', href: '/si' },␍
-
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome: src\components\StructuredData.astro:3:24 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome:   ! Unexpected any. Specify a different type.
-
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:     1 │ ---
-
-apps-edlove-web:lint:biome:     2 │ interface Props {
-
-apps-edlove-web:lint:biome:   > 3 │   data: Record<string, any> | Array<Record<string, any>>;
-
-apps-edlove-web:lint:biome:       │                        ^^^
-
-apps-edlove-web:lint:biome:     4 │ }
-
-apps-edlove-web:lint:biome:     5 │ 
-
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome: src\components\StructuredData.astro:3:52 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome:   ! Unexpected any. Specify a different type.
-
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:     1 │ ---
-
-apps-edlove-web:lint:biome:     2 │ interface Props {
-
-apps-edlove-web:lint:biome:   > 3 │   data: Record<string, any> | Array<Record<string, any>>;
-
-apps-edlove-web:lint:biome:       │                                                    ^^^
-
-apps-edlove-web:lint:biome:     4 │ }
-
-apps-edlove-web:lint:biome:     5 │ 
-
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome: src\components\StructuredData.astro:7:7 lint/correctness/noUnusedVariables  FIXABLE  ━━━━━━━━━━━━━━━
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome:   ! This variable normalized is unused.
-
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:     6 │ const { data } = Astro.props;
-
-apps-edlove-web:lint:biome:   > 7 │ const normalized = Array.isArray(data) ? data : [data];
-
-apps-edlove-web:lint:biome:       │       ^^^^^^^^^^
-apps-edlove-web:lint:biome:     8 │ ---
-apps-edlove-web:lint:biome:     9 │ 
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:   i Unused variables are often the result of typos, incomplete refactors, or other sources of bugs.
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:   i Unsafe fix: If this is intentional, prepend normalized with an underscore.
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:     5 5 │   ␍
-apps-edlove-web:lint:biome:     6 6 │   const { data } = Astro.props;␍
-apps-edlove-web:lint:biome:     7   │ - const·normalized·=·Array.isArray(data)·?·data·:·[data];␍
-apps-edlove-web:lint:biome:       7 │ + const·_normalized·=·Array.isArray(data)·?·data·:·[data];␍
-apps-edlove-web:lint:biome:     8 8 │   
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome: src\components\Welcome.astro:2:8 lint/correctness/noUnusedImports  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome:   ! This import is unused.
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:     1 │ ---
-apps-edlove-web:lint:biome:   > 2 │ import astroLogo from '../assets/astro.svg';
-apps-edlove-web:lint:biome:       │        ^^^^^^^^^
-apps-edlove-web:lint:biome:     3 │ import background from '../assets/background.svg';
-apps-edlove-web:lint:biome:     4 │ ---
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:   i Unused imports might be the result of an incomplete refactoring.
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:   i Unsafe fix: Remove the unused imports.
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:     1   │ - 
-apps-edlove-web:lint:biome:     2   │ - import·astroLogo·from·'../assets/astro.svg';␍
-apps-edlove-web:lint:biome:       1 │ + ␍
-apps-edlove-web:lint:biome:     3 2 │   import background from '../assets/background.svg';␍
-apps-edlove-web:lint:biome:     4 3 │   
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome: src\components\Welcome.astro:3:8 lint/correctness/noUnusedImports  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome:   ! This import is unused.
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:     1 │ ---
-apps-edlove-web:lint:biome:     2 │ import astroLogo from '../assets/astro.svg';
-apps-edlove-web:lint:biome:   > 3 │ import background from '../assets/background.svg';
-apps-edlove-web:lint:biome:       │        ^^^^^^^^^^
-apps-edlove-web:lint:biome:     4 │ ---
-apps-edlove-web:lint:biome:     5 │ 
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:   i Unused imports might be the result of an incomplete refactoring.
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:   i Unsafe fix: Remove the unused imports.
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:     1 1 │   
-apps-edlove-web:lint:biome:     2   │ - import·astroLogo·from·'../assets/astro.svg';␍
-apps-edlove-web:lint:biome:     3   │ - import·background·from·'../assets/background.svg';␍
-apps-edlove-web:lint:biome:       2 │ + import·astroLogo·from·'../assets/astro.svg';␍
-apps-edlove-web:lint:biome:     4 3 │   
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome: src\utils\helpers.ts:326:46 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome:   ! Unexpected any. Specify a different type.
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:     324 │  * Debounce function (wait for pause in calls)
-apps-edlove-web:lint:biome:     325 │  */
-apps-edlove-web:lint:biome:   > 326 │ export function debounce<T extends (...args: any[]) => any>(
-apps-edlove-web:lint:biome:         │                                              ^^^
-apps-edlove-web:lint:biome:     327 │   func: T,
-apps-edlove-web:lint:biome:     328 │   delay: number,
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome: src\utils\helpers.ts:326:56 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome:   ! Unexpected any. Specify a different type.
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:     324 │  * Debounce function (wait for pause in calls)
-
-apps-edlove-web:lint:biome:     325 │  */
-apps-edlove-web:lint:biome:   > 326 │ export function debounce<T extends (...args: any[]) => any>(
-apps-edlove-web:lint:biome:         │                                                        ^^^
-apps-edlove-web:lint:biome:     327 │   func: T,
-apps-edlove-web:lint:biome:     328 │   delay: number,
-apps-edlove-web:lint:biome:   
-gurudevi-mobile:lint:biome:  ELIFECYCLE  Command failed with exit code 1.
-
-apps-edlove-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome: src\utils\helpers.ts:341:46 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome:   ! Unexpected any. Specify a different type.
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:     339 │  * Throttle function (limit calls per time period)
-apps-edlove-web:lint:biome:     340 │  */
-
-apps-edlove-web:lint:biome:   > 341 │ export function throttle<T extends (...args: any[]) => any>(
-
-apps-edlove-web:lint:biome:         │                                              ^^^
-apps-edlove-web:lint:biome:     342 │   func: T,
-apps-edlove-web:lint:biome:     343 │   limit: number,
-
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome: src\utils\helpers.ts:341:56 lint/suspicious/noExplicitAny ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome:   ! Unexpected any. Specify a different type.
-
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:     339 │  * Throttle function (limit calls per time period)
-
-apps-edlove-web:lint:biome:     340 │  */
-
-apps-edlove-web:lint:biome:   > 341 │ export function throttle<T extends (...args: any[]) => any>(
-
-apps-edlove-web:lint:biome:         │                                                        ^^^
-
-apps-edlove-web:lint:biome:     342 │   func: T,
-
-apps-edlove-web:lint:biome:     343 │   limit: number,
-
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:   i any disables many type checking rules. Its use should be avoided.
-
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome: astro.config.mjs format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome:   × Formatter would have printed the following content:
-
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:      1    │ - //·@ts-check␍
-
-apps-edlove-web:lint:biome:      2    │ - ␍
-
-apps-edlove-web:lint:biome:      3    │ - import·sitemap·from·'@astrojs/sitemap';␍
-apps-edlove-web:lint:biome:      4    │ - import·svelte·from·'@astrojs/svelte';␍
-apps-edlove-web:lint:biome:      5    │ - ␍
-apps-edlove-web:lint:biome:      6    │ - import·tailwindcss·from·'@tailwindcss/vite';␍
-apps-edlove-web:lint:biome:      7    │ - import·{·defineConfig·}·from·'astro/config';␍
-apps-edlove-web:lint:biome:      8    │ - ␍
-apps-edlove-web:lint:biome:      9    │ - //·https://astro.build/config␍
-apps-edlove-web:lint:biome:     10    │ - export·default·defineConfig({␍
-
-apps-edlove-web:lint:biome:     11    │ - ··site:·'https://edlove.org',␍
-apps-edlove-web:lint:biome:     12    │ - ␍
-apps-edlove-web:lint:biome:     13    │ - ··vite:·{␍
-apps-edlove-web:lint:biome:     14    │ - ····plugins:·[/**·@type·{any}·*/·(tailwindcss())],␍
-apps-edlove-web:lint:biome:     15    │ - ··},␍
-apps-edlove-web:lint:biome:     16    │ - ␍
-apps-edlove-web:lint:biome:     17    │ - ··integrations:·[svelte(),·sitemap()],␍
-apps-edlove-web:lint:biome:     18    │ - ␍
-apps-edlove-web:lint:biome:     19    │ - ··i18n:·{␍
-apps-edlove-web:lint:biome:     20    │ - ····defaultLocale:·'en',␍
-apps-edlove-web:lint:biome:     21    │ - ····locales:·['en',·'si',·'ta'],␍
-apps-edlove-web:lint:biome:     22    │ - ····routing:·{␍
-apps-edlove-web:lint:biome:     23    │ - ······prefixDefaultLocale:·false,␍
-apps-edlove-web:lint:biome:     24    │ - ····},␍
-apps-edlove-web:lint:biome:     25    │ - ··},␍
-apps-edlove-web:lint:biome:     26    │ - });␍
-apps-edlove-web:lint:biome:         1 │ + //·@ts-check
-apps-edlove-web:lint:biome:         2 │ + 
-apps-edlove-web:lint:biome:         3 │ + import·sitemap·from·'@astrojs/sitemap';
-apps-edlove-web:lint:biome:         4 │ + import·svelte·from·'@astrojs/svelte';
-apps-edlove-web:lint:biome:         5 │ + 
-apps-edlove-web:lint:biome:         6 │ + import·tailwindcss·from·'@tailwindcss/vite';
-apps-edlove-web:lint:biome:         7 │ + import·{·defineConfig·}·from·'astro/config';
-apps-edlove-web:lint:biome:         8 │ + 
-apps-edlove-web:lint:biome:         9 │ + //·https://astro.build/config
-apps-edlove-web:lint:biome:        10 │ + export·default·defineConfig({
-apps-edlove-web:lint:biome:        11 │ + ··site:·'https://edlove.org',
-apps-edlove-web:lint:biome:        12 │ + 
-apps-edlove-web:lint:biome:        13 │ + ··vite:·{
-apps-edlove-web:lint:biome:        14 │ + ····plugins:·[/**·@type·{any}·*/·(tailwindcss())],
-apps-edlove-web:lint:biome:        15 │ + ··},
-apps-edlove-web:lint:biome:        16 │ + 
-apps-edlove-web:lint:biome:        17 │ + ··integrations:·[svelte(),·sitemap()],
-apps-edlove-web:lint:biome:        18 │ + 
-apps-edlove-web:lint:biome:        19 │ + ··i18n:·{
-apps-edlove-web:lint:biome:        20 │ + ····defaultLocale:·'en',
-apps-edlove-web:lint:biome:        21 │ + ····locales:·['en',·'si',·'ta'],
-apps-edlove-web:lint:biome:        22 │ + ····routing:·{
-apps-edlove-web:lint:biome:        23 │ + ······prefixDefaultLocale:·false,
-apps-edlove-web:lint:biome:        24 │ + ····},
-apps-edlove-web:lint:biome:        25 │ + ··},
-apps-edlove-web:lint:biome:        26 │ + });
-apps-edlove-web:lint:biome:     27 27 │   
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome: src\components\ExpandableContent.astro format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome:   × Formatter would have printed the following content:
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:      1  1 │   ---␍
-apps-edlove-web:lint:biome:      2    │ - interface·Props·{␍
-apps-edlove-web:lint:biome:      3    │ - ··title:·string;␍
-apps-edlove-web:lint:biome:      4    │ - ··subtitle?:·string;␍
-apps-edlove-web:lint:biome:      5    │ - ··icon?:·string;␍
-apps-edlove-web:lint:biome:      6    │ - ··mode?:·'panel'·|·'modal';␍
-apps-edlove-web:lint:biome:      7    │ - }␍
-apps-edlove-web:lint:biome:      8    │ - ␍
-apps-edlove-web:lint:biome:      9    │ - const·{·title,·subtitle,·icon,·mode·=·'panel'·}·=·Astro.props;␍
-apps-edlove-web:lint:biome:         2 │ + interface·Props·{
-apps-edlove-web:lint:biome:         3 │ + ··title:·string;
-apps-edlove-web:lint:biome:         4 │ + ··subtitle?:·string;
-apps-edlove-web:lint:biome:         5 │ + ··icon?:·string;
-apps-edlove-web:lint:biome:         6 │ + ··mode?:·'panel'·|·'modal';
-apps-edlove-web:lint:biome:         7 │ + }
-apps-edlove-web:lint:biome:         8 │ + 
-apps-edlove-web:lint:biome:         9 │ + const·{·title,·subtitle,·icon,·mode·=·'panel'·}·=·Astro.props;
-apps-edlove-web:lint:biome:     10 10 │   ---␍
-apps-edlove-web:lint:biome:     11 11 │   ␍
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome: src\components\Navigation.astro format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-apps-edlove-web:lint:biome: 
-apps-edlove-web:lint:biome:   × Formatter would have printed the following content:
-apps-edlove-web:lint:biome:   
-apps-edlove-web:lint:biome:       1   1 │   ---␍
-apps-edlove-web:lint:biome:       2     │ - interface·NavLink·{␍
-apps-edlove-web:lint:biome:       3     │ - ··name:·string;␍
-apps-edlove-web:lint:biome:       4     │ - ··href:·string;␍
-apps-edlove-web:lint:biome:       5     │ - }␍
-apps-edlove-web:lint:biome:       6     │ - ␍
-apps-edlove-web:lint:biome:       7     │ - interface·Language·{␍
-
-apps-edlove-web:lint:biome:       8     │ - ··code:·string;␍
-
-apps-edlove-web:lint:biome:       9     │ - ··label:·string;␍
-
-apps-edlove-web:lint:biome:      10     │ - ··href:·string;␍
-
-apps-edlove-web:lint:biome:      11     │ - }␍
-
-apps-edlove-web:lint:biome:      12     │ - ␍
-
-apps-edlove-web:lint:biome:      13     │ - const·links:·NavLink[]·=·[␍
-
-apps-edlove-web:lint:biome:      14     │ - ··{·name:·'Cosmos',·href:·'/cosmos'·},␍
-
-apps-edlove-web:lint:biome:      15     │ - ··{·name:·'Sri·Lanka',·href:·'/sri-lanka'·},␍
-
-apps-edlove-web:lint:biome:      16     │ - ··{·name:·'Gurudevi',·href:·'/gurudevi'·},␍
-
-apps-edlove-web:lint:biome:      17     │ - ··{·name:·'Resources',·href:·'/resources'·},␍
-
-apps-edlove-web:lint:biome:      18     │ - ··{·name:·'The·Sangha',·href:·'/community'·},␍
-
-apps-edlove-web:lint:biome:      19     │ - ··{·name:·'Library',·href:·'/library'·},␍
-
-apps-edlove-web:lint:biome:      20     │ - ];␍
-
-apps-edlove-web:lint:biome:      21     │ - ␍
-
-apps-edlove-web:lint:biome:      22     │ - const·languages:·Language[]·=·[␍
-
-apps-edlove-web:lint:biome:      23     │ - ··{·code:·'EN',·label:·'English',·href:·'/'·},␍
-
-apps-edlove-web:lint:biome:      24     │ - ··{·code:·'SI',·label:·'Sinhala',·href:·'/si'·},␍
-
-apps-edlove-web:lint:biome:      25     │ - ··{·code:·'TA',·label:·'Tamil',·href:·'/ta'·},␍
-
-apps-edlove-web:lint:biome:      26     │ - ];␍
-
-apps-edlove-web:lint:biome:           2 │ + interface·NavLink·{
-
-apps-edlove-web:lint:biome:           3 │ + ··name:·string;
-
-apps-edlove-web:lint:biome:           4 │ + ··href:·string;
-
-apps-edlove-web:lint:biome:           5 │ + }
-
-apps-edlove-web:lint:biome:           6 │ + 
-
-apps-edlove-web:lint:biome:           7 │ + interface·Language·{
-
-apps-edlove-web:lint:biome:           8 │ + ··code:·string;
-
-apps-edlove-web:lint:biome:           9 │ + ··label:·string;
-
-apps-edlove-web:lint:biome:          10 │ + ··href:·string;
-
-apps-edlove-web:lint:biome:          11 │ + }
-
-apps-edlove-web:lint:biome:          12 │ + 
-
-apps-edlove-web:lint:biome:          13 │ + const·links:·NavLink[]·=·[
-
-apps-edlove-web:lint:biome:          14 │ + ··{·name:·'Cosmos',·href:·'/cosmos'·},
-
-apps-edlove-web:lint:biome:          15 │ + ··{·name:·'Sri·Lanka',·href:·'/sri-lanka'·},
-
-apps-edlove-web:lint:biome:          16 │ + ··{·name:·'Gurudevi',·href:·'/gurudevi'·},
-
-apps-edlove-web:lint:biome:          17 │ + ··{·name:·'Resources',·href:·'/resources'·},
-
-apps-edlove-web:lint:biome:          18 │ + ··{·name:·'The·Sangha',·href:·'/community'·},
-
-apps-edlove-web:lint:biome:          19 │ + ··{·name:·'Library',·href:·'/library'·},
-apps-edlove-web:lint:biome:          20 │ + ];
-
-apps-edlove-web:lint:biome:          21 │ + 
-
-apps-edlove-web:lint:biome:          22 │ + const·languages:·Language[]·=·[
-
-apps-edlove-web:lint:biome:          23 │ + ··{·code:·'EN',·label:·'English',·href:·'/'·},
-
-apps-edlove-web:lint:biome:          24 │ + ··{·code:·'SI',·label:·'Sinhala',·href:·'/si'·},
-
-apps-edlove-web:lint:biome:          25 │ + ··{·code:·'TA',·label:·'Tamil',·href:·'/ta'·},
-
-apps-edlove-web:lint:biome:          26 │ + ];
-
-apps-edlove-web:lint:biome:      27  27 │   ---␍
-
-apps-edlove-web:lint:biome:      28  28 │   ␍
-
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome: src\components\Welcome.astro format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome:   × Formatter would have printed the following content:
-
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome:       1   1 │   ---␍
-
-apps-edlove-web:lint:biome:       2     │ - import·astroLogo·from·'../assets/astro.svg';␍
-
-apps-edlove-web:lint:biome:       3     │ - import·background·from·'../assets/background.svg';␍
-
-apps-edlove-web:lint:biome:           2 │ + import·astroLogo·from·'../assets/astro.svg';
-
-apps-edlove-web:lint:biome:           3 │ + import·background·from·'../assets/background.svg';
-
-apps-edlove-web:lint:biome:       4   4 │   ---␍
-
-apps-edlove-web:lint:biome:       5   5 │   ␍
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome: The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
-
-apps-edlove-web:lint:biome: Diagnostics not shown: 98.
-
-apps-edlove-web:lint:biome: Checked 47 files in 666ms. No fixes applied.
-
-apps-edlove-web:lint:biome: Found 23 errors.
-apps-edlove-web:lint:biome: Found 94 warnings.
-
-apps-edlove-web:lint:biome: Found 1 info.
-
-apps-edlove-web:lint:biome: check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome:   × Some errors were emitted while running checks.
-
-apps-edlove-web:lint:biome:   
-
-apps-edlove-web:lint:biome: 
-
-apps-edlove-web:lint:biome:  ELIFECYCLE  Command failed with exit code 1.
-
-@repo/database:lint:biome: cache miss, executing d5bb0df42380b5a4
-
-@repo/form-builder:lint:biome: cache miss, executing 357982994208143c
-
-@repo/library:lint:biome: cache miss, executing ffad0be412db9712
-
-@repo/classroom:lint:biome: cache miss, executing 6925e0dc922cef87
-
-@repo/platform-mcp:lint:biome: cache miss, executing ac4b1ee61e66c847
-
-apps-gurudevi-marketing-web:lint:biome: cache miss, executing 4d7339fbce9a40a6
-
-@repo/graphics:lint:biome: cache miss, executing ffd3d4432548e4cb
-
-@repo/core:lint:biome: cache miss, executing b2bcc7a597f96e40
-
-@repo/admin:lint:biome: cache miss, executing e826720417e15bf2
-
-@repo/ui:lint:biome: cache miss, executing 6fc92d2395235024
-
-@repo/scanner-kit:lint:biome: cache miss, executing f0c3b318ffbc5c2f
-
-@repo/self:lint:biome: cache miss, executing 3f031849c8325faf
-
-@repo/ai:lint:biome: cache miss, executing 288f433016b6ef8a
-
-@repo/accounting:lint:biome: cache miss, executing f1b7cb7fc06201b0
-
-@repo/people:lint:biome: cache miss, executing b3ea1c818b145cc8
-
-apps-neevsk-web:lint:biome: cache miss, executing c7e937ca144303b0
-
- ERROR 
- 
-@repo/analytics#lint:biome: command (C:\Users\Naween\projects\polymath-platform\packages\analytics) C:\Users\Naween\AppData\Roaming\npm\pnpm.cmd run lint:biome exited (1)
-
-
-
- Tasks:    0 successful, 26 total
+@repo/core:lint:biome:      12     │ - ··updateUser:·vi.fn(),␍
+@repo/core:lint:biome:      13     │ - ··signOut:·vi.fn(),␍
+@repo/core:lint:biome:      14     │ - ··passkey:·{␍
+@repo/core:lint:biome:      15     │ - ····signIn:·vi.fn(),␍
+@repo/library:lint:biome:  ELIFECYCLE  Command failed with exit code 1.
+@repo/core:lint:biome:      16     │ - ····register:·vi.fn(),␍
+@repo/core:lint:biome:      17     │ - ··},␍
+@repo/core:lint:biome:      18     │ - ··mfa:·{␍
+@repo/core:lint:biome:      19     │ - ····listFactors:·vi.fn(),␍
+
+@repo/core:lint:biome:      20     │ - ····enroll:·vi.fn(),␍
+
+@repo/core:lint:biome:      21     │ - ····challenge:·vi.fn(),␍
+@repo/core:lint:biome:      22     │ - ····verify:·vi.fn(),␍
+
+@repo/core:lint:biome:      23     │ - ····challengeAndVerify:·vi.fn(),␍
+@repo/core:lint:biome:      24     │ - ··},␍
+@repo/core:lint:biome:      25     │ - }));␍
+
+@repo/core:lint:biome:      26     │ - ␍
+@repo/core:lint:biome:      27     │ - vi.mock('../../api/supabase',·()·=>·({␍
+@repo/core:lint:biome:      28     │ - ··__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__:·{␍
+
+@repo/core:lint:biome:      29     │ - ····auth:·mockAuth,␍
+
+@repo/core:lint:biome:      30     │ - ····rpc:·vi.fn(),␍
+
+@repo/core:lint:biome:      31     │ - ··},␍
+@repo/core:lint:biome:      32     │ - }));␍
+@repo/core:lint:biome:      33     │ - ␍
+
+@repo/core:lint:biome:      34     │ - import·{·SupabaseAuthAdapter·}·from·'../supabase/auth.adapter';␍
+@repo/core:lint:biome:      35     │ - ␍
+
+@repo/core:lint:biome:      36     │ - describe('SupabaseAuthAdapter',·()·=>·{␍
+@repo/core:lint:biome:      37     │ - ··const·adapter·=·new·SupabaseAuthAdapter();␍
+@repo/core:lint:biome:      38     │ - ␍
+@repo/core:lint:biome:      39     │ - ··beforeEach(()·=>·{␍
+@repo/core:lint:biome:      40     │ - ····vi.clearAllMocks();␍
+@repo/core:lint:biome:      41     │ - ··});␍
+@repo/core:lint:biome:      42     │ - ␍
+@repo/core:lint:biome:      43     │ - ··it('signs·in·with·passkey·through·the·Supabase·passkey·API',·async·()·=>·{␍
+@repo/core:lint:biome:      44     │ - ····mockAuth.passkey.signIn.mockResolvedValue({␍
+@repo/core:lint:biome:      45     │ - ······data:·{·url:·'https://example.com/passkey-signin'·},␍
+@repo/core:lint:biome:      46     │ - ······error:·null,␍
+@repo/core:lint:biome:      47     │ - ····});␍
+@repo/core:lint:biome:      48     │ - ␍
+
+@repo/core:lint:biome:      49     │ - ····const·result·=·await·adapter.signInWithPasskey({·redirectTo:·'https://app.example.com'·});␍
+@repo/core:lint:biome:      50     │ - ␍
+@repo/core:lint:biome:      51     │ - ····expect(mockAuth.passkey.signIn).toHaveBeenCalledWith({␍
+@repo/core:lint:biome:      52     │ - ······options:·{␍
+@repo/core:lint:biome:      53     │ - ········redirectTo:·'https://app.example.com',␍
+@repo/core:lint:biome:      54     │ - ········skipBrowserRedirect:·undefined,␍
+@repo/core:lint:biome:      55     │ - ······},␍
+@repo/core:lint:biome:      56     │ - ····});␍
+@repo/core:lint:biome:      57     │ - ····expect(result).toEqual({·url:·'https://example.com/passkey-signin'·});␍
+@repo/core:lint:biome:      58     │ - ··});␍
+@repo/core:lint:biome:      59     │ - ␍
+@repo/core:lint:biome:      60     │ - ··it('registers·a·passkey·through·the·Supabase·passkey·API',·async·()·=>·{␍
+@repo/core:lint:biome:      61     │ - ····mockAuth.passkey.register.mockResolvedValue({␍
+@repo/core:lint:biome:      62     │ - ······data:·{·url:·'https://example.com/passkey-register'·},␍
+@repo/core:lint:biome:      63     │ - ······error:·null,␍
+@repo/core:lint:biome:      64     │ - ····});␍
+@repo/core:lint:biome:      65     │ - ␍
+@repo/core:lint:biome:      66     │ - ····const·result·=·await·adapter.registerPasskey({·skipBrowserRedirect:·true·});␍
+@repo/core:lint:biome:      67     │ - ␍
+@repo/core:lint:biome:      68     │ - ····expect(mockAuth.passkey.register).toHaveBeenCalledWith({␍
+@repo/core:lint:biome:      69     │ - ······options:·{␍
+@repo/core:lint:biome:      70     │ - ········redirectTo:·undefined,␍
+
+@repo/core:lint:biome:      71     │ - ········skipBrowserRedirect:·true,␍
+@repo/core:lint:biome:      72     │ - ······},␍
+@repo/core:lint:biome:      73     │ - ····});␍
+@repo/core:lint:biome:      74     │ - ····expect(result).toEqual({·url:·'https://example.com/passkey-register'·});␍
+
+@repo/core:lint:biome:      75     │ - ··});␍
+@repo/core:lint:biome:      76     │ - ␍
+@repo/core:lint:biome:      77     │ - ··it('lists·TOTP·factors·from·Supabase·MFA',·async·()·=>·{␍
+@repo/core:lint:biome:      78     │ - ····mockAuth.mfa.listFactors.mockResolvedValue({␍
+@repo/core:lint:biome:      79     │ - ······data:·{␍
+@repo/core:lint:biome:      80     │ - ········totp:·[␍
+@repo/core:lint:biome:      81     │ - ··········{␍
+@repo/core:lint:biome:      82     │ - ············id:·'totp-1',␍
+@repo/core:lint:biome:      83     │ - ············friendly_name:·'Phone',␍
+@repo/core:lint:biome:      84     │ - ············factor_type:·'totp',␍
+@repo/core:lint:biome:      85     │ - ············status:·'verified',␍
+@repo/core:lint:biome:      86     │ - ············created_at:·'2026-05-21T00:00:00Z',␍
+@repo/core:lint:biome:      87     │ - ············updated_at:·'2026-05-21T00:00:00Z',␍
+@repo/core:lint:biome:      88     │ - ··········},␍
+@repo/core:lint:biome:      89     │ - ········],␍
+@repo/core:lint:biome:      90     │ - ········phone:·[],␍
+@repo/core:lint:biome:      91     │ - ········webauthn:·[],␍
+@repo/core:lint:biome:      92     │ - ······},␍
+@repo/core:lint:biome:      93     │ - ······error:·null,␍
+@repo/core:lint:biome:      94     │ - ····});␍
+@repo/core:lint:biome:      95     │ - ␍
+@repo/core:lint:biome:      96     │ - ····const·result·=·await·adapter.listMfaFactors();␍
+@repo/core:lint:biome:      97     │ - ␍
+@repo/core:lint:biome:      98     │ - ····expect(mockAuth.mfa.listFactors).toHaveBeenCalledTimes(1);␍
+@repo/core:lint:biome:      99     │ - ····expect(result.all).toHaveLength(1);␍
+@repo/core:lint:biome:     100     │ - ····expect(result.verified).toHaveLength(1);␍
+@repo/core:lint:biome:     101     │ - ··});␍
+@repo/core:lint:biome:     102     │ - ␍
+@repo/core:lint:biome:     103     │ - ··it('enrolls·TOTP·through·Supabase·MFA',·async·()·=>·{␍
+@repo/core:lint:biome:     104     │ - ····mockAuth.mfa.enroll.mockResolvedValue({␍
+@repo/core:lint:biome:     105     │ - ······data:·{␍
+@repo/core:lint:biome:     106     │ - ········id:·'factor-1',␍
+@repo/core:lint:biome:     107     │ - ········totp:·{␍
+@repo/core:lint:biome:     108     │ - ··········qrCode:·'otpauth://totp/test',␍
+@repo/core:lint:biome:     109     │ - ··········secret:·'ABC123',␍
+@repo/core:lint:biome:     110     │ - ··········uri:·'otpauth://totp/test?secret=ABC123',␍
+@repo/core:lint:biome:     111     │ - ········},␍
+@repo/core:lint:biome:     112     │ - ······},␍
+@repo/core:lint:biome:     113     │ - ······error:·null,␍
+@repo/core:lint:biome:     114     │ - ····});␍
+@repo/core:lint:biome:     115     │ - ␍
+@repo/core:lint:biome:     116     │ - ····const·result·=·await·adapter.enrollTotp({·friendlyName:·'Parent·phone'·});␍
+@repo/core:lint:biome:     117     │ - ␍
+@repo/core:lint:biome:     118     │ - ····expect(mockAuth.mfa.enroll).toHaveBeenCalledWith({␍
+@repo/core:lint:biome:     119     │ - ······factorType:·'totp',␍
+@repo/core:lint:biome:     120     │ - ······friendlyName:·'Parent·phone',␍
+@repo/core:lint:biome:     121     │ - ····});␍
+
+@repo/core:lint:biome:     122     │ - ····expect(result.factorId).toBe('factor-1');␍
+@repo/core:lint:biome:     123     │ - ····expect(result.qrCode).toContain('otpauth://totp/test');␍
+@repo/core:lint:biome:     124     │ - ··});␍
+@repo/core:lint:biome:     125     │ - ␍
+@repo/core:lint:biome:     126     │ - ··it('verifies·a·TOTP·code·through·Supabase·MFA',·async·()·=>·{␍
+@repo/core:lint:biome:     127     │ - ····mockAuth.mfa.challengeAndVerify.mockResolvedValue({␍
+@repo/core:lint:biome:     128     │ - ······data:·{␍
+@repo/core:lint:biome:     129     │ - ········user:·{·id:·'user-1'·},␍
+@repo/core:lint:biome:     130     │ - ········session:·{·access_token:·'a',·refresh_token:·'r'·},␍
+@repo/core:lint:biome:     131     │ - ······},␍
+@repo/core:lint:biome:     132     │ - ······error:·null,␍
+
+@repo/core:lint:biome:     133     │ - ····});␍
+
+@repo/core:lint:biome:     134     │ - ␍
+
+@repo/core:lint:biome:     135     │ - ····const·result·=·await·adapter.challengeAndVerifyTotp({·factorId:·'factor-1',·code:·'123456'·});␍
+@repo/core:lint:biome:     136     │ - ␍
+@repo/core:lint:biome:     137     │ - ····expect(mockAuth.mfa.challengeAndVerify).toHaveBeenCalledWith({␍
+@repo/core:lint:biome:     138     │ - ······factorId:·'factor-1',␍
+@repo/core:lint:biome:     139     │ - ······code:·'123456',␍
+@repo/core:lint:biome:     140     │ - ····});␍
+
+@repo/core:lint:biome:     141     │ - ····expect(result.user?.id).toBe('user-1');␍
+@repo/core:lint:biome:     142     │ - ··});␍
+@repo/core:lint:biome:     143     │ - });␍
+@repo/core:lint:biome:           1 │ + import·{·beforeEach,·describe,·expect,·it,·vi·}·from·'vitest';
+@repo/core:lint:biome:           2 │ + 
+
+@repo/core:lint:biome:           3 │ + const·mockAuth·=·vi.hoisted(()·=>·({
+@repo/core:lint:biome:           4 │ + ··getSession:·vi.fn(),
+@repo/core:lint:biome:           5 │ + ··getUser:·vi.fn(),
+@repo/core:lint:biome:           6 │ + ··signInWithPassword:·vi.fn(),
+@repo/core:lint:biome:           7 │ + ··signInWithOAuth:·vi.fn(),
+@repo/core:lint:biome:   137 more lines truncated
+@repo/core:lint:biome:   
+@repo/core:lint:biome: 
+@repo/core:lint:biome: src\adapters\native\NativeDeviceIdentityAdapter.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome: 
+
+@repo/core:lint:biome:   × Formatter would have printed the following content:
+
+@repo/core:lint:biome:   
+
+@repo/core:lint:biome:      1    │ - import·{·Platform·}·from·'react-native';␍
+@repo/core:lint:biome:      2    │ - import·*·as·Keychain·from·'react-native-keychain';␍
+@repo/core:lint:biome:      3    │ - import·type·{·IDeviceIdentity·}·from·'../../logic/interfaces/deviceIdentity.port';␍
+@repo/core:lint:biome:      4    │ - ␍
+@repo/core:lint:biome:      5    │ - /**␍
+@repo/core:lint:biome:      6    │ - ·*·NativeDeviceIdentityAdapter␍
+@repo/core:lint:biome:      7    │ - ·*␍
+@repo/core:lint:biome:      8    │ - ·*·The·production-grade·implementation·of·hardware-bound·identity.␍
+@repo/core:lint:biome:      9    │ - ·*·Leverages·the·iOS·Secure·Enclave·and·Android·Keystore·via·react-native-keychain.␍
+@repo/core:lint:biome:     10    │ - ·*/␍
+@repo/core:lint:biome:     11    │ - export·class·NativeDeviceIdentityAdapter·implements·IDeviceIdentity·{␍
+
+@repo/core:lint:biome:     12    │ - ··async·isSupported():·Promise<boolean>·{␍
+
+@repo/core:lint:biome:     13    │ - ····try·{␍
+
+@repo/core:lint:biome:     14    │ - ······const·biometryType·=·await·Keychain.getSupportedBiometryType();␍
+
+@repo/core:lint:biome:     15    │ - ······return·biometryType·!==·null;␍
+
+@repo/core:lint:biome:     16    │ - ····}·catch·{␍
+
+@repo/core:lint:biome:     17    │ - ······return·false;␍
+
+@repo/core:lint:biome:     18    │ - ····}␍
+@repo/core:lint:biome:     19    │ - ··}␍
+@repo/core:lint:biome:     20    │ - ␍
+@repo/core:lint:biome:     21    │ - ··async·generateHardwareKey(alias:·string):·Promise<string>·{␍
+@repo/core:lint:biome:     22    │ - ····const·storageOptions:·Keychain.Options·=·{␍
+@repo/core:lint:biome:     23    │ - ······service:·alias,␍
+
+@repo/core:lint:biome:     24    │ - ······accessible:·Keychain.ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,␍
+
+@repo/core:lint:biome:     25    │ - ······securityLevel:·Keychain.SECURITY_LEVEL.SECURE_HARDWARE,␍
+
+@repo/core:lint:biome:     26    │ - ····};␍
+@repo/core:lint:biome:     27    │ - ␍
+
+@repo/core:lint:biome:     28    │ - ····//·Use·hasGenericPassword·for·a·non-intrusive·check␍
+
+@repo/core:lint:biome:     29    │ - ····const·hasKey·=·await·Keychain.hasGenericPassword({·service:·alias·});␍
+
+@repo/core:lint:biome:     30    │ - ····if·(hasKey)·{␍
+@repo/core:lint:biome:     31    │ - ······const·credentials·=·await·Keychain.getGenericPassword(storageOptions);␍
+@repo/core:lint:biome:     32    │ - ······if·(credentials)·return·credentials.password;␍
+@repo/core:lint:biome:     33    │ - ····}␍
+@repo/core:lint:biome:     34    │ - ␍
+@repo/core:lint:biome:     35    │ - ····//·Generate·a·persistent·hardware-bound·ID␍
+
+@repo/core:lint:biome:     36    │ - ····//·In·a·full·implementation,·this·would·be·a·Public·Key·from·an·RSA/ECC·pair.␍
+
+@repo/core:lint:biome:     37    │ - ····const·hardwareId·=·`${Platform.OS}_${Math.random().toString(36).substring(2,·15)}`;␍
+@repo/core:lint:biome:     38    │ - ␍
+
+@repo/core:lint:biome:     39    │ - ····await·Keychain.setGenericPassword('hardware_identity',·hardwareId,·storageOptions);␍
+@repo/core:lint:biome:     40    │ - ····return·hardwareId;␍
+@repo/core:lint:biome:     41    │ - ··}␍
+@repo/core:lint:biome:     42    │ - ␍
+@repo/core:lint:biome:     43    │ - ··async·signWithHardwareKey(alias:·string,·challenge:·string):·Promise<string>·{␍
+
+@repo/core:lint:biome:     44    │ - ····//·This·requires·a·native·module·that·supports·ECC/RSA·signing·(like·react-native-keychain's·key-pair·support)␍
+@repo/core:lint:biome:     45    │ - ····//·For·now,·we·perform·a·hardware-bound·'Fetch'·of·the·ID·to·prove·access.␍
+@repo/core:lint:biome:     46    │ - ····const·storageOptions:·Keychain.Options·=·{␍
+@repo/core:lint:biome:     47    │ - ······service:·alias,␍
+@repo/core:lint:biome:     48    │ - ······authenticationPrompt:·{␍
+@repo/core:lint:biome:     49    │ - ········title:·'Authorize·Sanctuary',␍
+@repo/core:lint:biome:     50    │ - ········subtitle:·'Verify·your·device·identity',␍
+@repo/core:lint:biome:     51    │ - ······},␍
+@repo/core:lint:biome:     52    │ - ······accessControl:·Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET,·//·Requires·biometric·touch␍
+@repo/core:lint:biome:     53    │ - ····};␍
+@repo/core:lint:biome:     54    │ - ␍
+@repo/core:lint:biome:     55    │ - ····const·credentials·=·await·Keychain.getGenericPassword(storageOptions);␍
+@repo/core:lint:biome:     56    │ - ····if·(!credentials)·throw·new·Error('Hardware·identity·access·denied.');␍
+@repo/core:lint:biome:     57    │ - ␍
+@repo/core:lint:biome:     58    │ - ····//·In·a·full·implementation,·we·sign·the·challenge·with·the·private·key·here.␍
+@repo/core:lint:biome:     59    │ - ····return·`signed_${challenge}_with_${credentials.password}`;␍
+@repo/core:lint:biome:     60    │ - ··}␍
+@repo/core:lint:biome:     61    │ - ␍
+@repo/core:lint:biome:     62    │ - ··async·getAttestation(_alias:·string,·_challenge?:·string):·Promise<string>·{␍
+@repo/core:lint:biome:     63    │ - ····//·Implementation·for·Apple·App·Attest·/·Google·Play·Integrity␍
+@repo/core:lint:biome:     64    │ - ····//·This·typically·requires·a·dedicated·native·bridge·or·calling·the·platform·APIs·directly.␍
+@repo/core:lint:biome:     65    │ - ····return·'production_attestation_token_placeholder';␍
+
+@repo/core:lint:biome:     66    │ - ··}␍
+
+@repo/core:lint:biome:     67    │ - }␍
+@repo/core:lint:biome:         1 │ + import·{·Platform·}·from·'react-native';
+@repo/core:lint:biome:         2 │ + import·*·as·Keychain·from·'react-native-keychain';
+@repo/core:lint:biome:         3 │ + import·type·{·IDeviceIdentity·}·from·'../../logic/interfaces/deviceIdentity.port';
+@repo/core:lint:biome:         4 │ + 
+@repo/core:lint:biome:         5 │ + /**
+@repo/core:lint:biome:         6 │ + ·*·NativeDeviceIdentityAdapter
+@repo/core:lint:biome:         7 │ + ·*
+@repo/core:lint:biome:         8 │ + ·*·The·production-grade·implementation·of·hardware-bound·identity.
+@repo/core:lint:biome:         9 │ + ·*·Leverages·the·iOS·Secure·Enclave·and·Android·Keystore·via·react-native-keychain.
+@repo/core:lint:biome:        10 │ + ·*/
+@repo/core:lint:biome:        11 │ + export·class·NativeDeviceIdentityAdapter·implements·IDeviceIdentity·{
+@repo/core:lint:biome:        12 │ + ··async·isSupported():·Promise<boolean>·{
+@repo/core:lint:biome:        13 │ + ····try·{
+@repo/core:lint:biome:        14 │ + ······const·biometryType·=·await·Keychain.getSupportedBiometryType();
+@repo/core:lint:biome:        15 │ + ······return·biometryType·!==·null;
+@repo/core:lint:biome:        16 │ + ····}·catch·{
+@repo/core:lint:biome:        17 │ + ······return·false;
+@repo/core:lint:biome:        18 │ + ····}
+@repo/core:lint:biome:        19 │ + ··}
+@repo/core:lint:biome:        20 │ + 
+@repo/core:lint:biome:        21 │ + ··async·generateHardwareKey(alias:·string):·Promise<string>·{
+@repo/core:lint:biome:        22 │ + ····const·storageOptions:·Keychain.Options·=·{
+@repo/core:lint:biome:        23 │ + ······service:·alias,
+@repo/core:lint:biome:        24 │ + ······accessible:·Keychain.ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+@repo/core:lint:biome:        25 │ + ······securityLevel:·Keychain.SECURITY_LEVEL.SECURE_HARDWARE,
+@repo/core:lint:biome:        26 │ + ····};
+@repo/core:lint:biome:        27 │ + 
+@repo/core:lint:biome:        28 │ + ····//·Use·hasGenericPassword·for·a·non-intrusive·check
+@repo/core:lint:biome:        29 │ + ····const·hasKey·=·await·Keychain.hasGenericPassword({·service:·alias·});
+@repo/core:lint:biome:        30 │ + ····if·(hasKey)·{
+@repo/core:lint:biome:        31 │ + ······const·credentials·=·await·Keychain.getGenericPassword(storageOptions);
+@repo/core:lint:biome:        32 │ + ······if·(credentials)·return·credentials.password;
+@repo/core:lint:biome:        33 │ + ····}
+@repo/core:lint:biome:        34 │ + 
+@repo/core:lint:biome:        35 │ + ····//·Generate·a·persistent·hardware-bound·ID
+@repo/core:lint:biome:        36 │ + ····//·In·a·full·implementation,·this·would·be·a·Public·Key·from·an·RSA/ECC·pair.
+@repo/core:lint:biome:        37 │ + ····const·hardwareId·=·`${Platform.OS}_${Math.random().toString(36).substring(2,·15)}`;
+@repo/core:lint:biome:        38 │ + 
+@repo/core:lint:biome:        39 │ + ····await·Keychain.setGenericPassword('hardware_identity',·hardwareId,·storageOptions);
+@repo/core:lint:biome:        40 │ + ····return·hardwareId;
+@repo/core:lint:biome:        41 │ + ··}
+@repo/core:lint:biome:        42 │ + 
+
+@repo/core:lint:biome:        43 │ + ··async·signWithHardwareKey(alias:·string,·challenge:·string):·Promise<string>·{
+@repo/core:lint:biome:        44 │ + ····//·This·requires·a·native·module·that·supports·ECC/RSA·signing·(like·react-native-keychain's·key-pair·support)
+@repo/core:lint:biome:        45 │ + ····//·For·now,·we·perform·a·hardware-bound·'Fetch'·of·the·ID·to·prove·access.
+@repo/core:lint:biome:        46 │ + ····const·storageOptions:·Keychain.Options·=·{
+@repo/core:lint:biome:        47 │ + ······service:·alias,
+
+@repo/core:lint:biome:        48 │ + ······authenticationPrompt:·{
+@repo/core:lint:biome:        49 │ + ········title:·'Authorize·Sanctuary',
+@repo/core:lint:biome:        50 │ + ········subtitle:·'Verify·your·device·identity',
+@repo/core:lint:biome:        51 │ + ······},
+@repo/core:lint:biome:        52 │ + ······accessControl:·Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET,·//·Requires·biometric·touch
+@repo/core:lint:biome:        53 │ + ····};
+@repo/core:lint:biome:        54 │ + 
+@repo/people:lint:biome: 
+@repo/people:lint:biome: > @repo/people@0.0.2 lint:biome C:\Users\Naween\projects\polymath-platform\packages\people
+@repo/people:lint:biome: > biome check .
+@repo/people:lint:biome: 
+
+@repo/core:lint:biome:        55 │ + ····const·credentials·=·await·Keychain.getGenericPassword(storageOptions);
+
+@repo/core:lint:biome:        56 │ + ····if·(!credentials)·throw·new·Error('Hardware·identity·access·denied.');
+@repo/core:lint:biome:        57 │ + 
+
+@repo/core:lint:biome:        58 │ + ····//·In·a·full·implementation,·we·sign·the·challenge·with·the·private·key·here.
+
+@repo/core:lint:biome:        59 │ + ····return·`signed_${challenge}_with_${credentials.password}`;
+@repo/core:lint:biome:        60 │ + ··}
+@repo/core:lint:biome:        61 │ + 
+
+@repo/core:lint:biome:        62 │ + ··async·getAttestation(_alias:·string,·_challenge?:·string):·Promise<string>·{
+
+@repo/form-builder:lint:biome: 
+@repo/form-builder:lint:biome: > @repo/form-builder@1.0.1 lint:biome C:\Users\Naween\projects\polymath-platform\packages\form-builder
+@repo/form-builder:lint:biome: > biome check .
+@repo/form-builder:lint:biome: 
+@repo/core:lint:biome:        63 │ + ····//·Implementation·for·Apple·App·Attest·/·Google·Play·Integrity
+@repo/core:lint:biome:        64 │ + ····//·This·typically·requires·a·dedicated·native·bridge·or·calling·the·platform·APIs·directly.
+@repo/core:lint:biome:        65 │ + ····return·'production_attestation_token_placeholder';
+@repo/core:lint:biome:        66 │ + ··}
+@repo/core:lint:biome:        67 │ + }
+@repo/core:lint:biome:     68 68 │   
+@repo/core:lint:biome:   
+@repo/core:lint:biome: 
+@repo/core:lint:biome: src\adapters\powersync\PowerSyncGate.tsx format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@repo/core:lint:biome: 
+
+@repo/core:lint:biome:   × Formatter would have printed the following content:
+@repo/core:lint:biome:   
+
+@repo/core:lint:biome:      1    │ - /**␍
+
+@repo/core:lint:biome:      2    │ - ·*·PowerSyncProvider·—·Feature-Gated·Context·Provider·(May·2026)␍
+
+@repo/core:lint:biome:      3    │ - ·*␍
+@repo/core:lint:biome:      4    │ - ·*·Wraps·the·app·with·the·PowerSync·context·when·`isPowerSyncEnabled`·is·true.␍
+
+@repo/core:lint:biome:      5    │ - ·*·When·the·flag·is·off,·renders·children·directly·—·zero·overhead.␍
+
+@repo/core:lint:biome:      6    │ - ·*␍
+
+@repo/core:lint:biome:      7    │ - ·*·Placement:·Mount·this·INSIDE·the·existing·AuthProvider/FeatureProvider,␍
+
+@repo/core:lint:biome:      8    │ - ·*·after·the·user·is·authenticated·(we·need·a·session·for·fetchCredentials).␍
+@repo/core:lint:biome:      9    │ - ·*␍
+@repo/core:lint:biome:     10    │ - ·*·@example␍
+@repo/core:lint:biome:     11    │ - ·*·//·In·App.tsx,·inside·your·provider·tree:␍
+@repo/core:lint:biome:     12    │ - ·*·<PowerSyncGate>␍
+@repo/core:lint:biome:     13    │ - ·*···<NavigationContainer>...</NavigationContainer>␍
+@repo/core:lint:biome:     14    │ - ·*·</PowerSyncGate>␍
+@repo/core:lint:biome:     15    │ - ·*/␍
+
+@repo/core:lint:biome:     16    │ - import·{·type·PropsWithChildren,·useEffect,·useRef·}·from·'react';␍
+
+@repo/core:lint:biome:     17    │ - import·{·sovereignBus·}·from·'../../lib/sync/eventBus';␍
+@repo/core:lint:biome:     18    │ - import·{·useStore·}·from·'../../store/useStore';␍
+@repo/core:lint:biome:     19    │ - import·{·disconnectPowerSync,·getPowerSyncDB·}·from·'./database';␍
+
+@repo/core:lint:biome:     20    │ - import·{·PowerSyncContext·}·from·'./powersync-react-shim';␍
+
+@repo/core:lint:biome:     21    │ - import·{·SupabasePowerSyncConnector·}·from·'./SupabasePowerSyncConnector';␍
+@repo/core:lint:biome:     22    │ - ␍
+@repo/core:lint:biome:     23    │ - interface·PowerSyncGateProps·extends·PropsWithChildren·{␍
+
+@repo/core:lint:biome:     24    │ - ··/**·Override·—·if·false,·renders·children·without·PowerSync·context.·*/␍
+@repo/core:lint:biome:     25    │ - ··enabled?:·boolean;␍
+@repo/core:lint:biome:     26    │ - }␍
+
+@repo/core:lint:biome:     27    │ - ␍
+
+@repo/core:lint:biome:     28    │ - export·function·PowerSyncGate({·children,·enabled·=·true·}:·PowerSyncGateProps)·{␍
+
+@repo/core:lint:biome:     29    │ - ··const·isPowerSyncEnabled·=·useStore((s)·=>·s.flags.isPowerSyncEnabled);␍
+
+@repo/accounting:lint:biome: cache miss, executing 1715be6ed9662ac9
+
+@repo/core:lint:biome:     30    │ - ··const·isActive·=·enabled·&&·isPowerSyncEnabled;␍
+@repo/core:lint:biome:     31    │ - ␍
+apps-intuitui-web:lint:biome: cache miss, executing e2983824c13fc9be
+@repo/profile:lint:biome: cache miss, executing 4bbefc84b2703dfe
+@repo/scanner-kit:lint:biome: cache miss, executing 3b857d4f686283e8
+@repo/platform-mcp:lint:biome: cache miss, executing 339bf071c9db1708
+apps-neevsk-web:lint:biome: cache miss, executing 07a1c805a6a8d658
+@repo/classroom:lint:biome: cache miss, executing a9fa73597669850d
+@repo/analytics:lint:biome: cache miss, executing be4d92f5af0c1f36
+@repo/community:lint:biome: cache miss, executing 1e8a4fefee7c7763
+
+@repo/graphics:lint:biome: cache miss, executing a26acaa44963d568
+
+@repo/ai:lint:biome: cache miss, executing a35f340d9fcc4bcf
+apps-edlove-web:lint:biome: cache miss, executing 362f6f8f18518824
+gurudevi-mobile:lint:biome: cache miss, executing d2c637f7710a5290
+
+@repo/admin:lint:biome: cache miss, executing 9a5a36f4fb2e944c
+
+@repo/core:lint:biome:     32    │ - ··const·connectorRef·=·useRef<SupabasePowerSyncCon
+
+@repo/ui:lint:biome:     4 │ [{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\eslint.config.mjs","messages":[],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":0,"fixableErrorCount":0,"fixableWarningCount":0,"usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\nativewind-env.d.ts","messages":[],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":0,"fixableErrorCount":0,"fixableWarningCount":0,"usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\scripts\\audit-theme.ts","messages":[{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'colors' is defined but never used.","line":8,"column":10,"nodeType":"Identifier","messageId":"unusedVar","endLine":8,"endColumn":16,"suggestions":[{"messageId":"removeUnusedVar","data":{"varName":"colors"},"fix":{"range":[175,182],"text":""},"desc":"Remove unused variable \"colors\"."}]},{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'phaseMatrix' is defined but never used.","line":8,"column":18,"nodeType":"Identifier","messageId":"unusedVar","endLine":8,"endColumn":29,"suggestions":[{"messageId":"removeUnusedVar","data":{"varName":"phaseMatrix"},"fix":{"range":[181,194],"text":""},"desc":"Remove unused variable \"phaseMatrix\"."}]}],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":2,"fixableErrorCount":0,"fixableWarningCount":0,"source":"/**\n * Sanctuary Theme Auditor\n *\n * Scans Theme.ts and phaseMatrix for contrast violations using APCA and WCAG 2.1.\n * Run with: npx tsx scripts/audit-theme.ts\n */\n\nimport { colors, phaseMatrix, resolvePhaseTokens } from '../src/theme/Theme';\nimport { checkAccessibility, toHex } from '../src/utils/a11yUtils';\nimport { TemporalPhase } from '../src/context/types';\n\nconst PHASES: TemporalPhase[] = ['predawn', 'dawn', 'morning', 'afternoon', 'dusk', 'night'];\nconst MODES: ('light' | 'dark')[] = ['light', 'dark'];\n\nconsole.log('\\x1b[36m%s\\x1b[0m', '--- GURUDEVI THEME ACCESSIBILITY AUDIT ---');\nconsole.log('Validating Sanctuary tokens against WCAG 2.1 and APCA Standards...\\n');\n\nlet violations = 0;\nlet totalChecks = 0;\n\nfunction report(\n  label: string,\n  fg: string,\n  bg: string,\n  requirement: { wcag?: number; apca?: number },\n) {\n  totalChecks++;\n  const fgHex = toHex(fg);\n  const bgHex = toHex(bg);\n  const { ratio, apca, apcaRating } = checkAccessibility(fgHex, bgHex);\n\n  let failed = false;\n  const details = [];\n\n  if (requirement.wcag && ratio < requirement.wcag) {\n    failed = true;\n    details.push(`WCAG: ${ratio.toFixed(2)}:1 (Min ${requirement.wcag})`);\n  }\n\n  if (requirement.apca && Math.abs(apca) < requirement.apca) {\n    failed = true;\n    details.push(`APCA: ${apca.toFixed(1)} Lc (Min ${requirement.apca} - ${apcaRating})`);\n  }\n\n  if (failed) {\n    violations++;\n    console.log(`\\x1b[31m[FAIL]\\x1b[0m ${label}`);\n    console.log(`       - BG: ${bgHex}, FG: ${fgHex}`);\n    console.log(`       - ${details.join(' | ')}`);\n  }\n}\n\n// 1. Audit Phase Matrix\nPHASES.forEach((phase) => {\n  MODES.forEach((mode) => {\n    const isDark = mode === 'dark';\n    const tokens = resolvePhaseTokens(phase, isDark);\n\n    // Primary Text Contrast\n    report(`${phase}/${mode} Primary Text`, tokens.text.primary, tokens.gradientNodes[0], {\n      wcag: 4.5,\n      apca: 75,\n    });\n\n    // Secondary Text Contrast\n    report(`${phase}/${mode} Secondary Text`, tokens.text.secondary, tokens.gradientNodes[0], {\n      wcag: 3.0,\n      apca: 60,\n    });\n\n    // Accent Action Contrast\n    report(`${phase}/${mode} Accent Action`, tokens.text.inverse, tokens.accent.action, {\n      wcag: 4.5,\n      apca: 60,\n    });\n  });\n});\n\nconsole.log('\\n--- AUDIT SUMMARY ---');\nif (violations === 0) {\n  console.log(`\\x1b[32mSUCCESS: All ${totalChecks} checks passed.\\x1b[0m`);\n  process.exit(0);\n} else {\n  console.log(\n    `\\x1b[31mWARNING: Found ${violations} accessibility violations across ${totalChecks} checks.\\x1b[0m`,\n  );\n  // We don't exit with 1 yet to avoid breaking builds until we fix the colors\n  process.exit(0);\n}\n","usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\__tests__\\useTheme.test.js","messages":[{"ruleId":"@typescript-eslint/no-require-imports","severity":1,"message":"A `require()` style import is forbidden.","line":1,"column":54,"nodeType":"CallExpression","messageId":"noRequireImports","endLine":1,"endColumn":79},{"ruleId":"no-undef","severity":1,"message":"'require' is not defined.","line":1,"column":54,"nodeType":"Identifier","messageId":"undef","endLine":1,"endColumn":61},{"ruleId":"no-undef","severity":1,"message":"'describe' is not defined.","line":3,"column":1,"nodeType":"Identifier","messageId":"undef","endLine":3,"endColumn":9},{"ruleId":"no-undef","severity":1,"message":"'it' is not defined.","line":4,"column":3,"nodeType":"Identifier","messageId":"undef","endLine":4,"endColumn":5},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":7,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":7,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":8,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":8,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":9,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":9,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":10,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":10,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":11,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":11,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'it' is not defined.","line":14,"column":3,"nodeType":"Identifier","messageId":"undef","endLine":14,"endColumn":5},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":17,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":17,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":18,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":18,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":19,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":19,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":20,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":20,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":21,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":21,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'it' is not defined.","line":24,"column":3,"nodeType":"Identifier","messageId":"undef","endLine":24,"endColumn":5},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":28,"column":7,"nodeType":"Identifier","messageId":"undef","endLine":28,"endColumn":13},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":29,"column":7,"nodeType":"Identifier","messageId":"undef","endLine":29,"endColumn":13},{"ruleId":"no-undef","severity":1,"message":"'it' is not defined.","line":33,"column":3,"nodeType":"Identifier","messageId":"undef","endLine":33,"endColumn":5},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":37,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":37,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":38,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":38,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":39,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":39,"endColumn":11},{"ruleId":"no-undef","severity":1,"message":"'expect' is not defined.","line":40,"column":5,"nodeType":"Identifier","messageId":"undef","endLine":40,"endColumn":11}],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":23,"fixableErrorCount":0,"fixableWarningCount":0,"source":"const { resolveClassicTokens, resolvePhaseTokens } = require('../theme/Theme');\n\ndescribe('resolvePhaseTokens', () => {\n  it('returns scene tokens for night/dark', () => {\n    const tokens = resolvePhaseTokens('night', true);\n\n    expect(tokens.scene.world.bg).toBe('#0F131C');\n    expect(tokens.scene.chrome.bg).toBe(tokens.glass.surface.bg);\n    expect(tokens.scene.elevated.bg).toBe(tokens.glass.modal.bg);\n    expect(tokens.text.onWorld).toBe('#FCF9F2');\n    expect(tokens.accent.action).toBe('#FDD925');\n  });\n\n  it('returns scene tokens for morning/light', () => {\n    const tokens = resolvePhaseTokens('morning', false);\n\n    expect(tokens.scene.world.bg).toBe('#F5EDD6');\n    expect(tokens.scene.canvas.bg).toBe('#DCFCE7');\n    expect(tokens.text.onCanvas).toBe('#2A2318');\n    expect(tokens.accent.action).toBe('#8BBF7A');\n    expect(tokens.text.onAccent).toBe(tokens.text.inverse);\n  });\n\n  it('all six phases resolve without throwing in both worlds', () => {\n    const phases = ['predawn', 'dawn', 'morning', 'afternoon', 'dusk', 'night'];\n\n    phases.forEach((phase) => {\n      expect(() => resolvePhaseTokens(phase, false)).not.toThrow();\n      expect(() => resolvePhaseTokens(phase, true)).not.toThrow();\n    });\n  });\n\n  it('classic tokens project into the same scene contract', () => {\n    const lightClassic = resolveClassicTokens(false);\n    const darkClassic = resolveClassicTokens(true);\n\n    expect(lightClassic.scene.canvas.bg).toBe('#FAF7ED');\n    expect(lightClassic.text.onCanvas).toBe('#2A2318');\n    expect(darkClassic.scene.world.bg).toBe('#0F131C');\n    expect(darkClassic.text.onWorld).toBe('#FCF9F2');\n  });\n});\n","usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\archive\\LotusPetalFAB.complex.tsx","messages":[{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'runOnJS' is defined but never used.","line":27,"column":3,"nodeType":"Identifier","messageId":"unusedVar","endLine":27,"endColumn":10,"suggestions":[{"messageId":"removeUnusedVar","data":{"varName":"runOnJS"},"fix":{"range":[709,720],"text":""},"desc":"Remove unused variable \"runOnJS\"."}]},{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'FAB_HIT_SLOP' is assigned a value but never used.","line":61,"column":7,"nodeType":"Identifier","messageId":"unusedVar","endLine":61,"endColumn":19},{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'ACTION_BUBBLE_SIZE' is assigned a value but never used.","line":62,"column":7,"nodeType":"Identifier","messageId":"unusedVar","endLine":62,"endColumn":25},{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'SCREEN_WIDTH' is assigned a value but never used.","line":65,"column":7,"nodeType":"Identifier","messageId":"unusedVar","endLine":65,"endColumn":19},{"ruleId":"@typescript-eslint/no-require-imports","severity":1,"message":"A `require()` style import is forbidden.","line":93,"column":21,"nodeType":"CallExpression","messageId":"noRequireImports","endLine":93,"endColumn":67},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useSharedValue\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":114,"column":22,"nodeType":"Identifier","endLine":114,"endColumn":36},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useSharedValue\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":116,"column":26,"nodeType":"Identifier","endLine":116,"endColumn":40},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useSharedValue\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":118,"column":22,"nodeType":"Identifier","endLine":118,"endColumn":36},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useSharedValue\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":119,"column":22,"nodeType":"Identifier","endLine":119,"endColumn":36},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useRef\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":121,"column":17,"nodeType":"Identifier","endLine":121,"endColumn":23},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useRef\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":122,"column":17,"nodeType":"Identifier","endLine":122,"endColumn":23},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useState\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":124,"column":41,"nodeType":"Identifier","endLine":124,"endColumn":49},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useSharedValue\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":125,"column":27,"nodeType":"Identifier","endLine":125,"endColumn":41},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useRef\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":127,"column":26,"nodeType":"Identifier","endLine":127,"endColumn":32},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useState\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":128,"column":39,"nodeType":"Identifier","endLine":128,"endColumn":47},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useMemo\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":131,"column":18,"nodeType":"Identifier","endLine":131,"endColumn":25},{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'IconComponent' is assigned a value but never used.","line":132,"column":9,"nodeType":"Identifier","messageId":"unusedVar","endLine":132,"endColumn":22},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useCallback\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":135,"column":25,"nodeType":"Identifier","endLine":135,"endColumn":36},{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'error' is defined but never used.","line":138,"column":14,"nodeType":"Identifier","messageId":"unusedVar","endLine":138,"endColumn":19},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useRef\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":144,"column":24,"nodeType":"Identifier","endLine":144,"endColumn":30},{"ruleId":"react-hooks/refs","severity":1,"message":"Error: Cannot access refs during render\n\nReact refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).\n\nC:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\archive\\LotusPetalFAB.complex.tsx:145:25\n  143 |   // Pan responder for drag functionality\n  144 |   const panResponder = useRef(\n> 145 |     PanResponder.create({\n      |                         ^\n> 146 |       onStartShouldSetPanResponder: () => true,\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 147 |       onMoveShouldSetPanResponder: (_, gestureState) => {\n      ΓÇª\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 184 |       },\n      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n> 185 |     }),\n      | ^^^^^^ Passing a ref to a function may read its value during render\n  186 |   ).current;\n  187 |\n  188 |   // ============================================================================","line":145,"column":25,"nodeType":null,"endLine":185,"endColumn":6},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useEffect\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":192,"column":3,"nodeType":"Identifier","endLine":192,"endColumn":12},{"ruleId":"react-hooks/exhaustive-deps","severity":1,"message":"React Hook useEffect has a missing dependency: 'breathingScale'. Either include it or remove the dependency array.","line":206,"column":6,"nodeType":"ArrayExpression","endLine":206,"endColumn":39,"suggestions":[{"desc":"Update the dependencies array to be: [breathingScale, disabled, isReduceMotionEnabled]","fix":{"range":[6445,6478],"text":"[breathingScale, disabled, isReduceMotionEnabled]"}}]},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useAnimatedStyle\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":212,"column":26,"nodeType":"Identifier","endLine":212,"endColumn":42},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useAnimatedStyle\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":218,"column":22,"nodeType":"Identifier","endLine":218,"endColumn":38},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useCallback\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":224,"column":23,"nodeType":"Identifier","endLine":224,"endColumn":34},{"ruleId":"react-hooks/immutability","severity":1,"message":"Error: This value cannot be modified\n\nThis modifies a variable that React considers immutable.\n\nC:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\archive\\LotusPetalFAB.complex.tsx:240:7\n  238 |     if (onPress) {\n  239 |       triggerHaptic();\n> 240 |       pressScale.value = withSequence(\n      |       ^^^^^^^^^^ `pressScale` cannot be modified\n  241 |         withTiming(0.85, { duration: 100 }),\n  242 |         withSpring(1.0, { damping: 12, stiffness: 200 }),\n  243 |       );","line":240,"column":7,"nodeType":null,"endLine":240,"endColumn":17},{"ruleId":"react-hooks/exhaustive-deps","severity":1,"message":"React Hook useCallback has missing dependencies: 'actionMenuScale', 'announce', and 'pressScale'. Either include them or remove the dependency array.","line":246,"column":6,"nodeType":"ArrayExpression","endLine":246,"endColumn":62,"suggestions":[{"desc":"Update the dependencies array to be: [disabled, actions, onPress, triggerHaptic, showActions, actionMenuScale, announce, pressScale]","fix":{"range":[7526,7582],"text":"[disabled, actions, onPress, triggerHaptic, showActions, actionMenuScale, announce, pressScale]"}}]},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useAnimatedStyle\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":248,"column":27,"nodeType":"Identifier","endLine":248,"endColumn":43},{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":252,"column":10,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":252,"endColumn":13,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[7790,7793],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[7790,7793],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useEffect\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":255,"column":3,"nodeType":"Identifier","endLine":255,"endColumn":12},{"ruleId":"react-hooks/immutability","severity":1,"message":"Error: This value cannot be modified\n\nModifying a value previously passed as an argument to a hook is not allowed. Consider moving the modification before calling the hook.\n\nC:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\archive\\LotusPetalFAB.complex.tsx:256:5\n  254 |\n  255 |   useEffect(() => {\n> 256 |     actionMenuScale.value = withSpring(showActions ? 1 : 0, {\n      |     ^^^^^^^^^^^^^^^ `actionMenuScale` cannot be modified\n  257 |       damping: 15,\n  258 |       stiffness: 150,\n  259 |     });","line":256,"column":5,"nodeType":null,"endLine":256,"endColumn":20},{"ruleId":"react-hooks/exhaustive-deps","severity":1,"message":"React Hook useEffect has a missing dependency: 'actionMenuScale'. Either include it or remove the dependency array.","line":260,"column":6,"nodeType":"ArrayExpression","endLine":260,"endColumn":19,"suggestions":[{"desc":"Update the dependencies array to be: [actionMenuScale, showActions]","fix":{"range":[7938,7951],"text":"[actionMenuScale, showActions]"}}]},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useEffect\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":262,"column":3,"nodeType":"Identifier","endLine":262,"endColumn":12},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useAnimatedStyle\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":270,"column":23,"nodeType":"Identifier","endLine":270,"endColumn":39},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useAnimatedStyle\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":282,"column":21,"nodeType":"Identifier","endLine":282,"endColumn":37},{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":285,"column":10,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":285,"endColumn":13,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[8586,8589],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[8586,8589],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]},{"ruleId":"react-hooks/rules-of-hooks","severity":1,"message":"React Hook \"useMemo\" is called conditionally. React Hooks must be called in the exact same order in every component render.","line":288,"column":26,"nodeType":"Identifier","endLine":288,"endColumn":33},{"ruleId":"react-hooks/refs","severity":1,"message":"Error: Cannot access refs during render\n\nReact refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).\n\nC:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\archive\\LotusPetalFAB.complex.tsx:303:11\n  301 |   return (\n  302 |     <Animated.View\n> 303 |       {...panResponder.panHandlers}\n      |           ^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render\n  304 |       style={containerStyle}\n  305 |       accessible={true}\n  306 |       accessibilityRole=\"image\" // The FAB itself is an image/button","line":303,"column":11,"nodeType":null,"endLine":303,"endColumn":35},{"ruleId":"react-native-a11y/has-valid-accessibility-ignores-invert-colors","severity":1,"message":"Found an element which will be inverted. Add the accessibilityIgnoresInvertColors prop","line":318,"column":9,"nodeType":"JSXElement","endLine":318,"endColumn":86},{"ruleId":"react-native-a11y/has-accessibility-hint","severity":1,"message":"has accessibilityLabel prop but no accessibilityHint","line":332,"column":13,"nodeType":"JSXOpeningElement","endLine":342,"endColumn":14}],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":41,"fixableErrorCount":0,"fixableWarningCount":0,"source":"/**\n * LOTUS PETAL FAB - Floating Action Button\n *\n * A petal-shaped floating action button with:\n * - Golden Lotus Art image\n * - Breathing animation (4-second cycle)\n * - Context-aware icons per tab\n * - Press animation with haptic feedback\n * - Floating bubble physics for dragging\n *\n * Philosophy: Organic, living UI that breathes with intention\n */\n\nimport React, { FC, useMemo, useEffect, useCallback, useState, useRef } from 'react';\nimport { View, Pressable, StyleSheet, Text, PanResponder, Dimensions, Image } from 'react-native';\nimport Animated, {\n  useAnimatedStyle,\n  withRepeat,\n  withTiming,\n  withSequence,\n  withSpring,\n  interpolate,\n  SharedValue,\n  Extrapolate,\n  useSharedValue,\n  Easing,\n  runOnJS,\n} from 'react-native-reanimated';\nimport * as Haptics from 'expo-haptics';\nimport { Flower2, Plus, MessageCircle, Upload, Edit } from 'lucide-react-native';\nimport { Theme } from '../theme/Theme';\nimport { useAccessibility } from '../hooks/useAccessibility';\n\n// ============================================================================\n// TYPES\n// ============================================================================\n\ntype TabType = 'self' | 'classroom' | 'community' | 'library' | 'profile';\n\nexport interface ActionItem {\n  label: string;\n  onPress: () => void;\n  icon?: React.ComponentType<{ size: number; color: string; strokeWidth: number }>;\n}\n\ninterface LotusPetalFABProps {\n  currentTab?: TabType;\n  onPress?: () => void;\n  icon?: React.ReactNode;\n  actions?: ActionItem[];\n  scrollY?: SharedValue<number>;\n  disabled?: boolean;\n  bottomInset?: number; // New prop for safe area handling\n}\n\n// ============================================================================\n// CONSTANTS\n// ============================================================================\n\nconst FAB_SIZE = 72; // Slightly larger for the art\nconst FAB_HIT_SLOP = 10;\nconst ACTION_BUBBLE_SIZE = 48;\nconst ACTION_BUBBLE_SPACING = 12;\nconst LONG_PRESS_DURATION = 400; // milliseconds\nconst SCREEN_WIDTH = Dimensions.get('window').width;\n\n// Context-aware configuration\ntype IconComponentType = React.ComponentType<{ size: number; color: string; strokeWidth: number }>;\n\nconst fabConfig: Record<TabType, { IconComponent: IconComponentType; label: string }> = {\n  self: {\n    IconComponent: Flower2,\n    label: 'Log mood',\n  },\n  classroom: {\n    IconComponent: Plus,\n    label: 'Create lesson',\n  },\n  community: {\n    IconComponent: MessageCircle,\n    label: 'Post announcement',\n  },\n  library: {\n    IconComponent: Upload,\n    label: 'Upload resource',\n  },\n  profile: {\n    IconComponent: Edit,\n    label: 'Edit profile',\n  },\n};\n\nconst LOTUS_IMAGE = require('../../assets/images/lotus_bloom.png');\n\n// ============================================================================\n// MAIN COMPONENT\n// ============================================================================\n\nconst LotusPetalFAB: FC<LotusPetalFABProps> = ({\n  currentTab = 'self',\n  onPress,\n  icon,\n  actions,\n  scrollY,\n  disabled = true,\n  bottomInset = Theme.spacing.lg, // Default value if not provided\n}) => {\n  const { isReduceMotionEnabled, announce } = useAccessibility();\n\n  // TEMPORARY: Return null if disabled to completely hide the FAB\n  if (disabled) return null;\n\n  // Shared value for press animation\n  const pressScale = useSharedValue(1);\n  // Shared value for breathing animation\n  const breathingScale = useSharedValue(0.95);\n  // Position for dragging\n  const translateX = useSharedValue(0);\n  const translateY = useSharedValue(0);\n  // Base position accumulator\n  const baseX = useRef(0);\n  const baseY = useRef(0);\n  // State for showing action menu\n  const [showActions, setShowActions] = useState(false);\n  const actionMenuScale = useSharedValue(0);\n  // Track long press\n  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);\n  const [isDragging, setIsDragging] = useState(false);\n\n  // Memoize current configuration to avoid unnecessary recalculations\n  const config = useMemo(() => fabConfig[currentTab], [currentTab]);\n  const IconComponent = config.IconComponent;\n\n  // Safe haptic feedback wrapper\n  const triggerHaptic = useCallback(async () => {\n    try {\n      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);\n    } catch (error) {\n      console.warn('Haptic feedback not available');\n    }\n  }, []);\n\n  // Pan responder for drag functionality\n  const panResponder = useRef(\n    PanResponder.create({\n      onStartShouldSetPanResponder: () => true,\n      onMoveShouldSetPanResponder: (_, gestureState) => {\n        return isDragging || Math.abs(gestureState.dx) > 5 || Math.abs(gestureState.dy) > 5;\n      },\n      onPanResponderGrant: () => {\n        longPressTimer.current = setTimeout(() => {\n          setIsDragging(true);\n          triggerHaptic();\n          // Slight lift effect\n          pressScale.value = withSpring(1.1);\n        }, LONG_PRESS_DURATION);\n      },\n      onPanResponderMove: (_, gestureState) => {\n        if (isDragging) {\n          translateX.value = baseX.current + gestureState.dx;\n          translateY.value = baseY.current + gestureState.dy;\n        }\n      },\n      onPanResponderRelease: (_, gestureState) => {\n        if (longPressTimer.current) {\n          clearTimeout(longPressTimer.current);\n          longPressTimer.current = null;\n        }\n\n        if (isDragging) {\n          baseX.current += gestureState.dx;\n          baseY.current += gestureState.dy;\n          setIsDragging(false);\n          // Spring back slightly on release (bubble effect)\n          pressScale.value = withSpring(1.0);\n\n          // Optional: Snap back if near edge? For now, free floating.\n        } else {\n          const moved = Math.abs(gestureState.dx) > 5 || Math.abs(gestureState.dy) > 5;\n          if (!moved) {\n            handlePress();\n          }\n        }\n      },\n    }),\n  ).current;\n\n  // ============================================================================\n  // ANIMATION INITIALIZATION\n  // ============================================================================\n\n  useEffect(() => {\n    if (!disabled && !isReduceMotionEnabled) {\n      breathingScale.value = 0.95;\n      breathingScale.value = withRepeat(\n        withTiming(1.02, {\n          duration: 3000,\n          easing: Easing.inOut(Easing.ease),\n        }),\n        -1,\n        true,\n      );\n    } else {\n      breathingScale.value = withTiming(1.0, { duration: 200 });\n    }\n  }, [disabled, isReduceMotionEnabled]);\n\n  // ============================================================================\n  // ANIMATION STYLES\n  // ============================================================================\n\n  const breathingStyle = useAnimatedStyle(() => {\n    return {\n      transform: [{ scale: breathingScale.value }],\n    };\n  });\n\n  const pressStyle = useAnimatedStyle(() => {\n    return {\n      transform: [{ scale: pressScale.value }],\n    };\n  });\n\n  const handlePress = useCallback(() => {\n    if (disabled) return;\n\n    if (actions && actions.length > 0) {\n      triggerHaptic();\n      setShowActions(!showActions);\n      actionMenuScale.value = withSpring(showActions ? 0 : 1, {\n        damping: 15,\n        stiffness: 150,\n      });\n      announce(showActions ? 'Actions menu closed' : 'Actions menu opened');\n      return;\n    }\n\n    if (onPress) {\n      triggerHaptic();\n      pressScale.value = withSequence(\n        withTiming(0.85, { duration: 100 }),\n        withSpring(1.0, { damping: 12, stiffness: 200 }),\n      );\n      onPress();\n    }\n  }, [disabled, onPress, actions, showActions, triggerHaptic]);\n\n  const actionMenuStyle = useAnimatedStyle(() => {\n    return {\n      transform: [{ scale: actionMenuScale.value }, { translateY: -10 }], // Pop up slightly\n      opacity: actionMenuScale.value,\n    } as any;\n  });\n\n  useEffect(() => {\n    actionMenuScale.value = withSpring(showActions ? 1 : 0, {\n      damping: 15,\n      stiffness: 150,\n    });\n  }, [showActions]);\n\n  useEffect(() => {\n    return () => {\n      if (longPressTimer.current) {\n        clearTimeout(longPressTimer.current);\n      }\n    };\n  }, []);\n\n  const scrollStyle = useAnimatedStyle(() => {\n    if (!scrollY) return {};\n    return {\n      transform: [\n        {\n          translateY: interpolate(scrollY.value, [0, 100], [0, 100], Extrapolate.CLAMP),\n        },\n      ],\n      opacity: interpolate(scrollY.value, [0, 50, 100], [1, 0.5, 0], Extrapolate.CLAMP),\n    };\n  });\n\n  const dragStyle = useAnimatedStyle(() => {\n    return {\n      transform: [{ translateX: translateX.value }, { translateY: translateY.value }],\n    } as any;\n  });\n\n  const containerStyle = useMemo(\n    () => [\n      styles.container,\n      { bottom: bottomInset }, // Override bottom with prop\n      breathingStyle,\n      pressStyle,\n      scrollStyle,\n      dragStyle,\n      disabled && styles.disabled,\n    ],\n    [bottomInset, breathingStyle, pressStyle, scrollStyle, dragStyle, disabled],\n  );\n\n  return (\n    <Animated.View\n      {...panResponder.panHandlers}\n      style={containerStyle}\n      accessible={true}\n      accessibilityRole=\"image\" // The FAB itself is an image/button\n      accessibilityLabel={config.label}\n      accessibilityHint={actions && actions.length > 0 ? 'Double tap to view actions' : undefined}\n      accessibilityState={{ disabled, expanded: showActions }}\n      accessibilityActions={[{ name: 'activate', label: 'Activate' }]}\n      onAccessibilityAction={handlePress}\n    >\n      <View style={styles.contentContainer}>\n        {/* Glow Behind */}\n        <View style={styles.glow} />\n\n        {/* Lotus Image */}\n        <Image source={LOTUS_IMAGE} style={styles.lotusImage} resizeMode=\"contain\" />\n\n        {/* Optional Icon Overlay */}\n        {icon && (\n          <View style={styles.iconOverlay}>\n            <>{icon}</>\n          </View>\n        )}\n      </View>\n\n      {/* Action Menu */}\n      {actions && actions.length > 0 && (\n        <Animated.View style={[styles.actionMenu, actionMenuStyle]}>\n          {actions.map((action, index) => (\n            <Pressable\n              key={index}\n              style={styles.actionBubble}\n              onPress={() => {\n                triggerHaptic();\n                action.onPress();\n              }}\n              accessible={true}\n              accessibilityRole=\"button\"\n              accessibilityLabel={action.label}\n            >\n              <View style={styles.actionBubbleContent}>\n                {action.icon && (\n                  <action.icon size={18} color={Theme.colors.lotusDeepPink} strokeWidth={2} />\n                )}\n                <Text style={styles.actionLabel}>{action.label}</Text>\n              </View>\n            </Pressable>\n          ))}\n        </Animated.View>\n      )}\n    </Animated.View>\n  );\n};\n\n// ============================================================================\n// STYLES\n// ============================================================================\n\nconst styles = StyleSheet.create({\n  container: {\n    position: 'absolute',\n    // bottom set dynamically\n    right: Theme.spacing.lg,\n    zIndex: Theme.zIndex.fab,\n    alignItems: 'center',\n    justifyContent: 'center',\n  },\n  contentContainer: {\n    width: FAB_SIZE,\n    height: FAB_SIZE,\n    alignItems: 'center',\n    justifyContent: 'center',\n  },\n  lotusImage: {\n    width: '100%',\n    height: '100%',\n    zIndex: 2,\n    backgroundColor: 'transparent',\n  },\n  iconOverlay: {\n    position: 'absolute',\n    zIndex: 3,\n    alignItems: 'center',\n    justifyContent: 'center',\n  },\n  glow: {\n    position: 'absolute',\n    width: FAB_SIZE * 0.8,\n    height: FAB_SIZE * 0.8,\n    borderRadius: FAB_SIZE,\n    backgroundColor: Theme.colors.sanctuarySaffron,\n    opacity: 0.4,\n    shadowColor: Theme.colors.sanctuarySaffron,\n    shadowOffset: { width: 0, height: 0 },\n    shadowOpacity: 0.8,\n    shadowRadius: 20,\n    elevation: 10,\n    zIndex: 1,\n  },\n  disabled: {\n    opacity: 0.5,\n  },\n  actionMenu: {\n    position: 'absolute',\n    bottom: FAB_SIZE + ACTION_BUBBLE_SPACING,\n    right: 0,\n    alignItems: 'flex-end',\n  },\n  actionBubble: {\n    backgroundColor: Theme.colors.ink,\n    borderRadius: 24,\n    marginBottom: ACTION_BUBBLE_SPACING,\n    paddingHorizontal: 16,\n    paddingVertical: 10,\n    ...Theme.shadows.md,\n    minWidth: 100,\n    borderColor: 'rgba(255,255,255,0.1)',\n    borderWidth: 1,\n  },\n  actionBubbleContent: {\n    flexDirection: 'row',\n    alignItems: 'center',\n    justifyContent: 'flex-end',\n    gap: 8,\n  },\n  actionLabel: {\n    color: Theme.colors.sacredWhite,\n    fontSize: 14,\n    fontWeight: '600',\n  },\n});\n\nexport default LotusPetalFAB;\n","usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\button.tsx","messages":[],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":0,"fixableErrorCount":0,"fixableWarningCount":0,"usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\card.tsx","messages":[],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":0,"fixableErrorCount":0,"fixableWarningCount":0,"usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\code.tsx","messages":[],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":0,"fixableErrorCount":0,"fixableWarningCount":0,"usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\components-legacy\\box\\index.tsx","messages":[{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":18,"column":35,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":18,"endColumn":38,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[407,410],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[407,410],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]}],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":1,"fixableErrorCount":0,"fixableWarningCount":0,"source":"import React from 'react';\nimport { View, type ViewProps } from 'react-native';\nimport { cssInterop } from 'nativewind';\n\nconst StyledView = View;\n\ncssInterop(StyledView, {\n  className: {\n    target: 'style',\n  },\n});\n\nexport interface IBoxProps extends ViewProps {\n  className?: string;\n}\n\nconst Box = React.forwardRef<View, IBoxProps>(({ className, ...props }, ref) => {\n  const Component = StyledView as any;\n  return <Component {...props} ref={ref} className={className} />;\n});\n\nBox.displayName = 'Box';\n\nexport { Box };\n","usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\components-legacy\\button\\index.tsx","messages":[{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":18,"column":33,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":18,"endColumn":36,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[439,442],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[439,442],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]},{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":19,"column":45,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":19,"endColumn":48,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[488,491],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[488,491],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]},{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":20,"column":41,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":20,"endColumn":44,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[533,536],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[533,536],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]},{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":29,"column":33,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":29,"endColumn":36,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[753,756],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[753,756],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]},{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'variant' is assigned a value but never used.","line":30,"column":17,"nodeType":"Identifier","messageId":"unusedVar","endLine":30,"endColumn":24},{"ruleId":"@typescript-eslint/no-unused-vars","severity":1,"message":"'size' is assigned a value but never used.","line":30,"column":36,"nodeType":"Identifier","messageId":"unusedVar","endLine":30,"endColumn":40}],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":6,"fixableErrorCount":0,"fixableWarningCount":0,"source":"import React from 'react';\nimport {\n  Pressable as RNPressable,\n  Text as RNText,\n  type PressableProps,\n  type TextProps,\n  View as BaseView,\n  ScrollView as BaseScrollView,\n} from 'react-native';\nimport { cssInterop } from 'nativewind';\n\nconst StyledPressable = RNPressable;\nconst StyledText = RNText;\n\ncssInterop(StyledPressable, { className: 'style' });\ncssInterop(StyledText, { className: 'style' });\n\nexport const View = BaseView as any;\nexport const ScrollView = BaseScrollView as any;\nexport const Pressable = RNPressable as any;\n\nexport interface IButtonProps extends PressableProps {\n  className?: string;\n  variant?: 'solid' | 'outline' | 'link';\n  size?: 'xs' | 'sm' | 'md' | 'lg';\n  isDisabled?: boolean;\n}\n\nconst Button = React.forwardRef<any, IButtonProps>(\n  ({ className, variant = 'solid', size = 'md', isDisabled, ...props }, ref) => {\n    return (\n      <StyledPressable\n        {...props}\n        ref={ref}\n        disabled={isDisabled}\n        className={`flex-row items-center justify-center rounded-comfortable ${className || ''}`}\n      />\n    );\n  },\n);\n\nexport interface IButtonTextProps extends TextProps {\n  className?: string;\n}\n\nconst ButtonText = React.forwardRef<RNText, IButtonTextProps>(({ className, ...props }, ref) => {\n  return (\n    <StyledText {...props} ref={ref} className={`font-medium text-inherit ${className || ''}`} />\n  );\n});\n\nButton.displayName = 'Button';\nButtonText.displayName = 'ButtonText';\n\nexport { Button, ButtonText };\n","usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\components-legacy\\center\\index.tsx","messages":[{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":18,"column":35,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":18,"endColumn":38,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[416,419],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[416,419],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]}],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":1,"fixableErrorCount":0,"fixableWarningCount":0,"source":"import React from 'react';\nimport { View, type ViewProps } from 'react-native';\nimport { cssInterop } from 'nativewind';\n\nconst StyledView = View;\n\ncssInterop(StyledView, {\n  className: {\n    target: 'style',\n  },\n});\n\nexport interface ICenterProps extends ViewProps {\n  className?: string;\n}\n\nconst Center = React.forwardRef<View, ICenterProps>(({ className, ...props }, ref) => {\n  const Component = StyledView as any;\n  return (\n    <Component {...props} ref={ref} className={`items-center justify-center ${className || ''}`} />\n  );\n});\n\nCenter.displayName = 'Center';\n\nexport { Center };\n","usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\components-legacy\\divider\\index.tsx","messages":[{"ruleId":"react/display-name","severity":1,"message":"Component definition is missing display name","line":14,"column":24,"nodeType":"CallExpression","messageId":"noDisplayName","endLine":18,"endColumn":2}],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":1,"fixableErrorCount":0,"fixableWarningCount":0,"source":"import React from 'react';\nimport {\n  Text as RNText,\n  View,\n  ActivityIndicator,\n  type TextProps,\n  type ViewProps,\n  type ActivityIndicatorProps,\n} from 'react-native';\nimport { cssInterop } from 'nativewind';\n\ncssInterop(ActivityIndicator, { className: 'style' });\n\nexport const Heading = React.forwardRef<RNText, TextProps & { className?: string }>(\n  ({ className, ...props }, ref) => (\n    <RNText {...props} ref={ref} className={`font-bold text-xl ${className || ''}`} />\n  ),\n);\n\nexport const Divider = ({ className, ...props }: ViewProps & { className?: string }) => (\n  <View {...props} className={`h-[1px] w-full bg-border ${className || ''}`} />\n);\n\nexport const Spinner = ({\n  className,\n  ...props\n}: ActivityIndicatorProps & { className?: string }) => (\n  <ActivityIndicator {...props} className={className} />\n);\n","usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\components-legacy\\form-control\\index.tsx","messages":[{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":59,"column":86,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":59,"endColumn":89,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[1817,1820],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[1817,1820],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]}],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":1,"fixableErrorCount":0,"fixableWarningCount":0,"source":"import React, { createContext, useContext } from 'react';\nimport { View, Text as RNText, type ViewProps, type TextProps } from 'react-native';\nimport { cssInterop } from 'nativewind';\n\ncssInterop(View, { className: 'style' });\ncssInterop(RNText, { className: 'style' });\n\nexport interface IFormControlProps extends ViewProps {\n  isInvalid?: boolean;\n  isDisabled?: boolean;\n  className?: string;\n  children?: React.ReactNode;\n}\n\ntype FormControlContextType = Pick<IFormControlProps, 'isInvalid' | 'isDisabled'>;\n\nconst FormControlContext = createContext<FormControlContextType>({});\n\nexport const FormControl = ({\n  isInvalid,\n  isDisabled,\n  className,\n  children,\n  ...props\n}: ViewProps & {\n  isInvalid?: boolean;\n  isDisabled?: boolean;\n  className?: string;\n  children?: React.ReactNode;\n}) => {\n  return (\n    <FormControlContext.Provider value={{ isInvalid, isDisabled }}>\n      <View {...props} className={`w-full ${className || ''}`}>\n        {children}\n      </View>\n    </FormControlContext.Provider>\n  );\n};\n\nexport const useFormControl = () => useContext(FormControlContext);\n\nexport const FormControlLabel = ({ className, ...props }: ViewProps & { className?: string }) => (\n  <View {...props} className={`mb-2 ${className || ''}`} />\n);\n\nexport const FormControlLabelText = ({\n  className,\n  ...props\n}: TextProps & { className?: string }) => (\n  <RNText {...props} className={`text-sm font-medium text-textSecondary ${className || ''}`} />\n);\n\nexport const FormControlError = ({ className, ...props }: ViewProps & { className?: string }) => {\n  const { isInvalid } = useFormControl();\n  if (!isInvalid) return null;\n  return <View {...props} className={`mt-1 flex-row items-center gap-1 ${className || ''}`} />;\n};\n\nexport const FormControlErrorIcon = ({ as: Icon, className, color, size, ...props }: any) => {\n  const { isInvalid } = useFormControl();\n  if (!isInvalid || !Icon) return null;\n  return <Icon {...props} size={size || 16} color={color || '#EF4444'} className={className} />;\n};\n\nexport const FormControlErrorText = ({\n  className,\n  ...props\n}: TextProps & { className?: string }) => (\n  <RNText {...props} className={`text-xs text-error ${className || ''}`} />\n);\n\nexport const FormControlHelper = ({ className, ...props }: ViewProps & { className?: string }) => (\n  <View {...props} className={`mt-1 ${className || ''}`} />\n);\n\nexport const FormControlHelperText = ({\n  className,\n  ...props\n}: TextProps & { className?: string }) => (\n  <RNText {...props} className={`mt-1 text-xs text-textSecondary ${className || ''}`} />\n);\n","usedDeprecatedRules":[]},{"filePath":"C:\\Users\\Naween\\projects\\polymath-platform\\packages\\ui\\src\\components-legacy\\hstack\\index.tsx","messages":[{"ruleId":"@typescript-eslint/no-explicit-any","severity":1,"message":"Unexpected any. Specify a different type.","line":24,"column":37,"nodeType":"TSAnyKeyword","messageId":"unexpectedAny","endLine":24,"endColumn":40,"suggestions":[{"messageId":"suggestUnknown","fix":{"range":[627,630],"text":"unknown"},"desc":"Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."},{"messageId":"suggestNever","fix":{"range":[627,630],"text":"never"},"desc":"Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."}]}],"suppressedMessages":[],"errorCount":0,"fatalErrorCount":0,"warningCount":1,"fixableErrorCount":0,"fixableWarningCount":0,"source":"import React from 'react';\nimport { View, type ViewProps } from 'react-native';\nimport { cssInterop } from 'nativewind';\n\nconst StyledView = View;\n\ncssInterop(StyledView, {\n  className: {\n    target: 'style',\n  },\n});\n\nexport interface IHStackProps extends ViewProps {\n  className?: string;\n  space?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';\n  reversed?: boolean;\n}\n\nconst HStack = React.forwardRef<View, IHStackProps>(\n  ({ className, space, reversed, ...props }, ref) => {\n    const spaceClass = space ? `gap-${space}` : '';\n    const reversedClass = reversed ? 'flex-row-reverse' : 'flex-row';\n\n    const Component = StyledView as any;\n\n    return (\n      <Component\n        {...props}\n        ref={ref}\n        className={`${reversedClass} items-center ${spaceClass} ${classNa
+
+ ERROR  @repo/database#lint:biome: command (C:\Users\Naween\projects\polymath-platform\packages\database) C:\Users\Naween\AppData\Roaming\npm\pnpm.cmd run lint:biome exited (1)
+
+
+ Tasks:    2 successful, 26 total
 Cached:    0 cached, 26 total
-  Time:    9.982s 
-
-Failed:    @repo/analytics#lint:biome
+  Time:    5.885s 
+Failed:    @repo/database#lint:biome
 
 
  ERROR  run failed: command  exited (1)
@@ -6072,88 +4133,91 @@ Failed:    @repo/analytics#lint:biome
 > node scripts/sovereign-audit.mjs --cmd "pnpm turbo run check-types" --log "reports/check-types.txt"
 
 
->>> Starting Sovereign Audit: 2026-05-20T05:47:00.642Z
+>>> Starting Sovereign Audit: 2026-05-22T09:14:03.132Z
 
 >>> Command: pnpm turbo run check-types
-
 --------------------------------------------------------------------------------
 
-• turbo 2.9.4
+• turbo 2.9.14
 
 
    • Packages in scope: @intuitui-labs/form-builder-engine, @intuitui-labs/lk-edu-geo, @repo/accounting, @repo/admin, @repo/ai, @repo/analytics, @repo/classroom, @repo/community, @repo/core, @repo/database, @repo/eslint-config, @repo/form-builder, @repo/graphics, @repo/library, @repo/payments, @repo/people, @repo/platform-mcp, @repo/policies, @repo/profile, @repo/sanctuary-api, @repo/scanner-kit, @repo/schema, @repo/self, @repo/types-shim, @repo/typescript-config, @repo/ui, @repo/workforce, apps-edlove-web, apps-gurudevi-marketing-web, apps-intuitui-web, apps-neevsk-web, gurudevi-mobile
+
    • Running check-types in 32 packages
    • Remote caching disabled
 
 
-@repo/schema:check-types: cache miss, executing d264ec8587b4f7bd
+apps-edlove-web:check-types: cache miss, executing fe1f3ec34b838742
 
-@repo/types-shim:check-types: cache miss, executing 46a32e5f58d49077
+apps-neevsk-web:check-types: cache miss, executing d0326f983c3f4903
 
-@intuitui-labs/form-builder-engine:check-types: cache miss, executing 380ff6c5693a7c80
+apps-intuitui-web:check-types: cache miss, executing 7d2fbed64abd87f8
 
-@repo/platform-mcp:check-types: cache miss, executing cc0514fa306a53ee
+@repo/types-shim:check-types: cache hit, replaying logs 7bd795a12fe05cd3
+@repo/schema:check-types: cache hit, replaying logs ae15028e90be5544
 
-apps-neevsk-web:check-types: cache miss, executing be465c528f91863b
+@intuitui-labs/form-builder-engine:check-types: cache hit, replaying logs b52cffe56a9e51fb
+@repo/platform-mcp:check-types: cache hit, replaying logs 382d112d0ac5e383
 
-apps-edlove-web:check-types: cache miss, executing 9df2621a9b51b1fb
+@repo/platform-mcp:check-types: 
 
-apps-intuitui-web:check-types: cache miss, executing 2efc28a9ef759517
-
-apps-neevsk-web:check-types: 
-apps-neevsk-web:check-types: > apps-neevsk-web@0.0.2 check-types C:\Users\Naween\projects\polymath-platform\apps\neevsk-web
-apps-neevsk-web:check-types: > pnpm exec tsc --noEmit
-apps-neevsk-web:check-types: 
-
-apps-edlove-web:check-types: 
-apps-edlove-web:check-types: > apps-edlove-web@0.0.2 check-types C:\Users\Naween\projects\polymath-platform\apps\edlove-web
-apps-edlove-web:check-types: > pnpm exec tsc --noEmit
-apps-edlove-web:check-types: 
-
+@repo/platform-mcp:check-types: > @repo/platform-mcp@0.1.0 check-types C:\Users\Naween\projects\polymath-platform\packages\platform-mcp
+@repo/platform-mcp:check-types: > pnpm exec tsc --noEmit
+@repo/platform-mcp:check-types: 
 @repo/schema:check-types: 
 @repo/schema:check-types: > @repo/schema@1.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\schema
 @repo/schema:check-types: > pnpm exec tsc --noEmit
 @repo/schema:check-types: 
-
-@repo/platform-mcp:check-types: 
-@repo/platform-mcp:check-types: > @repo/platform-mcp@0.1.0 check-types C:\Users\Naween\projects\polymath-platform\packages\platform-mcp
-@repo/platform-mcp:check-types: > pnpm exec tsc --noEmit
-@repo/platform-mcp:check-types: 
+@repo/types-shim:check-types: 
+@repo/types-shim:check-types: > @repo/types-shim@0.0.2 check-types C:\Users\Naween\projects\polymath-platform\packages\types-shim
+@repo/types-shim:check-types: > pnpm exec tsc --noEmit
+@repo/types-shim:check-types: 
 
 @intuitui-labs/form-builder-engine:check-types: 
 @intuitui-labs/form-builder-engine:check-types: > @intuitui-labs/form-builder-engine@1.0.0 check-types C:\Users\Naween\projects\polymath-platform\packages\form-builder-engine
 @intuitui-labs/form-builder-engine:check-types: > tsc --noEmit
 @intuitui-labs/form-builder-engine:check-types: 
 
-apps-intuitui-web:check-types: 
-apps-intuitui-web:check-types: > apps-intuitui-web@0.0.2 check-types C:\Users\Naween\projects\polymath-platform\apps\intuitui-web
-apps-intuitui-web:check-types: > pnpm exec tsc --noEmit
-apps-intuitui-web:check-types: 
-
-@repo/types-shim:check-types: 
-@repo/types-shim:check-types: > @repo/types-shim@0.0.2 check-types C:\Users\Naween\projects\polymath-platform\packages\types-shim
-@repo/types-shim:check-types: > pnpm exec tsc --noEmit
-@repo/types-shim:check-types: 
-
-@repo/database:check-types: cache miss, executing e3d6330374cce0d8
+@repo/database:check-types: cache hit, replaying logs b572f94fb66b3c65
 
 @repo/database:check-types: 
 @repo/database:check-types: > @repo/database@1.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\database
 @repo/database:check-types: > pnpm exec tsc --noEmit
 @repo/database:check-types: 
 
-@repo/core:check-types: cache miss, executing 88a44d3497a15048
+@repo/core:check-types: cache miss, executing a41b7d9055cc6303
+
+apps-neevsk-web:check-types: 
+apps-neevsk-web:check-types: > apps-neevsk-web@0.0.2 check-types C:\Users\Naween\projects\polymath-platform\apps\neevsk-web
+apps-neevsk-web:check-types: > pnpm exec tsc --noEmit
+apps-neevsk-web:check-types: 
+
+apps-intuitui-web:check-types: 
+apps-intuitui-web:check-types: > apps-intuitui-web@0.0.2 check-types C:\Users\Naween\projects\polymath-platform\apps\intuitui-web
+apps-intuitui-web:check-types: > pnpm exec tsc --noEmit
+apps-intuitui-web:check-types: 
+
+apps-edlove-web:check-types: 
+apps-edlove-web:check-types: > apps-edlove-web@0.0.2 check-types C:\Users\Naween\projects\polymath-platform\apps\edlove-web
+apps-edlove-web:check-types: > pnpm exec tsc --noEmit
+apps-edlove-web:check-types: 
 
 @repo/core:check-types: 
 @repo/core:check-types: > @repo/core@0.1.0 check-types C:\Users\Naween\projects\polymath-platform\packages\core
 @repo/core:check-types: > pnpm exec tsc --noEmit
 @repo/core:check-types: 
 
-@repo/ui:check-types: cache miss, executing 4e7c0c5e671d99d6
+@repo/ui:check-types: cache miss, executing 1707f8fe2ad629d9
 
-@repo/accounting:check-types: cache miss, executing c33c80f5f7a16d9f
+@intuitui-labs/lk-edu-geo:check-types: cache miss, executing 8dae20ead1d70d7c
 
-@intuitui-labs/lk-edu-geo:check-types: cache miss, executing fa76ea034b1c0a11
+@repo/accounting:check-types: cache miss, executing 3555351cf8fdc263
+
+@repo/accounting:check-types: 
+
+@repo/accounting:check-types: > @repo/accounting@0.0.2 check-types C:\Users\Naween\projects\polymath-platform\packages\accounting
+@repo/accounting:check-types: > pnpm exec tsc --noEmit
+@repo/accounting:check-types: 
 
 @repo/ui:check-types: 
 @repo/ui:check-types: > @repo/ui@1.1.0 check-types C:\Users\Naween\projects\polymath-platform\packages\ui
@@ -6165,26 +4229,38 @@ apps-intuitui-web:check-types:
 @intuitui-labs/lk-edu-geo:check-types: > pnpm exec tsc --noEmit
 @intuitui-labs/lk-edu-geo:check-types: 
 
-@repo/accounting:check-types: 
-@repo/accounting:check-types: > @repo/accounting@0.0.2 check-types C:\Users\Naween\projects\polymath-platform\packages\accounting
-@repo/accounting:check-types: > pnpm exec tsc --noEmit
-@repo/accounting:check-types: 
-
-@repo/payments:check-types: cache miss, executing f622c7eec6eb12fb
+@repo/payments:check-types: cache miss, executing 86c6ab4db94f37f5
 
 @repo/payments:check-types: 
 @repo/payments:check-types: > @repo/payments@0.0.2 check-types C:\Users\Naween\projects\polymath-platform\packages\payments
 @repo/payments:check-types: > pnpm exec tsc --noEmit
 @repo/payments:check-types: 
 
-@repo/workforce:check-types: cache miss, executing 95fb02be7c23af0f
+@repo/ai:check-types: cache miss, executing 7d224375060a040f
 
-@repo/graphics:check-types: cache miss, executing 9c6b6d2c8c606701
-@repo/scanner-kit:check-types: cache miss, executing e6270c74f345b6a7
+@repo/graphics:check-types: cache miss, executing 0a1998e4366e3dc5
+@repo/people:check-types: cache miss, executing 293851306f0e46a7
 
-@repo/people:check-types: cache miss, executing 2064bd42a4424e3a
+@repo/scanner-kit:check-types: cache miss, executing 875b5c831a2f26a3
 
-@repo/ai:check-types: cache miss, executing 703116887aa50c76
+@repo/workforce:check-types: cache miss, executing c6e1dbef2ae2f661
+
+@repo/form-builder:check-types: cache miss, executing 474802bfdd623ee7
+
+@repo/scanner-kit:check-types: 
+@repo/scanner-kit:check-types: > @repo/scanner-kit@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\scanner-kit
+@repo/scanner-kit:check-types: > pnpm exec tsc --noEmit
+@repo/scanner-kit:check-types: 
+
+@repo/people:check-types: 
+
+@repo/people:check-types: > @repo/people@0.0.2 check-types C:\Users\Naween\projects\polymath-platform\packages\people
+@repo/people:check-types: > pnpm exec tsc --noEmit
+@repo/people:check-types: 
+@repo/form-builder:check-types: 
+@repo/form-builder:check-types: > @repo/form-builder@1.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\form-builder
+@repo/form-builder:check-types: > pnpm exec tsc --noEmit
+@repo/form-builder:check-types: 
 
 @repo/graphics:check-types: 
 @repo/graphics:check-types: > @repo/graphics@0.0.2 check-types C:\Users\Naween\projects\polymath-platform\packages\graphics
@@ -6201,32 +4277,16 @@ apps-intuitui-web:check-types:
 @repo/ai:check-types: > pnpm exec tsc --noEmit
 @repo/ai:check-types: 
 
-@repo/people:check-types: 
-@repo/people:check-types: > @repo/people@0.0.2 check-types C:\Users\Naween\projects\polymath-platform\packages\people
-@repo/people:check-types: > pnpm exec tsc --noEmit
-@repo/people:check-types: 
-
-@repo/scanner-kit:check-types: 
-@repo/scanner-kit:check-types: > @repo/scanner-kit@0.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\scanner-kit
-@repo/scanner-kit:check-types: > pnpm exec tsc --noEmit
-@repo/scanner-kit:check-types: 
-
-@repo/profile:check-types: cache miss, executing 9117106fd926ad05
-@repo/form-builder:check-types: cache miss, executing 456feed1a1866fca
+@repo/profile:check-types: cache miss, executing 6ddfe3760b0ff704
 
 @repo/profile:check-types: 
 @repo/profile:check-types: > @repo/profile@1.0.0 check-types C:\Users\Naween\projects\polymath-platform\packages\profile
 @repo/profile:check-types: > pnpm exec tsc --noEmit
 @repo/profile:check-types: 
 
-@repo/form-builder:check-types: 
-@repo/form-builder:check-types: > @repo/form-builder@1.0.1 check-types C:\Users\Naween\projects\polymath-platform\packages\form-builder
-@repo/form-builder:check-types: > pnpm exec tsc --noEmit
-@repo/form-builder:check-types: 
+@repo/analytics:check-types: cache miss, executing 26ad671b9e954fdd
 
-@repo/library:check-types: cache miss, executing 7041baf18d2a115e
-
-@repo/analytics:check-types: cache miss, executing 87430c875f243cef
+@repo/library:check-types: cache miss, executing a28d6a5ae5caf6c8
 
 @repo/analytics:check-types: 
 @repo/analytics:check-types: > @repo/analytics@1.0.0 check-types C:\Users\Naween\projects\polymath-platform\packages\analytics
@@ -6238,42 +4298,42 @@ apps-intuitui-web:check-types:
 @repo/library:check-types: > pnpm exec tsc --noEmit
 @repo/library:check-types: 
 
-@repo/self:check-types: cache miss, executing 06f23b0739b23f67
+@repo/self:check-types: cache miss, executing 89e4e9900f3a250b
+
+apps-gurudevi-marketing-web:check-types: cache miss, executing 9264b48128397d70
 
 @repo/self:check-types: 
 @repo/self:check-types: > @repo/self@1.0.0 check-types C:\Users\Naween\projects\polymath-platform\packages\self
 @repo/self:check-types: > pnpm exec tsc --noEmit
 @repo/self:check-types: 
 
-apps-gurudevi-marketing-web:check-types: cache miss, executing 0974d638cd673cbc
-
 apps-gurudevi-marketing-web:check-types: 
 apps-gurudevi-marketing-web:check-types: > apps-gurudevi-marketing-web@0.0.2 check-types C:\Users\Naween\projects\polymath-platform\apps\gurudevi-marketingWeb
 apps-gurudevi-marketing-web:check-types: > pnpm exec tsc --noEmit
 apps-gurudevi-marketing-web:check-types: 
 
-@repo/community:check-types: cache miss, executing 46bc471ac1ad3eeb
+@repo/community:check-types: cache miss, executing 754ebb86ddbaef25
 
 @repo/community:check-types: 
 @repo/community:check-types: > @repo/community@1.0.0 check-types C:\Users\Naween\projects\polymath-platform\packages\community
 @repo/community:check-types: > pnpm exec tsc --noEmit
 @repo/community:check-types: 
 
-@repo/admin:check-types: cache miss, executing 04e774e09e3e1291
+@repo/admin:check-types: cache miss, executing 530f185bd45f3f2e
 
 @repo/admin:check-types: 
 @repo/admin:check-types: > @repo/admin@0.0.2 check-types C:\Users\Naween\projects\polymath-platform\packages\admin
 @repo/admin:check-types: > pnpm exec tsc --noEmit
 @repo/admin:check-types: 
 
-@repo/classroom:check-types: cache miss, executing d8fd627dda5841a0
+@repo/classroom:check-types: cache miss, executing 805b323cb3df6e4a
 
 @repo/classroom:check-types: 
 @repo/classroom:check-types: > @repo/classroom@0.0.2 check-types C:\Users\Naween\projects\polymath-platform\packages\classroom
 @repo/classroom:check-types: > pnpm exec tsc --noEmit
 @repo/classroom:check-types: 
 
-gurudevi-mobile:check-types: cache miss, executing ebed806a8f5b933a
+gurudevi-mobile:check-types: cache miss, executing 47dd44beaf0207e6
 
 gurudevi-mobile:check-types: 
 gurudevi-mobile:check-types: > gurudevi-mobile@1.1.0 check-types C:\Users\Naween\projects\polymath-platform\apps\gurudevi-mobile
@@ -6282,15 +4342,15 @@ gurudevi-mobile:check-types:
 
 
  Tasks:    28 successful, 28 total
-Cached:    0 cached, 28 total
-  Time:    4m1.406s 
+Cached:    5 cached, 28 total
+  Time:    4m3.82s 
 
 
 
 --------------------------------------------------------------------------------
-AUDIT SUMMARY
-Duration: 243.7s
 
+AUDIT SUMMARY
+Duration: 245.9s
 Findings: 0
 Log File: reports/check-types.txt
 --------------------------------------------------------------------------------
@@ -6311,12 +4371,10 @@ Log File: reports/check-types.txt
 > node scripts/sovereign-audit.mjs --cmd "pnpm exec depcruise packages apps --config .dependency-cruiser.cjs --output-type err" --filter "no-circular" --log "reports/circular_deps.txt"
 
 
->>> Starting Sovereign Audit: 2026-05-20T05:51:05.915Z
+>>> Starting Sovereign Audit: 2026-05-22T09:18:10.652Z
 
 >>> Command: pnpm exec depcruise packages apps --config .dependency-cruiser.cjs --output-type err
-
 >>> Filter: no-circular
-
 --------------------------------------------------------------------------------
 
 
@@ -6326,17 +4384,22 @@ Log File: reports/check-types.txt
   warn no-orphans: packages/ui/src/utils/dialogs.web.ts
   warn no-orphans: packages/ui/src/components/ui/list/index.tsx
   warn no-orphans: packages/ui/src/components/SkeletonLoader.web.tsx
+  warn no-orphans: packages/ui/src/components-native/NoiseOverlay.web.tsx
   warn no-orphans: packages/ui/src/code.tsx
-  warn no-orphans: packages/ui/src/button.tsx
-  warn no-orphans: packages/trube-art/src
-/native/renderers/SoulLibrary.ts
+  warn no-orp
+hans: packages/ui/src/button.tsx
+  warn no-orphans: packages/trube-art/src/native/renderers/SoulLibrary.ts
   warn no-orphans: packages/scanner-kit/src/ScannerModal.web.tsx
   warn no-orphans: packages/lk-edu-geo/src/constants.ts
   warn no-orphans: packages/library/src/components/LibraryThumbnailCard.web.tsx
   warn no-orphans: packages/library/src/api/database.web.ts
+  warn no-orphans: packages/core/src/utils/temporal.ts
   warn no-orphans: packages/core/src/utils/idempotency.ts
   warn no-orphans: packages/core/src/native/sentry.ts
+  warn no-orphans: packages/core/src/logic/forms/dynamic-loader.ts
+  warn no-orphans: packages/core/src/logic/forms/analytics.ts
   warn no-orphans: packages/core/src/hooks/useSovereignEffect.ts
+  warn no-orphans: packages/core/src/hooks/useMediaDownloader.web.ts
   warn no-orphans: packages/core/src/api/growthSignals.generated.zod.ts
   warn no-orphans: packages/analytics/src/utils/analyticsHelpers.ts
   warn no-orphans: packages/analytics/src/types/AnalyticsTypes.ts
@@ -6357,6 +4420,7 @@ Log File: reports/check-types.txt
   warn no-orphans: apps/intuitui-web/.astro/content-assets.mjs
   warn no-orphans: apps/gurudevi-mobile/src/utils/validators.ts
   warn no-orphans: apps/gurudevi-mobile/src/utils/usePWAInstallPrompt.ts
+  warn no-orphans: apps/gurudevi-mobile/src/lib/backgroundSync.web.ts
   warn no-orphans: apps/gurudevi-mobile/src/components/web/WebSkeleton.web.tsx
   warn no-orphans: apps/gurudevi-mobile/src/components/web/WebSkeleton.tsx
   warn no-orphans: apps/gurudevi-mobile/src/components/web/WebScreenShimmer.web.tsx
@@ -6383,27 +4447,18 @@ Log File: reports/check-types.txt
   warn no-orphans: apps/edlove-web/.astro/content-modules.mjs
   warn no-orphans: apps/edlove-web/.astro/content-assets.mjs
   warn L0-L1-subpath-only: packages/self/src/api/wellbeingRepository.ts → packages/core/src/index.ts
-  warn L0-L1-subpath-only: packages/profile/src/hooks/useTeacherProfessionalHistory.ts → packages/core/src/index.ts
-  warn L0-L1-subpath-only: packages/profile/src/hooks/useStudentAcademicHistory.ts → packages/core/src/index.ts
   warn L0-L1-subpath-only: packages/profile/src/hooks/useNotificationPreferences.ts → packages/ui/src/index.ts
-  warn L0-L1-subpath-only: packages/community/src/screens/GroupsScreen.tsx → packages/core/src/index.ts
-  warn L0-L1-subpath-only: packages/admin/src/screens/GuardianDashboard.tsx → packages/core/src/index.ts
-  warn L0-L1-subpath-only: packages/admin/src/principal/usePrincipalWorkspaceCanvas.tsx → packages/core/src/index.ts
-  warn L0-L1-subpath-only: packages/admin/src/guardian/useGuardianWorkspaceCanvas.tsx → packages/core/src/index.ts
-  warn L0-L1-subpath-only: packages/admin/src/founder/useFounderWorkspaceCanvas.tsx → packages/core/src/index.ts
-  warn L0-L1-subpath-only: apps/sanctuary-api/src/index.ts → packages/core/src/index.ts
 
-x 71 dependency violations (0 errors, 71 warnings). 2063 modules, 6511 dependencies cruised.
+x 69 dependency violations (0 errors, 69 warnings). 2087 modules, 6531 dependencies cruised.
 
 
 
 --------------------------------------------------------------------------------
 
 AUDIT SUMMARY
-Duration: 12.8s
+Duration: 15.3s
 Findings: 0
 Log File: reports/circular_deps.txt
-
 --------------------------------------------------------------------------------
 
 --- Checking Unused Code ---
@@ -6413,7 +4468,7 @@ Log File: reports/circular_deps.txt
 > node scripts/sovereign-audit.mjs --cmd "pnpm exec depcruise packages apps --config .dependency-cruiser.cjs --output-type err" --filter "no-orphans" --log "reports/unused_code.txt"
 
 
->>> Starting Sovereign Audit: 2026-05-20T05:51:19.508Z
+>>> Starting Sovereign Audit: 2026-05-22T09:18:26.861Z
 
 >>> Command: pnpm exec depcruise packages apps --config .dependency-cruiser.cjs --output-type err
 >>> Filter: no-orphans
@@ -6426,17 +4481,22 @@ Log File: reports/circular_deps.txt
   warn no-orphans: packages/ui/src/utils/dialogs.web.ts
   warn no-orphans: packages/ui/src/components/ui/list/index.tsx
   warn no-orphans: packages/ui/src/components/SkeletonLoader.web.tsx
+  warn no-orphans: packages/ui/src/components-native/NoiseOverlay.web.tsx
   warn no-orphans: packages/ui/src/code.tsx
-  warn no-orphans: packages/ui/src/button.tsx
-  warn no-orphans: packages/trube-art/src
-/native/renderers/SoulLibrary.ts
+  warn no-orp
+hans: packages/ui/src/button.tsx
+  warn no-orphans: packages/trube-art/src/native/renderers/SoulLibrary.ts
   warn no-orphans: packages/scanner-kit/src/ScannerModal.web.tsx
   warn no-orphans: packages/lk-edu-geo/src/constants.ts
   warn no-orphans: packages/library/src/components/LibraryThumbnailCard.web.tsx
   warn no-orphans: packages/library/src/api/database.web.ts
+  warn no-orphans: packages/core/src/utils/temporal.ts
   warn no-orphans: packages/core/src/utils/idempotency.ts
   warn no-orphans: packages/core/src/native/sentry.ts
+  warn no-orphans: packages/core/src/logic/forms/dynamic-loader.ts
+  warn no-orphans: packages/core/src/logic/forms/analytics.ts
   warn no-orphans: packages/core/src/hooks/useSovereignEffect.ts
+  warn no-orphans: packages/core/src/hooks/useMediaDownloader.web.ts
   warn no-orphans: packages/core/src/api/growthSignals.generated.zod.ts
   warn no-orphans: packages/analytics/src/utils/analyticsHelpers.ts
   warn no-orphans: packages/analytics/src/types/AnalyticsTypes.ts
@@ -6457,6 +4517,7 @@ Log File: reports/circular_deps.txt
   warn no-orphans: apps/intuitui-web/.astro/content-assets.mjs
   warn no-orphans: apps/gurudevi-mobile/src/utils/validators.ts
   warn no-orphans: apps/gurudevi-mobile/src/utils/usePWAInstallPrompt.ts
+  warn no-orphans: apps/gurudevi-mobile/src/lib/backgroundSync.web.ts
   warn no-orphans: apps/gurudevi-mobile/src/components/web/WebSkeleton.web.tsx
   warn no-orphans: apps/gurudevi-mobile/src/components/web/WebSkeleton.tsx
   warn no-orphans: apps/gurudevi-mobile/src/components/web/WebScreenShimmer.web.tsx
@@ -6483,26 +4544,17 @@ Log File: reports/circular_deps.txt
   warn no-orphans: apps/edlove-web/.astro/content-modules.mjs
   warn no-orphans: apps/edlove-web/.astro/content-assets.mjs
   warn L0-L1-subpath-only: packages/self/src/api/wellbeingRepository.ts → packages/core/src/index.ts
-  warn L0-L1-subpath-only: packages/profile/src/hooks/useTeacherProfessionalHistory.ts → packages/core/src/index.ts
-  warn L0-L1-subpath-only: packages/profile/src/hooks/useStudentAcademicHistory.ts → packages/core/src/index.ts
   warn L0-L1-subpath-only: packages/profile/src/hooks/useNotificationPreferences.ts → packages/ui/src/index.ts
-  warn L0-L1-subpath-only: packages/community/src/screens/GroupsScreen.tsx → packages/core/src/index.ts
-  warn L0-L1-subpath-only: packages/admin/src/screens/GuardianDashboard.tsx → packages/core/src/index.ts
-  warn L0-L1-subpath-only: packages/admin/src/principal/usePrincipalWorkspaceCanvas.tsx → packages/core/src/index.ts
-  warn L0-L1-subpath-only: packages/admin/src/guardian/useGuardianWorkspaceCanvas.tsx → packages/core/src/index.ts
-  warn L0-L1-subpath-only: packages/admin/src/founder/useFounderWorkspaceCanvas.tsx → packages/core/src/index.ts
-  warn L0-L1-subpath-only: apps/sanctuary-api/src/index.ts → packages/core/src/index.ts
 
-x 71 dependency violations (0 errors, 71 warnings). 2063 modules, 6511 dependencies cruised.
+x 69 dependency violations (0 errors, 69 warnings). 2087 modules, 6531 dependencies cruised.
 
 
 
 --------------------------------------------------------------------------------
 
 AUDIT SUMMARY
-Duration: 10.1s
-Findings: 61
-
+Duration: 11.0s
+Findings: 66
 Log File: reports/unused_code.txt
 --------------------------------------------------------------------------------
 
@@ -6513,10 +4565,9 @@ Log File: reports/unused_code.txt
 > node scripts/sovereign-audit.mjs --cmd "pnpm exec depcruise packages apps --config .dependency-cruiser.cjs --output-type err" --log "reports/architecture.txt"
 
 
->>> Starting Sovereign Audit: 2026-05-20T05:51:30.420Z
+>>> Starting Sovereign Audit: 2026-05-22T09:18:38.808Z
 
 >>> Command: pnpm exec depcruise packages apps --config .dependency-cruiser.cjs --output-type err
-
 --------------------------------------------------------------------------------
 
 
@@ -6526,17 +4577,22 @@ Log File: reports/unused_code.txt
   warn no-orphans: packages/ui/src/utils/dialogs.web.ts
   warn no-orphans: packages/ui/src/components/ui/list/index.tsx
   warn no-orphans: packages/ui/src/components/SkeletonLoader.web.tsx
+  warn no-orphans: packages/ui/src/components-native/NoiseOverlay.web.tsx
   warn no-orphans: packages/ui/src/code.tsx
-  warn no-orphans: packages/ui/src/button.tsx
-  warn no-orphans: packages/trube-art/src
-/native/renderers/SoulLibrary.ts
+  warn no-orp
+hans: packages/ui/src/button.tsx
+  warn no-orphans: packages/trube-art/src/native/renderers/SoulLibrary.ts
   warn no-orphans: packages/scanner-kit/src/ScannerModal.web.tsx
   warn no-orphans: packages/lk-edu-geo/src/constants.ts
   warn no-orphans: packages/library/src/components/LibraryThumbnailCard.web.tsx
   warn no-orphans: packages/library/src/api/database.web.ts
+  warn no-orphans: packages/core/src/utils/temporal.ts
   warn no-orphans: packages/core/src/utils/idempotency.ts
   warn no-orphans: packages/core/src/native/sentry.ts
+  warn no-orphans: packages/core/src/logic/forms/dynamic-loader.ts
+  warn no-orphans: packages/core/src/logic/forms/analytics.ts
   warn no-orphans: packages/core/src/hooks/useSovereignEffect.ts
+  warn no-orphans: packages/core/src/hooks/useMediaDownloader.web.ts
   warn no-orphans: packages/core/src/api/growthSignals.generated.zod.ts
   warn no-orphans: packages/analytics/src/utils/analyticsHelpers.ts
   warn no-orphans: packages/analytics/src/types/AnalyticsTypes.ts
@@ -6557,6 +4613,7 @@ Log File: reports/unused_code.txt
   warn no-orphans: apps/intuitui-web/.astro/content-assets.mjs
   warn no-orphans: apps/gurudevi-mobile/src/utils/validators.ts
   warn no-orphans: apps/gurudevi-mobile/src/utils/usePWAInstallPrompt.ts
+  warn no-orphans: apps/gurudevi-mobile/src/lib/backgroundSync.web.ts
   warn no-orphans: apps/gurudevi-mobile/src/components/web/WebSkeleton.web.tsx
   warn no-orphans: apps/gurudevi-mobile/src/components/web/WebSkeleton.tsx
   warn no-orphans: apps/gurudevi-mobile/src/components/web/WebScreenShimmer.web.tsx
@@ -6583,27 +4640,18 @@ Log File: reports/unused_code.txt
   warn no-orphans: apps/edlove-web/.astro/content-modules.mjs
   warn no-orphans: apps/edlove-web/.astro/content-assets.mjs
   warn L0-L1-subpath-only: packages/self/src/api/wellbeingRepository.ts → packages/core/src/index.ts
-  warn L0-L1-subpath-only: packages/profile/src/hooks/useTeacherProfessionalHistory.ts → packages/core/src/index.ts
-  warn L0-L1-subpath-only: packages/profile/src/hooks/useStudentAcademicHistory.ts → packages/core/src/index.ts
   warn L0-L1-subpath-only: packages/profile/src/hooks/useNotificationPreferences.ts → packages/ui/src/index.ts
-  warn L0-L1-subpath-only: packages/community/src/screens/GroupsScreen.tsx → packages/core/src/index.ts
-  warn L0-L1-subpath-only: packages/admin/src/screens/GuardianDashboard.tsx → packages/core/src/index.ts
-  warn L0-L1-subpath-only: packages/admin/src/principal/usePrincipalWorkspaceCanvas.tsx → packages/core/src/index.ts
-  warn L0-L1-subpath-only: packages/admin/src/guardian/useGuardianWorkspaceCanvas.tsx → packages/core/src/index.ts
-  warn L0-L1-subpath-only: packages/admin/src/founder/useFounderWorkspaceCanvas.tsx → packages/core/src/index.ts
-  warn L0-L1-subpath-only: apps/sanctuary-api/src/index.ts → packages/core/src/index.ts
 
-x 71 dependency violations (0 errors, 71 warnings). 2063 modules, 6511 dependencies cruised.
+x 69 dependency violations (0 errors, 69 warnings). 2087 modules, 6531 dependencies cruised.
 
 
 
 --------------------------------------------------------------------------------
+
 AUDIT SUMMARY
-
-Duration: 10.2s
-Findings: 72
+Duration: 11.4s
+Findings: 70
 Log File: reports/architecture.txt
-
 --------------------------------------------------------------------------------
 
 
@@ -6614,16 +4662,15 @@ Log File: reports/architecture.txt
 > node scripts/sovereign-audit.mjs --cmd "node scripts/check-identity-alignment.mjs" --log "reports/identity_check.txt"
 
 
->>> Starting Sovereign Audit: 2026-05-20T05:51:41.212Z
+>>> Starting Sovereign Audit: 2026-05-22T09:18:50.896Z
 
 >>> Command: node scripts/check-identity-alignment.mjs
-
 --------------------------------------------------------------------------------
 
 🚀 Starting Identity Alignment Audit...
 
 
-Scan complete in 1.81s. Found 0 potential alignment issues.
+Scan complete in 1.71s. Found 0 potential alignment issues.
 
 
 
@@ -6636,7 +4683,6 @@ AUDIT SUMMARY
 Duration: 2.3s
 Findings: 0
 Log File: reports/identity_check.txt
-
 --------------------------------------------------------------------------------
 
 
@@ -6654,440 +4700,302 @@ Log File: reports/identity_check.txt
 
   - chat.empty
   - chat.historicalView
-
   - chat.noConversationsDesc
   - chat.noConversationsTitle
-
   - chat.placeholder
   - chat.tapToContinue
-
   - common.plant
-
   - community.endorse
-
   - community.endorsers
-
   - community.groups.joinAuthRequired
-
   - community.groups.joinedSuccess
   - community.groups.member
-
   - community.groups.qrHint
 
   - community.groups.qrTitle
   - community.hearthSubtitle
-
   - community.hearthTitle
-
   - community.manifestoCarousel
   - community.manifestoTopic
-
   - community.profile.defaultBio
-
   - community.profile.explorer
   - community.profile.memberOfGurudevi
-
   - community.profile.privacyProtected
-
   - community.profile.privateNote
   - community.profile.privateSanctuary
-
   - community.profile.publicPresenceOf
-
   - community.profile.publicResonance
   - community.profile.pulseActive
-
   - community.profile.recent
   - community.profile.reflection
-
   - community.profile.resonanceSphere
   - community.profile.verified
   - community.spotlight
-
   - community.viewSpotlight
   - fireJournal.errorSaving
-
   - grades.empty
-
   - invitationWelcome.desc
   - invite.error.invalid
-
   - invite.error.noCode
   - invite.success.joining
-
   - key
-
   - progressTree.interactionsLabel
   - progressTree.philosophy
-
   - self.adminDescription
-
   - self.founderDesc
   - self.founderDescription
   - self.gratitudePlaceholder
-
   - self.guardianDescription
   - self.moodHowAreYou
-
   - self.moodNeutral
-
   - self.moodPositive
   - self.moodRadiant
   - self.noWisdomYet
-
   - self.plantSeed
   - self.principalDesc
   - self.principalDescription
-
   - self.recording
   - self.recordingHint
-
   - self.studentDesc
   - self.studentDescription
   - self.tapToStart
-
   - self.teacherDesc
-  - self.teacherDescription
 
+  - self.teacherDescription
   - self.voiceJournal
   - self.voiceJournalSubtitle
-
   - self.wisdomPlaceholder
   - self.wisdomSeeds
-
   - sleepTracker.notTime
   - sleepTracker.philosophy
-
   - sleepTracker.tomorrowHint
-
 
 [si] Missing 116 translation key(s):
   - chat.empty
-
   - chat.historicalView
   - chat.noConversationsDesc
-
   - chat.noConversationsTitle
   - chat.placeholder
-
   - chat.tapToContinue
-
   - common.plant
   - community.endorse
-
   - community.endorsers
   - community.groups.joinAuthRequired
-
   - community.groups.joinedSuccess
   - community.groups.member
-
   - community.groups.qrHint
-
   - community.groups.qrTitle
   - community.hearthSubtitle
-
   - community.hearthTitle
   - community.manifestoCarousel
-
   - community.manifestoTopic
   - community.profile.aspiration
-
   - community.profile.contributions
-
   - community.profile.defaultBio
-
   - community.profile.endorsements
   - community.profile.explorer
-
   - community.profile.memberOfGurudevi
   - community.profile.posts
-
   - community.profile.privacyNote
   - community.profile.privacyProtected
   - community.profile.privateNote
-
   - community.profile.privateSanctuary
   - community.profile.publicPresenceOf
   - community.profile.publicResonance
-
   - community.profile.pulse
   - community.profile.pulseActive
   - community.profile.recent
-
   - community.profile.reflection
   - community.profile.reportAccount
   - community.profile.resonanceSphere
-
   - community.profile.resonanceStats
   - community.profile.sanctuaryHonors
-
   - community.profile.sendMessage
   - community.profile.verified
   - community.spotlight
-
   - community.viewSpotlight
-
   - fireJournal.errorSaving
-
   - grades.empty
   - invitationWelcome.desc
-
   - invite.error.invalid
-
   - invite.error.noCode
-
   - invite.success.joining
-
   - key
   - ocr.captureDescription
-
   - ocr.chooseFromGallery
   - ocr.permission.description
-
   - ocr.permission.title
   - ocr.scanning
-
   - ocr.takePhoto
   - ocr.tipsTitle
-
   - ocr.title
   - ocr.tryAgain
-
   - progressTree.interactionsLabel
   - progressTree.philosophy
-
   - scanner.controls.flip
   - scanner.controls.gallery
-
   - scanner.dismiss
   - scanner.errors.customBuild
-
   - scanner.errors.noQrFound
   - scanner.errors.scanFailed
-
   - scanner.instructions
   - scanner.permission.grant
   - scanner.permission.message
   - scanner.status.mlKit
   - scanner.title
-
   - scanner.web.cameraMessage
   - scanner.web.closeScanner
   - scanner.web.desktopHint
   - scanner.web.emptyError
-
   - scanner.web.pasteCode
 
   - scanner.web.submitCode
   - scanner.web.title
-
   - self.adminDescription
   - self.breathingReset
-
   - self.founderDesc
   - self.founderDescription
   - self.gratitudePlaceholder
-
   - self.guardianDescription
-
   - self.moodHowAreYou
-
   - self.moodNeutral
-
   - self.moodPositive
   - self.moodRadiant
   - self.noWisdomYet
-
   - self.plantSeed
   - self.principalDesc
   - self.principalDescription
-
   - self.recording
   - self.recordingHint
-
   - self.studentDesc
   - self.studentDescription
-
   - self.tapToStart
   - self.teacherDesc
-
   - self.teacherDescription
   - self.voiceJournal
-
   - self.voiceJournalSubtitle
   - self.wisdomPlaceholder
-
   - self.wisdomSeeds
   - sleepTracker.notTime
-
   - sleepTracker.philosophy
   - sleepTracker.tomorrowHint
-
   - tabs.class
-
   - tabs.platform
-
   - webNav.alerts
   - webNav.brandName
-
   - webNav.menu
   - webNav.notifications
-
   - webNav.settings
   - webNav.tabNavigation
-
   - webNav.toggleNavigation
 
 [ta] Missing 108 translation key(s):
-
   - chat.empty
   - chat.historicalView
-
   - chat.noConversationsDesc
   - chat.noConversationsTitle
-
   - chat.placeholder
   - chat.tapToContinue
-
   - common.plant
   - community.endorse
-
   - community.endorsers
   - community.groups.joinAuthRequired
-
   - community.groups.joinedSuccess
   - community.groups.member
-
   - community.groups.qrHint
-
   - community.groups.qrTitle
   - community.hearthSubtitle
-
   - community.hearthTitle
-
   - community.manifestoCarousel
-
   - community.manifestoTopic
   - community.profile.aspiration
-
   - community.profile.contributions
   - community.profile.defaultBio
   - community.profile.endorsements
   - community.profile.explorer
   - community.profile.memberOfGurudevi
-
   - community.profile.posts
   - community.profile.privacyNote
   - community.profile.privacyProtected
   - community.profile.privateNote
   - community.profile.privateSanctuary
   - community.profile.publicPresenceOf
-
   - community.profile.publicResonance
   - community.profile.pulse
   - community.profile.pulseActive
-
   - community.profile.recent
   - community.profile.reflection
   - community.profile.reportAccount
-
   - community.profile.resonanceSphere
   - community.profile.resonanceStats
   - community.profile.sanctuaryHonors
-
   - community.profile.sendMessage
   - community.profile.verified
   - community.spotlight
   - community.viewSpotlight
   - fireJournal.errorSaving
   - grades.empty
-
   - invitationWelcome.desc
   - invite.error.invalid
   - invite.error.noCode
   - invite.success.joining
-
   - key
   - ocr.captureDescription
   - ocr.chooseFromGallery
-
   - ocr.permission.description
   - ocr.permission.title
   - ocr.scanning
-
   - ocr.takePhoto
   - ocr.tipsTitle
   - ocr.title
-
   - ocr.tryAgain
   - progressTree.interactionsLabel
-
   - progressTree.philosophy
   - scanner.controls.flip
-
   - scanner.controls.gallery
   - scanner.dismiss
-
   - scanner.errors.customBuild
   - scanner.errors.noQrFound
-
   - scanner.errors.scanFailed
   - scanner.instructions
-
   - scanner.permission.grant
-
   - scanner.permission.message
   - scanner.status.mlKit
   - scanner.title
-
   - scanner.web.cameraMessage
   - scanner.web.closeScanner
-
   - scanner.web.desktopHint
   - scanner.web.emptyError
   - scanner.web.pasteCode
-
   - scanner.web.submitCode
   - scanner.web.title
   - self.adminDescription
-
   - self.founderDesc
   - self.founderDescription
-
   - self.gratitudePlaceholder
   - self.guardianDescription
   - self.moodHowAreYou
-
   - self.moodNeutral
   - self.moodPositive
-
   - self.moodRadiant
   - self.noWisdomYet
-
   - self.plantSeed
   - self.principalDesc
-
   - self.principalDescription
-
   - self.recording
   - self.recordingHint
   - self.studentDesc
   - self.studentDescription
-
   - self.tapToStart
   - self.teacherDesc
-
   - self.teacherDescription
   - self.voiceJournal
-
   - self.voiceJournalSubtitle
-
   - self.wisdomPlaceholder
   - self.wisdomSeeds
   - sleepTracker.notTime
   - sleepTracker.philosophy
   - sleepTracker.tomorrowHint
-
   - tabs.class
   - tabs.platform
 

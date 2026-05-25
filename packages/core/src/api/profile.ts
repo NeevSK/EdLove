@@ -1,4 +1,5 @@
 import { profile } from '../logic/managers/factory';
+import { useStore } from '../store/useStore';
 import type { SocialLink } from '../types';
 import { APIError } from '../types';
 import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
@@ -121,10 +122,18 @@ export const profileAPI = {
   },
 
   async upsertSocialLink(userId: string, link: Partial<SocialLink>) {
+    const state = useStore.getState();
+    if (!state.user || state.user.is_anonymous) {
+      throw new APIError('Forbidden', '403');
+    }
     return profile.upsertSocialLink(userId, link);
   },
 
   async deleteSocialLink(linkId: string) {
+    const state = useStore.getState();
+    if (!state.user || state.user.is_anonymous) {
+      throw new APIError('Forbidden', '403');
+    }
     return profile.deleteSocialLink(linkId);
   },
 };

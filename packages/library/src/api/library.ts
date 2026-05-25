@@ -1165,7 +1165,7 @@ resource: nodes!resource_engagements_resource_id_fkey(
         .single();
       if (fetchError || !resource) return [];
       const query = `${resource.subjects?.[0] || ''} ${resource.tags?.join(' ') || ''}`;
-      const { data, error } = await supabase.rpc('search_map_universe', {
+      const { data } = await supabase.rpc('search_map_universe', {
         query_text: query,
         match_count: 3,
       });

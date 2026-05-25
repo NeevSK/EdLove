@@ -1,14 +1,11 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FlatCompat } from '@eslint/eslintrc';
-import js from '@eslint/js';
-import eslintConfigPrettier from 'eslint-config-prettier';
 import pluginJsxA11y from 'eslint-plugin-jsx-a11y';
 import pluginReact from 'eslint-plugin-react';
 import pluginReactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
 import { config as baseConfig } from './base.js';
-import tseslint from 'typescript-eslint';
 import maxUseStateRule from './rules/max-use-state.js';
 
 const __filename = fileURLToPath(import.meta.url);

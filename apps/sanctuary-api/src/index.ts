@@ -145,11 +145,11 @@ app.use('/api/*', async (c, next) => {
   let hydratedFromDb = false;
   if (!isAnonymousUser && db) {
     try {
-      const activeBond = await db.bond.findFirst({
+      const activeBond = (await db.bond.findFirst({
         where: {
           user_id: user.id,
         },
-      });
+      })) as any;
       if (activeBond) {
         capacity = activeBond.capacity;
         if (activeBond.entity_type === 'SCHOOL') {
@@ -213,13 +213,28 @@ app.use('/api/*', async (c, next) => {
   let resourceType = 'School';
   let resourceId = school_id || 'school_institutional';
 
-  if (isAnonymousUser && urlPath.includes('/identity/resolveIdentity')) {
+  // 1. Resolve Identity bootstrap bypass
+  if (urlPath.includes('/identity/resolveIdentity')) {
     return await next();
   }
 
-  if (urlPath.includes('/groups') || urlPath.includes('/posts')) {
-    resourceType = 'Community';
-    resourceId = 'school_community';
+  // 2. Identity & Profile API calls should target the specific User resource
+  if (urlPath.includes('/identity/')) {
+    resourceType = 'User';
+    const parts = urlPath.split('/');
+    const lastPart = parts[parts.length - 1];
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (uuidRegex.test(lastPart)) {
+      resourceId = lastPart;
+    } else {
+      resourceId = user.id;
+    }
+  } else if (urlPath.includes('/groups')) {
+    resourceType = 'Group';
+    resourceId = 'school_group';
+  } else if (urlPath.includes('/posts')) {
+    resourceType = 'Post';
+    resourceId = 'school_post';
   } else if (urlPath.includes('/classroom')) {
     resourceType = 'Classroom';
     resourceId = 'school_classroom';
@@ -227,12 +242,15 @@ app.use('/api/*', async (c, next) => {
     resourceType = 'Grade';
     resourceId = 'school_grade';
   } else if (urlPath.includes('/attendance')) {
-    resourceType = 'Attendance';
+    resourceType = 'AttendanceRecord';
     resourceId = 'school_attendance';
   } else if (urlPath.includes('/resources') || urlPath.includes('/library')) {
-    resourceType = 'Library';
+    resourceType = 'Material';
     resourceId = 'school_library';
-  } else if (urlPath.includes('/leave') || urlPath.includes('/staff')) {
+  } else if (urlPath.includes('/leave')) {
+    resourceType = 'StaffLeave';
+    resourceId = 'school_admin';
+  } else if (urlPath.includes('/staff')) {
     resourceType = 'School';
     resourceId = 'school_admin';
   } else if (urlPath.includes('/self/preferences')) {
@@ -300,8 +318,7 @@ app.use('/api/*', async (c, next) => {
           resourceType === 'FireJournal' ||
           resourceType === 'JoyMoments' ||
           resourceType === 'GratitudeEntries' ||
-          resourceType === 'EnergyForecasts' ||
-          resourceType === 'User') && { user_id: user.id }),
+          resourceType === 'EnergyForecasts') && { user_id: user.id }),
       },
     },
     context: {

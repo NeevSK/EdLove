@@ -11,7 +11,7 @@ module.exports = {
     const chunks = chunkArray(files, 10);
     const commands = [];
     for (const chunk of chunks) {
-      const chunkStr = chunk.map(f => `"${f}"`).join(' ');
+      const chunkStr = chunk.map((f) => `"${f}"`).join(' ');
       commands.push(`biome check --write --no-errors-on-unmatched ${chunkStr}`);
       commands.push(`eslint --fix ${chunkStr}`);
       commands.push(`node scripts/surgical-check.mjs ${chunkStr}`);
@@ -20,6 +20,9 @@ module.exports = {
   },
   '*.json': (files) => {
     const chunks = chunkArray(files, 10);
-    return chunks.map(chunk => `biome check --write --no-errors-on-unmatched ${chunk.map(f => `"${f}"`).join(' ')}`);
+    return chunks.map(
+      (chunk) =>
+        `biome check --write --no-errors-on-unmatched ${chunk.map((f) => `"${f}"`).join(' ')}`,
+    );
   },
 };

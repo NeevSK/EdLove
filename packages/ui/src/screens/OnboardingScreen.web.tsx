@@ -9,18 +9,13 @@ import type { Capacity } from '@repo/core/types';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWindowDimensions } from 'react-native';
-
+import { GatewayFooter } from '../components/GatewayFooter.web';
+import { GatewayHeader } from '../components/GatewayHeader.web';
 import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
 
 // ──────────────────────────────────────────────────────────
 // CONSTANTS
 // ──────────────────────────────────────────────────────────
-
-const LANGUAGES = [
-  { code: 'en', label: 'EN' },
-  { code: 'si', label: 'සිං' },
-  { code: 'ta', label: 'தமிழ்' },
-];
 
 const PILLARS = [
   { name: 'Self', emoji: '🧘' },
@@ -97,30 +92,6 @@ function onboardingReducer(state: OnboardingUIState, action: OnboardingAction): 
 // SUB-COMPONENTS
 // ──────────────────────────────────────────────────────────
 
-const LanguagePillRow = memo(
-  ({
-    currentLang,
-    onLanguageChange,
-  }: {
-    currentLang: string;
-    onLanguageChange: (code: string) => void;
-  }) => (
-    <div className="ob-lang-row">
-      {LANGUAGES.map((lang) => (
-        <button
-          type="button"
-          key={lang.code}
-          className={`ob-lang-pill ${currentLang?.startsWith(lang.code) ? 'active' : ''}`}
-          onClick={() => onLanguageChange(lang.code)}
-        >
-          {lang.label}
-        </button>
-      ))}
-    </div>
-  ),
-);
-LanguagePillRow.displayName = 'LanguagePillRow';
-
 const ErrorBanner = memo(({ error }: { error: string | null }) => {
   if (!error) return null;
   return (
@@ -143,44 +114,58 @@ const NameStep = memo(
     name: string;
     onNameChange: (val: string) => void;
     onNext: () => void;
-  }) => (
-    <div className="ob-step">
-      <div className="ob-step-shell">
-        <div className="ob-step-meta">Step 1 · Arrival</div>
-        <div className="ob-step-icon">👋🏻</div>
+  }) => {
+    const handleChange = useCallback(
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        onNameChange(e.target.value);
+      },
+      [onNameChange],
+    );
+
+    const handleKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' && name.trim()) onNext();
+      },
+      [name, onNext],
+    );
+
+    return (
+      <div className="ob-step">
+        <div className="ob-step-shell">
+          <div className="ob-step-meta">Step 1 · Arrival</div>
+          <div className="ob-step-icon">👋🏻</div>
+        </div>
+        <h2 className="ob-step-title">{t('onboarding.nameTitle')}</h2>
+        <p className="ob-step-subtitle">{t('onboarding.nameSubtitle')}</p>
+        <input
+          className="ob-input"
+          type="text"
+          placeholder={t('onboarding.namePlaceholder')}
+          value={name}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          autoComplete="name"
+        />
+        <p className="ob-input-hint">
+          {name.trim().length > 0 && name.trim().length < 2
+            ? 'Your name is a bit short. Try adding another character.'
+            : name === 'Guest User'
+              ? "Please choose a name other than 'Guest User'."
+              : 'Use the display name you want people to see inside the app.'}
+        </p>
+        <div className="ob-actions">
+          <button
+            type="button"
+            className="ob-btn-primary"
+            onClick={onNext}
+            disabled={name.trim().length < 2 || name === 'Guest User'}
+          >
+            {t('onboarding.continue')} →
+          </button>
+        </div>
       </div>
-      <h2 className="ob-step-title">{t('onboarding.nameTitle')}</h2>
-      <p className="ob-step-subtitle">{t('onboarding.nameSubtitle')}</p>
-      <input
-        className="ob-input"
-        type="text"
-        placeholder={t('onboarding.namePlaceholder')}
-        value={name}
-        onChange={(e) => onNameChange(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' && name.trim()) onNext();
-        }}
-        autoComplete="name"
-      />
-      <p className="ob-input-hint">
-        {name.trim().length > 0 && name.trim().length < 2
-          ? 'Your name is a bit short. Try adding another character.'
-          : name === 'Guest User'
-            ? "Please choose a name other than 'Guest User'."
-            : 'Use the display name you want people to see inside the app.'}
-      </p>
-      <div className="ob-actions">
-        <button
-          type="button"
-          className="ob-btn-primary"
-          onClick={onNext}
-          disabled={name.trim().length < 2 || name === 'Guest User'}
-        >
-          {t('onboarding.continue')} →
-        </button>
-      </div>
-    </div>
-  ),
+    );
+  },
 );
 NameStep.displayName = 'NameStep';
 
@@ -201,39 +186,52 @@ const IdentityStep = memo(
     onCapacitySelect: (val: Capacity) => void;
     onBack: () => void;
     onNext: () => void;
-  }) => (
-    <div className="ob-step">
-      <div className="ob-step-shell">
-        <div className="ob-step-meta">Step 2 · Belonging</div>
-        <div className="ob-step-icon">🎯</div>
-      </div>
-      <h2 className="ob-step-title">{t('onboarding.roleTitle')}</h2>
-      <p className="ob-step-subtitle">{t('onboarding.roleSubtitle')}</p>
-      {isAnonymous && <div className="ob-anonymous-tag">(Anonymous Session)</div>}
-      <div className="ob-role-grid">
-        {CAPACITY_OPTIONS.map((r) => (
-          <button
-            type="button"
-            key={r.value}
-            className={`ob-role-card ${capacity === r.value ? 'selected' : ''}`}
-            onClick={() => onCapacitySelect(r.value as Capacity)}
-          >
-            <span className="ob-role-emoji">{r.emoji}</span>
-            <span className="ob-role-name">{t(`identity.${r.value}`)}</span>
-            <span className="ob-role-desc">{t(r.descKey)}</span>
+  }) => {
+    const handleCapacityClick = useCallback(
+      (e: React.MouseEvent<HTMLButtonElement>) => {
+        const selectedCap = e.currentTarget.getAttribute('data-capacity');
+        if (selectedCap) {
+          onCapacitySelect(selectedCap as Capacity);
+        }
+      },
+      [onCapacitySelect],
+    );
+
+    return (
+      <div className="ob-step">
+        <div className="ob-step-shell">
+          <div className="ob-step-meta">Step 2 · Belonging</div>
+          <div className="ob-step-icon">🎯</div>
+        </div>
+        <h2 className="ob-step-title">{t('onboarding.roleTitle')}</h2>
+        <p className="ob-step-subtitle">{t('onboarding.roleSubtitle')}</p>
+        {isAnonymous && <div className="ob-anonymous-tag">(Anonymous Session)</div>}
+        <div className="ob-role-grid">
+          {CAPACITY_OPTIONS.map((r) => (
+            <button
+              type="button"
+              key={r.value}
+              data-capacity={r.value}
+              className={`ob-role-card ${capacity === r.value ? 'selected' : ''}`}
+              onClick={handleCapacityClick}
+            >
+              <span className="ob-role-emoji">{r.emoji}</span>
+              <span className="ob-role-name">{t(`identity.${r.value}`)}</span>
+              <span className="ob-role-desc">{t(r.descKey)}</span>
+            </button>
+          ))}
+        </div>
+        <div className="ob-actions">
+          <button type="button" className="ob-btn-secondary" onClick={onBack}>
+            ← {t('onboarding.back')}
           </button>
-        ))}
+          <button type="button" className="ob-btn-primary" onClick={onNext} disabled={isCompleting}>
+            {isCompleting ? t('onboarding.saving') : t('onboarding.continue')} →
+          </button>
+        </div>
       </div>
-      <div className="ob-actions">
-        <button type="button" className="ob-btn-secondary" onClick={onBack}>
-          ← {t('onboarding.back')}
-        </button>
-        <button type="button" className="ob-btn-primary" onClick={onNext} disabled={isCompleting}>
-          {isCompleting ? t('onboarding.saving') : t('onboarding.continue')} →
-        </button>
-      </div>
-    </div>
-  ),
+    );
+  },
 );
 IdentityStep.displayName = 'IdentityStep';
 
@@ -312,7 +310,7 @@ export default memo(function OnboardingScreenWeb({
   onComplete,
   isAnonymous = false,
 }: OnboardingScreenProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { width } = useWindowDimensions();
 
   const [state, dispatch] = useReducer(onboardingReducer, {
@@ -559,6 +557,10 @@ export default memo(function OnboardingScreenWeb({
     state.schoolId,
   ]);
 
+  const handleNextPress = useCallback(() => {
+    void handleNext();
+  }, [handleNext]);
+
   const handleBack = useCallback(() => {
     hapticLight();
     dispatch({ type: 'PREV_STEP' });
@@ -577,13 +579,6 @@ export default memo(function OnboardingScreenWeb({
     dispatch({ type: 'SET_CAPACITY', capacity: val });
     hapticLight();
   }, []);
-  const handleLanguageChange = useCallback(
-    (code: string) => {
-      hapticLight();
-      void i18n.changeLanguage(code);
-    },
-    [i18n],
-  );
 
   // Save progress whenever step/name/role changes
   useEffect(() => {
@@ -611,14 +606,7 @@ export default memo(function OnboardingScreenWeb({
   const renderCurrentStep = useCallback(() => {
     if (currentStep === 0) {
       return (
-        <NameStep
-          t={t}
-          name={name}
-          onNameChange={handleNameChange}
-          onNext={() => {
-            void handleNext();
-          }}
-        />
+        <NameStep t={t} name={name} onNameChange={handleNameChange} onNext={handleNextPress} />
       );
     }
     if (currentStep === 1) {
@@ -630,9 +618,7 @@ export default memo(function OnboardingScreenWeb({
           isAnonymous={isAnonymous}
           onCapacitySelect={handleCapacitySelect}
           onBack={handleBack}
-          onNext={() => {
-            void handleNext();
-          }}
+          onNext={handleNextPress}
         />
       );
     }
@@ -644,9 +630,7 @@ export default memo(function OnboardingScreenWeb({
           screen={currentTourScreen}
           isCompleting={isProcessing}
           onBack={handleBack}
-          onNext={() => {
-            void handleNext();
-          }}
+          onNext={handleNextPress}
           onSkip={handleSkipTour}
         />
       );
@@ -657,7 +641,7 @@ export default memo(function OnboardingScreenWeb({
     t,
     name,
     handleNameChange,
-    handleNext,
+    handleNextPress,
     selectedCapacity,
     isProcessing,
     isAnonymous,
@@ -669,15 +653,12 @@ export default memo(function OnboardingScreenWeb({
 
   return (
     <div className="ob-root">
+      <GatewayHeader />
       <div className="ob-atmosphere ob-atmosphere-one" />
       <div className="ob-atmosphere ob-atmosphere-two" />
 
       {isNarrow ? (
         <div className="ob-narrow">
-          <div className="ob-narrow-header">
-            <span className="ob-brand-name">🪷 Gurudevi</span>
-            <LanguagePillRow currentLang={i18n.language} onLanguageChange={handleLanguageChange} />
-          </div>
           <div className="ob-progress-track" role="progressbar">
             <div
               className="ob-progress-fill"
@@ -693,10 +674,6 @@ export default memo(function OnboardingScreenWeb({
         <div className="ob-split">
           <div className="ob-left">
             <div className="ob-left-inner">
-              <div className="ob-brand">
-                <span className="ob-brand-icon">🪷</span>
-                <span className="ob-brand-name">Gurudevi</span>
-              </div>
               <div>
                 <h1 className="ob-left-headline">
                   Your Sacred
@@ -716,12 +693,6 @@ export default memo(function OnboardingScreenWeb({
                 ))}
               </div>
               <Tracker currentStep={currentStep} />
-              <div className="ob-lang-row ob-lang-bottom">
-                <LanguagePillRow
-                  currentLang={i18n.language}
-                  onLanguageChange={handleLanguageChange}
-                />
-              </div>
             </div>
           </div>
           <div className="ob-right">
@@ -742,6 +713,8 @@ export default memo(function OnboardingScreenWeb({
         </div>
       )}
 
+      <GatewayFooter />
+
       <style>{ONBOARDING_STYLES}</style>
     </div>
   );
@@ -753,14 +726,16 @@ export default memo(function OnboardingScreenWeb({
 
 const ONBOARDING_STYLES = `
     .ob-root {
-        position: fixed;
-        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 100vh;
+        overflow-y: auto;
         background:
             radial-gradient(circle at 18% 14%, rgba(125, 212, 192, 0.14), transparent 24%),
             radial-gradient(circle at 88% 22%, rgba(184, 169, 224, 0.14), transparent 22%),
             linear-gradient(160deg, var(--background, #F5EDD6) 0%, var(--background-alt, #FAF7ED) 60%, rgba(252, 249, 242, 0.96) 100%);
         font-family: var(--font-body, 'DM Sans', sans-serif);
-        overflow: hidden;
     }
     .ob-atmosphere {
         position: absolute;
@@ -788,7 +763,7 @@ const ONBOARDING_STYLES = `
     .ob-narrow {
         display: flex;
         flex-direction: column;
-        height: 100%;
+        flex: 1;
         position: relative;
         z-index: 1;
     }
@@ -820,7 +795,7 @@ const ONBOARDING_STYLES = `
     /* ── SPLIT (two-column) ──────────────────── */
     .ob-split {
         display: flex;
-        height: 100%;
+        flex: 1;
         position: relative;
         z-index: 1;
     }

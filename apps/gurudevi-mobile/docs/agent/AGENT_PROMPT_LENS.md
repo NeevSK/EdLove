@@ -67,6 +67,8 @@ Critical truths about this codebase's web support (Expo SDK 55 / Metro):
 This app uses **`registerRootComponent(App)`** (classic Expo entry via `index.ts`), NOT expo-router's file-based routing.
 - `package.json` → `"main": "index.ts"` → `App.tsx` via `registerRootComponent`.
 - `expo-router` is intentionally **NOT** listed as an `app.json` plugin. Adding it will silently break web by hijacking Metro to look for an `app/` directory that does not exist → blank page.
+- Nested layouts, section shells, and responsive web/mobile variants should be built with React Navigation stacks/tabs plus `.web.tsx` screen variants, not Expo Router file conventions.
+- If a screen needs different structure on web, prefer platform files, conditional rendering, or nested navigators inside `App.tsx` rather than moving the whole app to file-based routing.
 
 ### web section in `app.json`
 `"bundler": "metro"` is mandatory in the `expo.web` section for Expo SDK 50+. Without it the web target is undefined. See the actual config in `apps/gurudevi-mobile/app.json`.

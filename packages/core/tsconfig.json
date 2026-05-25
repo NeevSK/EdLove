@@ -7,16 +7,14 @@
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "noEmit": true,
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@powersync/react-native": ["src/adapters/powersync/powersync-shim.ts"],
-      "@powersync/react": ["src/adapters/powersync/powersync-react-shim.ts"],
-      "@repo/sanctuary-api": ["../../apps/sanctuary-api/src/index.ts"],
-      "@intuitui-labs/form-builder-engine": ["../form-builder-engine/src"]
+      "@/*": ["./src/*"],
+      "@powersync/react-native": ["./src/adapters/powersync/powersync-shim.ts"],
+      "@powersync/react": ["./src/adapters/powersync/powersync-react-shim.ts"]
     },
-    "types": ["vitest/importMeta", "vitest/globals", "@repo/types-shim"]
+    "types": ["vitest/importMeta", "vitest/globals", "@repo/types-shim"],
+    "rootDir": "./src"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "vitest.config.ts"],
   "exclude": ["node_modules"]
 }

@@ -22,6 +22,6 @@ module.exports = (api) => {
       ],
       'nativewind/babel',
     ],
-    plugins: [require('react-native-reanimated/plugin')],
+    plugins: [require('react-native-worklets/plugin')],
   };
 };

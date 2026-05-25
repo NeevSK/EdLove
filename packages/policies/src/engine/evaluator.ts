@@ -93,12 +93,18 @@ export function check(request: AuthRequest): AuthResponse {
     };
 
     // Build resource entity
+    const resourceAttrs: Record<string, any> = {
+      id: request.resource.id,
+      ...request.resource.attributes,
+    };
+    if (request.resource.type === 'User') {
+      if (resourceAttrs.school_id === undefined) resourceAttrs.school_id = '';
+      if (resourceAttrs.capacity === undefined) resourceAttrs.capacity = 'student';
+    }
+
     const resourceEntity = {
       uid: { type: request.resource.type, id: request.resource.id },
-      attrs: {
-        id: request.resource.id,
-        ...request.resource.attributes,
-      },
+      attrs: resourceAttrs,
       parents: [],
     };
 
@@ -111,7 +117,11 @@ export function check(request: AuthRequest): AuthResponse {
       schema: { human: schemaText },
       slice: {
         policies: concatenatedPolicies,
-        entities: [principalEntity, resourceEntity],
+        entities:
+          principalEntity.uid.type === resourceEntity.uid.type &&
+          principalEntity.uid.id === resourceEntity.uid.id
+            ? [principalEntity]
+            : [principalEntity, resourceEntity],
         templateInstantiations: null,
       },
     });

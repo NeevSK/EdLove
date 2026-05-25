@@ -93,7 +93,7 @@ export function useAuthorityLifecycle() {
           email: identity.email,
           display_name: identity.display_name,
           capacity: identity.activeBond?.capacity || null,
-          total_bonds: identity.availableBonds.length,
+          total_bonds: (identity.availableBonds || []).length,
           school_id: identity.schoolId,
         });
       }

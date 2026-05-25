@@ -3,11 +3,11 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "baseUrl": ".",
     "jsx": "react-jsx",
     "paths": {
       "@repo/library/*": ["./src/*"]
-    }
+    },
+    "noImplicitAny": false
   },
   "include": ["src/**/*"]
 }

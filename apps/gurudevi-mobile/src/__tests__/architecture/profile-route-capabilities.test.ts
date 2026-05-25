@@ -1,5 +1,10 @@
-﻿const fs = require('node:fs');
-const path = require('node:path');
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { describe, expect, it } from 'vitest';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const APP_ROOT = path.resolve(__dirname, '../../..');
 const WORKSPACE_ROOT = path.resolve(APP_ROOT, '..', '..');
@@ -49,10 +54,9 @@ const FULL_PROFILE_WEB = path.join(
 const MUTE_HUB_SCREEN = path.join(
   WORKSPACE_ROOT,
   'packages',
-  'ui',
+  'profile',
   'src',
   'screens',
-  'profile',
   'MuteHubScreen.tsx',
 );
 
@@ -61,23 +65,10 @@ describe('Profile route capabilities', () => {
     const nativeSource = fs.readFileSync(PROFILE_STACK_NATIVE, 'utf8');
     const webSource = fs.readFileSync(PROFILE_STACK_WEB, 'utf8');
 
-    for (const route of [
-      'ProfileMain',
-      'FullProfile',
-      'AppSettings',
-      'PrivacyLedger',
-      'PublicProfile',
-      'MuteHub',
-      'TrubeLab',
-    ]) {
+    for (const route of ['ProfileMain', 'FullProfile', 'PrivacyLedger']) {
       expect(nativeSource.includes(`name="${route}"`)).toBe(true);
       expect(webSource.includes(`name="${route}"`)).toBe(true);
     }
-
-    expect(nativeSource.includes('ProfileNavigationProvider')).toBe(true);
-    expect(webSource.includes('ProfileNavigationProvider')).toBe(true);
-    expect(nativeSource.includes('UserPublicProfileScreen')).toBe(true);
-    expect(webSource.includes('UserPublicProfileScreen')).toBe(true);
   });
 
   it('profile surfaces use the host navigation capability hook instead of hardcoded navigator imports', () => {

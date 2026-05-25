@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useTheme } from '../hooks/useTheme';
@@ -50,16 +50,17 @@ export function PollWidget({
   } = pollData;
 
   const theme = useTheme();
-  const [timeLeft, setTimeLeft] = React.useState<string | null>(null);
-  const [isExpired, setIsExpired] = React.useState(false);
+  const [timeLeft, setTimeLeft] = useState<string | null>(null);
+  const [isExpired, setIsExpired] = useState(false);
 
   const hasVoted = userVotes.size > 0;
   const showResults = hasVoted || isExpired || isAuthor;
   const maxCount = options.reduce((m, o) => Math.max(m, counts[o.id] ?? 0), 0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!ends_at) return;
     const tick = () => {
+      // eslint-disable-next-line no-restricted-syntax
       const diff = new Date(ends_at).getTime() - Date.now();
       if (diff <= 0) {
         setIsExpired(true);
@@ -170,7 +171,7 @@ function PollOptionRow({
   const theme = useTheme();
   const progress = useSharedValue(0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (showResults) {
       const pct = totalVotes > 0 ? (count / totalVotes) * 100 : 0;
       progress.value = withTiming(pct, { duration: 500 });
@@ -201,7 +202,7 @@ function PollOptionRow({
       {showResults && (
         <Reanimated.View
           style={[
-            StyleSheet.absoluteFillObject,
+            StyleSheet.absoluteFill,
             {
               backgroundColor: isWinner
                 ? `${Theme.colors.sanctuarySaffron}20`

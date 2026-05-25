@@ -40,6 +40,26 @@ export class SchemaType implements SchemaDef {
           name: 'full_name',
           type: 'String',
         },
+        display_name: {
+          name: 'display_name',
+          type: 'String',
+          optional: true,
+        },
+        first_name: {
+          name: 'first_name',
+          type: 'String',
+          optional: true,
+        },
+        last_name: {
+          name: 'last_name',
+          type: 'String',
+          optional: true,
+        },
+        identity_state: {
+          name: 'identity_state',
+          type: 'String',
+          optional: true,
+        },
         username: {
           name: 'username',
           type: 'String',
@@ -98,6 +118,11 @@ export class SchemaType implements SchemaDef {
             { name: '@default', args: [{ name: 'value', value: ExpressionUtils.literal(false) }] },
           ] as readonly AttributeApplication[],
           default: false as FieldDefault,
+        },
+        capacity: {
+          name: 'capacity',
+          type: 'String',
+          optional: true,
         },
         citizenship: {
           name: 'citizenship',
@@ -282,6 +307,12 @@ export class SchemaType implements SchemaDef {
           name: 'preferences',
           type: 'UserPreferences',
           optional: true,
+          relation: { opposite: 'user' },
+        },
+        personal_classrooms: {
+          name: 'personal_classrooms',
+          type: 'PersonalClassroom',
+          array: true,
           relation: { opposite: 'user' },
         },
         gifts_given: {
@@ -1104,6 +1135,147 @@ export class SchemaType implements SchemaDef {
             },
           ],
         },
+        { name: '@@map', args: [{ name: 'name', value: ExpressionUtils.literal('classrooms') }] },
+      ] as readonly AttributeApplication[],
+      idFields: ['id'],
+      uniqueFields: {
+        id: { type: 'String' },
+      },
+    },
+    PersonalClassroom: {
+      name: 'PersonalClassroom',
+      fields: {
+        id: {
+          name: 'id',
+          type: 'String',
+          id: true,
+          attributes: [
+            { name: '@id' },
+            { name: '@default', args: [{ name: 'value', value: ExpressionUtils.call('uuid') }] },
+          ] as readonly AttributeApplication[],
+          default: ExpressionUtils.call('uuid') as FieldDefault,
+        },
+        user_id: {
+          name: 'user_id',
+          type: 'String',
+          foreignKeyFor: ['user'] as readonly string[],
+        },
+        name: {
+          name: 'name',
+          type: 'String',
+        },
+        type: {
+          name: 'type',
+          type: 'String',
+        },
+        created_at: {
+          name: 'created_at',
+          type: 'DateTime',
+          attributes: [
+            { name: '@default', args: [{ name: 'value', value: ExpressionUtils.call('now') }] },
+          ] as readonly AttributeApplication[],
+          default: ExpressionUtils.call('now') as FieldDefault,
+        },
+        updated_at: {
+          name: 'updated_at',
+          type: 'DateTime',
+          updatedAt: true,
+          attributes: [{ name: '@updatedAt' }] as readonly AttributeApplication[],
+        },
+        user: {
+          name: 'user',
+          type: 'User',
+          attributes: [
+            {
+              name: '@relation',
+              args: [
+                {
+                  name: 'fields',
+                  value: ExpressionUtils.array('String', [ExpressionUtils.field('user_id')]),
+                },
+                {
+                  name: 'references',
+                  value: ExpressionUtils.array('String', [ExpressionUtils.field('id')]),
+                },
+                { name: 'onDelete', value: ExpressionUtils.literal('Cascade') },
+              ],
+            },
+          ] as readonly AttributeApplication[],
+          relation: {
+            opposite: 'personal_classrooms',
+            fields: ['user_id'],
+            references: ['id'],
+            onDelete: 'Cascade',
+          },
+        },
+      },
+      attributes: [
+        {
+          name: '@@allow',
+          args: [
+            { name: 'operation', value: ExpressionUtils.literal('all') },
+            {
+              name: 'condition',
+              value: ExpressionUtils.binary(
+                ExpressionUtils.binary(ExpressionUtils.call('auth'), '!=', ExpressionUtils._null()),
+                '&&',
+                ExpressionUtils.binary(
+                  ExpressionUtils.field('user_id'),
+                  '==',
+                  ExpressionUtils.member(ExpressionUtils.call('auth'), ['id']),
+                ),
+              ),
+            },
+          ],
+        },
+        {
+          name: '@@allow',
+          args: [
+            { name: 'operation', value: ExpressionUtils.literal('all') },
+            {
+              name: 'condition',
+              value: ExpressionUtils.binary(
+                ExpressionUtils.member(ExpressionUtils.call('auth'), ['bonds']),
+                '?',
+                ExpressionUtils.binary(
+                  ExpressionUtils.binary(
+                    ExpressionUtils.field('capacity'),
+                    '==',
+                    ExpressionUtils.literal('admin'),
+                  ),
+                  '&&',
+                  ExpressionUtils.binary(
+                    ExpressionUtils.field('entity_type'),
+                    '==',
+                    ExpressionUtils.literal('PLATFORM'),
+                  ),
+                ),
+              ),
+            },
+          ],
+        },
+        {
+          name: '@@allow',
+          args: [
+            { name: 'operation', value: ExpressionUtils.literal('read') },
+            {
+              name: 'condition',
+              value: ExpressionUtils.binary(
+                ExpressionUtils.binary(ExpressionUtils.call('auth'), '!=', ExpressionUtils._null()),
+                '&&',
+                ExpressionUtils.binary(
+                  ExpressionUtils.field('user_id'),
+                  '==',
+                  ExpressionUtils.member(ExpressionUtils.call('auth'), ['id']),
+                ),
+              ),
+            },
+          ],
+        },
+        {
+          name: '@@map',
+          args: [{ name: 'name', value: ExpressionUtils.literal('personal_classrooms') }],
+        },
       ] as readonly AttributeApplication[],
       idFields: ['id'],
       uniqueFields: {
@@ -1288,6 +1460,10 @@ export class SchemaType implements SchemaDef {
             },
           ],
         },
+        {
+          name: '@@map',
+          args: [{ name: 'name', value: ExpressionUtils.literal('classroom_students') }],
+        },
       ] as readonly AttributeApplication[],
       idFields: ['id'],
       uniqueFields: {
@@ -1449,6 +1625,7 @@ export class SchemaType implements SchemaDef {
             },
           ],
         },
+        { name: '@@map', args: [{ name: 'name', value: ExpressionUtils.literal('assignments') }] },
       ] as readonly AttributeApplication[],
       idFields: ['id'],
       uniqueFields: {
@@ -1769,6 +1946,10 @@ export class SchemaType implements SchemaDef {
             },
           ],
         },
+        {
+          name: '@@map',
+          args: [{ name: 'name', value: ExpressionUtils.literal('student_grades') }],
+        },
       ] as readonly AttributeApplication[],
       idFields: ['id'],
       uniqueFields: {
@@ -1886,6 +2067,10 @@ export class SchemaType implements SchemaDef {
               ),
             },
           ],
+        },
+        {
+          name: '@@map',
+          args: [{ name: 'name', value: ExpressionUtils.literal('classroom_grading_settings') }],
         },
       ] as readonly AttributeApplication[],
       idFields: ['classroom_id'],
@@ -2088,6 +2273,10 @@ export class SchemaType implements SchemaDef {
             },
           ],
         },
+        {
+          name: '@@map',
+          args: [{ name: 'name', value: ExpressionUtils.literal('community_groups') }],
+        },
       ] as readonly AttributeApplication[],
       idFields: ['id'],
       uniqueFields: {
@@ -2267,6 +2456,10 @@ export class SchemaType implements SchemaDef {
             },
           ],
         },
+        {
+          name: '@@map',
+          args: [{ name: 'name', value: ExpressionUtils.literal('community_group_members') }],
+        },
       ] as readonly AttributeApplication[],
       idFields: ['id'],
       uniqueFields: {
@@ -2444,6 +2637,10 @@ export class SchemaType implements SchemaDef {
             },
           ],
         },
+        {
+          name: '@@map',
+          args: [{ name: 'name', value: ExpressionUtils.literal('community_posts') }],
+        },
       ] as readonly AttributeApplication[],
       idFields: ['id'],
       uniqueFields: {
@@ -2562,6 +2759,10 @@ export class SchemaType implements SchemaDef {
               ),
             },
           ],
+        },
+        {
+          name: '@@map',
+          args: [{ name: 'name', value: ExpressionUtils.literal('group_messages') }],
         },
       ] as readonly AttributeApplication[],
       idFields: ['id'],
@@ -2692,6 +2893,10 @@ export class SchemaType implements SchemaDef {
               ),
             },
           ],
+        },
+        {
+          name: '@@map',
+          args: [{ name: 'name', value: ExpressionUtils.literal('community_reactions') }],
         },
       ] as readonly AttributeApplication[],
       idFields: ['id'],
@@ -2846,6 +3051,7 @@ export class SchemaType implements SchemaDef {
             },
           ],
         },
+        { name: '@@map', args: [{ name: 'name', value: ExpressionUtils.literal('lessons') }] },
       ] as readonly AttributeApplication[],
       idFields: ['id'],
       uniqueFields: {
@@ -3025,7 +3231,7 @@ export class SchemaType implements SchemaDef {
         },
         {
           name: '@@map',
-          args: [{ name: 'name', value: ExpressionUtils.literal('classroom_resources') }],
+          args: [{ name: 'name', value: ExpressionUtils.literal('lesson_materials') }],
         },
       ] as readonly AttributeApplication[],
       idFields: ['id'],
@@ -3280,6 +3486,7 @@ export class SchemaType implements SchemaDef {
             },
           ],
         },
+        { name: '@@map', args: [{ name: 'name', value: ExpressionUtils.literal('attendance') }] },
       ] as readonly AttributeApplication[],
       idFields: ['id'],
       uniqueFields: {
@@ -3501,6 +3708,7 @@ export class SchemaType implements SchemaDef {
             },
           ],
         },
+        { name: '@@map', args: [{ name: 'name', value: ExpressionUtils.literal('schools') }] },
       ] as readonly AttributeApplication[],
       idFields: ['id'],
       uniqueFields: {
@@ -3637,6 +3845,10 @@ export class SchemaType implements SchemaDef {
               ),
             },
           ],
+        },
+        {
+          name: '@@map',
+          args: [{ name: 'name', value: ExpressionUtils.literal('inventory_items') }],
         },
       ] as readonly AttributeApplication[],
       idFields: ['id'],
@@ -5868,6 +6080,7 @@ export class SchemaType implements SchemaDef {
             },
           ],
         },
+        { name: '@@map', args: [{ name: 'name', value: ExpressionUtils.literal('sections') }] },
       ] as readonly AttributeApplication[],
       idFields: ['id'],
       uniqueFields: {
@@ -5972,6 +6185,7 @@ export class SchemaType implements SchemaDef {
             },
           ],
         },
+        { name: '@@map', args: [{ name: 'name', value: ExpressionUtils.literal('grade_levels') }] },
       ] as readonly AttributeApplication[],
       idFields: ['id'],
       uniqueFields: {

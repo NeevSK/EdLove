@@ -105,9 +105,9 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
   const handleOpenExternal = useCallback(async () => {
     try {
       await WebBrowser.openBrowserAsync(currentUrl);
-    } catch (_error) {
+    } catch {
       // Fallback to basic Linking
-      Linking.openURL(currentUrl);
+      void Linking.openURL(currentUrl);
     }
   }, [currentUrl]);
 
@@ -141,7 +141,7 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
         </View>
 
         <View style={styles.headerRight}>
-          <Pressable onPress={handleOpenExternal} style={styles.iconButton}>
+          <Pressable onPress={() => { void handleOpenExternal(); }} style={styles.iconButton}>
             <ExternalLink size={18} color={scene.text.primary} />
           </Pressable>
         </View>
@@ -216,7 +216,7 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
             <RotateCcw size={20} color={scene.text.primary} />
           </Pressable>
 
-          <Pressable onPress={handleShare} style={styles.toolbarButton}>
+          <Pressable onPress={() => { void handleShare(); }} style={styles.toolbarButton}>
             <Share2 size={20} color={scene.text.primary} />
           </Pressable>
         </View>
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,

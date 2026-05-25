@@ -98,8 +98,8 @@ export function MultiSeriesChart({
         </Text>
       ) : null}
       <HStack className="justify-around gap-3">
-        {series.map((entry, index) => (
-          <Box key={index} className="flex-1 items-center">
+        {series.map((entry) => (
+          <Box key={entry.name} className="flex-1 items-center">
             <Text
               className="mb-2 text-center text-xs font-semibold"
               style={{ color: entry.color || colors.gurudeviBlue }}

@@ -9,8 +9,10 @@ export class PostHogAnalytics {
   private instance: any = null;
   private isInitialized = false;
   private isBrowser = typeof window !== 'undefined';
+  private isDisabled = process.env.EXPO_PUBLIC_POSTHOG_ENABLED === 'false';
 
   async initialize(apiKey: string, options?: { host?: string; debug?: boolean }) {
+    if (this.isDisabled) return;
     if (this.isInitialized) return;
 
     const host = options?.host || 'https://eu.i.posthog.com';
@@ -37,7 +39,7 @@ export class PostHogAnalytics {
   }
 
   track(event: string, properties?: Record<string, any>) {
-    if (!this.isInitialized) return;
+    if (this.isDisabled || !this.isInitialized) return;
     try {
       if (this.isBrowser) {
         this.instance.capture(event, properties);
@@ -54,7 +56,7 @@ export class PostHogAnalytics {
   }
 
   identify(userId: string, properties?: Record<string, any>) {
-    if (!this.isInitialized) return;
+    if (this.isDisabled || !this.isInitialized) return;
     try {
       if (this.isBrowser) {
         this.instance.identify(userId, properties);
@@ -70,7 +72,7 @@ export class PostHogAnalytics {
   }
 
   screen(name: string, properties?: Record<string, any>) {
-    if (!this.isInitialized) return;
+    if (this.isDisabled || !this.isInitialized) return;
     try {
       if (this.isBrowser) {
         // In posthog-js, screen is commonly implemented via capture with specific event name
@@ -94,7 +96,7 @@ export class PostHogAnalytics {
   }
 
   reset() {
-    if (!this.isInitialized) return;
+    if (this.isDisabled || !this.isInitialized) return;
     try {
       if (this.isBrowser) {
         this.instance.reset();
@@ -110,6 +112,7 @@ export class PostHogAnalytics {
 
   // Compatibility with IPostHog
   async flush() {
+    if (this.isDisabled) return;
     if (!this.isBrowser && this.instance?.shutdown) {
       await this.instance.shutdown();
     }

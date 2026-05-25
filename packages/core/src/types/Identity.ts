@@ -27,7 +27,13 @@ export interface Bond {
   id: string;
   user_id: string;
   entity_id: string; // Could be a School ID, Classroom ID, or 'GLOBAL'
-  entity_type: 'PLATFORM' | 'SCHOOL' | 'CLASSROOM' | 'COMMUNITY' | 'PERSONAL';
+  entity_type:
+    | 'PLATFORM'
+    | 'SCHOOL'
+    | 'CLASSROOM'
+    | 'COMMUNITY'
+    | 'PERSONAL'
+    | 'PERSONAL_CLASSROOM';
   capacity: Capacity;
   status: 'active' | 'archived' | 'pending';
   valid_from?: string;

@@ -13,8 +13,8 @@ export const WorkspaceLayoutZoneSchema = z.enum([
 ]);
 
 export const WorkspaceLayoutRecordSchema = z.object({
-  id: z.string().uuid(),
-  user_id: z.string().uuid(),
+  id: z.uuid(),
+  user_id: z.uuid(),
   workspace_id: z.string().min(1),
   layout_target: WorkspaceLayoutTargetSchema.default('shared'),
   order: z.array(z.string()),
@@ -29,7 +29,7 @@ export const WorkspaceLayoutRecordSchema = z.object({
 });
 
 export const WorkspaceLayoutUpsertSchema = z.object({
-  userId: z.string().uuid(),
+  userId: z.uuid(),
   workspaceId: z.string().min(1),
   layoutTarget: WorkspaceLayoutTargetSchema.default('shared'),
   order: z.array(z.string()),
@@ -43,7 +43,7 @@ export const WorkspaceLayoutUpsertSchema = z.object({
 });
 
 export const WorkspaceLayoutDeleteSchema = z.object({
-  userId: z.string().uuid(),
+  userId: z.uuid(),
   workspaceId: z.string().min(1),
   layoutTarget: WorkspaceLayoutTargetSchema.default('shared'),
 });

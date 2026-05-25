@@ -1,5 +1,10 @@
-﻿const fs = require('node:fs');
-const path = require('node:path');
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { describe, expect, it } from 'vitest';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const APP_ROOT = path.resolve(__dirname, '../../..');
 const PACKAGES_ROOT = path.resolve(APP_ROOT, '..', '..');

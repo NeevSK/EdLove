@@ -1,13 +1,10 @@
-import js from '@eslint/js';
 import pluginNext from '@next/eslint-plugin-next';
 import { globalIgnores } from 'eslint/config';
-import eslintConfigPrettier from 'eslint-config-prettier';
 import pluginJsxA11y from 'eslint-plugin-jsx-a11y';
 import pluginReact from 'eslint-plugin-react';
 import pluginReactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
 import { config as baseConfig } from './base.js';
-import tseslint from 'typescript-eslint';
 import maxUseStateRule from './rules/max-use-state.js';
 
 /**

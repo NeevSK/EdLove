@@ -6,7 +6,6 @@
     "moduleResolution": "Bundler",
     "lib": ["ESNext"],
     "strict": true,
-    "baseUrl": ".",
     "outDir": "./dist",
     "rootDir": "./src",
     "types": ["node"]

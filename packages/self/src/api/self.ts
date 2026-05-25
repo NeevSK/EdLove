@@ -4,12 +4,22 @@ import {
   growthSignalsAPI,
   SOVEREIGN_API_URL,
 } from '@repo/core/api';
-
+import { useStore } from '@repo/core/logic';
 import { APIError } from '@repo/core/types';
 import type { FireJournalEntry, MoodLog } from '../types';
 
 // Create the type-safe RPC client
 const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
+
+/**
+ * Helper to enforce client-side defense-in-depth guest blocks.
+ */
+function assertAuthenticated() {
+  const state = useStore.getState();
+  if (!state.user || state.user.is_anonymous) {
+    throw new APIError('Forbidden', '403');
+  }
+}
 
 /**
  * SELF API (Sovereign Hono Proxy)
@@ -27,6 +37,7 @@ export const selfAPI = {
     note?: string,
     mood?: MoodLog['mood'],
   ): Promise<MoodLog> {
+    assertAuthenticated();
     const res = await client.api.self.mood.$post({
       json: {
         user_id: userId,
@@ -57,6 +68,7 @@ export const selfAPI = {
    * Retrieve mood history.
    */
   async getMoodHistory(userId: string, limit: number = 30): Promise<MoodLog[]> {
+    assertAuthenticated();
     const res = await client.api.self.mood.$get({
       query: { userId, limit: limit.toString() },
     });
@@ -72,6 +84,7 @@ export const selfAPI = {
    * Release a journal entry to the flames.
    */
   async burnJournal(userId: string, content: string): Promise<FireJournalEntry> {
+    assertAuthenticated();
     const res = await client.api.self.journal.burn.$post({
       json: { content },
     });
@@ -95,6 +108,7 @@ export const selfAPI = {
    * Retrieve burned history.
    */
   async getBurnedHistory(userId: string, limit: number = 10): Promise<FireJournalEntry[]> {
+    assertAuthenticated();
     const res = await client.api.self.journal.$get({
       query: { userId, limit: limit.toString() },
     });
@@ -110,6 +124,7 @@ export const selfAPI = {
    * Retrieve today's mood.
    */
   async getTodayMood(userId: string): Promise<MoodLog | null> {
+    assertAuthenticated();
     const res = await client.api.self.mood.today.$get({
       query: { userId },
     });

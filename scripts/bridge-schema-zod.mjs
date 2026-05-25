@@ -17,11 +17,30 @@ const inputPath = path.isAbsolute(inputArg) ? inputArg : path.join(rootDir, inpu
 const outputPath = path.isAbsolute(outputArg) ? outputArg : path.join(rootDir, outputArg);
 
 function mapType(prop) {
+  if (Array.isArray(prop.type)) {
+    if (prop.type.includes('null')) {
+      const actualType = prop.type.filter((t) => t !== 'null')[0];
+      const strippedProp = { ...prop };
+      if (actualType) {
+        strippedProp.type = actualType;
+      } else {
+        delete strippedProp.type;
+      }
+      return `${mapType(strippedProp)}.nullable()`;
+    }
+  }
+  if (prop.enum) {
+    return `z.enum([${prop.enum.map((e) => `'${e}'`).join(', ')}])`;
+  }
+  if (prop.$ref) {
+    const name = prop.$ref.split('/').pop();
+    return `${name}Schema`;
+  }
   if (prop.type === 'string') {
     if (prop.format === 'uuid') return 'z.uuid()';
-    if (prop.format === 'email') return 'z.email()';
+    if (prop.format === 'email') return "z.email().or(z.literal(''))";
     if (prop.format === 'uri' || prop.format === 'url') return 'z.url()';
-    if (prop.format === 'date-time') return 'z.iso.datetime()';
+    if (prop.format === 'date-time') return 'z.string().datetime()';
     return 'z.string()';
   }
   if (prop.type === 'boolean') return 'z.boolean()';
@@ -40,13 +59,7 @@ function mapType(prop) {
       obj += '    })';
       return obj;
     }
-    return 'z.record(z.any())';
-  }
-  if (Array.isArray(prop.type)) {
-    if (prop.type.includes('null')) {
-      const actualType = prop.type.filter((t) => t !== 'null')[0];
-      return `${mapType({ ...prop, type: actualType })}.nullable()`;
-    }
+    return 'z.record(z.string(), z.any())';
   }
   return 'z.any()';
 }
@@ -66,6 +79,9 @@ function generateZod(schema) {
           output += `${line},\n`;
         }
         output += `});\n\n`;
+        output += `export type ${name} = z.infer<typeof ${name}Schema>;\n\n`;
+      } else {
+        output += `export const ${name}Schema = ${mapType(def)};\n\n`;
         output += `export type ${name} = z.infer<typeof ${name}Schema>;\n\n`;
       }
     }

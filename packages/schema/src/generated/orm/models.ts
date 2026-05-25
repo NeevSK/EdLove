@@ -11,6 +11,7 @@ export type User = $ModelResult<$Schema, 'User'>;
 export type Bond = $ModelResult<$Schema, 'Bond'>;
 export type UserSocialLink = $ModelResult<$Schema, 'UserSocialLink'>;
 export type Classroom = $ModelResult<$Schema, 'Classroom'>;
+export type PersonalClassroom = $ModelResult<$Schema, 'PersonalClassroom'>;
 export type ClassroomStudent = $ModelResult<$Schema, 'ClassroomStudent'>;
 export type Assignment = $ModelResult<$Schema, 'Assignment'>;
 export type Grade = $ModelResult<$Schema, 'Grade'>;

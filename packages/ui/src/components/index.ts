@@ -27,6 +27,8 @@ export { default as ErrorMessage } from './ErrorMessage';
 export { default as FeatureDiscoveryModal } from './FeatureDiscoveryModal';
 export { default as FeatureInfoIcon } from './FeatureInfoIcon';
 export { FounderGlow } from './FounderGlow';
+export { GatewayFooter } from './GatewayFooter.web';
+export { GatewayHeader } from './GatewayHeader.web';
 export * from './GlassCard';
 export { default as GlobalHeader } from './GlobalHeader';
 export { default as GuestDataSyncModal } from './GuestDataSyncModal';
@@ -69,8 +71,7 @@ export type {
 } from './PostCard';
 export { PostCard } from './PostCard';
 export { ProgressIndicator } from './ProgressIndicator';
-export type { QRCodeGeneratorProps } from './QRCodeGenerator';
-export { default as QRCodeGenerator } from './QRCodeGenerator';
+
 export * from './ResonantHeatmap';
 export { SafeButton } from './SafeButton';
 export { SanctuaryBackground } from './SanctuaryBackground';

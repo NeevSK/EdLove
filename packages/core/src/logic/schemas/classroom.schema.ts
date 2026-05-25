@@ -85,10 +85,10 @@ export const EchoSchema = z.object({
 });
 
 export const StudentAcademicRecordSchema = z.object({
-  id: z.string().uuid(),
-  student_id: z.string().uuid(),
-  classroom_id: z.string().uuid(),
-  school_id: z.string().uuid(),
+  id: z.uuid(),
+  student_id: z.uuid(),
+  classroom_id: z.uuid(),
+  school_id: z.uuid(),
   academic_year: z.string(),
   grade_number: z.number().optional().nullable(),
   subject: z.string().optional().nullable(),
@@ -104,9 +104,9 @@ export const StudentAcademicRecordSchema = z.object({
 });
 
 export const TeacherProfessionalRecordSchema = z.object({
-  id: z.string().uuid(),
-  teacher_id: z.string().uuid(),
-  school_id: z.string().uuid(),
+  id: z.uuid(),
+  teacher_id: z.uuid(),
+  school_id: z.uuid(),
   school_name: z.string().optional().nullable(),
   academic_year: z.string(),
   designation: z.string(),
@@ -120,9 +120,9 @@ export const TeacherProfessionalRecordSchema = z.object({
 });
 
 export const PrincipalGovernanceRecordSchema = z.object({
-  id: z.string().uuid(),
-  principal_id: z.string().uuid(),
-  school_id: z.string().uuid(),
+  id: z.uuid(),
+  principal_id: z.uuid(),
+  school_id: z.uuid(),
   school_name: z.string().optional().nullable(),
   academic_year: z.string(),
   capacity: z.string(),
@@ -135,8 +135,8 @@ export const PrincipalGovernanceRecordSchema = z.object({
 });
 
 export const SchoolLegacyRecordSchema = z.object({
-  id: z.string().uuid(),
-  school_id: z.string().uuid(),
+  id: z.uuid(),
+  school_id: z.uuid(),
   academic_year: z.string(),
   total_students: z.number().default(0),
   total_staff: z.number().default(0),
@@ -145,7 +145,7 @@ export const SchoolLegacyRecordSchema = z.object({
   milestones: z.array(z.string()).default([]),
   leadership: z
     .object({
-      principal_id: z.string().uuid().optional(),
+      principal_id: z.uuid().optional(),
       principal_name: z.string().optional(),
     })
     .optional(),
@@ -154,10 +154,10 @@ export const SchoolLegacyRecordSchema = z.object({
 });
 
 export const ClassroomLegacyRecordSchema = z.object({
-  id: z.string().uuid(),
-  classroom_id: z.string().uuid(),
+  id: z.uuid(),
+  classroom_id: z.uuid(),
   academic_year: z.string(),
-  teacher_id: z.string().uuid(),
+  teacher_id: z.uuid(),
   teacher_name: z.string().optional(),
   student_count: z.number().default(0),
   avg_performance: z.number().optional().nullable(),
