@@ -1,9 +1,15 @@
+/* eslint-disable import-x/no-unresolved */
 import path from 'node:path';
+import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import * as fs from 'node:fs';
 import * as dotenv from 'dotenv';
+
 
 // --- Service Imports: The Modular Sovereignty ---
 import { AuditService } from './services/AuditService.js';
@@ -29,10 +35,11 @@ class PolymathPlatformServer {
   private scout: ScoutService;
   private help: HelpService;
   private document: DocumentService;
+  private downstreamClients: Map<string, { client: Client; tools: any[] }> = new Map();
 
   constructor() {
     this.server = new Server(
-      { name: 'polymath-platform-mcp', version: '1.1.0' },
+      { name: 'polymath-platform-mcp', version: '1.2.0' },
       { capabilities: { tools: {} } },
     );
 
@@ -45,6 +52,249 @@ class PolymathPlatformServer {
 
     this.setupHandlers();
     this.server.onerror = (error) => console.error('[MCP Error]', error);
+  }
+
+  private async syncWorkspaceSkillsToAntigravity() {
+    const homedir = os.homedir();
+    
+    // Dynamically resolve the absolute workspace root relative to the current module folder
+    let workspaceRoot = path.resolve(__dirname, '..', '..', '..');
+    if (!fs.existsSync(path.join(workspaceRoot, 'package.json'))) {
+      workspaceRoot = path.resolve(process.cwd());
+    }
+
+    const localSkillsDir = path.join(workspaceRoot, '.claude', 'skills');
+    const globalKiDir = path.join(homedir, '.gemini', 'antigravity', 'knowledge');
+    const globalCodexSkillsDir = path.join(homedir, '.codex', 'skills');
+
+    // Assure basic directories exist on the local workspace
+    if (!fs.existsSync(localSkillsDir)) {
+      fs.mkdirSync(localSkillsDir, { recursive: true });
+    }
+    if (!fs.existsSync(globalKiDir)) {
+      fs.mkdirSync(globalKiDir, { recursive: true });
+    }
+
+    // Step 1: Discover all playbooks across the local workspace and the global Codex folders
+    const playbooks = new Map<string, { sourcePath: string; content: string }>();
+
+    // A. Read local playbooks committed in the repo
+    if (fs.existsSync(localSkillsDir)) {
+      const localSkills = fs.readdirSync(localSkillsDir);
+      for (const skillName of localSkills) {
+        const skillPath = path.join(localSkillsDir, skillName);
+        if (!fs.statSync(skillPath).isDirectory()) continue;
+
+        const localSkillMdPath = path.join(skillPath, 'skill.md');
+        if (fs.existsSync(localSkillMdPath)) {
+          const content = fs.readFileSync(localSkillMdPath, 'utf8');
+          playbooks.set(skillName, { sourcePath: localSkillMdPath, content });
+        }
+      }
+    }
+
+    // B. Read global Codex playbooks (if installed on this computer) to bootstrap the workspace
+    if (fs.existsSync(globalCodexSkillsDir)) {
+      const globalSkills = fs.readdirSync(globalCodexSkillsDir);
+      for (const skillName of globalSkills) {
+        if (skillName.startsWith('.')) continue;
+
+        const skillPath = path.join(globalCodexSkillsDir, skillName);
+        if (!fs.statSync(skillPath).isDirectory()) continue;
+
+        let codexSkillMdPath = path.join(skillPath, 'SKILL.md');
+        if (!fs.existsSync(codexSkillMdPath)) {
+          codexSkillMdPath = path.join(skillPath, 'skill.md');
+        }
+
+        if (fs.existsSync(codexSkillMdPath)) {
+          if (!playbooks.has(skillName)) {
+            const content = fs.readFileSync(codexSkillMdPath, 'utf8');
+            playbooks.set(skillName, { sourcePath: codexSkillMdPath, content });
+            
+            // Auto-import global Codex skill to local workspace folder so they are committed and shared!
+            const targetWorkspaceSkillDir = path.join(localSkillsDir, skillName);
+            if (!fs.existsSync(targetWorkspaceSkillDir)) {
+              fs.mkdirSync(targetWorkspaceSkillDir, { recursive: true });
+            }
+            fs.writeFileSync(path.join(targetWorkspaceSkillDir, 'skill.md'), content, 'utf8');
+            console.error(`[Gateway] Dynamic Auto-Import: Global Codex skill "${skillName}" imported into workspace.`);
+          }
+        }
+      }
+    }
+
+    // Step 2: Compile & Sync the unified playbooks globally and to .github/
+    let consolidatedInstructions = `# Unified Developer Copilot Instructions\n\nGenerated automatically by the Polymath Platform Gateway. Do not edit directly.\n\n`;
+
+    // Prepend root .cursorrules if available
+    const cursorRulesPath = path.join(workspaceRoot, '.cursorrules');
+    if (fs.existsSync(cursorRulesPath)) {
+      consolidatedInstructions += `\n<!-- START SYSTEM RULES (.cursorrules) -->\n\n${fs.readFileSync(cursorRulesPath, 'utf8')}\n\n<!-- END SYSTEM RULES -->\n\n---\n`;
+    }
+
+    for (const [skillName, details] of playbooks.entries()) {
+      consolidatedInstructions += `\n<!-- START SKILL: ${skillName} -->\n\n${details.content}\n\n<!-- END SKILL: ${skillName} -->\n`;
+
+      // 1. Sync globally to Gemini/Antigravity KIs
+      const targetSkillDir = path.join(globalKiDir, skillName);
+      const targetArtifactsDir = path.join(targetSkillDir, 'artifacts');
+
+      if (!fs.existsSync(targetSkillDir)) {
+        fs.mkdirSync(targetSkillDir, { recursive: true });
+      }
+      if (!fs.existsSync(targetArtifactsDir)) {
+        fs.mkdirSync(targetArtifactsDir, { recursive: true });
+      }
+
+      const metadata = {
+        title: `${skillName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')} Skill`,
+        summary: `Workspace-bounded engineering playbook for ${skillName} integrated into the Polymath Platform.`,
+        tags: [skillName, 'sovereign', 'monorepo', 'playbook'],
+        updatedAt: new Date().toISOString(),
+        references: [
+          {
+            title: `Workspace Playbook`,
+            path: path.join(localSkillsDir, skillName, 'skill.md')
+          }
+        ]
+      };
+
+      fs.writeFileSync(
+        path.join(targetSkillDir, 'metadata.json'),
+        JSON.stringify(metadata, null, 2),
+        'utf8'
+      );
+
+      fs.writeFileSync(path.join(targetArtifactsDir, 'skill.md'), details.content, 'utf8');
+      console.error(`[Gateway] Synced skill "${skillName}" globally to Antigravity KIs.`);
+
+      // 2. Sync globally back to Codex skills (if Codex directory exists but this skill is missing)
+      if (fs.existsSync(globalCodexSkillsDir)) {
+        const targetCodexSkillDir = path.join(globalCodexSkillsDir, skillName);
+        if (!fs.existsSync(targetCodexSkillDir)) {
+          fs.mkdirSync(targetCodexSkillDir, { recursive: true });
+          fs.writeFileSync(path.join(targetCodexSkillDir, 'SKILL.md'), details.content, 'utf8');
+          console.error(`[Gateway] Dynamic Auto-Export: Synced skill "${skillName}" back to global Codex.`);
+        }
+      }
+    }
+
+    // Write the compiled copilot instructions file in .github/
+    const githubDir = path.join(workspaceRoot, '.github');
+    if (!fs.existsSync(githubDir)) {
+      fs.mkdirSync(githubDir, { recursive: true });
+    }
+    fs.writeFileSync(
+      path.join(githubDir, 'copilot-instructions.md'),
+      consolidatedInstructions,
+      'utf8'
+    );
+    console.error(`[Gateway] Consolidated all workspace skills into .github/copilot-instructions.md.`);
+  }
+
+  private async initializeDownstream() {
+    console.error('[Gateway] Initializing Sovereign Downstream Multiplexer...');
+    
+    // Auto-sync local skills on boot
+    try {
+      await this.syncWorkspaceSkillsToAntigravity();
+    } catch (e: any) {
+      console.error('[Gateway] Skills Sync Warning:', e.message);
+    }
+
+    const servers = [
+      {
+        name: 'sequential-thinking',
+        envKey: 'EXPO_TOKEN', // sequential thinking doesn't need specific tokens but we want it always active
+        alwaysRun: true,
+        command: 'node',
+        args: [
+          'C:\\Users\\Naween\\projects\\polymath-platform\\scripts\\mcp-proxy.mjs',
+          'pnpm',
+          'dlx',
+          '@modelcontextprotocol/server-sequential-thinking'
+        ]
+      },
+      {
+        name: 'github',
+        envKey: 'GITHUB_PERSONAL_ACCESS_TOKEN',
+        command: 'node',
+        args: [
+          'C:\\Users\\Naween\\projects\\polymath-platform\\scripts\\mcp-proxy.mjs',
+          'pnpm',
+          'dlx',
+          '@modelcontextprotocol/server-github'
+        ]
+      },
+      {
+        name: 'supabase',
+        envKey: 'SUPABASE_ACCESS_TOKEN',
+        command: 'node',
+        args: [
+          'C:\\Users\\Naween\\projects\\polymath-platform\\scripts\\mcp-proxy.mjs',
+          'node',
+          'C:\\Users\\Naween\\projects\\polymath-platform\\node_modules\\@supabase\\mcp-server-supabase\\dist\\transports\\stdio.js'
+        ]
+      },
+      {
+        name: 'expo',
+        envKey: 'EXPO_TOKEN',
+        command: 'node',
+        args: [
+          'C:\\Users\\Naween\\projects\\polymath-platform\\scripts\\mcp-proxy.mjs',
+          'npx',
+          '-y',
+          'mcp-remote',
+          'https://mcp.expo.dev/mcp'
+        ]
+      }
+    ];
+
+    for (const serverConf of servers) {
+      const token = process.env[serverConf.envKey];
+      if (!token && !serverConf.alwaysRun) {
+        console.error(`[Gateway] Skipping ${serverConf.name} server (missing ${serverConf.envKey})`);
+        continue;
+      }
+
+      try {
+        console.error(`[Gateway] Launching downstream client: ${serverConf.name}...`);
+        const cleanEnv: Record<string, string> = {};
+        for (const [key, value] of Object.entries(process.env)) {
+          if (value !== undefined) {
+            cleanEnv[key] = value;
+          }
+        }
+        if (token) {
+          cleanEnv[serverConf.envKey] = token;
+        }
+
+        const transport = new StdioClientTransport({
+          command: serverConf.command,
+          args: serverConf.args,
+          env: cleanEnv
+        });
+
+        const client = new Client(
+          { name: `gateway-${serverConf.name}-client`, version: '1.0.0' },
+          { capabilities: {} }
+        );
+
+        await client.connect(transport);
+        const toolsResult = await client.listTools();
+        const toolsList = toolsResult.tools || [];
+        
+        this.downstreamClients.set(serverConf.name, {
+          client,
+          tools: toolsList
+        });
+
+        console.error(`[Gateway] Successfully bonded downstream server: ${serverConf.name} exposing ${toolsList.length} tools`);
+      } catch (err: any) {
+        console.error(`[Gateway] Failed to bind downstream server ${serverConf.name}:`, err.message);
+      }
+    }
   }
 
   private setupHandlers() {
@@ -714,15 +964,20 @@ class PolymathPlatformServer {
           description: 'Get architectural information and philosophy of the Polymath Platform.',
           inputSchema: { type: 'object', properties: {} },
         },
+        {
+          name: 'sync_workspace_skills',
+          description: 'Surgically syncs active repo-level agent skills into global Antigravity Knowledge Items (KIs) dynamically.',
+          inputSchema: { type: 'object', properties: {} },
+        }
       ];
 
       // Smart Selection Strategy
       const mcpMode = process.env.MCP_MODE;
+      
+      let baseTools: any[] = [];
       if (mcpMode === 'GATEWAY' || !mcpMode) {
-        return { tools: gatewayTools };
-      }
-
-      if (mcpMode === 'LEAN') {
+        baseTools = gatewayTools;
+      } else if (mcpMode === 'LEAN') {
         const highValueToolNames = [
           'grep_code',
           'sovereign_scout',
@@ -740,18 +995,41 @@ class PolymathPlatformServer {
           'shiny_refactor',
           'heal_codebase',
         ];
-        return {
-          tools: allTools.filter((t) => highValueToolNames.includes(t.name)),
-        };
+        baseTools = allTools.filter((t) => highValueToolNames.includes(t.name));
+      } else {
+        baseTools = allTools;
       }
 
-      return { tools: allTools };
+      // Merge downstream tools!
+      const mergedTools = [...baseTools];
+      for (const details of this.downstreamClients.values()) {
+        mergedTools.push(...details.tools);
+      }
+
+      return { tools: mergedTools };
     });
 
     this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const { name, arguments: args } = request.params;
 
       try {
+        // --- Dynamic Downstream Client Routing ---
+        for (const [clientName, details] of this.downstreamClients.entries()) {
+          const hasTool = details.tools.some(t => t.name === name);
+          if (hasTool) {
+            console.error(`[Gateway] Delegating tool "${name}" to downstream server: ${clientName}`);
+            return await details.client.callTool({ name, arguments: args });
+          }
+        }
+
+        // --- Custom Tools ---
+        if (name === 'sync_workspace_skills') {
+          await this.syncWorkspaceSkillsToAntigravity();
+          return {
+            content: [{ type: 'text', text: 'Successfully synced workspace skills to global Antigravity Knowledge Items (KIs)!' }]
+          };
+        }
+
         // --- GATEWAY ROUTING ---
         if (name === 'sovereign_audit') {
           const { action, params = {} } = args as any;
@@ -1049,9 +1327,40 @@ class PolymathPlatformServer {
   }
 
   async run() {
+    await this.initializeDownstream();
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
     console.error('Polymath Master MCP Server (Modular) running on stdio');
+
+    const cleanup = async () => {
+      console.error('[Gateway] Shutting down, cleaning up downstream servers...');
+      const closePromises: Promise<void>[] = [];
+      for (const [name, details] of this.downstreamClients.entries()) {
+        closePromises.push(
+          details.client.close().catch((err) => {
+            console.error(`[Gateway] Error closing downstream ${name}:`, err.message);
+          })
+        );
+      }
+      try {
+        await Promise.all(closePromises);
+      } catch {
+        // Suppress and guarantee exit
+      } finally {
+        process.exit(0);
+      }
+    };
+
+    process.on('SIGINT', () => {
+      cleanup().catch((err) => {
+        console.error('[Gateway] Shutdown error:', err.message);
+      });
+    });
+    process.on('SIGTERM', () => {
+      cleanup().catch((err) => {
+        console.error('[Gateway] Shutdown error:', err.message);
+      });
+    });
   }
 }
 
