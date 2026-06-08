@@ -32,9 +32,16 @@ import X from './Foo'
 
 This means a `.web.tsx` file *completely replaces* its `.tsx` counterpart on web. The native file is never loaded. There is no inheritance or merging — it's full replacement.
 
+That also means nested layouts do not require Expo Router. You can still build:
+- nested stacks and tab shells in React Navigation
+- different web/mobile compositions via `.web.tsx`
+- dedicated web-only shells for larger screens or split panes
+
+If you need an embedded browser inside the app, use `react-native-webview`. If you need OAuth or external handoff, use `expo-web-browser`.
+
 ### 2b. What Expo Router is
 
-Expo Router v4 (SDK 52+) is file-based routing built *on top of* React Navigation. The file system becomes the route map. It also enables static HTML output (`output: 'static'` in app.json) for SEO.
+Expo Router v4 (SDK 52+) is file-based routing built *on top of* React Navigation. It is a valid pattern, but it is not the architecture used by this app. The file system becomes the route map, and it can enable static HTML output (`output: 'static'` in app.json) for SEO.
 
 ### 2c. The honest TCO comparison
 
@@ -44,7 +51,7 @@ Expo Router v4 (SDK 52+) is file-based routing built *on top of* React Navigatio
 | **Nav chrome** | 1 `.web.tsx` override total (done) | 1 `_layout.tsx` handles both |
 | **Deep links** | Manual `LinkingOptions` config in App.tsx | Automatic (file path = URL) |
 | **SEO** | SPA — blank HTML, JS renders everything | Static HTML per route possible |
-| **Migration cost from here** | 0 (already here) | ~2–3 eng-weeks (55 `navigate()` call sites, 5 stack navigators, all packages need `useLocalSearchParams` swap) |
+| **Migration cost from here** | 0 (already here) | ~2–3 eng-weeks (many `navigate()` call sites, 5 stack navigators, all packages need `useLocalSearchParams` swap) |
 | **Risk** | Low — working today | Medium — all 5 packages (`@repo/classroom`, `@repo/community`, etc.) use `useNavigation()` internally |
 | **Web UI flexibility** | ✅ Full — `.web.tsx` can be anything | ✅ Same (`.web.tsx` still works in Expo Router) |
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { useSafeAction } from '../hooks/useSafeAction';
 import { Button, type IButtonProps } from './ui/button';
 
@@ -46,11 +46,7 @@ export const SafeButton: React.FC<ISafeButtonProps> = ({
   });
 
   return (
-    <Button
-      {...props}
-      isLoading={isPending || isLoading}
-      onPress={execute}
-    >
+    <Button {...props} isLoading={isPending || isLoading} onPress={execute}>
       {children}
     </Button>
   );

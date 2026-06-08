@@ -1,2 +1,2 @@
-﻿export * from "./DashboardContent";
-export * from "./StudentPulse";
+﻿export * from './DashboardContent';
+export * from './StudentPulse';

@@ -129,10 +129,18 @@ export default function MuteHubScreen() {
                         avatarUrl={user.avatar_url}
                         fullName={user.display_name}
                         size={44}
-                        fallbackEmoji={user.capacity === 'principal' ? '🏛️' : user.capacity === 'teacher' ? '🌱' : '🌿'}
+                        fallbackEmoji={
+                          user.capacity === 'principal'
+                            ? '🏛️'
+                            : user.capacity === 'teacher'
+                              ? '🌱'
+                              : '🌿'
+                        }
                       />
                       <VStack className="flex-1">
-                        <Text className="text-phase-text-primary font-bold">{user.display_name}</Text>
+                        <Text className="text-phase-text-primary font-bold">
+                          {user.display_name}
+                        </Text>
                         <Text className="text-phase-text-tertiary text-[10px] uppercase tracking-wider">
                           @{user.id.substring(0, 8)}
                         </Text>

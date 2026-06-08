@@ -5,7 +5,19 @@ import { z } from 'zod';
  */
 export const POAMetadataSchema = z.object({
   policy: z.object({
-    action: z.enum(['manage', 'create', 'read', 'update', 'delete', 'submit', 'verify', 'grade', 'resolve', 'publish', 'override']),
+    action: z.enum([
+      'manage',
+      'create',
+      'read',
+      'update',
+      'delete',
+      'submit',
+      'verify',
+      'grade',
+      'resolve',
+      'publish',
+      'override',
+    ]),
     subject: z.string(),
   }),
 });
@@ -27,10 +39,13 @@ export interface SovereignRoute {
     params?: z.ZodType<any>;
     headers?: z.ZodType<any>;
   };
-  responses: Record<number, {
-    schema: z.ZodType<any>;
-    description: string;
-  }>;
+  responses: Record<
+    number,
+    {
+      schema: z.ZodType<any>;
+      description: string;
+    }
+  >;
   metadata: POAMetadata;
 }
 
@@ -53,9 +68,11 @@ export function adaptToHono(route: SovereignRoute) {
     method: route.method,
     path: route.path,
     request: {
-      body: route.request?.body ? {
-        content: { 'application/json': { schema: route.request.body } }
-      } : undefined,
+      body: route.request?.body
+        ? {
+            content: { 'application/json': { schema: route.request.body } },
+          }
+        : undefined,
       query: route.request?.query,
       params: route.request?.params,
       headers: route.request?.headers,
@@ -66,17 +83,51 @@ export function adaptToHono(route: SovereignRoute) {
         {
           content: { 'application/json': { schema: res.schema } },
           description: res.description,
-        }
-      ])
+        },
+      ]),
     ),
     metadata: route.metadata,
   });
+}
+
+let tokenResolver: (() => Promise<string | null>) | null = null;
+
+/**
+ * registerTokenResolver
+ * Registers a function to resolve the current user's session token.
+ * This decouples the shared contract from direct client-side Supabase/storage imports.
+ */
+export function registerTokenResolver(resolver: () => Promise<string | null>) {
+  tokenResolver = resolver;
 }
 
 /**
  * createSovereignClient
  * Creates a type-safe RPC client for the Sovereign API.
  */
-export function createSovereignClient<T extends import('hono').Hono<any, any, any>>(baseUrl: string) {
-  return hc<T>(baseUrl);
+export function createSovereignClient<T extends import('hono').Hono<any, any, any>>(
+  baseUrl: string,
+): ReturnType<typeof hc<T>> {
+  return hc<T>(baseUrl, {
+    fetch: async (input: RequestInfo | URL, requestInit?: RequestInit) => {
+      let token: string | null = null;
+      if (tokenResolver) {
+        try {
+          token = await tokenResolver();
+        } catch (err) {
+          console.warn('[Sovereign Client] Failed to retrieve session token via resolver:', err);
+        }
+      }
+
+      const headers = new Headers(requestInit?.headers);
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+
+      return fetch(input, {
+        ...requestInit,
+        headers,
+      });
+    },
+  });
 }

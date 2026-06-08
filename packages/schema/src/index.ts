@@ -1,18 +1,17 @@
 /**
  * @repo/schema - The Sovereign Brain of the Polymath Platform.
- * 
+ *
  * This package is a dependency-free Shared Kernel (L0) that exports
  * the ORM metadata and Zod validation factories.
  */
 
-// ORM Metadata
-export { schema } from './generated/orm/schema';
+// Input Types
+export * from './generated/orm/input';
 
 // Model Types
 export * from './generated/orm/models';
-
-// Input Types
-export * from './generated/orm/input';
+// ORM Metadata
+export { schema } from './generated/orm/schema';
 
 // Zod Factory - Derivative of the Schema
 import { createSchemaFactory } from '@zenstackhq/zod';

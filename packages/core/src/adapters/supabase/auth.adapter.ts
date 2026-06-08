@@ -1,5 +1,5 @@
-import { IAuthPort, AuthSession, AuthUser } from '../../logic/ports/auth.port';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
+import type { AuthMfaFactor, AuthSession, AuthUser, IAuthPort } from '../../logic/ports/auth.port';
 import { APIError } from '../../types/API';
 
 export class SupabaseAuthAdapter implements IAuthPort {
@@ -25,7 +25,11 @@ export class SupabaseAuthAdapter implements IAuthPort {
     return data as any;
   }
 
-  async signInWithOAuth(params: { provider: 'google'; redirectTo?: string; skipBrowserRedirect?: boolean }) {
+  async signInWithOAuth(params: {
+    provider: 'google';
+    redirectTo?: string;
+    skipBrowserRedirect?: boolean;
+  }) {
     const { data, error } = await this.client.auth.signInWithOAuth({
       provider: params.provider,
       options: {
@@ -38,7 +42,11 @@ export class SupabaseAuthAdapter implements IAuthPort {
     return data;
   }
 
-  async linkOAuthIdentity(params: { provider: 'google'; redirectTo?: string; skipBrowserRedirect?: boolean }) {
+  async linkOAuthIdentity(params: {
+    provider: 'google';
+    redirectTo?: string;
+    skipBrowserRedirect?: boolean;
+  }) {
     const { data, error } = await this.client.auth.linkIdentity({
       provider: params.provider,
       options: {
@@ -51,13 +59,145 @@ export class SupabaseAuthAdapter implements IAuthPort {
     return data as any;
   }
 
+  async signInWithPasskey(params?: { redirectTo?: string; skipBrowserRedirect?: boolean }) {
+    const passkeyApi = (this.client.auth as any).passkey;
+    if (!passkeyApi?.signIn) {
+      throw new APIError(
+        'Passkey sign-in is not supported by the current Supabase client',
+        'AUTH_ERROR',
+      );
+    }
+
+    const { data, error } = await passkeyApi.signIn({
+      options: {
+        redirectTo: params?.redirectTo,
+        skipBrowserRedirect: params?.skipBrowserRedirect,
+      },
+    });
+    if (error) throw new APIError('Failed to sign in with passkey', error.code, error);
+    return data;
+  }
+
+  async registerPasskey(params?: { redirectTo?: string; skipBrowserRedirect?: boolean }) {
+    const passkeyApi = (this.client.auth as any).passkey;
+    if (!passkeyApi?.register) {
+      throw new APIError(
+        'Passkey registration is not supported by the current Supabase client',
+        'AUTH_ERROR',
+      );
+    }
+
+    const { data, error } = await passkeyApi.register({
+      options: {
+        redirectTo: params?.redirectTo,
+        skipBrowserRedirect: params?.skipBrowserRedirect,
+      },
+    });
+    if (error) throw new APIError('Failed to register passkey', error.code, error);
+    return data;
+  }
+
+  async listMfaFactors() {
+    const mfaApi = (this.client.auth as any).mfa;
+    if (!mfaApi?.listFactors) {
+      throw new APIError('MFA is not supported by the current Supabase client', 'AUTH_ERROR');
+    }
+
+    const { data, error } = await mfaApi.listFactors();
+    if (error) throw new APIError('Failed to list MFA factors', error.code, error);
+
+    const all = [
+      ...((data?.totp ?? []) as AuthMfaFactor[]),
+      ...((data?.phone ?? []) as AuthMfaFactor[]),
+      ...((data?.webauthn ?? []) as AuthMfaFactor[]),
+    ];
+    const verified = all.filter((factor) => factor.status === 'verified');
+    return { all, verified };
+  }
+
+  async enrollTotp(params?: { friendlyName?: string }) {
+    const mfaApi = (this.client.auth as any).mfa;
+    if (!mfaApi?.enroll) {
+      throw new APIError(
+        'MFA enrollment is not supported by the current Supabase client',
+        'AUTH_ERROR',
+      );
+    }
+
+    const { data, error } = await mfaApi.enroll({
+      factorType: 'totp',
+      friendlyName: params?.friendlyName,
+    });
+    if (error) throw new APIError('Failed to enroll TOTP factor', error.code, error);
+
+    return {
+      factorId: data.id,
+      qrCode: data.totp?.qrCode ?? null,
+      secret: data.totp?.secret ?? null,
+      uri: data.totp?.uri ?? null,
+    };
+  }
+
+  async challengeTotp(factorId: string) {
+    const mfaApi = (this.client.auth as any).mfa;
+    if (!mfaApi?.challenge) {
+      throw new APIError(
+        'MFA challenge is not supported by the current Supabase client',
+        'AUTH_ERROR',
+      );
+    }
+
+    const { data, error } = await mfaApi.challenge({ factorId });
+    if (error) throw new APIError('Failed to create TOTP challenge', error.code, error);
+    return { challengeId: data.id };
+  }
+
+  async verifyTotp(params: { factorId: string; challengeId: string; code: string }) {
+    const mfaApi = (this.client.auth as any).mfa;
+    if (!mfaApi?.verify) {
+      throw new APIError(
+        'MFA verification is not supported by the current Supabase client',
+        'AUTH_ERROR',
+      );
+    }
+
+    const { data, error } = await mfaApi.verify({
+      factorId: params.factorId,
+      challengeId: params.challengeId,
+      code: params.code,
+    });
+    if (error) throw new APIError('Failed to verify TOTP code', error.code, error);
+    return data as any;
+  }
+
+  async challengeAndVerifyTotp(params: { factorId: string; code: string }) {
+    const mfaApi = (this.client.auth as any).mfa;
+    if (!mfaApi?.challengeAndVerify) {
+      throw new APIError(
+        'TOTP challenge-and-verify is not supported by the current Supabase client',
+        'AUTH_ERROR',
+      );
+    }
+
+    const { data, error } = await mfaApi.challengeAndVerify({
+      factorId: params.factorId,
+      code: params.code,
+    });
+    if (error) throw new APIError('Failed to verify TOTP challenge', error.code, error);
+    return data as any;
+  }
+
   async setSession(access_token: string, refresh_token: string) {
     const { data, error } = await this.client.auth.setSession({ access_token, refresh_token });
     if (error) throw new APIError('Failed to set session', error.code, error);
     return data as any;
   }
 
-  async signUp(params: { email: string; password: string; options?: { data?: Record<string, any> } }) {
+  async signUp(params: {
+    email: string;
+    password: string;
+    options?: { data?: Record<string, any> };
+  }) {
     const { data, error } = await this.client.auth.signUp(params);
     if (error) throw new APIError('Failed to sign up', error.code, error);
     return data as any;

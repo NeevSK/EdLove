@@ -1,5 +1,5 @@
-import { TeacherInsightsRepository } from '../domains/teacherInsights/ports';
-import {
+import type { TeacherInsightsRepository } from '../domains/teacherInsights/ports';
+import type {
   TeacherInsightPromotion,
   TeacherInsightShareUpdate,
   TeacherInsightTargetType,
@@ -11,7 +11,7 @@ import {
 
 /**
  * TeacherInsightsManager
- * 
+ *
  * Orchestrates pedagogical insights, observations, and student potential tracking.
  */
 export class TeacherInsightsManager {

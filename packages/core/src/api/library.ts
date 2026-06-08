@@ -1,13 +1,9 @@
-import { 
-  createSovereignClient, 
-  SOVEREIGN_API_URL, 
-  type AppType 
-} from './base';
 import { APIError } from '../types/API';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
 
 /**
  * LIBRARY API (Sovereign RPC Proxy)
- * 
+ *
  * Siphons Global Library & Media access to the Sanctuary API.
  * [BREAKING] Purged legacy Supabase library managers.
  */
@@ -26,7 +22,7 @@ export const libraryAPI = {
     offset?: number;
     search?: string;
   }) {
-    const res = await client.api.library.resources.$get({
+    const res = await (client.api as any).library.resources.$get({
       query: {
         type: filters.type,
         subject: filters.subject,
@@ -48,7 +44,7 @@ export const libraryAPI = {
    * Fetches a single resource by ID.
    */
   async identifyResource(id: string) {
-    const res = await client.api.library.resources[':id'].$get({
+    const res = await (client.api as any).library.resources[':id'].$get({
       param: { id },
     });
 
@@ -63,11 +59,11 @@ export const libraryAPI = {
    * Records user engagement with a resource.
    */
   async recordEngagement(
-    resourceId: string, 
+    resourceId: string,
     engagementType: 'view' | 'use' | 'endorse' | 'bookmark',
-    classroomId?: string
+    classroomId?: string,
   ) {
-    const res = await client.api.library.resources[':id'].engage.$post({
+    const res = await (client.api as any).library.resources[':id'].engage.$post({
       param: { id: resourceId },
       json: {
         engagement_type: engagementType,
@@ -90,7 +86,7 @@ export const libraryAPI = {
     subject?: string;
     search?: string;
   }) {
-    const res = await client.api.library.collections.$get({
+    const res = await (client.api as any).library.collections.$get({
       query: filters,
     });
 

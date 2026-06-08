@@ -1,22 +1,25 @@
 import { z } from 'zod';
+import { ClassroomSchema, LessonSchema } from '../logic/schemas/classroom.schema';
 import {
-  ClassroomSchema,
-  LessonSchema,
-} from '../logic/schemas/classroom.schema';
-import { ClassroomNoteSchema, ClassroomNoteLifecycleEventSchema } from '../logic/schemas/classroom-note.schema';
-import { type SovereignContract } from './contract';
+  ClassroomNoteLifecycleEventSchema,
+  ClassroomNoteSchema,
+} from '../logic/schemas/classroom-note.schema';
+import type { SovereignContract } from './contract';
 
-const classroomAuthority = (action: 'create' | 'read' | 'update' | 'delete') => ({
-  policy: { action, subject: 'Classroom' }
-}) as const;
+const classroomAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
+  ({
+    policy: { action, subject: 'Classroom' },
+  }) as const;
 
-const lessonAuthority = (action: 'create' | 'read' | 'update' | 'delete') => ({
-  policy: { action, subject: 'Lesson' }
-}) as const;
+const lessonAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
+  ({
+    policy: { action, subject: 'Lesson' },
+  }) as const;
 
-const classroomNoteAuthority = (action: 'create' | 'read' | 'update' | 'delete') => ({
-  policy: { action, subject: 'ClassroomNote' }
-}) as const;
+const classroomNoteAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
+  ({
+    policy: { action, subject: 'ClassroomNote' },
+  }) as const;
 
 /**
  * Educational Port (Sovereign RPC)
@@ -24,7 +27,7 @@ const classroomNoteAuthority = (action: 'create' | 'read' | 'update' | 'delete')
  * Updated: Zod v4 + Hono alignment.
  * [LOUD-FAILURE] Methods must be explicitly mapped in the contract to be exposed via POA.
  */
-export const educationalContract: SovereignContract = {
+export const educationalContract = {
   getByTeacher: {
     method: 'get',
     path: '/educational/classrooms/by-teacher',
@@ -177,7 +180,11 @@ export const educationalContract: SovereignContract = {
     path: '/educational/notes/:id',
     request: {
       params: z.strictObject({ id: z.uuid() }),
-      body: ClassroomNoteSchema.pick({ content: true, is_pinned: true, visibility: true }).partial(),
+      body: ClassroomNoteSchema.pick({
+        content: true,
+        is_pinned: true,
+        visibility: true,
+      }).partial(),
     },
     responses: {
       200: {
@@ -217,4 +224,4 @@ export const educationalContract: SovereignContract = {
     },
     metadata: classroomNoteAuthority('read'),
   },
-} as const;
+} as const satisfies SovereignContract;

@@ -1,6 +1,6 @@
 /**
  * IFileStoragePort
- * 
+ *
  * Framework-agnostic port for file operations.
  * Allows the platform to swap between Cloudinary, Supabase Storage, S3, or Local Disk
  * without changing domain logic.

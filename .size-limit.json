@@ -1,12 +1,12 @@
 [
-	{
-		"path": "packages/ui/dist/index.js",
-		"limit": "100 KB",
-		"name": "@repo/ui (Total)"
-	},
-	{
-		"path": "packages/core/dist/index.js",
-		"limit": "50 KB",
-		"name": "@repo/core"
-	}
+  {
+    "path": "packages/ui/dist/index.js",
+    "limit": "100 KB",
+    "name": "@repo/ui (Total)"
+  },
+  {
+    "path": "packages/core/dist/index.js",
+    "limit": "50 KB",
+    "name": "@repo/core"
+  }
 ]

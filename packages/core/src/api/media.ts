@@ -1,9 +1,9 @@
 import { media } from '../logic/managers/media.factory';
-import { FileUploadOptions } from '../logic/ports/storage.port';
+import type { FileUploadOptions } from '../logic/ports/storage.port';
 
 /**
  * Media API
- * 
+ *
  * Thin delegation layer to the Sovereign Media Manager.
  */
 export const mediaAPI = {
@@ -26,5 +26,5 @@ export const mediaAPI = {
    */
   getPublicUrl(path: string): string {
     return media.getPublicUrl(path);
-  }
+  },
 };

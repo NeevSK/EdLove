@@ -1,21 +1,21 @@
 import type { POAMetadata } from '../../api/contract';
-import type { AppAbility } from './abilities/base';
-import { SovereignError, ErrorCategory } from '../../types/Errors';
+import { ErrorCategory, SovereignError } from '../../types/Errors';
+import type { UserContext } from '../schemas/user.schema';
+import { checkLocalPermission } from './localEvaluator';
 
 /**
  * AuthorityInterceptor (BFF Layer - L4)
  *
  * In 2026, the BFF uses this pattern to automatically enforce POA based on Hono metadata.
- * This ensures that even if a route handler is exposed, it cannot be executed without policy approval.
+ * Decoupled from legacy CASL abilities, utilizing the new PermissionSnapshot/Cedar checkLocalPermission engine.
  */
 export class AuthorityInterceptor {
   /**
-   * Enforce policy for a given route and user ability.
+   * Enforce policy for a given route and user context.
    * @throws ForbiddenError if policy check fails.
    */
-  static async enforce(ability: AppAbility, metadata: unknown) {
-    if (!metadata || typeof metadata !== 'object' || !('policy' in metadata)) {
-      // Default to deny if no policy is defined (Safe by default)
+  static async enforce(context: Partial<UserContext>, metadata: unknown) {
+    if (!metadata || typeof metadata !== 'object') {
       console.warn('Endpoint missing POA metadata. Access denied.');
       throw new SovereignError({
         title: 'Protocol Violation',
@@ -26,33 +26,27 @@ export class AuthorityInterceptor {
       });
     }
 
-    const { action, subject } = (metadata as { policy: POAMetadata['policy'] }).policy;
+    const policy = (metadata as { policy?: POAMetadata['policy'] }).policy;
+    if (!policy || typeof policy.action !== 'string' || typeof policy.subject !== 'string') {
+      throw new SovereignError({
+        title: 'Protocol Violation',
+        detail: 'Invalid policy contract shape.',
+        status: 403,
+        category: ErrorCategory.AUTHORIZATION,
+        code: 'INVALID_POA_METADATA',
+      });
+    }
 
-    // API-surface POA is intentionally coarse: if the user has any matching rule for the
-    // action/subject pair, we allow the request to proceed to deeper data-policy checks
-    // in ZenStack/RLS. This avoids coupling fail-fast surface checks to row-level CASL
-    // conditions, which are evaluated later with concrete resource instances.
-    const rawRules = ((ability as any).rules ?? []) as Array<{
-      action?: string | string[];
-      subject?: string | string[];
-      inverted?: boolean;
-    }>;
+    const { action, subject } = policy;
 
-    const matchesAction = (ruleAction?: string | string[]) => {
-      if (!ruleAction) return false;
-      const actions = Array.isArray(ruleAction) ? ruleAction : [ruleAction];
-      return actions.includes(action) || actions.includes('manage');
-    };
-
-    const matchesSubject = (ruleSubject?: string | string[]) => {
-      if (!ruleSubject) return false;
-      const subjects = Array.isArray(ruleSubject) ? ruleSubject : [ruleSubject];
-      return subjects.includes(subject) || subjects.includes('all');
-    };
-
-    const isAllowed = rawRules.some(
-      (rule) => !rule.inverted && matchesAction(rule.action) && matchesSubject(rule.subject),
-    );
+    // Evaluate using the local snapshot evaluator. Server paths should still
+    // be checked again by Cedar at the gateway.
+    const isAllowed = await checkLocalPermission({
+      action: action as any,
+      resourceType: subject as any,
+      resourceId: 'api-surface-flight-check',
+      userContext: context,
+    });
 
     if (!isAllowed) {
       throw SovereignError.unauthorized(action, subject);

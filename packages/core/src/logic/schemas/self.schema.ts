@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { makeModelSchema } from '@repo/schema';
+import type { z } from 'zod';
 
 /**
  * MoodLogSchema - A signal of internal state.

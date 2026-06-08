@@ -3,10 +3,7 @@ import type { Capacity } from '../types/Identity';
 /**
  * Get capacity display name.
  */
-export function getCapacityLabel(
-  capacity: Capacity,
-  language: 'en' | 'si' | 'ta' = 'en',
-): string {
+export function getCapacityLabel(capacity: Capacity, language: 'en' | 'si' | 'ta' = 'en'): string {
   const labels: Record<Capacity, Record<'en' | 'si' | 'ta', string>> = {
     student: {
       si: '\u0DC1\u0DD2\u0DC2\u0DCA\u200D\u0DBA',
@@ -90,7 +87,7 @@ export function getCapacityLabel(
 
 // ReBAC-derived helpers.
 export function getSchoolCapacityForUser(user: any): Capacity | null {
-  const activeBond = user?.active_bond;
+  const activeBond = user?.activeBond;
   if (activeBond?.entity_type === 'SCHOOL' && typeof activeBond?.capacity === 'string') {
     return activeBond.capacity as Capacity;
   }

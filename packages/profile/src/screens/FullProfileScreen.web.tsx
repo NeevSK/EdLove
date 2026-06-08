@@ -41,7 +41,7 @@ export default function FullProfileScreenWeb() {
     uploadAvatar,
   } = useProfile(initialProfile?.id);
   const profile = liveProfile || initialProfile;
-  const completionCapacity = (context.active_bond?.capacity || context.primary_capacity) ?? null;
+  const completionCapacity = (context.activeBond?.capacity || context.primaryCapacity) ?? null;
   useProfileCompletion(profile, completionCapacity as any);
   const { links: socialLinks } = useSocialLinks(profile?.id);
 
@@ -54,10 +54,16 @@ export default function FullProfileScreenWeb() {
   if (!profile) return null;
 
   const isOtherProfile = currentUserId !== undefined && currentUserId !== profile.id;
-  const profileCapacity = (profile as any)?.active_bond?.capacity || (profile as any)?.capacity || '';
-  const isTeacherProfile = ['teacher', 'principal', 'gradeHead', 'sectionHead', 'grade_head', 'section_head'].includes(
-    profileCapacity || '',
-  );
+  const profileCapacity =
+    (profile as any)?.active_bond?.capacity || (profile as any)?.capacity || '';
+  const isTeacherProfile = [
+    'teacher',
+    'principal',
+    'gradeHead',
+    'sectionHead',
+    'grade_head',
+    'section_head',
+  ].includes(profileCapacity || '');
 
   const handleSave = async (field: string, value: any) => {
     let valueToSave = value;
@@ -86,10 +92,10 @@ export default function FullProfileScreenWeb() {
         <Box className="max-w-[800px] mx-auto w-full p-6">
           <VStack space="2xl">
             <HStack space="xl" className="items-center">
-                <AvatarDisplay
-                  userId={profile.id}
-                  avatarUrl={profile.avatar_url}
-                  fullName={profile.display_name}
+              <AvatarDisplay
+                userId={profile.id}
+                avatarUrl={profile.avatar_url}
+                fullName={profile.display_name}
                 size={120}
                 editable={!isOtherProfile}
                 onAvatarSelected={async (localUri) => {
@@ -149,9 +155,9 @@ export default function FullProfileScreenWeb() {
               </VStack>
             </Box>
 
-              <ContactLinktree
-                links={socialLinks || []}
-                userName={profile.display_name}
+            <ContactLinktree
+              links={socialLinks || []}
+              userName={profile.display_name}
               bio={profile.bio ?? undefined}
               userId={profile.id}
               isOwnProfile={!isOtherProfile}

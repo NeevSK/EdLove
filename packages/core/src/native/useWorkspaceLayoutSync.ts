@@ -6,15 +6,11 @@ import type { WorkspaceLayoutTarget } from '../logic/schemas/workspace-layout.sc
 import {
   createDefaultWorkspaceLayout,
   normalizeWorkspaceLayout,
-  type ResolvedWorkspaceSurface,
   resolveWorkspaceSurfaceLayout,
   setWorkspaceSurfaceHidden,
   setWorkspaceSurfaceOrder,
   setWorkspaceSurfacePinned,
   setWorkspaceSurfaceZone,
-  type WorkspaceLayout,
-  type WorkspaceSurfaceDefinition,
-  type WorkspaceZoneId,
 } from '../logic/workspace/canvas';
 import {
   buildWorkspaceLayoutStorageKey,
@@ -25,6 +21,12 @@ import {
   type WorkspaceLayoutPlatformKind,
   type WorkspaceLayoutScreenClass,
 } from '../logic/workspace/layoutSync';
+import type {
+  ResolvedWorkspaceSurface,
+  WorkspaceLayout,
+  WorkspaceSurfaceDefinition,
+  WorkspaceZoneId,
+} from '../types';
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -287,7 +289,7 @@ export function useWorkspaceLayoutSync<
   useEffect(() => {
     if (!layout || !surfaces.length) return;
 
-    setLayoutState((current) => {
+    setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) => {
       if (!current) return defaultLayout;
 
       const normalized = normalizeWorkspaceLayout(current, surfaces);
@@ -302,13 +304,15 @@ export function useWorkspaceLayoutSync<
 
   const setSurfaceOrder = useCallback(
     (order: TSurfaceId[]) =>
-      setLayoutState((current) => (current ? setWorkspaceSurfaceOrder(current, order) : current)),
+      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
+        current ? setWorkspaceSurfaceOrder(current, order) : current,
+      ),
     [],
   );
 
   const setSurfaceHidden = useCallback(
     (surfaceId: TSurfaceId, hidden: boolean) =>
-      setLayoutState((current) =>
+      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
         current ? setWorkspaceSurfaceHidden(current, surfaceId, hidden) : current,
       ),
     [],
@@ -316,7 +320,7 @@ export function useWorkspaceLayoutSync<
 
   const setSurfacePinned = useCallback(
     (surfaceId: TSurfaceId, pinned: boolean) =>
-      setLayoutState((current) =>
+      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
         current ? setWorkspaceSurfacePinned(current, surfaceId, pinned) : current,
       ),
     [],
@@ -324,7 +328,7 @@ export function useWorkspaceLayoutSync<
 
   const setSurfaceZone = useCallback(
     (surfaceId: TSurfaceId, zone: WorkspaceZoneId) =>
-      setLayoutState((current) =>
+      setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) =>
         current ? setWorkspaceSurfaceZone(current, surfaceId, zone) : current,
       ),
     [],

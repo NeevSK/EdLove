@@ -1,11 +1,11 @@
 import { Bell, BookOpen, Check, CheckCircle, Info, Users, X } from 'lucide-react-native';
 import { Dimensions } from 'react-native';
-import { ScrollView } from '../primitives';
 import Animated, { Easing, SlideInLeft, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Box, Heading, HStack, Portal, Pressable, Spinner, Text, VStack } from '../gluestack';
+import { Box, Heading, HStack, Portal, Pressable, Text, VStack } from '../gluestack';
+import { ScrollView } from '../primitives';
 import { hapticLight } from '../utils/haptics';
-import SkeletonLoader, { SkeletonAvatar, SkeletonTextLine } from './SkeletonLoader';
+import { SkeletonAvatar, SkeletonTextLine } from './SkeletonLoader';
 
 const { width } = Dimensions.get('window');
 const DRAWER_WIDTH = width * 0.65;
@@ -157,9 +157,7 @@ export default function NotificationDrawer({
 
             {error && (
               <Box className="bg-red-500/10 border border-red-500/20 p-3 rounded-xl">
-                <Text className="text-red-500 text-xs text-center font-medium">
-                  {error}
-                </Text>
+                <Text className="text-red-500 text-xs text-center font-medium">{error}</Text>
               </Box>
             )}
 
@@ -170,7 +168,10 @@ export default function NotificationDrawer({
               {isLoading ? (
                 <VStack className="mt-4 gap-4">
                   {[1, 2, 3, 4, 5].map((i) => (
-                    <Box key={i} className="p-4 rounded-xl border border-phase-surface bg-phase-surface/30">
+                    <Box
+                      key={i}
+                      className="p-4 rounded-xl border border-phase-surface bg-phase-surface/30"
+                    >
                       <HStack className="items-start gap-3">
                         <SkeletonAvatar size={36} />
                         <VStack className="flex-1 gap-2">
@@ -212,9 +213,9 @@ export default function NotificationDrawer({
                       const diff = now.getTime() - date.getTime();
                       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-                      if (days === 0) groups['Today']?.push(n);
-                      else if (days === 1) groups['Yesterday']?.push(n);
-                      else groups['Earlier']?.push(n);
+                      if (days === 0) groups.Today?.push(n);
+                      else if (days === 1) groups.Yesterday?.push(n);
+                      else groups.Earlier?.push(n);
                     });
 
                     return Object.entries(groups).map(([title, items]) => {
@@ -226,11 +227,14 @@ export default function NotificationDrawer({
                           </Text>
                           {items.map((n) => {
                             const Icon = notificationIcon(n.type);
-                            const accentColor = 
-                                n.type === 'resonance' ? '#F6BF8C' : 
-                                n.type === 'community' ? '#10b981' : 
-                                n.type === 'achievement' ? '#8b5cf6' : 
-                                '#94a3b8';
+                            const accentColor =
+                              n.type === 'resonance'
+                                ? '#F6BF8C'
+                                : n.type === 'community'
+                                  ? '#10b981'
+                                  : n.type === 'achievement'
+                                    ? '#8b5cf6'
+                                    : '#94a3b8';
 
                             return (
                               <Pressable
@@ -253,7 +257,7 @@ export default function NotificationDrawer({
                                   }}
                                 >
                                   <HStack className="items-start gap-3">
-                                    <Box 
+                                    <Box
                                       className="p-2.5 rounded-xl bg-phase-canvas border border-phase-surface"
                                       style={{
                                         shadowColor: accentColor,

@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { makeModelSchema } from '@repo/schema';
+import { z } from 'zod';
 import { BondSchema, CapacitySchema, IdentityStateSchema } from './identity.schema';
 
 const sanctuaryDateTime = z.coerce.date().transform((d) => d.toISOString());
@@ -8,72 +8,93 @@ const sanctuaryDateTime = z.coerce.date().transform((d) => d.toISOString());
  * UserSchema - Base entity for a user in the sanctuary.
  * Derived from ZenStack Model Schema + App-specific extensions.
  */
-export const UserSchema = makeModelSchema('User').extend({
-  created_at: sanctuaryDateTime,
-  updated_at: sanctuaryDateTime.optional(),
-  deleted_at: sanctuaryDateTime.optional().nullable(),
-  onboarding_completed_at: sanctuaryDateTime.optional().nullable(),
-  last_seen_at: sanctuaryDateTime.optional().nullable(),
-  display_name: z.string().nullish().default(null),
-  identity_state: IdentityStateSchema.nullish().default('anonymous'),
-}).catchall(z.unknown());
+export const UserSchema = makeModelSchema('User')
+  .extend({
+    created_at: sanctuaryDateTime,
+    updated_at: sanctuaryDateTime.optional(),
+    deleted_at: sanctuaryDateTime.optional().nullable(),
+    onboarding_completed_at: sanctuaryDateTime.optional().nullable(),
+    last_seen_at: sanctuaryDateTime.optional().nullable(),
+    display_name: z.string().nullish().default(null),
+    identity_state: IdentityStateSchema.nullish().default('anonymous'),
+  })
+  .catchall(z.unknown());
 
 export type User = z.infer<typeof UserSchema>;
 
 export const TenantKindSchema = z.enum(['internal', 'customer', 'demo', 'sandbox']);
 
-export const UserContextSchema = z.object({
-  user_id: z.string().uuid().nullish().default(null),
-  userId: z.string().uuid().nullish().default(null),
-  email: z.string().email().nullish().default(null),
-  
-  // Sovereign ReBAC Context
-  // 1. The Reality: All active relationships (The Union of Identity)
-  bonds: z.array(BondSchema).nullish().transform((value) => value ?? []),
+const normalizeUserContextInput = (value: unknown) => {
+  if (!value || typeof value !== 'object') return value;
+  const input = value as Record<string, unknown>;
 
-  // 2. The Anchor: The primary identity chosen during onboarding (Mental Model)
-  primary_capacity: z.string().nullish().default(null),
-  primaryCapacity: z.string().nullish().default(null),
+  return {
+    ...input,
+    userId: input.userId ?? null,
+    primaryCapacity: input.primaryCapacity ?? null,
+    activeBond: input.activeBond ?? null,
+    schoolId: input.schoolId ?? null,
+    tenancyName: input.tenancyName ?? null,
+    tenantKind: input.tenantKind ?? 'customer',
+    sectionId: input.sectionId ?? null,
+    gradeId: input.gradeId ?? null,
+    classroomId: input.classroomId ?? null,
+    isAnonymous: input.isAnonymous ?? false,
+    hasGlobalAccess: input.hasGlobalAccess ?? false,
+    isPersonal: input.isPersonal ?? false,
+  };
+};
 
-  // 3. The Focus: The currently selected workspace/perspective
-  active_bond: BondSchema.nullish().default(null),
-  activeBond: BondSchema.nullish().default(null),
-  active_bond_status: z.string().nullish().default(null),
-  capacity: CapacitySchema.nullish().default(null),
-  traits: z.array(z.string()).nullish().default([]),
-  
-  school_id: z.string().uuid().nullish().default(null), // Null if 2nd class citizen
-  schoolId: z.string().uuid().nullish().default(null),
-  tenancy_name: z.string().nullish().default(null),
-  tenancy: z
-    .object({
-      kind: TenantKindSchema.default('customer'),
-      is_personal: z.boolean().default(false),
-    })
-    .nullish()
-    .default(null),
-  tenant_kind: TenantKindSchema.nullish().default('customer'),
+export const UserContextSchema = z.preprocess(
+  normalizeUserContextInput,
+  z.object({
+    userId: z.uuid().nullish().default(null),
+    email: z.email().or(z.literal('')).nullish().default(null),
 
-  // Scoped context for 1st class citizens
-  section_id: z.string().uuid().nullish().default(null),
-  grade_id: z.string().uuid().nullish().default(null),
-  classroom_id: z.string().uuid().nullish().default(null),
+    // Sovereign ReBAC Context
+    bonds: z
+      .array(BondSchema)
+      .nullish()
+      .transform((value) => value ?? []),
 
-  // Metadata & Flags
-  is_anonymous: z.boolean().nullish().default(false),
-  isAnonymous: z.boolean().nullish().default(false),
-  has_global_access: z.boolean().nullish().default(false), // e.g. Founder/Developer
-  is_personal: z.boolean().nullish().default(false),
+    primaryCapacity: z.string().nullish().default(null),
+    activeBond: BondSchema.nullish().default(null),
+    capacity: CapacitySchema.nullish().default(null),
+    traits: z.array(z.string()).nullish().default([]),
 
-  tier: z.string().nullish().default('free'),
-  citizenship: z.enum(['WANDERER', 'SECOND_CLASS', 'FIRST_CLASS']).default('WANDERER'),
-  pricing_tier: z.enum(['FREE', 'PRO', 'INSTITUTIONAL']).default('FREE'),
-  features: z.array(z.string()).nullish().transform((value) => value ?? []),
-  flags: z
-    .record(z.string(), z.union([z.boolean(), z.string()]))
-    .nullish()
-    .transform((value) => value ?? {}),
-});
+    schoolId: z.uuid().nullish().default(null),
+    tenancyName: z.string().nullish().default(null),
+    tenancy: z
+      .object({
+        kind: TenantKindSchema.default('customer'),
+        isPersonal: z.boolean().default(false),
+      })
+      .nullish()
+      .default(null),
+    tenantKind: TenantKindSchema.nullish().default('customer'),
+
+    sectionId: z.uuid().nullish().default(null),
+    gradeId: z.uuid().nullish().default(null),
+    classroomId: z.uuid().nullish().default(null),
+
+    // Metadata & Flags
+    isAnonymous: z.boolean().nullish().default(false),
+    hasGlobalAccess: z.boolean().nullish().default(false),
+    isPersonal: z.boolean().nullish().default(false),
+
+    tier: z.string().nullish().default('free'),
+    citizenship: z.enum(['WANDERER', 'SECOND_CLASS', 'FIRST_CLASS']).default('WANDERER'),
+    pricing_tier: z.enum(['FREE', 'PRO', 'INSTITUTIONAL']).default('FREE'),
+    features: z
+      .array(z.string())
+      .nullish()
+      .transform((value) => value ?? []),
+    flags: z
+      .record(z.string(), z.union([z.boolean(), z.string()]))
+      .nullish()
+      .transform((value) => value ?? {}),
+  }),
+);
 
 export type UserContext = z.infer<typeof UserContextSchema>;
 export type TenantKind = z.infer<typeof TenantKindSchema>;

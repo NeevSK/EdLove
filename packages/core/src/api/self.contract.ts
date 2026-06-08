@@ -4,21 +4,23 @@ import {
   MoodLogSchema,
   UserPreferencesSchema,
 } from '../logic/schemas/self.schema';
-import { type SovereignContract } from './contract';
+import type { SovereignContract } from './contract';
 
-const wellbeingAuthority = (action: 'create' | 'read' | 'update' | 'delete') => ({
-  policy: { action, subject: 'Wellbeing' },
-}) as const;
+const wellbeingAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
+  ({
+    policy: { action, subject: 'Wellbeing' },
+  }) as const;
 
-const userAuthority = (action: 'read' | 'update') => ({
-  policy: { action, subject: 'User' },
-}) as const;
+const userAuthority = (action: 'read' | 'update') =>
+  ({
+    policy: { action, subject: 'User' },
+  }) as const;
 
 /**
  * Self (Wellbeing & Profile) Port
  * Framework-agnostic definition of personal ecology.
  */
-export const selfContract: SovereignContract = {
+export const selfContract = {
   logMood: {
     method: 'post',
     path: '/self/mood',
@@ -94,7 +96,7 @@ export const selfContract: SovereignContract = {
     responses: {
       200: {
         schema: MoodLogSchema.nullable(),
-        description: 'Retrieve today\'s mood log',
+        description: "Retrieve today's mood log",
       },
     },
     metadata: wellbeingAuthority('read'),
@@ -126,4 +128,4 @@ export const selfContract: SovereignContract = {
     },
     metadata: userAuthority('update'),
   },
-} as const;
+} as const satisfies SovereignContract;

@@ -1,5 +1,6 @@
 import type { Session } from '@supabase/supabase-js';
 import { deviceTrustAPI } from '../api/deviceTrust';
+import { assertHighway } from '../api/highways';
 import { identityAPI } from '../api/identity';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import { accountPin } from '../lib/accountPin';
@@ -99,6 +100,7 @@ export const deviceAccounts = {
       return null;
     }
 
+    assertHighway('identity_bootstrap', 'direct-api');
     const identity = profile?.id ? null : await identityAPI.identifyActiveCitizen();
     const accountId = profile?.id ?? identity?.id;
 
@@ -117,7 +119,7 @@ export const deviceAccounts = {
       email: profile?.email ?? session.user.email ?? existing?.email ?? null,
       displayName:
         profile?.display_name ??
-        (session.user.user_metadata?.['display_name'] as string | undefined) ??
+        (session.user.user_metadata?.display_name as string | undefined) ??
         existing?.displayName ??
         null,
       avatarUrl: profile?.avatar_url ?? existing?.avatarUrl ?? null,

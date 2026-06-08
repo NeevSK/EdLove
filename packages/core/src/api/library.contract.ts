@@ -4,17 +4,18 @@ import {
   LibraryResourceSchema,
   ResourceEngagementSchema,
 } from '../logic/schemas/library.schema';
-import { type SovereignContract } from './contract';
+import type { SovereignContract } from './contract';
 
-const libraryAuthority = (action: 'create' | 'read' | 'update' | 'delete') => ({
-  policy: { action, subject: 'Library' }
-}) as const;
+const libraryAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
+  ({
+    policy: { action, subject: 'Library' },
+  }) as const;
 
 /**
  * Library & Media Port (Sovereign RPC)
  * Framework-agnostic definition of the Library API.
  */
-export const libraryContract: SovereignContract = {
+export const libraryContract = {
   getResources: {
     method: 'get',
     path: '/library/resources',
@@ -109,4 +110,4 @@ export const libraryContract: SovereignContract = {
     },
     metadata: libraryAuthority('read'),
   },
-} as const;
+} as const satisfies SovereignContract;

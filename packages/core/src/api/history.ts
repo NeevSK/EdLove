@@ -181,10 +181,13 @@ export const historyAPI = {
     collectionId: string,
     asOf: string,
   ): Promise<CollectionMembershipAsOfEntry[]> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc('get_collection_membership_as_of', {
-      p_collection_id: collectionId,
-      p_as_of: asOf,
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'get_collection_membership_as_of',
+      {
+        p_collection_id: collectionId,
+        p_as_of: asOf,
+      },
+    );
 
     if (error) {
       throw new APIError(

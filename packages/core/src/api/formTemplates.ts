@@ -114,7 +114,10 @@ export const formTemplatesAPI = {
    * Delete a template
    */
   async delete(id: string): Promise<void> {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('form_templates').delete().eq('id', id);
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      .from('form_templates')
+      .delete()
+      .eq('id', id);
 
     if (error) {
       throw new APIError('Failed to delete form template', error.code, error);

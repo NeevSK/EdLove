@@ -1,3 +1,4 @@
+export * from '../providers/ErrorResolutionProvider';
 export {
   useSanctuaryToast,
   useSanctuaryToast as useLotusToast,
@@ -6,7 +7,6 @@ export {
 export * from './useAccessibility';
 export * from './useDemoBridge';
 export * from './useResponsive';
+export * from './useSafeAction';
 export * from './useTheme';
 export * from './useThemedColors';
-export * from './useSafeAction';
-export * from '../providers/ErrorResolutionProvider';

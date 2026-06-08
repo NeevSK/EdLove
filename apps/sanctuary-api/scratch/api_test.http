@@ -1,0 +1,79 @@
+# ==============================================================================
+# 🛡️ Sanctuary API Gateway Playground
+# ==============================================================================
+# This file lets you test and verify your Hono API endpoints locally.
+# It includes standard HTTP Client format, curl format, and PowerShell format.
+#
+# Prerequisite: Make sure the API server is running locally:
+# $ pnpm --filter=@repo/sanctuary-api dev
+#
+# The API will be listening at http://localhost:3000
+# ==============================================================================
+
+###
+# @name SwaggerUIDocuments
+# Open this URL in your browser for a fully interactive API playground!
+GET http://localhost:3000/ui
+
+
+###
+# @name GetSchoolDetails_Anonymous (Expected: 403 Forbidden - double gated by Cedar)
+GET http://localhost:3000/api/admin/schools/123e4567-e89b-12d3-a456-426614174000
+Accept: application/json
+
+# --- Curl Version:
+# curl -i http://localhost:3000/api/admin/schools/123e4567-e89b-12d3-a456-426614174000
+#
+# --- PowerShell Version:
+# Invoke-RestMethod -Uri "http://localhost:3000/api/admin/schools/123e4567-e89b-12d3-a456-426614174000" -Method Get
+
+
+###
+# @name GetSchoolDetails_Admin (Expected: Passes Cedar gate because capacity is admin)
+GET http://localhost:3000/api/admin/schools/123e4567-e89b-12d3-a456-426614174000
+Authorization: Bearer admin-user-1
+x-capacity: admin
+x-school-id: 123e4567-e89b-12d3-a456-426614174000
+Accept: application/json
+
+# --- Curl Version:
+# curl -i -H "Authorization: Bearer admin-user-1" -H "x-capacity: admin" -H "x-school-id: 123e4567-e89b-12d3-a456-426614174000" http://localhost:3000/api/admin/schools/123e4567-e89b-12d3-a456-426614174000
+#
+# --- PowerShell Version:
+# Invoke-RestMethod -Uri "http://localhost:3000/api/admin/schools/123e4567-e89b-12d3-a456-426614174000" -Method Get -Headers @{ "Authorization" = "Bearer admin-user-1"; "x-capacity" = "admin"; "x-school-id" = "123e4567-e89b-12d3-a456-426614174000" }
+
+
+###
+# @name SubmitGrade_Student (Expected: 403 Forbidden - denied by Cedar)
+POST http://localhost:3000/api/grade/submit
+Authorization: Bearer student-user-1
+x-capacity: student
+x-school-id: 123e4567-e89b-12d3-a456-426614174000
+Content-Type: application/json
+
+{
+  "classroom_id": "class-1",
+  "student_id": "student-1",
+  "marks": 92,
+  "grade": "A"
+}
+
+# --- Curl Version:
+# curl -i -X POST -H "Content-Type: application/json" -H "Authorization: Bearer student-user-1" -H "x-capacity: student" -H "x-school-id: 123e4567-e89b-12d3-a456-426614174000" -d "{\"classroom_id\":\"class-1\",\"student_id\":\"student-1\",\"marks\":92,\"grade\":\"A\"}" http://localhost:3000/api/grade/submit
+
+
+###
+# @name SubmitGrade_Teacher (Expected: 200/500 depending on active db connection, but NOT 403)
+POST http://localhost:3000/api/grade/submit
+Authorization: Bearer teacher-user-1
+x-capacity: teacher
+x-school-id: 123e4567-e89b-12d3-a456-426614174000
+x-classroom-ids: class-1
+Content-Type: application/json
+
+{
+  "classroom_id": "class-1",
+  "student_id": "student-1",
+  "marks": 95,
+  "grade": "A"
+}

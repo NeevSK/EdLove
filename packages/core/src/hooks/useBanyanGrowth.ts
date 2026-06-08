@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { type BanyanStage } from '../types/Growth';
 import { growth } from '../logic';
-
 import { usePermissions } from '../logic/permissions/hooks/usePermissions';
+import type { BanyanStage } from '../types/Growth';
 
 /**
  * useBanyanGrowth
@@ -11,7 +10,7 @@ import { usePermissions } from '../logic/permissions/hooks/usePermissions';
  */
 export function useBanyanGrowth() {
   const { context } = usePermissions();
-  const userId = context.user_id;
+  const userId = context.userId || null;
   const [banyan, setBanyan] = useState<{
     banyan_stage: BanyanStage;
     peer_mentored_count: number;
@@ -37,7 +36,6 @@ export function useBanyanGrowth() {
       setIsLoading(false);
     }
   }, [userId]);
-
 
   useEffect(() => {
     refreshBanyan().catch((e) => {

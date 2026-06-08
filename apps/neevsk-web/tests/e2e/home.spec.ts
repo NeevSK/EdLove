@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test('has title', async ({ page }) => {
   await page.goto('/');
@@ -17,7 +17,7 @@ test('hero section is visible', async ({ page }) => {
 
 test('theme is set to home', async ({ page }) => {
   await page.goto('/');
-  
+
   // BaseLayout sets data-theme on html
   const html = page.locator('html');
   await expect(html).toHaveAttribute('data-theme', 'home');

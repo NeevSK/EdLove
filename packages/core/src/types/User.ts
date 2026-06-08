@@ -1,6 +1,6 @@
-import type { SocialLink } from './Social';
-import type { Membership, TenantKind } from './Tenancy';
 import type { Bond } from './Identity';
+import type { SocialLink } from './Social';
+import type { TenantKind } from './Tenancy';
 
 export interface ProfileStats {
   classes_taught?: number;
@@ -30,6 +30,7 @@ export interface User extends ProfileStats {
   updated_at?: string | Date; // ISO timestamp or Date object (optional)
   avatar_url?: string | null; // Profile picture URL (optional)
   is_anonymous?: boolean | null; // Flag for anonymous/guest users
+  capacity?: string | null;
   identity_state?: 'anonymous' | 'onboarded' | 'verified' | string | null;
   profile_completed?: boolean; // Flag for "No Trust" barrier
   bio?: string | null; // User bio

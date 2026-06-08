@@ -1,8 +1,8 @@
-import type { AppNotification } from '@repo/core/types';
 import { useNotifications, useStore } from '@repo/core/logic';
+import type { AppNotification } from '@repo/core/types';
 import { formatDistanceToNow } from 'date-fns';
 import { Bell, CheckCircle2, Inbox, Info, Shield, Sparkles } from 'lucide-react-native';
-import React, { useCallback, memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WebScreenHeader } from '../components/WebScreenHeader.web';
 
@@ -46,128 +46,130 @@ function timeAgo(ts: string): string {
   }
 }
 
-const NotificationRow = memo(({
-  notif,
-  onRead,
-}: {
-  notif: AppNotification;
-  onRead: (id: string) => Promise<void>;
-}) => {
-  const icon = ICON_MAP[notif.type] ?? ICON_MAP['system'];
+const NotificationRow = memo(
+  ({ notif, onRead }: { notif: AppNotification; onRead: (id: string) => Promise<void> }) => {
+    const icon = ICON_MAP[notif.type] ?? ICON_MAP.system;
 
-  const handleClick = useCallback(() => {
-    if (!notif.is_read) onRead(notif.id);
-  }, [notif.id, notif.is_read, onRead]);
+    const handleClick = useCallback(() => {
+      if (!notif.is_read) onRead(notif.id);
+    }, [notif.id, notif.is_read, onRead]);
 
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      onClick={handleClick}
-      onKeyDown={(e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          // preventDefault for Space only on the row element itself
-          // avoids blocking scroll in any scrollable child element.
-          if (e.target === e.currentTarget) e.preventDefault();
-          handleClick();
-        }
-      }}
-      className="sanctuary-card"
-      style={{
-        padding: '20px',
-        borderLeft: notif.is_read ? '1px solid var(--border)' : '4px solid var(--action)',
-        opacity: notif.is_read ? 0.75 : 1,
-        cursor: notif.is_read ? 'default' : 'pointer',
-        transition: 'opacity 0.3s ease',
-      }}
-    >
-      <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-        {/* Icon */}
-        <div
-          style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '12px',
-            flexShrink: 0,
-            background: 'var(--glass-interact)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {icon}
-        </div>
-
-        {/* Body */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+    return (
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={handleClick}
+        onKeyDown={(e: React.KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            // preventDefault for Space only on the row element itself
+            // avoids blocking scroll in any scrollable child element.
+            if (e.target === e.currentTarget) e.preventDefault();
+            handleClick();
+          }
+        }}
+        className="sanctuary-card"
+        style={{
+          padding: '20px',
+          borderLeft: notif.is_read ? '1px solid var(--border)' : '4px solid var(--action)',
+          opacity: notif.is_read ? 0.75 : 1,
+          cursor: notif.is_read ? 'default' : 'pointer',
+          transition: 'opacity 0.3s ease',
+        }}
+      >
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+          {/* Icon */}
           <div
             style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '12px',
+              flexShrink: 0,
+              background: 'var(--glass-interact)',
               display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'flex-start',
-              gap: '8px',
-              marginBottom: '4px',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            <h3
-              style={{
-                margin: 0,
-                fontSize: '15px',
-                fontWeight: '700',
-                color: 'var(--ink)',
-                lineHeight: 1.3,
-              }}
-            >
-              {notif.title}
-            </h3>
-            <span
-              style={{
-                fontSize: '11px',
-                color: 'var(--ink-ghost)',
-                flexShrink: 0,
-              }}
-            >
-              {timeAgo(notif.created_at)}
-            </span>
+            {icon}
           </div>
-          {notif.body && (
-            <p
+
+          {/* Body */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div
               style={{
-                margin: 0,
-                fontSize: '13px',
-                color: 'var(--ink-soft)',
-                lineHeight: 1.5,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                gap: '8px',
+                marginBottom: '4px',
               }}
             >
-              {notif.body}
-            </p>
+              <h3
+                style={{
+                  margin: 0,
+                  fontSize: '15px',
+                  fontWeight: '700',
+                  color: 'var(--ink)',
+                  lineHeight: 1.3,
+                }}
+              >
+                {notif.title}
+              </h3>
+              <span
+                style={{
+                  fontSize: '11px',
+                  color: 'var(--ink-ghost)',
+                  flexShrink: 0,
+                }}
+              >
+                {timeAgo(notif.created_at)}
+              </span>
+            </div>
+            {notif.body && (
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: '13px',
+                  color: 'var(--ink-soft)',
+                  lineHeight: 1.5,
+                }}
+              >
+                {notif.body}
+              </p>
+            )}
+          </div>
+
+          {/* Unread dot */}
+          {!notif.is_read && (
+            <div
+              style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: 'var(--action)',
+                flexShrink: 0,
+                marginTop: '6px',
+              }}
+            />
           )}
         </div>
-
-        {/* Unread dot */}
-        {!notif.is_read && (
-          <div
-            style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              background: 'var(--action)',
-              flexShrink: 0,
-              marginTop: '6px',
-            }}
-          />
-        )}
       </div>
-    </div>
-  );
-});
+    );
+  },
+);
 
 export default memo(function NotificationsScreenWeb() {
   const { t } = useTranslation();
   const { user } = useStore();
-  const { notifications, unreadCount, isLoading, isRealtimeConnected, error, markAsRead, markAllRead } = useNotifications(
-    user?.id,
-  );
+  const {
+    notifications,
+    unreadCount,
+    isLoading,
+    isRealtimeConnected,
+    error,
+    markAsRead,
+    markAllRead,
+  } = useNotifications(user?.id);
 
   // Automatically mark all as read when visiting this screen
   React.useEffect(() => {
@@ -191,32 +193,43 @@ export default memo(function NotificationsScreenWeb() {
         {/* CONTENT */}
         <div style={{ maxWidth: '800px' }}>
           {isRealtimeConnected && (
-            <div style={{ 
-              fontSize: '11px', 
-              color: 'var(--moss)', 
-              marginBottom: '16px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '6px',
-              fontWeight: '600',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px'
-            }}>
-              <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--moss)' }} />
+            <div
+              style={{
+                fontSize: '11px',
+                color: 'var(--moss)',
+                marginBottom: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontWeight: '600',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+              }}
+            >
+              <div
+                style={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--moss)',
+                }}
+              />
               Live Stream Active
             </div>
           )}
 
           {error && (
-            <div style={{ 
-              padding: '12px 16px', 
-              backgroundColor: 'rgba(239, 68, 68, 0.1)', 
-              border: '1px solid rgba(239, 68, 68, 0.2)', 
-              borderRadius: '12px',
-              color: '#ef4444',
-              fontSize: '13px',
-              marginBottom: '20px'
-            }}>
+            <div
+              style={{
+                padding: '12px 16px',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.2)',
+                borderRadius: '12px',
+                color: '#ef4444',
+                fontSize: '13px',
+                marginBottom: '20px',
+              }}
+            >
               {error}
             </div>
           )}

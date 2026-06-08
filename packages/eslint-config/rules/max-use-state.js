@@ -3,18 +3,18 @@
  */
 export default {
   meta: {
-    type: "suggestion",
+    type: 'suggestion',
     docs: {
-      description: "limit the number of useState hooks per component",
-      category: "Best Practices",
+      description: 'limit the number of useState hooks per component',
+      category: 'Best Practices',
       recommended: false,
     },
     schema: [
       {
-        type: "object",
+        type: 'object',
         properties: {
           max: {
-            type: "number",
+            type: 'number',
           },
         },
         additionalProperties: false,
@@ -22,12 +22,12 @@ export default {
     ],
     messages: {
       tooManyStateHooks:
-        "Component has too many useState hooks ({{count}}). Limit is {{max}}. Consider using useReducer or a state machine for complex state.",
+        'Component has too many useState hooks ({{count}}). Limit is {{max}}. Consider using useReducer or a state machine for complex state.',
     },
   },
   create(context) {
     const max = context.options[0]?.max || 3;
-    let stateCounts = new Map();
+    const stateCounts = new Map();
 
     return {
       "CallExpression[callee.name='useState']"(node) {
@@ -44,7 +44,7 @@ export default {
           if (count > max) {
             context.report({
               node,
-              messageId: "tooManyStateHooks",
+              messageId: 'tooManyStateHooks',
               data: {
                 count,
                 max,

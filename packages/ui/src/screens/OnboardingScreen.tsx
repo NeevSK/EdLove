@@ -1,10 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { authAPI, identityAPI, schoolAPI } from '@repo/core/api';
-import { type Capacity, identity, useStore } from '@repo/core/logic';
+import { authAPI, identityAPI, onboardingAPI } from '@repo/core/api';
+import { useStore } from '@repo/core/store';
+import type { Capacity } from '@repo/core/types';
 
 import type React from 'react';
-import { memo, useCallback, useEffect, useMemo, useReducer } from 'react';
+import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ProgressIndicator } from '../components/ProgressIndicator';
 import ScreenWrapper from '../components/ScreenWrapper';
@@ -165,7 +166,6 @@ const NameStep = memo(
     onNext,
     canProceed,
     isLoading,
-    error,
     onBackToWelcome,
   }: {
     t: (key: string) => string;
@@ -174,7 +174,6 @@ const NameStep = memo(
     onNext: () => void;
     canProceed: boolean;
     isLoading?: boolean;
-    error: string | null;
     onBackToWelcome: () => void;
   }) => (
     <StepShell
@@ -184,7 +183,6 @@ const NameStep = memo(
       subtitle={t('onboarding.nameSubtitle') || "Let's start your journey with a name."}
     >
       <VStack className="gap-6">
-        <ErrorBanner error={error} />
         <Input className="rounded-comfortable border-phase-text-tertiary">
           <InputField
             placeholder={t('onboarding.namePlaceholder')}
@@ -202,10 +200,11 @@ const NameStep = memo(
         </Input>
         <Text className="text-phase-text-secondary text-sm">
           {name.trim().length > 0 && name.trim().length < 2
-            ? "Your name is a bit short. Try adding another character."
+            ? 'Your name is a bit short. Try adding another character.'
             : name === 'Guest User'
-            ? "Please choose a name other than 'Guest User'."
-            : t('onboarding.nameHint') || "Use the display name you want people to see inside the app."}
+              ? "Please choose a name other than 'Guest User'."
+              : t('onboarding.nameHint') ||
+                'Use the display name you want people to see inside the app.'}
         </Text>
         <Button
           size="lg"
@@ -238,7 +237,6 @@ const IdentityStep = memo(
     onNext,
     isLoading,
     isAnonymous,
-    error,
   }: {
     t: (key: string) => string;
     capacity: Capacity;
@@ -247,7 +245,6 @@ const IdentityStep = memo(
     onNext: () => void;
     isLoading?: boolean;
     isAnonymous?: boolean;
-    error: string | null;
   }) => (
     <VStack className="gap-6 mt-8 px-6">
       <ProgressIndicator currentStep={1} totalSteps={TOTAL_STEPS} />
@@ -257,7 +254,6 @@ const IdentityStep = memo(
       <Text className="text-md text-phase-text-secondary text-center">
         {t('onboarding.roleSubtitle')}
       </Text>
-      <ErrorBanner error={error} />
       {isAnonymous && (
         <Text className="text-xs text-phase-text-tertiary text-center mb-2">
           (Anonymous Session)
@@ -338,7 +334,6 @@ const TourStep = memo(
     onNext,
     onSkip,
     isLoading,
-    error,
   }: {
     t: (key: string) => string;
     index: number;
@@ -347,7 +342,6 @@ const TourStep = memo(
     onNext: () => void;
     onSkip: () => void;
     isLoading?: boolean;
-    error: string | null;
   }) => (
     <VStack className="gap-6 mt-8 px-6 flex-1">
       <ProgressIndicator currentStep={index} totalSteps={TOTAL_STEPS} />
@@ -361,7 +355,6 @@ const TourStep = memo(
         <Text className="text-phase-text-secondary text-center text-lg font-bold">
           {screen.subtitle}
         </Text>
-        <ErrorBanner error={error} />
         <Box className="flex-1 justify-center py-4">
           <Text className="text-center text-phase-text-primary text-md leading-relaxed">
             {screen.content}
@@ -426,18 +419,31 @@ const OnboardingScreen = memo(function OnboardingScreen({
   const { currentStep, name, selectedCapacity, isProcessing, error } = state;
   const isOnline = useStore((s) => s.isOnline);
   const showToast = useStore((s) => s.showToast);
+  const resolvedInternalIdRef = useRef<string | null>(null);
+  const resolvedCitizenRef = useRef<Awaited<
+    ReturnType<typeof identityAPI.identifyActiveCitizen>
+  > | null>(null);
+  const anonymousBootstrapRequestedRef = useRef(false);
 
   // ── Restore saved progress or pre-fill from existing auth ──────────
   useEffect(() => {
     const initOnboarding = async () => {
-      const internalId = await identityAPI.getMyInternalId();
+      let internalId: string | null = null;
+      try {
+        const citizen = await identityAPI.identifyActiveCitizen().catch(() => null);
+        resolvedCitizenRef.current = citizen;
+        internalId = citizen?.id || null;
+        resolvedInternalIdRef.current = internalId;
+      } catch (err) {
+        console.warn('[Onboarding] Failed to identify active citizen:', err);
+      }
 
       try {
         // Saved progress recovery logic
         const savedProgress = await AsyncStorage.getItem('onboarding_progress');
         if (savedProgress) {
           const progress = JSON.parse(savedProgress);
-          if (progress.user_id === internalId) {
+          if (progress.user_id === internalId || !progress.user_id || isAnonymous) {
             console.log('📦 OnboardingScreen: Restoring progress for:', internalId);
             dispatch({
               type: 'RESTORE_PROGRESS',
@@ -461,29 +467,38 @@ const OnboardingScreen = memo(function OnboardingScreen({
       try {
         // No saved progress — pre-fill for verified (non-anonymous) users with a real name
         if (!internalId) {
+          if (anonymousBootstrapRequestedRef.current) {
+            return;
+          }
+          anonymousBootstrapRequestedRef.current = true;
           console.log('🧭 OnboardingScreen: No internalId found, initiating anonymous session...');
           await authAPI.signInAnonymously();
           return initOnboarding();
         }
 
         // USE NEW DOMAIN STATE API
-        const { state: initialDomainState, profile } =
-          await identityAPI.getOnboardingStatus(internalId);
-        const activePerspective = await identity.getActivePerspective();
+        const capacitySummary = await identityAPI.resolveWorkspaceContext(internalId);
+        const initialDomainState = capacitySummary.onboarding_state;
+        const profile = capacitySummary.profile as {
+          display_name?: string;
+          full_name?: string;
+          school_id?: string | null;
+        } | null;
+        const activePerspective = await onboardingAPI.getActivePerspective();
 
         if (!profile) return;
 
         // If already onboarded in DB, just finish locally
         if (initialDomainState === 'COMPLETED') {
           console.log('✅ Onboarding: Profile already marked as completed in DB, finalizing...');
-          const capacity = (activePerspective?.active_bond.capacity as Capacity) || 'teacher';
-          const resolvedName = profile.display_name || '';
+          const capacity = (activePerspective?.activeBond?.capacity as Capacity) || 'teacher';
+          const resolvedName = profile.display_name || profile.full_name || '';
           dispatch({ type: 'SET_NAME', name: resolvedName });
           onComplete(resolvedName, capacity, isAnonymous);
           return;
         }
 
-        const resolvedName = profile.display_name;
+        const resolvedName = profile.display_name || profile.full_name;
         if (resolvedName && resolvedName !== 'Guest User') {
           dispatch({ type: 'SET_NAME', name: resolvedName });
           if (profile.school_id) {
@@ -551,34 +566,34 @@ const OnboardingScreen = memo(function OnboardingScreen({
   // Save progress whenever step/name/role/seeds change (so app-close resumes correctly)
   useEffect(() => {
     if (currentStep === 0 && !name) return; // Nothing to save yet
-    void identity.getMyInternalId().then((userId) => {
-      if (userId) {
-        void AsyncStorage.setItem(
-          'onboarding_progress',
-          JSON.stringify({
-            user_id: userId,
-            step: currentStep,
-            name,
-            capacity: selectedCapacity,
-            schoolId: state.schoolId,
-          }),
-        ).catch((err) => {
-          console.warn('[Onboarding] Failed to save progress:', err);
-        });
-      }
-    });
-  }, [currentStep, name, selectedCapacity]);
+    const userId = resolvedInternalIdRef.current;
+    if (!userId) return;
 
+    void AsyncStorage.setItem(
+      'onboarding_progress',
+      JSON.stringify({
+        user_id: userId,
+        step: currentStep,
+        name,
+        capacity: selectedCapacity,
+        schoolId: state.schoolId,
+      }),
+    ).catch((err) => {
+      console.warn('[Onboarding] Failed to save progress:', err);
+    });
+  }, [currentStep, name, selectedCapacity, state.schoolId]);
 
   const handleCompleteOnboarding = useCallback(async () => {
     dispatch({ type: 'SET_PROCESSING', isProcessing: true });
     showToast('Finalizing your sanctuary journey...', 'info', 2000);
     try {
-      const internalId = await identityAPI.getMyInternalId();
+      const citizen = resolvedCitizenRef.current ?? (await identityAPI.identifyActiveCitizen());
+      resolvedCitizenRef.current = citizen;
+      const internalId = citizen?.id;
       if (!internalId) throw new Error('Identity not resolved. Please try again.');
 
       // 1. Mark journey as completed in DB
-      await identityAPI.completeOnboarding(internalId);
+      await onboardingAPI.completeOnboarding(internalId);
 
       // 2. Finalize persistence
       await AsyncStorage.removeItem('onboarding_progress');
@@ -612,37 +627,32 @@ const OnboardingScreen = memo(function OnboardingScreen({
     dispatch({ type: 'SET_PROCESSING', isProcessing: true });
 
     try {
-      const internalId = await identityAPI.getMyInternalId();
+      const citizen = resolvedCitizenRef.current ?? (await identityAPI.identifyActiveCitizen());
+      resolvedCitizenRef.current = citizen;
+      const internalId = citizen?.id;
       if (!internalId) throw new Error('Identity not resolved. Please try again.');
 
       if (currentStep === 0) {
-        // STEP 0 -> 1: Sync Name to DB
-        showToast('Syncing your identity...', 'info', 1000);
-        await identityAPI.updateProfile(internalId, { display_name: name });
-        console.log('✅ [Onboarding] Name synced.');
+        const isAnonymousIdentity = !citizen?.email;
+        if (isAnonymousIdentity) {
+          showToast('Name saved locally. Choose your capacity next.', 'info', 1000);
+          console.log('📝 [Onboarding] Anonymous name kept local until capacity step.');
+        } else {
+          showToast('Syncing your identity...', 'info', 1000);
+          await identityAPI.modifyUserProfile(internalId, { display_name: name });
+          console.log('✅ [Onboarding] Name synced.');
+        }
       } else if (currentStep === 1) {
         // STEP 1 -> 2: Identity Selection & Initial Bond Creation
         console.log('🏗️ [Onboarding] Initializing Bond for capacity:', selectedCapacity);
 
-        // Ensure user has a profile and potentially a school
-        const existingProfile = await identityAPI.getProfile(internalId);
-        let schoolId = state.schoolId || existingProfile?.school_id;
-
-        // Wanderers (Anonymous) don't get a workspace yet.
-        // Second class citizens (Authenticated) get a personal workspace.
-        if (!schoolId && !isAnonymous) {
-          showToast('Building your personal sanctuary...', 'info', 2000);
-          schoolId = await schoolAPI.initializePersonalWorkspace(internalId, name || 'My');
-          dispatch({ type: 'SET_SCHOOL_ID', schoolId });
-          console.log('🏫 [Onboarding] Personal workspace initialized:', schoolId);
-        }
-
         // 2. Create the Bond
         showToast(`Establishing your bond as ${selectedCapacity}...`, 'info', 1500);
-        await identity.createInitialBond(selectedCapacity, {
+        await onboardingAPI.createInitialBond(selectedCapacity, {
+          userId: internalId,
           displayName: name || 'Gurudevi User',
           fullName: name || 'Gurudevi User',
-          schoolId: schoolId,
+          schoolId: state.schoolId,
         });
         console.log('🔗 [Onboarding] Initial Bond created.');
         showToast('Identity bond secured.', 'success', 1000);
@@ -658,7 +668,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
       hapticError();
       const baseMsg = err instanceof Error ? err.message : 'Something went wrong.';
       const guidedMsg = `${baseMsg} Please check your connection and try again.`;
-      
+
       dispatch({
         type: 'SET_ERROR',
         error: guidedMsg,
@@ -671,12 +681,12 @@ const OnboardingScreen = memo(function OnboardingScreen({
     canProceed,
     isProcessing,
     isOnline,
-    isAnonymous,
     currentStep,
     name,
     selectedCapacity,
     handleCompleteOnboarding,
     showToast,
+    state.schoolId,
   ]);
 
   const handleBack = useCallback(() => {
@@ -738,6 +748,10 @@ const OnboardingScreen = memo(function OnboardingScreen({
             </Text>
           </VStack>
 
+          <Box className="px-6">
+            <ErrorBanner error={error} />
+          </Box>
+
           {isProcessing ? (
             <Center className="flex-1">
               <Text className="text-phase-text-primary">Finalizing your sanctuary...</Text>
@@ -749,10 +763,11 @@ const OnboardingScreen = memo(function OnboardingScreen({
                   t={t}
                   name={name}
                   onNameChange={handleNameChange}
-                  onNext={handleNext}
+                  onNext={() => {
+                    void handleNext();
+                  }}
                   canProceed={canProceed}
                   isLoading={isProcessing}
-                  error={error}
                   onBackToWelcome={handleBackToWelcome}
                 />
               )}
@@ -762,10 +777,11 @@ const OnboardingScreen = memo(function OnboardingScreen({
                   capacity={selectedCapacity}
                   onCapacitySelect={handleCapacitySelect}
                   onBack={handleBack}
-                  onNext={handleNext}
+                  onNext={() => {
+                    void handleNext();
+                  }}
                   isLoading={isProcessing}
                   isAnonymous={isAnonymous}
-                  error={error}
                 />
               )}
               {currentStep >= 2 && currentStep <= 6 && currentTourScreen && (
@@ -774,10 +790,11 @@ const OnboardingScreen = memo(function OnboardingScreen({
                   index={currentStep}
                   screen={currentTourScreen}
                   onBack={handleBack}
-                  onNext={handleNext}
+                  onNext={() => {
+                    void handleNext();
+                  }}
                   onSkip={handleSkipTour}
                   isLoading={isProcessing}
-                  error={error}
                 />
               )}
             </>

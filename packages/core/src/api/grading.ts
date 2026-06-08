@@ -1,13 +1,9 @@
-import { 
-  createSovereignClient, 
-  SOVEREIGN_API_URL, 
-  type AppType 
-} from './base';
 import { APIError } from '../types/API';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
 
 /**
  * GRADING API (Sovereign RPC Proxy)
- * 
+ *
  * This module siphons Grading requests to the Sanctuary API.
  * [BREAKING] Renamed methods to enforce Sovereign naming standards.
  */
@@ -19,7 +15,7 @@ export const gradingAPI = {
    * [LOUD-FAILURE] Renamed from getReportCard.
    */
   async fetchStudentReport(studentId: string) {
-    const res = await client.api.grading['report-card'].$get({
+    const res = await (client.api as any).grading['report-card'].$get({
       query: { studentId },
     });
 
@@ -40,7 +36,7 @@ export const gradingAPI = {
     assignmentId?: string;
     feedback?: string;
   }) {
-    const res = await client.api.grading.$post({
+    const res = await (client.api as any).grading.$post({
       json: params,
     });
 
@@ -55,7 +51,7 @@ export const gradingAPI = {
    * [LOUD-FAILURE] Renamed from publishGrade.
    */
   async finalizeAcademicRecord(id: string) {
-    const res = await client.api.grading[':id'].publish.$post({
+    const res = await (client.api as any).grading[':id'].publish.$post({
       param: { id },
     });
 

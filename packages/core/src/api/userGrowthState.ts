@@ -1,11 +1,9 @@
 import { growth } from '../logic';
-import { type UserGrowthState } from '../types/Growth';
-export * from '../types/Growth';
-
+import type { UserGrowthState } from '../types/Growth';
 
 /**
  * userGrowthStateAPI (Legacy Proxy)
- * 
+ *
  * Superseded by GrowthManager. Now redirects to the sovereign Growth domain.
  */
 export const userGrowthStateAPI = {
@@ -19,5 +17,5 @@ export const userGrowthStateAPI = {
 
   async updateGrowthState(userId: string, updates: Partial<UserGrowthState>): Promise<void> {
     await growth.updateGrowthState(userId, updates);
-  }
+  },
 };

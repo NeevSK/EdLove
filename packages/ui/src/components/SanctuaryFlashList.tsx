@@ -1,9 +1,9 @@
 import { FlashList, type FlashListProps } from '@shopify/flash-list';
 import { BookOpen } from 'lucide-react-native';
 import React, { useCallback } from 'react';
-import { type StyleProp, type ViewStyle } from 'react-native';
-import { RefreshControl } from '../primitives';
+import type { StyleProp, ViewStyle } from 'react-native';
 import { useThemedColors } from '../hooks/useThemedColors';
+import { RefreshControl } from '../primitives';
 import { Theme } from '../theme/Theme';
 import EmptyState from './EmptyState';
 

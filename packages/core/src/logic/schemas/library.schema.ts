@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { makeModelSchema } from '@repo/schema';
+import type { z } from 'zod';
 
 /**
  * LibraryResourceSchema - A node of knowledge in the library.

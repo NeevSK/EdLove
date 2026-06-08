@@ -1,5 +1,6 @@
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
+import type { UserGrowthState } from '@repo/schema';
 import { mediaAPI } from '../../api/media';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
 import type {
   CommunityProfile,
   ProfileHistoryEntry,
@@ -9,10 +10,9 @@ import type {
   ProfileRepository,
   ProfileTemporalReadOptions,
   PulseMetrics,
-  WhisperedMomentSnapshot,
   UserRewardsSnapshot,
+  WhisperedMomentSnapshot,
 } from '../../logic/domains/profile/ports';
-import type { UserGrowthState } from '@repo/schema';
 import { getTemporalRange } from '../../logic/utils/temporalUtils';
 import type { SocialLink, User } from '../../types';
 import { APIError } from '../../types';
@@ -26,19 +26,19 @@ const DEFAULT_NOTIFICATION_SETTINGS = {
   channels: {
     push: true,
     email: false,
-    in_app: true
+    in_app: true,
   },
   categories: {
     community: { push: true, email: false },
     academic: { push: true, email: true },
     security: { push: true, email: true },
-    direct_messages: { push: true, email: false }
+    direct_messages: { push: true, email: false },
   },
   quiet_hours: {
     enabled: false,
-    start: "22:00",
-    end: "07:00"
-  }
+    start: '22:00',
+    end: '07:00',
+  },
 };
 
 const getPreviousRange = (start: string, end: string) => {
@@ -75,21 +75,24 @@ interface UserRow extends Partial<User> {
   id: string;
 }
 
-const normalizeUser = (row: UserRow): User => ({
-  ...row,
-  id: row.id || '',
-  email: row.email ?? '',
-  full_name: row.full_name ?? 'Unknown User',
-  bonds: row.bonds ?? [],
-  school_id: row.school_id ?? null,
-  profile_completed: !!row.profile_completed,
-  onboarding_completed: !!row.onboarding_completed,
-  onboarding_completed_at: row.onboarding_completed_at,
-  created_at: row.created_at || new Date().toISOString(),
-  updated_at: row.updated_at || new Date().toISOString(),
-}) as User;
+const normalizeUser = (row: UserRow): User =>
+  ({
+    ...row,
+    id: row.id || '',
+    email: row.email ?? '',
+    full_name: row.full_name ?? 'Unknown User',
+    bonds: row.bonds ?? [],
+    school_id: row.school_id ?? null,
+    profile_completed: !!row.profile_completed,
+    onboarding_completed: !!row.onboarding_completed,
+    onboarding_completed_at: row.onboarding_completed_at,
+    created_at: row.created_at || new Date().toISOString(),
+    updated_at: row.updated_at || new Date().toISOString(),
+  }) as User;
 
-const mapWhisperedMoments = (rows: WhisperedMomentRow[] | null | undefined): WhisperedMomentSnapshot[] =>
+const mapWhisperedMoments = (
+  rows: WhisperedMomentRow[] | null | undefined,
+): WhisperedMomentSnapshot[] =>
   (rows || []).map((row) => ({
     key: row.moment_key,
     name_en: row.moment_name_en ?? row.moment_key,
@@ -99,7 +102,11 @@ const mapWhisperedMoments = (rows: WhisperedMomentRow[] | null | undefined): Whi
 
 export const createSupabaseProfileRepository = (): ProfileRepository => ({
   async getUserProfile(userId) {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('users').select('*').eq('id', userId).maybeSingle();
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      .from('users')
+      .select('*')
+      .eq('id', userId)
+      .maybeSingle();
     if (error) throw new APIError('Failed to fetch user profile', error.code, error);
     if (!data) return null;
     return normalizeUser(data);
@@ -135,14 +142,15 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
     const viewScale = normalizeTemporalScale(options.viewScale);
 
     if (asOf) {
-      const { data: rewardsVersion, error: rewardsError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-        .from('user_rewards_versions')
-        .select('snapshot')
-        .eq('user_id', userId)
-        .lte('recorded_at', asOf)
-        .order('recorded_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      const { data: rewardsVersion, error: rewardsError } =
+        await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+          .from('user_rewards_versions')
+          .select('snapshot')
+          .eq('user_id', userId)
+          .lte('recorded_at', asOf)
+          .order('recorded_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
       if (rewardsError)
         throw new APIError(
           'Failed to fetch historical rewards snapshot',
@@ -150,14 +158,15 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
           rewardsError,
         );
 
-      const { data: growthVersion, error: growthError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-        .from('user_growth_state_versions')
-        .select('snapshot')
-        .eq('user_id', userId)
-        .lte('recorded_at', asOf)
-        .order('recorded_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      const { data: growthVersion, error: growthError } =
+        await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+          .from('user_growth_state_versions')
+          .select('snapshot')
+          .eq('user_id', userId)
+          .lte('recorded_at', asOf)
+          .order('recorded_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
       if (growthError)
         throw new APIError(
           'Failed to fetch historical growth snapshot',
@@ -201,8 +210,16 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
       { data: growth, error: growthError },
       { data: whisperedRows, error: whisperedError },
     ] = await Promise.all([
-      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('user_rewards').select('*').eq('user_id', userId).maybeSingle(),
-      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('user_growth_state').select('*').eq('user_id', userId).maybeSingle(),
+      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        .from('user_rewards')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle(),
+      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        .from('user_growth_state')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle(),
       __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
         .from('whispered_moments')
         .select('moment_key, moment_name_en, moment_name_si, awarded_at')
@@ -301,24 +318,26 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
       title: `Growth state ${row.operation}`,
       snapshot: (row.snapshot as Record<string, unknown>) ?? undefined,
       metadata: {
-        bhumi_stage: row.snapshot?.bhumi_stage,
-        banyan_stage: row.snapshot?.banyan_stage,
-        river_stage: row.snapshot?.river_stage,
-        crystal_tier: row.snapshot?.crystal_tier,
+        bhumi_stage: (row.snapshot as any)?.bhumi_stage,
+        banyan_stage: (row.snapshot as any)?.banyan_stage,
+        river_stage: (row.snapshot as any)?.river_stage,
+        crystal_tier: (row.snapshot as any)?.crystal_tier,
       },
     }));
 
-    const momentEvents: ProfileJourneyEvent[] = (momentRows || []).map((row: WhisperedMomentRow & { id: string }) => ({
-      id: row.id,
-      timestamp: row.awarded_at,
-      source: 'moment',
-      title: row.moment_name_en || row.moment_key,
-      metadata: {
-        key: row.moment_key,
-        name_en: row.moment_name_en,
-        name_si: row.moment_name_si,
-      },
-    }));
+    const momentEvents: ProfileJourneyEvent[] = (momentRows || []).map(
+      (row: WhisperedMomentRow & { id: string }) => ({
+        id: row.id,
+        timestamp: row.awarded_at,
+        source: 'moment',
+        title: row.moment_name_en || row.moment_key,
+        metadata: {
+          key: row.moment_key,
+          name_en: row.moment_name_en,
+          name_si: row.moment_name_si,
+        },
+      }),
+    );
 
     return [...rewardEvents, ...growthEvents, ...momentEvents]
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
@@ -362,16 +381,25 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
     return (data || []) as SocialLink[];
   },
   async upsertSocialLink(link) {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('user_social_links').upsert(link).select().single();
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      .from('user_social_links')
+      .upsert(link)
+      .select()
+      .single();
     if (error) throw new APIError('Failed to upsert social link', error.code, error);
     return data as SocialLink;
   },
   async deleteSocialLink(linkId) {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('user_social_links').delete().eq('id', linkId);
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      .from('user_social_links')
+      .delete()
+      .eq('id', linkId);
     if (error) throw new APIError('Failed to delete social link', error.code, error);
   },
   async updateSocialLinksOrder(links) {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('user_social_links').upsert(links);
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      .from('user_social_links')
+      .upsert(links);
     if (error) throw new APIError('Failed to update social links order', error.code, error);
   },
 
@@ -381,13 +409,13 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
       .select('*')
       .eq('user_id', userId)
       .maybeSingle();
-      
+
     if (error) throw new APIError('Failed to fetch user preferences', error.code, error);
     if (!data) return null;
 
     return {
       ...data,
-      notification_settings: data.notification_settings || DEFAULT_NOTIFICATION_SETTINGS
+      notification_settings: data.notification_settings || DEFAULT_NOTIFICATION_SETTINGS,
     };
   },
 
@@ -474,7 +502,7 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
         .gte('created_at', previousStart)
         .lte('created_at', previousEnd),
       __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-        .from('library_items')
+        .from('nodes')
         .select('id', { count: 'exact', head: true })
         .eq('school_id', schoolId)
         .gte('created_at', periodStart)

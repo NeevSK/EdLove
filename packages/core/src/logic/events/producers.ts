@@ -167,10 +167,7 @@ export async function sendSchoolGradePublished(
   });
 }
 
-export async function sendStudentOnboarded(
-  bus: IEventBusPort,
-  input: StudentOnboardedPayload,
-) {
+export async function sendStudentOnboarded(bus: IEventBusPort, input: StudentOnboardedPayload) {
   return bus.publish({
     name: 'student/onboarded',
     data: input,
@@ -182,10 +179,7 @@ export async function sendStudentOnboarded(
   });
 }
 
-export async function sendSyncMutationQueued(
-  bus: IEventBusPort,
-  input: SyncMutationQueuedPayload,
-) {
+export async function sendSyncMutationQueued(bus: IEventBusPort, input: SyncMutationQueuedPayload) {
   return bus.publish({
     name: 'sync/mutation-queued',
     data: {

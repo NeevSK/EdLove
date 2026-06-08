@@ -1,5 +1,5 @@
-import { SupabaseClient } from '@supabase/supabase-js';
-import { TeacherRepository } from '../../logic/domains/teacher/ports';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { TeacherRepository } from '../../logic/domains/teacher/ports';
 import { APIError } from '../../types/API';
 
 export const createSupabaseTeacherRepository = (supabase: SupabaseClient): TeacherRepository => ({

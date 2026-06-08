@@ -1,12 +1,12 @@
-import { classroomsAPI as rawClassroomsAPI } from '../classrooms';
-import { lessonsAPI as rawLessonsAPI, studentsAPI as rawStudentsAPI } from '../classroom';
 import { assignmentsAPI as rawAssignmentsAPI } from '../assignments';
+import { lessonsAPI as rawLessonsAPI, studentsAPI as rawStudentsAPI } from '../classroom';
 import { classroomGroupsAPI as rawClassroomGroupsAPI } from '../classroomGroups';
-import { classroomStudentsAPI as rawClassroomStudentsAPI } from '../classroomStudents';
-import { lessonMaterialsAPI as rawLessonMaterialsAPI } from '../lessonMaterials';
 import { classroomNotesAPI as rawClassroomNotesAPI } from '../classroomNotes';
-import { educationalContract } from '../educational.contract';
+import { classroomStudentsAPI as rawClassroomStudentsAPI } from '../classroomStudents';
+import { classroomsAPI as rawClassroomsAPI } from '../classrooms';
 import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
+import { educationalContract } from '../educational.contract';
+import { lessonMaterialsAPI as rawLessonMaterialsAPI } from '../lessonMaterials';
 import { createTemporalPOAProxy } from '../temporalPOAProxy';
 
 const classroomsCoverage = assertContractCoverage(
@@ -67,6 +67,18 @@ const studentsCoverage = assertContractCoverage(
       getSchoolLegacyHistory: 'getSchoolLegacyHistory',
       getClassroomLegacyHistory: 'getClassroomLegacyHistory',
     },
+    internalMethods: [
+      'getAll',
+      'enroll',
+      'remove',
+      'create',
+      'update',
+      'getHistoricalAcademicRecords',
+      'getHistoricalProfessionalRecords',
+      'getHistoricalGovernanceRecords',
+      'getSchoolLegacyHistory',
+      'getClassroomLegacyHistory',
+    ],
   }),
 );
 
@@ -94,7 +106,17 @@ const assignmentsCoverage = assertContractCoverage(
       update: 'updateAssignment',
       delete: 'deleteAssignment',
     },
-    internalMethods: ['getRecentGradesOverviewForStudent'],
+    internalMethods: [
+      'getAll',
+      'getByLesson',
+      'getUpcomingForStudent',
+      'getSubmissionHistoryForStudent',
+      'getRecentGradesOverviewForStudent',
+      'submitSubmission',
+      'create',
+      'update',
+      'delete',
+    ],
   }),
 );
 
@@ -119,6 +141,7 @@ const classroomGroupsCoverage = assertContractCoverage(
       update: 'updateClassroomGroup',
       delete: 'deleteClassroomGroup',
     },
+    internalMethods: ['getAll', 'create', 'update', 'delete'],
   }),
 );
 
@@ -140,6 +163,15 @@ const classroomStudentsCoverage = assertContractCoverage(
       update: 'updateEnrollmentRecord',
       remove: 'deleteEnrollmentRecord',
     },
+    internalMethods: [
+      'getAll',
+      'addShadowStudent',
+      'claimStudent',
+      'add',
+      'updateById',
+      'update',
+      'remove',
+    ],
   }),
 );
 
@@ -163,6 +195,7 @@ const lessonMaterialsCoverage = assertContractCoverage(
       update: 'updateMaterial',
       delete: 'deleteMaterial',
     },
+    internalMethods: ['getAll', 'getByLesson', 'create', 'update', 'delete'],
   }),
 );
 

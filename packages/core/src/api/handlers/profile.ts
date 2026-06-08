@@ -1,5 +1,4 @@
-import { type Context } from 'hono';
-import { z } from 'zod';
+import type { Context } from 'hono';
 
 /**
  * Profile Domain Handlers (Hono + ZenStack ReBAC)
@@ -62,37 +61,43 @@ export const profileHandlers = {
 
     const [growthState, moments] = await Promise.all([
       db.userGrowthState.findUnique({ where: { user_id: id } }),
-      db.whisperedMoment.findMany({ 
+      db.whisperedMoment.findMany({
         where: { user_id: id },
         orderBy: { awarded_at: 'desc' },
-        take: 5
+        take: 5,
       }),
     ]);
 
-    return c.json({
-      as_of: new Date().toISOString(),
-      rewards: null, // Placeholder for future integration
-      growth: growthState,
-      whispered_moments: moments,
-    }, 200);
+    return c.json(
+      {
+        as_of: new Date().toISOString(),
+        rewards: null, // Placeholder for future integration
+        growth: growthState,
+        whispered_moments: moments,
+      },
+      200,
+    );
   },
 
   /**
    * School Pulse Metrics (Aggregation Layer).
    */
   getSchoolPulse: async (c: Context) => {
-    const db = c.get('db');
+    const _db = c.get('db');
     const { id } = c.req.param();
 
     // In a real implementation, this would perform a complex Kysely aggregation
     // For now, we return a mock pulse derived from the school context
-    return c.json({
-      resonance_score: 85,
-      aggregated_mood: 'peace',
-      trend: 'rising',
-      participation_rate: 0.92,
-      top_subjects: ['Mindfulness', 'Systems Thinking'],
-      interaction_volume: 1250,
-    }, 200);
+    return c.json(
+      {
+        resonance_score: 85,
+        aggregated_mood: 'peace',
+        trend: 'rising',
+        participation_rate: 0.92,
+        top_subjects: ['Mindfulness', 'Systems Thinking'],
+        interaction_volume: 1250,
+      },
+      200,
+    );
   },
 };

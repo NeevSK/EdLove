@@ -49,4 +49,3 @@ export const longitudinalContract = c.router({
     summary: 'Retrieve the latest effective longitudinal records for a student as of a view date',
   },
 });
-

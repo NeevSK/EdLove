@@ -1,8 +1,8 @@
+import { educational } from '../logic/managers/factory';
 import type {
   StudentAssignment,
   StudentSubmissionSummary,
 } from '../logic/schemas/classroom.schema';
-import { educational } from '../logic/managers/factory';
 import type { Assignment } from '../types';
 
 export const assignmentsAPI = {
@@ -40,10 +40,7 @@ export const assignmentsAPI = {
   /**
    * @policy read AssignmentSubmission
    */
-  async getRecentGradesOverviewForStudent(
-    studentId: string,
-    limit = 4,
-  ) {
+  async getRecentGradesOverviewForStudent(studentId: string, limit = 4) {
     return educational.assignments.getRecentGradesOverviewForStudent(studentId, limit);
   },
 
@@ -77,4 +74,3 @@ export const assignmentsAPI = {
     return educational.assignments.delete(id);
   },
 };
-

@@ -1,6 +1,6 @@
-import React from 'react';
-import { Box, Text, HStack, VStack, Pressable, Icon, Heading } from '../primitives';
-import { AlertTriangle, Check, X, ArrowLeftRight } from '../icons';
+import type React from 'react';
+import { AlertTriangle, ArrowLeftRight, Check } from '../icons';
+import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '../primitives';
 import { Theme } from '../theme/Theme';
 import { hapticLight, hapticSuccess } from '../utils/haptics';
 
@@ -16,19 +16,16 @@ interface ConflictResolverProps {
 
 /**
  * ConflictResolver
- * 
+ *
  * A 2026-standard "Resonance Resolver" for data conflicts.
  * Features:
  * - Glassmorphic overlay
  * - Semantic differentiation (Mine vs. Theirs)
  * - Atomic resolution actions
  */
-export const ConflictResolver: React.FC<ConflictResolverProps> = ({
-  conflict,
-  onResolve
-}) => {
+export const ConflictResolver: React.FC<ConflictResolverProps> = ({ conflict, onResolve }) => {
   return (
-    <Box 
+    <Box
       className="m-4 p-6 rounded-[32px] bg-white/80 backdrop-blur-xl border border-white/40 shadow-2xl overflow-hidden"
       style={{
         shadowColor: Theme.colors.templeGold,
@@ -87,10 +84,10 @@ export const ConflictResolver: React.FC<ConflictResolverProps> = ({
           </Pressable>
         </HStack>
 
-        <Pressable 
+        <Pressable
           onPress={() => {
-             // Future: Implement Diff View
-             hapticLight();
+            // Future: Implement Diff View
+            hapticLight();
           }}
           className="items-center py-2"
         >

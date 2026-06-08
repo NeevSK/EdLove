@@ -297,7 +297,8 @@ export const MOCK_COMMUNITY_POSTS: any[] = [
     author_id: 'demo-user-1',
     author_name: 'Ariya',
     author_policy: 'student',
-    content: "Just finished my first React project! It's so rewarding to see it all come together. Anyone else working on something fun today? \uD83C\uDF3F",
+    content:
+      "Just finished my first React project! It's so rewarding to see it all come together. Anyone else working on something fun today? \uD83C\uDF3F",
     post_type: 'discussion',
     visibility: 'public',
     reaction_count: 42,
@@ -314,7 +315,8 @@ export const MOCK_COMMUNITY_POSTS: any[] = [
     author_id: 'demo-user-2',
     author_name: 'Master Sam',
     author_policy: 'teacher',
-    content: "I've uploaded the new resource on 'Algorithmic Thinking' in the Library. Check it out and let me know if you have any questions!",
+    content:
+      "I've uploaded the new resource on 'Algorithmic Thinking' in the Library. Check it out and let me know if you have any questions!",
     post_type: 'resource',
     visibility: 'public',
     reaction_count: 15,
@@ -455,4 +457,3 @@ export const MOCK_PENDING_LEAVES: StaffLeaveDTO[] = [
     created_at: new Date(Date.now() - 7200000),
   },
 ];
-

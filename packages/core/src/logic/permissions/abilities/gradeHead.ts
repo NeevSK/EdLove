@@ -8,15 +8,16 @@ export const defineGradeHeadAbilities = (
   builder: AbilityBuilder<AppAbility>,
 ) => {
   const { can } = builder;
+  const gradeId = user.gradeId;
   // 1. Inherit Teacher roles
   defineTeacherAbilities(user, builder);
 
   // 2. Grade Head Specifics
   can('manage', 'GradeHeadDashboard');
-  can('read', 'Report', { grade_id: user.grade_id } as any);
+  can('read', 'Report', { grade_id: gradeId } as any);
 
-  if (user.grade_id) {
-    can('manage', 'Classroom', { grade_id: user.grade_id } as any);
-    can('manage', 'Attendance', { grade_id: user.grade_id } as any);
+  if (gradeId) {
+    can('manage', 'Classroom', { grade_id: gradeId } as any);
+    can('manage', 'Attendance', { grade_id: gradeId } as any);
   }
 };

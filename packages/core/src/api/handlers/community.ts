@@ -1,11 +1,11 @@
-import { type Context } from 'hono';
+import type { Context } from 'hono';
 
 /**
  * Community Domain Handlers (Hono + ZenStack ReBAC)
  */
 export const communityHandlers = {
   /**
-   * Retrieve groups. 
+   * Retrieve groups.
    * ZenStack filters by visibility and membership.
    */
   getGroups: async (c: Context) => {
@@ -90,7 +90,7 @@ export const communityHandlers = {
   },
 
   /**
-   * Retrieve posts. 
+   * Retrieve posts.
    * Automatic filtering by membership/visibility.
    */
   getPosts: async (c: Context) => {

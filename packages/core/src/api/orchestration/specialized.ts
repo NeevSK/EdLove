@@ -1,17 +1,17 @@
-import { gradingAPI as rawGradingAPI } from '../grading';
-import { gradingContract } from '../grading.contract';
+import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
 import { founderAPI as rawFounderAPI } from '../founder';
 import { founderContract } from '../founder.contract';
+import { gradingAPI as rawGradingAPI } from '../grading';
+import { gradingContract } from '../grading.contract';
 import { guardianAPI as rawGuardianAPI } from '../guardian';
 import { guardianContract } from '../guardian.contract';
+import { longitudinalAPI as rawLongitudinalAPI } from '../longitudinal';
+import { longitudinalContract } from '../longitudinal.contract';
+import { createPOAProxy } from '../poaProxy';
 import { principalWorkspaceAPI as rawPrincipalWorkspaceAPI } from '../principalWorkspace';
 import { principalWorkspaceContract } from '../principalWorkspace.contract';
 import { teacherInsightsAPI as rawTeacherInsightsAPI } from '../teacherInsights';
 import { teacherInsightsContract } from '../teacherInsights.contract';
-import { longitudinalAPI as rawLongitudinalAPI } from '../longitudinal';
-import { longitudinalContract } from '../longitudinal.contract';
-import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
-import { createPOAProxy } from '../poaProxy';
 import { createTemporalPOAProxy } from '../temporalPOAProxy';
 
 const gradingCoverage = assertContractCoverage(
@@ -20,17 +20,10 @@ const gradingCoverage = assertContractCoverage(
     moduleName: 'grading',
     contract: gradingContract,
     methodMapping: {
-      saveGradeDraft: 'saveGradeDraft',
-      getGradebookSnapshot: 'getGradebookSnapshot',
-      getStudentGradeTimeline: 'getStudentGradeTimeline',
-      getPublishedStudentGrades: 'getPublishedStudentGrades',
-      getSchoolGradingCompletion: 'getSchoolGradingCompletion',
-      getSchoolPublishedGradingCompletion: 'getSchoolPublishedGradingCompletion',
-      publishGrade: 'publishGrade',
-      revisePublishedGrade: 'revisePublishedGrade',
-      overrideGrade: 'overrideGrade',
+      fetchStudentReport: 'getReportCard',
+      recordAcademicMark: 'submitGrade',
+      finalizeAcademicRecord: 'publishGrade',
     },
-    internalMethods: ['getGradeLifecycleRows'],
   }),
 );
 

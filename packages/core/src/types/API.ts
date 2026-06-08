@@ -3,11 +3,7 @@ import { SovereignError } from './Errors';
 export class APIError extends SovereignError {
   public readonly code: string;
 
-  constructor(
-    message: string,
-    code = 'API_ERROR',
-    details?: unknown,
-  ) {
+  constructor(message: string, code = 'API_ERROR', details?: unknown) {
     const normalizedCode = code;
     super({
       title: message,

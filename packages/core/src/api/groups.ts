@@ -1,13 +1,9 @@
-import { 
-  createSovereignClient, 
-  SOVEREIGN_API_URL, 
-  type AppType 
-} from './base';
 import { APIError } from '../types/API';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
 
 /**
  * GROUPS API (Sovereign RPC Proxy)
- * 
+ *
  * This module siphons Group requests to the Sanctuary API.
  * PURGED: Direct Supabase access.
  */
@@ -19,7 +15,7 @@ export const groupsAPI = {
    * Retrieves all groups for a school.
    */
   async getAll(schoolId?: string) {
-    const res = await client.api.community.groups.$get({
+    const res = await (client.api as any).community.groups.$get({
       query: { school_id: schoolId },
     });
 
@@ -34,7 +30,7 @@ export const groupsAPI = {
    * Retrieves a specific group.
    */
   async get(groupId: string) {
-    const res = await client.api.community.groups[':groupId'].$get({
+    const res = await (client.api as any).community.groups[':groupId'].$get({
       param: { groupId },
     });
 
@@ -57,7 +53,7 @@ export const groupsAPI = {
     visibility?: string;
     is_public?: boolean;
   }) {
-    const res = await client.api.community.groups.$post({
+    const res = await (client.api as any).community.groups.$post({
       json: params,
     });
 
@@ -72,7 +68,7 @@ export const groupsAPI = {
    * Joins a group.
    */
   async join(groupId: string, userId: string, capacity: string) {
-    const res = await client.api.community.groups[':groupId'].join.$post({
+    const res = await (client.api as any).community.groups[':groupId'].join.$post({
       param: { groupId },
       json: { user_id: userId, capacity },
     });

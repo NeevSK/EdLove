@@ -1,5 +1,5 @@
-import { CommunityManager } from './CommunityManager';
 import { SupabaseCommunityRepository } from '../../adapters/supabase/communityRepository';
+import { CommunityManager } from './CommunityManager';
 import { growth } from './growth.factory';
 
 /**

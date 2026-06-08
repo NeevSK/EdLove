@@ -1,8 +1,8 @@
-import { ICommunityRepository, PostFilters } from '../../logic/domains/community/ports';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
+import type { ICommunityRepository, PostFilters } from '../../logic/domains/community/ports';
 import { CommunityPostSchema } from '../../logic/schemas/community.schema';
 import { applyTemporalFilter } from '../../logic/utils/temporalUtils';
-import { Post, Comment, PollStatus } from '../../types';
+import type { Comment, PollStatus, Post } from '../../types';
 import { APIError } from '../../types/API';
 
 export class SupabaseCommunityRepository implements ICommunityRepository {
@@ -84,7 +84,11 @@ export class SupabaseCommunityRepository implements ICommunityRepository {
     }
   }
 
-  async getComments(postId: string, limit = 60, options: { viewDate?: string; viewScale?: any } = {}): Promise<Comment[]> {
+  async getComments(
+    postId: string,
+    limit = 60,
+    options: { viewDate?: string; viewScale?: any } = {},
+  ): Promise<Comment[]> {
     let query = this.client
       .from('community_comments')
       .select('*, author:users!community_comments_author_id_fkey(full_name, avatar_url, capacity)')
@@ -157,7 +161,7 @@ export class SupabaseCommunityRepository implements ICommunityRepository {
     const { error } = await this.client
       .from('community_comment_upvotes')
       .insert({ comment_id: commentId, user_id: userId });
-    
+
     if (error) throw new APIError('Failed to upvote comment', error.code, error);
     return true;
   }
@@ -185,7 +189,8 @@ export class SupabaseCommunityRepository implements ICommunityRepository {
         .eq('post_id', postId)
         .eq('user_id', userId);
 
-      if (myVotesError) throw new APIError('Failed to fetch user votes', myVotesError.code, myVotesError);
+      if (myVotesError)
+        throw new APIError('Failed to fetch user votes', myVotesError.code, myVotesError);
       userVotes = (myVotesData ?? []).map((v: any) => v.option_id);
     }
 
@@ -244,7 +249,7 @@ export class SupabaseCommunityRepository implements ICommunityRepository {
           .delete()
           .eq('post_id', params.postId)
           .eq('user_id', params.userId);
-        
+
         await this.client
           .from('community_poll_votes')
           .insert({ post_id: params.postId, user_id: params.userId, option_id: params.optionId });
@@ -319,22 +324,29 @@ export class SupabaseCommunityRepository implements ICommunityRepository {
     return data;
   }
 
-  async createGroupMembership(params: { groupId: string; userId: string; capacity: string; status: string }) {
-    const { error } = await this.client
-      .from('group_members')
-      .insert([
-        {
-          group_id: params.groupId,
-          user_id: params.userId,
-          capacity: params.capacity,
-          status: params.status,
-        },
-      ]);
+  async createGroupMembership(params: {
+    groupId: string;
+    userId: string;
+    capacity: string;
+    status: string;
+  }) {
+    const { error } = await this.client.from('group_members').insert([
+      {
+        group_id: params.groupId,
+        user_id: params.userId,
+        capacity: params.capacity,
+        status: params.status,
+      },
+    ]);
 
     if (error) throw new APIError('Failed to create group membership', error.code, error);
   }
 
-  async updateGroupMembership(groupId: string, userId: string, updates: { status?: string; capacity?: string }) {
+  async updateGroupMembership(
+    groupId: string,
+    userId: string,
+    updates: { status?: string; capacity?: string },
+  ) {
     const { error } = await this.client
       .from('group_members')
       .update(updates)

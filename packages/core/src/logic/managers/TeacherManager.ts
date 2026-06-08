@@ -1,10 +1,10 @@
-import { TeacherRepository } from '../domains/teacher/ports';
 import type { Task } from '../../types';
 import { APIError } from '../../types/API';
+import type { TeacherRepository } from '../domains/teacher/ports';
 
 /**
  * TeacherManager
- * 
+ *
  * Orchestrates teacher-specific logic like tasks and personal organization.
  */
 export class TeacherManager {
@@ -12,7 +12,7 @@ export class TeacherManager {
 
   public tasks = {
     getAll: (teacherId: string) => this.repo.getTasks(teacherId),
-    create: (title: string, teacherId: string, description?: string) => 
+    create: (title: string, teacherId: string, description?: string) =>
       this.repo.createTask(title, teacherId, description),
     updateStatus: (id: string, status: boolean) => this.repo.updateTaskStatus(id, status),
     update: (id: string, updates: Partial<Task>) => this.repo.updateTask(id, updates),

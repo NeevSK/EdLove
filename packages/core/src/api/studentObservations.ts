@@ -44,7 +44,6 @@ export const studentObservationsAPI = {
     return data.map(({ audit, ...observation }) => observation as StudentObservation);
   },
 
-
   /**
    * Create a new observation
    */

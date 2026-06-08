@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
+import { useAuthStore } from '../../store/useAuthStore';
 import { communityAPI } from '../community';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../supabase';
-import { useAuthStore } from '../../store/useAuthStore';
 
 export const commentKeys = {
   all: ['community', 'comments'] as const,
@@ -14,7 +14,7 @@ export const commentKeys = {
  */
 export function useCommentHooks(postId: string | null) {
   const queryClient = useQueryClient();
-  const activeBond = useAuthStore((state) => state.active_bond);
+  const activeBond = useAuthStore((state) => state.activeBond);
 
   const query = useQuery({
     queryKey: postId ? commentKeys.list(postId) : ['community', 'comments', '__none__'],
@@ -54,9 +54,9 @@ export function useCommentHooks(postId: string | null) {
 
   const createMutation = useMutation({
     mutationFn: ({ content, isAnonymous = false }: { content: string; isAnonymous?: boolean }) =>
-      communityAPI.createComment(postId!, { 
-        content, 
-        author_tier: activeBond?.capacity || 'member' 
+      communityAPI.createComment(postId!, {
+        content,
+        author_tier: activeBond?.capacity || 'member',
       }),
     onSuccess: async () => {
       if (postId) await queryClient.invalidateQueries({ queryKey: commentKeys.list(postId) });

@@ -1,5 +1,5 @@
-import type { Student as EnrollmentRecord } from '../logic/schemas/student.schema';
 import { educational } from '../logic/managers/factory';
+import type { Student as EnrollmentRecord } from '../logic/schemas/student.schema';
 
 export const classroomStudentsAPI = {
   /**
@@ -18,12 +18,7 @@ export const classroomStudentsAPI = {
     rollNumber?: string,
     notes?: string,
   ): Promise<EnrollmentRecord> {
-    return educational.classroomStudents.addShadowStudent(
-      classroomId,
-      fullName,
-      rollNumber,
-      notes,
-    );
+    return educational.classroomStudents.addShadowStudent(classroomId, fullName, rollNumber, notes);
   },
 
   /**

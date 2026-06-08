@@ -1,17 +1,17 @@
 {
   "extends": "../../packages/typescript-config/base.json",
-	"compilerOptions": {
-		"target": "ESNext",
-		"module": "NodeNext",
-		"moduleResolution": "NodeNext",
-		"outDir": "./dist",
-		"rootDir": "./src",
-		"strict": true,
-		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"forceConsistentCasingInFileNames": true,
-		"declaration": true
-	},
-	"include": ["src/**/*"],
-	"exclude": ["node_modules", "dist"]
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

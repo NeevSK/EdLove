@@ -1,10 +1,9 @@
-import { staffManagementAPI as _staffManagementAPI } from '../staffManagement';
 import { attendanceAPI as rawAttendanceAPI } from '../attendance';
-import { schoolAPI as rawSchoolAPI } from '../school';
+import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
 import { inventoryAPI as rawInventoryAPI } from '../inventory';
 import { operationsContract } from '../operations.contract';
-import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
-import { createPOAProxy } from '../poaProxy';
+import { schoolAPI as rawSchoolAPI } from '../school';
+import { staffManagementAPI as _staffManagementAPI } from '../staffManagement';
 import { createTemporalPOAProxy } from '../temporalPOAProxy';
 
 export const staffManagementAPI = createTemporalPOAProxy(
@@ -60,6 +59,20 @@ const schoolCoverage = assertContractCoverage(
       createSection: 'createSchoolSection',
       createGrade: 'createSectionGrade',
     },
+    internalMethods: [
+      'create',
+      'initializePersonalWorkspace',
+      'getSchool',
+      'update',
+      'searchSchools',
+      'getSections',
+      'getGrades',
+      'getSchoolStats',
+      'getInviteCodes',
+      'createSection',
+      'createGrade',
+      'generateInviteCode',
+    ],
   }),
 );
 
@@ -85,6 +98,13 @@ const inventoryCoverage = assertContractCoverage(
       getSchoolResourceNeeds: 'getSchoolResourceNeeds',
       getSchoolRequests: 'getSchoolRequests',
     },
+    internalMethods: [
+      'getAll',
+      'update',
+      'createRequest',
+      'getSchoolResourceNeeds',
+      'getSchoolRequests',
+    ],
   }),
 );
 

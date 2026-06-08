@@ -14,7 +14,6 @@
 import { type FC, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
-import { View } from '../primitives';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -23,6 +22,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useAccessibility } from '../hooks/useAccessibility';
+import { View } from '../primitives';
 import { Theme } from '../theme/Theme';
 
 interface BreathingLoaderProps {

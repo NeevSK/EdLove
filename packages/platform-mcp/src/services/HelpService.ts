@@ -1,39 +1,30 @@
-import fs from "node:fs";
-import path from "node:path";
-import { ROOT_DIR } from "../utils/constants.js";
+import fs from 'node:fs';
+import path from 'node:path';
+import { ROOT_DIR } from '../utils/constants.js';
 
 /**
  * --- Standardized Knowledge Layer ---
  * Manages documentation, philosophy, and tool inventory for the MCP.
  */
 export class HelpService {
-	private getDocContent(fileName: string, fallbackTitle: string) {
-		const docPath = path.join(
-			ROOT_DIR,
-			"packages",
-			"platform-mcp",
-			"docs",
-			fileName,
-		);
-		if (fs.existsSync(docPath)) {
-			return fs.readFileSync(docPath, "utf-8");
-		}
-		return `# ${fallbackTitle}\n\nDocumentation file missing.`;
-	}
+  private getDocContent(fileName: string, fallbackTitle: string) {
+    const docPath = path.join(ROOT_DIR, 'packages', 'platform-mcp', 'docs', fileName);
+    if (fs.existsSync(docPath)) {
+      return fs.readFileSync(docPath, 'utf-8');
+    }
+    return `# ${fallbackTitle}\n\nDocumentation file missing.`;
+  }
 
-	private getPhilosophyContent() {
-		return this.getDocContent("mcp-philosophy.md", "MCP Philosophy");
-	}
+  private getPhilosophyContent() {
+    return this.getDocContent('mcp-philosophy.md', 'MCP Philosophy');
+  }
 
-	private getRunbyteContent() {
-		return this.getDocContent(
-			"runbyte-integration.md",
-			"Runbyte Integration Guide",
-		);
-	}
+  private getRunbyteContent() {
+    return this.getDocContent('runbyte-integration.md', 'Runbyte Integration Guide');
+  }
 
-	handleGetHelpOverview() {
-		const overview = `
+  handleGetHelpOverview() {
+    const overview = `
 # Polymath Platform MCP: Sovereign Support Service
 
 Welcome to the **Sovereign Support Service**. This is the primary asset for engineering agents working within the Polymath ecosystem. It is designed to be the "best place for work" by providing orchestrated intelligence, automated healing, and high-performance tools.
@@ -66,11 +57,11 @@ We integrate industry-leading Rust-based tools for extreme performance:
 ---
 **Tip for Agents:** Always start your task by scouting the territory with \`sovereign_discovery(action: 'scout')\`.
     `;
-		return { content: [{ type: "text" as const, text: overview }] };
-	}
+    return { content: [{ type: 'text' as const, text: overview }] };
+  }
 
-	handleGetArchitectureDoc() {
-		const doc = `
+  handleGetArchitectureDoc() {
+    const doc = `
 # Polymath MCP Architecture: The Gateway Pattern
 
 ## The Challenge: The 100-Tool Limit
@@ -96,11 +87,11 @@ Instead of exposing a large set of individual tools, we use **Gateways**. Each g
 ## Optional Runbyte Layer
 If you want token-efficient orchestration across multiple MCP servers, place Runbyte **in front of** this server. See \`sovereign_guide(action: 'runbyte')\` for the supported pattern.
     `;
-		return { content: [{ type: "text" as const, text: doc }] };
-	}
+    return { content: [{ type: 'text' as const, text: doc }] };
+  }
 
-	handleGetToolInventory() {
-		const inventory = `
+  handleGetToolInventory() {
+    const inventory = `
 # Master Tool Index
 
 ## Primary Commands
@@ -177,34 +168,34 @@ If you want token-efficient orchestration across multiple MCP servers, place Run
 | **recent_evolutions** | Summary of the latest God Mode tools added in this session. |
 | **runbyte** | Integration guidance for Runbyte. |
     `;
-		return { content: [{ type: "text" as const, text: inventory }] };
-	}
+    return { content: [{ type: 'text' as const, text: inventory }] };
+  }
 
-	handleGetPhilosophy() {
-		return {
-			content: [{ type: "text" as const, text: this.getPhilosophyContent() }],
-		};
-	}
+  handleGetPhilosophy() {
+    return {
+      content: [{ type: 'text' as const, text: this.getPhilosophyContent() }],
+    };
+  }
 
-	handleGetSoul() {
-		return {
-			content: [
-				{
-					type: "text" as const,
-					text: this.getDocContent("project-soul.md", "Project Soul Ledger"),
-				},
-			],
-		};
-	}
+  handleGetSoul() {
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: this.getDocContent('project-soul.md', 'Project Soul Ledger'),
+        },
+      ],
+    };
+  }
 
-	handleGetRunbyteGuide() {
-		return {
-			content: [{ type: "text" as const, text: this.getRunbyteContent() }],
-		};
-	}
+  handleGetRunbyteGuide() {
+    return {
+      content: [{ type: 'text' as const, text: this.getRunbyteContent() }],
+    };
+  }
 
-	handleGetRecentEvolutions() {
-		const content = `
+  handleGetRecentEvolutions() {
+    const content = `
 # Recent Evolutions: The Sovereign Upgrade (May 2026)
 
 This session focused on evolving the Polymath Platform MCP into an **Absolute God Mode** support service, bridging the gap between raw tools and senior architectural oversight.
@@ -244,31 +235,28 @@ A persistent record of architectural dead-ends to prevent recursive failures.
 ---
 *Status: Phase 1-4 Core Foundation is now LIVE.*
     `;
-		return { content: [{ type: "text" as const, text: content }] };
-	}
+    return { content: [{ type: 'text' as const, text: content }] };
+  }
 
-	handleGetMistakeLedger() {
-		return {
-			content: [
-				{
-					type: "text" as const,
-					text: this.getDocContent("mistake-ledger.md", "Mistake Ledger"),
-				},
-			],
-		};
-	}
+  handleGetMistakeLedger() {
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: this.getDocContent('mistake-ledger.md', 'Mistake Ledger'),
+        },
+      ],
+    };
+  }
 
-	handleGetSeniorRefusal() {
-		return {
-			content: [
-				{
-					type: "text" as const,
-					text: this.getDocContent(
-						"senior-refusal-protocol.md",
-						"Senior Refusal Protocol",
-					),
-				},
-			],
-		};
-	}
+  handleGetSeniorRefusal() {
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: this.getDocContent('senior-refusal-protocol.md', 'Senior Refusal Protocol'),
+        },
+      ],
+    };
+  }
 }

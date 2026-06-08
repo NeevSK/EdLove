@@ -6,9 +6,9 @@ import type { WorkspaceRendererConfig } from '@repo/core/types';
 import { LayoutGrid, Pin } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { View } from '../../primitives';
 import { Text } from '../../gluestack';
 import { useThemedColors } from '../../hooks/useThemedColors';
+import { View } from '../../primitives';
 import { Theme } from '../../theme/Theme';
 import type { WorkspaceCanvasProps } from './types';
 

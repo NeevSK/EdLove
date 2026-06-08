@@ -13,17 +13,17 @@ import { APIError } from '../../types/API';
 
 const normalizeWorkspaceLayoutRow = (row: Record<string, unknown>): WorkspaceLayoutRecord =>
   WorkspaceLayoutRecordSchema.parse({
-    id: row['id'],
-    user_id: row['user_id'],
-    workspace_id: row['workspace_id'],
-    layout_target: row['layout_target'] ?? 'shared',
-    order: row['order_json'] ?? [],
-    hidden: row['hidden_json'] ?? [],
-    pinned: row['pinned_json'] ?? [],
-    zone_by_surface: row['zone_by_surface_jsonb'] ?? {},
-    layout_version: row['layout_version'] ?? 1,
-    created_at: row['created_at'],
-    updated_at: row['updated_at'],
+    id: row.id,
+    user_id: row.user_id,
+    workspace_id: row.workspace_id,
+    layout_target: row.layout_target ?? 'shared',
+    order: row.order_json ?? [],
+    hidden: row.hidden_json ?? [],
+    pinned: row.pinned_json ?? [],
+    zone_by_surface: row.zone_by_surface_jsonb ?? {},
+    layout_version: row.layout_version ?? 1,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
   });
 
 export const createSupabaseWorkspaceLayoutRepository = (

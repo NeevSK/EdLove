@@ -1,9 +1,14 @@
-import { IDeviceSecurityPort } from '../ports/deviceSecurity.port';
-import { DeviceTrustSummary, DeviceSecurityEvent, DeviceSecuritySession } from '../../api/deviceTrust';
+import type {
+  AuthEvent,
+  DeviceSecurityEvent,
+  DeviceSecuritySession,
+  DeviceTrustSummary,
+} from '../../api/deviceTrust';
+import type { IDeviceSecurityPort } from '../ports/deviceSecurity.port';
 
 /**
  * DeviceSecurityManager
- * 
+ *
  * The Orchestrator for Device Trust.
  * Handles the logic of syncing device state and managing revocations.
  */
@@ -13,6 +18,7 @@ export class DeviceSecurityManager implements IDeviceSecurityPort {
   async getSecuritySummary(): Promise<{
     devices: DeviceTrustSummary[];
     events: DeviceSecurityEvent[];
+    authEvents: AuthEvent[];
     sessions: DeviceSecuritySession[];
     currentDevice: DeviceTrustSummary | null;
   }> {

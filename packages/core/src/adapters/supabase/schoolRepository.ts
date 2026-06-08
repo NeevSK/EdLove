@@ -21,11 +21,7 @@ export const createSupabaseSchoolRepository = (supabase: SupabaseClient) => ({
   },
 
   async getSchool(schoolId: string) {
-    const { data, error } = await supabase
-      .from('schools')
-      .select('*')
-      .eq('id', schoolId)
-      .single();
+    const { data, error } = await supabase.from('schools').select('*').eq('id', schoolId).single();
 
     if (error) {
       throw new APIError('Failed to fetch school', error.code, error);

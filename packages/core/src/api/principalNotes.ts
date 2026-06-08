@@ -12,10 +12,11 @@
 
 import { APIError } from '../types/API';
 import type { PrincipalNote } from '../types/PrincipalNote';
-import { identityAPI } from './identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 export type { PrincipalNote };
+
+import { identityAPI } from './identity';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 export const principalNotesAPI = {
   /**
@@ -118,7 +119,10 @@ export const principalNotesAPI = {
    * Delete a note. Only the author can delete (enforced by RLS).
    */
   async delete(id: string): Promise<void> {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('principal_notes').delete().eq('id', id);
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      .from('principal_notes')
+      .delete()
+      .eq('id', id);
 
     if (error) throw new APIError('Failed to delete principal note', error.code, error);
   },

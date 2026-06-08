@@ -1,5 +1,5 @@
-import type { ClassroomGroup as ClassroomGroupRecord } from '../logic/schemas/classroom.schema';
 import { educational } from '../logic/managers/factory';
+import type { ClassroomGroup as ClassroomGroupRecord } from '../logic/schemas/classroom.schema';
 
 export type ClassroomGroup = ClassroomGroupRecord;
 
@@ -48,4 +48,3 @@ export const classroomGroupsAPI = {
     return educational.classroomGroups.delete(id);
   },
 };
-

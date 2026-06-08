@@ -1,6 +1,6 @@
 /**
  * IRealtimePort
- * 
+ *
  * Port for real-time subscriptions (WebSockets, SSE, Supabase Realtime).
  */
 
@@ -11,11 +11,7 @@ export interface RealtimeSubscriptionOptions {
   filter?: string;
 }
 
-export type RealtimeCallback<T = any> = (payload: {
-  event: string;
-  new: T;
-  old?: T;
-}) => void;
+export type RealtimeCallback<T = any> = (payload: { event: string; new: T; old?: T }) => void;
 
 export interface IRealtimeSubscription {
   unsubscribe(): Promise<void>;
@@ -28,6 +24,6 @@ export interface IRealtimePort {
   subscribe<T>(
     channelName: string,
     options: RealtimeSubscriptionOptions,
-    callback: RealtimeCallback<T>
+    callback: RealtimeCallback<T>,
   ): IRealtimeSubscription;
 }

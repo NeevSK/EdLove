@@ -1,4 +1,4 @@
-import { Task } from '../../../types';
+import type { Task } from '../../../types';
 
 export interface TeacherRepository {
   getTasks(teacherId: string): Promise<Task[]>;

@@ -1,6 +1,6 @@
 import type React from 'react';
-import { ScrollView } from '../primitives';
 import { Box, HStack, Text, VStack } from '../gluestack';
+import { ScrollView } from '../primitives';
 
 export interface HeatmapPoint {
   date: string;

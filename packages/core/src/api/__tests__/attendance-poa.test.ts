@@ -1,8 +1,26 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { attendanceAPI } from '../orchestration/operations';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { storage } from '../../logic/managers/StorageManager';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useTemporalStore } from '../../store/useTemporalStore';
-import { storage } from '../../logic/managers/StorageManager';
+
+vi.mock('../../logic/permissions/localEvaluator', () => ({
+  checkLocalPermission: vi.fn(() => Promise.resolve(true)),
+}));
+
+vi.mock('../../lib/security/deviceTrust', () => ({
+  DeviceTrustEngine: {
+    checkDeviceTrustStatus: vi.fn(() => Promise.resolve(true)),
+  },
+}));
+
+vi.mock('../../api/deviceTrust', () => ({
+  deviceTrustAPI: {
+    getCurrentDeviceTrust: vi.fn(() => Promise.resolve({ trustStatus: 'trusted' })),
+  },
+}));
+
+import { attendanceAPI as rawAttendanceAPI } from '../attendance';
+import { attendanceAPI } from '../orchestration/operations';
 
 const mockStorage = {
   set: vi.fn(),
@@ -18,6 +36,16 @@ const mockStorage = {
 storage.registerAdapter(mockStorage as any);
 
 vi.mock('../supabase', () => ({
+  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__: {
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          single: vi.fn(() => Promise.resolve({ data: { id: 'test-1' }, error: null })),
+          insert: vi.fn(() => Promise.resolve({ data: { id: 'test-1' }, error: null })),
+        })),
+      })),
+    })),
+  },
   supabase: {
     from: vi.fn(() => ({
       select: vi.fn(() => ({
@@ -33,6 +61,9 @@ vi.mock('../supabase', () => ({
 describe('Attendance POA Orchestration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(rawAttendanceAPI, 'upsertAttendanceRecord').mockResolvedValue({
+      success: true,
+    } as any);
     // Setup mock abilities
     useAuthStore.setState({
       user: {

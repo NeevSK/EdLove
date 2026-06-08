@@ -50,3 +50,9 @@ audit-results.json
 
 # Geo Archive Artifacts
 .geo_archive/
+
+# Local scratch, diagnostics, and lint results
+diagnostics/
+scratch/
+packages/library/lint_results.json
+

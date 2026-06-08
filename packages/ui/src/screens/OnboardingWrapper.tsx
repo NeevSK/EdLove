@@ -1,5 +1,6 @@
+import { useAuth } from '@repo/core/providers';
+import { useStore } from '@repo/core/store';
 import { useCallback } from 'react';
-import { useAuth, useStore } from '@repo/core/logic';
 import OnboardingScreen from './OnboardingScreen';
 
 export function OnboardingWrapper() {

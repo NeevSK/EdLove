@@ -1,101 +1,66 @@
-import { withResilience } from '../offline/resilience';
 import { APIError } from '../types/API';
-import { getCurrentTimeMillis } from '../utils/temporal';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
+import { createSovereignClient, SOVEREIGN_API_URL } from './base';
+import type { DailyContent } from './dailyContent.contract';
+import { readLocalFirst } from './dataGateway';
 
-// ============================================================================
-// DAILY CONTENT API (Motivation & "Did You Know?")
-// ============================================================================
-
-export interface DailyContent {
-  id: string;
-  type: 'motivation' | 'did_you_know';
-  content: string;
-  author?: string;
-  date: string;
-  active: boolean;
-  created_at: string;
-}
+const client = createSovereignClient(SOVEREIGN_API_URL);
 
 export const dailyContentAPI = {
-  /**
-   * Get daily content for today
-   * Returns the most recent motivation quote and "did you know" fact
-   */
   async getTodaysContent(): Promise<{
     motivation: DailyContent | null;
     didYouKnow: DailyContent | null;
   }> {
-    return withResilience(
-      async () => {
-        // Fetch motivation quote
-        const { data: motivationData, error: motivationError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-          .rpc('get_daily_content_for_today', { content_type: 'motivation' })
-          .single();
-
-        if (motivationError && motivationError.code !== 'PGRST116') {
-          console.warn('Failed to fetch motivation:', motivationError);
+    const result = await readLocalFirst({
+      key: 'daily_content_today',
+      ttl: 24 * 60 * 60 * 1000,
+      fetchRemote: async () => {
+        const res = await (client.api as any)['daily-content'].today.$get();
+        if (!res.ok) {
+          throw new APIError('Failed to fetch daily content', res.status.toString());
         }
-
-        // Fetch "did you know" fact
-        const { data: didYouKnowData, error: didYouKnowError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-          .rpc('get_daily_content_for_today', { content_type: 'did_you_know' })
-          .single();
-
-        if (didYouKnowError && didYouKnowError.code !== 'PGRST116') {
-          console.warn('Failed to fetch did you know:', didYouKnowError);
-        }
-
-        return {
-          motivation: (motivationData as DailyContent) || null,
-          didYouKnow: (didYouKnowData as DailyContent) || null,
+        return (await res.json()) as {
+          motivation: DailyContent | null;
+          didYouKnow: DailyContent | null;
         };
       },
-      {
-        key: 'daily_content_today',
-        ttl: 24 * 60 * 60 * 1000, // Cache for 24 hours
-      },
-    ) as Promise<{
-      motivation: DailyContent | null;
-      didYouKnow: DailyContent | null;
-    }>;
+    });
+    return (
+      result ?? {
+        motivation: null,
+        didYouKnow: null,
+      }
+    );
   },
 
-  /**
-   * Get content for a specific date
-   */
   async getContentForDate(date: string): Promise<DailyContent[]> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-      .from('daily_content')
-      .select('*')
-      .eq('date', date)
-      .eq('active', true)
-      .order('type');
-
-    if (error) {
-      throw new APIError('Failed to fetch content for date', error.code, error);
-    }
-
-    return data || [];
+    return readLocalFirst({
+      key: `daily_content:${date}`,
+      ttl: 24 * 60 * 60 * 1000,
+      fetchRemote: async () => {
+        const res = await (client.api as any)['daily-content'][':date'].$get({
+          param: { date },
+        });
+        if (!res.ok) {
+          throw new APIError('Failed to fetch content for date', res.status.toString());
+        }
+        return (await res.json()) as DailyContent[];
+      },
+    }).then((data) => data ?? []);
   },
 
-  /**
-   * Get recent content (last N days)
-   */
   async getRecentContent(days: number = 7): Promise<DailyContent[]> {
-    const now = getCurrentTimeMillis();
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-      .from('daily_content')
-      .select('*')
-      .eq('active', true)
-      .gte('date', new Date(now - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
-      .order('date', { ascending: false })
-      .order('type');
-
-    if (error) {
-      throw new APIError('Failed to fetch recent content', error.code, error);
-    }
-
-    return data || [];
+    return readLocalFirst({
+      key: `daily_content:recent:${days}`,
+      ttl: 24 * 60 * 60 * 1000,
+      fetchRemote: async () => {
+        const res = await (client.api as any)['daily-content'].recent[':days'].$get({
+          param: { days: String(days) },
+        });
+        if (!res.ok) {
+          throw new APIError('Failed to fetch recent content', res.status.toString());
+        }
+        return (await res.json()) as DailyContent[];
+      },
+    }).then((data) => data ?? []);
   },
 };

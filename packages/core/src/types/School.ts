@@ -60,6 +60,7 @@ export interface SchoolStats {
   total_teachers: number;
   total_classrooms: number;
   total_sections: number;
+  is_sample?: boolean;
 }
 
 export interface AcademicCycle {

@@ -1,15 +1,14 @@
+import { Platform } from 'react-native';
 import * as Keychain from 'react-native-keychain';
 import type { IDeviceIdentity } from '../../logic/interfaces/deviceIdentity.port';
-import { Platform } from 'react-native';
 
 /**
  * NativeDeviceIdentityAdapter
- * 
+ *
  * The production-grade implementation of hardware-bound identity.
  * Leverages the iOS Secure Enclave and Android Keystore via react-native-keychain.
  */
 export class NativeDeviceIdentityAdapter implements IDeviceIdentity {
-  
   async isSupported(): Promise<boolean> {
     try {
       const biometryType = await Keychain.getSupportedBiometryType();
@@ -36,7 +35,7 @@ export class NativeDeviceIdentityAdapter implements IDeviceIdentity {
     // Generate a persistent hardware-bound ID
     // In a full implementation, this would be a Public Key from an RSA/ECC pair.
     const hardwareId = `${Platform.OS}_${Math.random().toString(36).substring(2, 15)}`;
-    
+
     await Keychain.setGenericPassword('hardware_identity', hardwareId, storageOptions);
     return hardwareId;
   }
@@ -60,7 +59,7 @@ export class NativeDeviceIdentityAdapter implements IDeviceIdentity {
     return `signed_${challenge}_with_${credentials.password}`;
   }
 
-  async getAttestation(alias: string, challenge?: string): Promise<string> {
+  async getAttestation(_alias: string, _challenge?: string): Promise<string> {
     // Implementation for Apple App Attest / Google Play Integrity
     // This typically requires a dedicated native bridge or calling the platform APIs directly.
     return 'production_attestation_token_placeholder';

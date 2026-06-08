@@ -1,6 +1,6 @@
 import type React from 'react';
-import { View } from '../../primitives';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
+import { View } from '../../primitives';
 import { Box } from '../box';
 import { Overlay } from '../overlay';
 import { Portal } from '../portal';

@@ -1,8 +1,12 @@
-import { 
-  BanyanStage, RiverStage, CrystalDiscovery, 
-  GrowthDimension, UserGrowthState,
-  Challenge, ChallengeMetric, PersonalCompass,
-  ImpactRipple, CreateRippleInput, SanctuaryManifesto, ManifestoVibe
+import type {
+  Challenge,
+  ChallengeMetric,
+  CrystalDiscovery,
+  ImpactRipple,
+  ManifestoVibe,
+  PersonalCompass,
+  SanctuaryManifesto,
+  UserGrowthState,
 } from '../../types/Growth';
 
 export interface IGrowthPort {
@@ -24,11 +28,14 @@ export interface IGrowthPort {
   /**
    * Awards multiple whispered moments to a user.
    */
-  awardMoments(userId: string, moments: Array<{
-    key: string;
-    name_si: string;
-    name_en: string;
-  }>): Promise<void>;
+  awardMoments(
+    userId: string,
+    moments: Array<{
+      key: string;
+      name_si: string;
+      name_en: string;
+    }>,
+  ): Promise<void>;
 
   /**
    * Counts occurrences of specific event types for a user.
@@ -60,7 +67,6 @@ export interface IGrowthPort {
    */
   getCrystalCollection(userId: string): Promise<CrystalDiscovery[]>;
 
-
   /**
    * Increments a dimension counter atomically.
    */
@@ -69,12 +75,21 @@ export interface IGrowthPort {
   /**
    * Contextual Challenges
    */
-  getChallenges(filters: { schoolId?: string; classroomId?: string; status?: string; type?: string }): Promise<Challenge[]>;
-  createChallenge(challenge: Omit<Challenge, 'id' | 'created_at' | 'updated_at'>): Promise<Challenge>;
+  getChallenges(filters: {
+    schoolId?: string;
+    classroomId?: string;
+    status?: string;
+    type?: string;
+  }): Promise<Challenge[]>;
+  createChallenge(
+    challenge: Omit<Challenge, 'id' | 'created_at' | 'updated_at'>,
+  ): Promise<Challenge>;
   updateChallenge(id: string, updates: Partial<Challenge>): Promise<void>;
-  
+
   getPersonalCompasses(filters: { userId: string; status?: string }): Promise<PersonalCompass[]>;
-  createPersonalCompass(compass: Omit<PersonalCompass, 'id' | 'created_at'>): Promise<PersonalCompass>;
+  createPersonalCompass(
+    compass: Omit<PersonalCompass, 'id' | 'created_at'>,
+  ): Promise<PersonalCompass>;
   updatePersonalCompass(id: string, updates: Partial<PersonalCompass>): Promise<void>;
 
   recordContribution(
@@ -107,6 +122,3 @@ export interface IGrowthPort {
   endorseManifesto(manifestoId: string, userId: string, commitmentText?: string): Promise<void>;
   unendorseManifesto(manifestoId: string, userId: string): Promise<void>;
 }
-
-
-

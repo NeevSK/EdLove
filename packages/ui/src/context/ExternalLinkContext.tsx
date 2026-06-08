@@ -224,10 +224,7 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
           pendingRequest ? (
             <VStack className="gap-2">
               <HStack className="gap-2 flex-wrap">
-                <SanctuaryButton
-                  onPress={handleOpenNow}
-                  fullWidth
-                >
+                <SanctuaryButton onPress={handleOpenNow} fullWidth>
                   Open Now
                 </SanctuaryButton>
               </HStack>

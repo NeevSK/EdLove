@@ -1,23 +1,23 @@
 import { z } from 'zod';
 import {
   ClassroomGradingSettingsSchema,
-  GradebookSnapshotSchema,
   StudentGradeSchema,
 } from '../logic/schemas/grading.schema';
-import { type SovereignContract } from './contract';
+import type { SovereignContract } from './contract';
 
 const gradingAuthority = (
   action: 'manage' | 'create' | 'read' | 'update' | 'delete' | 'grade' | 'publish' | 'override',
-  subject: 'Grade'
-) => ({
-  policy: { action, subject },
-}) as const;
+  subject: 'Grade',
+) =>
+  ({
+    policy: { action, subject },
+  }) as const;
 
 /**
  * Grading Domain Port (Sovereign RPC)
  * Framework-agnostic definition of the Grading API.
  */
-export const gradingContract: SovereignContract = {
+export const gradingContract = {
   getReportCard: {
     method: 'get',
     path: '/grades/report-card',
@@ -87,4 +87,4 @@ export const gradingContract: SovereignContract = {
     },
     metadata: gradingAuthority('read', 'Grade'),
   },
-} as const;
+} as const satisfies SovereignContract;

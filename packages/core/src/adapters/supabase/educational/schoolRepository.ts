@@ -1,4 +1,4 @@
-import { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { APIError } from '../../../types/API';
 
 export const createSchoolRepository = (supabase: SupabaseClient) => ({

@@ -1,5 +1,6 @@
-import { educational, profile, community, notification } from '../logic/managers/factory';
+import { community, educational, identity, notification, profile } from '../logic/managers/factory';
 import type { Capacity } from '../logic/schemas/capacity.schema';
+import type { Perspective } from '../types/Identity';
 import type { ClassroomJoinRequest, RequestStatus, SchoolJoinRequest } from '../types/Onboarding';
 
 /**
@@ -7,6 +8,22 @@ import type { ClassroomJoinRequest, RequestStatus, SchoolJoinRequest } from '../
  * Handles "No Trust" verification flows for schools and classrooms.
  */
 export const onboardingAPI = {
+  /**
+   * ONBOARDING IDENTITY FLOW
+   */
+
+  async getActivePerspective(): Promise<Perspective | null> {
+    return identity.getActivePerspective();
+  },
+
+  async createInitialBond(orientation: Capacity, context: Record<string, any>): Promise<void> {
+    await identity.createInitialBond(orientation, context);
+  },
+
+  async completeOnboarding(userId: string): Promise<void> {
+    await identity.completeOnboarding(userId);
+  },
+
   /**
    * SCHOOL JOIN FLOW
    */
@@ -37,8 +54,13 @@ export const onboardingAPI = {
     capacity: string,
     subjectLabel?: string,
   ): Promise<ClassroomJoinRequest> {
-    const request = await educational.classroomStudents.requestJoin(userId, classroomId, capacity, subjectLabel);
-    
+    const request = await educational.classroomStudents.requestJoin(
+      userId,
+      classroomId,
+      capacity,
+      subjectLabel,
+    );
+
     // Find linked community group and create pending membership
     const group = await community.getGroupByClassroom(classroomId);
 
@@ -48,7 +70,7 @@ export const onboardingAPI = {
         groupId: group.id,
         userId,
         capacity: 'member', // Default to member for pending join
-        status: 'pending'
+        status: 'pending',
       });
     }
 
@@ -100,8 +122,8 @@ export const onboardingAPI = {
     if (type === 'school') {
       await profile.updateProfile(userId, { school_id: null });
     } else {
-      await educational.classroomStudents.remove(targetId); 
-      
+      await educational.classroomStudents.remove(targetId);
+
       const group = await community.getGroupByClassroom(targetId);
       if (group) {
         await community.deleteMembership(group.id, userId);
@@ -145,4 +167,3 @@ export const onboardingAPI = {
     });
   },
 };
-

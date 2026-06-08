@@ -1,9 +1,9 @@
+import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
 import { identityAPI as rawIdentityAPI } from '../identity';
 import { identityContract } from '../identity.contract';
+import { createPOAProxy } from '../poaProxy';
 import { profileAPI as rawProfileAPI } from '../profile';
 import { profileContract } from '../profile.contract';
-import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
-import { createPOAProxy } from '../poaProxy';
 
 const identityCoverage = assertContractCoverage(
   rawIdentityAPI,
@@ -16,12 +16,7 @@ const identityCoverage = assertContractCoverage(
       modifyUserProfile: 'modifyUserProfile',
       resolveWorkspaceContext: 'resolveWorkspaceContext',
     },
-    internalMethods: [
-      'linkIdentity',
-      'getBonds',
-      'getActivePerspective',
-      'switchPerspective',
-    ], // Explicitly internal or handled via POA
+    internalMethods: ['linkIdentity', 'getBonds', 'getActivePerspective', 'switchPerspective'], // Explicitly internal or handled via POA
   }),
 );
 
@@ -42,8 +37,23 @@ const profileCoverage = assertContractCoverage(
     moduleName: 'profile',
     contract: profileContract,
     methodMapping: {
+      getUserProfile: 'getUserProfile',
+      updateProfile: 'updateProfile',
+      getJourneySnapshot: 'getJourneySnapshot',
       getSchoolPulse: 'getSchoolPulse',
     },
+    internalMethods: [
+      'getCommunityProfileAsOf',
+      'getCommunityProfile',
+      'updateCommunityProfile',
+      'getCommunityProfileHistory',
+      'getUserProfileAsOf',
+      'uploadAvatar',
+      'getUserProfileHistory',
+      'getSocialLinks',
+      'upsertSocialLink',
+      'deleteSocialLink',
+    ],
   }),
 );
 
@@ -52,5 +62,8 @@ export const profileAPI = createPOAProxy(
   rawProfileAPI,
   profileCoverage.contract,
   profileCoverage.methodMapping,
-  { strictUnmappedMethods: true },
+  {
+    strictUnmappedMethods: true,
+    ignoredMethods: profileCoverage.internalMethods as string[],
+  },
 );

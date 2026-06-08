@@ -1,7 +1,9 @@
 export { authAPI } from '../api/auth';
 export { identityAPI } from '../api/identity';
-export { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-export { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ as supabase } from '../api/supabase';
+export {
+  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__,
+  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ as supabase,
+} from '../api/supabase';
 export { bootstrapPlatform } from './bootstrap';
 export { deviceTrustAPI } from './deviceTrust';
 export { FlowResolver } from './flows/FlowResolver';

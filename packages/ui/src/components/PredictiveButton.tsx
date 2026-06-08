@@ -1,5 +1,6 @@
-import React, { useRef } from 'react';
-import { Pressable, Text, HStack, Icon } from '../primitives';
+import type React from 'react';
+import { useRef } from 'react';
+import { HStack, Icon, Pressable, Text } from '../primitives';
 import { hapticLight } from '../utils/haptics';
 
 interface PredictiveButtonProps {
@@ -13,7 +14,7 @@ interface PredictiveButtonProps {
 
 /**
  * PredictiveButton
- * 
+ *
  * Implements "Hover-to-Hydrate" (H2H) patterns.
  * In 2026, we don't wait for the click; we fetch data when the user shows intent (hover).
  */
@@ -22,8 +23,8 @@ export const PredictiveButton: React.FC<PredictiveButtonProps> = ({
   onHoverStart,
   label,
   icon,
-  className = "",
-  toneColor
+  className = '',
+  toneColor,
 }) => {
   const hasTriggered = useRef(false);
 
@@ -47,9 +48,7 @@ export const PredictiveButton: React.FC<PredictiveButtonProps> = ({
     >
       <HStack className="items-center gap-2">
         {icon && <Icon as={icon} size="sm" />}
-        <Text className="text-xs font-black uppercase tracking-wider">
-          {label}
-        </Text>
+        <Text className="text-xs font-black uppercase tracking-wider">{label}</Text>
       </HStack>
     </Pressable>
   );

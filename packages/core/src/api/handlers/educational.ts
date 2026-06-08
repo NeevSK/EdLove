@@ -1,4 +1,4 @@
-import { type Context } from 'hono';
+import type { Context } from 'hono';
 
 /**
  * Educational Domain Handlers (Hono + ZenStack ReBAC)
@@ -18,9 +18,9 @@ export const educationalHandlers = {
       orderBy: { created_at: 'desc' },
       include: {
         school: {
-          select: { name: true, avatar_url: true }
-        }
-      }
+          select: { name: true, avatar_url: true },
+        },
+      },
     });
 
     return c.json(classrooms, 200);
@@ -37,12 +37,12 @@ export const educationalHandlers = {
       where: { id },
       include: {
         teacher: {
-          select: { full_name: true, avatar_url: true }
+          select: { full_name: true, avatar_url: true },
         },
         _count: {
-          select: { students: true, lessons: true }
-        }
-      }
+          select: { students: true, lessons: true },
+        },
+      },
     });
 
     if (!classroom) return c.json({ message: 'Classroom not found' }, 404);
@@ -72,10 +72,7 @@ export const educationalHandlers = {
 
     const resources = await db.classroomResource.findMany({
       where: { classroom_id: classroomId },
-      orderBy: [
-        { is_pinned: 'desc' },
-        { created_at: 'desc' }
-      ]
+      orderBy: [{ is_pinned: 'desc' }, { created_at: 'desc' }],
     });
 
     return c.json(resources, 200);

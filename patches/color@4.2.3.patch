@@ -1,0 +1,15 @@
+diff --git a/index.js b/index.js
+index ddb0b5df6215e0195ac82868a4d844b9d38b21a5..0f0d5d390f8c27cbca968fbac2e6dd10ebb119c4 100644
+--- a/index.js
++++ b/index.js
+@@ -14,7 +14,9 @@ const skippedModels = [
+ 
+ const hashedModelKeys = {};
+ for (const model of Object.keys(convert)) {
+-	hashedModelKeys[[...convert[model].labels].sort().join('')] = model;
++	if (convert[model] && convert[model].labels) {
++		hashedModelKeys[[...convert[model].labels].sort().join('')] = model;
++	}
+ }
+ 
+ const limiters = {};

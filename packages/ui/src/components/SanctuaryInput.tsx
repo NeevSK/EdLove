@@ -105,7 +105,15 @@ export default function SanctuaryInput({
           value={value}
           onChangeText={onChangeText}
           secureTextEntry={type === 'password'}
-          keyboardType={keyboardType as 'default' | 'number-pad' | 'decimal-pad' | 'numeric' | 'email-address' | 'phone-pad'}
+          keyboardType={
+            keyboardType as
+              | 'default'
+              | 'number-pad'
+              | 'decimal-pad'
+              | 'numeric'
+              | 'email-address'
+              | 'phone-pad'
+          }
           className="text-phase-text-primary px-3 text-base"
           multiline={multiline}
           numberOfLines={numberOfLines}

@@ -1,8 +1,11 @@
-import { ProfileManager } from './ProfileManager';
 import { createSupabaseProfileRepository } from '../../adapters/supabase/profileRepository';
-import { createZenStackProfileRepository, isZenStackProfileRepositoryAvailable } from '../../adapters/zenstack/profileRepository';
+import {
+  createZenStackProfileRepository,
+  isZenStackProfileRepositoryAvailable,
+} from '../../adapters/zenstack/profileRepository';
 import { storage } from '../../lib/storage';
 import { media } from './media.factory';
+import { ProfileManager } from './ProfileManager';
 
 /**
  * profile: The Global Sovereign Profile Instance.
@@ -10,8 +13,8 @@ import { media } from './media.factory';
 export const profile = new ProfileManager(
   isZenStackProfileRepositoryAvailable()
     ? createZenStackProfileRepository(
-        () => ({ id: storage.getString('user_id') || null }), 
-        media.adapter, 
+        () => ({ id: storage.getString('user_id') || null }),
+        media.adapter,
       )
-    : createSupabaseProfileRepository()
+    : createSupabaseProfileRepository(),
 );

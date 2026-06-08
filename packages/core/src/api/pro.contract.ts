@@ -72,4 +72,3 @@ export const proContract = c.router({
     metadata: proAuthority('update'),
   },
 });
-

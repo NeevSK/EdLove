@@ -24,10 +24,7 @@ vi.mock('../../lib/supabase', () => ({
   },
 }));
 
-import { describe, it, expect, vi } from 'vitest';
-import { attendanceAPI } from '../attendance';
-import { assertContractCoverage } from '../contractCoverage';
-import { operationsContract } from '../operations.contract';
+import { describe, expect, it, vi } from 'vitest';
 
 describe('simple', () => {
   it('works', () => {

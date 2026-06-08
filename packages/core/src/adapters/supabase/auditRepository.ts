@@ -1,5 +1,5 @@
-import { SupabaseClient } from '@supabase/supabase-js';
-import { IAuditRepository, AuditLogEntry } from '../../logic/domains/audit/ports';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { AuditLogEntry, IAuditRepository } from '../../logic/domains/audit/ports';
 
 export const createSupabaseAuditRepository = (supabase: SupabaseClient): IAuditRepository => ({
   async log(entry: AuditLogEntry): Promise<void> {

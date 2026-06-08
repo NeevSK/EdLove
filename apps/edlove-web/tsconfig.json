@@ -1,16 +1,15 @@
 {
-	"extends": "../../packages/typescript-config/base.json",
-	"compilerOptions": {
-		"baseUrl": ".",
-		"paths": {
-			"@/*": ["./src/*"],
-			"@/types": ["./src/types"],
-			"@/constants/*": ["./src/constants/*"],
-			"@/components/*": ["./src/components/*"],
-			"@/lib/*": ["./src/lib/*"],
-			"@/utils/*": ["./src/utils/*"]
-		}
-	},
-	"include": [".astro/types.d.ts", "**/*"],
-	"exclude": ["dist"]
+  "extends": "../../packages/typescript-config/base.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/types": ["./src/types"],
+      "@/constants/*": ["./src/constants/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/utils/*": ["./src/utils/*"]
+    }
+  },
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"]
 }

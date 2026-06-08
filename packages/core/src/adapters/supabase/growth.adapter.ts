@@ -1,10 +1,14 @@
-import { IGrowthPort } from '../../logic/ports/growth.port';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
+import type { IGrowthPort } from '../../logic/ports/growth.port';
 import { APIError } from '../../types/API';
-import { 
-  Challenge, ChallengeMetric, PersonalCompass, 
-  CrystalDiscovery, UserGrowthState,
-  ImpactRipple, CreateRippleInput, SanctuaryManifesto, ManifestoVibe, RippleType
+import type {
+  Challenge,
+  ChallengeMetric,
+  CrystalDiscovery,
+  ImpactRipple,
+  PersonalCompass,
+  SanctuaryManifesto,
+  UserGrowthState,
 } from '../../types/Growth';
 
 const WARM_MESSAGES: Record<string, { en: string; si: string; ta: string }> = {
@@ -31,7 +35,7 @@ const WARM_MESSAGES: Record<string, { en: string; si: string; ta: string }> = {
   feedback_given: {
     en: 'Your teacher thought carefully about your work.',
     si: '\u0D94\u0DB6\u0DDA \u0D9C\u0DD4\u0DBB\u0DD4\u0DAD\u0DD4\u0DB8\u0DCF \u0D94\u0DB6\u0DDA \u0D9A\u0DCF\u0DBB\u0DCA\u0DBA\u0DBA\u0DDA \u0D9C\u0DD0\u0DB9\u0DD4\u0DBB\u0DA7 \u0D9C\u0DD2\u0DBA \u0DBA.',
-    ta: '\u0B89\u0B99\u0BCD\u0B95\u0BB3\u0BCD \u0B86\u0B9A\u0BBF\u0BB0\u0BBF\u0BAF\u0BB0\u0BCD \u0B89\u0B99\u0BCD\u0B95\u0BB3\u0BCD \BB5\u0BC7\u0BB2\u0BC8\u0BAF\u0BC8\u0BAA\u0BCD \u0BAA\u0BB1\u0BCD\u0BB1\u0BBF \u0B95\u0BB5\u0BA9\u0BAE\u0BBE\u0B95 \u0B9A\u0BBF\u0BA8\u0BCD\u0BA4\u0BBF\u0BA4\u0BCD\u0BA4\u0BBE\u0BB0\u0BCD.',
+    ta: '\u0B89\u0B99\u0BCD\u0B95\u0BB3\u0BCD \u0B86\u0B9A\u0BBF\u0BB0\u0BBF\u0BAF\u0BB0\u0BCD \u0B89\u0B99\u0BCD\u0B95\u0BB3\u0BCD BB5\u0BC7\u0BB2\u0BC8\u0BAF\u0BC8\u0BAA\u0BCD \u0BAA\u0BB1\u0BCD\u0BB1\u0BBF \u0B95\u0BB5\u0BA9\u0BAE\u0BBE\u0B95 \u0B9A\u0BBF\u0BA8\u0BCD\u0BA4\u0BBF\u0BA4\u0BCD\u0BA4\u0BBE\u0BB0\u0BCD.',
   },
   manifesto_endorsed: {
     en: 'A fellow teacher endorsed your vision.',
@@ -79,21 +83,24 @@ export class SupabaseGrowthAdapter implements IGrowthPort {
       .select('moment_key')
       .eq('user_id', userId)
       .in('moment_key', candidateKeys);
-    
-    return (data ?? []).map(r => r.moment_key);
+
+    return (data ?? []).map((r) => r.moment_key);
   }
 
-  async awardMoments(userId: string, moments: Array<{ key: string; name_si: string; name_en: string }>) {
+  async awardMoments(
+    userId: string,
+    moments: Array<{ key: string; name_si: string; name_en: string }>,
+  ) {
     const { error } = await this.client.from('whispered_moments').upsert(
-      moments.map(m => ({
+      moments.map((m) => ({
         user_id: userId,
         moment_key: m.key,
         moment_name_si: m.name_si,
         moment_name_en: m.name_en,
       })),
-      { onConflict: 'user_id,moment_key', ignoreDuplicates: true }
+      { onConflict: 'user_id,moment_key', ignoreDuplicates: true },
     );
-    
+
     if (error) throw new APIError('Failed to award whispered moments', error.code, error);
   }
 
@@ -103,11 +110,11 @@ export class SupabaseGrowthAdapter implements IGrowthPort {
       .select('id', { count: 'exact', head: true })
       .eq('user_id', userId)
       .in('event_type', eventTypes);
-    
+
     if (options?.since) {
       query = query.gte('created_at', options.since);
     }
-    
+
     const { count, error } = await query;
     if (error) throw new APIError('Failed to count growth events', error.code, error);
     return count ?? 0;
@@ -119,12 +126,15 @@ export class SupabaseGrowthAdapter implements IGrowthPort {
       .select('event_metadata')
       .eq('user_id', userId)
       .eq('event_type', eventType);
-    
+
     if (error) throw new APIError('Failed to get event metadata', error.code, error);
-    return (data ?? []).map(r => r.event_metadata as Record<string, any>);
+    return (data ?? []).map((r) => r.event_metadata as Record<string, any>);
   }
 
-  async updateGrowthState(userId: string, updates: Partial<UserGrowthState>): Promise<UserGrowthState> {
+  async updateGrowthState(
+    userId: string,
+    updates: Partial<UserGrowthState>,
+  ): Promise<UserGrowthState> {
     const { data, error } = await this.client
       .from('user_growth_state')
       .update({
@@ -150,7 +160,9 @@ export class SupabaseGrowthAdapter implements IGrowthPort {
     return data as UserGrowthState | null;
   }
 
-  async recordCrystalDiscovery(discovery: Omit<CrystalDiscovery, 'id' | 'created_at'>): Promise<void> {
+  async recordCrystalDiscovery(
+    discovery: Omit<CrystalDiscovery, 'id' | 'created_at'>,
+  ): Promise<void> {
     const { error } = await this.client.from('crystal_discoveries').insert(discovery);
     if (error) throw new APIError('Failed to record crystal discovery', error.code, error);
   }
@@ -166,37 +178,45 @@ export class SupabaseGrowthAdapter implements IGrowthPort {
     return (data ?? []) as CrystalDiscovery[];
   }
 
-
   async incrementDimension(userId: string, column: string): Promise<UserGrowthState | null> {
     // Attempt RPC first for atomicity
-    const { data, error } = await this.client.rpc('increment_growth_dimension', {
-      p_user_id: userId,
-      p_column: column,
-    }).maybeSingle();
+    const { data, error } = await this.client
+      .rpc('increment_growth_dimension', {
+        p_user_id: userId,
+        p_column: column,
+      })
+      .maybeSingle();
 
     if (error) {
-       // Fallback logic could go here if needed, but in hexagonal we prefer the adapter to fail 
-       // if the specific storage mechanism (Supabase RPC) fails.
-       throw new APIError('Failed to increment growth dimension via RPC', error.code, error);
+      // Fallback logic could go here if needed, but in hexagonal we prefer the adapter to fail
+      // if the specific storage mechanism (Supabase RPC) fails.
+      throw new APIError('Failed to increment growth dimension via RPC', error.code, error);
     }
-    
+
     return data as UserGrowthState | null;
   }
 
-  async getChallenges(filters: { schoolId?: string; classroomId?: string; status?: string; type?: string }): Promise<Challenge[]> {
+  async getChallenges(filters: {
+    schoolId?: string;
+    classroomId?: string;
+    status?: string;
+    type?: string;
+  }): Promise<Challenge[]> {
     let query = this.client.from('contextual_challenges').select('*');
-    
+
     if (filters.schoolId) query = query.eq('school_id', filters.schoolId);
     if (filters.classroomId) query = query.eq('classroom_id', filters.classroomId);
     if (filters.status) query = query.eq('status', filters.status);
     if (filters.type) query = query.eq('type', filters.type);
-    
+
     const { data, error } = await query.order('created_at', { ascending: false });
     if (error) throw new APIError('Failed to get challenges', error.code, error);
     return data as Challenge[];
   }
 
-  async createChallenge(challenge: Omit<Challenge, 'id' | 'created_at' | 'updated_at'>): Promise<Challenge> {
+  async createChallenge(
+    challenge: Omit<Challenge, 'id' | 'created_at' | 'updated_at'>,
+  ): Promise<Challenge> {
     const { data, error } = await this.client
       .from('contextual_challenges')
       .insert({
@@ -223,16 +243,21 @@ export class SupabaseGrowthAdapter implements IGrowthPort {
     if (error) throw new APIError('Failed to update challenge', error.code, error);
   }
 
-  async getPersonalCompasses(filters: { userId: string; status?: string }): Promise<PersonalCompass[]> {
+  async getPersonalCompasses(filters: {
+    userId: string;
+    status?: string;
+  }): Promise<PersonalCompass[]> {
     let query = this.client.from('personal_compasses').select('*').eq('user_id', filters.userId);
     if (filters.status) query = query.eq('status', filters.status);
-    
+
     const { data, error } = await query.order('created_at', { ascending: false });
     if (error) throw new APIError('Failed to get personal compasses', error.code, error);
     return data as PersonalCompass[];
   }
 
-  async createPersonalCompass(compass: Omit<PersonalCompass, 'id' | 'created_at'>): Promise<PersonalCompass> {
+  async createPersonalCompass(
+    compass: Omit<PersonalCompass, 'id' | 'created_at'>,
+  ): Promise<PersonalCompass> {
     const { data, error } = await this.client
       .from('personal_compasses')
       .insert({
@@ -450,7 +475,11 @@ export class SupabaseGrowthAdapter implements IGrowthPort {
     return data as SanctuaryManifesto;
   }
 
-  async endorseManifesto(manifestoId: string, userId: string, commitmentText?: string): Promise<void> {
+  async endorseManifesto(
+    manifestoId: string,
+    userId: string,
+    commitmentText?: string,
+  ): Promise<void> {
     const { error } = await this.client.from('manifesto_endorsements').upsert({
       manifesto_id: manifestoId,
       user_id: userId,
@@ -470,6 +499,3 @@ export class SupabaseGrowthAdapter implements IGrowthPort {
     if (error) throw new APIError('Failed to unendorse manifesto', error.code, error);
   }
 }
-
-
-

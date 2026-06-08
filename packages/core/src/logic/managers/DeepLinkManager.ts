@@ -1,4 +1,4 @@
-import { AuthManager } from './AuthManager';
+import type { AuthManager } from './AuthManager';
 
 /**
  * DeepLinkType
@@ -43,7 +43,7 @@ export class DeepLinkManager {
       const params = Object.fromEntries(parsedUrl.searchParams.entries());
 
       // 1. Auth Callback Check
-      if (url.includes('auth/callback') || params['access_token']) {
+      if (url.includes('auth/callback') || params.access_token) {
         return this.handleAuthCallback(params);
       }
 
@@ -74,8 +74,8 @@ export class DeepLinkManager {
   }
 
   private async handleAuthCallback(params: Record<string, string>): Promise<DeepLinkResult> {
-    const access_token = params['access_token'];
-    const refresh_token = params['refresh_token'];
+    const access_token = params.access_token;
+    const refresh_token = params.refresh_token;
 
     if (access_token && refresh_token) {
       try {
@@ -108,11 +108,7 @@ export class DeepLinkManager {
    * Returns the deep link prefixes for the platform.
    */
   getPrefixes() {
-    return [
-      'gurudevi://',
-      'https://platform.gurudevi.edlove.org',
-      'http://localhost:4000',
-    ];
+    return ['gurudevi://', 'https://platform.gurudevi.edlove.org', 'http://localhost:4000'];
   }
 
   /**

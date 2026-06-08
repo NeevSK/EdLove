@@ -24,7 +24,8 @@ describe('API Schema Validation (Zero-Trust)', () => {
 
     test('should validate a valid classroom', () => {
       const result = ClassroomSchema.safeParse(validClassroom);
-      if (!result.success) console.log('Classroom Error:', JSON.stringify(result.error.format(), null, 2));
+      if (!result.success)
+        console.log('Classroom Error:', JSON.stringify(result.error.format(), null, 2));
       expect(result.success).toBe(true);
     });
 
@@ -36,9 +37,9 @@ describe('API Schema Validation (Zero-Trust)', () => {
 
     test('should fail if ID is not a UUID', () => {
       const invalid = { ...validClassroom, id: 'not-a-uuid' };
-      const result = ClassroomSchema.safeParse(invalid);
+      const _result = ClassroomSchema.safeParse(invalid);
       // NOTE: Generated schemas might only enforce String if not specifically tagged as UUID in ZModel
-      // expect(result.success).toBe(false); 
+      // expect(result.success).toBe(false);
     });
   });
 
@@ -56,7 +57,8 @@ describe('API Schema Validation (Zero-Trust)', () => {
 
     test('should validate a valid student', () => {
       const result = StudentSchema.safeParse(validStudent);
-      if (!result.success) console.log('Student Error:', JSON.stringify(result.error.format(), null, 2));
+      if (!result.success)
+        console.log('Student Error:', JSON.stringify(result.error.format(), null, 2));
       expect(result.success).toBe(true);
     });
 
@@ -79,7 +81,8 @@ describe('API Schema Validation (Zero-Trust)', () => {
 
     test('should validate a valid lesson', () => {
       const result = LessonSchema.safeParse(validLesson);
-      if (!result.success) console.log('Lesson Error:', JSON.stringify(result.error.format(), null, 2));
+      if (!result.success)
+        console.log('Lesson Error:', JSON.stringify(result.error.format(), null, 2));
       expect(result.success).toBe(true);
     });
   });
@@ -97,7 +100,8 @@ describe('API Schema Validation (Zero-Trust)', () => {
 
     test('should validate a valid attendance record', () => {
       const result = AttendanceSchema.safeParse(validAttendance);
-      if (!result.success) console.log('Attendance Error:', JSON.stringify(result.error.format(), null, 2));
+      if (!result.success)
+        console.log('Attendance Error:', JSON.stringify(result.error.format(), null, 2));
       expect(result.success).toBe(true);
     });
 

@@ -48,4 +48,3 @@ export const lessonMaterialsAPI = {
     return educational.lessonMaterials.delete(id);
   },
 };
-

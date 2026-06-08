@@ -2,12 +2,10 @@
  * Warm Mirror API — Competence through personal narrative.
  */
 
-import { composeUserAbilities } from '../logic/permissions/composer';
+import { checkLocalPermission } from '../logic/permissions/localEvaluator';
 import { APIError } from '../types/API';
 import { identityAPI } from './identity';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
-import type { TemporalScale } from '../store/useTemporalStore';
-import { applyTemporalFilter } from '../logic/utils/temporalUtils';
 
 export interface WarmMirrorDataPoints {
   days_present: number;
@@ -26,9 +24,14 @@ export const warmMirrorAPI = {
     const loggedInId = identity?.id;
     if (!loggedInId) throw new APIError('Authentication required', 'UNAUTHORIZED');
 
-    const ability = composeUserAbilities({ user_id: loggedInId });
+    const isAllowed = await checkLocalPermission({
+      action: 'manage',
+      resourceType: 'Wellbeing',
+      resourceId: userId,
+      userContext: { userId: loggedInId },
+    });
 
-    if (loggedInId !== userId && !ability.can('manage', 'Wellbeing')) {
+    if (loggedInId !== userId && !isAllowed) {
       throw new APIError('Unauthorized access to wellbeing data', 'FORBIDDEN');
     }
 
@@ -41,9 +44,7 @@ export const warmMirrorAPI = {
       .eq('user_id', userId)
       .gte('created_at', periodStart);
 
-    const distinctDays = new Set(
-      (growthEvents ?? []).map((e) => e.created_at.slice(0, 10)),
-    );
+    const distinctDays = new Set((growthEvents ?? []).map((e) => e.created_at.slice(0, 10)));
     const days_present = distinctDays.size;
 
     const { count: quietCount } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
@@ -209,7 +210,7 @@ export const warmMirrorAPI = {
 
     if (data.ripples_received >= 1) {
       lines.push(
-        '\u0D94\u0DB6\u0DDA \u0D9A\u0DCF\u0DBB\u0DCA\u0DBA\u0DBA\u0DDA \u0D9C\u0DD2\u0DBA \u0DAD\u0DBB\u0D82\u0D9C \u0D86\u0DB4\u0DC3\u0DD4 \u0D86\u0DC0\u0DCF.',
+        '\u0D94\u0DB6\u0DDA \u0D9A\u0DCF\u0DBB\u0DCA\u0DBA\u0DBA\u0DED\u0D9C\u0DD2\u0DBA \u0DAD\u0DBB\u0D82\u0D9C \u0D86\u0DB4\u0DC3\u0DD4 \u0D86\u0DC0\u0DCF.',
       );
     }
 

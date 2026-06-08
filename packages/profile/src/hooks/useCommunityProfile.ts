@@ -63,14 +63,14 @@ export function useCommunityProfile(communityId: string) {
   }, [loadCommunity]);
 
   const updateField = useCallback(
-      async (field: EditableCommunityField, value: string) => {
-        if (!communityId) return;
-        try {
+    async (field: EditableCommunityField, value: string) => {
+      if (!communityId) return;
+      try {
         const data = await profileAPI.updateCommunityProfile(communityId, field, value);
-          dispatch({ type: 'FETCH_SUCCESS', payload: data ?? null });
-        } catch (error) {
-          handleAPIError(error);
-        }
+        dispatch({ type: 'FETCH_SUCCESS', payload: data ?? null });
+      } catch (error) {
+        handleAPIError(error);
+      }
     },
     [communityId],
   );

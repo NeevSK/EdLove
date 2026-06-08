@@ -3,23 +3,19 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { authAPI, identityAPI, schoolAPI } from '@repo/core/api';
-import { type Capacity, identity, useStore } from '@repo/core/logic';
-import React, { memo, useCallback, useEffect, useMemo, useReducer } from 'react';
+import { authAPI, identityAPI, onboardingAPI } from '@repo/core/api';
+import { useStore } from '@repo/core/store';
+import type { Capacity } from '@repo/core/types';
+import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWindowDimensions } from 'react-native';
-
+import { GatewayFooter } from '../components/GatewayFooter.web';
+import { GatewayHeader } from '../components/GatewayHeader.web';
 import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
 
 // ──────────────────────────────────────────────────────────
 // CONSTANTS
 // ──────────────────────────────────────────────────────────
-
-const LANGUAGES = [
-  { code: 'en', label: 'EN' },
-  { code: 'si', label: 'සිං' },
-  { code: 'ta', label: 'தமிழ்' },
-];
 
 const PILLARS = [
   { name: 'Self', emoji: '🧘' },
@@ -96,29 +92,6 @@ function onboardingReducer(state: OnboardingUIState, action: OnboardingAction): 
 // SUB-COMPONENTS
 // ──────────────────────────────────────────────────────────
 
-const LanguagePillRow = memo(
-  ({
-    currentLang,
-    onLanguageChange,
-  }: {
-    currentLang: string;
-    onLanguageChange: (code: string) => void;
-  }) => (
-    <div className="ob-lang-row">
-      {LANGUAGES.map((lang) => (
-        <button
-          key={lang.code}
-          className={`ob-lang-pill ${currentLang?.startsWith(lang.code) ? 'active' : ''}`}
-          onClick={() => onLanguageChange(lang.code)}
-        >
-          {lang.label}
-        </button>
-      ))}
-    </div>
-  ),
-);
-LanguagePillRow.displayName = 'LanguagePillRow';
-
 const ErrorBanner = memo(({ error }: { error: string | null }) => {
   if (!error) return null;
   return (
@@ -136,48 +109,63 @@ const NameStep = memo(
     name,
     onNameChange,
     onNext,
-    error,
   }: {
     t: (key: string) => string;
     name: string;
     onNameChange: (val: string) => void;
     onNext: () => void;
-    error: string | null;
-  }) => (
-    <div className="ob-step">
-      <div className="ob-step-shell">
-        <div className="ob-step-meta">Step 1 · Arrival</div>
-        <div className="ob-step-icon">👋🏻</div>
-      </div>
-      <h2 className="ob-step-title">{t('onboarding.nameTitle')}</h2>
-      <p className="ob-step-subtitle">{t('onboarding.nameSubtitle')}</p>
-      <ErrorBanner error={error} />
+  }) => {
+    const handleChange = useCallback(
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        onNameChange(e.target.value);
+      },
+      [onNameChange],
+    );
+
+    const handleKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' && name.trim()) onNext();
+      },
+      [name, onNext],
+    );
+
+    return (
+      <div className="ob-step">
+        <div className="ob-step-shell">
+          <div className="ob-step-meta">Step 1 · Arrival</div>
+          <div className="ob-step-icon">👋🏻</div>
+        </div>
+        <h2 className="ob-step-title">{t('onboarding.nameTitle')}</h2>
+        <p className="ob-step-subtitle">{t('onboarding.nameSubtitle')}</p>
         <input
-        className="ob-input"
-        type="text"
-        placeholder={t('onboarding.namePlaceholder')}
-        value={name}
-        onChange={(e) => onNameChange(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' && name.trim()) onNext();
-        }}
-        autoFocus
-        autoComplete="name"
-      />
-      <p className="ob-input-hint">
-        {name.trim().length > 0 && name.trim().length < 2
-          ? "Your name is a bit short. Try adding another character."
-          : name === 'Guest User'
-          ? "Please choose a name other than 'Guest User'."
-          : "Use the display name you want people to see inside the app."}
-      </p>
-      <div className="ob-actions">
-        <button className="ob-btn-primary" onClick={onNext} disabled={name.trim().length < 2 || name === 'Guest User'}>
-          {t('onboarding.continue')} →
-        </button>
+          className="ob-input"
+          type="text"
+          placeholder={t('onboarding.namePlaceholder')}
+          value={name}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          autoComplete="name"
+        />
+        <p className="ob-input-hint">
+          {name.trim().length > 0 && name.trim().length < 2
+            ? 'Your name is a bit short. Try adding another character.'
+            : name === 'Guest User'
+              ? "Please choose a name other than 'Guest User'."
+              : 'Use the display name you want people to see inside the app.'}
+        </p>
+        <div className="ob-actions">
+          <button
+            type="button"
+            className="ob-btn-primary"
+            onClick={onNext}
+            disabled={name.trim().length < 2 || name === 'Guest User'}
+          >
+            {t('onboarding.continue')} →
+          </button>
+        </div>
       </div>
-    </div>
-  ),
+    );
+  },
 );
 NameStep.displayName = 'NameStep';
 
@@ -190,7 +178,6 @@ const IdentityStep = memo(
     onCapacitySelect,
     onBack,
     onNext,
-    error,
   }: {
     t: (key: string) => string;
     capacity: Capacity;
@@ -199,40 +186,52 @@ const IdentityStep = memo(
     onCapacitySelect: (val: Capacity) => void;
     onBack: () => void;
     onNext: () => void;
-    error: string | null;
-  }) => (
-    <div className="ob-step">
-      <div className="ob-step-shell">
-        <div className="ob-step-meta">Step 2 · Belonging</div>
-        <div className="ob-step-icon">🎯</div>
-      </div>
-      <h2 className="ob-step-title">{t('onboarding.roleTitle')}</h2>
-      <p className="ob-step-subtitle">{t('onboarding.roleSubtitle')}</p>
-      <ErrorBanner error={error} />
-      {isAnonymous && <div className="ob-anonymous-tag">(Anonymous Session)</div>}
-      <div className="ob-role-grid">
-        {CAPACITY_OPTIONS.map((r) => (
-          <button
-            key={r.value}
-            className={`ob-role-card ${capacity === r.value ? 'selected' : ''}`}
-            onClick={() => onCapacitySelect(r.value as Capacity)}
-          >
-            <span className="ob-role-emoji">{r.emoji}</span>
-            <span className="ob-role-name">{t(`identity.${r.value}`)}</span>
-            <span className="ob-role-desc">{t(r.descKey)}</span>
+  }) => {
+    const handleCapacityClick = useCallback(
+      (e: React.MouseEvent<HTMLButtonElement>) => {
+        const selectedCap = e.currentTarget.getAttribute('data-capacity');
+        if (selectedCap) {
+          onCapacitySelect(selectedCap as Capacity);
+        }
+      },
+      [onCapacitySelect],
+    );
+
+    return (
+      <div className="ob-step">
+        <div className="ob-step-shell">
+          <div className="ob-step-meta">Step 2 · Belonging</div>
+          <div className="ob-step-icon">🎯</div>
+        </div>
+        <h2 className="ob-step-title">{t('onboarding.roleTitle')}</h2>
+        <p className="ob-step-subtitle">{t('onboarding.roleSubtitle')}</p>
+        {isAnonymous && <div className="ob-anonymous-tag">(Anonymous Session)</div>}
+        <div className="ob-role-grid">
+          {CAPACITY_OPTIONS.map((r) => (
+            <button
+              type="button"
+              key={r.value}
+              data-capacity={r.value}
+              className={`ob-role-card ${capacity === r.value ? 'selected' : ''}`}
+              onClick={handleCapacityClick}
+            >
+              <span className="ob-role-emoji">{r.emoji}</span>
+              <span className="ob-role-name">{t(`identity.${r.value}`)}</span>
+              <span className="ob-role-desc">{t(r.descKey)}</span>
+            </button>
+          ))}
+        </div>
+        <div className="ob-actions">
+          <button type="button" className="ob-btn-secondary" onClick={onBack}>
+            ← {t('onboarding.back')}
           </button>
-        ))}
+          <button type="button" className="ob-btn-primary" onClick={onNext} disabled={isCompleting}>
+            {isCompleting ? t('onboarding.saving') : t('onboarding.continue')} →
+          </button>
+        </div>
       </div>
-      <div className="ob-actions">
-        <button className="ob-btn-secondary" onClick={onBack}>
-          ← {t('onboarding.back')}
-        </button>
-        <button className="ob-btn-primary" onClick={onNext} disabled={isCompleting}>
-          {isCompleting ? t('onboarding.saving') : t('onboarding.continue')} →
-        </button>
-      </div>
-    </div>
-  ),
+    );
+  },
 );
 IdentityStep.displayName = 'IdentityStep';
 
@@ -245,7 +244,6 @@ const TourStep = memo(
     onBack,
     onNext,
     onSkip,
-    error,
   }: {
     t: (key: string) => string;
     currentStep: number;
@@ -254,7 +252,6 @@ const TourStep = memo(
     onBack: () => void;
     onNext: () => void;
     onSkip: () => void;
-    error: string | null;
   }) => (
     <div className="ob-step">
       <div className="ob-step-shell">
@@ -263,13 +260,12 @@ const TourStep = memo(
       </div>
       <h2 className="ob-step-title">{screen.title}</h2>
       <p className="ob-step-subtitle">{screen.subtitle}</p>
-      <ErrorBanner error={error} />
       <div className="ob-tour-content">{screen.content}</div>
       <div className="ob-actions">
-        <button className="ob-btn-secondary" onClick={onBack}>
+        <button type="button" className="ob-btn-secondary" onClick={onBack}>
           ← {t('onboarding.back')}
         </button>
-        <button className="ob-btn-primary" onClick={onNext} disabled={isCompleting}>
+        <button type="button" className="ob-btn-primary" onClick={onNext} disabled={isCompleting}>
           {isCompleting
             ? t('onboarding.saving')
             : currentStep === 6
@@ -278,7 +274,7 @@ const TourStep = memo(
           →
         </button>
       </div>
-      <button className="ob-btn-link" onClick={onSkip}>
+      <button type="button" className="ob-btn-link" onClick={onSkip}>
         {t('onboarding.skip')}
       </button>
     </div>
@@ -314,7 +310,7 @@ export default memo(function OnboardingScreenWeb({
   onComplete,
   isAnonymous = false,
 }: OnboardingScreenProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { width } = useWindowDimensions();
 
   const [state, dispatch] = useReducer(onboardingReducer, {
@@ -328,13 +324,28 @@ export default memo(function OnboardingScreenWeb({
 
   const { currentStep, name, selectedCapacity, isProcessing, error } = state;
   const isOnline = useStore((s) => s.isOnline);
+  const showToast = useStore((s) => s.showToast);
   const isNarrow = width < 900;
+  const resolvedInternalIdRef = useRef<string | null>(null);
+  const resolvedCitizenRef = useRef<Awaited<
+    ReturnType<typeof identityAPI.identifyActiveCitizen>
+  > | null>(null);
+  const anonymousBootstrapRequestedRef = useRef(false);
 
   // ── Restore saved progress or pre-fill from existing auth ────────────────────
   useEffect(() => {
     const initOnboarding = async () => {
+      let internalId: string | null = null;
       try {
-        const internalId = await identityAPI.getMyInternalId();
+        const citizen = await identityAPI.identifyActiveCitizen().catch(() => null);
+        resolvedCitizenRef.current = citizen;
+        internalId = citizen?.id || null;
+        resolvedInternalIdRef.current = internalId;
+      } catch (err) {
+        console.warn('[Onboarding] Failed to identify active citizen:', err);
+      }
+
+      try {
         try {
           const saved = await AsyncStorage.getItem('onboarding_progress');
           if (saved) {
@@ -360,6 +371,10 @@ export default memo(function OnboardingScreenWeb({
         }
 
         if (!internalId) {
+          if (anonymousBootstrapRequestedRef.current) {
+            return;
+          }
+          anonymousBootstrapRequestedRef.current = true;
           console.log(
             '🗝️ OnboardingScreen.web: No internalId found, initiating anonymous session...',
           );
@@ -368,23 +383,28 @@ export default memo(function OnboardingScreenWeb({
         }
 
         // USE NEW DOMAIN STATE API
-        const { state: initialDomainState, profile } =
-          await identityAPI.getOnboardingStatus(internalId);
-        const activePerspective = await identity.getActivePerspective();
+        const capacitySummary = await identityAPI.resolveWorkspaceContext(internalId);
+        const initialDomainState = capacitySummary.onboarding_state;
+        const profile = capacitySummary.profile as {
+          display_name?: string;
+          full_name?: string;
+          school_id?: string | null;
+        } | null;
+        const activePerspective = await onboardingAPI.getActivePerspective();
 
         if (!profile) return;
 
         // If already onboarded in DB, just finish locally
         if (initialDomainState === 'COMPLETED') {
           console.log('✅ Onboarding: Profile already marked as completed in DB, finalizing...');
-          const capacity = (activePerspective?.active_bond.capacity as Capacity) || 'teacher';
-          const resolvedName = profile.display_name || '';
+          const capacity = (activePerspective?.activeBond?.capacity as Capacity) || 'teacher';
+          const resolvedName = profile.display_name || profile.full_name || '';
           dispatch({ type: 'SET_NAME', name: resolvedName });
           onComplete(resolvedName, capacity, isAnonymous);
           return;
         }
 
-        const resolvedName = profile.display_name;
+        const resolvedName = profile.display_name || profile.full_name;
         if (resolvedName && resolvedName !== 'Guest User') {
           dispatch({ type: 'SET_NAME', name: resolvedName });
           if (profile.school_id) {
@@ -405,7 +425,7 @@ export default memo(function OnboardingScreenWeb({
       }
     };
     void initOnboarding();
-  }, [isAnonymous, onComplete]);
+  }, [isAnonymous, onComplete, showToast]);
 
   // ── Tour content ────────────────────
   const tourScreens = useMemo(
@@ -444,15 +464,15 @@ export default memo(function OnboardingScreenWeb({
     [t],
   );
 
-  const showToast = useStore((s) => s.showToast);
-
   const handleCompleteOnboarding = useCallback(async () => {
     dispatch({ type: 'SET_PROCESSING', isProcessing: true });
     showToast('Finalizing your sanctuary journey...', 'info', 2000);
     try {
-      const internalId = await identity.getMyInternalId();
+      const citizen = resolvedCitizenRef.current ?? (await identityAPI.identifyActiveCitizen());
+      resolvedCitizenRef.current = citizen;
+      const internalId = citizen?.id;
       if (internalId) {
-        await identityAPI.completeOnboarding(internalId);
+        await onboardingAPI.completeOnboarding(internalId);
       }
       await AsyncStorage.removeItem('onboarding_progress');
       hapticSuccess();
@@ -485,30 +505,25 @@ export default memo(function OnboardingScreenWeb({
     dispatch({ type: 'SET_PROCESSING', isProcessing: true });
 
     try {
-      const internalId = await identityAPI.getMyInternalId();
+      const citizen = resolvedCitizenRef.current ?? (await identityAPI.identifyActiveCitizen());
+      resolvedCitizenRef.current = citizen;
+      const internalId = citizen?.id;
       if (!internalId) throw new Error('Identity not resolved. Please try again.');
 
       if (currentStep === 0) {
-        // Sync Name
-        showToast('Syncing your identity...', 'info', 1000);
-        await identityAPI.updateProfile(internalId, { display_name: name });
-      } else if (currentStep === 1) {
-        // 1. Ensure user has a profile and potentially a school
-        const existingProfile = await identityAPI.getProfile(internalId);
-        let schoolId = state.schoolId || existingProfile?.school_id;
-
-        // Wanderers (Anonymous) don't get a workspace yet.
-        // Second class citizens (Authenticated) get a personal workspace.
-        if (!schoolId && !isAnonymous) {
-          showToast('Building your personal sanctuary...', 'info', 2000);
-          schoolId = await schoolAPI.initializePersonalWorkspace(internalId, name || 'My');
-          dispatch({ type: 'SET_SCHOOL_ID', schoolId });
+        const isAnonymousIdentity = !citizen?.email;
+        if (isAnonymousIdentity) {
+          showToast('Name saved locally. Choose your capacity next.', 'info', 1000);
+        } else {
+          showToast('Syncing your identity...', 'info', 1000);
+          await identityAPI.modifyUserProfile(internalId, { display_name: name });
         }
-
+      } else if (currentStep === 1) {
         showToast(`Establishing your bond as ${selectedCapacity}...`, 'info', 1500);
-        await identity.createInitialBond(selectedCapacity, {
+        await onboardingAPI.createInitialBond(selectedCapacity, {
+          userId: internalId,
           displayName: name || 'Gurudevi User',
-          schoolId,
+          schoolId: state.schoolId,
         });
         showToast('Identity bond secured.', 'success', 1000);
       } else if (currentStep === 6) {
@@ -522,7 +537,7 @@ export default memo(function OnboardingScreenWeb({
       hapticError();
       const baseMsg = err instanceof Error ? err.message : 'Something went wrong.';
       const guidedMsg = `${baseMsg} Please check your connection and try again.`;
-      
+
       dispatch({
         type: 'SET_ERROR',
         error: guidedMsg,
@@ -538,9 +553,13 @@ export default memo(function OnboardingScreenWeb({
     isProcessing,
     isOnline,
     handleCompleteOnboarding,
-    isAnonymous,
     showToast,
+    state.schoolId,
   ]);
+
+  const handleNextPress = useCallback(() => {
+    void handleNext();
+  }, [handleNext]);
 
   const handleBack = useCallback(() => {
     hapticLight();
@@ -560,30 +579,24 @@ export default memo(function OnboardingScreenWeb({
     dispatch({ type: 'SET_CAPACITY', capacity: val });
     hapticLight();
   }, []);
-  const handleLanguageChange = useCallback(
-    (code: string) => {
-      hapticLight();
-      void i18n.changeLanguage(code);
-    },
-    [i18n],
-  );
 
   // Save progress whenever step/name/role changes
   useEffect(() => {
     if (currentStep === 0 && !name) return;
-    void identity.getMyInternalId().then((userId) => {
-      void AsyncStorage.setItem(
-        'onboarding_progress',
-        JSON.stringify({
-          user_id: userId,
-          step: currentStep,
-          name,
-          capacity: selectedCapacity,
-          schoolId: state.schoolId,
-        }),
-      ).catch(() => {});
-    });
-  }, [currentStep, name, selectedCapacity]);
+    const userId = resolvedInternalIdRef.current;
+    if (!userId) return;
+
+    void AsyncStorage.setItem(
+      'onboarding_progress',
+      JSON.stringify({
+        user_id: userId,
+        step: currentStep,
+        name,
+        capacity: selectedCapacity,
+        schoolId: state.schoolId,
+      }),
+    ).catch(() => {});
+  }, [currentStep, name, selectedCapacity, state.schoolId]);
 
   const currentTourScreen = useMemo(() => {
     if (currentStep < 2 || currentStep > 6) return null;
@@ -593,13 +606,7 @@ export default memo(function OnboardingScreenWeb({
   const renderCurrentStep = useCallback(() => {
     if (currentStep === 0) {
       return (
-        <NameStep
-          t={t}
-          name={name}
-          onNameChange={handleNameChange}
-          onNext={handleNext}
-          error={error}
-        />
+        <NameStep t={t} name={name} onNameChange={handleNameChange} onNext={handleNextPress} />
       );
     }
     if (currentStep === 1) {
@@ -611,8 +618,7 @@ export default memo(function OnboardingScreenWeb({
           isAnonymous={isAnonymous}
           onCapacitySelect={handleCapacitySelect}
           onBack={handleBack}
-          onNext={handleNext}
-          error={error}
+          onNext={handleNextPress}
         />
       );
     }
@@ -624,9 +630,8 @@ export default memo(function OnboardingScreenWeb({
           screen={currentTourScreen}
           isCompleting={isProcessing}
           onBack={handleBack}
-          onNext={handleNext}
+          onNext={handleNextPress}
           onSkip={handleSkipTour}
-          error={error}
         />
       );
     }
@@ -636,8 +641,7 @@ export default memo(function OnboardingScreenWeb({
     t,
     name,
     handleNameChange,
-    handleNext,
-    error,
+    handleNextPress,
     selectedCapacity,
     isProcessing,
     isAnonymous,
@@ -649,31 +653,27 @@ export default memo(function OnboardingScreenWeb({
 
   return (
     <div className="ob-root">
+      <GatewayHeader />
       <div className="ob-atmosphere ob-atmosphere-one" />
       <div className="ob-atmosphere ob-atmosphere-two" />
 
       {isNarrow ? (
         <div className="ob-narrow">
-          <div className="ob-narrow-header">
-            <span className="ob-brand-name">🪷 Gurudevi</span>
-            <LanguagePillRow currentLang={i18n.language} onLanguageChange={handleLanguageChange} />
-          </div>
           <div className="ob-progress-track" role="progressbar">
             <div
               className="ob-progress-fill"
               style={{ width: `${(currentStep / (TOTAL_STEPS - 1)) * 100}%` }}
             />
           </div>
-          <div className="ob-narrow-content">{renderCurrentStep()}</div>
+          <div className="ob-narrow-content">
+            <ErrorBanner error={error} />
+            {renderCurrentStep()}
+          </div>
         </div>
       ) : (
         <div className="ob-split">
           <div className="ob-left">
             <div className="ob-left-inner">
-              <div className="ob-brand">
-                <span className="ob-brand-icon">🪷</span>
-                <span className="ob-brand-name">Gurudevi</span>
-              </div>
               <div>
                 <h1 className="ob-left-headline">
                   Your Sacred
@@ -693,12 +693,6 @@ export default memo(function OnboardingScreenWeb({
                 ))}
               </div>
               <Tracker currentStep={currentStep} />
-              <div className="ob-lang-row ob-lang-bottom">
-                <LanguagePillRow
-                  currentLang={i18n.language}
-                  onLanguageChange={handleLanguageChange}
-                />
-              </div>
             </div>
           </div>
           <div className="ob-right">
@@ -706,16 +700,20 @@ export default memo(function OnboardingScreenWeb({
               <div className="ob-dots" role="progressbar">
                 {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
                   <div
+                    // biome-ignore lint/suspicious/noArrayIndexKey: stable progress dots
                     key={i}
                     className={`ob-dot ${i === currentStep ? 'active' : i < currentStep ? 'done' : ''}`}
                   />
                 ))}
               </div>
+              <ErrorBanner error={error} />
               {renderCurrentStep()}
             </div>
           </div>
         </div>
       )}
+
+      <GatewayFooter />
 
       <style>{ONBOARDING_STYLES}</style>
     </div>
@@ -728,14 +726,16 @@ export default memo(function OnboardingScreenWeb({
 
 const ONBOARDING_STYLES = `
     .ob-root {
-        position: fixed;
-        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 100vh;
+        overflow-y: auto;
         background:
             radial-gradient(circle at 18% 14%, rgba(125, 212, 192, 0.14), transparent 24%),
             radial-gradient(circle at 88% 22%, rgba(184, 169, 224, 0.14), transparent 22%),
             linear-gradient(160deg, var(--background, #F5EDD6) 0%, var(--background-alt, #FAF7ED) 60%, rgba(252, 249, 242, 0.96) 100%);
         font-family: var(--font-body, 'DM Sans', sans-serif);
-        overflow: hidden;
     }
     .ob-atmosphere {
         position: absolute;
@@ -763,7 +763,7 @@ const ONBOARDING_STYLES = `
     .ob-narrow {
         display: flex;
         flex-direction: column;
-        height: 100%;
+        flex: 1;
         position: relative;
         z-index: 1;
     }
@@ -795,7 +795,7 @@ const ONBOARDING_STYLES = `
     /* ── SPLIT (two-column) ──────────────────── */
     .ob-split {
         display: flex;
-        height: 100%;
+        flex: 1;
         position: relative;
         z-index: 1;
     }

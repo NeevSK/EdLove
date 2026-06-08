@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { selectLatestTemporalRecordsAsOf } from '../../lib/temporalEvents';
 import type { PrincipalWorkspaceRepository } from '../../logic/domains/principalWorkspace/ports';
+import { CapacitySchema } from '../../logic/schemas/capacity.schema';
 import {
   InviteCodeSchema,
   type InviteCodeZod,
@@ -8,7 +9,6 @@ import {
   type PrincipalGovernanceEventZod,
   type PrincipalInviteEventCreate,
   PrincipalInviteEventCreateSchema,
-  type PrincipalInviteRole,
   type PrincipalObservationCreate,
   PrincipalObservationCreateSchema,
   type PrincipalObservationFollowUpCreate,
@@ -16,20 +16,19 @@ import {
   PrincipalObservationSchema,
   type PrincipalObservationZod,
 } from '../../logic/schemas/principal-workspace.schema';
-import { CapacitySchema } from '../../logic/schemas/capacity.schema';
 import { getTemporalRange } from '../../logic/utils/temporalUtils';
 import { APIError } from '../../types/API';
 
 const normalizeInviteCode = (row: Record<string, unknown>): InviteCodeZod =>
   InviteCodeSchema.parse({
-    code: row['code'],
-    school_id: row['school_id'],
-    capacity: CapacitySchema.parse((row['capacity'] ?? 'teacher') as string),
-    created_by: row['created_by'],
-    used: Boolean(row['used'] ?? !row['is_active']) || Number(row['uses_count'] ?? 0) > 0,
-    created_at: row['created_at'],
-    expires_at: row['expires_at'] ?? null,
-    is_active: Boolean(row['is_active'] ?? true),
+    code: row.code,
+    school_id: row.school_id,
+    capacity: CapacitySchema.parse((row.capacity ?? 'teacher') as string),
+    created_by: row.created_by,
+    used: Boolean(row.used ?? !row.is_active) || Number(row.uses_count ?? 0) > 0,
+    created_at: row.created_at,
+    expires_at: row.expires_at ?? null,
+    is_active: Boolean(row.is_active ?? true),
   });
 
 export const createSupabasePrincipalWorkspaceRepository = (
@@ -80,7 +79,9 @@ export const createSupabasePrincipalWorkspaceRepository = (
     async listInviteCodes(schoolId) {
       const { data, error } = await supabase
         .from('invite_codes')
-        .select('code, school_id, capacity, created_by, used, is_active, uses_count, created_at, expires_at')
+        .select(
+          'code, school_id, capacity, created_by, used, is_active, uses_count, created_at, expires_at',
+        )
         .eq('school_id', schoolId)
         .order('created_at', { ascending: false });
 
@@ -89,7 +90,8 @@ export const createSupabasePrincipalWorkspaceRepository = (
     },
 
     async generateInviteCode(schoolId, capacity, createdBy) {
-      const code = `GURU-${Math.random().toString(36).substring(2, 8).toUpperCase().padEnd(6, '0')}-${capacity === 'teacher' ? 'TEACH' : 'ADMIN'}`;
+      const randomPart = crypto.randomUUID().replace(/-/g, '').substring(0, 6).toUpperCase();
+      const code = `GURU-${randomPart}-${capacity === 'teacher' ? 'TEACH' : 'ADMIN'}`;
       const payload = {
         school_id: schoolId,
         code,
@@ -102,7 +104,9 @@ export const createSupabasePrincipalWorkspaceRepository = (
       const { data, error } = await supabase
         .from('invite_codes')
         .insert(payload)
-        .select('code, school_id, capacity, created_by, used, is_active, uses_count, created_at, expires_at')
+        .select(
+          'code, school_id, capacity, created_by, used, is_active, uses_count, created_at, expires_at',
+        )
         .single();
 
       if (error) throw new APIError('Failed to generate invite code', error.code, error);

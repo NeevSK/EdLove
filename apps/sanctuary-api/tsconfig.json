@@ -1,9 +1,17 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist"
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "target": "ES2022",
+    "lib": ["es2022", "DOM"],
+    "types": ["node"],
+    "skipLibCheck": true
   },
+  "files": [],
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }

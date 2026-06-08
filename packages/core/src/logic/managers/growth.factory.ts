@@ -1,5 +1,5 @@
-import { GrowthManager } from './GrowthManager';
 import { SupabaseGrowthAdapter } from '../../adapters/supabase/growth.adapter';
+import { GrowthManager } from './GrowthManager';
 
 /**
  * growth: The Global Sovereign Growth Instance.

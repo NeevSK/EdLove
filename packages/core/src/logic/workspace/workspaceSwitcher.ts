@@ -1,30 +1,4 @@
-export type WorkspaceSwitcherTargetId =
-  | 'founder'
-  | 'admin'
-  | 'principal'
-  | 'teacher'
-  | 'student'
-  | 'guardian';
-
-export type WorkspaceSwitcherDestination =
-  | {
-      kind: 'route';
-      name: string;
-    }
-  | {
-      kind: 'tab';
-      name: string;
-    };
-
-export interface WorkspaceSwitcherTarget {
-  id: WorkspaceSwitcherTargetId;
-  title: string;
-  description: string;
-  destination: WorkspaceSwitcherDestination | null;
-  enabled: boolean;
-  status: 'current' | 'available' | 'bridge' | 'coming_soon';
-  reason?: string;
-}
+import type { WorkspaceSwitcherTarget, WorkspaceSwitcherTargetId } from '../../types/Workspace';
 
 export function resolveWorkspaceSwitcherTargets({
   currentWorkspace = 'founder',

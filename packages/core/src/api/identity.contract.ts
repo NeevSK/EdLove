@@ -1,6 +1,6 @@
 import { z } from 'zod';
+import type { SovereignContract } from './contract';
 import { FacetedProfileSchema, IdentitySchema } from './identity.generated';
-import { type SovereignContract } from './contract';
 
 export const OnboardingStateSchema = z.enum([
   'ARRIVAL',
@@ -9,7 +9,7 @@ export const OnboardingStateSchema = z.enum([
   'COMPLETED',
 ]);
 
-export const ClassroomRoleSummarySchema = z.strictObject({
+export const ClassroomCapacitySummarySchema = z.strictObject({
   user_id: z.uuid(),
   school_id: z.uuid().nullable(),
   profile_completed: z.boolean(),
@@ -19,19 +19,20 @@ export const ClassroomRoleSummarySchema = z.strictObject({
   profile: FacetedProfileSchema,
 });
 
-const userAuthority = (action: 'resolve' | 'read' | 'update') => ({
-  policy: { action, subject: 'User' }
-}) as const;
+const userAuthority = (action: 'resolve' | 'read' | 'update') =>
+  ({
+    policy: { action, subject: 'User' },
+  }) as const;
 
 /**
  * Identity & Profile Port (Sovereign RPC)
  * Framework-agnostic definition of the Identity API.
  * [LOUD-FAILURE] Renamed methods to force architectural compliance.
  */
-export const identityContract: SovereignContract = {
+export const identityContract = {
   identifyActiveCitizen: {
     method: 'get',
-    path: '/identity/resolve',
+    path: '/identity/resolveIdentity',
     request: {},
     responses: {
       200: {
@@ -65,7 +66,7 @@ export const identityContract: SovereignContract = {
     },
     responses: {
       200: {
-        schema: ClassroomRoleSummarySchema,
+        schema: ClassroomCapacitySummarySchema,
         description: 'Get capacity summary',
       },
     },
@@ -87,4 +88,4 @@ export const identityContract: SovereignContract = {
     },
     metadata: userAuthority('update'),
   },
-} as const;
+} as const satisfies SovereignContract;

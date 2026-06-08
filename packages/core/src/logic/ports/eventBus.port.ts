@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 /**
  * IEventBusPort
- * 
+ *
  * Framework-agnostic port for publishing domain events.
  * Decouples the core from Inngest, RabbitMQ, or any specific message bus.
  */
@@ -30,7 +30,7 @@ export interface IEventBusPort {
  * Standardized Payloads (Pure Zod)
  */
 export const UserCreatedEventSchema = z.object({
-  id: z.string().uuid(),
-  email: z.string().email(),
+  id: z.uuid(),
+  email: z.email(),
   full_name: z.string(),
 });

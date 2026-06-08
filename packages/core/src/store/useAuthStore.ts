@@ -36,4 +36,3 @@ export const useAuthStore = create<AuthSlice>()(
     },
   ),
 );
-

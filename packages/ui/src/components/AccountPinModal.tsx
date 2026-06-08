@@ -1,6 +1,6 @@
-import { Lock, Shield, Smartphone } from '../icons';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { Box, HStack, Text, VStack } from '../gluestack';
+import { Lock, Shield, Smartphone } from '../icons';
 import { Theme } from '../theme/Theme';
 import { SanctuaryButton } from './SanctuaryButton';
 import SanctuaryInput from './SanctuaryInput';
@@ -120,7 +120,6 @@ export default function AccountPinModal({
   });
 
   const { pin, confirmPin, currentPin, localError } = state;
-
 
   const copy = useMemo(() => getCopy(mode, accountLabel), [accountLabel, mode]);
 

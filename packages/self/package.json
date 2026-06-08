@@ -4,18 +4,42 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./api": "./src/api/index.ts",
-    "./components": "./src/components/index.ts",
-    "./components/*": "./src/components/*.tsx",
-    "./hooks": "./src/hooks/index.ts",
-    "./hooks/*": "./src/hooks/*.ts",
-    "./screens": "./src/screens/index.ts",
-    "./screens/*": "./src/screens/*.tsx",
-    "./types": "./src/types/index.ts",
-    "./types/*": "./src/types/*.ts",
-    "./screens/SelfScreen.web": "./src/screens/SelfScreen.web.tsx",
-    "./screens/PrivacyLedgerScreen": "./src/screens/PrivacyLedgerScreen.tsx",
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./api": {
+      "types": "./src/api/index.ts",
+      "import": "./src/api/index.ts",
+      "default": "./src/api/index.ts"
+    },
+    "./screens/SelfScreen": {
+      "import": "./src/screens/SelfScreen.tsx",
+      "browser": "./src/screens/SelfScreen.web.tsx",
+      "react-native": "./src/screens/SelfScreen.tsx",
+      "default": "./src/screens/SelfScreen.tsx"
+    },
+    "./screens/SelfScreen.web": {
+      "types": "./src/screens/SelfScreen.web.tsx",
+      "import": "./src/screens/SelfScreen.web.tsx",
+      "default": "./src/screens/SelfScreen.web.tsx"
+    },
+    "./screens/PrivacyLedgerScreen": {
+      "types": "./src/screens/PrivacyLedgerScreen.tsx",
+      "import": "./src/screens/PrivacyLedgerScreen.tsx",
+      "default": "./src/screens/PrivacyLedgerScreen.tsx"
+    },
+    "./components/*": {
+      "types": "./src/components/*.tsx",
+      "import": "./src/components/*.tsx",
+      "default": "./src/components/*.tsx"
+    },
+    "./*": {
+      "types": "./src/*.ts",
+      "import": "./src/*.js",
+      "default": "./src/*.js"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -41,7 +65,8 @@
     "expo-haptics": "*",
     "date-fns": "^4.1.0",
     "@supabase/supabase-js": "2.102.1",
-    "@supabase/postgrest-js": "2.102.1"
+    "@supabase/postgrest-js": "2.102.1",
+    "drizzle-orm": "^0.39.0"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
@@ -49,7 +74,7 @@
     "eslint": "^9.38.0",
     "@repo/eslint-config": "workspace:^",
     "@types/react": "^19.2.14",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "vitest": "^2.1.9",
     "vite-tsconfig-paths": "^6.1.1"
   },

@@ -8,8 +8,8 @@ import type {
   GuardianVerificationDocument,
   StudentGuardianRelationship,
 } from '../logic/schemas/guardian.schema';
-import { guardianServices } from './runtimes/guardian.runtime';
 import { guardianContract } from './guardian.contract';
+import { guardianServices } from './runtimes/guardian.runtime';
 
 export const guardianAPI = {
   /**
@@ -118,4 +118,3 @@ export const guardianAPI = {
 };
 
 void guardianContract;
-

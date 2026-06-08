@@ -1,5 +1,5 @@
-import { Post, Comment, PollStatus } from '../../../types';
-import { TemporalScale } from '../../../store/useTemporalStore';
+import type { TemporalScale } from '../../../store/useTemporalStore';
+import type { Comment, PollStatus, Post } from '../../../types';
 
 export interface PostFilters {
   limit: number;
@@ -34,7 +34,11 @@ export interface ICommunityRepository {
   /**
    * Retrieves comments for a post.
    */
-  getComments(postId: string, limit?: number, options?: { viewDate?: string; viewScale?: TemporalScale }): Promise<Comment[]>;
+  getComments(
+    postId: string,
+    limit?: number,
+    options?: { viewDate?: string; viewScale?: TemporalScale },
+  ): Promise<Comment[]>;
 
   /**
    * Creates a comment on a post.
@@ -88,7 +92,16 @@ export interface ICommunityRepository {
 
   // Groups and Memberships
   getCommunityGroupByClassroom(classroomId: string): Promise<any>;
-  createGroupMembership(params: { groupId: string; userId: string; capacity: string; status: string }): Promise<void>;
-  updateGroupMembership(groupId: string, userId: string, updates: { status?: string; capacity?: string }): Promise<void>;
+  createGroupMembership(params: {
+    groupId: string;
+    userId: string;
+    capacity: string;
+    status: string;
+  }): Promise<void>;
+  updateGroupMembership(
+    groupId: string,
+    userId: string,
+    updates: { status?: string; capacity?: string },
+  ): Promise<void>;
   deleteGroupMembership(groupId: string, userId: string): Promise<void>;
 }

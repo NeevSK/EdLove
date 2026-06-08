@@ -68,14 +68,14 @@ The platform does **not** follow "Online-First with Caching." It is **Action-Fir
 
 ## 3. The Two Paths
 
-### 🟢 Path 1 — Resonant Sync (PowerSync, Future)
+### 🟢 Path 1 — Resonant Sync (PowerSync, In Transition)
 | Attribute | Detail |
 | :--- | :--- |
 | **When active** | `isPowerSyncEnabled` feature flag = `true` (via `global_configs` in Supabase) |
 | **What it syncs** | Standard CRUD — Attendance rows, Mood logs, Profile data |
-| **Mechanism** | Postgres logical replication → local SQLite via binary protocol |
+| **Mechanism** | Postgres logical replication → local SQLite encrypted via SQLCipher (`op-sqlite` JSI C++ engine) |
 | **Cost** | $0 free (50 concurrent) / $50/mo (1,000 concurrent) |
-| **Status** | **Planned** — adapter interface designed, not yet wired |
+| **Status** | **In Transition (May 2026)** — Upgrading native driver from deprecated `quick-sqlite` to active `op-sqlite` under PowerSync, wrapped in Drizzle ORM. See [local-first-transition-spec.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/local-first-transition-spec.md). |
 
 ### 🟡 Path 2 — Sovereign Message Bus (Active Now)
 | Attribute | Detail |
@@ -158,11 +158,14 @@ Managed via `global_configs` table in Supabase → propagated via `FeatureSyncMa
 
 ---
 
-## 7. The PowerSync Convergence — **Implemented**
+## 7. The PowerSync Convergence — **In Transition (op-sqlite & Drizzle)**
 
-Path 1 (PowerSync / Resonant Sync) is now fully scaffolded and feature-gated.
+Path 1 (PowerSync / Resonant Sync) is currently in transition to a fully type-safe JSI-backed execution engine using **Drizzle ORM** and **op-sqlite**. 
 
-### Files Created
+For complete transition patterns, details on dual-database isolation, SQLCipher AES-256 local encryption, and compiled Drizzle AST query hooks, please refer to the primary specification:
+👉 **[local-first-transition-spec.md](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/local-first-transition-spec.md)**
+
+### Files in Transition / Scaffolding
 | File | Role |
 | :--- | :--- |
 | `packages/core/src/adapters/powersync/schema.ts` | SQLite table definitions (attendance, students, classrooms, mood_logs, schools) |

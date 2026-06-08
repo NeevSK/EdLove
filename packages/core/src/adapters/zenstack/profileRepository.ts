@@ -1,5 +1,5 @@
+import type { User as ZenStackUser } from '@repo/schema';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
-import { type IFileStoragePort } from '../../logic/ports/storage.port';
 import type {
   CommunityProfile,
   ProfileHistoryEntry,
@@ -9,12 +9,12 @@ import type {
   ProfileRepository,
   ProfileTemporalReadOptions,
   PulseMetrics,
+  UserGrowthState,
   UserPreferences,
   UserRewardsSnapshot,
   WhisperedMomentSnapshot,
-  UserGrowthState,
 } from '../../logic/domains/profile/ports';
-import type { User as ZenStackUser } from '@repo/schema';
+import type { IFileStoragePort } from '../../logic/ports/storage.port';
 import { getTemporalRange } from '../../logic/utils/temporalUtils';
 import type { SocialLink, User } from '../../types';
 import { APIError } from '../../types';
@@ -41,18 +41,28 @@ type AuthUserResolver = () => { id: string | null };
 
 const normalizeUser = (record: ZenStackUser | null | undefined): User | null => {
   if (!record) return null;
+  const user = record as any;
   return {
-    ...record,
-    id: record.id,
-    email: record.email ?? '',
-    full_name: record.full_name ?? '',
+    ...user,
+    id: user.id,
+    email: user.email ?? '',
+    full_name: user.full_name ?? '',
     // ReBAC Bonds now carry the canonical capacity context
-    school_id: record.school_id ?? null,
-    profile_completed: !!record.profile_completed,
-    onboarding_completed: !!record.onboarding_completed,
-    created_at: record.created_at instanceof Date ? record.created_at.toISOString() : (record.created_at as unknown as string) || new Date().toISOString(),
-    updated_at: record.updated_at instanceof Date ? record.updated_at.toISOString() : (record.updated_at as unknown as string) || new Date().toISOString(),
-    onboarding_completed_at: record.onboarding_completed_at instanceof Date ? record.onboarding_completed_at.toISOString() : (record.onboarding_completed_at as unknown as string),
+    school_id: user.school_id ?? null,
+    profile_completed: !!user.profile_completed,
+    onboarding_completed: !!user.onboarding_completed,
+    created_at:
+      user.created_at instanceof Date
+        ? user.created_at.toISOString()
+        : (user.created_at as unknown as string) || new Date().toISOString(),
+    updated_at:
+      user.updated_at instanceof Date
+        ? user.updated_at.toISOString()
+        : (user.updated_at as unknown as string) || new Date().toISOString(),
+    onboarding_completed_at:
+      user.onboarding_completed_at instanceof Date
+        ? user.onboarding_completed_at.toISOString()
+        : (user.onboarding_completed_at as unknown as string),
   } as unknown as User;
 };
 
@@ -63,16 +73,16 @@ const mapWhisperedMoments = (
   rows: Record<string, unknown>[] | null | undefined,
 ): WhisperedMomentSnapshot[] =>
   (rows || []).map((row) => ({
-    key: row['moment_key'] as string,
-    name_en: (row['moment_name_en'] as string) || (row['moment_key'] as string),
-    name_si: (row['moment_name_si'] as string) || (row['moment_key'] as string),
-    awarded_at: row['awarded_at'] as string,
+    key: row.moment_key as string,
+    name_en: (row.moment_name_en as string) || (row.moment_key as string),
+    name_si: (row.moment_name_si as string) || (row.moment_key as string),
+    awarded_at: row.awarded_at as string,
   }));
 
 const mapSocialLink = (record: Record<string, unknown> | null | undefined): SocialLink => {
   if (!record) return record as unknown as SocialLink;
-  const createdAt = record[ 'created_at' ];
-  const updatedAt = record[ 'updated_at' ];
+  const createdAt = record.created_at;
+  const updatedAt = record.updated_at;
   return {
     ...record,
     created_at: createdAt instanceof Date ? createdAt.toISOString() : (createdAt as string),
@@ -99,7 +109,9 @@ export const createZenStackProfileRepository = (
   return {
     async getUserProfile(userId) {
       const db = await getDb();
-      return normalizeUser(await db['user'].findFirst({ where: { id: userId }, include: { bonds: true } }));
+      return normalizeUser(
+        await db.user.findFirst({ where: { id: userId }, include: { bonds: true } }),
+      );
     },
     async getUserProfileAsOf(userId, asOf) {
       const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
@@ -132,14 +144,15 @@ export const createZenStackProfileRepository = (
       const viewScale = normalizeTemporalScale(options.viewScale);
 
       if (asOf) {
-        const { data: rewardsVersion, error: rewardsError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-          .from('user_rewards_versions')
-          .select('snapshot')
-          .eq('user_id', userId)
-          .lte('recorded_at', asOf)
-          .order('recorded_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
+        const { data: rewardsVersion, error: rewardsError } =
+          await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+            .from('user_rewards_versions')
+            .select('snapshot')
+            .eq('user_id', userId)
+            .lte('recorded_at', asOf)
+            .order('recorded_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
         if (rewardsError)
           throw new APIError(
             'Failed to fetch historical rewards snapshot',
@@ -147,14 +160,15 @@ export const createZenStackProfileRepository = (
             rewardsError,
           );
 
-        const { data: growthVersion, error: growthError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-          .from('user_growth_state_versions')
-          .select('snapshot')
-          .eq('user_id', userId)
-          .lte('recorded_at', asOf)
-          .order('recorded_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
+        const { data: growthVersion, error: growthError } =
+          await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+            .from('user_growth_state_versions')
+            .select('snapshot')
+            .eq('user_id', userId)
+            .lte('recorded_at', asOf)
+            .order('recorded_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
         if (growthError)
           throw new APIError(
             'Failed to fetch historical growth snapshot',
@@ -200,8 +214,16 @@ export const createZenStackProfileRepository = (
         { data: growth, error: growthError },
         { data: whisperedRows, error: whisperedError },
       ] = await Promise.all([
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('user_rewards').select('*').eq('user_id', userId).maybeSingle(),
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('user_growth_state').select('*').eq('user_id', userId).maybeSingle(),
+        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+          .from('user_rewards')
+          .select('*')
+          .eq('user_id', userId)
+          .maybeSingle(),
+        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+          .from('user_growth_state')
+          .select('*')
+          .eq('user_id', userId)
+          .maybeSingle(),
         __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
           .from('whispered_moments')
           .select('moment_key, moment_name_en, moment_name_si, awarded_at')
@@ -285,9 +307,9 @@ export const createZenStackProfileRepository = (
         title: `Rewards ${row.operation}`,
         snapshot: row.snapshot ?? undefined,
         metadata: {
-          points: ((row.snapshot as Record<string, unknown>)?.[ 'points' ] as number) ?? 0,
-          badges: Array.isArray((row.snapshot as Record<string, unknown>)?.[ 'badges' ])
-            ? ((row.snapshot as Record<string, unknown>)[ 'badges' ] as string[])
+          points: ((row.snapshot as Record<string, unknown>)?.points as number) ?? 0,
+          badges: Array.isArray((row.snapshot as Record<string, unknown>)?.badges)
+            ? ((row.snapshot as Record<string, unknown>).badges as string[])
             : [],
         },
       }));
@@ -300,22 +322,22 @@ export const createZenStackProfileRepository = (
         title: `Growth state ${row.operation}`,
         snapshot: row.snapshot ?? undefined,
         metadata: {
-          bhumi_stage: (row.snapshot as Record<string, unknown>)?.[ 'bhumi_stage' ],
-          banyan_stage: (row.snapshot as Record<string, unknown>)?.[ 'banyan_stage' ],
-          river_stage: (row.snapshot as Record<string, unknown>)?.[ 'river_stage' ],
-          crystal_tier: (row.snapshot as Record<string, unknown>)?.[ 'crystal_tier' ],
+          bhumi_stage: (row.snapshot as Record<string, unknown>)?.bhumi_stage,
+          banyan_stage: (row.snapshot as Record<string, unknown>)?.banyan_stage,
+          river_stage: (row.snapshot as Record<string, unknown>)?.river_stage,
+          crystal_tier: (row.snapshot as Record<string, unknown>)?.crystal_tier,
         },
       }));
 
       const momentEvents: ProfileJourneyEvent[] = (momentRows || []).map((row) => ({
-        id: row['id'] as string,
-        timestamp: row['awarded_at'] as string,
+        id: row.id as string,
+        timestamp: row.awarded_at as string,
         source: 'moment',
-        title: (row['moment_name_en'] as string) || (row['moment_key'] as string),
+        title: (row.moment_name_en as string) || (row.moment_key as string),
         metadata: {
-          key: row['moment_key'],
-          name_en: row['moment_name_en'],
-          name_si: row['moment_name_si'],
+          key: row.moment_key,
+          name_en: row.moment_name_en,
+          name_si: row.moment_name_si,
         },
       }));
 
@@ -325,17 +347,18 @@ export const createZenStackProfileRepository = (
     },
     async updateUserProfile(userId, updates) {
       const db = await getDb();
-      const updated = await db['user'].update({
+      const updated = await db.user.update({
         where: { id: userId },
         data: updates,
       });
       const normalized = normalizeUser(updated);
-      if (!normalized) throw new APIError('Failed to normalize updated user profile', 'INTERNAL_ERROR');
+      if (!normalized)
+        throw new APIError('Failed to normalize updated user profile', 'INTERNAL_ERROR');
       return normalized;
     },
     async getAnonymousFlag(userId) {
       const db = await getDb();
-      const user = await db['user'].findFirst({
+      const user = await db.user.findFirst({
         where: { id: userId },
         select: { is_anonymous: true },
       });
@@ -347,7 +370,7 @@ export const createZenStackProfileRepository = (
 
     async getSocialLinks(userId) {
       const db = await getDb();
-      const records = await db['userSocialLink'].findMany({
+      const records = await db.userSocialLink.findMany({
         where: { user_id: userId },
         orderBy: { order_index: 'asc' },
       });
@@ -357,7 +380,7 @@ export const createZenStackProfileRepository = (
       const db = await getDb();
       let record: Record<string, unknown>;
       if (link.id) {
-        record = await db['userSocialLink'].update({
+        record = await db.userSocialLink.update({
           where: { id: link.id },
           data: link as any,
         });
@@ -365,7 +388,7 @@ export const createZenStackProfileRepository = (
         if (!link.user_id) {
           throw new APIError('user_id is required for social link creation', 'BAD_REQUEST');
         }
-        record = await db['userSocialLink'].create({
+        record = await db.userSocialLink.create({
           data: link as any,
         });
       }
@@ -373,13 +396,13 @@ export const createZenStackProfileRepository = (
     },
     async deleteSocialLink(linkId) {
       const db = await getDb();
-      await db['userSocialLink'].delete({ where: { id: linkId } });
+      await db.userSocialLink.delete({ where: { id: linkId } });
     },
     async updateSocialLinksOrder(links) {
       const db = await getDb();
       await Promise.all(
         links.map((link) =>
-          db['userSocialLink'].update({
+          db.userSocialLink.update({
             where: { id: link.id },
             data: { order_index: link.order_index },
           }),
@@ -410,7 +433,7 @@ export const createZenStackProfileRepository = (
 
     async getCommunityProfile(communityId) {
       const db = await getDb();
-      const group = await db['group'].findFirst({
+      const group = await db.group.findFirst({
         where: { id: communityId },
         select: {
           id: true,
@@ -447,7 +470,7 @@ export const createZenStackProfileRepository = (
     },
     async updateCommunityProfile(communityId, field, value) {
       const db = await getDb();
-      return (await db['group'].update({
+      return (await db.group.update({
         where: { id: communityId },
         data: { [field]: value },
       })) as CommunityProfile;
@@ -464,7 +487,7 @@ export const createZenStackProfileRepository = (
 
       const [postsThisPeriod, postsPreviousPeriod, libraryActivity, groups, classrooms] =
         await Promise.all([
-          db['post'].findMany({
+          db.post.findMany({
             where: {
               school_id: schoolId,
               created_at: {
@@ -474,7 +497,7 @@ export const createZenStackProfileRepository = (
             },
             select: { id: true },
           }),
-          db['post'].findMany({
+          db.post.findMany({
             where: {
               school_id: schoolId,
               created_at: {
@@ -484,7 +507,7 @@ export const createZenStackProfileRepository = (
             },
             select: { id: true },
           }),
-          db['libraryResource'].findMany({
+          db.libraryResource.findMany({
             where: {
               creator_id: { not: undefined },
               created_at: {
@@ -494,11 +517,11 @@ export const createZenStackProfileRepository = (
             },
             select: { id: true },
           }),
-          db['group'].findMany({
+          db.group.findMany({
             where: { school_id: schoolId },
             select: { id: true },
           }),
-          db['classroom'].findMany({
+          db.classroom.findMany({
             where: { school_id: schoolId },
             select: { id: true },
           }),
@@ -538,4 +561,4 @@ export const createZenStackProfileRepository = (
   };
 };
 
-export const isZenStackProfileRepositoryAvailable = () => Boolean(process.env['DATABASE_URL']);
+export const isZenStackProfileRepositoryAvailable = () => Boolean(process.env.DATABASE_URL);

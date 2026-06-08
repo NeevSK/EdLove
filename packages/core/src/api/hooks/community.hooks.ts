@@ -4,12 +4,12 @@ import { useStore, useTemporalStore } from '../../store';
 import { useAuthStore } from '../../store/useAuthStore';
 import { APIError } from '../../types/API';
 import type { Post } from '../../types/Community';
-import { communityAPI } from '../community';
-import { circleAPI } from '../circles';
 import { announcementAPI } from '../announcements';
-import { socialAPI } from '../social';
+import { circleAPI } from '../circles';
+import { communityAPI } from '../community';
 import { growthSignalsAPI } from '../growthSignals';
 import { identityAPI } from '../identity';
+import { socialAPI } from '../social';
 
 /**
  * Community Query Key Factory
@@ -81,16 +81,17 @@ export function usePostsInfiniteQuery(groupId: string = 'all', options: Record<s
 export function useCreatePostMutation() {
   const queryClient = useQueryClient();
   const { user: storeUser } = useStore();
-  const activeBond = useAuthStore((state) => state.active_bond);
+  const _activeBond = useAuthStore((state) => state.activeBond);
 
   return useMutation({
     mutationFn: async (input: any) => {
       const identity = await identityAPI.identifyActiveCitizen();
       if (!identity) throw new APIError('Not authenticated', 'UNAUTHORIZED' as any);
+      if (!identity.activeBond) throw new APIError('No active bond found', 'FORBIDDEN' as any);
 
       return communityAPI.createPost({
         ...input,
-        author_tier: identity.active_bond.capacity, // Using resolved capacity
+        author_tier: identity.activeBond.capacity, // Using resolved capacity
       });
     },
     onSuccess: async (_data, variables) => {

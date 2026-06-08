@@ -14,7 +14,7 @@ export const pollKeys = {
  */
 export function usePollHooks(postId: string) {
   const queryClient = useQueryClient();
-  const user = useAuthStore((state) => state.user);
+  const _user = useAuthStore((state) => state.user);
 
   const query = useQuery({
     queryKey: pollKeys.detail(postId),
@@ -41,8 +41,7 @@ export function usePollHooks(postId: string) {
       ...query.data,
       isLoading: query.isLoading,
       isVoting: voteMutation.isPending,
-      handleVote: (optionId: string, _allowMultiple = false) =>
-        voteMutation.mutate({ optionId }),
+      handleVote: (optionId: string, _allowMultiple = false) => voteMutation.mutate({ optionId }),
       refreshVotes: () => {
         void queryClient.invalidateQueries({ queryKey: pollKeys.detail(postId) });
       },

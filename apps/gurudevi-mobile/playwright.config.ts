@@ -35,7 +35,7 @@ export default defineConfig({
     },
   ],
 
-  /* 
+  /*
    * This command starts the Expo Web server.
    * Note: The server can take a while to bundle the JS on first run.
    */

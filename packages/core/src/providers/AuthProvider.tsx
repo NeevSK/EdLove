@@ -15,11 +15,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const authLifecycle = useAuthorityLifecycle();
 
-  return (
-    <AuthContext.Provider value={authLifecycle}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={authLifecycle}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {

@@ -3,8 +3,8 @@
  * 2026 Sovereign Architecture: Decoupled Atomic State Providers.
  */
 
-import { useStore, identity } from '@repo/core/logic';
-import { type ReactNode, useMemo, useCallback } from 'react';
+import { identity, useStore } from '@repo/core/logic';
+import { type ReactNode, useCallback, useMemo } from 'react';
 import { FidelityProvider, useFidelity } from './FidelityProvider';
 import { LanguageProvider, useLanguage } from './LanguageProvider';
 // Atomic Providers

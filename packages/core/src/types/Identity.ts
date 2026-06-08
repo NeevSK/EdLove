@@ -17,7 +17,7 @@ export type Capacity =
   | 'librarian'
   | 'nurse'
   | 'staff'
-  | 'member'
+  | 'member';
 
 /**
  * Bond: A relationship between a User and an Entity.
@@ -27,7 +27,13 @@ export interface Bond {
   id: string;
   user_id: string;
   entity_id: string; // Could be a School ID, Classroom ID, or 'GLOBAL'
-  entity_type: 'PLATFORM' | 'SCHOOL' | 'CLASSROOM' | 'COMMUNITY' | 'PERSONAL';
+  entity_type:
+    | 'PLATFORM'
+    | 'SCHOOL'
+    | 'CLASSROOM'
+    | 'COMMUNITY'
+    | 'PERSONAL'
+    | 'PERSONAL_CLASSROOM';
   capacity: Capacity;
   status: 'active' | 'archived' | 'pending';
   valid_from?: string;
@@ -40,6 +46,6 @@ export interface Bond {
  * Represents the "Authority in Reality".
  */
 export interface Perspective {
-  active_bond: Bond;
-  available_bonds: Bond[];
+  activeBond?: Bond;
+  availableBonds?: Bond[];
 }

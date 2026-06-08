@@ -111,8 +111,16 @@ export interface AssetProvider {
 
 export interface NotificationProvider {
   getPushTokenAsync(): Promise<string | null>;
-  getPermissionsAsync(): Promise<{ status: string; canAskAgain: boolean; expires: number | 'never' }>;
-  requestPermissionsAsync(): Promise<{ status: string; canAskAgain: boolean; expires: number | 'never' }>;
+  getPermissionsAsync(): Promise<{
+    status: string;
+    canAskAgain: boolean;
+    expires: number | 'never';
+  }>;
+  requestPermissionsAsync(): Promise<{
+    status: string;
+    canAskAgain: boolean;
+    expires: number | 'never';
+  }>;
   setBadgeCountAsync(count: number): Promise<boolean>;
   getBadgeCountAsync(): Promise<number>;
 }
@@ -129,7 +137,7 @@ export interface PushNotificationProvider {
   requestPermissionsAsync(): Promise<NotificationPermissionResponse>;
   setBadgeCountAsync(count: number): Promise<void>;
   getBadgeCountAsync(): Promise<number>;
-  
+
   // Listeners
   addPushTokenListener(callback: (token: string) => void): () => void;
   addNotificationReceivedListener(callback: (notification: any) => void): () => void;

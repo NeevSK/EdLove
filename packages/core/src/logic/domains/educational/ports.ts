@@ -4,14 +4,14 @@ import type {
   AssignmentSubmission,
   Classroom,
   ClassroomGroup,
+  ClassroomLegacyRecord,
   ClassroomStudent,
-  StudentAssignment,
-  StudentSubmissionSummary,
-  StudentAcademicRecord,
-  TeacherProfessionalRecord,
   PrincipalGovernanceRecord,
   SchoolLegacyRecord,
-  ClassroomLegacyRecord,
+  StudentAcademicRecord,
+  StudentAssignment,
+  StudentSubmissionSummary,
+  TeacherProfessionalRecord,
 } from '../../schemas/classroom.schema';
 import type { ClassroomGradingSettings, Grade } from '../../schemas/grading.schema';
 import type { Lesson } from '../../schemas/lesson.schema';
@@ -66,10 +66,7 @@ export interface EducationalRepository {
   ): Promise<Assignment>;
   updateAssignment(id: string, updates: Partial<Assignment>): Promise<Assignment>;
   deleteAssignment(id: string): Promise<void>;
-  getRecentGradesOverviewForStudent(
-    studentId: string,
-    limit?: number,
-  ): Promise<any[]>;
+  getRecentGradesOverviewForStudent(studentId: string, limit?: number): Promise<any[]>;
 
   getClassroomGroups(classroomId: string): Promise<ClassroomGroup[]>;
   createClassroomGroup(input: {
@@ -184,7 +181,12 @@ export interface EducationalRepository {
   getAttendanceForStudent(studentId: string, classroomId?: string): Promise<AttendanceRecord[]>;
 
   // Institutional Management
-  createSchool(data: { name: string; handle?: string | null; type: string; created_by: string }): Promise<any>;
+  createSchool(data: {
+    name: string;
+    handle?: string | null;
+    type: string;
+    created_by: string;
+  }): Promise<any>;
   getSchool(id: string): Promise<any>;
   updateSchool(id: string, updates: any): Promise<any>;
   searchSchools(query: string): Promise<any[]>;
@@ -213,7 +215,12 @@ export interface EducationalRepository {
   // Join Requests
   requestSchoolJoin(userId: string, schoolId: string, capacity: string): Promise<any>;
   updateSchoolJoinRequest(requestId: string, status: string): Promise<any>;
-  requestClassroomJoin(userId: string, classroomId: string, capacity: string, subjectLabel?: string): Promise<any>;
+  requestClassroomJoin(
+    userId: string,
+    classroomId: string,
+    capacity: string,
+    subjectLabel?: string,
+  ): Promise<any>;
   updateClassroomJoinRequest(requestId: string, status: string): Promise<any>;
   getClassroomJoinRequest(requestId: string): Promise<any>;
 }

@@ -1,24 +1,20 @@
 import { z } from 'zod';
-import {
-  AttendanceReportSchema,
-  AttendanceSchema,
-  AttendanceSnapshotSchema,
-  SchoolAttendancePulseSchema,
-} from '../logic/schemas/attendance.schema';
-import { type SovereignContract } from './contract';
+import { AttendanceSchema, SchoolAttendancePulseSchema } from '../logic/schemas/attendance.schema';
+import type { SovereignContract } from './contract';
 
 const operationsAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',
-  subject: 'Attendance' | 'School' | 'Inventory'
-) => ({
-  policy: { action, subject },
-}) as const;
+  subject: 'Attendance' | 'School' | 'Inventory',
+) =>
+  ({
+    policy: { action, subject },
+  }) as const;
 
 /**
  * Operations & Attendance Port (Sovereign RPC)
  * Framework-agnostic definition of the Operations API.
  */
-export const operationsContract: SovereignContract = {
+export const operationsContract = {
   getAttendance: {
     method: 'get',
     path: '/attendance',
@@ -61,7 +57,7 @@ export const operationsContract: SovereignContract = {
           student_id: z.uuid(),
           status: z.string(),
           date: z.string(),
-        })
+        }),
       ),
     },
     responses: {
@@ -85,4 +81,4 @@ export const operationsContract: SovereignContract = {
     },
     metadata: operationsAuthority('read', 'Attendance'),
   },
-} as const;
+} as const satisfies SovereignContract;

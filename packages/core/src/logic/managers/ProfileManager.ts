@@ -1,9 +1,14 @@
-import { ProfileRepository, ProfileJourneyReadOptions, ProfileJourneyHistoryReadOptions, ProfileTemporalReadOptions } from '../domains/profile/ports';
-import { SocialLink, User } from '../../types';
+import type { SocialLink } from '../../types';
+import type {
+  ProfileJourneyHistoryReadOptions,
+  ProfileJourneyReadOptions,
+  ProfileRepository,
+  ProfileTemporalReadOptions,
+} from '../domains/profile/ports';
 
 /**
  * ProfileManager
- * 
+ *
  * Domain manager for User and Institutional profiles.
  * Orchestrates repository access for history, journey snapshots, and social identity.
  */
@@ -55,10 +60,10 @@ export class ProfileManager {
     return this.repo.deleteSocialLink(linkId);
   }
 
-  async updateSocialLinksOrder(userId: string, links: { id: string; order_index: number }[]) {
+  async updateSocialLinksOrder(_userId: string, links: { id: string; order_index: number }[]) {
     return this.repo.updateSocialLinksOrder(links);
   }
-  
+
   async getUserPreferences(userId: string) {
     return this.repo.getUserPreferences(userId);
   }

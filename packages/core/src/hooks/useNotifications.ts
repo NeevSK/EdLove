@@ -10,9 +10,7 @@ import { useNotificationStore } from '../store/useNotificationStore';
 
 import type { AppNotification } from '../types';
 
-
 // Types now provided by @repo/core/types
-
 
 export interface UseNotificationsResult {
   notifications: AppNotification[];

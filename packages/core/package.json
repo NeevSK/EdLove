@@ -11,153 +11,230 @@
   "exports": {
     ".": {
       "types": "./src/index.ts",
-      "import": "./src/index.ts"
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./shared": {
+      "types": "./src/shared/index.ts",
+      "import": "./src/shared/index.ts",
+      "default": "./src/shared/index.ts"
+    },
+    "./shared/*": {
+      "types": "./src/shared/*.ts",
+      "import": "./src/shared/*.ts",
+      "default": "./src/shared/*.ts"
     },
     "./api": {
       "types": "./src/api/index.ts",
-      "import": "./src/api/index.ts"
+      "import": "./src/api/index.ts",
+      "default": "./src/api/index.ts"
+    },
+    "./api/server": {
+      "types": "./src/api/server.ts",
+      "import": "./src/api/server.ts",
+      "default": "./src/api/server.ts"
+    },
+    "./api/interceptor": {
+      "types": "./src/api/interceptor.ts",
+      "import": "./src/api/interceptor.ts",
+      "default": "./src/api/interceptor.ts"
     },
     "./api/*": {
       "types": "./src/api/*.ts",
-      "import": "./src/api/*.ts"
+      "import": "./src/api/*.ts",
+      "default": "./src/api/*.ts"
     },
     "./api/hooks": {
       "types": "./src/api/hooks/index.ts",
-      "import": "./src/api/hooks/index.ts"
+      "import": "./src/api/hooks/index.ts",
+      "default": "./src/api/hooks/index.ts"
     },
     "./api/runtimes/*": {
       "types": "./src/api/runtimes/*.ts",
-      "import": "./src/api/runtimes/*.ts"
+      "import": "./src/api/runtimes/*.ts",
+      "default": "./src/api/runtimes/*.ts"
     },
     "./logic": {
       "types": "./src/logic/index.ts",
-      "import": "./src/logic/index.ts"
+      "import": "./src/logic/index.ts",
+      "default": "./src/logic/index.ts"
     },
     "./logic/schemas/*": {
       "types": "./src/logic/schemas/*.ts",
-      "import": "./src/logic/schemas/*.ts"
+      "import": "./src/logic/schemas/*.ts",
+      "default": "./src/logic/schemas/*.ts"
     },
     "./zen": {
       "types": "./src/logic/generated/index.ts",
-      "import": "./src/logic/generated/index.ts"
+      "import": "./src/logic/generated/index.ts",
+      "default": "./src/logic/generated/index.ts"
     },
     "./native": {
       "types": "./src/native/index.ts",
-      "import": "./src/native/index.ts"
+      "import": "./src/native/index.ts",
+      "default": "./src/native/index.ts"
     },
     "./hooks": {
       "types": "./src/hooks/index.ts",
-      "import": "./src/hooks/index.ts"
+      "import": "./src/hooks/index.ts",
+      "default": "./src/hooks/index.ts"
     },
     "./hooks/*": {
       "types": "./src/hooks/*.ts",
-      "import": "./src/hooks/*.ts"
+      "import": "./src/hooks/*.ts",
+      "default": "./src/hooks/*.ts"
+    },
+    "./providers": {
+      "types": "./src/providers/index.ts",
+      "import": "./src/providers/index.ts",
+      "default": "./src/providers/index.ts"
     },
     "./store": {
       "types": "./src/store/index.ts",
-      "import": "./src/store/index.ts"
+      "import": "./src/store/index.ts",
+      "default": "./src/store/index.ts"
     },
     "./store/*": {
       "types": "./src/store/*.ts",
-      "import": "./src/store/*.ts"
+      "import": "./src/store/*.ts",
+      "default": "./src/store/*.ts"
     },
     "./native/*": {
       "types": "./src/native/*.ts",
-      "import": "./src/native/*.ts"
+      "import": "./src/native/*.ts",
+      "default": "./src/native/*.ts"
     },
     "./sync/*": {
       "types": "./src/lib/sync/*.ts",
-      "import": "./src/lib/sync/*.ts"
+      "import": "./src/lib/sync/*.ts",
+      "default": "./src/lib/sync/*.ts"
     },
     "./lib/*": {
       "types": "./src/lib/*.ts",
-      "import": "./src/lib/*.ts"
+      "import": "./src/lib/*.ts",
+      "default": "./src/lib/*.ts"
+    },
+    "./adapters/*": {
+      "types": "./src/adapters/*.ts",
+      "import": "./src/adapters/*.ts",
+      "default": "./src/adapters/*.ts"
     },
     "./types": {
       "types": "./src/types/index.ts",
-      "import": "./src/types/index.ts"
+      "import": "./src/types/index.ts",
+      "default": "./src/types/index.ts"
     },
     "./types/*": {
       "types": "./src/types/*.ts",
-      "import": "./src/types/*.ts"
+      "import": "./src/types/*.ts",
+      "default": "./src/types/*.ts"
     },
     "./auth": {
       "types": "./src/api/auth.ts",
-      "import": "./src/api/auth.ts"
+      "import": "./src/api/auth.ts",
+      "default": "./src/api/auth.ts"
     },
     "./identity": {
       "types": "./src/api/identity.ts",
-      "import": "./src/api/identity.ts"
+      "import": "./src/api/identity.ts",
+      "default": "./src/api/identity.ts"
     },
     "./storage": {
       "types": "./src/native/storage.ts",
-      "import": "./src/native/storage.ts"
+      "import": "./src/native/storage.ts",
+      "default": "./src/native/storage.ts"
     },
     "./supabase": {
       "types": "./src/api/supabase.ts",
-      "import": "./src/api/supabase.ts"
+      "import": "./src/api/supabase.ts",
+      "default": "./src/api/supabase.ts"
     },
     "./monitoring": {
       "types": "./src/lib/monitoring/index.ts",
-      "import": "./src/lib/monitoring/index.ts"
+      "import": "./src/lib/monitoring/index.ts",
+      "default": "./src/lib/monitoring/index.ts"
     },
     "./sync": {
       "types": "./src/lib/sync/index.ts",
-      "import": "./src/lib/sync/index.ts"
+      "import": "./src/lib/sync/index.ts",
+      "default": "./src/lib/sync/index.ts"
+    },
+    "./powersync": {
+      "types": "./src/adapters/powersync/index.ts",
+      "import": "./src/adapters/powersync/index.ts",
+      "default": "./src/adapters/powersync/index.ts"
     },
     "./utils": {
       "types": "./src/logic/utils/index.ts",
-      "import": "./src/logic/utils/index.ts"
+      "import": "./src/logic/utils/index.ts",
+      "default": "./src/logic/utils/index.ts"
     },
     "./constants": {
       "types": "./src/constants/index.ts",
-      "import": "./src/constants/index.ts"
+      "import": "./src/constants/index.ts",
+      "default": "./src/constants/index.ts"
     },
     "./constants/*": {
       "types": "./src/constants/*.ts",
-      "import": "./src/constants/*.ts"
+      "import": "./src/constants/*.ts",
+      "default": "./src/constants/*.ts"
     },
     "./grading": {
       "types": "./src/logic/grading/index.ts",
-      "import": "./src/logic/grading/index.ts"
+      "import": "./src/logic/grading/index.ts",
+      "default": "./src/logic/grading/index.ts"
     },
     "./events": {
       "types": "./src/logic/events/bus.ts",
-      "import": "./src/logic/events/bus.ts"
+      "import": "./src/logic/events/bus.ts",
+      "default": "./src/logic/events/bus.ts"
     },
     "./offline": {
       "types": "./src/offline/resilience.ts",
-      "import": "./src/offline/resilience.ts"
+      "import": "./src/offline/resilience.ts",
+      "default": "./src/offline/resilience.ts"
     },
     "./storage-wrapper": {
       "types": "./src/lib/storageWrapper.ts",
-      "import": "./src/lib/storageWrapper.ts"
+      "import": "./src/lib/storageWrapper.ts",
+      "default": "./src/lib/storageWrapper.ts"
     },
     "./lib": {
       "types": "./src/lib/index.ts",
-      "import": "./src/lib/index.ts"
+      "import": "./src/lib/index.ts",
+      "default": "./src/lib/index.ts"
     },
     "./logic/workspace/*": {
       "types": "./src/logic/workspace/*.ts",
-      "import": "./src/logic/workspace/*.ts"
+      "import": "./src/logic/workspace/*.ts",
+      "default": "./src/logic/workspace/*.ts"
     },
     "./logic/permissions/*": {
       "types": "./src/logic/permissions/*.ts",
-      "import": "./src/logic/permissions/*.ts"
+      "import": "./src/logic/permissions/*.ts",
+      "default": "./src/logic/permissions/*.ts"
     },
     "./logic/forms/*": {
       "types": "./src/logic/forms/*.ts",
-      "import": "./src/logic/forms/*.ts"
+      "import": "./src/logic/forms/*.ts",
+      "default": "./src/logic/forms/*.ts"
     },
     "./forms/form-manager": {
       "types": "./src/logic/forms/form-manager.ts",
-      "import": "./src/logic/forms/form-manager.ts"
+      "import": "./src/logic/forms/form-manager.ts",
+      "default": "./src/logic/forms/form-manager.ts"
     },
     "./logic/entities/*": {
       "types": "./src/logic/entities/*.ts",
-      "import": "./src/logic/entities/*.ts"
+      "import": "./src/logic/entities/*.ts",
+      "default": "./src/logic/entities/*.ts"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./*": {
+      "types": "./src/*.ts",
+      "import": "./src/*.js",
+      "default": "./src/*.js"
+    }
   },
   "scripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
@@ -207,20 +284,21 @@
     "expo-location": "*",
     "expo-notifications": "*",
     "jest": "^29.7.0",
-
     "pino-pretty": "^13.1.3",
     "tailwindcss": "^4.1.18",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^2.1.9",
     "zustand": "^5.0.10",
     "@repo/typescript-config": "workspace:*"
   },
   "dependencies": {
+    "@repo/policies": "workspace:*",
     "@casl/ability": "^6.8.0",
     "@casl/react": "^5.0.1",
     "@effect/platform": "^0.96.1",
     "@react-native-community/netinfo": "^11.4.1",
+    "@intuitui-labs/form-builder-engine": "workspace:*",
     "@repo/database": "workspace:*",
     "@sentry/browser": "^10.19.0",
     "@supabase/postgrest-js": "2.102.1",
@@ -244,6 +322,8 @@
     "pino": "^9.14.0",
     "react-i18next": "^16.5.4",
     "uuid": "^13.0.0",
-    "zod": "4.3.6"
+    "zod": "4.3.6",
+    "drizzle-orm": "^0.39.0",
+    "@powersync/drizzle-driver": "^0.7.3"
   }
 }

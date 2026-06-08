@@ -1,6 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { StyleSheet, type ViewStyle } from 'react-native';
-import { Text } from '../primitives';
 import Reanimated, {
   useAnimatedStyle,
   useSharedValue,
@@ -9,6 +8,7 @@ import Reanimated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Box, HStack, VStack } from '../gluestack';
+import { Text } from '../primitives';
 
 export interface SanctuaryProgressBarProps {
   percentage: number; // 0–100
@@ -85,7 +85,7 @@ export function SanctuaryProgressBar({
         {/* Animated fill */}
         <Reanimated.View
           style={[
-            StyleSheet.absoluteFillObject,
+            StyleSheet.absoluteFill,
             {
               backgroundColor: isComplete ? '#10B981' : '#F6BF8C', // phase-reward : phase-accent
               borderRadius: barHeight / 2,
@@ -97,7 +97,7 @@ export function SanctuaryProgressBar({
         {isComplete && (
           <Reanimated.View
             style={[
-              StyleSheet.absoluteFillObject,
+              StyleSheet.absoluteFill,
               {
                 backgroundColor: 'rgba(16, 185, 129, 0.3)',
                 borderRadius: barHeight / 2,

@@ -1,319 +1,295 @@
 ---
-import CinematicBackground from "../../components/CinematicBackground.astro";
-import Layout from "../../layouts/Layout.astro";
-
 // Data from 13_GLOBAL_INNOVATION_GALLERY.md
-const globalOpenSource = {
-	name: "Global Open Source",
-	subtitle: "The Foundation of Free Knowledge",
-	focus: "Universal Access, collaborative Development, Zero Cost",
-	innovations: [
-		{
-			title: "Moodle",
-			country: "Global",
-			description:
-				"The world's most popular open-source LMS, used by millions to create private learning spaces.",
-			link: "https://moodle.org",
-		},
-		{
-			title: "Kolibri",
-			country: "Global (Offline)",
-			description:
-				"An offline ecosystem for universal education, running on anything from Raspberry Pis to old laptops.",
-			link: "https://learningequality.org/kolibri",
-		},
-		{
-			title: "Khan Academy",
-			country: "Global",
-			description:
-				"Free, world-class education for anyone, anywhere. The gold standard for self-paced learning.",
-			link: "https://khanacademy.org",
-		},
-		{
-			title: "Wikipedia",
-			country: "Global",
-			description:
-				"The sum of all human knowledge, available for free. The ultimate educational resource.",
-			link: "https://wikipedia.org",
-		},
-		{
-			title: "OpenStreetMap",
-			country: "Global",
-			description:
-				"A free, editable map of the whole world that is being built by volunteers largely from scratch.",
-			link: "https://openstreetmap.org",
-		},
-	],
+const _globalOpenSource = {
+  name: 'Global Open Source',
+  subtitle: 'The Foundation of Free Knowledge',
+  focus: 'Universal Access, collaborative Development, Zero Cost',
+  innovations: [
+    {
+      title: 'Moodle',
+      country: 'Global',
+      description:
+        "The world's most popular open-source LMS, used by millions to create private learning spaces.",
+      link: 'https://moodle.org',
+    },
+    {
+      title: 'Kolibri',
+      country: 'Global (Offline)',
+      description:
+        'An offline ecosystem for universal education, running on anything from Raspberry Pis to old laptops.',
+      link: 'https://learningequality.org/kolibri',
+    },
+    {
+      title: 'Khan Academy',
+      country: 'Global',
+      description:
+        'Free, world-class education for anyone, anywhere. The gold standard for self-paced learning.',
+      link: 'https://khanacademy.org',
+    },
+    {
+      title: 'Wikipedia',
+      country: 'Global',
+      description:
+        'The sum of all human knowledge, available for free. The ultimate educational resource.',
+      link: 'https://wikipedia.org',
+    },
+    {
+      title: 'OpenStreetMap',
+      country: 'Global',
+      description:
+        'A free, editable map of the whole world that is being built by volunteers largely from scratch.',
+      link: 'https://openstreetmap.org',
+    },
+  ],
 };
 
-const regions = [
-	{
-		name: "Africa",
-		subtitle: "The Mobile Renaissance",
-		focus: "Accessibility, Community, Resourcefulness",
-		innovations: [
-			{
-				title: "Bewize",
-				country: "Morocco",
-				description:
-					"Gamified primary school revision across Curricula (Math/French/Arabic).",
-				link: "https://bewize.ma",
-			},
-			{
-				title: "Sprints",
-				country: "Egypt",
-				description:
-					"A 'Talent Journey' AI that upskills and hires tech talent across the region.",
-				link: "https://sprints.ai",
-			},
-			{
-				title: "AltSchool Africa",
-				country: "Nigeria",
-				description:
-					"Mobile-first tech diplomas for the 'unskilled' – bypassing traditional barriers.",
-				link: "https://altschoolafrica.com",
-			},
-			{
-				title: "Foondamate",
-				country: "South Africa",
-				description:
-					"A WhatsApp bot that acts as a study assistant in the app teachers already use.",
-				link: "https://foondamate.com",
-			},
-			{
-				title: "Eneza Education",
-				country: "Kenya",
-				description:
-					"'Low-tech' learning via SMS/USSD for students with zero internet.",
-				link: "https://enezaeducation.com",
-			},
-			{
-				title: "eCampus",
-				country: "Ghana",
-				description:
-					"Combining academic and vocational training with localized Ghanaian content.",
-				link: "https://ecampus.com.gh",
-			},
-			{
-				title: "Simba Education",
-				country: "Zimbabwe",
-				description:
-					"Comprehensive school management system with high offline capability.",
-				link: "https://simba.education",
-			},
-		],
-	},
-	{
-		name: "Asia",
-		subtitle: "The AI Frontier",
-		focus: "Scale, Personalization, High-Tech Integration",
-		innovations: [
-			{
-				title: "Gurudevi",
-				country: "Sri Lanka",
-				description:
-					"A digital sanctuary built for the dignity and sovereignty of Sri Lankan teachers.",
-				link: "https://gurudevi.edlove.org",
-			},
-			{
-				title: "AI Textbooks",
-				country: "South Korea",
-				description:
-					"National textbooks that adapt to reading levels in real-time (Launching 2025).",
-				link: "#",
-			},
-			{
-				title: "Vernacular AI",
-				country: "India",
-				description:
-					"AI mentors speaking in regional languages (Hindi, Tamil, etc.) for rural areas.",
-				link: "https://interactive.ai",
-			},
-			{
-				title: "STEAM4INNOVATOR",
-				country: "Thailand",
-				description:
-					"National framework integrating business-thinking with STEM for high schoolers.",
-				link: "https://nia.or.th",
-			},
-			{
-				title: "National AI Policy",
-				country: "Kazakhstan",
-				description:
-					"One of the world's first national frameworks for AI use/ethics in K-12.",
-				link: "#",
-			},
-			{
-				title: "Amira Learning",
-				country: "Jordan",
-				description:
-					"National AI-supported literacy initiative focused on primary school reading.",
-				link: "https://amira.ai",
-			},
-			{
-				title: "ZEP QUIZ",
-				country: "Indonesia",
-				description:
-					"Gamified Korean-designed quiz platforms adapted for the Indonesian curriculum.",
-				link: "#",
-			},
-		],
-	},
-	{
-		name: "Europe",
-		subtitle: "The Human-Centric Leap",
-		focus: "Ethics, Digital Maturity, Teacher Empowerment",
-		innovations: [
-			{
-				title: "AI Leap",
-				country: "Estonia",
-				description:
-					"Providing AI chatbots to every high schooler as a fundamental digital right.",
-				link: "https://e-estonia.com",
-			},
-			{
-				title: "Alice.tech",
-				country: "Denmark",
-				description:
-					"High-end AI for personalized learning, moving from pilot to national scale.",
-				link: "https://alice.tech",
-			},
-			{
-				title: "Skriware",
-				country: "Poland",
-				description:
-					"STEAM education combining 3D printing and robotics for K-12.",
-				link: "https://skriware.com",
-			},
-			{
-				title: "High Tech Campus",
-				country: "Netherlands",
-				description:
-					"Eindhoven's sustainable 'Campus of the Future' architecture and tech.",
-				link: "https://hightechcampus.com",
-			},
-		],
-	},
-	{
-		name: "Americas",
-		subtitle: "Immersive & Social",
-		focus: "VR/AR, Gamification, Personalization",
-		innovations: [
-			{
-				title: "Ceibal",
-				country: "Uruguay",
-				description:
-					"700k students on a national LMS with AI 'PowerBuds' for teachers.",
-				link: "https://ceibal.edu.uy",
-			},
-			{
-				title: "Yuna Stories",
-				country: "Brazil",
-				description:
-					"AI-powered children's stories where the child is the hero.",
-				link: "https://yunastory.com",
-			},
-			{
-				title: "Xertify",
-				country: "Colombia",
-				description:
-					"Blockchain-based academic credentials to stop student bureaucracy.",
-				link: "https://xertify.co",
-			},
-			{
-				title: "Lirmi",
-				country: "Chile",
-				description:
-					"All-in-one school software for humane classroom management across LatAm.",
-				link: "https://lirmi.com",
-			},
-		],
-	},
-	{
-		name: "Oceania",
-		subtitle: "Earth-Connected Wisdom",
-		focus: "Nature, Indigenous Sovereignty, Cultural Inclusion",
-		innovations: [
-			{
-				title: "Indigenous Tech",
-				country: "Australia",
-				description:
-					"100% Indigenous-owned tech solutions integrating native worldviews into AI.",
-				link: "https://indigenoustech.com.au",
-			},
-			{
-				title: "Its Time Foundation",
-				country: "Fiji",
-				description:
-					"Solar-powered 24/7 electricity and Starlink high-speed internet for remote schools.",
-				link: "https://itstimefoundation.org",
-			},
-			{
-				title: "Pacific Lens EdTech",
-				country: "New Zealand",
-				description:
-					"Curriculum tools optimized for Pasifika values and multi-generational learning.",
-				link: "https://education.govt.nz",
-			},
-			{
-				title: "SMS Daily Lessons",
-				country: "PNG",
-				description:
-					"Proven 10% increase in literacy scores via simple daily text message interventions.",
-				link: "#",
-			},
-		],
-	},
+const _regions = [
+  {
+    name: 'Africa',
+    subtitle: 'The Mobile Renaissance',
+    focus: 'Accessibility, Community, Resourcefulness',
+    innovations: [
+      {
+        title: 'Bewize',
+        country: 'Morocco',
+        description: 'Gamified primary school revision across Curricula (Math/French/Arabic).',
+        link: 'https://bewize.ma',
+      },
+      {
+        title: 'Sprints',
+        country: 'Egypt',
+        description: "A 'Talent Journey' AI that upskills and hires tech talent across the region.",
+        link: 'https://sprints.ai',
+      },
+      {
+        title: 'AltSchool Africa',
+        country: 'Nigeria',
+        description:
+          "Mobile-first tech diplomas for the 'unskilled' – bypassing traditional barriers.",
+        link: 'https://altschoolafrica.com',
+      },
+      {
+        title: 'Foondamate',
+        country: 'South Africa',
+        description:
+          'A WhatsApp bot that acts as a study assistant in the app teachers already use.',
+        link: 'https://foondamate.com',
+      },
+      {
+        title: 'Eneza Education',
+        country: 'Kenya',
+        description: "'Low-tech' learning via SMS/USSD for students with zero internet.",
+        link: 'https://enezaeducation.com',
+      },
+      {
+        title: 'eCampus',
+        country: 'Ghana',
+        description: 'Combining academic and vocational training with localized Ghanaian content.',
+        link: 'https://ecampus.com.gh',
+      },
+      {
+        title: 'Simba Education',
+        country: 'Zimbabwe',
+        description: 'Comprehensive school management system with high offline capability.',
+        link: 'https://simba.education',
+      },
+    ],
+  },
+  {
+    name: 'Asia',
+    subtitle: 'The AI Frontier',
+    focus: 'Scale, Personalization, High-Tech Integration',
+    innovations: [
+      {
+        title: 'Gurudevi',
+        country: 'Sri Lanka',
+        description:
+          'A digital sanctuary built for the dignity and sovereignty of Sri Lankan teachers.',
+        link: 'https://gurudevi.edlove.org',
+      },
+      {
+        title: 'AI Textbooks',
+        country: 'South Korea',
+        description:
+          'National textbooks that adapt to reading levels in real-time (Launching 2025).',
+        link: '#',
+      },
+      {
+        title: 'Vernacular AI',
+        country: 'India',
+        description:
+          'AI mentors speaking in regional languages (Hindi, Tamil, etc.) for rural areas.',
+        link: 'https://interactive.ai',
+      },
+      {
+        title: 'STEAM4INNOVATOR',
+        country: 'Thailand',
+        description:
+          'National framework integrating business-thinking with STEM for high schoolers.',
+        link: 'https://nia.or.th',
+      },
+      {
+        title: 'National AI Policy',
+        country: 'Kazakhstan',
+        description: "One of the world's first national frameworks for AI use/ethics in K-12.",
+        link: '#',
+      },
+      {
+        title: 'Amira Learning',
+        country: 'Jordan',
+        description: 'National AI-supported literacy initiative focused on primary school reading.',
+        link: 'https://amira.ai',
+      },
+      {
+        title: 'ZEP QUIZ',
+        country: 'Indonesia',
+        description:
+          'Gamified Korean-designed quiz platforms adapted for the Indonesian curriculum.',
+        link: '#',
+      },
+    ],
+  },
+  {
+    name: 'Europe',
+    subtitle: 'The Human-Centric Leap',
+    focus: 'Ethics, Digital Maturity, Teacher Empowerment',
+    innovations: [
+      {
+        title: 'AI Leap',
+        country: 'Estonia',
+        description: 'Providing AI chatbots to every high schooler as a fundamental digital right.',
+        link: 'https://e-estonia.com',
+      },
+      {
+        title: 'Alice.tech',
+        country: 'Denmark',
+        description: 'High-end AI for personalized learning, moving from pilot to national scale.',
+        link: 'https://alice.tech',
+      },
+      {
+        title: 'Skriware',
+        country: 'Poland',
+        description: 'STEAM education combining 3D printing and robotics for K-12.',
+        link: 'https://skriware.com',
+      },
+      {
+        title: 'High Tech Campus',
+        country: 'Netherlands',
+        description: "Eindhoven's sustainable 'Campus of the Future' architecture and tech.",
+        link: 'https://hightechcampus.com',
+      },
+    ],
+  },
+  {
+    name: 'Americas',
+    subtitle: 'Immersive & Social',
+    focus: 'VR/AR, Gamification, Personalization',
+    innovations: [
+      {
+        title: 'Ceibal',
+        country: 'Uruguay',
+        description: "700k students on a national LMS with AI 'PowerBuds' for teachers.",
+        link: 'https://ceibal.edu.uy',
+      },
+      {
+        title: 'Yuna Stories',
+        country: 'Brazil',
+        description: "AI-powered children's stories where the child is the hero.",
+        link: 'https://yunastory.com',
+      },
+      {
+        title: 'Xertify',
+        country: 'Colombia',
+        description: 'Blockchain-based academic credentials to stop student bureaucracy.',
+        link: 'https://xertify.co',
+      },
+      {
+        title: 'Lirmi',
+        country: 'Chile',
+        description: 'All-in-one school software for humane classroom management across LatAm.',
+        link: 'https://lirmi.com',
+      },
+    ],
+  },
+  {
+    name: 'Oceania',
+    subtitle: 'Earth-Connected Wisdom',
+    focus: 'Nature, Indigenous Sovereignty, Cultural Inclusion',
+    innovations: [
+      {
+        title: 'Indigenous Tech',
+        country: 'Australia',
+        description: '100% Indigenous-owned tech solutions integrating native worldviews into AI.',
+        link: 'https://indigenoustech.com.au',
+      },
+      {
+        title: 'Its Time Foundation',
+        country: 'Fiji',
+        description:
+          'Solar-powered 24/7 electricity and Starlink high-speed internet for remote schools.',
+        link: 'https://itstimefoundation.org',
+      },
+      {
+        title: 'Pacific Lens EdTech',
+        country: 'New Zealand',
+        description:
+          'Curriculum tools optimized for Pasifika values and multi-generational learning.',
+        link: 'https://education.govt.nz',
+      },
+      {
+        title: 'SMS Daily Lessons',
+        country: 'PNG',
+        description:
+          'Proven 10% increase in literacy scores via simple daily text message interventions.',
+        link: '#',
+      },
+    ],
+  },
 ];
 
-const specializedInnovations = [
-	{
-		title: "QTRobot",
-		category: "Autism (ASD)",
-		description:
-			"Social robots that help kids practice communication in a non-judgmental way.",
-	},
-	{
-		title: "GraphoGame",
-		category: "Dyslexia",
-		description:
-			"Science-backed literacy game used across Jamaica/Guyana for early reading.",
-	},
-	{
-		title: "Solar Classroom",
-		category: "Off-Grid",
-		description:
-			"Solar panels + low-power computers + preloaded Wikipedia for off-grid setup.",
-	},
-	{
-		title: "Socrat.ai",
-		category: "Student Agency",
-		description:
-			"AI that never gives the answer, only asks the next Socratic question.",
-	},
-	{
-		title: "Schoolhouse.world",
-		category: "Peer Learning",
-		description:
-			"Students becoming certified tutors for other students globally (Khan Academy).",
-	},
+const _specializedInnovations = [
+  {
+    title: 'QTRobot',
+    category: 'Autism (ASD)',
+    description: 'Social robots that help kids practice communication in a non-judgmental way.',
+  },
+  {
+    title: 'GraphoGame',
+    category: 'Dyslexia',
+    description: 'Science-backed literacy game used across Jamaica/Guyana for early reading.',
+  },
+  {
+    title: 'Solar Classroom',
+    category: 'Off-Grid',
+    description: 'Solar panels + low-power computers + preloaded Wikipedia for off-grid setup.',
+  },
+  {
+    title: 'Socrat.ai',
+    category: 'Student Agency',
+    description: 'AI that never gives the answer, only asks the next Socratic question.',
+  },
+  {
+    title: 'Schoolhouse.world',
+    category: 'Peer Learning',
+    description: 'Students becoming certified tutors for other students globally (Khan Academy).',
+  },
 ];
 
 // Color palettes per region
 const regionColors = {
-	Africa: { border: "#D97757", accent: "#8B4513", bg: "#FFF5F0" },
-	Asia: { border: "#FFB84D", accent: "#D4A574", bg: "#FFFBF0" },
-	Europe: { border: "#4A90E2", accent: "#5D6D7E", bg: "#F0F7FF" },
-	Americas: { border: "#E74C3C", accent: "#27AE60", bg: "#FFF0F0" },
-	Oceania: { border: "#16A085", accent: "#3498DB", bg: "#F0FFFF" },
+  Africa: { border: '#D97757', accent: '#8B4513', bg: '#FFF5F0' },
+  Asia: { border: '#FFB84D', accent: '#D4A574', bg: '#FFFBF0' },
+  Europe: { border: '#4A90E2', accent: '#5D6D7E', bg: '#F0F7FF' },
+  Americas: { border: '#E74C3C', accent: '#27AE60', bg: '#FFF0F0' },
+  Oceania: { border: '#16A085', accent: '#3498DB', bg: '#F0FFFF' },
 } as const;
 
 type RegionName = keyof typeof regionColors;
 
 // Card style variants
-const getCardStyle = (index: number) => {
-	const styles = ["exhibition", "artifact", "catalog"];
-	return styles[index % 3];
+const _getCardStyle = (index: number) => {
+  const styles = ['exhibition', 'artifact', 'catalog'];
+  return styles[index % 3];
 };
 ---
 

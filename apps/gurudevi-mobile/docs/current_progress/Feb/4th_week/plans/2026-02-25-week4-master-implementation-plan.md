@@ -4,7 +4,7 @@
 
 **Goal:** Implement every remaining unchecked item in `apps/gurudevi-mobile/docs/current_progress/4th_week/tasks.md`.
 
-**Architecture:** Turbo monorepo. App: `apps/gurudevi-mobile/`. Shared packages: `packages/{classroom,community,core,library,profile,self,scanner-kit,ui}/`. All design tokens in `packages/ui/src/theme/Theme.ts`. Supabase backend, React Query v5, Zustand, Reanimated 2, React Navigation v6, i18next, GlueStack UI, PostHog, Sentry.
+**Architecture:** Turbo monorepo. App: `apps/gurudevi-mobile/`. Shared packages: `packages/{classroom,community,core,library,profile,self,scanner-kit,ui}/`. All design tokens in `packages/ui/src/theme/Theme.ts`. Supabase backend, React Query v5, Zustand, Reanimated 2, React Navigation v7, i18next, GlueStack UI, PostHog, Sentry. React Navigation v8 is being evaluated separately and is not the default runtime yet.
 
 **Tech Stack:** React Native (Expo SDK 51), TypeScript strict, Supabase Realtime, React Query infinite queries, `react-native-reanimated` v3, `@gluestack-ui/themed`.
 
@@ -972,8 +972,8 @@ export const groupMessagesAPI = {
 3. Create `packages/community/src/hooks/useGroupChat.ts`:
 ```typescript
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { groupMessagesAPI } from '@repo/core';
-import { useAuth } from '@repo/core'; // or wherever auth hook lives
+import { groupMessagesAPI } from '@repo/core/api';
+import { useAuth } from '@repo/core/hooks'; // or wherever auth hook lives
 
 export function useGroupChat(groupId: string) {
   const [messages, setMessages] = useState<any[]>([]);

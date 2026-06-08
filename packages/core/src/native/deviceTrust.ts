@@ -1,8 +1,8 @@
 import { v7 as uuidv7 } from 'uuid';
-import { identityAPI } from '../api/identity';
+import { type ActiveCitizen, identityAPI } from '../api/identity';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-import { APIError } from '../types/API';
 import { coreRuntime } from '../logic/runtimeRegistry';
+import { APIError } from '../types/API';
 
 const DEVICE_INSTALL_ID_KEY = 'gurudevi-device-install-id';
 const SERVER_DEVICE_ID_KEY = 'gurudevi-server-device-id';
@@ -92,7 +92,7 @@ async function rpcSingle<T>(fn: string, params: Record<string, unknown>) {
 
 async function requireAccountId(accountId?: string) {
   const identity = await identityAPI.identifyActiveCitizen();
-  const resolved = accountId ?? identity?.id;
+  const resolved = accountId ?? (identity as ActiveCitizen | null)?.id;
   if (!resolved) {
     throw new APIError('No authenticated account is available for device trust operations.');
   }
@@ -196,12 +196,15 @@ export const deviceTrustAPI = {
     const deviceId =
       (await getStoredServerDeviceId()) ?? (await this.ensureDeviceRegistered()).deviceId;
 
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc('log_my_device_audit', {
-      p_action: action,
-      p_device_id: deviceId,
-      p_account_id: resolvedAccountId,
-      p_metadata: metadata,
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'log_my_device_audit',
+      {
+        p_action: action,
+        p_device_id: deviceId,
+        p_account_id: resolvedAccountId,
+        p_metadata: metadata,
+      },
+    );
 
     if (error) {
       throw new APIError('Failed to write device audit log.', error.code, error);

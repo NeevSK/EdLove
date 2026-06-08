@@ -90,16 +90,19 @@ export const studentPotentialAPI = {
     analysis: Partial<StudentPotentialAnalysis>,
   ): Promise<string> {
     try {
-      const response = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.functions.invoke('ai-assistant', {
-        body: {
-          message: `Analyze potential for student "${studentName}" based on these dimensions: Cognitive: ${analysis.cognitive_flow}%, Emotional: ${analysis.emotional_resonance}%, Social: ${analysis.social_weaving}%, Creative: ${analysis.creative_spark}%, Practical: ${analysis.practical_mastery}%. Current Silver Lining: "${analysis.silver_lining || 'None recorded'}". Provide 3 nurturing intervention suggestions.`,
-          context: {
-            type: 'student_potential_insight',
-            studentName,
-            analysis,
+      const response = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.functions.invoke(
+        'ai-assistant',
+        {
+          body: {
+            message: `Analyze potential for student "${studentName}" based on these dimensions: Cognitive: ${analysis.cognitive_flow}%, Emotional: ${analysis.emotional_resonance}%, Social: ${analysis.social_weaving}%, Creative: ${analysis.creative_spark}%, Practical: ${analysis.practical_mastery}%. Current Silver Lining: "${analysis.silver_lining || 'None recorded'}". Provide 3 nurturing intervention suggestions.`,
+            context: {
+              type: 'student_potential_insight',
+              studentName,
+              analysis,
+            },
           },
         },
-      });
+      );
 
       if (response.data?.reply) return response.data.reply;
       throw new Error('No reply from AI scout');

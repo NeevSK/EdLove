@@ -4,22 +4,28 @@
  * Import from here, not from individual files.
  * Tree-shaking will eliminate unused exports.
  */
-export { AppSchema } from './schema';
-export type { Database } from './schema';
-export { getPowerSyncDB, disconnectPowerSync } from './database';
-export { SupabasePowerSyncConnector } from './SupabasePowerSyncConnector';
-export { PowerSyncGate } from './PowerSyncGate';
+
 export {
+  disconnectPowerSync,
+  getDrizzleDB,
+  getPowerSyncDB,
+  injectNativePowerSyncDB,
+} from './database';
+export {
+  useAttendanceForClassroom,
+  useDrizzleQuery,
+  useMoodLogsForUser,
   usePowerSyncQuery,
   usePowerSyncStatus,
-  useAttendanceForClassroom,
   useStudentsInClassroom,
-  useMoodLogsForStudent,
 } from './hooks';
+export { PowerSyncGate } from './PowerSyncGate';
+export { SupabasePowerSyncConnector } from './SupabasePowerSyncConnector';
 export type {
-  AttendanceRow,
-  StudentRow,
-  ClassroomRow,
-  MoodLogRow,
-  SchoolRow,
-} from './hooks';
+  Attendance,
+  Classroom,
+  MoodLog,
+  School,
+  Student,
+} from './schema';
+export { AppSchema } from './schema';

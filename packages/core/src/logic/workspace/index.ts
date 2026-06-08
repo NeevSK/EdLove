@@ -1,5 +1,4 @@
 export {
-  WORKSPACE_CANVAS_ZONES,
   createDefaultWorkspaceLayout,
   groupResolvedWorkspaceSurfacesByZone,
   normalizeWorkspaceLayout,
@@ -8,6 +7,7 @@ export {
   setWorkspaceSurfaceOrder,
   setWorkspaceSurfacePinned,
   setWorkspaceSurfaceZone,
+  WORKSPACE_CANVAS_ZONES,
 } from './canvas';
 export {
   buildWorkspaceLayoutStorageKey,

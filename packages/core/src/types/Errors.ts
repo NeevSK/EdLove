@@ -5,9 +5,9 @@
  */
 
 export enum ErrorTier {
-  USER = 'USER',     // Consumer-facing (Warm, Generic)
-  DEV = 'DEV',       // Architect-facing (Verbose, Raw)
-  AGENT = 'AGENT',   // AI-facing (Semantic, Structured)
+  USER = 'USER', // Consumer-facing (Warm, Generic)
+  DEV = 'DEV', // Architect-facing (Verbose, Raw)
+  AGENT = 'AGENT', // AI-facing (Semantic, Structured)
   SYSTEM = 'SYSTEM', // Log-only (Internal)
 }
 
@@ -24,18 +24,19 @@ export enum ErrorCategory {
  * RFC 9457 compliant error structure
  */
 export interface ProblemDetails {
-  type: string;           // URI identifying the error type
-  title: string;          // Human-readable summary
-  status: number;         // HTTP status code
-  detail?: string;        // Safe explanation
-  instance?: string;      // Correlation ID
+  type: string; // URI identifying the error type
+  title: string; // Human-readable summary
+  status: number; // HTTP status code
+  detail?: string; // Safe explanation
+  instance?: string; // Correlation ID
   category: ErrorCategory;
-  code: string;           // Machine-readable code (e.g. CITIZENSHIP_RESTRICTED)
-  
+  code: string; // Machine-readable code (e.g. CITIZENSHIP_RESTRICTED)
+
   // Tiered Payloads
-  userMessage?: string;   // Warm message for Toasts
-  devDetails?: any;       // Stack traces, Schemas (Only in __DEV__)
-  agentAction?: {         // Instructions for AI Agents
+  userMessage?: string; // Warm message for Toasts
+  devDetails?: any; // Stack traces, Schemas (Only in __DEV__)
+  agentAction?: {
+    // Instructions for AI Agents
     suggestedAction: string;
     parameters?: Record<string, any>;
     retryAfter?: number;
@@ -48,7 +49,7 @@ export class SovereignError extends Error {
   constructor(details: Partial<ProblemDetails>) {
     super(details.title || 'An unexpected error occurred');
     this.name = 'SovereignError';
-    
+
     this.details = {
       type: 'https://polymath.network/errors/unknown',
       title: 'Unknown Error',
@@ -60,7 +61,7 @@ export class SovereignError extends Error {
 
     const isDevelopment =
       (typeof __DEV__ !== 'undefined' && __DEV__) ||
-      (typeof process !== 'undefined' && process.env?.['NODE_ENV'] === 'development');
+      (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development');
 
     // Auto-sanitize dev details if not in development
     if (!isDevelopment) {
@@ -82,7 +83,7 @@ export class SovereignError extends Error {
       userMessage: 'Please check the information you entered.',
       agentAction: {
         suggestedAction: 'CHECK_SCHEMA_AND_RETRY',
-      }
+      },
     });
   }
 
@@ -99,7 +100,7 @@ export class SovereignError extends Error {
       userMessage: 'You are not authorized to perform this action.',
       agentAction: {
         suggestedAction: 'UPGRADE_CITIZENSHIP_OR_SWITCH_BOND',
-      }
+      },
     });
   }
 }

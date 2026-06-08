@@ -1,3 +1,26 @@
+vi.mock('../supabase', () => ({
+  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__: {
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          single: vi.fn(() => Promise.resolve({ data: { id: 'test-1' }, error: null })),
+          insert: vi.fn(() => Promise.resolve({ data: { id: 'test-1' }, error: null })),
+        })),
+      })),
+    })),
+  },
+  supabase: {
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          single: vi.fn(() => Promise.resolve({ data: { id: 'test-1' }, error: null })),
+          insert: vi.fn(() => Promise.resolve({ data: { id: 'test-1' }, error: null })),
+        })),
+      })),
+    })),
+  },
+}));
+
 vi.mock('../runtimes/teacherInsights.runtime', () => ({
   teacherInsightsServices: {
     listPrivateNotes: vi.fn(),
@@ -75,4 +98,3 @@ describe('teacher insights POA coverage', () => {
     });
   });
 });
-

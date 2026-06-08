@@ -8,11 +8,10 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "baseUrl": ".",
     "paths": {
-      "zenstack/*": ["./zenstack/*"],
-      "@repo/schema": ["../schema/src/index.ts"]
-    }
+      "zenstack/*": ["./zenstack/*"]
+    },
+    "rootDir": "./src"
   },
   "include": ["src/**/*", "zenstack/**/*"]
 }

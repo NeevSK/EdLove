@@ -1,8 +1,8 @@
 import { X } from 'lucide-react-native';
 import type React from 'react';
 import { Dimensions } from 'react-native';
-import { Pressable } from '../primitives';
 import { Box, HStack, Text, VStack } from '../gluestack';
+import { Pressable } from '../primitives';
 import { UniversalModal } from './UniversalModal';
 
 export interface SanctuaryModalProps {

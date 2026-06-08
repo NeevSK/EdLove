@@ -1,16 +1,18 @@
-import { ICommunityRepository, PostFilters } from '../domains/community/ports';
-import { Post, Comment, PollStatus } from '../../types';
-import { GrowthManager } from './GrowthManager';
+import type { Comment, PollStatus, Post } from '../../types';
+import type { ICommunityRepository, PostFilters } from '../domains/community/ports';
+import type { GrowthManager } from './GrowthManager';
 
 /**
  * CommunityManager
- * 
+ *
  * Domain manager for community interactions (Posts, Comments, Polls).
  * Orchestrates repository access and cross-domain side-effects (e.g. Growth Signals).
  */
 export class CommunityManager {
-  constructor(private repo: ICommunityRepository, private growth: GrowthManager) {}
-
+  constructor(
+    private repo: ICommunityRepository,
+    private growth: GrowthManager,
+  ) {}
 
   async getPosts(filters: PostFilters): Promise<Post[]> {
     return this.repo.getPosts(filters);
@@ -34,7 +36,6 @@ export class CommunityManager {
       },
     });
 
-
     return post;
   }
 
@@ -42,7 +43,11 @@ export class CommunityManager {
     return this.repo.togglePostReaction(postId, userId);
   }
 
-  async getComments(postId: string, limit?: number, options?: { viewDate?: string; viewScale?: any }): Promise<Comment[]> {
+  async getComments(
+    postId: string,
+    limit?: number,
+    options?: { viewDate?: string; viewScale?: any },
+  ): Promise<Comment[]> {
     return this.repo.getComments(postId, limit, options);
   }
 
@@ -97,11 +102,20 @@ export class CommunityManager {
     return this.repo.getCommunityGroupByClassroom(classroomId);
   }
 
-  async createMembership(params: { groupId: string; userId: string; capacity: string; status: string }): Promise<void> {
+  async createMembership(params: {
+    groupId: string;
+    userId: string;
+    capacity: string;
+    status: string;
+  }): Promise<void> {
     return this.repo.createGroupMembership(params);
   }
 
-  async updateMembership(groupId: string, userId: string, updates: { status?: string; capacity?: string }): Promise<void> {
+  async updateMembership(
+    groupId: string,
+    userId: string,
+    updates: { status?: string; capacity?: string },
+  ): Promise<void> {
     return this.repo.updateGroupMembership(groupId, userId, updates);
   }
 

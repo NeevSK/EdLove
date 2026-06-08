@@ -12,9 +12,15 @@ type State = {
 
 type Action =
   | { type: 'HYDRATE_START' }
-  | { type: 'HYDRATE_SUCCESS'; payload: { accounts: DeviceAccountRecord[]; activeAccountId: string | null } }
+  | {
+      type: 'HYDRATE_SUCCESS';
+      payload: { accounts: DeviceAccountRecord[]; activeAccountId: string | null };
+    }
   | { type: 'SET_BUSY'; payload: string | null }
-  | { type: 'REFRESH_SUCCESS'; payload: { accounts: DeviceAccountRecord[]; activeAccountId: string | null } };
+  | {
+      type: 'REFRESH_SUCCESS';
+      payload: { accounts: DeviceAccountRecord[]; activeAccountId: string | null };
+    };
 
 function accountsReducer(state: State, action: Action): State {
   switch (action.type) {

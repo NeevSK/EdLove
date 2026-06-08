@@ -1,7 +1,6 @@
 import { Runtime } from '@repo/core/native';
 
 import React, { useEffect } from 'react';
-import { View } from '../primitives';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -9,6 +8,7 @@ import Animated, {
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
+import { View } from '../primitives';
 
 interface BreathAnimationProps {
   children: React.ReactNode;

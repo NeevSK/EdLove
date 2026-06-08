@@ -91,4 +91,3 @@ export const founderContract = c.router({
     metadata: founderAuthority('read', 'FounderDashboard'),
   },
 });
-

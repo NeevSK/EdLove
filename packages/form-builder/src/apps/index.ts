@@ -1,1 +1,1 @@
-export * from "./resilience-sensing-schema";
+export * from './resilience-sensing-schema';

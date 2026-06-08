@@ -2,15 +2,17 @@ import type { Session } from '@supabase/supabase-js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 import { authAPI } from '../api/auth';
+import { assertHighway } from '../api/highways';
 import { identityAPI } from '../api/identity';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import type { SchoolType } from '../constants/SriLankanSchools';
 import { identifyUser, initPostHog, trackEvent } from '../lib/monitoring/posthog';
 import { clearSentryUser, initSentry, setSentryUser } from '../lib/monitoring/sentry';
 import { useAuthStore } from '../store/useAuthStore';
+import { usePermissionStore } from '../store/usePermissionStore';
 import { useStore } from '../store/useStore';
-import type { User } from '../types';
 import { APIError } from '../types/API';
+import type { Bond } from '../types/Identity';
 
 /**
  * useAuthorityLifecycle (Native)
@@ -31,66 +33,76 @@ export function useAuthorityLifecycle() {
   const setAuthSession = useStore((state) => state.setAuthSession);
   const setAuthSessionResolved = useStore((state) => state.setAuthSessionResolved);
 
-  const fetchAndSetUserProfile = useCallback(
-    async () => {
-      setIsProfileLoading(true);
-      try {
-        // 1. Resolve Sovereign Identity (Bonds & Perspectives)
-        // [SOVEREIGN-SIPHON] unified into identifyActiveCitizen
-        const identity = await identityAPI.identifyActiveCitizen();
+  const isAnonymousSession = (currentSession: Session | null) =>
+    !!currentSession?.user && (currentSession.user.is_anonymous || !currentSession.user.email);
 
-        if (identity) {
-          // 2. Update store
-          setUser(identity as any);
-          setAvailableBonds(identity.available_bonds);
-          
-          setPerspective({ 
-            active_bond: identity.active_bond, 
-            available_bonds: identity.available_bonds 
-          });
-          
-          const isEffectivelyOnboarded = !!identity.onboarding_completed;
-          if (isEffectivelyOnboarded) {
-            setOnboardingCompleted(true);
-          }
+  const fetchAndSetUserProfile = useCallback(async () => {
+    setIsProfileLoading(true);
+    try {
+      assertHighway('identity_bootstrap', 'direct-api');
+      // 1. Resolve Sovereign Identity (Bonds & Perspectives)
+      // [SOVEREIGN-SIPHON] unified into identifyActiveCitizen
+      const identity = await identityAPI.identifyActiveCitizen();
 
-          if (identity.school_id) {
-            const { data: schoolData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-              .from('schools')
-              .select('type')
-              .eq('id', identity.school_id)
-              .single();
+      if (identity) {
+        // 2. Update store
+        // Cast simplified bonds to full Bond type - the store layer fills in additional fields
+        setUser(identity as unknown as Parameters<typeof setUser>[0]);
+        setAvailableBonds(identity.availableBonds as unknown as Bond[]);
 
-            if (schoolData) {
-              setSchoolType(schoolData.type as SchoolType | null);
-            }
-          } else {
-            setSchoolType(null);
-          }
+        setPerspective({
+          activeBond: identity.activeBond as unknown as Bond | undefined,
+          availableBonds: identity.availableBonds as unknown as Bond[],
+        });
 
-          // Monitoring identification
-          setSentryUser({
-            id: identity.id,
-            email: identity.email,
-            username: identity.display_name,
+        // Load cryptographic permission snapshots asynchronously
+        usePermissionStore
+          .getState()
+          .loadPermissions(identity.id)
+          .catch((err) => {
+            console.error('[AuthorityLifecycle] Failed to load permissions snapshot:', err);
           });
 
-          identifyUser(identity.id, {
-            email: identity.email,
-            display_name: identity.display_name,
-            capacity: identity.active_bond?.capacity || null,
-            total_bonds: identity.available_bonds.length,
-            school_id: identity.school_id,
-          });
+        const isEffectivelyOnboarded = !!identity.onboarding_completed;
+        if (isEffectivelyOnboarded) {
+          setOnboardingCompleted(true);
         }
-      } catch (error) {
-        console.warn('❌ Profile: Fetching encountered an error:', error);
-      } finally {
-        setIsProfileLoading(false);
+
+        if (identity.schoolId) {
+          const { data: schoolData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+            .from('schools')
+            .select('type')
+            .eq('id', identity.schoolId)
+            .single();
+
+          if (schoolData) {
+            setSchoolType(schoolData.type as SchoolType | null);
+          }
+        } else {
+          setSchoolType(null);
+        }
+
+        // Monitoring identification
+        setSentryUser({
+          id: identity.id,
+          email: identity.email,
+          username: identity.display_name,
+        });
+
+        identifyUser(identity.id, {
+          email: identity.email,
+          display_name: identity.display_name,
+          capacity: identity.activeBond?.capacity || null,
+          total_bonds: (identity.availableBonds || []).length,
+          school_id: identity.schoolId,
+        });
       }
-    },
-    [setUser, setPerspective, setAvailableBonds, setSchoolType, setOnboardingCompleted],
-  );
+    } catch (error) {
+      console.warn('❌ Profile: Fetching encountered an error:', error);
+    } finally {
+      setIsProfileLoading(false);
+    }
+  }, [setUser, setPerspective, setAvailableBonds, setSchoolType, setOnboardingCompleted]);
 
   const refreshProfile = useCallback(async () => {
     await fetchAndSetUserProfile();
@@ -114,8 +126,15 @@ export function useAuthorityLifecycle() {
         setSession(initialSession);
         setAuthSession(initialSession);
 
-        if (initialSession?.user) {
+        if (initialSession?.user && !isAnonymousSession(initialSession)) {
           await fetchAndSetUserProfile();
+        } else if (initialSession?.user) {
+          setUser(null);
+          setPerspective(null);
+          setAvailableBonds([]);
+          setSchoolType(null);
+          setOnboardingCompleted(false);
+          usePermissionStore.getState().clearPermissions();
         }
       } catch (error) {
         if (error instanceof APIError) {
@@ -141,22 +160,32 @@ export function useAuthorityLifecycle() {
     // 3. Auth State Change Listener
     const {
       data: { subscription },
-    } = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.onAuthStateChange(async (event, currentSession) => {
-      setSession(currentSession);
-      setAuthSession(currentSession);
-      setAuthSessionResolved(true);
+    } = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.onAuthStateChange(
+      async (event, currentSession) => {
+        setSession(currentSession);
+        setAuthSession(currentSession);
+        setAuthSessionResolved(true);
 
-      if (currentSession?.user) {
-        await fetchAndSetUserProfile();
-      } else if (event === 'SIGNED_OUT') {
-        clearSentryUser();
-        setUser(null);
-        setPerspective(null);
-        setAvailableBonds([]);
-        setSchoolType(null);
-        setOnboardingCompleted(false);
-      }
-    });
+        if (currentSession?.user && !isAnonymousSession(currentSession)) {
+          await fetchAndSetUserProfile();
+        } else if (currentSession?.user) {
+          setUser(null);
+          setPerspective(null);
+          setAvailableBonds([]);
+          setSchoolType(null);
+          setOnboardingCompleted(false);
+          usePermissionStore.getState().clearPermissions();
+        } else if (event === 'SIGNED_OUT') {
+          clearSentryUser();
+          setUser(null);
+          setPerspective(null);
+          setAvailableBonds([]);
+          setSchoolType(null);
+          setOnboardingCompleted(false);
+          usePermissionStore.getState().clearPermissions();
+        }
+      },
+    );
 
     return () => subscription.unsubscribe();
   }, [
@@ -168,6 +197,7 @@ export function useAuthorityLifecycle() {
     setSchoolType,
     setOnboardingCompleted,
     fetchAndSetUserProfile,
+    isAnonymousSession,
   ]);
 
   // 4. Realtime Profile Updates (Capability Sync)
@@ -187,7 +217,7 @@ export function useAuthorityLifecycle() {
         },
         async (payload) => {
           // Detect privilege change
-          const oldCapacity = useAuthStore.getState().active_bond?.capacity;
+          const oldCapacity = useAuthStore.getState().activeBond?.capacity;
           const newCapacity = (payload.new as { capacity?: string })?.capacity;
           const capacityChanged = Boolean(newCapacity && newCapacity !== oldCapacity);
 

@@ -1,5 +1,5 @@
 export interface ScannedStudent {
-	name: string;
-	index_number: string;
-	notes?: string;
+  name: string;
+  index_number: string;
+  notes?: string;
 }

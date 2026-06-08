@@ -125,27 +125,27 @@ export const resolveFeatureFlags = (
   // Note: Expo/Next.js bundle these at build time
   const envFlags = {
     ERP:
-      process.env['EXPO_PUBLIC_ENABLE_ERP'] === 'true' ||
-      process.env['NEXT_PUBLIC_ENABLE_ERP'] === 'true',
-    NEW_ONBOARDING: process.env['EXPO_PUBLIC_ENABLE_NEW_ONBOARDING'] === 'true',
+      process.env.EXPO_PUBLIC_ENABLE_ERP === 'true' ||
+      process.env.NEXT_PUBLIC_ENABLE_ERP === 'true',
+    NEW_ONBOARDING: process.env.EXPO_PUBLIC_ENABLE_NEW_ONBOARDING === 'true',
     GUARDIAN_WORKSPACE:
-      process.env['EXPO_PUBLIC_ENABLE_GUARDIAN_WORKSPACE'] === 'true' ||
-      process.env['NEXT_PUBLIC_ENABLE_GUARDIAN_WORKSPACE'] === 'true',
+      process.env.EXPO_PUBLIC_ENABLE_GUARDIAN_WORKSPACE === 'true' ||
+      process.env.NEXT_PUBLIC_ENABLE_GUARDIAN_WORKSPACE === 'true',
     STUDENT_REWARDS_WORKSPACE:
-      process.env['EXPO_PUBLIC_ENABLE_STUDENT_REWARDS_WORKSPACE'] === 'true' ||
-      process.env['NEXT_PUBLIC_ENABLE_STUDENT_REWARDS_WORKSPACE'] === 'true',
+      process.env.EXPO_PUBLIC_ENABLE_STUDENT_REWARDS_WORKSPACE === 'true' ||
+      process.env.NEXT_PUBLIC_ENABLE_STUDENT_REWARDS_WORKSPACE === 'true',
     STUDENT_GOALS_WORKSPACE:
-      process.env['EXPO_PUBLIC_ENABLE_STUDENT_GOALS_WORKSPACE'] === 'true' ||
-      process.env['NEXT_PUBLIC_ENABLE_STUDENT_GOALS_WORKSPACE'] === 'true',
+      process.env.EXPO_PUBLIC_ENABLE_STUDENT_GOALS_WORKSPACE === 'true' ||
+      process.env.NEXT_PUBLIC_ENABLE_STUDENT_GOALS_WORKSPACE === 'true',
     STUDENT_GRADES_WORKSPACE:
-      process.env['EXPO_PUBLIC_ENABLE_STUDENT_GRADES_WORKSPACE'] === 'true' ||
-      process.env['NEXT_PUBLIC_ENABLE_STUDENT_GRADES_WORKSPACE'] === 'true',
+      process.env.EXPO_PUBLIC_ENABLE_STUDENT_GRADES_WORKSPACE === 'true' ||
+      process.env.NEXT_PUBLIC_ENABLE_STUDENT_GRADES_WORKSPACE === 'true',
     STUDENT_PROGRESS_WORKSPACE:
-      process.env['EXPO_PUBLIC_ENABLE_STUDENT_PROGRESS_WORKSPACE'] === 'true' ||
-      process.env['NEXT_PUBLIC_ENABLE_STUDENT_PROGRESS_WORKSPACE'] === 'true',
-    COMMUNITY: process.env['EXPO_PUBLIC_ENABLE_COMMUNITY'] !== 'false',
-    MESSAGING: process.env['EXPO_PUBLIC_ENABLE_MESSAGING'] !== 'false',
-    SOCIAL_SHIELD: process.env['EXPO_PUBLIC_ENABLE_SOCIAL_SHIELD'] !== 'false',
+      process.env.EXPO_PUBLIC_ENABLE_STUDENT_PROGRESS_WORKSPACE === 'true' ||
+      process.env.NEXT_PUBLIC_ENABLE_STUDENT_PROGRESS_WORKSPACE === 'true',
+    COMMUNITY: process.env.EXPO_PUBLIC_ENABLE_COMMUNITY !== 'false',
+    MESSAGING: process.env.EXPO_PUBLIC_ENABLE_MESSAGING !== 'false',
+    SOCIAL_SHIELD: process.env.EXPO_PUBLIC_ENABLE_SOCIAL_SHIELD !== 'false',
   };
 
   if (envFlags.ERP) {
@@ -170,8 +170,9 @@ export const resolveFeatureFlags = (
   const isPaidTier = context.pricing_tier === 'PRO' || context.pricing_tier === 'INSTITUTIONAL';
   const isInstitutional = context.pricing_tier === 'INSTITUTIONAL';
   const isWanderer = context.citizenship === 'WANDERER';
-  
-  const capacity = context.active_bond?.capacity || null;
+
+  const activeBond = context.activeBond || null;
+  const capacity = activeBond?.capacity || null;
   const isAdmin = ['admin', 'founder', 'developer'].includes(capacity || '');
 
   flags.isProMember = isPaidTier || isAdmin;
@@ -192,9 +193,11 @@ export const resolveFeatureFlags = (
   }
 
   if ((context.features || []).includes('OCR') || isAdmin) flags.canUseOCR = true;
-  if ((context.features || []).includes('AI_ASSISTANT') || isAdmin) flags.isAIAssistantEnabled = true;
+  if ((context.features || []).includes('AI_ASSISTANT') || isAdmin)
+    flags.isAIAssistantEnabled = true;
   if ((context.features || []).includes('STAFF_MANAGEMENT')) flags.isStaffManagementEnabled = true;
-  if ((context.features || []).includes('STUDENT_REPORTING')) flags.isStudentReportingEnabled = true;
+  if ((context.features || []).includes('STUDENT_REPORTING'))
+    flags.isStudentReportingEnabled = true;
   if ((context.features || []).includes('BETA_TESTER')) flags.isNewOnboardingEnabled = true;
   if (
     (context.features || []).includes('GUARDIAN_WORKSPACE') ||
@@ -256,34 +259,37 @@ export const resolveFeatureFlags = (
   }
 
   // 4. Remote Level (Global Configs) - HIGHEST PRIORITY Overrides
-  if (globalConfigs['KILL_SWITCH_OCR'] === 'true' || globalConfigs['KILL_SWITCH_OCR'] === true) {
+  if (globalConfigs.KILL_SWITCH_OCR === 'true' || globalConfigs.KILL_SWITCH_OCR === true) {
     flags.canUseOCR = false;
   }
 
   if (
-    globalConfigs['KILL_SWITCH_COMMUNITY'] === 'true' ||
-    globalConfigs['KILL_SWITCH_COMMUNITY'] === true
+    globalConfigs.KILL_SWITCH_COMMUNITY === 'true' ||
+    globalConfigs.KILL_SWITCH_COMMUNITY === true
   ) {
     flags.isCommunityEnabled = false;
   }
 
   if (
-    globalConfigs['KILL_SWITCH_MESSAGING'] === 'true' ||
-    globalConfigs['KILL_SWITCH_MESSAGING'] === true
+    globalConfigs.KILL_SWITCH_MESSAGING === 'true' ||
+    globalConfigs.KILL_SWITCH_MESSAGING === true
   ) {
     flags.isMessagingEnabled = false;
   }
 
-  if (globalConfigs['MAINTENANCE_MODE'] === 'true' || globalConfigs['MAINTENANCE_MODE'] === true) {
+  if (globalConfigs.MAINTENANCE_MODE === 'true' || globalConfigs.MAINTENANCE_MODE === true) {
     flags.isUnderMaintenance = true;
     // Potentially disable features here
   }
 
-  if (globalConfigs['ENABLE_POWERSYNC'] === 'true' || globalConfigs['ENABLE_POWERSYNC'] === true) {
+  if (globalConfigs.ENABLE_POWERSYNC === 'true' || globalConfigs.ENABLE_POWERSYNC === true) {
     flags.isPowerSyncEnabled = true;
   }
 
-  if (globalConfigs['DISABLE_BACKGROUND_SYNC'] === 'true' || globalConfigs['DISABLE_BACKGROUND_SYNC'] === true) {
+  if (
+    globalConfigs.DISABLE_BACKGROUND_SYNC === 'true' ||
+    globalConfigs.DISABLE_BACKGROUND_SYNC === true
+  ) {
     flags.isBackgroundSyncEnabled = false;
   }
 

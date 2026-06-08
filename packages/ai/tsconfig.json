@@ -1,12 +1,11 @@
 {
-	"extends": "../../packages/typescript-config/base.json",
-	"compilerOptions": {
-		"outDir": "./dist",
-		"rootDir": "./src",
-		"baseUrl": ".",
-		"paths": {
-			"@repo/ai/*": ["./src/*"]
-		}
-	},
-	"include": ["src/**/*"]
+  "extends": "../../packages/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "paths": {
+      "@repo/ai/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*"]
 }

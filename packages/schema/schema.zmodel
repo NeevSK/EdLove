@@ -28,6 +28,10 @@ model User {
   id        String   @id @default(uuid())
   email     String?  @unique
   full_name String
+  display_name String?
+  first_name String?
+  last_name String?
+  identity_state String?
   username  String?  @unique
   avatar_url String?
   bio       String?
@@ -37,6 +41,7 @@ model User {
   public_profile Boolean? @default(true)
   profile_completed Boolean? @default(false)
   is_anonymous Boolean? @default(false)
+  capacity String?
   citizenship String @default("WANDERER") // WANDERER, SECOND_CLASS, FIRST_CLASS
   pricing_tier String @default("FREE") // FREE, PRO, INSTITUTIONAL
   experience_years Int?
@@ -63,6 +68,7 @@ model User {
   mood_logs MoodLog[]
   journal_entries FireJournalEntry[]
   preferences UserPreferences?
+  personal_classrooms PersonalClassroom[]
 
   // Growth & Wellbeing
   gifts_given ThuthimalGift[] @relation("GiftsGiven")
@@ -182,6 +188,26 @@ model Classroom {
     auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] ||
     auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head')]
   ))
+
+  @@map("classrooms")
+}
+
+model PersonalClassroom {
+  id         String   @id @default(uuid())
+  user_id    String
+  name       String
+  type       String   // 'teacher_classroom' | 'student_classroom' | 'unrelated_classroom' | 'undefined'
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  // Permissions: Only the owner user or platform admin can manage
+  @@allow('all', auth() != null && user_id == auth().id)
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('read', auth() != null && user_id == auth().id)
+
+  @@map("personal_classrooms")
 }
 
 model ClassroomStudent {
@@ -198,6 +224,8 @@ model ClassroomStudent {
 
   @@allow('read', classroom.teacher_id == auth().id || student_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@allow('all', classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+
+  @@map("classroom_students")
 }
 
 model Assignment {
@@ -217,6 +245,8 @@ model Assignment {
   // Permissions
   @@allow('read', classroom.teacher_id == auth().id || (auth() != null && classroom.is_archived == false))
   @@allow('all', classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+
+  @@map("assignments")
 }
 
 model Grade {
@@ -247,6 +277,8 @@ model Grade {
     auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] ||
     auth().bonds?[entity_id == this.classroom.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head')]
   )
+
+  @@map("student_grades")
 }
 
 model ClassroomGradingSettings {
@@ -258,6 +290,8 @@ model ClassroomGradingSettings {
   // Permissions
   @@allow('read', classroom.teacher_id == auth().id || (auth() != null && classroom.is_archived == false))
   @@allow('all', classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+
+  @@map("classroom_grading_settings")
 }
 
 model Group {
@@ -282,6 +316,8 @@ model Group {
   @@allow('read', is_public || visibility == 'public')
   @@allow('read', members?[user_id == auth().id])
   @@allow('all', creator_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+
+  @@map("community_groups")
 }
 
 model GroupMember {
@@ -299,6 +335,8 @@ model GroupMember {
   @@allow('read', group.is_public || group.members?[user_id == auth().id])
   @@allow('all', auth() != null && user_id == auth().id)
   @@allow('all', group.creator_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+
+  @@map("community_group_members")
 }
 
 model Post {
@@ -324,6 +362,8 @@ model Post {
   
   // Members of the group can read posts
   @@allow('read', group.is_public || group.members?[user_id == auth().id])
+
+  @@map("community_posts")
 }
 
 model GroupMessage {
@@ -338,6 +378,8 @@ model GroupMessage {
 
   @@allow('read', group.members?[user_id == auth().id])
   @@allow('create', group.members?[user_id == auth().id])
+
+  @@map("group_messages")
 }
 
 model CommunityReaction {
@@ -353,6 +395,8 @@ model CommunityReaction {
 
   @@allow('read', post.group.is_public || post.group.members?[user_id == auth().id])
   @@allow('all', user_id == auth().id)
+
+  @@map("community_reactions")
 }
 
 model Lesson {
@@ -371,6 +415,8 @@ model Lesson {
   // Permissions
   @@allow('read', classroom.teacher_id == auth().id || (auth() != null && classroom.is_archived == false))
   @@allow('all', classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+
+  @@map("lessons")
 }
 
 model Material {
@@ -392,7 +438,7 @@ model Material {
   @@allow('read', classroom.teacher_id == auth().id || (auth() != null && classroom.is_archived == false))
   @@allow('all', classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
 
-  @@map("classroom_resources")
+  @@map("lesson_materials")
 }
 
 model AttendanceRecord {
@@ -412,6 +458,8 @@ model AttendanceRecord {
   // Permissions: Teachers and Admins can manage attendance for their classroom
   @@allow('read', auth() != null && (classroom.teacher_id == auth().id || auth().id == student_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.classroom.school_id && (capacity == 'principal' || capacity == 'section_head')]))
   @@allow('all', auth() != null && (classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'] || auth().bonds?[entity_id == this.classroom.school_id && (capacity == 'principal' || capacity == 'section_head')]))
+
+  @@map("attendance")
 }
 
 model School {
@@ -452,6 +500,8 @@ model School {
   @@allow('read', auth() != null)
   @@allow('create', auth() != null)
   @@allow('all', auth().id == created_by || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+
+  @@map("schools")
 }
 
 model InventoryItem {
@@ -469,6 +519,8 @@ model InventoryItem {
   // Permissions: Teachers and Admins can manage their classroom inventory
   @@allow('read', classroom.teacher_id == auth().id || auth() != null)
   @@allow('all', classroom.teacher_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+
+  @@map("inventory_items")
 }
 
 // ============================================================================
@@ -747,6 +799,8 @@ model Section {
 
   @@allow('read', auth() != null)
   @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+
+  @@map("sections")
 }
 
 model SchoolGrade {
@@ -760,6 +814,8 @@ model SchoolGrade {
 
   @@allow('read', auth() != null)
   @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+
+  @@map("grade_levels")
 }
 
 // ============================================================================

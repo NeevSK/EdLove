@@ -1,4 +1,32 @@
-import { type Context } from 'hono';
+import type { Context } from 'hono';
+
+const mapToIdentityPayload = (user: any) => {
+  const dbBonds = user.bonds || [];
+  const availableBonds = dbBonds.map((b: any) => ({
+    id: b.id,
+    user_id: b.user_id,
+    entity_id: b.entity_id,
+    entity_type: b.entity_type,
+    capacity: b.capacity,
+    status: b.status || 'active',
+    metadata: b.metadata || {},
+  }));
+
+  const activeBond =
+    availableBonds.find((b: any) => b.capacity === user.capacity) || availableBonds[0] || null;
+
+  return {
+    id: user.id,
+    email: user.email || '',
+    name: user.display_name || user.full_name || '',
+    display_name: user.display_name || user.full_name || '',
+    activeBond,
+    availableBonds,
+    onboarding_completed: !!user.onboarding_completed,
+    schoolId: user.school_id || null,
+    school_id: user.school_id || null,
+  };
+};
 
 /**
  * Identity Domain Handlers (Hono + ZenStack ReBAC)
@@ -11,17 +39,33 @@ export const identityHandlers = {
     const db = c.get('db');
     const user = c.get('user');
 
+    if (!db || user.id === 'anonymous') {
+      return c.json(
+        {
+          id: user.id,
+          email: '',
+          name: '',
+          display_name: '',
+          school_id: null,
+          schoolId: null,
+          onboarding_completed: false,
+          onboarding_state: 'pending',
+          activeBond: null,
+          availableBonds: [],
+        },
+        200,
+      );
+    }
+
     const identity = await db.user.findUnique({
       where: { id: user.id },
       include: {
-        bonds: {
-          select: { capacity: true, entity_id: true, entity_type: true }
-        }
-      }
+        bonds: true,
+      },
     });
 
     if (!identity) return c.json({ message: 'Identity not found' }, 404);
-    return c.json(identity, 200);
+    return c.json(mapToIdentityPayload(identity), 200);
   },
 
   /**
@@ -34,14 +78,12 @@ export const identityHandlers = {
     const profile = await db.user.findUnique({
       where: { id },
       include: {
-        bonds: {
-          select: { capacity: true, entity_id: true, entity_type: true }
-        }
-      }
+        bonds: true,
+      },
     });
 
     if (!profile) return c.json({ message: 'Profile not found' }, 404);
-    return c.json(profile, 200);
+    return c.json(mapToIdentityPayload(profile), 200);
   },
 
   /**
@@ -51,25 +93,43 @@ export const identityHandlers = {
     const db = c.get('db');
     const { id } = c.req.param();
 
+    if (!db || id === 'anonymous') {
+      return c.json(
+        {
+          user_id: id,
+          school_id: null,
+          profile_completed: false,
+          onboarding_completed: false,
+          onboarding_state: 'pending',
+          real_class_count: 0,
+          profile: null,
+        },
+        200,
+      );
+    }
+
     const [user, classrooms] = await Promise.all([
       db.user.findUnique({ where: { id } }),
-      db.classroom.findMany({ 
+      db.classroom.findMany({
         where: { teacher_id: id },
-        select: { id: true }
-      })
+        select: { id: true },
+      }),
     ]);
 
     if (!user) return c.json({ message: 'User not found' }, 404);
 
-    return c.json({
-      user_id: id,
-      school_id: null, // To be determined by active bond
-      profile_completed: !!user.full_name,
-      onboarding_completed: user.onboarding_completed,
-      onboarding_state: user.onboarding_state,
-      real_class_count: classrooms.length,
-      profile: user,
-    }, 200);
+    return c.json(
+      {
+        user_id: id,
+        school_id: null, // To be determined by active bond
+        profile_completed: !!user.full_name,
+        onboarding_completed: user.onboarding_completed,
+        onboarding_state: user.onboarding_state,
+        real_class_count: classrooms.length,
+        profile: user,
+      },
+      200,
+    );
   },
 
   /**
@@ -83,8 +143,11 @@ export const identityHandlers = {
     const updated = await db.user.update({
       where: { id },
       data: body,
+      include: {
+        bonds: true,
+      },
     });
 
-    return c.json(updated, 200);
+    return c.json(mapToIdentityPayload(updated), 200);
   },
 };

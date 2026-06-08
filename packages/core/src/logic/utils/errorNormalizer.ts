@@ -1,10 +1,10 @@
 import { ZodError } from 'zod';
-import { SovereignError, ErrorCategory } from '../../types/Errors';
+import { ErrorCategory, SovereignError } from '../../types/Errors';
 
 /**
  * normalizeError: The Sovereign Sanitizer
  * --------------------------------------
- * Converts raw internal errors (Prisma, Zod, Supabase) into 
+ * Converts raw internal errors (Prisma, Zod, Supabase) into
  * structured SovereignErrors that respect the observation tier.
  */
 export const normalizeError = (error: unknown, instanceId?: string): SovereignError => {
@@ -20,14 +20,14 @@ export const normalizeError = (error: unknown, instanceId?: string): SovereignEr
   if (error instanceof ZodError) {
     return SovereignError.validation(
       'One or more fields are invalid.',
-      error.format() // Full detail for Devs, sanitized by SovereignError constructor in Prod
+      error.format(), // Full detail for Devs, sanitized by SovereignError constructor in Prod
     );
   }
 
   // 3. Handle Supabase / PostgREST Errors (RLS violations)
   if (error && typeof error === 'object' && 'code' in error) {
     const pgError = error as { code: string; message: string; hint?: string };
-    
+
     // 42501 is PostgreSQL Insufficient Privilege (RLS)
     if (pgError.code === '42501') {
       return new SovereignError({
@@ -38,7 +38,7 @@ export const normalizeError = (error: unknown, instanceId?: string): SovereignEr
         code: 'RLS_VIOLATION',
         userMessage: 'You do not have access to this data.',
         devDetails: pgError,
-        instance: instanceId
+        instance: instanceId,
       });
     }
   }
@@ -51,6 +51,6 @@ export const normalizeError = (error: unknown, instanceId?: string): SovereignEr
     category: ErrorCategory.UNKNOWN,
     code: 'INTERNAL_SERVER_ERROR',
     devDetails: error,
-    instance: instanceId
+    instance: instanceId,
   });
 };

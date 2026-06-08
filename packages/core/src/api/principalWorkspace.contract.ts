@@ -122,4 +122,3 @@ export const principalWorkspaceContract = c.router({
     metadata: principalWorkspaceAuthority('read', 'PrincipalObservation'),
   },
 });
-

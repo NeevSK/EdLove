@@ -22,8 +22,12 @@ export function useMediaDownloader({ resourceId, url, mimeType }: UseMediaDownlo
 
   const extension = mimeType === 'application/pdf' ? 'pdf' : url.split('.').pop() || 'tmp';
   const fileName = `gurudevi_${resourceId}.${extension}`;
-  const localPath =
-    ((FileSystem as any).cacheDirectory ?? (FileSystem as any).documentDirectory) + fileName;
+  const fileSystem = FileSystem as typeof FileSystem & {
+    cacheDirectory?: string;
+    documentDirectory?: string;
+  };
+  const baseDirectory = fileSystem.cacheDirectory ?? fileSystem.documentDirectory ?? '';
+  const localPath = `${baseDirectory}${fileName}`;
 
   const checkCached = useCallback(async () => {
     if (Platform.OS === 'web') return;
@@ -79,8 +83,8 @@ export function useMediaDownloader({ resourceId, url, mimeType }: UseMediaDownlo
       } else {
         throw new Error('Download returned no URI');
       }
-    } catch (e: any) {
-      setErrorMsg(e?.message ?? 'Download failed');
+    } catch (error: unknown) {
+      setErrorMsg(error instanceof Error ? error.message : 'Download failed');
       setDownloadState('error');
     }
   }, [url, localPath]);
