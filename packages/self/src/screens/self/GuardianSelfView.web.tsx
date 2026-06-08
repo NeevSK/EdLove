@@ -60,10 +60,7 @@ export default function GuardianSelfView() {
     <TemporalProvider>
       <BaseSelfView
         perspective="guardian"
-        description={t(
-          'self.guardianDescription',
-          'A steady sanctuary for parents and guardians to stay centered while caring for their children.',
-        )}
+        description={t('self.guardianDescription')}
         domains={[
           {
             id: 'journey',

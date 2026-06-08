@@ -62,7 +62,7 @@ export default function StudentSelfView() {
     <ScreenWrapper scroll={false} noTopInset={true}>
       <BaseSelfView
         perspective="student"
-        description={t('self.studentDescription', 'Nurture your growth.')}
+        description={t('self.studentDescription')}
         domains={domainContent as any}
       />
       <WelcomeModal

@@ -86,10 +86,10 @@ export default function FounderSelfView() {
           Ecosystem Flux
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <button className="sidebar-item" onClick={() => {}}>
+          <button type="button" className="sidebar-item" onClick={() => {}}>
             <Sparkles size={16} /> <span>Vision Alignment</span>
           </button>
-          <button className="sidebar-item" onClick={() => {}}>
+          <button type="button" className="sidebar-item" onClick={() => {}}>
             <Lightbulb size={16} /> <span>Philosophy Lab</span>
           </button>
         </div>
@@ -103,10 +103,7 @@ export default function FounderSelfView() {
     <TemporalProvider>
       <BaseSelfView
         perspective="founder"
-        description={t(
-          'self.founderDesc',
-          'Navigate the vast currents of the educational ecosystem.',
-        )}
+        description={t('self.founderDesc')}
         domains={[
           {
             id: 'journey',
@@ -165,7 +162,7 @@ export default function FounderSelfView() {
                         color: 'var(--ink)',
                       }}
                     >
-                      {t('founder.visionComingSoon', 'Architecting the Future')}
+                      {t('founder.visionComingSoon')}
                     </h3>
                     <p
                       style={{
@@ -174,10 +171,7 @@ export default function FounderSelfView() {
                         color: 'var(--ink-ghost)',
                       }}
                     >
-                      {t(
-                        'founder.visionComingSoonDesc',
-                        'The vision alignment dashboard is currently being synthesized.',
-                      )}
+                      {t('founder.visionComingSoonDesc')}
                     </p>
                   </div>
                 ),

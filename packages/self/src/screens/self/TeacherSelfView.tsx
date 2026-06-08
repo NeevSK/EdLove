@@ -83,7 +83,7 @@ export default function TeacherSelfView() {
     <ScreenWrapper scroll={false} noTopInset={true}>
       <BaseSelfView
         perspective="teacher"
-        description={t('self.teacherDescription', 'Refine your craft, nurture your spirit.')}
+        description={t('self.teacherDescription')}
         domains={[
           {
             id: 'journey',

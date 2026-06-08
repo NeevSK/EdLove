@@ -33,7 +33,8 @@
     "close": "Close",
     "now": "Now",
     "saving": "Saving",
-    "comingSoon": "Coming Soon"
+    "comingSoon": "Coming Soon",
+    "plant": "Plant Seed"
   },
   "goodMorning": "Good Morning!",
   "goodAfternoon": "Good Afternoon!",
@@ -282,7 +283,31 @@
     "decisionPlaceholder": "Decision Placeholder",
     "recentDecisions": "Recent Decisions",
     "noDecisionsYet": "No Decisions Yet",
-    "historicalMood": "Your resonance on this journey."
+    "historicalMood": "Your resonance on this journey.",
+    "adminDescription": "Operational clarity from a source of inner stillness.",
+    "founderDesc": "Navigate the vast currents of the educational ecosystem.",
+    "founderDescription": "The steady eye of the hurricane - a space for vision and personal pulse.",
+    "gratitudePlaceholder": "What warmed your heart?",
+    "guardianDescription": "A steady sanctuary for parents and guardians to stay centered while caring for their children.",
+    "moodHowAreYou": "Inner Lotus",
+    "moodNeutral": "Neutral",
+    "moodPositive": "Positive",
+    "moodRadiant": "Radiant",
+    "noWisdomYet": "No wisdom seeds planted in this sanctuary yet.",
+    "plantSeed": "Plant a new seed of wisdom",
+    "principalDesc": "Orchestrate systemic harmony from a place of centered wisdom.",
+    "principalDescription": "A restorative space for leadership clarity and personal rhythm.",
+    "recording": "Active Recording",
+    "recordingHint": "The void is listening...",
+    "studentDesc": "Cultivate your inner landscape.",
+    "studentDescription": "Nurture your growth.",
+    "tapToStart": "Tap the Mic to Begin",
+    "teacherDesc": "Radiate clarity from the center of your instructional practice.",
+    "teacherDescription": "Refine your craft, nurture your spirit.",
+    "voiceJournal": "Voice Sanctuary",
+    "voiceJournalSubtitle": "Speak your truth, let it go.",
+    "wisdomPlaceholder": "What have you realized today?",
+    "wisdomSeeds": "Wisdom Seeds"
   },
   "student": {
     "mood": "Mood Check",
@@ -331,7 +356,7 @@
     "quickActions": "Quick Actions",
     "actions": {
       "manageHierarchy": "🏫 Manage School Hierarchy",
-      "inviteStaff": "\u2709\ufe0f Invite Staff & Students"
+      "inviteStaff": "✉️ Invite Staff & Students"
     },
     "ia": {
       "scope": {
@@ -580,7 +605,12 @@
       "noSanctuaryDesc": "No Sanctuary Desc",
       "exploreGalaxy": "Explore Galaxy",
       "noGalaxyDesc": "No Galaxy Desc",
-      "foundCircle": "Found Circle"
+      "foundCircle": "Found Circle",
+      "joinAuthRequired": "To join this group, let's create an account first!",
+      "joinedSuccess": "Welcome to the circle!",
+      "member": "Member",
+      "qrHint": "Broadcasters can scan this key to join the circle instantly.",
+      "qrTitle": "Circle Identity"
     },
     "sections": {
       "vision": "SCHOOL VISION",
@@ -655,7 +685,20 @@
       "pulseHigh": "High",
       "sanctuaryHonors": "Sanctuary Honors",
       "earlyResonator": "Early Resonator",
-      "verifiedArchitect": "Verified Architect"
+      "verifiedArchitect": "Verified Architect",
+      "defaultBio": "This user is on a journey of growth and resonance within the Gurudevi ecosystem.",
+      "explorer": "Explorer",
+      "memberOfGurudevi": "Member of Gurudevi",
+      "privacyProtected": "Privacy Protected",
+      "privateNote": "This explorer has chosen to keep their detailed presence private.",
+      "privateSanctuary": "Private Sanctuary",
+      "publicPresenceOf": "Public presence of",
+      "publicResonance": "Public Resonance",
+      "pulseActive": "Active",
+      "recent": "Recent",
+      "reflection": "REFLECTION",
+      "resonanceSphere": "Resonance Sphere",
+      "verified": "Verified"
     },
     "filters": {
       "allUpdates": "All Updates"
@@ -688,7 +731,15 @@
     "dms": {
       "guestTitle": "Private Resonance",
       "guestDesc": "Sign in to connect directly with fellow educators and share private reflections."
-    }
+    },
+    "endorse": "Endorse",
+    "endorsers": "Endorsers",
+    "hearthSubtitle": "Where the community pulse beats strongest",
+    "hearthTitle": "The Hearth",
+    "manifestoCarousel": "Community Manifestos",
+    "manifestoTopic": "Community Manifesto",
+    "spotlight": "SPOTLIGHT",
+    "viewSpotlight": "View Spotlight Post"
   },
   "library": {
     "errorLoading": "Failed to load sanctuary wisdom.",
@@ -885,7 +936,14 @@
     "whereDesc": "Ask your principal for an invite code",
     "createSchool": "I'm a Principal - Create my school",
     "invalidCode": "Invalid or expired code",
-    "joiningSchool": "Joining {{schoolName}}!"
+    "joiningSchool": "Joining {{schoolName}}!",
+    "error": {
+      "invalid": "Invalid code",
+      "noCode": "Please enter an invite code"
+    },
+    "success": {
+      "joining": "Joining"
+    }
   },
   "errors": {
     "somethingWentWrong": "Something went wrong",
@@ -918,7 +976,8 @@
     "marksOnly": "Marks Only",
     "gpaOnly": "GPA Only",
     "both": "Both",
-    "showRanks": "Show Ranks"
+    "showRanks": "Show Ranks",
+    "empty": "No graded assignments yet. Your growth will be reflected here soon."
   },
   "students": {
     "title": "Students",
@@ -979,9 +1038,9 @@
     "indexPlaceholder": "Enter index number",
     "optionalNotes": "Notes (Optional)",
     "notesPlaceholder": "Add any notes about this student...",
-    "previous": "\u2190 Previous",
-    "skip": "Skip \u2192",
-    "saveNext": "Save & Next \u2192",
+    "previous": "← Previous",
+    "skip": "Skip →",
+    "saveNext": "Save & Next →",
     "finishReview": "Finish & Review",
     "reviewAll": "Review All ({{count}})",
     "reviewTitle": "Review Students",
@@ -989,7 +1048,7 @@
     "validCount": "{{count}} valid student(s)",
     "addOneMore": "Add One More",
     "addStudentsAction": "Add {{count}} Student(s)",
-    "backToEntry": "\u2190 Back to Entry",
+    "backToEntry": "← Back to Entry",
     "noName": "No name",
     "noIndex": "No index",
     "errors": {
@@ -1190,12 +1249,12 @@
     "alreadyBloomedDesc": "This Thuthimal gift has already been received by someone.\nEach flower of gratitude blooms only once.",
     "errorTitle": "Something went wrong",
     "errorDesc": "We couldn't process this gift. Please try again or contact support.",
-    "flowerTitle": "\u0DAD\u0DD4\u0DAD\u0DD2\u0DB8\u0DBD\u0DCA",
+    "flowerTitle": "තුතිමල්",
     "giftHeading": "A Flower of Gratitude",
     "giftFrom": "Your Pro subscription is a gift of gratitude from",
     "giftRecognition": "A recognition of your sacred work as an educator.",
     "proActive": "Pro is now active on your account",
-    "enterSanctuary": "Enter the Sanctuary \u2727",
+    "enterSanctuary": "Enter the Sanctuary ✧",
     "goBack": "Go Back"
   },
   "qrHandler": {
@@ -1214,7 +1273,8 @@
     "joinFailed": "Failed to join",
     "joinFailedDesc": "Unable to update your profile. Please try again.",
     "errorTitle": "Error",
-    "errorDesc": "An unexpected error occurred. Please try again."
+    "errorDesc": "An unexpected error occurred. Please try again.",
+    "desc": "Your presence has been requested within this sanctuary."
   },
   "aiAssistant": {
     "title": "Mr. AI Agent",
@@ -1235,7 +1295,8 @@
     "guidance": "Sometimes the act of naming is enough to release it",
     "pastRecord": "What was released on this day.",
     "noPastRecord": "No burdens were released on this day.",
-    "historical": "Historical"
+    "historical": "Historical",
+    "errorSaving": "We could not save this release safely."
   },
   "sleepTracker": {
     "title": "How did you sleep?",
@@ -1252,7 +1313,10 @@
     "excellentDesc": "Deeply rested",
     "logButton": "Save Sleep Log",
     "alreadyLogged": "Sleep logged for today",
-    "qualityLabel": "Sleep Quality"
+    "qualityLabel": "Sleep Quality",
+    "notTime": "Sleep tracking is available in the morning (5am - 11am)",
+    "philosophy": "💤 Rest is sacred. Your wellbeing matters.",
+    "tomorrowHint": "You can record your next rest tomorrow morning."
   },
   "reminders": {
     "title": "Reminders",
@@ -1302,13 +1366,15 @@
     "level": "Level {{level}}",
     "xpToNext": "{{xp}} XP to next level",
     "achievements": "Achievements",
-    "keepGoing": "Keep growing!"
+    "keepGoing": "Keep growing!",
+    "interactionsLabel": "Vitality Totals",
+    "philosophy": "Growth is an organic unfolding, not a performance. Every breath, every reflection, and every moment of presence nourishes the whole. 🌱"
   },
   "thuthimalBadge": {
     "title": "Thuthimal",
-    "sinhala": "\u0DAD\u0DD4\u0DAD\u0DD2\u0DB8\u0DBD\u0DCA",
+    "sinhala": "තුතිමල්",
     "giftedBy": "Your Pro subscription is a gift of gratitude from:",
-    "meaning": "\u0DAD\u0DD4\u0DAD\u0DD2\u0DB8\u0DBD\u0DCA (Thuthimal) means \"Flower of Gratitude\" — honoring the sacred work of teaching",
+    "meaning": "තුතිමල් (Thuthimal) means \"Flower of Gratitude\" — honoring the sacred work of teaching",
     "giftedOn": "Gifted on {{date}}"
   },
   "socialSanctuary": {
@@ -1521,5 +1587,13 @@
     "progress": "Progress",
     "completed": "Completed",
     "noGoals": "No Goals"
+  },
+  "chat": {
+    "empty": "A quiet resonance awaits. Be the first to speak in this sanctuary.",
+    "historicalView": "Viewing historical sanctuary records.",
+    "noConversationsDesc": "No direct resonances yet. Start a conversation from a user's profile to begin.",
+    "noConversationsTitle": "Quiet Sanctuary",
+    "placeholder": "Resonate...",
+    "tapToContinue": "Deepen your resonance..."
   }
 }

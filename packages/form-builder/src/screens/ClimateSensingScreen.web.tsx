@@ -104,73 +104,81 @@ export const ClimateSensingScreenWeb = ({
     return () => clearTimeout(timer);
   }, [searchQuery, services]);
 
-  const handleSubmit = useCallback(async (values: ClimateSensingData) => {
-    if (!selectedSchool) return;
-    setIsSubmitting(true);
-    setSubmitError(null);
+  const handleSubmit = useCallback(
+    async (values: ClimateSensingData) => {
+      if (!selectedSchool) return;
+      setIsSubmitting(true);
+      setSubmitError(null);
 
-    try {
-      const logs = [
-        {
-          edu_school_id: selectedSchool.id,
-          dimension: 'material',
-          score: null,
-          detailed_context: JSON.stringify({
-            power_reliability: values.power_reliability,
-            water_access: values.water_access,
-            lab_status: values.lab_status,
-          }),
-          reason_category: values.shift_reason,
-        },
-        {
-          edu_school_id: selectedSchool.id,
-          dimension: 'connectivity',
-          score: (values.signal_strength + values.wifi_reach) / 2,
-          detailed_context: JSON.stringify({
-            signal_strength: values.signal_strength,
-            wifi_reach: values.wifi_reach,
-          }),
-          reason_category: values.shift_reason,
-        },
-        {
-          edu_school_id: selectedSchool.id,
-          dimension: 'harmony',
-          score: (values.staff_synergy + values.principal_alignment) / 2,
-          detailed_context: JSON.stringify({
-            harmony_vibe: values.harmony_vibe,
-            staff_synergy: values.staff_synergy,
-            principal_alignment: values.principal_alignment,
-          }),
-          reason_category: values.shift_reason,
-        },
-        {
-          edu_school_id: selectedSchool.id,
-          dimension: 'logistics',
-          score: (values.commute_friction + values.resource_density) / 2,
-          detailed_context: JSON.stringify({
-            commute_friction: values.commute_friction,
-            resource_density: values.resource_density,
-          }),
-          reason_category: values.shift_reason,
-        },
-      ];
+      try {
+        const logs = [
+          {
+            edu_school_id: selectedSchool.id,
+            dimension: 'material',
+            score: null,
+            detailed_context: JSON.stringify({
+              power_reliability: values.power_reliability,
+              water_access: values.water_access,
+              lab_status: values.lab_status,
+            }),
+            reason_category: values.shift_reason,
+          },
+          {
+            edu_school_id: selectedSchool.id,
+            dimension: 'connectivity',
+            score: (values.signal_strength + values.wifi_reach) / 2,
+            detailed_context: JSON.stringify({
+              signal_strength: values.signal_strength,
+              wifi_reach: values.wifi_reach,
+            }),
+            reason_category: values.shift_reason,
+          },
+          {
+            edu_school_id: selectedSchool.id,
+            dimension: 'harmony',
+            score: (values.staff_synergy + values.principal_alignment) / 2,
+            detailed_context: JSON.stringify({
+              harmony_vibe: values.harmony_vibe,
+              staff_synergy: values.staff_synergy,
+              principal_alignment: values.principal_alignment,
+            }),
+            reason_category: values.shift_reason,
+          },
+          {
+            edu_school_id: selectedSchool.id,
+            dimension: 'logistics',
+            score: (values.commute_friction + values.resource_density) / 2,
+            detailed_context: JSON.stringify({
+              commute_friction: values.commute_friction,
+              resource_density: values.resource_density,
+            }),
+            reason_category: values.shift_reason,
+          },
+        ];
 
-      if (!services?.submitPulse) {
-        throw new Error('Climate sensing host services are not configured.');
+        if (!services?.submitPulse) {
+          throw new Error('Climate sensing host services are not configured.');
+        }
+
+        await services.submitPulse({ schoolId: selectedSchool.id, logs });
+        setIsFinished(true);
+      } catch (err: any) {
+        console.error('Failed to broadcast resonance pulse:', err);
+        setSubmitError(err.message || 'Transmission failed. Please check your connection.');
+      } finally {
+        setIsSubmitting(false);
       }
-
-      await services.submitPulse({ schoolId: selectedSchool.id, logs });
-      setIsFinished(true);
-    } catch (err: any) {
-      console.error('Failed to broadcast resonance pulse:', err);
-      setSubmitError(err.message || 'Transmission failed. Please check your connection.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [selectedSchool, services]);
+    },
+    [selectedSchool, services],
+  );
 
   const manager = useMemo(
-    () => new FormManager(createClimateSensingSchema((values) => { void handleSubmit(values); })),
+    () =>
+      new FormManager(
+        createClimateSensingSchema((values) => {
+          void handleSubmit(values);
+        }),
+      ),
     [handleSubmit],
   );
 

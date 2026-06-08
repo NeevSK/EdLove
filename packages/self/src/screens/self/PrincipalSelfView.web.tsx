@@ -110,10 +110,7 @@ export default function PrincipalSelfView() {
     <TemporalProvider>
       <BaseSelfView
         perspective="principal"
-        description={t(
-          'self.principalDesc',
-          'Orchestrate systemic harmony from a place of centered wisdom.',
-        )}
+        description={t('self.principalDesc')}
         domains={[
           {
             id: 'journey',
@@ -192,7 +189,7 @@ export default function PrincipalSelfView() {
                         color: 'var(--ink)',
                       }}
                     >
-                      {t('principal.monthlyComingSoon', 'Architect of Growth')}
+                      {t('principal.monthlyComingSoon')}
                     </h3>
                     <p
                       style={{
@@ -201,10 +198,7 @@ export default function PrincipalSelfView() {
                         color: 'var(--ink-ghost)',
                       }}
                     >
-                      {t(
-                        'principal.monthlyComingSoonDesc',
-                        'A deep reflection module for your monthly milestones is on its way.',
-                      )}
+                      {t('principal.monthlyComingSoonDesc')}
                     </p>
                   </div>
                 ),

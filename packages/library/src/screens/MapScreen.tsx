@@ -238,7 +238,9 @@ export default function MapScreen() {
         rightAction={
           <FeatureGuard feature="isProMember">
             <Pressable
-              onPress={() => { void handleExport(); }}
+              onPress={() => {
+                void handleExport();
+              }}
               disabled={isExporting}
               className="flex-row items-center px-4 py-2 rounded-xl mr-3"
               style={({ pressed }) => ({

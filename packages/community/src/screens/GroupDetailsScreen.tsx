@@ -144,7 +144,7 @@ export default function GroupDetailsScreen() {
     setShowReportModal(true);
   }, []);
 
-  const handleJoin = async () => {
+  const handleJoin = React.useCallback(async () => {
     if (!canJoinGroup || !user?.id) {
       await setPendingGateAction({
         kind: 'community_join_group',
@@ -186,7 +186,7 @@ export default function GroupDetailsScreen() {
         type: 'error',
       });
     }
-  };
+  }, [canJoinGroup, user?.id, groupId, group?.join_policy, showToast, t, navigation, joinGroup]);
 
   useEffect(() => {
     let cancelled = false;
@@ -433,7 +433,7 @@ export default function GroupDetailsScreen() {
         <SanctuaryModal
           isOpen={showQRModal}
           onClose={handleHideQR}
-          title={t('community.groups.qrTitle', 'Circle Identity')}
+          title={t('community.groups.qrTitle')}
         >
           <VStack className="items-center py-8 gap-8">
             <Box className="p-6 bg-white rounded-[40px] shadow-2xl">
@@ -445,10 +445,7 @@ export default function GroupDetailsScreen() {
                 <Text className="text-phase-interactive text-sm font-bold">@{group.handle}</Text>
               )}
               <Text className="text-xs text-ink/40 text-center mt-3 font-medium leading-relaxed">
-                {t(
-                  'community.groups.qrHint',
-                  'Broadcasters can scan this key to join the circle instantly.',
-                )}
+                {t('community.groups.qrHint')}
               </Text>
             </VStack>
 

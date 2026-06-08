@@ -78,8 +78,7 @@ export default function DirectMessagesListScreen() {
                 <Text className="text-[10px] font-bold text-ink/20">{timeStr}</Text>
               </HStack>
               <Text className="text-xs font-medium text-ink/40" numberOfLines={1}>
-                {t('chat.tapToContinue', 'Deepen your resonance...') ||
-                  'Tap to continue conversation'}
+                {t('chat.tapToContinue') || 'Tap to continue conversation'}
               </Text>
             </VStack>
 
@@ -118,13 +117,10 @@ export default function DirectMessagesListScreen() {
             </Box>
             <VStack className="gap-2 items-center">
               <Text className="text-xl font-black text-ink text-center">
-                {t('chat.noConversationsTitle', 'Quiet Sanctuary') || 'Quiet Sanctuary'}
+                {t('chat.noConversationsTitle') || 'Quiet Sanctuary'}
               </Text>
               <Text className="text-center text-ink/40 font-medium px-4 leading-relaxed">
-                {t(
-                  'chat.noConversationsDesc',
-                  "No direct resonances yet. Start a conversation from a user's profile to begin.",
-                ) ||
+                {t('chat.noConversationsDesc') ||
                   "No direct resonances yet. Start a conversation from a user's profile to begin."}
               </Text>
             </VStack>

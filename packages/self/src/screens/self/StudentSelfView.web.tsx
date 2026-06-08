@@ -94,7 +94,7 @@ export default function StudentSelfView() {
     <>
       <BaseSelfView
         perspective="student"
-        description={t('self.studentDesc', 'Cultivate your inner landscape.')}
+        description={t('self.studentDesc')}
         domains={domainContent as any}
       />
       <WelcomeModal

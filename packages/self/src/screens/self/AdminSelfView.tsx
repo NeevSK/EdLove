@@ -60,10 +60,7 @@ export default function AdminSelfView() {
     <ScreenWrapper scroll={false} noTopInset={true}>
       <BaseSelfView
         perspective="admin"
-        description={t(
-          'self.adminDescription',
-          'Operational clarity from a source of inner stillness.',
-        )}
+        description={t('self.adminDescription')}
         domains={[
           {
             id: 'pulse',

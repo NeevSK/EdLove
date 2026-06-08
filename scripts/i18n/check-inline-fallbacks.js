@@ -1,6 +1,5 @@
-#!/usr/bin/env node
-const fs = require('node:fs');
-const path = require('node:path');
+import fs from 'node:fs';
+import path from 'node:path';
 
 const roots = [
   'apps/gurudevi-mobile/src',
@@ -10,6 +9,7 @@ const roots = [
 ];
 
 function walk(dir, out = []) {
+  if (!fs.existsSync(dir)) return out;
   for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, ent.name);
     if (ent.isDirectory()) walk(p, out);

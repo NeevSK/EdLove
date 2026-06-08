@@ -13,7 +13,7 @@ i18n
     lng: 'en',
 
     // Fallback language if translation missing.
-    // Keep runtime fallbacks in i18n config + locale files (never inline t('key', 'default')).
+    // Keep runtime fallbacks in i18n config + locale files (never inline t-key, default).
     fallbackLng: 'en',
 
     // Available languages

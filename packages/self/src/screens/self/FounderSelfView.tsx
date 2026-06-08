@@ -80,10 +80,7 @@ export default function FounderSelfView() {
     <ScreenWrapper scroll={false} noTopInset={true}>
       <BaseSelfView
         perspective="founder"
-        description={t(
-          'self.founderDescription',
-          'The steady eye of the hurricane - a space for vision and personal pulse.',
-        )}
+        description={t('self.founderDescription')}
         domains={[
           {
             id: 'journey',
@@ -170,11 +167,8 @@ export default function FounderSelfView() {
                 content: (
                   <PositiveInvitation
                     context="self"
-                    title={t('founder.visionComingSoon', 'Architecting the Future')}
-                    description={t(
-                      'founder.visionComingSoonDesc',
-                      'The vision alignment dashboard is currently being synthesized.',
-                    )}
+                    title={t('founder.visionComingSoon')}
+                    description={t('founder.visionComingSoonDesc')}
                   />
                 ),
               },

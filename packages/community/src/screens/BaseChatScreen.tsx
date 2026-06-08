@@ -258,10 +258,7 @@ export default function BaseChatScreen({
                     <Icon as={MessageSquare} size="lg" className="text-ink/20" />
                   </Box>
                   <Text className="text-center text-ink/40 text-sm font-medium leading-relaxed">
-                    {t(
-                      'chat.empty',
-                      'A quiet resonance awaits. Be the first to speak in this sanctuary.',
-                    )}
+                    {t('chat.empty')}
                   </Text>
                 </Box>
               </AnimatedView>
@@ -274,7 +271,7 @@ export default function BaseChatScreen({
           {isReadOnly ? (
             <Box className="py-2 items-center bg-ink/5 rounded-xl border border-dashed border-border">
               <Text className="text-ink/40 text-[11px] font-medium italic">
-                {t('chat.historicalView', 'Viewing historical sanctuary records.')}
+                {t('chat.historicalView')}
               </Text>
             </Box>
           ) : isBlocked ? (
@@ -289,7 +286,7 @@ export default function BaseChatScreen({
                 <InputField
                   value={draft}
                   onChangeText={setDraft}
-                  placeholder={t('chat.placeholder', 'Resonate...') as string}
+                  placeholder={t('chat.placeholder') as string}
                   placeholderTextColor="rgba(var(--ink), 0.2)"
                   multiline
                   className="min-h-[44px] max-h-[140px] px-4 py-2.5 text-base text-ink font-medium"

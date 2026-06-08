@@ -1,15 +1,15 @@
 /* eslint-disable import-x/no-unresolved */
-import path from 'node:path';
+
+import * as fs from 'node:fs';
 import os from 'node:os';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
-import * as fs from 'node:fs';
 import * as dotenv from 'dotenv';
-
 
 // --- Service Imports: The Modular Sovereignty ---
 import { AuditService } from './services/AuditService.js';
@@ -56,7 +56,7 @@ class PolymathPlatformServer {
 
   private async syncWorkspaceSkillsToAntigravity() {
     const homedir = os.homedir();
-    
+
     // Dynamically resolve the absolute workspace root relative to the current module folder
     let workspaceRoot = path.resolve(__dirname, '..', '..', '..');
     if (!fs.existsSync(path.join(workspaceRoot, 'package.json'))) {
@@ -111,14 +111,16 @@ class PolymathPlatformServer {
           if (!playbooks.has(skillName)) {
             const content = fs.readFileSync(codexSkillMdPath, 'utf8');
             playbooks.set(skillName, { sourcePath: codexSkillMdPath, content });
-            
+
             // Auto-import global Codex skill to local workspace folder so they are committed and shared!
             const targetWorkspaceSkillDir = path.join(localSkillsDir, skillName);
             if (!fs.existsSync(targetWorkspaceSkillDir)) {
               fs.mkdirSync(targetWorkspaceSkillDir, { recursive: true });
             }
             fs.writeFileSync(path.join(targetWorkspaceSkillDir, 'skill.md'), content, 'utf8');
-            console.error(`[Gateway] Dynamic Auto-Import: Global Codex skill "${skillName}" imported into workspace.`);
+            console.error(
+              `[Gateway] Dynamic Auto-Import: Global Codex skill "${skillName}" imported into workspace.`,
+            );
           }
         }
       }
@@ -148,22 +150,25 @@ class PolymathPlatformServer {
       }
 
       const metadata = {
-        title: `${skillName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')} Skill`,
+        title: `${skillName
+          .split('-')
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(' ')} Skill`,
         summary: `Workspace-bounded engineering playbook for ${skillName} integrated into the Polymath Platform.`,
         tags: [skillName, 'sovereign', 'monorepo', 'playbook'],
         updatedAt: new Date().toISOString(),
         references: [
           {
             title: `Workspace Playbook`,
-            path: path.join(localSkillsDir, skillName, 'skill.md')
-          }
-        ]
+            path: path.join(localSkillsDir, skillName, 'skill.md'),
+          },
+        ],
       };
 
       fs.writeFileSync(
         path.join(targetSkillDir, 'metadata.json'),
         JSON.stringify(metadata, null, 2),
-        'utf8'
+        'utf8',
       );
 
       fs.writeFileSync(path.join(targetArtifactsDir, 'skill.md'), details.content, 'utf8');
@@ -175,7 +180,9 @@ class PolymathPlatformServer {
         if (!fs.existsSync(targetCodexSkillDir)) {
           fs.mkdirSync(targetCodexSkillDir, { recursive: true });
           fs.writeFileSync(path.join(targetCodexSkillDir, 'SKILL.md'), details.content, 'utf8');
-          console.error(`[Gateway] Dynamic Auto-Export: Synced skill "${skillName}" back to global Codex.`);
+          console.error(
+            `[Gateway] Dynamic Auto-Export: Synced skill "${skillName}" back to global Codex.`,
+          );
         }
       }
     }
@@ -188,14 +195,16 @@ class PolymathPlatformServer {
     fs.writeFileSync(
       path.join(githubDir, 'copilot-instructions.md'),
       consolidatedInstructions,
-      'utf8'
+      'utf8',
     );
-    console.error(`[Gateway] Consolidated all workspace skills into .github/copilot-instructions.md.`);
+    console.error(
+      `[Gateway] Consolidated all workspace skills into .github/copilot-instructions.md.`,
+    );
   }
 
   private async initializeDownstream() {
     console.error('[Gateway] Initializing Sovereign Downstream Multiplexer...');
-    
+
     // Auto-sync local skills on boot
     try {
       await this.syncWorkspaceSkillsToAntigravity();
@@ -213,8 +222,8 @@ class PolymathPlatformServer {
           'C:\\Users\\Naween\\projects\\polymath-platform\\scripts\\mcp-proxy.mjs',
           'pnpm',
           'dlx',
-          '@modelcontextprotocol/server-sequential-thinking'
-        ]
+          '@modelcontextprotocol/server-sequential-thinking',
+        ],
       },
       {
         name: 'github',
@@ -224,8 +233,8 @@ class PolymathPlatformServer {
           'C:\\Users\\Naween\\projects\\polymath-platform\\scripts\\mcp-proxy.mjs',
           'pnpm',
           'dlx',
-          '@modelcontextprotocol/server-github'
-        ]
+          '@modelcontextprotocol/server-github',
+        ],
       },
       {
         name: 'supabase',
@@ -234,8 +243,8 @@ class PolymathPlatformServer {
         args: [
           'C:\\Users\\Naween\\projects\\polymath-platform\\scripts\\mcp-proxy.mjs',
           'node',
-          'C:\\Users\\Naween\\projects\\polymath-platform\\node_modules\\@supabase\\mcp-server-supabase\\dist\\transports\\stdio.js'
-        ]
+          'C:\\Users\\Naween\\projects\\polymath-platform\\node_modules\\@supabase\\mcp-server-supabase\\dist\\transports\\stdio.js',
+        ],
       },
       {
         name: 'expo',
@@ -246,15 +255,17 @@ class PolymathPlatformServer {
           'npx',
           '-y',
           'mcp-remote',
-          'https://mcp.expo.dev/mcp'
-        ]
-      }
+          'https://mcp.expo.dev/mcp',
+        ],
+      },
     ];
 
     for (const serverConf of servers) {
       const token = process.env[serverConf.envKey];
       if (!token && !serverConf.alwaysRun) {
-        console.error(`[Gateway] Skipping ${serverConf.name} server (missing ${serverConf.envKey})`);
+        console.error(
+          `[Gateway] Skipping ${serverConf.name} server (missing ${serverConf.envKey})`,
+        );
         continue;
       }
 
@@ -273,26 +284,31 @@ class PolymathPlatformServer {
         const transport = new StdioClientTransport({
           command: serverConf.command,
           args: serverConf.args,
-          env: cleanEnv
+          env: cleanEnv,
         });
 
         const client = new Client(
           { name: `gateway-${serverConf.name}-client`, version: '1.0.0' },
-          { capabilities: {} }
+          { capabilities: {} },
         );
 
         await client.connect(transport);
         const toolsResult = await client.listTools();
         const toolsList = toolsResult.tools || [];
-        
+
         this.downstreamClients.set(serverConf.name, {
           client,
-          tools: toolsList
+          tools: toolsList,
         });
 
-        console.error(`[Gateway] Successfully bonded downstream server: ${serverConf.name} exposing ${toolsList.length} tools`);
+        console.error(
+          `[Gateway] Successfully bonded downstream server: ${serverConf.name} exposing ${toolsList.length} tools`,
+        );
       } catch (err: any) {
-        console.error(`[Gateway] Failed to bind downstream server ${serverConf.name}:`, err.message);
+        console.error(
+          `[Gateway] Failed to bind downstream server ${serverConf.name}:`,
+          err.message,
+        );
       }
     }
   }
@@ -966,14 +982,15 @@ class PolymathPlatformServer {
         },
         {
           name: 'sync_workspace_skills',
-          description: 'Surgically syncs active repo-level agent skills into global Antigravity Knowledge Items (KIs) dynamically.',
+          description:
+            'Surgically syncs active repo-level agent skills into global Antigravity Knowledge Items (KIs) dynamically.',
           inputSchema: { type: 'object', properties: {} },
-        }
+        },
       ];
 
       // Smart Selection Strategy
       const mcpMode = process.env.MCP_MODE;
-      
+
       let baseTools: any[] = [];
       if (mcpMode === 'GATEWAY' || !mcpMode) {
         baseTools = gatewayTools;
@@ -1015,9 +1032,11 @@ class PolymathPlatformServer {
       try {
         // --- Dynamic Downstream Client Routing ---
         for (const [clientName, details] of this.downstreamClients.entries()) {
-          const hasTool = details.tools.some(t => t.name === name);
+          const hasTool = details.tools.some((t) => t.name === name);
           if (hasTool) {
-            console.error(`[Gateway] Delegating tool "${name}" to downstream server: ${clientName}`);
+            console.error(
+              `[Gateway] Delegating tool "${name}" to downstream server: ${clientName}`,
+            );
             return await details.client.callTool({ name, arguments: args });
           }
         }
@@ -1026,7 +1045,12 @@ class PolymathPlatformServer {
         if (name === 'sync_workspace_skills') {
           await this.syncWorkspaceSkillsToAntigravity();
           return {
-            content: [{ type: 'text', text: 'Successfully synced workspace skills to global Antigravity Knowledge Items (KIs)!' }]
+            content: [
+              {
+                type: 'text',
+                text: 'Successfully synced workspace skills to global Antigravity Knowledge Items (KIs)!',
+              },
+            ],
           };
         }
 
@@ -1339,7 +1363,7 @@ class PolymathPlatformServer {
         closePromises.push(
           details.client.close().catch((err) => {
             console.error(`[Gateway] Error closing downstream ${name}:`, err.message);
-          })
+          }),
         );
       }
       try {

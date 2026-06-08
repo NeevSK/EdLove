@@ -958,7 +958,9 @@ export default function LibraryScreenWeb() {
                     onOpenResourceOptions={handleOpenResourceOptions}
                     onEndReached={handleEndReached}
                     refreshing={loading}
-                    onRefresh={() => { void fetchResources(); }}
+                    onRefresh={() => {
+                      void fetchResources();
+                    }}
                   />
                 )}
 
@@ -1086,7 +1088,9 @@ export default function LibraryScreenWeb() {
                 type="button"
                 className="top-tab"
                 style={{ alignSelf: 'center', padding: '12px 32px' }}
-                onClick={() => { void fetchNextResources(); }}
+                onClick={() => {
+                  void fetchNextResources();
+                }}
                 disabled={isFetchingNextResources}
               >
                 {isFetchingNextResources ? t('library.loadingMore') : t('library.loadMoreFindings')}
@@ -1100,7 +1104,9 @@ export default function LibraryScreenWeb() {
         visible={isCollectionPickerVisible}
         onClose={() => dispatch({ type: 'SET_MODAL', name: 'picker', isOpen: false })}
         collections={collections}
-        onSelect={(col) => { void handleAddToCollection(col); }}
+        onSelect={(col) => {
+          void handleAddToCollection(col);
+        }}
         isAdding={isAddingToCollection}
       />
 
@@ -1144,7 +1150,9 @@ export default function LibraryScreenWeb() {
               const input: CreateResourceInput = {
                 title: data.title,
                 description: data.description,
-                type: (selectedCategoryId === 'All' ? 'lesson' : selectedCategoryId) as ResourceType,
+                type: (selectedCategoryId === 'All'
+                  ? 'lesson'
+                  : selectedCategoryId) as ResourceType,
                 format:
                   data.url.includes('youtube') ||
                   data.url.includes('youtu.be') ||
@@ -1193,7 +1201,9 @@ export default function LibraryScreenWeb() {
             ...selectedResource,
             has_bookmarked: bookmarkedIds.has(selectedResource.id),
           }}
-          onBookmark={() => { void handleBookmark(selectedResource); }}
+          onBookmark={() => {
+            void handleBookmark(selectedResource);
+          }}
           onShare={() => {
             if (!selectedResource.url) return;
             void navigator.clipboard.writeText(selectedResource.url);

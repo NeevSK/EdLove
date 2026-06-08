@@ -76,10 +76,7 @@ export default function PrincipalSelfView() {
     <ScreenWrapper scroll={false} noTopInset={true}>
       <BaseSelfView
         perspective="principal"
-        description={t(
-          'self.principalDescription',
-          'A restorative space for leadership clarity and personal rhythm.',
-        )}
+        description={t('self.principalDescription')}
         domains={[
           {
             id: 'journey',
@@ -184,11 +181,8 @@ export default function PrincipalSelfView() {
                 content: (
                   <PositiveInvitation
                     context="self"
-                    title={t('principal.monthlyComingSoon', 'Architect of Growth')}
-                    description={t(
-                      'principal.monthlyComingSoonDesc',
-                      'A deep reflection module for your monthly milestones is on its way.',
-                    )}
+                    title={t('principal.monthlyComingSoon')}
+                    description={t('principal.monthlyComingSoonDesc')}
                   />
                 ),
               },

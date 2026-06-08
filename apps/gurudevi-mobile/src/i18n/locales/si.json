@@ -28,7 +28,8 @@
     "close": "Close",
     "now": "Now",
     "saving": "Saving",
-    "comingSoon": "Coming Soon"
+    "comingSoon": "Coming Soon",
+    "plant": "Plant Seed"
   },
   "goodMorning": "සුභ උදෑසනක්!",
   "goodAfternoon": "සුභ දහවල්!",
@@ -219,7 +220,9 @@
     "grade": "ශ්‍රේණිය",
     "community": "ප්‍රජාව",
     "library": "පුස්තකාලය",
-    "profile": "ගිණුම"
+    "profile": "ගිණුම",
+    "class": "Class",
+    "platform": "Platform"
   },
   "self": {
     "goodMorning": "සුභ උදෑසනක්!",
@@ -348,7 +351,32 @@
     "savedAt": "Saved At",
     "adminSubtitle": "Admin Subtitle",
     "founderSubtitle": "Founder Subtitle",
-    "historicalMood": "මෙම ගමනේ ඔබගේ අනුනාදය."
+    "historicalMood": "මෙම ගමනේ ඔබගේ අනුනාදය.",
+    "adminDescription": "Operational clarity from a source of inner stillness.",
+    "breathingReset": "Breathing Reset",
+    "founderDesc": "Navigate the vast currents of the educational ecosystem.",
+    "founderDescription": "The steady eye of the hurricane - a space for vision and personal pulse.",
+    "gratitudePlaceholder": "What warmed your heart?",
+    "guardianDescription": "A steady sanctuary for parents and guardians to stay centered while caring for their children.",
+    "moodHowAreYou": "Inner Lotus",
+    "moodNeutral": "Neutral",
+    "moodPositive": "Positive",
+    "moodRadiant": "Radiant",
+    "noWisdomYet": "No wisdom seeds planted in this sanctuary yet.",
+    "plantSeed": "Plant a new seed of wisdom",
+    "principalDesc": "Orchestrate systemic harmony from a place of centered wisdom.",
+    "principalDescription": "A restorative space for leadership clarity and personal rhythm.",
+    "recording": "Active Recording",
+    "recordingHint": "The void is listening...",
+    "studentDesc": "Cultivate your inner landscape.",
+    "studentDescription": "Nurture your growth.",
+    "tapToStart": "Tap the Mic to Begin",
+    "teacherDesc": "Radiate clarity from the center of your instructional practice.",
+    "teacherDescription": "Refine your craft, nurture your spirit.",
+    "voiceJournal": "Voice Sanctuary",
+    "voiceJournalSubtitle": "Speak your truth, let it go.",
+    "wisdomPlaceholder": "What have you realized today?",
+    "wisdomSeeds": "Wisdom Seeds"
   },
   "student": {
     "mood": "මනෝභාවය",
@@ -528,7 +556,12 @@
       "noSanctuaryDesc": "Create a sanctuary to gather your community in one shared space.",
       "exploreGalaxy": "Explore Galaxy",
       "noGalaxyDesc": "Explore the galaxy to discover circles that resonate with you.",
-      "foundCircle": "Found Circle"
+      "foundCircle": "Found Circle",
+      "joinAuthRequired": "To join this group, let's create an account first!",
+      "joinedSuccess": "Welcome to the circle!",
+      "member": "Member",
+      "qrHint": "Broadcasters can scan this key to join the circle instantly.",
+      "qrTitle": "Circle Identity"
     },
     "tabs": {
       "resonantFeed": "Resonant Feed",
@@ -558,7 +591,40 @@
     "dms": {
       "guestTitle": "Private Resonance",
       "guestDesc": "Sign in to connect directly with fellow educators and share private reflections."
-    }
+    },
+    "endorse": "Endorse",
+    "endorsers": "Endorsers",
+    "hearthSubtitle": "Where the community pulse beats strongest",
+    "hearthTitle": "The Hearth",
+    "manifestoCarousel": "Community Manifestos",
+    "manifestoTopic": "Community Manifesto",
+    "profile": {
+      "aspiration": "Aspiration",
+      "contributions": "Contributions",
+      "defaultBio": "This user is on a journey of growth and resonance within the Gurudevi ecosystem.",
+      "endorsements": "Endorsements",
+      "explorer": "Explorer",
+      "memberOfGurudevi": "Member of Gurudevi",
+      "posts": "Posts",
+      "privacyNote": "🔐 Only public contributions are shown. Wellbeing data, grades, and private content remain private.",
+      "privacyProtected": "Privacy Protected",
+      "privateNote": "This explorer has chosen to keep their detailed presence private.",
+      "privateSanctuary": "Private Sanctuary",
+      "publicPresenceOf": "Public presence of",
+      "publicResonance": "Public Resonance",
+      "pulse": "Pulse",
+      "pulseActive": "Active",
+      "recent": "Recent",
+      "reflection": "REFLECTION",
+      "reportAccount": "Report Account",
+      "resonanceSphere": "Resonance Sphere",
+      "resonanceStats": "Resonance Stats",
+      "sanctuaryHonors": "Sanctuary Honors",
+      "sendMessage": "Send Message",
+      "verified": "Verified"
+    },
+    "spotlight": "SPOTLIGHT",
+    "viewSpotlight": "View Spotlight Post"
   },
   "library": {
     "errorLoading": "අභයභූමි ප්‍රඥාව පූරණය කිරීමට අපොහොසත් විය.",
@@ -636,7 +702,14 @@
     "whereDesc": "ඔබේ විදුහල්පතිවරයාගෙන් ආරාධනා කේතයක් විමසන්න",
     "createSchool": "මම විදුහල්පතිවරයෙක් - මගේ පාසල සාදන්න",
     "invalidCode": "වලංගු නැති හෝ කල් ඉකුත් වූ කේතයකි",
-    "joiningSchool": "{{schoolName}} වෙත එකතු වෙමින්!"
+    "joiningSchool": "{{schoolName}} වෙත එකතු වෙමින්!",
+    "error": {
+      "invalid": "Invalid code",
+      "noCode": "Please enter an invite code"
+    },
+    "success": {
+      "joining": "Joining"
+    }
   },
   "errors": {
     "somethingWentWrong": "මොකක්හරි වැරදුනා",
@@ -669,7 +742,8 @@
     "marksOnly": "ලකුණු පමණයි",
     "gpaOnly": "GPA පමණයි",
     "both": "දෙකම",
-    "showRanks": "ස්ථාන පෙන්වන්න"
+    "showRanks": "ස්ථාන පෙන්වන්න",
+    "empty": "No graded assignments yet. Your growth will be reflected here soon."
   },
   "students": {
     "title": "සිසුන්",
@@ -1003,7 +1077,8 @@
     "joinFailed": "දෝෂයකි",
     "joinFailedDesc": "ඔබේ විස්තර යාවත්කාලීන කිරීම අසාර්ථකයි. නැවත උත්සාහ කරන්න.",
     "errorTitle": "දෝෂයකි",
-    "errorDesc": "දෝෂයක් ඇතිවිය. ටිකක් ඉවසා නැවත උත්සාහ කරන්න."
+    "errorDesc": "දෝෂයක් ඇතිවිය. ටිකක් ඉවසා නැවත උත්සාහ කරන්න.",
+    "desc": "Your presence has been requested within this sanctuary."
   },
   "aiAssistant": {
     "title": "AI සහකාරයා",
@@ -1024,7 +1099,8 @@
     "guidance": "සමහරවිට ලිවීමෙන් ම ලිහිල් කරගත හැකියි",
     "pastRecord": "ඒ දින නිදහස් කළ දේ.",
     "noPastRecord": "ඒ දිනය ගිනිට දෙන ලද ශාර්ව නැත.",
-    "historical": "ඓතිහාසික"
+    "historical": "ඓතිහාසික",
+    "errorSaving": "We could not save this release safely."
   },
   "sleepTracker": {
     "title": "ඔබේ නින්ද කෙසේ වීද?",
@@ -1041,7 +1117,10 @@
     "excellentDesc": "ගොඩක් ලස්සනට නිදාගත්තා",
     "logButton": "නින්ද සටහන සුරකින්න",
     "alreadyLogged": "අද නින්ද සටහන් කළා",
-    "qualityLabel": "නින්දේ ගතිය"
+    "qualityLabel": "නින්දේ ගතිය",
+    "notTime": "Sleep tracking is available in the morning (5am - 11am)",
+    "philosophy": "💤 Rest is sacred. Your wellbeing matters.",
+    "tomorrowHint": "You can record your next rest tomorrow morning."
   },
   "reminders": {
     "title": "සිහිපත් කිරීම්",
@@ -1091,7 +1170,9 @@
     "level": "මට්ටම {{level}}",
     "xpToNext": "ඊළඟ මට්ටමට {{xp}} XP",
     "achievements": "ජය ලාභ",
-    "keepGoing": "ඉදිරිය හොඳයි!"
+    "keepGoing": "ඉදිරිය හොඳයි!",
+    "interactionsLabel": "Vitality Totals",
+    "philosophy": "Growth is an organic unfolding, not a performance. Every breath, every reflection, and every moment of presence nourishes the whole. 🌱"
   },
   "thuthimalBadge": {
     "title": "තුතිමල්",
@@ -1243,5 +1324,65 @@
     "progress": "Progress",
     "completed": "Completed",
     "noGoals": "No Goals"
+  },
+  "chat": {
+    "empty": "A quiet resonance awaits. Be the first to speak in this sanctuary.",
+    "historicalView": "Viewing historical sanctuary records.",
+    "noConversationsDesc": "No direct resonances yet. Start a conversation from a user's profile to begin.",
+    "noConversationsTitle": "Quiet Sanctuary",
+    "placeholder": "Resonate...",
+    "tapToContinue": "Deepen your resonance..."
+  },
+  "ocr": {
+    "captureDescription": "Take a photo of your student register. Works with Sinhala, Tamil, and English text.",
+    "chooseFromGallery": "Choose from Gallery",
+    "permission": {
+      "description": "We need camera permission to scan student registers.",
+      "title": "Camera Permission"
+    },
+    "scanning": "Scanning and analyzing text...",
+    "takePhoto": "Take Photo",
+    "tipsTitle": "Tips for best results:",
+    "title": "Scan Student Register",
+    "tryAgain": "Try Again"
+  },
+  "scanner": {
+    "controls": {
+      "flip": "Flip",
+      "gallery": "Gallery"
+    },
+    "dismiss": "Dismiss",
+    "errors": {
+      "customBuild": "Gallery scanning requires a custom dev build.\nRun: expo prebuild && expo run:android (or run:ios)",
+      "noQrFound": "No QR code found in image.\nTry cropping closer to the QR code.",
+      "scanFailed": "Could not scan image. Please try again."
+    },
+    "instructions": "Point camera at QR code\nor select from gallery",
+    "permission": {
+      "grant": "Grant Permission",
+      "message": "We need your permission to show the camera"
+    },
+    "status": {
+      "mlKit": "Scanning with ML Kit..."
+    },
+    "title": "Scan QR Code",
+    "web": {
+      "cameraMessage": "Camera scanning is available in the\nGurudevi mobile app.",
+      "closeScanner": "Close scanner",
+      "desktopHint": "On desktop, paste the QR code value below.",
+      "emptyError": "Please paste or type a QR code value.",
+      "pasteCode": "Paste QR code value here…",
+      "submitCode": "Submit Code",
+      "title": "Enter QR Code"
+    }
+  },
+  "webNav": {
+    "alerts": "Alerts",
+    "brandName": "Gurudevi Sanctuary",
+    "menu": "Menu",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "tabNavigation": "Tab navigation",
+    "toggleNavigation": "Toggle navigation"
   }
 }

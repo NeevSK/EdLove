@@ -113,10 +113,7 @@ export default function TeacherSelfView() {
     <TemporalProvider>
       <BaseSelfView
         perspective="teacher"
-        description={t(
-          'self.teacherDesc',
-          'Radiate clarity from the center of your instructional practice.',
-        )}
+        description={t('self.teacherDesc')}
         domains={[
           {
             id: 'journey',
