@@ -1,5 +1,5 @@
 ---
-title: "Sovereign Agent Skills Framework"
+title: "Sovereign Agent Skills Framework: Architectural SSOT & Usage Guide"
 status: "active"
 created: 2026-05-31
 updated: 2026-05-31

@@ -1,3 +1,12 @@
+---
+title: "The Architect's Playbook"
+status: "active"
+created: 2026-04-08
+updated: 2026-05-06
+author: "Naween"
+tags: [reorganized]
+---
+
 # The Architect's Playbook: polymath-platform
 
 Welcome to the **Master Strategy** for the `polymath-platform` monorepo. This document codifies our standards for architecture, health, and scalability. Every tool here exists to protect the speed and quality of development.

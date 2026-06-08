@@ -1,5 +1,5 @@
 ---
-title: "Sovereign Identity Fabric (May 2026)"
+title: "Sovereign Identity Fabric: Architectural SSOT (May 2026)"
 status: "active"
 created: 2026-05-06
 updated: 2026-05-20

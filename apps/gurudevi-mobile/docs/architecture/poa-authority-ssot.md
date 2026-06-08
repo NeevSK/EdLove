@@ -1,5 +1,5 @@
 ---
-title: "Protocol-Oriented Authority (POA) SSOT"
+title: "Protocol-Oriented Authority (POA): Architectural SSOT"
 status: "active"
 created: 2026-03-30
 updated: 2026-03-30

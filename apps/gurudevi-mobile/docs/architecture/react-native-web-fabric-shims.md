@@ -1,3 +1,12 @@
+---
+title: "React Native Web Fabric Shims Spec"
+status: "active"
+created: 2026-03-30
+updated: 2026-03-30
+author: "Naween"
+tags: [reorganized]
+---
+
 # React Native Web: Fixing Missing Native APIs (Fabric & Legacy)
 
 ## 📖 The "Why": Why Are These Errors Happening?

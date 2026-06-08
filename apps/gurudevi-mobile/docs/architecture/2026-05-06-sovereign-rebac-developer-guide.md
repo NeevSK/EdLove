@@ -1,5 +1,5 @@
 ---
-title: "Sovereign ReBAC: Developer Guide"
+title: "Sovereign ReBAC: Developer Guide & Monorepo Standards"
 status: "active"
 created: 2026-05-06
 updated: 2026-05-22

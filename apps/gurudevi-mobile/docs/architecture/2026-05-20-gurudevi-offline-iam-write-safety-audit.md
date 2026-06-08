@@ -1,5 +1,5 @@
 ---
-title: "Gurudevi Offline IAM & Write Safety Audit"
+title: "Gurudevi Offline IAM & Write Safety Audit (May 20, 2026)"
 status: "active"
 created: 2026-05-20
 updated: 2026-05-20

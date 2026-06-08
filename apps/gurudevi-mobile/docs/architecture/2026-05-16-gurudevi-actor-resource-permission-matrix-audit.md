@@ -1,5 +1,5 @@
 ---
-title: "Actor x Resource Permission Matrix Audit"
+title: "Actor × Resource Permission Matrix Audit (2026-05-16)"
 status: "active"
 created: 2026-05-20
 updated: 2026-05-20

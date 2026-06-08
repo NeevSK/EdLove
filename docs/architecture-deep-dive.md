@@ -1,3 +1,12 @@
+---
+title: "Architecture Deep Dive: Resilience through Restraint"
+status: "active"
+created: 2026-03-30
+updated: 2026-03-30
+author: "Naween"
+tags: [reorganized]
+---
+
 # Architecture Deep Dive: Resilience through Restraint
 
 This document expands on the **Architecture Guidelines** of the `polymath-platform` monorepo. It explains the "Why" behind our core principles and provides strategies for maintaining structural integrity as the system grows.

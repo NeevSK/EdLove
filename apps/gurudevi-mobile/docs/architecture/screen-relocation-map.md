@@ -1,5 +1,5 @@
 ---
-title: "Screen Relocation Map"
+title: "Gurudevi Screen Relocation Map"
 status: "active"
 created: 2026-03-30
 updated: 2026-03-30

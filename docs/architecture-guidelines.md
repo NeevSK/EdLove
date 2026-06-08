@@ -1,3 +1,12 @@
+---
+title: "Architecture Guidelines"
+status: "active"
+created: 2026-03-30
+updated: 2026-03-30
+author: "Naween"
+tags: [reorganized]
+---
+
 # Architecture & Dependency Guidelines
 
 This document defines the structural integrity rules for the **polymath-platform** monorepo. Use this as a reference for resolving existing violations and planning new feature placements.

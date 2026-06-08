@@ -1,5 +1,5 @@
 ---
-title: "Project Map"
+title: "Internal Project Map (Polymath / EdLove / Gurudevi)"
 status: "active"
 created: 2026-03-20
 updated: 2026-03-20

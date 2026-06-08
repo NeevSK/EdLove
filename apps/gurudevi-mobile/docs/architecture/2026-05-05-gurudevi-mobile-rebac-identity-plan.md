@@ -1,5 +1,5 @@
 ---
-title: "Gurudevi Mobile ReBAC and Identity Plan"
+title: "Gurudevi Mobile ReBAC + Identity Remediation Plan (2026-05-05)"
 status: "active"
 created: 2026-05-06
 updated: 2026-05-06

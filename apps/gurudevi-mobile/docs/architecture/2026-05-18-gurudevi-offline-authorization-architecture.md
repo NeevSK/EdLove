@@ -1,5 +1,5 @@
 ---
-title: "Gurudevi Offline Authorization Architecture"
+title: "Sovereign Offline-First Authorization Architecture"
 status: "active"
 created: 2026-05-18
 updated: 2026-05-18

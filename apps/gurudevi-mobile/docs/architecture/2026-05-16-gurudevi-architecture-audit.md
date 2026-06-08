@@ -1,5 +1,5 @@
 ---
-title: "Sovereign Monorepo Architecture Audit"
+title: "Sovereign Monorepo Architecture Audit (2026-05-16)"
 status: "active"
 created: 2026-05-20
 updated: 2026-05-20
