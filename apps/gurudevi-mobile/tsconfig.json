@@ -25,7 +25,7 @@
       "@repo/types-shim"
     ]
   },
-  "include": ["src/**/*", "App.tsx", "gluestack-ui.config.ts", "nativewind-env.d.ts"],
+  "include": ["src/**/*", "app/**/*", "App.tsx", "gluestack-ui.config.ts", "nativewind-env.d.ts"],
   "exclude": ["node_modules", ".expo", "dist"],
   "extends": "../../packages/typescript-config/base.json"
 }

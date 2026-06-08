@@ -1,0 +1,1063 @@
+---
+title: "Expo Router Audit 1"
+status: "active"
+created: 2026-05-27
+updated: 2026-05-27
+author: "Naween"
+tags: [reorganized]
+---
+
+Here’s the raw inventory, split the way you asked.
+
+I’m being explicit about one boundary: I treated “screen components” as the route-bearing screen files that are actually wired into navigators or exported as route targets, not every helper inside a `screens/` folder. I also included package-resident screen files that are currently reachable from the navigation shell, because those are the ones that matter for the router map.
+
+**1. Complete screen inventory**
+
+**`apps/`-resident screens**
+- `apps/gurudevi-mobile/src/screens/AuthScreen.tsx`
+  - Package: `apps/gurudevi-mobile`
+  - Route-registered: yes, root route `Auth` in [`apps/gurudevi-mobile/App.tsx`](/C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/App.tsx)
+  - Roles: all roles can reach auth, but it is primarily unauthenticated/bootstrap flow
+- `apps/gurudevi-mobile/src/screens/InvitationWelcomeScreen.tsx`
+  - Package: `apps/gurudevi-mobile`
+  - Route-registered: yes, root route `InvitationWelcome` in [`apps/gurudevi-mobile/App.tsx`](/C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/App.tsx)
+  - Roles: all roles / invited users
+- `apps/gurudevi-mobile/src/screens/QRHandlerScreen.tsx`
+  - Package: `apps/gurudevi-mobile`
+  - Route-registered: yes, root route `QRHandler` in [`apps/gurudevi-mobile/App.tsx`](/C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/App.tsx)
+  - Roles: all roles, deep-link/bootstrap path
+- `apps/gurudevi-mobile/src/screens/SchoolCreationScreen.tsx`
+  - Package: `apps/gurudevi-mobile`
+  - Route-registered: yes, root route `SchoolCreation` in [`apps/gurudevi-mobile/App.tsx`](/C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/App.tsx) and also used in admin/founder/guardian stacks
+  - Roles: principal, founder, guardian, admin
+- `apps/gurudevi-mobile/src/screens/ThuthimalClaimScreen.tsx`
+  - Package: `apps/gurudevi-mobile`
+  - Route-registered: yes, root route `ThuthimalClaim` in [`apps/gurudevi-mobile/App.tsx`](/C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/App.tsx)
+  - Roles: all roles if claim flow is surfaced
+- `apps/gurudevi-mobile/src/screens/ErrorMessageDemo.tsx`
+  - Package: `apps/gurudevi-mobile`
+  - Route-registered: no visible navigator registration found
+  - Roles: none/diagnostic
+- `apps/gurudevi-mobile/src/screens/GradebookScreen.web.tsx`
+  - Package: `apps/gurudevi-mobile`
+  - Route-registered: yes, classroom stack route `Gradebook`
+  - Roles: teacher, principal, grade-head, section-head; students only if explicitly exposed by classroom flow
+- `apps/gurudevi-mobile/src/screens/AttendanceScreen.web.tsx`
+  - Package: `apps/gurudevi-mobile`
+  - Route-registered: yes, classroom stack route `Attendance`
+  - Roles: teacher, principal, grade-head, section-head
+- `apps/gurudevi-mobile/src/screens/ClassroomDetailScreen.web.tsx`
+  - Package: `apps/gurudevi-mobile`
+  - Route-registered: no direct route registration found in current app shell
+  - Roles: classroom-specific, likely teacher/student/principal depending on caller
+- `apps/gurudevi-mobile/src/screens/TimetableScreen.web.tsx`
+  - Package: `apps/gurudevi-mobile`
+  - Route-registered: no direct route registration found in current app shell, but route name `Timetable` is referenced throughout the codebase
+  - Roles: student, teacher
+- `apps/gurudevi-mobile/src/screens/SchoolForestScreen.web.tsx`
+  - Package: `apps/gurudevi-mobile`
+  - Route-registered: no direct route registration found in current app shell
+  - Roles: principal/founder/admin
+- `apps/gurudevi-mobile/src/screens/InviteCodeEntry.tsx`
+  - Package: `apps/gurudevi-mobile`
+  - Route-registered: no direct route registration found in current app shell
+  - Roles: onboarding/invite flow for all roles
+- `apps/gurudevi-mobile/src/screens/index.ts`
+  - Package: `apps/gurudevi-mobile`
+  - Route-registered: barrel only, not a screen
+- `apps/gurudevi-mobile/src/screens/community/AnnouncementsScreen.tsx`
+  - Package: `apps/gurudevi-mobile`
+  - Route-registered: yes, community stack route `Announcements`
+  - Roles: teacher, principal, student, parent depending on community permissions
+- `apps/gurudevi-mobile/src/screens/classroom/NoSchoolView.web.tsx`
+  - Package: `apps/gurudevi-mobile`
+  - Route-registered: yes, classroom stack route `ClassroomList`
+  - Roles: all roles, especially unaffiliated/guest/onboarding
+- `apps/gurudevi-mobile/src/screens/classroom/DemoPlaygroundPanel.web.tsx`
+  - Package: `apps/gurudevi-mobile`
+  - Route-registered: no direct navigator registration found
+  - Roles: demo/diagnostic
+- `apps/gurudevi-mobile/src/screens/profile/FullProfileScreen.tsx`
+  - Package: `apps/gurudevi-mobile`
+  - Route-registered: yes, profile stack route `FullProfile`
+  - Roles: all roles; viewer and subject contexts
+- `apps/gurudevi-mobile/archives/classroom/src/screens/PrincipalDashboard.web.tsx`
+  - Package: archived app code
+  - Route-registered: no current route registration
+  - Roles: principal
+- `apps/gurudevi-mobile/archives/classroom/src/screens/FounderDashboard.tsx`
+  - Package: archived app code
+  - Route-registered: no current route registration
+  - Roles: founder
+- `apps/gurudevi-mobile/archives/screens/WelcomeScreen.tsx`
+  - Package: archived app code
+  - Route-registered: superseded by `packages/ui/src/screens/WelcomeScreen.tsx`
+  - Roles: bootstrap
+- `apps/gurudevi-mobile/archives/screens/AuthScreen.tsx`
+  - Package: archived app code
+  - Route-registered: superseded by `apps/gurudevi-mobile/src/screens/AuthScreen.tsx`
+  - Roles: bootstrap
+
+**`packages/`-resident route screens**
+- `packages/ui/src/screens/WelcomeScreen.tsx`
+  - Package: `packages/ui`
+  - Route-registered: yes, root route `Welcome`
+  - Roles: all roles at bootstrap
+- `packages/ui/src/screens/OnboardingScreen.tsx`
+  - Package: `packages/ui`
+  - Route-registered: yes, root route `Onboarding`
+  - Roles: all roles, onboarding
+- `packages/ui/src/screens/NotificationsScreen.tsx`
+  - Package: `packages/ui`
+  - Route-registered: yes, tab-panel route `NotificationsPanel` in the web shell, and used as a screen component in app UI
+  - Roles: all signed-in roles
+- `packages/ui/src/screens/AuthScreen.tsx`
+  - Package: `packages/ui`
+  - Route-registered: yes, root route `Auth`
+  - Roles: all roles, auth flow
+- `packages/ui/src/screens/AppSettingsScreen.tsx`
+  - Package: `packages/ui`
+  - Route-registered: yes, tab-panel route `SettingsPanel` in the web shell
+  - Roles: all signed-in roles
+- `packages/ui/src/screens/ErrorMessageDemo.tsx`
+  - Package: `packages/ui`
+  - Route-registered: no
+  - Roles: none/diagnostic
+- `packages/ui/src/screens/WorkspaceCanvasDemo.tsx`
+  - Package: `packages/ui`
+  - Route-registered: no
+  - Roles: demo/diagnostic
+- `packages/ui/src/screens/OnboardingWrapper.tsx`
+  - Package: `packages/ui`
+  - Route-registered: yes, wrapper for root onboarding route
+  - Roles: bootstrap
+- `packages/ui/src/screens/WelcomeScreen.web.tsx`
+  - Package: `packages/ui`
+  - Route-registered: web variant of `WelcomeScreen`
+  - Roles: bootstrap
+- `packages/ui/src/screens/OnboardingScreen.web.tsx`
+  - Package: `packages/ui`
+  - Route-registered: web variant of onboarding
+  - Roles: bootstrap
+- `packages/ui/src/screens/NotificationsScreen.web.tsx`
+  - Package: `packages/ui`
+  - Route-registered: web variant of notifications panel
+  - Roles: signed-in
+- `packages/ui/src/screens/AuthScreen.web.tsx`
+  - Package: `packages/ui`
+  - Route-registered: web variant of auth
+  - Roles: bootstrap
+- `packages/ui/src/screens/AppSettingsScreen.web.tsx`
+  - Package: `packages/ui`
+  - Route-registered: web variant of settings panel
+  - Roles: signed-in
+- `packages/ui/src/screens/AppSettingsScreen.shared.tsx`
+  - Package: `packages/ui`
+  - Route-registered: shared implementation for settings
+  - Roles: signed-in
+
+- `packages/self/src/screens/SelfScreen.tsx`
+  - Package: `packages/self`
+  - Route-registered: yes, tab route `Self`
+  - Roles: all roles, role-specific landing
+- `packages/self/src/screens/PrivacyLedgerScreen.tsx`
+  - Package: `packages/self`
+  - Route-registered: yes, profile stack route `PrivacyLedger`
+  - Roles: all roles, profile/settings context
+- `packages/self/src/screens/SelfScreen.web.tsx`
+  - Package: `packages/self`
+  - Route-registered: web variant of `Self`
+  - Roles: all roles
+- `packages/self/src/screens/self/TeacherSelfView.tsx`
+  - Package: `packages/self`
+  - Route-registered: no direct route; rendered inside `SelfScreen`
+  - Roles: teacher
+- `packages/self/src/screens/self/StudentSelfView.tsx`
+  - Package: `packages/self`
+  - Route-registered: no direct route; rendered inside `SelfScreen`
+  - Roles: student
+- `packages/self/src/screens/self/PrincipalSelfView.tsx`
+  - Package: `packages/self`
+  - Route-registered: no direct route; rendered inside `SelfScreen`
+  - Roles: principal
+- `packages/self/src/screens/self/GuardianSelfView.tsx`
+  - Package: `packages/self`
+  - Route-registered: no direct route; rendered inside `SelfScreen`
+  - Roles: parent/guardian
+- `packages/self/src/screens/self/FounderSelfView.tsx`
+  - Package: `packages/self`
+  - Route-registered: no direct route; rendered inside `SelfScreen`
+  - Roles: founder
+- `packages/self/src/screens/self/AdminSelfView.tsx`
+  - Package: `packages/self`
+  - Route-registered: no direct route; rendered inside `SelfScreen`
+  - Roles: admin
+
+- `packages/library/src/screens/LibraryScreen.tsx`
+  - Package: `packages/library`
+  - Route-registered: yes, tab route `Library` / stack route `LibraryHome`
+  - Roles: teacher, student, principal, parent
+- `packages/library/src/screens/MapScreen.tsx`
+  - Package: `packages/library`
+  - Route-registered: yes, stack route `LibraryMap`
+  - Roles: all library users
+- `packages/library/src/screens/CuratorReviewScreen.tsx`
+  - Package: `packages/library`
+  - Route-registered: yes, stack route `CuratorReview`
+  - Roles: librarian/curator/admin/teacher with review rights
+- `packages/library/src/screens/PDFViewerScreen.tsx`
+  - Package: `packages/library`
+  - Route-registered: yes, stack route `PDFViewer`
+  - Roles: all library users
+- `packages/library/src/screens/VideoPlayerScreen.tsx`
+  - Package: `packages/library`
+  - Route-registered: yes, stack route `VideoPlayer`
+  - Roles: all library users
+- `packages/library/src/screens/CollectionDetailScreen.tsx`
+  - Package: `packages/library`
+  - Route-registered: yes, route registered in export map; web variant exists
+  - Roles: all library users
+- `packages/library/src/screens/DocumentViewerScreen.tsx`
+  - Package: `packages/library`
+  - Route-registered: no direct route registration found
+  - Roles: library/document users
+- `packages/library/src/screens/ResourceHubScreen.tsx`
+  - Package: `packages/library`
+  - Route-registered: no direct route registration found
+  - Roles: library users
+- `packages/library/src/screens/LibraryScreen.web.tsx`
+  - Package: `packages/library`
+  - Route-registered: web variant of library home
+  - Roles: library users
+- `packages/library/src/screens/CollectionDetailScreen.web.tsx`
+  - Package: `packages/library`
+  - Route-registered: web variant of collection detail
+  - Roles: library users
+- `packages/library/src/screens/MapScreen.web.tsx`
+  - Package: `packages/library`
+  - Route-registered: web variant of map
+  - Roles: all library users
+- `packages/library/src/screens/PDFViewerScreen.web.tsx`
+  - Package: `packages/library`
+  - Route-registered: web variant of PDF viewer
+  - Roles: all library users
+- `packages/library/src/screens/VideoPlayerScreen.web.tsx`
+  - Package: `packages/library`
+  - Route-registered: web variant of video player
+  - Roles: all library users
+
+- `packages/profile/src/screens/ProfileScreen.tsx`
+  - Package: `packages/profile`
+  - Route-registered: yes, profile stack route `ProfileMain`
+  - Roles: all roles
+- `packages/profile/src/screens/FullProfileScreen.tsx`
+  - Package: `packages/profile`
+  - Route-registered: yes, profile stack route `FullProfile`
+  - Roles: all roles
+- `packages/profile/src/screens/MuteHubScreen.tsx`
+  - Package: `packages/profile`
+  - Route-registered: yes, profile stack route `MuteHub` via shared type, but I did not find a current stack registration in app shell
+  - Roles: all roles
+- `packages/profile/src/screens/ThuthimalClaimScreen.tsx`
+  - Package: `packages/profile`
+  - Route-registered: yes, root route `ThuthimalClaim`
+  - Roles: all roles / claim flow
+- `packages/profile/src/screens/PublicProfileScreen.web.tsx`
+  - Package: `packages/profile`
+  - Route-registered: web variant for public profile
+  - Roles: all roles
+- `packages/profile/src/screens/ProfileScreen.web.tsx`
+  - Package: `packages/profile`
+  - Route-registered: web variant for profile main
+  - Roles: all roles
+- `packages/profile/src/screens/FullProfileScreen.web.tsx`
+  - Package: `packages/profile`
+  - Route-registered: web variant for full profile
+  - Roles: all roles
+
+- `packages/community/src/screens/CommunityScreen.tsx`
+  - Package: `packages/community`
+  - Route-registered: yes, tab route `Community` / stack route `CommunityMain`
+  - Roles: all signed-in roles
+- `packages/community/src/screens/GroupsScreen.tsx`
+  - Package: `packages/community`
+  - Route-registered: yes, current stack route in community flow
+  - Roles: teacher, student, principal, parent depending on `CommunityGroups` permission
+- `packages/community/src/screens/GroupDetailsScreen.tsx`
+  - Package: `packages/community`
+  - Route-registered: yes, stack route `GroupDetails`
+  - Roles: signed-in users with group access
+- `packages/community/src/screens/GroupChatScreen.tsx`
+  - Package: `packages/community`
+  - Route-registered: yes, stack route `GroupChat`
+  - Roles: signed-in users with group access
+- `packages/community/src/screens/DirectMessagesListScreen.tsx`
+  - Package: `packages/community`
+  - Route-registered: yes, stack route `DirectMessagesList`
+  - Roles: signed-in users with messaging
+- `packages/community/src/screens/DirectMessageScreen.tsx`
+  - Package: `packages/community`
+  - Route-registered: yes, stack route `DirectMessage`
+  - Roles: signed-in users with messaging
+- `packages/community/src/screens/AnnouncementsScreen.tsx`
+  - Package: `packages/community`
+  - Route-registered: yes, stack route `Announcements`
+  - Roles: school/community participants; write access limited by permission
+- `packages/community/src/screens/UserPublicProfileScreen.tsx`
+  - Package: `packages/community`
+  - Route-registered: yes, stack route `UserProfile` / `PublicProfile` in current code paths
+  - Roles: all roles
+- `packages/community/src/screens/InvitationWelcomeScreen.tsx`
+  - Package: `packages/community`
+  - Route-registered: yes, root route `InvitationWelcome`
+  - Roles: all roles / invite flow
+- `packages/community/src/screens/InviteCodeEntry.tsx`
+  - Package: `packages/community`
+  - Route-registered: yes, onboarding/invite flow
+  - Roles: all roles
+- `packages/community/src/screens/BaseChatScreen.tsx`
+  - Package: `packages/community`
+  - Route-registered: no direct route
+  - Roles: messaging users
+- `packages/community/src/screens/CommunityScreen.web.tsx`
+  - Package: `packages/community`
+  - Route-registered: web variant
+  - Roles: signed-in users
+- `packages/community/src/screens/GroupDetailsScreen.web.tsx`
+  - Package: `packages/community`
+  - Route-registered: web variant
+  - Roles: group participants
+- `packages/community/src/screens/GroupChatScreen.web.tsx`
+  - Package: `packages/community`
+  - Route-registered: web variant
+  - Roles: group participants
+- `packages/community/src/screens/DirectMessageScreen.web.tsx`
+  - Package: `packages/community`
+  - Route-registered: web variant
+  - Roles: messaging users
+- `packages/community/src/screens/UserPublicProfileScreen.web.tsx`
+  - Package: `packages/community`
+  - Route-registered: web variant
+  - Roles: all roles
+
+- `packages/classroom/src/screens/ClassroomScreen.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: yes, classroom stack route `ClassroomList`
+  - Roles: teacher, student, principal, parent
+- `packages/classroom/src/screens/TeacherDashboard.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: no direct app-shell registration found in current mobile shell, but used in package workflows
+  - Roles: teacher
+- `packages/classroom/src/screens/TeacherClassroomDashboard.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: yes, classroom stack route `TeacherClassroomDashboard`
+  - Roles: teacher, principal
+- `packages/classroom/src/screens/StudentDashboard.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: no direct app-shell registration found in current mobile shell, but it is a live package screen
+  - Roles: student
+- `packages/classroom/src/screens/StudentClassroomDashboard.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: yes, classroom route `StudentClassroomDashboard` in types and package flows
+  - Roles: student
+- `packages/classroom/src/screens/StudentProfileScreen.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: yes, classroom route `StudentProfile`
+  - Roles: student/teacher/parent depending on caller
+- `packages/classroom/src/screens/AttendanceScreen.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: yes, classroom stack route `Attendance`
+  - Roles: teacher, principal, section-head, grade-head
+- `packages/classroom/src/screens/GradebookScreen.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: yes, classroom stack route `Gradebook`
+  - Roles: teacher, principal, section-head, grade-head
+- `packages/classroom/src/screens/AttendanceReportScreen.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: no direct stack registration found
+  - Roles: teacher/principal
+- `packages/classroom/src/screens/ContentLibrary.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: yes, classroom stack route `ContentLibrary`
+  - Roles: teacher
+- `packages/classroom/src/screens/LessonFeed.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: no direct app-shell registration found
+  - Roles: teacher/student depending on content model
+- `packages/classroom/src/screens/ClassroomDetailScreen.web.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: web variant
+  - Roles: classroom participants
+- `packages/classroom/src/screens/ClassroomProfileScreen.web.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: web variant
+  - Roles: classroom participants
+- `packages/classroom/src/screens/TeacherDashboard.web.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: web variant
+  - Roles: teacher
+- `packages/classroom/src/screens/TeacherClassroomDashboard.web.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: web variant
+  - Roles: teacher
+- `packages/classroom/src/screens/StudentDashboard.web.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: web variant
+  - Roles: student
+- `packages/classroom/src/screens/PrincipalDashboard.web.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: web variant
+  - Roles: principal
+- `packages/classroom/src/screens/NoSchoolView.web.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: classroom route `ClassroomList` / bootstrap state
+  - Roles: unaffiliated users
+- `packages/classroom/src/screens/TimetableScreen.web.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: web variant / referenced route `Timetable`
+  - Roles: student, teacher
+- `packages/classroom/src/screens/DemoPlaygroundPanel.web.tsx`
+  - Package: `packages/classroom`
+  - Route-registered: no
+  - Roles: demo
+- `packages/classroom/src/screens/index.ts`
+  - Barrel only
+
+- `packages/admin/src/screens/AdminDashboard.tsx`
+  - Package: `packages/admin`
+  - Route-registered: yes, root/admin shell route `AdminDashboard`
+  - Roles: admin, founder
+- `packages/admin/src/screens/AdminIncidentQueue.tsx`
+  - Package: `packages/admin`
+  - Route-registered: yes, root/admin shell route `AdminIncidentQueue`
+  - Roles: admin/founder
+- `packages/admin/src/screens/AdminTenantDetail.tsx`
+  - Package: `packages/admin`
+  - Route-registered: yes, root/admin shell route `AdminTenantDetail`
+  - Roles: admin/founder
+- `packages/admin/src/screens/AdminAuthorityRepair.tsx`
+  - Package: `packages/admin`
+  - Route-registered: yes, root/admin shell route `AdminAuthorityRepair`
+  - Roles: admin/founder
+- `packages/admin/src/screens/AdminJobControl.tsx`
+  - Package: `packages/admin`
+  - Route-registered: yes, root/admin shell route `AdminJobControl`
+  - Roles: admin/founder
+- `packages/admin/src/screens/AdminAuditLog.tsx`
+  - Package: `packages/admin`
+  - Route-registered: yes, root/admin shell route `AdminAuditLog`
+  - Roles: admin/founder
+- `packages/admin/src/screens/AdminReleaseControl.tsx`
+  - Package: `packages/admin`
+  - Route-registered: yes, root/admin shell route `AdminReleaseControl`
+  - Roles: admin/founder
+- `packages/admin/src/screens/AdminFeatureRegistry.tsx`
+  - Package: `packages/admin`
+  - Route-registered: yes, reachable from admin dashboard flow
+  - Roles: admin/founder
+- `packages/admin/src/screens/PrincipalDashboard.tsx`
+  - Package: `packages/admin`
+  - Route-registered: yes, root/admin shell route `PrincipalDashboard`
+  - Roles: principal, assistant principal, founder fallback
+- `packages/admin/src/screens/FounderDashboard.tsx`
+  - Package: `packages/admin`
+  - Route-registered: yes, root/admin shell route `FounderDashboard`
+  - Roles: founder
+- `packages/admin/src/screens/FounderSchoolDashboard.tsx`
+  - Package: `packages/admin`
+  - Route-registered: yes, founder/guardian/admin stack route
+  - Roles: founder, guardian, admin
+- `packages/admin/src/screens/GuardianDashboard.tsx`
+  - Package: `packages/admin`
+  - Route-registered: yes, guardian stack route `GuardianDashboard`
+  - Roles: guardian/parent
+- `packages/admin/src/screens/GuardianDashboardScreen.tsx`
+  - Package: `packages/admin`
+  - Route-registered: sibling screen implementation for guardian flows
+  - Roles: guardian/parent
+- `packages/admin/src/screens/SchoolCreationScreen.tsx`
+  - Package: `packages/admin`
+  - Route-registered: yes, shared route `SchoolCreation`
+  - Roles: principal/founder/guardian/admin
+- `packages/admin/src/screens/SchoolForestScreen.web.tsx`
+  - Package: `packages/admin`
+  - Route-registered: web variant
+  - Roles: principal/founder/admin
+- `packages/admin/src/screens/SchoolProfileScreen.web.tsx`
+  - Package: `packages/admin`
+  - Route-registered: web variant
+  - Roles: principal/founder/admin
+- `packages/admin/src/screens/PrincipalNativeWorkspace.tsx`
+  - Package: `packages/admin`
+  - Route-registered: not a navigator route; workspace container
+  - Roles: principal
+- `packages/admin/src/screens/PrincipalWorkspaceContainer.tsx`
+  - Package: `packages/admin`
+  - Route-registered: not a navigator route; workspace container
+  - Roles: principal
+- `packages/admin/src/screens/EnhancedAnalyticsDashboard.web.tsx`
+  - Package: `packages/admin`
+  - Route-registered: web variant / internal dashboard surface
+  - Roles: principal/founder/admin
+- `packages/admin/src/screens/DocumentListScreen.tsx`
+  - Package: `packages/admin`
+  - Route-registered: yes, dashboard flow route
+  - Roles: principal/founder/admin
+- `packages/admin/src/screens/DocumentListScreen.web.tsx`
+  - Package: `packages/admin`
+  - Route-registered: web variant
+  - Roles: principal/founder/admin
+- `packages/admin/src/screens/AnalyticsDashboardScreen.tsx`
+  - Package: `packages/admin`
+  - Route-registered: dashboard surface
+  - Roles: founder/admin/principal
+- `packages/admin/src/screens/AcademicCycleManager.tsx`
+  - Package: `packages/admin`
+  - Route-registered: dashboard surface
+  - Roles: principal/founder/admin
+- `packages/admin/src/screens/GradeHeadDashboard.tsx`
+  - Package: `packages/admin`
+  - Route-registered: yes, role dashboard
+  - Roles: grade-head
+- `packages/admin/src/screens/SectionHeadDashboard.tsx`
+  - Package: `packages/admin`
+  - Route-registered: yes, role dashboard
+  - Roles: section-head
+- `packages/admin/src/screens/FounderVisionScreen.tsx`
+  - Package: `packages/admin`
+  - Route-registered: dashboard surface
+  - Roles: founder
+- `packages/admin/src/screens/principal/*`
+  - Package: `packages/admin`
+  - Route-registered: not top-level routes; nested principal dashboard sections
+  - Roles: principal
+- `packages/admin/src/screens/guardian/*`
+  - Package: `packages/admin`
+  - Route-registered: not top-level routes; nested guardian dashboard sections
+  - Roles: guardian/parent
+
+- `packages/ai/src/screens/AIAssistantScreen.tsx`
+  - Package: `packages/ai`
+  - Route-registered: yes, root route `AIAssistant`
+  - Roles: teacher-focused, but reachable by any role with access to AI tools
+- `packages/ai/src/screens/AIAssistantScreen.web.tsx`
+  - Package: `packages/ai`
+  - Route-registered: web variant
+  - Roles: same as above
+
+- `packages/form-builder/src/screens/PublicFormScreen.web.tsx`
+  - Package: `packages/form-builder`
+  - Route-registered: yes, root route `PublicForm`
+  - Roles: public/invite/share link users
+- `packages/form-builder/src/screens/FormBuilderScreen.web.tsx`
+  - Package: `packages/form-builder`
+  - Route-registered: no direct route registration found
+  - Roles: form builders
+- `packages/form-builder/src/screens/ClimateSensingScreen.tsx`
+  - Package: `packages/form-builder`
+  - Route-registered: yes, live feature route in form-builder flows
+  - Roles: domain-specific
+- `packages/form-builder/src/screens/ClimateSensingScreen.web.tsx`
+  - Package: `packages/form-builder`
+  - Route-registered: web variant
+  - Roles: domain-specific
+
+- `packages/scanner-kit/src/screens/QRHandlerScreen.tsx`
+  - Package: `packages/scanner-kit`
+  - Route-registered: yes, root route `QRHandler`
+  - Roles: all roles
+- `packages/trube-art/src/screens/TrubeLabScreen.tsx`
+  - Package: `packages/trube-art`
+  - Route-registered: no direct route registration found
+  - Roles: art/demo
+
+**Totals**
+- Lives in `apps/`: 17
+- Lives in `packages/`: 156
+
+**2. Route param classification**
+
+Using `packages/core/src/types/navigation.ts` plus the app-shell root routes, here’s the classification:
+
+- `ClassroomList: undefined`
+  - Classification: GREEN
+  - Why: no params
+- `TeacherClassroomDashboard: { classroomId: string; classroomName?: string }`
+  - Classification: YELLOW
+  - Why: `classroomName` is display-only and can shrink away
+- `StudentClassroomDashboard: { classroomId: string; classroomName?: string }`
+  - Classification: YELLOW
+  - Why: same as above
+- `Attendance: { classroomId: string; classroomName?: string; date?: string }`
+  - Classification: YELLOW
+  - Why: `classroomName` is display-only, `date` is serializable
+- `Gradebook: { classroomId: string; classroomName?: string }`
+  - Classification: YELLOW
+  - Why: `classroomName` is display-only
+- `ContentLibrary: { classroomId: string; classroomName?: string }`
+  - Classification: YELLOW
+  - Why: `classroomName` is display-only
+- `StudentProfile: { studentId: string; classroomId: string; studentName?: string; classroomStudentId: string }`
+  - Classification: YELLOW
+  - Why: `studentName` is display-only
+- `Timetable: { schoolId?: string }`
+  - Classification: GREEN
+  - Why: serializable identifier only
+- `PublicProfile: { id: string; type: 'user' | 'school' | 'classroom' | 'community' }`
+  - Classification: GREEN
+  - Why: scalar params only
+- `FormBuilder: undefined`
+  - Classification: GREEN
+- `PublicForm: { slug: string }`
+  - Classification: GREEN
+- `ClassroomDetails: { classroomId: string }`
+  - Classification: GREEN
+- `FounderDashboard: undefined`
+  - Classification: GREEN
+- `FounderSchoolView: { schoolId: string; userId: string }`
+  - Classification: GREEN
+- `SchoolCreation: undefined`
+  - Classification: GREEN
+- `SchoolForest: undefined`
+  - Classification: GREEN
+- `KnowledgeBase: undefined`
+  - Classification: GREEN
+- `LiveSession: { sessionId: string }`
+  - Classification: GREEN
+- `ResourceCenter: undefined`
+  - Classification: GREEN
+- `Assignment: { assignmentId: string }`
+  - Classification: GREEN
+
+`FounderStackParamList`
+- `FounderDashboard: undefined`
+  - GREEN
+- `FounderSchoolDashboard: { schoolId: string; userId: string }`
+  - GREEN
+- `PrincipalDashboard: { schoolId: string; userId: string; forceDemo?: boolean; onRefresh?: () => void }`
+  - Classification: RED
+  - Why: `onRefresh` is a callback, non-serializable
+- `SchoolCreation: undefined`
+  - GREEN
+- `SchoolForest: undefined`
+  - GREEN
+- `AdminDashboard: undefined`
+  - GREEN
+- `AdminIncidentQueue: undefined`
+  - GREEN
+- `AdminTenantDetail: { tenantId: string }`
+  - GREEN
+- `AdminAuthorityRepair: undefined`
+  - GREEN
+- `AdminJobControl: undefined`
+  - GREEN
+- `AdminAuditLog: undefined`
+  - GREEN
+- `AdminReleaseControl: undefined`
+  - GREEN
+- `GuardianDashboard: undefined`
+  - GREEN
+
+`ProfileStackParamList`
+- `ProfileMain: undefined`
+  - GREEN
+- `FullProfile: { profile: FullProfileParams }`
+  - Classification: RED
+  - Why: full object payload, not router-friendly as-is
+- `AppSettings: undefined`
+  - GREEN
+- `PrivacyLedger: undefined`
+  - GREEN
+- `MuteHub: undefined`
+  - GREEN
+- `TrubeLab: undefined`
+  - GREEN
+- `PublicProfile: { id: string; type: 'user' | 'school' | 'classroom' | 'community' }`
+  - GREEN
+
+`CommunityStackParamList`
+- `CommunityMain: undefined`
+  - GREEN
+- `GroupDetails: { groupId: string; groupName?: string }`
+  - Classification: YELLOW
+  - Why: `groupName` is display-only
+- `GroupChat: { groupId: string; groupName: string }`
+  - Classification: YELLOW
+  - Why: `groupName` is display-only
+- `Announcements: undefined`
+  - GREEN
+- `UserProfile: { userId: string; userName: string }`
+  - Classification: YELLOW
+  - Why: `userName` is display-only
+- `PublicProfile: { id: string; type: 'user' | 'school' | 'classroom' | 'community' }`
+  - GREEN
+- `DirectMessagesList: undefined`
+  - GREEN
+- `DirectMessage: { conversationId: string; userName: string }`
+  - Classification: YELLOW
+  - Why: `userName` is display-only
+
+`SelfStackParamList`
+- `SelfMain: undefined`
+  - GREEN
+- `AIAssistant: undefined`
+  - GREEN
+
+`LibraryStackParamList`
+- `LibraryHome: undefined`
+  - GREEN
+- `LibraryMap: undefined`
+  - GREEN
+- `CuratorReview: undefined`
+  - GREEN
+- `PDFViewer: { resourceId: string; title: string; url: string; creator?: string }`
+  - Classification: YELLOW
+  - Why: `title` and `creator` are display-only; `url` is serializable
+- `VideoPlayer: { resourceId: string; title: string; url: string; creator?: string }`
+  - Classification: YELLOW
+  - Why: same
+- `CollectionDetail: { id: string; title: string }`
+  - Classification: YELLOW
+  - Why: `title` is display-only
+
+`GuardianStackParamList`
+- `GuardianDashboard: undefined`
+  - GREEN
+- `GuardianStudents: undefined`
+  - GREEN
+- `GuardianStudentDetail: { studentId: string; studentName?: string }`
+  - Classification: YELLOW
+  - Why: `studentName` is display-only
+- `GuardianNotifications: undefined`
+  - GREEN
+- `GuardianEvents: undefined`
+  - GREEN
+- `GuardianCommunicationBridge: undefined`
+  - GREEN
+- `PrincipalDashboard: { schoolId: string; userId: string; forceDemo?: boolean }`
+  - GREEN
+- `FounderDashboard: undefined`
+  - GREEN
+- `FounderSchoolDashboard: { schoolId: string; userId: string }`
+  - GREEN
+- `SchoolCreation: undefined`
+  - GREEN
+
+App root routes in [`apps/gurudevi-mobile/App.tsx`](/C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/App.tsx)
+- `Welcome: component`
+  - GREEN
+- `Auth: component`
+  - GREEN
+- `Onboarding: component`
+  - GREEN
+- `InvitationWelcome: component`
+  - GREEN
+- `PublicForm: component`
+  - GREEN
+- `Main: component`
+  - GREEN
+- `AdminDashboard: component`
+  - GREEN
+- `AdminIncidentQueue: component`
+  - GREEN
+- `AdminTenantDetail: component`
+  - GREEN
+- `AdminAuthorityRepair: component`
+  - GREEN
+- `AdminJobControl: component`
+  - GREEN
+- `AdminAuditLog: component`
+  - GREEN
+- `AdminReleaseControl: component`
+  - GREEN
+- `AIAssistant: component`
+  - GREEN
+- `QRHandler: component`
+  - GREEN
+- `ThuthimalClaim: component`
+  - GREEN
+
+**3. Role-conditional navigation inventory**
+
+**Where role-conditional logic currently lives**
+- `apps/gurudevi-mobile/src/navigation/TabNavigator.tsx`
+- `apps/gurudevi-mobile/src/navigation/TabNavigator.web.tsx`
+- `packages/self/src/screens/SelfScreen.tsx`
+- `packages/self/src/screens/SelfScreen.web.tsx`
+- `packages/classroom/src/components/ClassroomList.tsx`
+- `packages/community/src/screens/CommunityScreen.tsx`
+- `packages/community/src/screens/CommunityScreen.web.tsx`
+- `packages/library/src/screens/LibraryScreen.web.tsx`
+- `packages/admin/src/screens/PrincipalDashboard.tsx`
+- `packages/admin/src/screens/PrincipalDashboard.web.tsx`
+- `packages/admin/src/screens/FounderDashboard.tsx`
+- `packages/admin/src/screens/GuardianDashboard.tsx`
+- `packages/admin/src/screens/SchoolForestScreen.web.tsx`
+- `packages/profile/src/screens/ProfileScreen.web.tsx`
+- `packages/ui/src/components/WebScreenHeader.web.tsx`
+
+**Tab structure vs tab visibility**
+- Native tab shell [`apps/gurudevi-mobile/src/navigation/TabNavigator.tsx`](/C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/navigation/TabNavigator.tsx)
+  - Structure is mostly stable: `Profile`, `Classroom`, `Self`, `Community`, `Library`
+  - One extra tab, `Workforce`, is conditionally inserted when `flags.isDevelopingWorkforce`
+  - So this is mostly “visibility / label variation,” not a fundamentally different topology
+- Web tab shell [`apps/gurudevi-mobile/src/navigation/TabNavigator.web.tsx`](/C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/navigation/TabNavigator.web.tsx)
+  - Structural difference from native: web shell has `NotificationsPanel` and `SettingsPanel` as in-shell panel routes plus sidebar/mobile-topology differences
+  - Same base tab set, but web has extra panel routes and a split shell layout
+  - This is a genuine topology difference between native and web, not just hiding tabs
+
+**Role-conditional tabs / screens**
+- `Self` tab content is role-selected by `usePermissions()` in [`packages/self/src/screens/SelfScreen.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/self/src/screens/SelfScreen.tsx) and web variant
+  - Teacher gets `TeacherSelfView`
+  - Student gets `StudentSelfView`
+  - Principal gets `PrincipalSelfView`
+  - Founder gets `FounderSelfView`
+  - Admin gets `AdminSelfView`
+  - Guardian/parent gets `GuardianSelfView`
+  - This is same tab, different screen content
+- `Classroom` label changes by capacity in tab shell
+  - Principal sees “My School”
+  - Founder sees “School” / “Platform” on web
+  - Section head sees “Section”
+  - Grade head sees “Grade”
+  - Teachers/students see “Classroom”
+  - This is label/visibility, not different topology
+- `Workforce` tab appears only if `flags.isDevelopingWorkforce` is true
+  - This is conditional visibility, not a role-specific navigation tree
+- `Community` shell content changes based on permissions and messaging flags in [`packages/community/src/screens/CommunityScreen.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/community/src/screens/CommunityScreen.tsx)
+  - The same tab shell routes to different feature affordances, not a different navigator tree
+- `Library` shell conditionally exposes curator/admin actions in [`packages/library/src/screens/LibraryScreen.web.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/library/src/screens/LibraryScreen.web.tsx)
+  - Same tab, different actions and route affordances
+- `PrincipalDashboard` / `FounderDashboard` / `GuardianDashboard` are separate navigable roots in admin stack files
+  - This is genuinely different navigation topology per role in the admin/founder/guardian layer
+- `ClassroomList` routes into different classroom details depending on role in [`packages/classroom/src/components/ClassroomList.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/classroom/src/components/ClassroomList.tsx)
+  - Same list surface, different destination routes and detail surfaces per role
+
+**Same component, different position per role**
+- `SelfScreen` content is the clearest example: same tab position, different internal view per role
+- `Classroom` tab label changes, but the component shell stays in the same position
+- `Community` and `Library` keep position but vary available actions and nested destinations
+- `PrincipalDashboard` / `FounderDashboard` / `GuardianDashboard` are separate top-level role dashboards rather than one component repositioned
+
+**Bottom line**
+- This repo is mostly “same shell, role-driven content and permissions”
+- The major topology splits are:
+  - web vs native shell
+  - admin/founder/guardian root stack separation
+  - conditional `Workforce` tab
+- Most other role-conditional behavior is tab-label or in-screen surface variation, not a different route tree
+
+**4. `navigationRef` usage inventory**
+
+- [`apps/gurudevi-mobile/src/navigation/navigationRef.ts`](/C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/navigation/navigationRef.ts)
+  - Creates the shared root ref
+- [`apps/gurudevi-mobile/App.tsx`](/C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/App.tsx)
+  - `navigate('Auth')` from welcome callback
+  - `navigate('Onboarding')` from welcome/login flow and auth success flow
+  - `navigate('QRHandler', { payload })` from QR deep link handler
+  - ref is attached to `NavigationContainer`
+- [`apps/gurudevi-mobile/src/navigation/useAppEntryGate.ts`](/C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/navigation/useAppEntryGate.ts)
+  - `navigate('Main')` when onboarding/session state is satisfied
+  - `navigate('Onboarding')` during setup flow
+  - `reset({ routes: [{ name: 'Welcome' }] })` for auth/onboarding gating
+- [`apps/gurudevi-mobile/src/providers/DeepLinkProvider.tsx`](/C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/providers/DeepLinkProvider.tsx)
+  - `navigate('ClassroomInvite', { code })` on classroom invite deep link
+  - `navigate('QRHandler', { payload })` for QR deep links
+- [`apps/gurudevi-mobile/src/components/web/CommandPalette.web.tsx`](/C:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/src/components/web/CommandPalette.web.tsx)
+  - `navigate(route, params)` for tab switching
+  - `navigate('Main', { screen: tabName })`
+  - `navigate('AIAssistant')`
+- [`packages/core/src/logic/permissions/hooks/useNavigationAuthGuard.ts`](/C:/Users/Naween/projects/polymath-platform/packages/core/src/logic/permissions/hooks/useNavigationAuthGuard.ts)
+  - `reset({ routes: [{ name: 'Welcome' }] })`
+  - `reset({ routes: [{ name: 'Onboarding' }] })`
+- [`packages/ui/src/components/GlobalHeader.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/ui/src/components/GlobalHeader.tsx)
+  - `goBack()`
+  - `navigate('Profile')`
+- [`packages/ui/src/components/SanctuarySignal.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/ui/src/components/SanctuarySignal.tsx)
+  - `navigate('Auth')`
+- [`packages/self/src/components/WindDownRitual.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/self/src/components/WindDownRitual.tsx)
+  - `navigate('Auth')`
+- [`packages/self/src/components/TomorrowPrep.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/self/src/components/TomorrowPrep.tsx)
+  - `navigate('Auth')`
+- [`packages/self/src/components/JoyJar.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/self/src/components/JoyJar.tsx)
+  - `navigate('Auth')`
+- [`packages/self/src/components/GratitudeGlimmers.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/self/src/components/GratitudeGlimmers.tsx)
+  - `navigate('Auth')`
+- [`packages/self/src/components/FireJournal.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/self/src/components/FireJournal.tsx)
+  - `navigate('Auth')`
+- [`packages/self/src/components/EnergyForecast.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/self/src/components/EnergyForecast.tsx)
+  - `navigate('Auth')`
+- [`packages/self/src/components/ProgressTree.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/self/src/components/ProgressTree.tsx)
+  - `navigate('Auth')`
+- [`packages/self/src/components/PulseDashboard.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/self/src/components/PulseDashboard.tsx)
+  - `navigate('Attendance', ...)`
+  - `navigate('Gradebook', ...)`
+- [`packages/community/src/screens/CommunityScreen.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/community/src/screens/CommunityScreen.tsx)
+  - `navigate('Auth')`
+  - `navigate('GroupDetails', ...)`
+  - `navigate('PublicProfile', ...)`
+  - `navigate('DirectMessage', ...)`
+- [`packages/community/src/screens/CommunityScreen.web.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/community/src/screens/CommunityScreen.web.tsx)
+  - same as above
+- [`packages/community/src/screens/GroupDetailsScreen.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/community/src/screens/GroupDetailsScreen.tsx)
+  - `navigate('GroupChat', ...)`
+  - `navigate('Auth')`
+- [`packages/community/src/screens/GroupChatScreen.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/community/src/screens/GroupChatScreen.tsx)
+  - `navigate('PublicProfile', ...)`
+- [`packages/community/src/screens/DirectMessagesListScreen.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/community/src/screens/DirectMessagesListScreen.tsx)
+  - `navigate('DirectMessage', ...)`
+- [`packages/community/src/screens/DirectMessageScreen.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/community/src/screens/DirectMessageScreen.tsx)
+  - `navigate('PublicProfile', ...)`
+- [`packages/community/src/screens/UserPublicProfileScreen.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/community/src/screens/UserPublicProfileScreen.tsx)
+  - `navigate('DirectMessage', ...)`
+- [`packages/community/src/components/GroupMemberManagement.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/community/src/components/GroupMemberManagement.tsx)
+  - `navigate('PublicProfile', ...)`
+- [`packages/community/src/components/CreateGroupModal.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/community/src/components/CreateGroupModal.tsx)
+  - `navigate('GroupDetails', ...)`
+- [`packages/classroom/src/screens/TeacherDashboard.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/classroom/src/screens/TeacherDashboard.tsx)
+  - `getParent()?.navigate('Library')`
+  - `navigate('Classroom', ...)`
+- [`packages/classroom/src/screens/TeacherDashboard.web.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/classroom/src/screens/TeacherDashboard.web.tsx)
+  - same as above
+- [`packages/classroom/src/screens/StudentDashboard.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/classroom/src/screens/StudentDashboard.tsx)
+  - `navigate('Library')`
+  - `navigate('Community')`
+  - `navigate('Self')`
+  - `navigate('Classroom', ...)`
+  - `navigate('Auth')`
+- [`packages/classroom/src/screens/StudentDashboard.web.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/classroom/src/screens/StudentDashboard.web.tsx)
+  - same as above
+- [`packages/classroom/src/screens/ClassroomScreen.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/classroom/src/screens/ClassroomScreen.tsx)
+  - `navigate('Auth')`
+  - `navigate('Classroom', ...)`
+- [`packages/classroom/src/screens/ClassroomScreen.web.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/classroom/src/screens/ClassroomScreen.web.tsx)
+  - `navigate('Auth')`
+- [`packages/classroom/src/components/CreateClassroomModal.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/classroom/src/components/CreateClassroomModal.tsx)
+  - `navigate('TeacherClassroomDashboard', ...)`
+  - `navigate('Profile')`
+- [`packages/classroom/src/components/CreateSchoolModal.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/classroom/src/components/CreateSchoolModal.tsx)
+  - `navigate('CommunityStack', ...)`
+- [`packages/classroom/src/components/student/StudentStudySuite.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/classroom/src/components/student/StudentStudySuite.tsx)
+  - `navigate('Main', { screen: 'Library' })`
+  - `navigate('Main', { screen: 'Community' })`
+  - `navigate('Timetable', {})`
+  - `navigate('Main', { screen: 'Self' })`
+- [`packages/classroom/src/components/student/StudentGoals.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/classroom/src/components/student/StudentGoals.tsx)
+  - `navigate('Main', { screen: 'Self' })`
+- [`packages/classroom/src/components/student/StudentClassroomList.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/classroom/src/components/student/StudentClassroomList.tsx)
+  - `navigate('Main', { screen: 'Community' })`
+  - `navigate('StudentClassroomDashboard', ...)`
+- [`packages/classroom/src/workspace/useTeacherWorkspaceShell.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/classroom/src/workspace/useTeacherWorkspaceShell.tsx)
+  - `navigate('Attendance', ...)`
+- [`packages/classroom/src/workspace/useClassroomWorkspaceSurfaces.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/classroom/src/workspace/useClassroomWorkspaceSurfaces.tsx)
+  - `navigate('Profile')`
+  - `navigate('Search')`
+- [`packages/admin/src/screens/AdminDashboard.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/admin/src/screens/AdminDashboard.tsx)
+  - `navigate('AdminIncidentQueue')`
+  - `navigate('AdminTenantDetail')`
+  - `navigate('AdminAuthorityRepair')`
+  - `navigate('AdminJobControl')`
+  - `navigate('AdminAuditLog')`
+  - `navigate('AdminReleaseControl')`
+  - `navigate('AdminFeatureRegistry')`
+  - `navigate(view)`
+- [`packages/admin/src/screens/PrincipalDashboard.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/admin/src/screens/PrincipalDashboard.tsx)
+  - `navigate('SchoolProfile', ...)`
+  - `navigate('CommunityStack')`
+- [`packages/admin/src/screens/PrincipalDashboard.web.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/admin/src/screens/PrincipalDashboard.web.tsx)
+  - `navigate('Search')`
+  - `navigate('SchoolProfile', ...)`
+  - `navigate('Main', { screen: 'Community' })`
+- [`packages/admin/src/screens/SchoolCreationScreen.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/admin/src/screens/SchoolCreationScreen.tsx)
+  - `navigate('ClassroomList')`
+- [`packages/admin/src/screens/GuardianDashboard.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/admin/src/screens/GuardianDashboard.tsx)
+  - internal navigation to guardian stack routes
+- [`packages/admin/src/screens/guardian/GuardianStudentsScreen.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/admin/src/screens/guardian/GuardianStudentsScreen.tsx)
+  - guardian detail navigation
+- [`packages/profile/src/navigation/ProfileNavigationContext.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/profile/src/navigation/ProfileNavigationContext.tsx)
+  - navigation context wrapper for profile routing
+- [`packages/profile/src/screens/ProfileScreen.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/profile/src/screens/ProfileScreen.tsx)
+  - profile-level navigation actions
+- [`packages/profile/src/screens/FullProfileScreen.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/profile/src/screens/FullProfileScreen.tsx)
+  - back navigation
+- [`packages/library/src/screens/LibraryScreen.web.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/library/src/screens/LibraryScreen.web.tsx)
+  - `navigate('LibraryMap')`
+  - `navigate('CuratorReview')`
+  - `navigate('CollectionDetail', ...)`
+- [`packages/library/src/screens/LibraryScreen.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/library/src/screens/LibraryScreen.tsx)
+  - same package navigation
+- [`packages/library/src/screens/CuratorReviewScreen.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/library/src/screens/CuratorReviewScreen.tsx)
+  - review navigation
+- [`packages/library/src/screens/CollectionDetailScreen.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/library/src/screens/CollectionDetailScreen.tsx)
+  - back navigation / nested library routing
+- [`packages/ai/src/screens/AIAssistantScreen.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/ai/src/screens/AIAssistantScreen.tsx)
+  - `navigate('Welcome')`
+  - goBack
+- [`packages/ai/src/screens/AIAssistantScreen.web.tsx`](/C:/Users/Naween/projects/polymath-platform/packages/ai/src/screens/AIAssistantScreen.web.tsx)
+  - `navigate('Auth')`
+  - goBack
+
+**5. Route-name-as-string usage**
+
+These are the hardcoded route strings I found in live code paths.
+
+- `Auth`
+- `Onboarding`
+- `QRHandler`
+- `Main`
+- `Welcome`
+- `InvitationWelcome`
+- `PublicForm`
+- `AIAssistant`
+- `Profile`
+- `Self`
+- `Classroom`
+- `Community`
+- `Library`
+- `Workforce`
+- `NotificationsPanel`
+- `SettingsPanel`
+- `AdminDashboard`
+- `AdminIncidentQueue`
+- `AdminTenantDetail`
+- `AdminAuthorityRepair`
+- `AdminJobControl`
+- `AdminAuditLog`
+- `AdminReleaseControl`
+- `AdminFeatureRegistry`
+- `SchoolProfile`
+- `Search`
+- `ClassroomInvite`
+- `ClassroomList`
+- `TeacherClassroomDashboard`
+- `StudentClassroomDashboard`
+- `Attendance`
+- `Gradebook`
+- `Timetable`
+- `GroupDetails`
+- `GroupChat`
+- `DirectMessagesList`
+- `DirectMessage`
+- `PublicProfile`
+- `LibraryMap`
+- `CuratorReview`
+- `CollectionDetail`
+- `SchoolCreation`
+- `ThuthimalClaim`
+- `FullProfile`
+- `PrivacyLedger`
+- `GuardianDashboard`
+- `GuardianStudents`
+- `GuardianStudentDetail`
+- `GuardianNotifications`
+- `GuardianEvents`
+- `GuardianCommunicationBridge`
+- `FounderDashboard`
+- `FounderSchoolDashboard`
+- `PrincipalDashboard`
+- `MuteHub`
+- `TrubeLab`
+- `FormBuilder`
+- `PublicProfile`
+- `PublicForm`
+- `ClassroomDetails`
