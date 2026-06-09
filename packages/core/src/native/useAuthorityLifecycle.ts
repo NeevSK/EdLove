@@ -214,23 +214,26 @@ export function useAuthorityLifecycle() {
           table: 'users',
           filter: `id=eq.${currentUser.id}`,
         },
-        async (payload) => {
-          // Detect privilege change
-          const oldCapacity = useAuthStore.getState().activeBond?.capacity;
-          const newCapacity = (payload.new as { capacity?: string })?.capacity;
-          const capacityChanged = Boolean(newCapacity && newCapacity !== oldCapacity);
+        (payload) => {
+          const handlePayload = async () => {
+            // Detect privilege change
+            const oldCapacity = useAuthStore.getState().activeBond?.capacity;
+            const newCapacity = (payload.new as { capacity?: string })?.capacity;
+            const capacityChanged = Boolean(newCapacity && newCapacity !== oldCapacity);
 
-          if (capacityChanged) {
-            try {
-              await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.refreshSession();
-            } catch (e) {
-              console.error('Auth: JWT refresh failed after capacity change', e);
+            if (capacityChanged) {
+              try {
+                await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.refreshSession();
+              } catch (e) {
+                console.error('Auth: JWT refresh failed after capacity change', e);
+              }
             }
-          }
 
-          refreshProfile().catch((e) => {
-            console.error('Auth: Profile refresh failed after remote update', e);
-          });
+            refreshProfile().catch((e) => {
+              console.error('Auth: Profile refresh failed after remote update', e);
+            });
+          };
+          void handlePayload();
         },
       )
       .subscribe();
