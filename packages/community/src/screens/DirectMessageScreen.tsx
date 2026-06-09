@@ -36,7 +36,7 @@ export default function DirectMessageScreen() {
   React.useEffect(() => {
     async function fetchContext() {
       try {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from('direct_conversations')
           .select('user1_id, user2_id')
           .eq('id', conversationId)
@@ -54,7 +54,7 @@ export default function DirectMessageScreen() {
         console.error('Failed to fetch conversation context:', err);
       }
     }
-    fetchContext();
+    void fetchContext();
   }, [conversationId, user]);
 
   const fetchMessages = async (): Promise<ChatMessage[]> => {

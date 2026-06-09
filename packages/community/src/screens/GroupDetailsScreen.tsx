@@ -83,7 +83,7 @@ export default function GroupDetailsScreen() {
     const fetchGroup = async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from('community_groups')
           .select('*, creator:users!community_groups_created_by_fkey(full_name, avatar_url)')
           .eq('id', groupId)
@@ -109,8 +109,8 @@ export default function GroupDetailsScreen() {
         setLoading(false);
       }
     };
-    fetchGroup();
-    fetchPosts(groupId);
+    void fetchGroup();
+    void fetchPosts(groupId);
   }, [groupId, user?.id, fetchPosts]);
 
   const handleBack = React.useCallback(() => navigation.goBack(), [navigation]);
@@ -148,6 +148,7 @@ export default function GroupDetailsScreen() {
     if (!canJoinGroup || !user?.id) {
       await setPendingGateAction({
         kind: 'community_join_group',
+        // eslint-disable-next-line no-restricted-syntax
         createdAt: Date.now(),
         groupId,
         joinPolicy: group?.join_policy || 'open',

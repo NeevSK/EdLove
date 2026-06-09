@@ -14,7 +14,6 @@ interface GroupCardProps {
 }
 
 const GroupCard = React.memo(function GroupCard({
-  id,
   name,
   memberCount,
   type,

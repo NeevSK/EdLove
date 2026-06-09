@@ -614,7 +614,9 @@ const rawCommunityAPI = {
           'comment_id',
           data.map((c: any) => c.id),
         );
-      (uv ?? []).forEach((row: any) => upvotedIds.add(row.comment_id));
+      (uv ?? []).forEach((row: any) => {
+        upvotedIds.add(row.comment_id);
+      });
     }
     return (data ?? []).map(
       (c: any) =>

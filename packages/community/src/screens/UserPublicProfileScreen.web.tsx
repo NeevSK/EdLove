@@ -32,7 +32,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
 import { communityAPI } from '../api/community';
@@ -70,7 +70,7 @@ export default function UserPublicProfileScreen() {
   const [showThuthimal, setShowThuthimal] = useState(false);
   const [stats, setStats] = useState({ posts: 0, endorsements: 0 });
 
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     if (!userId) return;
     setLoading(true);
     try {
@@ -110,11 +110,11 @@ export default function UserPublicProfileScreen() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
 
   useEffect(() => {
     if (userId) {
-      loadProfile();
+      void loadProfile();
     } else {
       setUser(null);
       setStats({ posts: 0, endorsements: 0 });
@@ -193,7 +193,9 @@ export default function UserPublicProfileScreen() {
               <VStack className="gap-2.5 mt-3">
                 <Button
                   variant="solid"
-                  onPress={handleMessagePress}
+                  onPress={() => {
+                    void handleMessagePress();
+                  }}
                   isDisabled={initiatingDM}
                   className="h-[52px] rounded-[26px]"
                 >

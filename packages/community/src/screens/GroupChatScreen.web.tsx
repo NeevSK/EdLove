@@ -87,23 +87,26 @@ export default function GroupChatScreen() {
           table: 'group_messages',
           filter: `group_id=eq.${groupId}`,
         },
-        async (payload) => {
-          const { data } = await supabase
-            .from('group_messages')
-            .select('*, author:users!group_messages_author_id_fkey(full_name, avatar_url)')
-            .eq('id', payload.new.id)
-            .single();
-          if (!data) return;
-          setMessages((prev) => {
-            if (prev.some((m) => m.id === data.id)) return prev;
-            return [...prev, data as ChatMessage];
-          });
-          scrollToBottom();
+        (payload) => {
+          const handlePayload = async () => {
+            const { data } = await supabase
+              .from('group_messages')
+              .select('*, author:users!group_messages_author_id_fkey(full_name, avatar_url)')
+              .eq('id', payload.new.id)
+              .single();
+            if (!data) return;
+            setMessages((prev) => {
+              if (prev.some((m) => m.id === data.id)) return prev;
+              return [...prev, data as ChatMessage];
+            });
+            scrollToBottom();
+          };
+          void handlePayload();
         },
       )
       .subscribe();
     return () => {
-      supabase.removeChannel(channel);
+      void supabase.removeChannel(channel);
     };
   }, [groupId, scrollToBottom]);
 
@@ -114,6 +117,7 @@ export default function GroupChatScreen() {
     setSending(true);
     setDraft('');
 
+    // eslint-disable-next-line no-restricted-syntax
     const optimisticId = `opt_${Date.now()}`;
     const optimistic: ChatMessage = {
       id: optimisticId,
@@ -142,7 +146,7 @@ export default function GroupChatScreen() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      void handleSend();
     }
   };
 
@@ -168,6 +172,7 @@ export default function GroupChatScreen() {
         }}
       >
         <button
+          type="button"
           onClick={() => navigation.goBack()}
           style={{
             background: 'none',
@@ -251,6 +256,7 @@ export default function GroupChatScreen() {
               >
                 {/* Avatar */}
                 <button
+                  type="button"
                   onClick={() =>
                     !isOwn &&
                     navigation.navigate('PublicProfile', {
@@ -378,7 +384,10 @@ export default function GroupChatScreen() {
           }}
         />
         <button
-          onClick={handleSend}
+          type="button"
+          onClick={() => {
+            void handleSend();
+          }}
           disabled={isPastView || !draft.trim() || sending}
           style={{
             width: '40px',

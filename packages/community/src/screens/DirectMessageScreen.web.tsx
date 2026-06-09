@@ -93,7 +93,7 @@ export default function DirectMessageScreen() {
         setLoading(false);
       }
     }
-    fetchContext();
+    void fetchContext();
   }, [conversationId, user, viewDate, viewScale]);
 
   useEffect(() => {
@@ -112,33 +112,37 @@ export default function DirectMessageScreen() {
           table: 'direct_messages',
           filter: `conversation_id=eq.${conversationId}`,
         },
-        async (payload) => {
-          const { data } = await supabase
-            .from('direct_messages')
-            .select('*, author:users!direct_messages_sender_id_fkey(full_name, avatar_url)')
-            .eq('id', payload.new.id)
-            .single();
-          if (!data) return;
-          setMessages((prev) => {
-            if (prev.some((m) => m.id === data.id)) return prev;
-            return [...prev, data as ChatMessage];
-          });
-          scrollToBottom();
+        (payload) => {
+          const handlePayload = async () => {
+            const { data } = await supabase
+              .from('direct_messages')
+              .select('*, author:users!direct_messages_sender_id_fkey(full_name, avatar_url)')
+              .eq('id', payload.new.id)
+              .single();
+            if (!data) return;
+            setMessages((prev) => {
+              if (prev.some((m) => m.id === data.id)) return prev;
+              return [...prev, data as ChatMessage];
+            });
+            scrollToBottom();
+          };
+          void handlePayload();
         },
       )
       .subscribe();
     return () => {
-      supabase.removeChannel(channel);
+      void supabase.removeChannel(channel);
     };
   }, [conversationId, scrollToBottom]);
 
-  // \u2500\u2500 Send \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // ── Send ─────────────────────────────────────────────────────────────────────
   const handleSend = useCallback(async () => {
     const content = draft.trim();
     if (!content || !user || isPastView) return;
     setSending(true);
     setDraft('');
 
+    // eslint-disable-next-line no-restricted-syntax
     const optimisticId = `opt_${Date.now()}`;
     const optimistic: ChatMessage = {
       id: optimisticId,
@@ -167,7 +171,7 @@ export default function DirectMessageScreen() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      void handleSend();
     }
   };
 
@@ -193,6 +197,7 @@ export default function DirectMessageScreen() {
         }}
       >
         <button
+          type="button"
           onClick={() => navigation.goBack()}
           style={{
             background: 'none',
@@ -407,7 +412,10 @@ export default function DirectMessageScreen() {
               }}
             />
             <button
-              onClick={handleSend}
+              type="button"
+              onClick={() => {
+                void handleSend();
+              }}
               disabled={!draft.trim() || sending}
               style={{
                 width: '40px',

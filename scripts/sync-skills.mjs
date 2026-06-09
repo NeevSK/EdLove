@@ -135,7 +135,9 @@ async function syncWorkspaceSkillsToAntigravity() {
     consolidatedInstructions,
     'utf8',
   );
-  console.log('Successfully consolidated all playbooks and rules into .github/copilot-instructions.md.');
+  console.log(
+    'Successfully consolidated all playbooks and rules into .github/copilot-instructions.md.',
+  );
 }
 
 syncWorkspaceSkillsToAntigravity().catch(console.error);

@@ -49,6 +49,20 @@
   },
   "overrides": [
     {
+      "includes": [
+        "**/archives/**/*",
+        "**/archive/**/*",
+        "**/archives/*",
+        "**/archive/*"
+      ],
+      "linter": {
+        "enabled": false
+      },
+      "formatter": {
+        "enabled": false
+      }
+    },
+    {
       "includes": ["**/*.d.ts"],
       "linter": {
         "rules": {

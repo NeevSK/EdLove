@@ -13,6 +13,9 @@ import type { User } from '../types';
 import { APIError } from '../types/API';
 import type { Bond } from '../types/Identity';
 
+const isAnonymousSession = (currentSession: Session | null) =>
+  !!currentSession?.user && (currentSession.user.is_anonymous || !currentSession.user.email);
+
 /**
  * useAuthorityLifecycle
  *
@@ -32,9 +35,6 @@ export function useAuthorityLifecycle() {
   const setAuthSession = useStore((state) => state.setAuthSession);
   const setAuthSessionResolved = useStore((state) => state.setAuthSessionResolved);
   const setDemoMode = useStore((state) => state.setDemoMode);
-
-  const isAnonymousSession = (currentSession: Session | null) =>
-    !!currentSession?.user && (currentSession.user.is_anonymous || !currentSession.user.email);
 
   const fetchAndSetUserProfile = useCallback(async () => {
     setIsProfileLoading(true);
@@ -195,7 +195,6 @@ export function useAuthorityLifecycle() {
     setOnboardingCompleted,
     fetchAndSetUserProfile,
     setDemoMode,
-    isAnonymousSession,
   ]);
 
   // 4. Realtime Profile Updates (Capability Sync)

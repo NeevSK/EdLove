@@ -101,7 +101,11 @@ class SovereignBus {
     for (const event of Object.keys({}) as SovereignEvent[]) {
       wrappedListeners.push(this.on(event, (payload) => listener(event, payload)));
     }
-    return () => wrappedListeners.forEach((unsub) => unsub());
+    return () => {
+      wrappedListeners.forEach((unsub) => {
+        unsub();
+      });
+    };
   }
 
   /** Remove all listeners for a specific event (useful in tests). */

@@ -53,7 +53,7 @@ Reference `AGENT_PROMPT_LENS.md` and `TRUTH_DESIGN_SYSTEM.md` for tokens.
 ---
 
 ## 4. ONBOARDING SEQUENCE FOR AGENTS
-1. **Research**: Read `TRUTH_ARCHITECTURE.md` and `AGENT_PROMPT_LENS.md`.
+1. **Research**: Read the core files under `docs/Core/` (`domain-and-users.md`, `tech-stack.md`, `workspace-navigation-philosophy.md`) and `AGENT_PROMPT_LENS.md`.
 2. **Locate**: Identify state in `packages/core` and UI in `packages/ui`.
 3. **Propose**: Use the format in `AGENT_PROMPT_LENS.md` section 2.
 4. **Build**: Thin screens, thick hooks/stores.

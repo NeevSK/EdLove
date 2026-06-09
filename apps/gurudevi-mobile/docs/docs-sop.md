@@ -48,7 +48,8 @@ title: "Document Title"
 status: "active" | "draft" | "superseded" | "deprecated"
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
-author: "Name"
+author: "Naveen" # Primary author
+scribe: "Antigravity" # Agent scribe (if generated/maintained by AI)
 tags: [mobile, architecture]
 superseded_by: "relative/path/to/newer-doc.md" # Optional
 ---
