@@ -1,3 +1,4 @@
+/* eslint-disable import-x/export */
 // 1. Foundation (No relative dependencies)
 
 export {

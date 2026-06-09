@@ -56,7 +56,7 @@ export function useDeviceSecurity() {
   );
 
   useEffect(() => {
-    fetchSecuritySummary();
+    void fetchSecuritySummary();
   }, [fetchSecuritySummary]);
 
   // Actions wrapped in transitions and optimistic updates
@@ -64,7 +64,7 @@ export function useDeviceSecurity() {
     async (sessionId: string) => {
       startTransition(() => {
         addOptimisticSession({ type: 'revoke', sessionId });
-        revokeSession(sessionId);
+        void revokeSession(sessionId);
       });
     },
     [revokeSession, addOptimisticSession],
@@ -74,7 +74,7 @@ export function useDeviceSecurity() {
     async (deviceId: string) => {
       startTransition(() => {
         addOptimisticDevice({ type: 'unlink', deviceId });
-        unlinkDevice(deviceId);
+        void unlinkDevice(deviceId);
       });
     },
     [unlinkDevice, addOptimisticDevice],

@@ -48,6 +48,10 @@ yarn-error.log*
 !.claude/skills/
 ## Generated audit artifacts
 audit-results.json
+report_final.json
+report-*.json
+eslint-report.json
+
 
 # Geo Archive Artifacts
 .geo_archive/

@@ -39,7 +39,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     set({ userId, notifications: [], unreadCount: 0, error: null });
 
     if (userId) {
-      get().loadNotifications();
+      void get().loadNotifications();
       get().subscribe();
     }
   },
@@ -116,7 +116,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
           ),
         }));
         if (updated.is_read) {
-          get().loadNotifications();
+          void get().loadNotifications();
         }
       },
       (status) => {

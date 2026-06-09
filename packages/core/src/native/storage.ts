@@ -40,7 +40,7 @@ class RobustAsyncStorage implements StorageInterface {
         }
       });
       this.initialized = true;
-    } catch (_e) {
+    } catch {
       // Silently fail during hydration to avoid HMR issues, or defer to a safe time
     }
   }
@@ -141,6 +141,7 @@ function createStorage(): StorageInterface {
   }
 
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { MMKV } = require('react-native-mmkv');
     const mmkv = new MMKV({ id: 'gurudevi-store' });
 

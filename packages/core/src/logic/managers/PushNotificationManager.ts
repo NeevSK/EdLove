@@ -45,10 +45,10 @@ export class PushNotificationManager {
 
       // 1. Setup Token Listener for refresh edge cases
       if (typeof this.runtime.addPushTokenListener === 'function') {
-        this.runtime.addPushTokenListener(async (newToken) => {
+        this.runtime.addPushTokenListener((newToken) => {
           console.log('PushNotificationManager: Token refreshed', newToken);
           const platform = this.coreRuntime.device.getMetadata().platform ?? 'mobile';
-          await this.pushPort.registerPushToken(userId, newToken, deviceId, platform);
+          void this.pushPort.registerPushToken(userId, newToken, deviceId, platform);
         });
       }
 
@@ -61,7 +61,7 @@ export class PushNotificationManager {
       }
 
       if (typeof this.runtime.addNotificationResponseReceivedListener === 'function') {
-        this.runtime.addNotificationResponseReceivedListener(async (response) => {
+        this.runtime.addNotificationResponseReceivedListener((response) => {
           console.log('PushNotificationManager: Notification clicked', response);
 
           // Extract URL from notification data payload
@@ -73,7 +73,7 @@ export class PushNotificationManager {
 
           if (targetUrl) {
             console.log('PushNotificationManager: Routing to deep link', targetUrl);
-            await this.deepLink.handleURL(targetUrl);
+            void this.deepLink.handleURL(targetUrl);
           }
         });
       }

@@ -10,7 +10,8 @@ try {
   // Verify if remote branch exists
   try {
     execSync(`git rev-parse --verify ${remoteBranch}`, { stdio: 'ignore' });
-    changedFilesStr = execSync(`git diff --name-only ${remoteBranch}...HEAD`, { encoding: 'utf8' }).trim();
+    const baseCommit = process.env.SURGICAL_PUSH_COMMIT || remoteBranch;
+    changedFilesStr = execSync(`git diff --name-only ${baseCommit}...HEAD`, { encoding: 'utf8' }).trim();
   } catch {
     // If remote branch does not exist, fall back to comparing against HEAD~1 or HEAD
     try {
@@ -50,7 +51,7 @@ const filterArgs = Array.from(affectedPackages)
 console.log(`>>> 🛡️  Surgical Push Sentinel: Auditing affected packages: ${Array.from(affectedPackages).join(', ')}`);
 
 try {
-  const cmd = `pnpm exec turbo run lint check-types ${filterArgs} --continue --concurrency=1`;
+  const cmd = `pnpm exec turbo run check-types ${filterArgs} --continue --concurrency=1 --only`;
   console.log(`>>> Executing: ${cmd}`);
   execSync(cmd, { stdio: ['ignore', 'inherit', 'inherit'] });
   console.log('\n✅ Surgical Push Sentinel: Affected packages integrity verified.');

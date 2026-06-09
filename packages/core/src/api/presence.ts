@@ -53,20 +53,22 @@ export function startPresenceSession(options: PresenceSessionOptions): () => voi
   );
   const watcherChannel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.channel(options.channelName);
 
-  selfChannel.subscribe(async (status) => {
+  selfChannel.subscribe((status) => {
     if (status !== 'SUBSCRIBED') return;
 
-    try {
-      await markUserPresenceSeen(options.userId);
-      await selfChannel.track({
-        user_id: options.userId,
-        vibe: options.userVibe ?? 'active',
-        // DETERMINISTIC_OK: Background side-effect for presence heartbeat.
-        online_at: new Date().toISOString(),
-      });
-    } catch {
-      options.onOfflineChange(true);
-    }
+    void (async () => {
+      try {
+        await markUserPresenceSeen(options.userId);
+        await selfChannel.track({
+          user_id: options.userId,
+          vibe: options.userVibe ?? 'active',
+          // DETERMINISTIC_OK: Background side-effect for presence heartbeat.
+          online_at: new Date().toISOString(),
+        });
+      } catch {
+        options.onOfflineChange(true);
+      }
+    })();
   });
 
   watcherChannel

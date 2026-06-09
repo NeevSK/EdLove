@@ -40,7 +40,7 @@ export function useLocalPermission(
       }
     }
 
-    evaluateLocalPDP();
+    void evaluateLocalPDP();
 
     return () => {
       active = false;

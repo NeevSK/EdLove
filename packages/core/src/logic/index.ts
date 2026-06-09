@@ -34,7 +34,7 @@ export { useFeatureStore } from '../store/useFeatureStore';
 export { type TotalState, useStore } from '../store/useStore';
 export { type TemporalScale, useTemporalStore } from '../store/useTemporalStore';
 // Types (Agnostic / logic-layer)
-export type { Bond, Capacity } from '../types';
+export type { Bond } from '../types';
 export type { APIError } from '../types/API';
 export type { LessonMaterial } from '../types/LessonMaterial';
 export * from './apiInterceptor';

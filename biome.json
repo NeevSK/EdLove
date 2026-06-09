@@ -15,7 +15,13 @@
       "!!**/.geo_archive/**",
       "!!**/legacy/**",
       "!!**/*-legacy/**",
-      "!!**/*_archive/**"
+      "!!**/*_archive/**",
+      "!!**/report_final.json",
+      "!!**/reports/**",
+      "!!**/dist/**",
+      "!!**/.turbo/**",
+      "!!**/node_modules/**",
+      "!!**/*.log"
     ]
   },
   "formatter": {

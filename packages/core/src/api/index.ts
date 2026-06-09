@@ -88,10 +88,10 @@ export type {
   RiverStage,
   UserGrowthState,
 } from '../types/Growth';
+export type { PrincipalNote } from '../types/PrincipalNote';
 // --- Re-exports (Types & Contracts) ---
 export * from './admin.contract';
 export * from './announcements';
-export * from './assignments';
 export * from './circles';
 export * from './classroomGroups';
 export * from './classroomNotes.contract';

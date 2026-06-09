@@ -15,6 +15,6 @@
     "types": ["vitest/importMeta", "vitest/globals", "@repo/types-shim"],
     "rootDir": "./src"
   },
-  "include": ["src/**/*", "vitest.config.ts"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }

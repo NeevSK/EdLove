@@ -70,7 +70,7 @@ export function useDeviceAccounts() {
   useEffect(() => {
     let cancelled = false;
 
-    (async () => {
+    void (async () => {
       dispatch({ type: 'HYDRATE_START' });
       try {
         const [nextAccounts, nextActiveId] = await Promise.all([

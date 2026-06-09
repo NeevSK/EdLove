@@ -28,7 +28,7 @@ export class SupabaseGlobalConfigAdapter implements IGlobalConfigPort {
       .subscribe();
 
     return () => {
-      this.client.removeChannel(channel);
+      void this.client.removeChannel(channel);
     };
   }
 }

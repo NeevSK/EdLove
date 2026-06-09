@@ -202,6 +202,106 @@ function groupNotes(notes: PrincipalNote[]): NoteGroup[] {
   return result;
 }
 
+// -- Sub-Components -------------------------------------------
+
+const NoteCard = memo(
+  ({
+    note,
+    onToggleDone,
+    onTogglePin,
+    onDelete,
+  }: {
+    note: PrincipalNote;
+    onToggleDone: (note: PrincipalNote) => void | Promise<void>;
+    onTogglePin: (note: PrincipalNote) => void | Promise<void>;
+    onDelete: (id: string) => void | Promise<void>;
+  }) => {
+    const meta = NOTE_TYPE_META[note.note_type]!;
+    const NoteIcon = meta.icon;
+    const isTodo = note.note_type === 'todo';
+    // eslint-disable-next-line @eslint-react/purity
+    const createdAt = note.created_at || new Date().toISOString();
+    const time = new Date(createdAt).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    return (
+      <Box
+        className={`p-6 mb-4 rounded-[24px] border-l-4 shadow-sm ${
+          note.is_done
+            ? 'bg-phase-surface/60 opacity-60 border-phase-border'
+            : `bg-phase-surface border-phase-interactive`
+        }`}
+      >
+        <HStack className="justify-between items-start gap-4">
+          <HStack className="items-center flex-1 gap-4">
+            {isTodo ? (
+              <Pressable
+                onPress={() => {
+                  void onToggleDone(note);
+                }}
+                className={`w-7 h-7 rounded-lg border-2 items-center justify-center ${note.is_done ? 'bg-phase-interactive border-phase-interactive' : 'border-phase-interactive/40'}`}
+                hitSlop={12}
+                accessibilityLabel={`Mark "${note.content}" as ${note.is_done ? 'incomplete' : 'complete'}`}
+                accessibilityHint="Toggles the completion status of this item"
+              >
+                {note.is_done && <Icon as={CheckSquare} size="xs" className="text-white" />}
+              </Pressable>
+            ) : (
+              <Box className={`w-7 h-7 rounded-lg items-center justify-center ${meta.bg}`}>
+                <Icon as={NoteIcon} size="xs" className={meta.color} />
+              </Box>
+            )}
+            <Text
+              className={`flex-1 text-[16px] font-bold text-phaseText-primary tracking-tight leading-[22px] ${
+                note.is_done ? 'line-through opacity-50' : ''
+              }`}
+            >
+              {note.content}
+            </Text>
+          </HStack>
+
+          <HStack className="gap-5 items-center">
+            {!note.is_done && (
+              <Pressable
+                onPress={() => {
+                  void onTogglePin(note);
+                }}
+                accessibilityLabel={note.is_pinned ? 'Unpin item' : 'Pin item'}
+                accessibilityHint="Keeps this item at the top of the log"
+              >
+                <Icon
+                  as={Pin}
+                  size="xs"
+                  className={note.is_pinned ? 'text-phase-interactive' : 'text-phaseText-muted/30'}
+                  fill={note.is_pinned ? 'currentColor' : 'transparent'}
+                />
+              </Pressable>
+            )}
+            <Pressable
+              onPress={() => {
+                void onDelete(note.id);
+              }}
+              accessibilityLabel="Delete item"
+              accessibilityHint="Permanently removes this entry from the log"
+            >
+              <Icon as={X} size="xs" className="text-phaseText-muted/40" />
+            </Pressable>
+          </HStack>
+        </HStack>
+
+        <HStack className="mt-3 justify-end items-center gap-1.5">
+          <Box className="w-1.5 h-1.5 rounded-full bg-phaseText-muted/20" />
+          <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-widest opacity-60">
+            {time}
+          </Text>
+        </HStack>
+      </Box>
+    );
+  },
+);
+
 // -- Main Component -------------------------------------------
 
 export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps) {
@@ -216,101 +316,6 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
   });
 
   const isIos = Platform.OS === 'ios';
-
-  // -- Sub-Components -------------------------------------------
-
-  const NoteCard = memo(
-    ({
-      note,
-      onToggleDone,
-      onTogglePin,
-      onDelete,
-    }: {
-      note: PrincipalNote;
-      onToggleDone: (note: PrincipalNote) => void;
-      onTogglePin: (note: PrincipalNote) => void;
-      onDelete: (id: string) => void;
-    }) => {
-      const meta = NOTE_TYPE_META[note.note_type];
-      const NoteIcon = meta.icon;
-      const isTodo = note.note_type === 'todo';
-      const createdAt = note.created_at || new Date().toISOString();
-      const time = new Date(createdAt).toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-
-      return (
-        <Box
-          className={`p-6 mb-4 rounded-[24px] border-l-4 shadow-sm ${
-            note.is_done
-              ? 'bg-phase-surface/60 opacity-60 border-phase-border'
-              : `bg-phase-surface border-phase-interactive`
-          }`}
-        >
-          <HStack className="justify-between items-start gap-4">
-            <HStack className="items-center flex-1 gap-4">
-              {isTodo ? (
-                <Pressable
-                  onPress={() => onToggleDone(note)}
-                  className={`w-7 h-7 rounded-lg border-2 items-center justify-center ${note.is_done ? 'bg-phase-interactive border-phase-interactive' : 'border-phase-interactive/40'}`}
-                  hitSlop={12}
-                  accessibilityLabel={`Mark "${note.content}" as ${note.is_done ? 'incomplete' : 'complete'}`}
-                  accessibilityHint="Toggles the completion status of this item"
-                >
-                  {note.is_done && <Icon as={CheckSquare} size="xs" className="text-white" />}
-                </Pressable>
-              ) : (
-                <Box className={`w-7 h-7 rounded-lg items-center justify-center ${meta.bg}`}>
-                  <Icon as={NoteIcon} size="xs" className={meta.color} />
-                </Box>
-              )}
-              <Text
-                className={`flex-1 text-[16px] font-bold text-phaseText-primary tracking-tight leading-[22px] ${
-                  note.is_done ? 'line-through opacity-50' : ''
-                }`}
-              >
-                {note.content}
-              </Text>
-            </HStack>
-
-            <HStack className="gap-5 items-center">
-              {!note.is_done && (
-                <Pressable
-                  onPress={() => onTogglePin(note)}
-                  accessibilityLabel={note.is_pinned ? 'Unpin item' : 'Pin item'}
-                  accessibilityHint="Keeps this item at the top of the log"
-                >
-                  <Icon
-                    as={Pin}
-                    size="xs"
-                    className={
-                      note.is_pinned ? 'text-phase-interactive' : 'text-phaseText-muted/30'
-                    }
-                    fill={note.is_pinned ? 'currentColor' : 'transparent'}
-                  />
-                </Pressable>
-              )}
-              <Pressable
-                onPress={() => onDelete(note.id)}
-                accessibilityLabel="Delete item"
-                accessibilityHint="Permanently removes this entry from the log"
-              >
-                <Icon as={X} size="xs" className="text-phaseText-muted/40" />
-              </Pressable>
-            </HStack>
-          </HStack>
-
-          <HStack className="mt-3 justify-end items-center gap-1.5">
-            <Box className="w-1.5 h-1.5 rounded-full bg-phaseText-muted/20" />
-            <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-widest opacity-60">
-              {time}
-            </Text>
-          </HStack>
-        </Box>
-      );
-    },
-  );
 
   const fetchNotes = useCallback(async () => {
     try {
@@ -355,42 +360,51 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
     }
   };
 
-  const handleToggleDone = async (note: PrincipalNote) => {
-    if (note.note_type !== 'todo') return;
-    try {
-      hapticLight();
-      const updated = await api.principalNotes.update(note.id, {
-        is_done: !note.is_done,
-      });
-      dispatch({ type: 'UPDATE_NOTE', note: updated });
-    } catch {
-      showToast({ message: 'Could not update note.', type: 'error' });
-    }
-  };
+  const handleToggleDone = useCallback(
+    async (note: PrincipalNote) => {
+      if (note.note_type !== 'todo') return;
+      try {
+        hapticLight();
+        const updated = await api.principalNotes.update(note.id, {
+          is_done: !note.is_done,
+        });
+        dispatch({ type: 'UPDATE_NOTE', note: updated });
+      } catch {
+        showToast({ message: 'Could not update note.', type: 'error' });
+      }
+    },
+    [showToast],
+  );
 
-  const handleTogglePin = async (note: PrincipalNote) => {
-    if (note.is_done) return;
-    try {
-      hapticLight();
-      const updated = await api.principalNotes.update(note.id, {
-        is_pinned: !note.is_pinned,
-      });
-      dispatch({ type: 'UPDATE_NOTE', note: updated });
-    } catch {
-      showToast({ message: 'Could not update note.', type: 'error' });
-    }
-  };
+  const handleTogglePin = useCallback(
+    async (note: PrincipalNote) => {
+      if (note.is_done) return;
+      try {
+        hapticLight();
+        const updated = await api.principalNotes.update(note.id, {
+          is_pinned: !note.is_pinned,
+        });
+        dispatch({ type: 'UPDATE_NOTE', note: updated });
+      } catch {
+        showToast({ message: 'Could not update note.', type: 'error' });
+      }
+    },
+    [showToast],
+  );
 
-  const handleDelete = async (id: string) => {
-    try {
-      hapticLight();
-      await api.principalNotes.delete(id);
-      dispatch({ type: 'DELETE_NOTE', id });
-      showToast({ message: 'Note deleted.', type: 'success' });
-    } catch {
-      showToast({ message: 'Could not delete note.', type: 'error' });
-    }
-  };
+  const handleDelete = useCallback(
+    async (id: string) => {
+      try {
+        hapticLight();
+        await api.principalNotes.delete(id);
+        dispatch({ type: 'DELETE_NOTE', id });
+        showToast({ message: 'Note deleted.', type: 'success' });
+      } catch {
+        showToast({ message: 'Could not delete note.', type: 'error' });
+      }
+    },
+    [showToast],
+  );
 
   const renderRow = useCallback(
     ({ item }: { item: NoteRow }) => {
@@ -415,7 +429,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
         </Box>
       );
     },
-    [handleToggleDone, handleTogglePin, handleDelete, NoteCard],
+    [handleToggleDone, handleTogglePin, handleDelete],
   );
 
   return (
@@ -523,9 +537,10 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
             <InputField
               value={state.draft}
               onChangeText={(val) => dispatch({ type: 'UPDATE_DRAFT', draft: val })}
-              placeholder={NOTE_TYPE_META[state.draftType].placeholder}
+              placeholder={NOTE_TYPE_META[state.draftType]!.placeholder}
               placeholderTextColor="rgba(0,0,0,0.3)"
               multiline
+              // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus
               className="text-[17px] font-bold text-phaseText-primary leading-[24px]"
               accessibilityLabel="Note content"

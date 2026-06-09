@@ -57,13 +57,27 @@ export const nativeDeviceProvider = {
 };
 
 export const nativeHapticsProvider: HapticsProvider = {
-  impactLight: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
-  impactMedium: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium),
-  impactHeavy: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy),
-  notificationSuccess: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success),
-  notificationWarning: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning),
-  notificationError: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error),
-  selection: () => Haptics.selectionAsync(),
+  impactLight: () => {
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  },
+  impactMedium: () => {
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  },
+  impactHeavy: () => {
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+  },
+  notificationSuccess: () => {
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  },
+  notificationWarning: () => {
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+  },
+  notificationError: () => {
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+  },
+  selection: () => {
+    void Haptics.selectionAsync();
+  },
 };
 
 export const nativeLinkingProvider: LinkingProvider = {
