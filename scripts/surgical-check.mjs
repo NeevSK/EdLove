@@ -36,7 +36,7 @@ if (affectedPackages.size === 0) {
 }
 
 const filterArgs = Array.from(affectedPackages)
-  .map((pkg) => `--filter=${pkg}`)
+  .map((pkg) => `--filter=./${pkg}`)
   .join(' ');
 
 console.log(
@@ -48,7 +48,7 @@ try {
   const cmd = `pnpm exec turbo run check-types ${filterArgs} --continue`;
   console.log(`>>> Executing: ${cmd}`);
 
-  execSync(cmd, { stdio: 'inherit' });
+  execSync(cmd, { stdio: ['ignore', 'inherit', 'inherit'] });
 
   console.log('\n✅ Surgical Sentinel: Package integrity verified.');
   process.exit(0);

@@ -31,35 +31,51 @@ const startTime = Date.now();
 const rawLines = [];
 let exitCode = 0;
 
-// Execute the command
-const shell = process.platform === 'win32' ? 'powershell.exe' : '/bin/sh';
-const shellArgs = process.platform === 'win32' ? ['-Command', command] : ['-c', command];
-
 // Increase memory limit for node-based tools in the command string if needed
-// Actually, it's better to set environment variables
 const env = { ...process.env, NODE_OPTIONS: '--max-old-space-size=4096' };
 
-const child = spawn(shell, shellArgs, {
-  env,
-  stdio: ['inherit', 'pipe', 'pipe'],
-});
+// Split command by && or ; and run sequentially
+const subCommands = command.split(/&&|;/).map(cmd => cmd.trim()).filter(Boolean);
 
-child.stdout.on('data', (data) => {
-  const str = data.toString();
-  process.stdout.write(str);
-  rawLines.push(...str.split('\n'));
-});
+async function runCommandsSequentially() {
+  for (const subCommand of subCommands) {
+    console.log(`>>> Executing sub-command: ${subCommand}`);
+    const code = await new Promise((resolve) => {
+      const shell = process.platform === 'win32' ? 'powershell.exe' : '/bin/sh';
+      const shellArgs = process.platform === 'win32' ? ['-Command', subCommand] : ['-c', subCommand];
+      
+      const child = spawn(shell, shellArgs, {
+        env,
+        stdio: ['ignore', 'pipe', 'pipe'],
+      });
 
-child.stderr.on('data', (data) => {
-  const str = data.toString();
-  process.stderr.write(str);
-  rawLines.push(...str.split('\n'));
-});
+      child.stdout.on('data', (data) => {
+        const str = data.toString();
+        process.stdout.write(str);
+        rawLines.push(...str.split('\n'));
+      });
 
-child.on('close', async (code) => {
-  exitCode = code ?? 0;
+      child.stderr.on('data', (data) => {
+        const str = data.toString();
+        process.stderr.write(str);
+        rawLines.push(...str.split('\n'));
+      });
+
+      child.on('close', (code) => {
+        resolve(code ?? 0);
+      });
+    });
+
+    if (code !== 0) {
+      exitCode = code;
+      console.log(`>>> Sub-command failed with exit code ${code}: ${subCommand}`);
+      break;
+    }
+  }
   await generateReport();
-});
+}
+
+runCommandsSequentially();
 
 async function generateReport() {
   const findings = [];

@@ -22,20 +22,25 @@ export const config = [
       turbo: turboPlugin,
       deprecation: pluginDeprecation,
     },
+    rules: {
+      'turbo/no-undeclared-env-vars': 'warn',
+      'deprecation/deprecation': 'off',
+      'no-unused-vars': 'off',
+      'import-x/no-cycle': ['error', { maxDepth: 5 }],
+    },
+  },
+  {
+    files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
     languageOptions: {
       parserOptions: {
         project: true,
       },
     },
     rules: {
-      'turbo/no-undeclared-env-vars': 'warn',
-      'deprecation/deprecation': 'off',
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
       '@typescript-eslint/no-explicit-any': 'warn',
-      'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
-      'import-x/no-cycle': ['error', { maxDepth: 5 }],
     },
   },
   {
