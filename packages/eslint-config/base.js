@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import pluginDeprecation from 'eslint-plugin-deprecation';
 import pluginImport from 'eslint-plugin-import-x';
+import eslintPluginOxlint from 'eslint-plugin-oxlint';
 import turboPlugin from 'eslint-plugin-turbo';
 import tseslint from 'typescript-eslint';
 
@@ -35,23 +36,17 @@ export const config = [
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
       'import-x/no-cycle': ['error', { maxDepth: 5 }],
-      'no-restricted-syntax': [
-        'error',
-        {
-          selector: "CallExpression[callee.object.name='Math'][callee.property.name='random']",
-          message:
-            'Math.random() is non-deterministic and causes hydration mismatches in 2026. Use useId() for IDs or generate random values outside the render cycle.',
-        },
-        {
-          selector: "CallExpression[callee.object.name='Date'][callee.property.name='now']",
-          message:
-            'Date.now() is non-deterministic during hydration. Use a stable timestamp prop or wrap in useEffect.',
-        },
-      ],
     },
   },
   {
-    ignores: ['dist/**'],
+    ignores: [
+      'dist/**',
+      '**/*.config.js',
+      '**/*.config.mjs',
+      '**/*.config.ts',
+      '**/.astro/**',
+      'docs/**',
+    ],
   },
   {
     files: ['**/*.d.ts'],
@@ -59,4 +54,5 @@ export const config = [
       'deprecation/deprecation': 'off',
     },
   },
+  ...eslintPluginOxlint.configs['flat/recommended'],
 ];

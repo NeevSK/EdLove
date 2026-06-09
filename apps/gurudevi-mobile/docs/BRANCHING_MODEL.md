@@ -1,33 +1,17 @@
 ---
 title: "Branching model (solo, scalable)"
-status: "active"
+status: "superseded"
 created: 2026-03-20
-updated: 2026-03-20
+updated: 2026-06-09
 author: "Naween"
-tags: [reorganized]
+scribe: "Antigravity"
+tags: [reorganized, branching]
+superseded_by: "docs/git-branching-model.md"
 ---
 
-# Branching model (solo, scalable)
+# ⚠️ Document Superseded
 
-This repo uses a pipeline-style branch structure so changes can be promoted through environments with increasing stability.
+This document has been reorganized and made canonical at the root level of the workspace.
 
-## Branches and intent
-
-- `main-innovate`: experimentation, prototypes, spikes, new features (allowed to be unstable).
-- `main-dev`: active development branch (features integrated, still changing fast).
-- `main-QA`: stabilization/testing branch (bug fixes, regression checks, hardening).
-- `main-preview`: pre-production preview branch (release candidate validation).
-- `main`: production branch.
-
-## Promotion rules (recommended)
-
-- Promote changes forward only: `main-innovate` -> `main-dev` -> `main-QA` -> `main-preview` -> `main`.
-- Avoid back-merges from `main` into upstream branches except for critical hotfix sync.
-- Tag releases off `main` (e.g., `vX.Y.Z`) and keep a short release note in PR descriptions.
-
-## Practical tips (solo dev)
-
-- Keep each branch deployable: broken builds block promotion.
-- Use PRs even when solo (self-review + history + easier rollback).
-- Map environments to branches in CI/CD (e.g., preview deployments from `main-preview`, production from `main`).
-
+Please refer to the updated guidelines in the root folder:
+👉 **[Git Branching Model & Promotion Rules](file:///c:/Users/Naween/projects/polymath-platform/docs/git-branching-model.md)**

@@ -1,0 +1,40 @@
+{
+  "linter": {
+    "enabled": false
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100,
+    "endOfLineKind": "lf",
+    "trailingComma": "es5",
+    "semi": true,
+    "singleQuote": true,
+    "arrowParens": "always",
+    "bracketSpacing": true,
+    "bracketSameLine": false,
+    "htmlFormatter": {
+      "indentWidth": 2
+    },
+    "cssFormatter": {
+      "indentWidth": 2
+    },
+    "jsonFormatter": {
+      "indentWidth": 2
+    }
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "ignore": [
+      "node_modules",
+      "dist",
+      "build",
+      ".next",
+      ".nuxt",
+      ".output",
+      "coverage",
+      "pnpm-lock.yaml"
+    ]
+  }
+}

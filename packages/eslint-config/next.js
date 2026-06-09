@@ -1,7 +1,7 @@
+import eslintReact from '@eslint-react/eslint-plugin';
 import pluginNext from '@next/eslint-plugin-next';
 import { globalIgnores } from 'eslint/config';
 import pluginJsxA11y from 'eslint-plugin-jsx-a11y';
-import pluginReact from 'eslint-plugin-react';
 import pluginReactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
 import { config as baseConfig } from './base.js';
@@ -22,10 +22,9 @@ export const nextJsConfig = [
     'build/**',
     'next-env.d.ts',
   ]),
+  eslintReact.configs.recommended,
   {
-    ...pluginReact.configs.flat.recommended,
     languageOptions: {
-      ...pluginReact.configs.flat.recommended.languageOptions,
       globals: {
         ...globals.serviceworker,
       },
@@ -49,18 +48,13 @@ export const nextJsConfig = [
         },
       },
     },
-    settings: { react: { version: 'detect' } },
     rules: {
       ...pluginReactHooks.configs.recommended.rules,
-      'react/no-unstable-nested-components': 'error',
-      'react/jsx-no-bind': 'error',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'error',
       'local/max-use-state': ['error', { max: 3 }],
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
-      // React scope no longer necessary with new JSX transform.
-      'react/react-in-jsx-scope': 'off',
       'no-restricted-syntax': [
         'error',
         {
@@ -68,6 +62,16 @@ export const nextJsConfig = [
             "JSXOpeningElement[name.name='Button'] > JSXAttribute[name.name='onPress'] > JSXExpressionContainer > :matches(ArrowFunctionExpression[async=true], FunctionExpression[async=true])",
           message:
             'Unsafe async handler detected on Button. This can lead to idempotency bugs (double-clicks). Use <SafeButton onSafePress={...} /> or the useSafeAction() hook instead.',
+        },
+        {
+          selector: "CallExpression[callee.object.name='Math'][callee.property.name='random']",
+          message:
+            'Math.random() is non-deterministic and causes hydration mismatches in 2026. Use useId() for IDs or generate random values outside the render cycle.',
+        },
+        {
+          selector: "CallExpression[callee.object.name='Date'][callee.property.name='now']",
+          message:
+            'Date.now() is non-deterministic during hydration. Use a stable timestamp prop or wrap in useEffect.',
         },
       ],
     },

@@ -12,8 +12,9 @@ module.exports = {
     const commands = [];
     for (const chunk of chunks) {
       const chunkStr = chunk.map((f) => `"${f}"`).join(' ');
-      commands.push(`biome check --write --no-errors-on-unmatched ${chunkStr}`);
+      commands.push(`oxlint --fix ${chunkStr}`);
       commands.push(`eslint --fix ${chunkStr}`);
+      commands.push(`biome check --write --no-errors-on-unmatched ${chunkStr}`);
       commands.push(`node scripts/surgical-check.mjs ${chunkStr}`);
     }
     return commands;

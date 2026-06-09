@@ -17,7 +17,7 @@
     "lineEnding": "lf"
   },
   "linter": {
-    "enabled": true,
+    "enabled": false,
     "rules": {
       "recommended": true,
       "a11y": {
@@ -49,12 +49,7 @@
   },
   "overrides": [
     {
-      "includes": [
-        "**/archives/**/*",
-        "**/archive/**/*",
-        "**/archives/*",
-        "**/archive/*"
-      ],
+      "includes": ["**/archives/**/*", "**/archive/**/*", "**/archives/*", "**/archive/*"],
       "linter": {
         "enabled": false
       },

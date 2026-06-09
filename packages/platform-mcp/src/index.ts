@@ -992,7 +992,7 @@ class PolymathPlatformServer {
       // Smart Selection Strategy
       const mcpMode = process.env.MCP_MODE;
 
-      let baseTools: any[] = [];
+      let baseTools: any[];
       if (mcpMode === 'GATEWAY' || !mcpMode) {
         baseTools = gatewayTools;
       } else if (mcpMode === 'LEAN') {
@@ -1354,10 +1354,14 @@ class PolymathPlatformServer {
   }
 
   async run() {
-    await this.initializeDownstream();
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
     console.error('Polymath Master MCP Server (Modular) running on stdio');
+
+    // Initialize downstream in the background so it doesn't block startup
+    this.initializeDownstream().catch((err) => {
+      console.error('[Gateway] Background downstream initialization failed:', err);
+    });
 
     const cleanup = async () => {
       console.error('[Gateway] Shutting down, cleaning up downstream servers...');

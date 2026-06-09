@@ -1,8 +1,8 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FlatCompat } from '@eslint/eslintrc';
+import eslintReact from '@eslint-react/eslint-plugin';
 import pluginJsxA11y from 'eslint-plugin-jsx-a11y';
-import pluginReact from 'eslint-plugin-react';
 import pluginReactHooks from 'eslint-plugin-react-hooks';
 import globals from 'globals';
 import { config as baseConfig } from './base.js';
@@ -21,9 +21,9 @@ const compat = new FlatCompat({
  * @type {import("eslint").Linter.Config[]} */
 export const config = [
   ...baseConfig,
-  pluginReact.configs.flat.recommended,
   pluginReactHooks.configs.flat.recommended,
   pluginJsxA11y.flatConfigs.recommended,
+  eslintReact.configs.recommended,
   ...compat.extends('plugin:react-native-a11y/all'),
   {
     languageOptions: {
@@ -41,19 +41,14 @@ export const config = [
         },
       },
     },
-    settings: { react: { version: 'detect' } },
     rules: {
-      // React scope no longer necessary with new JSX transform.
-      'react/react-in-jsx-scope': 'off',
-      'react/no-unstable-nested-components': 'error',
-      'react/jsx-no-bind': 'error',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'error',
       'local/max-use-state': ['error', { max: 3 }],
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
       'no-restricted-syntax': [
-        'warn',
+        'error',
         {
           selector:
             "CallExpression[callee.name='t'][arguments.length=2][arguments.1.type='Literal'], CallExpression[callee.name='t'][arguments.length=2][arguments.1.type='TemplateLiteral']",
@@ -65,6 +60,16 @@ export const config = [
             "JSXOpeningElement[name.name='Button'] > JSXAttribute[name.name='onPress'] > JSXExpressionContainer > :matches(ArrowFunctionExpression[async=true], FunctionExpression[async=true])",
           message:
             'Unsafe async handler detected on Button. This can lead to idempotency bugs (double-clicks). Use <SafeButton onSafePress={...} /> or the useSafeAction() hook instead.',
+        },
+        {
+          selector: "CallExpression[callee.object.name='Math'][callee.property.name='random']",
+          message:
+            'Math.random() is non-deterministic and causes hydration mismatches in 2026. Use useId() for IDs or generate random values outside the render cycle.',
+        },
+        {
+          selector: "CallExpression[callee.object.name='Date'][callee.property.name='now']",
+          message:
+            'Date.now() is non-deterministic during hydration. Use a stable timestamp prop or wrap in useEffect.',
         },
       ],
     },

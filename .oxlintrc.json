@@ -1,0 +1,50 @@
+{
+  "env": {
+    "browser": true,
+    "es2025": true,
+    "node": true
+  },
+  "globals": {
+    "document": "writable",
+    "window": "writable",
+    "globalThis": "writable"
+  },
+  "plugins": ["react", "import"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "pedantic": "off",
+    "perf": "warn",
+    "style": "off",
+    "restriction": "warn",
+    "nursery": "off"
+  },
+  "rules": {
+    "no-debugger": "error",
+    "no-console": "warn",
+    "no-constant-condition": "error",
+    "no-empty": "warn",
+    "prefer-const": "warn",
+    "no-var": "error"
+  },
+  "settings": {
+    "react": {
+      "version": "19"
+    },
+    "import": {
+      "ignore": ["node_modules"]
+    }
+  },
+  "ignorePatterns": [
+    "node_modules",
+    "dist",
+    "build",
+    ".next",
+    ".expo",
+    ".turbo",
+    "coverage",
+    "*.config.ts",
+    "*.config.js",
+    "*.config.mjs"
+  ]
+}

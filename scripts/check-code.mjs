@@ -2,6 +2,8 @@ import { spawn } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 
+import { existsSync } from 'node:fs';
+
 const args = process.argv.slice(2);
 
 function readArg(name, fallback = '') {
@@ -31,10 +33,14 @@ const scopedPaths = pathsArg
 const workspaceCwd = resolve(cwdArg);
 const reportFile = resolve(cwdArg, reportPath);
 const startTime = Date.now();
-const pnpmBinary = process.env.npm_execpath || 'pnpm';
+
+const npmExecPath = process.env.npm_execpath;
+const isJsFile = npmExecPath && existsSync(npmExecPath) && (npmExecPath.endsWith('.js') || npmExecPath.endsWith('.cjs') || npmExecPath.endsWith('.mjs'));
+const pnpmBinary = isJsFile ? npmExecPath : 'pnpm';
 
 const checks = [
   { name: 'TypeScript', bin: 'tsc', args: ['--noEmit'] },
+  { name: 'Oxlint', bin: 'oxlint', args: scopedPaths.length > 0 ? scopedPaths : ['.'] },
   { name: 'ESLint', bin: 'eslint', args: scopedPaths.length > 0 ? scopedPaths : ['.'] },
   {
     name: 'Biome',
@@ -70,11 +76,17 @@ process.exit(totalFailures === 0 ? 0 : 1);
 
 function runCheck(name, bin, args, cwd) {
   return new Promise((resolveResult) => {
-    const child = spawn(process.execPath, [pnpmBinary, '--dir', cwd, 'exec', bin, ...args], {
+    const isJs = pnpmBinary.endsWith('.js') || pnpmBinary.endsWith('.cjs') || pnpmBinary.endsWith('.mjs');
+    const spawnCmd = isJs ? process.execPath : pnpmBinary;
+    const spawnArgs = isJs
+      ? [pnpmBinary, '--dir', cwd, 'exec', bin, ...args]
+      : ['--dir', cwd, 'exec', bin, ...args];
+
+    const child = spawn(spawnCmd, spawnArgs, {
       cwd,
       env: process.env,
       stdio: ['ignore', 'pipe', 'pipe'],
-      shell: false,
+      shell: !isJs, // Use shell for direct command execution on Windows
     });
 
     const stdout = [];

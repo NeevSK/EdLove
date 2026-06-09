@@ -8,6 +8,8 @@ Welcome to the documentation vault for `gurudevi-mobile`. This file serves as th
 
 | Date | Document | Category | Status | Summary |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-06-09** | [Oxlint and ESLint Hybrid Integration Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/oxlint-and-eslint-hybrid-guide.md) | Infrastructure | `active` | Pipeline setup for Oxlint + ESLint hybrid strategy and Biome format-only configurations. |
+| **2026-06-09** | [React Compiler and ESLint Guidance](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/react-compiler-and-eslint-guide.md) | Infrastructure | `active` | Aligning ESLint 9 configuration and React Compiler for React 19.2/RN 0.85 stack. |
 | **2026-06-09** | [Gurudevi UI Development Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/Core/ui-development-guide.md) | UI / Layout | `active` | Zero-legacy screen architecture, hook contracts, caching levels, and quality checklists. |
 | **2026-06-09** | [Agent Offline Strategy Briefing](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/agent/agent-briefing-offline-strategy-framework.md) | Agent / Sync | `active` | Feature-level decision trees and guided implementation checklists for offline-first. |
 | **2026-06-09** | [Sanctuary API and Backend Spec](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/Core/sanctuary-api-and-backend-spec.md) | Backend | `active` | Hono routing, ZenStack Zod v4 validation, and MCP integration. |
@@ -63,7 +65,9 @@ Welcome to the documentation vault for `gurudevi-mobile`. This file serves as th
 *   [Bootstrap and Entrypoint Standard](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/bootstrap-and-entrypoint-standard.md) - Startup sequence flow.
 *   [Protocol-Oriented Authority (POA) SSOT](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/poa-authority-ssot.md) - Core authorization specifications.
 
-### 📦 Platform & Deployment Guides (Vercel, Cloudflare, Expo, PNPM)
+### 📦 Platform, Infrastructure & Deployment Guides (Vercel, Cloudflare, Expo, PNPM, ESLint)
+*   [Oxlint and ESLint Hybrid Integration Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/oxlint-and-eslint-hybrid-guide.md) - Pipeline setup for Oxlint + ESLint hybrid strategy and Biome format-only configurations.
+*   [React Compiler and ESLint Guidance](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/react-compiler-and-eslint-guide.md) - Configuration rules and auto-memoization checks.
 *   [pnpm Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/pnpm-guide.md) - Dependency management rules.
 *   [Expo Development Paths](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/expo-development-paths.md) - Simulator and physical device flows.
 *   [Expo SDK Deprecation Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/expo-sdk-deprecation-guide.md) - Upgrading package APIs.

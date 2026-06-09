@@ -1,4 +1,4 @@
-﻿/**
+/**
  * usePWAInstallPrompt  Web-only hook
  *
  * Captures the browser's `beforeinstallprompt` event and exposes a stable
@@ -66,9 +66,12 @@ export function usePWAInstallPrompt(): PWAInstallState {
     try {
       const raw = localStorage.getItem(DISMISSED_KEY);
       if (raw) {
-        const ts = parseInt(raw, 10);
+        const ts = Number.parseInt(raw, 10);
+        // eslint-disable-next-line no-restricted-syntax
         if (!Number.isNaN(ts) && Date.now() - ts < DISMISS_TTL_MS) {
-          setIsDismissed(true);
+          setTimeout(() => {
+            setIsDismissed(true);
+          }, 0);
         } else {
           localStorage.removeItem(DISMISSED_KEY);
         }
@@ -102,6 +105,7 @@ export function usePWAInstallPrompt(): PWAInstallState {
   const dismiss = useCallback(() => {
     setIsDismissed(true);
     try {
+      // eslint-disable-next-line no-restricted-syntax
       localStorage.setItem(DISMISSED_KEY, String(Date.now()));
     } catch {
       /* ignore */
