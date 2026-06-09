@@ -134,8 +134,8 @@ If you want token-efficient orchestration across multiple MCP servers, place Run
 | **i18n** | \`audit_i18n\` | Key coverage and fallback policy compliance. |
 | **colors** | \`check_contrast\` | WCAG and APCA contrast calculations. |
 | **features** | \`audit_feature_fidelity\` | Gap analysis between docs and implementation. |
-| **exports** | \`audit_export_integrity\` | Barrel export and deep-import violation detection. |
-| **lint** | \`lint_package\` | High-speed Biome linting for packages. |
+| **lint** | \`lint_package\` | High-speed ESLint compliance checks. |
+| **biome_lint** | - | High-speed Biome linting for packages. |
 | **check** | \`format:fix\` | Primary Biome check/format/fix tool. |
 | **syncpack_fix** | \`maintenance:fix\` | Fixes package.json version mismatches monorepo-wide. |
 | **types** | \`check_package_types\` | Targeted TypeScript audits. |

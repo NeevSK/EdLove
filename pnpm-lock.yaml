@@ -2207,6 +2207,91 @@ importers:
         specifier: ^2.1.9
         version: 2.1.9(@types/node@25.5.2)(@vitest/ui@4.1.5)(jsdom@20.0.3)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.1)
 
+  packages/rn-terrain-cli:
+    dependencies:
+      '@rn-terrain/core':
+        specifier: workspace:*
+        version: link:../rn-terrain-core
+      cac:
+        specifier: ^6.7.14
+        version: 6.7.14
+      chalk:
+        specifier: ^5.6.2
+        version: 5.6.2
+      consola:
+        specifier: ^3.4.0
+        version: 3.4.2
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:^
+        version: link:../eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+
+  packages/rn-terrain-core:
+    dependencies:
+      '@supabase/supabase-js':
+        specifier: 2.102.1
+        version: 2.102.1
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.6.1
+      semver:
+        specifier: ^7.6.0
+        version: 7.7.4
+      zod:
+        specifier: 4.3.6
+        version: 4.3.6
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:^
+        version: link:../eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/semver':
+        specifier: ^7.5.8
+        version: 7.7.1
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+
+  packages/rn-terrain-mcp:
+    dependencies:
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.4.0
+        version: 1.29.0(zod@4.3.6)
+      '@rn-terrain/core':
+        specifier: workspace:*
+        version: link:../rn-terrain-core
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:^
+        version: link:../eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+
+  packages/rn-terrain-vscode:
+    dependencies:
+      '@rn-terrain/core':
+        specifier: workspace:*
+        version: link:../rn-terrain-core
+    devDependencies:
+      '@types/vscode':
+        specifier: ^1.85.0
+        version: 1.120.0
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+
   packages/scanner-kit:
     dependencies:
       '@react-native-async-storage/async-storage':
@@ -8756,6 +8841,9 @@ packages:
 
   '@types/uuid@9.0.8':
     resolution: {integrity: sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==}
+
+  '@types/vscode@1.120.0':
+    resolution: {integrity: sha512-feaT4Rst+FkTch5zz/ZbNCxoIvo55YU80Be2kiL7OJcod4+CUYf2lUBPdIJzozNnSEMq1VRTGrWEcCGFB3fBmA==}
 
   '@types/webidl-conversions@7.0.3':
     resolution: {integrity: sha512-CiJJvcRtIgzadHCYXw7dqEnMNRjhGZlYK05Mj9OyktqV8uVT8fD2BFOB7S1uwBE3Kj2Z+4UyPmFw/Ixgw/LAlA==}
@@ -25899,6 +25987,8 @@ snapshots:
   '@types/uuid@10.0.0': {}
 
   '@types/uuid@9.0.8': {}
+
+  '@types/vscode@1.120.0': {}
 
   '@types/webidl-conversions@7.0.3':
     optional: true

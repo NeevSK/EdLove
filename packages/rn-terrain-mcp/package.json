@@ -1,0 +1,21 @@
+{
+  "name": "@rn-terrain/mcp",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check-types": "pnpm exec tsc --noEmit",
+    "clean": "rm -rf .turbo node_modules dist"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.4.0",
+    "@rn-terrain/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:^",
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "^6.0.3"
+  }
+}

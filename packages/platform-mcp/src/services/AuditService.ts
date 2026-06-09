@@ -128,7 +128,7 @@ export class AuditService {
     return toText(result.combined, !result.ok);
   }
 
-  handleLintPackage(args: { target?: string; fix?: boolean }) {
+  handleBiomeLint(args: { target?: string; fix?: boolean }) {
     const target = normalizeTarget(args.target || '.');
     console.error(`Biome linting for: ${target}`);
     const result = runPowerShellScript('scripts/biome-audit.ps1', [
@@ -136,6 +136,15 @@ export class AuditService {
       target,
       ...(args.fix ? ['--fix'] : []),
     ]);
+    return toText(result.combined, !result.ok);
+  }
+
+  handleLintPackage(args: { target?: string; fix?: boolean }) {
+    const target = normalizeTarget(args.target || '.');
+    console.error(`ESLint auditing for: ${target}`);
+    const result = runCommand('npx', ['eslint', ...(args.fix ? ['--fix'] : []), target], {
+      shell: process.platform === 'win32',
+    });
     return toText(result.combined, !result.ok);
   }
 

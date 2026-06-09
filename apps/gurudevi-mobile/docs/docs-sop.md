@@ -1,23 +1,23 @@
-# Gurudevi Mobile Documentation SOP (Standard Operating Procedure)
+# Polymath Platform Documentation SOP (Standard Operating Procedure)
 
-This document establishes the official standard for creating, maintaining, and organizing technical documentation for the `gurudevi-mobile` application. All developers and agents must adhere to these rules.
+This document establishes the official standard for creating, maintaining, and organizing technical documentation across all applications and packages within the Polymath Platform. All developers and agents must adhere to these rules.
 
 ---
 
 ## 1. Directory Structure
 
-All documentation must be placed in one of the following subdirectories under `apps/gurudevi-mobile/docs/` based on its purpose:
+All documentation must be placed in one of the following subdirectories under the respective package or application's `docs/` folder (e.g. `docs/RN Terrain/` or `apps/<name>/docs/`) based on its purpose:
 
 ```text
-apps/gurudevi-mobile/docs/
-├── SOP.md                      # This document (rules and guidelines)
+docs/
+├── docs-sop.md                 # This document (rules and guidelines)
 ├── INDEX.md                    # Central index and chronological changelog
 ├── architecture/               # System design, data engines, security models, schemas
 ├── decisions/                  # ADRs (Architecture Decision Records)
 ├── current_progress/           # Active plans, task lists, current implementations
 │   └── old_docs/               # Timeframe-based historical archives (e.g. Q1-2026)
-├── infra/                      # CI/CD, EAS builds, release checklists, environment setup
-└── Core/                       # Core mobile logic, engine details, UI doctrine
+├── infra/                      # CI/CD, builds, release checklists, environment setup
+└── Core/                       # Core package/app logic, engine details, UI doctrine
 ```
 
 ---

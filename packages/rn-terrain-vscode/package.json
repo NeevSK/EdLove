@@ -1,0 +1,27 @@
+{
+  "name": "@rn-terrain/vscode",
+  "displayName": "RN Terrain",
+  "description": "Visual React Native package intelligence, compatibility, and version checks directly inside package.json.",
+  "version": "0.0.1",
+  "publisher": "polymath",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Linters",
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "scripts": {
+    "vscode:prepublish": "pnpm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "dependencies": {
+    "@rn-terrain/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "typescript": "^6.0.3"
+  }
+}

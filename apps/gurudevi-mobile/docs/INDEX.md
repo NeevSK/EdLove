@@ -26,7 +26,7 @@ Welcome to the documentation vault for `gurudevi-mobile`. This file serves as th
 ## 📁 Document Categories
 
 ### 🚀 Core Mobile & App Standards
-*   [SOP (Documentation Rules)](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/SOP.md) - Format, frontmatter, and naming conventions.
+*   [SOP (Documentation Rules)](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/docs-sop.md) - Format, frontmatter, and naming conventions.
 *   [Project Map](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/project-map.md) - Scope and module mapping of the project.
 *   [Navigation Architecture](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/navigation-architecture.md) - App screens and routing map.
 *   [UI Color Doctrine](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/ui-color-doctrine.md) - The design system palette and theme standards.

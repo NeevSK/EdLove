@@ -854,6 +854,7 @@ class PolymathPlatformServer {
                   'load_report',
                   'bundle_leak',
                   'lint',
+                  'biome_lint',
                   'check',
                   'syncpack_fix',
                   'types',
@@ -1088,6 +1089,8 @@ class PolymathPlatformServer {
               return this.audit.handleAuditBundleLeak();
             case 'lint':
               return this.audit.handleLintPackage(params);
+            case 'biome_lint':
+              return this.audit.handleBiomeLint(params);
             case 'check':
               return this.audit.handleBiomeCheck(params);
             case 'syncpack_fix':

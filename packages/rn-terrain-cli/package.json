@@ -1,0 +1,26 @@
+{
+  "name": "@rn-terrain/cli",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "rn-eval": "./src/index.ts"
+  },
+  "scripts": {
+    "check-types": "pnpm exec tsc --noEmit",
+    "clean": "rm -rf .turbo node_modules dist"
+  },
+  "dependencies": {
+    "@rn-terrain/core": "workspace:*",
+    "cac": "^6.7.14",
+    "chalk": "^5.6.2",
+    "consola": "^3.4.0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:^",
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "^6.0.3"
+  }
+}
