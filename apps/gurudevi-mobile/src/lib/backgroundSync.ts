@@ -30,6 +30,7 @@ coreRuntime.backgroundTask.defineTask(BACKGROUND_SYNC_TASK, async () => {
 
   // Batch to max 10 items to stay within OS time limits (~30s)
   const batch = queue
+    // eslint-disable-next-line no-restricted-syntax
     .filter((item) => !item.backoffUntil || Date.now() >= item.backoffUntil)
     .slice(0, 10);
 

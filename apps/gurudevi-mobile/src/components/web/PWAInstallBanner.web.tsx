@@ -28,6 +28,16 @@ export function PWAInstallBanner() {
     usePWAInstallPrompt();
   const theme = useTheme();
 
+  const handleInstall = () => {
+    void (async () => {
+      try {
+        await promptInstall();
+      } catch {
+        dismiss();
+      }
+    })();
+  };
+
   if (isInstalled) return null;
   if (isDismissed) return null;
   if (!canInstall && !isIOS) return null;
@@ -61,20 +71,20 @@ export function PWAInstallBanner() {
       <HStack className="items-center gap-3">
         {!isIOS && (
           <Pressable
-            onPress={async () => {
-              try {
-                await promptInstall();
-              } catch {
-                dismiss();
-              }
-            }}
+            onPress={handleInstall}
             className="px-4 py-2 rounded-xl bg-sanctuarySaffron"
             accessibilityLabel="Install Gurudevi as an app"
+            accessibilityHint="Triggers the browser install prompt for Gurudevi"
           >
             <Text className="text-ink text-[13px] font-bold">Install</Text>
           </Pressable>
         )}
-        <Pressable onPress={dismiss} className="p-1.5" accessibilityLabel="Dismiss install prompt">
+        <Pressable
+          onPress={dismiss}
+          className="p-1.5"
+          accessibilityLabel="Dismiss install prompt"
+          accessibilityHint="Closes this banner for 30 days"
+        >
           <Icon as={X} size={18} className="text-phaseText-secondary" />
         </Pressable>
       </HStack>

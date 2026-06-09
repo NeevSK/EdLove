@@ -23,7 +23,7 @@ import { assertPowerSyncBootstrapReady } from '@repo/core/api/highways';
 import { AppSchema, injectNativePowerSyncDB } from '@repo/core/powersync';
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
-import { type PropsWithChildren, useEffect, useRef, useState } from 'react';
+import { type PropsWithChildren, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 
 const SQLCIPHER_KEY_STORAGE_KEY = 'gurudevi-sqlite-cipher-key';
@@ -60,8 +60,7 @@ async function getOrCreateEncryptionKey(): Promise<string> {
 type PowerSyncProviderProps = PropsWithChildren;
 
 export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
-  const [initialized, setInitialized] = useState(false);
-  const dbRef = useRef<PowerSyncDatabase | null>(null);
+  const [db, setDb] = useState<PowerSyncDatabase | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -73,8 +72,7 @@ export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
         }
 
         if (_nativePowerSyncInstance && _nativeDrizzleInstance) {
-          dbRef.current = _nativePowerSyncInstance;
-          if (active) setInitialized(true);
+          if (active) setDb(_nativePowerSyncInstance);
           return;
         }
 
@@ -106,10 +104,9 @@ export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
 
         _nativePowerSyncInstance = powersyncDb;
         _nativeDrizzleInstance = drizzleDb;
-        dbRef.current = powersyncDb;
 
         console.log('⚡ [PowerSync] JSI-Engine initialized with Drizzle ORM and SQLCipher.');
-        if (active) setInitialized(true);
+        if (active) setDb(powersyncDb);
       } catch (error) {
         console.error('❌ [PowerSync] Native JSI initialization failed:', error);
       }
@@ -122,12 +119,12 @@ export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
     };
   }, []);
 
-  if (!initialized || !dbRef.current) {
+  if (!db) {
     // Return null or splash screen during fast JSI load sequence (<20ms)
     return null;
   }
 
-  return <PowerSyncContext.Provider value={dbRef.current}>{children}</PowerSyncContext.Provider>;
+  return <PowerSyncContext.Provider value={db}>{children}</PowerSyncContext.Provider>;
 }
 
 /**

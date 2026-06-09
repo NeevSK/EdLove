@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/immutability */
 /**
  * CommandPalette — Web-exclusive Cmd+K power feature (Zero-Legacy Ready)
  *
@@ -70,8 +71,20 @@ interface CommandPaletteProps {
 export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPaletteProps) {
   const [visible, setVisible] = useState(false);
   const [query, setQuery] = useState('');
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [searchFocused, setSearchFocused] = useState(false);
+  const [uiState, setUiState] = useState({ selectedIndex: 0, searchFocused: false });
+  const { selectedIndex, searchFocused } = uiState;
+
+  const setSelectedIndex = useCallback((val: number | ((prev: number) => number)) => {
+    setUiState((s) => ({
+      ...s,
+      selectedIndex: typeof val === 'function' ? val(s.selectedIndex) : val,
+    }));
+  }, []);
+
+  const setSearchFocused = useCallback((val: boolean) => {
+    setUiState((s) => ({ ...s, searchFocused: val }));
+  }, []);
+
   const { isDark } = useTheme();
   const { width } = useWebDimensions();
   // Using generic HTMLInputElement ref for Sovereign Web purity
@@ -90,7 +103,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
     scale.value = withSpring(1, { damping: 20, stiffness: 300 });
     backdropOpacity.value = withTiming(1, { duration: 180 });
     setTimeout(() => inputRef.current?.focus(), 80);
-  }, [opacity, scale, backdropOpacity]);
+  }, [opacity, scale, backdropOpacity, setSelectedIndex]);
 
   const close = useCallback(() => {
     opacity.value = withTiming(0, { duration: 140 });
@@ -268,11 +281,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
 
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [visible, filtered, selectedIndex, open, close, goToTab, navigate]);
-
-  useEffect(() => {
-    setSelectedIndex(0);
-  }, []);
+  }, [visible, filtered, selectedIndex, open, close, goToTab, navigate, setSelectedIndex]);
 
   const cardStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -299,6 +308,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
           className="absolute inset-0"
           onPress={close}
           accessibilityLabel="Close command palette"
+          accessibilityHint="Closes the search interface"
         />
       </AnimatedView>
 

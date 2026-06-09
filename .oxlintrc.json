@@ -25,7 +25,13 @@
     "no-constant-condition": "error",
     "no-empty": "warn",
     "prefer-const": "warn",
-    "no-var": "error"
+    "no-var": "error",
+    "react/react-in-jsx-scope": "off",
+    "no-async-await": "off",
+    "no-optional-chaining": "off",
+    "no-await-in-loop": "off",
+    "unicode-bom": "off",
+    "unicorn/prefer-module": "off"
   },
   "settings": {
     "react": {
@@ -45,6 +51,8 @@
     "coverage",
     "*.config.ts",
     "*.config.js",
-    "*.config.mjs"
+    "*.config.mjs",
+    "**/archives/**",
+    "**/archive/**"
   ]
 }

@@ -23,14 +23,14 @@ export const FeatureSyncManager = () => {
       }
     };
 
-    fetchGlobalConfigs();
+    void fetchGlobalConfigs();
 
     // 2. Subscribe, to Realtime, Changes for Global Config
     // This, allows an, admin to, flip a "Kill, Switch" in, the Supabase, Dashboard
     // and, have it, propagate to, all users, in < 200ms.
     const unsubscribe = globalConfig.subscribe(() => {
       console.log('🔔 FeatureSync: Global, Config, Change, Detected');
-      fetchGlobalConfigs();
+      void fetchGlobalConfigs();
     });
 
     return () => {

@@ -22,7 +22,7 @@ export const AssetProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         setFontsLoaded(true); // Proceed anyway to avoid blocking the app
       }
     }
-    loadFonts();
+    void loadFonts();
   }, []);
 
   return <AssetContext.Provider value={{ fontsLoaded }}>{children}</AssetContext.Provider>;

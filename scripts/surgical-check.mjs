@@ -45,7 +45,7 @@ console.log(
 
 try {
   // Execute TSC via Turbo
-  const cmd = `pnpm exec turbo run check-types ${filterArgs} --continue`;
+  const cmd = `pnpm exec turbo run check-types ${filterArgs} --continue --concurrency=1`;
   console.log(`>>> Executing: ${cmd}`);
 
   execSync(cmd, { stdio: ['ignore', 'inherit', 'inherit'] });

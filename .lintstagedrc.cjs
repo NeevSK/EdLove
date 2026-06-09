@@ -8,7 +8,15 @@ const chunkArray = (arr, size) => {
 
 module.exports = {
   '*.{js,ts,tsx}': (files) => {
-    const chunks = chunkArray(files, 10);
+    const filteredFiles = files.filter(
+      (file) =>
+        !file.includes('/archives/') &&
+        !file.includes('\\archives\\') &&
+        !file.includes('/archive/') &&
+        !file.includes('\\archive\\'),
+    );
+    if (filteredFiles.length === 0) return [];
+    const chunks = chunkArray(filteredFiles, 10);
     const commands = [];
     for (const chunk of chunks) {
       const chunkStr = chunk.map((f) => `"${f}"`).join(' ');

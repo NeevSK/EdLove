@@ -50,7 +50,7 @@ const filterArgs = Array.from(affectedPackages)
 console.log(`>>> 🛡️  Surgical Push Sentinel: Auditing affected packages: ${Array.from(affectedPackages).join(', ')}`);
 
 try {
-  const cmd = `pnpm exec turbo run lint check-types ${filterArgs} --continue --concurrency=3`;
+  const cmd = `pnpm exec turbo run lint check-types ${filterArgs} --continue --concurrency=1`;
   console.log(`>>> Executing: ${cmd}`);
   execSync(cmd, { stdio: ['ignore', 'inherit', 'inherit'] });
   console.log('\n✅ Surgical Push Sentinel: Affected packages integrity verified.');

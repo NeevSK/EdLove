@@ -1,4 +1,4 @@
-﻿import i18n from 'i18next';
+import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import en from './locales/en.json';
 // Import translation files
@@ -6,7 +6,7 @@ import si from './locales/si.json';
 import ta from './locales/ta.json';
 
 // i18n configuration
-i18n
+void i18n
   .use(initReactI18next) // Pass i18n down to react-i18next
   .init({
     // Default language (English for dev)

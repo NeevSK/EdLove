@@ -34,12 +34,12 @@ describe('WelcomeScreen', () => {
     });
     const mockOnGuest = jest.fn();
     const { getByText } = await render(<WelcomeScreen onGuest={mockOnGuest} />);
-    fireEvent.press(getByText('welcome.exploreAsGuest'));
+    void fireEvent.press(getByText('welcome.exploreAsGuest'));
     await waitFor(() => expect(mockSignInAnonymously).toHaveBeenCalled());
   });
   it('shows auth screen when Login button is pressed', async () => {
     const { getByText, getByTestId } = await render(<WelcomeScreen />);
-    fireEvent.press(getByText('welcome.login'));
+    void fireEvent.press(getByText('welcome.login'));
     await waitFor(() => expect(getByTestId('auth-screen')).toBeTruthy());
   });
 });

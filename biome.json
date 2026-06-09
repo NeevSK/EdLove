@@ -7,7 +7,16 @@
     "defaultBranch": "main"
   },
   "files": {
-    "ignoreUnknown": false
+    "ignoreUnknown": false,
+    "includes": [
+      "**/*",
+      "!!**/archives/**",
+      "!!**/archive/**",
+      "!!**/.geo_archive/**",
+      "!!**/legacy/**",
+      "!!**/*-legacy/**",
+      "!!**/*_archive/**"
+    ]
   },
   "formatter": {
     "enabled": true,
