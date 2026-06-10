@@ -10,7 +10,7 @@
     "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.4.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@rn-terrain/core": "workspace:*"
   },
   "devDependencies": {

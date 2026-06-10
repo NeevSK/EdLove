@@ -1,4 +1,5 @@
 import type { Context } from 'hono';
+import { attendanceProjectionServices } from '../runtimes/attendanceProjection.runtime';
 
 /**
  * Operations Domain Handlers (Hono + ZenStack ReBAC)
@@ -119,5 +120,22 @@ export const operationsHandlers = {
     };
 
     return c.json({ stats, view_date: view_date || new Date().toISOString() }, 200);
+  },
+
+  /**
+   * Retrieve attendance report.
+   */
+  getAttendanceReport: async (c: Context) => {
+    const { school_id, start_date, end_date, classroom_id } = c.req.query();
+    if (!school_id || !start_date || !end_date) {
+      return c.json({ message: 'Missing required query parameters' }, 400);
+    }
+    const report = await attendanceProjectionServices.getAttendanceReport(
+      school_id,
+      start_date,
+      end_date,
+      classroom_id || undefined,
+    );
+    return c.json(report, 200);
   },
 };

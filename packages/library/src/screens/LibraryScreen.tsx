@@ -628,6 +628,7 @@ export default function LibraryScreen() {
             resource_ids: [],
             subject: '',
             grades: [],
+            visibility: 'private',
           },
           userId,
         );

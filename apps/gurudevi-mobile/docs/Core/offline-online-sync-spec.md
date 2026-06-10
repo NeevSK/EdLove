@@ -2,7 +2,7 @@
 title: "Offline-Online Synchronization Spec"
 status: "active"
 created: 2026-06-09
-updated: 2026-06-09
+updated: 2026-06-10
 author: "Naveen"
 scribe: "Antigravity"
 tags: [technical, sync, powersync, database]
@@ -18,10 +18,11 @@ This document defines the synchronization logic, conflict resolution rules, and 
 
 To survive rural Sri Lankan network disruptions, all database mutations must execute locally first before replicating to the cloud.
 
-1. **Optimistic Write**: UI triggers a write -> immediately applied to the local SQLite database via Drizzle/OP-SQLite, updating the screen instantly.
-2. **Queue Insertion**: The write mutation is appended to the local PowerSync sync queue table.
-3. **Background Replication**: When connectivity is detected, the PowerSync engine processes the queue sequentially, forwarding payloads to the Hono API gateway.
-4. **Reconciliation**: Once the API returns a successful write confirmation, the queue item is purged, and the local SQLite record is updated with server-reconciled fields.
+1. **Write Gating & Interception**: Before any local write occurs, the operation is intercepted at the Drizzle layer by the **Secure Drizzle Proxy**. The proxy validates the mutation against local Cedar policies or signed snapshots. If denied, it immediately rejects the write and throws a `LOCAL_WRITE_VIOLATION` error, stopping the write from ever reaching SQLite or the sync queue.
+2. **Optimistic Write**: If permitted, the write is applied to the local SQLite database via Drizzle/OP-SQLite, updating the screen instantly.
+3. **Queue Insertion**: The write mutation is captured by the PowerSync engine and appended to the local sync queue transaction log.
+4. **Background Replication**: When connectivity is detected, the PowerSync engine processes the queue sequentially, forwarding payloads to the Hono API gateway via the `uploadData` batch loop.
+5. **Reconciliation**: Once the API returns a successful write confirmation, the queue item is purged, and the local SQLite record is updated with server-reconciled fields.
 
 ---
 

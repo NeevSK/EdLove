@@ -16,13 +16,11 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { colors } from '@repo/ui/theme';
-
+import { router } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
-const { shroud, sanctuarySaffron, mistGray, willow } = colors;
-
-import { navigationRef } from '../../navigation/navigationRef';
+const { shroud, sanctuarySaffron } = colors;
 
 // ─── Icons (inline SVG paths) ──────────────────────────────────────────────────
 const GLYPHS: Record<string, string> = {
@@ -112,27 +110,12 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
     setTimeout(() => setVisible(false), 150);
   }, [opacity, scale, backdropOpacity]);
 
-  const navigate = useCallback((screen: string, params?: Record<string, unknown>) => {
-    if (navigationRef.isReady()) {
-      (
-        navigationRef as unknown as {
-          navigate: (s: string, p?: Record<string, unknown>) => void;
-        }
-      ).navigate(screen, params);
-    }
-  }, []);
-
   const goToTab = useCallback(
-    (tabName: string) => {
-      if (!navigationRef.isReady()) return;
-      const state = navigationRef.getState() as { routes?: Array<{ name: string }> } | undefined;
-      const hasMain = state?.routes?.some((r) => r.name === 'Main');
-      if (hasMain) {
-        navigate('Main', { screen: tabName });
-      }
+    (route: string) => {
+      router.push(route);
       close();
     },
-    [navigate, close],
+    [close],
   );
 
   const commands: Command[] = useMemo(
@@ -144,7 +127,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
         glyph: GLYPHS.Self ?? '',
         section: 'Navigate',
         shortcut: '⌘3',
-        action: () => goToTab('Self'),
+        action: () => goToTab('/self'),
       },
       {
         id: 'classroom',
@@ -153,7 +136,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
         glyph: GLYPHS.Classroom ?? '',
         section: 'Navigate',
         shortcut: '⌘2',
-        action: () => goToTab('Classroom'),
+        action: () => goToTab('/workspace'),
       },
       {
         id: 'community',
@@ -162,7 +145,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
         glyph: GLYPHS.Community ?? '',
         section: 'Navigate',
         shortcut: '⌘4',
-        action: () => goToTab('Community'),
+        action: () => goToTab('/community'),
       },
       {
         id: 'library',
@@ -171,7 +154,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
         glyph: GLYPHS.Library ?? '',
         section: 'Navigate',
         shortcut: '⌘5',
-        action: () => goToTab('Library'),
+        action: () => goToTab('/library'),
       },
       {
         id: 'profile',
@@ -180,7 +163,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
         glyph: GLYPHS.Profile ?? '',
         section: 'Navigate',
         shortcut: '⌘1',
-        action: () => goToTab('Profile'),
+        action: () => goToTab('/profile'),
       },
       {
         id: 'ai',
@@ -191,7 +174,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
         shortcut: '⌘.',
         action: () => {
           onOpenAI?.();
-          navigate('AIAssistant');
+          router.push('/a-i-assistant');
           close();
         },
       },
@@ -203,11 +186,12 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
         section: 'Tools',
         action: () => {
           onOpenScanner?.();
+          router.push('/qr');
           close();
         },
       },
     ],
-    [goToTab, navigate, close, onOpenAI, onOpenScanner],
+    [goToTab, close, onOpenAI, onOpenScanner],
   );
 
   const filtered = useMemo(
@@ -251,13 +235,13 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
       }
       if (meta && e.key === '.') {
         e.preventDefault();
-        navigate('AIAssistant');
+        router.push('/a-i-assistant');
         return;
       }
       const tab = TAB_MAP[e.key];
       if (meta && tab) {
         e.preventDefault();
-        goToTab(tab);
+        goToTab(`/${tab.toLowerCase()}`);
         return;
       }
       if (!visible) return;
@@ -281,7 +265,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
 
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [visible, filtered, selectedIndex, open, close, goToTab, navigate, setSelectedIndex]);
+  }, [visible, filtered, selectedIndex, open, close, goToTab, setSelectedIndex]);
 
   const cardStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,

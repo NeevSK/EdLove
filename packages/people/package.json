@@ -31,19 +31,19 @@
   "dependencies": {
     "@repo/core": "workspace:*",
     "@repo/ui": "workspace:*",
-    "date-fns": "^4.1.0",
-    "lucide-react-native": "^0.563.0",
-    "react-i18next": "^16.5.4"
+    "date-fns": "^4.4.0",
+    "lucide-react-native": "^1.17.0",
+    "react-i18next": "^17.0.8"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/types-shim": "workspace:*",
-    "@types/react": "^19.2.14",
-    "typescript": "^6.0.3",
-    "eslint": "^9.38.0",
     "@repo/typescript-config": "workspace:*",
-    "vitest": "^2.1.9",
-    "vite-tsconfig-paths": "^6.1.1"
+    "@types/react": "^19.2.17",
+    "eslint": "^10.4.1",
+    "typescript": "^6.0.3",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.8"
   },
   "peerDependencies": {
     "react": "*",

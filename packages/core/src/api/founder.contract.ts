@@ -1,4 +1,3 @@
-import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
 import { ClassroomSchema } from '../logic/schemas/classroom.schema';
 import { CommunityGroupSchema } from '../logic/schemas/community.schema';
@@ -9,85 +8,137 @@ import {
   SentinelAuditLogSchema,
 } from '../logic/schemas/founder.schema';
 import { SchoolSchema } from '../logic/schemas/school.schema';
-import { POAMetadataSchema } from './contract';
-
-const c = initContract();
+import type { SovereignContract } from './contract';
 
 const founderAuthority = (action: 'create' | 'read' | 'update' | 'delete', subject: string) =>
-  POAMetadataSchema.parse({ policy: { action, subject } });
+  ({ policy: { action, subject } }) as const;
 
-export const founderContract = c.router({
+export const founderContract = {
   getEcosystemStats: {
-    method: 'GET',
+    method: 'get',
     path: '/founder/ecosystem/stats',
-    responses: { 200: EcosystemStatsSchema },
+    responses: {
+      200: {
+        schema: EcosystemStatsSchema,
+        description: 'Get ecosystem statistics',
+      },
+    },
     metadata: founderAuthority('read', 'FounderDashboard'),
   },
   getAllSchools: {
-    method: 'GET',
+    method: 'get',
     path: '/founder/ecosystem/schools',
-    responses: { 200: z.array(SchoolSchema) },
+    responses: {
+      200: {
+        schema: z.array(SchoolSchema),
+        description: 'Get all schools list',
+      },
+    },
     metadata: founderAuthority('read', 'School'),
   },
   createSchool: {
-    method: 'POST',
+    method: 'post',
     path: '/founder/ecosystem/schools',
-    body: z.object({
-      name: z.string().min(1),
-      type: z.string(),
-      created_by: z.string(),
-    }),
-    responses: { 201: SchoolSchema },
+    request: {
+      body: z.object({
+        name: z.string().min(1),
+        type: z.string(),
+        created_by: z.string(),
+      }),
+    },
+    responses: {
+      201: {
+        schema: SchoolSchema,
+        description: 'School created successfully',
+      },
+    },
     metadata: founderAuthority('create', 'School'),
   },
   createClassroom: {
-    method: 'POST',
+    method: 'post',
     path: '/founder/ecosystem/classrooms',
-    body: z.object({
-      school_id: z.string(),
-      name: z.string().min(1),
-      grade_number: z.number(),
-      created_by: z.string(),
-    }),
-    responses: { 201: ClassroomSchema },
+    request: {
+      body: z.object({
+        school_id: z.string(),
+        name: z.string().min(1),
+        grade_number: z.number(),
+        created_by: z.string(),
+      }),
+    },
+    responses: {
+      201: {
+        schema: ClassroomSchema,
+        description: 'Classroom created successfully',
+      },
+    },
     metadata: founderAuthority('create', 'Classroom'),
   },
   createGroup: {
-    method: 'POST',
+    method: 'post',
     path: '/founder/ecosystem/groups',
-    body: z.object({
-      name: z.string().min(1),
-      description: z.string(),
-      school_id: z.string(),
-    }),
-    responses: { 201: CommunityGroupSchema.or(z.any()) },
+    request: {
+      body: z.object({
+        name: z.string().min(1),
+        description: z.string(),
+        school_id: z.string(),
+      }),
+    },
+    responses: {
+      201: {
+        schema: CommunityGroupSchema.or(z.any()),
+        description: 'Ecosystem group created successfully',
+      },
+    },
     metadata: founderAuthority('create', 'Group'),
   },
   listAllUsers: {
-    method: 'GET',
+    method: 'get',
     path: '/founder/ecosystem/users',
-    responses: { 200: z.array(GlobalUserSchema) },
+    responses: {
+      200: {
+        schema: z.array(GlobalUserSchema),
+        description: 'List all ecosystem users',
+      },
+    },
     metadata: founderAuthority('read', 'FounderDashboard'),
   },
   updateSchoolMetadata: {
-    method: 'PATCH',
+    method: 'patch',
     path: '/founder/ecosystem/schools/:schoolId/metadata',
-    body: z.object({
-      metadata: z.record(z.string(), z.any()),
-    }),
-    responses: { 200: SchoolSchema },
+    request: {
+      params: z.object({ schoolId: z.string() }),
+      body: z.object({
+        metadata: z.record(z.string(), z.any()),
+      }),
+    },
+    responses: {
+      200: {
+        schema: SchoolSchema,
+        description: 'School metadata updated successfully',
+      },
+    },
     metadata: founderAuthority('update', 'School'),
   },
   getEcosystemPulse: {
-    method: 'GET',
+    method: 'get',
     path: '/founder/ecosystem/pulse',
-    responses: { 200: EcosystemPulseSchema },
+    responses: {
+      200: {
+        schema: EcosystemPulseSchema,
+        description: 'Get ecosystem pulse snapshot',
+      },
+    },
     metadata: founderAuthority('read', 'FounderDashboard'),
   },
   getSentinelGovernance: {
-    method: 'GET',
+    method: 'get',
     path: '/founder/ecosystem/sentinel',
-    responses: { 200: z.array(SentinelAuditLogSchema) },
+    responses: {
+      200: {
+        schema: z.array(SentinelAuditLogSchema),
+        description: 'Get sentinel governance audit logs',
+      },
+    },
     metadata: founderAuthority('read', 'FounderDashboard'),
   },
-});
+} as const satisfies SovereignContract;

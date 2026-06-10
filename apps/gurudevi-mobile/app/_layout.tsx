@@ -17,6 +17,7 @@ import { GlobalProvider, pushNotification, useAuth, useStore } from '@repo/core/
 import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
 import { clearSentryUser, initSentry, injectPostHog, setSentryUser } from '@repo/core/monitoring';
 import { bootstrapPlatform, storage } from '@repo/core/native';
+import { usePermissionStore } from '@repo/core/store/usePermissionStore';
 import { SyncManager } from '@repo/core/sync';
 import { useQRDeepLink } from '@repo/scanner-kit';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
@@ -36,6 +37,7 @@ import { StyleSheet as CSSStyleSheet, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { PWAInstallBanner } from '../src/components/web/PWAInstallBanner';
 import { fontAssets } from '../src/constants/Fonts';
+import { registerBackgroundSync } from '../src/lib/backgroundSync';
 import {
   dispatchQueuedMutationToSovereignBus,
   installMobileWorkflowEventBridge,
@@ -78,6 +80,7 @@ function BootstrapSideEffects() {
 
     void bootstrapPlatform().then(() => {
       installMobileWorkflowEventBridge();
+      void registerBackgroundSync();
     });
 
     void LanguageUtils.init();
@@ -157,10 +160,59 @@ function RootShell() {
       return;
     }
 
+    // Token-Based Access Control (TOBAC) Route Guard
+    if (session?.expires_at) {
+      const isExpired = session.expires_at < Date.now() / 1000;
+      if (isExpired && pathname !== '/welcome' && pathname !== '/auth') {
+        console.warn('[TOBAC ROUTE GUARD] Session token expired. Redirecting to /welcome');
+        router.replace('/welcome');
+        return;
+      }
+    }
+
+    const activeBond = (useStore.getState() as any).activeBond;
+    const activeCapacity = activeBond?.capacity || 'wanderer';
+    const allowedStaffCapacities = [
+      'principal',
+      'assistantPrincipal',
+      'teacher',
+      'gradeHead',
+      'sectionHead',
+      'staff',
+    ];
+    const allowedCitizenCapacities = [...allowedStaffCapacities, 'student', 'guardian'];
+
+    if (pathname?.startsWith('/workspace') && !allowedStaffCapacities.includes(activeCapacity)) {
+      console.warn(
+        `[TOBAC ROUTE GUARD] Denied routing to ${pathname} for capacity: ${activeCapacity}`,
+      );
+      router.replace('/self');
+      return;
+    }
+
+    if (
+      (pathname?.startsWith('/community') || pathname?.startsWith('/library')) &&
+      !allowedCitizenCapacities.includes(activeCapacity)
+    ) {
+      console.warn(
+        `[TOBAC ROUTE GUARD] Denied access to ${pathname} for non-citizen capacity: ${activeCapacity}`,
+      );
+      router.replace('/self');
+      return;
+    }
+
     if (pathname === '/' || pathname === '/welcome' || pathname === '/auth') {
       router.replace('/self');
     }
   }, [fontsReady, isProfileLoading, loading, onboardingCompleted, pathname, router, session]);
+
+  const loadPermissions = usePermissionStore((state) => state.loadPermissions);
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      void loadPermissions(session.user.id);
+    }
+  }, [session?.user?.id, loadPermissions]);
 
   useQRDeepLink((payload: unknown) => {
     router.push({ pathname: '/qr', params: { payload: JSON.stringify(payload) } });

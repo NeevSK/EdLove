@@ -1,9 +1,9 @@
 import { coreRuntime, DeepLinkType, deepLink, useAuth } from '@repo/core/logic';
 import { useQRDeepLink } from '@repo/scanner-kit';
+import { router } from 'expo-router';
 import type React from 'react';
 import { type ReactNode, useEffect } from 'react';
 import { Platform } from 'react-native';
-import { navigationRef } from '../navigation/navigationRef';
 
 /**
  * DeepLinkProvider
@@ -25,13 +25,7 @@ export const DeepLinkProvider: React.FC<{ children: ReactNode }> = ({ children }
       // we can perform shell-specific actions here.
       if (!result.isHandled) {
         if (result.type === DeepLinkType.CLASSROOM_INVITE) {
-          // Example: Navigate to a specific screen
-          if (navigationRef.isReady()) {
-            const nav = navigationRef as unknown as {
-              navigate: (name: string, params?: object) => void;
-            };
-            nav.navigate('ClassroomInvite', { code: result.params.inviteCode });
-          }
+          router.push({ pathname: '/community', params: { inviteCode: result.params.inviteCode } });
         }
       }
     };
@@ -49,11 +43,8 @@ export const DeepLinkProvider: React.FC<{ children: ReactNode }> = ({ children }
   }, []);
 
   useQRDeepLink((payload) => {
-    if (navigationRef.isReady() && session) {
-      const nav = navigationRef as unknown as {
-        navigate: (name: string, params?: object) => void;
-      };
-      nav.navigate('QRHandler', { payload });
+    if (session) {
+      router.push({ pathname: '/qr', params: { payload: JSON.stringify(payload) } });
     }
   });
 

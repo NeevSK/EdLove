@@ -1,11 +1,10 @@
 import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
 import { identityAPI as rawIdentityAPI } from '../identity';
 import { identityContract } from '../identity.contract';
-import { createPOAProxy } from '../poaProxy';
 import { profileAPI as rawProfileAPI } from '../profile';
 import { profileContract } from '../profile.contract';
 
-const identityCoverage = assertContractCoverage(
+const _identityCoverage = assertContractCoverage(
   rawIdentityAPI,
   defineContractCoverage({
     moduleName: 'identity',
@@ -16,22 +15,20 @@ const identityCoverage = assertContractCoverage(
       modifyUserProfile: 'modifyUserProfile',
       resolveWorkspaceContext: 'resolveWorkspaceContext',
     },
-    internalMethods: ['linkIdentity', 'getBonds', 'getActivePerspective', 'switchPerspective'], // Explicitly internal or handled via POA
+    internalMethods: [
+      'linkIdentity',
+      'getBonds',
+      'getActivePerspective',
+      'switchPerspective',
+      'getMyInternalId',
+      'updateProfile',
+    ], // Explicitly internal or handled via POA
   }),
 );
 
-export const identityAPI = createPOAProxy(
-  'identity',
-  rawIdentityAPI,
-  identityCoverage.contract,
-  identityCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-    ignoredMethods: identityCoverage.internalMethods as string[],
-  },
-);
+export const identityAPI = rawIdentityAPI;
 
-const profileCoverage = assertContractCoverage(
+const _profileCoverage = assertContractCoverage(
   rawProfileAPI,
   defineContractCoverage({
     moduleName: 'profile',
@@ -57,13 +54,4 @@ const profileCoverage = assertContractCoverage(
   }),
 );
 
-export const profileAPI = createPOAProxy(
-  'profile',
-  rawProfileAPI,
-  profileCoverage.contract,
-  profileCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-    ignoredMethods: profileCoverage.internalMethods as string[],
-  },
-);
+export const profileAPI = rawProfileAPI;

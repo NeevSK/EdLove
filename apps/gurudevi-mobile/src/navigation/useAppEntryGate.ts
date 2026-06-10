@@ -91,6 +91,7 @@ export function useAppEntryGate({
   isProfileLoading: boolean;
   onboardingCompleted: boolean;
 }) {
+  // Archived gate kept for support paths that still surface a legacy route ref.
   const previousOnboardingCompleted = useRef(onboardingCompleted);
 
   useEffect(() => {

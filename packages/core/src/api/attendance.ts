@@ -71,4 +71,26 @@ export const attendanceAPI = {
 
     return (await res.json()) as StudentAttendancePulse;
   },
+
+  async getAttendanceReport(
+    school_id: string,
+    start_date: string,
+    end_date: string,
+    classroom_id?: string,
+  ): Promise<any> {
+    const res = await (client.api as any).attendance.report.$get({
+      query: {
+        school_id,
+        start_date,
+        end_date,
+        classroom_id: classroom_id ?? undefined,
+      },
+    });
+
+    if (!res.ok) {
+      throw new APIError('Failed to fetch attendance report', res.status.toString());
+    }
+
+    return await res.json();
+  },
 };

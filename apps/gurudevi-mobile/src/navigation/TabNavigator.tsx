@@ -10,7 +10,9 @@ export default function TabNavigator({
     <View
       style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}
     >
-      <Text style={{ color: '#fff' }}>Navigation Migrating to Expo Router</Text>
+      <Text style={{ color: '#fff', textAlign: 'center', paddingHorizontal: 24 }}>
+        Archived React Navigation tab shell placeholder. Use Expo Router routes under `app/`.
+      </Text>
     </View>
   );
 }

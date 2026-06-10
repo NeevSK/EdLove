@@ -1,3 +1,13 @@
+---
+title: "Polymath Platform Documentation SOP (Standard Operating Procedure)"
+status: "active"
+created: 2026-06-10
+updated: 2026-06-10
+author: "Naveen"
+scribe: "Antigravity"
+tags: [standards, documentation]
+---
+
 # Polymath Platform Documentation SOP (Standard Operating Procedure)
 
 This document establishes the official standard for creating, maintaining, and organizing technical documentation across all applications and packages within the Polymath Platform. All developers and agents must adhere to these rules.

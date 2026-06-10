@@ -2,7 +2,7 @@
 title: "Security and Data Integrity"
 status: "active"
 created: 2026-06-09
-updated: 2026-06-09
+updated: 2026-06-10
 author: "Naveen"
 scribe: "Antigravity"
 tags: [technical, security, rls, crypto]

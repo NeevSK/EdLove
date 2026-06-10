@@ -6,7 +6,7 @@
  *   - Back/forward navigation shows meaningful titles in browser history
  *   - Screen readers and assistive tech announce the correct page name
  *
- * Usage: call once in App.tsx (inside <NavigationContainer>).
+ * Usage: call once from the Expo Router web shell or any route-aware web layout.
  */
 
 import { Platform } from 'react-native';

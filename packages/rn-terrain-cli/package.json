@@ -14,9 +14,9 @@
   },
   "dependencies": {
     "@rn-terrain/core": "workspace:*",
-    "cac": "^6.7.14",
+    "cac": "^7.0.0",
     "chalk": "^5.6.2",
-    "consola": "^3.4.0"
+    "consola": "^3.4.2"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",

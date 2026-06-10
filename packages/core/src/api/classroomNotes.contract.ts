@@ -1,4 +1,3 @@
-import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
 import {
   ClassroomNoteLifecycleEventSchema,
@@ -6,78 +5,109 @@ import {
   ClassroomNoteTypeSchema,
   ClassroomNoteVisibilitySchema,
 } from '../logic/schemas/classroom-note.schema';
-import { POAMetadataSchema } from './contract';
-
-const c = initContract();
+import type { SovereignContract } from './contract';
 
 const classroomNoteAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',
   subject = 'ClassroomNote',
-) => POAMetadataSchema.parse({ policy: { action, subject } });
+) => ({ policy: { action, subject } }) as const;
 
-export const classroomNotesContract = c.router({
+export const classroomNotesContract = {
   listVisibleNotes: {
-    method: 'GET',
+    method: 'get',
     path: '/classroom-notes',
-    query: z.object({ classroom_id: z.uuid() }),
+    request: {
+      query: z.object({ classroom_id: z.uuid() }),
+    },
     responses: {
-      200: z.array(ClassroomNoteSchema),
+      200: {
+        schema: z.array(ClassroomNoteSchema),
+        description: 'List visible notes',
+      },
     },
     metadata: classroomNoteAuthority('read'),
   },
   getVisibleNotesSnapshot: {
-    method: 'GET',
+    method: 'get',
     path: '/classroom-notes/snapshot',
-    query: z.object({
-      classroom_id: z.uuid(),
-      view_date: z.iso.datetime(),
-    }),
+    request: {
+      query: z.object({
+        classroom_id: z.uuid(),
+        view_date: z.string(),
+      }),
+    },
     responses: {
-      200: z.array(ClassroomNoteSchema),
+      200: {
+        schema: z.array(ClassroomNoteSchema),
+        description: 'Get visible notes snapshot',
+      },
     },
     metadata: classroomNoteAuthority('read'),
   },
   createClassroomNote: {
-    method: 'POST',
+    method: 'post',
     path: '/classroom-notes',
-    body: z.object({
-      classroom_id: z.uuid(),
-      content: z.string().min(1),
-      note_type: ClassroomNoteTypeSchema,
-      visibility: ClassroomNoteVisibilitySchema,
-    }),
+    request: {
+      body: z.object({
+        classroom_id: z.uuid(),
+        content: z.string().min(1),
+        note_type: ClassroomNoteTypeSchema,
+        visibility: ClassroomNoteVisibilitySchema,
+      }),
+    },
     responses: {
-      201: ClassroomNoteSchema,
+      201: {
+        schema: ClassroomNoteSchema,
+        description: 'Classroom note created successfully',
+      },
     },
     metadata: classroomNoteAuthority('create'),
   },
   updateClassroomNote: {
-    method: 'PATCH',
+    method: 'patch',
     path: '/classroom-notes/:id',
-    body: z.object({
-      content: z.string().optional(),
-      is_pinned: z.boolean().optional(),
-      visibility: ClassroomNoteVisibilitySchema.optional(),
-    }),
+    request: {
+      params: z.object({ id: z.uuid() }),
+      body: z.object({
+        content: z.string().optional(),
+        is_pinned: z.boolean().optional(),
+        visibility: ClassroomNoteVisibilitySchema.optional(),
+      }),
+    },
     responses: {
-      200: ClassroomNoteSchema,
+      200: {
+        schema: ClassroomNoteSchema,
+        description: 'Classroom note updated successfully',
+      },
     },
     metadata: classroomNoteAuthority('update'),
   },
   deleteClassroomNote: {
-    method: 'DELETE',
+    method: 'delete',
     path: '/classroom-notes/:id',
+    request: {
+      params: z.object({ id: z.uuid() }),
+    },
     responses: {
-      204: z.void(),
+      204: {
+        schema: z.null(),
+        description: 'Classroom note deleted successfully',
+      },
     },
     metadata: classroomNoteAuthority('delete'),
   },
   getClassroomNoteTimeline: {
-    method: 'GET',
+    method: 'get',
     path: '/classroom-notes/:id/timeline',
+    request: {
+      params: z.object({ id: z.uuid() }),
+    },
     responses: {
-      200: z.array(ClassroomNoteLifecycleEventSchema),
+      200: {
+        schema: z.array(ClassroomNoteLifecycleEventSchema),
+        description: 'Retrieve classroom note timeline',
+      },
     },
     metadata: classroomNoteAuthority('read'),
   },
-});
+} as const satisfies SovereignContract;

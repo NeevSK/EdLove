@@ -62,6 +62,71 @@ The pre-push behavior is configured via the `PUSH_MODE` environment variable:
 
 ---
 
+## ⚙️ Monorepo Tuning & Troubleshooting (Node 24 Memory & Concurrency)
+
+When developing in `polymath-platform` under **Node.js 24+**, V8's revised garbage collection (GC) and RSS memory allocation schemes can cause parallel compilation tasks to exhaust virtual memory/commit limits. 
+
+We have tuned the monorepo configuration with the following guidelines and overrides:
+
+### 1. Concurrency Control (`--concurrency=1`)
+* **Problem**: Parallel execution of multiple TypeScript compilers (`tsc`) concurrently eats up host virtual memory, leading to crashes like `FATAL ERROR: Zone Allocation failed` or `Committing semi space failed. Allocation failed - JavaScript heap out of memory` at low heap sizes (around ~360MB).
+* **Workaround**: Global scripts like `check-types` and `lint` in the root [package.json](file:///c:/Users/Naween/projects/polymath-platform/package.json) are run with `--concurrency=1` to ensure sequential task execution.
+* **Heap Limits**: Intensive compilers (like `@repo/ui` and `@intuitui-labs/lk-edu-geo`) run `tsc` with `node --max-old-space-size=4096` to provide a higher memory allocation ceiling.
+
+### 2. Surgical Scope Optimization (`SURGICAL_PUSH_COMMIT`)
+By default, the pre-push hook audits all modified files in changed packages compared to the remote tracking branch. If your branch has multiple commits with historical lint/compilation issues in other packages, you can narrow the pre-push sentinel's focus:
+* **Usage**: Set the `SURGICAL_PUSH_COMMIT` environment variable to define a custom starting commit for the diff:
+  ```powershell
+  # Audit and verify changes in the last commit only
+  $env:SURGICAL_PUSH_COMMIT="HEAD~1"; git push
+  ```
+
+### 3. Turborepo Dependency Isolation (`--only`)
+* **Tradeoff**: In [scripts/surgical-push-check.mjs](file:///c:/Users/Naween/projects/polymath-platform/scripts/surgical-push-check.mjs), we run `turbo run check-types` with the `--only` flag. 
+* **Effect**: This bypasses package dependency chains (like `dependsOn: ["^lint"]` defined in `turbo.json`), meaning we only run audits on the specific packages changed in our commit range. This prevents pre-existing, unchanged dependencies with unrelated lint issues from polluting our push verification results.
+
+---
+
+## 🔍 Deep-Dive: How Different Quality Checks Work & Their Tradeoffs
+
+### 1. Verification Layers & How They Work
+
+To ensure stability across the monorepo, the pre-commit and pre-push hooks execute specialized check layers:
+
+*   **Type Safety (`tsc`)**:
+    *   *Mechanism*: Runs `tsc --noEmit` at the individual package level.
+    *   *Tuning*: Runs with `node --max-old-space-size=4096` in packages containing extensive typings (e.g., `@repo/ui` and `@intuitui-labs/lk-edu-geo`).
+    *   *Tradeoff*: Provides complete type safety across API boundaries. However, running sequential checking (`--concurrency=1`) increases gate time relative to parallelized execution.
+*   **Hygiene & Style (Biome & ESLint)**:
+    *   *Mechanism*: **Biome** acts as the primary formatter and linter (executing in milliseconds). **ESLint** runs as a secondary pass with specialized plugins for legacy or custom rules.
+    *   *Configuration Gotchas*:
+        *   **Biome**: Does not support standard ignore lists. Exclusions must be manually specified as negated paths (prefixed with `!!`) within `files.includes`.
+        *   **ESLint**: Flat configurations (`eslint.config.mjs`) must explicitly define global ignores (e.g., `{ ignores: ["scripts/**/*"] }`) for non-source scripts, otherwise `typescript-eslint` will crash trying to map them to the project's source `tsconfig.json`.
+*   **Monorepo Boundaries Check (`check-monorepo-boundaries.mjs`)**:
+    *   *Mechanism*: Scans imports within each package and validates them against core architectural rules (e.g., `@repo/core` cannot import from `apps/`; packages must declare all dependencies in their `package.json`).
+    *   *Tradeoff*: Prevents circular dependencies and loose isolation. The strictness can sometimes require restructuring code when moving utility functions to shared packages.
+*   **Schema Drift (`check-schema-drift.mjs`)**:
+    *   *Mechanism*: Audits database models, API contracts, and client bridge definitions to confirm they are synchronized.
+    *   *Tradeoff*: Guarantees database-to-client fidelity. Requires updating and compiling definitions immediately when database shapes change.
+*   **Localization Alignment (`i18n-fallback-policy-check.mjs`)**:
+    *   *Mechanism*: Verifies translation files for matching keys and validates i18n fallback policies to avoid missing text at runtime.
+    *   *Tradeoff*: Ensures a seamless internationalized user experience, but requires matching changes in fallback bundles.
+
+---
+
+### 2. Pipeline Optimization Tradeoffs
+
+Adjusting gate behavior using environment variables involves several technical tradeoffs:
+
+| Control | Mechanism | Pros | Cons (Risks) |
+| :--- | :--- | :--- | :--- |
+| **`PUSH_MODE="min"`** | Skips architectural, schema drift, and i18n verification. | Significantly speeds up hotfixes and emergency pushes. | Bypasses schema compatibility checks, which can lead to runtime crashes or broken clients. |
+| **Turborepo `--only`** | Runs tasks directly on target packages without executing dependent tasks (`dependsOn: ["^lint"]` or build steps). | Prevents unrelated lint or test errors in untouched dependencies from blocking your push. | **Breaking API changes** in a library (e.g., `@repo/core`) might not trigger type errors in consuming apps (e.g., `apps/admin`) because those apps are skipped in the current check run. |
+| **`SURGICAL_PUSH_COMMIT`** | Diff-limits the audited files (e.g. `SURGICAL_PUSH_COMMIT="HEAD~1"` compares only the latest commit). | Restricts verification to exactly what you just worked on, minimizing check time. | If historical commits on the branch contain unverified compile errors, they will not be audited, shifting the burden of failure onto the CI/CD pipeline. |
+| **`--concurrency=1`** | Restricts Turborepo tasks to sequential execution. | Resolves OOM and virtual memory allocation crashes on Node 24+ under Windows/macOS. | Increases overall audit execution duration. |
+
+---
+
 ## ✍️ Commit Message Hook: Commitlint
 
 Every commit message must follow the **Conventional Commits** specification to enable automatic changelog generation and structured release versioning.

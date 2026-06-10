@@ -19,14 +19,14 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "2.102.1",
-    "dotenv": "^16.4.7",
-    "semver": "^7.6.0",
+    "dotenv": "^17.4.2",
+    "semver": "^7.8.3",
     "zod": "4.3.6"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "@types/semver": "^7.5.8",
+    "@types/semver": "^7.7.1",
     "typescript": "^6.0.3"
   }
 }

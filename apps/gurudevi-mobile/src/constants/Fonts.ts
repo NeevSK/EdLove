@@ -4,7 +4,7 @@
  * Using 3 font weights only (Regular, Medium, Bold) for optimal loading speed
  * Total size: ~3 MB (down from ~5 MB with 5 weights)
  *
- * Fonts are loaded via expo-font in App.tsx with lazy loading
+ * Fonts are loaded via expo-font from the Expo Router root shell with lazy loading
  * - Sinhala: Abhaya Libre (Elegant serif)
  * - Tamil: Baloo Thambi 2 (Friendly rounded)
  *

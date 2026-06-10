@@ -21,7 +21,7 @@ export default function IndexRoute() {
       return;
     }
 
-    router.replace('/main');
+    router.replace('/self');
   }, [isProfileLoading, loading, onboardingCompleted, router, session]);
 
   return (

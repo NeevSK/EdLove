@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import { AttendanceSchema, SchoolAttendancePulseSchema } from '../logic/schemas/attendance.schema';
+import {
+  AttendanceReportSchema,
+  AttendanceSchema,
+  SchoolAttendancePulseSchema,
+} from '../logic/schemas/attendance.schema';
 import type { SovereignContract } from './contract';
 
 const operationsAuthority = (
@@ -78,6 +82,23 @@ export const operationsContract = {
     },
     responses: {
       200: { schema: SchoolAttendancePulseSchema, description: 'Attendance pulse retrieved' },
+    },
+    metadata: operationsAuthority('read', 'Attendance'),
+  },
+
+  getAttendanceReport: {
+    method: 'get',
+    path: '/attendance/report',
+    request: {
+      query: z.strictObject({
+        school_id: z.uuid(),
+        start_date: z.string(),
+        end_date: z.string(),
+        classroom_id: z.uuid().optional(),
+      }),
+    },
+    responses: {
+      200: { schema: AttendanceReportSchema, description: 'Attendance report retrieved' },
     },
     metadata: operationsAuthority('read', 'Attendance'),
   },

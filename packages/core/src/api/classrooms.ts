@@ -1,5 +1,6 @@
 import { APIError } from '../types/API';
 import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ as supabase } from './supabase';
 
 /**
  * CLASSROOMS API (Sovereign RPC Proxy)
@@ -10,6 +11,40 @@ import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
 const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export const classroomsAPI = {
+  async getTeacherClassrooms(teacher_id: string) {
+    return this.getByTeacher(teacher_id);
+  },
+
+  async update(id: string, updates: any) {
+    const { data, error } = await supabase
+      .from('classrooms')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      throw new APIError('Failed to update classroom', error.code);
+    }
+    return data;
+  },
+
+  async create(classroom: any) {
+    const { data, error } = await supabase.from('classrooms').insert([classroom]).select().single();
+
+    if (error) {
+      throw new APIError('Failed to create classroom', error.code);
+    }
+    return data;
+  },
+
+  async delete(id: string) {
+    const { error } = await supabase.from('classrooms').delete().eq('id', id);
+
+    if (error) {
+      throw new APIError('Failed to delete classroom', error.code);
+    }
+  },
   async getByTeacher(teacher_id: string, params: { limit?: number; offset?: number } = {}) {
     const res = await (client.api as any).educational.classrooms['by-teacher'].$get({
       query: {

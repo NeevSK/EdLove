@@ -1,6 +1,6 @@
 import {
   assertContractCoverage,
-  createTemporalPOAProxy,
+  createTemporalProxy,
   defineContractCoverage,
   growthSignalsAPI,
   identityAPI,
@@ -1220,11 +1220,5 @@ const libraryCoverage = assertContractCoverage(
     ],
   }),
 );
-export const libraryAPI = createTemporalPOAProxy(
-  'library',
-  rawLibraryAPI,
-  libraryCoverage.contract,
-  libraryCoverage.methodMapping,
-  { strictUnmappedMethods: true },
-);
+export const libraryAPI = createTemporalProxy('library', rawLibraryAPI);
 void [libraryContract, libraryCoverage];

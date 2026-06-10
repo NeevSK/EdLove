@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Mobile Documentation Vault Index"
+status: "active"
+created: 2026-06-10
+updated: 2026-06-10
+author: "Naveen"
+scribe: "Antigravity"
+tags: [index, portal]
+---
+
 # Gurudevi Mobile Documentation Vault Index
 
 Welcome to the documentation vault for `gurudevi-mobile`. This file serves as the entry point and index for all system documentation.
@@ -8,6 +18,13 @@ Welcome to the documentation vault for `gurudevi-mobile`. This file serves as th
 
 | Date | Document | Category | Status | Summary |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-06-10** | [Monorepo Upgrade and Navigation Purge Execution Report](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-10-monorepo-upgrade-and-cleanup-execution.md) | Infrastructure | `active` | Report detailing the execution of Expo SDK 56 alignment, safe major updates, React Navigation removal, and navigation check flag purging. |
+| **2026-06-10** | [Dependency Alignment and Upgrade Testing Playbook](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-10-dependency-alignment-and-upgrade-testing.md) | Infrastructure | `active` | Testing playbook for peer dependency compatibility checks, automatic alignment checks, and rollback spike workflows. |
+| **2026-06-10** | [Expo Router Migration and Major Dependencies Audit](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-10-migration-and-major-dependency-audit.md) | Audits | `active` | Deep-dive review of Expo Router transfer, Expo version mismatch, major updates list, and gesture handler risks. |
+| **2026-06-10** | [Gurudevi Mobile and Shared Packages Dependency Audit](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-10-dependency-audit.md) | Audits | `active` | Deep-dive audit of outdated dependencies in gurudevi-mobile and supporting shared packages using taze. |
+| **2026-06-10** | [Offline Security & Resilience Blueprint](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/offline-security-and-resilience.md) | Security | `active` | Threat model, SubtleCrypto dynamic key verification, and dual-PDP fail-safe boundaries. |
+| **2026-06-10** | [Offline Gating and Authorization](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/decisions/2026-06-10-offline-authorization-and-gating.md) | Security / Sync | `active` | Layered Cedar WASM and signed permission snapshots for native write safety. |
+| **2026-06-10** | [POA Client-Side Proxy Unentanglement](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/decisions/2026-06-10-poa-proxy-unentanglement.md) | Security / Arch | `active` | Removing redundant client-side POA proxy in favor of database and Hono PEP middleware. |
 | **2026-06-09** | [Oxlint and ESLint Hybrid Integration Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/oxlint-and-eslint-hybrid-guide.md) | Infrastructure | `active` | Pipeline setup for Oxlint + ESLint hybrid strategy and Biome format-only configurations. |
 | **2026-06-09** | [React Compiler and ESLint Guidance](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/react-compiler-and-eslint-guide.md) | Infrastructure | `active` | Aligning ESLint 9 configuration and React Compiler for React 19.2/RN 0.85 stack. |
 | **2026-06-09** | [Gurudevi UI Development Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/Core/ui-development-guide.md) | UI / Layout | `active` | Zero-legacy screen architecture, hook contracts, caching levels, and quality checklists. |
@@ -65,7 +82,14 @@ Welcome to the documentation vault for `gurudevi-mobile`. This file serves as th
 *   [Bootstrap and Entrypoint Standard](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/bootstrap-and-entrypoint-standard.md) - Startup sequence flow.
 *   [Protocol-Oriented Authority (POA) SSOT](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/poa-authority-ssot.md) - Core authorization specifications.
 
+### 🏛️ Architecture Decision Records (ADRs)
+*   [Offline Gating and Authorization](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/decisions/2026-06-10-offline-authorization-and-gating.md) - Layered Cedar WASM evaluation and signed snapshot fallback for local Drizzle write security.
+*   [POA Client-Side Proxy Unentanglement](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/decisions/2026-06-10-poa-proxy-unentanglement.md) - Removing redundant client-side POA proxy in favor of database and Hono PEP middleware.
+
+
 ### 📦 Platform, Infrastructure & Deployment Guides (Vercel, Cloudflare, Expo, PNPM, ESLint)
+*   [Monorepo Upgrade and Navigation Purge Execution Report](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-10-monorepo-upgrade-and-cleanup-execution.md) - Report on Expo SDK 56 alignment, major version upgrades, and navigation cleanups.
+*   [Dependency Alignment and Upgrade Testing Playbook](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-10-dependency-alignment-and-upgrade-testing.md) - Diagnostic tools and step-by-step procedures for testing major version updates.
 *   [Oxlint and ESLint Hybrid Integration Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/oxlint-and-eslint-hybrid-guide.md) - Pipeline setup for Oxlint + ESLint hybrid strategy and Biome format-only configurations.
 *   [React Compiler and ESLint Guidance](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/react-compiler-and-eslint-guide.md) - Configuration rules and auto-memoization checks.
 *   [pnpm Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/pnpm-guide.md) - Dependency management rules.
@@ -77,6 +101,9 @@ Welcome to the documentation vault for `gurudevi-mobile`. This file serves as th
 *   [Hosting Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/hosting-guide.md) - General topology specs.
 
 ### 🛡️ Security, ReBAC & Audits
+*   [Expo Router Migration and Major Dependencies Audit](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-10-migration-and-major-dependency-audit.md) - Deep-dive review of Expo Router transfer status, Expo mismatches, major updates list, and gesture handler risks.
+*   [Gurudevi Mobile and Shared Packages Dependency Audit](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-10-dependency-audit.md) - Deep-dive audit of outdated dependencies in gurudevi-mobile and shared libraries using taze.
+*   [Offline Security & Resilience Blueprint](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/offline-security-and-resilience.md) - Security controls, keys configuration, and system threat mitigation model.
 *   [Offline Authorization Architecture](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/2026-05-18-gurudevi-offline-authorization-architecture.md) - Offline RBAC rule caches.
 *   [Sovereign ReBAC Developer Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/2026-05-06-sovereign-rebac-developer-guide.md) - Relationship-Based Access Control logic.
 *   [Offline IAM & Write Safety Audit](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/2026-05-20-gurudevi-offline-iam-write-safety-audit.md) - Data write validation report.

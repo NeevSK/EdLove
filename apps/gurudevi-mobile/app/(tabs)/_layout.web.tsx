@@ -1,10 +1,11 @@
-import { useNotifications } from '@repo/core/hooks';
-import { usePermissions } from '@repo/core/logic';
-import { useStore } from '@repo/core/store';
-import { Box, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { useNotifications, useRewards } from '@repo/core/hooks';
+import { usePermissions, useStore } from '@repo/core/logic';
+import { BreathGuide } from '@repo/self';
+import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
+import { Box, Modal, ModalContent, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { router, Slot, usePathname } from 'expo-router';
-import { Bell, Heart, Library, Menu, School, Settings, User, Users } from 'lucide-react-native';
-import { useCallback, useMemo, useState } from 'react';
+import { Bell, Heart, Library, Menu, School, Settings, User, Users, X } from 'lucide-react-native';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, useWindowDimensions, type ViewStyle } from 'react-native';
 import { resolveResponsiveShellMode } from '../../src/lib/responsiveShell';
 
@@ -29,9 +30,15 @@ export default function WebTabsLayout() {
   const { width } = useWindowDimensions();
   const { context } = usePermissions();
   const userId = context.userId;
+  const { newAchievements } = useRewards();
   const { unreadCount } = useNotifications(userId);
   const user = useStore((state) => state.user);
   const [railExpanded, setRailExpanded] = useState(true);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [currentAchievement, setCurrentAchievement] = useState('');
+  const previousAchievementsRef = useRef<string[]>([]);
+  const isBreathingOpen = useStore((state) => state.isBreathingOpen ?? false);
+  const setBreathingOpen = useStore((state) => state.setBreathingOpen ?? (() => {}));
 
   const mode = resolveResponsiveShellMode(Platform.OS, width);
   const isCompact = mode === 'webCompact' || mode === 'webTabletCompact';
@@ -65,6 +72,29 @@ export default function WebTabsLayout() {
   const handleNavigate = useCallback((href: string) => {
     router.push(href);
   }, []);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    document.title = `Gurudevi · ${getPageTitle(pathname)}`;
+  }, [pathname]);
+
+  useEffect(() => {
+    if (newAchievements === previousAchievementsRef.current) return;
+    previousAchievementsRef.current = newAchievements;
+
+    if (newAchievements.length === 0 || showCelebration) {
+      return;
+    }
+    const first = newAchievements[0];
+    if (!first) return;
+
+    const timer = window.setTimeout(() => {
+      setCurrentAchievement(first);
+      setShowCelebration(true);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [newAchievements, showCelebration]);
 
   return (
     <Box style={shellStyle}>
@@ -237,6 +267,51 @@ export default function WebTabsLayout() {
           <Slot />
         </Box>
       </Box>
+
+      <AchievementUnlockOverlay
+        title={currentAchievement}
+        visible={showCelebration}
+        onHide={() => setShowCelebration(false)}
+      />
+
+      <Modal isOpen={isBreathingOpen} onClose={() => setBreathingOpen(false)}>
+        <ModalContent className="bg-phase-canvas">
+          <Box style={{ padding: 16, gap: 12 }}>
+            <Box
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <Box>
+                <Text style={{ color: '#2A2318', fontSize: 18, fontWeight: '700' }}>
+                  Breathing Reset
+                </Text>
+                <Text style={{ color: '#74685A', fontSize: 12 }}>1 minute of peace</Text>
+              </Box>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Close breathing reset"
+                onPress={() => setBreathingOpen(false)}
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 999,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'rgba(42,35,24,0.08)',
+                }}
+              >
+                <X size={18} color="#2A2318" />
+              </Pressable>
+            </Box>
+            <Box style={{ minHeight: 400, justifyContent: 'center' }}>
+              <BreathGuide onComplete={() => setBreathingOpen(false)} />
+            </Box>
+          </Box>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 }

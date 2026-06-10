@@ -4,15 +4,11 @@ import { inventoryAPI as rawInventoryAPI } from '../inventory';
 import { operationsContract } from '../operations.contract';
 import { schoolAPI as rawSchoolAPI } from '../school';
 import { staffManagementAPI as _staffManagementAPI } from '../staffManagement';
-import { createTemporalPOAProxy } from '../temporalPOAProxy';
+import { createTemporalProxy } from '../temporalProxy';
 
-export const staffManagementAPI = createTemporalPOAProxy(
-  'staffManagement',
-  _staffManagementAPI,
-  operationsContract,
-);
+export const staffManagementAPI = createTemporalProxy('staffManagement', _staffManagementAPI);
 
-const attendanceCoverage = assertContractCoverage(
+const _attendanceCoverage = assertContractCoverage(
   rawAttendanceAPI,
   defineContractCoverage({
     moduleName: 'attendance',
@@ -31,17 +27,9 @@ const attendanceCoverage = assertContractCoverage(
   }),
 );
 
-export const attendanceAPI = createTemporalPOAProxy(
-  'attendance',
-  rawAttendanceAPI,
-  attendanceCoverage.contract,
-  attendanceCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-  },
-);
+export const attendanceAPI = createTemporalProxy('attendance', rawAttendanceAPI);
 
-const schoolCoverage = assertContractCoverage(
+const _schoolCoverage = assertContractCoverage(
   rawSchoolAPI,
   defineContractCoverage({
     moduleName: 'school',
@@ -76,17 +64,9 @@ const schoolCoverage = assertContractCoverage(
   }),
 );
 
-export const schoolAPI = createTemporalPOAProxy(
-  'school',
-  rawSchoolAPI,
-  schoolCoverage.contract,
-  schoolCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-  },
-);
+export const schoolAPI = createTemporalProxy('school', rawSchoolAPI);
 
-const inventoryCoverage = assertContractCoverage(
+const _inventoryCoverage = assertContractCoverage(
   rawInventoryAPI,
   defineContractCoverage({
     moduleName: 'inventory',
@@ -108,12 +88,4 @@ const inventoryCoverage = assertContractCoverage(
   }),
 );
 
-export const inventoryAPI = createTemporalPOAProxy(
-  'inventory',
-  rawInventoryAPI,
-  inventoryCoverage.contract,
-  inventoryCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-  },
-);
+export const inventoryAPI = createTemporalProxy('inventory', rawInventoryAPI);

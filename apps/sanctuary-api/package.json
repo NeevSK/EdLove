@@ -12,21 +12,21 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@hono/node-server": "^1.19.2",
+    "@hono/node-server": "^2.0.4",
     "@hono/swagger-ui": "^0.6.1",
-    "@hono/zod-openapi": "^0.18.4",
+    "@hono/zod-openapi": "^1.4.0",
     "@repo/core": "workspace:*",
     "@repo/database": "workspace:*",
     "@repo/policies": "workspace:*",
-    "dotenv": "^16.6.1",
-    "hono": "^4.7.4",
-    "zod": "^3.24.2"
+    "dotenv": "^17.4.2",
+    "hono": "^4.12.25",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "tsup": "^8.4.0",
-    "tsx": "^4.19.3",
+    "@biomejs/biome": "^2.4.16",
+    "tsup": "^8.5.1",
+    "tsx": "^4.22.4",
     "typescript": "^6.0.3",
-    "vitest": "^2.1.9"
+    "vitest": "^4.1.8"
   }
 }

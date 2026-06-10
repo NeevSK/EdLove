@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
 import { type TotalState, useNotifications, usePermissions, useStore } from '@repo/core/logic';
+import { useNavigation } from 'expo-router';
 import {
   Bell,
   ChevronLeft,

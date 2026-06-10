@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
 import { authAPI, identityAPI, onboardingAPI } from '@repo/core/api';
 import { useStore } from '@repo/core/store';
 import type { Capacity } from '@repo/core/types';
+import { useNavigation } from 'expo-router';
 
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';

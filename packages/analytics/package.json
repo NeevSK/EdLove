@@ -38,21 +38,21 @@
     "@repo/core": "workspace:*",
     "@repo/graphics": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@tanstack/react-query": "^5.90.20",
-    "lucide-react-native": "^0.563.0",
-    "posthog-js": "^1.114.0",
-    "posthog-node": "^5.29.5",
-    "posthog-react-native": "^4.35.1",
-    "react-i18next": "^16.5.4"
+    "@tanstack/react-query": "^5.101.0",
+    "lucide-react-native": "^1.17.0",
+    "posthog-js": "^1.383.1",
+    "posthog-node": "^5.36.6",
+    "posthog-react-native": "^4.46.21",
+    "react-i18next": "^17.0.8"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "^19.2.14",
-    "eslint": "^9.38.0",
+    "@types/react": "^19.2.17",
+    "eslint": "^10.4.1",
     "typescript": "^6.0.3",
-    "vitest": "^2.1.9",
-    "vite-tsconfig-paths": "^6.1.1"
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.8"
   },
   "peerDependencies": {
     "@repo/ui": "*",

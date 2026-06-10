@@ -31,6 +31,7 @@ import {
   operationsHandlers,
   profileContract,
   profileHandlers,
+  type SovereignRoute,
   selfContract,
   selfHandlers,
   syncContract,
@@ -116,18 +117,22 @@ app.use('/api/*', async (c, next) => {
   c.set('user', user);
   if (db) c.set('db', db);
 
+  return await next();
+});
+
+// --- 3. Cedar Server Gate Check Middleware (Dynamic Route-level PEP) ---
+async function getRequestSecurityContext(c: any) {
+  const user = c.get('user') || { id: 'anonymous' };
+  const db = c.get('db');
   const isAnonymousUser = user.id === 'anonymous';
 
-  // --- 3. Cedar Server Gate Check (Double Gate Security Principle) ---
-  // A. Resolve attributes for Principal
   let school_id = '';
-  let capacity = 'teacher'; // Changed from 'Wanderer' to 'teacher' for development
+  let capacity = 'teacher';
   let grade_id: string | undefined;
   let section_id: string | undefined;
   let classroom_ids: string[] = [];
   let child_student_ids: string[] = [];
 
-  // Parse headers strictly as fallback/testing parameters or narrow scoping filters
   const clientHeaderSchoolId = c.req.header('x-school-id') || '';
   const clientHeaderCapacity = c.req.header('x-capacity') || 'teacher';
   const clientHeaderGradeId = c.req.header('x-grade-id') || undefined;
@@ -135,20 +140,17 @@ app.use('/api/*', async (c, next) => {
 
   const xClassroomIds = c.req.header('x-classroom-ids');
   const clientHeaderClassroomIds = xClassroomIds
-    ? xClassroomIds.split(',').map((id) => id.trim())
+    ? xClassroomIds.split(',').map((id: string) => id.trim())
     : [];
 
   const xChildIds = c.req.header('x-child-student-ids');
-  const clientHeaderChildIds = xChildIds ? xChildIds.split(',').map((id) => id.trim()) : [];
+  const clientHeaderChildIds = xChildIds ? xChildIds.split(',').map((id: string) => id.trim()) : [];
 
-  // Hydrate principal authoritatively from database when active
   let hydratedFromDb = false;
   if (!isAnonymousUser && db) {
     try {
       const activeBond = (await db.bond.findFirst({
-        where: {
-          user_id: user.id,
-        },
+        where: { user_id: user.id },
       })) as any;
       if (activeBond) {
         capacity = activeBond.capacity;
@@ -162,7 +164,6 @@ app.use('/api/*', async (c, next) => {
     }
   }
 
-  // Fallback to client headers ONLY under test/local development OR when database bond is offline
   if (!hydratedFromDb) {
     school_id = clientHeaderSchoolId;
     capacity = isAnonymousUser ? 'wanderer' : clientHeaderCapacity;
@@ -171,130 +172,25 @@ app.use('/api/*', async (c, next) => {
     classroom_ids = clientHeaderClassroomIds;
     child_student_ids = clientHeaderChildIds;
   } else {
-    // Database is active: prevent administrative privilege escalation via unverified client headers
     if (clientHeaderCapacity === 'admin' && capacity !== 'admin') {
       console.warn(
         `[SENTINEL SECURITY ALERT] Blocked header privilege escalation attempt by user "${user.id}"`,
       );
-      return c.json(
-        {
-          error: 'Forbidden',
-          message: 'Authoritative database policy rejects the requested administrative capability.',
-        },
-        403,
-      );
+      throw new Error('PrivilegeEscalation');
     }
-    // Hydrate scope-filtering parameters from request, verified against active database context
     grade_id = clientHeaderGradeId;
     section_id = clientHeaderSectionId;
     classroom_ids = clientHeaderClassroomIds;
     child_student_ids = clientHeaderChildIds;
   }
 
-  // B. Map Hono Request to Cedar Action and Resource Type
-  const method = c.req.method.toUpperCase();
-  const url = new URL(c.req.url);
-  const urlPath = url.pathname;
-
-  let cedarAction = 'read';
-  if (method === 'POST') {
-    cedarAction = 'create';
-  } else if (method === 'PUT' || method === 'PATCH') {
-    cedarAction = 'update';
-  } else if (method === 'DELETE') {
-    cedarAction = 'delete';
-  }
-
-  // Special action mapping based on path keywords
-  if (urlPath.includes('/submit-grade') || urlPath.includes('/publish-grade')) {
-    cedarAction = 'grade';
-  }
-
-  let resourceType = 'School';
-  let resourceId = school_id || 'school_institutional';
-
-  // 1. Resolve Identity bootstrap bypass
-  if (urlPath.includes('/identity/resolveIdentity')) {
-    return await next();
-  }
-
-  // 2. Identity & Profile API calls should target the specific User resource
-  if (urlPath.includes('/identity/')) {
-    resourceType = 'User';
-    const parts = urlPath.split('/');
-    const lastPart = parts[parts.length - 1];
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (uuidRegex.test(lastPart)) {
-      resourceId = lastPart;
-    } else {
-      resourceId = user.id;
-    }
-  } else if (urlPath.includes('/groups')) {
-    resourceType = 'Group';
-    resourceId = 'school_group';
-  } else if (urlPath.includes('/posts')) {
-    resourceType = 'Post';
-    resourceId = 'school_post';
-  } else if (urlPath.includes('/classroom')) {
-    resourceType = 'Classroom';
-    resourceId = 'school_classroom';
-  } else if (urlPath.includes('/grade')) {
-    resourceType = 'Grade';
-    resourceId = 'school_grade';
-  } else if (urlPath.includes('/attendance')) {
-    resourceType = 'AttendanceRecord';
-    resourceId = 'school_attendance';
-  } else if (urlPath.includes('/resources') || urlPath.includes('/library')) {
-    resourceType = 'Material';
-    resourceId = 'school_library';
-  } else if (urlPath.includes('/leave')) {
-    resourceType = 'StaffLeave';
-    resourceId = 'school_admin';
-  } else if (urlPath.includes('/staff')) {
-    resourceType = 'School';
-    resourceId = 'school_admin';
-  } else if (urlPath.includes('/self/preferences')) {
-    resourceType = 'User';
-    resourceId = user.id;
-  } else if (urlPath.includes('/powersync/upload')) {
-    cedarAction = 'update';
-    resourceType = 'User';
-    resourceId = user.id;
-  } else if (urlPath.includes('/self/mood')) {
-    resourceType = 'MoodLog';
-    resourceId = 'user_mood_log';
-  } else if (urlPath.includes('/self/journal')) {
-    resourceType = 'FireJournal';
-    resourceId = 'user_fire_journal';
-  } else if (urlPath.includes('/self/joy')) {
-    resourceType = 'JoyMoments';
-    resourceId = 'user_joy_moment';
-  } else if (urlPath.includes('/self/gratitude')) {
-    resourceType = 'GratitudeEntries';
-    resourceId = 'user_gratitude_entry';
-  } else if (urlPath.includes('/self')) {
-    resourceType = 'User';
-    resourceId = user.id;
-  }
-
-  // Attempt to parse classroom_id safely by cloning the request body (prevents stream lockout)
-  let bodyClassroomId: string | undefined;
-  if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
-    try {
-      const cloned = c.req.raw.clone();
-      const bodyJson = await cloned.json();
-      bodyClassroomId = bodyJson?.classroom_id ?? bodyJson?.classroomId;
-    } catch (_e) {
-      // Body is not JSON or cannot be read, ignore gracefully
-    }
-  }
-
   const deviceTrust =
     c.req.header('x-device-trust') || c.req.header('x-device-status') || 'standard';
   const networkZone = c.req.header('x-network-zone') || 'trusted';
 
-  // C. Perform Cedar authorization check
-  const authResult = checkCedar({
+  return {
+    user,
+    db,
     principal: {
       id: user.id,
       type: capacity,
@@ -307,180 +203,257 @@ app.use('/api/*', async (c, next) => {
         child_student_ids,
       },
     },
-    action: cedarAction,
-    resource: {
-      id: resourceId,
-      type: resourceType,
-      attributes: {
-        ...(resourceType !== 'School' && { school_id }),
-        ...(bodyClassroomId && { classroom_id: bodyClassroomId }),
-        ...((resourceType === 'MoodLog' ||
-          resourceType === 'FireJournal' ||
-          resourceType === 'JoyMoments' ||
-          resourceType === 'GratitudeEntries' ||
-          resourceType === 'EnergyForecasts') && { user_id: user.id }),
-      },
-    },
     context: {
       device_trust: deviceTrust,
       network_zone: networkZone,
     },
-  });
+    school_id,
+    capacity,
+  };
+}
 
-  if (!authResult.permitted) {
-    return c.json(
-      {
-        error: 'Forbidden',
-        message: 'Access denied by authoritative Cedar policy engine (Double Gate Enforcement).',
-        reason: authResult.reason,
-        gaps: authResult.gaps,
+function poa(route: SovereignRoute) {
+  return async (c: any, next: any) => {
+    if (c.req.method.toLowerCase() !== route.method.toLowerCase()) {
+      return await next();
+    }
+
+    // Special bypass for resolveIdentity bootstrapping
+    if (c.req.path.includes('/identity/resolveIdentity')) {
+      return await next();
+    }
+
+    let securityContext;
+    try {
+      securityContext = await getRequestSecurityContext(c);
+    } catch (err: any) {
+      if (err.message === 'PrivilegeEscalation') {
+        return c.json(
+          {
+            error: 'Forbidden',
+            message:
+              'Authoritative database policy rejects the requested administrative capability.',
+          },
+          403,
+        );
+      }
+      return c.json({ error: 'Internal Server Error' }, 500);
+    }
+
+    const { user, principal, context, school_id, capacity } = securityContext;
+    const policy = route.metadata.policy;
+    const cedarAction = policy.action;
+    const resourceType = policy.subject;
+
+    let resourceId = school_id || 'school_institutional';
+    const params = c.req.param();
+    const paramKeys = Object.keys(params);
+    if (paramKeys.length > 0) {
+      if (params.id) {
+        resourceId = params.id;
+      } else if (params.userId) {
+        resourceId = params.userId;
+      } else if (params.studentId) {
+        resourceId = params.studentId;
+      } else if (params.classroomId) {
+        resourceId = params.classroomId;
+      } else if (params.classroomStudentId) {
+        resourceId = params.classroomStudentId;
+      } else if (params.teacherId) {
+        resourceId = params.teacherId;
+      } else if (params.schoolId) {
+        resourceId = params.schoolId;
+      } else if (params.principalId) {
+        resourceId = params.principalId;
+      } else if (params.insightId) {
+        resourceId = params.insightId;
+      } else if (params.token) {
+        resourceId = params.token;
+      } else if (params.workspaceId) {
+        resourceId = params.workspaceId;
+      } else {
+        resourceId = params[paramKeys[0]];
+      }
+    } else {
+      if (resourceType === 'User') {
+        resourceId = user.id;
+      } else if (resourceType === 'MoodLog') {
+        resourceId = 'user_mood_log';
+      } else if (resourceType === 'FireJournal') {
+        resourceId = 'user_fire_journal';
+      } else if (resourceType === 'JoyMoments') {
+        resourceId = 'user_joy_moment';
+      } else if (resourceType === 'GratitudeEntries') {
+        resourceId = 'user_gratitude_entry';
+      }
+    }
+
+    let bodyClassroomId: string | undefined;
+    const method = c.req.method.toUpperCase();
+    if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
+      try {
+        const cloned = c.req.raw.clone();
+        const bodyJson = await cloned.json();
+        bodyClassroomId = bodyJson?.classroom_id ?? bodyJson?.classroomId;
+      } catch {
+        // Body is not JSON or cannot be read, ignore gracefully
+      }
+    }
+
+    const authResult = checkCedar({
+      principal,
+      action: cedarAction,
+      resource: {
+        id: resourceId,
+        type: resourceType,
+        attributes: {
+          ...(resourceType !== 'School' && { school_id }),
+          ...(bodyClassroomId && { classroom_id: bodyClassroomId }),
+          ...((resourceType === 'MoodLog' ||
+            resourceType === 'FireJournal' ||
+            resourceType === 'JoyMoments' ||
+            resourceType === 'GratitudeEntries' ||
+            resourceType === 'EnergyForecasts') && { user_id: user.id }),
+        },
       },
-      403,
-    );
-  }
+      context,
+    });
 
-  // Sentinel Audit Log Interceptor: Log high-privilege platform administrator actions
-  if (capacity === 'admin') {
-    console.info(
-      `[SENTINEL AUDIT LOG] Platform Admin Action Authorized:
-       - Operator ID: "${user.id}"
-       - Action: "${cedarAction}"
-       - Target Resource: "${resourceType}::${resourceId}"
-       - Path: "${method} ${urlPath}"
-       - Device Trust: "${deviceTrust}"
-       - Network Zone: "${networkZone}"
-       - Status: APPROVED & AUDITED`,
-    );
-  }
+    if (!authResult.permitted) {
+      return c.json(
+        {
+          error: 'Forbidden',
+          message: 'Access denied by authoritative Cedar policy engine (Double Gate Enforcement).',
+          reason: authResult.reason,
+          gaps: authResult.gaps,
+        },
+        403,
+      );
+    }
 
-  return await next();
-});
+    if (capacity === 'admin') {
+      console.info(
+        `[SENTINEL AUDIT LOG] Platform Admin Action Authorized:
+         - Operator ID: "${user.id}"
+         - Action: "${cedarAction}"
+         - Target Resource: "${resourceType}::${resourceId}"
+         - Path: "${c.req.method} ${c.req.path}"
+         - Device Trust: "${context.device_trust}"
+         - Network Zone: "${context.network_zone}"
+         - Status: APPROVED & AUDITED`,
+      );
+    }
+
+    return await next();
+  };
+}
+
+function registerRoute(apiApp: OpenAPIHono<any>, route: SovereignRoute, handler: any) {
+  apiApp.use(route.path, poa(route));
+  apiApp.openapi(adaptToHono(route), handler);
+}
 
 // Sovereign Routes (Vertical Slice: SELF)
 const selfApp = new OpenAPIHono();
-selfApp.openapi(adaptToHono(selfContract.logMood), selfHandlers.logMood);
-selfApp.openapi(adaptToHono(selfContract.getMoodHistory), selfHandlers.getMoodHistory);
-selfApp.openapi(adaptToHono(selfContract.burnJournal), selfHandlers.burnJournal);
-selfApp.openapi(adaptToHono(selfContract.getJournalHistory), selfHandlers.getJournalHistory);
-selfApp.openapi(adaptToHono(selfContract.getTodayMood), selfHandlers.getTodayMood);
-selfApp.openapi(adaptToHono(selfContract.getPreferences), selfHandlers.getPreferences);
-selfApp.openapi(adaptToHono(selfContract.updatePreferences), selfHandlers.updatePreferences);
+registerRoute(selfApp, selfContract.logMood, selfHandlers.logMood);
+registerRoute(selfApp, selfContract.getMoodHistory, selfHandlers.getMoodHistory);
+registerRoute(selfApp, selfContract.burnJournal, selfHandlers.burnJournal);
+registerRoute(selfApp, selfContract.getJournalHistory, selfHandlers.getJournalHistory);
+registerRoute(selfApp, selfContract.getTodayMood, selfHandlers.getTodayMood);
+registerRoute(selfApp, selfContract.getPreferences, selfHandlers.getPreferences);
+registerRoute(selfApp, selfContract.updatePreferences, selfHandlers.updatePreferences);
 
 // Sovereign Routes (Vertical Slice: PROFILE)
 const profileApp = new OpenAPIHono();
-profileApp.openapi(adaptToHono(profileContract.getUserProfile), profileHandlers.getUserProfile);
-profileApp.openapi(adaptToHono(profileContract.updateProfile), profileHandlers.updateProfile);
-profileApp.openapi(
-  adaptToHono(profileContract.getJourneySnapshot),
-  profileHandlers.getJourneySnapshot,
-);
-profileApp.openapi(adaptToHono(profileContract.getSchoolPulse), profileHandlers.getSchoolPulse);
+registerRoute(profileApp, profileContract.getUserProfile, profileHandlers.getUserProfile);
+registerRoute(profileApp, profileContract.updateProfile, profileHandlers.updateProfile);
+registerRoute(profileApp, profileContract.getJourneySnapshot, profileHandlers.getJourneySnapshot);
+registerRoute(profileApp, profileContract.getSchoolPulse, profileHandlers.getSchoolPulse);
 
 // Sovereign Routes (Vertical Slice: COMMUNITY)
 const communityApp = new OpenAPIHono();
-communityApp.openapi(adaptToHono(communityContract.getGroups), communityHandlers.getGroups);
-communityApp.openapi(adaptToHono(communityContract.getGroup), communityHandlers.getGroup);
-communityApp.openapi(adaptToHono(communityContract.createGroup), communityHandlers.createGroup);
-communityApp.openapi(adaptToHono(communityContract.joinGroup), communityHandlers.joinGroup);
-communityApp.openapi(adaptToHono(communityContract.getPosts), communityHandlers.getPosts);
-communityApp.openapi(adaptToHono(communityContract.createPost), communityHandlers.createPost);
-communityApp.openapi(
-  adaptToHono(communityContract.toggleReaction),
-  communityHandlers.toggleReaction,
-);
+registerRoute(communityApp, communityContract.getGroups, communityHandlers.getGroups);
+registerRoute(communityApp, communityContract.getGroup, communityHandlers.getGroup);
+registerRoute(communityApp, communityContract.createGroup, communityHandlers.createGroup);
+registerRoute(communityApp, communityContract.joinGroup, communityHandlers.joinGroup);
+registerRoute(communityApp, communityContract.getPosts, communityHandlers.getPosts);
+registerRoute(communityApp, communityContract.createPost, communityHandlers.createPost);
+registerRoute(communityApp, communityContract.toggleReaction, communityHandlers.toggleReaction);
 
 // Sovereign Routes (Vertical Slice: DAILY CONTENT)
 const dailyContentApp = new OpenAPIHono();
-dailyContentApp.openapi(adaptToHono(dailyContentContract.getToday), dailyContentHandlers.getToday);
-dailyContentApp.openapi(
-  adaptToHono(dailyContentContract.getForDate),
-  dailyContentHandlers.getForDate,
-);
-dailyContentApp.openapi(
-  adaptToHono(dailyContentContract.getRecent),
-  dailyContentHandlers.getRecent,
-);
+registerRoute(dailyContentApp, dailyContentContract.getToday, dailyContentHandlers.getToday);
+registerRoute(dailyContentApp, dailyContentContract.getForDate, dailyContentHandlers.getForDate);
+registerRoute(dailyContentApp, dailyContentContract.getRecent, dailyContentHandlers.getRecent);
 
 // Sovereign Routes (Vertical Slice: EDUCATIONAL)
 const educationalApp = new OpenAPIHono();
-educationalApp.openapi(
-  adaptToHono(educationalContract.getByTeacher),
-  educationalHandlers.getByTeacher,
-);
-educationalApp.openapi(adaptToHono(educationalContract.getById), educationalHandlers.getById);
-educationalApp.openapi(
-  adaptToHono(educationalContract.getClassroomResources),
+registerRoute(educationalApp, educationalContract.getByTeacher, educationalHandlers.getByTeacher);
+registerRoute(educationalApp, educationalContract.getById, educationalHandlers.getById);
+registerRoute(
+  educationalApp,
+  educationalContract.getClassroomResources,
   educationalHandlers.getClassroomResources,
 );
-educationalApp.openapi(
-  adaptToHono(educationalContract.createLesson),
-  educationalHandlers.createLesson,
-);
+registerRoute(educationalApp, educationalContract.createLesson, educationalHandlers.createLesson);
 
 // Sovereign Routes (Vertical Slice: GRADING)
 const gradingApp = new OpenAPIHono();
-gradingApp.openapi(adaptToHono(gradingContract.getReportCard), gradingHandlers.getReportCard);
-gradingApp.openapi(
-  adaptToHono(gradingContract.getClassroomGrades),
-  gradingHandlers.getClassroomGrades,
-);
-gradingApp.openapi(adaptToHono(gradingContract.submitGrade), gradingHandlers.submitGrade);
-gradingApp.openapi(adaptToHono(gradingContract.publishGrade), gradingHandlers.publishGrade);
-gradingApp.openapi(
-  adaptToHono(gradingContract.getGradingSettings),
-  gradingHandlers.getGradingSettings,
-);
+registerRoute(gradingApp, gradingContract.getReportCard, gradingHandlers.getReportCard);
+registerRoute(gradingApp, gradingContract.getClassroomGrades, gradingHandlers.getClassroomGrades);
+registerRoute(gradingApp, gradingContract.submitGrade, gradingHandlers.submitGrade);
+registerRoute(gradingApp, gradingContract.publishGrade, gradingHandlers.publishGrade);
+registerRoute(gradingApp, gradingContract.getGradingSettings, gradingHandlers.getGradingSettings);
 
 // Sovereign Routes (Vertical Slice: OPERATIONS)
 const operationsApp = new OpenAPIHono();
-operationsApp.openapi(
-  adaptToHono(operationsContract.getAttendance),
-  operationsHandlers.getAttendance,
-);
-operationsApp.openapi(
-  adaptToHono(operationsContract.recordAttendance),
+registerRoute(operationsApp, operationsContract.getAttendance, operationsHandlers.getAttendance);
+registerRoute(
+  operationsApp,
+  operationsContract.recordAttendance,
   operationsHandlers.recordAttendance,
 );
-operationsApp.openapi(
-  adaptToHono(operationsContract.batchRecordAttendance),
+registerRoute(
+  operationsApp,
+  operationsContract.batchRecordAttendance,
   operationsHandlers.batchRecordAttendance,
 );
-operationsApp.openapi(
-  adaptToHono(operationsContract.getSchoolAttendancePulse),
+registerRoute(
+  operationsApp,
+  operationsContract.getSchoolAttendancePulse,
   operationsHandlers.getSchoolAttendancePulse,
 );
 
 // Sovereign Routes (Vertical Slice: IDENTITY)
 const identityApp = new OpenAPIHono();
-identityApp.openapi(
-  adaptToHono(identityContract.identifyActiveCitizen),
+registerRoute(
+  identityApp,
+  identityContract.identifyActiveCitizen,
   identityHandlers.resolveIdentity,
 );
-identityApp.openapi(adaptToHono(identityContract.fetchUserProfile), identityHandlers.getProfile);
-identityApp.openapi(
-  adaptToHono(identityContract.resolveWorkspaceContext),
+registerRoute(identityApp, identityContract.fetchUserProfile, identityHandlers.getProfile);
+registerRoute(
+  identityApp,
+  identityContract.resolveWorkspaceContext,
   identityHandlers.getClassroomCapacitySummary,
 );
-identityApp.openapi(
-  adaptToHono(identityContract.modifyUserProfile),
-  identityHandlers.updateProfile,
-);
+registerRoute(identityApp, identityContract.modifyUserProfile, identityHandlers.updateProfile);
 
 // Sovereign Routes (Vertical Slice: ADMIN)
 const adminApp = new OpenAPIHono();
-adminApp.openapi(adaptToHono(adminContract.getStaffPresence), adminHandlers.getStaffPresence);
-adminApp.openapi(adaptToHono(adminContract.getTeacherCarousel), adminHandlers.getTeacherCarousel);
-adminApp.openapi(adaptToHono(adminContract.submitLeave), adminHandlers.submitLeave);
-adminApp.openapi(adaptToHono(adminContract.getSchool), adminHandlers.getSchool);
+registerRoute(adminApp, adminContract.getStaffPresence, adminHandlers.getStaffPresence);
+registerRoute(adminApp, adminContract.getTeacherCarousel, adminHandlers.getTeacherCarousel);
+registerRoute(adminApp, adminContract.submitLeave, adminHandlers.submitLeave);
+registerRoute(adminApp, adminContract.getSchool, adminHandlers.getSchool);
 
 // Sovereign Routes (Vertical Slice: LIBRARY)
 const libraryApp = new OpenAPIHono();
-libraryApp.openapi(adaptToHono(libraryContract.getResources), libraryHandlers.getResources);
-libraryApp.openapi(adaptToHono(libraryContract.getResource), libraryHandlers.getResource);
-libraryApp.openapi(adaptToHono(libraryContract.searchLibrary), libraryHandlers.searchLibrary);
-libraryApp.openapi(adaptToHono(libraryContract.engage), libraryHandlers.engage);
-libraryApp.openapi(adaptToHono(libraryContract.getCollections), libraryHandlers.getCollections);
-libraryApp.openapi(adaptToHono(libraryContract.getCollection), libraryHandlers.getCollection);
+registerRoute(libraryApp, libraryContract.getResources, libraryHandlers.getResources);
+registerRoute(libraryApp, libraryContract.getResource, libraryHandlers.getResource);
+registerRoute(libraryApp, libraryContract.searchLibrary, libraryHandlers.searchLibrary);
+registerRoute(libraryApp, libraryContract.engage, libraryHandlers.engage);
+registerRoute(libraryApp, libraryContract.getCollections, libraryHandlers.getCollections);
+registerRoute(libraryApp, libraryContract.getCollection, libraryHandlers.getCollection);
 
 app.route('/api', selfApp);
 app.route('/api', profileApp);
@@ -495,7 +468,7 @@ app.route('/api', libraryApp);
 
 // Sovereign Routes (Vertical Slice: SYNC)
 const syncApp = new OpenAPIHono();
-syncApp.openapi(adaptToHono(syncContract.uploadPowerSyncBatch), syncHandlers.uploadPowerSyncBatch);
+registerRoute(syncApp, syncContract.uploadPowerSyncBatch, syncHandlers.uploadPowerSyncBatch);
 app.route('/api', syncApp);
 
 // --- 4. Documentation ---

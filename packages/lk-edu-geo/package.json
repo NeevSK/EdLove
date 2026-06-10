@@ -34,7 +34,7 @@
     "gn-divisions",
     "educational-zones"
   ],
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "pnpm@11.5.2",
   "scripts": {
     "build": "pnpm exec tsup src/index.ts --format esm,cjs --dts --clean",
     "test": "vitest run",
@@ -54,17 +54,17 @@
   "devDependencies": {
     "@nishansanjuka/srilanka_geographics": "^0.0.1",
     "@repo/core": "workspace:*",
-    "@types/node": "^25.5.0",
-    "@types/glob": "^9.0.0",
-    "glob": "^11.0.1",
-    "tsup": "^8.3.5",
-    "tsx": "^4.19.2",
-    "typescript": "^6.0.3",
-    "vitest": "^2.1.9",
-    "xlsx": "^0.18.5",
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
+    "@types/glob": "^9.0.0",
+    "@types/node": "^25.9.2",
+    "eslint": "^10.4.1",
+    "glob": "^13.0.6",
+    "tsup": "^8.5.1",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3",
     "vite-tsconfig-paths": "^6.1.1",
-    "eslint": "^9.38.0"
+    "vitest": "^4.1.8",
+    "xlsx": "^0.18.5"
   }
 }

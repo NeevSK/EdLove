@@ -36,6 +36,16 @@ export const usePermissionStore = create<PermissionState>((set) => ({
         return;
       }
 
+      if (snapshotRecord.userId !== userId) {
+        console.error('[PermissionStore] Mismatched userId in permission snapshot record!');
+        set({
+          permissionsMap: null,
+          error: 'Cryptographic tamper detected on permission snapshot',
+          isLoading: false,
+        });
+        return;
+      }
+
       // Cryptographic signature check
       const isSignatureValid = await verifySnapshotSignature(snapshotRecord);
       if (!isSignatureValid) {

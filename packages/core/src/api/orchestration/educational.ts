@@ -7,27 +7,20 @@ import { classroomsAPI as rawClassroomsAPI } from '../classrooms';
 import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
 import { educationalContract } from '../educational.contract';
 import { lessonMaterialsAPI as rawLessonMaterialsAPI } from '../lessonMaterials';
-import { createTemporalPOAProxy } from '../temporalPOAProxy';
+import { createTemporalProxy } from '../temporalProxy';
 
-const classroomsCoverage = assertContractCoverage(
+const _classroomsCoverage = assertContractCoverage(
   rawClassroomsAPI,
   defineContractCoverage({
     moduleName: 'classrooms',
     contract: educationalContract,
+    internalMethods: ['update', 'create', 'delete', 'getTeacherClassrooms'],
   }),
 );
 
-export const classroomsAPI = createTemporalPOAProxy(
-  'classrooms',
-  rawClassroomsAPI,
-  classroomsCoverage.contract,
-  classroomsCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-  },
-);
+export const classroomsAPI = createTemporalProxy('classrooms', rawClassroomsAPI);
 
-const lessonsCoverage = assertContractCoverage(
+const _lessonsCoverage = assertContractCoverage(
   rawLessonsAPI,
   defineContractCoverage({
     moduleName: 'lessons',
@@ -40,17 +33,9 @@ const lessonsCoverage = assertContractCoverage(
   }),
 );
 
-export const lessonsAPI = createTemporalPOAProxy(
-  'lessons',
-  rawLessonsAPI,
-  lessonsCoverage.contract,
-  lessonsCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-  },
-);
+export const lessonsAPI = createTemporalProxy('lessons', rawLessonsAPI);
 
-const studentsCoverage = assertContractCoverage(
+const _studentsCoverage = assertContractCoverage(
   rawStudentsAPI,
   defineContractCoverage({
     moduleName: 'students',
@@ -82,17 +67,9 @@ const studentsCoverage = assertContractCoverage(
   }),
 );
 
-export const studentsAPI = createTemporalPOAProxy(
-  'students',
-  rawStudentsAPI,
-  studentsCoverage.contract,
-  studentsCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-  },
-);
+export const studentsAPI = createTemporalProxy('students', rawStudentsAPI);
 
-const assignmentsCoverage = assertContractCoverage(
+const _assignmentsCoverage = assertContractCoverage(
   rawAssignmentsAPI,
   defineContractCoverage({
     moduleName: 'assignments',
@@ -120,17 +97,9 @@ const assignmentsCoverage = assertContractCoverage(
   }),
 );
 
-export const assignmentsAPI = createTemporalPOAProxy(
-  'assignments',
-  rawAssignmentsAPI,
-  assignmentsCoverage.contract,
-  assignmentsCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-  },
-);
+export const assignmentsAPI = createTemporalProxy('assignments', rawAssignmentsAPI);
 
-const classroomGroupsCoverage = assertContractCoverage(
+const _classroomGroupsCoverage = assertContractCoverage(
   rawClassroomGroupsAPI,
   defineContractCoverage({
     moduleName: 'classroomGroups',
@@ -145,15 +114,9 @@ const classroomGroupsCoverage = assertContractCoverage(
   }),
 );
 
-export const classroomGroupsAPI = createTemporalPOAProxy(
-  'classroomGroups',
-  rawClassroomGroupsAPI,
-  classroomGroupsCoverage.contract,
-  classroomGroupsCoverage.methodMapping,
-  { strictUnmappedMethods: true },
-);
+export const classroomGroupsAPI = createTemporalProxy('classroomGroups', rawClassroomGroupsAPI);
 
-const classroomStudentsCoverage = assertContractCoverage(
+const _classroomStudentsCoverage = assertContractCoverage(
   rawClassroomStudentsAPI,
   defineContractCoverage({
     moduleName: 'classroomStudents',
@@ -175,15 +138,12 @@ const classroomStudentsCoverage = assertContractCoverage(
   }),
 );
 
-export const classroomStudentsAPI = createTemporalPOAProxy(
+export const classroomStudentsAPI = createTemporalProxy(
   'classroomStudents',
   rawClassroomStudentsAPI,
-  classroomStudentsCoverage.contract,
-  classroomStudentsCoverage.methodMapping,
-  { strictUnmappedMethods: true },
 );
 
-const lessonMaterialsCoverage = assertContractCoverage(
+const _lessonMaterialsCoverage = assertContractCoverage(
   rawLessonMaterialsAPI,
   defineContractCoverage({
     moduleName: 'lessonMaterials',
@@ -199,15 +159,9 @@ const lessonMaterialsCoverage = assertContractCoverage(
   }),
 );
 
-export const lessonMaterialsAPI = createTemporalPOAProxy(
-  'lessonMaterials',
-  rawLessonMaterialsAPI,
-  lessonMaterialsCoverage.contract,
-  lessonMaterialsCoverage.methodMapping,
-  { strictUnmappedMethods: true },
-);
+export const lessonMaterialsAPI = createTemporalProxy('lessonMaterials', rawLessonMaterialsAPI);
 
-const classroomNotesCoverage = assertContractCoverage(
+const _classroomNotesCoverage = assertContractCoverage(
   rawClassroomNotesAPI,
   defineContractCoverage({
     moduleName: 'classroomNotes',
@@ -223,10 +177,4 @@ const classroomNotesCoverage = assertContractCoverage(
   }),
 );
 
-export const classroomNotesAPI = createTemporalPOAProxy(
-  'classroomNotes',
-  rawClassroomNotesAPI,
-  classroomNotesCoverage.contract,
-  classroomNotesCoverage.methodMapping,
-  { strictUnmappedMethods: true },
-);
+export const classroomNotesAPI = createTemporalProxy('classroomNotes', rawClassroomNotesAPI);

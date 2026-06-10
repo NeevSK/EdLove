@@ -119,7 +119,6 @@ export * from './mockData';
 export * from './moonPhase';
 export * from './naturePaths';
 export * from './operations.contract';
-export * from './poaProxy';
 export * from './principalNotes';
 export * from './principalWorkspace';
 export * from './principalWorkspace.contract';
@@ -135,7 +134,6 @@ export * from './studentPotential';
 export * from './sync.contract';
 export * from './teacherInsights';
 export * from './teacherInsights.contract';
-export * from './temporalPOAProxy';
 export * from './temporalProxy';
 export * from './thuthimal';
 export * from './userGrowthState';
@@ -255,5 +253,7 @@ export const api: Record<string, any> = {
   media: mediaAPI,
   library: libraryAPI,
 };
+
+export { createTemporalProxy } from './temporalProxy';
 
 export default api;

@@ -54,6 +54,14 @@ export const identityAPI = {
   },
 
   /**
+   * Legacy shim for getMyInternalId to ensure backward compatibility across package hooks.
+   */
+  async getMyInternalId(): Promise<string | null> {
+    const citizen = await this.identifyActiveCitizen();
+    return citizen?.id ?? null;
+  },
+
+  /**
    * [LOUD-FAILURE] Renamed from getProfile.
    */
   async fetchUserProfile(id: string) {
@@ -94,5 +102,9 @@ export const identityAPI = {
       throw new APIError('Failed to fetch workspace context', res.status.toString());
     }
     return await res.json();
+  },
+
+  async updateProfile(id: string, updates: Record<string, unknown>) {
+    return this.modifyUserProfile(id, updates);
   },
 };

@@ -1,10 +1,4 @@
-import {
-  communityContract,
-  communityAPI as coreCommunityAPI,
-  identityAPI,
-  supabase,
-} from '@repo/core/api';
-import { createPOAProxy } from '@repo/core/api/poaProxy';
+import { communityAPI as coreCommunityAPI, identityAPI, supabase } from '@repo/core/api';
 import { applyTemporalFilter } from '@repo/core/logic';
 
 import type { Comment, CommunityGroup, GroupFilters, Post } from '../types';
@@ -841,4 +835,4 @@ const rawCommunityAPI = {
   },
 };
 
-export const communityAPI = createPOAProxy('community', rawCommunityAPI, communityContract);
+export const communityAPI = rawCommunityAPI;

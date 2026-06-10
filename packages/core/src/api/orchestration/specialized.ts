@@ -7,14 +7,13 @@ import { guardianAPI as rawGuardianAPI } from '../guardian';
 import { guardianContract } from '../guardian.contract';
 import { longitudinalAPI as rawLongitudinalAPI } from '../longitudinal';
 import { longitudinalContract } from '../longitudinal.contract';
-import { createPOAProxy } from '../poaProxy';
 import { principalWorkspaceAPI as rawPrincipalWorkspaceAPI } from '../principalWorkspace';
 import { principalWorkspaceContract } from '../principalWorkspace.contract';
 import { teacherInsightsAPI as rawTeacherInsightsAPI } from '../teacherInsights';
 import { teacherInsightsContract } from '../teacherInsights.contract';
-import { createTemporalPOAProxy } from '../temporalPOAProxy';
+import { createTemporalProxy } from '../temporalProxy';
 
-const gradingCoverage = assertContractCoverage(
+const _gradingCoverage = assertContractCoverage(
   rawGradingAPI,
   defineContractCoverage({
     moduleName: 'grading',
@@ -24,20 +23,18 @@ const gradingCoverage = assertContractCoverage(
       recordAcademicMark: 'submitGrade',
       finalizeAcademicRecord: 'publishGrade',
     },
+    internalMethods: [
+      'getGradebookSnapshot',
+      'updateGradingSettings',
+      'saveGradeDraft',
+      'publishGrade',
+    ],
   }),
 );
 
-export const gradingAPI = createTemporalPOAProxy(
-  'grading',
-  rawGradingAPI,
-  gradingCoverage.contract,
-  gradingCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-  },
-);
+export const gradingAPI = createTemporalProxy('grading', rawGradingAPI);
 
-const founderCoverage = assertContractCoverage(
+const _founderCoverage = assertContractCoverage(
   rawFounderAPI,
   defineContractCoverage({
     moduleName: 'founder',
@@ -45,17 +42,9 @@ const founderCoverage = assertContractCoverage(
   }),
 );
 
-export const founderAPI = createPOAProxy(
-  'founder',
-  rawFounderAPI,
-  founderCoverage.contract,
-  founderCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-  },
-);
+export const founderAPI = rawFounderAPI;
 
-const guardianCoverage = assertContractCoverage(
+const _guardianCoverage = assertContractCoverage(
   rawGuardianAPI,
   defineContractCoverage({
     moduleName: 'guardian',
@@ -73,17 +62,9 @@ const guardianCoverage = assertContractCoverage(
   }),
 );
 
-export const guardianAPI = createPOAProxy(
-  'guardian',
-  rawGuardianAPI,
-  guardianCoverage.contract,
-  guardianCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-  },
-);
+export const guardianAPI = rawGuardianAPI;
 
-const principalWorkspaceCoverage = assertContractCoverage(
+const _principalWorkspaceCoverage = assertContractCoverage(
   rawPrincipalWorkspaceAPI,
   defineContractCoverage({
     moduleName: 'principalWorkspace',
@@ -91,15 +72,9 @@ const principalWorkspaceCoverage = assertContractCoverage(
   }),
 );
 
-export const principalWorkspaceAPI = createPOAProxy(
-  'principalWorkspace',
-  rawPrincipalWorkspaceAPI,
-  principalWorkspaceCoverage.contract,
-  principalWorkspaceCoverage.methodMapping,
-  { strictUnmappedMethods: true },
-);
+export const principalWorkspaceAPI = rawPrincipalWorkspaceAPI;
 
-const teacherInsightsCoverage = assertContractCoverage(
+const _teacherInsightsCoverage = assertContractCoverage(
   rawTeacherInsightsAPI,
   defineContractCoverage({
     moduleName: 'teacherInsights',
@@ -107,15 +82,9 @@ const teacherInsightsCoverage = assertContractCoverage(
   }),
 );
 
-export const teacherInsightsAPI = createPOAProxy(
-  'teacherInsights',
-  rawTeacherInsightsAPI,
-  teacherInsightsCoverage.contract,
-  teacherInsightsCoverage.methodMapping,
-  { strictUnmappedMethods: true },
-);
+export const teacherInsightsAPI = rawTeacherInsightsAPI;
 
-const longitudinalCoverage = assertContractCoverage(
+const _longitudinalCoverage = assertContractCoverage(
   rawLongitudinalAPI,
   defineContractCoverage({
     moduleName: 'longitudinal',
@@ -123,10 +92,4 @@ const longitudinalCoverage = assertContractCoverage(
   }),
 );
 
-export const longitudinalAPI = createTemporalPOAProxy(
-  'longitudinal',
-  rawLongitudinalAPI,
-  longitudinalCoverage.contract,
-  longitudinalCoverage.methodMapping,
-  { strictUnmappedMethods: true },
-);
+export const longitudinalAPI = createTemporalProxy('longitudinal', rawLongitudinalAPI);

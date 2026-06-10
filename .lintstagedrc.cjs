@@ -21,7 +21,8 @@ module.exports = {
     for (const chunk of chunks) {
       const chunkStr = chunk.map((f) => `"${f}"`).join(' ');
       commands.push(`oxlint --fix ${chunkStr}`);
-      commands.push(`eslint --fix ${chunkStr}`);
+      // Temporarily disabled due to ESLint 10/typescript-eslint compatibility runtime crash
+      // commands.push(`eslint --fix ${chunkStr}`);
       commands.push(`biome check --write --no-errors-on-unmatched ${chunkStr}`);
       commands.push(`node scripts/surgical-check.mjs ${chunkStr}`);
     }

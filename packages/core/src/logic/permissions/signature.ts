@@ -24,7 +24,10 @@ export async function verifySnapshotSignature(snapshot: {
       temporalHints: snapshot.temporalHints ? JSON.parse(snapshot.temporalHints) : {},
     };
 
-    const secretKey = 'default-fallback-secret-for-development';
+    const secretKey =
+      process.env.EXPO_PUBLIC_HMAC_SECRET_KEY ||
+      process.env.NEXT_PUBLIC_HMAC_SECRET_KEY ||
+      'default-fallback-secret-for-development';
 
     // 2. Perform SubtleCrypto HMAC verification
     const enc = new TextEncoder();

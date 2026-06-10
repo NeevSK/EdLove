@@ -1,6 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
 import { ArrowRight, Sparkles } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { useNavigation } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 /**

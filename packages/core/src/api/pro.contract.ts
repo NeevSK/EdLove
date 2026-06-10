@@ -1,74 +1,119 @@
-import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
 import {
   ProClaimResultSchema,
   ProGiftSchema,
   UserEntitlementsSchema,
 } from '../logic/schemas/pro.schema';
-import { POAMetadataSchema } from './contract';
-
-const c = initContract();
+import type { SovereignContract } from './contract';
 
 const proAuthority = (
   action: 'manage' | 'create' | 'read' | 'update' | 'delete' | 'submit' | 'verify',
-) => POAMetadataSchema.parse({ policy: { action, subject: 'Pro' } });
+) => ({ policy: { action, subject: 'Pro' } }) as const;
 
-export const proContract = c.router({
+export const proContract = {
   // --- ENTITLEMENTS ---
   getEntitlements: {
-    method: 'GET',
+    method: 'get',
     path: '/pro/entitlements/:userId',
+    request: {
+      params: z.object({ userId: z.string() }),
+    },
     responses: {
-      200: UserEntitlementsSchema,
-      404: z.object({ message: z.string() }),
+      200: {
+        schema: UserEntitlementsSchema,
+        description: 'Get user entitlements',
+      },
+      404: {
+        schema: z.object({ message: z.string() }),
+        description: 'Entitlements not found',
+      },
     },
     metadata: proAuthority('read'),
   },
   verifyProStatus: {
-    method: 'GET',
+    method: 'get',
     path: '/pro/verify/:userId',
-    responses: { 200: z.object({ is_pro: z.boolean(), tier: z.string() }) },
+    request: {
+      params: z.object({ userId: z.string() }),
+    },
+    responses: {
+      200: {
+        schema: z.object({ is_pro: z.boolean(), tier: z.string() }),
+        description: 'Verify pro status',
+      },
+    },
     metadata: proAuthority('read'),
   },
 
   // --- THUTHIMAL (GIFTING PRO) ---
   getAllReceivedGifts: {
-    method: 'GET',
+    method: 'get',
     path: '/pro/gifts/received/:userId',
-    responses: { 200: z.array(ProGiftSchema) },
+    request: {
+      params: z.object({ userId: z.string() }),
+    },
+    responses: {
+      200: {
+        schema: z.array(ProGiftSchema),
+        description: 'Get all received gifts',
+      },
+    },
     metadata: proAuthority('read'),
   },
   previewGift: {
-    method: 'GET',
+    method: 'get',
     path: '/pro/gifts/preview/:token',
+    request: {
+      params: z.object({ token: z.string() }),
+    },
     responses: {
-      200: ProGiftSchema.pick({
-        gifter_name: true,
-        gift_message: true,
-        recipient_role: true,
-      }),
-      404: z.object({ message: z.string() }),
+      200: {
+        schema: ProGiftSchema.pick({
+          gifter_name: true,
+          gift_message: true,
+          recipient_role: true,
+        }),
+        description: 'Preview gift',
+      },
+      404: {
+        schema: z.object({ message: z.string() }),
+        description: 'Gift not found',
+      },
     },
     metadata: proAuthority('read'),
   },
   giftPro: {
-    method: 'POST',
+    method: 'post',
     path: '/pro/gifts',
-    body: z.object({
-      gifter_id: z.string(),
-      recipient_id: z.string().optional(),
-      recipient_email: z.string().optional(),
-      recipient_role: z.string(),
-      gift_message: z.string().optional(),
-    }),
-    responses: { 201: z.object({ gift_token: z.string() }) },
+    request: {
+      body: z.object({
+        gifter_id: z.string(),
+        recipient_id: z.string().optional(),
+        recipient_email: z.string().optional(),
+        recipient_role: z.string(),
+        gift_message: z.string().optional(),
+      }),
+    },
+    responses: {
+      201: {
+        schema: z.object({ gift_token: z.string() }),
+        description: 'Pro gifted successfully',
+      },
+    },
     metadata: proAuthority('create'),
   },
   claimProGift: {
-    method: 'POST',
+    method: 'post',
     path: '/pro/gifts/claim',
-    body: z.object({ gift_token: z.string(), recipient_id: z.string() }),
-    responses: { 200: ProClaimResultSchema },
+    request: {
+      body: z.object({ gift_token: z.string(), recipient_id: z.string() }),
+    },
+    responses: {
+      200: {
+        schema: ProClaimResultSchema,
+        description: 'Pro gift claimed successfully',
+      },
+    },
     metadata: proAuthority('update'),
   },
-});
+} as const satisfies SovereignContract;
