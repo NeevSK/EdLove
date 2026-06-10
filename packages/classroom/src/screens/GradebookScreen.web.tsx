@@ -1,4 +1,3 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { growthSignalsAPI } from '@repo/core/api';
 import { type ClassroomGradingSettings, useStore } from '@repo/core/logic';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
@@ -29,6 +28,7 @@ import {
 
 import type React from 'react';
 import { useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import type { SortOption } from '../hooks/useGradebook';
 import { useGradebook } from '../hooks/useGradebook';
 
@@ -241,9 +241,9 @@ function SettingsModal({
 // -- Main Component -------------------------------------------
 
 export default function GradebookScreenWeb() {
-  const route = useRoute<any>();
-  const navigation = useNavigation<any>();
-  const { classroomId, classroomName } = route.params ?? {};
+  const router = useRouter();
+  const { classroomId = '', classroomName = 'Classroom' } =
+    useLocalSearchParams<{ classroomId?: string; classroomName?: string }>();
   const { user } = useStore();
 
   const {
@@ -301,7 +301,7 @@ export default function GradebookScreenWeb() {
         <HStack className="items-center justify-between mb-8 gap-4 flex-wrap">
           <SanctuaryButton
             action="secondary"
-            onPress={() => navigation.goBack()}
+            onPress={() => router.back()}
             className="px-4 py-2 bg-phase-surface/40 border-phase-border/20"
           >
             <HStack className="items-center gap-1.5">

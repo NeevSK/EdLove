@@ -1,6 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
 import { BookOpenText, MessagesSquare, School } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
 
 import type React from 'react';
 import { GuardianRoomShell } from './GuardianRoomShell';
@@ -34,33 +34,33 @@ function BridgeCard({
 }
 
 export default function GuardianCommunicationBridgeScreen() {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
 
   return (
     <GuardianRoomShell
       eyebrow="School-home, bridge"
       title="Communication, bridge"
       description="This, room, helps, the, guardian, move from awareness, into, the, right, school, community, and, resource, spaces, without, losing, context."
-      onBack={() => navigation.goBack()}
+      onBack={() => router.back()}
     >
       <VStack className="gap-3">
         <BridgeCard
           icon={MessagesSquare}
           title="Open, community commons"
           copy="Step, into family-safe, community space for school, conversation, groups, and, shared updates."
-          onPress={() => navigation.getParent()?.navigate('Community' as never)}
+          onPress={() => router.push('/community')}
         />
         <BridgeCard
           icon={BookOpenText}
           title="Open, learning resources"
           copy="Move from school, signal into, study support, and resource, discovery."
-          onPress={() => navigation.getParent()?.navigate('Library' as never)}
+          onPress={() => router.push('/library')}
         />
         <BridgeCard
           icon={School}
           title="Return, to family, workspace"
           copy="Come, back to, the guardian, canvas after, checking the, broader school, ecosystem."
-          onPress={() => navigation.navigate('GuardianDashboard')}
+          onPress={() => router.push('/workspace')}
         />
       </VStack>
     </GuardianRoomShell>

@@ -1,11 +1,11 @@
-import { useNavigation } from '@react-navigation/native';
 import { Box, Text, VStack } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
 import { useAdminWorkspaceSnapshot } from '../admin/adminRepository';
 import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
 
 export default function AdminIncidentQueue() {
   const { snapshot: data } = useAdminWorkspaceSnapshot();
-  const navigation = useNavigation<any>();
+  const router = useRouter();
 
   if (!data) return null;
 
@@ -15,7 +15,7 @@ export default function AdminIncidentQueue() {
       title="Incident queue"
       description="Triage cross-tenant incidents, regressions, and operational noise with a monitor-first stance and explicit handoff."
       caution="Keep this room read-first until the incident is validated. Escalations should preserve a clear audit trail and a named tenant scope."
-      onBack={() => navigation.goBack()}
+      onBack={() => router.back()}
       stats={[
         {
           label: 'Open incidents',

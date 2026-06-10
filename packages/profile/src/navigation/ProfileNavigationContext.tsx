@@ -1,5 +1,5 @@
-import { type NavigationProp, useNavigation } from '@react-navigation/native';
-import type { FullProfileParams, ProfileStackParamList } from '@repo/core/types';
+import { router } from 'expo-router';
+import type { FullProfileParams } from '@repo/core/types';
 import type React from 'react';
 import { createContext, useContext } from 'react';
 
@@ -31,19 +31,25 @@ export function ProfileNavigationProvider({
 
 export function useProfileNavigation(): ProfileNavigationCapabilities {
   const context = useContext(ProfileNavigationContext);
-  const navigation = useNavigation<NavigationProp<ProfileStackParamList>>();
 
   if (context) {
     return context;
   }
 
   return {
-    openFullProfile: (profile) => navigation.navigate('FullProfile', { profile }),
-    openSettings: () => navigation.navigate('AppSettings'),
-    openPrivacyLedger: () => navigation.navigate('PrivacyLedger'),
-    openMuteHub: () => navigation.navigate('MuteHub'),
-    openPublicProfile: (target) => navigation.navigate('PublicProfile', target),
-    openAuth: () => navigation.navigate('Auth' as any),
-    goBack: () => navigation.goBack(),
+    openFullProfile: (profile) => {
+      router.push({ pathname: '/profile/full/[id]', params: { id: profile.id } });
+    },
+    openSettings: () => router.push('/profile/settings'),
+    openPrivacyLedger: () => router.push('/profile/privacy-ledger'),
+    openMuteHub: () => router.push('/profile/mute-hub'),
+    openPublicProfile: (target) => {
+      router.push({
+        pathname: '/profile/public/[id]',
+        params: { id: target.id, type: target.type },
+      });
+    },
+    openAuth: () => router.push('/auth'),
+    goBack: () => router.back(),
   };
 }

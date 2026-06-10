@@ -1,11 +1,9 @@
-import type { NavigationProp } from '@react-navigation/native';
 import { identityAPI } from '@repo/core/api';
 import { useFeatureAccess } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 import { FlowResolver } from '@repo/core/native';
-import type { ClassroomStackParamList } from '@repo/core/types';
-
 import { resolveQR } from '@repo/scanner-kit';
+import { useRouter } from 'expo-router';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { useSanctuaryToast } from '@repo/ui/hooks';
 import { Plus } from '@repo/ui/icons';
@@ -21,9 +19,9 @@ type WorkspaceClassroom = {
 };
 
 export function useTeacherWorkspaceShell(
-  navigation: NavigationProp<ClassroomStackParamList>,
   _onRefresh?: () => void,
 ) {
+  const router = useRouter();
   const { isDemoMode } = useStore();
   const { isGuest } = useFeatureAccess();
   const { showToast } = useSanctuaryToast();
@@ -130,13 +128,16 @@ export function useTeacherWorkspaceShell(
     (action: string) => {
       if (action === 'Attendance' && classrooms.length > 0 && classrooms[0]) {
         setUiState((prev) => ({ ...prev, isAdminModalOpen: false }));
-        navigation.navigate('Attendance', {
-          classroomId: classrooms[0].id,
-          classroomName: classrooms[0].name,
+        router.push({
+          pathname: '/attendance',
+          params: {
+            classroomId: classrooms[0].id,
+            classroomName: classrooms[0].name,
+          },
         });
       }
     },
-    [classrooms, navigation],
+    [classrooms, router],
   );
 
   return {

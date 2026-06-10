@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import {
   Box,
@@ -44,7 +44,7 @@ interface WindDownRitualProps {
 // —————————————————————————————————————————————————————————————————————————————
 
 export default function WindDownRitual({ userId }: WindDownRitualProps) {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
   const [completed, setCompleted] = useState(false);
@@ -182,10 +182,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
   if (!userId) {
     return (
       <Box className="flex-1 p-lg">
-        <PositiveInvitation
-          type="anonymous"
-          onAction={() => navigation.navigate('Auth' as never)}
-        />
+        <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />
       </Box>
     );
   }

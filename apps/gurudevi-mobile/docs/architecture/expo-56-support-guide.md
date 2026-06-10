@@ -1,3 +1,13 @@
+---
+title: "Expo 56 Support Guide"
+status: "active"
+created: 2026-06-10
+updated: 2026-06-10
+author: "Naween"
+scribe: "Antigravity"
+tags: [expo, expo-router, react-native, upgrade, routing]
+---
+
 # Expo 56 Support Guide
 
 This guide is intentionally specific to the current Expo 56 upgrade in `gurudevi-mobile`.
@@ -31,14 +41,15 @@ Packages that typically need attention in this repo:
 
 ### Routing
 
-- Current runtime: React Navigation v7
-- React Navigation v8: evaluation only
-- Expo Router: not part of the app architecture
+- Current runtime: Expo Router 56 in `gurudevi-mobile`
+- Expo Router file-based routes own navigation in the live app
+- React Navigation APIs are only acceptable where Expo Router internally depends on them
+- React Navigation v8: evaluation only if a future migration requires it
 
 ### Web strategy
 
-- Web-specific screen variants stay in `.web.tsx`
-- Web shells can be built with React Navigation plus platform files
+- Web-specific screen variants stay in `.web.tsx` when a platform split is still useful
+- Web shell chrome should live in Expo Router layout files such as `app/(tabs)/_layout.web.tsx`
 - `expo-web-browser` stays the browser handoff primitive for auth/external flows
 
 ### Monorepo Metro strategy
@@ -87,9 +98,9 @@ Reference:
 ### Done
 
 - Expo SDK bumped to 56 in the mobile app
-- Expo Router removed from the live mobile app architecture
-- React Navigation v7 kept as the runtime router
-- Docs updated to reflect the current architecture
+- Expo Router is the live mobile app architecture
+- Route guards and shell chrome now live in Expo Router layouts
+- Docs need to stay aligned with the file-based route tree, not the old navigator mental model
 - Legacy `splash` key removed from `app.json`
 
 ### Still Worth Watching
@@ -171,4 +182,5 @@ For this repo, Renovate is usually the better fit because we want:
 - Keep Renovate enabled for visibility, but review framework PRs manually
 - Keep `disableHierarchicalLookup = true` documented as an intentional monorepo choice
 - Keep the splash config on `expo-splash-screen`, not the legacy top-level `splash` key
-- Keep React Navigation v7 as the current runtime until the team explicitly approves v8
+- Keep Expo Router as the current runtime unless the team explicitly approves a routing change
+- Use `router.push` / `router.replace` and route-group layouts for new navigation work

@@ -1,9 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useFeatureAccess } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
-import type { ClassroomStackParamList } from '@repo/core/types';
 
 import SandboxBanner from '@repo/ui/components/SandboxBanner';
 import { WorkspaceCanvas } from '@repo/ui/components/workspace/WorkspaceCanvas';
@@ -13,6 +10,7 @@ import { AnimatedView, Box, HStack, Pressable, ScrollView, Text } from '@repo/ui
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useTranslation } from 'react-i18next';
 import { FadeInDown } from 'react-native-reanimated';
+import { useRouter } from 'expo-router';
 import { useStudentDashboardSurfaces } from '../workspace/useStudentDashboardSurfaces';
 import { useStudentWorkspaceData } from '../workspace/useStudentWorkspaceData';
 
@@ -25,7 +23,7 @@ interface StudentDashboardProps {
 
 export default function StudentDashboard({ forceDemo, userId }: StudentDashboardProps) {
   const { t } = useTranslation();
-  const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
+  const router = useRouter();
   const showToast = useStore((state: any) => state.showToast);
   const { isGuest } = useFeatureAccess();
   const { isPastView } = useTemporalStore();
@@ -42,15 +40,15 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
     isPastView,
     isDemoExperience,
     stats,
-    onOpenLibrary: () => navigation.navigate('Library' as any),
-    onOpenCommunity: () => navigation.navigate('Community' as any),
+    onOpenLibrary: () => router.push('/library'),
+    onOpenCommunity: () => router.push('/community'),
     onOpenRewards: () => {
       hapticLight();
       showToast(t('common.comingSoon') || 'Rewards are blossoming soon!', 'info');
     },
     onOpenTimetable: () => {
       hapticLight();
-      navigation.navigate('Self' as any);
+      router.push('/self');
     },
     onOpenBreathing: () => {
       hapticLight();
@@ -59,8 +57,8 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
     },
     onOpenClassroom: (classroom) => {
       hapticLight();
-      navigation.navigate('Classroom' as any, {
-        screen: 'StudentClassroomDashboard',
+      router.push({
+        pathname: '/self',
         params: {
           classroomId: classroom.id,
           classroomName: classroom.name,
@@ -69,7 +67,7 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
     },
     onOpenGuestAuth: () => {
       hapticLight();
-      navigation.navigate('Auth' as any);
+      router.push('/auth');
     },
   });
 

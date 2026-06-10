@@ -5,8 +5,7 @@ import { hapticLight } from '@repo/ui/utils/haptics';
 import {
   Check,
   Globe,
-  Instagram,
-  Linkedin,
+  Link,
   Lock,
   MessagesSquare,
   Trash2,
@@ -35,8 +34,8 @@ const PLATFORMS: {
     icon: MessagesSquare,
     color: '#25D366',
   },
-  { label: 'LinkedIn', value: 'linkedin', icon: Linkedin, color: '#0077B5' },
-  { label: 'Instagram', value: 'instagram', icon: Instagram, color: '#E4405F' },
+  { label: 'LinkedIn', value: 'linkedin', icon: Link, color: '#0077B5' },
+  { label: 'Instagram', value: 'instagram', icon: Link, color: '#E4405F' },
   { label: 'Website', value: 'website', icon: Globe, color: '#4A90E2' },
 ];
 

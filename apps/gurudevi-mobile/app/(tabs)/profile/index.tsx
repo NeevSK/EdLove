@@ -1,1 +1,3 @@
-export { default } from '../profile';
+import { ProfileScreen } from '@repo/profile';
+
+export default ProfileScreen;

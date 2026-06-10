@@ -1,18 +1,14 @@
-﻿import { type RouteProp, useRoute } from '@react-navigation/native';
 import { useEntity } from '@repo/core/hooks';
 import type { EntityType } from '@repo/core/logic';
+import { useLocalSearchParams } from 'expo-router';
 import IdentityCard, { type IdentityData } from '@repo/ui/components/IdentityCard';
 import { Box, Center, Spinner } from '@repo/ui/primitives';
 import { useProfile } from '../hooks/useProfile';
 
-type PublicProfileRouteProp = RouteProp<
-  { PublicProfile: { id: string; type: EntityType } },
-  'PublicProfile'
->;
-
 export default function PublicProfileScreenWeb() {
-  const route = useRoute<PublicProfileRouteProp>();
-  const { id, type } = route.params || {};
+  const params = useLocalSearchParams<{ id?: string; type?: EntityType }>();
+  const id = Array.isArray(params.id) ? params.id[0] : params.id || '';
+  const type = (Array.isArray(params.type) ? params.type[0] : params.type) || 'user';
 
   const { profile, loading: isProfileLoading } = useProfile(type === 'user' ? id : undefined);
   const { instance, isLoading, error } = useEntity(type as EntityType, id);
@@ -55,7 +51,6 @@ export default function PublicProfileScreenWeb() {
     );
   }
 
-  // Fallback for other entity types if needed, or structured entity view
   return (
     <Box className="max-w-[1200px] mx-auto p-6">
       <IdentityCard data={instance as unknown as IdentityData} />

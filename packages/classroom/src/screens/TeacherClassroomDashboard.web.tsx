@@ -1,4 +1,3 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { api } from '@repo/core/api';
 import { usePermissions } from '@repo/core/logic';
 import ClassroomLegacyTimeline from '@repo/self/components/ClassroomLegacyTimeline';
@@ -42,6 +41,7 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { useReducer } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   AttendanceView,
   ClassroomEchoSection,
@@ -170,9 +170,9 @@ const initialState = {
 };
 
 export default function TeacherClassroomDashboardWeb() {
-  const navigation = useNavigation<any>();
-  const route = useRoute<any>();
-  const { classroomId, classroomName } = route.params ?? {};
+  const router = useRouter();
+  const { classroomId = '', classroomName = 'Classroom' } =
+    useLocalSearchParams<{ classroomId?: string; classroomName?: string }>();
   const colors = useThemedColors();
   const { can, context } = usePermissions();
 
@@ -448,7 +448,7 @@ export default function TeacherClassroomDashboardWeb() {
           >
             <VStack className="gap-lg">
               <HStack className="items-center justify-between gap-md">
-                <Pressable onPress={() => navigation.goBack()}>
+                <Pressable onPress={() => router.back()}>
                   <HStack
                     className="items-center gap-xs px-md py-sm rounded-full border"
                     style={{

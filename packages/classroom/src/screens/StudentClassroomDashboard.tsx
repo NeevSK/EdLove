@@ -1,7 +1,5 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { api } from '@repo/core/api';
 import type { Assignment } from '@repo/core/logic';
-import type { ClassroomStackParamList } from '@repo/core/types';
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
@@ -28,6 +26,7 @@ import {
 import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   AttendanceView,
   ClassroomEchoSection,
@@ -38,8 +37,6 @@ import {
 import ClassroomNotes from '../components/ClassroomNotes';
 import { useStudentClassroomWorkspaceData } from '../workspace/useStudentClassroomWorkspaceData';
 import LessonFeed from './LessonFeed';
-
-type Props = NativeStackScreenProps<ClassroomStackParamList, 'StudentClassroomDashboard'>;
 
 type FeatureId =
   | 'insights'
@@ -60,8 +57,10 @@ const STUDENT_FEATURES: { id: FeatureId; label: string; icon: any }[] = [
   { id: 'echo', label: 'Ask Echo', icon: MessageSquareIcon },
 ];
 
-export default function StudentClassroomDashboard({ route, navigation }: Props) {
-  const { classroomId, classroomName } = route.params;
+export default function StudentClassroomDashboard() {
+  const router = useRouter();
+  const { classroomId = '', classroomName = 'Classroom' } =
+    useLocalSearchParams<{ classroomId?: string; classroomName?: string }>();
   const [activeFeature, setActiveFeature] = useState<FeatureId>('insights');
   const [submissionModal, setSubmissionModal] = useState<Assignment | null>(null);
   const bottomPadding = useBottomTabPadding();
@@ -105,7 +104,7 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
   if (workspace.isLoading) {
     return (
       <ScreenWrapper>
-        <GlobalHeader title={classroomName} showBack onBack={() => navigation.goBack()} />
+        <GlobalHeader title={classroomName} showBack onBack={() => router.back()} />
         <VStack className="gap-4 p-6">
           <SkeletonCard height={100} />
           <HStack className="gap-4 mt-4">
@@ -131,7 +130,7 @@ export default function StudentClassroomDashboard({ route, navigation }: Props) 
         title={classroomName}
         subtitle={classroom?.subject || 'Subject'}
         showBack
-        onBack={() => navigation.goBack()}
+        onBack={() => router.back()}
       />
       <ScrollView
         stickyHeaderIndices={[1]}

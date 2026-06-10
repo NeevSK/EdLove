@@ -1,4 +1,3 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { api } from '@repo/core/api';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import { usePermissions, useStore } from '@repo/core/logic';
@@ -52,6 +51,7 @@ import {
 import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useMemo, useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   AttendanceView,
   ClassroomEchoSection,
@@ -68,8 +68,6 @@ import TeacherObservationsWorkspace from '../components/teacher/TeacherObservati
 import { useTeacherClassroomWorkspaceData } from '../workspace/useTeacherClassroomWorkspaceData';
 import AttendanceReportScreen from './AttendanceReportScreen';
 import LessonFeed from './LessonFeed';
-
-type Props = NativeStackScreenProps<ClassroomStackParamList, 'TeacherClassroomDashboard'>;
 
 type FeatureId =
   | 'insights'
@@ -163,8 +161,10 @@ const FEATURE_TONES: Record<FeatureId, { label: string; color: string; tint: str
   },
 };
 
-export default function TeacherClassroomDashboard({ route, navigation }: Props) {
-  const { classroomId, classroomName } = route.params;
+export default function TeacherClassroomDashboard() {
+  const router = useRouter();
+  const { classroomId = '', classroomName = 'Classroom' } =
+    useLocalSearchParams<{ classroomId?: string; classroomName?: string }>();
   const { can, context } = usePermissions();
   const [activeFeature, setActiveFeature] = useState<FeatureId>('insights');
   const [showGroupsModal, setShowGroupsModal] = useState(false);
@@ -478,7 +478,7 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
   if (workspace.isLoading) {
     return (
       <ScreenWrapper>
-        <GlobalHeader title={classroomName} showBack onBack={() => navigation.goBack()} />
+        <GlobalHeader title={classroomName} showBack onBack={() => router.back()} />
         <VStack className="gap-md p-4">
           <SkeletonCard height={100} />
           <HStack className="gap-md mt-4">
@@ -547,7 +547,7 @@ export default function TeacherClassroomDashboard({ route, navigation }: Props) 
         title={classroomName}
         subtitle={classroom?.subject || 'Classroom'}
         showBack
-        onBack={() => navigation.goBack()}
+        onBack={() => router.back()}
       />
       <ScrollView
         stickyHeaderIndices={[2]}

@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { usePermissions, useTemporalStore } from '@repo/core/logic';
 
 import FeatureInfoIcon from '@repo/ui/components/FeatureInfoIcon';
@@ -34,7 +34,7 @@ export function BaseSelfView({
   nightRitual,
   voiceJournal,
 }: BaseSelfViewProps) {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
 
   const { viewMode, setViewMode, viewScale, setScale } = useTemporalStore();
   const isHistoryMode = viewMode === 'timeline';
@@ -279,7 +279,7 @@ export function BaseSelfView({
               type="anonymous"
               context="self"
               onAction={() => {
-                navigation.navigate('Auth');
+                router.push('/auth');
               }}
             />
           </Box>

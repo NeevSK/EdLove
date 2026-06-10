@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import type { EntityDefinition } from '@repo/core/logic';
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
 import EntityModal from '@repo/ui/components/EntityModal';
@@ -9,6 +8,7 @@ import { Box, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { router } from 'expo-router';
 
 interface CreateGroupModalProps {
   isOpen: boolean;
@@ -28,7 +28,6 @@ export default function CreateGroupModal({
   initialData,
 }: CreateGroupModalProps) {
   useTranslation();
-  const navigation = useNavigation<any>();
   const [createdGroupId, setCreatedGroupId] = useState<string | null>(null);
 
   const groupDefinition: EntityDefinition = {
@@ -49,9 +48,12 @@ export default function CreateGroupModal({
   const handleEnterCircle = React.useCallback(() => {
     if (createdGroupId) {
       onClose();
-      navigation.navigate('GroupDetails', { groupId: createdGroupId });
+      router.push({
+        pathname: '/community/groups/[groupId]',
+        params: { groupId: createdGroupId },
+      });
     }
-  }, [createdGroupId, navigation, onClose]);
+  }, [createdGroupId, onClose]);
 
   if (!isOpen) return null;
 

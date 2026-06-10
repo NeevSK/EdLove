@@ -1,8 +1,8 @@
-import { useRoute } from '@react-navigation/native';
 import { useEntity } from '@repo/core/hooks';
 
 import EntityView from '@repo/ui/components/EntityView';
 import { Box, Center, Spinner } from '@repo/ui/primitives';
+import { useLocalSearchParams } from 'expo-router';
 
 /**
  * GroupDetailsScreenWeb
@@ -11,8 +11,8 @@ import { Box, Center, Spinner } from '@repo/ui/primitives';
  * Aligns with the EntityView pattern for unified data presentation.
  */
 export default function GroupDetailsScreenWeb() {
-  const route = useRoute<any>();
-  const { communityId } = route.params || {};
+  const params = useLocalSearchParams<{ communityId?: string }>();
+  const communityId = Array.isArray(params.communityId) ? params.communityId[0] : params.communityId;
 
   // Use the generic useEntity hook for the community_group entity
   const { instance, isLoading, error } = useEntity('community_group', communityId);

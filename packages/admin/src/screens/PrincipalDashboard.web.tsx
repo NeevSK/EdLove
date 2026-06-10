@@ -1,4 +1,3 @@
-import { type NavigationProp, useNavigation } from '@react-navigation/native';
 import {
   api,
   type CalendarEvent,
@@ -27,6 +26,7 @@ import { hapticLight } from '@repo/ui/utils/haptics';
 import { useQuery } from '@tanstack/react-query';
 import type React from 'react';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'expo-router';
 import {
   useCurriculumPulse,
   useMappingTopologyQuery,
@@ -174,7 +174,7 @@ export default function PrincipalDashboardWeb({
   const { can } = usePermissions();
   const viewDate = useTemporalStore((s) => s.viewDate);
   const isPastView = useTemporalStore((s) => s.isPastView);
-  const navigation = useNavigation<NavigationProp<any>>();
+  const router = useRouter();
 
   const effectiveSchoolId = schoolId || user?.school_id || '';
   const effectiveUserId = userId || user?.id || '';
@@ -241,7 +241,7 @@ export default function PrincipalDashboardWeb({
   };
 
   const handleCreateSchool = () => setIsCreateSchoolOpen(true);
-  const handleJoinSchool = () => navigation.navigate('Search' as never);
+  const handleJoinSchool = () => router.push('/welcome');
   const handleBackToDashboard = () => setActiveView('main');
   const canManageSchoolScope = !!principalSchoolId && (isDemoMode || can('manage', 'School'));
 
@@ -378,12 +378,8 @@ export default function PrincipalDashboardWeb({
               onApproveLeave={() => {}}
               onRejectLeave={() => {}}
               onShowAtRisk={() => {}}
-              onNavigateToProfile={() =>
-                navigation.navigate('SchoolProfile', {
-                  schoolId: principalSchoolId,
-                })
-              }
-              onOpenCommons={() => navigation.navigate('Main', { screen: 'Community' })}
+              onNavigateToProfile={() => router.push('/profile')}
+              onOpenCommons={() => router.push('/community')}
             />
           )}
         />

@@ -1,7 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { resolveWorkspaceSwitcherTargets, usePermissions, useStore } from '@repo/core/logic';
-import type { GuardianStackParamList, WorkspaceSwitcherTarget } from '@repo/core/types';
+import type { WorkspaceSwitcherTarget } from '@repo/core/types';
+import { useRouter } from 'expo-router';
 
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, Text } from '@repo/ui/primitives';
@@ -24,7 +23,7 @@ type GuardianResolvedSurface = GuardianWorkspaceSurface & {
 };
 
 export default function GuardianDashboard() {
-  const navigation = useNavigation<NativeStackNavigationProp<GuardianStackParamList>>();
+  const router = useRouter();
   const { can, flags } = usePermissions();
   const user = useStore((state) => state.user);
   const { dashboard, isLoading, error } = useGuardianWorkspaceData(user?.id || '');
@@ -50,47 +49,41 @@ export default function GuardianDashboard() {
       if (!target.enabled) return;
 
       if (target.id === 'founder') {
-        navigation.navigate('FounderDashboard');
+        router.push('/workspace');
         return;
       }
 
       if (target.id === 'principal' && user?.school_id) {
-        navigation.navigate('PrincipalDashboard', {
-          schoolId: user.school_id,
-          userId: user.id,
-        });
+        router.push('/workspace');
         return;
       }
 
       if (target.id === 'teacher' || target.id === 'student') {
-        navigation.getParent()?.navigate('Classroom' as never);
+        router.push('/workspace');
       }
     },
-    [navigation, user?.id, user?.school_id],
+    [router, user?.id, user?.school_id],
   );
 
   const handleOpenStudentsRoom = React.useCallback(() => {
-    navigation.navigate('GuardianStudents');
-  }, [navigation]);
+      router.push('/workspace');
+  }, [router]);
 
   const handleOpenStudent = React.useCallback(
     (studentId?: string, studentName?: string) => {
       if (studentId) {
-        navigation.navigate('GuardianStudentDetail', {
-          studentId,
-          studentName,
-        });
+        router.push('/workspace');
         return;
       }
 
-      navigation.navigate('GuardianStudents');
+      router.push('/workspace');
     },
-    [navigation],
+    [router],
   );
 
   const handleOpenLibrary = React.useCallback(() => {
-    navigation.getParent()?.navigate('Library' as never);
-  }, [navigation]);
+    router.push('/library');
+  }, [router]);
 
   const surfaces = useGuardianWorkspaceCanvasSurfaces({
     schoolName: user?.organization_name || null,
@@ -108,13 +101,13 @@ export default function GuardianDashboard() {
     },
     onOpenNotification: (notification) => {
       void notification;
-      navigation.navigate('GuardianNotifications');
+      router.push('/notifications');
     },
     onOpenEvent: (event) => {
       void event;
-      navigation.navigate('GuardianEvents');
+      router.push('/notifications');
     },
-    onOpenCommunity: () => navigation.navigate('GuardianCommunicationBridge'),
+    onOpenCommunity: () => router.push('/community'),
     onOpenLibrary: handleOpenLibrary,
   });
 
@@ -132,17 +125,17 @@ export default function GuardianDashboard() {
       }
 
       if (surface.surfaceId === 'school_feed') {
-        navigation.navigate('GuardianNotifications');
+        router.push('/notifications');
         return;
       }
 
       if (surface.surfaceId === 'upcoming_events') {
-        navigation.navigate('GuardianEvents');
+        router.push('/notifications');
         return;
       }
 
       if (surface.surfaceId === 'communication_bridge') {
-        navigation.navigate('GuardianCommunicationBridge');
+        router.push('/community');
         return;
       }
 
@@ -170,8 +163,8 @@ export default function GuardianDashboard() {
       <GuardianDashboardScreen
         guardianId={user.id}
         onStudentPress={(student) => handleOpenStudent(student.studentId, student.name)}
-        onNotificationPress={(_notification) => navigation.navigate('GuardianNotifications')}
-        onEventPress={(_event) => navigation.navigate('GuardianEvents')}
+        onNotificationPress={(_notification) => router.push('/notifications')}
+        onEventPress={(_event) => router.push('/notifications')}
       />
     );
   }

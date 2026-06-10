@@ -1,26 +1,16 @@
-import { useRoute } from '@react-navigation/native';
 import { academicCyclesAPI, api, growthSignalsAPI } from '@repo/core/api';
 import { useSafeMutation } from '@repo/core/hooks';
 import { type AttendanceStatus, type StudentAttendance, useStore } from '@repo/core/logic';
 import { generateIdempotencyKey, getCurrentTimestamp } from '@repo/core/utils';
 import { Box, Button, ButtonText, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
+import { useLocalSearchParams } from 'expo-router';
 
 import { useCallback, useEffect, useState } from 'react';
 import AttendanceSheet from '../components/AttendanceSheet';
 
-type AttendanceScreenRouteProp = {
-  key: string;
-  name: 'Attendance';
-  params: {
-    classroomId: string;
-    classroomName: string;
-  };
-};
-
 export default function AttendanceScreen() {
-  const route = useRoute<AttendanceScreenRouteProp>();
-  const { classroomId } = route.params;
+  const { classroomId = '' } = useLocalSearchParams<{ classroomId?: string }>();
 
   const [students, setStudents] = useState<StudentAttendance[]>([]);
   const [isLoading, setIsLoading] = useState(true);

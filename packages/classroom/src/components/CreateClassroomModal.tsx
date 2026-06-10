@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import { api, communityAPI, identityAPI } from '@repo/core/api';
 import { useEntity } from '@repo/core/hooks';
 import { handleAPIError, useStore } from '@repo/core/logic';
@@ -28,6 +27,7 @@ import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'expo-router';
 import GuestConversionPrompt from '../shared/GuestConversionPrompt';
 
 // Constants for Classroom logic
@@ -130,7 +130,7 @@ export default function CreateClassroomModal({
   schoolId,
   initialData,
 }: CreateClassroomModalProps) {
-  const navigation = useNavigation();
+  const router = useRouter();
   const { user, setUser } = useStore();
   const { t } = useTranslation();
   const { accent } = useTheme();
@@ -376,9 +376,12 @@ export default function CreateClassroomModal({
     if (!createdIds?.classroomId) return;
     const cId = createdIds.classroomId;
     handleClose();
-    (navigation as any).navigate('TeacherClassroomDashboard', {
-      classroomId: cId,
-      classroomName: state.details.name.trim() || 'Classroom',
+    router.push({
+      pathname: '/workspace',
+      params: {
+        classroomId: cId,
+        classroomName: state.details.name.trim() || 'Classroom',
+      },
     });
   };
 
@@ -432,7 +435,7 @@ export default function CreateClassroomModal({
         onCreateAccount={() => {
           setShowGuestPrompt(false);
           handleClose();
-          navigation.navigate('Profile' as never);
+          router.push('/profile');
         }}
         feature="classroom"
       />

@@ -29,12 +29,12 @@ This document reports the technical execution, rationale, and outcomes of the mo
 ## 2. React Navigation Decoupling & Flag Purge
 
 ### Context & Rationale
-With the migration to Expo Router fully realized for routing, legacy React Navigation dependencies became redundant. Continuing to support both architectures bloated the bundle and required maintaining escape hatches like `EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1` to bypass navigation structure assertions during builds.
+With the migration to Expo Router fully realized for routing, legacy React Navigation dependencies became redundant. Continuing to support both architectures bloated the bundle and forced us to carry temporary migration-era checks while the live app was still straddling two routing models.
 
 ### Actions Taken
 - **Decoupled Code**: Removed direct imports of `useNavigation` and other `@react-navigation/native` symbols in `@repo/ui` components ([GlobalHeader.tsx](file:///c:/Users/Naween/projects/polymath-platform/packages/ui/src/components/GlobalHeader.tsx), [SanctuarySignal.tsx](file:///c:/Users/Naween/projects/polymath-platform/packages/ui/src/components/SanctuarySignal.tsx), and [OnboardingScreen.tsx](file:///c:/Users/Naween/projects/polymath-platform/packages/ui/src/screens/OnboardingScreen.tsx)), replacing them with the unified `expo-router` `router` API.
 - **Removed Dependencies**: Removed unused `@react-navigation/*` packages from dependencies inside `apps/gurudevi-mobile/package.json` and decoupled nested libraries.
-- **Environment Flag Purge**: Completely removed `EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1` from all package scripts and workspace files. Since the application is running purely on Expo Router, this check bypass is no longer required.
+- **Environment Flag Purge**: Removed the router-navigation-check bypass from the live Expo Router startup path so the app no longer depends on a legacy React Navigation-era escape hatch.
 
 ---
 

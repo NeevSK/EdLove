@@ -1,4 +1,4 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { coreRuntime, useStore } from '@repo/core/logic';
 
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
@@ -147,13 +147,12 @@ function RelatedResourceCard({
 }
 
 export default function ResourceHubScreen() {
-  const navigation = useNavigation<any>();
-  const route = useRoute<any>();
+  const router = useRouter();
   const colors = useThemedColors();
   const { user } = useStore();
   const [qrVisible, setQrVisible] = useState(false);
 
-  const resourceId = route?.params?.resourceId as string | undefined;
+  const { resourceId } = useLocalSearchParams<{ resourceId?: string }>();
 
   const {
     data: resource,
@@ -200,73 +199,64 @@ export default function ResourceHubScreen() {
   );
 
   const handleBack = useCallback(() => {
-    if (navigation.canGoBack()) {
-      navigation.goBack();
+    if (router.canGoBack()) {
+      router.back();
       return;
     }
-    navigation.navigate('Main', {
-      screen: 'Library',
-      params: { screen: 'LibraryHome' },
-    });
-  }, [navigation]);
+    router.replace('/library');
+  }, [router]);
 
   const navigateIntoLibrary = useCallback(
     (screen: string, params: Record<string, unknown>) => {
-      const rootState = navigation.getState?.();
-      const hasMainRoute = rootState?.routeNames?.includes('Main');
-
-      if (!hasMainRoute) {
-        if (screen === 'ResourceHub') {
-          navigation.navigate('LibraryResourceHub', params);
-        }
-        return;
+      if (screen === 'ResourceHub') {
+        router.push({
+          pathname: '/library/resource/[resourceId]',
+          params: params as { resourceId: string },
+        });
       }
-
-      navigation.navigate('Main', {
-        screen: 'Library',
-        params: {
-          screen,
-          params,
-        },
-      });
     },
-    [navigation],
+    [router],
   );
 
   const handlePrimaryAction = useCallback(
     (item: LibraryResource) => {
       if (!item.url) return;
 
-      const rootState = navigation.getState?.();
-      const hasMainRoute = rootState?.routeNames?.includes('Main');
-
-      if (hasMainRoute && item.type === 'pdf') {
-        navigateIntoLibrary('PDFViewer', {
-          resourceId: item.id,
-          title: item.title,
-          url: item.url,
-          creator: item.creator_name,
+      if (item.type === 'pdf') {
+        router.push({
+          pathname: '/library/document/[resourceId]',
+          params: {
+            resourceId: item.id,
+            title: item.title,
+            url: item.url,
+            creator: item.creator_name ?? '',
+          },
         });
         return;
       }
 
-      if (hasMainRoute && (item.type === 'video' || item.type === 'movie_trailer')) {
-        navigateIntoLibrary('VideoPlayer', {
-          resourceId: item.id,
-          title: item.title,
-          url: item.url,
-          creator: item.creator_name,
+      if (item.type === 'video' || item.type === 'movie_trailer') {
+        router.push({
+          pathname: '/library/video/[resourceId]',
+          params: {
+            resourceId: item.id,
+            title: item.title,
+            url: item.url,
+            creator: item.creator_name ?? '',
+          },
         });
         return;
       }
 
-      if (hasMainRoute && (item.type === 'doc' || item.format === 'document')) {
-        navigateIntoLibrary('DocumentViewer', {
-          resourceId: item.id,
-          title: item.title,
-          url: item.url,
-          format: item.media?.format || 'docx',
-          size: item.media?.bytes ? `${Math.round(item.media.bytes / 1024)} KB` : 'Unknown',
+      if (item.type === 'doc' || item.format === 'document') {
+        router.push({
+          pathname: '/library/document/[resourceId]',
+          params: {
+            resourceId: item.id,
+            title: item.title,
+            url: item.url,
+            creator: item.creator_name ?? '',
+          },
         });
         return;
       }
@@ -275,7 +265,7 @@ export default function ResourceHubScreen() {
         (err) => console.error("Couldn't open resource source", err),
       );
     },
-    [navigateIntoLibrary, navigation],
+    [router],
   );
 
   const handleCompanionOpen = useCallback((link: ResourceCompanionLink) => {

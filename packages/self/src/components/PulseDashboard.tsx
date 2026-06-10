@@ -5,11 +5,9 @@
  * and improved visual hierarchy with Sanctuary V3 components.
  */
 
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useRouter } from 'expo-router';
 import { usePendingActions } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
-import type { ClassroomStackParamList } from '@repo/core/types';
 
 import { BreathAnimation } from '@repo/ui/components/BreathAnimation';
 import { DailyResonanceCard } from '@repo/ui/components/DailyResonanceCard';
@@ -43,7 +41,7 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
   const { t } = useTranslation();
   const user = useStore((state) => state.user);
   const userName = useStore((state) => state.userName);
-  const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
+  const router = useRouter();
 
   const [refreshing, setRefreshing] = useState(false);
   const [dailyContent, setDailyContent] = useState<{
@@ -178,9 +176,12 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
                       time={t('pulse.beforeNine') || 'Immediate Attention'}
                       status="pending"
                       onPress={() =>
-                        navigation.navigate('Attendance', {
-                          classroomId: item.classroomId,
-                          classroomName: item.classroomName,
+                        router.push({
+                          pathname: '/attendance',
+                          params: {
+                            classroomId: item.classroomId,
+                            classroomName: item.classroomName,
+                          },
                         })
                       }
                     />
@@ -192,9 +193,12 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
                       time={`${item.ungradedCount} ${t('pulse.submissions') || 'submission(s)'} · ${item.classroomName}`}
                       status="upcoming"
                       onPress={() =>
-                        navigation.navigate('Gradebook', {
-                          classroomId: item.classroomId,
-                          classroomName: item.classroomName,
+                        router.push({
+                          pathname: '/gradebook',
+                          params: {
+                            classroomId: item.classroomId,
+                            classroomName: item.classroomName,
+                          },
                         })
                       }
                     />

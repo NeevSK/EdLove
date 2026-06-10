@@ -5,8 +5,8 @@
  * Philosophy: Non-transactional, dignified, honors teaching as sacred work.
  */
 
-import { type RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { identityAPI, thuthimalAPI } from '@repo/core/api';
+import { router, useLocalSearchParams } from 'expo-router';
 
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import {
@@ -34,21 +34,17 @@ import {
   withTiming,
 } from 'react-native-reanimated';
 
-type ClaimRouteParams = {
-  ThuthimalClaim: {
-    gift_token: string;
-    gifter_name: string;
-  };
-};
-
 type ClaimState = 'loading' | 'success' | 'already_claimed' | 'error';
 
 export default function ThuthimalClaimScreen() {
-  const navigation = useNavigation<any>();
-  const route = useRoute<RouteProp<ClaimRouteParams, 'ThuthimalClaim'>>();
+  const params = useLocalSearchParams<{ gift_token?: string; gifter_name?: string }>();
   const { t } = useTranslation();
   const [claimState, setClaimState] = useState<ClaimState>('loading');
-  const [gifterName, setGifterName] = useState(route.params?.gifter_name ?? 'Someone special');
+  const giftToken = Array.isArray(params.gift_token) ? params.gift_token[0] : params.gift_token;
+  const [gifterName, setGifterName] = useState(
+    (Array.isArray(params.gifter_name) ? params.gifter_name[0] : params.gifter_name) ??
+      'Someone special',
+  );
 
   // Flower bloom animation
   const flowerScale = useSharedValue(0);
@@ -61,16 +57,15 @@ export default function ThuthimalClaimScreen() {
 
   useEffect(() => {
     const claimGift = async () => {
-      const { gift_token } = route.params;
       try {
         const myId = await identityAPI.getMyInternalId();
         if (!myId) {
-          navigation.navigate('Auth');
+          router.push('/auth');
           return;
         }
 
         const result = await thuthimalAPI.claimGift({
-          gift_token,
+          gift_token: giftToken || '',
           recipient_id: myId,
         });
 
@@ -101,11 +96,15 @@ export default function ThuthimalClaimScreen() {
       }
     };
 
-    void claimGift();
-  }, [route.params, navigation, gifterName, flowerScale, flowerOpacity]);
+    if (giftToken) {
+      void claimGift();
+    } else {
+      setClaimState('error');
+    }
+  }, [giftToken, gifterName, flowerScale, flowerOpacity]);
 
   const handleContinue = () => {
-    navigation.navigate('Main', { screen: 'Profile' });
+    router.replace('/profile');
   };
 
   if (claimState === 'loading') {
@@ -139,7 +138,7 @@ export default function ThuthimalClaimScreen() {
               <Button
                 size="sm"
                 variant="outline"
-                onPress={() => navigation.goBack()}
+                onPress={() => router.back()}
                 className="mt-4 border-phase-surface rounded-2xl"
               >
                 <ButtonText className="text-phase-text-primary">
@@ -168,7 +167,7 @@ export default function ThuthimalClaimScreen() {
             <Button
               size="lg"
               variant="outline"
-              onPress={() => navigation.goBack()}
+              onPress={() => router.back()}
               className="mt-4 border-phase-surface rounded-2xl"
             >
               <ButtonText className="text-phase-text-primary">

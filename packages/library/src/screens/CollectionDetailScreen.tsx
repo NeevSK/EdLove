@@ -1,4 +1,4 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useStore } from '@repo/core/logic';
 
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
@@ -12,19 +12,18 @@ import { useCollection } from '../hooks/useLibrary';
 import type { LibraryResource } from '../types';
 
 export default function CollectionDetailScreen() {
-  const route = useRoute<any>();
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const colors = useThemedColors();
   const { user } = useStore();
-  const { id } = route?.params || {};
+  const { id } = useLocalSearchParams<{ id: string }>();
 
   const { collection, isLoading, error, refetch } = useCollection(id, user?.id);
 
   const handleOpenResource = useCallback(
     (resource: LibraryResource) => {
-      navigation.navigate('ResourceHub', { resourceId: resource.id });
+      router.push(`/library/resource/${resource.id}`);
     },
-    [navigation],
+    [router],
   );
 
   const getYoutubeThumbnail = (url?: string) => {
@@ -57,7 +56,7 @@ export default function CollectionDetailScreen() {
           </Text>
           <HStack className="gap-2.5 mt-2">
             <Pressable
-              onPress={() => navigation.goBack()}
+              onPress={() => router.back()}
               className="h-10 px-6 rounded-xl border border-phase-border bg-phase-interactive/5 items-center justify-center"
             >
               <Text className="font-bold text-phaseText-primary">Back</Text>
@@ -79,7 +78,7 @@ export default function CollectionDetailScreen() {
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 40 }}>
         <Box className="px-md pt-md">
           <Pressable
-            onPress={() => navigation.goBack()}
+            onPress={() => router.back()}
             className="flex-row items-center gap-2 px-3.5 py-2.5 rounded-xl border border-phase-border bg-phase-surface/50 self-start"
           >
             <Icon as={ArrowLeft} size={16} color={colors.textPrimary} />

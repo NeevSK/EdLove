@@ -115,6 +115,7 @@
     "d3": "^7.9.0",
     "expo-blur": "~56.0.3",
     "expo-linear-gradient": "~56.0.4",
+    "expo-router": "~56.2.9",
     "lucide-react-native": "^1.17.0",
     "nativewind": "4.1.23",
     "react-i18next": "^17.0.8",

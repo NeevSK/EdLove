@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { useFeatureRegistry } from '@repo/core/hooks/useFeatureRegistry';
 import type { ClassroomWorkspaceSurface, PrincipalInsight } from '@repo/core/types/Workspace';
 import { PrincipalOnboardingView } from '../components';
@@ -38,6 +39,7 @@ export function appendAdminWorkspaceSurfaces(
     userCapabilities: string[];
   },
 ) {
+  const router = useRouter();
   const citizenshipLevel =
     citizenship === 'FIRST_CLASS' ? 2 : citizenship === 'SECOND_CLASS' ? 1 : 0;
 
@@ -57,7 +59,7 @@ export function appendAdminWorkspaceSurfaces(
           isGuest={isGuest}
           onTryDemo={onTryDemo}
           onCreateSchool={onCreateSchool}
-          onJoinSchool={() => navigation.navigate('Search')}
+          onJoinSchool={() => router.push('/welcome')}
         />
       ) : (
         <PrincipalDashboard

@@ -66,8 +66,8 @@ Use this checklist for Expo, React Native, React Navigation, or any other founda
 
 - [x] Stable package line confirmed for Expo 56
 - [x] This was a routine framework upgrade, not a routing migration
-- [x] The app runtime stays on React Navigation v7
-- [x] React Navigation v8 is only under evaluation
+- [x] The app runtime now uses Expo Router
+- [x] React Navigation is only used where Expo Router internally depends on it or for compatibility code
 
 ### Surface area
 
@@ -86,9 +86,8 @@ Use this checklist for Expo, React Native, React Navigation, or any other founda
 
 ### Architecture decisions
 
-- [x] React Navigation remains the routing layer
-- [x] Expo Router is not part of the app architecture
-- [x] Nested layouts continue to be handled with React Navigation + `.web.tsx`
+- [x] Expo Router remains the routing layer
+- [x] Nested layouts continue to be handled with Expo Router + `.web.tsx`
 - [x] `expo-web-browser` remains the browser handoff primitive
 - [x] `resolver.disableHierarchicalLookup = true` is intentional for the monorepo resolver strategy
 
@@ -104,7 +103,7 @@ Use this checklist for Expo, React Native, React Navigation, or any other founda
 
 - [x] Updated live docs to reflect the new architecture
 - [x] Left historical docs in place
-- [x] Clarified React Navigation v7 now, v8 later
+- [x] Clarified Expo Router now, React Navigation only where needed
 
 ### Status
 

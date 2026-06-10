@@ -1,7 +1,7 @@
-import { useNavigation } from '@react-navigation/native';
 import { useFeatureAccess } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 import type { TotalState } from '@repo/core/store';
+import { useRouter } from 'expo-router';
 
 import { QRBuilder } from '@repo/scanner-kit';
 import QRCodeGenerator from '@repo/ui/components/QRCodeGenerator';
@@ -36,7 +36,7 @@ export default function PrincipalDashboard({
   onRefresh,
 }: PrincipalDashboardProps) {
   const { t } = useTranslation();
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const { isGuest } = useFeatureAccess();
   const { can } = usePermissions();
   const isDemoMode = useStore((state: TotalState) => state.isDemoMode);
@@ -57,8 +57,8 @@ export default function PrincipalDashboard({
     userId,
     stats,
     navigatePrincipalView: (view) => setActiveView(view),
-    onOpenProfile: () => navigation.navigate('SchoolProfile', { schoolId }),
-    onOpenCommons: () => navigation.navigate('CommunityStack' as any),
+    onOpenProfile: () => router.push('/profile'),
+    onOpenCommons: () => router.push('/community'),
     onOpenQr: () => setIsQrModalOpen(true),
     onOpenBreathing: () => setBreathingOpen(true),
     onEditSchool: () => setIsCreateModalOpen(true),

@@ -1,1 +1,1 @@
-export { default } from '../self';
+export { default } from '@repo/self/screens/SelfScreen';

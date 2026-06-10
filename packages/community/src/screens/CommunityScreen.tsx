@@ -1,5 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { communityAPI } from '@repo/core/api';
 import {
   useAnnouncementsQuery,
@@ -12,7 +10,6 @@ import { setPendingGateAction, usePermissions } from '@repo/core/logic';
 import { useStore, useTemporalStore } from '@repo/core/store';
 import type {
   CommunityPost,
-  CommunityStackParamList,
   DirectConversation,
   SanctuaryGroup,
 } from '@repo/core/types';
@@ -28,6 +25,7 @@ import { Box, Heading, HStack, Icon, ScrollView, Spinner, Text, VStack } from '@
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { Platform } from 'react-native';
+import { router } from 'expo-router';
 import { CommentSheet } from '../components/CommentSheet';
 import CommunityHearth from '../components/CommunityHearth';
 import CreateGroupModal from '../components/CreateGroupModal';
@@ -44,8 +42,6 @@ import {
 } from './communityWorkspace.shared';
 import DirectMessagesListScreen from './DirectMessagesListScreen';
 import GroupsScreen from './GroupsScreen';
-
-type Navigation = NativeStackNavigationProp<CommunityStackParamList>;
 
 interface CommunityScreenState {
   activeMode: CommunityWorkspaceMode;
@@ -163,7 +159,6 @@ function communityScreenReducer(
 }
 
 export default function CommunityScreen() {
-  const navigation = useNavigation<Navigation>();
   const bottomPadding = useBottomTabPadding();
   const { discoverFeature } = useTracking();
   const { can } = usePermissions();
@@ -300,13 +295,16 @@ export default function CommunityScreen() {
   const handlePostPress = useCallback(
     (groupId?: string, groupName?: string) => {
       if (groupId) {
-        navigation.navigate('GroupDetails', {
-          groupId,
-          groupName: groupName ?? 'Circle',
+        router.push({
+          pathname: '/community/groups/[groupId]',
+          params: {
+            groupId,
+            groupName: groupName ?? 'Circle',
+          },
         });
       }
     },
-    [navigation],
+    [],
   );
 
   const handlePostLike = useCallback(
@@ -332,34 +330,40 @@ export default function CommunityScreen() {
   const handleAuthorPress = useCallback(
     (authorId?: string, isAnonymous?: boolean) => {
       if (authorId && !isAnonymous) {
-        navigation.navigate('PublicProfile', {
-          id: authorId,
-          type: 'user',
+        router.push({
+          pathname: '/community/profile/[id]',
+          params: { id: authorId },
         });
       }
     },
-    [navigation],
+    [],
   );
 
   const handleOpenCircle = useCallback(() => {
     const mainGroup = sanctuaryGroups[0];
     if (mainGroup) {
-      navigation.navigate('GroupDetails', {
-        groupId: mainGroup.id,
-        groupName: mainGroup.name,
+      router.push({
+        pathname: '/community/groups/[groupId]',
+        params: {
+          groupId: mainGroup.id,
+          groupName: mainGroup.name,
+        },
       });
     }
-  }, [navigation, sanctuaryGroups]);
+  }, [sanctuaryGroups]);
 
   const handleNavigateToGroup = useCallback(
     (groupId: string) => {
       const selected = sanctuaryGroups.find((group) => group.id === groupId);
-      navigation.navigate('GroupDetails', {
-        groupId,
-        groupName: selected?.name,
+      router.push({
+        pathname: '/community/groups/[groupId]',
+        params: {
+          groupId,
+          groupName: selected?.name,
+        },
       });
     },
-    [navigation, sanctuaryGroups],
+    [sanctuaryGroups],
   );
 
   const openGuestUpgrade = useCallback(() => {
@@ -367,8 +371,8 @@ export default function CommunityScreen() {
       kind: 'community_open_create_group',
       createdAt: Date.now(),
     }).catch(() => {});
-    navigation.navigate('Auth' as never);
-  }, [navigation]);
+    router.push('/auth');
+  }, []);
 
   const handleClosePostModal = useCallback(() => {
     dispatch({ type: 'SET_SHOW_CREATE_POST', payload: false });

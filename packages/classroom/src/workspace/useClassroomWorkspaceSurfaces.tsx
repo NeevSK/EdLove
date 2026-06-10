@@ -11,6 +11,7 @@ import SandboxBanner from '@repo/ui/components/SandboxBanner';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Wind } from '@repo/ui/icons';
 import { Box } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
 import { useMemo } from 'react';
 import { StudentOnboardingView, TeacherOnboardingView } from '../components';
 import { CLASSROOM_REGISTRY } from '../constants/classroomRegistry';
@@ -76,6 +77,7 @@ export function useClassroomWorkspaceSurfaces({
   isPro,
   userCapabilities,
 }: UseClassroomWorkspaceSurfacesArgs) {
+  const router = useRouter();
   const citizenshipLevel = CITIZENSHIP_MAP[citizenship] ?? 0;
 
   const classroomGated = useFeatureRegistry(CLASSROOM_REGISTRY, {
@@ -87,13 +89,13 @@ export function useClassroomWorkspaceSurfaces({
   const renderNudge = () => {
     if (classroomData && !classroomData.profileCompleted && !isGuest) {
       return (
-        <SanctuaryNudge
-          title="Sanctuary Entry"
-          description="Complete your profile to unlock full school features."
-          actionLabel="Finish"
-          onAction={() => navigation.navigate('Profile')}
-          icon="profile"
-        />
+          <SanctuaryNudge
+            title="Sanctuary Entry"
+            description="Complete your profile to unlock full school features."
+            actionLabel="Finish"
+            onAction={() => router.push('/profile')}
+            icon="profile"
+          />
       );
     }
 
@@ -181,7 +183,7 @@ export function useClassroomWorkspaceSurfaces({
             isGuest={isGuest}
             onTryDemo={() => setIsDemoModeTriggered(true)}
             onCreateClassroom={() => setIsCreateClassroomOpen(true)}
-            onJoinSchool={() => navigation.navigate('Search')}
+            onJoinSchool={() => router.push('/welcome')}
           />
         ) : (
           <ScreenWrapper scroll={false} noTopInset={true}>
@@ -220,7 +222,7 @@ export function useClassroomWorkspaceSurfaces({
             isGuest={isGuest}
             onTryDemo={() => setIsDemoModeTriggered(true)}
             onJoinClass={() => setIsClaimInviteOpen(true)}
-            onFindSchool={() => navigation.navigate('Search')}
+            onFindSchool={() => router.push('/welcome')}
           />
         ) : (
           <ScreenWrapper scroll={false} noTopInset={true}>

@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
 import { usePermissions } from '@repo/core/logic';
+import { useRouter } from 'expo-router';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 
 import { useMemo, useState } from 'react';
@@ -12,7 +12,7 @@ import {
 import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
 
 export default function AdminFeatureRegistry() {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const { flags } = usePermissions();
   const snapshot = useMemo(() => getAdminFeatureSnapshot(), []);
   const [preview, setPreview] = useState(() =>
@@ -26,7 +26,7 @@ export default function AdminFeatureRegistry() {
       title="Admin feature registry"
       description="Inspect the admin control surface, the current feature gate posture, and the live maintenance state before staging changes."
       caution="This screen only stages global feature changes and guarded repairs. Commit only after reviewing the preview."
-      onBack={() => navigation.goBack()}
+      onBack={() => router.back()}
       stats={[
         {
           label: 'Enabled flags',

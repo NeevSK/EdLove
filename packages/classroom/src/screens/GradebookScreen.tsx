@@ -17,6 +17,7 @@ import {
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocalSearchParams } from 'expo-router';
 import GradebookTable from '../components/grading/GradebookTable';
 import GradeEntryForm from '../components/grading/GradeEntryForm';
 import GradingSettings from '../components/grading/GradingSettings';
@@ -28,6 +29,8 @@ interface GradebookScreenProps {
 }
 
 export default function GradebookScreen({ classroomId }: GradebookScreenProps) {
+  const params = useLocalSearchParams<{ classroomId?: string }>();
+  const activeClassroomId = classroomId || params.classroomId || 'demo-class';
   const { t } = useTranslation();
   const {
     grades,
@@ -42,7 +45,7 @@ export default function GradebookScreen({ classroomId }: GradebookScreenProps) {
     updateSettings,
     submitGrade,
     publishGrade,
-  } = useGradebook(classroomId) as any;
+  } = useGradebook(activeClassroomId) as any;
 
   const [showSettings, setShowSettings] = useState(false);
   // studentId of the student whose grade entry form is open, or null when closed

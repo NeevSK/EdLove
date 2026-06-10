@@ -15,8 +15,7 @@ import {
 import {
   Check,
   Globe,
-  Instagram,
-  Linkedin,
+  Link,
   Mail,
   MessagesSquare,
   Plus,
@@ -53,13 +52,13 @@ const PLATFORMS: {
   {
     labelKey: 'addSocialLink.platforms.linkedin',
     value: 'linkedin',
-    icon: Linkedin,
+    icon: Link,
     color: '#0077B5',
   },
   {
     labelKey: 'addSocialLink.platforms.instagram',
     value: 'instagram',
-    icon: Instagram,
+    icon: Link,
     color: '#E4405F',
   },
   {

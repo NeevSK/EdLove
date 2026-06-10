@@ -4,7 +4,7 @@
  * Visualizes internal batteries.
  */
 
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 
@@ -28,7 +28,7 @@ export default function EnergyForecast({
   userId,
   disabled: componentDisabled,
 }: EnergyForecastProps) {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const { t } = useTranslation();
   const { context } = usePermissions();
   const activeUserId = userId || context.userId;
@@ -135,7 +135,7 @@ export default function EnergyForecast({
 
   if (!activeUserId) {
     return (
-      <PositiveInvitation type="anonymous" onAction={() => navigation.navigate('Auth' as never)} />
+      <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />
     );
   }
 

@@ -1,1 +1,1 @@
-export { default } from '../workspace';
+export { default } from '@repo/workforce/WorkforceShell';

@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
 import { usePermissions } from '@repo/core/logic';
+import { useRouter } from 'expo-router';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 
 import { useState } from 'react';
@@ -8,7 +8,7 @@ import { useAdminWorkspaceSnapshot } from '../admin/adminRepository';
 import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
 
 export default function AdminReleaseControl() {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const { snapshot: data } = useAdminWorkspaceSnapshot();
   const { flags } = usePermissions();
   const [preview, setPreview] = useState(() =>
@@ -25,7 +25,7 @@ export default function AdminReleaseControl() {
       title="Release watch"
       description="Track deployment posture, feature flags, and post-release health for the cross-tenant platform."
       caution="Treat release changes as production changes. If maintenance is active, prefer read-only monitoring and staged rollouts."
-      onBack={() => navigation.goBack()}
+      onBack={() => router.back()}
       stats={[
         {
           label: 'Schools',

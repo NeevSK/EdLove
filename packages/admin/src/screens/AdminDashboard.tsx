@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
 import { usePermissions, useStore } from '@repo/core/logic';
+import { useRouter } from 'expo-router';
 
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, Text, VStack } from '@repo/ui/primitives';
@@ -16,7 +16,7 @@ interface AdminDashboardProps {
 }
 
 export default function AdminDashboard({ userId }: AdminDashboardProps) {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const { context, flags } = usePermissions();
   const currentUserId = useStore((state) => state.user?.id ?? null);
   const resolvedUserId = userId ?? currentUserId;
@@ -35,12 +35,12 @@ export default function AdminDashboard({ userId }: AdminDashboardProps) {
       isDevelopingFormBuilder: flags.isDevelopingFormBuilder,
       isUnderMaintenance: flags.isUnderMaintenance,
     },
-    onOpenIncidentQueue: () => navigation.navigate('AdminIncidentQueue' as never),
-    onOpenTenantDetail: () => navigation.navigate('AdminTenantDetail' as never),
-    onOpenAuthorityRepair: () => navigation.navigate('AdminAuthorityRepair' as never),
-    onOpenJobControl: () => navigation.navigate('AdminJobControl' as never),
-    onOpenAuditLog: () => navigation.navigate('AdminAuditLog' as never),
-    onOpenReleaseControl: () => navigation.navigate('AdminReleaseControl' as never),
+    onOpenIncidentQueue: () => router.push('/workspace'),
+    onOpenTenantDetail: () => router.push('/workspace'),
+    onOpenAuthorityRepair: () => router.push('/workspace'),
+    onOpenJobControl: () => router.push('/workspace'),
+    onOpenAuditLog: () => router.push('/workspace'),
+    onOpenReleaseControl: () => router.push('/workspace'),
   });
 
   const workspace = useAdminWorkspaceLayout(resolvedUserId, surfaces);
@@ -88,11 +88,11 @@ export default function AdminDashboard({ userId }: AdminDashboardProps) {
           onOpenSurface={(surface) => {
             const view = resolveAdminWorkspaceView(surface.capabilityKey);
             if (view === 'admin_registry') {
-              navigation.navigate('AdminFeatureRegistry' as never);
+              router.push('/workspace');
               return;
             }
 
-            navigation.navigate(view as never);
+            router.push('/workspace');
           }}
         />
       </Box>

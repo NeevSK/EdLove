@@ -2,7 +2,7 @@
  * LibraryScreen — Netflix-Style Holistic Digital Library
  */
 
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { identityAPI } from '@repo/core/api';
 import { useTracking } from '@repo/core/hooks';
 import { coreRuntime, FeatureGuard, useStore, useTemporalStore } from '@repo/core/logic';
@@ -151,7 +151,7 @@ CuratorInvitation.displayName = 'CuratorInvitation';
 
 export default function LibraryScreen() {
   const { t } = useTranslation();
-  const navigation = useNavigation<any>();
+  const router = useRouter();
 
   // --- 1. STATE MACHINE (Mechanism) ---
   interface LibraryState {
@@ -497,19 +497,27 @@ export default function LibraryScreen() {
     (resource: LibraryResource) => {
       if (!resource.url) return;
       if (resource.type === 'pdf') {
-        navigation.navigate('PDFViewer', {
-          resourceId: resource.id,
-          title: resource.title,
-          url: resource.url,
+        router.push({
+          pathname: '/library/document/[resourceId]',
+          params: {
+            resourceId: resource.id,
+            title: resource.title,
+            url: resource.url,
+            creator: resource.creator_name ?? '',
+            format: resource.format ?? 'pdf',
+          },
         });
         return;
       }
       if (resource.type === 'video' || resource.type === 'movie_trailer') {
-        navigation.navigate('VideoPlayer', {
-          resourceId: resource.id,
-          title: resource.title,
-          url: resource.url,
-          creator: resource.creator_name,
+        router.push({
+          pathname: '/library/video/[resourceId]',
+          params: {
+            resourceId: resource.id,
+            title: resource.title,
+            url: resource.url,
+            creator: resource.creator_name ?? '',
+          },
         });
         return;
       }
@@ -517,7 +525,7 @@ export default function LibraryScreen() {
         console.error("Couldn't load page", err),
       );
     },
-    [navigation],
+    [router],
   );
 
   const handleOpenResourceOptions = useCallback((resource: LibraryResource) => {
@@ -697,12 +705,12 @@ export default function LibraryScreen() {
   }, []);
 
   const handleNavigateToMap = useCallback(() => {
-    navigation.navigate('LibraryMap' as any);
-  }, [navigation]);
+    router.push('/library/map');
+  }, [router]);
 
   const handleNavigateToCuratorReview = useCallback(() => {
-    navigation.navigate('CuratorReview' as any);
-  }, [navigation]);
+    router.push('/library/review');
+  }, [router]);
 
   const handleRetry = useCallback(() => {
     void fetchResources();
@@ -772,12 +780,15 @@ export default function LibraryScreen() {
 
   const handleOpenCollectionDetail = useCallback(
     (collection: any) => {
-      navigation.navigate('CollectionDetail', {
-        id: collection.id,
-        title: collection.name,
+      router.push({
+        pathname: '/library/collections/[id]',
+        params: {
+          id: collection.id,
+          title: collection.name,
+        },
       });
     },
-    [navigation],
+    [router],
   );
 
   const handlePullToDesk = useCallback((res: LibraryResource) => {

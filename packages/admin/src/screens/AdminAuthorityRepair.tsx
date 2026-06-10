@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
 import { usePermissions } from '@repo/core/logic';
+import { useRouter } from 'expo-router';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 
 import { useState } from 'react';
@@ -8,7 +8,7 @@ import { useAdminWorkspaceSnapshot } from '../admin/adminRepository';
 import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
 
 export default function AdminAuthorityRepair() {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const { snapshot: data } = useAdminWorkspaceSnapshot();
   const { flags } = usePermissions();
   const [preview, setPreview] = useState(() =>
@@ -29,7 +29,7 @@ export default function AdminAuthorityRepair() {
       title="Authority integrity"
       description="Repair role drift, capability mismatch, and POA boundary problems across tenants without crossing into tenant-side admin behavior."
       caution="This room should stay narrowly scoped to maintenance. Any repair should be explicit, reversible, and reviewable."
-      onBack={() => navigation.goBack()}
+      onBack={() => router.back()}
       stats={[
         {
           label: 'Users in scope',

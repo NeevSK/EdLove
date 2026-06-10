@@ -1,15 +1,15 @@
-import { useNavigation } from '@react-navigation/native';
 import { AvatarDisplay, EditableItem } from '@repo/profile';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { useThemedColors } from '@repo/ui/hooks';
 import { ArrowLeft, BookOpen, Clock, GraduationCap, Hash, User } from '@repo/ui/icons';
 import { Icon } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useClassroomProfile } from '../hooks/useClassroomProfile';
 
 export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId: string }) {
   const { t } = useTranslation();
-  const navigation = useNavigation();
+  const router = useRouter();
   const colors = useThemedColors();
   const { classroom, loading, updateField, isEditable } = useClassroomProfile(classroomId);
 
@@ -45,8 +45,8 @@ export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId
           marginBottom: '32px',
         }}
       >
-        <button
-          onClick={() => navigation.goBack()}
+          <button
+          onClick={() => router.back()}
           className="secondary-button"
           style={{
             display: 'flex',

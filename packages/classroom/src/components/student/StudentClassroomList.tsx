@@ -1,8 +1,8 @@
-import { useNavigation } from '@react-navigation/native';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { BookOpen } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
 
 interface Classroom {
   id: string;
@@ -22,7 +22,7 @@ export const StudentClassroomList = ({
   loading,
   isDemo,
 }: StudentClassroomListProps) => {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
 
   if (loading) {
     return (
@@ -46,7 +46,7 @@ export const StudentClassroomList = ({
               : "You haven't joined any classrooms yet. Reach out to your teacher for an invite code or search for a sanctuary."
           }
           actionLabel="Join a Classroom"
-          onAction={() => navigation.navigate('Main', { screen: 'Community' })}
+          onAction={() => router.push('/community')}
         />
       </Box>
     );
@@ -58,9 +58,9 @@ export const StudentClassroomList = ({
         <Pressable
           key={cls.id}
           onPress={() =>
-            navigation.navigate('StudentClassroomDashboard', {
-              classroomId: cls.id,
-              classroomName: cls.name,
+            router.push({
+              pathname: '/self',
+              params: { classroomId: cls.id, classroomName: cls.name },
             })
           }
           className="w-full max-w-[320px] bg-sanctuary-surface rounded-[32px] overflow-hidden border border-sanctuary-border/60"

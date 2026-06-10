@@ -163,7 +163,6 @@ const StatsSection = ({ profile, role }: StatsSectionProps) => {
 
 interface SupportSectionProps {
   t: TFunction;
-  navigation: ProfileNavigationCapabilities;
   cardWidth: number;
 }
 
@@ -515,7 +514,7 @@ export const ProfileScreen = () => {
             </Animated.View>
 
             <Animated.View entering={FadeInDown.delay(550).duration(500)}>
-              <SupportSection t={t} navigation={navigation} cardWidth={cardWidth} />
+              <SupportSection t={t} cardWidth={cardWidth} />
             </Animated.View>
 
             <Animated.View entering={FadeInDown.delay(600).duration(500)}>

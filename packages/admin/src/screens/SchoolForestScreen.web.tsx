@@ -8,9 +8,9 @@
  * forest weather narrative.
  */
 
-import { useNavigation } from '@react-navigation/native';
 import { type SchoolForestState, schoolForestAPI, type TeacherTree } from '@repo/core/api';
 import { usePermissions } from '@repo/core/logic';
+import { useRouter } from 'expo-router';
 
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { ArrowLeft, RefreshCw } from '@repo/ui/icons';
@@ -52,7 +52,7 @@ function lastSignalLabel(days: number): string {
 
 export default function SchoolForestScreen() {
   const { can, context } = usePermissions();
-  const navigation = useNavigation();
+  const router = useRouter();
   const schoolId = context.schoolId ?? '';
 
   const [forest, setForest] = useState<SchoolForestState | null>(null);
@@ -93,7 +93,7 @@ export default function SchoolForestScreen() {
         }}
       >
         <button
-          onClick={() => navigation.goBack()}
+          onClick={() => router.back()}
           style={{
             background: 'var(--background-alt)',
             border: 'none',

@@ -1,16 +1,14 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { communityAPI } from '@repo/core/api';
 import { useManifestoHooks, useNotificationHooks } from '@repo/core/api/hooks';
 import { usePendingGateAction } from '@repo/core/hooks';
 import { setPendingGateAction, usePermissions, useStore } from '@repo/core/logic';
-import type { CommunityStackParamList } from '@repo/core/types';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
 import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 import { Bell, Compass, Info, Plus, Shield, Users } from '@repo/ui/icons';
 import { Box, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
+import { router } from 'expo-router';
 import { CommentSheet } from '../components/CommentSheet';
 import CommunityHearth from '../components/CommunityHearth';
 import CreateGroupModal from '../components/CreateGroupModal';
@@ -97,8 +95,6 @@ function communityReducer(state: CommunityState, action: CommunityAction): Commu
   }
 }
 
-type Navigation = NativeStackNavigationProp<CommunityStackParamList & { Auth: undefined }>;
-
 const initialState: CommunityState = {
   activeMode: 'feed',
   selectedFilter: 'all',
@@ -114,7 +110,6 @@ const initialState: CommunityState = {
 };
 
 export default function CommunityScreenWeb() {
-  const navigation = useNavigation<Navigation>();
   const { can } = usePermissions();
   const { user, flags } = useStore();
   const { isCommunityEnabled, isMessagingEnabled, isSocialShieldEnabled } = flags;
@@ -250,14 +245,17 @@ export default function CommunityScreenWeb() {
       kind: 'community_open_create_group',
       createdAt: Date.now(),
     }).catch(() => {});
-    navigation.navigate('Auth');
-  }, [navigation]);
+    router.push('/auth');
+  }, []);
 
   const handleOpenGroup = useCallback(
     (groupId: string, groupName?: string) => {
-      navigation.navigate('GroupDetails', { groupId, groupName });
+      router.push({
+        pathname: '/community/groups/[groupId]',
+        params: { groupId, groupName },
+      });
     },
-    [navigation],
+    [],
   );
 
   const renderGuestGate = (title: string, description: string) => (
@@ -298,16 +296,16 @@ export default function CommunityScreenWeb() {
           });
         }}
         onAuthorPress={() => {
-          if (post.author_id && !post.is_anonymous && navigation?.navigate) {
-            navigation.navigate('PublicProfile', {
-              id: post.author_id,
-              type: 'user',
+          if (post.author_id && !post.is_anonymous) {
+            router.push({
+              pathname: '/community/profile/[id]',
+              params: { id: post.author_id },
             });
           }
         }}
       />
     ),
-    [user, isSocialShieldEnabled, navigation, handleOpenGroup],
+    [user, isSocialShieldEnabled, handleOpenGroup],
   );
 
   const renderPostStream = () => {
@@ -408,9 +406,12 @@ export default function CommunityScreenWeb() {
             type="button"
             className="community-message-row"
             onClick={() => {
-              navigation.navigate('DirectMessage', {
-                conversationId: conversation.id,
-                userName: conversation.other_user_name,
+              router.push({
+                pathname: '/community/direct-messages',
+                params: {
+                  conversationId: conversation.id,
+                  userName: conversation.other_user_name,
+                },
               });
             }}
           >

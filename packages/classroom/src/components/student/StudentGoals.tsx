@@ -1,10 +1,10 @@
-import { useNavigation } from '@react-navigation/native';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Target } from '@repo/ui/icons';
 import { Box, Button, ButtonText, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
 
 export const StudentGoals = ({ goals, loading }: { goals: any[]; loading: boolean }) => {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
 
   return (
     <Box className="bg-sanctuary-surface rounded-[32px] border border-sanctuary-border p-6">
@@ -45,7 +45,7 @@ export const StudentGoals = ({ goals, loading }: { goals: any[]; loading: boolea
       <Button
         variant="outline"
         className="w-full mt-6 h-12 rounded-[18px] border-sanctuary-border/60"
-        onPress={() => navigation.navigate('Main', { screen: 'Self' })}
+        onPress={() => router.push('/self')}
       >
         <ButtonText className="text-xs font-bold text-sanctuary-text">View All Goals →</ButtonText>
       </Button>

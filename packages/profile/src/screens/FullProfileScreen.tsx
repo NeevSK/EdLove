@@ -1,4 +1,5 @@
 import { usePermissions, useStore } from '@repo/core/logic';
+import { router, useLocalSearchParams } from 'expo-router';
 
 // Local Package Imports
 import { StaffPresencePulse } from '@repo/people';
@@ -33,7 +34,7 @@ import {
   School,
   User as UserIcon,
 } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, useWindowDimensions } from 'react-native';
 import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -47,21 +48,19 @@ import { useProfileCompletion } from '../hooks/useProfileCompletion';
 import { useSocialLinks } from '../hooks/useSocialLinks';
 import type { UserProfile } from '../types';
 
-// We use any for navigation props to avoid strict app-level dependency inside the package
-type FullProfileProps = {
-  route: {
-    params: {
-      profile: UserProfile;
-    };
-  };
-  navigation: {
-    goBack: () => void;
-    navigate: (screen: string, params?: Record<string, unknown>) => void;
-  };
-};
+const readParam = (value: string | string[] | undefined) =>
+  Array.isArray(value) ? value[0] : value;
 
-export const FullProfileScreen = ({ route, navigation }: FullProfileProps) => {
-  const { profile: initialProfile } = route.params;
+export const FullProfileScreen = () => {
+  const params = useLocalSearchParams<{ id?: string; userId?: string; full_name?: string }>();
+  const profileId = readParam(params.id) || readParam(params.userId) || '';
+  const initialProfile = useMemo(
+    () =>
+      profileId
+        ? ({ id: profileId, full_name: readParam(params.full_name) || 'Profile' } as UserProfile)
+        : null,
+    [profileId, params.full_name],
+  );
 
   const { t } = useTranslation();
   const { user: currentUser } = useStore();
@@ -154,7 +153,7 @@ export const FullProfileScreen = ({ route, navigation }: FullProfileProps) => {
 
   return (
     <ScreenWrapper scroll={false}>
-      <GlobalHeader title={t('profile.fullProfile')} showBack onBack={() => navigation.goBack()} />
+      <GlobalHeader title={t('profile.fullProfile')} showBack onBack={() => router.back()} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{

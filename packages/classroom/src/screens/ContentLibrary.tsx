@@ -7,7 +7,6 @@
  * - Pin to Top functionality
  */
 
-import { type RouteProp, useRoute } from '@react-navigation/native';
 import { api } from '@repo/core/api';
 import { useSafeMutation } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
@@ -59,11 +58,12 @@ import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useResources } from '../hooks';
 
 export default function ContentLibrary() {
-  const route = useRoute<RouteProp<ClassroomStackParamList, 'ContentLibrary'>>();
-  const classroomId = route.params?.classroomId || 'demo-class';
+  const router = useRouter();
+  const { classroomId = 'demo-class' } = useLocalSearchParams<{ classroomId?: string }>();
 
   const { t } = useTranslation();
   const user = useStore((state) => state.user);

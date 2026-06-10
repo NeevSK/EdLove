@@ -4,7 +4,7 @@
  * Standardized to Zero-Legacy: purged legacy components and integrated Sanctuary design system.
  */
 
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import {
   AnimatedView,
   Box,
@@ -86,7 +86,7 @@ const GROWTH_STAGES = [
 ];
 
 export default function ProgressTree({ userId }: ProgressTreeProps) {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const { interactionCount, isLoading } = useProgressTree(userId);
   const [currentStage, setCurrentStage] = useState(GROWTH_STAGES[0]!);
   const [showBloom, setShowBloom] = useState(false);
@@ -169,7 +169,7 @@ export default function ProgressTree({ userId }: ProgressTreeProps) {
           </Text>
         </VStack>
         <Button
-          onPress={() => navigation.navigate('Auth' as never)}
+          onPress={() => router.push('/auth')}
           className="bg-sanctuarySaffron rounded-2xl h-14 px-10 shadow-lg shadow-sanctuarySaffron/20"
         >
           <ButtonText className="text-obsidian font-black uppercase tracking-widest text-xs">

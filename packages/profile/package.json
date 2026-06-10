@@ -85,6 +85,7 @@
     "expo-file-system": "~56.0.7",
     "expo-image-manipulator": "~56.0.17",
     "expo-image-picker": "~56.0.16",
+    "expo-router": "~56.2.9",
     "lucide-react-native": "^1.17.0",
     "react-i18next": "^17.0.8",
     "react-native-reanimated": "^4.4.1"
@@ -107,7 +108,6 @@
     "react": "*",
     "react-i18next": "*",
     "react-native": "*",
-    "@react-navigation/native": "*",
     "@react-native-async-storage/async-storage": "*"
   }
 }

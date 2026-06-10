@@ -1,10 +1,10 @@
-import { useNavigation } from '@react-navigation/native';
 import { Box, Text, VStack } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
 import { getAdminAuditEntries } from '../admin/adminControl';
 import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
 
 export default function AdminAuditLog() {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const entries = getAdminAuditEntries();
 
   return (
@@ -13,7 +13,7 @@ export default function AdminAuditLog() {
       title="Accountability log"
       description="Review recent operator context, approvals, and cross-tenant signals so every action stays attributable."
       caution="This room is about accountability. If a change cannot be explained in the log, it should not be shipped."
-      onBack={() => navigation.goBack()}
+      onBack={() => router.back()}
       stats={[
         {
           label: 'Entries',

@@ -1,12 +1,12 @@
-import { useNavigation } from '@react-navigation/native';
 import { useStore } from '@repo/core/logic';
+import { useRouter } from 'expo-router';
 import { Box, ScrollView, Text, VStack } from '@repo/ui/primitives';
 
 import { useGuardianWorkspaceData } from '../../guardian';
 import { GuardianRoomShell } from './GuardianRoomShell';
 
 export default function GuardianNotificationsScreen() {
-  const navigation = useNavigation();
+  const router = useRouter();
   const user = useStore((state) => state.user);
   const { dashboard } = useGuardianWorkspaceData(user?.id || '');
   const notifications = dashboard?.notifications || [];
@@ -23,7 +23,7 @@ export default function GuardianNotificationsScreen() {
         },
         { label: 'Total', value: notifications.length },
       ]}
-      onBack={() => navigation.goBack()}
+      onBack={() => router.back()}
     >
       <ScrollView className="flex-1">
         <VStack className="gap-3 pb-8">

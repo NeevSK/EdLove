@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from 'expo-router/react-navigation';
 import { supabase } from '@repo/core/api';
 import { usePermissions, useStore } from '@repo/core/logic';
 

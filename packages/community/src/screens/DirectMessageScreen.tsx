@@ -5,28 +5,22 @@
  * Wires up DM-specific data sources (fetch, send, realtime subscription).
  */
 
-import { useNavigation, useRoute } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { supabase } from '@repo/core/api';
 
 import { useStore, useTemporalStore } from '@repo/core/store';
-import type { CommunityStackParamList } from '@repo/core/types';
 import React from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
 import { communityAPI } from '../api/community';
 import HeaderMoreMenu from '../components/HeaderMoreMenu';
 import type { ChatMessage } from '../types';
 import BaseChatScreen, { type SubscriptionConfig } from './BaseChatScreen';
 
-type DMRoute = {
-  key: string;
-  name: 'DirectMessage';
-  params: { conversationId: string; userName: string };
-};
-
 export default function DirectMessageScreen() {
-  const route = useRoute<DMRoute>();
-  const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
-  const { conversationId, userName } = route.params;
+  const params = useLocalSearchParams<{ conversationId?: string; userName?: string }>();
+  const conversationId = Array.isArray(params.conversationId)
+    ? params.conversationId[0]
+    : params.conversationId;
+  const userName = Array.isArray(params.userName) ? params.userName[0] : params.userName;
   const { user } = useStore();
   const [targetUserId, setTargetUserId] = React.useState<string | undefined>();
   const [isBlocked, setIsBlocked] = React.useState(false);
@@ -88,7 +82,10 @@ export default function DirectMessageScreen() {
       sendMessage={sendMessage}
       subscription={subscription}
       onPressAuthor={(userId) => {
-        navigation.navigate('PublicProfile', { id: userId, type: 'user' });
+        router.push({
+          pathname: '/community/profile/[id]',
+          params: { id: userId },
+        });
       }}
       isBlocked={isBlocked}
       isReadOnly={isPastView}

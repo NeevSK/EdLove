@@ -1,4 +1,4 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMediaDownloader } from '@repo/core/hooks';
 
 import { UniversalDocumentPortal } from '@repo/ui/components/media/UniversalDocumentPortal';
@@ -30,22 +30,31 @@ function resolveDocumentMimeType(format?: string) {
  * Uses the shared UniversalDocumentPortal to handle non-PDF/Video documents.
  */
 export function DocumentViewerScreen() {
-  const navigation = useNavigation();
-  const route = useRoute<any>();
-  const { title, url, format, size } = route.params;
+  const router = useRouter();
+  const { title, url, format, size, resourceId } = useLocalSearchParams<{
+    title?: string;
+    url?: string;
+    format?: string;
+    size?: string;
+    resourceId?: string;
+  }>();
+  const resolvedTitle = title ?? '';
+  const resolvedUrl = url ?? '';
+  const resolvedFormat = format ?? '';
+  const resolvedSize = size ?? '';
 
   const [aiSummaryReady, setAiSummaryReady] = useState(false);
 
   const { downloadState, progress, errorMsg, startDownload, openInNativeViewer } =
     useMediaDownloader({
-      url,
-      resourceId: route.params.resourceId,
-      mimeType: resolveDocumentMimeType(format),
+      url: resolvedUrl,
+      resourceId: resourceId ?? '',
+      mimeType: resolveDocumentMimeType(resolvedFormat),
     });
 
   const handleBack = useCallback(() => {
-    navigation.goBack();
-  }, [navigation]);
+    router.back();
+  }, [router]);
 
   const handleOpenNative = useCallback(async () => {
     await openInNativeViewer();
@@ -58,9 +67,9 @@ export function DocumentViewerScreen() {
 
   return (
     <UniversalDocumentPortal
-      title={title}
-      format={format}
-      size={size}
+      title={resolvedTitle}
+      format={resolvedFormat}
+      size={resolvedSize}
       downloadState={downloadState}
       progress={progress}
       errorMsg={errorMsg}

@@ -3,7 +3,7 @@
  * "Burn" negative thoughts - A cathartic release mechanism
  */
 
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { usePermissions, useTemporalStore } from '@repo/core/logic';
 
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
@@ -49,7 +49,7 @@ export default function FireJournal({
   onBurned,
   disabled: componentDisabled,
 }: FireJournalProps) {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const [content, setContent] = useState('');
   const [isBurning, setIsBurning] = useState(false);
   const { context } = usePermissions();
@@ -223,7 +223,7 @@ export default function FireJournal({
 
   if (!activeUserId) {
     return (
-      <PositiveInvitation type="anonymous" onAction={() => navigation.navigate('Auth' as never)} />
+      <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />
     );
   }
 
