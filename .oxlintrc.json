@@ -36,7 +36,7 @@
     "no-optional-chaining": "off",
     "no-await-in-loop": "off",
     "unicode-bom": "off",
-    "unicorn/prefer-module": "off"
+    "unicorn/prefer-module": "error"
   },
   "settings": {
     "react": {
@@ -46,6 +46,20 @@
       "ignore": ["node_modules"]
     }
   },
+  "overrides": [
+    {
+      "files": [
+        "*.cjs",
+        "**/*.config.js",
+        "**/*.config.cjs",
+        "scripts/**/*.js",
+        "scripts/**/*.cjs"
+      ],
+      "rules": {
+        "unicorn/prefer-module": "off"
+      }
+    }
+  ],
   "ignorePatterns": [
     "node_modules",
     "dist",
