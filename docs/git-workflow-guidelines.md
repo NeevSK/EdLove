@@ -23,8 +23,8 @@ Whenever you execute a `git commit`, the pre-commit hook runs to ensure the stag
 *   **File**: [.husky/pre-commit](file:///c:/Users/Naween/projects/polymath-platform/.husky/pre-commit)
 *   **Action**: Runs `lint-staged --concurrent false`.
 *   **Staged Configuration** ([.lintstagedrc.cjs](file:///c:/Users/Naween/projects/polymath-platform/.lintstagedrc.cjs)):
-    1.  **Formatting & Linting**: Calls `biome check --write` to automatically format files and lint code.
-    2.  **Lint Enforcement**: Calls `eslint --fix` for legacy ESLint coverage.
+    1.  **Formatting & Style**: Calls `biome check --write` to automatically format files.
+    2.  **Super-Fast Lint Enforcement**: Calls `oxlint --fix` for extremely fast, Rust-based lint checking. ESLint is temporarily disabled during pre-commit due to an ESLint v10 runtime compatibility crash.
     3.  **Surgical Type-checking**: Calls [scripts/surgical-check.mjs](file:///c:/Users/Naween/projects/polymath-platform/scripts/surgical-check.mjs) which parses the list of modified files, determines which workspace packages they belong to, and executes `pnpm exec turbo run check-types` on *only* those affected packages. This keeps type checks extremely fast.
 
 ### Configuration Variables
@@ -133,6 +133,7 @@ Every commit message must follow the **Conventional Commits** specification to e
 
 *   **File**: [.husky/commit-msg](file:///c:/Users/Naween/projects/polymath-platform/.husky/commit-msg)
 *   **Config**: [commitlint.config.cjs](file:///c:/Users/Naween/projects/polymath-platform/commitlint.config.cjs)
+*   **Custom Tuning**: The `body-max-line-length` rule is set to `0` (disabled) to allow auto-generated commit bodies (such as staged changes summaries appended by custom hooks) to pass validation.
 *   **Pattern**: `<type>(<optional scope>): <description>`
 *   **Common Types**:
     *   `feat`: A new feature
