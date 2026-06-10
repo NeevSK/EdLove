@@ -22,7 +22,7 @@ export const PrincipalGovernanceEventTypeSchema = z.enum([
 export const InviteCodeSchema = z.object({
   code: z.string().min(1),
   school_id: z.string(),
-  authority: CapacitySchema,
+  capacity: CapacitySchema,
   created_by: z.string(),
   used: z.boolean(),
   created_at: z.string(),

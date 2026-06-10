@@ -16,50 +16,17 @@
  * Complex workflows (Inngest triggers, side-effects) still go through
  * the Message Bus (Path 2 / useMutationQueue). This is intentional.
  */
+
+import { createSovereignClient, SOVEREIGN_API_URL } from '../../api/base';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
+import { sovereignBus } from '../../lib/sync/eventBus';
 import type {
   AbstractPowerSyncDatabase,
-  CrudEntry,
   PowerSyncBackendConnector,
   PowerSyncCredentials,
 } from './powersync-shim';
-import { supabase } from '../../api/supabase';
-import { sovereignBus } from '../../lib/sync/eventBus';
 
-const POWERSYNC_URL = process.env['EXPO_PUBLIC_POWERSYNC_URL'] ?? '';
-
-/** Group CRUD entries by [table][operation] for bulk processing. */
-type OpGroup = {
-  puts: Array<Record<string, unknown>>;
-  patches: Array<{ id: string; data: Record<string, unknown> }>;
-  deletes: string[];
-};
-
-function groupOps(entries: CrudEntry[]): Map<string, OpGroup> {
-  const groups = new Map<string, OpGroup>();
-
-  for (const op of entries) {
-    const { table, op: operation, opData, id } = op;
-
-    if (!groups.has(table)) {
-      groups.set(table, { puts: [], patches: [], deletes: [] });
-    }
-    const group = groups.get(table)!;
-
-    switch (operation) {
-      case 'PUT':
-        group.puts.push({ ...opData, id });
-        break;
-      case 'PATCH':
-        group.patches.push({ id, data: opData ?? {} });
-        break;
-      case 'DELETE':
-        group.deletes.push(id);
-        break;
-    }
-  }
-
-  return groups;
-}
+const POWERSYNC_URL = process.env.EXPO_PUBLIC_POWERSYNC_URL ?? '';
 
 export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
   /**
@@ -70,7 +37,7 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
     const {
       data: { session },
       error,
-    } = await supabase.auth.getSession();
+    } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getSession();
 
     if (error || !session) {
       throw new Error('[PowerSync] No active Supabase session. Cannot connect.');
@@ -85,52 +52,58 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
   /**
    * Called by PowerSync SDK when local SQLite writes need to be pushed upstream.
    *
-   * 2026 Bulk Strategy:
-   *  - Groups all ops in the batch by table + operation type.
-   *  - Dispatches one Supabase call per table per operation, not one per row.
-   *  - This reduces 200 sequential requests to ~N table batches (typically 3–5).
-   *  - Batch is only marked complete AFTER all bulk ops succeed atomically.
+   * 2026 Bulk Canonical Gateway Strategy:
+   *  - Encapsulates all transactional CRUD operations in the batch.
+   *  - Routes them in a single REST request to Sanctuary API `/api/powersync/upload`.
+   *  - Relies authoritatively on server-side Cedar + ZenStack ReBAC gates.
    */
   async uploadData(database: AbstractPowerSyncDatabase): Promise<void> {
     const batch = await database.getCrudBatch(200);
     if (!batch || batch.crud.length === 0) return;
 
     try {
-      const groups = groupOps(batch.crud);
-      const tablesAffected: string[] = [];
+      const {
+        data: { session },
+        error: sessionError,
+      } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getSession();
 
-      for (const [table, { puts, patches, deletes }] of groups) {
-        tablesAffected.push(table);
-
-        // ── Bulk PUT (upsert) ────────────────────────────────────────────────
-        if (puts.length > 0) {
-          const { error } = await supabase.from(table).upsert(puts);
-          if (error) throw error;
-        }
-
-        // ── Bulk PATCH (update individual rows — must stay per-row for safety) ─
-        // Supabase's update() requires a filter; can't bulk-update mixed rows.
-        // We can at least parallelise them:
-        if (patches.length > 0) {
-          const results = await Promise.allSettled(
-            patches.map(({ id, data }) =>
-              supabase.from(table).update(data).eq('id', id),
-            ),
-          );
-          const failed = results.find((r) => r.status === 'rejected');
-          if (failed) throw (failed as PromiseRejectedResult).reason;
-        }
-
-        // ── Bulk DELETE ──────────────────────────────────────────────────────
-        if (deletes.length > 0) {
-          const { error } = await supabase.from(table).delete().in('id', deletes);
-          if (error) throw error;
-        }
+      if (sessionError || !session) {
+        throw new Error('[PowerSync] No active session. Cannot upload data.');
       }
 
-      // All bulk ops succeeded — mark the batch as complete.
+      const client = createSovereignClient(SOVEREIGN_API_URL);
+
+      console.log(
+        `[PowerSync] Uploading transactional batch of ${batch.crud.length} mutations through Sanctuary API.`,
+      );
+
+      const res = await (client.api as any).powersync.upload.$post(
+        {
+          json: {
+            crud: batch.crud.map((c) => ({
+              id: c.id,
+              op: c.op,
+              table: c.table,
+              opData: c.opData,
+            })),
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        },
+      );
+
+      if (!res.ok) {
+        const errorData = (await res.json()) as any;
+        throw new Error(errorData.message || `Sanctuary API sync failed with status ${res.status}`);
+      }
+
+      // Sync batch succeeded upstream — mark the batch as complete in SQLite.
       await batch.complete();
 
+      const tablesAffected = Array.from(new Set(batch.crud.map((c) => c.table)));
       sovereignBus.emit('powersync:sync_complete', { tablesAffected });
     } catch (err: unknown) {
       // DO NOT call batch.complete() — PowerSync will retry the whole batch.

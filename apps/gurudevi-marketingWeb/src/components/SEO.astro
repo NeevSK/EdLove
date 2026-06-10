@@ -1,18 +1,18 @@
 ---
 export interface Props {
-	title: string;
-	description: string;
-	image?: string;
-	canonicalURL?: URL;
+  title: string;
+  description: string;
+  image?: string;
+  canonicalURL?: URL;
 }
 
 const {
-	title,
-	description,
-	image = "/og-image.jpg",
-	canonicalURL = Astro.site
-		? new URL(Astro.url.pathname, Astro.site)
-		: new URL(Astro.url.pathname, Astro.url.origin),
+  title,
+  description,
+  image = '/og-image.jpg',
+  canonicalURL = Astro.site
+    ? new URL(Astro.url.pathname, Astro.site)
+    : new URL(Astro.url.pathname, Astro.url.origin),
 } = Astro.props;
 ---
 

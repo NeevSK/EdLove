@@ -1,7 +1,7 @@
 {
   "name": "apps-intuitui-web",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "scripts": {
     "dev": "pnpm exec astro dev",
     "build": "pnpm exec astro build",
@@ -19,19 +19,19 @@
     "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {
-    "@astrojs/sitemap": "^3.6.0",
-    "@astrojs/svelte": "^8.0.5",
-    "@tailwindcss/vite": "^4.1.18",
-    "astro": "^6.1.7",
-    "svelte": "^5.55.4",
-    "tailwindcss": "^4.1.18",
-    "typescript": "^5.9.3"
+    "@astrojs/sitemap": "^3.7.3",
+    "@astrojs/svelte": "^8.1.2",
+    "@tailwindcss/vite": "^4.3.0",
+    "astro": "^6.4.4",
+    "svelte": "^5.56.3",
+    "tailwindcss": "^4.3.0",
+    "typescript": "^6.0.3"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "vitest": "^2.1.9",
+    "eslint": "^10.4.1",
     "vite-tsconfig-paths": "^6.1.1",
-    "eslint": "^9.38.0"
+    "vitest": "^4.1.8"
   }
 }

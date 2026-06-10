@@ -1,149 +1,176 @@
-import type { ClassroomStudent, TeacherStats } from '../logic/schemas/classroom.schema';
-import { educationalServices } from './runtimes/educational.runtime';
-import type { Lesson } from '../types';
-import { educationalContract } from './educational.contract';
+import { useStore } from '../store/useStore';
+import { APIError } from '../types/API';
+import { SovereignError } from '../types/Errors';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
 
-// ============================================================================
-// LESSONS API
-// ============================================================================
+/**
+ * LESSONS & STUDENTS API (Sovereign RPC Proxy)
+ *
+ * Siphons lesson and student management to Sanctuary API.
+ */
+
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export const lessonsAPI = {
-  /**
-   * @authority read Lesson
-   */
-  async getAll(classroomId: string): Promise<Lesson[]> {
-    return (await educationalServices.lessons.getAll(classroomId)) as unknown as Lesson[];
-  },
+  async create(lesson: any) {
+    const state = useStore.getState();
+    if (!state.user || state.user.is_anonymous) {
+      throw SovereignError.unauthorized('create', 'Lesson');
+    }
 
-  /**
-   * @authority read Lesson
-   */
-  async getByDate(classroomId: string, date: string): Promise<Lesson[]> {
-    return (await educationalServices.lessons.getByDate(classroomId, date)) as unknown as Lesson[];
-  },
+    const res = await (client.api as any).educational.lessons.$post({
+      json: lesson,
+    });
 
-  /**
-   * @authority create Lesson
-   */
-  async create(lesson: Omit<Lesson, 'id' | 'created_at' | 'updated_at'>): Promise<Lesson> {
-    return (await educationalServices.lessons.create({
-      ...lesson,
-      updated_at: new Date(),
-    } as Omit<Lesson, 'id' | 'created_at'>)) as unknown as Lesson;
-  },
+    if (!res.ok) {
+      throw new APIError('Failed to create lesson', res.status.toString());
+    }
 
-  /**
-   * @authority update Lesson
-   */
-  async update(id: string, updates: Partial<Lesson>): Promise<Lesson> {
-    return (await educationalServices.lessons.update(id, updates)) as unknown as Lesson;
-  },
-
-  /**
-   * @authority delete Lesson
-   */
-  async delete(id: string): Promise<void> {
-    return educationalServices.lessons.delete(id);
+    return await res.json();
   },
 };
 
-// ============================================================================
-// STUDENTS API
-// ============================================================================
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ as supabase } from './supabase';
 
+// ... (Students API remains on local manager for now until educational.contract is fully expanded)
 export const studentsAPI = {
-  /**
-   * @authority read Classroom
-   */
-  async getAll(classroomId: string): Promise<ClassroomStudent[]> {
-    return (await educationalServices.students.getAll(
-      classroomId,
-    )) as unknown as ClassroomStudent[];
+  async getAll(classroomId: string): Promise<any[]> {
+    const { data, error } = await supabase
+      .from('classroom_students')
+      .select('*, student:users!student_id(full_name)')
+      .eq('classroom_id', classroomId)
+      .order('roll_number', { ascending: true });
+    if (error) throw new APIError('Failed to fetch classroom students', error.code);
+    return (data || []).map((item: any) => ({
+      ...item,
+      class_id: item.classroom_id,
+      full_name: item.student?.full_name || item.full_name || 'Unregistered Student',
+    }));
   },
 
-  /**
-   * @authority update Classroom
-   */
-  async enroll(classroomId: string, studentId: string): Promise<ClassroomStudent> {
-    return (await educationalServices.students.enroll(
-      classroomId,
-      studentId,
-    )) as unknown as ClassroomStudent;
+  async enroll(classroomId: string, studentId: string): Promise<any> {
+    const { data, error } = await supabase
+      .from('classroom_students')
+      .upsert({
+        classroom_id: classroomId,
+        student_id: studentId,
+        status: 'active',
+      })
+      .select()
+      .single();
+    if (error) throw new APIError('Failed to enroll student', error.code);
+    return data;
   },
 
-  /**
-   * @authority update Classroom
-   */
   async remove(classroomId: string, studentId: string): Promise<void> {
-    return educationalServices.students.remove(classroomId, studentId);
+    const { error } = await supabase
+      .from('classroom_students')
+      .delete()
+      .eq('classroom_id', classroomId)
+      .eq('student_id', studentId);
+    if (error) throw new APIError('Failed to remove student from classroom', error.code);
   },
 
-  /**
-   * @authority create Classroom
-   */
-  async create(student: {
+  async create(input: {
     full_name: string;
     roll_number?: string;
     notes?: string;
     classroom_id: string;
-  }) {
-    return educationalServices.classroomStudents.add(
-      student.classroom_id,
-      '', // student_id not needed for shadow student creation
-      student.roll_number,
-      student.notes,
-    );
+  }): Promise<any> {
+    const { data, error } = await supabase
+      .from('classroom_students')
+      .insert([
+        {
+          classroom_id: input.classroom_id,
+          full_name: input.full_name,
+          roll_number: input.roll_number,
+          notes: input.notes,
+        },
+      ])
+      .select()
+      .single();
+    if (error) throw new APIError('Failed to add student to classroom', error.code);
+    return {
+      ...data,
+      class_id: data.classroom_id,
+    };
   },
 
-  /**
-   * @authority update Classroom
-   */
-  async update(id: string, updates: { roll_number?: string; notes?: string }) {
-    return educationalServices.classroomStudents.updateById(id, updates);
+  async update(id: string, updates: { roll_number?: string; notes?: string }): Promise<any> {
+    const { data, error } = await supabase
+      .from('classroom_students')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw new APIError('Failed to update classroom student', error.code);
+    return {
+      ...data,
+      class_id: data.classroom_id,
+    };
   },
 
-  /**
-   * @authority read Classroom
-   */
-  async getTeacherStats(teacherId: string): Promise<TeacherStats> {
-    return educationalServices.classrooms.getTeacherStats(teacherId);
+  async getSchoolLegacyHistory(schoolId: string): Promise<any[]> {
+    const { data, error } = await supabase
+      .from('school_legacy_records')
+      .select('*')
+      .eq('school_id', schoolId)
+      .order('academic_year', { ascending: false });
+
+    if (error) throw new APIError('Failed to fetch school legacy history', error.code);
+    return data || [];
   },
 
-  /**
-   * @authority read AcademicHistory
-   */
-  async getHistoricalAcademicRecords(studentId: string) {
-    return educationalServices.students.getHistoricalAcademicRecords(studentId);
+  async getClassroomLegacyHistory(classroomId: string): Promise<any[]> {
+    const { data, error } = await supabase
+      .from('classroom_legacy_records')
+      .select('*, teacher:users(full_name)')
+      .eq('classroom_id', classroomId)
+      .order('academic_year', { ascending: false });
+
+    if (error) throw new APIError('Failed to fetch classroom legacy history', error.code);
+    return (data || []).map((record: any) => ({
+      ...record,
+      teacher_name: record.teacher?.full_name,
+    }));
   },
 
-  /**
-   * @authority read ProfessionalHistory
-   */
-  async getHistoricalProfessionalRecords(teacherId: string) {
-    return educationalServices.teachers.getHistoricalProfessionalRecords(teacherId);
+  async getHistoricalGovernanceRecords(principalId: string): Promise<any[]> {
+    const { data, error } = await supabase
+      .from('principal_governance_records')
+      .select('*, school:schools(name)')
+      .eq('principal_id', principalId)
+      .order('academic_year', { ascending: false });
+
+    if (error) throw new APIError('Failed to fetch historical governance records', error.code);
+    return (data || []).map((record: any) => ({
+      ...record,
+      school_name: record.school?.name,
+    }));
   },
 
-  /**
-   * @authority read GovernanceHistory
-   */
-  async getHistoricalGovernanceRecords(principalId: string) {
-    return educationalServices.teachers.getHistoricalGovernanceRecords(principalId);
+  async getHistoricalAcademicRecords(studentId: string): Promise<any[]> {
+    const { data, error } = await supabase
+      .from('student_academic_records')
+      .select('*')
+      .eq('student_id', studentId)
+      .order('academic_year', { ascending: false });
+
+    if (error) throw new APIError('Failed to fetch historical academic records', error.code);
+    return data || [];
   },
 
-  /**
-   * @authority read School
-   */
-  async getSchoolLegacyHistory(schoolId: string) {
-    return educationalServices.institutions.getSchoolLegacyHistory(schoolId);
-  },
+  async getHistoricalProfessionalRecords(teacherId: string): Promise<any[]> {
+    const { data, error } = await supabase
+      .from('teacher_professional_records')
+      .select('*, school:schools(name)')
+      .eq('teacher_id', teacherId)
+      .order('academic_year', { ascending: false });
 
-  /**
-   * @authority read Classroom
-   */
-  async getClassroomLegacyHistory(classroomId: string) {
-    return educationalServices.institutions.getClassroomLegacyHistory(classroomId);
+    if (error) throw new APIError('Failed to fetch historical professional records', error.code);
+    return (data || []).map((record: any) => ({
+      ...record,
+      school_name: record.school?.name,
+    }));
   },
 };
-
-// Satisfy linter
-void educationalContract;

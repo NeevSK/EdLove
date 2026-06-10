@@ -15,14 +15,7 @@ export type {
   AttendanceStatus,
   StudentAttendance,
 } from './Attendance';
-export type {
-  AuthorityTier,
-  PlatformAuthority,
-  SchoolAuthority,
-  SchoolRole,
-  WorkCapacity,
-  WorkRole,
-} from './Authority';
+export type { AuthorityTier, Capacity } from './Authority';
 export type { Classroom, ClassroomStudent, StudentAcademicRecord } from './Classroom';
 export type { ClassroomNote } from './ClassroomNote';
 export type {
@@ -42,16 +35,15 @@ export type {
   GroupReport,
   GroupType,
   ManifestoStatus,
-  ManifestoVibe,
   PollData,
   PollOption,
+  PollStatus,
   Post,
   PostType,
   PostVisibility,
   ReportContentInput,
   ReportStatus,
   SanctuaryGroup,
-  SanctuaryManifesto,
   Urgency,
 } from './Community';
 export type {
@@ -63,6 +55,7 @@ export type {
 } from './Form';
 export type { ClassroomGradingSettings, StudentGrade } from './Grade';
 export type { StudentGroup } from './Group';
+export type { Bond, Perspective } from './Identity';
 export type {
   FieldAnalytics,
   InstitutionalAsset,
@@ -96,7 +89,6 @@ export type {
   CapabilityResource,
   PolicyDecision,
 } from './Policy';
-export type { Bond, Perspective, Capacity } from './Identity';
 export type { PrincipalNote } from './PrincipalNote';
 export {
   type ClaimInvitePayload,
@@ -120,6 +112,10 @@ export type {
   CoreRuntimeEnvironment,
   DeviceMetadata,
   StorageProvider,
+} from './runtime';
+export {
+  BackgroundTaskResult,
+  BackgroundTaskStatus,
 } from './runtime';
 export type {
   AcademicCycle,
@@ -166,6 +162,7 @@ export type {
   PerspectiveViewProps,
 } from './visualization';
 export type {
+  DomainFeature,
   ResolvedWorkspaceSurface,
   WorkspaceLayout,
   WorkspaceOwnerPackage,
@@ -174,6 +171,9 @@ export type {
   WorkspaceRendererPlatform,
   WorkspaceRuntimePlatform,
   WorkspaceSurfaceDefinition,
+  WorkspaceSwitcherDestination,
+  WorkspaceSwitcherTarget,
+  WorkspaceSwitcherTargetId,
   WorkspaceZoneId,
 } from './Workspace';
 export { APIError };
@@ -182,3 +182,5 @@ export { APIError };
 export type DeviceInfo = DeviceMetadata & { uniqueId: string };
 export type AppConfig = { env: string; apiHost: string };
 export type AppContext = { user?: User; schoolId?: string };
+export * from './Growth';
+export type { AppNotification, NotificationStatus } from './notifications';

@@ -23,16 +23,16 @@ describe('workspace layout POA coverage', () => {
     expect(coverage.contract).toBe(workspaceLayoutContract);
   });
 
-  test('workspace layout routes carry authority metadata', () => {
-    expect(workspaceLayoutContract.getWorkspaceLayout.metadata?.authority).toEqual({
+  test('workspace layout routes carry policy metadata', () => {
+    expect(workspaceLayoutContract.getWorkspaceLayout.metadata?.policy).toEqual({
       action: 'read',
       subject: 'WorkspaceLayout',
     });
-    expect(workspaceLayoutContract.upsertWorkspaceLayout.metadata?.authority).toEqual({
+    expect(workspaceLayoutContract.upsertWorkspaceLayout.metadata?.policy).toEqual({
       action: 'update',
       subject: 'WorkspaceLayout',
     });
-    expect(workspaceLayoutContract.deleteWorkspaceLayout.metadata?.authority).toEqual({
+    expect(workspaceLayoutContract.deleteWorkspaceLayout.metadata?.policy).toEqual({
       action: 'delete',
       subject: 'WorkspaceLayout',
     });

@@ -1,6 +1,11 @@
 import { cssInterop } from 'nativewind';
 import React from 'react';
-import { type ActivityIndicatorProps, Text as RNText, type TextProps, type ViewProps,  } from 'react-native';
+import {
+  type ActivityIndicatorProps,
+  Text as RNText,
+  type TextProps,
+  type ViewProps,
+} from 'react-native';
 import { ActivityIndicator, View } from '../../primitives';
 
 cssInterop(ActivityIndicator, { className: 'style' });

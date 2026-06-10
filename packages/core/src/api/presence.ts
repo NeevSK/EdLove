@@ -1,7 +1,7 @@
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 export interface PresenceFallbackCountOptions {
-  targetRoles: string[];
+  targetCapacities: string[];
   isCumulative: boolean;
   userId?: string;
   windowMs?: number;
@@ -9,7 +9,7 @@ export interface PresenceFallbackCountOptions {
 
 export interface PresenceSessionOptions {
   userId: string;
-  userRole: string;
+  userCapacity: string;
   userVibe?: string;
   channelName: string;
   onCountChange: (count: number) => void;
@@ -21,14 +21,14 @@ export async function fetchPresenceFallbackCount(
 ): Promise<number> {
   const now = Date.now();
   const fiveMinutesAgo = new Date(now - (options.windowMs ?? 5 * 60 * 1000)).toISOString();
-  let query = supabase
+  let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
     .from('users')
     .select('id', { count: 'exact', head: true })
     .gte('last_seen_at', fiveMinutesAgo);
 
   if (!options.isCumulative) {
-    query = query.in('role', options.targetRoles);
-  } else if (options.userId && options.userId !== 'guest') {
+    query = query.in('capacity', options.targetCapacities);
+  } else if (options.userId && options.userId !== 'anonymous') {
     query = query.neq('id', options.userId);
   }
 
@@ -39,7 +39,7 @@ export async function fetchPresenceFallbackCount(
 }
 
 export async function markUserPresenceSeen(userId: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
     .from('users')
     .update({ last_seen_at: new Date().toISOString() })
     .eq('id', userId);
@@ -48,23 +48,27 @@ export async function markUserPresenceSeen(userId: string): Promise<void> {
 }
 
 export function startPresenceSession(options: PresenceSessionOptions): () => void {
-  const selfChannel = supabase.channel(`presence:self:${options.userRole}`);
-  const watcherChannel = supabase.channel(options.channelName);
+  const selfChannel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.channel(
+    `presence:self:${options.userCapacity}`,
+  );
+  const watcherChannel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.channel(options.channelName);
 
-  selfChannel.subscribe(async (status) => {
+  selfChannel.subscribe((status) => {
     if (status !== 'SUBSCRIBED') return;
 
-    try {
-      await markUserPresenceSeen(options.userId);
-      await selfChannel.track({
-        user_id: options.userId,
-        vibe: options.userVibe ?? 'active',
-        // DETERMINISTIC_OK: Background side-effect for presence heartbeat.
-        online_at: new Date().toISOString(),
-      });
-    } catch {
-      options.onOfflineChange(true);
-    }
+    void (async () => {
+      try {
+        await markUserPresenceSeen(options.userId);
+        await selfChannel.track({
+          user_id: options.userId,
+          vibe: options.userVibe ?? 'active',
+          // DETERMINISTIC_OK: Background side-effect for presence heartbeat.
+          online_at: new Date().toISOString(),
+        });
+      } catch {
+        options.onOfflineChange(true);
+      }
+    })();
   });
 
   watcherChannel
@@ -84,10 +88,10 @@ export function startPresenceSession(options: PresenceSessionOptions): () => voi
     });
 
   return () => {
-    supabase.removeChannel(selfChannel).catch((e) => {
+    __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.removeChannel(selfChannel).catch((e) => {
       console.error('Presence: Failed to remove self channel', e);
     });
-    supabase.removeChannel(watcherChannel).catch((e) => {
+    __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.removeChannel(watcherChannel).catch((e) => {
       console.error('Presence: Failed to remove watcher channel', e);
     });
   };

@@ -1,5 +1,5 @@
 import { profileAPI } from '@repo/core/api';
-import { handleAPIError, type Capacity, usePermissions, useAuth } from '@repo/core/logic';
+import { type Capacity, handleAPIError, usePermissions } from '@repo/core/logic';
 import {
   Box,
   Button,
@@ -45,6 +45,9 @@ interface EditProfileModalProps {
 
 type EditState = {
   fullName: string;
+  firstName: string;
+  lastName: string;
+  username: string;
   phone: string;
   bio: string;
   loading: boolean;
@@ -68,7 +71,10 @@ function editReducer(state: EditState, action: EditAction): EditState {
     case 'INITIALIZE':
       return {
         ...state,
-        fullName: action.payload.full_name || '',
+        fullName: action.payload.display_name || '',
+        firstName: action.payload.first_name || '',
+        lastName: action.payload.last_name || '',
+        username: action.payload.username || '',
         phone: action.payload.phone || '',
         bio: action.payload.bio || '',
         selectedCapacity: action.payload.bonds?.[0]?.capacity || 'student',
@@ -87,6 +93,9 @@ function editReducer(state: EditState, action: EditAction): EditState {
 
 const initialState: EditState = {
   fullName: '',
+  firstName: '',
+  lastName: '',
+  username: '',
   phone: '',
   bio: '',
   loading: false,
@@ -108,10 +117,22 @@ export default function EditProfileModal({
   currentProfile,
 }: EditProfileModalProps) {
   const { t } = useTranslation();
-  const { ability } = usePermissions();
+  const { can } = usePermissions();
   const [state, dispatch] = useReducer(editReducer, initialState);
 
-  const { fullName, phone, bio, loading, selectedCapacity, avatarUrl, nicNumber, indexNumber } = state;
+  const {
+    fullName,
+    firstName,
+    lastName,
+    username,
+    phone,
+    bio,
+    loading,
+    selectedCapacity,
+    avatarUrl,
+    nicNumber,
+    indexNumber,
+  } = state;
 
   useEffect(() => {
     if (currentProfile) {
@@ -144,23 +165,27 @@ export default function EditProfileModal({
     hapticLight();
 
     try {
-      const isStaff = ability.can('update', 'TeacherProfile');
-      const isStudent = ability.can('update', 'StudentProfile');
+      const isStaff = can('update', 'TeacherProfile');
+      const isStudent = can('update', 'StudentProfile');
 
       const updates: Record<string, unknown> = {
-        ['full_name']: fullName,
-        ['phone']: phone,
-        ['bio']: bio,
-        ['nic_number']: isStaff ? nicNumber : null,
-        ['index_number']: isStudent ? indexNumber : null,
+        display_name: fullName,
+        first_name: firstName,
+        last_name: lastName,
+        username: username || null,
+        phone: phone,
+        bio: bio,
+        nic_number: isStaff ? nicNumber : null,
+        index_number: isStudent ? indexNumber : null,
       };
 
       if (avatarUrl?.startsWith('file://')) {
         try {
-          const updatedProfile = (await profileAPI.uploadAvatar(currentProfile.id, {
-            local_uri: avatarUrl,
-          })) as UserProfile;
-          updates['avatar_url'] = updatedProfile['avatar_url'];
+          const updatedProfile = (await profileAPI.uploadAvatar(
+            currentProfile.id,
+            avatarUrl,
+          )) as UserProfile;
+          updates.avatar_url = updatedProfile.avatar_url;
         } catch (uploadError) {
           handleAPIError(uploadError);
         }
@@ -168,15 +193,12 @@ export default function EditProfileModal({
         avatarUrl &&
         (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://'))
       ) {
-        updates['avatar_url'] = avatarUrl;
+        updates.avatar_url = avatarUrl;
       }
 
       // Capacity updates are restricted to platform admins in V3
       // Normal users update their profile, but their capacity is managed via Bonds
-      if (
-        selectedCapacity &&
-        ability.can('manage', 'all')
-      ) {
+      if (selectedCapacity && can('manage', 'all')) {
         // POA: In a real ReBAC system, this would involve a Bond update API
         // For now, we'll track this as a requirement for the Bond Manager
       }
@@ -257,6 +279,67 @@ export default function EditProfileModal({
 
                   <VStack space="sm">
                     <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1">
+                      {t('profile.firstName') || 'FIRST NAME'}
+                    </Text>
+                    <Input
+                      className="h-16 rounded-3xl bg-phase-surface/30 border-phase-surface/50 px-2"
+                      isDisabled={loading}
+                    >
+                      <InputField
+                        className="text-phase-text-primary font-bold"
+                        value={firstName}
+                        onChangeText={(text) =>
+                          dispatch({ type: 'SET_FIELD', field: 'firstName', value: text })
+                        }
+                        placeholder={t('profile.firstNamePlaceholder') || 'First name'}
+                        placeholderTextColor="#9DA1A3"
+                      />
+                    </Input>
+                  </VStack>
+
+                  <VStack space="sm">
+                    <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1">
+                      {t('profile.lastName') || 'LAST NAME'}
+                    </Text>
+                    <Input
+                      className="h-16 rounded-3xl bg-phase-surface/30 border-phase-surface/50 px-2"
+                      isDisabled={loading}
+                    >
+                      <InputField
+                        className="text-phase-text-primary font-bold"
+                        value={lastName}
+                        onChangeText={(text) =>
+                          dispatch({ type: 'SET_FIELD', field: 'lastName', value: text })
+                        }
+                        placeholder={t('profile.lastNamePlaceholder') || 'Last name'}
+                        placeholderTextColor="#9DA1A3"
+                      />
+                    </Input>
+                  </VStack>
+
+                  <VStack space="sm">
+                    <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1">
+                      {t('profile.username') || 'USERNAME'}
+                    </Text>
+                    <Input
+                      className="h-16 rounded-3xl bg-phase-surface/30 border-phase-surface/50 px-2"
+                      isDisabled={loading}
+                    >
+                      <InputField
+                        className="text-phase-text-primary font-bold"
+                        value={username}
+                        onChangeText={(text) =>
+                          dispatch({ type: 'SET_FIELD', field: 'username', value: text })
+                        }
+                        placeholder={t('profile.handlePlaceholder') || 'your-handle'}
+                        placeholderTextColor="#9DA1A3"
+                        autoCapitalize="none"
+                      />
+                    </Input>
+                  </VStack>
+
+                  <VStack space="sm">
+                    <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1">
                       {t('profile.fullName') || 'FULL NAME'}
                     </Text>
                     <Input
@@ -321,7 +404,7 @@ export default function EditProfileModal({
                     </Input>
                   </VStack>
 
-                  {ability.can('update', 'TeacherProfile') && (
+                  {can('update', 'TeacherProfile') && (
                     <VStack space="sm">
                       <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1">
                         {t('profile.nicNumber') || 'NIC NUMBER'}
@@ -343,7 +426,7 @@ export default function EditProfileModal({
                     </VStack>
                   )}
 
-                  {ability.can('update', 'StudentProfile') && (
+                  {can('update', 'StudentProfile') && (
                     <VStack space="sm">
                       <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1">
                         {t('profile.indexNumber') || 'INDEX NUMBER'}
@@ -365,7 +448,7 @@ export default function EditProfileModal({
                     </VStack>
                   )}
 
-                  {ability.can('manage', 'all') && (
+                  {can('manage', 'all') && (
                     <Box>
                       <Text className="text-phase-text-tertiary text-[10px] font-bold uppercase tracking-[2px] ml-1 mb-2">
                         {t('profile.role') || 'Sovereign Identity'}

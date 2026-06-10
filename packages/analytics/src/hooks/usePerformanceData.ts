@@ -1,1 +1,1 @@
-export { useClassPerformanceData as usePerformanceData } from "./queries";
+export { useClassPerformanceData as usePerformanceData } from './queries';

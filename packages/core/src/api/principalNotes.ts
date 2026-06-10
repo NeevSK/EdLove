@@ -12,10 +12,9 @@
 
 import { APIError } from '../types/API';
 import type { PrincipalNote } from '../types/PrincipalNote';
-import { identityAPI } from './identity';
-import { supabase } from './supabase';
 
-export type { PrincipalNote };
+import { identityAPI } from './identity';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 export const principalNotesAPI = {
   /**
@@ -24,10 +23,10 @@ export const principalNotesAPI = {
    * RLS guarantees only the author ever sees their own notes.
    */
   async getAll(schoolId: string): Promise<PrincipalNote[]> {
-    const myId = await identityAPI.getMyInternalId();
-    if (!myId) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
+    const identity = await identityAPI.identifyActiveCitizen();
+    if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('principal_notes')
       .select(`
                 *,
@@ -35,7 +34,7 @@ export const principalNotesAPI = {
                 context_classroom:classrooms!principal_notes_context_classroom_id_fkey(name)
             `)
       .eq('school_id', schoolId)
-      .eq('author_id', myId)
+      .eq('author_id', identity.id)
       .order('is_pinned', { ascending: false })
       .order('created_at', { ascending: false });
 
@@ -48,14 +47,14 @@ export const principalNotesAPI = {
    * dashboard preview strip.
    */
   async getRecent(schoolId: string, limit = 3): Promise<PrincipalNote[]> {
-    const myId = await identityAPI.getMyInternalId();
-    if (!myId) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
+    const identity = await identityAPI.identifyActiveCitizen();
+    if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('principal_notes')
       .select('*')
       .eq('school_id', schoolId)
-      .eq('author_id', myId)
+      .eq('author_id', identity.id)
       .eq('is_done', false)
       .order('is_pinned', { ascending: false })
       .order('created_at', { ascending: false })
@@ -75,15 +74,15 @@ export const principalNotesAPI = {
     context_teacher_id?: string | null;
     context_classroom_id?: string | null;
   }): Promise<PrincipalNote> {
-    const myId = await identityAPI.getMyInternalId();
-    if (!myId) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
+    const identity = await identityAPI.identifyActiveCitizen();
+    if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('principal_notes')
       .insert([
         {
           ...note,
-          author_id: myId,
+          author_id: identity.id,
           is_pinned: false,
           is_done: false,
         },
@@ -103,7 +102,7 @@ export const principalNotesAPI = {
     id: string,
     updates: Partial<Pick<PrincipalNote, 'content' | 'is_pinned' | 'is_done'>>,
   ): Promise<PrincipalNote> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('principal_notes')
       .update({ ...updates, updated_at: new Date().toISOString() })
       .eq('id', id)
@@ -118,7 +117,10 @@ export const principalNotesAPI = {
    * Delete a note. Only the author can delete (enforced by RLS).
    */
   async delete(id: string): Promise<void> {
-    const { error } = await supabase.from('principal_notes').delete().eq('id', id);
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      .from('principal_notes')
+      .delete()
+      .eq('id', id);
 
     if (error) throw new APIError('Failed to delete principal note', error.code, error);
   },

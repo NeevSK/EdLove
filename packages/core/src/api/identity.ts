@@ -1,120 +1,110 @@
-import { getOnboardingState } from '../logic/domains/profile/onboarding';
-import { type User, UserSchema } from '../logic/schemas/user.schema';
-import { identity } from '../logic/managers/factory';
 import { APIError } from '../types/API';
-import { supabase } from './supabase';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
+import { assertHighway } from './highways';
 
-// State is managed by the adapter now
+/**
+ * Simplified bond structure returned by the identity API
+ * The full Bond structure includes additional fields like user_id, entity_id, etc.
+ * that are filled in by the store layer
+ */
+export interface SimplifiedBond {
+  id: string;
+  capacity: string;
+}
 
+/**
+ * IDENTITY API (Sovereign RPC Proxy)
+ *
+ * Siphons Identity and Profile management to the Sanctuary API.
+ * [BREAKING] Renamed methods to force loud failure in UI.
+ */
+
+export interface ActiveCitizen {
+  id: string;
+  email: string;
+  display_name: string;
+  availableBonds: SimplifiedBond[];
+  activeBond?: SimplifiedBond;
+  onboarding_completed?: boolean;
+  schoolId?: string;
+}
+
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
+let inFlightIdentityRequest: Promise<ActiveCitizen | null> | null = null;
 
 export const identityAPI = {
   /**
-   * Resolves the internal user ID from a provider and provider-specific user ID.
+   * [LOUD-FAILURE] Renamed from resolveIdentity.
    */
-  async resolveInternalId(provider: string, providerUserId: string): Promise<string | null> {
-    return identity.resolveInternalId(provider, providerUserId);
+  async identifyActiveCitizen(): Promise<ActiveCitizen | null> {
+    assertHighway('identity_bootstrap', 'direct-api');
+    if (!inFlightIdentityRequest) {
+      inFlightIdentityRequest = (async () => {
+        const res = await (client.api as any).identity.resolveIdentity.$get();
+        if (!res.ok) {
+          throw new APIError('Failed to resolve identity', res.status.toString());
+        }
+        return await res.json();
+      })().finally(() => {
+        inFlightIdentityRequest = null;
+      });
+    }
+
+    return await inFlightIdentityRequest;
   },
 
   /**
-   * Links an authentication identity to an existing internal user.
-   */
-  async linkIdentity(userId: string, provider: string, providerUserId: string) {
-    return identity.linkIdentity(userId, provider, providerUserId);
-  },
-
-  /**
-   * Resolves the current logged-in user's internal ID.
+   * Legacy shim for getMyInternalId to ensure backward compatibility across package hooks.
    */
   async getMyInternalId(): Promise<string | null> {
-    return identity.getMyInternalId();
+    const citizen = await this.identifyActiveCitizen();
+    return citizen?.id ?? null;
   },
 
   /**
-   * Fetches the full user profile from the `users` table.
+   * [LOUD-FAILURE] Renamed from getProfile.
    */
-  async getProfile(userId: string): Promise<User> {
-    const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
-
-    if (error) {
-      throw new APIError('Failed to fetch user profile', error.code, error);
+  async fetchUserProfile(id: string) {
+    assertHighway('profile_core', 'direct-api');
+    const res = await (client.api as any).identity.profile[':id'].$get({
+      param: { id },
+    });
+    if (!res.ok) {
+      throw new APIError('Failed to fetch profile', res.status.toString());
     }
-
-    return UserSchema.parse(data);
+    return await res.json();
   },
 
   /**
-   * Updates the user's profile in the `users` table.
+   * [LOUD-FAILURE] Renamed from updateProfile.
    */
-  async updateProfile(userId: string, updates: Partial<User>) {
-    // Validate updates against partial UserSchema
-    const validatedUpdates = UserSchema.partial().parse(updates);
-
-    const { error } = await supabase.from('users').update(validatedUpdates).eq('id', userId);
-
-    if (error) {
-      throw new APIError('Failed to update user profile', error.code, error);
+  async modifyUserProfile(id: string, updates: Record<string, unknown>) {
+    assertHighway('profile_core', 'direct-api');
+    const res = await (client.api as any).identity.profile[':id'].$patch({
+      param: { id },
+      json: updates,
+    });
+    if (!res.ok) {
+      throw new APIError('Failed to update profile', res.status.toString());
     }
-  },
-
-  async getBonds(userId: string) {
-    return identity.getBonds(userId);
-  },
-
-  async getActivePerspective() {
-    return identity.getActivePerspective();
-  },
-
-  async switchPerspective(entityId: string, capacity: any) {
-    return identity.switchPerspective(entityId, capacity);
-  },
-
-
-  /**
-   * Returns the classroom workspace summary needed by the academic daily-work shell.
-   */
-  async getClassroomRoleSummary(userId: string) {
-    const [profile, bonds, activePerspective] = await Promise.all([
-      identity.getProfile(userId),
-      identity.getBonds(userId),
-      identity.getActivePerspective(),
-    ]);
-
-    const active_bond = activePerspective?.active_bond || null;
-
-    // A "real class count" is now a count of Classroom Bonds
-    const realClassCount = bonds.filter(b => b.entity_type === 'CLASSROOM').length;
-
-    return {
-      user_id: userId,
-      school_id: profile.school_id,
-      profile_completed: !!profile.profile_completed,
-      onboarding_completed: !!profile.onboarding_completed,
-      onboarding_state: getOnboardingState(profile, active_bond),
-      real_class_count: realClassCount,
-      profile: {
-        ...profile,
-        active_bond,
-      },
-    };
+    return await res.json();
   },
 
   /**
-   * Returns the explicit onboarding state for the current user.
+   * [LOUD-FAILURE] Renamed from getClassroomCapacitySummary.
    */
-  async getOnboardingStatus(userId: string) {
-    const profile = await identity.getProfile(userId);
-    const perspective = await identity.getActivePerspective();
-    return {
-      state: getOnboardingState(profile, perspective?.active_bond),
-      profile,
-    };
+  async resolveWorkspaceContext(id: string) {
+    assertHighway('workspace_sync', 'direct-api');
+    const res = await (client.api as any).identity['classroom-capacity-summary'][':id'].$get({
+      param: { id },
+    });
+    if (!res.ok) {
+      throw new APIError('Failed to fetch workspace context', res.status.toString());
+    }
+    return await res.json();
   },
 
-  /**
-   * Clears the identity cache (e.g., on logout).
-   */
-  clearCache() {
-    // Adapter handles its own cache clearing via auth subscription if needed,
-    // but we can expose it if added to port. For now, no-op.
+  async updateProfile(id: string, updates: Record<string, unknown>) {
+    return this.modifyUserProfile(id, updates);
   },
 };

@@ -44,9 +44,20 @@ yarn-error.log*
 ## IDEs
 .vscode/
 .idea/
-.claude/
+.claude/*
+!.claude/skills/
 ## Generated audit artifacts
 audit-results.json
+report_final.json
+report-*.json
+eslint-report.json
+
 
 # Geo Archive Artifacts
 .geo_archive/
+
+# Local scratch, diagnostics, and lint results
+diagnostics/
+scratch/
+packages/library/lint_results.json
+

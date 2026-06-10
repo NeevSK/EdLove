@@ -1,9 +1,8 @@
-// @ts-ignore - fast-json-patch is installed but tsc environment may need refresh
-import { compare, applyPatch, Operation } from 'fast-json-patch';
+import { applyPatch, compare, type Operation } from 'fast-json-patch';
 
 /**
  * DeltaResonance Utility
- * 
+ *
  * Provides surgical state diffing and patching for low-bandwidth sync.
  * Aligned with 2026 "Server-First" and "Resilience-First" standards.
  */
@@ -35,5 +34,5 @@ export const DeltaResonance = {
       patch,
       timestamp: Date.now(),
     };
-  }
+  },
 };

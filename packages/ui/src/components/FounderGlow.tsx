@@ -1,5 +1,5 @@
 import type React from 'react';
-import { type ViewStyle } from 'react-native';
+import type { ViewStyle } from 'react-native';
 import { View } from '../primitives';
 import { LivingGlow } from './LivingGlow';
 

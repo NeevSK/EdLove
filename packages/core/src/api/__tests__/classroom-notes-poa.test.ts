@@ -1,10 +1,29 @@
-vi.mock('../../lib/supabase', () => ({
-  supabase: {},
+vi.mock('../supabase', () => ({
+  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__: {
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          single: vi.fn(() => Promise.resolve({ data: { id: 'test-1' }, error: null })),
+          insert: vi.fn(() => Promise.resolve({ data: { id: 'test-1' }, error: null })),
+        })),
+      })),
+    })),
+  },
+  supabase: {
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          single: vi.fn(() => Promise.resolve({ data: { id: 'test-1' }, error: null })),
+          insert: vi.fn(() => Promise.resolve({ data: { id: 'test-1' }, error: null })),
+        })),
+      })),
+    })),
+  },
 }));
 
 vi.mock('../identity', () => ({
   identityAPI: {
-    getMyInternalId: vi.fn(),
+    identifyActiveCitizen: vi.fn(),
   },
 }));
 
@@ -33,28 +52,28 @@ describe('classroom notes POA coverage', () => {
     expect(coverage.contract).toBe(classroomNotesContract);
   });
 
-  test('classroom notes routes carry authority metadata', () => {
-    expect(classroomNotesContract.listVisibleNotes.metadata?.authority).toEqual({
+  test('classroom notes routes carry policy metadata', () => {
+    expect(classroomNotesContract.listVisibleNotes.metadata?.policy).toEqual({
       action: 'read',
       subject: 'ClassroomNote',
     });
-    expect(classroomNotesContract.getVisibleNotesSnapshot.metadata?.authority).toEqual({
+    expect(classroomNotesContract.getVisibleNotesSnapshot.metadata?.policy).toEqual({
       action: 'read',
       subject: 'ClassroomNote',
     });
-    expect(classroomNotesContract.createClassroomNote.metadata?.authority).toEqual({
+    expect(classroomNotesContract.createClassroomNote.metadata?.policy).toEqual({
       action: 'create',
       subject: 'ClassroomNote',
     });
-    expect(classroomNotesContract.updateClassroomNote.metadata?.authority).toEqual({
+    expect(classroomNotesContract.updateClassroomNote.metadata?.policy).toEqual({
       action: 'update',
       subject: 'ClassroomNote',
     });
-    expect(classroomNotesContract.deleteClassroomNote.metadata?.authority).toEqual({
+    expect(classroomNotesContract.deleteClassroomNote.metadata?.policy).toEqual({
       action: 'delete',
       subject: 'ClassroomNote',
     });
-    expect(classroomNotesContract.getClassroomNoteTimeline.metadata?.authority).toEqual({
+    expect(classroomNotesContract.getClassroomNoteTimeline.metadata?.policy).toEqual({
       action: 'read',
       subject: 'ClassroomNote',
     });

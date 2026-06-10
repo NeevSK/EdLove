@@ -3,9 +3,8 @@ import { ChevronLeft, ChevronRight, ExternalLink, RotateCcw, Share2, X } from 'l
 import type React from 'react';
 import { useCallback, useReducer, useRef } from 'react';
 import { Linking, Share, StyleSheet } from 'react-native';
-import { ActivityIndicator } from '../primitives';
 import { WebView, type WebViewNavigation } from 'react-native-webview';
-import { Pressable, Text, useTheme, View } from '../primitives';
+import { ActivityIndicator, Pressable, Text, useTheme, View } from '../primitives';
 
 export interface InternalBrowserProps {
   url: string;
@@ -13,7 +12,6 @@ export interface InternalBrowserProps {
   title?: string;
   showToolbar?: boolean;
 }
-
 
 // ============================================================================
 // TYPES & REDUCER
@@ -107,12 +105,11 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
   const handleOpenExternal = useCallback(async () => {
     try {
       await WebBrowser.openBrowserAsync(currentUrl);
-    } catch (_error) {
+    } catch {
       // Fallback to basic Linking
-      Linking.openURL(currentUrl);
+      void Linking.openURL(currentUrl);
     }
   }, [currentUrl]);
-
 
   return (
     <View style={[styles.container, { backgroundColor: scene.canvas.bg }]}>
@@ -144,7 +141,12 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
         </View>
 
         <View style={styles.headerRight}>
-          <Pressable onPress={handleOpenExternal} style={styles.iconButton}>
+          <Pressable
+            onPress={() => {
+              void handleOpenExternal();
+            }}
+            style={styles.iconButton}
+          >
             <ExternalLink size={18} color={scene.text.primary} />
           </Pressable>
         </View>
@@ -219,7 +221,12 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
             <RotateCcw size={20} color={scene.text.primary} />
           </Pressable>
 
-          <Pressable onPress={handleShare} style={styles.toolbarButton}>
+          <Pressable
+            onPress={() => {
+              void handleShare();
+            }}
+            style={styles.toolbarButton}
+          >
             <Share2 size={20} color={scene.text.primary} />
           </Pressable>
         </View>
@@ -295,7 +302,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,

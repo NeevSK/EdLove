@@ -1,32 +1,28 @@
+import { educational } from '../logic/managers/factory';
 import type { ClassroomNoteLifecycleEvent } from '../logic/schemas/classroom-note.schema';
-import { classroomNotesServices } from './runtimes/classroomNotes.runtime';
 import { APIError } from '../types/API';
 import type { ClassroomNote } from '../types/ClassroomNote';
-import { classroomNotesContract } from './classroomNotes.contract';
 import { identityAPI } from './identity';
-
-export type { ClassroomNote };
 
 export const classroomNotesAPI = {
   /**
-   * @authority read ClassroomNote
+   * @policy read ClassroomNote
    */
   async getAll(classroomId: string): Promise<ClassroomNote[]> {
-    return (await classroomNotesServices.listVisibleNotes(classroomId)) as ClassroomNote[];
+    return educational.classroomNotes.getAll(classroomId) as Promise<ClassroomNote[]>;
   },
 
   /**
-   * @authority read ClassroomNote
+   * @policy read ClassroomNote
    */
   async getSnapshotAsOf(classroomId: string, viewDate: string): Promise<ClassroomNote[]> {
-    return (await classroomNotesServices.listVisibleNotesAsOf(
-      classroomId,
-      viewDate,
-    )) as ClassroomNote[];
+    return educational.classroomNotes.getSnapshotAsOf(classroomId, viewDate) as Promise<
+      ClassroomNote[]
+    >;
   },
 
   /**
-   * @authority create ClassroomNote
+   * @policy create ClassroomNote
    */
   async create(note: {
     classroom_id: string;
@@ -34,39 +30,37 @@ export const classroomNotesAPI = {
     note_type: ClassroomNote['note_type'];
     visibility: ClassroomNote['visibility'];
   }): Promise<ClassroomNote> {
-    const myId = await identityAPI.getMyInternalId();
-    if (!myId) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
-    
-    return (await classroomNotesServices.createNote(myId, {
+    const identity = await identityAPI.identifyActiveCitizen();
+    if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
+
+    return educational.classroomNotes.create(identity.id, {
       ...note,
-      author_id: myId,
+      author_id: identity.id,
       is_pinned: false,
-    })) as ClassroomNote;
+    }) as Promise<ClassroomNote>;
   },
 
   /**
-   * @authority update ClassroomNote
+   * @policy update ClassroomNote
    */
   async update(
     id: string,
     updates: Partial<Pick<ClassroomNote, 'content' | 'is_pinned' | 'visibility'>>,
   ): Promise<ClassroomNote> {
-    return (await classroomNotesServices.updateNote(id, updates)) as ClassroomNote;
+    return educational.classroomNotes.update(id, updates) as Promise<ClassroomNote>;
   },
 
   /**
-   * @authority delete ClassroomNote
+   * @policy delete ClassroomNote
    */
   async delete(id: string): Promise<void> {
-    await classroomNotesServices.deleteNote(id);
+    await educational.classroomNotes.delete(id);
   },
 
   /**
-   * @authority read ClassroomNote
+   * @policy read ClassroomNote
    */
   async getTimeline(id: string): Promise<ClassroomNoteLifecycleEvent[]> {
-    return classroomNotesServices.getNoteTimeline(id);
+    return educational.classroomNotes.getTimeline(id) as Promise<ClassroomNoteLifecycleEvent[]>;
   },
 };
-
-void classroomNotesContract;

@@ -1,9 +1,6 @@
-import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { POAMetadataSchema } from './contract';
+import type { SovereignContract } from './contract';
 import { FacetedProfileSchema, IdentitySchema } from './identity.generated';
-
-const c = initContract();
 
 export const OnboardingStateSchema = z.enum([
   'ARRIVAL',
@@ -12,7 +9,7 @@ export const OnboardingStateSchema = z.enum([
   'COMPLETED',
 ]);
 
-export const ClassroomRoleSummarySchema = z.object({
+export const ClassroomCapacitySummarySchema = z.strictObject({
   user_id: z.uuid(),
   school_id: z.uuid().nullable(),
   profile_completed: z.boolean(),
@@ -22,79 +19,73 @@ export const ClassroomRoleSummarySchema = z.object({
   profile: FacetedProfileSchema,
 });
 
-export const identityContract = c.router({
-  resolveIdentity: {
-    method: 'GET',
-    path: '/identity/resolve',
+const userAuthority = (action: 'resolve' | 'read' | 'update') =>
+  ({
+    policy: { action, subject: 'User' },
+  }) as const;
+
+/**
+ * Identity & Profile Port (Sovereign RPC)
+ * Framework-agnostic definition of the Identity API.
+ * [LOUD-FAILURE] Renamed methods to force architectural compliance.
+ */
+export const identityContract = {
+  identifyActiveCitizen: {
+    method: 'get',
+    path: '/identity/resolveIdentity',
+    request: {},
     responses: {
-      200: IdentitySchema,
-    },
-    metadata: POAMetadataSchema.parse({
-      authority: {
-        action: 'resolve',
-        subject: 'User',
+      200: {
+        schema: IdentitySchema,
+        description: 'Resolve current identity',
       },
-    }),
-    summary: 'Resolve the current user identity and roles',
+    },
+    metadata: userAuthority('resolve'),
   },
-  getProfile: {
-    method: 'GET',
+
+  fetchUserProfile: {
+    method: 'get',
     path: '/identity/profile/:id',
-    responses: {
-      200: IdentitySchema,
+    request: {
+      params: z.strictObject({ id: z.uuid() }),
     },
-    metadata: POAMetadataSchema.parse({
-      authority: {
-        action: 'read',
-        subject: 'User',
-      },
-    }),
-    summary: 'Get a user profile by ID',
-  },
-  getClassroomRoleSummary: {
-    method: 'GET',
-    path: '/identity/classroom-role-summary/:id',
     responses: {
-      200: ClassroomRoleSummarySchema,
-    },
-    metadata: POAMetadataSchema.parse({
-      authority: {
-        action: 'read',
-        subject: 'User',
+      200: {
+        schema: IdentitySchema,
+        description: 'Get user profile',
       },
-    }),
-    summary: 'Get classroom workspace role summary for a user',
+    },
+    metadata: userAuthority('read'),
   },
-  updateProfile: {
-    method: 'PATCH',
+
+  resolveWorkspaceContext: {
+    method: 'get',
+    path: '/identity/classroom-capacity-summary/:id',
+    request: {
+      params: z.strictObject({ id: z.uuid() }),
+    },
+    responses: {
+      200: {
+        schema: ClassroomCapacitySummarySchema,
+        description: 'Get capacity summary',
+      },
+    },
+    metadata: userAuthority('read'),
+  },
+
+  modifyUserProfile: {
+    method: 'patch',
     path: '/identity/profile/:id',
-    body: IdentitySchema.partial(),
-    responses: {
-      200: IdentitySchema,
+    request: {
+      params: z.strictObject({ id: z.uuid() }),
+      body: IdentitySchema.partial(),
     },
-    metadata: POAMetadataSchema.parse({
-      authority: {
-        action: 'update',
-        subject: 'User',
-      },
-    }),
-    summary: 'Update a user profile',
-  },
-  getOnboardingStatus: {
-    method: 'GET',
-    path: '/identity/onboarding-status/:id',
     responses: {
-      200: z.object({
-        state: OnboardingStateSchema,
-        profile: IdentitySchema,
-      }),
-    },
-    metadata: POAMetadataSchema.parse({
-      authority: {
-        action: 'read',
-        subject: 'User',
+      200: {
+        schema: IdentitySchema,
+        description: 'Update user profile',
       },
-    }),
-    summary: 'Get the explicit onboarding state for a user',
+    },
+    metadata: userAuthority('update'),
   },
-});
+} as const satisfies SovereignContract;

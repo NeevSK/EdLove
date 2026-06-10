@@ -1,7 +1,8 @@
 import type { Session } from '@supabase/supabase-js';
 import { deviceTrustAPI } from '../api/deviceTrust';
+import { assertHighway } from '../api/highways';
 import { identityAPI } from '../api/identity';
-import { supabase } from '../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import { accountPin } from '../lib/accountPin';
 import { getActiveAccountId, setActiveAccountId } from '../lib/accountScope';
 import { storage } from '../lib/storage';
@@ -20,9 +21,9 @@ export interface DeviceAccountRecord {
   accountId: string;
   authUserId: string;
   email: string | null;
-  fullName: string | null;
+  displayName: string | null;
   avatarUrl: string | null;
-  role: string | null;
+  capacity: string | null;
   schoolId: string | null;
   isAnonymous: boolean;
   createdAt: string;
@@ -32,9 +33,9 @@ export interface DeviceAccountRecord {
 export interface DeviceAccountProfile {
   id: string;
   email: string | null;
-  full_name: string | null;
+  display_name: string | null;
   avatar_url: string | null;
-  role: string | null;
+  capacity: string | null;
   school_id: string | null;
   is_anonymous?: boolean;
 }
@@ -99,7 +100,10 @@ export const deviceAccounts = {
       return null;
     }
 
-    const accountId = profile?.id ?? (await identityAPI.getMyInternalId());
+    assertHighway('identity_bootstrap', 'direct-api');
+    const identity = profile?.id ? null : await identityAPI.identifyActiveCitizen();
+    const accountId = profile?.id ?? identity?.id;
+
     if (!accountId) return null;
 
     await setStoredSessionForAccount(accountId, toSessionTokens(session));
@@ -113,13 +117,13 @@ export const deviceAccounts = {
       accountId,
       authUserId,
       email: profile?.email ?? session.user.email ?? existing?.email ?? null,
-      fullName:
-        profile?.full_name ??
-        (session.user.user_metadata?.['full_name'] as string | undefined) ??
-        existing?.fullName ??
+      displayName:
+        profile?.display_name ??
+        (session.user.user_metadata?.display_name as string | undefined) ??
+        existing?.displayName ??
         null,
       avatarUrl: profile?.avatar_url ?? existing?.avatarUrl ?? null,
-      role: profile?.role ?? existing?.role ?? null,
+      capacity: profile?.capacity ?? existing?.capacity ?? null,
       schoolId: profile?.school_id ?? existing?.schoolId ?? null,
       isAnonymous: false,
       createdAt: existing?.createdAt ?? now,
@@ -169,11 +173,10 @@ export const deviceAccounts = {
     }
 
     await setActiveAccount(accountId);
-    identityAPI.clearCache();
     resetScopedStores();
     await rehydrateScopedStores();
 
-    const { error } = await supabase.auth.setSession({
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.setSession({
       access_token: storedSession.access_token,
       refresh_token: storedSession.refresh_token,
     });
@@ -243,19 +246,17 @@ export const deviceAccounts = {
       return nextAccounts;
     }
 
-    identityAPI.clearCache();
     await setActiveAccount(null);
     resetScopedStores();
     await rehydrateScopedStores();
-    await supabase.auth.signOut({ scope: 'local' });
+    await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.signOut({ scope: 'local' });
     return nextAccounts;
   },
 
   async signOutCurrentAccount() {
     const activeAccountId = getActiveAccountId();
     if (!activeAccountId) {
-      await supabase.auth.signOut({ scope: 'local' });
-      identityAPI.clearCache();
+      await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.signOut({ scope: 'local' });
       resetScopedStores();
       await rehydrateScopedStores();
       return [];
@@ -313,10 +314,9 @@ export const deviceAccounts = {
     );
     await writeRegistry([]);
     storage.delete(ACTIVE_ACCOUNT_KEY);
-    identityAPI.clearCache();
     await setActiveAccount(null);
     resetScopedStores();
     await rehydrateScopedStores();
-    await supabase.auth.signOut({ scope: 'local' });
+    await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.signOut({ scope: 'local' });
   },
 };

@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: '#D1AC8C', // Sepia/Glass tint
   },
   badge: {

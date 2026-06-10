@@ -1,4 +1,7 @@
 export * from './useCommunityProfile';
+export * from './useInstitutionalHistory';
+export * from './useNotificationPreferences';
+export * from './usePrincipalGovernanceHistory';
 export * from './useProfile';
 export * from './useProfileCompletion';
 export * from './useSchoolProfile';
@@ -6,5 +9,3 @@ export * from './useSchoolPulse';
 export * from './useSocialLinks';
 export * from './useStudentAcademicHistory';
 export * from './useTeacherProfessionalHistory';
-export * from './usePrincipalGovernanceHistory';
-export * from './useInstitutionalHistory';

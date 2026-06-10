@@ -4,6 +4,6 @@
 export const GPU = {};
 export const requestAdapter = async () => null;
 export default {
-	GPU,
-	requestAdapter,
+  GPU,
+  requestAdapter,
 };

@@ -12,6 +12,8 @@ This is the **single source of truth** for everything related to deploying, main
 - Uses **classic Expo entry**, NOT expo-router file-based routing
 - `expo-router` plugin is intentionally absent from `app.json` — adding it breaks web silently
 - `app.json → expo.web.bundler: "metro"` is mandatory for Expo SDK 50+
+- Nested layouts and divergent web/mobile shells should be built with React Navigation stacks, tabs, and `.web.tsx` variants.
+- If a screen needs different structure on web, prefer a dedicated navigator or a web-specific screen component rather than switching the app to Expo Router.
 
 ### Build Command
 ```bash

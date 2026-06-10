@@ -8,15 +8,16 @@ export const defineSectionHeadAbilities = (
   builder: AbilityBuilder<AppAbility>,
 ) => {
   const { can } = builder;
+  const sectionId = user.sectionId;
   // 1. Inherit Teacher roles
   defineTeacherAbilities(user, builder);
 
   // 2. Section Head Specifics
   can('manage', 'SectionHeadDashboard');
-  can('read', 'Report', { section_id: user.section_id } as any);
+  can('read', 'Report', { section_id: sectionId } as any);
 
-  if (user.section_id) {
-    can('manage', 'Classroom', { section_id: user.section_id } as any);
-    can('manage', 'Staff', { section_id: user.section_id } as any);
+  if (sectionId) {
+    can('manage', 'Classroom', { section_id: sectionId } as any);
+    can('manage', 'Staff', { section_id: sectionId } as any);
   }
 };

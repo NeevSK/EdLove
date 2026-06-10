@@ -1,5 +1,33 @@
 export type WorkspaceZoneId = 'today' | 'work' | 'institution' | 'outlook' | 'private';
 
+export type WorkspaceSwitcherTargetId =
+  | 'founder'
+  | 'admin'
+  | 'principal'
+  | 'teacher'
+  | 'student'
+  | 'guardian';
+
+export type WorkspaceSwitcherDestination =
+  | {
+      kind: 'route';
+      name: string;
+    }
+  | {
+      kind: 'tab';
+      name: string;
+    };
+
+export interface WorkspaceSwitcherTarget {
+  id: WorkspaceSwitcherTargetId;
+  title: string;
+  description: string;
+  destination: WorkspaceSwitcherDestination | null;
+  enabled: boolean;
+  status: 'current' | 'available' | 'bridge' | 'coming_soon';
+  reason?: string;
+}
+
 export type WorkspaceRendererPlatform = 'mobile' | 'tablet' | 'web';
 
 export type WorkspaceRuntimePlatform = 'android' | 'ios' | 'web';
@@ -10,6 +38,7 @@ export type WorkspaceOwnerPackage =
   | 'classroom'
   | 'community'
   | 'admin'
+  | 'library'
   | 'people'
   | 'workforce'
   | 'core'
@@ -48,6 +77,15 @@ export interface WorkspaceRendererConfig {
   maxColumns?: number;
 }
 
+export interface DomainFeature extends WorkspaceSurfaceDefinition {
+  id: string;
+  label: string;
+  description?: string;
+  icon?: string;
+  citizenshipRequired: number; // 0 (Wanderer), 1 (2nd Class), 2 (1st Class)
+  isPro?: boolean;
+}
+
 export interface ResolvedWorkspaceSurface<
   TSurfaceId extends string = string,
   TCapabilityKey extends string = string,
@@ -61,5 +99,44 @@ export interface ResolvedWorkspaceSurface<
   subtitle?: string;
   summary?: string;
   temporalLabel?: string;
-  metadata?: Record<string, any>;
+  metadata?: string[];
+  isLocked?: boolean;
+  lockReason?: 'citizenship' | 'capability' | 'pro';
 }
+
+export type ClassroomWorkspaceSurfaceId =
+  | 'principal'
+  | 'section-head'
+  | 'grade-head'
+  | 'teacher'
+  | 'student';
+
+export type ClassroomWorkspaceCapabilityKey =
+  | 'PrincipalDashboard'
+  | 'SectionHeadDashboard'
+  | 'GradeHeadDashboard'
+  | 'TeacherDashboard'
+  | 'StudentDashboard';
+
+export type ClassroomWorkspaceSurface = WorkspaceSurfaceDefinition<
+  ClassroomWorkspaceSurfaceId,
+  ClassroomWorkspaceCapabilityKey
+> & {
+  content: React.ReactNode;
+  title: string;
+  subtitle?: string;
+  summary?: string;
+  temporalLabel?: string;
+  metadata?: string[];
+};
+
+export type PrincipalInsight = Partial<
+  Record<
+    ClassroomWorkspaceSurfaceId,
+    {
+      summary?: string;
+      temporalLabel?: string;
+      metadata?: string[];
+    }
+  >
+>;

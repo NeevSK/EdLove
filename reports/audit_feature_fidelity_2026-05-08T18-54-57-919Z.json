@@ -1,0 +1,8 @@
+{
+  "tool": "audit_feature_fidelity",
+  "timestamp": "2026-05-08T18:54:57.919Z",
+  "durationMs": 406,
+  "status": "success",
+  "output": "💎 Feature Fidelity Mirror (Polymath Edition)\n-------------------------------------------\n📚 Documented Features: 898\n🎯 Fidelity Score:      0%\n👻 Shadow Features:    28\n\n⚠️  SHADOW FEATURES (Implemented but NOT in Docs):\n- Classroom                      [Mobile: ✅ | Web: ❌] (Ungated)\n- ContentLibrary                 [Mobile: ✅ | Web: ❌] (Ungated)\n- Gradebook                      [Mobile: ✅ | Web: ❌] (Ungated)\n- index.ts                       [Mobile: ✅ | Web: ❌] (Ungated)\n- LessonFeed                     [Mobile: ✅ | Web: ❌] (Ungated)\n- TeacherClassroomDashboard      [Mobile: ✅ | Web: ❌] (Ungated)\n- TeacherDashboard               [Mobile: ✅ | Web: ❌] (Ungated)\n- self                           [Mobile: ✅ | Web: ❌] (Gated)\n- Self                           [Mobile: ✅ | Web: ❌] (Gated)\n- AcademicCycleManager           [Mobile: ✅ | Web: ❌] (Ungated)",
+  "metadata": {}
+}

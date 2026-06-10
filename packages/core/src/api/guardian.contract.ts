@@ -1,4 +1,3 @@
-import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
 import {
   GuardianDashboardSchema,
@@ -10,91 +9,176 @@ import {
   GuardianVerificationDocumentSchema,
   StudentGuardianRelationshipSchema,
 } from '../logic/schemas/guardian.schema';
-import { POAMetadataSchema } from './contract';
-
-const c = initContract();
+import type { SovereignContract } from './contract';
 
 const guardianAuthority = (action: 'create' | 'read' | 'update' | 'delete', subject: string) =>
-  POAMetadataSchema.parse({ authority: { action, subject } });
+  ({ policy: { action, subject } }) as const;
 
-export const guardianContract = c.router({
+export const guardianContract = {
   createGuardianProfile: {
-    method: 'POST',
+    method: 'post',
     path: '/guardian/profile',
-    body: GuardianProfileCreateSchema,
-    responses: { 200: GuardianIdentitySchema },
+    request: {
+      body: GuardianProfileCreateSchema,
+    },
+    responses: {
+      200: {
+        schema: GuardianIdentitySchema,
+        description: 'Guardian profile created successfully',
+      },
+    },
     metadata: guardianAuthority('create', 'GuardianProfile'),
   },
   getGuardianProfile: {
-    method: 'GET',
+    method: 'get',
     path: '/guardian/:guardianId/profile',
-    responses: { 200: GuardianIdentitySchema },
+    request: {
+      params: z.object({ guardianId: z.string() }),
+    },
+    responses: {
+      200: {
+        schema: GuardianIdentitySchema,
+        description: 'Retrieve guardian profile details',
+      },
+    },
     metadata: guardianAuthority('read', 'GuardianProfile'),
   },
   updateGuardianProfile: {
-    method: 'PATCH',
+    method: 'patch',
     path: '/guardian/:guardianId/profile',
-    body: GuardianIdentitySchema.partial(),
-    responses: { 200: GuardianIdentitySchema },
+    request: {
+      params: z.object({ guardianId: z.string() }),
+      body: GuardianIdentitySchema.partial(),
+    },
+    responses: {
+      200: {
+        schema: GuardianIdentitySchema,
+        description: 'Guardian profile updated successfully',
+      },
+    },
     metadata: guardianAuthority('update', 'GuardianProfile'),
   },
   getGuardianStudents: {
-    method: 'GET',
+    method: 'get',
     path: '/guardian/:guardianId/students',
-    responses: { 200: z.array(GuardianStudentOverviewSchema) },
+    request: {
+      params: z.object({ guardianId: z.string() }),
+    },
+    responses: {
+      200: {
+        schema: z.array(GuardianStudentOverviewSchema),
+        description: 'Get guardian students list',
+      },
+    },
     metadata: guardianAuthority('read', 'GuardianDashboard'),
   },
   getStudentGuardians: {
-    method: 'GET',
+    method: 'get',
     path: '/guardian/students/:studentId/guardians',
-    responses: { 200: z.array(GuardianIdentitySchema) },
+    request: {
+      params: z.object({ studentId: z.string() }),
+    },
+    responses: {
+      200: {
+        schema: z.array(GuardianIdentitySchema),
+        description: 'Get student guardians list',
+      },
+    },
     metadata: guardianAuthority('read', 'GuardianRelationship'),
   },
   getGuardianDashboard: {
-    method: 'GET',
+    method: 'get',
     path: '/guardian/:guardianId/dashboard',
-    responses: { 200: GuardianDashboardSchema },
+    request: {
+      params: z.object({ guardianId: z.string() }),
+    },
+    responses: {
+      200: {
+        schema: GuardianDashboardSchema,
+        description: 'Get guardian dashboard analytics',
+      },
+    },
     metadata: guardianAuthority('read', 'GuardianDashboard'),
   },
   verifyGuardian: {
-    method: 'POST',
+    method: 'post',
     path: '/guardian/:guardianId/verification',
-    body: z.object({
-      documents: z.array(GuardianVerificationDocumentSchema),
-    }),
-    responses: { 200: z.object({ success: z.literal(true) }) },
+    request: {
+      params: z.object({ guardianId: z.string() }),
+      body: z.object({
+        documents: z.array(GuardianVerificationDocumentSchema),
+      }),
+    },
+    responses: {
+      200: {
+        schema: z.object({ success: z.literal(true) }),
+        description: 'Verify guardian documents successfully',
+      },
+    },
     metadata: guardianAuthority('update', 'GuardianVerification'),
   },
   linkGuardianToStudent: {
-    method: 'POST',
+    method: 'post',
     path: '/guardian/:guardianId/students/:studentId/link',
-    body: z.object({
-      relationshipType: z.enum(['parent', 'guardian', 'caregiver']),
-      schoolId: z.string().optional(),
-    }),
-    responses: { 200: StudentGuardianRelationshipSchema },
+    request: {
+      params: z.object({ guardianId: z.string(), studentId: z.string() }),
+      body: z.object({
+        relationshipType: z.enum(['parent', 'guardian', 'caregiver']),
+        schoolId: z.string().optional(),
+      }),
+    },
+    responses: {
+      200: {
+        schema: StudentGuardianRelationshipSchema,
+        description: 'Link guardian to student successfully',
+      },
+    },
     metadata: guardianAuthority('create', 'GuardianRelationship'),
   },
   updateGuardianPermissions: {
-    method: 'PATCH',
+    method: 'patch',
     path: '/guardian/:guardianId/students/:studentId/permissions',
-    body: z.object({
-      permissions: z.array(GuardianPermissionConfigSchema),
-    }),
-    responses: { 200: z.object({ success: z.literal(true) }) },
+    request: {
+      params: z.object({ guardianId: z.string(), studentId: z.string() }),
+      body: z.object({
+        permissions: z.array(GuardianPermissionConfigSchema),
+      }),
+    },
+    responses: {
+      200: {
+        schema: z.object({ success: z.literal(true) }),
+        description: 'Update guardian permissions successfully',
+      },
+    },
     metadata: guardianAuthority('update', 'GuardianRelationship'),
   },
   terminateGuardianRelationship: {
-    method: 'DELETE',
+    method: 'delete',
     path: '/guardian/:guardianId/students/:studentId/link',
-    responses: { 200: z.object({ success: z.literal(true) }) },
+    request: {
+      params: z.object({ guardianId: z.string(), studentId: z.string() }),
+    },
+    responses: {
+      200: {
+        schema: z.object({ success: z.literal(true) }),
+        description: 'Terminate guardian relationship successfully',
+      },
+    },
     metadata: guardianAuthority('delete', 'GuardianRelationship'),
   },
   updateGuardianNotificationSettings: {
-    method: 'PATCH',
+    method: 'patch',
     path: '/guardian/:guardianId/notification-settings',
-    body: GuardianNotificationSettingsSchema,
-    responses: { 200: z.object({ success: z.literal(true) }) },
+    request: {
+      params: z.object({ guardianId: z.string() }),
+      body: GuardianNotificationSettingsSchema,
+    },
+    responses: {
+      200: {
+        schema: z.object({ success: z.literal(true) }),
+        description: 'Update guardian notification settings successfully',
+      },
+    },
     metadata: guardianAuthority('update', 'GuardianNotificationSettings'),
   },
-});
+} as const satisfies SovereignContract;

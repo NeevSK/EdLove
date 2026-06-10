@@ -1,12 +1,12 @@
-import { EyeOff, Info, MoveDiagonal2, Pin, Sparkles } from 'lucide-react-native';
-import { useCallback } from 'react';
+import type { ResolvedWorkspaceSurface } from '@repo/core/types';
+import { EyeOff, Info, Lock, MoveDiagonal2, Pin, Sparkles } from 'lucide-react-native';
 import type React from 'react';
+import { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
-import { Pressable, View } from '../../primitives';
 import { Text } from '../../gluestack';
 import { useThemedColors } from '../../hooks/useThemedColors';
+import { Pressable, View } from '../../primitives';
 import { Theme } from '../../theme/Theme';
-import type { ResolvedWorkspaceSurface } from '@repo/core/types';
 
 export interface CanvasSurfaceCardProps<
   TSurfaceId extends string = string,
@@ -59,8 +59,12 @@ export function CanvasSurfaceCard<
   const cardStyles = createStyles(colors);
 
   const handlePress = useCallback(() => {
+    if (surface.isLocked) {
+      onPressInfo?.(surface);
+      return;
+    }
     onPress?.(surface);
-  }, [onPress, surface]);
+  }, [onPress, onPressInfo, surface]);
 
   const handlePressInfo = useCallback(() => {
     onPressInfo?.(surface);
@@ -73,11 +77,11 @@ export function CanvasSurfaceCard<
   return (
     <Pressable
       accessibilityRole={onPress ? 'button' : undefined}
-      disabled={!onPress}
-      onPress={onPress ? handlePress : undefined}
+      disabled={!onPress && !surface.isLocked}
+      onPress={handlePress}
       style={({ pressed }) => [
         cardStyles.card,
-        pressed && onPress ? cardStyles.cardPressed : null,
+        pressed && (onPress || surface.isLocked) ? cardStyles.cardPressed : null,
         surface.hidden ? cardStyles.cardHidden : null,
       ]}
     >
@@ -129,18 +133,38 @@ export function CanvasSurfaceCard<
       ) : null}
 
       <View style={cardStyles.contentShell}>
-        {content ?? (
-          <View style={cardStyles.placeholderPanel}>
-            <Sparkles size={18} color={Theme.colors.sanctuarySaffron} />
-            <Text style={cardStyles.placeholderTitle}>Renderer-ready surface</Text>
-            <Text style={cardStyles.placeholderBody}>
-              This shared card can host the package-owned workspace content when a live screen
-              adopts the canvas renderer.
+        {surface.isLocked ? (
+          <View style={cardStyles.lockedOverlay}>
+            <Lock size={24} color={Theme.colors.saffronMuted} />
+            <Text style={cardStyles.lockedTitle}>
+              {surface.lockReason === 'citizenship'
+                ? 'Elevation Required'
+                : surface.lockReason === 'pro'
+                  ? 'Pro-tier Capability'
+                  : 'Capability Pending'}
+            </Text>
+            <Text style={cardStyles.lockedBody}>
+              {surface.lockReason === 'citizenship'
+                ? 'Establish your Sanctuary or join an institution to unlock this workspace.'
+                : surface.lockReason === 'pro'
+                  ? 'This institutional governance tool is available for Pro and Institutional citizens.'
+                  : 'This capability is currently gated by your active bond status.'}
             </Text>
           </View>
+        ) : (
+          (content ?? (
+            <View style={cardStyles.placeholderPanel}>
+              <Sparkles size={18} color={Theme.colors.sanctuarySaffron} />
+              <Text style={cardStyles.placeholderTitle}>Renderer-ready surface</Text>
+              <Text style={cardStyles.placeholderBody}>
+                This shared card can host the package-owned workspace content when a live screen
+                adopts the canvas renderer.
+              </Text>
+            </View>
+          ))
         )}
       </View>
-      {actions ? <View style={cardStyles.actionsRow}>{actions}</View> : null}
+      {actions && !surface.isLocked ? <View style={cardStyles.actionsRow}>{actions}</View> : null}
 
       <View style={cardStyles.footer}>
         <Text style={cardStyles.footerText}>
@@ -160,7 +184,7 @@ export function CanvasSurfaceCard<
               <Info size={14} color={colors.textSecondary} />
             </Pressable>
           ) : null}
-          {onToggleHidden ? (
+          {onToggleHidden && !surface.isLocked ? (
             <Pressable
               accessibilityRole="button"
               onPress={handleToggleHidden}
@@ -318,6 +342,24 @@ function createStyles(colors: ReturnType<typeof useThemedColors>) {
       borderColor: Theme.colors.saffronWhisper,
       backgroundColor: 'rgba(250, 247, 237, 0.8)',
       padding: Theme.spacing.md,
+      position: 'relative',
+    },
+    lockedOverlay: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: Theme.spacing.lg,
+      gap: Theme.spacing.sm,
+    },
+    lockedTitle: {
+      fontSize: Theme.typography.fontSize.md,
+      fontWeight: '700',
+      color: Theme.colors.inkTruth,
+    },
+    lockedBody: {
+      fontSize: Theme.typography.fontSize.xs,
+      lineHeight: 18,
+      textAlign: 'center',
+      color: colors.textSecondary,
     },
     actionsRow: {
       flexDirection: 'row',

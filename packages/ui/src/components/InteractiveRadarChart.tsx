@@ -1,8 +1,8 @@
 import type React from 'react';
 import { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { View } from '../primitives';
 import Svg, { Circle, G, Line, Polygon, Text as SvgText } from 'react-native-svg';
+import { View } from '../primitives';
 import { Theme } from '../theme/Theme';
 
 export interface RadarDimension {
@@ -149,10 +149,7 @@ export const InteractiveRadarChart: React.FC<InteractiveRadarChartProps> = ({
       {/* Glow Effect Overlay (subtle) */}
       <View
         pointerEvents="none"
-        style={[
-          styles.glow,
-          { width: size * 0.6, height: size * 0.6, borderRadius: size * 0.3 },
-        ]}
+        style={[styles.glow, { width: size * 0.6, height: size * 0.6, borderRadius: size * 0.3 }]}
       />
     </View>
   );

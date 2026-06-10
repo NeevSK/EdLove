@@ -2,8 +2,8 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Repositories
 import { createSupabaseAttendanceProjectionRepository } from '../../adapters/supabase/attendanceProjectionRepository';
-import { createSupabaseClassroomNotesRepository } from '../../adapters/supabase/classroomNotesRepository';
 import { createSupabaseEducationalRepository } from '../../adapters/supabase/educational';
+import { createSupabaseClassroomNotesRepository } from '../../adapters/supabase/educational/classroomNotesRepository';
 import { createSupabaseFounderRepository } from '../../adapters/supabase/founderRepository';
 import { createSupabaseGradingProjectionRepository } from '../../adapters/supabase/gradingProjectionRepository';
 import { createSupabaseGuardianRepository } from '../../adapters/supabase/guardianRepository';

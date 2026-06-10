@@ -27,7 +27,7 @@ export interface GradeWithRank extends GradeWithMarks {
   rank: number;
 }
 
-export function calculateRanks(grades: GradeWithMarks[]): GradeWithRank[] {
+export function calculateRanks<T extends GradeWithMarks>(grades: T[]): (T & { rank: number })[] {
   const sorted = [...grades].sort((a, b) => b.marks - a.marks);
   return grades.map((grade) => {
     const rank = sorted.findIndex((s) => s.id === grade.id) + 1;

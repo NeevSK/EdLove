@@ -7,39 +7,39 @@ import type {
   PrincipalObservationFollowUpCreate,
   PrincipalObservationZod,
 } from '../logic/schemas/principal-workspace.schema';
-import { principalWorkspaceServices } from './runtimes/principalWorkspace.runtime';
 import { principalWorkspaceContract } from './principalWorkspace.contract';
+import { principalWorkspaceServices } from './runtimes/principalWorkspace.runtime';
 
 export type { PrincipalGovernanceEventZod } from '../logic/schemas/principal-workspace.schema';
 
 export const principalWorkspaceAPI = {
   /**
-   * @authority read SchoolInvite
+   * @policy read SchoolInvite
    */
   async listInviteCodes(schoolId: string): Promise<InviteCodeZod[]> {
     return principalWorkspaceServices.listInviteCodes(schoolId);
   },
 
   /**
-   * @authority read SchoolInvite
+   * @policy read SchoolInvite
    */
   async getInviteCodes(schoolId: string): Promise<InviteCodeZod[]> {
     return principalWorkspaceServices.listInviteCodes(schoolId);
   },
 
   /**
-   * @authority create SchoolInvite
+   * @policy create SchoolInvite
    */
   async generateInviteCode(
     schoolId: string,
-    role: PrincipalInviteRole,
+    capacity: PrincipalInviteRole,
     createdBy: string,
   ): Promise<InviteCodeZod> {
-    return principalWorkspaceServices.generateInviteCode(schoolId, role, createdBy);
+    return principalWorkspaceServices.generateInviteCode(schoolId, capacity, createdBy);
   },
 
   /**
-   * @authority read PrincipalObservation
+   * @policy read PrincipalObservation
    */
   async listObservationsByDate(
     principalId: string,
@@ -50,28 +50,28 @@ export const principalWorkspaceAPI = {
   },
 
   /**
-   * @authority read PrincipalObservation
+   * @policy read PrincipalObservation
    */
   async listRecentObservations(principalId: string, limit = 5): Promise<PrincipalObservationZod[]> {
     return principalWorkspaceServices.listRecentObservations(principalId, limit);
   },
 
   /**
-   * @authority create PrincipalObservation
+   * @policy create PrincipalObservation
    */
   async createObservation(input: PrincipalObservationCreate): Promise<PrincipalObservationZod> {
     return principalWorkspaceServices.createObservation(input);
   },
 
   /**
-   * @authority update SchoolInvite
+   * @policy update SchoolInvite
    */
   async recordInviteEvent(input: PrincipalInviteEventCreate): Promise<PrincipalGovernanceEventZod> {
     return principalWorkspaceServices.recordInviteEvent(input);
   },
 
   /**
-   * @authority update PrincipalObservation
+   * @policy update PrincipalObservation
    */
   async recordObservationFollowUp(
     input: PrincipalObservationFollowUpCreate,
@@ -80,7 +80,7 @@ export const principalWorkspaceAPI = {
   },
 
   /**
-   * @authority read PrincipalObservation
+   * @policy read PrincipalObservation
    */
   async getGovernanceTimeline(
     principalId: string,
@@ -91,7 +91,7 @@ export const principalWorkspaceAPI = {
   },
 
   /**
-   * @authority read PrincipalObservation
+   * @policy read PrincipalObservation
    */
   async getGovernanceSnapshotAsOf(
     principalId: string,

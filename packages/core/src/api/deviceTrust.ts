@@ -1,14 +1,15 @@
 import { v7 as uuidv7 } from 'uuid';
-import { coreRuntime } from '../logic/runtimeRegistry';
-import { networkManager } from '../logic/managers/NetworkManager';
 import {
   DEVICE_SECURITY_MUTATIONS,
   isOfflineLikeError,
   queueDeviceSecurityIntent,
 } from '../lib/sync/deviceSecurityIntents';
+import { networkManager } from '../logic/managers/NetworkManager';
+import { coreRuntime } from '../logic/runtimeRegistry';
 import { APIError } from '../types/API';
+import { assertHighway } from './highways';
 import { identityAPI } from './identity';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 const DEVICE_INSTALL_ID_KEY = 'gurudevi-device-install-id';
 const SERVER_DEVICE_ID_KEY = 'gurudevi-server-device-id';
@@ -34,6 +35,8 @@ export interface DeviceSecurityEvent {
   accountId: string | null;
   device: DeviceTrustSummary | null;
 }
+
+export type AuthEvent = DeviceSecurityEvent;
 
 export interface DeviceSecuritySession {
   sessionId: string;
@@ -138,7 +141,7 @@ function normalizeDeviceSecurityEventRow(
     createdAt: row.created_at,
     accountId: row.account_id ?? null,
     device:
-          row.device_id && row.install_id
+      row.device_id && row.install_id
         ? {
             deviceId: row.device_id,
             installId: row.install_id,
@@ -219,7 +222,7 @@ function unwrapRpcRows<T>(data: T[] | T | null) {
 }
 
 async function rpcSingle<T>(fn: string, params: Record<string, unknown>) {
-  const { data, error } = await supabase.rpc(fn, params);
+  const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(fn, params);
 
   if (error) {
     throw new APIError(`Failed to call ${fn}`, error.code, error);
@@ -229,7 +232,7 @@ async function rpcSingle<T>(fn: string, params: Record<string, unknown>) {
 }
 
 async function rpcList<T>(fn: string, params: Record<string, unknown> = {}) {
-  const { data, error } = await supabase.rpc(fn, params);
+  const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(fn, params);
 
   if (error) {
     throw new APIError(`Failed to call ${fn}`, error.code, error);
@@ -272,12 +275,14 @@ async function runQueuedDeviceSecurityMutation<T>(
 }
 
 async function requireAccountId(accountId?: string) {
-  const resolved = accountId ?? (await identityAPI.getMyInternalId());
-  if (!resolved) {
+  if (accountId) return accountId;
+  assertHighway('identity_bootstrap', 'direct-api');
+  const identity = await identityAPI.identifyActiveCitizen();
+  if (!identity) {
     throw new APIError('No authenticated account is available for device trust operations.');
   }
 
-  return resolved;
+  return identity.id;
 }
 
 export const deviceTrustAPI = {
@@ -406,6 +411,16 @@ export const deviceTrustAPI = {
       .filter((row): row is DeviceSecurityEvent => !!row);
   },
 
+  async listMyAuthEvents(limit = 50) {
+    const rows = await rpcList<DeviceSecurityEventRow>('list_my_auth_events', {
+      p_limit: limit,
+    });
+
+    return rows
+      .map((row) => normalizeDeviceSecurityEventRow(row))
+      .filter((row): row is AuthEvent => !!row);
+  },
+
   async listMySecuritySessions(limit = 20) {
     const rows = await rpcList<DeviceSecuritySessionRow>('list_my_security_sessions', {
       p_limit: limit,
@@ -423,10 +438,13 @@ export const deviceTrustAPI = {
   }) {
     const resolvedAccountId = await requireAccountId();
     const revokeSessions = input.revokeSessions ?? true;
-    const { data, error } = await supabase.rpc('unlink_my_device', {
-      p_device_id: input.deviceId,
-      p_revoke_sessions: revokeSessions,
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'unlink_my_device',
+      {
+        p_device_id: input.deviceId,
+        p_revoke_sessions: revokeSessions,
+      },
+    );
 
     if (error) {
       throw new APIError('Failed to unlink device.', error.code, error);
@@ -499,10 +517,13 @@ export const deviceTrustAPI = {
     idempotencyKey?: string | null;
   }) {
     const reason = input.reason ?? 'manual';
-    const { data, error } = await supabase.rpc('revoke_my_other_security_sessions', {
-      p_keep_session_id: input.keepSessionId ?? null,
-      p_reason: reason,
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'revoke_my_other_security_sessions',
+      {
+        p_keep_session_id: input.keepSessionId ?? null,
+        p_reason: reason,
+      },
+    );
 
     if (error) {
       throw new APIError('Failed to revoke other security sessions.', error.code, error);
@@ -536,10 +557,13 @@ export const deviceTrustAPI = {
     idempotencyKey?: string | null;
   }) {
     const reason = input.reason ?? 'signed_out_locally';
-    const { data, error } = await supabase.rpc('revoke_my_install_security_sessions', {
-      p_install_id: input.installId,
-      p_reason: reason,
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'revoke_my_install_security_sessions',
+      {
+        p_install_id: input.installId,
+        p_reason: reason,
+      },
+    );
 
     if (error) {
       throw new APIError('Failed to revoke current install security sessions.', error.code, error);
@@ -587,18 +611,23 @@ export const deviceTrustAPI = {
     const resolvedAccountId = await requireAccountId(input.accountId);
     const deviceId =
       input.deviceId ??
-      ((await getStoredServerDeviceId()) ?? (await this.ensureDeviceRegistered()).deviceId);
+      (await getStoredServerDeviceId()) ??
+      (await this.ensureDeviceRegistered()).deviceId;
     const nextMetadata = {
       ...(input.metadata ?? {}),
-      idempotency_key: input.idempotencyKey ?? (input.metadata?.['idempotency_key'] as string | null) ?? null,
+      idempotency_key:
+        input.idempotencyKey ?? (input.metadata?.idempotency_key as string | null) ?? null,
     };
 
-    const { data, error } = await supabase.rpc('log_my_device_audit', {
-      p_action: input.action,
-      p_device_id: deviceId,
-      p_account_id: resolvedAccountId,
-      p_metadata: nextMetadata,
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'log_my_device_audit',
+      {
+        p_action: input.action,
+        p_device_id: deviceId,
+        p_account_id: resolvedAccountId,
+        p_metadata: nextMetadata,
+      },
+    );
 
     if (error) {
       throw new APIError('Failed to write device audit log.', error.code, error);
@@ -637,13 +666,14 @@ export const deviceTrustAPI = {
   },
 
   async getSecuritySummary() {
-    const [devices, events, sessions, currentDevice] = await Promise.all([
+    const [devices, events, authEvents, sessions, currentDevice] = await Promise.all([
       this.listMyDevices(),
       this.listMySecurityAuditEvents(),
+      this.listMyAuthEvents(),
       this.listMySecuritySessions(),
       this.getCurrentDeviceTrust(),
     ]);
-    return { devices, events, sessions, currentDevice };
+    return { devices, events, authEvents, sessions, currentDevice };
   },
 
   async trustDevice(deviceId: string) {

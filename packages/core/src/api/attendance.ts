@@ -1,118 +1,96 @@
-import { Effect } from 'effect';
-import type {
-  AttendanceReport,
-  AttendanceSnapshot,
-  SchoolAttendancePulse,
-} from '../logic/schemas/attendance.schema';
-import type { AttendanceRecord } from '../types';
-import * as AttendanceEffect from './attendance.effect';
-import { operationsContract } from './operations.contract';
-
-export type AttendanceAuditContext = {
-  actorId?: string;
-  reason?: string;
-  accessKind?: 'teacher_marking' | 'institutional_read' | 'institutional_export';
-  idempotencyKey?: string;
-};
+import { APIError } from '../types/API';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
+import type { StudentAttendancePulse } from './staffManagement';
 
 /**
- * API methods for Managing Classroom Attendance.
- * Bridged to Effect-TS for High-Fidelity Logic.
+ * ATTENDANCE API (Sovereign RPC Proxy)
+ *
+ * Siphons Attendance tracking to the Sanctuary API.
+ * [BREAKING] Renamed methods to force loud failure in UI.
  */
-export const attendanceAPI = {
-  async getByDate(classroomId: string, date: string): Promise<AttendanceRecord[]> {
-    const snapshot = await attendanceAPI.getClassroomAttendanceSnapshot(classroomId, date);
-    return snapshot.records as AttendanceRecord[];
-  },
 
-  async record(
-    classroomId: string,
-    studentId: string,
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
+
+export const attendanceAPI = {
+  /**
+   * [LOUD-FAILURE] Renamed from record.
+   */
+  async upsertAttendanceRecord(
+    classroom_id: string,
+    student_id: string,
     status: string,
     date: string,
-    audit?: AttendanceAuditContext,
-  ): Promise<AttendanceRecord> {
-    return Effect.runPromise(
-      AttendanceEffect.attendanceAPI.record(classroomId, studentId, status, date, audit),
-    );
-  },
-
-  async batchRecord(
-    records: Array<{
-      classroom_id: string;
-      student_id: string;
-      status: string;
-      date: string;
-      occurred_at?: string;
-      academic_cycle_id?: string | null;
-    }>,
-    audit?: AttendanceAuditContext,
-  ): Promise<AttendanceRecord[]> {
-    return Effect.runPromise(AttendanceEffect.attendanceAPI.batchRecord(records, audit));
-  },
-
-  async getForStudent(studentId: string, classroomId?: string): Promise<AttendanceRecord[]> {
-    return attendanceAPI.getStudentAttendanceTimeline(studentId, {
-      classroomId,
+  ) {
+    const res = await (client.api as any).attendance.$post({
+      json: {
+        classroom_id,
+        student_id,
+        status,
+        date,
+      },
     });
+
+    if (!res.ok) {
+      throw new APIError('Failed to record attendance', res.status.toString());
+    }
+
+    return await res.json();
   },
 
-  async getClassroomAttendanceSnapshot(
-    classroomId: string,
-    viewDate: string,
-  ): Promise<AttendanceSnapshot> {
-    return Effect.runPromise(
-      AttendanceEffect.attendanceAPI.getClassroomAttendanceSnapshot(classroomId, viewDate),
-    );
-  },
+  /**
+   * [LOUD-FAILURE] Renamed from getByDate.
+   */
+  async fetchClassroomAttendance(classroom_id: string, date?: string) {
+    const res = await (client.api as any).attendance.$get({
+      query: { classroom_id, date },
+    });
 
-  async getStudentAttendanceTimeline(
-    studentId: string,
-    options?: {
-      classroomId?: string;
-      fromDate?: string;
-      toDate?: string;
-    },
-  ): Promise<AttendanceRecord[]> {
-    return Effect.runPromise(
-      AttendanceEffect.attendanceAPI.getStudentAttendanceTimeline(studentId, options),
-    );
+    if (!res.ok) {
+      throw new APIError('Failed to fetch attendance', res.status.toString());
+    }
+
+    return await res.json();
   },
 
   async getSchoolAttendancePulse(
-    schoolId: string,
-    classroomId?: string,
-    viewDate?: string,
-    audit?: AttendanceAuditContext,
-  ): Promise<SchoolAttendancePulse> {
-    return Effect.runPromise(
-      AttendanceEffect.attendanceAPI.getSchoolAttendancePulse(
-        schoolId,
-        classroomId,
-        viewDate,
-        audit,
-      ),
-    );
+    school_id: string,
+    classroom_id?: string,
+    view_date?: string,
+  ): Promise<StudentAttendancePulse> {
+    const res = await (client.api as any).attendance.pulse.$get({
+      query: {
+        school_id,
+        classroom_id: classroom_id ?? undefined,
+        view_date: view_date ?? undefined,
+      },
+    });
+
+    if (!res.ok) {
+      throw new APIError('Failed to fetch attendance pulse', res.status.toString());
+    }
+
+    return (await res.json()) as StudentAttendancePulse;
   },
 
   async getAttendanceReport(
-    schoolId: string,
-    startDate: string,
-    endDate: string,
-    classroomId?: string,
-    audit?: AttendanceAuditContext,
-  ): Promise<AttendanceReport> {
-    return Effect.runPromise(
-      AttendanceEffect.attendanceAPI.getAttendanceReport(
-        schoolId,
-        startDate,
-        endDate,
-        classroomId,
-        audit,
-      ),
-    );
+    school_id: string,
+    start_date: string,
+    end_date: string,
+    classroom_id?: string,
+  ): Promise<any> {
+    const res = await (client.api as any).attendance.report.$get({
+      query: {
+        school_id,
+        start_date,
+        end_date,
+        classroom_id: classroom_id ?? undefined,
+      },
+    });
+
+    if (!res.ok) {
+      throw new APIError('Failed to fetch attendance report', res.status.toString());
+    }
+
+    return await res.json();
   },
 };
-
-// Satisfy linter for POA metadata linking
-void operationsContract;

@@ -4,8 +4,8 @@ You are a **System 2** AI Coding Agent. Your goal is not speed, but **Ecosystem 
 
 ## Mandatory Context
 Before performing any task, you **MUST** read the following files:
-1. `docs/TAIL_FIN.md`: The core resonance and aesthetic specification.
-2. `AGENT_RESONANCE.md`: The architectural map and metacognitive steering guide.
+1. `apps/gurudevi-mobile/docs/SOP.md`: The official documentation rules and standard.
+2. `apps/gurudevi-mobile/docs/INDEX.md`: The index of all active guides, audits, and progress trackers.
 
 ## Persona & Behavior
 - **Slow Down**: Do not rush to provide code. Spend 50% of your effort on analysis and reflection.
@@ -29,3 +29,12 @@ Before performing any task, you **MUST** read the following files:
 - Use `pnpm exec` instead of `npx`.
 - Use `pnpm dlx` for one-off tool executions.
 - Reason: Common package managers corrupt the workspace symlink topology.
+
+## Documentation SOP Enforcement (STRICT)
+Whenever you create or modify any documentation (`.md` files), you **MUST** strictly follow `apps/gurudevi-mobile/docs/SOP.md`:
+- **App Isolation**: Place app-specific files under their respective app directory (e.g. `apps/gurudevi-mobile/docs/`). Use root `docs/` only for global repository-wide playbooks/configurations.
+- **Mandatory YAML Frontmatter**: Start every `.md` file with a YAML block containing `title`, `status` ("active" | "draft" | "superseded"), `created`, `updated`, and `author`.
+- **Dual Naming Convention**:
+  - Reference guides must use clean static kebab-case (e.g., `ui-color-doctrine.md`).
+  - Point-in-time documents (audits, RFCs, ADRs, progress files) **MUST** be prefixed with their creation date `YYYY-MM-DD-title.md` (e.g., `2026-06-08-reorganization-walkthrough.md`).
+- **No Obsidian Configs**: Do not commit any `.obsidian` folders.

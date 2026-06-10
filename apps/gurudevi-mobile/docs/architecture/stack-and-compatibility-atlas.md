@@ -102,7 +102,7 @@ graph TD
 | expo-linking | ~55.0.7 |  |
 | expo-localization | ~55.0.8 |  |
 | expo-location | ~55.1.2 |  |
-| expo-router | ~55.0.3 |  |
+| expo-router | not used in the app runtime | keep only if a future migration explicitly needs it |
 | expo-secure-store | ^55.0.8 |  |
 | expo-sharing | ~55.0.11 |  |
 | expo-sqlite | ^55.0.10 |  |
@@ -383,7 +383,7 @@ Notes: compatibility is a mix of hard peer ranges, current npm dist-tags, and ar
 | expo-linking | ~55.0.7 |  |
 | expo-localization | ~55.0.8 |  |
 | expo-location | ~55.1.2 |  |
-| expo-router | ~55.0.3 |  |
+| expo-router | not used in the app runtime | keep only if a future migration explicitly needs it |
 | expo-secure-store | ^55.0.8 |  |
 | expo-sharing | ~55.0.11 |  |
 | expo-sqlite | ^55.0.10 |  |

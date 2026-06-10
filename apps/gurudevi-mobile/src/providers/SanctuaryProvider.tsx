@@ -1,21 +1,21 @@
-import { AnalyticsProvider } from "@repo/analytics/ui";
-import { useAuth, usePermissions } from "@repo/core/logic";
-import { useAuthStore } from "@repo/core/store";
-import { SyncManager } from "@repo/core/sync";
-import { SanctuaryGlobalStyles } from "@repo/ui/components/SanctuaryGlobalStyles";
-import { EnvironmentProvider, ExternalLinkProvider } from "@repo/ui/context";
-import { FABProvider } from "@repo/ui/context/FABContext";
-import { GluestackUIProvider } from "@repo/ui/gluestack";
-import { Box, Center, Spinner } from "@repo/ui/primitives";
-import { ToastProvider } from "@repo/ui/providers";
+import { AnalyticsProvider } from '@repo/analytics/ui';
+import { useAuth, usePermissions } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { SyncManager } from '@repo/core/sync';
+import { SanctuaryGlobalStyles } from '@repo/ui/components/SanctuaryGlobalStyles';
+import { EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';
+import { FABProvider } from '@repo/ui/context/FABContext';
+import { GluestackUIProvider } from '@repo/ui/gluestack';
+import { Box, Center, Spinner } from '@repo/ui/primitives';
+import { ToastProvider } from '@repo/ui/providers';
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type React from "react";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { config } from "../../gluestack-ui.config";
-import { dispatchQueuedMutationToInngest } from "../lib/inngestEvents";
-import { useAssets } from "./AssetProvider";
-import { DeepLinkProvider } from "./DeepLinkProvider";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type React from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { config } from '../../gluestack-ui.config';
+import { dispatchQueuedMutationToSovereignBus } from '../lib/inngestEvents';
+import { useAssets } from './AssetProvider';
+import { DeepLinkProvider } from './DeepLinkProvider';
 
 const queryClient = new QueryClient();
 
@@ -31,61 +31,57 @@ const queryClient = new QueryClient();
  * being evaluated with empty bond arrays during app bootstrap.
  */
 function AssetLoaderWatcher({ children }: { children: React.ReactNode }) {
-	const { fontsLoaded } = useAssets();
-	const { loading } = useAuth();
-	const isStoreHydrated = useAuthStore((s) => s.isStoreHydrated);
+  const { fontsLoaded } = useAssets();
+  const { loading } = useAuth();
+  const isStoreHydrated = useAuthStore((s) => s.isStoreHydrated);
 
-	if (!fontsLoaded || loading || !isStoreHydrated) {
-		return (
-			<SafeAreaProvider>
-				<Center className="flex-1 bg-obsidian">
-					<Spinner size="large" className="text-sanctuarySaffron" />
-				</Center>
-			</SafeAreaProvider>
-		);
-	}
+  if (!fontsLoaded || loading || !isStoreHydrated) {
+    return (
+      <SafeAreaProvider>
+        <Center className="flex-1 bg-obsidian">
+          <Spinner size="large" className="text-sanctuarySaffron" />
+        </Center>
+      </SafeAreaProvider>
+    );
+  }
 
-	return <>{children}</>;
+  return <>{children}</>;
 }
 
 interface SanctuaryProviderProps {
-	children: React.ReactNode;
+  children: React.ReactNode;
 }
 
 export function SanctuaryProvider({ children }: SanctuaryProviderProps) {
-	const { flags } = usePermissions();
+  const { flags } = usePermissions();
 
-	return (
-		<QueryClientProvider client={queryClient}>
-			<EnvironmentProvider>
-				<GluestackUIProvider config={config}>
-					<SanctuaryGlobalStyles />
-					<AssetLoaderWatcher>
-						<FABProvider>
-							<DeepLinkProvider>
-								<ToastProvider>
-									<ExternalLinkProvider>
-										<AnalyticsProvider
-											apiKey={process.env["EXPO_PUBLIC_POSTHOG_API_KEY"]}
-											enabled={flags?.isAnalyticsEnabled}
-											options={{
-												host:
-													process.env["EXPO_PUBLIC_POSTHOG_HOST"] ||
-													"https://app.posthog.com",
-											}}
-										>
-											<Box className="flex-1">{children}</Box>
-											<SyncManager
-												dispatchQueuedMutation={dispatchQueuedMutationToInngest}
-											/>
-										</AnalyticsProvider>
-									</ExternalLinkProvider>
-								</ToastProvider>
-							</DeepLinkProvider>
-						</FABProvider>
-					</AssetLoaderWatcher>
-				</GluestackUIProvider>
-			</EnvironmentProvider>
-		</QueryClientProvider>
-	);
+  return (
+    <QueryClientProvider client={queryClient}>
+      <EnvironmentProvider>
+        <GluestackUIProvider config={config}>
+          <SanctuaryGlobalStyles />
+          <AssetLoaderWatcher>
+            <FABProvider>
+              <DeepLinkProvider>
+                <ToastProvider>
+                  <ExternalLinkProvider>
+                    <AnalyticsProvider
+                      apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
+                      enabled={flags?.isAnalyticsEnabled}
+                      options={{
+                        host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
+                      }}
+                    >
+                      <Box className="flex-1">{children}</Box>
+                      <SyncManager dispatchQueuedMutation={dispatchQueuedMutationToSovereignBus} />
+                    </AnalyticsProvider>
+                  </ExternalLinkProvider>
+                </ToastProvider>
+              </DeepLinkProvider>
+            </FABProvider>
+          </AssetLoaderWatcher>
+        </GluestackUIProvider>
+      </EnvironmentProvider>
+    </QueryClientProvider>
+  );
 }

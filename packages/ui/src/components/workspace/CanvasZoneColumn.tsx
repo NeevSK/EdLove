@@ -1,11 +1,11 @@
-import type React from 'react';
-import { type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
-import { View } from '../../primitives';
-import { Text } from '../../gluestack';
-import { useThemedColors } from '../../hooks/useThemedColors';
-import { Theme } from '../../theme/Theme';
 import type { WorkspaceZoneLayoutGroup } from '@repo/core/logic/workspace/canvas';
 import type { ResolvedWorkspaceSurface } from '@repo/core/types';
+import type React from 'react';
+import { type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
+import { Text } from '../../gluestack';
+import { useThemedColors } from '../../hooks/useThemedColors';
+import { View } from '../../primitives';
+import { Theme } from '../../theme/Theme';
 import { CanvasSurfaceCard } from './CanvasSurfaceCard';
 import { DraggableCanvasSurface } from './DraggableCanvasSurface';
 
@@ -104,8 +104,8 @@ export function CanvasZoneColumn<
       <View style={styles.body}>
         {group.surfaces.length ? (
           group.surfaces.map((surface) => (
-            <DraggableCanvasSurface 
-              key={surface.surfaceId} 
+            <DraggableCanvasSurface
+              key={surface.surfaceId}
               id={surface.surfaceId}
               onDragEnd={(id, translation) => {
                 // Logic to calculate new index based on vertical translation
@@ -113,7 +113,7 @@ export function CanvasZoneColumn<
                 const cardHeight = 180; // approximate
                 const shift = Math.round(translation.y / cardHeight);
                 if (shift !== 0 && onReorder) {
-                  const currentIndex = group.surfaces.findIndex(s => s.surfaceId === id);
+                  const currentIndex = group.surfaces.findIndex((s) => s.surfaceId === id);
                   onReorder(id as TSurfaceId, currentIndex + shift);
                 }
               }}

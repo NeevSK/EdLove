@@ -13,7 +13,6 @@ const _Temporal = typeof Temporal !== 'undefined' ? Temporal : null;
 export const getCurrentTimestamp = () => {
   if (_Temporal) {
     try {
-      // @ts-ignore - Assuming Temporal is available
       return _Temporal.Now.instant().toString();
     } catch (_e) {
       // Fallback if global exists but fails
@@ -29,14 +28,13 @@ export const getCurrentTimestamp = () => {
 export const getCurrentTimeMillis = () => {
   if (_Temporal) {
     try {
-      // @ts-ignore - Assuming Temporal is available
       return _Temporal.Now.instant().epochMilliseconds;
     } catch (_e) {
       // Fallback
     }
   }
   // eslint-disable-next-line no-restricted-syntax
-  return new Date().getTime();
+  return Date.now();
 };
 
 export const getZonedDateTime = (timeZone: string = 'Asia/Colombo') => {

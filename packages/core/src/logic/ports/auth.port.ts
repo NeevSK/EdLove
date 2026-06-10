@@ -1,0 +1,100 @@
+export interface AuthSession {
+  access_token: string;
+  refresh_token: string;
+  user: any;
+}
+
+export interface AuthUser {
+  id: string;
+  email?: string;
+  user_metadata?: Record<string, any>;
+}
+
+export interface AuthMfaFactor {
+  id: string;
+  friendly_name?: string;
+  factor_type: 'totp' | 'phone' | 'webauthn';
+  status: 'verified' | 'unverified';
+  created_at: string;
+  updated_at: string;
+  last_challenged_at?: string;
+}
+
+export interface IAuthPort {
+  getSession(): Promise<AuthSession | null>;
+  getUser(): Promise<AuthUser | null>;
+
+  signInWithPassword(
+    email: string,
+    password: string,
+  ): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
+
+  signInWithOAuth(params: {
+    provider: 'google';
+    redirectTo?: string;
+    skipBrowserRedirect?: boolean;
+  }): Promise<{ url: string | null }>;
+
+  linkOAuthIdentity(params: {
+    provider: 'google';
+    redirectTo?: string;
+    skipBrowserRedirect?: boolean;
+  }): Promise<{ url: string | null }>;
+
+  signInWithPasskey(params?: {
+    redirectTo?: string;
+    skipBrowserRedirect?: boolean;
+  }): Promise<{ url: string | null }>;
+
+  registerPasskey(params?: {
+    redirectTo?: string;
+    skipBrowserRedirect?: boolean;
+  }): Promise<{ url: string | null }>;
+
+  listMfaFactors(): Promise<{ all: AuthMfaFactor[]; verified: AuthMfaFactor[] }>;
+
+  enrollTotp(params?: { friendlyName?: string }): Promise<{
+    factorId: string;
+    qrCode?: string | null;
+    secret?: string | null;
+    uri?: string | null;
+  }>;
+
+  challengeTotp(factorId: string): Promise<{ challengeId: string }>;
+
+  verifyTotp(params: {
+    factorId: string;
+    challengeId: string;
+    code: string;
+  }): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
+
+  challengeAndVerifyTotp(params: {
+    factorId: string;
+    code: string;
+  }): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
+
+  setSession(
+    access_token: string,
+    refresh_token: string,
+  ): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
+
+  signUp(params: {
+    email: string;
+    password: string;
+    options?: { data?: Record<string, any> };
+  }): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
+
+  signInAnonymously(options?: {
+    data?: Record<string, any>;
+  }): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
+
+  updateUser(params: {
+    email?: string;
+    password?: string;
+    data?: Record<string, any>;
+  }): Promise<{ user: AuthUser | null }>;
+
+  signOut(): Promise<void>;
+
+  executeRpc(fn: string, params?: Record<string, any>): Promise<any>;
+}

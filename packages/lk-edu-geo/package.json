@@ -1,13 +1,18 @@
 {
   "name": "@intuitui-labs/lk-edu-geo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Sri Lanka educational and administrative geo data",
   "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "types": "./src/*.ts",
+      "import": "./src/*.js",
+      "default": "./src/*.js"
     },
     "./package.json": "./package.json"
   },
@@ -29,13 +34,13 @@
     "gn-divisions",
     "educational-zones"
   ],
-  "packageManager": "pnpm@10.30.2",
+  "packageManager": "pnpm@11.5.2",
   "scripts": {
     "build": "pnpm exec tsup src/index.ts --format esm,cjs --dts --clean",
     "test": "vitest run",
     "validate": "pnpm exec tsx scripts/validate.ts",
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
-    "check-types": "pnpm exec tsc --noEmit",
+    "check-types": "node --max-old-space-size=4096 ../../node_modules/typescript/bin/tsc --noEmit",
     "import:xlsx": "pnpm exec tsx scripts/import-xlsx.ts",
     "import:pdf": "pnpm exec tsx scripts/import-pdf.ts",
     "lint:biome": "biome check .",
@@ -49,17 +54,17 @@
   "devDependencies": {
     "@nishansanjuka/srilanka_geographics": "^0.0.1",
     "@repo/core": "workspace:*",
-    "@types/node": "^25.5.0",
-    "@types/glob": "^9.0.0",
-    "glob": "^11.0.1",
-    "tsup": "^8.3.5",
-    "tsx": "^4.19.2",
-    "typescript": "^5.9.3",
-    "vitest": "^2.1.9",
-    "xlsx": "^0.18.5",
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
+    "@types/glob": "^9.0.0",
+    "@types/node": "^25.9.2",
+    "eslint": "^10.4.1",
+    "glob": "^13.0.6",
+    "tsup": "^8.5.1",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3",
     "vite-tsconfig-paths": "^6.1.1",
-    "eslint": "^9.38.0"
+    "vitest": "^4.1.8",
+    "xlsx": "^0.18.5"
   }
 }

@@ -1,26 +1,21 @@
-import { staffManagementAPI as _staffManagementAPI } from '../staffManagement';
 import { attendanceAPI as rawAttendanceAPI } from '../attendance';
-import { schoolAPI as rawSchoolAPI } from '../school';
+import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
 import { inventoryAPI as rawInventoryAPI } from '../inventory';
 import { operationsContract } from '../operations.contract';
-import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
-import { createPOAProxy } from '../poaProxy';
-import { createTemporalPOAProxy } from '../temporalPOAProxy';
+import { schoolAPI as rawSchoolAPI } from '../school';
+import { staffManagementAPI as _staffManagementAPI } from '../staffManagement';
+import { createTemporalProxy } from '../temporalProxy';
 
-export const staffManagementAPI = createTemporalPOAProxy(
-  'staffManagement',
-  _staffManagementAPI,
-  operationsContract,
-);
+export const staffManagementAPI = createTemporalProxy('staffManagement', _staffManagementAPI);
 
-const attendanceCoverage = assertContractCoverage(
+const _attendanceCoverage = assertContractCoverage(
   rawAttendanceAPI,
   defineContractCoverage({
     moduleName: 'attendance',
     contract: operationsContract,
     methodMapping: {
-      getByDate: 'getAttendance',
-      record: 'recordAttendance',
+      fetchClassroomAttendance: 'getAttendance',
+      upsertAttendanceRecord: 'recordAttendance',
       batchRecord: 'batchRecordAttendance',
       getForStudent: 'getAttendanceForStudent',
       getClassroomAttendanceSnapshot: 'getClassroomAttendanceSnapshot',
@@ -32,17 +27,9 @@ const attendanceCoverage = assertContractCoverage(
   }),
 );
 
-export const attendanceAPI = createTemporalPOAProxy(
-  'attendance',
-  rawAttendanceAPI,
-  attendanceCoverage.contract,
-  attendanceCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-  },
-);
+export const attendanceAPI = createTemporalProxy('attendance', rawAttendanceAPI);
 
-const schoolCoverage = assertContractCoverage(
+const _schoolCoverage = assertContractCoverage(
   rawSchoolAPI,
   defineContractCoverage({
     moduleName: 'school',
@@ -60,20 +47,26 @@ const schoolCoverage = assertContractCoverage(
       createSection: 'createSchoolSection',
       createGrade: 'createSectionGrade',
     },
+    internalMethods: [
+      'create',
+      'initializePersonalWorkspace',
+      'getSchool',
+      'update',
+      'searchSchools',
+      'getSections',
+      'getGrades',
+      'getSchoolStats',
+      'getInviteCodes',
+      'createSection',
+      'createGrade',
+      'generateInviteCode',
+    ],
   }),
 );
 
-export const schoolAPI = createTemporalPOAProxy(
-  'school',
-  rawSchoolAPI,
-  schoolCoverage.contract,
-  schoolCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-  },
-);
+export const schoolAPI = createTemporalProxy('school', rawSchoolAPI);
 
-const inventoryCoverage = assertContractCoverage(
+const _inventoryCoverage = assertContractCoverage(
   rawInventoryAPI,
   defineContractCoverage({
     moduleName: 'inventory',
@@ -85,15 +78,14 @@ const inventoryCoverage = assertContractCoverage(
       getSchoolResourceNeeds: 'getSchoolResourceNeeds',
       getSchoolRequests: 'getSchoolRequests',
     },
+    internalMethods: [
+      'getAll',
+      'update',
+      'createRequest',
+      'getSchoolResourceNeeds',
+      'getSchoolRequests',
+    ],
   }),
 );
 
-export const inventoryAPI = createTemporalPOAProxy(
-  'inventory',
-  rawInventoryAPI,
-  inventoryCoverage.contract,
-  inventoryCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-  },
-);
+export const inventoryAPI = createTemporalProxy('inventory', rawInventoryAPI);

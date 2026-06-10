@@ -16,7 +16,6 @@ import { Edit, Flower2, MessageCircle, Plus, Upload } from 'lucide-react-native'
 import type React from 'react';
 import { type FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, Image, PanResponder, StyleSheet } from 'react-native';
-import { Pressable, Text, View } from '../primitives';
 import Animated, {
   Easing,
   Extrapolate,
@@ -30,6 +29,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useAccessibility } from '../hooks/useAccessibility';
+import { Pressable, Text, View } from '../primitives';
 import { Theme } from '../theme/Theme';
 
 // ============================================================================

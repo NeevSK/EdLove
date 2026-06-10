@@ -1,3 +1,4 @@
+/* eslint-disable import-x/export */
 // 1. Foundation (No relative dependencies)
 
 export {
@@ -9,10 +10,6 @@ export { isDemo } from './api/demo';
 // 4. API & Business Logic (Named exports for better tree-shaking)
 export { deviceTrustAPI } from './api/deviceTrust';
 export { accountPin, validateAccountPin } from './lib/accountPin';
-export {
-  type CloudinaryUploadResponse,
-  uploadToCloudinary,
-} from './lib/cloudinary';
 export { marksToGPA } from './lib/grading';
 export {
   CLASSROOM_RESOURCE_SCOPE,
@@ -47,9 +44,9 @@ export {
   setPendingGateAction,
 } from './lib/pendingGateAction';
 export {
-  getAuthorityLabel,
-  getSchoolRoleForUser,
-  getWorkRolesForUser,
+  getCapacityLabel,
+  getSchoolCapacityForUser,
+  getWorkCapacitiesForUser,
 } from './lib/permissions';
 export { StorageKeys, storage } from './lib/storage';
 export { SafeZustandStorage } from './lib/storageWrapper';
@@ -138,6 +135,7 @@ export { GlobalProvider } from './providers/GlobalProvider';
 export type { FeatureSlice } from './store/slices/feature.slice';
 export { useAuthStore } from './store/useAuthStore';
 export { useFeatureStore } from './store/useFeatureStore';
+export { usePermissionStore } from './store/usePermissionStore';
 // 2. Logic State & Storage (Zustand & Supabase)
 export { type TotalState, useStore } from './store/useStore';
 export { type TemporalScale, useTemporalStore } from './store/useTemporalStore';
@@ -147,15 +145,20 @@ export * from './types';
 
 import { z } from 'zod';
 
+export { AnalyticsEngine as formAnalytics } from '@intuitui-labs/form-builder-engine/analytics';
+export type { FormState } from '@intuitui-labs/form-builder-engine/core';
+export { FormManager } from '@intuitui-labs/form-builder-engine/core';
+export { FormHydrator } from '@intuitui-labs/form-builder-engine/hydration';
 export * from './api';
 export {
-  useStudentAssignmentsQuery,
-  useStudentClassroomsQuery,
-  useStudentStatsQuery,
-  useTeacherClassroomsQuery,
-  useTeacherStatsQuery,
-} from './api/hooks/classroom.hooks';
-export * from './api/hooks/founder.hooks';
+  adaptToHono,
+  type POAMetadata,
+  POAMetadataSchema,
+  type SovereignContract,
+  type SovereignRoute,
+} from './api/contract';
+export * from './constants/SriLankanSchools';
+export * from './hooks';
 export {
   type InviteCodeData,
   incrementInviteCodeUsage,
@@ -175,26 +178,17 @@ export type {
   EntityMode,
   EntityType,
 } from './logic/entities/entity-protocol';
-export { type FieldAnalytics, formAnalytics } from './logic/forms/analytics';
-export { FormHydrator } from './logic/forms/dynamic-loader';
-export type { FormState } from './logic/forms/form-manager';
-export { FormManager } from './logic/forms/form-manager';
 export { GPACalculator } from './logic/grading/GPACalculator';
 export * from './logic/permissions';
-export { usePermissions } from './logic/permissions/hooks/usePermissions';
-export type {
-  Attendance,
-  AttendanceStatus,
-  StudentAttendance,
-} from './logic/schemas/attendance.schema';
+export type { Attendance } from './logic/schemas/attendance.schema';
 export {
   type AttendanceReport,
   AttendanceSchema,
   AttendanceStatusSchema,
   StudentAttendanceSchema,
 } from './logic/schemas/attendance.schema';
+export { CapacitySchema } from './logic/schemas/capacity.schema';
 export type {
-  Assignment,
   Echo,
   TeacherStats,
 } from './logic/schemas/classroom.schema';
@@ -205,21 +199,15 @@ export {
   StudentStatsSchema,
   TeacherStatsSchema,
 } from './logic/schemas/classroom.schema';
-export type {
-  MappingTopologyZod,
-  PulseMetricsZod,
-} from './logic/schemas/dashboard.schema';
 export {
   KnowledgeTopologySchema,
   PulseMetricsSchema,
 } from './logic/schemas/dashboard.schema';
 export type {
   Assessment,
-  ClassroomGradingSettings,
   GradebookSnapshot,
   PublishedSchoolGradingCompletion,
   SchoolGradingCompletion,
-  StudentGrade,
 } from './logic/schemas/grading.schema';
 export {
   AssessmentSchema,
@@ -230,14 +218,10 @@ export {
   SchoolGradingCompletionSchema,
   StudentGradeSchema,
 } from './logic/schemas/grading.schema';
-export type { Lesson } from './logic/schemas/lesson.schema';
-export type { Material as LessonMaterial } from './logic/schemas/material.schema';
 export type {
   InviteCodeZod,
   PrincipalInviteRole,
 } from './logic/schemas/principal-workspace.schema';
-export type { Capacity } from './logic/schemas/capacity.schema';
-export { CapacitySchema } from './logic/schemas/capacity.schema';
 export type {
   LongitudinalEntityType,
   StudentLongitudinalEvent,
@@ -255,12 +239,6 @@ export { UserSchema } from './logic/schemas/user.schema';
 // User and other types are already exported from ./types
 export { validateForm, validators } from './logic/utils/validators';
 export * from './logic/workspace/canvas';
-export {
-  resolveWorkspaceSwitcherTargets,
-  type WorkspaceSwitcherTarget,
-} from './logic/workspace/workspaceSwitcher';
+export { resolveWorkspaceSwitcherTargets } from './logic/workspace/workspaceSwitcher';
 export { useWorkspaceLayoutSync } from './native/useWorkspaceLayoutSync';
 export { z };
-export * from './constants/SriLankanSchools';
-export * from './hooks';
-

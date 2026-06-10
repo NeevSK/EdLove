@@ -1,13 +1,13 @@
-import { supabase } from '../api/supabase';
-import { AppNotification } from '../hooks/useNotifications';
-import { INotificationPort } from '../logic/ports/notification.port';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
+import type { INotificationPort } from '../logic/ports/notification.port';
+import type { AppNotification, NotificationStatus } from '../types';
 
 /**
  * SupabaseNotificationAdapter: Implementation of INotificationPort using Supabase.
  */
 export class SupabaseNotificationAdapter implements INotificationPort {
   async getNotifications(userId: string, limit: number = 20): Promise<AppNotification[]> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('notifications')
       .select('id, type, title, body, is_read, reference_id, reference_type, created_at')
       .eq('user_id', userId)
@@ -18,8 +18,22 @@ export class SupabaseNotificationAdapter implements INotificationPort {
     return (data || []) as AppNotification[];
   }
 
+  async createNotification(
+    userId: string,
+    type: string,
+    title: string,
+    message: string,
+    metadata: any = {},
+  ): Promise<void> {
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      .from('notifications')
+      .insert([{ user_id: userId, type, title, body: message, metadata }]);
+
+    if (error) throw error;
+  }
+
   async getUnreadCount(userId: string): Promise<number> {
-    const { count, error } = await supabase
+    const { count, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('notifications')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
@@ -30,7 +44,7 @@ export class SupabaseNotificationAdapter implements INotificationPort {
   }
 
   async markAsRead(userId: string, notificationId: string): Promise<void> {
-    const { error } = await supabase
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('notifications')
       .update({ is_read: true })
       .eq('id', notificationId)
@@ -40,7 +54,7 @@ export class SupabaseNotificationAdapter implements INotificationPort {
   }
 
   async markAllRead(userId: string): Promise<void> {
-    const { error } = await supabase
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('notifications')
       .update({ is_read: true })
       .eq('user_id', userId)
@@ -53,9 +67,9 @@ export class SupabaseNotificationAdapter implements INotificationPort {
     userId: string,
     onInsert: (notification: AppNotification) => void,
     onUpdate: (notification: AppNotification) => void,
-    onStatusChange: (status: 'CONNECTED' | 'DISCONNECTED' | 'ERROR') => void
+    onStatusChange: (status: NotificationStatus) => void,
   ): () => void {
-    const channel = supabase
+    const channel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .channel(`notifications:global:${userId}`)
       .on(
         'postgres_changes',
@@ -65,7 +79,7 @@ export class SupabaseNotificationAdapter implements INotificationPort {
           table: 'notifications',
           filter: `user_id=eq.${userId}`,
         },
-        (payload) => onInsert(payload.new as AppNotification)
+        (payload) => onInsert(payload.new as AppNotification),
       )
       .on(
         'postgres_changes',
@@ -75,7 +89,7 @@ export class SupabaseNotificationAdapter implements INotificationPort {
           table: 'notifications',
           filter: `user_id=eq.${userId}`,
         },
-        (payload) => onUpdate(payload.new as AppNotification)
+        (payload) => onUpdate(payload.new as AppNotification),
       )
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') onStatusChange('CONNECTED');
@@ -84,7 +98,7 @@ export class SupabaseNotificationAdapter implements INotificationPort {
       });
 
     return () => {
-      supabase.removeChannel(channel).catch(() => {});
+      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.removeChannel(channel).catch(() => {});
     };
   }
 }

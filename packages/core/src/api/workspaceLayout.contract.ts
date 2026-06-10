@@ -1,42 +1,71 @@
-import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
 import {
   WorkspaceLayoutDeleteSchema,
   WorkspaceLayoutRecordSchema,
   WorkspaceLayoutUpsertSchema,
 } from '../logic/schemas/workspace-layout.schema';
-import { POAMetadataSchema } from './contract';
-
-const c = initContract();
+import type { SovereignContract } from './contract';
 
 const workspaceLayoutAuthority = (action: 'read' | 'update' | 'delete', subject: string) =>
-  POAMetadataSchema.parse({ authority: { action, subject } });
+  ({
+    policy: { action, subject },
+  }) as const;
 
-export const workspaceLayoutContract = c.router({
+export const workspaceLayoutContract = {
   getWorkspaceLayout: {
-    method: 'GET',
+    method: 'get',
     path: '/workspace-layouts/:userId/:workspaceId/:layoutTarget',
+    request: {
+      params: z.object({
+        userId: z.string(),
+        workspaceId: z.string(),
+        layoutTarget: z.string(),
+      }),
+    },
     responses: {
-      200: WorkspaceLayoutRecordSchema.nullable(),
+      200: {
+        schema: WorkspaceLayoutRecordSchema.nullable(),
+        description: 'Get workspace layout',
+      },
     },
     metadata: workspaceLayoutAuthority('read', 'WorkspaceLayout'),
   },
   upsertWorkspaceLayout: {
-    method: 'PUT',
+    method: 'put',
     path: '/workspace-layouts/:userId/:workspaceId/:layoutTarget',
-    body: WorkspaceLayoutUpsertSchema,
+    request: {
+      params: z.object({
+        userId: z.string(),
+        workspaceId: z.string(),
+        layoutTarget: z.string(),
+      }),
+      body: WorkspaceLayoutUpsertSchema,
+    },
     responses: {
-      200: WorkspaceLayoutRecordSchema,
+      200: {
+        schema: WorkspaceLayoutRecordSchema,
+        description: 'Workspace layout upserted successfully',
+      },
     },
     metadata: workspaceLayoutAuthority('update', 'WorkspaceLayout'),
   },
   deleteWorkspaceLayout: {
-    method: 'DELETE',
+    method: 'delete',
     path: '/workspace-layouts/:userId/:workspaceId/:layoutTarget',
-    body: WorkspaceLayoutDeleteSchema,
+    request: {
+      params: z.object({
+        userId: z.string(),
+        workspaceId: z.string(),
+        layoutTarget: z.string(),
+      }),
+      body: WorkspaceLayoutDeleteSchema,
+    },
     responses: {
-      200: z.object({ success: z.literal(true) }),
+      200: {
+        schema: z.object({ success: z.literal(true) }),
+        description: 'Workspace layout deleted successfully',
+      },
     },
     metadata: workspaceLayoutAuthority('delete', 'WorkspaceLayout'),
   },
-});
+} as const satisfies SovereignContract;

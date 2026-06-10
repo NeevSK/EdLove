@@ -1,13 +1,10 @@
-import type { AuthorityTier } from '../types/Authority';
+import type { Capacity } from '../types/Identity';
 
 /**
- * Get authority display name
+ * Get capacity display name.
  */
-export function getAuthorityLabel(
-  authority: AuthorityTier,
-  language: 'en' | 'si' | 'ta' = 'en',
-): string {
-  const labels: Record<AuthorityTier, Record<'en' | 'si' | 'ta', string>> = {
+export function getCapacityLabel(capacity: Capacity, language: 'en' | 'si' | 'ta' = 'en'): string {
+  const labels: Record<Capacity, Record<'en' | 'si' | 'ta', string>> = {
     student: {
       si: '\u0DC1\u0DD2\u0DC2\u0DCA\u200D\u0DBA',
       ta: '\u0BAE\u0BBE\u0BA3\u0BB5\u0BB0\u0BCD',
@@ -83,32 +80,26 @@ export function getAuthorityLabel(
       ta: 'உறுப்பினர்',
       en: 'Member',
     },
-    guest: {
-      si: '\u0D85\u0DB8\u0DD4\u0DAD\u0DCA\u0DAD\u0DCF',
-      ta: '\u0BB5\u0BBF\u0BB0\u0BC1\u0BA8\u0BCD\u0BA4\u0BBF\u0BA9\u0BB0\u0BCD',
-      en: 'Guest',
-    },
   };
 
-  return labels[authority]?.[language] || authority;
+  return labels[capacity]?.[language] || capacity;
 }
 
-// Legacy compatibility helpers.
-// These should not be used for authorization decisions; prefer ReBAC bonds + active perspective.
-export function getSchoolRoleForUser(user: any): AuthorityTier | null {
-  const activeBond = user?.active_bond;
+// ReBAC-derived helpers.
+export function getSchoolCapacityForUser(user: any): Capacity | null {
+  const activeBond = user?.activeBond;
   if (activeBond?.entity_type === 'SCHOOL' && typeof activeBond?.capacity === 'string') {
-    return activeBond.capacity as AuthorityTier;
+    return activeBond.capacity as Capacity;
   }
   const bonds: any[] = Array.isArray(user?.bonds) ? user.bonds : [];
   const schoolBond = bonds.find(
     (b) => b?.entity_type === 'SCHOOL' && (b?.status ?? 'active') === 'active',
   );
-  if (schoolBond?.capacity) return schoolBond.capacity as AuthorityTier;
+  if (schoolBond?.capacity) return schoolBond.capacity as Capacity;
   return null;
 }
 
-export function getWorkRolesForUser(_user: any): AuthorityTier[] {
-  // Work roles are not yet modeled canonically in ReBAC; return empty for compatibility.
+export function getWorkCapacitiesForUser(_user: any): Capacity[] {
+  // Work capacities are not yet modeled canonically in ReBAC; return empty until modeled.
   return [];
 }

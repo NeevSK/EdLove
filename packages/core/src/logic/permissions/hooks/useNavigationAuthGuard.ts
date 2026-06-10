@@ -6,7 +6,7 @@ import { useAuth } from '../../../providers/AuthProvider';
  * useGuardedNavigation
  *
  * Enforces "No Trust" barriers and ensures users are routed based
- * on their authority and onboarding status.
+ * on their capacity and onboarding status.
  *
  * @param onboardingCompleted - Current onboarding status
  * @param navigationRef - The React Navigation reference object (from the app)
@@ -44,7 +44,7 @@ export function useNavigationAuthGuard(
 
     // 3. Onboarding Protection: If onboarding not completed
     if (!onboardingCompleted) {
-      // Only allow onboarding routes if we have a valid session (e.g. guest or user)
+      // Only allow onboarding routes if we have a valid session (anonymous or authenticated user)
       if (onboardingRoutes.includes(currentRoute)) {
         if (!hasValidSession) {
           navigationRef.reset({

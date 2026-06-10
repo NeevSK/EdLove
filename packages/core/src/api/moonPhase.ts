@@ -313,7 +313,12 @@ export const moonPhaseAPI = {
     is_poya: boolean;
   }> {
     const daysInMonth = new Date(year, month, 0).getDate();
-    const calendar = [];
+    const calendar: Array<{
+      date: string;
+      phase: MoonPhaseName;
+      emoji: string;
+      is_poya: boolean;
+    }> = [];
 
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
@@ -335,7 +340,7 @@ export const moonPhaseAPI = {
    * Used for the school planning calendar view.
    */
   getPoyaDays(year: number): Array<{ date: string; name_en: string; name_si: string }> {
-    const poyaDays = [];
+    const poyaDays: Array<{ date: string; name_en: string; name_si: string }> = [];
 
     for (let month = 1; month <= 12; month++) {
       // Find the full moon date for this month by iterating days

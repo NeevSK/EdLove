@@ -1,0 +1,77 @@
+{
+  "env": {
+    "browser": true,
+    "es2025": true,
+    "node": true
+  },
+  "globals": {
+    "document": "writable",
+    "window": "writable",
+    "globalThis": "writable"
+  },
+  "plugins": ["react", "import"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "pedantic": "off",
+    "perf": "warn",
+    "style": "off",
+    "restriction": "warn",
+    "nursery": "off"
+  },
+  "rules": {
+    "no-debugger": "error",
+    "no-console": "warn",
+    "no-constant-condition": "error",
+    "no-empty": "warn",
+    "prefer-const": "warn",
+    "no-var": "error",
+    "no-unused-vars": "warn",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "react/react-in-jsx-scope": "off",
+    "react/no-multi-comp": "off",
+    "react/jsx-filename-extension": "off",
+    "react/forbid-component-props": "off",
+    "no-async-await": "off",
+    "no-optional-chaining": "off",
+    "no-await-in-loop": "off",
+    "unicode-bom": "off",
+    "unicorn/prefer-module": "error"
+  },
+  "settings": {
+    "react": {
+      "version": "19"
+    },
+    "import": {
+      "ignore": ["node_modules"]
+    }
+  },
+  "overrides": [
+    {
+      "files": [
+        "*.cjs",
+        "**/*.config.js",
+        "**/*.config.cjs",
+        "scripts/**/*.js",
+        "scripts/**/*.cjs"
+      ],
+      "rules": {
+        "unicorn/prefer-module": "off"
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "node_modules",
+    "dist",
+    "build",
+    ".next",
+    ".expo",
+    ".turbo",
+    "coverage",
+    "*.config.ts",
+    "*.config.js",
+    "*.config.mjs",
+    "**/archives/**",
+    "**/archive/**"
+  ]
+}

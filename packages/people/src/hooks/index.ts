@@ -1,1 +1,1 @@
-export * from "./useStaffPresence";
+export * from './useStaffPresence';

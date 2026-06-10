@@ -1,5 +1,5 @@
-import * as SecureStore from 'expo-secure-store';
-import { supabase } from '../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
+import { coreRuntime } from '../logic/runtimeRegistry';
 
 export const AppCryptoEngine = {
   /**
@@ -36,7 +36,7 @@ export const AppCryptoEngine = {
     // In a real flow, this is encrypted with a server-side public key
     // to ensure Supabase operators cannot read it.
     const encryptedEscrow = this.wrapMasterDEK(masterDEK, `cloud_key_${accountId}`);
-    await supabase
+    await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('users')
       .update({ escrowed_recovery_key: encryptedEscrow })
       .eq('id', accountId);
@@ -46,7 +46,7 @@ export const AppCryptoEngine = {
    * Cloud Escrow Fetch (Path B)
    */
   async fetchCloudRecoveryKey(accountId: string): Promise<string> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('users')
       .select('escrowed_recovery_key')
       .eq('id', accountId)
@@ -63,9 +63,8 @@ export const AppCryptoEngine = {
    * Master Biometric Override (Saves raw Master DEK to hardware enclave)
    */
   async enrollParentKey(accountId: string, masterDEK: string) {
-    await SecureStore.setItemAsync(`master_dek_${accountId}`, masterDEK, {
+    await coreRuntime.secureStorage.setItemAsync(`master_dek_${accountId}`, masterDEK, {
       requireAuthentication: true,
-      keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
     });
   },
 };

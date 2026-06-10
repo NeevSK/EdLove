@@ -316,13 +316,13 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
             supabase
               .from('attendance')
               .select('*')
-              .eq('student_id', student['id'])
+              .eq('student_id', student.id)
               .gte('date', monthAgoIso),
-            getGuardianPublishedGrades(student['id']),
+            getGuardianPublishedGrades(student.id),
             supabase
               .from('assignments')
               .select('*')
-              .eq('classroom_id', student['classroom_id'])
+              .eq('classroom_id', student.classroom_id)
               .gte('due_date', nowIso)
               .order('due_date', { ascending: true })
               .limit(3),
@@ -347,10 +347,10 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
           const presentCount = attendance.filter((record) => record.status === 'present').length;
 
           return {
-            studentId: student['id'],
-            name: `${student['first_name']} ${student['last_name']}`,
-            grade: student['grade'],
-            classroom: student['classroom_id'],
+            studentId: student.id,
+            name: `${student.first_name} ${student.last_name}`,
+            grade: student.grade,
+            classroom: student.classroom_id,
             attendance: {
               present: presentCount,
               absent: attendance.filter((record) => record.status === 'absent').length,

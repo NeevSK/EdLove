@@ -10,7 +10,7 @@
 
 import type { ThuthimalGift } from '../types';
 import { growthSignalsAPI } from './growthSignals';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 export interface CreateGiftInput {
   gifterName: string;
@@ -39,7 +39,7 @@ export const thuthimalAPI = {
     input: CreateGiftInput & { gifter_id: string },
   ): Promise<{ gift_token: string }> {
     const { gifter_id: gifterId } = input;
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('thuthimal_gifts')
       .insert({
         gifter_id: gifterId,
@@ -62,10 +62,13 @@ export const thuthimalAPI = {
    */
   async claimGift(input: { gift_token: string; recipient_id: string }): Promise<ClaimResult> {
     const { gift_token: giftToken, recipient_id: recipientId } = input;
-    const { data, error } = await supabase.rpc('claim_thuthimal_gift', {
-      p_token: giftToken,
-      p_recipient: recipientId,
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'claim_thuthimal_gift',
+      {
+        p_token: giftToken,
+        p_recipient: recipientId,
+      },
+    );
 
     if (error) throw new Error(`Claim RPC failed: ${error.message}`);
 
@@ -93,7 +96,7 @@ export const thuthimalAPI = {
    * Get gift history for the current user as gifter.
    */
   async getMyGifts(gifterId: string): Promise<ThuthimalGift[]> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('thuthimal_gifts')
       .select('*')
       .eq('gifter_id', gifterId)
@@ -110,7 +113,7 @@ export const thuthimalAPI = {
   async previewGift(
     giftToken: string,
   ): Promise<Pick<ThuthimalGift, 'gifter_name' | 'recipient_tier'> | null> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('thuthimal_gifts')
       .select('gifter_name, recipient_tier')
       .eq('gift_token', giftToken)

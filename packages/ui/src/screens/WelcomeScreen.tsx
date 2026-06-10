@@ -1,9 +1,10 @@
 import { authAPI } from '@repo/core/auth';
 import { LanguageUtils } from '@repo/core/logic';
-import { useState, useCallback, memo, useMemo } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image } from 'react-native';
 import ScreenWrapper from '../components/ScreenWrapper';
+import { useTheme } from '../hooks/useTheme';
 import {
   Box,
   Button,
@@ -20,12 +21,13 @@ import {
   Spinner,
   Text,
   VStack,
-} from '../gluestack';
-import { useTheme } from '../hooks/useTheme';
+} from '../primitives';
 import { useSanctuaryToast } from '../providers/ToastProvider';
 import { Theme } from '../theme/Theme';
+import { EXTERNAL_URLS } from '../utils';
 import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const LOGO = require('../../assets/icon.png');
 
 const LANGUAGES = [
@@ -51,7 +53,9 @@ const LanguagePill = memo(({ lang, isActive, onPress, t }: LanguagePillProps) =>
       accessibilityLabel={t('accessibility.switchLanguage', {
         lang: lang.label,
       })}
-      accessibilityHint={t('accessibility.switchLanguageHint') || 'Changes the application language'}
+      accessibilityHint={
+        t('accessibility.switchLanguageHint') || 'Changes the application language'
+      }
       accessibilityState={{ selected: isActive }}
       className={`px-2.5 py-1.5 rounded-2xl ${isActive ? 'bg-phase-accent' : 'bg-transparent'}`}
     >
@@ -76,9 +80,9 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
   const [isConnecting, setIsConnecting] = useState(false);
   const { showToast } = useSanctuaryToast();
 
-  const changeLanguage = useCallback(async (langCode: string) => {
+  const changeLanguage = useCallback((langCode: string) => {
     hapticLight();
-    await LanguageUtils.setLanguage(langCode as 'en' | 'si' | 'ta');
+    void LanguageUtils.setLanguage(langCode as 'en' | 'si' | 'ta');
   }, []);
 
   const showTermsToast = useCallback(() => {
@@ -105,12 +109,19 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
     } catch (error) {
       console.error('Guest login failed:', error);
       showToast({
-        message: (error as Error)?.message || t('auth.guestLoginFailed') || 'We could not open the sanctuary doors for you right now. Please try again.',
+        message:
+          (error as Error)?.message ||
+          t('auth.guestLoginFailed') ||
+          'We could not open the sanctuary doors for you right now. Please try again.',
         type: 'error',
       });
       setIsConnecting(false);
     }
   }, [acceptedTerms, onGuest, showTermsToast, showToast, t]);
+
+  const handleStartExploringPress = useCallback(() => {
+    void handleStartExploring();
+  }, [handleStartExploring]);
 
   const handleLogin = useCallback(() => {
     if (!acceptedTerms) {
@@ -229,8 +240,8 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
                   BEGIN QUIETLY
                 </Text>
                 <Text className="text-phase-text-secondary text-sm leading-relaxed">
-                  Enter as a guest to explore the sanctuary, or return to the account that already
-                  holds your path.
+                  Enter as an anonymous explorer to explore the sanctuary, or return to the account
+                  that already holds your path.
                 </Text>
               </VStack>
 
@@ -250,7 +261,7 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
                     <Text className="text-sm text-phase-text-secondary">
                       {t('welcome.acceptTerms')}
                     </Text>
-                    <Link href="https://neevsk.org/privacy" isExternal>
+                    <Link href={EXTERNAL_URLS.privacy} isExternal>
                       <LinkText className="text-sm">{t('welcome.privacyPactLink')}</LinkText>
                     </Link>
                   </HStack>
@@ -258,7 +269,7 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
 
                 <VStack className="gap-3">
                   <Button
-                    onPress={handleStartExploring}
+                    onPress={handleStartExploringPress}
                     isDisabled={isConnecting || !acceptedTerms}
                     className={`h-[64px] rounded-2xl shadow-md ${acceptedTerms ? 'bg-phase-accent' : 'bg-phase-text-secondary opacity-50'}`}
                   >

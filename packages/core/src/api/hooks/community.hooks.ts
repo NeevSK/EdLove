@@ -1,14 +1,15 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 import { useStore, useTemporalStore } from '../../store';
+import { useAuthStore } from '../../store/useAuthStore';
 import { APIError } from '../../types/API';
 import type { Post } from '../../types/Community';
-import { communityAPI } from '../community';
-import { circleAPI } from '../circles';
 import { announcementAPI } from '../announcements';
-import { socialAPI } from '../social';
+import { circleAPI } from '../circles';
+import { communityAPI } from '../community';
 import { growthSignalsAPI } from '../growthSignals';
 import { identityAPI } from '../identity';
+import { socialAPI } from '../social';
 
 /**
  * Community Query Key Factory
@@ -64,8 +65,6 @@ export function usePostsInfiniteQuery(groupId: string = 'all', options: Record<s
         limit: 10,
         offset: pageParam,
         groupId: groupId === 'all' ? undefined : groupId,
-        viewDate,
-        viewScale,
         ...options,
       });
     },
@@ -81,24 +80,19 @@ export function usePostsInfiniteQuery(groupId: string = 'all', options: Record<s
  */
 export function useCreatePostMutation() {
   const queryClient = useQueryClient();
-  const { user: storeUser, active_bond } = useStore();
-  const _viewDate = useTemporalStore((state) => state.viewDate);
-  const _viewScale = useTemporalStore((state) => state.viewScale);
+  const { user: storeUser } = useStore();
+  const _activeBond = useAuthStore((state) => state.activeBond);
 
   return useMutation({
     mutationFn: async (input: any) => {
-      const loggedInId = await identityAPI.getMyInternalId();
-      if (!loggedInId) throw new APIError('Not authenticated', 'UNAUTHORIZED' as any);
+      const identity = await identityAPI.identifyActiveCitizen();
+      if (!identity) throw new APIError('Not authenticated', 'UNAUTHORIZED' as any);
+      if (!identity.activeBond) throw new APIError('No active bond found', 'FORBIDDEN' as any);
 
-      const schoolId = storeUser?.school_id;
-      if (!schoolId) {
-        throw new APIError(
-          'No school context  please complete your profile before posting.',
-          'BAD_REQUEST' as any,
-        );
-      }
-      const capacity = active_bond?.capacity || 'student';
-      return communityAPI.createPost(input, loggedInId, capacity as any, schoolId);
+      return communityAPI.createPost({
+        ...input,
+        author_tier: identity.activeBond.capacity, // Using resolved capacity
+      });
     },
     onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({
@@ -178,8 +172,8 @@ export function useAnnouncementsQuery(schoolId: string) {
 export function usePollVoteMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (params: { postId: string; optionId: string; allowMultiple?: boolean }) =>
-      communityAPI.voteInPoll(params.postId, params.optionId, params.allowMultiple),
+    mutationFn: (params: { postId: string; optionId: string }) =>
+      communityAPI.voteInPoll(params.postId, params.optionId),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: communityKeys.all });
     },
@@ -245,16 +239,16 @@ export function usePostLogic(post: Post, userId?: string) {
 /**
  * usePollLogic - Logic for community poll interaction.
  */
-export function usePollLogic(postId: string, userId?: string, allowMultiple?: boolean) {
+export function usePollLogic(postId: string, userId?: string) {
   const voteMutation = usePollVoteMutation();
   const [userVotes, _setUserVotes] = useState<string[]>([]); // This should eventually come from a query
 
   const handleVote = useCallback(
     async (optionId: string) => {
       if (!userId) return;
-      await voteMutation.mutateAsync({ postId, optionId, allowMultiple });
+      await voteMutation.mutateAsync({ postId, optionId });
     },
-    [postId, userId, allowMultiple, voteMutation],
+    [postId, userId, voteMutation],
   );
 
   return useMemo(

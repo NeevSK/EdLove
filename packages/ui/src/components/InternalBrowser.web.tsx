@@ -1,8 +1,8 @@
 import { ChevronLeft, ChevronRight, ExternalLink, RotateCcw, Share2, X } from 'lucide-react-native';
 import type React from 'react';
 import { StyleSheet } from 'react-native';
-import { View } from '../primitives';
 import { useTheme } from '../hooks/useTheme';
+import { View } from '../primitives';
 import { Text } from './ui/text';
 import { Pressable } from './ui/view';
 

@@ -1,63 +1,33 @@
 /**
- * PowerSync Hooks — Typed React Hooks (2026 Elegant Edition)
+ * PowerSync Hooks — Compiled Drizzle AST Query Hooks (2026 Edition)
  *
- * Thin wrappers around @powersync/react that add compile-time type safety
- * via the Database type generated from AppSchema.
+ * Provides type-safe React hooks for reactive local-first SQLite queries.
+ * Instead of raw string-based SQL queries, this module uses Drizzle ORM
+ * to compile reactive AST queries, providing 100% compile-time type-safety.
  *
- * 2026 Addition: Each typed hook applies a `mapRow` transform to cast
- * SQLite integer fields (0|1) to proper TypeScript booleans. This prevents
- * primitive leakage where UI components expecting `true/false` receive `1/0`.
- *
- * Usage:
- *   const rows = useStudentsInClassroom(classroomId);
- *   rows[0].is_active // → true | false (not 1 | 0)
+ * @see https://docs.powersync.com/usage/use-case-examples/drizzle
  */
+import { and, desc, eq } from 'drizzle-orm';
+import { getDrizzleDB } from './database';
 import { useQuery, useStatus } from './powersync-react-shim';
-import type { Database } from './schema';
+import {
+  type Attendance,
+  attendance,
+  type Classroom,
+  classrooms,
+  type MoodLog,
+  moodLogs,
+  type School,
+  type Student,
+  schools,
+  students,
+} from './schema';
 
-// ─── Raw Row Types (from SQLite schema) ───────────────────────────────────────
-type RawAttendanceRow = Database['attendance'];
-type RawStudentRow = Database['students'];
-type RawClassroomRow = Database['classrooms'];
-type RawMoodLogRow = Database['mood_logs'];
-type RawSchoolRow = Database['schools'];
-
-// ─── Mapped Row Types (TypeScript-safe with booleans) ────────────────────────
-export type AttendanceRow = RawAttendanceRow;
-
-export type StudentRow = Omit<RawStudentRow, 'is_active'> & {
-  is_active: boolean;
-};
-
-export type ClassroomRow = Omit<RawClassroomRow, 'is_active'> & {
-  is_active: boolean;
-};
-
-export type MoodLogRow = RawMoodLogRow;
-
-export type SchoolRow = Omit<RawSchoolRow, 'is_active'> & {
-  is_active: boolean;
-};
-
-// ─── SQLite → TypeScript Primitive Mappers ───────────────────────────────────
-
-function mapStudent(row: RawStudentRow): StudentRow {
-  return { ...row, is_active: row.is_active === 1 };
-}
-
-function mapClassroom(row: RawClassroomRow): ClassroomRow {
-  return { ...row, is_active: row.is_active === 1 };
-}
-
-function mapSchool(row: RawSchoolRow): SchoolRow {
-  return { ...row, is_active: row.is_active === 1 };
-}
-
-// ─── Generic Query Hook ───────────────────────────────────────────────────────
+// ─── Generic Reactive Query Hooks ────────────────────────────────────────────
 
 /**
- * Reactive SQL query hook. Re-renders automatically when the underlying
- * SQLite data changes (via PowerSync's watch mechanism).
+ * Low-level reactive raw SQL query hook. Re-renders automatically when
+ * the underlying SQLite data changes.
  */
 export function usePowerSyncQuery<T = Record<string, unknown>>(
   sql: string,
@@ -68,72 +38,93 @@ export function usePowerSyncQuery<T = Record<string, unknown>>(
 }
 
 /**
- * Returns the current PowerSync sync status.
- * Useful for showing a "syncing..." indicator.
+ * The ultimate Drizzle reactive query compiler hook!
+ * Compiles a Drizzle AST query into raw SQLite and feeds it directly
+ * into PowerSync's live query reactive stream.
+ *
+ * Provides absolute compile-time type safety from the DB to the UI render tree.
+ */
+export function useDrizzleQuery<T>(query: { toSQL(): { sql: string; params: unknown[] } }): T[] {
+  const { sql: compiledSql, params } = query.toSQL();
+  return usePowerSyncQuery<T>(compiledSql, params);
+}
+
+/**
+ * Returns the current PowerSync synchronization status.
+ * Useful for displaying sync status indicators in the user interface.
  */
 export function usePowerSyncStatus() {
   return useStatus();
 }
 
-// ─── Pre-built, Type-Safe, Mapped Query Hooks ─────────────────────────────────
+// ─── Pre-built, Type-Safe Query Hooks ─────────────────────────────────────────
 
 /**
  * Get all attendance records for a classroom on a given ISO date.
- * Returns correctly typed AttendanceRow objects.
+ * Returns correctly typed Attendance rows.
  */
-export function useAttendanceForClassroom(
-  classroomId: string,
-  date: string,
-): AttendanceRow[] {
-  return usePowerSyncQuery<RawAttendanceRow>(
-    'SELECT * FROM attendance WHERE classroom_id = ? AND date = ? ORDER BY student_id',
-    [classroomId, date],
-  );
+export function useAttendanceForClassroom(classroomId: string, date: string): Attendance[] {
+  const db = getDrizzleDB();
+  const query = db
+    .select()
+    .from(attendance)
+    .where(and(eq(attendance.classroomId, classroomId), eq(attendance.date, date)))
+    .orderBy(attendance.studentId);
+
+  return useDrizzleQuery<Attendance>(query);
 }
 
 /**
  * Get all active students in a classroom.
- * Maps is_active (0|1) → boolean.
+ * Boolean conversion is handled automatically by the Drizzle schema.
  */
-export function useStudentsInClassroom(classroomId: string): StudentRow[] {
-  const rows = usePowerSyncQuery<RawStudentRow>(
-    'SELECT * FROM students WHERE classroom_id = ? AND is_active = 1 ORDER BY full_name',
-    [classroomId],
-  );
-  return rows.map(mapStudent);
+export function useStudentsInClassroom(classroomId: string): Student[] {
+  const db = getDrizzleDB();
+  const query = db
+    .select()
+    .from(students)
+    .where(and(eq(students.classroomId, classroomId), eq(students.isActive, true)))
+    .orderBy(students.fullName);
+
+  return useDrizzleQuery<Student>(query);
 }
 
 /**
  * Get mood logs for a student.
  */
-export function useMoodLogsForStudent(studentId: string, limit = 30): MoodLogRow[] {
-  return usePowerSyncQuery<MoodLogRow>(
-    'SELECT * FROM mood_logs WHERE student_id = ? ORDER BY recorded_at DESC LIMIT ?',
-    [studentId, limit],
-  );
+export function useMoodLogsForUser(userId: string, limit = 30): MoodLog[] {
+  const db = getDrizzleDB();
+  const query = db
+    .select()
+    .from(moodLogs)
+    .where(eq(moodLogs.userId, userId))
+    .orderBy(desc(moodLogs.createdAt))
+    .limit(limit);
+
+  return useDrizzleQuery<MoodLog>(query);
 }
 
 /**
  * Get all active classrooms for a school.
- * Maps is_active (0|1) → boolean.
  */
-export function useClassroomsForSchool(schoolId: string): ClassroomRow[] {
-  const rows = usePowerSyncQuery<RawClassroomRow>(
-    'SELECT * FROM classrooms WHERE school_id = ? AND is_active = 1 ORDER BY name',
-    [schoolId],
-  );
-  return rows.map(mapClassroom);
+export function useClassroomsForSchool(schoolId: string): Classroom[] {
+  const db = getDrizzleDB();
+  const query = db
+    .select()
+    .from(classrooms)
+    .where(and(eq(classrooms.schoolId, schoolId), eq(classrooms.isActive, true)))
+    .orderBy(classrooms.name);
+
+  return useDrizzleQuery<Classroom>(query);
 }
 
 /**
  * Get the school record for a given school ID.
- * Maps is_active (0|1) → boolean.
  */
-export function useSchool(schoolId: string): SchoolRow | null {
-  const rows = usePowerSyncQuery<RawSchoolRow>(
-    'SELECT * FROM schools WHERE id = ? LIMIT 1',
-    [schoolId],
-  );
-  const raw = rows[0];
-  return raw ? mapSchool(raw) : null;
+export function useSchool(schoolId: string): School | null {
+  const db = getDrizzleDB();
+  const query = db.select().from(schools).where(eq(schools.id, schoolId)).limit(1);
+
+  const rows = useDrizzleQuery<School>(query);
+  return rows[0] || null;
 }

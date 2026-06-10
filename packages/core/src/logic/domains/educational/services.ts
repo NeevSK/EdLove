@@ -6,15 +6,15 @@ import type {
   AssignmentSubmission,
   Classroom,
   ClassroomGroup,
+  ClassroomLegacyRecord,
   ClassroomStudent,
-  StudentAssignment,
-  StudentSubmissionSummary,
-  TeacherStats,
-  StudentAcademicRecord,
-  TeacherProfessionalRecord,
   PrincipalGovernanceRecord,
   SchoolLegacyRecord,
-  ClassroomLegacyRecord,
+  StudentAcademicRecord,
+  StudentAssignment,
+  StudentSubmissionSummary,
+  TeacherProfessionalRecord,
+  TeacherStats,
 } from '../../schemas/classroom.schema';
 import type { ClassroomGradingSettings, Grade } from '../../schemas/grading.schema';
 import type { Lesson } from '../../schemas/lesson.schema';

@@ -1,184 +1,139 @@
 import {
-	assertContractCoverage,
-	createPOAProxy,
-	defineContractCoverage,
-	growthSignalsAPI,
-	selfContract,
-	supabase,
-} from "@repo/core/api";
+  type AppType,
+  createSovereignClient,
+  growthSignalsAPI,
+  SOVEREIGN_API_URL,
+} from '@repo/core/api';
+import { useStore } from '@repo/core/logic';
+import { APIError } from '@repo/core/types';
+import type { FireJournalEntry, MoodLog } from '../types';
 
-import { APIError } from "@repo/core/types";
+// Create the type-safe RPC client
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
-import type { FireJournalEntry, MoodLog } from "../types";
+/**
+ * Helper to enforce client-side defense-in-depth guest blocks.
+ */
+function assertAuthenticated() {
+  const state = useStore.getState();
+  if (!state.user || state.user.is_anonymous) {
+    throw new APIError('Forbidden', '403');
+  }
+}
 
-// ============================================================================
-// SELF API (Wellbeing & Reflection)
-// ============================================================================
+/**
+ * SELF API (Sovereign Hono Proxy)
+ *
+ * This module no longer talks to Supabase directly.
+ * It acts as a lightweight RPC proxy to the Sanctuary API on Railway.
+ */
+export const selfAPI = {
+  /**
+   * Log a new mood signal via the Remote API.
+   */
+  async logMood(
+    userId: string,
+    score: number,
+    note?: string,
+    mood?: MoodLog['mood'],
+  ): Promise<MoodLog> {
+    assertAuthenticated();
+    const res = await client.api.self.mood.$post({
+      json: {
+        user_id: userId,
+        mood_score: score,
+        mood,
+        note,
+      },
+    });
 
-const rawSelfAPI = {
-	/**
-	 * @authority create Wellbeing
-	 */
-	async logMood(
-		userId: string,
-		score: number,
-		note?: string,
-		mood?: MoodLog["mood"],
-	): Promise<MoodLog> {
-		// AuthorityInterceptor handles authentication and authorization check
+    if (!res.ok) {
+      const error = (await res.json()) as any;
+      throw new APIError(error.message || 'Failed to log mood', res.status.toString());
+    }
 
-		// Validate mood score (1-5)
-		if (score < 1 || score > 5) {
-			throw new APIError("Mood score must be between 1 and 5", "INVALID_SCORE");
-		}
+    const data = (await res.json()) as MoodLog;
 
-		const { data, error } = await supabase
-			.from("mood_logs")
-			.insert([
-				{
-					user_id: userId,
-					mood_score: score,
-					mood,
-					note,
-				},
-			])
-			.select()
-			.single();
+    // Emit growth signal (Side effect remains in client for now)
+    growthSignalsAPI.emitSilent({
+      user_id: userId,
+      event_type: 'mood_checkin',
+      event_metadata: { mood_score: score },
+    });
 
-		if (error) {
-			throw new APIError("Failed to log mood", error.code, error);
-		}
+    return data;
+  },
 
-		// Growth signal: teacher chose to check in with themselves (Presence  Tier 2 Care Signal)
-		growthSignalsAPI.emitSilent({
-			user_id: userId,
-			event_type: "mood_checkin",
-			event_metadata: { mood_score: score },
-		});
+  /**
+   * Retrieve mood history.
+   */
+  async getMoodHistory(userId: string, limit: number = 30): Promise<MoodLog[]> {
+    assertAuthenticated();
+    const res = await client.api.self.mood.$get({
+      query: { userId, limit: limit.toString() },
+    });
 
-		return data;
-	},
+    if (!res.ok) {
+      throw new APIError('Failed to fetch mood history', res.status.toString());
+    }
 
-	/**
-	 * @authority read Wellbeing
-	 */
-	async getMoodHistory(userId: string, limit: number = 30): Promise<MoodLog[]> {
-		const { data, error } = await supabase
-			.from("mood_logs")
-			.select("*")
-			.eq("user_id", userId)
-			.order("created_at", { ascending: false })
-			.limit(limit);
+    return (await res.json()) as MoodLog[];
+  },
 
-		if (error) {
-			throw new APIError("Failed to fetch mood history", error.code, error);
-		}
+  /**
+   * Release a journal entry to the flames.
+   */
+  async burnJournal(userId: string, content: string): Promise<FireJournalEntry> {
+    assertAuthenticated();
+    const res = await client.api.self.journal.burn.$post({
+      json: { content },
+    });
 
-		return data || [];
-	},
+    if (!res.ok) {
+      throw new APIError('Failed to burn journal entry', res.status.toString());
+    }
 
-	/**
-	 * @authority create Wellbeing
-	 */
-	async burnJournal(
-		userId: string,
-		content: string,
-	): Promise<FireJournalEntry> {
-		// Only store preview (first 50 characters) for privacy
-		const contentPreview = content.substring(0, 50);
+    const data = (await res.json()) as FireJournalEntry;
 
-		const { data, error } = await supabase
-			.from("fire_journal")
-			.insert([
-				{
-					user_id: userId,
-					content_preview: contentPreview,
-					is_burned: true,
-				},
-			])
-			.select()
-			.single();
+    growthSignalsAPI.emitSilent({
+      user_id: userId,
+      event_type: 'fire_journal_entry',
+      event_metadata: {},
+    });
 
-		if (error) {
-			throw new APIError("Failed to burn journal entry", error.code, error);
-		}
+    return data;
+  },
 
-		// Growth signal: teacher processed difficult emotions (Presence  Tier 2 Care Signal)
-		growthSignalsAPI.emitSilent({
-			user_id: userId,
-			event_type: "fire_journal_entry",
-			event_metadata: {},
-		});
+  /**
+   * Retrieve burned history.
+   */
+  async getBurnedHistory(userId: string, limit: number = 10): Promise<FireJournalEntry[]> {
+    assertAuthenticated();
+    const res = await client.api.self.journal.$get({
+      query: { userId, limit: limit.toString() },
+    });
 
-		return data;
-	},
+    if (!res.ok) {
+      throw new APIError('Failed to fetch burned history', res.status.toString());
+    }
 
-	/**
-	 * @authority read Wellbeing
-	 */
-	async getBurnedHistory(
-		userId: string,
-		limit: number = 10,
-	): Promise<FireJournalEntry[]> {
-		const { data, error } = await supabase
-			.from("fire_journal")
-			.select("id, user_id, content_preview, is_burned, created_at")
-			.eq("user_id", userId)
-			.eq("is_burned", true)
-			.order("created_at", { ascending: false })
-			.limit(limit);
+    return (await res.json()) as FireJournalEntry[];
+  },
 
-		if (error) {
-			throw new APIError("Failed to fetch burned history", error.code, error);
-		}
+  /**
+   * Retrieve today's mood.
+   */
+  async getTodayMood(userId: string): Promise<MoodLog | null> {
+    assertAuthenticated();
+    const res = await client.api.self.mood.today.$get({
+      query: { userId },
+    });
 
-		return data || [];
-	},
+    if (!res.ok) {
+      if (res.status === 404) return null;
+      throw new APIError('Failed to fetch today mood', res.status.toString());
+    }
 
-	/**
-	 * @authority read Wellbeing
-	 */
-	async getTodayMood(userId: string): Promise<MoodLog | null> {
-		const today = new Date();
-		today.setHours(0, 0, 0, 0);
-
-		const { data, error } = await supabase
-			.from("mood_logs")
-			.select("*")
-			.eq("user_id", userId)
-			.gte("created_at", today.toISOString())
-			.order("created_at", { ascending: false })
-			.limit(1)
-			.single();
-
-		if (error) {
-			if (error.code === "PGRST116") {
-				return null; // No mood logged today
-			}
-			throw new APIError("Failed to fetch today mood", error.code, error);
-		}
-
-		return data;
-	},
+    return (await res.json()) as MoodLog;
+  },
 };
-
-const selfCoverage = assertContractCoverage(
-	rawSelfAPI,
-	defineContractCoverage({
-		moduleName: "self",
-		contract: selfContract,
-		methodMapping: {
-			getBurnedHistory: "getJournalHistory",
-		},
-	}),
-);
-
-export const selfAPI = createPOAProxy(
-	"self",
-	rawSelfAPI,
-	selfCoverage.contract,
-	selfCoverage.methodMapping,
-	{ strictUnmappedMethods: true },
-);
-
-void [selfContract];

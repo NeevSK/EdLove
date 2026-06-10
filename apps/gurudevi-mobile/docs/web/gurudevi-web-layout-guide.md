@@ -93,7 +93,8 @@ once, and the active screen renders in the content area.
 ```tsx
 // app/(tabs)/_layout.web.tsx
 import React, { useState } from 'react'
-import { Slot, useRouter, usePathname } from 'expo-router'
+// This guide now assumes the classic Expo entry + React Navigation stack model.
+// Use React Navigation screens/stacks and web-specific `.web.tsx` overrides instead of Expo Router.
 import { useAuth } from '@repo/core/hooks/useAuth'
 import { SanctuaryGlobalStyles } from '@repo/ui/src/web/SanctuaryGlobalStyles'
 

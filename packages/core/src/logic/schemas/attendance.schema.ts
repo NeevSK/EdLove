@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { makeModelSchema } from '@repo/schema';
+import { z } from 'zod';
 import { StudentAttendancePulseSchema } from './staff.schema';
 
 export const AttendanceStatusSchema = z.enum(['present', 'absent', 'late']);

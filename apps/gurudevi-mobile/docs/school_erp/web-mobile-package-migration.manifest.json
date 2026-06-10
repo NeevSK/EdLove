@@ -1,149 +1,149 @@
 {
-	"version": 1,
-	"updatedAt": "2026-03-21",
-	"notes": [
-		"Manifest entries are reviewed ownership decisions, not auto-generated guesses.",
-		"Thin app adapters remain valid final destinations when route naming or stack semantics must stay in the app shell."
-	],
-	"entries": [
-		{
-			"source": "apps/gurudevi-mobile/src/screens/SelfScreen.web.tsx",
-			"ownerPackage": "@repo/self",
-			"target": "packages/self/src/screens/SelfScreen.web.tsx",
-			"adapterRequired": true,
-			"packageExport": "@repo/self",
-			"codemodStatus": "implemented"
-		},
-		{
-			"source": "apps/gurudevi-mobile/src/screens/self/views/StudentSelfView.web.tsx",
-			"ownerPackage": "@repo/self",
-			"target": "packages/self/src/screens/self/StudentSelfView.web.tsx",
-			"adapterRequired": false,
-			"packageExport": "@repo/self",
-			"codemodStatus": "implemented"
-		},
-		{
-			"source": "apps/gurudevi-mobile/src/screens/self/views/TeacherSelfView.web.tsx",
-			"ownerPackage": "@repo/self",
-			"target": "packages/self/src/screens/self/TeacherSelfView.web.tsx",
-			"adapterRequired": false,
-			"packageExport": "@repo/self",
-			"codemodStatus": "implemented"
-		},
-		{
-			"source": "apps/gurudevi-mobile/src/screens/self/views/PrincipalSelfView.web.tsx",
-			"ownerPackage": "@repo/self",
-			"target": "packages/self/src/screens/self/PrincipalSelfView.web.tsx",
-			"adapterRequired": false,
-			"packageExport": "@repo/self",
-			"codemodStatus": "implemented"
-		},
-		{
-			"source": "apps/gurudevi-mobile/src/screens/self/views/FounderSelfView.web.tsx",
-			"ownerPackage": "@repo/self",
-			"target": "packages/self/src/screens/self/FounderSelfView.web.tsx",
-			"adapterRequired": false,
-			"packageExport": "@repo/self",
-			"codemodStatus": "implemented"
-		},
-		{
-			"source": "apps/gurudevi-mobile/src/screens/LibraryScreen.web.tsx",
-			"ownerPackage": "@repo/library",
-			"target": "packages/library/src/screens/LibraryScreen.web.tsx",
-			"adapterRequired": true,
-			"packageExport": "@repo/library",
-			"packageSymbol": "LibraryScreen",
-			"codemodStatus": "implemented"
-		},
-		{
-			"source": "apps/gurudevi-mobile/src/screens/library/CollectionDetailScreen.web.tsx",
-			"ownerPackage": "@repo/library",
-			"target": "packages/library/src/screens/CollectionDetailScreen.web.tsx",
-			"adapterRequired": true,
-			"packageExport": "@repo/library",
-			"packageSymbol": "CollectionDetailScreenWeb",
-			"codemodStatus": "implemented"
-		},
-		{
-			"source": "apps/gurudevi-mobile/src/screens/ProfileScreen.web.tsx",
-			"ownerPackage": "@repo/profile",
-			"target": "packages/profile/src/screens/ProfileScreen.web.tsx",
-			"adapterRequired": true,
-			"packageExport": "@repo/profile",
-			"packageSymbol": "ProfileScreenWeb",
-			"codemodStatus": "implemented"
-		},
-		{
-			"source": "apps/gurudevi-mobile/src/screens/PublicProfileScreen.web.tsx",
-			"ownerPackage": "@repo/profile",
-			"target": "packages/profile/src/screens/PublicProfileScreen.web.tsx",
-			"adapterRequired": true,
-			"packageExport": "@repo/profile",
-			"packageSymbol": "PublicProfileScreenWeb",
-			"codemodStatus": "implemented"
-		},
-		{
-			"source": "apps/gurudevi-mobile/src/screens/profile/FullProfileScreen.web.tsx",
-			"ownerPackage": "@repo/profile",
-			"target": "packages/profile/src/screens/FullProfileScreen.web.tsx",
-			"adapterRequired": true,
-			"packageExport": "@repo/profile",
-			"packageSymbol": "FullProfileScreenWeb",
-			"codemodStatus": "implemented"
-		},
-		{
-			"source": "apps/gurudevi-mobile/src/screens/classroom/FormBuilderScreen.web.tsx",
-			"ownerPackage": "@repo/form-builder",
-			"target": "packages/form-builder/src/screens/FormBuilderScreen.web.tsx",
-			"adapterRequired": true,
-			"packageExport": "@repo/form-builder",
-			"packageSymbol": "FormBuilderScreenWeb",
-			"codemodStatus": "implemented"
-		},
-		{
-			"source": "apps/gurudevi-mobile/src/screens/classroom/PublicFormScreen.web.tsx",
-			"ownerPackage": "@repo/form-builder",
-			"target": "packages/form-builder/src/screens/PublicFormScreen.web.tsx",
-			"adapterRequired": true,
-			"packageExport": "@repo/form-builder",
-			"packageSymbol": "PublicFormScreenWeb",
-			"codemodStatus": "implemented"
-		},
-		{
-			"source": "apps/gurudevi-mobile/src/screens/CommunityScreen.web.tsx",
-			"ownerPackage": "@repo/community",
-			"target": "packages/community/src/screens/CommunityScreen.web.tsx",
-			"adapterRequired": true,
-			"packageExport": "@repo/community",
-			"packageSymbol": "CommunityScreenWeb",
-			"codemodStatus": "implemented"
-		},
-		{
-			"source": "apps/gurudevi-mobile/src/screens/CommunityProfileScreen.web.tsx",
-			"ownerPackage": "@repo/community",
-			"target": "packages/community/src/screens/GroupDetailsScreen.web.tsx",
-			"adapterRequired": true,
-			"packageExport": "@repo/community",
-			"packageSymbol": "GroupDetailsScreenWeb",
-			"codemodStatus": "implemented"
-		},
-		{
-			"source": "apps/gurudevi-mobile/src/screens/community/AnnouncementsScreen.tsx",
-			"ownerPackage": "@repo/community",
-			"target": "packages/community/src/screens/AnnouncementsScreen.tsx",
-			"adapterRequired": true,
-			"packageExport": "@repo/community",
-			"packageSymbol": "AnnouncementsScreen",
-			"codemodStatus": "implemented"
-		},
-		{
-			"source": "apps/gurudevi-mobile/src/screens/InvitationWelcomeScreen.web.tsx",
-			"ownerPackage": "@repo/core",
-			"target": "packages/core/src/screens/InvitationWelcomeScreen.tsx",
-			"adapterRequired": true,
-			"packageExport": "@repo/core",
-			"packageSymbol": "InvitationWelcomeScreen",
-			"codemodStatus": "implemented"
-		}
-	]
+  "version": 1,
+  "updatedAt": "2026-03-21",
+  "notes": [
+    "Manifest entries are reviewed ownership decisions, not auto-generated guesses.",
+    "Thin app adapters remain valid final destinations when route naming or stack semantics must stay in the app shell."
+  ],
+  "entries": [
+    {
+      "source": "apps/gurudevi-mobile/src/screens/SelfScreen.web.tsx",
+      "ownerPackage": "@repo/self",
+      "target": "packages/self/src/screens/SelfScreen.web.tsx",
+      "adapterRequired": true,
+      "packageExport": "@repo/self",
+      "codemodStatus": "implemented"
+    },
+    {
+      "source": "apps/gurudevi-mobile/src/screens/self/views/StudentSelfView.web.tsx",
+      "ownerPackage": "@repo/self",
+      "target": "packages/self/src/screens/self/StudentSelfView.web.tsx",
+      "adapterRequired": false,
+      "packageExport": "@repo/self",
+      "codemodStatus": "implemented"
+    },
+    {
+      "source": "apps/gurudevi-mobile/src/screens/self/views/TeacherSelfView.web.tsx",
+      "ownerPackage": "@repo/self",
+      "target": "packages/self/src/screens/self/TeacherSelfView.web.tsx",
+      "adapterRequired": false,
+      "packageExport": "@repo/self",
+      "codemodStatus": "implemented"
+    },
+    {
+      "source": "apps/gurudevi-mobile/src/screens/self/views/PrincipalSelfView.web.tsx",
+      "ownerPackage": "@repo/self",
+      "target": "packages/self/src/screens/self/PrincipalSelfView.web.tsx",
+      "adapterRequired": false,
+      "packageExport": "@repo/self",
+      "codemodStatus": "implemented"
+    },
+    {
+      "source": "apps/gurudevi-mobile/src/screens/self/views/FounderSelfView.web.tsx",
+      "ownerPackage": "@repo/self",
+      "target": "packages/self/src/screens/self/FounderSelfView.web.tsx",
+      "adapterRequired": false,
+      "packageExport": "@repo/self",
+      "codemodStatus": "implemented"
+    },
+    {
+      "source": "apps/gurudevi-mobile/src/screens/LibraryScreen.web.tsx",
+      "ownerPackage": "@repo/library",
+      "target": "packages/library/src/screens/LibraryScreen.web.tsx",
+      "adapterRequired": true,
+      "packageExport": "@repo/library",
+      "packageSymbol": "LibraryScreen",
+      "codemodStatus": "implemented"
+    },
+    {
+      "source": "apps/gurudevi-mobile/src/screens/library/CollectionDetailScreen.web.tsx",
+      "ownerPackage": "@repo/library",
+      "target": "packages/library/src/screens/CollectionDetailScreen.web.tsx",
+      "adapterRequired": true,
+      "packageExport": "@repo/library",
+      "packageSymbol": "CollectionDetailScreenWeb",
+      "codemodStatus": "implemented"
+    },
+    {
+      "source": "apps/gurudevi-mobile/src/screens/ProfileScreen.web.tsx",
+      "ownerPackage": "@repo/profile",
+      "target": "packages/profile/src/screens/ProfileScreen.web.tsx",
+      "adapterRequired": true,
+      "packageExport": "@repo/profile",
+      "packageSymbol": "ProfileScreenWeb",
+      "codemodStatus": "implemented"
+    },
+    {
+      "source": "apps/gurudevi-mobile/src/screens/PublicProfileScreen.web.tsx",
+      "ownerPackage": "@repo/profile",
+      "target": "packages/profile/src/screens/PublicProfileScreen.web.tsx",
+      "adapterRequired": true,
+      "packageExport": "@repo/profile",
+      "packageSymbol": "PublicProfileScreenWeb",
+      "codemodStatus": "implemented"
+    },
+    {
+      "source": "apps/gurudevi-mobile/src/screens/profile/FullProfileScreen.web.tsx",
+      "ownerPackage": "@repo/profile",
+      "target": "packages/profile/src/screens/FullProfileScreen.web.tsx",
+      "adapterRequired": true,
+      "packageExport": "@repo/profile",
+      "packageSymbol": "FullProfileScreenWeb",
+      "codemodStatus": "implemented"
+    },
+    {
+      "source": "apps/gurudevi-mobile/src/screens/classroom/FormBuilderScreen.web.tsx",
+      "ownerPackage": "@repo/form-builder",
+      "target": "packages/form-builder/src/screens/FormBuilderScreen.web.tsx",
+      "adapterRequired": true,
+      "packageExport": "@repo/form-builder",
+      "packageSymbol": "FormBuilderScreenWeb",
+      "codemodStatus": "implemented"
+    },
+    {
+      "source": "apps/gurudevi-mobile/src/screens/classroom/PublicFormScreen.web.tsx",
+      "ownerPackage": "@repo/form-builder",
+      "target": "packages/form-builder/src/screens/PublicFormScreen.web.tsx",
+      "adapterRequired": true,
+      "packageExport": "@repo/form-builder",
+      "packageSymbol": "PublicFormScreenWeb",
+      "codemodStatus": "implemented"
+    },
+    {
+      "source": "apps/gurudevi-mobile/src/screens/CommunityScreen.web.tsx",
+      "ownerPackage": "@repo/community",
+      "target": "packages/community/src/screens/CommunityScreen.web.tsx",
+      "adapterRequired": true,
+      "packageExport": "@repo/community",
+      "packageSymbol": "CommunityScreenWeb",
+      "codemodStatus": "implemented"
+    },
+    {
+      "source": "apps/gurudevi-mobile/src/screens/CommunityProfileScreen.web.tsx",
+      "ownerPackage": "@repo/community",
+      "target": "packages/community/src/screens/GroupDetailsScreen.web.tsx",
+      "adapterRequired": true,
+      "packageExport": "@repo/community",
+      "packageSymbol": "GroupDetailsScreenWeb",
+      "codemodStatus": "implemented"
+    },
+    {
+      "source": "apps/gurudevi-mobile/src/screens/community/AnnouncementsScreen.tsx",
+      "ownerPackage": "@repo/community",
+      "target": "packages/community/src/screens/AnnouncementsScreen.tsx",
+      "adapterRequired": true,
+      "packageExport": "@repo/community",
+      "packageSymbol": "AnnouncementsScreen",
+      "codemodStatus": "implemented"
+    },
+    {
+      "source": "apps/gurudevi-mobile/src/screens/InvitationWelcomeScreen.web.tsx",
+      "ownerPackage": "@repo/core",
+      "target": "packages/core/src/screens/InvitationWelcomeScreen.tsx",
+      "adapterRequired": true,
+      "packageExport": "@repo/core",
+      "packageSymbol": "InvitationWelcomeScreen",
+      "codemodStatus": "implemented"
+    }
+  ]
 }

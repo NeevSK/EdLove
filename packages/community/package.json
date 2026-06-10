@@ -1,22 +1,104 @@
 {
   "name": "@repo/community",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./components": "./src/components/index.ts",
-    "./hooks": "./src/hooks/index.ts",
-    "./screens": "./src/screens/index.ts",
-    "./types": "./src/types/index.ts",
-    "./api": "./src/api/index.ts",
-    "./screens/CommunityScreen.web": "./src/screens/CommunityScreen.web.tsx",
-    "./screens/UserPublicProfileScreen.web": "./src/screens/UserPublicProfileScreen.web.tsx",
-    "./screens/GroupDetailsScreen.web": "./src/screens/GroupDetailsScreen.web.tsx",
-    "./screens/GroupChatScreen.web": "./src/screens/GroupChatScreen.web.tsx",
-    "./screens/DirectMessagesListScreen": "./src/screens/DirectMessagesListScreen.tsx",
-    "./screens/DirectMessageScreen.web": "./src/screens/DirectMessageScreen.web.tsx",
-    "./screens/AnnouncementsScreen": "./src/screens/AnnouncementsScreen.tsx",
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./screens/CommunityScreen": {
+      "import": "./src/screens/CommunityScreen.tsx",
+      "browser": "./src/screens/CommunityScreen.web.tsx",
+      "react-native": "./src/screens/CommunityScreen.tsx",
+      "default": "./src/screens/CommunityScreen.tsx"
+    },
+    "./screens/CommunityScreen.web": {
+      "types": "./src/screens/CommunityScreen.web.tsx",
+      "import": "./src/screens/CommunityScreen.web.tsx",
+      "default": "./src/screens/CommunityScreen.web.tsx"
+    },
+    "./screens/UserPublicProfileScreen": {
+      "import": "./src/screens/UserPublicProfileScreen.tsx",
+      "browser": "./src/screens/UserPublicProfileScreen.web.tsx",
+      "react-native": "./src/screens/UserPublicProfileScreen.tsx",
+      "default": "./src/screens/UserPublicProfileScreen.tsx"
+    },
+    "./screens/UserPublicProfileScreen.web": {
+      "types": "./src/screens/UserPublicProfileScreen.web.tsx",
+      "import": "./src/screens/UserPublicProfileScreen.web.tsx",
+      "default": "./src/screens/UserPublicProfileScreen.web.tsx"
+    },
+    "./screens/GroupDetailsScreen": {
+      "import": "./src/screens/GroupDetailsScreen.tsx",
+      "browser": "./src/screens/GroupDetailsScreen.web.tsx",
+      "react-native": "./src/screens/GroupDetailsScreen.tsx",
+      "default": "./src/screens/GroupDetailsScreen.tsx"
+    },
+    "./screens/GroupDetailsScreen.web": {
+      "types": "./src/screens/GroupDetailsScreen.web.tsx",
+      "import": "./src/screens/GroupDetailsScreen.web.tsx",
+      "default": "./src/screens/GroupDetailsScreen.web.tsx"
+    },
+    "./screens/GroupChatScreen": {
+      "import": "./src/screens/GroupChatScreen.tsx",
+      "browser": "./src/screens/GroupChatScreen.web.tsx",
+      "react-native": "./src/screens/GroupChatScreen.tsx",
+      "default": "./src/screens/GroupChatScreen.tsx"
+    },
+    "./screens/GroupChatScreen.web": {
+      "types": "./src/screens/GroupChatScreen.web.tsx",
+      "import": "./src/screens/GroupChatScreen.web.tsx",
+      "default": "./src/screens/GroupChatScreen.web.tsx"
+    },
+    "./screens/DirectMessagesListScreen": {
+      "types": "./src/screens/DirectMessagesListScreen.tsx",
+      "import": "./src/screens/DirectMessagesListScreen.tsx",
+      "default": "./src/screens/DirectMessagesListScreen.tsx"
+    },
+    "./screens/DirectMessageScreen": {
+      "import": "./src/screens/DirectMessageScreen.tsx",
+      "browser": "./src/screens/DirectMessageScreen.web.tsx",
+      "react-native": "./src/screens/DirectMessageScreen.tsx",
+      "default": "./src/screens/DirectMessageScreen.tsx"
+    },
+    "./screens/DirectMessageScreen.web": {
+      "types": "./src/screens/DirectMessageScreen.web.tsx",
+      "import": "./src/screens/DirectMessageScreen.web.tsx",
+      "default": "./src/screens/DirectMessageScreen.web.tsx"
+    },
+    "./screens/AnnouncementsScreen": {
+      "types": "./src/screens/AnnouncementsScreen.tsx",
+      "import": "./src/screens/AnnouncementsScreen.tsx",
+      "default": "./src/screens/AnnouncementsScreen.tsx"
+    },
+    "./screens/BaseChatScreen": {
+      "types": "./src/screens/BaseChatScreen.tsx",
+      "import": "./src/screens/BaseChatScreen.tsx",
+      "default": "./src/screens/BaseChatScreen.tsx"
+    },
+    "./screens/GroupsScreen": {
+      "types": "./src/screens/GroupsScreen.tsx",
+      "import": "./src/screens/GroupsScreen.tsx",
+      "default": "./src/screens/GroupsScreen.tsx"
+    },
+    "./screens/InvitationWelcomeScreen": {
+      "types": "./src/screens/InvitationWelcomeScreen.tsx",
+      "import": "./src/screens/InvitationWelcomeScreen.tsx",
+      "default": "./src/screens/InvitationWelcomeScreen.tsx"
+    },
+    "./screens/InviteCodeEntry": {
+      "types": "./src/screens/InviteCodeEntry.tsx",
+      "import": "./src/screens/InviteCodeEntry.tsx",
+      "default": "./src/screens/InviteCodeEntry.tsx"
+    },
+    "./*": {
+      "types": "./src/*.ts",
+      "import": "./src/*.js",
+      "default": "./src/*.js"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -34,29 +116,29 @@
   "dependencies": {
     "@repo/core": "workspace:*",
     "@repo/library": "workspace:*",
-    "@repo/scanner-kit": "workspace:*",
-    "@repo/ui": "workspace:*",
-    "@repo/self": "workspace:*",
     "@repo/profile": "workspace:*",
-    "@tanstack/react-query": "^5.90.20",
-    "expo-clipboard": "~55.0.13",
-    "lucide-react-native": "^0.563.0",
-    "react-i18next": "^16.5.4",
-    "date-fns": "^4.1.0",
-    "expo-image-picker": "~55.0.19",
-    "react-native-reanimated": "^4.2.1",
+    "@repo/scanner-kit": "workspace:*",
+    "@repo/self": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "@supabase/postgrest-js": "2.102.1",
     "@supabase/supabase-js": "2.102.1",
-    "@supabase/postgrest-js": "2.102.1"
+    "@tanstack/react-query": "^5.101.0",
+    "date-fns": "^4.4.0",
+    "expo-clipboard": "~56.0.4",
+    "expo-image-picker": "~56.0.16",
+    "lucide-react-native": "^1.17.0",
+    "react-i18next": "^17.0.8",
+    "react-native-reanimated": "^4.4.1"
   },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*",
-    "react-i18next": "^16.5.4",
-    "eslint": "^9.38.0",
     "@repo/eslint-config": "workspace:^",
-    "@types/react": "^19.2.14",
-    "typescript": "^5.9.3",
-    "vitest": "^2.1.9",
-    "vite-tsconfig-paths": "^6.1.1"
+    "@repo/typescript-config": "workspace:*",
+    "@types/react": "^19.2.17",
+    "eslint": "^10.4.1",
+    "react-i18next": "^17.0.8",
+    "typescript": "^6.0.3",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.8"
   },
   "peerDependencies": {
     "react": "*",

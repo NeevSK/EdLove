@@ -20,31 +20,29 @@
 
 import { authAPI } from '@repo/core/auth';
 import { handleAPIError } from '@repo/core/logic';
-import { useCallback, useMemo, useReducer, memo } from 'react';
+import { memo, useCallback, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
+import { GatewayFooter } from '../components/GatewayFooter.web';
+import { GatewayHeader } from '../components/GatewayHeader.web';
+import { useTheme } from '../hooks/useTheme';
 import {
   ActivityIndicator,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
   VStack,
-  useWindowDimensions,
 } from '../primitives';
-import { useTheme } from '../hooks/useTheme';
 import { Theme } from '../theme/Theme';
+import { EXTERNAL_URLS } from '../utils';
 import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
 import { openExternalURL } from '../utils/linking';
 
 // ──────────────────────────────────────────────────────────
 // Constants
 // ──────────────────────────────────────────────────────────
-const LANGUAGES = [
-  { code: 'en', label: 'EN' },
-  { code: 'si', label: 'සිං' },
-  { code: 'ta', label: 'தமிழ்' },
-];
 
 const STATS = [
   { value: 'Teacher', label: 'First' },
@@ -75,14 +73,12 @@ const PILLARS = [
 interface WelcomeState {
   acceptedTerms: boolean;
   isConnecting: boolean;
-  langHover: string | null;
   btnHover: 'explore' | 'login' | null;
 }
 
 type WelcomeAction =
   | { type: 'SET_TERMS'; accepted: boolean }
   | { type: 'SET_CONNECTING'; connecting: boolean }
-  | { type: 'SET_LANG_HOVER'; lang: string | null }
   | { type: 'SET_BTN_HOVER'; btn: 'explore' | 'login' | null };
 
 function welcomeReducer(state: WelcomeState, action: WelcomeAction): WelcomeState {
@@ -91,8 +87,6 @@ function welcomeReducer(state: WelcomeState, action: WelcomeAction): WelcomeStat
       return { ...state, acceptedTerms: action.accepted };
     case 'SET_CONNECTING':
       return { ...state, isConnecting: action.connecting };
-    case 'SET_LANG_HOVER':
-      return { ...state, langHover: action.lang };
     case 'SET_BTN_HOVER':
       return { ...state, btnHover: action.btn };
     default:
@@ -167,17 +161,12 @@ const LeftPanel = memo(({ isNarrow }: { isNarrow: boolean }) => {
 LeftPanel.displayName = 'LeftPanel';
 
 interface RightPanelProps {
-  i18nLanguage: string;
   acceptedTerms: boolean;
   isConnecting: boolean;
-  langHover: string | null;
   btnHover: 'explore' | 'login' | null;
-  onChangeLanguage: (code: string) => void;
   onStartExploring: () => void;
   onLogin: () => void;
   onToggleTerms: () => void;
-  onLangHoverIn: (code: string) => void;
-  onLangHoverOut: () => void;
   onBtnHoverIn: (btn: 'explore' | 'login') => void;
   onBtnHoverOut: () => void;
   footer: string;
@@ -185,17 +174,12 @@ interface RightPanelProps {
 
 const RightPanel = memo(
   ({
-    i18nLanguage,
     acceptedTerms,
     isConnecting,
-    langHover,
     btnHover,
-    onChangeLanguage,
     onStartExploring,
     onLogin,
     onToggleTerms,
-    onLangHoverIn,
-    onLangHoverOut,
     onBtnHoverIn,
     onBtnHoverOut,
     footer,
@@ -204,13 +188,21 @@ const RightPanel = memo(
 
     const handlePrivacyPress = useCallback((e: { stopPropagation: () => void }) => {
       e.stopPropagation();
-      void openExternalURL('https://neevsk.org/privacy', {
+      void openExternalURL(EXTERNAL_URLS.privacy, {
         title: 'Privacy Pact',
         sourceLabel: 'Welcome',
         sourceBadge: 'External policy',
         trustLevel: 'verified',
       });
     }, []);
+
+    const handleExploreHoverIn = useCallback(() => {
+      onBtnHoverIn('explore');
+    }, [onBtnHoverIn]);
+
+    const handleLoginHoverIn = useCallback(() => {
+      onBtnHoverIn('login');
+    }, [onBtnHoverIn]);
 
     return (
       <View style={styles.rightPanel}>
@@ -223,44 +215,6 @@ const RightPanel = memo(
             },
           ]}
         >
-          {/* Language selector */}
-          <View style={styles.langRow}>
-            {LANGUAGES.map((lang) => {
-              const isActive = i18nLanguage?.startsWith(lang.code);
-              const isHov = langHover === lang.code;
-              return (
-                <Pressable
-                  accessibilityRole="button"
-                  key={lang.code}
-                  onPress={() => onChangeLanguage(lang.code)}
-                  onHoverIn={() => onLangHoverIn(lang.code)}
-                  onHoverOut={onLangHoverOut}
-                  style={[
-                    styles.langPill,
-                    {
-                      backgroundColor: isActive
-                        ? accent.action
-                        : isHov
-                          ? glass.interact.bg
-                          : 'transparent',
-                    },
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.langText,
-                      {
-                        color: isActive ? Theme.colors.sacredWhite : text.secondary,
-                        fontWeight: isActive ? '700' : '500',
-                      },
-                    ]}
-                  >
-                    {lang.label}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
           {/* Greeting */}
           <Text style={[styles.cardTitle, { color: text.primary }]}>Welcome to the Sanctuary</Text>
           <Text style={[styles.cardSubtitle, { color: text.secondary }]}>
@@ -269,7 +223,7 @@ const RightPanel = memo(
           {/* Explore button */}
           <Pressable
             onPress={onStartExploring}
-            onHoverIn={() => onBtnHoverIn('explore')}
+            onHoverIn={handleExploreHoverIn}
             onHoverOut={onBtnHoverOut}
             disabled={isConnecting}
             accessibilityRole="button"
@@ -291,7 +245,7 @@ const RightPanel = memo(
           {/* Login button */}
           <Pressable
             onPress={onLogin}
-            onHoverIn={() => onBtnHoverIn('login')}
+            onHoverIn={handleLoginHoverIn}
             onHoverOut={onBtnHoverOut}
             accessibilityRole="button"
             style={[
@@ -362,31 +316,22 @@ interface WelcomeScreenProps {
 }
 
 export const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { gradientNodes } = useTheme();
   const { width } = useWindowDimensions();
 
   const [state, dispatch] = useReducer(welcomeReducer, {
     acceptedTerms: true,
     isConnecting: false,
-    langHover: null,
     btnHover: null,
   });
 
-  const { acceptedTerms, isConnecting, langHover, btnHover } = state;
+  const { acceptedTerms, isConnecting, btnHover } = state;
 
   const isNarrow = width < 900;
   const bgFrom = gradientNodes[0];
 
-  const changeLanguage = useCallback(
-    async (code: string) => {
-      hapticLight();
-      await i18n.changeLanguage(code);
-    },
-    [i18n],
-  );
-
-  const handleStartExploring = useCallback(async () => {
+  const startExploring = useCallback(async () => {
     if (!acceptedTerms) {
       hapticError();
       return;
@@ -402,6 +347,10 @@ export const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => 
     }
   }, [acceptedTerms, onGuest]);
 
+  const handleStartExploring = useCallback(() => {
+    void startExploring();
+  }, [startExploring]);
+
   const handleLoginPress = useCallback(() => {
     if (!acceptedTerms) {
       hapticError();
@@ -414,14 +363,6 @@ export const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => 
   const toggleTerms = useCallback(() => {
     dispatch({ type: 'SET_TERMS', accepted: !acceptedTerms });
   }, [acceptedTerms]);
-
-  const setLangHoverIn = useCallback((code: string) => {
-    dispatch({ type: 'SET_LANG_HOVER', lang: code });
-  }, []);
-
-  const setLangHoverOut = useCallback(() => {
-    dispatch({ type: 'SET_LANG_HOVER', lang: null });
-  }, []);
 
   const setBtnHoverIn = useCallback((btn: 'explore' | 'login') => {
     dispatch({ type: 'SET_BTN_HOVER', btn });
@@ -438,55 +379,51 @@ export const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => 
 
   return (
     <View style={[styles.root, { backgroundColor: bgFrom }]}>
+      <GatewayHeader />
       {/* Subtle ambient glow blobs */}
       <View style={[styles.blob1, { backgroundColor: `${Theme.colors.sanctuarySaffron}12` }]} />
       <View style={[styles.blob2, { backgroundColor: `${Theme.colors.sageGreen}0D` }]} />
-      {isNarrow ? (
-        <ScrollView
-          contentContainerStyle={styles.narrowContent}
-          showsVerticalScrollIndicator={false}
-        >
-          <LeftPanel isNarrow={isNarrow} />
-          <RightPanel
-            i18nLanguage={i18n.language}
-            acceptedTerms={acceptedTerms}
-            isConnecting={isConnecting}
-            langHover={langHover}
-            btnHover={btnHover}
-            onChangeLanguage={changeLanguage}
-            onStartExploring={handleStartExploring}
-            onLogin={handleLoginPress}
-            onToggleTerms={toggleTerms}
-            onLangHoverIn={setLangHoverIn}
-            onLangHoverOut={setLangHoverOut}
-            onBtnHoverIn={setBtnHoverIn}
-            onBtnHoverOut={setBtnHoverOut}
-            footer={footer}
-          />
-        </ScrollView>
-      ) : (
-        <View style={styles.twoCol}>
-          <LeftPanel isNarrow={false} />
-          <VStack className="flex-1 justify-center items-center">
+
+      <View style={{ flex: 1, width: '100%' }}>
+        {isNarrow ? (
+          <ScrollView
+            contentContainerStyle={styles.narrowContent}
+            showsVerticalScrollIndicator={false}
+          >
+            <LeftPanel isNarrow={isNarrow} />
             <RightPanel
-              i18nLanguage={i18n.language}
               acceptedTerms={acceptedTerms}
               isConnecting={isConnecting}
-              langHover={langHover}
               btnHover={btnHover}
-              onChangeLanguage={changeLanguage}
               onStartExploring={handleStartExploring}
               onLogin={handleLoginPress}
               onToggleTerms={toggleTerms}
-              onLangHoverIn={setLangHoverIn}
-              onLangHoverOut={setLangHoverOut}
               onBtnHoverIn={setBtnHoverIn}
               onBtnHoverOut={setBtnHoverOut}
               footer={footer}
             />
-          </VStack>
-        </View>
-      )}
+          </ScrollView>
+        ) : (
+          <View style={styles.twoCol}>
+            <LeftPanel isNarrow={false} />
+            <VStack className="flex-1 justify-center items-center">
+              <RightPanel
+                acceptedTerms={acceptedTerms}
+                isConnecting={isConnecting}
+                btnHover={btnHover}
+                onStartExploring={handleStartExploring}
+                onLogin={handleLoginPress}
+                onToggleTerms={toggleTerms}
+                onBtnHoverIn={setBtnHoverIn}
+                onBtnHoverOut={setBtnHoverOut}
+                footer={footer}
+              />
+            </VStack>
+          </View>
+        )}
+      </View>
+
+      <GatewayFooter />
     </View>
   );
 });
@@ -499,9 +436,12 @@ export default WelcomeScreen;
 // ──────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   root: {
-    flex: 1,
-    overflow: 'hidden',
-  },
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    overflowY: 'auto',
+  } as Record<string, unknown>,
   blob1: {
     position: 'absolute',
     width: 600,

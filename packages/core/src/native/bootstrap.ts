@@ -1,20 +1,24 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'react-native';
+import { startNetworkBusAdapter } from '../adapters/NetworkBusAdapter';
 // Adapters
 import { AsyncStorageAdapter } from '../adapters/native/AsyncStorageAdapter';
 import { FallbackMMKVStorageAdapter } from '../adapters/native/FallbackMMKVStorageAdapter';
 import { NativeCryptoAdapter } from '../adapters/native/NativeCryptoAdapter';
 import { NativeNetworkAdapter } from '../adapters/native/NativeNetworkAdapter';
 import { SentryTelemetryAdapter } from '../adapters/native/SentryTelemetryAdapter';
+import { SimulatorDeviceIdentityAdapter } from '../adapters/native/SimulatorDeviceIdentityAdapter';
 import { WebNetworkAdapter } from '../adapters/WebNetworkAdapter';
-import { startNetworkBusAdapter } from '../adapters/NetworkBusAdapter';
 import { cryptoManager } from '../logic/managers/CryptoManager';
+import { deviceIdentity } from '../logic/managers/DeviceIdentityManager';
 import { networkManager } from '../logic/managers/NetworkManager';
 // Managers
 import { storage } from '../logic/managers/StorageManager';
 import { telemetry } from '../logic/managers/TelemetryManager';
 
+import { coreRuntime } from '../logic/runtimeRegistry';
 import { Runtime } from './runtime';
+import { nativeRuntimeEnvironment } from './runtimeAdapter';
 
 /**
  * Sovereign Bootstrap
@@ -30,6 +34,7 @@ export async function bootstrapPlatform() {
     cryptoManager.registerAdapter(new NativeCryptoAdapter());
     telemetry.registerAdapter(new SentryTelemetryAdapter());
     networkManager.registerAdapter(new NativeNetworkAdapter());
+    deviceIdentity.registerAdapter(new SimulatorDeviceIdentityAdapter());
   } else {
     networkManager.registerAdapter(new WebNetworkAdapter());
   }
@@ -45,16 +50,19 @@ export async function bootstrapPlatform() {
   // 2. Initialize Storage
   if (isExpoGo || isWeb || !isReady) {
     storage.registerAdapter(new AsyncStorageAdapter());
-    return;
+  } else {
+    try {
+      const mmkvModule = (await import('react-native-mmkv')) as any;
+      const MMKVClass = mmkvModule.MMKV;
+      const mmkv = new MMKVClass({ id: 'gurudevi-store' });
+      storage.registerAdapter(new FallbackMMKVStorageAdapter(mmkv));
+    } catch (e) {
+      console.warn('Boot: MMKV init failed, falling back to AsyncStorage', e);
+      storage.registerAdapter(new AsyncStorageAdapter());
+    }
   }
 
-  try {
-    const mmkvModule = (await import('react-native-mmkv')) as any;
-    const MMKVClass = mmkvModule.MMKV;
-    const mmkv = new MMKVClass({ id: 'gurudevi-store' });
-    storage.registerAdapter(new FallbackMMKVStorageAdapter(mmkv));
-  } catch (e) {
-    console.warn('Boot: MMKV init failed, falling back to AsyncStorage', e);
-    storage.registerAdapter(new AsyncStorageAdapter());
-  }
+  // 3. Register Core Runtime with all providers (asset, haptics, linking, etc.)
+  //     This must happen after adapter initialization but before app mount
+  coreRuntime.register(nativeRuntimeEnvironment);
 }

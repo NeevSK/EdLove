@@ -46,7 +46,11 @@ function isWebUrl(url: string) {
 }
 
 function getPlatform() {
-  return coreRuntime.device.getMetadata().platform;
+  if (coreRuntime.isRegistered()) {
+    return coreRuntime.device.getMetadata().platform;
+  }
+
+  return 'native';
 }
 
 function getPlatformKey() {

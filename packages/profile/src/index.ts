@@ -4,6 +4,7 @@ export * from './config/profileSections';
 export * from './hooks/useCommunityProfile';
 export * from './hooks/useCommunityProfileHistory';
 export * from './hooks/useInstitutionalHistory';
+export * from './hooks/useNotificationPreferences';
 export * from './hooks/usePrincipalGovernanceHistory';
 export * from './hooks/useProfile';
 export * from './hooks/useProfileCompletion';

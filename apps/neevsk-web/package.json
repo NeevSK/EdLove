@@ -1,7 +1,7 @@
 {
   "name": "apps-neevsk-web",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "scripts": {
     "dev": "pnpm exec astro dev",
     "build": "pnpm exec astro build",
@@ -20,25 +20,25 @@
     "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {
-    "@astrojs/react": "^5.0.3",
-    "@astrojs/sitemap": "^3.6.0",
-    "@astrojs/svelte": "^8.0.5",
-    "@tailwindcss/vite": "^4.1.18",
-    "astro": "^6.1.7",
-    "gsap": "^3.14.2",
+    "@astrojs/react": "^5.0.7",
+    "@astrojs/sitemap": "^3.7.3",
+    "@astrojs/svelte": "^8.1.2",
+    "@tailwindcss/vite": "^4.3.0",
+    "astro": "^6.4.4",
+    "gsap": "^3.15.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "svelte": "^5.55.4",
-    "tailwindcss": "^4.1.18",
-    "typescript": "^5.9.3"
+    "svelte": "^5.56.3",
+    "tailwindcss": "^4.3.0",
+    "typescript": "^6.0.3"
   },
   "devDependencies": {
-    "sass": "^1.97.3",
+    "@playwright/test": "^1.60.0",
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "vitest": "^2.1.9",
+    "eslint": "^10.4.1",
+    "sass": "^1.100.0",
     "vite-tsconfig-paths": "^6.1.1",
-    "eslint": "^9.38.0",
-    "@playwright/test": "^1.55.0"
+    "vitest": "^4.1.8"
   }
 }

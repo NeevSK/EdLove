@@ -6,11 +6,11 @@
  * simply shim it to return a basic View-like component or identity function
  * to prevent runtime crashes when native-focused libraries are bundled for web.
  */
-const { View } = require("react-native");
+const { View } = require('react-native');
 
 function codegenNativeComponent(_name, _options) {
-	// Return a generic View that can handle props passed to the native component
-	return View;
+  // Return a generic View that can handle props passed to the native component
+  return View;
 }
 
 module.exports = codegenNativeComponent;

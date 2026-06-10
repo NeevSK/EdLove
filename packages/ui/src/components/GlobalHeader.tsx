@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
 import { type TotalState, useNotifications, usePermissions, useStore } from '@repo/core/logic';
+import { useNavigation } from 'expo-router';
 import {
   Bell,
   ChevronLeft,
@@ -14,9 +14,9 @@ import type React from 'react';
 import { useCallback, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TouchableOpacity } from 'react-native';
-import { Pressable } from '../primitives';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Box, HStack, Text, VStack } from '../gluestack';
+import { Pressable } from '../primitives';
 import { hapticLight } from '../utils/haptics';
 import NotificationDrawer from './NotificationDrawer';
 import SanctuaryInput from './SanctuaryInput';
@@ -123,18 +123,22 @@ export default function GlobalHeader({
         dispatch({ type: 'SET_SEARCH_QUERY', query: text });
       }
     },
-    [searchProps]
+    [searchProps],
   );
 
-  const displayName = userName || user?.full_name?.split(' ')[0] || '';
-  const userFullName = userName || user?.full_name || '';
+  const displayName = userName || user?.display_name?.split(' ')[0] || '';
+  const userFullName = userName || user?.display_name || '';
 
   const roleContext = useMemo(() => {
     if (can('manage', 'AdminDashboard')) {
       return { icon: Crown, emoji: '\u26A1', label: t('roles.admin') || 'Admin' };
     }
     if (can('manage', 'PrincipalDashboard')) {
-      return { icon: Crown, emoji: '\uD83C\uDFDB\uFE0F', label: t('roles.principal') || 'Principal' };
+      return {
+        icon: Crown,
+        emoji: '\uD83C\uDFDB\uFE0F',
+        label: t('roles.principal') || 'Principal',
+      };
     }
     if (can('manage', 'SectionHeadDashboard')) {
       return {
@@ -144,7 +148,11 @@ export default function GlobalHeader({
       };
     }
     if (can('manage', 'GradeHeadDashboard')) {
-      return { icon: GraduationCap, emoji: '\uD83C\uDF32', label: t('roles.gradeHead') || 'Grade Head' };
+      return {
+        icon: GraduationCap,
+        emoji: '\uD83C\uDF32',
+        label: t('roles.gradeHead') || 'Grade Head',
+      };
     }
     if (can('manage', 'TeacherDashboard')) {
       return { icon: GraduationCap, emoji: '\uD83C\uDF31', label: t('roles.teacher') || 'Teacher' };

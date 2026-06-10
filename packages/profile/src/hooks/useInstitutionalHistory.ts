@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
 import { studentsAPI } from '@repo/core/api';
-import type { SchoolLegacyRecord, ClassroomLegacyRecord } from '@repo/core/logic';
+import type { ClassroomLegacyRecord, SchoolLegacyRecord } from '@repo/core/logic';
+import { useQuery } from '@tanstack/react-query';
 
 export function useSchoolLegacyHistory(schoolId?: string) {
   return useQuery({

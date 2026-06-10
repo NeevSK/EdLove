@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 interface ActivityPulseState {
   pulse: number; // 0 to 1, representing recent activity intensity
@@ -36,7 +44,7 @@ export const ActivityPulseProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     // DETERMINISTIC_OK: Setting real time once hydrated ensures server/client parity on first render.
     // eslint-disable-next-line no-restricted-syntax
-    setState(prev => ({ ...prev, lastEventTime: Date.now() }));
+    setState((prev) => ({ ...prev, lastEventTime: Date.now() }));
 
     // Decay function to make the pulse fade over time
     const decay = () => {
@@ -58,11 +66,7 @@ export const ActivityPulseProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const value = useMemo(() => ({ state, registerPulse }), [state, registerPulse]);
 
-  return (
-    <ActivityPulseContext.Provider value={value}>
-      {children}
-    </ActivityPulseContext.Provider>
-  );
+  return <ActivityPulseContext.Provider value={value}>{children}</ActivityPulseContext.Provider>;
 };
 
 export const useActivityPulse = () => {

@@ -1,11 +1,19 @@
 echo ">>> 🛂 SOVEREIGN GATE: Validating Global Push Integrity..."
 
-# PUSH_MODE handling: full (default) or min (TSC + Lint only)
-if [ "$PUSH_MODE" = "min" ]; then
-    echo ">>> ⚠️  PUSH MODE: MINIMUM (TSC + LINT ONLY)"
-    AuditCmd="pnpm exec commitlint --from=HEAD~1 --to=HEAD; pnpm run lint; pnpm run check-types"
+# Default PUSH_SCOPE to "changed" if not set
+SCOPE=${PUSH_SCOPE:-changed}
+
+if [ "$SCOPE" = "all" ]; then
+    echo ">>> 🌎 PUSH SCOPE: ALL PACKAGES"
+    if [ "$PUSH_MODE" = "min" ]; then
+        echo ">>> ⚠️  PUSH MODE: MINIMUM (TSC + LINT ONLY)"
+        AuditCmd="pnpm exec commitlint --from=HEAD~1 --to=HEAD && pnpm run lint && pnpm run check-types"
+    else
+        AuditCmd="pnpm exec commitlint --from=HEAD~1 --to=HEAD && pnpm run lint && pnpm run check-types && pnpm run check:hygiene && pnpm run identity:check && pnpm run i18n:check"
+    fi
 else
-    AuditCmd="pnpm exec commitlint --from=HEAD~1 --to=HEAD; pnpm run lint; pnpm run check-types; pnpm run check:hygiene; pnpm run identity:check; pnpm run i18n:check"
+    echo ">>> 🔬 PUSH SCOPE: SURGICAL (CHANGED PACKAGES ONLY)"
+    AuditCmd="pnpm exec commitlint --from=HEAD~1 --to=HEAD && node scripts/surgical-push-check.mjs"
 fi
 
 node scripts/sovereign-audit.mjs --cmd "$AuditCmd" --log "reports/push_audit.md"

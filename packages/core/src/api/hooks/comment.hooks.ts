@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
+import { useAuthStore } from '../../store/useAuthStore';
 import { communityAPI } from '../community';
-import { supabase } from '../supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../supabase';
 
 export const commentKeys = {
   all: ['community', 'comments'] as const,
@@ -13,6 +14,7 @@ export const commentKeys = {
  */
 export function useCommentHooks(postId: string | null) {
   const queryClient = useQueryClient();
+  const activeBond = useAuthStore((state) => state.activeBond);
 
   const query = useQuery({
     queryKey: postId ? commentKeys.list(postId) : ['community', 'comments', '__none__'],
@@ -25,7 +27,7 @@ export function useCommentHooks(postId: string | null) {
   useEffect(() => {
     if (!postId) return;
 
-    const channel = supabase
+    const channel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .channel(`comments-${postId}`)
       .on(
         'postgres_changes',
@@ -44,7 +46,7 @@ export function useCommentHooks(postId: string | null) {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel).catch((e) => {
+      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.removeChannel(channel).catch((e) => {
         console.error('Failed to remove channel during cleanup', e);
       });
     };
@@ -52,7 +54,10 @@ export function useCommentHooks(postId: string | null) {
 
   const createMutation = useMutation({
     mutationFn: ({ content, isAnonymous = false }: { content: string; isAnonymous?: boolean }) =>
-      communityAPI.createComment(postId!, content, isAnonymous),
+      communityAPI.createComment(postId!, {
+        content,
+        author_tier: activeBond?.capacity || 'member',
+      }),
     onSuccess: async () => {
       if (postId) await queryClient.invalidateQueries({ queryKey: commentKeys.list(postId) });
     },
@@ -73,8 +78,8 @@ export function useCommentHooks(postId: string | null) {
   });
 
   const markOfficialMutation = useMutation({
-    mutationFn: ({ commentId, isOfficial }: { commentId: string; isOfficial: boolean }) =>
-      communityAPI.markOfficialAnswer(commentId, isOfficial),
+    mutationFn: ({ commentId }: { commentId: string; isOfficial: boolean }) =>
+      communityAPI.markOfficialAnswer(commentId),
     onSuccess: async () => {
       if (postId) await queryClient.invalidateQueries({ queryKey: commentKeys.list(postId) });
     },

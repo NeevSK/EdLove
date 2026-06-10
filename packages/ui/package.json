@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package",
   "name": "@repo/ui",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "src/index.ts",
   "license": "MIT",
   "sideEffects": false,
@@ -9,228 +9,777 @@
     "node": "24.x"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./global.css": "./src/global.css",
-    "./components": "./src/components/index.ts",
-    "./components/*.tsx": "./src/components/*.tsx",
-    "./components/*": "./src/components/*.tsx",
-    "./components/AccountPinModal": "./src/components/AccountPinModal.tsx",
-    "./components/AchievementUnlockOverlay": "./src/components/AchievementUnlockOverlay.tsx",
-    "./components/AdaptiveLayout": "./src/components/AdaptiveLayout.tsx",
-    "./components/BreathAnimation": "./src/components/BreathAnimation.tsx",
-    "./components/BreathingLoader": "./src/components/BreathingLoader.tsx",
-    "./components/CapabilityGuard": "./src/components/CapabilityGuard.tsx",
-    "./components/CitizenGate": "./src/components/CitizenGate.tsx",
-    "./components/CollectionCard": "./src/components/CollectionCard.tsx",
-    "./components/ContentComposer": "./src/components/ContentComposer.tsx",
-    "./components/ConversationSheet": "./src/components/ConversationSheet.tsx",
-    "./components/DailyResonanceCard": "./src/components/DailyResonanceCard.tsx",
-    "./components/DeleteAccountModal": "./src/components/DeleteAccountModal.tsx",
-    "./components/DeviceAccountManager": "./src/components/DeviceAccountManager.tsx",
-    "./components/DeviceSecurityCenter": "./src/components/DeviceSecurityCenter.tsx",
-    "./components/EmptyState": "./src/components/EmptyState.tsx",
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./global.css": {
+      "default": "./src/global.css"
+    },
+    "./components": {
+      "types": "./src/components/index.ts",
+      "import": "./src/components/index.ts",
+      "default": "./src/components/index.ts"
+    },
+    "./components/*.tsx": {
+      "types": "./src/components/*.tsx",
+      "import": "./src/components/*.tsx",
+      "default": "./src/components/*.tsx"
+    },
+    "./components/*": {
+      "types": "./src/components/*.tsx",
+      "import": "./src/components/*.tsx",
+      "default": "./src/components/*.tsx"
+    },
+    "./components/AccountPinModal": {
+      "types": "./src/components/AccountPinModal.tsx",
+      "import": "./src/components/AccountPinModal.tsx",
+      "default": "./src/components/AccountPinModal.tsx"
+    },
+    "./components/AchievementUnlockOverlay": {
+      "types": "./src/components/AchievementUnlockOverlay.tsx",
+      "import": "./src/components/AchievementUnlockOverlay.tsx",
+      "default": "./src/components/AchievementUnlockOverlay.tsx"
+    },
+    "./components/AdaptiveLayout": {
+      "types": "./src/components/AdaptiveLayout.tsx",
+      "import": "./src/components/AdaptiveLayout.tsx",
+      "default": "./src/components/AdaptiveLayout.tsx"
+    },
+    "./components/BreathAnimation": {
+      "types": "./src/components/BreathAnimation.tsx",
+      "import": "./src/components/BreathAnimation.tsx",
+      "default": "./src/components/BreathAnimation.tsx"
+    },
+    "./components/BreathingLoader": {
+      "types": "./src/components/BreathingLoader.tsx",
+      "import": "./src/components/BreathingLoader.tsx",
+      "default": "./src/components/BreathingLoader.tsx"
+    },
+    "./components/CapabilityGuard": {
+      "types": "./src/components/CapabilityGuard.tsx",
+      "import": "./src/components/CapabilityGuard.tsx",
+      "default": "./src/components/CapabilityGuard.tsx"
+    },
+    "./components/CitizenGate": {
+      "types": "./src/components/CitizenGate.tsx",
+      "import": "./src/components/CitizenGate.tsx",
+      "default": "./src/components/CitizenGate.tsx"
+    },
+    "./components/CollectionCard": {
+      "types": "./src/components/CollectionCard.tsx",
+      "import": "./src/components/CollectionCard.tsx",
+      "default": "./src/components/CollectionCard.tsx"
+    },
+    "./components/ContentComposer": {
+      "types": "./src/components/ContentComposer.tsx",
+      "import": "./src/components/ContentComposer.tsx",
+      "default": "./src/components/ContentComposer.tsx"
+    },
+    "./components/ConversationSheet": {
+      "types": "./src/components/ConversationSheet.tsx",
+      "import": "./src/components/ConversationSheet.tsx",
+      "default": "./src/components/ConversationSheet.tsx"
+    },
+    "./components/DailyResonanceCard": {
+      "types": "./src/components/DailyResonanceCard.tsx",
+      "import": "./src/components/DailyResonanceCard.tsx",
+      "default": "./src/components/DailyResonanceCard.tsx"
+    },
+    "./components/DeleteAccountModal": {
+      "types": "./src/components/DeleteAccountModal.tsx",
+      "import": "./src/components/DeleteAccountModal.tsx",
+      "default": "./src/components/DeleteAccountModal.tsx"
+    },
+    "./components/DeviceAccountManager": {
+      "types": "./src/components/DeviceAccountManager.tsx",
+      "import": "./src/components/DeviceAccountManager.tsx",
+      "default": "./src/components/DeviceAccountManager.tsx"
+    },
+    "./components/DeviceSecurityCenter": {
+      "types": "./src/components/DeviceSecurityCenter.tsx",
+      "import": "./src/components/DeviceSecurityCenter.tsx",
+      "default": "./src/components/DeviceSecurityCenter.tsx"
+    },
+    "./components/EmptyState": {
+      "types": "./src/components/EmptyState.tsx",
+      "import": "./src/components/EmptyState.tsx",
+      "default": "./src/components/EmptyState.tsx"
+    },
     "./components/EntityModal": {
+      "import": "./src/components/EntityModal.tsx",
       "browser": "./src/components/EntityModal.web.tsx",
       "react-native": "./src/components/EntityModal.tsx",
       "default": "./src/components/EntityModal.tsx"
     },
-    "./components/EntityView": "./src/components/EntityView.tsx",
-    "./components/EnvironmentGuard": "./src/components/EnvironmentGuard.tsx",
-    "./components/ErrorBoundary": "./src/components/ErrorBoundary.tsx",
-    "./components/ErrorMessage": "./src/components/ErrorMessage.tsx",
-    "./components/FeatureDiscoveryModal": "./src/components/FeatureDiscoveryModal.tsx",
-    "./components/FeatureInfoIcon": "./src/components/FeatureInfoIcon.tsx",
-    "./components/FounderGlow": "./src/components/FounderGlow.tsx",
-    "./components/GlassCard": "./src/components/GlassCard.tsx",
-    "./components/GlobalHeader": "./src/components/GlobalHeader.tsx",
-    "./components/GuestDataSyncModal": "./src/components/GuestDataSyncModal.tsx",
-    "./components/HistoryTimeline": "./src/components/HistoryTimeline.tsx",
-    "./components/HorizontalChipRow": "./src/components/HorizontalChipRow.tsx",
-    "./components/IdentityCard": "./src/components/IdentityCard.tsx",
-    "./components/InteractiveRadarChart": "./src/components/InteractiveRadarChart.tsx",
+    "./components/EntityView": {
+      "types": "./src/components/EntityView.tsx",
+      "import": "./src/components/EntityView.tsx",
+      "default": "./src/components/EntityView.tsx"
+    },
+    "./components/EnvironmentGuard": {
+      "types": "./src/components/EnvironmentGuard.tsx",
+      "import": "./src/components/EnvironmentGuard.tsx",
+      "default": "./src/components/EnvironmentGuard.tsx"
+    },
+    "./components/ErrorBoundary": {
+      "types": "./src/components/ErrorBoundary.tsx",
+      "import": "./src/components/ErrorBoundary.tsx",
+      "default": "./src/components/ErrorBoundary.tsx"
+    },
+    "./components/ErrorMessage": {
+      "types": "./src/components/ErrorMessage.tsx",
+      "import": "./src/components/ErrorMessage.tsx",
+      "default": "./src/components/ErrorMessage.tsx"
+    },
+    "./components/FeatureDiscoveryModal": {
+      "types": "./src/components/FeatureDiscoveryModal.tsx",
+      "import": "./src/components/FeatureDiscoveryModal.tsx",
+      "default": "./src/components/FeatureDiscoveryModal.tsx"
+    },
+    "./components/FeatureInfoIcon": {
+      "types": "./src/components/FeatureInfoIcon.tsx",
+      "import": "./src/components/FeatureInfoIcon.tsx",
+      "default": "./src/components/FeatureInfoIcon.tsx"
+    },
+    "./components/FounderGlow": {
+      "types": "./src/components/FounderGlow.tsx",
+      "import": "./src/components/FounderGlow.tsx",
+      "default": "./src/components/FounderGlow.tsx"
+    },
+    "./components/GlassCard": {
+      "types": "./src/components/GlassCard.tsx",
+      "import": "./src/components/GlassCard.tsx",
+      "default": "./src/components/GlassCard.tsx"
+    },
+    "./components/GlobalHeader": {
+      "types": "./src/components/GlobalHeader.tsx",
+      "import": "./src/components/GlobalHeader.tsx",
+      "default": "./src/components/GlobalHeader.tsx"
+    },
+    "./components/GuestDataSyncModal": {
+      "types": "./src/components/GuestDataSyncModal.tsx",
+      "import": "./src/components/GuestDataSyncModal.tsx",
+      "default": "./src/components/GuestDataSyncModal.tsx"
+    },
+    "./components/HistoryTimeline": {
+      "types": "./src/components/HistoryTimeline.tsx",
+      "import": "./src/components/HistoryTimeline.tsx",
+      "default": "./src/components/HistoryTimeline.tsx"
+    },
+    "./components/HorizontalChipRow": {
+      "types": "./src/components/HorizontalChipRow.tsx",
+      "import": "./src/components/HorizontalChipRow.tsx",
+      "default": "./src/components/HorizontalChipRow.tsx"
+    },
+    "./components/IdentityCard": {
+      "types": "./src/components/IdentityCard.tsx",
+      "import": "./src/components/IdentityCard.tsx",
+      "default": "./src/components/IdentityCard.tsx"
+    },
+    "./components/InteractiveRadarChart": {
+      "types": "./src/components/InteractiveRadarChart.tsx",
+      "import": "./src/components/InteractiveRadarChart.tsx",
+      "default": "./src/components/InteractiveRadarChart.tsx"
+    },
     "./components/InternalBrowser": {
+      "import": "./src/components/InternalBrowser.tsx",
       "browser": "./src/components/InternalBrowser.web.tsx",
       "react-native": "./src/components/InternalBrowser.tsx",
       "default": "./src/components/InternalBrowser.tsx"
     },
-    "./components/JourneyHistoryCard": "./src/components/JourneyHistoryCard.tsx",
-    "./components/LivingGlow": "./src/components/LivingGlow.tsx",
-    "./components/LoadingOverlay": "./src/components/LoadingOverlay.tsx",
-    "./components/LogoutModal": "./src/components/LogoutModal.tsx",
-    "./components/LotusDropdown": "./src/components/LotusDropdown.tsx",
-    "./components/LotusLoader": "./src/components/LotusLoader.tsx",
-    "./components/LotusPetalFAB": "./src/components/LotusPetalFAB.tsx",
-    "./components/NetworkStatusBanner": "./src/components/NetworkStatusBanner.tsx",
-    "./components/NotificationDrawer": "./src/components/NotificationDrawer.tsx",
-    "./components/PollWidget": "./src/components/PollWidget.tsx",
-    "./components/PositiveInvitation": "./src/components/PositiveInvitation.tsx",
-    "./components/PostCard": "./src/components/PostCard.tsx",
-    "./components/ProgressIndicator": "./src/components/ProgressIndicator.tsx",
-    "./components/QRCodeGenerator": "./src/components/QRCodeGenerator.tsx",
-    "./components/ResonantHeatmap": "./src/components/ResonantHeatmap.tsx",
-    "./components/SanctuaryBackground": "./src/components/SanctuaryBackground.tsx",
-    "./components/SanctuaryButton": "./src/components/SanctuaryButton.tsx",
-    "./components/SanctuaryCard": "./src/components/SanctuaryCard.tsx",
-    "./components/SanctuaryCarousel": "./src/components/SanctuaryCarousel.tsx",
-    "./components/SanctuaryChip": "./src/components/SanctuaryChip.tsx",
+    "./components/JourneyHistoryCard": {
+      "types": "./src/components/JourneyHistoryCard.tsx",
+      "import": "./src/components/JourneyHistoryCard.tsx",
+      "default": "./src/components/JourneyHistoryCard.tsx"
+    },
+    "./components/LivingGlow": {
+      "types": "./src/components/LivingGlow.tsx",
+      "import": "./src/components/LivingGlow.tsx",
+      "default": "./src/components/LivingGlow.tsx"
+    },
+    "./components/LoadingOverlay": {
+      "types": "./src/components/LoadingOverlay.tsx",
+      "import": "./src/components/LoadingOverlay.tsx",
+      "default": "./src/components/LoadingOverlay.tsx"
+    },
+    "./components/LogoutModal": {
+      "types": "./src/components/LogoutModal.tsx",
+      "import": "./src/components/LogoutModal.tsx",
+      "default": "./src/components/LogoutModal.tsx"
+    },
+    "./components/LotusDropdown": {
+      "types": "./src/components/LotusDropdown.tsx",
+      "import": "./src/components/LotusDropdown.tsx",
+      "default": "./src/components/LotusDropdown.tsx"
+    },
+    "./components/LotusLoader": {
+      "types": "./src/components/LotusLoader.tsx",
+      "import": "./src/components/LotusLoader.tsx",
+      "default": "./src/components/LotusLoader.tsx"
+    },
+    "./components/LotusPetalFAB": {
+      "types": "./src/components/LotusPetalFAB.tsx",
+      "import": "./src/components/LotusPetalFAB.tsx",
+      "default": "./src/components/LotusPetalFAB.tsx"
+    },
+    "./components/NetworkStatusBanner": {
+      "types": "./src/components/NetworkStatusBanner.tsx",
+      "import": "./src/components/NetworkStatusBanner.tsx",
+      "default": "./src/components/NetworkStatusBanner.tsx"
+    },
+    "./components/NotificationDrawer": {
+      "types": "./src/components/NotificationDrawer.tsx",
+      "import": "./src/components/NotificationDrawer.tsx",
+      "default": "./src/components/NotificationDrawer.tsx"
+    },
+    "./components/PollWidget": {
+      "types": "./src/components/PollWidget.tsx",
+      "import": "./src/components/PollWidget.tsx",
+      "default": "./src/components/PollWidget.tsx"
+    },
+    "./components/PositiveInvitation": {
+      "types": "./src/components/PositiveInvitation.tsx",
+      "import": "./src/components/PositiveInvitation.tsx",
+      "default": "./src/components/PositiveInvitation.tsx"
+    },
+    "./components/PostCard": {
+      "types": "./src/components/PostCard.tsx",
+      "import": "./src/components/PostCard.tsx",
+      "default": "./src/components/PostCard.tsx"
+    },
+    "./components/ProgressIndicator": {
+      "types": "./src/components/ProgressIndicator.tsx",
+      "import": "./src/components/ProgressIndicator.tsx",
+      "default": "./src/components/ProgressIndicator.tsx"
+    },
+    "./components/QRCodeGenerator": {
+      "types": "./src/components/QRCodeGenerator.tsx",
+      "import": "./src/components/QRCodeGenerator.tsx",
+      "default": "./src/components/QRCodeGenerator.tsx"
+    },
+    "./components/ResonantHeatmap": {
+      "types": "./src/components/ResonantHeatmap.tsx",
+      "import": "./src/components/ResonantHeatmap.tsx",
+      "default": "./src/components/ResonantHeatmap.tsx"
+    },
+    "./components/SanctuaryBackground": {
+      "types": "./src/components/SanctuaryBackground.tsx",
+      "import": "./src/components/SanctuaryBackground.tsx",
+      "default": "./src/components/SanctuaryBackground.tsx"
+    },
+    "./components/SanctuaryButton": {
+      "types": "./src/components/SanctuaryButton.tsx",
+      "import": "./src/components/SanctuaryButton.tsx",
+      "default": "./src/components/SanctuaryButton.tsx"
+    },
+    "./components/SanctuaryCard": {
+      "types": "./src/components/SanctuaryCard.tsx",
+      "import": "./src/components/SanctuaryCard.tsx",
+      "default": "./src/components/SanctuaryCard.tsx"
+    },
+    "./components/SanctuaryCarousel": {
+      "types": "./src/components/SanctuaryCarousel.tsx",
+      "import": "./src/components/SanctuaryCarousel.tsx",
+      "default": "./src/components/SanctuaryCarousel.tsx"
+    },
+    "./components/SanctuaryChip": {
+      "types": "./src/components/SanctuaryChip.tsx",
+      "import": "./src/components/SanctuaryChip.tsx",
+      "default": "./src/components/SanctuaryChip.tsx"
+    },
     "./components/SanctuaryFlashList": {
+      "import": "./src/components/SanctuaryFlashList.tsx",
       "browser": "./src/components/SanctuaryFlashList.web.tsx",
       "react-native": "./src/components/SanctuaryFlashList.tsx",
       "default": "./src/components/SanctuaryFlashList.tsx"
     },
-    "./components/SanctuaryGlobalStyles": "./src/components/SanctuaryGlobalStyles.tsx",
-    "./components/SanctuaryInput": "./src/components/SanctuaryInput.tsx",
+    "./components/SanctuaryGlobalStyles": {
+      "types": "./src/components/SanctuaryGlobalStyles.tsx",
+      "import": "./src/components/SanctuaryGlobalStyles.tsx",
+      "default": "./src/components/SanctuaryGlobalStyles.tsx"
+    },
+    "./components/SanctuaryInput": {
+      "types": "./src/components/SanctuaryInput.tsx",
+      "import": "./src/components/SanctuaryInput.tsx",
+      "default": "./src/components/SanctuaryInput.tsx"
+    },
     "./components/SanctuaryModal": {
+      "import": "./src/components/SanctuaryModal.tsx",
       "browser": "./src/components/SanctuaryModal.web.tsx",
       "react-native": "./src/components/SanctuaryModal.tsx",
       "default": "./src/components/SanctuaryModal.tsx"
     },
-    "./components/SanctuaryNudge": "./src/components/SanctuaryNudge.tsx",
-    "./components/SanctuaryProgressBar": "./src/components/SanctuaryProgressBar.tsx",
-    "./components/SanctuaryStatsCard": "./src/components/SanctuaryStatsCard.tsx",
-    "./components/SanctuaryToast": "./src/components/SanctuaryToast.tsx",
-    "./components/SandboxBanner": "./src/components/SandboxBanner.tsx",
+    "./components/SanctuaryNudge": {
+      "types": "./src/components/SanctuaryNudge.tsx",
+      "import": "./src/components/SanctuaryNudge.tsx",
+      "default": "./src/components/SanctuaryNudge.tsx"
+    },
+    "./components/SanctuaryProgressBar": {
+      "types": "./src/components/SanctuaryProgressBar.tsx",
+      "import": "./src/components/SanctuaryProgressBar.tsx",
+      "default": "./src/components/SanctuaryProgressBar.tsx"
+    },
+    "./components/SanctuaryStatsCard": {
+      "types": "./src/components/SanctuaryStatsCard.tsx",
+      "import": "./src/components/SanctuaryStatsCard.tsx",
+      "default": "./src/components/SanctuaryStatsCard.tsx"
+    },
+    "./components/SanctuaryToast": {
+      "types": "./src/components/SanctuaryToast.tsx",
+      "import": "./src/components/SanctuaryToast.tsx",
+      "default": "./src/components/SanctuaryToast.tsx"
+    },
+    "./components/SandboxBanner": {
+      "types": "./src/components/SandboxBanner.tsx",
+      "import": "./src/components/SandboxBanner.tsx",
+      "default": "./src/components/SandboxBanner.tsx"
+    },
     "./components/ScreenWrapper": {
+      "import": "./src/components/ScreenWrapper.tsx",
       "browser": "./src/components/ScreenWrapper.web.tsx",
       "react-native": "./src/components/ScreenWrapper.tsx",
       "default": "./src/components/ScreenWrapper.tsx"
     },
-    "./components/SkeletonLoader": "./src/components/SkeletonLoader.tsx",
-    "./components/SmartShelf": "./src/components/SmartShelf.tsx",
-    "./components/StepIndicator": "./src/components/StepIndicator.tsx",
-    "./components/TemporalNavigator": "./src/components/TemporalNavigator.tsx",
-    "./components/TemporalPilot": "./src/components/TemporalPilot.tsx",
+    "./components/SkeletonLoader": {
+      "types": "./src/components/SkeletonLoader.tsx",
+      "import": "./src/components/SkeletonLoader.tsx",
+      "default": "./src/components/SkeletonLoader.tsx"
+    },
+    "./components/SmartShelf": {
+      "types": "./src/components/SmartShelf.tsx",
+      "import": "./src/components/SmartShelf.tsx",
+      "default": "./src/components/SmartShelf.tsx"
+    },
+    "./components/StepIndicator": {
+      "types": "./src/components/StepIndicator.tsx",
+      "import": "./src/components/StepIndicator.tsx",
+      "default": "./src/components/StepIndicator.tsx"
+    },
+    "./components/TemporalNavigator": {
+      "types": "./src/components/TemporalNavigator.tsx",
+      "import": "./src/components/TemporalNavigator.tsx",
+      "default": "./src/components/TemporalNavigator.tsx"
+    },
+    "./components/TemporalPilot": {
+      "types": "./src/components/TemporalPilot.tsx",
+      "import": "./src/components/TemporalPilot.tsx",
+      "default": "./src/components/TemporalPilot.tsx"
+    },
     "./components/TemporalProvider": {
+      "import": "./src/components/TemporalProvider.tsx",
       "browser": "./src/components/TemporalProvider.web.tsx",
       "react-native": "./src/components/TemporalProvider.tsx",
       "default": "./src/components/TemporalProvider.tsx"
     },
-    "./components/TemporalScrubber": "./src/components/TemporalScrubber.tsx",
-    "./components/TemporalShield": "./src/components/TemporalShield.tsx",
+    "./components/TemporalScrubber": {
+      "types": "./src/components/TemporalScrubber.tsx",
+      "import": "./src/components/TemporalScrubber.tsx",
+      "default": "./src/components/TemporalScrubber.tsx"
+    },
+    "./components/TemporalShield": {
+      "types": "./src/components/TemporalShield.tsx",
+      "import": "./src/components/TemporalShield.tsx",
+      "default": "./src/components/TemporalShield.tsx"
+    },
     "./components/UniversalModal": {
+      "import": "./src/components/UniversalModal.tsx",
       "browser": "./src/components/UniversalModal.web.tsx",
       "react-native": "./src/components/UniversalModal.tsx",
       "default": "./src/components/UniversalModal.tsx"
     },
-    "./components/UserAvatar": "./src/components/UserAvatar.tsx",
-    "./components/WebScreenHeader.web": "./src/components/WebScreenHeader.web.tsx",
-    "./components/debug/FeatureOverridesPanel": "./src/components/debug/FeatureOverridesPanel.tsx",
-    "./components/maps": "./src/components/maps/index.ts",
-    "./components/maps/*": "./src/components/maps/*",
-    "./components/maps/MapProvider": "./src/components/maps/MapProvider.tsx",
+    "./components/UserAvatar": {
+      "types": "./src/components/UserAvatar.tsx",
+      "import": "./src/components/UserAvatar.tsx",
+      "default": "./src/components/UserAvatar.tsx"
+    },
+    "./components/WebScreenHeader.web": {
+      "types": "./src/components/WebScreenHeader.web.tsx",
+      "import": "./src/components/WebScreenHeader.web.tsx",
+      "default": "./src/components/WebScreenHeader.web.tsx"
+    },
+    "./components/debug/FeatureOverridesPanel": {
+      "types": "./src/components/debug/FeatureOverridesPanel.tsx",
+      "import": "./src/components/debug/FeatureOverridesPanel.tsx",
+      "default": "./src/components/debug/FeatureOverridesPanel.tsx"
+    },
+    "./components/maps": {
+      "types": "./src/components/maps/index.ts",
+      "import": "./src/components/maps/index.ts",
+      "default": "./src/components/maps/index.ts"
+    },
+    "./components/maps/*": {
+      "types": "./src/components/maps/*",
+      "import": "./src/components/maps/*",
+      "default": "./src/components/maps/*"
+    },
+    "./components/maps/MapProvider": {
+      "types": "./src/components/maps/MapProvider.tsx",
+      "import": "./src/components/maps/MapProvider.tsx",
+      "default": "./src/components/maps/MapProvider.tsx"
+    },
     "./components/maps/UnifiedMapView": {
+      "import": "./src/components/maps/UnifiedMapView.tsx",
       "browser": "./src/components/maps/UnifiedMapView.web.tsx",
       "react-native": "./src/components/maps/UnifiedMapView.tsx",
       "default": "./src/components/maps/UnifiedMapView.tsx"
     },
     "./components/maps/UnifiedMarker": {
+      "import": "./src/components/maps/UnifiedMarker.tsx",
       "browser": "./src/components/maps/UnifiedMarker.web.tsx",
       "react-native": "./src/components/maps/UnifiedMarker.tsx",
       "default": "./src/components/maps/UnifiedMarker.tsx"
     },
-    "./components/maps/UnifiedMarker.types": "./src/components/maps/UnifiedMarker.types.ts",
-    "./components/media": "./src/components/media/index.ts",
-    "./components/media/*": "./src/components/media/*",
-    "./components/media/AssetCollectionPicker": "./src/components/media/AssetCollectionPicker.tsx",
-    "./components/media/AssetCreationPortal": "./src/components/media/AssetCreationPortal.tsx",
-    "./components/media/AssetShareModal": "./src/components/media/AssetShareModal.tsx",
-    "./components/media/PdfViewer": "./src/components/media/PdfViewer.tsx",
-    "./components/media/ResourceActionSheet": "./src/components/media/ResourceActionSheet.tsx",
-    "./components/media/ResourceCard": "./src/components/media/ResourceCard.tsx",
-    "./components/media/UniversalDocumentPortal": "./src/components/media/UniversalDocumentPortal.tsx",
+    "./components/maps/UnifiedMarker.types": {
+      "types": "./src/components/maps/UnifiedMarker.types.ts",
+      "import": "./src/components/maps/UnifiedMarker.types.ts",
+      "default": "./src/components/maps/UnifiedMarker.types.ts"
+    },
+    "./components/media": {
+      "types": "./src/components/media/index.ts",
+      "import": "./src/components/media/index.ts",
+      "default": "./src/components/media/index.ts"
+    },
+    "./components/media/*": {
+      "types": "./src/components/media/*",
+      "import": "./src/components/media/*",
+      "default": "./src/components/media/*"
+    },
+    "./components/media/AssetCollectionPicker": {
+      "types": "./src/components/media/AssetCollectionPicker.tsx",
+      "import": "./src/components/media/AssetCollectionPicker.tsx",
+      "default": "./src/components/media/AssetCollectionPicker.tsx"
+    },
+    "./components/media/AssetCreationPortal": {
+      "types": "./src/components/media/AssetCreationPortal.tsx",
+      "import": "./src/components/media/AssetCreationPortal.tsx",
+      "default": "./src/components/media/AssetCreationPortal.tsx"
+    },
+    "./components/media/AssetShareModal": {
+      "types": "./src/components/media/AssetShareModal.tsx",
+      "import": "./src/components/media/AssetShareModal.tsx",
+      "default": "./src/components/media/AssetShareModal.tsx"
+    },
+    "./components/media/PdfViewer": {
+      "types": "./src/components/media/PdfViewer.tsx",
+      "import": "./src/components/media/PdfViewer.tsx",
+      "default": "./src/components/media/PdfViewer.tsx"
+    },
+    "./components/media/ResourceActionSheet": {
+      "types": "./src/components/media/ResourceActionSheet.tsx",
+      "import": "./src/components/media/ResourceActionSheet.tsx",
+      "default": "./src/components/media/ResourceActionSheet.tsx"
+    },
+    "./components/media/ResourceCard": {
+      "types": "./src/components/media/ResourceCard.tsx",
+      "import": "./src/components/media/ResourceCard.tsx",
+      "default": "./src/components/media/ResourceCard.tsx"
+    },
+    "./components/media/UniversalDocumentPortal": {
+      "types": "./src/components/media/UniversalDocumentPortal.tsx",
+      "import": "./src/components/media/UniversalDocumentPortal.tsx",
+      "default": "./src/components/media/UniversalDocumentPortal.tsx"
+    },
     "./components/media/VideoPlayer": {
+      "import": "./src/components/media/VideoPlayer.tsx",
       "browser": "./src/components/media/VideoPlayer.web.tsx",
       "react-native": "./src/components/media/VideoPlayer.tsx",
       "default": "./src/components/media/VideoPlayer.tsx"
     },
-    "./components/social": "./src/components/social/index.ts",
-    "./components/social/*": "./src/components/social/*",
+    "./components/social": {
+      "types": "./src/components/social/index.ts",
+      "import": "./src/components/social/index.ts",
+      "default": "./src/components/social/index.ts"
+    },
+    "./components/social/*": {
+      "types": "./src/components/social/*",
+      "import": "./src/components/social/*",
+      "default": "./src/components/social/*"
+    },
     "./components/social/CommunityPresence": {
+      "import": "./src/components/social/CommunityPresence.tsx",
       "browser": "./src/components/social/CommunityPresence.web.tsx",
       "react-native": "./src/components/social/CommunityPresence.tsx",
       "default": "./src/components/social/CommunityPresence.tsx"
     },
-    "./components/social/SocialShieldModal": "./src/components/social/SocialShieldModal.tsx",
-    "./components/ui/*": "./src/components/ui/*",
-    "./components/visualization": "./src/components/visualization/index.ts",
-    "./components/visualization/*": "./src/components/visualization/*",
-    "./components/visualization/AstroView": "./src/components/visualization/AstroView.tsx",
-    "./components/visualization/DharmaView": "./src/components/visualization/DharmaView.tsx",
-    "./components/visualization/JyotiView": "./src/components/visualization/JyotiView.tsx",
-    "./components/visualization/TerraView": "./src/components/visualization/TerraView.tsx",
-    "./components/visualization/UniversalPerspective": "./src/components/visualization/UniversalPerspective.tsx",
+    "./components/social/SocialShieldModal": {
+      "types": "./src/components/social/SocialShieldModal.tsx",
+      "import": "./src/components/social/SocialShieldModal.tsx",
+      "default": "./src/components/social/SocialShieldModal.tsx"
+    },
+    "./components/ui/*": {
+      "types": "./src/components/ui/*",
+      "import": "./src/components/ui/*",
+      "default": "./src/components/ui/*"
+    },
+    "./components/visualization": {
+      "types": "./src/components/visualization/index.ts",
+      "import": "./src/components/visualization/index.ts",
+      "default": "./src/components/visualization/index.ts"
+    },
+    "./components/visualization/*": {
+      "types": "./src/components/visualization/*",
+      "import": "./src/components/visualization/*",
+      "default": "./src/components/visualization/*"
+    },
+    "./components/visualization/AstroView": {
+      "types": "./src/components/visualization/AstroView.tsx",
+      "import": "./src/components/visualization/AstroView.tsx",
+      "default": "./src/components/visualization/AstroView.tsx"
+    },
+    "./components/visualization/DharmaView": {
+      "types": "./src/components/visualization/DharmaView.tsx",
+      "import": "./src/components/visualization/DharmaView.tsx",
+      "default": "./src/components/visualization/DharmaView.tsx"
+    },
+    "./components/visualization/JyotiView": {
+      "types": "./src/components/visualization/JyotiView.tsx",
+      "import": "./src/components/visualization/JyotiView.tsx",
+      "default": "./src/components/visualization/JyotiView.tsx"
+    },
+    "./components/visualization/TerraView": {
+      "types": "./src/components/visualization/TerraView.tsx",
+      "import": "./src/components/visualization/TerraView.tsx",
+      "default": "./src/components/visualization/TerraView.tsx"
+    },
+    "./components/visualization/UniversalPerspective": {
+      "types": "./src/components/visualization/UniversalPerspective.tsx",
+      "import": "./src/components/visualization/UniversalPerspective.tsx",
+      "default": "./src/components/visualization/UniversalPerspective.tsx"
+    },
     "./components/visualization/VastuView": {
+      "import": "./src/components/visualization/VastuView.tsx",
       "browser": "./src/components/visualization/VastuView.web.tsx",
       "react-native": "./src/components/visualization/VastuView.tsx",
       "default": "./src/components/visualization/VastuView.tsx"
     },
     "./components/visualization/VatyaView": {
+      "import": "./src/components/visualization/VatyaView.tsx",
       "browser": "./src/components/visualization/VatyaView.web.tsx",
       "react-native": "./src/components/visualization/VatyaView.tsx",
       "default": "./src/components/visualization/VatyaView.tsx"
     },
-    "./components/workspace": "./src/components/workspace/index.ts",
-    "./components/workspace/*": "./src/components/workspace/*",
-    "./components/workspace/CanvasSurfaceCard": "./src/components/workspace/CanvasSurfaceCard.tsx",
-    "./components/workspace/CanvasZoneColumn": "./src/components/workspace/CanvasZoneColumn.tsx",
-    "./components/workspace/ResponsiveWorkspaceCanvas": "./src/components/workspace/ResponsiveWorkspaceCanvas.tsx",
-    "./components/workspace/WorkspaceCanvas": "./src/components/workspace/WorkspaceCanvas.tsx",
-    "./components/workspace/renderers/MobileWorkspaceCanvas": "./src/components/workspace/renderers/MobileWorkspaceCanvas.tsx",
-    "./components/workspace/renderers/TabletWorkspaceCanvas": "./src/components/workspace/renderers/TabletWorkspaceCanvas.tsx",
-    "./components/workspace/renderers/WebWorkspaceCanvas": "./src/components/workspace/renderers/WebWorkspaceCanvas.tsx",
-    "./components/workspace/shared": "./src/components/workspace/shared.tsx",
-    "./components/workspace/types": "./src/components/workspace/types.ts",
-    "./context": "./src/context/index.ts",
-    "./context/*": "./src/context/*",
-    "./context/FABContext": "./src/context/FABContext.tsx",
-    "./gluestack": "./src/gluestack/index.tsx",
-    "./hooks": "./src/hooks/index.ts",
-    "./hooks/*": "./src/hooks/*",
-    "./icons": "./src/icons.ts",
-    "./native": "./src/components-native/index.ts",
+    "./components/workspace": {
+      "types": "./src/components/workspace/index.ts",
+      "import": "./src/components/workspace/index.ts",
+      "default": "./src/components/workspace/index.ts"
+    },
+    "./components/workspace/*": {
+      "types": "./src/components/workspace/*",
+      "import": "./src/components/workspace/*",
+      "default": "./src/components/workspace/*"
+    },
+    "./components/workspace/CanvasSurfaceCard": {
+      "types": "./src/components/workspace/CanvasSurfaceCard.tsx",
+      "import": "./src/components/workspace/CanvasSurfaceCard.tsx",
+      "default": "./src/components/workspace/CanvasSurfaceCard.tsx"
+    },
+    "./components/workspace/CanvasZoneColumn": {
+      "types": "./src/components/workspace/CanvasZoneColumn.tsx",
+      "import": "./src/components/workspace/CanvasZoneColumn.tsx",
+      "default": "./src/components/workspace/CanvasZoneColumn.tsx"
+    },
+    "./components/workspace/ResponsiveWorkspaceCanvas": {
+      "types": "./src/components/workspace/ResponsiveWorkspaceCanvas.tsx",
+      "import": "./src/components/workspace/ResponsiveWorkspaceCanvas.tsx",
+      "default": "./src/components/workspace/ResponsiveWorkspaceCanvas.tsx"
+    },
+    "./components/workspace/WorkspaceCanvas": {
+      "types": "./src/components/workspace/WorkspaceCanvas.tsx",
+      "import": "./src/components/workspace/WorkspaceCanvas.tsx",
+      "default": "./src/components/workspace/WorkspaceCanvas.tsx"
+    },
+    "./components/workspace/renderers/MobileWorkspaceCanvas": {
+      "types": "./src/components/workspace/renderers/MobileWorkspaceCanvas.tsx",
+      "import": "./src/components/workspace/renderers/MobileWorkspaceCanvas.tsx",
+      "default": "./src/components/workspace/renderers/MobileWorkspaceCanvas.tsx"
+    },
+    "./components/workspace/renderers/TabletWorkspaceCanvas": {
+      "types": "./src/components/workspace/renderers/TabletWorkspaceCanvas.tsx",
+      "import": "./src/components/workspace/renderers/TabletWorkspaceCanvas.tsx",
+      "default": "./src/components/workspace/renderers/TabletWorkspaceCanvas.tsx"
+    },
+    "./components/workspace/renderers/WebWorkspaceCanvas": {
+      "types": "./src/components/workspace/renderers/WebWorkspaceCanvas.tsx",
+      "import": "./src/components/workspace/renderers/WebWorkspaceCanvas.tsx",
+      "default": "./src/components/workspace/renderers/WebWorkspaceCanvas.tsx"
+    },
+    "./components/workspace/shared": {
+      "types": "./src/components/workspace/shared.tsx",
+      "import": "./src/components/workspace/shared.tsx",
+      "default": "./src/components/workspace/shared.tsx"
+    },
+    "./components/workspace/types": {
+      "types": "./src/components/workspace/types.ts",
+      "import": "./src/components/workspace/types.ts",
+      "default": "./src/components/workspace/types.ts"
+    },
+    "./context": {
+      "types": "./src/context/index.ts",
+      "import": "./src/context/index.ts",
+      "default": "./src/context/index.ts"
+    },
+    "./context/*": {
+      "types": "./src/context/*",
+      "import": "./src/context/*",
+      "default": "./src/context/*"
+    },
+    "./context/FABContext": {
+      "types": "./src/context/FABContext.tsx",
+      "import": "./src/context/FABContext.tsx",
+      "default": "./src/context/FABContext.tsx"
+    },
+    "./gluestack": {
+      "types": "./src/gluestack/index.tsx",
+      "import": "./src/gluestack/index.tsx",
+      "default": "./src/gluestack/index.tsx"
+    },
+    "./hooks": {
+      "types": "./src/hooks/index.ts",
+      "import": "./src/hooks/index.ts",
+      "default": "./src/hooks/index.ts"
+    },
+    "./hooks/*": {
+      "types": "./src/hooks/*",
+      "import": "./src/hooks/*",
+      "default": "./src/hooks/*"
+    },
+    "./icons": {
+      "types": "./src/icons.ts",
+      "import": "./src/icons.ts",
+      "default": "./src/icons.ts"
+    },
+    "./native": {
+      "types": "./src/components-native/index.ts",
+      "import": "./src/components-native/index.ts",
+      "default": "./src/components-native/index.ts"
+    },
     "./package.json": "./package.json",
-    "./primitives": "./src/primitives.ts",
-    "./providers": "./src/providers/index.ts",
-    "./providers/*": "./src/providers/*",
-    "./screens": "./src/screens/index.ts",
-    "./screens/*": "./src/screens/*",
-    "./screens/AppSettingsScreen": "./src/screens/AppSettingsScreen.tsx",
+    "./primitives": {
+      "types": "./src/primitives.ts",
+      "import": "./src/primitives.ts",
+      "default": "./src/primitives.ts"
+    },
+    "./providers": {
+      "types": "./src/providers/index.ts",
+      "import": "./src/providers/index.ts",
+      "default": "./src/providers/index.ts"
+    },
+    "./providers/*": {
+      "types": "./src/providers/*",
+      "import": "./src/providers/*",
+      "default": "./src/providers/*"
+    },
+    "./screens": {
+      "types": "./src/screens/index.ts",
+      "import": "./src/screens/index.ts",
+      "default": "./src/screens/index.ts"
+    },
+    "./screens/*": {
+      "types": "./src/screens/*",
+      "import": "./src/screens/*",
+      "default": "./src/screens/*"
+    },
+    "./screens/AppSettingsScreen": {
+      "import": "./src/screens/AppSettingsScreen.tsx",
+      "browser": "./src/screens/AppSettingsScreen.web.tsx",
+      "react-native": "./src/screens/AppSettingsScreen.tsx",
+      "default": "./src/screens/AppSettingsScreen.tsx"
+    },
+    "./screens/AppSettingsScreen.web": {
+      "types": "./src/screens/AppSettingsScreen.web.tsx",
+      "import": "./src/screens/AppSettingsScreen.web.tsx",
+      "default": "./src/screens/AppSettingsScreen.web.tsx"
+    },
     "./screens/AuthScreen": {
+      "import": "./src/screens/AuthScreen.tsx",
       "browser": "./src/screens/AuthScreen.web.tsx",
       "react-native": "./src/screens/AuthScreen.tsx",
       "default": "./src/screens/AuthScreen.tsx"
     },
-    "./screens/ErrorMessageDemo": "./src/screens/ErrorMessageDemo.tsx",
+    "./screens/ErrorMessageDemo": {
+      "types": "./src/screens/ErrorMessageDemo.tsx",
+      "import": "./src/screens/ErrorMessageDemo.tsx",
+      "default": "./src/screens/ErrorMessageDemo.tsx"
+    },
     "./screens/NotificationsScreen": {
+      "import": "./src/screens/NotificationsScreen.tsx",
       "browser": "./src/screens/NotificationsScreen.web.tsx",
       "react-native": "./src/screens/NotificationsScreen.tsx",
       "default": "./src/screens/NotificationsScreen.tsx"
     },
     "./screens/OnboardingScreen": {
+      "import": "./src/screens/OnboardingScreen.tsx",
       "browser": "./src/screens/OnboardingScreen.web.tsx",
       "react-native": "./src/screens/OnboardingScreen.tsx",
       "default": "./src/screens/OnboardingScreen.tsx"
     },
-    "./screens/OnboardingWrapper": "./src/screens/OnboardingWrapper.tsx",
+    "./screens/OnboardingWrapper": {
+      "types": "./src/screens/OnboardingWrapper.tsx",
+      "import": "./src/screens/OnboardingWrapper.tsx",
+      "default": "./src/screens/OnboardingWrapper.tsx"
+    },
     "./screens/WelcomeScreen": {
+      "import": "./src/screens/WelcomeScreen.tsx",
       "browser": "./src/screens/WelcomeScreen.web.tsx",
       "react-native": "./src/screens/WelcomeScreen.tsx",
       "default": "./src/screens/WelcomeScreen.tsx"
     },
-    "./screens/WorkspaceCanvasDemo": "./src/screens/WorkspaceCanvasDemo.tsx",
-    "./svelte/*": "./src/svelte/*.svelte",
-    "./theme": "./src/theme/Theme.ts",
-    "./utils": "./src/utils/index.ts",
-    "./utils/*": "./src/utils/*",
-    "./utils/dateTimeUtils": "./src/utils/dateTimeUtils.ts",
-    "./utils/haptics": "./src/utils/haptics.ts",
-    "./utils/stringUtils": "./src/utils/stringUtils.ts",
-    "./utils/themeColors": "./src/utils/themeColors.ts"
+    "./screens/WorkspaceCanvasDemo": {
+      "types": "./src/screens/WorkspaceCanvasDemo.tsx",
+      "import": "./src/screens/WorkspaceCanvasDemo.tsx",
+      "default": "./src/screens/WorkspaceCanvasDemo.tsx"
+    },
+    "./svelte/*": {
+      "svelte": "./src/svelte/*.svelte",
+      "default": "./src/svelte/*.svelte"
+    },
+    "./theme": {
+      "types": "./src/theme/Theme.ts",
+      "import": "./src/theme/Theme.ts",
+      "default": "./src/theme/Theme.ts"
+    },
+    "./utils": {
+      "types": "./src/utils/index.ts",
+      "import": "./src/utils/index.ts",
+      "default": "./src/utils/index.ts"
+    },
+    "./utils/*": {
+      "types": "./src/utils/*",
+      "import": "./src/utils/*",
+      "default": "./src/utils/*"
+    },
+    "./utils/dateTimeUtils": {
+      "types": "./src/utils/dateTimeUtils.ts",
+      "import": "./src/utils/dateTimeUtils.ts",
+      "default": "./src/utils/dateTimeUtils.ts"
+    },
+    "./utils/haptics": {
+      "types": "./src/utils/haptics.ts",
+      "import": "./src/utils/haptics.ts",
+      "default": "./src/utils/haptics.ts"
+    },
+    "./utils/stringUtils": {
+      "types": "./src/utils/stringUtils.ts",
+      "import": "./src/utils/stringUtils.ts",
+      "default": "./src/utils/stringUtils.ts"
+    },
+    "./utils/themeColors": {
+      "types": "./src/utils/themeColors.ts",
+      "import": "./src/utils/themeColors.ts",
+      "default": "./src/utils/themeColors.ts"
+    },
+    "./*": {
+      "types": "./src/*.ts",
+      "import": "./src/*.js",
+      "default": "./src/*.js"
+    }
   },
   "scripts": {
-    "build": "pnpm exec tsc",
-    "typecheck": "pnpm exec tsc --noEmit",
-    "check-types": "pnpm exec tsc --noEmit",
+    "build": "node --max-old-space-size=4096 ../../node_modules/typescript/bin/tsc",
+    "typecheck": "node --max-old-space-size=4096 ../../node_modules/typescript/bin/tsc --noEmit",
+    "check-types": "node --max-old-space-size=4096 ../../node_modules/typescript/bin/tsc --noEmit",
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
     "lint:biome": "biome check .",
     "lint:eslint": "eslint .",
@@ -242,42 +791,42 @@
     "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {
-    "@react-native-community/slider": "4.5.6",
+    "@react-native-community/slider": "5.2.0",
     "@repo/core": "workspace:*",
-    "@shopify/react-native-skia": "2.4.18",
-    "@tanstack/react-query": "^5.96.2",
+    "@shopify/react-native-skia": "2.6.2",
+    "@tanstack/react-query": "^5.101.0",
     "apca-w3": "^0.1.9",
     "culori": "^4.0.2",
-    "date-fns": "^4.1.0",
-    "expo-auth-session": "~55.0.15",
-    "expo-clipboard": "~55.0.13",
+    "date-fns": "^4.4.0",
+    "expo-auth-session": "~56.0.13",
+    "expo-clipboard": "~56.0.4",
     "expo-device": "*",
-    "expo-file-system": "~55.0.15",
-    "expo-router": "~55.0.13",
-    "expo-sharing": "~55.0.18",
-    "expo-video": "~55.0.18",
-    "expo-web-browser": "~55.0.14",
+    "expo-file-system": "~56.0.7",
+    "expo-router": "~56.2.9",
+    "expo-sharing": "~56.0.16",
+    "expo-video": "~56.1.2",
+    "expo-web-browser": "~56.0.5",
     "gluestack-ui": "3.0.0",
-    "lucide-react-native": "^0.563.0",
+    "lucide-react-native": "^1.17.0",
     "nativewind": "4.1.23",
     "qrcode": "^1.5.4",
-    "react-native-reanimated": "^4.2.1",
+    "react-native-reanimated": "^4.4.1",
     "react-native-safe-area-context": "5.6.2",
-    "react-native-svg": "15.15.3",
-    "react-native-webview": "^13.13.2",
+    "react-native-svg": "15.15.4",
+    "react-native-webview": "^13.16.1",
     "tailwindcss": "3.4.17",
-    "xstate": "^5.31.0"
+    "xstate": "^5.32.0"
   },
   "peerDependencies": {
     "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-community/netinfo": "*",
     "@react-navigation/native": "*",
     "@shopify/flash-list": "2.0.2",
-    "@shopify/react-native-skia": "2.4.18",
-    "expo-blur": "~55.0.10",
-    "expo-haptics": "~55.0.9",
-    "expo-linear-gradient": "~55.0.9",
-    "expo-location": "~55.1.4",
+    "@shopify/react-native-skia": "2.6.2",
+    "expo-blur": "~56.0.3",
+    "expo-haptics": "~56.0.4",
+    "expo-linear-gradient": "~56.0.4",
+    "expo-location": "~56.0.16",
     "i18next": "*",
     "react": "19.2.0",
     "react-i18next": "*",
@@ -286,19 +835,19 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
+    "@repo/typescript-config": "workspace:*",
     "@types/apca-w3": "^0.1.3",
     "@types/culori": "^4.0.1",
-    "@types/jest": "^29.5.14",
+    "@types/jest": "^30.0.0",
     "@types/qrcode": "^1.5.6",
-    "@types/react": "^19.2.14",
+    "@types/react": "^19.2.17",
     "@types/react-native": "0.83.2",
-    "eslint": "^9.38.0",
-    "i18next": "^25.8.11",
-    "react-i18next": "^16.5.4",
+    "eslint": "^10.4.1",
+    "i18next": "^26.3.1",
+    "react-i18next": "^17.0.8",
     "tailwindcss": "3.4.17",
-    "typescript": "^5.9.3",
-    "@repo/typescript-config": "workspace:*",
-    "vitest": "^2.1.9",
-    "vite-tsconfig-paths": "^6.1.1"
+    "typescript": "^6.0.3",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.8"
   }
 }

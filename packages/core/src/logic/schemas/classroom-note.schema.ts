@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { makeModelSchema } from '@repo/schema';
+import { z } from 'zod';
 
 export const ClassroomNoteTypeSchema = z.enum([
   'note',
@@ -13,7 +13,7 @@ export const ClassroomNoteVisibilitySchema = z.enum(['private', 'class']);
 
 export const ClassroomNoteAuthorSchema = z.object({
   full_name: z.string(),
-  role: z.string(),
+  capacity: z.string(),
 });
 
 /**
@@ -46,10 +46,12 @@ export const ClassroomNoteUpdateSchema = ClassroomNoteSchema.partial().omit({
  * ClassroomNoteLifecycleEventSchema - Non-repudiable audit log for notes.
  * Derived from ZenStack StudentLongitudinalEvent model (as a snapshot).
  */
-export const ClassroomNoteLifecycleEventSchema = makeModelSchema('StudentLongitudinalEvent').extend({
-  note_type: ClassroomNoteTypeSchema,
-  visibility: ClassroomNoteVisibilitySchema,
-});
+export const ClassroomNoteLifecycleEventSchema = makeModelSchema('StudentLongitudinalEvent').extend(
+  {
+    note_type: ClassroomNoteTypeSchema,
+    visibility: ClassroomNoteVisibilitySchema,
+  },
+);
 
 export type ClassroomNoteRecord = z.infer<typeof ClassroomNoteSchema>;
 export type ClassroomNoteCreate = z.infer<typeof ClassroomNoteCreateSchema>;

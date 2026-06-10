@@ -52,9 +52,9 @@ export const studentOnboardedEvent = eventType('student/onboarded', {
 
 export const wellbeingMoodLoggedEvent = eventType('wellbeing/mood.logged', {
   schema: z.object({
-    studentId: z.string().uuid(),
+    studentId: z.uuid(),
     moodScore: z.number().int().min(1).max(5),
-    schoolId: z.string().uuid(),
+    schoolId: z.uuid(),
     loggedAt: z.string().datetime().optional(),
     correlationId: z.string().optional(),
     causationId: z.string().optional(),
@@ -76,12 +76,12 @@ export const syncMutationQueuedEvent = eventType('sync/mutation-queued', {
 });
 
 export const teacherSummaryRequestedPayloadSchema = z.object({
-  runId: z.string().uuid(),
+  runId: z.uuid(),
   mode: z.enum(['demo', 'live']),
   demoScenario: z.enum(['attendance-dip', 'steady-growth', 'wellbeing-watch']).optional(),
-  schoolId: z.string().uuid(),
-  classroomId: z.string().uuid(),
-  teacherId: z.string().uuid().optional().nullable(),
+  schoolId: z.uuid(),
+  classroomId: z.uuid(),
+  teacherId: z.uuid().optional().nullable(),
   requestedBy: z.string().optional().nullable(),
   requestedAt: z.string().datetime(),
   focusPrompt: z.string().min(1).max(500).optional(),
@@ -100,13 +100,13 @@ export const teacherSummaryRequestedEvent = eventType('agent/teacher-summary.req
 });
 
 export const studentSupportRequestedPayloadSchema = z.object({
-  runId: z.string().uuid(),
+  runId: z.uuid(),
   mode: z.enum(['demo', 'live']),
   demoScenario: z.enum(['quiet-struggle', 'resilient-improver', 'wellbeing-watch']).optional(),
-  schoolId: z.string().uuid(),
-  classroomId: z.string().uuid(),
-  teacherId: z.string().uuid().optional().nullable(),
-  studentId: z.string().uuid(),
+  schoolId: z.uuid(),
+  classroomId: z.uuid(),
+  teacherId: z.uuid().optional().nullable(),
+  studentId: z.uuid(),
   studentName: z.string().min(1).max(120).optional(),
   requestedBy: z.string().optional().nullable(),
   requestedAt: z.string().datetime(),
@@ -129,7 +129,7 @@ export const systemAuditLogEvent = eventType('system/audit.log', {
   schema: withWorkflowMetadata(
     z.object({
       action: z.string(),
-      actorId: z.string().uuid(),
+      actorId: z.uuid(),
       metadata: z.record(z.string(), z.unknown()).optional(),
     }),
   ),

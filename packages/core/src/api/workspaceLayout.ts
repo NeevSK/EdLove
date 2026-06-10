@@ -8,7 +8,7 @@ import { workspaceLayoutContract } from './workspaceLayout.contract';
 
 export const workspaceLayoutAPI = {
   /**
-   * @authority read WorkspaceLayout
+   * @policy read WorkspaceLayout
    */
   async getWorkspaceLayout(
     userId: string,
@@ -19,14 +19,14 @@ export const workspaceLayoutAPI = {
   },
 
   /**
-   * @authority update WorkspaceLayout
+   * @policy update WorkspaceLayout
    */
   async upsertWorkspaceLayout(input: WorkspaceLayoutUpsert): Promise<WorkspaceLayoutRecord> {
     return workspaceLayoutServices.upsertLayout(input);
   },
 
   /**
-   * @authority delete WorkspaceLayout
+   * @policy delete WorkspaceLayout
    */
   async deleteWorkspaceLayout(input: WorkspaceLayoutDelete): Promise<{ success: true }> {
     return workspaceLayoutServices.deleteLayout(input);

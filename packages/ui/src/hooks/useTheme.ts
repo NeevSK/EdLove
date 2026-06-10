@@ -58,8 +58,6 @@ export interface UseThemeReturn extends ResolvedThemeTokens, AdaptiveTokens {
   setThemeMode: (mode: ThemeMode) => void;
 }
 
-
-
 export function useTheme(): UseThemeReturn {
   const {
     temporalPhase,
@@ -71,53 +69,70 @@ export function useTheme(): UseThemeReturn {
     setThemeMode,
   } = useEnvironment();
 
-  const tokens = useMemo(() => 
-    enableLivingTheme
-      ? resolvePhaseTokens(temporalPhase, isDark)
-      : resolveClassicTokens(isDark),
-    [enableLivingTheme, temporalPhase, isDark]
+  const tokens = useMemo(
+    () =>
+      enableLivingTheme ? resolvePhaseTokens(temporalPhase, isDark) : resolveClassicTokens(isDark),
+    [enableLivingTheme, temporalPhase, isDark],
   );
 
-  const animationsEnabled = useMemo(() => enableLivingTheme && effectiveFidelity === 'high', [enableLivingTheme, effectiveFidelity]);
-  const blurEnabled = useMemo(() => effectiveFidelity === 'high' && reality.deviceTier !== 'low', [effectiveFidelity, reality.deviceTier]);
+  const animationsEnabled = useMemo(
+    () => enableLivingTheme && effectiveFidelity === 'high',
+    [enableLivingTheme, effectiveFidelity],
+  );
+  const blurEnabled = useMemo(
+    () => effectiveFidelity === 'high' && reality.deviceTier !== 'low',
+    [effectiveFidelity, reality.deviceTier],
+  );
 
   // --- Adaptive text colors (WCAG-computed) ---
-  const textOnAccent = useMemo(() => getTextOnBackground(tokens.accent.action), [tokens.accent.action]);
-  const textOnReward = useMemo(() => getTextOnBackground(tokens.accent.reward), [tokens.accent.reward]);
+  const textOnAccent = useMemo(
+    () => getTextOnBackground(tokens.accent.action),
+    [tokens.accent.action],
+  );
+  const textOnReward = useMemo(
+    () => getTextOnBackground(tokens.accent.reward),
+    [tokens.accent.reward],
+  );
 
   // --- RGB component strings for flexible CSS rgba() usage ---
   const accentRgb = useMemo(() => hexToRgbComponents(tokens.accent.action), [tokens.accent.action]);
   const rewardRgb = useMemo(() => hexToRgbComponents(tokens.accent.reward), [tokens.accent.reward]);
-  const surfaceRgb = useMemo(() => hexToRgbComponents(tokens.gradientNodes[0]), [tokens.gradientNodes]);
+  const surfaceRgb = useMemo(
+    () => hexToRgbComponents(tokens.gradientNodes[0]),
+    [tokens.gradientNodes],
+  );
 
-  return useMemo(() => ({
-    ...tokens,
-    templeGold: tokens.accent.templeGold,
-    sageGreen: tokens.accent.sageGreen,
-    isDark,
-    phase: temporalPhase,
-    animationsEnabled,
-    blurEnabled,
-    themeMode,
-    setThemeMode,
-    // Adaptive tokens
-    textOnAccent,
-    textOnReward,
-    accentRgb,
-    rewardRgb,
-    surfaceRgb,
-  }), [
-    tokens,
-    isDark,
-    temporalPhase,
-    animationsEnabled,
-    blurEnabled,
-    themeMode,
-    setThemeMode,
-    textOnAccent,
-    textOnReward,
-    accentRgb,
-    rewardRgb,
-    surfaceRgb,
-  ]);
+  return useMemo(
+    () => ({
+      ...tokens,
+      templeGold: tokens.accent.templeGold,
+      sageGreen: tokens.accent.sageGreen,
+      isDark,
+      phase: temporalPhase,
+      animationsEnabled,
+      blurEnabled,
+      themeMode,
+      setThemeMode,
+      // Adaptive tokens
+      textOnAccent,
+      textOnReward,
+      accentRgb,
+      rewardRgb,
+      surfaceRgb,
+    }),
+    [
+      tokens,
+      isDark,
+      temporalPhase,
+      animationsEnabled,
+      blurEnabled,
+      themeMode,
+      setThemeMode,
+      textOnAccent,
+      textOnReward,
+      accentRgb,
+      rewardRgb,
+      surfaceRgb,
+    ],
+  );
 }

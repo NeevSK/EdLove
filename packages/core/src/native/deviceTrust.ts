@@ -1,8 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
 import { v7 as uuidv7 } from 'uuid';
-import { identityAPI } from '../api/identity';
-import { supabase } from '../api/supabase';
+import { type ActiveCitizen, identityAPI } from '../api/identity';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
+import { coreRuntime } from '../logic/runtimeRegistry';
 import { APIError } from '../types/API';
 
 const DEVICE_INSTALL_ID_KEY = 'gurudevi-device-install-id';
@@ -53,33 +52,24 @@ function normalizeDeviceTrustRow(
 }
 
 function getDeviceMetadata() {
-  const constants = (Platform.constants ?? {}) as Record<string, unknown>;
-  const brand = typeof constants['Brand'] === 'string' ? constants['Brand'].trim() : '';
-  const model = typeof constants['Model'] === 'string' ? constants['Model'].trim() : '';
-  const parts = [brand, model].filter(Boolean);
-
-  return {
-    modelName: parts.length > 0 ? parts.join(' ') : Platform.OS,
-    osVersion: Platform.Version == null ? null : String(Platform.Version),
-    platform: Platform.OS,
-  };
+  return coreRuntime.device.getMetadata();
 }
 
 async function getOrCreateInstallId() {
-  const existing = await AsyncStorage.getItem(DEVICE_INSTALL_ID_KEY);
+  const existing = await coreRuntime.storage.getItem(DEVICE_INSTALL_ID_KEY);
   if (existing) return existing;
 
   const next = uuidv7();
-  await AsyncStorage.setItem(DEVICE_INSTALL_ID_KEY, next);
+  await coreRuntime.storage.setItem(DEVICE_INSTALL_ID_KEY, next);
   return next;
 }
 
 async function getStoredServerDeviceId() {
-  return AsyncStorage.getItem(SERVER_DEVICE_ID_KEY);
+  return coreRuntime.storage.getItem(SERVER_DEVICE_ID_KEY);
 }
 
 async function setStoredServerDeviceId(deviceId: string) {
-  await AsyncStorage.setItem(SERVER_DEVICE_ID_KEY, deviceId);
+  await coreRuntime.storage.setItem(SERVER_DEVICE_ID_KEY, deviceId);
 }
 
 function unwrapRpcRow<T>(data: T[] | T | null): T | null {
@@ -91,7 +81,7 @@ function unwrapRpcRow<T>(data: T[] | T | null): T | null {
 }
 
 async function rpcSingle<T>(fn: string, params: Record<string, unknown>) {
-  const { data, error } = await supabase.rpc(fn, params);
+  const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(fn, params);
 
   if (error) {
     throw new APIError(`Failed to call ${fn}`, error.code, error);
@@ -101,7 +91,8 @@ async function rpcSingle<T>(fn: string, params: Record<string, unknown>) {
 }
 
 async function requireAccountId(accountId?: string) {
-  const resolved = accountId ?? (await identityAPI.getMyInternalId());
+  const identity = await identityAPI.identifyActiveCitizen();
+  const resolved = accountId ?? (identity as ActiveCitizen | null)?.id;
   if (!resolved) {
     throw new APIError('No authenticated account is available for device trust operations.');
   }
@@ -205,12 +196,15 @@ export const deviceTrustAPI = {
     const deviceId =
       (await getStoredServerDeviceId()) ?? (await this.ensureDeviceRegistered()).deviceId;
 
-    const { data, error } = await supabase.rpc('log_my_device_audit', {
-      p_action: action,
-      p_device_id: deviceId,
-      p_account_id: resolvedAccountId,
-      p_metadata: metadata,
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'log_my_device_audit',
+      {
+        p_action: action,
+        p_device_id: deviceId,
+        p_account_id: resolvedAccountId,
+        p_metadata: metadata,
+      },
+    );
 
     if (error) {
       throw new APIError('Failed to write device audit log.', error.code, error);

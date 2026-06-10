@@ -296,8 +296,9 @@ export const MOCK_COMMUNITY_POSTS: any[] = [
     id: 'demo-post-1',
     author_id: 'demo-user-1',
     author_name: 'Ariya',
-    author_authority: 'student',
-    content: "Just finished my first React project! It's so rewarding to see it all come together. Anyone else working on something fun today? \uD83C\uDF3F",
+    author_policy: 'student',
+    content:
+      "Just finished my first React project! It's so rewarding to see it all come together. Anyone else working on something fun today? \uD83C\uDF3F",
     post_type: 'discussion',
     visibility: 'public',
     reaction_count: 42,
@@ -313,8 +314,9 @@ export const MOCK_COMMUNITY_POSTS: any[] = [
     id: 'demo-post-2',
     author_id: 'demo-user-2',
     author_name: 'Master Sam',
-    author_authority: 'teacher',
-    content: "I've uploaded the new resource on 'Algorithmic Thinking' in the Library. Check it out and let me know if you have any questions!",
+    author_policy: 'teacher',
+    content:
+      "I've uploaded the new resource on 'Algorithmic Thinking' in the Library. Check it out and let me know if you have any questions!",
     post_type: 'resource',
     visibility: 'public',
     reaction_count: 15,
@@ -330,7 +332,7 @@ export const MOCK_COMMUNITY_POSTS: any[] = [
     id: 'demo-post-3',
     author_id: 'demo-user-3',
     author_name: 'Luna',
-    author_authority: 'student',
+    author_policy: 'student',
     content: 'Found this beautiful spot in the garden today. Nature is the best designer. \u2728',
     post_type: 'discussion',
     visibility: 'public',
@@ -382,7 +384,7 @@ export const MOCK_TEACHER_CAROUSEL: TeacherCarouselItem[] = [
   {
     userId: 'mock-t1',
     fullName: 'Sanduni Perera',
-    role: 'teacher',
+    capacity: 'teacher',
     todayStatus: 'present',
     classroomCount: 3,
     avatarUrl: null,
@@ -390,7 +392,7 @@ export const MOCK_TEACHER_CAROUSEL: TeacherCarouselItem[] = [
   {
     userId: 'mock-t2',
     fullName: 'Nimal Wickrama',
-    role: 'teacher',
+    capacity: 'teacher',
     todayStatus: 'present',
     classroomCount: 2,
     avatarUrl: null,
@@ -398,7 +400,7 @@ export const MOCK_TEACHER_CAROUSEL: TeacherCarouselItem[] = [
   {
     userId: 'mock-t3',
     fullName: 'Amali Fernando',
-    role: 'grade_head',
+    capacity: 'gradeHead',
     todayStatus: 'late',
     classroomCount: 4,
     avatarUrl: null,
@@ -406,7 +408,7 @@ export const MOCK_TEACHER_CAROUSEL: TeacherCarouselItem[] = [
   {
     userId: 'mock-t4',
     fullName: 'Roshan Silva',
-    role: 'teacher',
+    capacity: 'teacher',
     todayStatus: 'absent',
     classroomCount: 2,
     avatarUrl: null,
@@ -414,7 +416,7 @@ export const MOCK_TEACHER_CAROUSEL: TeacherCarouselItem[] = [
   {
     userId: 'mock-t5',
     fullName: 'Kavindra Dias',
-    role: 'teacher',
+    capacity: 'teacher',
     todayStatus: 'present',
     classroomCount: 1,
     avatarUrl: null,

@@ -26,7 +26,7 @@ export interface MutationQueueState {
   isSyncing: boolean;
   addToQueue: (
     mutation: Omit<QueuedMutation, 'id' | 'timestamp' | 'retryCount' | 'idempotencyKey'>,
-  ) => void;
+  ) => Promise<void>;
   removeFromQueue: (id: string) => void;
   moveToDeadLetter: (id: string, reason: string) => void;
   updateMutation: (id: string, updates: Partial<QueuedMutation>) => void;

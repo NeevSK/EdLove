@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
-import { MaterialSchema } from '../../../logic/schemas/material.schema';
 import type { Material as LessonMaterial } from '../../../logic/schemas/material.schema';
+import { MaterialSchema } from '../../../logic/schemas/material.schema';
 import { APIError } from '../../../types/API';
 
 export const createMaterialRepository = (supabase: SupabaseClient) => ({

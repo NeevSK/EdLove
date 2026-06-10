@@ -1,1 +1,1 @@
-export * from "./TeacherActions";
+export * from './TeacherActions';

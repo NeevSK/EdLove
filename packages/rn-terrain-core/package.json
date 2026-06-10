@@ -1,0 +1,32 @@
+{
+  "name": "@rn-terrain/core",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "check-types": "pnpm exec tsc --noEmit",
+    "clean": "rm -rf .turbo node_modules dist"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.102.1",
+    "dotenv": "^17.4.2",
+    "semver": "^7.8.3",
+    "zod": "4.3.6"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:^",
+    "@repo/typescript-config": "workspace:*",
+    "@types/semver": "^7.7.1",
+    "typescript": "^6.0.3"
+  }
+}

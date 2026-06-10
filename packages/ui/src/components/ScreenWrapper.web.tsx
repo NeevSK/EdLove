@@ -1,7 +1,7 @@
 import type React from 'react';
 import { StyleSheet } from 'react-native';
-import { ScrollView, View } from '../primitives';
 import { useTheme } from '../hooks/useTheme';
+import { ScrollView, View } from '../primitives';
 
 interface ScreenWrapperProps {
   children: React.ReactNode;
@@ -44,7 +44,11 @@ export default function ScreenWrapper({
   const resolvedBackground = backgroundColor || scene.canvas.bg;
 
   return (
-    <View role="main" aria-label={title} style={[styles.container, { backgroundColor: resolvedBackground }]}>
+    <View
+      role="main"
+      aria-label={title}
+      style={[styles.container, { backgroundColor: resolvedBackground }]}
+    >
       {isScrollable ? (
         <ScrollView
           style={styles.scrollView}

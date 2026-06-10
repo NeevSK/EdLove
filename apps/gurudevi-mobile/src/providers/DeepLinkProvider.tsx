@@ -1,66 +1,52 @@
-import { useAuth } from "@repo/core/logic";
-import { supabase } from "@repo/core/native";
+import { coreRuntime, DeepLinkType, deepLink, useAuth } from '@repo/core/logic';
+import { useQRDeepLink } from '@repo/scanner-kit';
+import { router } from 'expo-router';
+import type React from 'react';
+import { type ReactNode, useEffect } from 'react';
+import { Platform } from 'react-native';
 
-import { useQRDeepLink } from "@repo/scanner-kit";
-import * as Linking from "expo-linking";
-import type React from "react";
-import { type ReactNode, useEffect } from "react";
-import { navigationRef } from "../navigation/navigationRef";
+/**
+ * DeepLinkProvider
+ *
+ * Future-Proof Sovereign Interceptor for Deep Links.
+ * This provider listens to native 'url' events and dispatches them to the
+ * sovereign DeepLinkManager in core logic.
+ */
+export const DeepLinkProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { session } = useAuth();
 
-export const DeepLinkProvider: React.FC<{ children: ReactNode }> = ({
-	children,
-}) => {
-	const { session } = useAuth();
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
 
-	useEffect(() => {
-		// Sovereign Web Guard: Early return using web-native check
-		if (typeof window !== "undefined") return;
+    const handleURL = async (url: string) => {
+      const result = await deepLink.handleURL(url);
 
-		const handleDeepLink = async (url: string) => {
-			if (url.includes("auth/callback")) {
-				const getParam = (name: string) => {
-					const match = url.match(new RegExp(`[#?&]${name}=([^&]*)`));
-					return match ? match[1] : null;
-				};
+      // If the manager didn't fully handle it (e.g. it's a navigation link)
+      // we can perform shell-specific actions here.
+      if (!result.isHandled) {
+        if (result.type === DeepLinkType.CLASSROOM_INVITE) {
+          router.push({ pathname: '/community', params: { inviteCode: result.params.inviteCode } });
+        }
+      }
+    };
 
-				const access_token = getParam("access_token");
-				const refresh_token = getParam("refresh_token");
+    const subscription = coreRuntime.linking.addEventListener('url', (event) => {
+      void handleURL(event.url);
+    });
 
-				if (access_token && refresh_token) {
-					const { error } = await supabase.auth.setSession({
-						access_token,
-						refresh_token,
-					});
-					if (
-						error &&
-						(error.message?.includes("Refresh Token") ||
-							(error as { status?: number }).status === 400)
-					) {
-						await supabase.auth.signOut({ scope: "local" });
-					}
-				}
-			}
-		};
+    // Handle cold start
+    void coreRuntime.linking.getInitialURL().then((url) => {
+      if (url) void handleURL(url);
+    });
 
-		const subscription = Linking.addEventListener("url", (event) =>
-			handleDeepLink(event.url),
-		);
-		Linking.getInitialURL().then((url) => {
-			if (url) handleDeepLink(url);
-		});
+    return () => subscription.remove();
+  }, []);
 
-		return () => subscription.remove();
-	}, []);
+  useQRDeepLink((payload) => {
+    if (session) {
+      router.push({ pathname: '/qr', params: { payload: JSON.stringify(payload) } });
+    }
+  });
 
-	useQRDeepLink((payload) => {
-		if (navigationRef.isReady() && session) {
-			// Cast to a simpler interface to satisfy TSC while avoiding broad 'any'
-			const nav = navigationRef as unknown as {
-				navigate: (name: string, params?: object) => void;
-			};
-			nav.navigate("QRHandler", { payload });
-		}
-	});
-
-	return <>{children}</>;
+  return <>{children}</>;
 };

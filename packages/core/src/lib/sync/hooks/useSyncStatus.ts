@@ -10,13 +10,7 @@ import { useEffect, useState } from 'react';
 import { sovereignBus } from '../eventBus';
 import { useMutationQueue } from '../useMutationQueue';
 
-export type SyncStatusKind =
-  | 'idle'
-  | 'syncing'
-  | 'success'
-  | 'error'
-  | 'conflict'
-  | 'offline';
+export type SyncStatusKind = 'idle' | 'syncing' | 'success' | 'error' | 'conflict' | 'offline';
 
 export interface SyncStatus {
   kind: SyncStatusKind;
@@ -56,6 +50,7 @@ export function useSyncStatus(): SyncStatus {
         setStatus((s) => ({
           ...s,
           kind: failedCount > 0 ? 'error' : 'success',
+          // eslint-disable-next-line no-restricted-syntax
           lastSyncedAt: Date.now(),
           pendingCount: Math.max(0, s.pendingCount - processedCount),
         }));
@@ -96,7 +91,11 @@ export function useSyncStatus(): SyncStatus {
       }),
     );
 
-    return () => unsubscribers.forEach((unsub) => unsub());
+    return () => {
+      unsubscribers.forEach((unsub) => {
+        unsub();
+      });
+    };
   }, []);
 
   // Keep pendingCount in sync with the queue store

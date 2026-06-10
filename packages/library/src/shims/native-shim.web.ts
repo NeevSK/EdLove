@@ -8,7 +8,7 @@
 // Mock react-native-maps
 export const MapView = () => null;
 export const Marker = () => null;
-export const PROVIDER_GOOGLE = "google";
+export const PROVIDER_GOOGLE = 'google';
 
 // Mock other native-only secrets if needed
 export const NativeModules = {};

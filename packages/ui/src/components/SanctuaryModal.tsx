@@ -1,6 +1,5 @@
 import { X } from 'lucide-react-native';
 import type React from 'react';
-import { Pressable } from '../primitives';
 import {
   HStack,
   Modal,
@@ -11,6 +10,7 @@ import {
   Text,
   VStack,
 } from '../gluestack';
+import { Pressable } from '../primitives';
 
 const Heading = ({ children, className }: any) => (
   <Text className={`text-xl font-bold ${className || ''}`}>{children}</Text>

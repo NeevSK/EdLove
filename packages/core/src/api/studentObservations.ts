@@ -44,14 +44,14 @@ export const studentObservationsAPI = {
     return data.map(({ audit, ...observation }) => observation as StudentObservation);
   },
 
-
   /**
    * Create a new observation
    */
   async create(
     observation: Omit<StudentObservation, 'id' | 'created_at' | 'updated_at' | 'author_id'>,
   ): Promise<StudentObservation> {
-    const myId = await identityAPI.getMyInternalId();
+    const identity = await identityAPI.identifyActiveCitizen();
+    const myId = identity?.id;
     if (!myId) throw new APIError('Authentication required');
     const data = await teacherInsightsAPI.createStudentObservation(observation);
     const { audit, ...result } = data;

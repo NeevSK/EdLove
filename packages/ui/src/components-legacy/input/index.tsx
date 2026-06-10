@@ -1,7 +1,11 @@
 import { cssInterop } from 'nativewind';
 import React from 'react';
-import { type PressableProps, type TextInputProps, type ViewProps, type View, type TextInput } from 'react-native';
-import { Pressable, TextInput as PrimitiveTextInput, View as PrimitiveView } from '../../primitives';
+import type { PressableProps, TextInput, TextInputProps, View, ViewProps } from 'react-native';
+import {
+  Pressable,
+  TextInput as PrimitiveTextInput,
+  View as PrimitiveView,
+} from '../../primitives';
 import { useFormControl } from '../form-control';
 
 cssInterop(PrimitiveView, { className: 'style' });

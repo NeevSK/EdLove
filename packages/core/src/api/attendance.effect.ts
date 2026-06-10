@@ -1,13 +1,12 @@
 import { Data, Effect, pipe } from 'effect';
+import { audit, educational } from '../logic/managers/factory';
 import type {
   AttendanceReport,
   AttendanceSnapshot,
   SchoolAttendancePulse,
 } from '../logic/schemas/attendance.schema';
-import { attendanceProjectionServices } from './runtimes/attendanceProjection.runtime';
-import { educationalServices } from './runtimes/educational.runtime';
 import type { AttendanceRecord } from '../types';
-import { supabase } from './supabase';
+import { attendanceProjectionServices } from './runtimes/attendanceProjection.runtime';
 
 /**
  * Custom Error Types for Domain-Specific Failures
@@ -29,11 +28,8 @@ type AttendanceAuditContext = {
   idempotencyKey?: string;
 };
 
-const _buildAttendanceKey = (classroomId: string, studentId: string, date: string) =>
-  `${classroomId}:${studentId}:${date}`;
-
 /**
- * Effect-powered Audit Logger
+ * Effect-powered Audit Logger (delegates to Sovereign Audit Manager)
  */
 const logAttendanceAudit = (params: {
   action: string;
@@ -45,7 +41,7 @@ const logAttendanceAudit = (params: {
 
   return pipe(
     Effect.promise(() =>
-      supabase.from('audit_logs').insert({
+      audit.log({
         action: params.action,
         entity_id: params.entityId,
         target_id: params.entityId,
@@ -53,11 +49,6 @@ const logAttendanceAudit = (params: {
         executor_id: params.executorId!,
         metadata: params.metadata ?? {},
       }),
-    ),
-    Effect.flatMap(({ error }) =>
-      error
-        ? Effect.logWarning(`Failed to record attendance audit event: ${error.message}`)
-        : Effect.void,
     ),
     Effect.catchAll((e) => Effect.logError(`Audit logging crashed: ${e}`)),
     Effect.asVoid,
@@ -76,12 +67,12 @@ export const attendanceAPI = {
     studentId: string,
     status: string,
     date: string,
-    audit?: AttendanceAuditContext,
+    auditCtx?: AttendanceAuditContext,
   ): Effect.Effect<AttendanceRecord, AttendanceError | unknown, never> =>
     Effect.gen(function* () {
       // 1. Check for existing record to determine audit action
       const existing = yield* Effect.promise(() =>
-        educationalServices.attendance
+        educational.attendance
           .getByDate(classroomId, date)
           .then((records) =>
             (records as unknown as AttendanceRecord[]).find((r) => r.student_id === studentId),
@@ -91,7 +82,7 @@ export const attendanceAPI = {
       // 2. Perform the record operation
       const result = yield* Effect.tryPromise({
         try: () =>
-          educationalServices.attendance.record(
+          educational.attendance.record(
             classroomId,
             studentId,
             status,
@@ -112,15 +103,15 @@ export const attendanceAPI = {
               ? 'attendance_overridden'
               : 'attendance_recorded',
           entityId: result.id,
-          executorId: audit?.actorId,
+          executorId: auditCtx?.actorId,
           metadata: {
             classroomId,
             studentId,
             date,
             previousStatus: existing?.status ?? null,
             nextStatus: status,
-            reason: audit?.reason ?? null,
-            accessKind: audit?.accessKind ?? 'teacher_marking',
+            reason: auditCtx?.reason ?? null,
+            accessKind: auditCtx?.accessKind ?? 'teacher_marking',
           },
         }),
       );
@@ -129,7 +120,7 @@ export const attendanceAPI = {
     }),
 
   /**
-   * Batch record attendance with idempotency support and academic cycle tagging
+   * Batch record attendance
    */
   batchRecord: (
     records: Array<{
@@ -140,13 +131,11 @@ export const attendanceAPI = {
       occurred_at?: string;
       academic_cycle_id?: string | null;
     }>,
-    audit?: AttendanceAuditContext,
+    auditCtx?: AttendanceAuditContext,
   ): Effect.Effect<AttendanceRecord[], AttendanceError | unknown, never> =>
     Effect.gen(function* () {
-      // 1. Perform batch operation
       const result = yield* Effect.tryPromise({
-        try: () =>
-          educationalServices.attendance.batchRecord(records) as Promise<AttendanceRecord[]>,
+        try: () => educational.attendance.batchRecord(records) as Promise<AttendanceRecord[]>,
         catch: (e) =>
           new AttendanceError({
             message: 'Failed batch attendance recording',
@@ -154,20 +143,19 @@ export const attendanceAPI = {
           }),
       });
 
-      // 2. Log Batch Audit
-      if (audit?.actorId) {
+      if (auditCtx?.actorId) {
         yield* Effect.forkDaemon(
           logAttendanceAudit({
             action: 'attendance_batch_recorded',
             entityId: records[0]?.classroom_id ?? 'attendance-batch',
-            executorId: audit.actorId,
+            executorId: auditCtx.actorId,
             metadata: {
               classroomIds: Array.from(new Set(records.map((r) => r.classroom_id))),
               dates: Array.from(new Set(records.map((r) => r.date))),
               count: records.length,
-              reason: audit.reason ?? null,
-              accessKind: audit.accessKind ?? 'teacher_marking',
-              idempotencyKey: audit.idempotencyKey,
+              reason: auditCtx.reason ?? null,
+              accessKind: auditCtx.accessKind ?? 'teacher_marking',
+              idempotencyKey: auditCtx.idempotencyKey,
             },
           }),
         );
@@ -177,15 +165,13 @@ export const attendanceAPI = {
     }),
 
   /**
-   * Get classroom snapshot for a view date
+   * Get classroom snapshot
    */
   getClassroomAttendanceSnapshot: (classroomId: string, viewDate: string) =>
     Effect.gen(function* () {
       const records = yield* Effect.tryPromise({
         try: () =>
-          educationalServices.attendance.getByDate(classroomId, viewDate) as Promise<
-            AttendanceRecord[]
-          >,
+          educational.attendance.getByDate(classroomId, viewDate) as Promise<AttendanceRecord[]>,
         catch: (e) =>
           new AttendanceError({
             message: 'Failed to fetch snapshot',
@@ -201,7 +187,7 @@ export const attendanceAPI = {
     }),
 
   /**
-   * Get student timeline with date filtering
+   * Get student timeline
    */
   getStudentAttendanceTimeline: (
     studentId: string,
@@ -210,7 +196,7 @@ export const attendanceAPI = {
     Effect.gen(function* () {
       const records = yield* Effect.tryPromise({
         try: () =>
-          educationalServices.attendance.getForStudent(studentId, options?.classroomId) as Promise<
+          educational.attendance.getForStudent(studentId, options?.classroomId) as Promise<
             AttendanceRecord[]
           >,
         catch: (e) =>
@@ -228,13 +214,13 @@ export const attendanceAPI = {
     }),
 
   /**
-   * Get institutional pulse with audit
+   * Get institutional pulse
    */
   getSchoolAttendancePulse: (
     schoolId: string,
     classroomId?: string,
     viewDate?: string,
-    audit?: AttendanceAuditContext,
+    auditCtx?: AttendanceAuditContext,
   ): Effect.Effect<SchoolAttendancePulse, AttendanceError | unknown, never> =>
     Effect.gen(function* () {
       const pulse = yield* Effect.tryPromise({
@@ -251,12 +237,12 @@ export const attendanceAPI = {
         logAttendanceAudit({
           action: 'attendance_institutional_read',
           entityId: classroomId ?? schoolId,
-          executorId: audit?.actorId,
+          executorId: auditCtx?.actorId,
           metadata: {
             schoolId,
             classroomId: classroomId ?? null,
             viewDate: viewDate ?? null,
-            accessKind: audit?.accessKind ?? 'institutional_read',
+            accessKind: auditCtx?.accessKind ?? 'institutional_read',
           },
         }),
       );
@@ -265,14 +251,14 @@ export const attendanceAPI = {
     }),
 
   /**
-   * Get attendance report with audit
+   * Get attendance report
    */
   getAttendanceReport: (
     schoolId: string,
     startDate: string,
     endDate: string,
     classroomId?: string,
-    audit?: AttendanceAuditContext,
+    auditCtx?: AttendanceAuditContext,
   ): Effect.Effect<AttendanceReport, AttendanceError | unknown, never> =>
     Effect.gen(function* () {
       const report = yield* Effect.tryPromise({
@@ -290,13 +276,13 @@ export const attendanceAPI = {
         logAttendanceAudit({
           action: 'attendance_report_read',
           entityId: classroomId ?? schoolId,
-          executorId: audit?.actorId,
+          executorId: auditCtx?.actorId,
           metadata: {
             schoolId,
             classroomId: classroomId ?? null,
             startDate,
             endDate,
-            accessKind: audit?.accessKind ?? 'institutional_export',
+            accessKind: auditCtx?.accessKind ?? 'institutional_export',
           },
         }),
       );

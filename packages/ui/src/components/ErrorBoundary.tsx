@@ -1,8 +1,8 @@
 import { AlertTriangle, RefreshCw } from 'lucide-react-native';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Platform, Text as RNText, StyleSheet, TouchableOpacity } from 'react-native';
-import { View } from '../primitives';
 import { Box, Button, ButtonIcon, ButtonText, Center, Heading, Text, VStack } from '../gluestack';
+import { View } from '../primitives';
 
 interface Props {
   children: ReactNode;

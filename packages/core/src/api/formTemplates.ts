@@ -5,7 +5,7 @@
  */
 
 import { APIError, type FormResponse, type FormTemplate, type PaginationParams } from '../types';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 export const formTemplatesAPI = {
   /**
@@ -14,7 +14,7 @@ export const formTemplatesAPI = {
   async create(
     template: Omit<FormTemplate, 'id' | 'created_at' | 'updated_at'>,
   ): Promise<FormTemplate> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('form_templates')
       .insert([template])
       .select()
@@ -31,7 +31,7 @@ export const formTemplatesAPI = {
    * Get a template by ID
    */
   async getById(id: string): Promise<FormTemplate> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('form_templates')
       .select('*')
       .eq('id', id)
@@ -52,7 +52,7 @@ export const formTemplatesAPI = {
    * Get a template by slug (Public)
    */
   async getBySlug(slug: string): Promise<FormTemplate> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('form_templates')
       .select('*')
       .eq('slug', slug)
@@ -74,7 +74,7 @@ export const formTemplatesAPI = {
    * Get all templates for an owner
    */
   async getByOwner(ownerId: string, params: PaginationParams = {}): Promise<FormTemplate[]> {
-    let query = supabase
+    let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('form_templates')
       .select('*')
       .eq('owner_id', ownerId)
@@ -96,7 +96,7 @@ export const formTemplatesAPI = {
    * Update a template
    */
   async update(id: string, updates: Partial<FormTemplate>): Promise<FormTemplate> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('form_templates')
       .update(updates)
       .eq('id', id)
@@ -114,7 +114,10 @@ export const formTemplatesAPI = {
    * Delete a template
    */
   async delete(id: string): Promise<void> {
-    const { error } = await supabase.from('form_templates').delete().eq('id', id);
+    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      .from('form_templates')
+      .delete()
+      .eq('id', id);
 
     if (error) {
       throw new APIError('Failed to delete form template', error.code, error);
@@ -125,7 +128,7 @@ export const formTemplatesAPI = {
    * Submit a response to a form
    */
   async submitResponse(response: Omit<FormResponse, 'id' | 'submitted_at'>): Promise<FormResponse> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('form_responses')
       .insert([response])
       .select()
@@ -142,7 +145,7 @@ export const formTemplatesAPI = {
    * Get responses for a template (Owner only)
    */
   async getResponses(templateId: string, params: PaginationParams = {}): Promise<FormResponse[]> {
-    let query = supabase
+    let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('form_responses')
       .select('*')
       .eq('template_id', templateId)

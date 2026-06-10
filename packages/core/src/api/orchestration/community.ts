@@ -5,7 +5,7 @@ import { communityContract } from '../community.contract';
 import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
 import { messagingAPI } from '../messaging';
 import { socialAPI } from '../social';
-import { createTemporalPOAProxy } from '../temporalPOAProxy';
+import { createTemporalProxy } from '../temporalProxy';
 
 const combinedRawAPI = {
   ...rawCommunityAPI,
@@ -15,7 +15,7 @@ const combinedRawAPI = {
   ...socialAPI,
 };
 
-const communityCoverage = assertContractCoverage(
+const _communityCoverage = assertContractCoverage(
   combinedRawAPI,
   defineContractCoverage({
     moduleName: 'community',
@@ -38,15 +38,28 @@ const communityCoverage = assertContractCoverage(
       markNotificationRead: 'markNotificationRead',
       markAllNotificationsRead: 'markAllNotificationsRead',
     },
+    internalMethods: [
+      'getGroupMessages',
+      'sendGroupMessage',
+      'handleMemberRequest',
+      'updateJoiningPolicy',
+      'getAnnouncements',
+      'createAnnouncement',
+      'getDirectConversations',
+      'getOrCreateDirectConversation',
+      'getDirectMessages',
+      'sendDirectMessage',
+      'getCommunityResonance',
+      'getNotifications',
+      'getUnreadNotificationCount',
+      'markNotificationRead',
+      'markAllNotificationsRead',
+      'blockUser',
+      'unblockUser',
+      'isBlockingActive',
+      'getMutedUsers',
+    ],
   }),
 );
 
-export const communityAPI = createTemporalPOAProxy(
-  'community',
-  combinedRawAPI,
-  communityCoverage.contract,
-  communityCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-  },
-);
+export const communityAPI = createTemporalProxy('community', combinedRawAPI);

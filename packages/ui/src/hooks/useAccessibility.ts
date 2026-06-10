@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AccessibilityInfo } from 'react-native';
 
 /**
@@ -50,9 +50,12 @@ export const useAccessibility = () => {
     AccessibilityInfo.announceForAccessibility(message);
   }, []);
 
-  return useMemo(() => ({
-    isScreenReaderEnabled,
-    isReduceMotionEnabled,
-    announce,
-  }), [isScreenReaderEnabled, isReduceMotionEnabled, announce]);
+  return useMemo(
+    () => ({
+      isScreenReaderEnabled,
+      isReduceMotionEnabled,
+      announce,
+    }),
+    [isScreenReaderEnabled, isReduceMotionEnabled, announce],
+  );
 };

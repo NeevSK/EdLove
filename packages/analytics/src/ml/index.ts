@@ -1,2 +1,2 @@
-export * from "./InsightGenerator";
-export * from "./Predictor";
+export * from './InsightGenerator';
+export * from './Predictor';

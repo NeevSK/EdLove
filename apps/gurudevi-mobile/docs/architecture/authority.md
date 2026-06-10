@@ -28,7 +28,7 @@ Abilities are composed hierarchically in `composer.ts`:
 The primary hook for checking permissions in React components:
 
 ```tsx
-import { usePermissions } from '@repo/core';
+import { usePermissions } from '@repo/core/logic';
 
 function ClassroomAction() {
   const { can } = usePermissions();
@@ -54,7 +54,7 @@ For complex blocks of UI, use the `FeatureGuard` component:
 For backend/API logic, use `requireCapability` from `@repo/core/lib/capabilities.ts`:
 
 ```ts
-import { requireCapability } from '@repo/core';
+import { requireCapability } from '@repo/core/logic';
 
 export async function deleteResource(id: string) {
   // This will throw an APIError if the user lacks the capability

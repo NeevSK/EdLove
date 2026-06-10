@@ -1,5 +1,5 @@
+import type { FormManager, FormState } from '@intuitui-labs/form-builder-engine/core';
 import { useEffect, useState } from 'react';
-import type { FormManager, FormState } from '../logic/forms/form-manager';
 
 /**
  * A React hook to bridge the framework-agnostic FormManager to React/React Native.

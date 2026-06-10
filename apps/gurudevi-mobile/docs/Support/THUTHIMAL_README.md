@@ -2,21 +2,25 @@
 
 ## Concept
 
-**Thuthimal** (තුතිමල්) means "Flower of Gratitude" in Sinhala. It's Gurudevi's unique feature that transforms subscription economics into a gratitude economy.
+**Thuthimal** (තුතිමල්) means "Flower of Gratitude" in Sinhala. It is Gurudevi's unique mechanism that transforms subscription economics into a gratitude economy. 
+
+At its core, Thuthimal is rooted in a deeply human reality: in every culture, we celebrate and gift our teachers. Each of us has a small handful of teachers who touched our hearts and souls—those rare, life-shaping relationships that Buber would call "divine encounters." Even if recognized retrospectively, these encounters leave a permanent mark on both teacher and student.
+
+As past students who want to offer gratitude to the educators who shaped our lives, Thuthimal provides a direct way to honor them. By purchasing a Pro subscription for a teacher, users support the actual infrastructure and monetary costs of the app, transforming a traditional software utility fee into a meaningful, cross-generational gift of care.
 
 ## How It Works
 
 ### For Gifters
-- Anyone can gift a Pro subscription to a teacher
-- Past students, alumni associations, or grateful communities
-- Gifter's name is displayed (or can be "Anonymous")
-- Recognizes teaching as sacred work deserving reciprocal care across time
+- Anyone can gift a Pro subscription to a teacher (past students, alumni, or school communities).
+- It is born out of a desire to say: *"You touched my life, and I remember."*
+- The gifter's name and a personal message are shared with the teacher (or can be kept Anonymous).
+- Recognizes teaching as sacred, life-shaping work deserving reciprocal care across time.
 
 ### For Recipients
-- Teacher receives Pro subscription as a gift
-- Beautiful badge displayed in Profile and Self screens
-- Message: "Your Pro subscription is a gift of gratitude (තුතිමල්) from [name]"
-- Honors the long-term impact teachers have
+- The teacher receives the Pro subscription as a gift, ensuring they have full access without financial burden.
+- A beautiful, non-intrusive Thuthimal badge is displayed on their Profile and Self screens.
+- They see a message: *"Your Pro subscription is a gift of gratitude (තුතිමල්) from [name]"* alongside any personal note of thanks.
+- Honors the long-term, lasting impact they have made on their students' lives.
 
 ## Implementation (Alpha)
 
@@ -64,12 +68,11 @@ Simple webpage: "Gift Gurudevi Pro to a Teacher"
 
 ## Philosophy
 
-This is not just a payment model. It's a gratitude economy that:
-- Honors the long-term impact teachers have
-- Allows past students to give back
-- Makes visible the debt of care we owe educators
-- Transforms subscription economics into gift economics
-- Creates a culture of honoring educators beyond transactional payments
+This is not just a payment model. It is a structured gratitude economy that:
+- **Honors Life-Shaping Encounters**: Formally celebrates the small group of teachers who leave an indelible mark on their students' hearts and souls.
+- **Enables Retrospective Gratitude**: Allows past students to express gratitude and pay it forward long after they have left the classroom.
+- **Funds the Ecology Sustainably**: Connects the real monetary costs of running the platform (servers, development) directly to the gratefulness of the community, shielding teachers from the cost.
+- **Transforms Transactional Economics**: Replaces standard SaaS billing with a culture of mutual care and gifting.
 
 ## Design Principles
 

@@ -1,4 +1,3 @@
-import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
 import {
   TeacherInsightAuditEventSchema,
@@ -12,160 +11,258 @@ import {
   TeacherStudentPotentialSchema,
   TeacherStudentPotentialUpsertSchema,
 } from '../logic/schemas/teacher-insights.schema';
-import { POAMetadataSchema } from './contract';
-
-const c = initContract();
+import type { SovereignContract } from './contract';
 
 const teacherInsightAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',
   subject: string,
-) => POAMetadataSchema.parse({ authority: { action, subject } });
+) => ({ policy: { action, subject } }) as const;
 
-export const teacherInsightsContract = c.router({
+export const teacherInsightsContract = {
   listPrivateNotes: {
-    method: 'GET',
+    method: 'get',
     path: '/teacher-insights/:teacherId/notes',
-    query: z.object({
-      type: z.enum(['venting', 'reflection', 'note']).optional(),
-    }),
+    request: {
+      params: z.object({ teacherId: z.string() }),
+      query: z.object({
+        type: z.enum(['venting', 'reflection', 'note']).optional(),
+      }),
+    },
     responses: {
-      200: z.array(TeacherPrivateNoteSchema),
+      200: {
+        schema: z.array(TeacherPrivateNoteSchema),
+        description: 'List private notes',
+      },
     },
     metadata: teacherInsightAuthority('read', 'TeacherInsight'),
   },
   createPrivateNote: {
-    method: 'POST',
+    method: 'post',
     path: '/teacher-insights/notes',
-    body: TeacherPrivateNoteCreateSchema,
+    request: {
+      body: TeacherPrivateNoteCreateSchema,
+    },
     responses: {
-      201: TeacherPrivateNoteSchema,
+      201: {
+        schema: TeacherPrivateNoteSchema,
+        description: 'Private note created successfully',
+      },
     },
     metadata: teacherInsightAuthority('create', 'TeacherInsight'),
   },
   deletePrivateNote: {
-    method: 'DELETE',
+    method: 'delete',
     path: '/teacher-insights/notes/:id',
+    request: {
+      params: z.object({ id: z.string() }),
+    },
     responses: {
-      200: z.object({ success: z.literal(true) }),
+      200: {
+        schema: z.object({ success: z.literal(true) }),
+        description: 'Private note deleted successfully',
+      },
     },
     metadata: teacherInsightAuthority('delete', 'TeacherInsight'),
   },
   listStudentObservations: {
-    method: 'GET',
+    method: 'get',
     path: '/teacher-insights/classrooms/:classroomId/observations',
+    request: {
+      params: z.object({ classroomId: z.string() }),
+    },
     responses: {
-      200: z.array(TeacherStudentObservationSchema),
+      200: {
+        schema: z.array(TeacherStudentObservationSchema),
+        description: 'List student observations for classroom',
+      },
     },
     metadata: teacherInsightAuthority('read', 'TeacherInsight'),
   },
   listStudentObservationsForEnrollment: {
-    method: 'GET',
+    method: 'get',
     path: '/teacher-insights/enrollments/:classroomStudentId/observations',
+    request: {
+      params: z.object({ classroomStudentId: z.string() }),
+    },
     responses: {
-      200: z.array(TeacherStudentObservationSchema),
+      200: {
+        schema: z.array(TeacherStudentObservationSchema),
+        description: 'List student observations for enrollment',
+      },
     },
     metadata: teacherInsightAuthority('read', 'TeacherInsight'),
   },
   listStudentObservationsForStudent: {
-    method: 'GET',
+    method: 'get',
     path: '/teacher-insights/students/:studentId/observations',
+    request: {
+      params: z.object({ studentId: z.string() }),
+    },
     responses: {
-      200: z.array(TeacherStudentObservationSchema),
+      200: {
+        schema: z.array(TeacherStudentObservationSchema),
+        description: 'List student observations for student',
+      },
     },
     metadata: teacherInsightAuthority('read', 'TeacherInsight'),
   },
   createStudentObservation: {
-    method: 'POST',
+    method: 'post',
     path: '/teacher-insights/observations',
-    body: TeacherStudentObservationCreateSchema,
+    request: {
+      body: TeacherStudentObservationCreateSchema,
+    },
     responses: {
-      201: TeacherStudentObservationSchema,
+      201: {
+        schema: TeacherStudentObservationSchema,
+        description: 'Student observation created successfully',
+      },
     },
     metadata: teacherInsightAuthority('create', 'TeacherInsight'),
   },
   finalizeStudentObservation: {
-    method: 'PATCH',
+    method: 'patch',
     path: '/teacher-insights/observations/:id/finalize',
-    body: z.object({
-      acceptDeclaration: z.literal(true),
-    }),
+    request: {
+      params: z.object({ id: z.string() }),
+      body: z.object({
+        acceptDeclaration: z.literal(true),
+      }),
+    },
     responses: {
-      200: TeacherStudentObservationSchema,
+      200: {
+        schema: TeacherStudentObservationSchema,
+        description: 'Student observation finalized successfully',
+      },
     },
     metadata: teacherInsightAuthority('update', 'TeacherInsight'),
   },
   deleteStudentObservation: {
-    method: 'DELETE',
+    method: 'delete',
     path: '/teacher-insights/observations/:id',
+    request: {
+      params: z.object({ id: z.string() }),
+    },
     responses: {
-      200: z.object({ success: z.literal(true) }),
+      200: {
+        schema: z.object({ success: z.literal(true) }),
+        description: 'Student observation deleted successfully',
+      },
     },
     metadata: teacherInsightAuthority('delete', 'TeacherInsight'),
   },
   getStudentPotential: {
-    method: 'GET',
+    method: 'get',
     path: '/teacher-insights/students/:studentId/potential',
-    query: z.object({
-      classroomId: z.string().min(1),
-    }),
+    request: {
+      params: z.object({ studentId: z.string() }),
+      query: z.object({
+        classroomId: z.string().min(1),
+      }),
+    },
     responses: {
-      200: TeacherStudentPotentialSchema.nullable(),
+      200: {
+        schema: TeacherStudentPotentialSchema.nullable(),
+        description: 'Get student potential',
+      },
     },
     metadata: teacherInsightAuthority('read', 'TeacherInsight'),
   },
   upsertStudentPotential: {
-    method: 'PUT',
+    method: 'put',
     path: '/teacher-insights/students/:studentId/potential',
-    body: TeacherStudentPotentialUpsertSchema,
+    request: {
+      params: z.object({ studentId: z.string() }),
+      body: TeacherStudentPotentialUpsertSchema,
+    },
     responses: {
-      200: TeacherStudentPotentialSchema,
+      200: {
+        schema: TeacherStudentPotentialSchema,
+        description: 'Student potential upserted successfully',
+      },
     },
     metadata: teacherInsightAuthority('update', 'TeacherInsight'),
   },
   shareStudentObservation: {
-    method: 'PATCH',
+    method: 'patch',
     path: '/teacher-insights/observations/:id/share',
-    body: TeacherInsightShareUpdateSchema,
+    request: {
+      params: z.object({ id: z.string() }),
+      body: TeacherInsightShareUpdateSchema,
+    },
     responses: {
-      200: TeacherStudentObservationSchema,
+      200: {
+        schema: TeacherStudentObservationSchema,
+        description: 'Student observation shared successfully',
+      },
     },
     metadata: teacherInsightAuthority('update', 'TeacherInsight'),
   },
   revokeStudentObservationShare: {
-    method: 'PATCH',
+    method: 'patch',
     path: '/teacher-insights/observations/:id/revoke-share',
-    body: z.object({}),
+    request: {
+      params: z.object({ id: z.string() }),
+      body: z.object({}),
+    },
     responses: {
-      200: TeacherStudentObservationSchema,
+      200: {
+        schema: TeacherStudentObservationSchema,
+        description: 'Student observation share revoked successfully',
+      },
     },
     metadata: teacherInsightAuthority('update', 'TeacherInsight'),
   },
   promoteStudentObservation: {
-    method: 'POST',
+    method: 'post',
     path: '/teacher-insights/observations/:id/promote',
-    body: TeacherInsightPromotionSchema,
+    request: {
+      params: z.object({ id: z.string() }),
+      body: TeacherInsightPromotionSchema,
+    },
     responses: {
-      200: z.object({
-        success: z.literal(true),
-        recordedAt: z.string(),
-      }),
+      200: {
+        schema: z.object({
+          success: z.literal(true),
+          recordedAt: z.string(),
+        }),
+        description: 'Student observation promoted successfully',
+      },
     },
     metadata: teacherInsightAuthority('create', 'TeacherInsightPromotion'),
   },
   getInsightAuditTrail: {
-    method: 'GET',
+    method: 'get',
     path: '/teacher-insights/:insightType/:insightId/audit',
+    request: {
+      params: z.object({
+        insightType: z.string(),
+        insightId: z.string(),
+      }),
+    },
     responses: {
-      200: z.array(TeacherInsightAuditEventSchema),
+      200: {
+        schema: z.array(TeacherInsightAuditEventSchema),
+        description: 'Get insight audit trail',
+      },
     },
     metadata: teacherInsightAuthority('read', 'TeacherInsightAudit'),
   },
   getInsightTimeline: {
-    method: 'GET',
+    method: 'get',
     path: '/teacher-insights/:insightType/:insightId/timeline',
+    request: {
+      params: z.object({
+        insightType: z.string(),
+        insightId: z.string(),
+      }),
+    },
     responses: {
-      200: z.array(TeacherInsightLifecycleEventSchema),
+      200: {
+        schema: z.array(TeacherInsightLifecycleEventSchema),
+        description: 'Get insight timeline',
+      },
     },
     metadata: teacherInsightAuthority('read', 'TeacherInsight'),
   },
-});
+} as const satisfies SovereignContract;

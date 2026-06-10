@@ -1,118 +1,145 @@
+import { profile } from '../logic/managers/factory';
+import { useStore } from '../store/useStore';
+import type { SocialLink } from '../types';
+import { APIError } from '../types';
+import { SovereignError } from '../types/Errors';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
+
 /**
- * PROFILE API (Protocol-Oriented Authority)
+ * PROFILE API (Sovereign RPC Proxy)
+ *
+ * This module siphons Profile requests to the Sanctuary API.
+ * It maintains the legacy signature but shifts the transport to RPC,
+ * delegating domain actions directly to the sovereign ProfileManager when appropriate.
  */
 
-import { profileServices } from './runtimes/profile.runtime';
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
-/**
- * API methods for User and Institutional Profiles.
- * Following Protocol-Oriented Authority.
- */
 export const profileAPI = {
-  async getUserProfile(userId: string) {
-    return profileServices.getUserProfile(userId);
+  async getUserProfile(id: string) {
+    const res = await (client.api as any).profile.users[':id'].$get({
+      param: { id },
+    });
+
+    if (!res.ok) {
+      if (res.status === 404) return null;
+      throw new APIError('Failed to fetch user profile', res.status.toString());
+    }
+
+    return await res.json();
   },
 
-  async getUserProfileAsOf(userId: string, at: string) {
-    return profileServices.getUserProfileAsOf(userId, at);
-  },
+  async updateProfile(id: string, updates: Record<string, any>) {
+    const state = useStore.getState();
+    if (!state.user || state.user.is_anonymous) {
+      throw SovereignError.unauthorized('update', 'User');
+    }
 
-  async getUserProfileHistory(userId: string, limit?: number) {
-    return profileServices.getUserProfileHistory(userId, limit);
+    const res = await (client.api as any).profile.users[':id'].$patch({
+      param: { id },
+      json: updates,
+    });
+
+    if (!res.ok) {
+      throw new APIError('Failed to update profile', res.status.toString());
+    }
+
+    return await res.json();
   },
 
   async getJourneySnapshot(
-    userId: string,
+    id: string,
     params?: {
       at?: string;
       view_date?: string;
-      view_scale?: 'day' | 'week' | 'month' | 'year' | 'custom';
+      view_scale?: any;
     },
   ) {
-    return profileServices.getJourneySnapshot(userId, {
-      asOf: params?.at,
-      viewDate: params?.view_date,
-      viewScale: params?.view_scale,
+    const res = await (client.api as any).profile.users[':id'].journey.$get({
+      param: { id },
+      query: {
+        at: params?.at,
+        view_date: params?.view_date,
+        view_scale: params?.view_scale,
+      },
     });
-  },
 
-  async getJourneyHistory(
-    userId: string,
-    params: {
-      view_date: string;
-      view_scale?: 'day' | 'week' | 'month' | 'year' | 'custom';
-      limit?: number;
-    },
-  ) {
-    return profileServices.getJourneyHistory(userId, {
-      viewDate: params.view_date,
-      viewScale: params.view_scale,
-      limit: params.limit,
-    });
-  },
+    if (!res.ok) {
+      throw new APIError('Failed to fetch journey snapshot', res.status.toString());
+    }
 
-  async updateProfile(userId: string, updates: Record<string, any>) {
-    return profileServices.updateProfile(userId, updates);
-  },
-
-  async isAnonymous(userId: string) {
-    const isAnonymous = await profileServices.isAnonymous(userId);
-    return { is_anonymous: isAnonymous };
-  },
-
-  async uploadAvatar(userId: string, params: { local_uri: string }) {
-    return profileServices.uploadAvatar(userId, params.local_uri);
-  },
-
-  async getSocialLinks(userId: string) {
-    return profileServices.getSocialLinks(userId);
-  },
-
-  async upsertSocialLink(userId: string, link: Record<string, any>) {
-    return profileServices.upsertSocialLink(userId, link as any);
-  },
-
-  async deleteSocialLink(linkId: string) {
-    return profileServices.deleteSocialLink(linkId);
-  },
-
-  async updateSocialLinksOrder(
-    _userId: string,
-    params: { links: { id: string; order_index: number }[] },
-  ) {
-    await profileServices.updateSocialLinksOrder(_userId, params.links);
-    return { ok: true };
-  },
-
-  async getCommunityProfile(communityId: string) {
-    return profileServices.getCommunityProfile(communityId);
-  },
-
-  async getCommunityProfileAsOf(communityId: string, at: string) {
-    return profileServices.getCommunityProfileAsOf(communityId, at);
-  },
-
-  async getCommunityProfileHistory(communityId: string, limit?: number) {
-    return profileServices.getCommunityProfileHistory(communityId, limit);
-  },
-
-  async updateCommunityProfile(
-    communityId: string,
-    params: { field: 'name' | 'description'; value: string },
-  ) {
-    return profileServices.updateCommunityProfile(communityId, params.field, params.value);
+    return await res.json();
   },
 
   async getSchoolPulse(
-    schoolId: string,
+    id: string,
     params: {
       view_date: string;
-      view_scale?: 'day' | 'week' | 'month' | 'year' | 'custom';
+      view_scale?: any;
     },
   ) {
-    return profileServices.getSchoolPulse(schoolId, {
-      viewDate: params.view_date,
-      viewScale: params.view_scale,
+    const res = await (client.api as any).profile.schools[':id'].pulse.$get({
+      param: { id },
+      query: {
+        view_date: params.view_date,
+        view_scale: params.view_scale,
+      },
     });
+
+    if (!res.ok) {
+      throw new APIError('Failed to fetch school pulse', res.status.toString());
+    }
+
+    return await res.json();
+  },
+
+  // --- Sovereign Domain Manager Delegation ---
+
+  async getCommunityProfileAsOf(communityId: string, asOf: string) {
+    return profile.getCommunityProfileAsOf(communityId, asOf);
+  },
+
+  async getCommunityProfile(communityId: string) {
+    return profile.getCommunityProfile(communityId);
+  },
+
+  async updateCommunityProfile(communityId: string, field: 'name' | 'description', value: string) {
+    return profile.updateCommunityProfile(communityId, field, value);
+  },
+
+  async getCommunityProfileHistory(communityId: string, limit?: number) {
+    return profile.getCommunityProfileHistory(communityId, limit);
+  },
+
+  async getUserProfileAsOf(userId: string, asOf: string) {
+    return profile.getUserProfileAsOf(userId, asOf);
+  },
+
+  async uploadAvatar(userId: string, localUri: string) {
+    return profile.uploadAvatar(userId, localUri);
+  },
+
+  async getUserProfileHistory(userId: string, limit?: number) {
+    return profile.getUserProfileHistory(userId, limit);
+  },
+
+  async getSocialLinks(userId: string) {
+    return profile.getSocialLinks(userId);
+  },
+
+  async upsertSocialLink(userId: string, link: Partial<SocialLink>) {
+    const state = useStore.getState();
+    if (!state.user || state.user.is_anonymous) {
+      throw new APIError('Forbidden', '403');
+    }
+    return profile.upsertSocialLink(userId, link);
+  },
+
+  async deleteSocialLink(linkId: string) {
+    const state = useStore.getState();
+    if (!state.user || state.user.is_anonymous) {
+      throw new APIError('Forbidden', '403');
+    }
+    return profile.deleteSocialLink(linkId);
   },
 };

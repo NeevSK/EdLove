@@ -12,7 +12,7 @@ export interface PrincipalWorkspaceRepository {
   listInviteCodes(schoolId: string): Promise<InviteCodeZod[]>;
   generateInviteCode(
     schoolId: string,
-    role: PrincipalInviteRole,
+    capacity: PrincipalInviteRole,
     createdBy: string,
   ): Promise<InviteCodeZod>;
   listObservationsByDate(

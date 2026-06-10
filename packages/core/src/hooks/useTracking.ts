@@ -13,7 +13,8 @@ export function useTracking() {
 
   useEffect(() => {
     const getUserId = async () => {
-      const myId = await identityAPI.getMyInternalId();
+      const identity = await identityAPI.identifyActiveCitizen();
+      const myId = identity?.id;
       if (myId) setUserId(myId);
     };
     getUserId().catch((e) => {
@@ -82,6 +83,6 @@ export function useTracking() {
       isDiscovered,
       trackSnapshot,
     }),
-    [exploredFeatures, isLoading, discoverFeature, trackSnapshot],
+    [exploredFeatures, isLoading, discoverFeature, trackSnapshot, isDiscovered],
   );
 }

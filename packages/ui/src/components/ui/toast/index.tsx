@@ -52,9 +52,7 @@ export const Toast = ({
   };
 
   const variantStyles =
-    variant === 'outline'
-      ? 'bg-phase-elevated/80 border-2'
-      : 'border shadow-2xl backdrop-blur-xl';
+    variant === 'outline' ? 'bg-phase-elevated/80 border-2' : 'border shadow-2xl backdrop-blur-xl';
 
   return (
     <ToastContext.Provider value={contextValue}>

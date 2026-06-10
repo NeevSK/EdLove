@@ -1,21 +1,45 @@
-﻿import type {
-	DashboardContent as AdminDashboardContent,
-	DashboardContentProps,
-} from "@repo/admin";
-import type { TemporalNavigator } from "@repo/ui/components";
+import type { DashboardContentProps } from '@repo/admin';
+import {
+  DashboardContent as AdminDashboardContent,
+  DashboardEcho,
+  InstitutionalCalendarSection,
+  LeaveApprovalSection,
+  ManagementStation,
+  MorningSituationalBrief,
+  PrincipalObservationsSection,
+  ResourceNeedsDashboard,
+  TeacherCarousel,
+} from '@repo/admin';
+import { TemporalNavigator } from '@repo/ui/components';
+import type React from 'react';
+import { StudentPulse } from './StudentPulse';
 
-import type React from "react";
-
-export const DashboardContent: React.FC<DashboardContentProps> = (_props) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '64px' }}    <div      <TemporalNavigator >/    ></div    <AdminDashboardContent>
-{
-	...props
-}
-renderTodayZone={({ schoolId, principalId, studentPulse, atRiskCount, onShowAtRisk }) => (
-        <          <_MorningSituationalBrief _schoolId={schoolId} _principalId={principalId} _viewDate={props.viewDate} /          ><_TeacherCarousel _schoolId={schoolId} /          ><_StudentPulse _pulse={studentPulse} _atRiskCount={atRiskCount} _onShowAtRisk={onShowAtRisk} /          ><_LeaveApprovalSection _schoolId={schoolId} _principalId={principalId} /          ><_InstitutionalCalendarSection _schoolId={schoolId} _principalId={principalId} /        ></      )}
-      _renderInstitutionZone={({ schoolId, principalId }) => (
-        <          <_ManagementStation _onAction={props.onNavigate as any} /          ><_PrincipalObservationsSection _schoolId={schoolId} _principalId={principalId} /        ></      )}
-      _renderOutlookZone={({ schoolId }) => (
-        <          <_ResourceNeedsDashboard _schoolId={schoolId} /          ><_DashboardEcho _schoolId={schoolId} /        ></      )}
-    /  >
-</div)
+export const DashboardContent: React.FC<DashboardContentProps> = (props) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '64px' }}>
+    <TemporalNavigator />
+    <AdminDashboardContent
+      {...props}
+      renderTodayZone={({ schoolId, principalId, studentPulse, atRiskCount, onShowAtRisk }) => (
+        <>
+          <MorningSituationalBrief schoolId={schoolId} principalId={principalId} viewDate={props.viewDate} />
+          <TeacherCarousel schoolId={schoolId} />
+          <StudentPulse pulse={studentPulse} atRiskCount={atRiskCount} onShowAtRisk={onShowAtRisk} />
+          <LeaveApprovalSection schoolId={schoolId} principalId={principalId} />
+          <InstitutionalCalendarSection schoolId={schoolId} principalId={principalId} />
+        </>
+      )}
+      renderInstitutionZone={({ schoolId, principalId }) => (
+        <>
+          <ManagementStation onAction={props.onNavigate as any} />
+          <PrincipalObservationsSection schoolId={schoolId} principalId={principalId} />
+        </>
+      )}
+      renderOutlookZone={({ schoolId }) => (
+        <>
+          <ResourceNeedsDashboard schoolId={schoolId} />
+          <DashboardEcho schoolId={schoolId} />
+        </>
+      )}
+    />
+  </div>
+);

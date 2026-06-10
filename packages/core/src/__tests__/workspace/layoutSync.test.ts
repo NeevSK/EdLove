@@ -46,7 +46,7 @@ describe('workspace layout sync helpers', () => {
 
     expect(record.workspaceId).toBe('classroom');
     expect(upsert.layoutTarget).toBe('web');
-    expect(upsert.zoneBySurface['principal']).toBe('institution');
+    expect(upsert.zoneBySurface.principal).toBe('institution');
   });
 
   test('prefers the newer layout snapshot', () => {

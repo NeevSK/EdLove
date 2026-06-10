@@ -6,29 +6,29 @@ import type { Bond, Perspective } from '../../types/Identity';
 export interface AuthSlice {
   // Sovereign Identity (ReBAC)
   activePerspective: Perspective | null;
-  active_bond: Bond | null;
-  available_bonds: Bond[];
+  activeBond: Bond | null;
+  availableBonds: Bond[];
   setPerspective: (perspective: Perspective | null) => void;
   setAvailableBonds: (bonds: Bond[]) => void;
-  
+
   // Profile & User
   userName: string;
   setUserName: (name: string) => void;
   user: User | null;
   setUser: (user: User | null) => void;
-  
+
   // Auth Session
   authSession: Session | null;
   authSessionResolved: boolean;
   setAuthSession: (session: Session | null) => void;
   setAuthSessionResolved: (resolved: boolean) => void;
-  
+
   // Onboarding
   onboardingCompleted: boolean;
   setOnboardingCompleted: (completed: boolean) => void;
   justFinishedOnboarding: boolean;
   setJustFinishedOnboarding: (justFinished: boolean) => void;
-  
+
   // Modes & Misc
   isDemoMode: boolean;
   setDemoMode: (isDemo: boolean) => void;
@@ -55,7 +55,7 @@ export interface AuthSlice {
   } | null;
   showToast: (message: string, type: 'success' | 'error' | 'info', duration?: number) => void;
   hideToast: () => void;
-  
+
   // DEPRECATED fields removed
 
   // ── Hydration Gate (Fix 6: Race Condition) ───────────────────────────────
@@ -75,11 +75,15 @@ export interface AuthSlice {
 
 export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set) => ({
   activePerspective: null,
-  active_bond: null,
-  available_bonds: [],
-  setPerspective: (perspective) => set({ activePerspective: perspective, active_bond: perspective?.active_bond || null }),
-  setAvailableBonds: (bonds) => set({ available_bonds: bonds }),
-  
+  activeBond: null,
+  availableBonds: [],
+  setPerspective: (perspective) =>
+    set({
+      activePerspective: perspective,
+      activeBond: perspective?.activeBond || null,
+    }),
+  setAvailableBonds: (bonds) => set({ availableBonds: bonds }),
+
   userName: 'Gurudevi',
   setUserName: (name) => set({ userName: name }),
   user: null,

@@ -1,32 +1,26 @@
-import { classroomsAPI as rawClassroomsAPI } from '../classrooms';
-import { lessonsAPI as rawLessonsAPI, studentsAPI as rawStudentsAPI } from '../classroom';
 import { assignmentsAPI as rawAssignmentsAPI } from '../assignments';
+import { lessonsAPI as rawLessonsAPI, studentsAPI as rawStudentsAPI } from '../classroom';
 import { classroomGroupsAPI as rawClassroomGroupsAPI } from '../classroomGroups';
+import { classroomNotesAPI as rawClassroomNotesAPI } from '../classroomNotes';
 import { classroomStudentsAPI as rawClassroomStudentsAPI } from '../classroomStudents';
-import { lessonMaterialsAPI as rawLessonMaterialsAPI } from '../lessonMaterials';
-import { educationalContract } from '../educational.contract';
+import { classroomsAPI as rawClassroomsAPI } from '../classrooms';
 import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
-import { createTemporalPOAProxy } from '../temporalPOAProxy';
+import { educationalContract } from '../educational.contract';
+import { lessonMaterialsAPI as rawLessonMaterialsAPI } from '../lessonMaterials';
+import { createTemporalProxy } from '../temporalProxy';
 
-const classroomsCoverage = assertContractCoverage(
+const _classroomsCoverage = assertContractCoverage(
   rawClassroomsAPI,
   defineContractCoverage({
     moduleName: 'classrooms',
     contract: educationalContract,
+    internalMethods: ['update', 'create', 'delete', 'getTeacherClassrooms'],
   }),
 );
 
-export const classroomsAPI = createTemporalPOAProxy(
-  'classrooms',
-  rawClassroomsAPI,
-  classroomsCoverage.contract,
-  classroomsCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-  },
-);
+export const classroomsAPI = createTemporalProxy('classrooms', rawClassroomsAPI);
 
-const lessonsCoverage = assertContractCoverage(
+const _lessonsCoverage = assertContractCoverage(
   rawLessonsAPI,
   defineContractCoverage({
     moduleName: 'lessons',
@@ -39,17 +33,9 @@ const lessonsCoverage = assertContractCoverage(
   }),
 );
 
-export const lessonsAPI = createTemporalPOAProxy(
-  'lessons',
-  rawLessonsAPI,
-  lessonsCoverage.contract,
-  lessonsCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-  },
-);
+export const lessonsAPI = createTemporalProxy('lessons', rawLessonsAPI);
 
-const studentsCoverage = assertContractCoverage(
+const _studentsCoverage = assertContractCoverage(
   rawStudentsAPI,
   defineContractCoverage({
     moduleName: 'students',
@@ -66,20 +52,24 @@ const studentsCoverage = assertContractCoverage(
       getSchoolLegacyHistory: 'getSchoolLegacyHistory',
       getClassroomLegacyHistory: 'getClassroomLegacyHistory',
     },
+    internalMethods: [
+      'getAll',
+      'enroll',
+      'remove',
+      'create',
+      'update',
+      'getHistoricalAcademicRecords',
+      'getHistoricalProfessionalRecords',
+      'getHistoricalGovernanceRecords',
+      'getSchoolLegacyHistory',
+      'getClassroomLegacyHistory',
+    ],
   }),
 );
 
-export const studentsAPI = createTemporalPOAProxy(
-  'students',
-  rawStudentsAPI,
-  studentsCoverage.contract,
-  studentsCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-  },
-);
+export const studentsAPI = createTemporalProxy('students', rawStudentsAPI);
 
-const assignmentsCoverage = assertContractCoverage(
+const _assignmentsCoverage = assertContractCoverage(
   rawAssignmentsAPI,
   defineContractCoverage({
     moduleName: 'assignments',
@@ -93,21 +83,23 @@ const assignmentsCoverage = assertContractCoverage(
       update: 'updateAssignment',
       delete: 'deleteAssignment',
     },
-    internalMethods: ['getRecentGradesOverviewForStudent'],
+    internalMethods: [
+      'getAll',
+      'getByLesson',
+      'getUpcomingForStudent',
+      'getSubmissionHistoryForStudent',
+      'getRecentGradesOverviewForStudent',
+      'submitSubmission',
+      'create',
+      'update',
+      'delete',
+    ],
   }),
 );
 
-export const assignmentsAPI = createTemporalPOAProxy(
-  'assignments',
-  rawAssignmentsAPI,
-  assignmentsCoverage.contract,
-  assignmentsCoverage.methodMapping,
-  {
-    strictUnmappedMethods: true,
-  },
-);
+export const assignmentsAPI = createTemporalProxy('assignments', rawAssignmentsAPI);
 
-const classroomGroupsCoverage = assertContractCoverage(
+const _classroomGroupsCoverage = assertContractCoverage(
   rawClassroomGroupsAPI,
   defineContractCoverage({
     moduleName: 'classroomGroups',
@@ -118,18 +110,13 @@ const classroomGroupsCoverage = assertContractCoverage(
       update: 'updateClassroomGroup',
       delete: 'deleteClassroomGroup',
     },
+    internalMethods: ['getAll', 'create', 'update', 'delete'],
   }),
 );
 
-export const classroomGroupsAPI = createTemporalPOAProxy(
-  'classroomGroups',
-  rawClassroomGroupsAPI,
-  classroomGroupsCoverage.contract,
-  classroomGroupsCoverage.methodMapping,
-  { strictUnmappedMethods: true },
-);
+export const classroomGroupsAPI = createTemporalProxy('classroomGroups', rawClassroomGroupsAPI);
 
-const classroomStudentsCoverage = assertContractCoverage(
+const _classroomStudentsCoverage = assertContractCoverage(
   rawClassroomStudentsAPI,
   defineContractCoverage({
     moduleName: 'classroomStudents',
@@ -139,18 +126,24 @@ const classroomStudentsCoverage = assertContractCoverage(
       update: 'updateEnrollmentRecord',
       remove: 'deleteEnrollmentRecord',
     },
+    internalMethods: [
+      'getAll',
+      'addShadowStudent',
+      'claimStudent',
+      'add',
+      'updateById',
+      'update',
+      'remove',
+    ],
   }),
 );
 
-export const classroomStudentsAPI = createTemporalPOAProxy(
+export const classroomStudentsAPI = createTemporalProxy(
   'classroomStudents',
   rawClassroomStudentsAPI,
-  classroomStudentsCoverage.contract,
-  classroomStudentsCoverage.methodMapping,
-  { strictUnmappedMethods: true },
 );
 
-const lessonMaterialsCoverage = assertContractCoverage(
+const _lessonMaterialsCoverage = assertContractCoverage(
   rawLessonMaterialsAPI,
   defineContractCoverage({
     moduleName: 'lessonMaterials',
@@ -162,13 +155,26 @@ const lessonMaterialsCoverage = assertContractCoverage(
       update: 'updateMaterial',
       delete: 'deleteMaterial',
     },
+    internalMethods: ['getAll', 'getByLesson', 'create', 'update', 'delete'],
   }),
 );
 
-export const lessonMaterialsAPI = createTemporalPOAProxy(
-  'lessonMaterials',
-  rawLessonMaterialsAPI,
-  lessonMaterialsCoverage.contract,
-  lessonMaterialsCoverage.methodMapping,
-  { strictUnmappedMethods: true },
+export const lessonMaterialsAPI = createTemporalProxy('lessonMaterials', rawLessonMaterialsAPI);
+
+const _classroomNotesCoverage = assertContractCoverage(
+  rawClassroomNotesAPI,
+  defineContractCoverage({
+    moduleName: 'classroomNotes',
+    contract: educationalContract,
+    methodMapping: {
+      getAll: 'getClassroomNotes',
+      getSnapshotAsOf: 'getClassroomNoteSnapshot',
+      create: 'createClassroomNote',
+      update: 'updateClassroomNote',
+      delete: 'deleteClassroomNote',
+      getTimeline: 'getClassroomNoteTimeline',
+    },
+  }),
 );
+
+export const classroomNotesAPI = createTemporalProxy('classroomNotes', rawClassroomNotesAPI);

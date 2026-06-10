@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { makeModelSchema } from '@repo/schema';
+import { z } from 'zod';
 
 /**
  * SentinelAuditLogSchema - Non-repudiable audit logs for critical actions.
@@ -49,7 +49,7 @@ export const EcosystemPulseSchema = z.object({
   weather: z.enum(['radiant', 'lush', 'steady', 'resting', 'quiet']),
   pulses: z.array(
     z.object({
-      school_id: z.string().uuid(),
+      school_id: z.uuid(),
       school_name: z.string(),
       weather: z.string(),
       health: z.number(),
@@ -62,12 +62,11 @@ export const EcosystemPulseSchema = z.object({
  * GlobalUserSchema - User representation for ecosystem-wide listing.
  */
 export const GlobalUserSchema = z.object({
-  id: z.string().uuid(),
-  email: z.string().email(),
+  id: z.uuid(),
+  email: z.email(),
   full_name: z.string(),
-  authority: z.string(),
-  role: z.string().optional(), // UI uses u.role
-  avatar_url: z.string().url().nullable().optional(),
+  capacity: z.string(),
+  avatar_url: z.url().nullable().optional(),
   created_at: z.string(),
   schools: z
     .object({

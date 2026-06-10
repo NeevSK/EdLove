@@ -9,15 +9,15 @@ import { AccountSchema, FinancialTransactionSchema } from '../logic/schemas/acco
 import { InvoiceSchema, PaymentIntentSchema } from '../logic/schemas/payments.schema';
 import { APIError } from '../types/API';
 import { erpContract } from './erp.contract';
-import { supabase } from './supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
 
 export const accountingAPI = {
   /**
    * Get all accounts for the current school/tenancy
-   * @authority read Accounting
+   * @policy read Accounting
    */
   async getAccounts(): Promise<z.infer<typeof AccountSchema>[]> {
-    const { data, error } = await supabase
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('accounting_accounts')
       .select('*')
       .order('code', { ascending: true });
@@ -31,15 +31,18 @@ export const accountingAPI = {
 
   /**
    * Record a financial transaction
-   * @authority create Accounting
+   * @policy create Accounting
    */
   async recordTransaction(
     tx: Omit<z.infer<typeof FinancialTransactionSchema>, 'id'>,
   ): Promise<z.infer<typeof FinancialTransactionSchema>> {
     // In a real implementation, this would be a complex RPC call to handle double-entry
-    const { data, error } = await supabase.rpc('record_financial_transaction', {
-      tx_data: tx,
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'record_financial_transaction',
+      {
+        tx_data: tx,
+      },
+    );
 
     if (error) {
       throw new APIError('Failed to record transaction', error.code, error);
@@ -52,7 +55,7 @@ export const accountingAPI = {
 export const paymentsAPI = {
   /**
    * Create a payment intent for specified provider
-   * @authority create Payments
+   * @policy create Payments
    */
   async createPaymentIntent(vars: {
     amount: number;
@@ -60,9 +63,12 @@ export const paymentsAPI = {
     provider: string;
     metadata?: any;
   }): Promise<z.infer<typeof PaymentIntentSchema>> {
-    const { data, error } = await supabase.functions.invoke('create-payment-intent', {
-      body: vars,
-    });
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.functions.invoke(
+      'create-payment-intent',
+      {
+        body: vars,
+      },
+    );
 
     if (error) {
       throw new APIError('Failed to create payment intent', 'PAYMENT_INTENT_ERROR', error);
@@ -73,10 +79,10 @@ export const paymentsAPI = {
 
   /**
    * Get invoices for a customer
-   * @authority read Payments
+   * @policy read Payments
    */
   async getInvoices(customerId?: string): Promise<z.infer<typeof InvoiceSchema>[]> {
-    let query = supabase.from('billing_invoices').select('*');
+    let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('billing_invoices').select('*');
     if (customerId) query = query.eq('customer_id', customerId);
 
     const { data, error } = await query.order('created_at', {

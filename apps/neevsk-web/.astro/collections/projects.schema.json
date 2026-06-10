@@ -33,10 +33,5 @@
       "type": "string"
     }
   },
-  "required": [
-    "title",
-    "description",
-    "role",
-    "tech"
-  ]
+  "required": ["title", "description", "role", "tech"]
 }

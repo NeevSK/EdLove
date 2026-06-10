@@ -28,7 +28,7 @@ export default function CitizenGate({
       <PositiveInvitation
         title={title}
         description={description}
-        type="guest"
+        type="anonymous"
         context={mappedContext}
         actionLabel={actionLabel}
         onAction={onAction}

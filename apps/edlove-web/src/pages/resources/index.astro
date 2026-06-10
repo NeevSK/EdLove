@@ -1,33 +1,26 @@
 ---
-import { getCollection, render } from "astro:content";
-import ExpandableContent from "../../components/ExpandableContent.astro";
-import Layout from "../../layouts/Layout.astro";
-import { absoluteUrl } from "../../lib/site";
+import { getCollection } from 'astro:content';
+import { absoluteUrl } from '../../lib/site';
 
-const resourceEntries = await getCollection(
-	"resources",
-	({ data }) => !data.draft,
-);
+const resourceEntries = await getCollection('resources', ({ data }) => !data.draft);
 resourceEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 
-const structuredData = {
-	"@context": "https://schema.org",
-	"@type": "CollectionPage",
-	name: "Resource Ecosystem | EdLove",
-	description:
-		"A machine-readable and human-readable view of the EdLove resource ecosystem, including the Global Gallery and pattern-based resource flows.",
-	url: absoluteUrl("/resources"),
-	mainEntity: {
-		"@type": "ItemList",
-		itemListElement: resourceEntries.map((entry, index) => ({
-			"@type": "ListItem",
-			position: index + 1,
-			name: entry.data.title,
-			url: absoluteUrl(
-				entry.id === "global-gallery.md" ? "/resources/gallery" : "/resources",
-			),
-		})),
-	},
+const _structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Resource Ecosystem | EdLove',
+  description:
+    'A machine-readable and human-readable view of the EdLove resource ecosystem, including the Global Gallery and pattern-based resource flows.',
+  url: absoluteUrl('/resources'),
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: resourceEntries.map((entry, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: entry.data.title,
+      url: absoluteUrl(entry.id === 'global-gallery.md' ? '/resources/gallery' : '/resources'),
+    })),
+  },
 };
 ---
 

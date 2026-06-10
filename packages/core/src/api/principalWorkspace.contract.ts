@@ -1,4 +1,3 @@
-import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
 import {
   InviteCodeSchema,
@@ -9,116 +8,171 @@ import {
   PrincipalObservationFollowUpCreateSchema,
   PrincipalObservationSchema,
 } from '../logic/schemas/principal-workspace.schema';
-import { POAMetadataSchema } from './contract';
-
-const c = initContract();
+import type { SovereignContract } from './contract';
 
 const principalWorkspaceAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',
   subject: string,
-) => POAMetadataSchema.parse({ authority: { action, subject } });
+) => ({ policy: { action, subject } }) as const;
 
-export const principalWorkspaceContract = c.router({
+export const principalWorkspaceContract = {
   listInviteCodes: {
-    method: 'GET',
+    method: 'get',
     path: '/principal-workspace/:schoolId/invites',
+    request: {
+      params: z.object({ schoolId: z.string() }),
+    },
     responses: {
-      200: z.array(InviteCodeSchema),
+      200: {
+        schema: z.array(InviteCodeSchema),
+        description: 'List invite codes',
+      },
     },
     metadata: principalWorkspaceAuthority('read', 'SchoolInvite'),
   },
   getInviteCodes: {
-    method: 'GET',
+    method: 'get',
     path: '/principal-workspace/:schoolId/invites',
+    request: {
+      params: z.object({ schoolId: z.string() }),
+    },
     responses: {
-      200: z.array(InviteCodeSchema),
+      200: {
+        schema: z.array(InviteCodeSchema),
+        description: 'Get invite codes',
+      },
     },
     metadata: principalWorkspaceAuthority('read', 'SchoolInvite'),
   },
   generateInviteCode: {
-    method: 'POST',
+    method: 'post',
     path: '/principal-workspace/:schoolId/invites',
-    body: z.object({
-      role: PrincipalInviteRoleSchema,
-      createdBy: z.string().min(1),
-    }),
+    request: {
+      params: z.object({ schoolId: z.string() }),
+      body: z.object({
+        capacity: PrincipalInviteRoleSchema,
+        createdBy: z.string().min(1),
+      }),
+    },
     responses: {
-      201: InviteCodeSchema,
+      201: {
+        schema: InviteCodeSchema,
+        description: 'Invite code generated successfully',
+      },
     },
     metadata: principalWorkspaceAuthority('create', 'SchoolInvite'),
   },
   listObservationsByDate: {
-    method: 'GET',
+    method: 'get',
     path: '/principal-workspace/:principalId/observations',
-    query: z.object({
-      viewDate: z.string().min(1),
-      limit: z.number().int().positive().max(100).optional(),
-    }),
+    request: {
+      params: z.object({ principalId: z.string() }),
+      query: z.object({
+        viewDate: z.string().min(1),
+        limit: z.number().int().positive().max(100).optional(),
+      }),
+    },
     responses: {
-      200: z.array(PrincipalObservationSchema),
+      200: {
+        schema: z.array(PrincipalObservationSchema),
+        description: 'List observations by date',
+      },
     },
     metadata: principalWorkspaceAuthority('read', 'PrincipalObservation'),
   },
   listRecentObservations: {
-    method: 'GET',
+    method: 'get',
     path: '/principal-workspace/:principalId/observations/recent',
-    query: z.object({
-      limit: z.number().int().positive().max(100).optional(),
-    }),
+    request: {
+      params: z.object({ principalId: z.string() }),
+      query: z.object({
+        limit: z.number().int().positive().max(100).optional(),
+      }),
+    },
     responses: {
-      200: z.array(PrincipalObservationSchema),
+      200: {
+        schema: z.array(PrincipalObservationSchema),
+        description: 'List recent observations',
+      },
     },
     metadata: principalWorkspaceAuthority('read', 'PrincipalObservation'),
   },
   createObservation: {
-    method: 'POST',
+    method: 'post',
     path: '/principal-workspace/observations',
-    body: PrincipalObservationCreateSchema,
+    request: {
+      body: PrincipalObservationCreateSchema,
+    },
     responses: {
-      201: PrincipalObservationSchema,
+      201: {
+        schema: PrincipalObservationSchema,
+        description: 'Observation created successfully',
+      },
     },
     metadata: principalWorkspaceAuthority('create', 'PrincipalObservation'),
   },
   recordInviteEvent: {
-    method: 'POST',
+    method: 'post',
     path: '/principal-workspace/invites/events',
-    body: PrincipalInviteEventCreateSchema,
+    request: {
+      body: PrincipalInviteEventCreateSchema,
+    },
     responses: {
-      201: PrincipalGovernanceEventSchema,
+      201: {
+        schema: PrincipalGovernanceEventSchema,
+        description: 'Invite event recorded successfully',
+      },
     },
     metadata: principalWorkspaceAuthority('update', 'SchoolInvite'),
   },
   recordObservationFollowUp: {
-    method: 'POST',
+    method: 'post',
     path: '/principal-workspace/observations/follow-up',
-    body: PrincipalObservationFollowUpCreateSchema,
+    request: {
+      body: PrincipalObservationFollowUpCreateSchema,
+    },
     responses: {
-      201: PrincipalGovernanceEventSchema,
+      201: {
+        schema: PrincipalGovernanceEventSchema,
+        description: 'Observation follow up recorded successfully',
+      },
     },
     metadata: principalWorkspaceAuthority('update', 'PrincipalObservation'),
   },
   getGovernanceTimeline: {
-    method: 'GET',
+    method: 'get',
     path: '/principal-workspace/:principalId/timeline',
-    query: z.object({
-      viewDate: z.string().min(1),
-      limit: z.number().int().positive().max(200).optional(),
-    }),
+    request: {
+      params: z.object({ principalId: z.string() }),
+      query: z.object({
+        viewDate: z.string().min(1),
+        limit: z.number().int().positive().max(200).optional(),
+      }),
+    },
     responses: {
-      200: z.array(PrincipalGovernanceEventSchema),
+      200: {
+        schema: z.array(PrincipalGovernanceEventSchema),
+        description: 'Retrieve governance timeline',
+      },
     },
     metadata: principalWorkspaceAuthority('read', 'PrincipalObservation'),
   },
   getGovernanceSnapshotAsOf: {
-    method: 'GET',
+    method: 'get',
     path: '/principal-workspace/:principalId/snapshot',
-    query: z.object({
-      viewDate: z.string().min(1),
-      limit: z.number().int().positive().max(200).optional(),
-    }),
+    request: {
+      params: z.object({ principalId: z.string() }),
+      query: z.object({
+        viewDate: z.string().min(1),
+        limit: z.number().int().positive().max(200).optional(),
+      }),
+    },
     responses: {
-      200: z.array(PrincipalGovernanceEventSchema),
+      200: {
+        schema: z.array(PrincipalGovernanceEventSchema),
+        description: 'Retrieve governance snapshot',
+      },
     },
     metadata: principalWorkspaceAuthority('read', 'PrincipalObservation'),
   },
-});
+} as const satisfies SovereignContract;

@@ -90,7 +90,7 @@ if (context.authority === 'developer') {
 Use the `FeatureGuard` component to wrap your new UI elements.
 
 ```tsx
-import { FeatureGuard } from '@repo/core';
+import { FeatureGuard } from '@repo/core/logic';
 
 <FeatureGuard feature="isDev_DynamicCurriculum" fallback={<OldCurriculum />}>
   <NewDynamicCurriculum />

@@ -4,14 +4,14 @@ import type {
   AssignmentSubmission,
   Classroom,
   ClassroomGroup,
+  ClassroomLegacyRecord,
   ClassroomStudent,
-  StudentAssignment,
-  StudentSubmissionSummary,
-  StudentAcademicRecord,
-  TeacherProfessionalRecord,
   PrincipalGovernanceRecord,
   SchoolLegacyRecord,
-  ClassroomLegacyRecord,
+  StudentAcademicRecord,
+  StudentAssignment,
+  StudentSubmissionSummary,
+  TeacherProfessionalRecord,
 } from '../../schemas/classroom.schema';
 import type { ClassroomGradingSettings, Grade } from '../../schemas/grading.schema';
 import type { Lesson } from '../../schemas/lesson.schema';
@@ -66,6 +66,7 @@ export interface EducationalRepository {
   ): Promise<Assignment>;
   updateAssignment(id: string, updates: Partial<Assignment>): Promise<Assignment>;
   deleteAssignment(id: string): Promise<void>;
+  getRecentGradesOverviewForStudent(studentId: string, limit?: number): Promise<any[]>;
 
   getClassroomGroups(classroomId: string): Promise<ClassroomGroup[]>;
   createClassroomGroup(input: {
@@ -178,6 +179,50 @@ export interface EducationalRepository {
     }>,
   ): Promise<AttendanceRecord[]>;
   getAttendanceForStudent(studentId: string, classroomId?: string): Promise<AttendanceRecord[]>;
+
+  // Institutional Management
+  createSchool(data: {
+    name: string;
+    handle?: string | null;
+    type: string;
+    created_by: string;
+  }): Promise<any>;
+  getSchool(id: string): Promise<any>;
+  updateSchool(id: string, updates: any): Promise<any>;
+  searchSchools(query: string): Promise<any[]>;
+  getSections(schoolId: string): Promise<any[]>;
+  getGrades(sectionId: string): Promise<any[]>;
+  createSection(schoolId: string, name: string): Promise<any>;
+  createGrade(sectionId: string, number: number): Promise<any>;
+  getInviteCodes(schoolId: string): Promise<any[]>;
+  generateInviteCode(schoolId: string, capacity: string, createdBy: string): Promise<any>;
+
+  // Academic Cycles
+  getAcademicCycles(schoolId: string): Promise<any[]>;
+  getCurrentAcademicCycle(schoolId: string): Promise<any | null>;
+  createAcademicCycle(data: any): Promise<any>;
+  updateAcademicCycle(id: string, schoolId: string, data: any): Promise<any>;
+  deleteAcademicCycle(id: string): Promise<void>;
+
+  // Classroom Notes
+  listVisibleNotes(classroomId: string): Promise<any[]>;
+  listVisibleNotesAsOf(classroomId: string, viewDate: string): Promise<any[]>;
+  createNote(authorId: string, note: any): Promise<any>;
+  updateNote(id: string, updates: any): Promise<any>;
+  deleteNote(id: string): Promise<void>;
+  getNoteTimeline(id: string): Promise<any[]>;
+
+  // Join Requests
+  requestSchoolJoin(userId: string, schoolId: string, capacity: string): Promise<any>;
+  updateSchoolJoinRequest(requestId: string, status: string): Promise<any>;
+  requestClassroomJoin(
+    userId: string,
+    classroomId: string,
+    capacity: string,
+    subjectLabel?: string,
+  ): Promise<any>;
+  updateClassroomJoinRequest(requestId: string, status: string): Promise<any>;
+  getClassroomJoinRequest(requestId: string): Promise<any>;
 }
 
 export interface EducationalSideEffects {

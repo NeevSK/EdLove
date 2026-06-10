@@ -83,31 +83,31 @@ describe('founder and guardian POA coverage', () => {
     );
   });
 
-  test('founder routes carry authority metadata', () => {
-    expect(founderContract.getEcosystemStats.metadata?.authority).toEqual({
+  test('founder routes carry policy metadata', () => {
+    expect(founderContract.getEcosystemStats.metadata?.policy).toEqual({
       action: 'read',
       subject: 'FounderDashboard',
     });
-    expect(founderContract.createSchool.metadata?.authority).toEqual({
+    expect(founderContract.createSchool.metadata?.policy).toEqual({
       action: 'create',
       subject: 'School',
     });
   });
 
-  test('guardian routes carry authority metadata', () => {
-    expect(guardianContract.getGuardianDashboard.metadata?.authority).toEqual({
+  test('guardian routes carry policy metadata', () => {
+    expect(guardianContract.getGuardianDashboard.metadata?.policy).toEqual({
       action: 'read',
       subject: 'GuardianDashboard',
     });
-    expect(guardianContract.updateGuardianProfile.metadata?.authority).toEqual({
+    expect(guardianContract.updateGuardianProfile.metadata?.policy).toEqual({
       action: 'update',
       subject: 'GuardianProfile',
     });
-    expect(guardianContract.createGuardianProfile.metadata?.authority).toEqual({
+    expect(guardianContract.createGuardianProfile.metadata?.policy).toEqual({
       action: 'create',
       subject: 'GuardianProfile',
     });
-    expect(guardianContract.updateGuardianNotificationSettings.metadata?.authority).toEqual({
+    expect(guardianContract.updateGuardianNotificationSettings.metadata?.policy).toEqual({
       action: 'update',
       subject: 'GuardianNotificationSettings',
     });

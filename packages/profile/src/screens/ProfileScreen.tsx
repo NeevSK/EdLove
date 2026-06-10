@@ -6,6 +6,7 @@ import DeviceSecurityCenter from '@repo/ui/components/DeviceSecurityCenter';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import IdentityCard from '@repo/ui/components/IdentityCard';
 import LogoutModal from '@repo/ui/components/LogoutModal';
+import { NotificationSettingsPanel } from '@repo/ui/components/NotificationSettingsPanel';
 import { SanctuaryProgressBar } from '@repo/ui/components/SanctuaryProgressBar';
 import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 import {
@@ -21,7 +22,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-
+import type { TFunction } from 'i18next';
 import {
   Edit3,
   Eye,
@@ -45,7 +46,6 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import type { TFunction } from 'i18next';
 import LivingJourneyPanel from '../components/LivingJourneyPanel';
 import ProfileListItem from '../components/ProfileListItem';
 // Local Package Imports
@@ -53,7 +53,11 @@ import ProfileSkeleton from '../components/ProfileSkeleton';
 import ThuthimalBadge from '../components/ThuthimalBadge';
 import { useProfile } from '../hooks/useProfile';
 import { useProfileCompletion } from '../hooks/useProfileCompletion';
-import { toFullProfileParams, useProfileNavigation, type ProfileNavigationCapabilities } from '../navigation';
+import {
+  type ProfileNavigationCapabilities,
+  toFullProfileParams,
+  useProfileNavigation,
+} from '../navigation';
 import type { UserProfile } from '../types';
 
 // --- Internal Sub-Components ---
@@ -76,13 +80,13 @@ const IdentitySection = ({
   cardWidth,
 }: IdentitySectionProps) => {
   const { context } = usePermissions();
-  const isWanderer = context.is_anonymous;
-  const capacity = context.active_bond?.capacity || context.primary_capacity || 'guest';
+  const isWanderer = context.isAnonymous;
+  const capacity = context.activeBond?.capacity || context.primaryCapacity || 'member';
 
   return (
     <Center>
       <Box style={{ width: cardWidth }}>
-        {profile && profile.id && (
+        {profile?.id && (
           <IdentityCard
             data={{ ...(profile as any), id: profile.id, capacity }}
             onViewFullProfile={() => {
@@ -99,7 +103,7 @@ const IdentitySection = ({
           />
         )}
       </Box>
-      {!context.is_anonymous && completionResult && (
+      {!context.isAnonymous && completionResult && (
         <Box style={{ width: cardWidth }} className="mt-4">
           <SanctuaryProgressBar
             percentage={completionResult.percentage}
@@ -258,8 +262,8 @@ export const ProfileScreen = () => {
   const { profile, loading, refreshing, refresh, logout } = useProfile();
 
   const { context } = usePermissions();
-  const capacity = context.active_bond?.capacity || context.primary_capacity || 'guest';
-  const completionCapacity = (context.active_bond?.capacity || context.primary_capacity) ?? null;
+  const capacity = context.activeBond?.capacity || context.primaryCapacity || 'member';
+  const completionCapacity = (context.activeBond?.capacity || context.primaryCapacity) ?? null;
   const completionResult = useProfileCompletion(profile, completionCapacity as any);
   const bottomPadding = useBottomTabPadding();
   const { width: windowWidth } = useWindowDimensions();
@@ -516,6 +520,14 @@ export const ProfileScreen = () => {
 
             <Animated.View entering={FadeInDown.delay(600).duration(500)}>
               <AppExperienceSection t={t} cardWidth={cardWidth} />
+            </Animated.View>
+
+            <Animated.View entering={FadeInDown.delay(650).duration(500)}>
+              <Center>
+                <Box style={{ width: cardWidth }}>
+                  <NotificationSettingsPanel />
+                </Box>
+              </Center>
             </Animated.View>
 
             <Animated.View entering={FadeInDown.delay(700).duration(500)}>

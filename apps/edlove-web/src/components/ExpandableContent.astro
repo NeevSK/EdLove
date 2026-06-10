@@ -1,12 +1,12 @@
 ---
 interface Props {
-	title: string;
-	subtitle?: string;
-	icon?: string;
-	mode?: "panel" | "modal";
+  title: string;
+  subtitle?: string;
+  icon?: string;
+  mode?: 'panel' | 'modal';
 }
 
-const { title, subtitle, icon, mode = "panel" } = Astro.props;
+const { title, subtitle, icon, mode = 'panel' } = Astro.props;
 ---
 
 <!-- 

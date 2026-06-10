@@ -43,7 +43,7 @@ export default function ProfileScreenWeb({
   const { t } = useTranslation();
   const navigation = useProfileNavigation();
   const { can, context } = usePermissions();
-  const authority = context.active_bond?.capacity;
+  const authority = context.activeBond?.capacity;
   const { user } = useStore();
   const {
     profile,
@@ -55,7 +55,7 @@ export default function ProfileScreenWeb({
   const completionResult = useProfileCompletion(profile, (authority as any) ?? null);
   const [copiedLink, setCopiedLink] = useState(false);
   const [editForm, setEditForm] = useState<{
-    full_name: string;
+    display_name: string;
     bio: string;
     phone: string;
     username: string;
@@ -67,7 +67,7 @@ export default function ProfileScreenWeb({
 
   const openInlineEdit = () =>
     setEditForm({
-      full_name: profile?.full_name ?? '',
+      display_name: profile?.display_name ?? '',
       bio: profile?.bio ?? '',
       phone: profile?.phone ?? '',
       username: profile?.username ?? '',
@@ -79,8 +79,8 @@ export default function ProfileScreenWeb({
     if (!editForm || !profile) return;
     setIsSaving(true);
     try {
-      if (editForm.full_name !== profile.full_name)
-        await updateField('full_name', editForm.full_name);
+      if (editForm.display_name !== profile.display_name)
+        await updateField('display_name', editForm.display_name);
       if (editForm.bio !== (profile.bio ?? '')) await updateField('bio', editForm.bio);
       if (editForm.phone !== (profile.phone ?? '')) await updateField('phone', editForm.phone);
       if (editForm.username !== (profile.username ?? ''))
@@ -190,7 +190,7 @@ export default function ProfileScreenWeb({
                 <AvatarDisplay
                   userId={profile.id}
                   avatarUrl={profile.avatar_url}
-                  fullName={profile.full_name}
+                  fullName={profile.display_name}
                   size={88}
                   editable={isOwnProfile}
                   onAvatarSelected={async (localUri: string) => {
@@ -222,7 +222,7 @@ export default function ProfileScreenWeb({
                       color: 'var(--ink)',
                     }}
                   >
-                    {profile.full_name}
+                    {profile.display_name}
                   </h1>
                   {profile.is_thuthimal && (
                     <span
@@ -360,9 +360,10 @@ export default function ProfileScreenWeb({
                   )}
                 </div>
 
-                {isOwnProfile && !context.is_anonymous && (
+                {isOwnProfile && !context.isAnonymous && (
                   <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                    <button type="button"
+                    <button
+                      type="button"
                       className="secondary-button"
                       style={{
                         display: 'inline-flex',
@@ -374,7 +375,8 @@ export default function ProfileScreenWeb({
                       <Edit3 size={16} />
                       {t('profile.viewEditProfile')}
                     </button>
-                    <button type="button"
+                    <button
+                      type="button"
                       className="secondary-button"
                       style={{
                         display: 'inline-flex',
@@ -385,7 +387,8 @@ export default function ProfileScreenWeb({
                     >
                       Full Profile
                     </button>
-                    <button type="button"
+                    <button
+                      type="button"
                       className="secondary-button"
                       style={{
                         display: 'inline-flex',
@@ -396,7 +399,8 @@ export default function ProfileScreenWeb({
                     >
                       Settings
                     </button>
-                    <button type="button"
+                    <button
+                      type="button"
                       className="secondary-button"
                       style={{
                         display: 'inline-flex',
@@ -407,7 +411,8 @@ export default function ProfileScreenWeb({
                     >
                       Privacy Ledger
                     </button>
-                    <button type="button"
+                    <button
+                      type="button"
                       className="secondary-button"
                       style={{
                         display: 'inline-flex',
@@ -426,7 +431,7 @@ export default function ProfileScreenWeb({
                   </div>
                 )}
 
-                {isOwnProfile && context.is_anonymous && (
+                {isOwnProfile && context.isAnonymous && (
                   <div style={{ marginTop: '12px' }}>
                     <CitizenGate
                       context="profile"
@@ -440,7 +445,7 @@ export default function ProfileScreenWeb({
               </div>
             </div>
 
-            {context.is_anonymous ? null : (
+            {context.isAnonymous ? null : (
               <div
                 className="profile-qr-panel"
                 style={{
@@ -464,7 +469,11 @@ export default function ProfileScreenWeb({
                     padding: '8px',
                   }}
                 >
-                  <QRCodeGenerator value={profilePublicUrl} size={104} label={profile.full_name} />
+                  <QRCodeGenerator
+                    value={profilePublicUrl}
+                    size={104}
+                    label={profile.display_name}
+                  />
                 </div>
                 <p
                   style={{
@@ -478,7 +487,8 @@ export default function ProfileScreenWeb({
                 >
                   Scan to view profile
                 </p>
-                <button type="button"
+                <button
+                  type="button"
                   style={{
                     background: 'none',
                     border: 'none',
@@ -507,7 +517,7 @@ export default function ProfileScreenWeb({
           </div>
         </div>
 
-        {editForm && !context.is_anonymous && (
+        {editForm && !context.isAnonymous && (
           <div
             className="sanctuary-card"
             style={{
@@ -525,7 +535,8 @@ export default function ProfileScreenWeb({
               }}
             >
               <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>Edit Profile</h3>
-              <button type="button"
+              <button
+                type="button"
                 onClick={cancelEdit}
                 style={{
                   background: 'none',
@@ -562,10 +573,10 @@ export default function ProfileScreenWeb({
                   Display Name
                 </label>
                 <input
-                  id="edit-full-name"
-                  value={editForm.full_name}
+                  id="edit-display-name"
+                  value={editForm.display_name}
                   onChange={(e) =>
-                    setEditForm((f) => (f ? { ...f, full_name: e.target.value } : f))
+                    setEditForm((f) => (f ? { ...f, display_name: e.target.value } : f))
                   }
                   style={{
                     width: '100%',
@@ -698,7 +709,8 @@ export default function ProfileScreenWeb({
               />
             </div>
             <div style={{ display: 'flex', gap: '12px' }}>
-              <button type="button"
+              <button
+                type="button"
                 className="premium-button"
                 onClick={saveEdit}
                 disabled={isSaving}
@@ -915,7 +927,7 @@ export default function ProfileScreenWeb({
               </div>
               <ContactLinktree
                 links={socialLinks || []}
-                userName={profile.full_name}
+                userName={profile.display_name}
                 userId={profile.id}
                 isOwnProfile={isOwnProfile}
                 editable={isOwnProfile}

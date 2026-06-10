@@ -39,6 +39,11 @@ export async function detectDeviceTier(): Promise<{
   memoryGB: number;
 }> {
   try {
+    // Web and pre-registration paths should stay conservative.
+    if (typeof navigator === 'undefined') {
+      return { tier: 'medium', memoryGB: 4 };
+    }
+
     // Get total memory if available
     const totalMemory = coreRuntime.device.getTotalMemory?.();
 
@@ -70,6 +75,10 @@ export async function detectDeviceTier(): Promise<{
  */
 export async function detectNetworkQuality(): Promise<NetworkQuality> {
   try {
+    if (typeof navigator === 'undefined') {
+      return 'fair';
+    }
+
     const netInfo = await coreRuntime.network.fetch();
 
     if (!netInfo.isConnected) {
@@ -78,7 +87,7 @@ export async function detectNetworkQuality(): Promise<NetworkQuality> {
 
     // Check connection type and effective type
     const type = netInfo.type;
-    const details = netInfo.details as any;
+    const details = netInfo.details as { cellularGeneration?: string } | undefined;
 
     // If we have cellular connection, check the type
     if (type === 'cellular') {

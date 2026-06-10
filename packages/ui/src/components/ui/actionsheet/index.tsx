@@ -40,9 +40,9 @@ export const Actionsheet = ({
   onClose: () => void;
   children: React.ReactNode;
 } & ViewProps) => {
-  if (!isOpen) return null;
-
   const contextValue = useMemo(() => ({ onClose }), [onClose]);
+
+  if (!isOpen) return null;
 
   return (
     <ActionsheetContext.Provider value={contextValue}>

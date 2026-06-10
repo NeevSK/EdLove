@@ -1,9 +1,9 @@
+import { v7 as uuidv7 } from 'uuid';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { SafeZustandStorage } from '../../lib/storageWrapper';
 import { generateIdempotencyKey } from './idempotency';
 import type { MutationQueueState, QueuedMutation } from './types';
-import { v7 as uuidv7 } from 'uuid';
 
 /**
  * useMutationQueue

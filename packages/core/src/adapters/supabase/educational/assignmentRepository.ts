@@ -1,16 +1,16 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
-import {
-  AssignmentSchema,
-  AssignmentSubmissionSchema,
-  StudentAssignmentSchema,
-  StudentSubmissionSummarySchema,
-} from '../../../logic/schemas/classroom.schema';
 import type {
   Assignment,
   AssignmentSubmission,
   StudentAssignment,
   StudentSubmissionSummary,
+} from '../../../logic/schemas/classroom.schema';
+import {
+  AssignmentSchema,
+  AssignmentSubmissionSchema,
+  StudentAssignmentSchema,
+  StudentSubmissionSummarySchema,
 } from '../../../logic/schemas/classroom.schema';
 import { APIError } from '../../../types/API';
 
@@ -90,7 +90,9 @@ export const createAssignmentRepository = (supabase: SupabaseClient) => ({
     return assignmentRows.map((assignment, index) =>
       StudentAssignmentSchema.parse({
         ...assignment,
-        classroom: (data?.[index] as { classrooms?: { name: string } | null } | undefined)?.classrooms?.name ?? null,
+        classroom:
+          (data?.[index] as { classrooms?: { name: string } | null } | undefined)?.classrooms
+            ?.name ?? null,
         submitted: submittedIds.has(assignment.id),
       }),
     ) as StudentAssignment[];
@@ -128,7 +130,7 @@ export const createAssignmentRepository = (supabase: SupabaseClient) => ({
       } | null;
     }
 
-    return (data as unknown as RawSubmissionRow[] || []).map((item) =>
+    return ((data as unknown as RawSubmissionRow[]) || []).map((item) =>
       StudentSubmissionSummarySchema.parse({
         id: item.id,
         assignment_id: item.assignment_id,
@@ -180,5 +182,22 @@ export const createAssignmentRepository = (supabase: SupabaseClient) => ({
   async deleteAssignment(id: string) {
     const { error } = await supabase.from('assignments').delete().eq('id', id);
     if (error) throw new APIError('Failed to delete assignment', error.code, error);
+  },
+  async getRecentGradesOverviewForStudent(studentId: string, limit = 4) {
+    const { data, error } = await supabase
+      .from('submissions')
+      .select('id, grade, feedback, submitted_at, assignments(title), classrooms(name)')
+      .eq('student_id', studentId)
+      .not('grade', 'is', null)
+      .order('submitted_at', { ascending: false })
+      .limit(limit);
+
+    if (error) throw new APIError('Failed to fetch recent grades', error.code, error);
+
+    return ((data as Record<string, any>[] | null) ?? []).map((row) => ({
+      ...row,
+      assignments: Array.isArray(row.assignments) ? row.assignments[0] : row.assignments || null,
+      classrooms: Array.isArray(row.classrooms) ? row.classrooms[0] : row.classrooms || null,
+    }));
   },
 });

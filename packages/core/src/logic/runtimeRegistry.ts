@@ -79,6 +79,38 @@ export const coreRuntime = {
     return runtime.clipboard;
   },
 
+  get secureStorage() {
+    if (!runtime)
+      throw new Error(
+        'CoreRuntime: SecureStorage provider not registered. Call coreRuntime.register() during app initialization.',
+      );
+    return runtime.secureStorage;
+  },
+
+  get backgroundTask() {
+    if (!runtime)
+      throw new Error(
+        'CoreRuntime: BackgroundTask provider not registered. Call coreRuntime.register() during app initialization.',
+      );
+    return runtime.backgroundTask;
+  },
+
+  get asset() {
+    if (!runtime)
+      throw new Error(
+        'CoreRuntime: Asset provider not registered. Call coreRuntime.register() during app initialization.',
+      );
+    return runtime.asset;
+  },
+
+  get notification() {
+    if (!runtime)
+      throw new Error(
+        'CoreRuntime: Notification provider not registered. Call coreRuntime.register() during app initialization.',
+      );
+    return runtime.notification;
+  },
+
   isRegistered() {
     return runtime !== null;
   },

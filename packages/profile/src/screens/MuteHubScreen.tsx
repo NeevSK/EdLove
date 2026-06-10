@@ -15,7 +15,7 @@ import { Alert, RefreshControl, ScrollView } from 'react-native';
 
 interface MutedUser {
   id: string;
-  full_name: string;
+  display_name: string;
   avatar_url?: string;
   capacity?: string;
 }
@@ -127,12 +127,20 @@ export default function MuteHubScreen() {
                     <HStack space="md" className="items-center flex-1">
                       <UserAvatar
                         avatarUrl={user.avatar_url}
-                        fullName={user.full_name}
+                        fullName={user.display_name}
                         size={44}
-                        fallbackEmoji={user.capacity === 'principal' ? '🏛️' : user.capacity === 'teacher' ? '🌱' : '🌿'}
+                        fallbackEmoji={
+                          user.capacity === 'principal'
+                            ? '🏛️'
+                            : user.capacity === 'teacher'
+                              ? '🌱'
+                              : '🌿'
+                        }
                       />
                       <VStack className="flex-1">
-                        <Text className="text-phase-text-primary font-bold">{user.full_name}</Text>
+                        <Text className="text-phase-text-primary font-bold">
+                          {user.display_name}
+                        </Text>
                         <Text className="text-phase-text-tertiary text-[10px] uppercase tracking-wider">
                           @{user.id.substring(0, 8)}
                         </Text>
@@ -142,12 +150,12 @@ export default function MuteHubScreen() {
                     <Pressable
                       onPress={() => {
                         hapticLight();
-                        handleUnmute(user.id, user.full_name);
+                        handleUnmute(user.id, user.display_name);
                       }}
                       accessible={true}
                       accessibilityRole="button"
                       accessibilityLabel={t('profile.safety.unmuteActionName', {
-                        name: user.full_name,
+                        name: user.display_name,
                       })}
                       accessibilityHint={t('profile.safety.unmuteHint')}
                       className="p-3 rounded-xl bg-phase-error/10"

@@ -66,10 +66,7 @@ export function useCommunityProfile(communityId: string) {
     async (field: EditableCommunityField, value: string) => {
       if (!communityId) return;
       try {
-        const data = await profileAPI.updateCommunityProfile(communityId, {
-          field,
-          value,
-        });
+        const data = await profileAPI.updateCommunityProfile(communityId, field, value);
         dispatch({ type: 'FETCH_SUCCESS', payload: data ?? null });
       } catch (error) {
         handleAPIError(error);

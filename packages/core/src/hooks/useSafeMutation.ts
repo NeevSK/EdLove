@@ -1,11 +1,11 @@
 import { useCallback, useState } from 'react';
 import { v7 as uuidv7 } from 'uuid';
+import { DeltaResonance } from '../lib/sync/delta';
 import { generateIdempotencyKey } from '../lib/sync/idempotency';
 import { useMutationAuditLog } from '../lib/sync/MutationAuditLog';
 import { useMutationQueue } from '../lib/sync/useMutationQueue';
 import { networkManager } from '../logic/managers/NetworkManager';
 import { useStore } from '../store/useStore';
-import { DeltaResonance } from '../lib/sync/delta';
 
 interface SafeMutationOptions<TData, TVariables> {
   mutationKey?: string; // Unique key for queueing (e.g. 'createPost')

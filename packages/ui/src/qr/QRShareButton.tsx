@@ -11,8 +11,8 @@
 
 import { useRef } from 'react';
 import { StyleSheet, TouchableOpacity, type View } from 'react-native';
-import { Text, View as PrimitiveView } from '../primitives';
 import QRCodeGenerator from '../components/QRCodeGenerator';
+import { View as PrimitiveView, Text } from '../primitives';
 
 const optionalImport = async <T = any>(moduleName: string): Promise<T | null> => {
   try {
@@ -105,7 +105,11 @@ export default function QRShareButton({
 
   return (
     <PrimitiveView style={[styles.container, { backgroundColor }]}>
-      <PrimitiveView ref={viewRef} collapsable={false} style={[styles.qrWrapper, { backgroundColor }]}>
+      <PrimitiveView
+        ref={viewRef}
+        collapsable={false}
+        style={[styles.qrWrapper, { backgroundColor }]}
+      >
         <QRCodeGenerator value={value} size={size} label={label} />
       </PrimitiveView>
 

@@ -431,7 +431,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
   const river = (growth.river_stage as RiverStage | undefined) ?? 'trickle';
   const crystal = (growth.crystal_tier as CrystalTier | undefined) ?? 'spark';
 
-  const bhumiData = BHUMI_NARRATIVES[bhumi];
+  const bhumiData = BHUMI_NARRATIVES[bhumi] ?? BHUMI_NARRATIVES.bijam;
 
   const isTeacherRole =
     can('read', 'TeacherPulse') || can('read', 'PrincipalPulse') || can('read', 'FounderPulse');
@@ -475,8 +475,10 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
             <PathRow
               emoji="🌳"
               pathName={t('journey.banyanPath')}
-              stageLabel={banyan.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
-              narrative={BANYAN_NARRATIVES[banyan]}
+              stageLabel={banyan
+                .replace(/_/g, ' ')
+                .replace(/\b\w/g, (l: string) => l.toUpperCase())}
+              narrative={BANYAN_NARRATIVES[banyan] ?? ''}
             />
           )}
 
@@ -486,7 +488,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
               emoji="🌊"
               pathName={t('journey.riverPath')}
               stageLabel={river.charAt(0).toUpperCase() + river.slice(1)}
-              narrative={RIVER_NARRATIVES[river]}
+              narrative={RIVER_NARRATIVES[river] ?? ''}
             />
           )}
 
@@ -496,7 +498,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
               emoji="💎"
               pathName={t('journey.crystalPath')}
               stageLabel={crystal.charAt(0).toUpperCase() + crystal.slice(1)}
-              narrative={CRYSTAL_NARRATIVES[crystal]}
+              narrative={CRYSTAL_NARRATIVES[crystal] ?? ''}
             />
           )}
 

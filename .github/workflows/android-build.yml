@@ -49,9 +49,6 @@ jobs:
 
   # ─────────────────────────────────────────────────────────────────────────
   # JOB 2: Pre-bundle with Metro to capture sourcemaps
-  #
-  # Runs BEFORE the build. continue-on-error: true means a failure here
-  # never blocks the build job.
   # ─────────────────────────────────────────────────────────────────────────
   prebundle:
     needs: prep
@@ -60,6 +57,18 @@ jobs:
     outputs:
       sourcemaps_available: ${{ steps.check.outputs.sourcemaps_available }}
     steps:
+      # --- OPTIMIZATION: Maximize space for Pre-bundling ---
+      - name: 🧹 Free Disk Space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: true
+          android: false # Keep Android components safe
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - name: 🏗 Checkout
         uses: actions/checkout@v4
 
@@ -100,11 +109,8 @@ jobs:
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: |
-          echo "=== Sentry auth token check ==="
           if [ -z "$SENTRY_AUTH_TOKEN" ]; then
             echo "❌ SENTRY_AUTH_TOKEN is NOT set."
-            echo "   Fix: Settings → Secrets and variables → Actions → New repository secret"
-            echo "   Name must be exactly: SENTRY_AUTH_TOKEN"
           else
             TOKEN_LEN=${#SENTRY_AUTH_TOKEN}
             TOKEN_PREVIEW="${SENTRY_AUTH_TOKEN:0:4}...${SENTRY_AUTH_TOKEN: -4}"
@@ -118,26 +124,14 @@ jobs:
           SENTRY_ORG: intuitui-labs
           SENTRY_PROJECT: gurudevi-mobile
         run: |
-          echo "=== sentry-cli availability ==="
           cd apps/gurudevi-mobile
-          if pnpm exec sentry-cli --version; then
-            echo "✅ sentry-cli is available"
-          else
-            echo "❌ sentry-cli not found — check @sentry/cli in devDependencies"
-          fi
-
-          echo ""
-          echo "=== sentry-cli auth check ==="
-          if [ -n "$SENTRY_AUTH_TOKEN" ]; then
-            pnpm exec sentry-cli info 2>&1 || echo "⚠️ sentry-cli info failed (org/token may be wrong)"
-          else
-            echo "⚠️ Skipping auth check — token not set"
-          fi
+          pnpm exec sentry-cli --version || echo "❌ sentry-cli not found"
 
       - name: 📦 Pre-bundle with Metro
         id: metro
         continue-on-error: true
         env:
+          EXPO_NO_DOCTOR: 1
           EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
           EXPO_PUBLIC_POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
@@ -149,12 +143,6 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=8192
         run: |
           mkdir -p /tmp/sentry-artifacts
-
-          echo "=== Starting Metro bundle ==="
-          echo "Entry file: apps/gurudevi-mobile/index.ts (from workspace root)"
-          echo "Output: /tmp/sentry-artifacts/"
-          echo ""
-
           cd apps/gurudevi-mobile
           pnpm exec expo export:embed \
             --platform android \
@@ -165,55 +153,22 @@ jobs:
             --minify true \
             2>&1
 
-          METRO_EXIT=$?
-          echo ""
-          echo "=== Metro exit code: $METRO_EXIT ==="
-
-          if [ $METRO_EXIT -ne 0 ]; then
-            echo "❌ Metro bundling failed with exit code $METRO_EXIT"
-            exit 1
-          fi
-
       - name: 🔍 Debug — Verify bundle and sourcemap output
         id: check
         if: always()
         run: |
-          echo "=== /tmp/sentry-artifacts contents ==="
-          ls -lah /tmp/sentry-artifacts/ 2>/dev/null || echo "(directory missing)"
-          echo ""
-
           BUNDLE="/tmp/sentry-artifacts/index.android.bundle"
           MAP="/tmp/sentry-artifacts/index.android.bundle.map"
-
           BUNDLE_OK=false
           MAP_OK=false
 
-          if [ -f "$BUNDLE" ]; then
-            SIZE=$(wc -c < "$BUNDLE")
-            echo "✅ Bundle found: $SIZE bytes"
-            BUNDLE_OK=true
-          else
-            echo "❌ Bundle NOT found at $BUNDLE"
-          fi
-
-          if [ -f "$MAP" ]; then
-            SIZE=$(wc -c < "$MAP")
-            echo "✅ Sourcemap found: $SIZE bytes"
-            HEAD=$(head -c 20 "$MAP")
-            echo "   First 20 bytes: $HEAD"
-            MAP_OK=true
-          else
-            echo "❌ Sourcemap NOT found at $MAP"
-          fi
+          if [ -f "$BUNDLE" ]; then BUNDLE_OK=true; fi
+          if [ -f "$MAP" ]; then MAP_OK=true; fi
 
           if [ "$BUNDLE_OK" = true ] && [ "$MAP_OK" = true ]; then
             echo "sourcemaps_available=true" >> $GITHUB_OUTPUT
-            echo ""
-            echo "✅ Sourcemaps available for Sentry upload"
           else
             echo "sourcemaps_available=false" >> $GITHUB_OUTPUT
-            echo ""
-            echo "⚠️ Sourcemaps NOT available — Sentry upload will be skipped"
           fi
 
       - name: 📤 Upload sourcemap artifacts
@@ -226,10 +181,7 @@ jobs:
           retention-days: 3
 
   # ─────────────────────────────────────────────────────────────────────────
-  # JOB 3: Build the app
-  #
-  # Runs whether prebundle succeeded or failed (if: always()).
-  # If prebundle failed, EAS runs Metro internally and build still completes.
+  # JOB 3: Build the app (CRITICAL DISK OPTIMIZATION ADDED HERE)
   # ─────────────────────────────────────────────────────────────────────────
   build:
     needs: [prep, prebundle]
@@ -239,6 +191,18 @@ jobs:
       matrix:
         type: ${{ fromJson(needs.prep.outputs.matrix) }}
     steps:
+      # --- CRITICAL FIX: Reclaim ~25-30GB of space before compiling native Android code ---
+      - name: 🧹 Free Disk Space (Prevent System.IO.IOException)
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: true
+          android: false # MUST remain false so your setup-android action can locate native tools
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - name: 🏗 Checkout
         uses: actions/checkout@v4
 
@@ -284,17 +248,9 @@ jobs:
       - name: 🔍 Debug — prebundle job outcome
         run: |
           echo "=== Prebundle job result ==="
-          echo "prebundle result    : ${{ needs.prebundle.result }}"
+          echo "prebundle result : ${{ needs.prebundle.result }}"
           echo "sourcemaps_available: ${{ needs.prebundle.outputs.sourcemaps_available }}"
-          echo ""
-          if [ "${{ needs.prebundle.outputs.sourcemaps_available }}" == "true" ]; then
-            echo "✅ Will use pre-built bundle (EXPO_BUNDLE_APP=0)"
-          else
-            echo "⚠️ Prebundle failed or skipped — EAS will bundle internally"
-            echo "   Sentry sourcemap upload will be skipped for this build"
-          fi
 
-      # Fresh ephemeral runner — /tmp is empty. Restore pre-built bundle if available.
       - name: 📥 Restore pre-built bundle
         if: needs.prebundle.outputs.sourcemaps_available == 'true'
         uses: actions/download-artifact@v4
@@ -311,16 +267,11 @@ jobs:
       - name: 🔍 Debug — Verify sentry.properties after prebuild
         if: github.event.inputs.build_method == 'local'
         run: |
-          echo "=== Searching for sentry.properties in workspace ==="
-          find $GITHUB_WORKSPACE -name "sentry.properties" 2>/dev/null || echo "(none found yet — prebuild hasn't run)"
-          echo ""
-          echo "=== Note ==="
-          echo "sentry.properties is generated during EAS prebuild inside /tmp/runner/..."
-          echo "The plugin console logs above (in the build output) are the real verification."
-          echo "Look for the ╔══╗ banner in the [PREBUILD] section of the build log."
+          find $GITHUB_WORKSPACE -name "sentry.properties" 2>/dev/null || echo "(none found yet)"
 
       - name: 🚀 Build App
         env:
+          EXPO_NO_DOCTOR: 1
           EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
           EXPO_PUBLIC_POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
@@ -339,10 +290,7 @@ jobs:
             echo "🏗️ Starting LOCAL EAS Build..."
 
             if [ "${{ needs.prebundle.outputs.sourcemaps_available }}" == "true" ]; then
-              echo "Using pre-built bundle — setting EXPO_BUNDLE_APP=0"
               export EXPO_BUNDLE_APP=0
-            else
-              echo "No pre-built bundle — EAS will run Metro internally"
             fi
 
             eas build \
@@ -353,26 +301,20 @@ jobs:
               --output=app.${{ matrix.type }} \
               2>&1 | tee /tmp/eas_build_log.txt
 
-            # Extract versionCode for Sentry upload
-            # mkdir -p in case prebundle didn't run and /tmp/sentry-artifacts doesn't exist
             mkdir -p /tmp/sentry-artifacts
-
             grep -o 'Incrementing versionCode from .* to [0-9]*' /tmp/eas_build_log.txt \
               | grep -o '[0-9]*$' \
               | tail -n 1 \
+              | tr -d '[:space:]' \
               > /tmp/sentry-artifacts/versionCode.txt 2>/dev/null || true
 
-            # Fallback for non-autoIncrement profiles
             if [ ! -s /tmp/sentry-artifacts/versionCode.txt ]; then
               grep -o '"versionCode": *"[0-9]*"' /tmp/eas_build_log.txt \
                 | grep -o '[0-9]*' \
                 | tail -n 1 \
+                | tr -d '[:space:]' \
                 > /tmp/sentry-artifacts/versionCode.txt 2>/dev/null || true
             fi
-
-            echo ""
-            echo "=== versionCode captured: $(cat /tmp/sentry-artifacts/versionCode.txt 2>/dev/null || echo 'none') ==="
-
           else
             echo "☁️ Triggering REMOTE EAS Build..."
             eas build \
@@ -401,9 +343,6 @@ jobs:
 
   # ─────────────────────────────────────────────────────────────────────────
   # JOB 4: Upload sourcemaps to Sentry
-  #
-  # Completely isolated. Fails here = nobody cares. AAB is already uploaded.
-  # Only runs when: local build succeeded AND sourcemaps were captured.
   # ─────────────────────────────────────────────────────────────────────────
   sentry-upload:
     needs: [prep, prebundle, build]
@@ -440,65 +379,6 @@ jobs:
           name: sentry-artifacts-final-${{ matrix.type }}
           path: /tmp/sentry-artifacts
 
-      - name: 🔍 Debug — Sentry upload environment
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        run: |
-          echo "=== Sentry upload environment ==="
-
-          echo "--- Auth token ---"
-          if [ -z "$SENTRY_AUTH_TOKEN" ]; then
-            echo "❌ SENTRY_AUTH_TOKEN is NOT set — upload will fail"
-            echo "   Add it at: Settings → Secrets and variables → Actions"
-          else
-            TOKEN_LEN=${#SENTRY_AUTH_TOKEN}
-            TOKEN_PREVIEW="${SENTRY_AUTH_TOKEN:0:4}...${SENTRY_AUTH_TOKEN: -4}"
-            echo "✅ SENTRY_AUTH_TOKEN present (length=$TOKEN_LEN, preview=$TOKEN_PREVIEW)"
-          fi
-
-          echo ""
-          echo "--- Artifact files ---"
-          ls -lah /tmp/sentry-artifacts/ || echo "(directory missing)"
-
-          echo ""
-          echo "--- Bundle integrity ---"
-          BUNDLE="/tmp/sentry-artifacts/index.android.bundle"
-          MAP="/tmp/sentry-artifacts/index.android.bundle.map"
-          [ -f "$BUNDLE" ] && echo "✅ Bundle: $(wc -c < $BUNDLE) bytes" || echo "❌ Bundle missing"
-          [ -f "$MAP" ]    && echo "✅ Map:    $(wc -c < $MAP) bytes"    || echo "❌ Map missing"
-
-          echo ""
-          echo "--- versionCode ---"
-          cat /tmp/sentry-artifacts/versionCode.txt 2>/dev/null || echo "(not found)"
-
-          echo ""
-          echo "--- app.json version ---"
-          node -p "require('./apps/gurudevi-mobile/app.json').expo.version"
-
-          echo ""
-          echo "--- sentry-cli version ---"
-          cd apps/gurudevi-mobile
-          pnpm exec sentry-cli --version 2>&1 || echo "❌ sentry-cli not available"
-
-          echo ""
-          echo "--- Network / Sentry reachability ---"
-          curl -s -o /dev/null -w "sentry.io HTTP status: %{http_code}\n" https://sentry.io || true
-
-      - name: 🔍 Debug — sentry-cli auth validation
-        continue-on-error: true
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: intuitui-labs
-          SENTRY_PROJECT: gurudevi-mobile
-        run: |
-          echo "=== sentry-cli auth info ==="
-          cd apps/gurudevi-mobile
-          pnpm exec sentry-cli info 2>&1 || true
-
-          echo ""
-          echo "=== Project list (confirms org/token are valid) ==="
-          pnpm exec sentry-cli projects list 2>&1 || true
-
       - name: 🚀 Sentry Sourcemap Upload
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -509,41 +389,18 @@ jobs:
           MAP_PATH="/tmp/sentry-artifacts/index.android.bundle.map"
           STRIP_PREFIX="$GITHUB_WORKSPACE/apps/gurudevi-mobile"
 
-          if [ ! -f "$BUNDLE_PATH" ]; then
-            echo "❌ Bundle not found at $BUNDLE_PATH"
-            exit 1
-          fi
-          if [ ! -f "$MAP_PATH" ]; then
-            echo "❌ Sourcemap not found at $MAP_PATH"
-            exit 1
-          fi
-          if [ -z "$SENTRY_AUTH_TOKEN" ]; then
-            echo "❌ SENTRY_AUTH_TOKEN not set — cannot upload"
-            exit 1
-          fi
-
           VERSION_CODE=$(cat /tmp/sentry-artifacts/versionCode.txt 2>/dev/null | tr -d '[:space:]')
           if [ -z "$VERSION_CODE" ]; then
-            echo "⚠️ versionCode not in artifacts, reading from app.json..."
             VERSION_CODE=$(node -p "require('./apps/gurudevi-mobile/app.json').expo.android.versionCode")
           fi
 
           VERSION=$(node -p "require('./apps/gurudevi-mobile/app.json').expo.version")
           RELEASE="org.edlove.gurudevi@${VERSION}+${VERSION_CODE}"
 
-          echo "📦 Uploading to Sentry"
-          echo "   Org     : intuitui-labs"
-          echo "   Project : gurudevi-mobile"
-          echo "   Release : $RELEASE"
-          echo "   Dist    : $VERSION_CODE"
-          echo "   Prefix  : $STRIP_PREFIX"
-
           cd apps/gurudevi-mobile
 
-          echo "Attempting modern Expo upload mode (debug-id-reference)..."
           UPLOAD_OK=0
           for ATTEMPT in 1 2 3; do
-            echo "Modern upload attempt $ATTEMPT/3"
             if pnpm exec sentry-cli sourcemaps upload \
               --org "$SENTRY_ORG" \
               --project "$SENTRY_PROJECT" \
@@ -559,9 +416,7 @@ jobs:
           done
 
           if [ "$UPLOAD_OK" -eq 0 ]; then
-            echo "⚠️ Modern upload mode failed. Falling back to release/dist mode..."
             for ATTEMPT in 1 2 3; do
-              echo "Legacy upload attempt $ATTEMPT/3"
               if pnpm exec sentry-cli sourcemaps upload \
                 --org "$SENTRY_ORG" \
                 --project "$SENTRY_PROJECT" \
@@ -579,8 +434,5 @@ jobs:
           fi
 
           if [ "$UPLOAD_OK" -ne 1 ]; then
-            echo "❌ Sentry sourcemap upload failed after all retries and fallback modes."
             exit 1
           fi
-
-          echo "✅ Sentry sourcemap upload complete."

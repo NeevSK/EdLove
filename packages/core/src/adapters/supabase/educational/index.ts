@@ -1,12 +1,14 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { EducationalRepository } from '../../../logic/domains/educational/ports';
-import { createClassroomRepository } from './classroomRepository';
-import { createLessonRepository } from './lessonRepository';
 import { createAssignmentRepository } from './assignmentRepository';
-import { createEnrollmentRepository } from './enrollmentRepository';
-import { createMaterialRepository } from './materialRepository';
 import { createAttendanceRepository } from './attendanceRepository';
+import { createSupabaseClassroomNotesRepository } from './classroomNotesRepository';
+import { createClassroomRepository } from './classroomRepository';
+import { createEnrollmentRepository } from './enrollmentRepository';
 import { createGradingRepository } from './gradingRepository';
+import { createLessonRepository } from './lessonRepository';
+import { createMaterialRepository } from './materialRepository';
+import { createSchoolRepository } from './schoolRepository';
 import { createStatsRepository } from './statsRepository';
 
 export const createSupabaseEducationalRepository = (
@@ -20,6 +22,8 @@ export const createSupabaseEducationalRepository = (
   const attendance = createAttendanceRepository(supabase);
   const grading = createGradingRepository(supabase);
   const stats = createStatsRepository(supabase);
+  const schools = createSchoolRepository(supabase);
+  const classroomNotes = createSupabaseClassroomNotesRepository(supabase);
 
   return {
     ...classrooms,
@@ -30,5 +34,7 @@ export const createSupabaseEducationalRepository = (
     ...attendance,
     ...grading,
     ...stats,
+    ...schools,
+    ...classroomNotes,
   };
 };

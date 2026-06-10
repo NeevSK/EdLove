@@ -1,15 +1,12 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
+import type { EnrollmentRecord } from '../../../logic/domains/educational/ports';
+import type { ClassroomGroup, ClassroomStudent } from '../../../logic/schemas/classroom.schema';
 import {
   ClassroomGroupSchema,
   ClassroomStudentSchema,
 } from '../../../logic/schemas/classroom.schema';
-import type {
-  ClassroomGroup,
-  ClassroomStudent,
-} from '../../../logic/schemas/classroom.schema';
 import { StudentSchema } from '../../../logic/schemas/student.schema';
-import type { EnrollmentRecord } from '../../../logic/domains/educational/ports';
 import { APIError } from '../../../types/API';
 
 export const createEnrollmentRepository = (supabase: SupabaseClient) => ({
@@ -113,7 +110,12 @@ export const createEnrollmentRepository = (supabase: SupabaseClient) => ({
     }) as EnrollmentRecord[];
   },
 
-  async addShadowStudent(classroomId: string, fullName: string, rollNumber?: string, notes?: string) {
+  async addShadowStudent(
+    classroomId: string,
+    fullName: string,
+    rollNumber?: string,
+    notes?: string,
+  ) {
     const { data, error } = await supabase
       .from('classroom_students')
       .insert([
@@ -224,9 +226,10 @@ export const createEnrollmentRepository = (supabase: SupabaseClient) => ({
       .eq('teacher_id', teacherId)
       .order('academic_year', { ascending: false });
 
-    if (error) throw new APIError('Failed to fetch historical professional records', error.code, error);
-    
-    return (data || []).map(record => ({
+    if (error)
+      throw new APIError('Failed to fetch historical professional records', error.code, error);
+
+    return (data || []).map((record) => ({
       ...record,
       school_name: record.school?.name,
     })) as any[];
@@ -239,9 +242,10 @@ export const createEnrollmentRepository = (supabase: SupabaseClient) => ({
       .eq('principal_id', principalId)
       .order('academic_year', { ascending: false });
 
-    if (error) throw new APIError('Failed to fetch historical governance records', error.code, error);
-    
-    return (data || []).map(record => ({
+    if (error)
+      throw new APIError('Failed to fetch historical governance records', error.code, error);
+
+    return (data || []).map((record) => ({
       ...record,
       school_name: record.school?.name,
     })) as any[];
@@ -266,9 +270,74 @@ export const createEnrollmentRepository = (supabase: SupabaseClient) => ({
       .order('academic_year', { ascending: false });
 
     if (error) throw new APIError('Failed to fetch classroom legacy history', error.code, error);
-    return (data || []).map(record => ({
+    return (data || []).map((record) => ({
       ...record,
       teacher_name: record.teacher?.full_name,
     }));
+  },
+
+  async requestSchoolJoin(userId: string, schoolId: string, capacity: string) {
+    const { data, error } = await supabase
+      .from('school_join_requests')
+      .insert([{ user_id: userId, school_id: schoolId, capacity, status: 'pending' }])
+      .select()
+      .single();
+    if (error) throw new APIError('Failed to request school join', error.code, error);
+    return data;
+  },
+
+  async updateSchoolJoinRequest(requestId: string, status: string) {
+    const { data, error } = await supabase
+      .from('school_join_requests')
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq('id', requestId)
+      .select()
+      .single();
+    if (error) throw new APIError('Failed to update school join request', error.code, error);
+    return data;
+  },
+
+  async requestClassroomJoin(
+    userId: string,
+    classroomId: string,
+    capacity: string,
+    subjectLabel?: string,
+  ) {
+    const { data, error } = await supabase
+      .from('classroom_join_requests')
+      .insert([
+        {
+          user_id: userId,
+          classroom_id: classroomId,
+          capacity,
+          subject_label: subjectLabel,
+          status: 'pending',
+        },
+      ])
+      .select()
+      .single();
+    if (error) throw new APIError('Failed to request classroom join', error.code, error);
+    return data;
+  },
+
+  async updateClassroomJoinRequest(requestId: string, status: string) {
+    const { data, error } = await supabase
+      .from('classroom_join_requests')
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq('id', requestId)
+      .select()
+      .single();
+    if (error) throw new APIError('Failed to update classroom join request', error.code, error);
+    return data;
+  },
+
+  async getClassroomJoinRequest(requestId: string) {
+    const { data, error } = await supabase
+      .from('classroom_join_requests')
+      .select('*')
+      .eq('id', requestId)
+      .single();
+    if (error) throw new APIError('Failed to fetch classroom join request', error.code, error);
+    return data;
   },
 });

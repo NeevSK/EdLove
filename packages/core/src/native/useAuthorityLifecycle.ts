@@ -2,21 +2,26 @@ import type { Session } from '@supabase/supabase-js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 import { authAPI } from '../api/auth';
+import { assertHighway } from '../api/highways';
 import { identityAPI } from '../api/identity';
-import { supabase } from '../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import type { SchoolType } from '../constants/SriLankanSchools';
 import { identifyUser, initPostHog, trackEvent } from '../lib/monitoring/posthog';
 import { clearSentryUser, initSentry, setSentryUser } from '../lib/monitoring/sentry';
 import { useAuthStore } from '../store/useAuthStore';
+import { usePermissionStore } from '../store/usePermissionStore';
 import { useStore } from '../store/useStore';
-import type { User } from '../types';
 import { APIError } from '../types/API';
+import type { Bond } from '../types/Identity';
+
+const isAnonymousSession = (currentSession: Session | null) =>
+  !!currentSession?.user && (currentSession.user.is_anonymous || !currentSession.user.email);
 
 /**
- * useAuthorityLifecycle
+ * useAuthorityLifecycle (Native)
  *
  * Orchestrates the "Reactive Capability Sync" and session management.
- * This is the heart of the POA system's reactivity.
+ * Optimized for Mobile performance via siphoned identity resolution.
  */
 export function useAuthorityLifecycle() {
   const [session, setSession] = useState<Session | null>(null);
@@ -31,69 +36,76 @@ export function useAuthorityLifecycle() {
   const setAuthSession = useStore((state) => state.setAuthSession);
   const setAuthSessionResolved = useStore((state) => state.setAuthSessionResolved);
 
-  const fetchAndSetUserProfile = useCallback(
-    async (internalUserId: string) => {
-      setIsProfileLoading(true);
-      try {
-        // 1. Resolve Sovereign Identity (Bonds & Perspectives)
-        const [profile, bonds, perspective] = await Promise.all([
-          identityAPI.getProfile(internalUserId),
-          identityAPI.getClassroomRoleSummary(internalUserId), // This handles bonds
-          identityAPI.getOnboardingStatus(internalUserId), // This handles perspective/state
-        ]);
+  const fetchAndSetUserProfile = useCallback(async () => {
+    setIsProfileLoading(true);
+    try {
+      assertHighway('identity_bootstrap', 'direct-api');
+      // 1. Resolve Sovereign Identity (Bonds & Perspectives)
+      // [SOVEREIGN-SIPHON] unified into identifyActiveCitizen
+      const identity = await identityAPI.identifyActiveCitizen();
 
-        if (profile) {
-          // 2. Update store
-          setUser(profile as any);
-          // Note: Perspective resolution might need a more direct call if classroom summary isn't enough
-          
-          const isEffectivelyOnboarded = !!profile.onboarding_completed;
-          if (isEffectivelyOnboarded) {
-            setOnboardingCompleted(true);
-          }
+      if (identity) {
+        // 2. Update store
+        // Cast simplified bonds to full Bond type - the store layer fills in additional fields
+        setUser(identity as unknown as Parameters<typeof setUser>[0]);
+        setAvailableBonds(identity.availableBonds as unknown as Bond[]);
 
-          if (profile.school_id) {
-            const { data: schoolData } = await supabase
-              .from('schools')
-              .select('type')
-              .eq('id', profile.school_id)
-              .single();
+        setPerspective({
+          activeBond: identity.activeBond as unknown as Bond | undefined,
+          availableBonds: identity.availableBonds as unknown as Bond[],
+        });
 
-            if (schoolData) {
-              setSchoolType(schoolData.type as SchoolType | null);
-            }
-          } else {
-            setSchoolType(null);
-          }
-
-          // Monitoring identification
-          setSentryUser({
-            id: profile.id,
-            email: profile.email,
-            username: profile.full_name,
+        // Load cryptographic permission snapshots asynchronously
+        usePermissionStore
+          .getState()
+          .loadPermissions(identity.id)
+          .catch((err) => {
+            console.error('[AuthorityLifecycle] Failed to load permissions snapshot:', err);
           });
 
-          identifyUser(profile.id, {
-            email: profile.email,
-            full_name: profile.full_name,
-            capacity: bonds.profile.active_bond?.capacity || null,
-            school_id: profile.school_id,
-          });
+        const isEffectivelyOnboarded = !!identity.onboarding_completed;
+        if (isEffectivelyOnboarded) {
+          setOnboardingCompleted(true);
         }
-      } catch (error) {
-        console.warn('\u274C Profile: Fetching encountered an error:', error);
-      } finally {
-        setIsProfileLoading(false);
+
+        if (identity.schoolId) {
+          const { data: schoolData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+            .from('schools')
+            .select('type')
+            .eq('id', identity.schoolId)
+            .single();
+
+          if (schoolData) {
+            setSchoolType(schoolData.type as SchoolType | null);
+          }
+        } else {
+          setSchoolType(null);
+        }
+
+        // Monitoring identification
+        setSentryUser({
+          id: identity.id,
+          email: identity.email,
+          username: identity.display_name,
+        });
+
+        identifyUser(identity.id, {
+          email: identity.email,
+          display_name: identity.display_name,
+          capacity: identity.activeBond?.capacity || null,
+          total_bonds: (identity.availableBonds || []).length,
+          school_id: identity.schoolId,
+        });
       }
-    },
-    [setUser, setPerspective, setAvailableBonds, setSchoolType, setOnboardingCompleted],
-  );
+    } catch (error) {
+      console.warn('❌ Profile: Fetching encountered an error:', error);
+    } finally {
+      setIsProfileLoading(false);
+    }
+  }, [setUser, setPerspective, setAvailableBonds, setSchoolType, setOnboardingCompleted]);
 
   const refreshProfile = useCallback(async () => {
-    const internalId = await identityAPI.getMyInternalId();
-    if (internalId) {
-      await fetchAndSetUserProfile(internalId);
-    }
+    await fetchAndSetUserProfile();
   }, [fetchAndSetUserProfile]);
 
   useEffect(() => {
@@ -110,15 +122,19 @@ export function useAuthorityLifecycle() {
     // 2. Initial Session Check
     const checkSession = async () => {
       try {
-        const initialSession = await authAPI.getAuthSession();
+        const initialSession = (await authAPI.getAuthSession()) as Session | null;
         setSession(initialSession);
         setAuthSession(initialSession);
 
-        if (initialSession?.user) {
-          const internalId = await identityAPI.getMyInternalId();
-          if (internalId) {
-            await fetchAndSetUserProfile(internalId);
-          }
+        if (initialSession?.user && !isAnonymousSession(initialSession)) {
+          await fetchAndSetUserProfile();
+        } else if (initialSession?.user) {
+          setUser(null);
+          setPerspective(null);
+          setAvailableBonds([]);
+          setSchoolType(null);
+          setOnboardingCompleted(false);
+          usePermissionStore.getState().clearPermissions();
         }
       } catch (error) {
         if (error instanceof APIError) {
@@ -126,7 +142,7 @@ export function useAuthorityLifecycle() {
             error.message?.includes('Refresh Token') ||
             (error as { status?: number }).status === 400
           ) {
-            await supabase.auth.signOut({ scope: 'local' });
+            await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.signOut({ scope: 'local' });
             setSession(null);
             setAuthSession(null);
           }
@@ -144,26 +160,32 @@ export function useAuthorityLifecycle() {
     // 3. Auth State Change Listener
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
-      setSession(currentSession);
-      setAuthSession(currentSession);
-      setAuthSessionResolved(true);
+    } = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.onAuthStateChange(
+      async (event, currentSession) => {
+        setSession(currentSession);
+        setAuthSession(currentSession);
+        setAuthSessionResolved(true);
 
-      if (currentSession?.user) {
-        const internalId = await identityAPI.getMyInternalId();
-        if (internalId) {
-          await fetchAndSetUserProfile(internalId);
+        if (currentSession?.user && !isAnonymousSession(currentSession)) {
+          await fetchAndSetUserProfile();
+        } else if (currentSession?.user) {
+          setUser(null);
+          setPerspective(null);
+          setAvailableBonds([]);
+          setSchoolType(null);
+          setOnboardingCompleted(false);
+          usePermissionStore.getState().clearPermissions();
+        } else if (event === 'SIGNED_OUT') {
+          clearSentryUser();
+          setUser(null);
+          setPerspective(null);
+          setAvailableBonds([]);
+          setSchoolType(null);
+          setOnboardingCompleted(false);
+          usePermissionStore.getState().clearPermissions();
         }
-      } else if (event === 'SIGNED_OUT') {
-        clearSentryUser();
-        identityAPI.clearCache();
-        setUser(null);
-        setPerspective(null);
-        setAvailableBonds([]);
-        setSchoolType(null);
-        setOnboardingCompleted(false);
-      }
-    });
+      },
+    );
 
     return () => subscription.unsubscribe();
   }, [
@@ -177,25 +199,13 @@ export function useAuthorityLifecycle() {
     fetchAndSetUserProfile,
   ]);
 
-  // 4. Realtime Profile Updates (Capability Sync) — 2026 JWT-Aware Pattern
-  //
-  //  CRITICAL FIX: When a user's capacity changes (e.g., promoted to 'principal'),
-  //  Supabase Realtime pushes the new row immediately. BUT the Supabase JWT still
-  //  has the OLD claims until explicitly refreshed.
-  //  If we only update Zustand, the UI shows 'Principal' but API calls carry a
-  //  'teacher' JWT and Supabase RLS rejects them.
-  //
-  //  Fix: detect capacity delta → refreshSession() FIRST → then refreshProfile().
+  // 4. Realtime Profile Updates (Capability Sync)
   const currentUser = useStore((state) => state.user);
   useEffect(() => {
     if (!currentUser?.id) return;
 
-    if (__DEV__) {
-      console.log('\uD83C\uDF38 Auth: Subscribing to profile changes for:', currentUser.id);
-    }
-
-    const channel = supabase
-      .channel(`user-profile-sync-${currentUser.id}-${Math.random().toString(36).slice(2, 9)}`)
+    const channel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      .channel(`user-profile-sync-${currentUser.id}`)
       .on(
         'postgres_changes',
         {
@@ -204,40 +214,32 @@ export function useAuthorityLifecycle() {
           table: 'users',
           filter: `id=eq.${currentUser.id}`,
         },
-        async (payload) => {
-          if (__DEV__) {
-            console.log('\uD83C\uDF38 Auth: Profile update received:', payload.new);
-          }
+        (payload) => {
+          const handlePayload = async () => {
+            // Detect privilege change
+            const oldCapacity = useAuthStore.getState().activeBond?.capacity;
+            const newCapacity = (payload.new as { capacity?: string })?.capacity;
+            const capacityChanged = Boolean(newCapacity && newCapacity !== oldCapacity);
 
-          // Detect privilege change
-          // NOTE: capacity lives on the Bond, not the User record.
-          // Read the current active capacity from the auth store's activeBond.
-          const oldCapacity = useAuthStore.getState().active_bond?.capacity;
-          const newCapacity = (payload.new as { capacity?: string })?.capacity;
-          const capacityChanged = Boolean(newCapacity && newCapacity !== oldCapacity);
-
-          if (capacityChanged) {
-            if (__DEV__) {
-              console.log(`\uD83D\uDD11 Auth: Capacity changed ${oldCapacity} -> ${newCapacity}. Refreshing JWT...`);
+            if (capacityChanged) {
+              try {
+                await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.refreshSession();
+              } catch (e) {
+                console.error('Auth: JWT refresh failed after capacity change', e);
+              }
             }
-            // Force a new JWT with updated custom claims so that
-            // RLS-dependent API calls inside refreshProfile() succeed.
-            try {
-              await supabase.auth.refreshSession();
-            } catch (e) {
-              console.error('Auth: JWT refresh failed after capacity change', e);
-            }
-          }
 
-          refreshProfile().catch((e) => {
-            console.error('Auth: Profile refresh failed after remote update', e);
-          });
+            refreshProfile().catch((e) => {
+              console.error('Auth: Profile refresh failed after remote update', e);
+            });
+          };
+          void handlePayload();
         },
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel).catch((e) => {
+      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.removeChannel(channel).catch((e) => {
         console.error('Auth: Failed to remove channel during cleanup', e);
       });
     };

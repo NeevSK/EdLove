@@ -41,7 +41,10 @@ export const getRandomInt = (min: number, max: number) => {
 /**
  * Generates a random string of specified length.
  */
-export const generateRandomString = (length: number, characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789') => {
+export const generateRandomString = (
+  length: number,
+  characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
+) => {
   let result = '';
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(secureRandom() * characters.length));

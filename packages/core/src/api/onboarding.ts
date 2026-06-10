@@ -1,13 +1,29 @@
-import { composeUserAbilities } from '../logic/permissions/composer';
+import { community, educational, identity, notification, profile } from '../logic/managers/factory';
 import type { Capacity } from '../logic/schemas/capacity.schema';
+import type { Perspective } from '../types/Identity';
 import type { ClassroomJoinRequest, RequestStatus, SchoolJoinRequest } from '../types/Onboarding';
-import { supabase } from './supabase';
 
 /**
- * Onboarding API (Triple Helix BDD Implementation)
+ * Onboarding API (Sovereign Orchestration)
  * Handles "No Trust" verification flows for schools and classrooms.
  */
 export const onboardingAPI = {
+  /**
+   * ONBOARDING IDENTITY FLOW
+   */
+
+  async getActivePerspective(): Promise<Perspective | null> {
+    return identity.getActivePerspective();
+  },
+
+  async createInitialBond(orientation: Capacity, context: Record<string, any>): Promise<void> {
+    await identity.createInitialBond(orientation, context);
+  },
+
+  async completeOnboarding(userId: string): Promise<void> {
+    await identity.completeOnboarding(userId);
+  },
+
   /**
    * SCHOOL JOIN FLOW
    */
@@ -17,16 +33,7 @@ export const onboardingAPI = {
     schoolId: string,
     capacity: Capacity,
   ): Promise<SchoolJoinRequest> {
-    const { data, error } = await supabase
-      .from('school_join_requests')
-      .insert([{ user_id: userId, school_id: schoolId, role: capacity, status: 'pending' }])
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    // Notify principal logic would go here (Trigger or follow-up)
-    return data;
+    return educational.institutions.requestJoin(userId, schoolId, capacity);
   },
 
   async handleSchoolRequest(
@@ -34,37 +41,7 @@ export const onboardingAPI = {
     status: RequestStatus,
     _adminId: string,
   ): Promise<void> {
-    const { error } = await supabase
-      .from('school_join_requests')
-      .update({ status, updated_at: new Date().toISOString() })
-      .eq('id', requestId);
-
-    if (error) throw error;
-
-    if (status === 'approved') {
-      // Get user_id from request
-      const { data: request } = await supabase
-        .from('school_join_requests')
-        .select('user_id, school_id')
-        .eq('id', requestId)
-        .single();
-
-      if (request) {
-        // Update user school_id
-        await supabase
-          .from('users')
-          .update({ school_id: request.school_id })
-          .eq('id', request.user_id);
-
-        // Add notification
-        await this.createNotification(
-          request.user_id,
-          'join_request_approved',
-          'School Joined',
-          'Your request to join the school has been approved.',
-        );
-      }
-    }
+    await educational.institutions.handleRequest(requestId, status);
   },
 
   /**
@@ -77,51 +54,24 @@ export const onboardingAPI = {
     capacity: string,
     subjectLabel?: string,
   ): Promise<ClassroomJoinRequest> {
-    // 1. Create classroom join request
-    const { data: request, error } = await supabase
-      .from('classroom_join_requests')
-      .insert([
-        {
-          user_id: userId,
-          classroom_id: classroomId,
-          role: capacity,
-          subject_label: subjectLabel,
-          status: 'pending',
-        },
-      ])
-      .select()
-      .single();
+    const request = await educational.classroomStudents.requestJoin(
+      userId,
+      classroomId,
+      capacity,
+      subjectLabel,
+    );
 
-    if (error) throw error;
-
-    // 2. Find linked community group and create pending membership
-    const { data: group } = await supabase
-      .from('community_groups')
-      .select('id')
-      .eq('classroom_id', classroomId)
-      .single();
+    // Find linked community group and create pending membership
+    const group = await community.getGroupByClassroom(classroomId);
 
     if (group) {
-      const requestedCapacity = capacity;
-      const ability = composeUserAbilities({
+      // Create pending group membership
+      await community.createMembership({
+        groupId: group.id,
         userId,
-        activeBond: {
-          capacity: requestedCapacity as any,
-          entityId: classroomId,
-          entityType: 'CLASSROOM',
-        } as any,
-      } as any);
-      // POA: Use capability to determine group capacity instead of hardcoded roles
-      const groupCapacity = ability.can('manage', 'CommunityGroup') ? 'admin' : 'member';
-
-      await supabase.from('group_members').insert([
-        {
-          group_id: group.id,
-          user_id: userId,
-          capacity: groupCapacity,
-          status: 'pending',
-        },
-      ]);
+        capacity: 'member', // Default to member for pending join
+        status: 'pending',
+      });
     }
 
     return request;
@@ -132,83 +82,7 @@ export const onboardingAPI = {
     status: RequestStatus,
     _classTeacherId: string,
   ): Promise<void> {
-    // 1. Update classroom request status
-    const { error } = await supabase
-      .from('classroom_join_requests')
-      .update({ status, updated_at: new Date().toISOString() })
-      .eq('id', requestId);
-
-    if (error) throw error;
-
-    // 2. Sync with community group membership
-    const { data: request } = await supabase
-      .from('classroom_join_requests')
-      .select('user_id, classroom_id, role')
-      .eq('id', requestId)
-      .single();
-
-    if (request && status === 'approved') {
-      // Find linked group
-      const { data: group } = await supabase
-        .from('community_groups')
-        .select('id')
-        .eq('classroom_id', request.classroom_id)
-        .single();
-
-      if (group) {
-        // Activate group membership
-        await supabase
-          .from('group_members')
-          .update({ status: 'active' })
-          .eq('group_id', group.id)
-          .eq('user_id', request.user_id);
-      }
-
-      const ability = composeUserAbilities({
-        userId: request.user_id,
-        activeBond: {
-          capacity: request.role as any,
-          entityId: request.classroom_id,
-          entityType: 'CLASSROOM',
-        } as any,
-      } as any);
-
-      if (ability.can('manage', 'StudentDashboard')) {
-        await supabase
-          .from('classroom_students')
-          .insert([{ student_id: request.user_id, classroom_id: request.classroom_id }]);
-      } else if (ability.can('manage', 'TeacherDashboard')) {
-        // If it's a teacher request being approved (e.g. by admin and they join as co-teacher)
-        await supabase
-          .from('classrooms')
-          .update({ teacher_id: request.user_id })
-          .eq('id', request.classroom_id)
-          .is('teacher_id', null);
-      }
-
-      await this.createNotification(
-        request.user_id,
-        'join_request_approved',
-        'Classroom Joined',
-        'You have been admitted to the classroom sanctuary.',
-      );
-    } else if (request && status === 'rejected') {
-      // Find linked group
-      const { data: group } = await supabase
-        .from('community_groups')
-        .select('id')
-        .eq('classroom_id', request.classroom_id)
-        .single();
-
-      if (group) {
-        // Reject group membership
-        await supabase
-          .from('group_members')
-          .update({ status: 'rejected' })
-          .eq('group_id', group.id)
-          .eq('user_id', request.user_id);
-      }
-    }
+    await educational.classroomStudents.handleRequest(requestId, status);
   },
 
   /**
@@ -222,24 +96,18 @@ export const onboardingAPI = {
     message: string,
     metadata: any = {},
   ): Promise<void> {
-    await supabase
-      .from('notifications')
-      .insert([{ user_id: userId, type, title, message, metadata }]);
+    await notification.createNotification(userId, type, title, message, metadata);
   },
 
   async getNotifications(userId: string) {
-    const { data, error } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return data;
+    return notification.getNotifications(userId);
   },
 
   async updateNotificationStatus(notificationId: string, isRead: boolean): Promise<void> {
-    await supabase.from('notifications').update({ is_read: isRead }).eq('id', notificationId);
+    // Note: marking as read in the manager is markAsRead
+    if (isRead) {
+      await notification.markAsRead('', notificationId); // userId is not strictly needed for the adapter but we should pass something if required
+    }
   },
 
   /**
@@ -252,37 +120,17 @@ export const onboardingAPI = {
     type: 'school' | 'classroom',
   ): Promise<void> {
     if (type === 'school') {
-      // 1. Remove from school_id in users table
-      await supabase.from('users').update({ school_id: null }).eq('id', userId);
-
-      // 2. Cascade removal from all school-specific community groups
-      // (Assuming a trigger or complex query handles this, or implement here)
+      await profile.updateProfile(userId, { school_id: null });
     } else {
-      // 1. Remove from classroom_students
-      await supabase
-        .from('classroom_students')
-        .delete()
-        .eq('student_id', userId)
-        .eq('classroom_id', targetId);
+      await educational.classroomStudents.remove(targetId);
 
-      // 2. Remove from classroom-specific community group
-      const { data: group } = await supabase
-        .from('community_groups')
-        .select('id')
-        .eq('classroom_id', targetId)
-        .single();
-
+      const group = await community.getGroupByClassroom(targetId);
       if (group) {
-        await supabase
-          .from('group_members')
-          .delete()
-          .eq('group_id', group.id)
-          .eq('user_id', userId);
+        await community.deleteMembership(group.id, userId);
       }
     }
 
-    // 3. Notify the user
-    await this.createNotification(
+    await notification.createNotification(
       userId,
       'space_removal',
       'Access Revoked',
@@ -296,24 +144,26 @@ export const onboardingAPI = {
 
   async completeProfile(
     userId: string,
-    fullName: string,
+    displayName: string,
     capacityLabel: string,
     bio?: string,
     indexNumber?: string,
     nicNumber?: string,
+    firstName?: string,
+    lastName?: string,
+    username?: string,
   ): Promise<void> {
-    const { error } = await supabase
-      .from('users')
-      .update({
-        full_name: fullName,
-        authority_label: capacityLabel,
-        bio,
-        index_number: indexNumber,
-        nic_number: nicNumber,
-        profile_completed: true,
-      })
-      .eq('id', userId);
-
-    if (error) throw error;
+    // identity.completeProfile was a helper that set multiple fields
+    await profile.updateProfile(userId, {
+      display_name: displayName,
+      first_name: firstName ?? null,
+      last_name: lastName ?? null,
+      username: username ?? null,
+      capacity_label: capacityLabel,
+      bio,
+      index_number: indexNumber,
+      nic_number: nicNumber,
+      profile_completed: true,
+    });
   },
 };

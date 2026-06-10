@@ -1,22 +1,94 @@
 {
   "name": "@repo/library",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./components": "./src/components/index.ts",
-    "./hooks": "./src/hooks/index.ts",
-    "./screens": "./src/screens/index.ts",
-    "./types": "./src/types/index.ts",
-    "./api": "./src/api/index.ts",
-    "./utils": "./src/utils/index.ts",
-    "./screens/LibraryScreen.web": "./src/screens/LibraryScreen.web.tsx",
-    "./screens/CollectionDetailScreen.web": "./src/screens/CollectionDetailScreen.web.tsx",
-    "./screens/PDFViewerScreen.web": "./src/screens/PDFViewerScreen.web.tsx",
-    "./screens/VideoPlayerScreen.web": "./src/screens/VideoPlayerScreen.web.tsx",
-    "./screens/MapScreen.web": "./src/screens/MapScreen.web.tsx",
-    "./screens/CuratorReviewScreen": "./src/screens/CuratorReviewScreen.tsx",
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./api": {
+      "types": "./src/api/index.ts",
+      "import": "./src/api/index.ts",
+      "default": "./src/api/index.ts"
+    },
+    "./screens/LibraryScreen": {
+      "import": "./src/screens/LibraryScreen.tsx",
+      "browser": "./src/screens/LibraryScreen.web.tsx",
+      "react-native": "./src/screens/LibraryScreen.tsx",
+      "default": "./src/screens/LibraryScreen.tsx"
+    },
+    "./screens/LibraryScreen.web": {
+      "types": "./src/screens/LibraryScreen.web.tsx",
+      "import": "./src/screens/LibraryScreen.web.tsx",
+      "default": "./src/screens/LibraryScreen.web.tsx"
+    },
+    "./screens/PDFViewerScreen": {
+      "import": "./src/screens/PDFViewerScreen.tsx",
+      "browser": "./src/screens/PDFViewerScreen.web.tsx",
+      "react-native": "./src/screens/PDFViewerScreen.tsx",
+      "default": "./src/screens/PDFViewerScreen.tsx"
+    },
+    "./screens/PDFViewerScreen.web": {
+      "types": "./src/screens/PDFViewerScreen.web.tsx",
+      "import": "./src/screens/PDFViewerScreen.web.tsx",
+      "default": "./src/screens/PDFViewerScreen.web.tsx"
+    },
+    "./screens/VideoPlayerScreen": {
+      "import": "./src/screens/VideoPlayerScreen.tsx",
+      "browser": "./src/screens/VideoPlayerScreen.web.tsx",
+      "react-native": "./src/screens/VideoPlayerScreen.tsx",
+      "default": "./src/screens/VideoPlayerScreen.tsx"
+    },
+    "./screens/VideoPlayerScreen.web": {
+      "types": "./src/screens/VideoPlayerScreen.web.tsx",
+      "import": "./src/screens/VideoPlayerScreen.web.tsx",
+      "default": "./src/screens/VideoPlayerScreen.web.tsx"
+    },
+    "./screens/MapScreen": {
+      "import": "./src/screens/MapScreen.tsx",
+      "browser": "./src/screens/MapScreen.web.tsx",
+      "react-native": "./src/screens/MapScreen.tsx",
+      "default": "./src/screens/MapScreen.tsx"
+    },
+    "./screens/MapScreen.web": {
+      "types": "./src/screens/MapScreen.web.tsx",
+      "import": "./src/screens/MapScreen.web.tsx",
+      "default": "./src/screens/MapScreen.web.tsx"
+    },
+    "./screens/CuratorReviewScreen": {
+      "types": "./src/screens/CuratorReviewScreen.tsx",
+      "import": "./src/screens/CuratorReviewScreen.tsx",
+      "default": "./src/screens/CuratorReviewScreen.tsx"
+    },
+    "./screens/CollectionDetailScreen": {
+      "import": "./src/screens/CollectionDetailScreen.tsx",
+      "browser": "./src/screens/CollectionDetailScreen.web.tsx",
+      "react-native": "./src/screens/CollectionDetailScreen.tsx",
+      "default": "./src/screens/CollectionDetailScreen.tsx"
+    },
+    "./screens/CollectionDetailScreen.web": {
+      "types": "./src/screens/CollectionDetailScreen.web.tsx",
+      "import": "./src/screens/CollectionDetailScreen.web.tsx",
+      "default": "./src/screens/CollectionDetailScreen.web.tsx"
+    },
+    "./screens/DocumentViewerScreen": {
+      "types": "./src/screens/DocumentViewerScreen.tsx",
+      "import": "./src/screens/DocumentViewerScreen.tsx",
+      "default": "./src/screens/DocumentViewerScreen.tsx"
+    },
+    "./screens/ResourceHubScreen": {
+      "types": "./src/screens/ResourceHubScreen.tsx",
+      "import": "./src/screens/ResourceHubScreen.tsx",
+      "default": "./src/screens/ResourceHubScreen.tsx"
+    },
+    "./*": {
+      "types": "./src/*.ts",
+      "import": "./src/*.js",
+      "default": "./src/*.js"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -32,38 +104,38 @@
     "test:ui": "vitest --ui"
   },
   "dependencies": {
+    "@expo/vector-icons": "15.1.1",
+    "@maplibre/maplibre-react-native": "10.4.2",
     "@repo/core": "workspace:*",
     "@repo/graphics": "workspace:*",
     "@repo/ui": "workspace:*",
-    "nativewind": "4.1.23",
-    "@tanstack/react-query": "^5.90.20",
-    "d3": "^7.9.0",
-    "lucide-react-native": "^0.563.0",
-    "react-i18next": "^16.5.4",
-    "react-native-gifted-charts": "^1.4.76",
-    "react-native-linear-gradient": "^2.8.3",
-    "react-native-gesture-handler": "2.30.0",
-    "@expo/vector-icons": "15.1.1",
-    "expo-linear-gradient": "~55.0.13",
-    "react-native-maps": "^1.27.2",
-    "@maplibre/maplibre-react-native": "^10.4.2",
-    "expo-blur": "~55.0.14",
-    "react-native-svg": "15.15.3",
+    "@supabase/postgrest-js": "2.102.1",
     "@supabase/supabase-js": "2.102.1",
-    "@supabase/postgrest-js": "2.102.1"
+    "@tanstack/react-query": "^5.101.0",
+    "d3": "^7.9.0",
+    "expo-blur": "~56.0.3",
+    "expo-linear-gradient": "~56.0.4",
+    "lucide-react-native": "^1.17.0",
+    "nativewind": "4.1.23",
+    "react-i18next": "^17.0.8",
+    "react-native-gesture-handler": "2.31.1",
+    "react-native-gifted-charts": "^1.4.77",
+    "react-native-linear-gradient": "^2.8.3",
+    "react-native-maps": "^1.27.2",
+    "react-native-svg": "15.15.4"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@types/d3": "^7.4.3",
-    "@types/react": "^19.2.14",
+    "@types/react": "^19.2.17",
     "@types/react-native": "0.83.2",
-    "eslint": "^9.38.0",
-    "react-i18next": "^16.5.4",
+    "eslint": "^10.4.1",
+    "react-i18next": "^17.0.8",
     "tailwindcss": "3.4.17",
-    "typescript": "^5.9.3",
-    "vitest": "^2.1.9",
-    "vite-tsconfig-paths": "^6.1.1"
+    "typescript": "^6.0.3",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.8"
   },
   "peerDependencies": {
     "@repo/ui": "*",
@@ -74,11 +146,11 @@
     "expo-sqlite": "*",
     "expo-video": "*",
     "lucide-react-native": "*",
-    "react": "19.2.0",
+    "react": "19.2.3",
     "react-i18next": "*",
-    "react-native": "0.83.2",
-    "react-native-gesture-handler": "2.30.0",
-    "react-native-reanimated": "3.16.7",
+    "react-native": "0.85.3",
+    "react-native-gesture-handler": "2.31.1",
+    "react-native-reanimated": "4.3.1",
     "@supabase/supabase-js": "2.102.1",
     "@supabase/postgrest-js": "2.102.1"
   }

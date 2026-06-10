@@ -1,11 +1,10 @@
 /**
  * navigationRef.ts
  *
- * Shared imperative navigation reference  used by components that need to
- * navigate outside the React tree (CommandPalette, deep-link handlers, etc.)
- * without creating a circular dependency with App.tsx.
+ * Archived imperative navigation reference kept only for legacy helper code.
+ * Prefer `router.push` / `router.replace` in live route code.
  */
-import { createNavigationContainerRef } from "@react-navigation/native";
+import { createNavigationContainerRef } from '@react-navigation/native';
 
 // biome-ignore lint/suspicious/noExplicitAny: generic navigation ref
 export const navigationRef = createNavigationContainerRef<any>();

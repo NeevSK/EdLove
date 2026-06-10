@@ -8,10 +8,10 @@
  * Stubbing the global before any Expo module loads prevents this error.
  */
 global.__ExpoImportMetaRegistry = new Proxy(
-	{},
-	{
-		get: () => undefined,
-		set: () => true,
-		has: () => false,
-	},
+  {},
+  {
+    get: () => undefined,
+    set: () => true,
+    has: () => false,
+  },
 );

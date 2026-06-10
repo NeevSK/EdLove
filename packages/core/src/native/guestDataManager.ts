@@ -11,7 +11,7 @@ let localIdCounter = 0;
 const createLocalId = () => {
   localIdCounter += 1;
   const suffix = globalThis.crypto?.randomUUID?.() ?? `seq-${localIdCounter}`;
-  return `local-${new Date().getTime()}-${suffix}`;
+  return `local-${Date.now()}-${suffix}`;
 };
 
 export interface GuestTimetablePeriod {

@@ -1,6 +1,6 @@
 {
   "name": "@repo/platform-mcp",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
   "description": "Unified Engineering Control Plane for Polymath Agents",
   "main": "dist/index.js",
@@ -21,17 +21,18 @@
     "clean": "rm -rf .turbo node_modules dist"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.6.0",
-    "dotenv": "^16.4.7",
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "@modelcontextprotocol/server-sequential-thinking": "2025.12.18",
+    "dotenv": "^17.4.2",
     "zod": "4.3.6"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
-    "typescript": "^5.9.3",
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "vitest": "^2.1.9",
+    "@types/node": "^25.9.2",
+    "eslint": "^10.4.1",
+    "typescript": "^6.0.3",
     "vite-tsconfig-paths": "^6.1.1",
-    "eslint": "^9.38.0"
+    "vitest": "^4.1.8"
   }
 }

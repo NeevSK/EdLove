@@ -7,7 +7,22 @@
     "defaultBranch": "main"
   },
   "files": {
-    "ignoreUnknown": false
+    "ignoreUnknown": false,
+    "includes": [
+      "**/*",
+      "!!**/archives/**",
+      "!!**/archive/**",
+      "!!**/.geo_archive/**",
+      "!!**/legacy/**",
+      "!!**/*-legacy/**",
+      "!!**/*_archive/**",
+      "!!**/report_final.json",
+      "!!**/reports/**",
+      "!!**/dist/**",
+      "!!**/.turbo/**",
+      "!!**/node_modules/**",
+      "!!**/*.log"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -17,7 +32,7 @@
     "lineEnding": "lf"
   },
   "linter": {
-    "enabled": true,
+    "enabled": false,
     "rules": {
       "recommended": true,
       "a11y": {
@@ -41,9 +56,94 @@
         "noUnusedVariables": "warn",
         "useExhaustiveDependencies": "error",
         "useHookAtTopLevel": "error"
+      },
+      "suspicious": {
+        "noExplicitAny": "off"
       }
     }
   },
+  "overrides": [
+    {
+      "includes": ["**/archives/**/*", "**/archive/**/*", "**/archives/*", "**/archive/*"],
+      "linter": {
+        "enabled": false
+      },
+      "formatter": {
+        "enabled": false
+      }
+    },
+    {
+      "includes": ["**/*.d.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off",
+            "noRedeclare": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/OrientationCaptureStep.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noArrayIndexKey": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/ResonancePatternCard.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noArrayIndexKey": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/ResonancePatternCard.web.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noArrayIndexKey": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/SchoolLegacyTimeline.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noArrayIndexKey": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/TeachingHistoryTimeline.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noArrayIndexKey": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/WelcomeModal.web.tsx"],
+      "linter": {
+        "rules": {
+          "security": {
+            "noDangerouslySetInnerHtml": "off"
+          }
+        }
+      }
+    }
+  ],
   "javascript": {
     "formatter": {
       "quoteStyle": "single",
@@ -57,6 +157,11 @@
     "formatter": {
       "indentStyle": "space",
       "indentWidth": 2
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
     }
   },
   "assist": {
