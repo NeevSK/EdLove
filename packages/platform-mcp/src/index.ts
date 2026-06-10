@@ -219,10 +219,9 @@ class PolymathPlatformServer {
         alwaysRun: true,
         command: 'node',
         args: [
-          'C:\\Users\\Naween\\projects\\polymath-platform\\scripts\\mcp-proxy.mjs',
-          'pnpm',
-          'dlx',
-          '@modelcontextprotocol/server-sequential-thinking',
+          path.join(__dirname, '..', '..', '..', 'scripts', 'mcp-proxy.mjs'),
+          'node',
+          path.join(__dirname, '..', 'node_modules', '@modelcontextprotocol', 'server-sequential-thinking', 'dist', 'index.js'),
         ],
       },
       {
@@ -251,11 +250,13 @@ class PolymathPlatformServer {
         envKey: 'EXPO_TOKEN',
         command: 'node',
         args: [
-          'C:\\Users\\Naween\\projects\\polymath-platform\\scripts\\mcp-proxy.mjs',
+          path.join(__dirname, '..', '..', '..', 'scripts', 'mcp-proxy.mjs'),
           'npx',
           '-y',
           'mcp-remote',
           'https://mcp.expo.dev/mcp',
+          '--header',
+          'Authorization: Bearer ${env.EXPO_TOKEN}',
         ],
       },
     ];
@@ -267,6 +268,36 @@ class PolymathPlatformServer {
           `[Gateway] Skipping ${serverConf.name} server (missing ${serverConf.envKey})`,
         );
         continue;
+      }
+
+      if (serverConf.name === 'expo' && token) {
+        try {
+          const checkRes = await fetch('https://mcp.expo.dev/mcp', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              id: 1,
+              method: 'initialize',
+              params: {
+                protocolVersion: '2024-11-05',
+                capabilities: {},
+                clientInfo: { name: 'gateway-probe', version: '1.0.0' }
+              }
+            })
+          });
+          if (checkRes.status === 401) {
+            console.error(
+              `[Gateway] ⚠️  Skipping expo server: The provided EXPO_TOKEN is invalid or expired. Please update it in packages/platform-mcp/.env.`
+            );
+            continue;
+          }
+        } catch (e: any) {
+          console.error(`[Gateway] Expo token validation probe failed:`, e.message);
+        }
       }
 
       try {

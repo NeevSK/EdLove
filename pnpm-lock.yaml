@@ -74,7 +74,7 @@ overrides:
   '@supabase/postgrest-js': 2.102.1
   jest-expo: ~56.0.4
 
-pnpmfileChecksum: sha256-RoJ8I368NnMeoZdIklVYUKEXptIiXwEdP8vpfKeL35M=
+pnpmfileChecksum: sha256-LMZBInkV/QO4DYWgBa6fhZLBp86hZMuos2uDCkUwxQo=
 
 patchedDependencies:
   '@noble/hashes@1.8.0': 8f29ec539b57f03e3a9292181436650de05718872694552273344b31198d92aa
@@ -2098,6 +2098,9 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: 1.29.0
         version: 1.29.0(zod@4.3.6)
+      '@modelcontextprotocol/server-sequential-thinking':
+        specifier: 2025.12.18
+        version: 2025.12.18
       dotenv:
         specifier: ^17.4.2
         version: 17.4.2
@@ -5238,6 +5241,10 @@ packages:
     peerDependenciesMeta:
       '@cfworker/json-schema':
         optional: true
+
+  '@modelcontextprotocol/server-sequential-thinking@2025.12.18':
+    resolution: {integrity: sha512-eFR5I9Z9czXQhDn05wahetZU83YNPO+p1HLSEZZEM5q9U1CLF7zv9+TrmSBfRoPaksEAoM8pTWQ33lRCScSFeQ==}
+    hasBin: true
 
   '@mongodb-js/saslprep@1.4.9':
     resolution: {integrity: sha512-RXSxsokhAF/4nWys8An8npsqOI33Ex1Hlzqjw2pZOO+GKtMAR2noGnUdsFiGwsaO/xXI+56mtjTmDA3JXJsvmA==}
@@ -21342,6 +21349,16 @@ snapshots:
       zod: 4.3.6
       zod-to-json-schema: 3.25.2(zod@4.3.6)
     transitivePeerDependencies:
+      - supports-color
+
+  '@modelcontextprotocol/server-sequential-thinking@2025.12.18':
+    dependencies:
+      '@modelcontextprotocol/sdk': 1.29.0(zod@4.3.6)
+      chalk: 5.6.2
+      yargs: 17.7.2
+      zod: 4.3.6
+    transitivePeerDependencies:
+      - '@cfworker/json-schema'
       - supports-color
 
   '@mongodb-js/saslprep@1.4.9':

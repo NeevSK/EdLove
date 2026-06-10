@@ -27,13 +27,13 @@ describe('profile POA enforcement', () => {
       schoolType: null,
     } as unknown as TotalState);
 
-    const updateSpy = vi.spyOn(rawProfileAPI, 'updateProfile');
+    const fetchSpy = vi.spyOn(global, 'fetch');
 
     await expect(profileAPI.updateProfile(USER_ID, { bio: 'forbidden' })).rejects.toThrow(
       'Access Denied',
     );
 
-    expect(updateSpy).not.toHaveBeenCalled();
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 
   it('blocks social link mutation for guests before service execution', async () => {

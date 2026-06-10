@@ -1,4 +1,6 @@
+import { useStore } from '../store/useStore';
 import { APIError } from '../types/API';
+import { SovereignError } from '../types/Errors';
 import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
 
 /**
@@ -11,6 +13,11 @@ const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export const lessonsAPI = {
   async create(lesson: any) {
+    const state = useStore.getState();
+    if (!state.user || state.user.is_anonymous) {
+      throw SovereignError.unauthorized('create', 'Lesson');
+    }
+
     const res = await (client.api as any).educational.lessons.$post({
       json: lesson,
     });

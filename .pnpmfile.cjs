@@ -6,6 +6,14 @@ module.exports = {
         pkg.peerDependencies.jest = '>=27.0.0 || ^30.0.0';
       }
 
+      // Fix @modelcontextprotocol/server-sequential-thinking missing dependency on zod
+      if (pkg.name === '@modelcontextprotocol/server-sequential-thinking') {
+        if (!pkg.dependencies) {
+          pkg.dependencies = {};
+        }
+        pkg.dependencies.zod = '^3.23.8 || ^4.0.0';
+      }
+
       // Fix eslint-plugin-react-native-a11y peer dependency on eslint
       if (pkg.name === 'eslint-plugin-react-native-a11y') {
         pkg.peerDependencies.eslint = '>=3.0.0';

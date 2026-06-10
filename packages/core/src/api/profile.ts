@@ -2,6 +2,7 @@ import { profile } from '../logic/managers/factory';
 import { useStore } from '../store/useStore';
 import type { SocialLink } from '../types';
 import { APIError } from '../types';
+import { SovereignError } from '../types/Errors';
 import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
 
 /**
@@ -29,6 +30,11 @@ export const profileAPI = {
   },
 
   async updateProfile(id: string, updates: Record<string, any>) {
+    const state = useStore.getState();
+    if (!state.user || state.user.is_anonymous) {
+      throw SovereignError.unauthorized('update', 'User');
+    }
+
     const res = await (client.api as any).profile.users[':id'].$patch({
       param: { id },
       json: updates,
