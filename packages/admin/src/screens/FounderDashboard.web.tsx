@@ -9,8 +9,6 @@
  * Personal wellbeing (mood, energy, vision, philosophy) lives in FounderSelfView.
  */
 
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   useAllSchoolsQuery,
   useEcosystemPulseQuery,
@@ -19,7 +17,7 @@ import {
   useSentinelGovernanceQuery,
 } from '@repo/core/api';
 import { usePermissions, useStore, useTemporalStore } from '@repo/core/logic';
-import type { FounderStackParamList, School } from '@repo/core/types';
+import type { School } from '@repo/core/types';
 
 import { FounderGlow } from '@repo/ui/components/FounderGlow';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
@@ -44,12 +42,13 @@ import {
 import { Icon as SanctuaryIcon } from '@repo/ui/primitives';
 
 import { useState } from 'react';
+import { useRouter } from 'expo-router';
 import { GlobalCreateModal } from '../components';
 
 type DashboardTab = 'pulse' | 'institutions' | 'staff' | 'sentinel';
 
 export default function FounderDashboardWeb() {
-  const navigation = useNavigation<NativeStackNavigationProp<FounderStackParamList>>();
+  const router = useRouter();
   const { can } = usePermissions();
   // Use user from useStore to get the full user object with full_name, etc.
   const user = useStore((state) => state.user);
@@ -1128,10 +1127,7 @@ export default function FounderDashboardWeb() {
                     key={school.id}
                     school={school}
                     onPress={() =>
-                      navigation.navigate('FounderSchoolDashboard', {
-                        schoolId: String(school.id),
-                        userId: user?.id ?? '',
-                      })
+                      router.push('/workspace')
                     }
                   />
                 ))}

@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import { communityAPI } from '@repo/community';
 import { schoolAPI } from '@repo/core/api';
 import { useSchoolCreation } from '@repo/core/hooks';
@@ -14,6 +13,7 @@ import { Box, Heading, HStack, Icon, ScrollView, Spinner, Text, VStack } from '@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'expo-router';
 
 // Step Components
 import StepBasicInfo from '../components/school/StepBasicInfo';
@@ -31,7 +31,7 @@ const STEP_LABELS = [
 
 export default function SchoolCreationScreen() {
   const { t } = useTranslation();
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const user = useStore((s) => s.user);
   const setUser = useStore((s) => s.setUser);
   const setDemoMode = useStore((s) => s.setDemoMode);
@@ -188,7 +188,7 @@ export default function SchoolCreationScreen() {
 
             <Box className="w-full mt-6 gap-4">
               <SanctuaryButton
-                onPress={() => navigation.navigate('ClassroomList')}
+                onPress={() => router.push('/workspace')}
                 size="lg"
                 className="w-full"
               >

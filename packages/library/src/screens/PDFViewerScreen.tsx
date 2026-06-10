@@ -1,26 +1,20 @@
-import { useNavigation } from '@react-navigation/native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMediaDownloader } from '@repo/core/hooks';
 
 import { PdfViewer } from '@repo/ui/components/media/PdfViewer';
 import { useCallback, useState } from 'react';
 
-interface PDFViewerScreenProps {
-  route: {
-    params: {
-      resourceId: string;
-      title: string;
-      url: string;
-      creator?: string;
-    };
-  };
-}
-
 /**
  * PDFViewerScreen - Thin navigation shell around the shared UI PdfViewer.
  */
-export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
-  const { resourceId, title, url, creator } = route.params;
-  const navigation = useNavigation();
+export default function PDFViewerScreen() {
+  const { resourceId, title, url, creator } = useLocalSearchParams<{
+    resourceId: string;
+    title: string;
+    url: string;
+    creator?: string;
+  }>();
+  const router = useRouter();
 
   const [isBookmarked, setIsBookmarked] = useState(false);
 
@@ -32,8 +26,8 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
     });
 
   const handleBack = useCallback(() => {
-    (navigation as any).goBack();
-  }, [navigation]);
+    router.back();
+  }, [router]);
 
   const handleDownload = useCallback(() => {
     void startDownload();

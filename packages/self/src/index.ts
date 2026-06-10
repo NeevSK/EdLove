@@ -6,3 +6,5 @@ export * from './hooks';
 export * from './screens';
 export * from './types';
 export * from './views';
+export { useWisdom } from './hooks/useWisdom';
+export { default } from './screens/SelfScreen';

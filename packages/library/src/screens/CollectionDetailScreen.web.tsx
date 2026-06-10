@@ -1,4 +1,4 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useStore } from '@repo/core/logic';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
@@ -33,9 +33,8 @@ function LoadingState() {
  * Uses responsive grid for resource cards.
  */
 export default function CollectionDetailScreenWeb() {
-  const route = useRoute<any>();
-  const navigation = useNavigation<any>();
-  const { id } = route?.params || {};
+  const router = useRouter();
+  const { id } = useLocalSearchParams<{ id: string }>();
 
   const { user } = useStore();
   const theme = useTheme();
@@ -47,20 +46,26 @@ export default function CollectionDetailScreenWeb() {
     (resource: LibraryResource) => {
       if (!resource.url) return;
       if (resource.type === 'pdf') {
-        navigation.navigate('PDFViewer', {
-          resourceId: resource.id,
-          title: resource.title,
-          url: resource.url,
-          creator: resource.creator_name,
+        router.push({
+          pathname: '/library/document/[resourceId]',
+          params: {
+            resourceId: resource.id,
+            title: resource.title,
+            url: resource.url,
+            creator: resource.creator_name ?? '',
+          },
         });
         return;
       }
       if (resource.type === 'video' || resource.type === 'movie_trailer') {
-        navigation.navigate('VideoPlayer', {
-          resourceId: resource.id,
-          title: resource.title,
-          url: resource.url,
-          creator: resource.creator_name ?? '',
+        router.push({
+          pathname: '/library/video/[resourceId]',
+          params: {
+            resourceId: resource.id,
+            title: resource.title,
+            url: resource.url,
+            creator: resource.creator_name ?? '',
+          },
         });
         return;
       }
@@ -128,7 +133,7 @@ export default function CollectionDetailScreenWeb() {
           <HStack className="gap-3 w-full">
             <SanctuaryButton
               variant="outline"
-              onPress={() => navigation.goBack()}
+              onPress={() => router.back()}
               leftIcon={ArrowLeft}
               className="flex-1"
             >
@@ -154,7 +159,7 @@ export default function CollectionDetailScreenWeb() {
           actions={
             <SanctuaryButton
               variant="ghost"
-              onPress={() => navigation.goBack()}
+              onPress={() => router.back()}
               leftIcon={ArrowLeft}
               size="sm"
             >

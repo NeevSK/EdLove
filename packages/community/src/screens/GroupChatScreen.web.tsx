@@ -11,17 +11,15 @@
  *  - Supabase postgres_changes subscription for instant messages
  */
 
-import { useNavigation, useRoute } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { supabase } from '@repo/core/api';
 import { useStore, useTemporalStore } from '@repo/core/logic';
-import type { CommunityStackParamList } from '@repo/core/types';
 
 import { formatTimestamp } from '@repo/ui/utils/dateTimeUtils';
 import { getInitialsFromName } from '@repo/ui/utils/stringUtils';
 
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
 import { communityAPI } from '../api/community';
 import HeaderMoreMenu from '../components/HeaderMoreMenu';
 
@@ -33,16 +31,10 @@ interface ChatMessage {
   author?: { full_name?: string | null; avatar_url?: string | null } | null;
 }
 
-type GroupChatRoute = {
-  key: string;
-  name: 'GroupChat';
-  params: { groupId: string; groupName: string };
-};
-
 export default function GroupChatScreen() {
-  const route = useRoute<GroupChatRoute>();
-  const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
-  const { groupId, groupName } = route.params;
+  const params = useLocalSearchParams<{ conversationId?: string; groupName?: string }>();
+  const groupId = Array.isArray(params.conversationId) ? params.conversationId[0] : params.conversationId;
+  const groupName = Array.isArray(params.groupName) ? params.groupName[0] : params.groupName;
   const { user } = useStore();
   const { viewDate, viewScale, isPastView } = useTemporalStore();
 
@@ -173,7 +165,7 @@ export default function GroupChatScreen() {
       >
         <button
           type="button"
-          onClick={() => navigation.goBack()}
+          onClick={() => router.back()}
           style={{
             background: 'none',
             border: 'none',
@@ -259,9 +251,9 @@ export default function GroupChatScreen() {
                   type="button"
                   onClick={() =>
                     !isOwn &&
-                    navigation.navigate('PublicProfile', {
-                      id: msg.author_id,
-                      type: 'user',
+                    router.push({
+                      pathname: '/community/profile/[id]',
+                      params: { id: msg.author_id },
                     })
                   }
                   style={{

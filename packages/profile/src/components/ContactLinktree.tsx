@@ -15,9 +15,7 @@ import {
   Edit2,
   ExternalLink,
   Globe,
-  Instagram,
   Link,
-  Linkedin,
   Mail,
   MessagesSquare,
   Plus,
@@ -64,13 +62,13 @@ const PROVIDER_CONFIG: Record<
     getUri: (value) => `whatsapp://send?phone=${value.replace(/\D/g, '')}`,
   },
   linkedin: {
-    icon: Linkedin,
+    icon: Link,
     color: '#0077B5', // Brand color
     label: 'LinkedIn',
     getUri: (value) => (value.startsWith('http') ? value : `https://www.linkedin.com/in/${value}`),
   },
   instagram: {
-    icon: Instagram,
+    icon: Link,
     color: '#E4405F', // Brand color
     label: 'Instagram',
     getUri: (value) => (value.startsWith('http') ? value : `https://instagram.com/${value}`),

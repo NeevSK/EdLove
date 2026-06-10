@@ -1,10 +1,7 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { supabase } from '@repo/core/api';
 import { usePermissions } from '@repo/core/logic';
 
 import { useStore } from '@repo/core/store';
-import type { CommunityStackParamList } from '@repo/core/types';
 import { GiveThuthimalModal } from '@repo/profile';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import LoadingOverlay from '@repo/ui/components/LoadingOverlay';
@@ -35,6 +32,7 @@ import {
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
 import { communityAPI } from '../api/community';
 
 /**
@@ -47,18 +45,10 @@ import { communityAPI } from '../api/community';
  */
 export default function UserPublicProfileScreen() {
   const { t } = useTranslation();
-  const route = useRoute<any>();
-  const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
-  const params = (route as any)?.params ?? {};
-  const {
-    userId: userIdParam,
-    id,
-    userName,
-  } = params as {
-    userId?: string;
-    id?: string;
-    userName?: string;
-  };
+  const params = useLocalSearchParams<{ userId?: string; id?: string; userName?: string }>();
+  const userIdParam = Array.isArray(params.userId) ? params.userId[0] : params.userId;
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
+  const userName = Array.isArray(params.userName) ? params.userName[0] : params.userName;
   const userId = userIdParam || id || '';
   const { context, can } = usePermissions();
   const currentUserId = context.userId;
@@ -127,9 +117,12 @@ export default function UserPublicProfileScreen() {
     setInitiatingDM(true);
     try {
       const conversationId = await communityAPI.getOrCreateDirectConversation(userId);
-      navigation.navigate('DirectMessage', {
-        conversationId: conversationId,
-        userName: user?.full_name || userName || 'User',
+      router.push({
+        pathname: '/community/direct-messages',
+        params: {
+          conversationId,
+          userName: user?.full_name || userName || 'User',
+        },
       });
     } catch (error) {
       console.error('[UserProfile.web] DM Error:', error);

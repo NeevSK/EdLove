@@ -13,8 +13,7 @@ import {
   posthogAnalytics as initTracker,
   trackEvent,
 } from '@repo/analytics';
-import { GlobalProvider, pushNotification, useAuth, useStore } from '@repo/core/logic';
-import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
+import { GlobalProvider, coreRuntime, pushNotification, useAuth, useStore } from '@repo/core/logic';
 import { clearSentryUser, initSentry, injectPostHog, setSentryUser } from '@repo/core/monitoring';
 import { bootstrapPlatform, storage } from '@repo/core/native';
 import { usePermissionStore } from '@repo/core/store/usePermissionStore';

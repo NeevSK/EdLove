@@ -1,7 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { usePermissions } from '@repo/core/logic';
-import type { CommunityStackParamList } from '@repo/core/types';
 import LoadingOverlay from '@repo/ui/components/LoadingOverlay';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useSanctuaryToast } from '@repo/ui/hooks';
@@ -9,6 +6,7 @@ import { Info, Settings, Shield, UserCheck, UserX } from '@repo/ui/icons';
 import { Box, Button, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils';
 import { useCallback, useEffect, useReducer, useState } from 'react';
+import { router } from 'expo-router';
 import { communityAPI } from '../api/community';
 import type { CommunityGroup, GroupJoinPolicy, GroupJoinRequest, GroupMember } from '../types';
 import CreateGroupModal from './CreateGroupModal';
@@ -76,7 +74,6 @@ function reducer(state: State, action: Action): State {
 }
 
 export default function GroupMemberManagement({ groupId }: GroupMemberManagementProps) {
-  const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
   const { showToast } = useSanctuaryToast();
   const [state, dispatch] = useReducer(reducer, initialState);
   const { group, pendingMembers, activeMembers, loading, policy } = state;
@@ -195,9 +192,12 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
 
   const handleProfileNavigation = useCallback(
     (id: string) => {
-      navigation.navigate('PublicProfile', { id, type: 'user' });
+      router.push({
+        pathname: '/community/profile/[id]',
+        params: { id },
+      });
     },
-    [navigation],
+    [],
   );
 
   const handleUpdateSuccess = useCallback((updatedGroup: CommunityGroup) => {

@@ -12,7 +12,7 @@
  * No expo-file-system or expo-sharing imports here.
  */
 
-import { useNavigation } from '@react-navigation/native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
@@ -21,21 +21,14 @@ import { Box, HStack, useTheme } from '@repo/ui/primitives';
 import { Bookmark, ExternalLink, RefreshCw } from 'lucide-react-native';
 import { useState } from 'react';
 
-interface PDFViewerScreenProps {
-  route: {
-    params: {
-      resourceId: string;
-      title: string;
-      url: string;
-      creator?: string;
-    };
-  };
-  navigation?: any;
-}
-
-export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
-  const { title, url } = route.params;
-  const navigation = useNavigation();
+export default function PDFViewerScreen() {
+  const { title, url } = useLocalSearchParams<{
+    resourceId: string;
+    title: string;
+    url: string;
+    creator?: string;
+  }>();
+  const router = useRouter();
   const theme = useTheme();
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [iframeKey, setIframeKey] = useState(0); // bump to reload iframe
@@ -52,7 +45,7 @@ export default function PDFViewerScreen({ route }: PDFViewerScreenProps) {
         title={title}
         subtitle="Document Viewer"
         showBack
-        onBack={() => (navigation as any).goBack()}
+        onBack={() => router.back()}
         rightAction={
           <Box
             className="rounded-full overflow-hidden"

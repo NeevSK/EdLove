@@ -1,5 +1,5 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { usePermissions, useStore } from '@repo/core/logic';
+import { router, useLocalSearchParams } from 'expo-router';
 
 import { StaffPresencePulse } from '@repo/people';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
@@ -24,10 +24,12 @@ import { useSocialLinks } from '../hooks/useSocialLinks';
 import type { UserProfile } from '../types';
 
 export default function FullProfileScreenWeb() {
-  const route = useRoute<any>();
-  const navigation = useNavigation<any>();
-  const { profile: initialParams } = route.params || {};
-  const initialProfile = initialParams as unknown as UserProfile;
+  const params = useLocalSearchParams<{ id?: string; userId?: string; full_name?: string }>();
+  const profileId = Array.isArray(params.id) ? params.id[0] : params.id || params.userId || '';
+  const initialProfile = {
+    id: profileId,
+    full_name: Array.isArray(params.full_name) ? params.full_name[0] : params.full_name || 'Profile',
+  } as UserProfile;
 
   const { t } = useTranslation();
   const _colors = useThemedColors();
@@ -87,7 +89,7 @@ export default function FullProfileScreenWeb() {
 
   return (
     <ScreenWrapper scroll={false}>
-      <GlobalHeader title={t('profile.fullProfile')} showBack onBack={() => navigation.goBack()} />
+      <GlobalHeader title={t('profile.fullProfile')} showBack onBack={() => router.back()} />
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         <Box className="max-w-[800px] mx-auto w-full p-6">
           <VStack space="2xl">

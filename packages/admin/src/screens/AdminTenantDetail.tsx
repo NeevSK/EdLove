@@ -1,11 +1,11 @@
-import { useNavigation } from '@react-navigation/native';
 import { Text, VStack } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
 import { useAdminWorkspaceSnapshot } from '../admin/adminRepository';
 import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
 
 export default function AdminTenantDetail() {
   const { snapshot: data } = useAdminWorkspaceSnapshot();
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   if (!data) return null;
   const tenant = data.recentSchools[0];
 
@@ -15,7 +15,7 @@ export default function AdminTenantDetail() {
       title="Tenant directory drill-in"
       description="Inspect a single tenant in context, with enough detail to support maintenance, customer care, and controlled fixes."
       caution="Cross-tenant admin access should be used to maintain the platform, not to impersonate tenant operators."
-      onBack={() => navigation.goBack()}
+      onBack={() => router.back()}
       stats={[
         {
           label: 'Known tenants',

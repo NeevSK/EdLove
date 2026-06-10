@@ -8,12 +8,12 @@
  * Navigation: ClassroomStack \u2192 Timetable
  */
 
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { TimetableScheduler } from '@repo/ai';
 import { usePermissions, useStore } from '@repo/core/logic';
 
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const PERIODS = [1, 2, 3, 4, 5, 6, 7];
@@ -27,14 +27,14 @@ const DAY_SHORT: Record<string, string> = {
 };
 
 export default function TimetableScreen() {
-  const navigation = useNavigation<any>();
-  const route = useRoute<any>();
+  const router = useRouter();
   const { t } = useTranslation();
   const { user } = useStore();
   const { context } = usePermissions();
   const _hasBonds = context.bonds.length > 0;
 
-  const schoolId: string = route.params?.schoolId ?? user?.school_id ?? '';
+  const { schoolId: routeSchoolId } = useLocalSearchParams<{ schoolId?: string }>();
+  const schoolId: string = routeSchoolId ?? user?.school_id ?? '';
 
   const [draft, setDraft] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -102,7 +102,7 @@ export default function TimetableScreen() {
         }}
       >
         <button
-          onClick={() => navigation.goBack()}
+          onClick={() => router.back()}
           style={{
             background: 'none',
             border: 'none',

@@ -65,6 +65,7 @@
     "date-fns": "^4.4.0",
     "drizzle-orm": "^0.45.2",
     "expo-haptics": "*",
+    "expo-router": "~56.2.9",
     "lucide-react-native": "^1.17.0",
     "react-native-reanimated": "^4.4.1"
   },

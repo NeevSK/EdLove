@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import { communityAPI, identityAPI } from '@repo/core/api';
 import {
   RELIGIOUS_AFFILIATIONS,
@@ -40,6 +39,7 @@ import {
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
 import { useMemo, useState } from 'react';
+import { useRouter } from 'expo-router';
 
 interface CreateSchoolModalProps {
   isOpen: boolean;
@@ -59,7 +59,7 @@ export default function CreateSchoolModal({
   onSuccess,
   initialData,
 }: CreateSchoolModalProps) {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const user = useStore((state) => state.user);
   const setUser = useStore((state) => state.setUser);
   const isEdit = !!initialData;
@@ -97,13 +97,7 @@ export default function CreateSchoolModal({
     if (!createdIds?.schoolId) return;
     const sId = createdIds.schoolId;
     handleClose();
-    navigation.navigate(
-      'FounderSchoolDashboard' as never,
-      {
-        schoolId: sId,
-        userId: user?.id ?? '',
-      } as never,
-    );
+    router.push('/workspace');
   };
 
   const handleSubmit = async () => {

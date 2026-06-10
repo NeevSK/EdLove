@@ -10,17 +10,15 @@
  *  - Supabase subscription on 'direct_messages' table
  */
 
-import { useNavigation, useRoute } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { socialAPI, supabase } from '@repo/core/api';
 import { useStore, useTemporalStore } from '@repo/core/logic';
-import type { CommunityStackParamList } from '@repo/core/types';
 
 import { formatTimestamp } from '@repo/ui/utils/dateTimeUtils';
 import { getInitialsFromName } from '@repo/ui/utils/stringUtils';
 
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
 import { communityAPI } from '../api/community';
 import HeaderMoreMenu from '../components/HeaderMoreMenu';
 
@@ -32,16 +30,12 @@ interface ChatMessage {
   author?: { full_name?: string | null; avatar_url?: string | null } | null;
 }
 
-type DMRoute = {
-  key: string;
-  name: 'DirectMessage';
-  params: { conversationId: string; userName: string };
-};
-
 export default function DirectMessageScreen() {
-  const route = useRoute<DMRoute>();
-  const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
-  const { conversationId, userName } = route.params;
+  const params = useLocalSearchParams<{ conversationId?: string; userName?: string }>();
+  const conversationId = Array.isArray(params.conversationId)
+    ? params.conversationId[0]
+    : params.conversationId;
+  const userName = Array.isArray(params.userName) ? params.userName[0] : params.userName;
   const { user } = useStore();
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -198,7 +192,7 @@ export default function DirectMessageScreen() {
       >
         <button
           type="button"
-          onClick={() => navigation.goBack()}
+          onClick={() => router.back()}
           style={{
             background: 'none',
             border: 'none',

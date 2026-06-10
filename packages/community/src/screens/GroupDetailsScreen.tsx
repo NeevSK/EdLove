@@ -1,5 +1,3 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { supabase } from '@repo/core/api';
 import {
   clearPendingGateAction,
@@ -9,7 +7,6 @@ import {
 } from '@repo/core/logic';
 
 import { useStore } from '@repo/core/store';
-import type { CommunityStackParamList } from '@repo/core/types';
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
@@ -39,6 +36,7 @@ import {
 } from '@repo/ui/primitives';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { router, useLocalSearchParams } from 'expo-router';
 import { FadeInDown } from 'react-native-reanimated';
 import { communityAPI } from '../api/community';
 import { CommentSheet } from '../components/CommentSheet';
@@ -48,19 +46,10 @@ import PostCard from '../components/PostCard';
 import SocialShieldModal from '../components/SocialShieldModal';
 import { useCommunity } from '../hooks/useCommunity';
 
-type GroupDetailsRouteProp = {
-  key: string;
-  name: 'GroupDetails';
-  params: {
-    groupId: string;
-  };
-};
-
 export default function GroupDetailsScreen() {
-  const route = useRoute<GroupDetailsRouteProp>();
-  const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
+  const { groupId: groupIdParam } = useLocalSearchParams<{ groupId?: string }>();
   const { t } = useTranslation();
-  const { groupId } = route.params;
+  const groupId = Array.isArray(groupIdParam) ? groupIdParam[0] : groupIdParam;
   const { can, flags } = usePermissions();
   const user = useStore((state) => state.user);
   const { showToast } = useLotusToast();
@@ -113,14 +102,17 @@ export default function GroupDetailsScreen() {
     void fetchPosts(groupId);
   }, [groupId, user?.id, fetchPosts]);
 
-  const handleBack = React.useCallback(() => navigation.goBack(), [navigation]);
+  const handleBack = React.useCallback(() => router.back(), []);
   const handleShowAdmin = React.useCallback(() => setShowAdmin(true), []);
   const handleHideAdmin = React.useCallback(() => setShowAdmin(false), []);
   const handleShowQR = React.useCallback(() => setShowQRModal(true), []);
   const handleHideQR = React.useCallback(() => setShowQRModal(false), []);
   const handleChatNavigate = React.useCallback(() => {
-    navigation.navigate('GroupChat', { groupId, groupName: group?.name });
-  }, [navigation, groupId, group?.name]);
+    router.push({
+      pathname: '/community/chat/[conversationId]',
+      params: { conversationId: groupId ?? '', groupName: group?.name ?? 'Circle' },
+    });
+  }, [groupId, group?.name]);
 
   const handlePostLike = React.useCallback(
     (postId: string) => {
@@ -158,7 +150,7 @@ export default function GroupDetailsScreen() {
           t('community.groups.joinAuthRequired') ||
           "To join this group, let's create an account first!",
       });
-      navigation.navigate('Auth' as any);
+      router.push('/auth');
       return;
     }
 
@@ -187,7 +179,7 @@ export default function GroupDetailsScreen() {
         type: 'error',
       });
     }
-  }, [canJoinGroup, user?.id, groupId, group?.join_policy, showToast, t, navigation, joinGroup]);
+  }, [canJoinGroup, user?.id, groupId, group?.join_policy, showToast, t, joinGroup]);
 
   useEffect(() => {
     let cancelled = false;

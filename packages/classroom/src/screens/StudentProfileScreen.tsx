@@ -1,4 +1,3 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { api, type StudentObservation } from '@repo/core/api';
 import {
   type StudentGrade,
@@ -28,13 +27,19 @@ import { hapticMedium } from '@repo/ui/utils/haptics';
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 export default function StudentProfileScreen() {
   const { t } = useTranslation();
   const colors = useThemedColors();
-  const navigation = useNavigation();
-  const route = useRoute<any>();
-  const { studentId, classroomId, studentName, classroomStudentId } = route.params;
+  const router = useRouter();
+  const { studentId = '', classroomId = '', studentName = 'Student', classroomStudentId = '' } =
+    useLocalSearchParams<{
+      studentId?: string;
+      classroomId?: string;
+      studentName?: string;
+      classroomStudentId?: string;
+    }>();
   const { viewDate } = useTemporalStore();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -368,7 +373,7 @@ export default function StudentProfileScreen() {
     <VStack className="flex-1 bg-phase-canvas">
       <Box className="p-md pt-xl border-b border-phase-border bg-phase-surface">
         <HStack className="items-center gap-md mb-lg">
-          <Pressable onPress={() => navigation.goBack()} onPressIn={() => hapticMedium()}>
+          <Pressable onPress={() => router.back()} onPressIn={() => hapticMedium()}>
             <Icon as={ArrowLeft} size="xl" className="text-phase-text-primary" />
           </Pressable>
           <VStack>

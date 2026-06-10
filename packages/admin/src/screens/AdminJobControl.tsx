@@ -1,10 +1,10 @@
-import { useNavigation } from '@react-navigation/native';
 import { Box, Text, VStack } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
 import { useAdminWorkspaceSnapshot } from '../admin/adminRepository';
 import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
 
 export default function AdminJobControl() {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const { snapshot: data } = useAdminWorkspaceSnapshot();
 
   if (!data) {
@@ -17,7 +17,7 @@ export default function AdminJobControl() {
       title="Guarded operator actions"
       description="Approve, retry, resync, or schedule remediation tasks with explicit operator intent and a clear audit trail."
       caution="Do not mutate tenant state casually here. Prefer preview, confirm, and then execute only when the scope is understood."
-      onBack={() => navigation.goBack()}
+      onBack={() => router.back()}
       stats={[
         {
           label: 'Approvals',

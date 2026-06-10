@@ -1,4 +1,3 @@
-import { type NavigationProp, useNavigation } from '@react-navigation/native';
 import { api, communityAPI, onboardingAPI, schoolAPI } from '@repo/core/api';
 import {
   incrementInviteCodeUsage,
@@ -6,7 +5,7 @@ import {
   useStore,
   validateInviteCode,
 } from '@repo/core/logic';
-import type { ClassroomStackParamList, School } from '@repo/core/types';
+import type { School } from '@repo/core/types';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import {
   ArrowRight,
@@ -32,6 +31,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
 
 import type React from 'react';
 import { useCallback, useReducer, useState } from 'react';
@@ -951,19 +951,15 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
 
 export default function NoSchoolView() {
   const { can } = usePermissions();
-  const navigation = useNavigation<NavigationProp<ClassroomStackParamList>>();
+  const router = useRouter();
 
   const canCreateSchool = can('create', 'School');
   const canCreateClassroom = can('create', 'Classroom');
   const canJoinClassroom = can('submit', 'AssignmentSubmission');
 
   const handleSuccess = useCallback(() => {
-    try {
-      navigation.navigate('Classroom' as never);
-    } catch {
-      /* noop */
-    }
-  }, [navigation]);
+    router.push('/workspace');
+  }, [router]);
 
   const META = canCreateSchool
     ? {

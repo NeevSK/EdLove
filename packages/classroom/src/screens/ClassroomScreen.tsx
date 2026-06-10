@@ -1,4 +1,3 @@
-import { type NavigationProp, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useFeatureAccess } from '@repo/core/hooks';
 import { FeatureGuard, usePermissions, useStore } from '@repo/core/logic';
 
@@ -11,6 +10,8 @@ import { hapticLight } from '@repo/ui/utils/haptics';
 
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useFocusEffect } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { ClaimInviteModal, ClassroomList, CreateClassroomModal } from '../components';
 import CreateSchoolModal from '../components/CreateSchoolModal';
 import { useClassroomRoleData } from '../hooks';
@@ -21,7 +22,7 @@ import { useClassroomWorkspaceSurfaces } from '../workspace/useClassroomWorkspac
 
 export default function ClassroomScreen() {
   const { t } = useTranslation();
-  const navigation = useNavigation<NavigationProp<Record<string, unknown>>>();
+  const router = useRouter();
   const { can, context } = usePermissions();
   const canForWorkspace = (action: string, subject: string, _field?: string) =>
     can(action as Parameters<typeof can>[0], subject as Parameters<typeof can>[1]);
@@ -151,7 +152,7 @@ export default function ClassroomScreen() {
                 type="anonymous"
                 onAction={() => {
                   hapticLight();
-                  navigation.navigate('Auth' as never);
+                  router.push('/auth');
                 }}
               />
             </Box>
@@ -167,11 +168,8 @@ export default function ClassroomScreen() {
             <ClassroomList
               refreshTrigger={refreshTrigger}
               onClassroomPress={(classroom) => {
-                const nav = navigation as unknown as {
-                  navigate(route: string, params: Record<string, unknown>): void;
-                };
-                nav.navigate('Classroom', {
-                  screen: 'ClassroomDashboard',
+                router.push({
+                  pathname: '/workspace',
                   params: {
                     classroomId: classroom.id,
                     classroomName: classroom.name,

@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import { usePermissions, useStore } from '@repo/core/logic';
 
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
@@ -11,6 +10,7 @@ import PrincipalDashboardWebSurface from './PrincipalDashboard.web';
 // Direct imports for sub-views
 import StudentDashboardWeb from './StudentDashboard.web';
 import TeacherDashboardWeb from './TeacherDashboard.web';
+import { useRouter } from 'expo-router';
 
 /**
  * ClassroomScreen.web.tsx (POA 100% Realized)
@@ -21,7 +21,7 @@ import TeacherDashboardWeb from './TeacherDashboard.web';
 export default function ClassroomScreenWeb() {
   const { can, context } = usePermissions();
   const { user } = useStore();
-  const navigation = useNavigation<any>();
+  const router = useRouter();
 
   const hasSchoolId = !!user?.school_id && user.school_id !== 'mock-school';
   const isWanderer = !!context.isAnonymous || !hasSchoolId;
@@ -51,7 +51,7 @@ export default function ClassroomScreenWeb() {
           </Text>
           <Pressable
             className="bg-sanctuarySaffron px-6 py-4 rounded-[24px] flex-row items-center gap-3 mt-4"
-            onPress={() => navigation.navigate('Auth')}
+            onPress={() => router.push('/auth')}
           >
             <Text className="text-white font-black">
               {!hasBonds ? 'Get started' : 'Join School'}

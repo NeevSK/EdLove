@@ -1,7 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
-import type { ClassroomStackParamList } from '@repo/core/types';
 
 import {
   TeacherAdminPortalModal,
@@ -26,6 +23,7 @@ import {
 import { Theme } from '@repo/ui/theme';
 import { useTranslation } from 'react-i18next';
 import { FadeInDown } from 'react-native-reanimated';
+import { useRouter } from 'expo-router';
 import { CreateClassroomModal } from '../components';
 import { TeacherWorkspaceShell } from '../components/teacher/TeacherWorkspaceShell';
 import {
@@ -44,8 +42,7 @@ interface TeacherDashboardProps {
 
 export default function TeacherDashboard({ onRefresh, schoolId, userId }: TeacherDashboardProps) {
   const { t } = useTranslation();
-  const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
-  const nav: any = navigation;
+  const router = useRouter();
   const colors = useThemedColors();
   const {
     isDemoMode,
@@ -73,7 +70,7 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
     hapticLight,
     isGuest,
     isPastView,
-  } = useTeacherWorkspaceShell(nav as any, onRefresh);
+  } = useTeacherWorkspaceShell(onRefresh);
 
   const dashboardSurfaces = useTeacherDashboardSurfaces({
     isDemoMode,
@@ -88,13 +85,13 @@ export default function TeacherDashboard({ onRefresh, schoolId, userId }: Teache
     setShowEchoHistory,
     setIsBreathingOpen,
     onOpenLibrary: () => {
-      navigation.getParent()?.navigate('Library' as never);
+      router.push('/library');
     },
     handleClassroomsLoaded,
     onOpenClassroom: (classroom) => {
       hapticLight();
-      navigation.navigate('Classroom' as any, {
-        screen: 'TeacherClassroomDashboard',
+      router.push({
+        pathname: '/workspace',
         params: {
           classroomId: classroom.id,
           classroomName: classroom.name,

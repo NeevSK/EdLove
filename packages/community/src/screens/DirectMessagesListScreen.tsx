@@ -5,9 +5,6 @@
  * Refactored for Sanctuary V3.
  */
 
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { CommunityStackParamList } from '@repo/core/types';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { ChevronRight, MessageSquare } from '@repo/ui/icons';
@@ -15,12 +12,12 @@ import { Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/pr
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import { router } from 'expo-router';
 import { communityAPI } from '../api/community';
 import type { DirectConversation } from '../types';
 
 export default function DirectMessagesListScreen() {
   const { t } = useTranslation();
-  const navigation = useNavigation<NativeStackNavigationProp<CommunityStackParamList>>();
   const [conversations, setConversations] = useState<DirectConversation[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -58,9 +55,12 @@ export default function DirectMessagesListScreen() {
       <Animated.View entering={FadeInDown.delay(index * 100).springify()}>
         <Pressable
           onPress={() =>
-            navigation.navigate('DirectMessage', {
-              conversationId: item.id,
-              userName: name,
+            router.push({
+              pathname: '/community/direct-messages',
+              params: {
+                conversationId: item.id,
+                userName: name,
+              },
             })
           }
           className="mx-5 mb-3"

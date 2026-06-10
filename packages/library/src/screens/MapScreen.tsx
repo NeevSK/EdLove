@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { FeatureGuard, useStore } from '@repo/core/logic';
 import {
   CaptureEngine,
@@ -89,7 +89,7 @@ const PERSPECTIVES: Perspective[] = [
 ];
 export default function MapScreen() {
   const theme = useTheme();
-  const navigation = useNavigation();
+  const router = useRouter();
   const { width, height } = useResponsive();
   const showToast = useStore((state) => state.showToast);
   const { reality } = useReality();
@@ -234,7 +234,7 @@ export default function MapScreen() {
         title="Knowledge Cosmos"
         subtitle="Isomorphic Visualization Engine"
         showBack
-        onBack={() => navigation.goBack()}
+        onBack={() => router.back()}
         rightAction={
           <FeatureGuard feature="isProMember">
             <Pressable
@@ -333,8 +333,9 @@ export default function MapScreen() {
                     className="h-14 rounded-[28px] justify-center items-center mt-2 bg-phase-accent active:bg-phase-accent/90 shadow-lg"
                     onPress={() => {
                       if (selectedNode.type === 'resource') {
-                        (navigation as any).navigate('ResourceDetail', {
-                          id: selectedNode.id,
+                        router.push({
+                          pathname: '/library/resource/[resourceId]',
+                          params: { resourceId: selectedNode.id },
                         });
                       }
                     }}

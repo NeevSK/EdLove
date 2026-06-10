@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { useSafeMutation } from '@repo/core/hooks';
 
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
@@ -38,7 +38,7 @@ const getTomorrowDate = (): string => {
 };
 
 export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const { t } = useTranslation();
 
   // Resilient Data Hook
@@ -109,7 +109,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
 
   if (!userId) {
     return (
-      <PositiveInvitation type="anonymous" onAction={() => navigation.navigate('Auth' as never)} />
+      <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />
     );
   }
 

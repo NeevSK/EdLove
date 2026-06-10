@@ -1,4 +1,3 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { api, growthSignalsAPI } from '@repo/core/api';
 import { type StudentAttendance, useStore } from '@repo/core/logic';
 import type { AttendanceRecord } from '@repo/core/types';
@@ -7,6 +6,7 @@ import { Check, ChevronLeft, Clock, Save, X } from '@repo/ui/icons';
 import { Icon } from '@repo/ui/primitives';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 type Status = 'present' | 'absent' | 'late';
 
@@ -103,9 +103,9 @@ const STATUS_CONFIG: Record<
 };
 
 export default function AttendanceScreenWeb() {
-  const route = useRoute<any>();
-  const navigation = useNavigation<any>();
-  const { classroomId, classroomName } = route.params ?? {};
+  const router = useRouter();
+  const { classroomId = '', classroomName = 'Classroom' } =
+    useLocalSearchParams<{ classroomId?: string; classroomName?: string }>();
   const { user } = useStore();
 
   const [state, dispatch] = useReducer(attendanceReducer, initialState);
@@ -234,7 +234,7 @@ export default function AttendanceScreenWeb() {
           }}
         >
           <button
-            onClick={() => navigation.goBack()}
+            onClick={() => router.back()}
             style={{
               display: 'flex',
               alignItems: 'center',

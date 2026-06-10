@@ -34,15 +34,15 @@ export interface SovereignRoute {
   method: 'get' | 'post' | 'put' | 'delete' | 'patch';
   summary?: string;
   request?: {
-    body?: z.ZodType<any>;
-    query?: z.ZodType<any>;
-    params?: z.ZodType<any>;
-    headers?: z.ZodType<any>;
+    body?: z.ZodTypeAny;
+    query?: z.ZodTypeAny;
+    params?: z.ZodTypeAny;
+    headers?: z.ZodTypeAny;
   };
   responses: Record<
     number,
     {
-      schema: z.ZodType<any>;
+      schema: z.ZodTypeAny;
       description: string;
     }
   >;
@@ -73,9 +73,9 @@ export function adaptToHono(route: SovereignRoute) {
             content: { 'application/json': { schema: route.request.body } },
           }
         : undefined,
-      query: route.request?.query,
-      params: route.request?.params,
-      headers: route.request?.headers,
+      query: route.request?.query as any,
+      params: route.request?.params as any,
+      headers: route.request?.headers as any,
     },
     responses: Object.fromEntries(
       Object.entries(route.responses).map(([code, res]) => [

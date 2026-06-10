@@ -1,7 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useStore } from '@repo/core/logic';
-import type { FounderStackParamList, School } from '@repo/core/types';
+import type { School } from '@repo/core/types';
+import { useRouter } from 'expo-router';
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
@@ -37,7 +36,7 @@ export default function FounderDashboard() {
   const user = useStore((s) => s.user);
   const setBreathingOpen = useStore((s) => s.setBreathingOpen);
   const _isDemoMode = useStore((s) => s.isDemoMode);
-  const navigation = useNavigation<NativeStackNavigationProp<FounderStackParamList>>();
+  const router = useRouter();
 
   const { stats, schools, isLoading, refreshData } = useFounderEcosystemStats();
   const [searchQuery, _setSearchQuery] = useState('');
@@ -59,12 +58,9 @@ export default function FounderDashboard() {
 
   const handleNavigateToSchool = React.useCallback(
     (schoolId: string) => {
-      navigation.navigate('FounderSchoolDashboard', {
-        schoolId: schoolId,
-        userId: user?.id || 'founder-id',
-      });
+      router.push('/workspace');
     },
-    [navigation, user?.id],
+    [router],
   );
 
   const handleOpenInstitute = React.useCallback(() => {

@@ -25,3 +25,5 @@ export const LIBRARY_UI_CATEGORIES_LOCAL = [
   { id: 'reading', en: 'Articles' },
   { id: 'note', en: 'Personal Notes' },
 ];
+
+export { default } from './screens/LibraryScreen';

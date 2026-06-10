@@ -4,7 +4,7 @@
  * Standardized to Zero-Legacy: purged sx props and fixed syntax corruption in handlers.
  */
 
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 
@@ -38,7 +38,7 @@ interface JoyJarProps {
 }
 
 export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarProps) {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const { t } = useTranslation();
   const { context } = usePermissions();
   const activeUserId = userId || context.userId;
@@ -126,7 +126,7 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
 
   if (!activeUserId) {
     return (
-      <PositiveInvitation type="anonymous" onAction={() => navigation.navigate('Auth' as never)} />
+      <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />
     );
   }
 

@@ -1,14 +1,12 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useStore } from '@repo/core/logic';
-import type { GuardianStackParamList } from '@repo/core/types';
+import { useRouter } from 'expo-router';
 import { Box, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 
 import { useGuardianWorkspaceData } from '../../guardian';
 import { GuardianRoomShell } from './GuardianRoomShell';
 
 export default function GuardianStudentsScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<GuardianStackParamList>>();
+  const router = useRouter();
   const user = useStore((state) => state.user);
   const { dashboard } = useGuardianWorkspaceData(user?.id || '');
 
@@ -28,7 +26,7 @@ export default function GuardianStudentsScreen() {
             : '0%',
         },
       ]}
-      onBack={() => navigation.goBack()}
+      onBack={() => router.back()}
     >
       <ScrollView className="flex-1">
         <VStack className="gap-3 pb-8">
@@ -36,10 +34,7 @@ export default function GuardianStudentsScreen() {
             <Pressable
               key={student.studentId}
               onPress={() =>
-                navigation.navigate('GuardianStudentDetail', {
-                  studentId: student.studentId,
-                  studentName: student.name,
-                })
+                router.push('/workspace')
               }
               className="active:opacity-80"
             >

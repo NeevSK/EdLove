@@ -2,9 +2,10 @@
 title: "Bootstrap and Entrypoint Standard"
 status: "active"
 created: 2026-05-22
-updated: 2026-05-22
+updated: 2026-06-10
 author: "Naween"
-tags: [reorganized]
+scribe: "Antigravity"
+tags: [bootstrap, entrypoint, expo-router, routing, architecture]
 ---
 
 # Bootstrap and Entrypoint Standard
@@ -31,8 +32,8 @@ The repo contains multiple apps, so this standard is intentionally hierarchical:
 The standard assumes:
 
 - Expo React Native as the app substrate
-- React Navigation 7 as the navigation layer for both mobile and web
-- no Expo Router
+- Expo Router as the navigation layer for `gurudevi-mobile`
+- app-owned route groups and layout files
 
 That means the app shell is Expo, but routing and screen orchestration remain explicit and app-owned.
 
@@ -162,14 +163,14 @@ Use the shared file only for the platform-agnostic contract.
 
 ### 6. Navigation Is App-Owned
 
-React Navigation 7 is the navigation system.
+Expo Router is the navigation system for `gurudevi-mobile`.
 
 The app entry and bootstrap standard must respect that:
 
-- navigation containers stay in the app
+- route groups and layout files stay in the app
 - linking config stays in the app
 - route guards stay in the app
-- Expo Router does not enter the architecture
+- shell chrome should live in Expo Router layouts
 
 ### 7. App Startup Must Be Deterministic
 
@@ -202,7 +203,7 @@ For the web build of the same app:
 - use the same app tree when possible
 - keep web-only shims in platform files
 - avoid importing native-only modules in web entry evaluation
-- let React Navigation 7 handle web routing and linking
+- let Expo Router handle web routing and linking
 
 ### Additional Apps
 
@@ -300,8 +301,8 @@ A startup implementation is compliant when:
 - `App.tsx` does not duplicate registration
 - shared utilities can be imported before runtime registration
 - platform-specific behavior lives in platform files
-- React Navigation 7 remains the router layer
-- Expo Router is not introduced
+- Expo Router remains the router layer
+- React Navigation is only used where Expo Router internally depends on it or for isolated compatibility code
 
 ## Migration Order
 

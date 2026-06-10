@@ -1,10 +1,7 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { supabase } from '@repo/core/api';
 import { usePermissions } from '@repo/core/logic';
 
 import { useStore } from '@repo/core/store';
-import type { CommunityStackParamList } from '@repo/core/types';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
@@ -26,10 +23,9 @@ import { Box, HStack, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
 import { communityAPI } from '../api/community';
 import SocialShieldModal from '../components/SocialShieldModal';
-
-type Nav = NativeStackNavigationProp<CommunityStackParamList, 'UserProfile'>;
 
 interface PublicUser {
   id: string;
@@ -53,13 +49,10 @@ const CAPACITY_LABELS: Record<string, string> = {
 
 export default function UserPublicProfileScreen() {
   const { t } = useTranslation();
-  const navigation = useNavigation<Nav>();
-  const route = useRoute<any>();
-  const {
-    userId: userIdParam,
-    id,
-    userName,
-  } = (route as { params?: { userId?: string; id?: string; userName?: string } }).params ?? {};
+  const params = useLocalSearchParams<{ userId?: string; id?: string; userName?: string }>();
+  const userIdParam = Array.isArray(params.userId) ? params.userId[0] : params.userId;
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
+  const userName = Array.isArray(params.userName) ? params.userName[0] : params.userName;
   const userId = userIdParam || id || '';
   const { can, flags } = usePermissions();
   const currentUserId = useStore((state) => state.user?.id);
@@ -132,9 +125,12 @@ export default function UserPublicProfileScreen() {
     setInitiatingDM(true);
     try {
       const conversationId = await communityAPI.getOrCreateDirectConversation(userId);
-      navigation.navigate('DirectMessage', {
-        conversationId,
-        userName: user?.full_name || userName || 'Explorer',
+      router.push({
+        pathname: '/community/direct-messages',
+        params: {
+          conversationId,
+          userName: user?.full_name || userName || 'Explorer',
+        },
       });
     } catch (err) {
       console.error('Failed to initiate DM', err);
@@ -159,10 +155,10 @@ export default function UserPublicProfileScreen() {
   return (
     <ScreenWrapper noTopInset scroll={false} className="bg-phase-canvas">
       <GlobalHeader
-        title={user?.full_name ?? userName ?? 'Profile'}
-        subtitle={capacityLabel}
-        showBack
-        onBack={() => navigation.goBack()}
+      title={user?.full_name ?? userName ?? 'Profile'}
+      subtitle={capacityLabel}
+      showBack
+        onBack={() => router.back()}
       />
 
       {loading ? (

@@ -1049,6 +1049,9 @@ importers:
       expo-clipboard:
         specifier: ~56.0.4
         version: 56.0.4(expo@56.0.9)(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
+      expo-router:
+        specifier: ~56.2.9
+        version: 56.2.9(bc328bf03c7a57ad768a5f5510a86863)
       lucide-react-native:
         specifier: ^1.17.0
         version: 1.17.0(react-native-svg@15.15.4(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
@@ -1335,6 +1338,9 @@ importers:
       expo-image-picker:
         specifier: ~56.0.16
         version: 56.0.16(expo@56.0.9)
+      expo-router:
+        specifier: ~56.2.9
+        version: 56.2.9(bc328bf03c7a57ad768a5f5510a86863)
       lucide-react-native:
         specifier: ^1.17.0
         version: 1.17.0(react-native-svg@15.15.4(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
@@ -1891,6 +1897,9 @@ importers:
       expo-linking:
         specifier: ~56.0.13
         version: 56.0.13(expo@56.0.9)(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
+      expo-router:
+        specifier: ~56.2.9
+        version: 56.2.9(bc328bf03c7a57ad768a5f5510a86863)
       expo-sharing:
         specifier: ~56.0.16
         version: 56.0.16(expo@56.0.9)(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)(typescript@6.0.3)
@@ -2157,9 +2166,6 @@ importers:
       '@react-native-async-storage/async-storage':
         specifier: 2.2.0
         version: 2.2.0(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.17)(react@19.2.3))
-      '@react-navigation/native':
-        specifier: '*'
-        version: 7.3.0(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
       '@repo/core':
         specifier: workspace:*
         version: link:../core
@@ -2190,6 +2196,9 @@ importers:
       expo-image-picker:
         specifier: ~56.0.16
         version: 56.0.16(expo@56.0.9)
+      expo-router:
+        specifier: ~56.2.9
+        version: 56.2.9(bc328bf03c7a57ad768a5f5510a86863)
       lucide-react-native:
         specifier: ^1.17.0
         version: 1.17.0(react-native-svg@15.15.4(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
@@ -2476,6 +2485,9 @@ importers:
       expo-haptics:
         specifier: ~56.0.3
         version: 56.0.3(expo@56.0.9)
+      expo-router:
+        specifier: ~56.2.9
+        version: 56.2.9(bc328bf03c7a57ad768a5f5510a86863)
       lucide-react-native:
         specifier: ^1.17.0
         version: 1.17.0(react-native-svg@15.15.4(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)

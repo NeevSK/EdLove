@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
 import { AvatarDisplay, ContactLinktree, EditableItem, useSchoolProfile } from '@repo/profile';
+import { useRouter } from 'expo-router';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import {
   ArrowLeft,
@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 
 export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string }) {
   const { t } = useTranslation();
-  const navigation = useNavigation();
+  const router = useRouter();
   const { school, stats, loading: isLoading, updateField, isEditable } = useSchoolProfile(schoolId);
 
   if (isLoading)
@@ -42,7 +42,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
           <Pressable
             onPress={() => {
               hapticLight();
-              navigation.goBack();
+              router.back();
             }}
             className="flex-row items-center gap-2 px-4 py-2.5 rounded-2xl border border-phase-border bg-phase-surface shadow-sm active:scale-95 transition-all"
           >

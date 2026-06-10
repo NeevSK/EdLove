@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import { identityAPI, supabase } from '@repo/core/api';
 
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
@@ -8,6 +7,7 @@ import { ArrowRight, GraduationCap, ShieldCheck } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import { router } from 'expo-router';
 
 interface InvitationWelcomeScreenProps {
   route?: {
@@ -19,7 +19,6 @@ interface InvitationWelcomeScreenProps {
 }
 
 export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScreenProps) {
-  const navigation = useNavigation<any>();
   const { showToast } = useSanctuaryToast();
   const { t } = useTranslation();
   const capacity = route?.params?.capacity || 'User';
@@ -52,7 +51,7 @@ export default function InvitationWelcomeScreen({ route }: InvitationWelcomeScre
         }
       }
 
-      navigation.navigate('Main');
+      router.replace('/self');
     } catch (error) {
       console.error('Error joining sanctuary:', error);
       showToast({

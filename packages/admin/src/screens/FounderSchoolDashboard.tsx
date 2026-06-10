@@ -1,8 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useFeatureAccess } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
-import type { FounderStackParamList } from '@repo/core/types';
+import { useRouter } from 'expo-router';
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
@@ -36,7 +34,7 @@ interface FounderSchoolDashboardProps {
 export default function FounderSchoolDashboard({ schoolId, userId }: FounderSchoolDashboardProps) {
   const { t } = useTranslation();
   const { isGuest } = useFeatureAccess();
-  const navigation = useNavigation<NativeStackNavigationProp<FounderStackParamList>>();
+  const router = useRouter();
 
   const { school, stats, isLoading, refreshData } = useFounderSchoolStats(schoolId);
 
@@ -141,10 +139,7 @@ export default function FounderSchoolDashboard({ schoolId, userId }: FounderScho
                 accessibilityLabel={t('founder.principalsOffice') || "Principal's Office"}
                 onPress={() => {
                   hapticLight();
-                  navigation.navigate('PrincipalDashboard', {
-                    schoolId: schoolId,
-                    userId: userId,
-                  });
+                  router.push('/workspace');
                 }}
                 className="p-4 rounded-xl border flex-row items-center gap-4 bg-phase-surface border-phase-interactive active:bg-phaseText-primary/5"
               >

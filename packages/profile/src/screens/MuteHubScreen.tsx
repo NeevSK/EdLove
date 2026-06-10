@@ -1,5 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { router } from 'expo-router';
 import { socialAPI } from '@repo/core/api';
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
@@ -22,7 +21,6 @@ interface MutedUser {
 
 export default function MuteHubScreen() {
   const { t } = useTranslation();
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
   const [mutedUsers, setMutedUsers] = useState<MutedUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,7 +76,7 @@ export default function MuteHubScreen() {
       <GlobalHeader
         title={t('profile.safety_hub') || 'Safety Hub'}
         showBack
-        onBack={() => navigation.goBack()}
+        onBack={() => router.back()}
       />
       <ScrollView
         showsVerticalScrollIndicator={false}

@@ -1,22 +1,22 @@
-import { useNavigation } from '@react-navigation/native';
 import { BookOpen, ChevronRight, Layout, MessageSquare, Star, TrendingUp } from '@repo/ui/icons';
 import { Box, Heading, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
 
 export const StudentStudySuite = () => {
-  const navigation = useNavigation<any>();
+  const router = useRouter();
 
   const items = [
     {
       label: 'Library',
       icon: BookOpen,
       colorClass: 'text-sanctuarySaffron',
-      onClick: () => navigation.navigate('Main', { screen: 'Library' }),
+      onClick: () => router.push('/library'),
     },
     {
       label: 'Community',
       icon: MessageSquare,
       colorClass: 'text-sanctuary-info',
-      onClick: () => navigation.navigate('Main', { screen: 'Community' }),
+      onClick: () => router.push('/community'),
     },
     {
       label: 'Rewards',
@@ -28,13 +28,13 @@ export const StudentStudySuite = () => {
       label: 'Timetable',
       icon: Layout,
       colorClass: 'text-sanctuary-success',
-      onClick: () => navigation.navigate('Timetable', {}),
+      onClick: () => router.push('/workspace'),
     },
     {
       label: 'Self Reflection',
       icon: TrendingUp,
       colorClass: 'text-sanctuary-info',
-      onClick: () => navigation.navigate('Main', { screen: 'Self' }),
+      onClick: () => router.push('/self'),
     },
   ];
 

@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import { api, communityAPI, identityAPI } from '@repo/core/api';
 
 import { CheckCircle, MessageSquare, School } from '@repo/ui/icons';
@@ -30,6 +29,7 @@ import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'expo-router';
 
 interface CreateSchoolModalProps {
   isOpen: boolean;
@@ -50,7 +50,7 @@ export default function CreateSchoolModal({
   initialData,
 }: CreateSchoolModalProps) {
   const { t } = useTranslation();
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   const [step, setStep] = useState<'details' | 'type' | 'success'>('details');
   const [name, setName] = useState(initialData?.name ?? '');
   const [handle, setHandle] = useState(initialData?.handle ?? '');
@@ -153,8 +153,8 @@ export default function CreateSchoolModal({
 
   const navigateToCommunity = () => {
     if (createdIds?.groupId) {
-      navigation.navigate('CommunityStack', {
-        screen: 'GroupDetails',
+      router.push({
+        pathname: '/community/groups/[groupId]',
         params: { groupId: createdIds.groupId },
       });
       handleClose();

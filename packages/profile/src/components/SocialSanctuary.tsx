@@ -5,16 +5,12 @@ import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import * as Clipboard from 'expo-clipboard';
 import {
   ExternalLink,
-  Facebook,
-  Github,
   Globe,
-  Instagram,
-  Linkedin,
+  Link,
   Share2,
   Shield,
   ShieldAlert,
   ShieldCheck,
-  Twitter,
   Phone as WhatsApp,
 } from 'lucide-react-native';
 import type React from 'react';
@@ -29,11 +25,11 @@ interface SocialSanctuaryProps {
 
 const PLATFORM_ICONS: Record<SocialPlatform, any> = {
   whatsapp: WhatsApp,
-  instagram: Instagram,
-  linkedin: Linkedin,
-  facebook: Facebook,
-  twitter: Twitter,
-  github: Github,
+  instagram: Link,
+  linkedin: Link,
+  facebook: Link,
+  twitter: Link,
+  github: Link,
   website: Globe,
 };
 

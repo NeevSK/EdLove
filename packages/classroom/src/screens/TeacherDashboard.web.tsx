@@ -1,7 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
-import type { ClassroomStackParamList } from '@repo/core/types';
+import { useRouter } from 'expo-router';
 
 import {
   TeacherAdminPortalModal,
@@ -50,7 +48,7 @@ export default function TeacherDashboardWeb({
   userId,
 }: TeacherDashboardProps) {
   const { t } = useTranslation();
-  const navigation = useNavigation<NativeStackNavigationProp<ClassroomStackParamList>>();
+  const router = useRouter();
   const _colors = useThemedColors();
   const {
     isDemoMode,
@@ -78,7 +76,7 @@ export default function TeacherDashboardWeb({
     bumpRefresh,
     hapticLight,
     isGuest,
-  } = useTeacherWorkspaceShell(navigation as any, onRefresh);
+  } = useTeacherWorkspaceShell(onRefresh);
 
   const dashboardSurfaces = useTeacherDashboardSurfaces({
     isDemoMode,
@@ -93,13 +91,13 @@ export default function TeacherDashboardWeb({
     setShowEchoHistory,
     setIsBreathingOpen,
     onOpenLibrary: () => {
-      navigation.getParent()?.navigate('Library' as never);
+      router.push('/library');
     },
     handleClassroomsLoaded,
     onOpenClassroom: (classroom: any) => {
       hapticLight();
-      navigation.navigate('Classroom' as any, {
-        screen: 'TeacherClassroomDashboard',
+      router.push({
+        pathname: '/workspace',
         params: {
           classroomId: classroom.id,
           classroomName: classroom.name,

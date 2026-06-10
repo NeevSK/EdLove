@@ -1,7 +1,5 @@
-import type { RouteProp } from '@react-navigation/native';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { useStore } from '@repo/core/logic';
-import type { GuardianStackParamList } from '@repo/core/types';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Box, ScrollView, Text, VStack } from '@repo/ui/primitives';
 
 import { useMemo } from 'react';
@@ -9,20 +7,23 @@ import { useGuardianWorkspaceData } from '../../guardian';
 import { GuardianRoomShell } from './GuardianRoomShell';
 
 export default function GuardianStudentDetailScreen() {
-  const navigation = useNavigation();
-  const route = useRoute<RouteProp<GuardianStackParamList, 'GuardianStudentDetail'>>();
+  const router = useRouter();
+  const { studentId, studentName } = useLocalSearchParams<{
+    studentId?: string;
+    studentName?: string;
+  }>();
   const user = useStore((state) => state.user);
   const { dashboard } = useGuardianWorkspaceData(user?.id || '');
 
   const student = useMemo(
-    () => dashboard?.students.find((item) => item.studentId === route.params.studentId),
-    [dashboard?.students, route.params.studentId],
+    () => dashboard?.students.find((item) => item.studentId === studentId),
+    [dashboard?.students, studentId],
   );
 
   return (
     <GuardianRoomShell
       eyebrow="Learner detail"
-      title={route.params.studentName || student?.name || 'Linked learner'}
+      title={studentName || student?.name || 'Linked learner'}
       description="A guardian-facing learner room with the essentials: attendance, rhythm, recent grade signal, and upcoming study commitments."
       stats={[
         {
@@ -38,7 +39,7 @@ export default function GuardianStudentDetailScreen() {
           value: student?.upcomingAssignments.length || 0,
         },
       ]}
-      onBack={() => navigation.goBack()}
+      onBack={() => router.back()}
     >
       <ScrollView className="flex-1">
         <VStack className="gap-4 pb-8">

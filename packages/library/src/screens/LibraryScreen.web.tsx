@@ -1,4 +1,4 @@
-import { type NavigationProp, useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { growthSignalsAPI, impactRipplesAPI, supabase } from '@repo/core/api';
 import { usePendingGateAction } from '@repo/core/hooks';
 import { setPendingGateAction, usePermissions, useStore, useTemporalStore } from '@repo/core/logic';
@@ -62,7 +62,7 @@ function StackFallback() {
 
 export default function LibraryScreenWeb() {
   const { t } = useTranslation();
-  const navigation = useNavigation<NavigationProp<Record<string, unknown>>>();
+  const router = useRouter();
   const { width } = useResponsive();
   const { can } = usePermissions();
   const { isPastView } = useTemporalStore();
@@ -388,20 +388,27 @@ export default function LibraryScreenWeb() {
     (resource: LibraryResource) => {
       if (!resource.url) return;
       if (resource.type === 'pdf') {
-        navigation.navigate('PDFViewer', {
-          resourceId: resource.id,
-          title: resource.title,
-          url: resource.url,
-          creator: resource.creator_name,
+        router.push({
+          pathname: '/library/document/[resourceId]',
+          params: {
+            resourceId: resource.id,
+            title: resource.title,
+            url: resource.url,
+            creator: resource.creator_name ?? '',
+            format: resource.format ?? 'pdf',
+          },
         });
         return;
       }
       if (resource.type === 'video' || resource.type === 'movie_trailer') {
-        navigation.navigate('VideoPlayer', {
-          resourceId: resource.id,
-          title: resource.title,
-          url: resource.url,
-          creator: resource.creator_name ?? '',
+        router.push({
+          pathname: '/library/video/[resourceId]',
+          params: {
+            resourceId: resource.id,
+            title: resource.title,
+            url: resource.url,
+            creator: resource.creator_name ?? '',
+          },
         });
         return;
       }
@@ -409,7 +416,7 @@ export default function LibraryScreenWeb() {
         console.error("Couldn't load page", err),
       );
     },
-    [navigation],
+    [router],
   );
 
   const handleOpenResourceOptions = useCallback((resource: LibraryResource) => {
@@ -510,11 +517,11 @@ export default function LibraryScreenWeb() {
         kind: 'library_open_add_resource',
         createdAt: Date.now(),
       }).catch(() => {});
-      navigation.navigate('Auth');
+      router.push('/auth');
       return;
     }
     dispatch({ type: 'SET_MODAL', name: 'assetCreation', isOpen: true });
-  }, [canCreate, isPastView, navigation, showToast]);
+  }, [canCreate, isPastView, router, showToast]);
 
   const fabConfig = useMemo(
     () => ({
@@ -597,7 +604,7 @@ export default function LibraryScreenWeb() {
                   fontSize: '13px',
                   marginLeft: '8px',
                 }}
-                onClick={() => navigation.navigate('LibraryMap')}
+                onClick={() => router.push('/library/map')}
               >
                 <MapIcon size={15} />
                 Knowledge Map
@@ -885,9 +892,12 @@ export default function LibraryScreenWeb() {
                                 type="collection"
                                 subject={col.subjects?.[0] || 'Curated'}
                                 onPress={() =>
-                                  navigation.navigate('CollectionDetail', {
-                                    id: col.id,
-                                    title: col.name,
+                                  router.push({
+                                    pathname: '/library/collections/[id]',
+                                    params: {
+                                      id: col.id,
+                                      title: col.name,
+                                    },
                                   })
                                 }
                               />
@@ -1009,7 +1019,7 @@ export default function LibraryScreenWeb() {
                     description="Move from shelves into a calmer constellation view when you want relationships, not just search results."
                     accent="rgba(132, 111, 212, 0.14)"
                     ctaLabel="Open map"
-                    onClick={() => navigation.navigate('LibraryMap')}
+                    onClick={() => router.push('/library/map')}
                   />
                   {canReview && (
                     <DoorwayCard
@@ -1018,7 +1028,7 @@ export default function LibraryScreenWeb() {
                       description="Contributors and reviewers can move straight into publishing flow without turning the whole library into a workspace canvas."
                       accent="rgba(221, 155, 40, 0.16)"
                       ctaLabel="Curator review"
-                      onClick={() => navigation.navigate('CuratorReview')}
+                      onClick={() => router.push('/library/review')}
                     />
                   )}
                 </div>
@@ -1041,9 +1051,12 @@ export default function LibraryScreenWeb() {
                             }
                             resourceCount={col.used_by_count ?? col.resource_ids?.length ?? 0}
                             onClick={() =>
-                              navigation.navigate('CollectionDetail', {
-                                id: col.id,
-                                title: col.name,
+                              router.push({
+                                pathname: '/library/collections/[id]',
+                                params: {
+                                  id: col.id,
+                                  title: col.name,
+                                },
                               })
                             }
                           />
