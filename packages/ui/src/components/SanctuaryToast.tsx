@@ -1,4 +1,4 @@
-import { AlertCircle, CheckCircle, Info, X } from 'lucide-react-native';
+import { CircleAlert, CircleCheck, Info, X } from 'lucide-react-native';
 import { useCallback, useEffect } from 'react';
 import { Platform } from 'react-native';
 import Animated, {
@@ -36,9 +36,9 @@ export default function SanctuaryToast({
   const getIconData = () => {
     switch (type) {
       case 'success':
-        return { icon: CheckCircle, color: '#10B981' }; // phase-reward
+        return { icon: CircleCheck, color: '#10B981' }; // phase-reward
       case 'error':
-        return { icon: AlertCircle, color: '#EF4444' }; // phase-danger
+        return { icon: CircleAlert, color: '#EF4444' }; // phase-danger
       case 'info':
         return { icon: Info, color: '#F6BF8C' }; // phase-accent
     }

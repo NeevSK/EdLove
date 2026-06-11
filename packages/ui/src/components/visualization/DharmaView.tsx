@@ -1,5 +1,5 @@
 import type { PerspectiveViewProps } from '@repo/core/types';
-import { CheckCircle2, Circle as CircleIcon, Lock } from 'lucide-react-native';
+import { CircleCheck, Circle as CircleIcon, Lock } from 'lucide-react-native';
 import type React from 'react';
 import { useTheme } from '../../hooks/useTheme';
 import { Box, HStack, ScrollView, Text, VStack } from '../../primitives';
@@ -33,7 +33,7 @@ export const DharmaView: React.FC<PerspectiveViewProps> = ({ data }) => {
                   }}
                 >
                   {step.completed ? (
-                    <CheckCircle2 size={16} color="white" />
+                    <CircleCheck size={16} color="white" />
                   ) : step.locked ? (
                     <Lock size={14} color="rgba(255,255,255,0.3)" />
                   ) : (

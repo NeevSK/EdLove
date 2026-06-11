@@ -3,10 +3,10 @@ import { FormManager } from '@intuitui-labs/form-builder-engine/core';
 import {
   ArrowRight,
   Building2,
-  CheckCircle2,
+  CircleCheck,
   Info,
   Link as LinkIcon,
-  Loader2,
+  LoaderCircle,
   Map as MapIcon,
   School,
   Search,
@@ -192,7 +192,7 @@ export const ClimateSensingScreenWeb = ({
         <div className="mx-auto flex w-full max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-700 flex-col gap-8 rounded-[40px] border border-slate-200 bg-white p-8 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] md:p-14">
           <div className="text-center">
             <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-              <CheckCircle2 size={56} strokeWidth={1.5} />
+              <CircleCheck size={56} strokeWidth={1.5} />
             </div>
             <h1 className="mb-4 text-4xl font-bold tracking-tight text-slate-900 md:text-5xl">
               Resonance Registered
@@ -275,7 +275,7 @@ export const ClimateSensingScreenWeb = ({
             <div className="relative group">
               <div className="absolute left-5 top-5 text-slate-400 group-focus-within:text-teal-600 transition-colors">
                 {isSearching ? (
-                  <Loader2 size={22} className="animate-spin" />
+                  <LoaderCircle size={22} className="animate-spin" />
                 ) : (
                   <Search size={22} />
                 )}

@@ -3,7 +3,7 @@ import { useStore } from '@repo/core/logic';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
-import { AlertCircle, Calendar, CalendarCheck, Users } from '@repo/ui/icons';
+import { Calendar, CalendarCheck, CircleAlert, Users } from '@repo/ui/icons';
 import { Box, HStack, Icon, ScrollView, Text, VStack } from '@repo/ui/primitives';
 
 import React from 'react';
@@ -64,7 +64,7 @@ export default function SectionHeadDashboard({
                   className="p-4 rounded-2xl border bg-phase-reward/5 border-phase-reward/20"
                 >
                   <HStack className="gap-3 items-center">
-                    <Icon as={AlertCircle} className="text-phase-reward" size="md" />
+                    <Icon as={CircleAlert} className="text-phase-reward" size="md" />
                     <VStack className="flex-1">
                       <Text className="font-bold text-phaseText-primary tracking-tight">
                         {gap.title}
@@ -104,7 +104,7 @@ export default function SectionHeadDashboard({
             {lastTimetableDraft ? (
               <VStack className="gap-3">
                 <HStack className="gap-2 items-center bg-phase-canvas p-3 rounded-xl border border-phase-border">
-                  <Icon as={AlertCircle} size={16} className="text-phase-warning" />
+                  <Icon as={CircleAlert} size={16} className="text-phase-warning" />
                   <Text className="text-[13px] text-phaseText-primary font-medium">
                     Draft generated for your section.
                   </Text>

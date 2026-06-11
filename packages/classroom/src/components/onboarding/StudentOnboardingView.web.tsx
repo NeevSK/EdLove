@@ -1,8 +1,8 @@
 import {
-  ArrowRightCircle,
   BookOpen,
+  CircleArrowRight,
   GraduationCap,
-  Layout,
+  PanelsTopLeft,
   QrCode,
   Search,
   Sparkles,
@@ -92,7 +92,7 @@ export default function StudentOnboardingViewWeb({
                     <Text className="text-templeGold font-black uppercase tracking-widest text-sm">
                       Explore Student Sandbox
                     </Text>
-                    <Icon as={ArrowRightCircle} size={16} color="#D4843A" />
+                    <Icon as={CircleArrowRight} size={16} color="#D4843A" />
                   </HStack>
                 </Pressable>
               </VStack>
@@ -102,7 +102,7 @@ export default function StudentOnboardingViewWeb({
           <Box className="p-6 bg-phase-canvas/50 rounded-comfortable border border-phase-canvas">
             <VStack className="gap-4">
               <HStack className="gap-3 items-center">
-                <Icon as={Layout} className="text-phaseText-secondary" size={18} />
+                <Icon as={PanelsTopLeft} className="text-phaseText-secondary" size={18} />
                 <Heading className="text-sm font-black text-phaseText-primary uppercase tracking-widest">
                   Platform Sovereignty
                 </Heading>

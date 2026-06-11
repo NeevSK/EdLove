@@ -8,15 +8,15 @@ import type {
 
 import { WorkspaceCanvas } from '@repo/ui/components/workspace';
 import {
-  AlertTriangle,
-  CheckCircle2,
   CircleAlert,
+  CircleCheck,
   Clock3,
   Database,
   GitBranch,
   RefreshCw,
   Search,
   ShieldCheck,
+  TriangleAlert,
 } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 
@@ -137,7 +137,7 @@ function ActivityList({
             {item.tone === 'warn' ? (
               <CircleAlert size={16} color="#8B5E34" />
             ) : item.tone === 'good' ? (
-              <CheckCircle2 size={16} color="#0F5132" />
+              <CircleCheck size={16} color="#0F5132" />
             ) : (
               <Clock3 size={16} color="#5F5449" />
             )}
@@ -350,7 +350,7 @@ export function useAdminWorkspaceCanvasSurfaces({
         content: (
           <VStack className="gap-4">
             <SurfaceLauncher
-              icon={AlertTriangle}
+              icon={TriangleAlert}
               title="Incident queue"
               description="Triage outages, broken flows, and noisy regressions before they spread across tenants."
               actionLabel="Open incident room"

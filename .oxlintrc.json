@@ -71,6 +71,11 @@
     "*.config.ts",
     "*.config.js",
     "*.config.mjs",
+    "*.config.cjs",
+    "*.cjs",
+    "**/*.cjs",
+    "scripts",
+    "eslint.config.js",
     "**/archives/**",
     "**/archive/**"
   ]

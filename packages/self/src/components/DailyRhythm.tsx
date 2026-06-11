@@ -40,9 +40,9 @@ import {
 import { useToast } from '@repo/ui/providers';
 
 import {
-  AlertCircle,
   Book,
   ChevronDown,
+  CircleAlert,
   Clock,
   Cloud,
   Coffee,
@@ -95,7 +95,7 @@ function DailyRhythmContent() {
             className="bg-emberRed/20 border border-emberRed/30 px-4 py-3 rounded-2xl"
           >
             <HStack className="gap-2 items-center">
-              <Icon as={AlertCircle} className="text-emberRed" size={16} />
+              <Icon as={CircleAlert} className="text-emberRed" size={16} />
               <ToastTitle className="text-sacredWhite text-sm font-bold">
                 {t('self.missingFields') || 'Required fields missing'}
               </ToastTitle>

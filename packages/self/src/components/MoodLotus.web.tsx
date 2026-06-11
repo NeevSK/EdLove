@@ -21,7 +21,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 
-import { Activity, CheckCircle, ChevronRight, Clock, Wind } from 'lucide-react-native';
+import { Activity, ChevronRight, CircleCheck, Clock, Wind } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
 import { useMoodLogs } from '../hooks/useMoodLogs';
@@ -256,7 +256,7 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
                     {saving ? (
                       <Spinner size="small" color="#FFFFFF" />
                     ) : saved ? (
-                      <Icon as={CheckCircle} size={18} className="text-white" />
+                      <Icon as={CircleCheck} size={18} className="text-white" />
                     ) : null}
                     <ButtonText className="text-white font-black uppercase tracking-widest text-xs">
                       {saving ? 'Syncing...' : saved ? 'Resonance Captured' : 'Commit Intention'}

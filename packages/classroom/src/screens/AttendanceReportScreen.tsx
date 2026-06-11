@@ -5,7 +5,7 @@ import type { AcademicCycle } from '@repo/core/types';
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
-import { Activity, AlertTriangle, TrendingUp } from '@repo/ui/icons';
+import { Activity, TrendingUp, TriangleAlert } from '@repo/ui/icons';
 import {
   Box,
   Heading,
@@ -18,7 +18,7 @@ import {
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface AttendanceReportScreenProps {
@@ -38,32 +38,35 @@ export default function AttendanceReportScreen({
   const [selectedCycleId, setSelectedCycleId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchData = async (cycleId?: string) => {
-    setLoading(true);
-    try {
-      const allCycles = await api.academicCycles.getAll(schoolId);
-      setCycles(allCycles);
+  const fetchData = useCallback(
+    async (cycleId?: string) => {
+      setLoading(true);
+      try {
+        const allCycles = await api.academicCycles.getAll(schoolId);
+        setCycles(allCycles);
 
-      const targetCycle = cycleId
-        ? allCycles.find((c: AcademicCycle) => c.id === cycleId)
-        : allCycles.find((c: AcademicCycle) => c.is_current) || allCycles[0];
+        const targetCycle = cycleId
+          ? allCycles.find((c: AcademicCycle) => c.id === cycleId)
+          : allCycles.find((c: AcademicCycle) => c.is_current) || allCycles[0];
 
-      if (targetCycle) {
-        setSelectedCycleId(targetCycle.id);
-        const data = await reportingAPI.getAttendanceReport(
-          schoolId,
-          targetCycle.start_date.toISOString(),
-          targetCycle.end_date.toISOString(),
-          classroomId,
-        );
-        setReport(data);
+        if (targetCycle) {
+          setSelectedCycleId(targetCycle.id);
+          const data = await reportingAPI.getAttendanceReport(
+            schoolId,
+            targetCycle.start_date.toISOString(),
+            targetCycle.end_date.toISOString(),
+            classroomId,
+          );
+          setReport(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch attendance report:', error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Failed to fetch attendance report:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [schoolId, classroomId],
+  );
 
   useEffect(() => {
     fetchData();
@@ -146,7 +149,7 @@ export default function AttendanceReportScreen({
               </Box>
               <Box className="flex-1 bg-phase-surface p-5 rounded-generous border-0 shadow-sm">
                 <VStack className="gap-2">
-                  <Icon as={AlertTriangle} size="md" className="text-emberRed" />
+                  <Icon as={TriangleAlert} size="md" className="text-emberRed" />
                   <Heading className="text-3xl font-black text-phaseText-primary">
                     {report.totalAbsences}
                   </Heading>

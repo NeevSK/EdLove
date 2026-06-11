@@ -17,7 +17,7 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-import { Calendar, CheckCircle2, Circle, Clock, Plus, Trash2 } from 'lucide-react-native';
+import { Calendar, CircleCheck, Circle, Clock, Plus, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, StyleSheet, TouchableOpacity } from 'react-native';
@@ -197,7 +197,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                   <Pressable onPress={() => setIsCurrent(!isCurrent)}>
                     <HStack sx={{ gap: Theme.spacing.sm, alignItems: 'center' }}>
                       {isCurrent ? (
-                        <CheckCircle2 size={18} color={colors.success} />
+                        <CircleCheck size={18} color={colors.success} />
                       ) : (
                         <Circle size={18} color={colors.textSecondary} />
                       )}
@@ -297,7 +297,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                     <HStack sx={{ gap: Theme.spacing.md }}>
                       {!cycle.is_current && (
                         <TouchableOpacity onPress={() => handleSetCurrent(cycle.id)}>
-                          <CheckCircle2 size={20} color={colors.textSecondary} />
+                          <CircleCheck size={20} color={colors.textSecondary} />
                         </TouchableOpacity>
                       )}
                       <TouchableOpacity onPress={() => handleDelete(cycle.id)}>

@@ -4,7 +4,6 @@
  * Modal/Bottom Sheet for configuring classroom grading preferences.
  */
 
-import { RadioIcon } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -13,6 +12,7 @@ import {
   HStack,
   Radio,
   RadioGroup,
+  RadioIcon,
   RadioIndicator,
   RadioLabel,
   Switch,

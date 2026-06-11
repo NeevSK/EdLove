@@ -1,4 +1,4 @@
-import { AlertCircle } from 'lucide-react-native';
+import { CircleAlert } from 'lucide-react-native';
 import type React from 'react';
 import { Theme } from '../theme/Theme';
 import {
@@ -135,7 +135,7 @@ export default function SanctuaryInput({
 
       {hasError && (
         <FormControlError className="mt-2">
-          <FormControlErrorIcon as={AlertCircle} className="text-phase-danger" />
+          <FormControlErrorIcon as={CircleAlert} className="text-phase-danger" />
           <FormControlErrorText className="text-phase-danger text-sm">
             {error || 'Invalid input'}
           </FormControlErrorText>

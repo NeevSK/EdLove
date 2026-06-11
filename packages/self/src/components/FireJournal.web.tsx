@@ -17,7 +17,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { CheckCircle, Flame } from 'lucide-react-native';
+import { CircleCheck, Flame } from 'lucide-react-native';
 import { useState } from 'react';
 import { useFireJournal } from '../hooks/useFireJournal';
 
@@ -80,7 +80,7 @@ export default function FireJournal({ userId, onBurned }: FireJournalProps) {
         <Box className="p-xl bg-emberRed/10 rounded-comfortable items-center border border-emberRed/20 animate-in fade-in slide-in-from-bottom-2 duration-500">
           <Text className="text-5xl mb-4">🔥</Text>
           <HStack className="items-center gap-2 mb-2">
-            <Icon as={CheckCircle} className="text-emberRed" size={18} />
+            <Icon as={CircleCheck} className="text-emberRed" size={18} />
             <Text className="text-lg font-bold text-emberRed">Released.</Text>
           </HStack>
           <Text className="text-sm text-mistGray text-center">

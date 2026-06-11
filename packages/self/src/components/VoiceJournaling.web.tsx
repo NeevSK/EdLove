@@ -21,7 +21,7 @@ import {
 } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
 
-import { AlertCircle, Check, Mic, Play, Square, Trash2 } from 'lucide-react-native';
+import { Check, CircleAlert, Mic, Play, Square, Trash2 } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -141,7 +141,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
     }
   }, [recordingState, waveHeight, stopRecording, pulseScale]);
 
-  function stopRecording() {
+  const stopRecording = useCallback(() => {
     if (mediaRecorderRef.current?.state === 'recording') {
       mediaRecorderRef.current.stop();
     }
@@ -151,7 +151,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
     pulseScale.value = withTiming(1);
     waveHeight.value = withTiming(12);
     setRecordingState('recorded');
-  }
+  }, [pulseScale, waveHeight]);
 
   const playRecording = useCallback(() => {
     if (!audioUrl) return;
@@ -212,7 +212,7 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
   if (recordingState === 'unsupported') {
     return (
       <VStack className="p-xl gap-md items-center bg-obsidian rounded-comfortable border border-white/5">
-        <Icon as={AlertCircle} size={48} className="text-emberRed" />
+        <Icon as={CircleAlert} size={48} className="text-emberRed" />
         <Heading size="md" className="text-center text-sacredWhite">
           Microphone Unavailable
         </Heading>

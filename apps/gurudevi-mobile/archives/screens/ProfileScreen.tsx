@@ -17,9 +17,9 @@ import {
 import { Theme } from '@repo/ui/theme';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import {
-  Edit3,
+  SquarePen,
   Heart,
-  HelpCircle,
+  CircleQuestionMark,
   Info,
   MessageSquare,
   Settings,
@@ -121,7 +121,7 @@ const _IdentitySection = ({
           {isWanderer ? (
             <UserPlus size={18} color={colors.action} />
           ) : (
-            <Edit3 size={18} color={colors.action} />
+            <SquarePen size={18} color={colors.action} />
           )}
           <Text className="font-bold" style={{ color: colors.text }}>
             {isWanderer ? t('auth.createAccount') : t('profile.viewEditProfile')}
@@ -159,7 +159,7 @@ const _SupportSection = ({ t, colors, navigation, cardWidth = CARD_WIDTH }: any)
         {t('profile.account.support')}
       </Heading>
       <ProfileListItem
-        icon={HelpCircle}
+        icon={CircleQuestionMark}
         label={t('profile.faqTitle')}
         onPress={() => hapticLight()}
       />

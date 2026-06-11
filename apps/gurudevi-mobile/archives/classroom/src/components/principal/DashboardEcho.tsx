@@ -21,8 +21,8 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import {
-  AlertTriangle,
-  CheckCircle2,
+  TriangleAlert,
+  CircleCheck,
   ChevronRight,
   Heart,
   MessageSquare,
@@ -45,8 +45,8 @@ interface FeedbackEcho {
 const CATEGORY_ICONS = {
   support: MessageSquare,
   morale: Heart,
-  facility: AlertTriangle,
-  recognition: CheckCircle2,
+  facility: TriangleAlert,
+  recognition: CircleCheck,
 };
 export default function DashboardEcho({ schoolId }: { schoolId: string }) {
   const { t } = useTranslation();

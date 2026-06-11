@@ -1,5 +1,5 @@
 import type { DownloadState } from '@repo/core/hooks';
-import { Bookmark, Download, ExternalLink, XCircle } from 'lucide-react-native';
+import { Bookmark, CircleX, Download, ExternalLink } from 'lucide-react-native';
 import { useTheme } from '../../hooks/useTheme';
 import { Box, HStack, Text, VStack } from '../../primitives';
 import GlobalHeader from '../GlobalHeader';
@@ -90,7 +90,7 @@ export function PdfViewer({
 
         {errorMsg && (
           <HStack className="items-center gap-2 mb-6 p-4 bg-phase-danger/10 rounded-2xl border border-phase-danger/20">
-            <XCircle size={16} color={theme.scene.danger.main} />
+            <CircleX size={16} color={theme.scene.danger.main} />
             <Text className="text-sm text-phase-danger font-medium">{errorMsg}</Text>
           </HStack>
         )}

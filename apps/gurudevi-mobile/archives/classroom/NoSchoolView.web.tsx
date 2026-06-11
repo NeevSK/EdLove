@@ -23,7 +23,7 @@ import {
   ArrowRight,
   BookOpen,
   Building2,
-  CheckCircle2,
+  CircleCheck,
   ChevronRight,
   Key,
   Search,
@@ -141,7 +141,7 @@ function SuccessCard({
           justifyContent: 'center',
         }}
       >
-        <CheckCircle2 size={32} color="var(--moss)" />
+        <CircleCheck size={32} color="var(--moss)" />
       </div>
       <div style={{ fontSize: '28px' }}>{emoji}</div>
       <div>
@@ -314,7 +314,7 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
                 </div>
                 <div style={{ fontSize: '12px', color: 'var(--ink-ghost)' }}>{t.desc}</div>
               </div>
-              {type === t.value && <CheckCircle2 size={16} color="var(--sanctuary-saffron)" />}
+              {type === t.value && <CircleCheck size={16} color="var(--sanctuary-saffron)" />}
             </button>
           ))}
           {error && <p style={{ margin: 0, fontSize: '12px', color: 'var(--ember)' }}>{error}</p>}

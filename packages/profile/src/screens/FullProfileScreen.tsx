@@ -1,6 +1,4 @@
 import { usePermissions, useStore } from '@repo/core/logic';
-import { router, useLocalSearchParams } from 'expo-router';
-
 // Local Package Imports
 import { StaffPresencePulse } from '@repo/people';
 import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
@@ -20,18 +18,19 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
+import { router, useLocalSearchParams } from 'expo-router';
 
 import {
   AtSign,
   BookOpen,
   Briefcase,
-  Edit3,
   FileText,
-  Fingerprint,
+  FingerprintPattern,
   GraduationCap,
   Heart,
   Phone,
   School,
+  SquarePen,
   User as UserIcon,
 } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
@@ -282,7 +281,7 @@ export const FullProfileScreen = () => {
                 />
                 {isStudentProfile ? (
                   <EditableItem
-                    icon={Fingerprint}
+                    icon={FingerprintPattern}
                     label={t('profile.indexNumber')}
                     value={profile.index_number ?? undefined}
                     field="index_number"
@@ -291,7 +290,7 @@ export const FullProfileScreen = () => {
                   />
                 ) : (
                   <EditableItem
-                    icon={Fingerprint}
+                    icon={FingerprintPattern}
                     label={t('profile.nicNumber')}
                     value={profile.nic_number ?? undefined}
                     field="nic_number"
@@ -409,7 +408,7 @@ export const FullProfileScreen = () => {
                   className="mt-4 p-4 rounded-2xl border border-dashed border-phase-surface items-center bg-phase-surface/30"
                 >
                   <HStack space="sm" className="items-center">
-                    <Edit3 size={18} color="#4A90E2" />
+                    <SquarePen size={18} color="#4A90E2" />
                     <Text className="text-phase-interactive font-bold">Manage Social Hub</Text>
                   </HStack>
                 </Pressable>

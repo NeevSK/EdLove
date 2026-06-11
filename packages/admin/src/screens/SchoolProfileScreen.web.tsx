@@ -1,18 +1,18 @@
 import { AvatarDisplay, ContactLinktree, EditableItem, useSchoolProfile } from '@repo/profile';
-import { useRouter } from 'expo-router';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import {
   ArrowLeft,
   BookOpen,
   ChevronRight,
   Globe,
-  Layout,
+  PanelsTopLeft,
   School as SchoolIcon,
   Shield,
   Users,
 } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import { useRouter } from 'expo-router';
 
 import { useTranslation } from 'react-i18next';
 
@@ -184,7 +184,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
             <Box className="bg-phase-canvas p-6 rounded-[32px] border border-phase-border border-dashed">
               <VStack className="gap-4">
                 <HStack className="items-center gap-3">
-                  <Icon as={Layout} size="xs" className="text-phaseText-muted" />
+                  <Icon as={PanelsTopLeft} size="xs" className="text-phaseText-muted" />
                   <Text className="text-[11px] font-black text-phaseText-muted uppercase tracking-widest">
                     School Structure
                   </Text>

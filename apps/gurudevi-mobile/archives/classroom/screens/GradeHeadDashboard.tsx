@@ -5,7 +5,7 @@ import { SanctuaryButton } from '@repo/ui/components';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-import { AlertCircle, BookOpen, Users } from 'lucide-react-native';
+import { CircleAlert, BookOpen, Users } from 'lucide-react-native';
 import { ScrollView, StyleSheet } from 'react-native';
 export default function GradeHeadDashboard({
   schoolId,
@@ -66,7 +66,7 @@ export default function GradeHeadDashboard({
                   }}
                 >
                   <HStack gap="$3" alignItems="center">
-                    <AlertCircle color={Theme.colors.sanctuarySaffron} size={20} />
+                    <CircleAlert color={Theme.colors.sanctuarySaffron} size={20} />
                     <VStack sx={{ flex: 1 }}>
                       <Text
                         sx={{

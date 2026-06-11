@@ -1,4 +1,4 @@
-import { ArrowRightCircle, BookOpen, Plus, School, Search, Users, Zap } from '@repo/ui/icons';
+import { BookOpen, CircleArrowRight, Plus, School, Search, Users, Zap } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 
 interface TeacherOnboardingViewProps {
@@ -84,7 +84,7 @@ export default function TeacherOnboardingViewWeb({
                     <Text className="text-templeGold font-black uppercase tracking-widest text-sm">
                       Explore Teacher Sandbox
                     </Text>
-                    <Icon as={ArrowRightCircle} size={16} color="#D4843A" />
+                    <Icon as={CircleArrowRight} size={16} color="#D4843A" />
                   </HStack>
                 </Pressable>
               </VStack>

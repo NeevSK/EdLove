@@ -1,5 +1,5 @@
 import type { BaseResource } from '@repo/core/types';
-import { Bookmark, FileText, FolderPlus, Info, PlayCircle, Share2 } from 'lucide-react-native';
+import { Bookmark, CirclePlay, FileText, FolderPlus, Info, Share2 } from 'lucide-react-native';
 import type React from 'react';
 import {
   Actionsheet,
@@ -56,7 +56,7 @@ export const ResourceActionSheet: React.FC<ResourceActionSheetProps> = ({
         <HStack className="items-center py-4 border-b border-phase-border mb-2 gap-3 w-full">
           <Box className="w-12 h-12 items-center justify-center rounded-xl bg-phase-accent/10">
             {resource.type === 'video' ? (
-              <PlayCircle size={28} color={theme.accent.action} />
+              <CirclePlay size={28} color={theme.accent.action} />
             ) : (
               <FileText size={28} color={theme.accent.action} />
             )}

@@ -1,4 +1,3 @@
-import { useRouter } from 'expo-router';
 import { FeatureGuard, useStore } from '@repo/core/logic';
 import {
   CaptureEngine,
@@ -30,7 +29,8 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { BlurView } from 'expo-blur';
-import { BarChart3, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
+import { ChartColumn, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'lucide-react-native';
 import { cssInterop } from 'nativewind';
 import React, { useEffect, useMemo, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -77,7 +77,7 @@ const PERSPECTIVES: Perspective[] = [
   {
     id: 'jyoti',
     label: 'Insight',
-    icon: BarChart3,
+    icon: ChartColumn,
     description: 'Analytic charts & metrics',
   },
   {

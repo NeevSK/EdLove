@@ -1,6 +1,6 @@
 import { api, communityAPI, identityAPI } from '@repo/core/api';
 
-import { CheckCircle, MessageSquare, School } from '@repo/ui/icons';
+import { CircleCheck, MessageSquare, School } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -26,10 +26,9 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'expo-router';
 
 interface CreateSchoolModalProps {
   isOpen: boolean;
@@ -321,6 +320,7 @@ export default function CreateSchoolModal({
                   const isSelected = type === tType.id;
                   return (
                     <Pressable
+                      key={tType.id}
                       onPress={() => {
                         hapticLight();
                         setType(tType.id);
@@ -344,7 +344,7 @@ export default function CreateSchoolModal({
                             </Text>
                           </VStack>
                           {isSelected && (
-                            <Icon as={CheckCircle} className="text-sanctuarySaffron" size="sm" />
+                            <Icon as={CircleCheck} className="text-sanctuarySaffron" size="sm" />
                           )}
                         </HStack>
                       </Box>
@@ -390,7 +390,7 @@ export default function CreateSchoolModal({
           <>
             <ModalHeader>
               <VStack className="items-center w-full gap-sm">
-                <Icon as={CheckCircle} className="text-sanctuarySaffron" size="xl" />
+                <Icon as={CircleCheck} className="text-sanctuarySaffron" size="xl" />
                 <Heading className="text-sanctuary-text text-center" size="lg">
                   Sanctuary Established!
                 </Heading>

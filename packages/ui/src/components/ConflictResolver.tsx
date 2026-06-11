@@ -1,5 +1,5 @@
 import type React from 'react';
-import { AlertTriangle, ArrowLeftRight, Check } from '../icons';
+import { ArrowLeftRight, Check, TriangleAlert } from '../icons';
 import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '../primitives';
 import { Theme } from '../theme/Theme';
 import { hapticLight, hapticSuccess } from '../utils/haptics';
@@ -36,7 +36,7 @@ export const ConflictResolver: React.FC<ConflictResolverProps> = ({ conflict, on
       <VStack className="gap-4">
         <HStack className="items-center gap-3">
           <Box className="p-3 rounded-2xl bg-amberGlow/20">
-            <Icon as={AlertTriangle} size="sm" className="text-amberGlow" />
+            <Icon as={TriangleAlert} size="sm" className="text-amberGlow" />
           </Box>
           <VStack>
             <Heading className="text-lg font-black text-phase-text-primary">

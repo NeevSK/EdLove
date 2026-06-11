@@ -1,4 +1,4 @@
-import { ArrowRightCircle, Building2, Layout, Plus, Settings2, Zap } from '@repo/ui/icons';
+import { Building2, CircleArrowRight, PanelsTopLeft, Plus, Settings2, Zap } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 
 interface PrincipalOnboardingViewProps {
@@ -44,7 +44,7 @@ export default function PrincipalOnboardingViewWeb({
           <VStack className="gap-6">
             <HStack className="gap-4 items-center">
               <Box className="p-3 bg-templeGold/10 rounded-comfortable">
-                <Icon as={Layout} className="text-templeGold" size="lg" />
+                <Icon as={PanelsTopLeft} className="text-templeGold" size="lg" />
               </Box>
               <Heading className="text-xl font-black text-phaseText-primary">
                 Institutional Form Builder
@@ -109,7 +109,7 @@ export default function PrincipalOnboardingViewWeb({
                     <Text className="text-templeGold font-black uppercase tracking-widest text-sm">
                       Explore Demo Sanctuary
                     </Text>
-                    <Icon as={ArrowRightCircle} size={16} color="#D4843A" />
+                    <Icon as={CircleArrowRight} size={16} color="#D4843A" />
                   </HStack>
                 </Pressable>
               </VStack>

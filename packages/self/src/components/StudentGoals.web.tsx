@@ -5,7 +5,7 @@
  * Metro resolves this over StudentGoals.tsx on the web platform.
  */
 
-import { CheckCircle2, Circle, Target } from 'lucide-react-native';
+import { Circle, CircleCheck, Target } from 'lucide-react-native';
 import { useState } from 'react';
 import { useStudentGoals } from '../hooks/useStudentGoals';
 import type { Goal } from '../types';
@@ -184,7 +184,7 @@ export default function StudentGoals({ userId }: StudentGoalsProps) {
                   }}
                 >
                   {goal.is_completed ? (
-                    <CheckCircle2 size={18} color="var(--moss)" />
+                    <CircleCheck size={18} color="var(--moss)" />
                   ) : (
                     <Circle size={18} color="var(--border)" />
                   )}

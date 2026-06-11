@@ -11,7 +11,7 @@ import { SanctuaryButton } from '@repo/ui/components';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-import { AlertCircle, Calendar, CalendarCheck, Users } from 'lucide-react-native';
+import { CircleAlert, Calendar, CalendarCheck, Users } from 'lucide-react-native';
 import { ScrollView, StyleSheet } from 'react-native';
 export default function SectionHeadDashboard({
   schoolId,
@@ -73,7 +73,7 @@ export default function SectionHeadDashboard({
                   }}
                 >
                   <HStack gap="$3" alignItems="center">
-                    <AlertCircle color={Theme.colors.sanctuarySaffron} size={20} />
+                    <CircleAlert color={Theme.colors.sanctuarySaffron} size={20} />
                     <VStack sx={{ flex: 1 }}>
                       <Text
                         sx={{
@@ -154,7 +154,7 @@ export default function SectionHeadDashboard({
             {lastTimetableDraft ? (
               <VStack sx={{ gap: 8 }}>
                 <HStack sx={{ gap: 8, alignItems: 'center' }}>
-                  <AlertCircle size={16} color={Theme.colors.amberGlow} />
+                  <CircleAlert size={16} color={Theme.colors.amberGlow} />
                   <Text sx={{ fontSize: 13, color: Theme.colors.sacredWhite }}>
                     Draft generated for your section.
                   </Text>

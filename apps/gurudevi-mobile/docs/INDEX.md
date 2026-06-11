@@ -18,6 +18,7 @@ Welcome to the documentation vault for `gurudevi-mobile`. This file serves as th
 
 | Date | Document | Category | Status | Summary |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-06-11** | [Mobile Bundle Size Optimization Execution Report](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-11-mobile-bundle-optimization-report.md) | Infrastructure | `active` | Report detailing audit, leak plugging, and tree-shaking optimizations resulting in a 1.28 MB reduction in bundle size. |
 | **2026-06-10** | [Monorepo Upgrade and Navigation Purge Execution Report](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-10-monorepo-upgrade-and-cleanup-execution.md) | Infrastructure | `active` | Report detailing the execution of Expo SDK 56 alignment, safe major updates, React Navigation removal, and navigation check flag purging. |
 | **2026-06-10** | [Dependency Alignment and Upgrade Testing Playbook](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-10-dependency-alignment-and-upgrade-testing.md) | Infrastructure | `active` | Testing playbook for peer dependency compatibility checks, automatic alignment checks, and rollback spike workflows. |
 | **2026-06-10** | [Expo Router Migration and Major Dependencies Audit](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-10-migration-and-major-dependency-audit.md) | Audits | `active` | Deep-dive review of Expo Router transfer, Expo version mismatch, major updates list, and gesture handler risks. |
@@ -88,6 +89,7 @@ Welcome to the documentation vault for `gurudevi-mobile`. This file serves as th
 
 
 ### 📦 Platform, Infrastructure & Deployment Guides (Vercel, Cloudflare, Expo, PNPM, ESLint)
+*   [Mobile Bundle Size Optimization Execution Report](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-11-mobile-bundle-optimization-report.md) - Report detailing audit, leak plugging, and tree-shaking optimizations resulting in a 1.28 MB reduction in bundle size.
 *   [Monorepo Upgrade and Navigation Purge Execution Report](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-10-monorepo-upgrade-and-cleanup-execution.md) - Report on Expo SDK 56 alignment, major version upgrades, and navigation cleanups.
 *   [Dependency Alignment and Upgrade Testing Playbook](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-10-dependency-alignment-and-upgrade-testing.md) - Diagnostic tools and step-by-step procedures for testing major version updates.
 *   [Oxlint and ESLint Hybrid Integration Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/oxlint-and-eslint-hybrid-guide.md) - Pipeline setup for Oxlint + ESLint hybrid strategy and Biome format-only configurations.

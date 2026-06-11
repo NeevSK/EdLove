@@ -19,13 +19,7 @@ import {
   TextareaInput,
   VStack,
 } from '@repo/ui/primitives';
-import {
-  AlertTriangle,
-  CheckCircle2,
-  ChevronDown,
-  Heart,
-  MessageSquare,
-} from 'lucide-react-native';
+import { ChevronDown, CircleCheck, Heart, MessageSquare, TriangleAlert } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { teacherFeedbackAPI } from '../feedback';
@@ -40,11 +34,11 @@ interface TeacherFeedbackModalProps {
 const CATEGORIES = [
   { label: 'Teaching Support', value: 'support', icon: MessageSquare },
   { label: 'Staff Morale', value: 'morale', icon: Heart },
-  { label: 'Facility/Resource Alert', value: 'facility', icon: AlertTriangle },
+  { label: 'Facility/Resource Alert', value: 'facility', icon: TriangleAlert },
   {
     label: 'Recognition/Positive Note',
     value: 'recognition',
-    icon: CheckCircle2,
+    icon: CircleCheck,
   },
 ];
 

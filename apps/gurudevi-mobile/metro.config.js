@@ -79,7 +79,6 @@ const SINGLETON_OVERRIDES = {
     'node_modules/@react-native-community/slider',
   ),
   'react-native-webview': path.resolve(projectRoot, 'node_modules/react-native-webview'),
-  '@expo/vector-icons': path.resolve(projectRoot, 'node_modules/@expo/vector-icons'),
   'react-native-maps': path.resolve(projectRoot, 'node_modules/react-native-maps'),
   'react-native-linear-gradient': path.resolve(
     projectRoot,
@@ -243,6 +242,13 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   // This allows .json and .wasm to use Metro's native loaders directly.
   if (moduleName.endsWith('.json') || moduleName.endsWith('.wasm')) {
     return (defaultResolveRequest || context.resolveRequest)(context, moduleName, platform);
+  }
+
+  if (moduleName === '@repo/workforce/WorkforceShell') {
+    return {
+      filePath: path.resolve(workspaceRoot, 'packages/workforce/src/WorkforceShell.tsx'),
+      type: 'sourceFile',
+    };
   }
 
   // B. (Removed) Manual Internal Resolver

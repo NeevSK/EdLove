@@ -1,4 +1,4 @@
-import { AlertTriangle, RefreshCw } from 'lucide-react-native';
+import { RefreshCw, TriangleAlert } from 'lucide-react-native';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Platform, Text as RNText, StyleSheet, TouchableOpacity } from 'react-native';
 import { Box, Button, ButtonIcon, ButtonText, Center, Heading, Text, VStack } from '../gluestack';
@@ -90,7 +90,7 @@ export default class ErrorBoundary extends Component<Props, State> {
                 <Box className="p-8 bg-phase-danger/10 rounded-full">
                   {/* These icons are the most likely to cause "Element type is invalid" on Web if not aliased */}
                   {Platform.OS !== 'web' ? (
-                    <AlertTriangle size={64} className="text-phase-danger" />
+                    <TriangleAlert size={64} className="text-phase-danger" />
                   ) : (
                     <RNText style={{ fontSize: 64 }}>⚠️</RNText>
                   )}

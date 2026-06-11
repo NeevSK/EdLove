@@ -1,7 +1,15 @@
 import type { WorkspaceSurfaceDefinition } from '@repo/core/types';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
-import { BookOpen, ClipboardCheck, Layout, MessageSquare, Star, Wind, Zap } from '@repo/ui/icons';
+import {
+  BookOpen,
+  ClipboardCheck,
+  MessageSquare,
+  PanelsTopLeft,
+  Star,
+  Wind,
+  Zap,
+} from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 
 import type { ComponentType, ReactNode } from 'react';
@@ -202,7 +210,7 @@ export function useStudentDashboardSurfaces({
               disabled={isPastView}
             />
             <QuickAction
-              icon={Layout}
+              icon={PanelsTopLeft}
               label="Timetable"
               onPress={onOpenTimetable}
               iconColorClass="text-phase-reward"

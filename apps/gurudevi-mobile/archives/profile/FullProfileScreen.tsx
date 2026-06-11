@@ -22,9 +22,9 @@ import {
   AtSign,
   BookOpen,
   Briefcase,
-  Edit3,
+  SquarePen,
   FileText,
-  Fingerprint,
+  FingerprintPattern,
   GraduationCap,
   Phone,
   School,
@@ -212,7 +212,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
 
                 {profile.role === 'student' ? (
                   <EditableItem
-                    icon={Fingerprint}
+                    icon={FingerprintPattern}
                     label={t('profile.indexNumber')}
                     value={profile.index_number}
                     field="index_number"
@@ -221,7 +221,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                   />
                 ) : (
                   <EditableItem
-                    icon={Fingerprint}
+                    icon={FingerprintPattern}
                     label={t('profile.nicNumber')}
                     value={profile.nic_number}
                     field="nic_number"
@@ -347,7 +347,7 @@ export default function FullProfileScreen({ route, navigation }: FullProfileScre
                   style={styles.manageSocialsBtn}
                 >
                   <HStack space="sm" alignItems="center">
-                    <Edit3 size={18} color={colors.action} />
+                    <SquarePen size={18} color={colors.action} />
                     <Text color={colors.action} bold>
                       Manage Social Hub
                     </Text>

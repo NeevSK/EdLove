@@ -3,7 +3,7 @@ import type { Student } from '@repo/core/types';
 
 import { QRCodeGenerator } from '@repo/scanner-kit';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
-import { Edit2, Plus, QrCode, Sparkles, Trash2 } from '@repo/ui/icons';
+import { Pen, Plus, QrCode, Sparkles, Trash2 } from '@repo/ui/icons';
 import {
   Spinner as ActivityIndicator,
   Box,
@@ -250,7 +250,7 @@ const StudentListItem = React.memo(
               </Pressable>
             )}
             <Pressable onPress={() => onEdit(student)} className="p-2.5">
-              <Icon as={Edit2} size={18} className="text-sanctuary-text-tertiary" />
+              <Icon as={Pen} size={18} className="text-sanctuary-text-tertiary" />
             </Pressable>
             <Pressable onPress={() => onRemove(student.id)} disabled={isDeleting} className="p-2.5">
               {isDeleting ? (

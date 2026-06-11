@@ -23,7 +23,7 @@ import {
   ArrowUpRight,
   BookOpen,
   Building,
-  CheckSquare,
+  SquareCheckBig,
   Globe,
   LayoutGrid,
   MessageSquare,
@@ -107,7 +107,7 @@ export default function FounderDashboard() {
     {
       label: 'Attendance Records',
       value: stats?.attendance_records ?? '—',
-      icon: CheckSquare,
+      icon: SquareCheckBig,
       color: 'var(--moss)',
       bg: 'rgba(78,154,78,0.08)',
     },

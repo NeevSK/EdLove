@@ -104,7 +104,6 @@
     "test:ui": "vitest --ui"
   },
   "dependencies": {
-    "@expo/vector-icons": "15.1.1",
     "@maplibre/maplibre-react-native": "10.4.2",
     "@repo/core": "workspace:*",
     "@repo/graphics": "workspace:*",

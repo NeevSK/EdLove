@@ -3,7 +3,7 @@ import { type AppNotification, useNotifications, useStore } from '@repo/core/log
 import { WebScreenHeader } from '@repo/ui/components';
 
 import { formatDistanceToNow } from 'date-fns';
-import { Bell, CheckCircle2, Inbox, Info, Shield, Sparkles } from 'lucide-react-native';
+import { Bell, CircleCheck, Inbox, Info, Shield, Sparkles } from 'lucide-react-native';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StackFallback } from '../components/web/WebScreenShimmer';
@@ -60,7 +60,7 @@ export default function NotificationsScreenWeb() {
               }}
             >
               <button className="sanctuary-button-ghost" onClick={() => markAllRead()}>
-                <CheckCircle2 size={14} />
+                <CircleCheck size={14} />
                 {t('notifications.markAllRead')}
               </button>
             </div>

@@ -1,7 +1,7 @@
 import { growthSignalsAPI } from '@repo/core/api';
 import { type ClassroomGradingSettings, useStore } from '@repo/core/logic';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
-import { Award, Check, ChevronLeft, Edit3, Settings2, TrendingUp, Users } from '@repo/ui/icons';
+import { Award, Check, ChevronLeft, Settings2, SquarePen, TrendingUp, Users } from '@repo/ui/icons';
 import {
   Box,
   Center,
@@ -25,10 +25,9 @@ import {
   TextareaInput,
   VStack,
 } from '@repo/ui/primitives';
-
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import type React from 'react';
 import { useState } from 'react';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import type { SortOption } from '../hooks/useGradebook';
 import { useGradebook } from '../hooks/useGradebook';
 
@@ -242,8 +241,10 @@ function SettingsModal({
 
 export default function GradebookScreenWeb() {
   const router = useRouter();
-  const { classroomId = '', classroomName = 'Classroom' } =
-    useLocalSearchParams<{ classroomId?: string; classroomName?: string }>();
+  const { classroomId = '', classroomName = 'Classroom' } = useLocalSearchParams<{
+    classroomId?: string;
+    classroomName?: string;
+  }>();
   const { user } = useStore();
 
   const {
@@ -370,7 +371,7 @@ export default function GradebookScreenWeb() {
               </Box>
               <Box className="bg-phase-surface p-5 rounded-[24px] border border-phase-border/40 shadow-sm">
                 <HStack className="items-center gap-2 mb-3">
-                  <Icon as={Edit3} size="xs" className="text-phase-interactive" />
+                  <Icon as={SquarePen} size="xs" className="text-phase-interactive" />
                   <SectionLabel>Mode</SectionLabel>
                 </HStack>
                 <Text className="text-xl font-black text-phaseText-primary leading-none capitalize">

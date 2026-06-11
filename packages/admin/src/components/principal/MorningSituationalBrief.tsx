@@ -15,7 +15,7 @@ import {
   staffManagementAPI,
 } from '@repo/core/api';
 
-import { AlertCircle, ChevronRight, FileCheck, TrendingDown, TrendingUp } from '@repo/ui/icons';
+import { ChevronRight, CircleAlert, FileCheck, TrendingDown, TrendingUp } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
@@ -167,7 +167,7 @@ export default function MorningSituationalBrief({
                 </Text>
               </VStack>
               <Box className="p-1.5 rounded-lg bg-phase-danger/10">
-                <Icon as={AlertCircle} size="xs" className="text-phase-danger" />
+                <Icon as={CircleAlert} size="xs" className="text-phase-danger" />
               </Box>
             </HStack>
             <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-widest opacity-60">

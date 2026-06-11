@@ -1,6 +1,4 @@
 import { usePermissions, useStore } from '@repo/core/logic';
-import { router, useLocalSearchParams } from 'expo-router';
-
 import { StaffPresencePulse } from '@repo/people';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
@@ -8,8 +6,9 @@ import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useThemedColors } from '@repo/ui/hooks';
 import { Box, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
+import { router, useLocalSearchParams } from 'expo-router';
 
-import { AtSign, Edit3, User as UserIcon } from 'lucide-react-native';
+import { AtSign, SquarePen, User as UserIcon } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
@@ -28,7 +27,9 @@ export default function FullProfileScreenWeb() {
   const profileId = Array.isArray(params.id) ? params.id[0] : params.id || params.userId || '';
   const initialProfile = {
     id: profileId,
-    full_name: Array.isArray(params.full_name) ? params.full_name[0] : params.full_name || 'Profile',
+    full_name: Array.isArray(params.full_name)
+      ? params.full_name[0]
+      : params.full_name || 'Profile',
   } as UserProfile;
 
   const { t } = useTranslation();
@@ -168,7 +169,7 @@ export default function FullProfileScreenWeb() {
             {!isOtherProfile && (
               <SanctuaryButton onPress={() => setShowSocialModal(true)}>
                 <HStack space="sm" className="items-center">
-                  <Edit3 size={18} color="white" />
+                  <SquarePen size={18} color="white" />
                   <Text className="text-white font-bold">Manage Social Links</Text>
                 </HStack>
               </SanctuaryButton>

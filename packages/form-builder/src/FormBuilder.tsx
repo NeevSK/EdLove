@@ -22,12 +22,12 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import {
-  BarChart3,
+  ChartColumn,
   Clock,
   Download,
   Eye,
   GripVertical,
-  Layout,
+  PanelsTopLeft,
   Plus,
   Save,
   Settings2,
@@ -111,7 +111,10 @@ export const FormBuilder = ({
   services: servicesOverride,
 }: FormBuilderProps) => {
   const colors = useThemedColors();
-  const services = { ...defaultFormBuilderServices, ...servicesOverride };
+  const services = useMemo(
+    () => ({ ...defaultFormBuilderServices, ...servicesOverride }),
+    [servicesOverride],
+  );
   const FeatureGate = services.featureGuard;
   const QRCodeGen = services.qrCodeGenerator;
   const [fields, setFields] = useState<FieldDefinition[]>(
@@ -182,7 +185,7 @@ export const FormBuilder = ({
       const el = document.getElementById(styleId);
       if (el) el.remove();
     };
-  }, [services.runtime.device.getMetadata]);
+  }, [services.runtime.device]);
   // Auto-save logic
   useEffect(() => {
     if (fields.length > 0) {
@@ -212,7 +215,7 @@ export const FormBuilder = ({
       void fetchResponses();
     }
   }, [activeTab, templateId, fetchResponses]);
-  async function fetchResponses() {
+  const fetchResponses = useCallback(async () => {
     setIsFetchingResponses(true);
     try {
       const data = await services.api.forms.getResponses(templateId!);
@@ -222,7 +225,7 @@ export const FormBuilder = ({
     } finally {
       setIsFetchingResponses(false);
     }
-  }
+  }, [services.api.forms, templateId]);
   const handleExportCSV = () => {
     const csv = formAnalytics.toCSV(fields, responses);
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -330,7 +333,7 @@ export const FormBuilder = ({
               onPress={() => setPreviewMode(!previewMode)}
               className="rounded-xl"
             >
-              <Icon as={previewMode ? Layout : Eye} className="mr-2" />
+              <Icon as={previewMode ? PanelsTopLeft : Eye} className="mr-2" />
               <ButtonText>{previewMode ? 'Back to Editor' : 'Live Preview'}</ButtonText>
             </Button>
             <Button
@@ -450,7 +453,7 @@ export const FormBuilder = ({
               </VStack>
               <HStack className="gap-2">
                 <Button variant="outline" action="secondary" onPress={handlePrintReport}>
-                  <Icon as={Layout} className="mr-2" />
+                  <Icon as={PanelsTopLeft} className="mr-2" />
                   <ButtonText>Print Report</ButtonText>
                 </Button>
                 <Button
@@ -530,7 +533,7 @@ export const FormBuilder = ({
                 className="p-14 items-center rounded-[32px] border border-dashed border-border"
                 sx={{ backgroundColor: colors.tertiary }}
               >
-                <Icon as={BarChart3} size={48} color={colors.textTertiary} />
+                <Icon as={ChartColumn} size={48} color={colors.textTertiary} />
                 <Heading size="sm" className="mt-4">
                   Listening for Resonance...
                 </Heading>

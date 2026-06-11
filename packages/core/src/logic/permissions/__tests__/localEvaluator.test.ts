@@ -83,7 +83,7 @@ describe('localEvaluator (WASM PDP)', () => {
     const userContext = {
       userId: 'user-123',
       schoolId: 'school-123',
-      capacity: 'teacher',
+      capacity: 'teacher' as const,
       classroomId: 'classroom-123',
     };
 

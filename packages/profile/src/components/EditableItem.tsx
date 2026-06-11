@@ -1,7 +1,7 @@
 import { Box, HStack, Input, InputField, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
-import { Check, Edit2, X } from 'lucide-react-native';
+import { Check, Pen, X } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { ProfileValidator } from '../lib/validator';
 
@@ -148,7 +148,7 @@ export const EditableItem = ({
             </Text>
             {!disabled && (
               <Box className="opacity-40 group-hover:opacity-100 transition-opacity">
-                <Edit2 size={12} color="#9DA1A3" />
+                <Pen size={12} color="#9DA1A3" />
               </Box>
             )}
           </Pressable>

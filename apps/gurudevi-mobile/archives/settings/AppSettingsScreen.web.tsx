@@ -10,7 +10,7 @@ import { useThemedColors } from '@repo/ui/hooks';
 import {
   ChevronRight,
   Globe,
-  HelpCircle,
+  CircleQuestionMark,
   Info,
   LogOut,
   Moon,
@@ -302,7 +302,7 @@ export default function AppSettingsScreenWeb() {
           {/* 5. SUPPORT & RESONANCE */}
           <div className="sanctuary-card" style={{ padding: '24px' }}>
             <h3 className="card-header-label">
-              <HelpCircle size={16} /> {t('settings.support.title')}
+              <CircleQuestionMark size={16} /> {t('settings.support.title')}
             </h3>
 
             <div className="settings-list">

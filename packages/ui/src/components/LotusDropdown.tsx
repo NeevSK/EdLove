@@ -1,4 +1,4 @@
-import { AlertCircle, ChevronDown } from 'lucide-react-native';
+import { ChevronDown, CircleAlert } from 'lucide-react-native';
 import { useState } from 'react';
 import {
   Actionsheet,
@@ -67,7 +67,7 @@ export default function LotusDropdown({
 
       {hasError && (
         <HStack className="items-center gap-1.5 px-1">
-          <AlertCircle size={14} className="text-phase-danger" />
+          <CircleAlert size={14} className="text-phase-danger" />
           <Text className="text-phase-danger text-xs font-medium">{error}</Text>
         </HStack>
       )}

@@ -1,7 +1,7 @@
 import { useNotifications, useStore } from '@repo/core/logic';
 import type { AppNotification } from '@repo/core/types';
 import { formatDistanceToNow } from 'date-fns';
-import { Bell, CheckCircle2, Inbox, Info, Shield, Sparkles } from 'lucide-react-native';
+import { Bell, CircleCheck, Inbox, Info, Shield, Sparkles } from 'lucide-react-native';
 import React, { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WebScreenHeader } from '../components/WebScreenHeader.web';
@@ -243,7 +243,7 @@ export default memo(function NotificationsScreenWeb() {
               }}
             >
               <button className="sanctuary-button-ghost" onClick={handleMarkAllRead}>
-                <CheckCircle2 size={14} />
+                <CircleCheck size={14} />
                 {t('notifications.markAllRead')}
               </button>
             </div>

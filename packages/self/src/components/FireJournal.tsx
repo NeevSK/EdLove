@@ -3,9 +3,7 @@
  * "Burn" negative thoughts - A cathartic release mechanism
  */
 
-import { useRouter } from 'expo-router';
 import { usePermissions, useTemporalStore } from '@repo/core/logic';
-
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import {
@@ -22,8 +20,9 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
+import { useRouter } from 'expo-router';
 
-import { CheckCircle, Flame, Mic } from 'lucide-react-native';
+import { CircleCheck, Flame, Mic } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -222,9 +221,7 @@ export default function FireJournal({
   }
 
   if (!activeUserId) {
-    return (
-      <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />
-    );
+    return <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />;
   }
 
   return (
@@ -244,7 +241,7 @@ export default function FireJournal({
         <AnimatedView entering={FadeIn}>
           <Box className="bg-emeraldGreen/10 p-md rounded-comfortable items-center border border-emeraldGreen/20">
             <HStack className="items-center gap-2">
-              <Icon as={CheckCircle} className="text-emeraldGreen" size={16} />
+              <Icon as={CircleCheck} className="text-emeraldGreen" size={16} />
               <Text className="text-emeraldGreen font-semibold text-md">
                 {t('fireJournal.released') || 'Released to the winds.'}
               </Text>

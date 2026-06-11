@@ -6,11 +6,11 @@ import { Box, HStack, Text, useTheme, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import {
   ArrowLeftRight,
-  BarChart2,
   BookMarked,
   Bookmark,
   BookOpen,
   Brain,
+  ChartNoAxesColumn,
   Clapperboard,
   ClipboardCheck,
   Cpu,
@@ -57,7 +57,7 @@ export const RESOURCE_TYPE_CONFIG: Record<
   doc: { icon: FileText, color: Theme.colors.ink, label: 'Doc' },
   note: { icon: StickyNote, color: Theme.colors.sageGreen, label: 'Note' },
   map: { icon: MapIcon, color: '#10B981', label: 'Map' },
-  infographic: { icon: BarChart2, color: '#F59E0B', label: 'Visual' },
+  infographic: { icon: ChartNoAxesColumn, color: '#F59E0B', label: 'Visual' },
   story: {
     icon: BookMarked,
     color: Theme.colors.gurudeviViolet,

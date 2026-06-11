@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { AlertTriangle, LifeBuoy, ShieldCheck, ShieldOff, UserX } from '../../icons';
+import { LifeBuoy, ShieldCheck, ShieldOff, TriangleAlert, UserX } from '../../icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '../../primitives';
 import { SanctuaryButton } from '../SanctuaryButton';
 import SanctuaryModal from '../SanctuaryModal';
@@ -28,14 +28,14 @@ export interface SocialShieldModalProps {
 }
 
 const REPORT_REASONS = [
-  { label: 'Harmful Content', value: 'harmful', icon: AlertTriangle },
+  { label: 'Harmful Content', value: 'harmful', icon: TriangleAlert },
   { label: 'Harassment', value: 'harassment', icon: UserX },
   {
     label: 'Inappropriate for School',
     value: 'inappropriate',
     icon: ShieldOff,
   },
-  { label: 'Other', value: 'other', icon: AlertTriangle },
+  { label: 'Other', value: 'other', icon: TriangleAlert },
 ];
 
 const TARGET_OPTIONS: {

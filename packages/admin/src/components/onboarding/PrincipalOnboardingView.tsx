@@ -1,8 +1,8 @@
 import {
-  ArrowRightCircle,
   Building,
   Building2,
   ChevronRight,
+  CircleArrowRight,
   Search,
   ShieldCheck,
   Zap,
@@ -139,7 +139,7 @@ export default function PrincipalOnboardingView({
                   <Text className="text-white font-black text-base uppercase tracking-widest">
                     Launch Demo Sandbox
                   </Text>
-                  <Icon as={ArrowRightCircle} size="sm" className="text-white" />
+                  <Icon as={CircleArrowRight} size="sm" className="text-white" />
                 </HStack>
               </Pressable>
             </VStack>

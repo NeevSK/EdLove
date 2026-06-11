@@ -21,12 +21,12 @@ import { hapticLight } from '@repo/ui/utils/haptics';
 
 import {
   Bell,
-  CheckSquare,
   ChevronDown,
   Eye,
   Lightbulb,
   NotebookPen,
   Pin,
+  SquareCheckBig,
   StickyNote,
   X,
 } from 'lucide-react-native';
@@ -125,7 +125,7 @@ const NOTE_TYPE_META: Record<
 > = {
   todo: {
     label: 'To-Do',
-    icon: CheckSquare,
+    icon: SquareCheckBig,
     color: 'text-phase-interactive',
     bg: 'bg-phase-interactive/10',
     placeholder: 'What needs to happen?…',
@@ -246,7 +246,7 @@ const NoteCard = memo(
                 accessibilityLabel={`Mark "${note.content}" as ${note.is_done ? 'incomplete' : 'complete'}`}
                 accessibilityHint="Toggles the completion status of this item"
               >
-                {note.is_done && <Icon as={CheckSquare} size="xs" className="text-white" />}
+                {note.is_done && <Icon as={SquareCheckBig} size="xs" className="text-white" />}
               </Pressable>
             ) : (
               <Box className={`w-7 h-7 rounded-lg items-center justify-center ${meta.bg}`}>

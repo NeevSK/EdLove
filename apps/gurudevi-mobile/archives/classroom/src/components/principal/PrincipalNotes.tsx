@@ -23,7 +23,7 @@ import { Theme } from '@repo/ui/theme';
 import {
   Bell,
   BookMarked,
-  CheckSquare,
+  SquareCheckBig,
   Eye,
   Lightbulb,
   NotebookPen,
@@ -101,7 +101,7 @@ const NOTE_TYPE_META: Record<
 > = {
   todo: {
     label: 'To-Do',
-    icon: CheckSquare,
+    icon: SquareCheckBig,
     color: Theme.colors.sanctuarySaffron,
     placeholder: 'What needs to happen tomorrow?…',
   },
@@ -238,7 +238,7 @@ export default function PrincipalNotes({ schoolId, onBack }: PrincipalNotesProps
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
                 {note.is_done ? (
-                  <CheckSquare size={18} color={colors.textTertiary} />
+                  <SquareCheckBig size={18} color={colors.textTertiary} />
                 ) : (
                   <Square size={18} color={meta.color} />
                 )}
