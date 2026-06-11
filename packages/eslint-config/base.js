@@ -1,6 +1,5 @@
 import js from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
-import pluginDeprecation from 'eslint-plugin-deprecation';
 import pluginImport from 'eslint-plugin-import-x';
 import eslintPluginOxlint from 'eslint-plugin-oxlint';
 import turboPlugin from 'eslint-plugin-turbo';
@@ -20,11 +19,9 @@ export const config = [
   {
     plugins: {
       turbo: turboPlugin,
-      deprecation: pluginDeprecation,
     },
     rules: {
       'turbo/no-undeclared-env-vars': 'warn',
-      'deprecation/deprecation': 'off',
       'no-unused-vars': 'off',
       'import-x/no-cycle': ['error', { maxDepth: 5 }],
     },
@@ -52,12 +49,6 @@ export const config = [
       '**/.astro/**',
       'docs/**',
     ],
-  },
-  {
-    files: ['**/*.d.ts'],
-    rules: {
-      'deprecation/deprecation': 'off',
-    },
   },
   ...eslintPluginOxlint.configs['flat/recommended'],
 ];

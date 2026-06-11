@@ -21,7 +21,10 @@ if (existsSync(ENV_PATH)) {
 
     const [key, ...vals] = trimmed.split('=');
     if (key && vals.length > 0) {
-      process.env[key.trim()] = vals.join('=').trim();
+      const varName = key.trim();
+      if (process.env[varName] === undefined) {
+        process.env[varName] = vals.join('=').trim();
+      }
     }
   });
 }
@@ -49,13 +52,17 @@ const finalArgs = args.map((arg) => {
   });
 });
 
-// 4. Execution: Launch the Sovereign Child
+// On Windows, use ComSpec (cmd.exe) only for batch files/scripts to avoid DEP0190 security warnings.
+// For executable binaries (like node), spawn directly to avoid command line argument parsing bugs (e.g. quote stripping).
 const isWin = process.platform === 'win32';
-
-// On Windows, use ComSpec (cmd.exe) to avoid DEP0190 security warning while still supporting batch files
-const spawnArgs = isWin
-  ? [process.env.ComSpec || 'cmd.exe', ['/c', command, ...finalArgs]]
-  : [command, finalArgs];
+const isBatch =
+  command.endsWith('.cmd') ||
+  command.endsWith('.bat') ||
+  ['npm', 'npx', 'pnpm', 'yarn', 'bun'].includes(command);
+const spawnArgs =
+  isWin && isBatch
+    ? [process.env.ComSpec || 'cmd.exe', ['/c', command, ...finalArgs]]
+    : [command, finalArgs];
 
 if (process.env.DEBUG_MCP_PROXY) {
   process.stderr.write(`[MCP-PROXY] Spawning: ${command} ${finalArgs.join(' ')}\n`);

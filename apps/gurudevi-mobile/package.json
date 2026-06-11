@@ -26,7 +26,7 @@
     "fix:web-shim": "node scripts/add-web-shim.mjs",
     "lint:biome": "biome check .",
     "lint:eslint": "eslint .",
-    "format": "biome format --write .",
+    "format": "node ../../scripts/scoped-biome.mjs --write",
     "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
     "test:ui": "vitest --ui",
     "test:e2e": "pnpm exec playwright test",

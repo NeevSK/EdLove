@@ -1,5 +1,11 @@
 /* eslint-disable import-x/no-unresolved */
 
+// --- Robust Stdio Protection: Redirect all stdout to stderr during the boot phase ---
+const originalStdoutWrite = process.stdout.write;
+process.stdout.write = function (chunk: any, encoding?: any, callback?: any) {
+  return process.stderr.write(chunk, encoding, callback);
+} as any;
+
 import * as fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -21,7 +27,7 @@ import { ScoutService } from './services/ScoutService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.join(__dirname, '..', '.env') });
+dotenv.config({ path: path.join(__dirname, '..', '.env'), quiet: true });
 
 /**
  * The Polymath Platform MCP Server - MODULAR VERSION
@@ -221,7 +227,15 @@ class PolymathPlatformServer {
         args: [
           path.join(__dirname, '..', '..', '..', 'scripts', 'mcp-proxy.mjs'),
           'node',
-          path.join(__dirname, '..', 'node_modules', '@modelcontextprotocol', 'server-sequential-thinking', 'dist', 'index.js'),
+          path.join(
+            __dirname,
+            '..',
+            'node_modules',
+            '@modelcontextprotocol',
+            'server-sequential-thinking',
+            'dist',
+            'index.js',
+          ),
         ],
       },
       {
@@ -251,12 +265,9 @@ class PolymathPlatformServer {
         command: 'node',
         args: [
           path.join(__dirname, '..', '..', '..', 'scripts', 'mcp-proxy.mjs'),
-          'npx',
-          '-y',
-          'mcp-remote',
+          'node',
+          path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
           'https://mcp.expo.dev/mcp',
-          '--header',
-          'Authorization: Bearer ${env.EXPO_TOKEN}',
         ],
       },
     ];
@@ -275,8 +286,8 @@ class PolymathPlatformServer {
           const checkRes = await fetch('https://mcp.expo.dev/mcp', {
             method: 'POST',
             headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify({
               jsonrpc: '2.0',
@@ -285,15 +296,14 @@ class PolymathPlatformServer {
               params: {
                 protocolVersion: '2024-11-05',
                 capabilities: {},
-                clientInfo: { name: 'gateway-probe', version: '1.0.0' }
-              }
-            })
+                clientInfo: { name: 'gateway-probe', version: '1.0.0' },
+              },
+            }),
           });
           if (checkRes.status === 401) {
             console.error(
-              `[Gateway] ⚠️  Skipping expo server: The provided EXPO_TOKEN is invalid or expired. Please update it in packages/platform-mcp/.env.`
+              `[Gateway] ⚠️  Warning: The provided EXPO_TOKEN returned 401 Unauthorized. Attempting to launch expo server anyway (it may fall back to cached browser tokens)...`,
             );
-            continue;
           }
         } catch (e: any) {
           console.error(`[Gateway] Expo token validation probe failed:`, e.message);
@@ -304,7 +314,7 @@ class PolymathPlatformServer {
         console.error(`[Gateway] Launching downstream client: ${serverConf.name}...`);
         const cleanEnv: Record<string, string> = {};
         for (const [key, value] of Object.entries(process.env)) {
-          if (value !== undefined) {
+          if (value !== undefined && key !== 'NODE_OPTIONS') {
             cleanEnv[key] = value;
           }
         }
@@ -1386,6 +1396,8 @@ class PolymathPlatformServer {
 
   async run() {
     const transport = new StdioServerTransport();
+    // Restore stdout write right before connecting the JSON-RPC channel
+    process.stdout.write = originalStdoutWrite;
     await this.server.connect(transport);
     console.error('Polymath Master MCP Server (Modular) running on stdio');
 

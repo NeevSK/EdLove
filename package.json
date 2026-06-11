@@ -12,7 +12,7 @@
     "lint:biome": "pnpm turbo run lint:biome",
     "lint:eslint": "pnpm turbo run lint:eslint",
     "format": "pnpm turbo run format",
-    "format:fix": "biome check --write .",
+    "format:fix": "node scripts/scoped-biome.mjs --write",
     "biome:audit": "powershell -ExecutionPolicy Bypass -File scripts/biome-audit.ps1",
     "audit:size": "powershell -ExecutionPolicy Bypass -File scripts/audit-wrapper.ps1 -Cmd \"pnpm exec size-limit\" -Log \"reports/size_audit.txt\"",
     "audit:mobile:doctor": "powershell -ExecutionPolicy Bypass -File scripts/audit-wrapper.ps1 -Cmd \"pnpm --filter gurudevi-mobile exec pnpm dlx expo-doctor\" -Log \"reports/mobile_doctor_audit.txt\"",

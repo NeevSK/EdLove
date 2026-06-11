@@ -97,7 +97,7 @@
     "clean": "rm -rf .turbo node_modules dist",
     "lint:biome": "biome check .",
     "lint:eslint": "eslint .",
-    "format": "biome format --write .",
+    "format": "node ../../scripts/scoped-biome.mjs --write",
     "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
