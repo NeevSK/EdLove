@@ -16,7 +16,7 @@ export function usePollHooks(postId: string) {
   const queryClient = useQueryClient();
   const _user = useAuthStore((state) => state.user);
 
-  const query = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: pollKeys.detail(postId),
     queryFn: async () => {
       const data = await communityAPI.getPollStatus(postId);
@@ -38,14 +38,14 @@ export function usePollHooks(postId: string) {
 
   return useMemo(
     () => ({
-      ...query.data,
-      isLoading: query.isLoading,
+      ...data,
+      isLoading,
       isVoting: voteMutation.isPending,
       handleVote: (optionId: string, _allowMultiple = false) => voteMutation.mutate({ optionId }),
       refreshVotes: () => {
         void queryClient.invalidateQueries({ queryKey: pollKeys.detail(postId) });
       },
     }),
-    [query.data, query.isLoading, voteMutation.isPending, voteMutation.mutate, queryClient, postId],
+    [data, isLoading, voteMutation, queryClient, postId],
   );
 }

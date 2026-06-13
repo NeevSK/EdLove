@@ -207,7 +207,9 @@ export default function AccountPinModal({
       <Box className={allowClose ? 'flex-[1.5]' : 'flex-1'}>
         <SanctuaryButton
           action={mode === 'remove' ? 'negative' : 'primary'}
-          onPress={handleSubmit}
+          onPress={() => {
+            void handleSubmit();
+          }}
           isLoading={isLoading}
         >
           {isLoading ? 'Working...' : copy.submitLabel}

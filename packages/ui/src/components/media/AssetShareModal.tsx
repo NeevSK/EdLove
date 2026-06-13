@@ -42,7 +42,13 @@ export function AssetShareModal({
   }, [assetTitle, shareUrl, shareMessage]);
 
   const footer = (
-    <SanctuaryButton onPress={handleShareLink} className="w-full" leftIcon={Share2}>
+    <SanctuaryButton
+      onPress={() => {
+        void handleShareLink();
+      }}
+      className="w-full"
+      leftIcon={Share2}
+    >
       Share External Link
     </SanctuaryButton>
   );

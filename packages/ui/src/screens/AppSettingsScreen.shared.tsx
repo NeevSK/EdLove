@@ -1,4 +1,6 @@
-import { useStore, cryptoManager, storage, accountPin } from '@repo/core/logic';
+import { accountPin, cryptoManager, storage, useStore } from '@repo/core/logic';
+import * as LocalAuthentication from 'expo-local-authentication';
+import * as ScreenCapture from 'expo-screen-capture';
 import {
   Check,
   ChevronRight,
@@ -12,15 +14,13 @@ import {
   Sparkles,
   Zap,
 } from 'lucide-react-native';
-import { TextInput, TouchableOpacity, Platform } from 'react-native';
-import * as LocalAuthentication from 'expo-local-authentication';
-import * as ScreenCapture from 'expo-screen-capture';
 import type React from 'react';
-import { memo, useCallback, useMemo, useState, useEffect } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Platform, TextInput, TouchableOpacity } from 'react-native';
+import AccountPinModal from '../components/AccountPinModal';
 import DeviceSecurityCenter from '../components/DeviceSecurityCenter';
 import { NotificationSettingsPanel } from '../components/NotificationSettingsPanel';
-import AccountPinModal from '../components/AccountPinModal';
 import { Box } from '../components/ui/box';
 import { Button, ButtonText } from '../components/ui/button';
 import { HStack } from '../components/ui/hstack';
@@ -244,7 +244,10 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
       if (val) {
         try {
           const auth = await LocalAuthentication.authenticateAsync({
-            promptMessage: t('settings.security.confirm_biometrics', 'Confirm biometrics to enable lock'),
+            promptMessage: t(
+              'settings.security.confirm_biometrics',
+              'Confirm biometrics to enable lock',
+            ),
           });
           if (auth.success) {
             storage.set('require_biometrics', true);
@@ -282,7 +285,10 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
           storage.set('prevent_screen_capture', true);
           setPreventScreenCapture(true);
           showToast({
-            message: t('settings.security.screencapture_prevented', 'Screen capture protection active'),
+            message: t(
+              'settings.security.screencapture_prevented',
+              'Screen capture protection active',
+            ),
             type: 'success',
           });
         } else {
@@ -290,13 +296,19 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
           storage.set('prevent_screen_capture', false);
           setPreventScreenCapture(false);
           showToast({
-            message: t('settings.security.screencapture_allowed', 'Screen capture protection disabled'),
+            message: t(
+              'settings.security.screencapture_allowed',
+              'Screen capture protection disabled',
+            ),
             type: 'success',
           });
         }
       } catch (err) {
         showToast({
-          message: t('settings.security.screencapture_failed', 'Failed to update screen capture status'),
+          message: t(
+            'settings.security.screencapture_failed',
+            'Failed to update screen capture status',
+          ),
           type: 'error',
         });
       }
@@ -318,56 +330,59 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
     checkPin();
   }, [user?.id]);
 
-  const handlePinSubmit = useCallback(async (values: any) => {
-    if (!user?.id) return;
-    try {
-      if (pinModalMode === 'create') {
-        await accountPin.setPin(user.id, values.pin);
-        setHasPin(true);
+  const handlePinSubmit = useCallback(
+    async (values: any) => {
+      if (!user?.id) return;
+      try {
+        if (pinModalMode === 'create') {
+          await accountPin.setPin(user.id, values.pin);
+          setHasPin(true);
+          showToast({
+            message: t('settings.security.pin_created', 'PIN set successfully'),
+            type: 'success',
+          });
+        } else if (pinModalMode === 'remove') {
+          const correct = await accountPin.verifyPin(user.id, values.pin);
+          if (correct) {
+            await accountPin.removePin(user.id);
+            setHasPin(false);
+            showToast({
+              message: t('settings.security.pin_removed', 'PIN removed successfully'),
+              type: 'success',
+            });
+          } else {
+            showToast({
+              message: t('settings.security.pin_incorrect', 'Incorrect PIN'),
+              type: 'error',
+            });
+            return;
+          }
+        } else if (pinModalMode === 'update') {
+          const correct = await accountPin.verifyPin(user.id, values.currentPin);
+          if (correct) {
+            await accountPin.setPin(user.id, values.nextPin);
+            showToast({
+              message: t('settings.security.pin_updated', 'PIN changed successfully'),
+              type: 'success',
+            });
+          } else {
+            showToast({
+              message: t('settings.security.pin_incorrect', 'Incorrect current PIN'),
+              type: 'error',
+            });
+            return;
+          }
+        }
+        setShowPinModal(false);
+      } catch (err: any) {
         showToast({
-          message: t('settings.security.pin_created', 'PIN set successfully'),
-          type: 'success',
+          message: err.message || 'Operation failed',
+          type: 'error',
         });
-      } else if (pinModalMode === 'remove') {
-        const correct = await accountPin.verifyPin(user.id, values.pin);
-        if (correct) {
-          await accountPin.removePin(user.id);
-          setHasPin(false);
-          showToast({
-            message: t('settings.security.pin_removed', 'PIN removed successfully'),
-            type: 'success',
-          });
-        } else {
-          showToast({
-            message: t('settings.security.pin_incorrect', 'Incorrect PIN'),
-            type: 'error',
-          });
-          return;
-        }
-      } else if (pinModalMode === 'update') {
-        const correct = await accountPin.verifyPin(user.id, values.currentPin);
-        if (correct) {
-          await accountPin.setPin(user.id, values.nextPin);
-          showToast({
-            message: t('settings.security.pin_updated', 'PIN changed successfully'),
-            type: 'success',
-          });
-        } else {
-          showToast({
-            message: t('settings.security.pin_incorrect', 'Incorrect current PIN'),
-            type: 'error',
-          });
-          return;
-        }
       }
-      setShowPinModal(false);
-    } catch (err: any) {
-      showToast({
-        message: err.message || 'Operation failed',
-        type: 'error',
-      });
-    }
-  }, [pinModalMode, user?.id, showToast, t]);
+    },
+    [pinModalMode, user?.id, showToast, t],
+  );
 
   // AI Assistant States
   const [aiBillingMode, setAiBillingMode] = useState<'baseline' | 'byok' | 'purchased'>('baseline');
@@ -392,39 +407,45 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
     loadAiSettings();
   }, []);
 
-  const handleAiBillingModeChange = useCallback(async (mode: 'baseline' | 'byok' | 'purchased') => {
-    setAiBillingMode(mode);
-    try {
-      await cryptoManager.setItemAsync('ai_billing_mode', mode);
-      hapticSuccess();
-      showToast({
-        message: t('settings.ai.billing_mode_updated', 'AI billing mode updated'),
-        type: 'success',
-      });
-    } catch (err) {
-      showToast({
-        message: t('settings.ai.billing_mode_failed', 'Failed to update billing mode'),
-        type: 'error',
-      });
-    }
-  }, [showToast, t]);
+  const handleAiBillingModeChange = useCallback(
+    async (mode: 'baseline' | 'byok' | 'purchased') => {
+      setAiBillingMode(mode);
+      try {
+        await cryptoManager.setItemAsync('ai_billing_mode', mode);
+        hapticSuccess();
+        showToast({
+          message: t('settings.ai.billing_mode_updated', 'AI billing mode updated'),
+          type: 'success',
+        });
+      } catch (err) {
+        showToast({
+          message: t('settings.ai.billing_mode_failed', 'Failed to update billing mode'),
+          type: 'error',
+        });
+      }
+    },
+    [showToast, t],
+  );
 
-  const handleAiByokKeyChange = useCallback(async (key: string) => {
-    setAiByokKey(key);
-    try {
-      await cryptoManager.setItemAsync('ai_byok_key', key);
-      hapticSuccess();
-      showToast({
-        message: t('settings.ai.key_updated', 'API Key saved securely'),
-        type: 'success',
-      });
-    } catch (err) {
-      showToast({
-        message: t('settings.ai.key_failed', 'Failed to save API Key'),
-        type: 'error',
-      });
-    }
-  }, [showToast, t]);
+  const handleAiByokKeyChange = useCallback(
+    async (key: string) => {
+      setAiByokKey(key);
+      try {
+        await cryptoManager.setItemAsync('ai_byok_key', key);
+        hapticSuccess();
+        showToast({
+          message: t('settings.ai.key_updated', 'API Key saved securely'),
+          type: 'success',
+        });
+      } catch (err) {
+        showToast({
+          message: t('settings.ai.key_failed', 'Failed to save API Key'),
+          type: 'error',
+        });
+      }
+    },
+    [showToast, t],
+  );
 
   // Theme mode labels
   const _themeLabel = useMemo(() => {
@@ -535,7 +556,6 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
     hapticLight();
     const bodyText = `Hi Support Team,\n\n[Write your message here]\n\n---\nDevice info:\nOS: ${Platform.OS}\nFidelity: ${fidelityLevel}\nLanguage: ${language}\n`;
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const MailComposer = require('expo-mail-composer');
       const isAvailable = await MailComposer.isAvailableAsync();
       if (isAvailable) {
@@ -548,7 +568,7 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
         const url = `mailto:support@gurudevi.org?subject=${encodeURIComponent(
           'Gurudevi App Feedback / Support Request',
         )}&body=${encodeURIComponent(bodyText)}`;
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
+
         const Linking = require('react-native').Linking;
         if (await Linking.canOpenURL(url)) {
           await Linking.openURL(url);
@@ -565,7 +585,7 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
         const url = `mailto:support@gurudevi.org?subject=${encodeURIComponent(
           'Gurudevi App Feedback / Support Request',
         )}&body=${encodeURIComponent(bodyText)}`;
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
+
         const Linking = require('react-native').Linking;
         if (await Linking.canOpenURL(url)) {
           await Linking.openURL(url);
@@ -811,7 +831,10 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
         {/* AI Assistant Configuration */}
         <SectionHeader
           title={t('settings.ai.title', 'AI Assistant')}
-          description={t('settings.ai.description', 'Configure billing resolution modes and custom developer API keys.')}
+          description={t(
+            'settings.ai.description',
+            'Configure billing resolution modes and custom developer API keys.',
+          )}
         />
         <Box className="bg-phase-surface border border-phase-border p-5 mb-4 rounded-[20px] gap-4">
           <Text className="text-sm font-semibold text-phase-primary">
@@ -820,8 +843,11 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
           <HStack className="gap-2">
             {(['baseline', 'byok', 'purchased'] as const).map((mode) => (
               <Pressable
+                accessibilityRole="button"
                 key={mode}
-                onPress={() => handleAiBillingModeChange(mode)}
+                onPress={() => {
+                  void handleAiBillingModeChange(mode);
+                }}
                 className={`flex-1 p-3 rounded-xl border items-center justify-center ${
                   aiBillingMode === mode
                     ? 'bg-phase-surface border-phase-primary'
@@ -850,21 +876,30 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
               </Text>
               <HStack className="items-center bg-phase-world border border-phase-border rounded-xl px-3 h-12">
                 <TextInput
+                  accessibilityLabel="Text input field"
                   secureTextEntry={!showAiKey}
                   placeholder={t('settings.ai.key_placeholder', 'Enter sk-... or AIzaSy...')}
                   placeholderTextColor="#9CA3AF"
                   value={aiByokKey}
-                  onChangeText={handleAiByokKeyChange}
+                  onChangeText={(text) => {
+                    void handleAiByokKeyChange(text);
+                  }}
                   className="flex-1 text-phase-primary text-sm h-full"
                 />
-                <TouchableOpacity onPress={() => setShowAiKey(!showAiKey)}>
+                <TouchableOpacity
+                  accessibilityRole="button"
+                  onPress={() => setShowAiKey(!showAiKey)}
+                >
                   <Box className="text-phase-secondary">
                     {showAiKey ? <EyeOff size={20} /> : <Eye size={20} />}
                   </Box>
                 </TouchableOpacity>
               </HStack>
               <Text className="text-xs text-phase-secondary leading-relaxed">
-                {t('settings.ai.byok_hint', 'Keys are secured locally on your device hardware enclave and decrypted inline.')}
+                {t(
+                  'settings.ai.byok_hint',
+                  'Keys are secured locally on your device hardware enclave and decrypted inline.',
+                )}
               </Text>
             </VStack>
           )}
@@ -949,9 +984,7 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
                     </Box>
                   </Box>
                   <VStack className="flex-1 gap-1">
-                    <Text className="text-base font-semibold text-phase-primary">
-                      App PIN Lock
-                    </Text>
+                    <Text className="text-base font-semibold text-phase-primary">App PIN Lock</Text>
                     <Text className="text-sm text-phase-secondary">
                       {hasPin ? 'PIN is active' : 'Secure your app with a PIN'}
                     </Text>
@@ -1063,8 +1096,13 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
             </Box>
           }
           title={t('settings.support.contact', 'Contact Support')}
-          description={t('settings.support.contact_desc', 'Send us feedback or report an issue via email.')}
-          onPress={handleContactSupport}
+          description={t(
+            'settings.support.contact_desc',
+            'Send us feedback or report an issue via email.',
+          )}
+          onPress={() => {
+            void handleContactSupport();
+          }}
           accessibilityLabel={t('settings.support.contact', 'Contact Support')}
           accessibilityHint={t('settings.support.contact_hint', 'Open the support email composer')}
         />
@@ -1092,7 +1130,9 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
         <SelectionModal
           title={t('settings.fidelity.select')}
           options={fidelityOptions}
-          onSelect={handleFidelityChange}
+          onSelect={(level) => {
+            void handleFidelityChange(level as any);
+          }}
           onClose={handleCloseFidelity}
         />
       )}
@@ -1102,7 +1142,9 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
         <SelectionModal
           title={t('settings.language.select')}
           options={languageOptions}
-          onSelect={handleLanguageChange}
+          onSelect={(lang) => {
+            void handleLanguageChange(lang as any);
+          }}
           onClose={handleCloseLanguage}
         />
       )}
@@ -1123,5 +1165,3 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
 AppSettingsScreen.displayName = 'AppSettingsScreen';
 
 export default AppSettingsScreen;
-
-

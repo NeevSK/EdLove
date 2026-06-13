@@ -54,6 +54,7 @@ export const ConflictResolver: React.FC<ConflictResolverProps> = ({ conflict, on
 
         <HStack className="gap-3 mt-2">
           <Pressable
+            accessibilityRole="button"
             onPress={() => {
               hapticSuccess();
               onResolve('local');
@@ -69,6 +70,7 @@ export const ConflictResolver: React.FC<ConflictResolverProps> = ({ conflict, on
           </Pressable>
 
           <Pressable
+            accessibilityRole="button"
             onPress={() => {
               hapticLight();
               onResolve('remote');
@@ -85,6 +87,7 @@ export const ConflictResolver: React.FC<ConflictResolverProps> = ({ conflict, on
         </HStack>
 
         <Pressable
+          accessibilityRole="button"
           onPress={() => {
             // Future: Implement Diff View
             hapticLight();

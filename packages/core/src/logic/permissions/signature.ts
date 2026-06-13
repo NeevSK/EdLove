@@ -47,7 +47,17 @@ export async function verifySnapshotSignature(snapshot: {
     const generatedSigArray = Array.from(new Uint8Array(generatedSigBuffer));
     const generatedSigHex = generatedSigArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 
-    return generatedSigHex === snapshot.signature;
+    // Constant-time signature comparison to prevent timing attacks
+    const a = generatedSigHex;
+    const b = snapshot.signature;
+    if (a.length !== b.length) {
+      return false;
+    }
+    let result = 0;
+    for (let i = 0; i < a.length; i++) {
+      result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+    }
+    return result === 0;
   } catch (err) {
     console.error('[Signature] Signature verification system error:', err);
     return false;

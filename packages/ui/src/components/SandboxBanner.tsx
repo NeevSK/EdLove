@@ -27,7 +27,7 @@ const SandboxBanner: React.FC<SandboxBannerProps> = ({ onExit }) => {
       {onExit && (
         <Pressable
           accessibilityRole="button"
-          onPress={async () => {
+          onPress={() => {
             hapticLight();
             onExit();
           }}

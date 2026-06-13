@@ -9,6 +9,6 @@ export interface IEntitlementPort {
   syncPurchases(userId: string): Promise<EntitlementSnapshot>;
   subscribeToEntitlementChanges(
     userId: string,
-    callback: (snapshot: EntitlementSnapshot) => void
+    callback: (snapshot: EntitlementSnapshot) => void,
   ): () => void;
 }

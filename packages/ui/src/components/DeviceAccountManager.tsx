@@ -316,7 +316,9 @@ export default function DeviceAccountManager({ compact = false }: { compact?: bo
                   account={row.account}
                   isActive={row.isActive}
                   isPinProtected={row.isPinProtected}
-                  onSwitch={handleSwitch}
+                  onSwitch={(a) => {
+                    void handleSwitch(a);
+                  }}
                   onRemove={(a) => {
                     if (pinProtectedIds[a.accountId])
                       dispatch({ type: 'setPinAction', value: { mode: 'remove', account: a } });
@@ -325,7 +327,7 @@ export default function DeviceAccountManager({ compact = false }: { compact?: bo
                         type: 'setOfflineConfirm',
                         value: { type: 'removeAccount', account: a },
                       });
-                    else removeAccount(a.accountId).then(refresh);
+                    else void removeAccount(a.accountId).then(refresh);
                   }}
                   onPinAction={(mode, account) =>
                     dispatch({ type: 'setPinAction', value: { mode, account } })
@@ -341,7 +343,9 @@ export default function DeviceAccountManager({ compact = false }: { compact?: bo
           <Button
             variant="outline"
             className="rounded-2xl mt-2"
-            onPress={handleSignOutCurrent}
+            onPress={() => {
+              void handleSignOutCurrent();
+            }}
             isDisabled={pinBusy || !activeAccountId}
           >
             <ButtonText>Sign Out Current</ButtonText>

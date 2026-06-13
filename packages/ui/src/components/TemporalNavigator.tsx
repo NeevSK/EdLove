@@ -1,10 +1,10 @@
 import { useTemporalStore } from '@repo/core/logic';
 import { Calendar, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react-native';
+import { useState } from 'react';
+import { Platform } from 'react-native';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';
 import { Box, HStack, Text } from '../gluestack';
 import { Pressable } from '../primitives';
-import { useState } from 'react';
-import { Platform } from 'react-native';
 
 /**
  * TemporalNavigator
@@ -113,24 +113,26 @@ export const TemporalNavigator = () => {
           <ChevronRight size={20} color="#999" />
         </Pressable>
       </Box>
-      {showDatePicker && Platform.OS !== 'web' && (() => {
-        const DateTimePicker = loadDateTimePicker();
-        if (!DateTimePicker) return null;
-        return (
-          <DateTimePicker
-            value={new Date(viewDate)}
-            mode="date"
-            display="default"
-            onChange={(event: any, selectedDate?: Date) => {
-              setShowDatePicker(false);
-              if (selectedDate) {
-                const dateStr = selectedDate.toISOString().split('T')[0] || '';
-                setViewDate(dateStr);
-              }
-            }}
-          />
-        );
-      })()}
+      {showDatePicker &&
+        Platform.OS !== 'web' &&
+        (() => {
+          const DateTimePicker = loadDateTimePicker();
+          if (!DateTimePicker) return null;
+          return (
+            <DateTimePicker
+              value={new Date(viewDate)}
+              mode="date"
+              display="default"
+              onChange={(event: any, selectedDate?: Date) => {
+                setShowDatePicker(false);
+                if (selectedDate) {
+                  const dateStr = selectedDate.toISOString().split('T')[0] || '';
+                  setViewDate(dateStr);
+                }
+              }}
+            />
+          );
+        })()}
     </Animated.View>
   );
 };

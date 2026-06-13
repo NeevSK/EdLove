@@ -155,6 +155,7 @@ export function VideoPlayer({ url, title, creator, onClose }: VideoPlayerProps) 
                 </SanctuaryButton>
 
                 <Pressable
+                  accessibilityRole="button"
                   onPress={handlePlayPause}
                   className="w-20 h-20 rounded-full bg-phase-accent flex items-center justify-center shadow-lg hover:scale-105 transition-transform"
                   style={{

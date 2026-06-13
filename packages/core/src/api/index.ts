@@ -254,6 +254,4 @@ export const api: Record<string, any> = {
   library: libraryAPI,
 };
 
-export { createTemporalProxy } from './temporalProxy';
-
 export default api;

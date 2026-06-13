@@ -54,7 +54,7 @@ export function useAppStoreReview() {
       }
 
       // 5. Require and trigger expo-store-review dynamically
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+
       const StoreReview = require('expo-store-review');
       const hasAction = await StoreReview.hasAction();
       if (hasAction) {

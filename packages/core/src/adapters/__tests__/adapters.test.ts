@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
-import { CedarAuthorizationAdapter } from '../cedar/cedarAuthorization.adapter';
-import { SupabaseFeatureFlagAdapter } from '../supabase/supabaseFeatureFlag.adapter';
-import { SupabaseEntitlementAdapter } from '../supabase/supabaseEntitlement.adapter';
 import type { UserContext } from '../../logic/schemas/user.schema';
+import { CedarAuthorizationAdapter } from '../cedar/cedarAuthorization.adapter';
+import { SupabaseEntitlementAdapter } from '../supabase/supabaseEntitlement.adapter';
+import { SupabaseFeatureFlagAdapter } from '../supabase/supabaseFeatureFlag.adapter';
 
 // Mock checkLocalPermission
 vi.mock('../../logic/permissions/localEvaluator', () => ({
@@ -74,4 +74,3 @@ describe('Hexagonal Adapters Verification', () => {
     expect(res2.pricingTier).toBe('FREE');
   });
 });
-

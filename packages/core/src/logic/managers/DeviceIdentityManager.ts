@@ -89,8 +89,11 @@ export class DeviceIdentityManager {
    */
   async createAccountBinding(accountId: string, serverNonce: string) {
     const publicKey = await this.ensureIdentity();
-    const signature = await this.getAdapter().signWithHardwareKey(this.KEY_ALIAS, serverNonce);
-    const attestation = await this.getAdapter().getAttestation(this.KEY_ALIAS, serverNonce);
+    const [signature, attestation, trustLevel] = await Promise.all([
+      this.getAdapter().signWithHardwareKey(this.KEY_ALIAS, serverNonce),
+      this.getAdapter().getAttestation(this.KEY_ALIAS, serverNonce),
+      this.getTrustLevel(),
+    ]);
 
     return {
       publicKey,
@@ -98,7 +101,7 @@ export class DeviceIdentityManager {
       attestation,
       accountId,
       timestamp: new Date().toISOString(),
-      trustLevel: await this.getTrustLevel(),
+      trustLevel,
     };
   }
 

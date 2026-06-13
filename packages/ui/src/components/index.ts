@@ -1,5 +1,6 @@
 export type { ActionItem, TabType } from '../context/FABContext';
 export * from '../qr';
+export { default as AccountPinModal } from './AccountPinModal';
 export { default as AchievementUnlockOverlay } from './AchievementUnlockOverlay';
 export { AdaptiveLayout } from './AdaptiveLayout';
 export * from './BreathAnimation';
@@ -71,7 +72,6 @@ export type {
 } from './PostCard';
 export { PostCard } from './PostCard';
 export { ProgressIndicator } from './ProgressIndicator';
-
 export * from './ResonantHeatmap';
 export { SafeButton } from './SafeButton';
 export { SanctuaryBackground } from './SanctuaryBackground';
@@ -113,4 +113,3 @@ export { UserAvatar } from './UserAvatar';
 export * from './visualization';
 export { WebScreenHeader } from './WebScreenHeader.web';
 export * from './workspace';
-export { default as AccountPinModal } from './AccountPinModal';

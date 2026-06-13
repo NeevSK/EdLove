@@ -116,7 +116,7 @@ export default function GuestDataSyncModal({
 
   useEffect(() => {
     if (isOpen) {
-      fetchSyncSummary();
+      void fetchSyncSummary();
     } else {
       dispatch({ type: 'RESET' });
     }
@@ -172,7 +172,9 @@ export default function GuestDataSyncModal({
         </SanctuaryButton>
         <SanctuaryButton
           action="primary"
-          onPress={handleSync}
+          onPress={() => {
+            void handleSync();
+          }}
           isLoading={state.status === 'syncing'}
           className="flex-1"
         >

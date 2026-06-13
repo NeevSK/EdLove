@@ -272,7 +272,9 @@ export const SocialShieldModal = React.memo(function SocialShieldModal({
               </SanctuaryButton>
               <SanctuaryButton
                 action="primary"
-                onPress={onSubmit}
+                onPress={() => {
+                  void onSubmit();
+                }}
                 className="flex-[1.5] h-14 rounded-2xl"
               >
                 <Text className="text-white font-bold text-lg">Submit Report</Text>

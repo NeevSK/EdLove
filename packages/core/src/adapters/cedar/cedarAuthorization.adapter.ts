@@ -1,11 +1,11 @@
-import type {
-  IAuthorizationPort,
-  AuthorizationRequest,
-  AuthorizationDecision,
-} from '../../logic/ports/authz.port';
-import { checkLocalPermission } from '../../logic/permissions/localEvaluator';
-import type { UserContext } from '../../logic/schemas/user.schema';
 import type { Actions, SubjectType } from '../../logic/permissions/abilities/base';
+import { checkLocalPermission } from '../../logic/permissions/localEvaluator';
+import type {
+  AuthorizationDecision,
+  AuthorizationRequest,
+  IAuthorizationPort,
+} from '../../logic/ports/authz.port';
+import type { UserContext } from '../../logic/schemas/user.schema';
 
 export class CedarAuthorizationAdapter implements IAuthorizationPort {
   async isAuthorized(request: AuthorizationRequest): Promise<AuthorizationDecision> {

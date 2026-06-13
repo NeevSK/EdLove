@@ -13,22 +13,16 @@ function normalizeDailyContentRow(row: any) {
   };
 }
 
-function escapeSqlLiteral(value: string | undefined) {
-  return String(value ?? '').replace(/'/g, "''");
-}
-
 async function fetchDailyContentRows(db: any, date: string | undefined, limitDays?: number) {
-  const safeDate = escapeSqlLiteral(date);
-  const sql = limitDays
-    ? `SELECT id, type, content, author, date, active, created_at
+  const rows = limitDays
+    ? await db.$queryRaw`SELECT id, type, content, author, date, active, created_at
        FROM daily_content
-       WHERE active = true AND date >= '${safeDate}'
+       WHERE active = true AND date >= ${date}
        ORDER BY date DESC, type`
-    : `SELECT id, type, content, author, date, active, created_at
+    : await db.$queryRaw`SELECT id, type, content, author, date, active, created_at
        FROM daily_content
-       WHERE active = true AND date = '${safeDate}'
+       WHERE active = true AND date = ${date}
        ORDER BY type`;
-  const rows = await db.$queryRawUnsafe(sql);
   return Array.isArray(rows) ? rows : [];
 }
 

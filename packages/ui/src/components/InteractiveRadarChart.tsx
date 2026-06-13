@@ -41,7 +41,7 @@ export const InteractiveRadarChart: React.FC<InteractiveRadarChartProps> = ({
         y: centerY + Math.sin(angle) * radius,
       };
     });
-  }, [centerX, centerY, radius, angleStep, dimensions.map]);
+  }, [centerX, centerY, radius, angleStep, dimensions]);
 
   // Calculate vertex positions for the data polygon
   const dataPoints = useMemo(() => {

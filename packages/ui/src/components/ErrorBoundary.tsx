@@ -63,6 +63,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             {__DEV__ && this.state.error && `\n\n${this.state.error.toString()}`}
           </RNText>
           <TouchableOpacity
+            accessibilityRole="button"
             style={styles.safeButton}
             onPress={this.handleReset}
             activeOpacity={0.7}

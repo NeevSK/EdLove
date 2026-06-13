@@ -13,7 +13,7 @@ export const manifestoKeys = {
 export function useManifestoHooks(schoolId: string | undefined, userId?: string) {
   const queryClient = useQueryClient();
 
-  const query = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: manifestoKeys.school(schoolId!),
     queryFn: () => sacredMissionsAPI.getManifestos(schoolId!, userId),
     enabled: !!schoolId,
@@ -40,14 +40,14 @@ export function useManifestoHooks(schoolId: string | undefined, userId?: string)
 
   return useMemo(
     () => ({
-      manifestos: query.data || [],
-      isLoading: query.isLoading,
-      error: query.error,
-      refetch: query.refetch,
+      manifestos: data || [],
+      isLoading,
+      error,
+      refetch,
       endorse: endorseMutation.mutate,
       unendorse: unendorseMutation.mutate,
       isEndorsing: endorseMutation.isPending,
     }),
-    [query.data, query.isLoading, query.error, query.refetch, endorseMutation, unendorseMutation],
+    [data, isLoading, error, refetch, endorseMutation, unendorseMutation],
   );
 }

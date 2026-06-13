@@ -60,6 +60,7 @@ export const AssetCollectionPicker: React.FC<AssetCollectionPickerProps> = ({
               </Text>
             </VStack>
             <Pressable
+              accessibilityRole="button"
               onPress={onClose}
               className="p-3 rounded-full bg-phase-surface-light active:bg-phase-surface-dark"
             >
@@ -74,6 +75,7 @@ export const AssetCollectionPicker: React.FC<AssetCollectionPickerProps> = ({
             keyExtractor={(item: any) => item.id}
             renderItem={({ item }: { item: any }) => (
               <Pressable
+                accessibilityRole="button"
                 className="flex-row items-center p-6 border-b border-phase-border active:bg-phase-accent/5"
                 onPress={() => onSelect(item.id)}
                 disabled={isLoading}

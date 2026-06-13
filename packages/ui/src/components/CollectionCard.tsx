@@ -92,7 +92,11 @@ export function CollectionCard<T = any>({
 
   if (onPress) {
     return (
-      <Pressable onPress={() => onPress(contextData as T)} className="rounded-3xl mr-4">
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => onPress(contextData as T)}
+        className="rounded-3xl mr-4"
+      >
         {cardContent}
       </Pressable>
     );
@@ -166,6 +170,7 @@ function CardOverlay({
 
             {onPullToDesk && (
               <Pressable
+                accessibilityRole="button"
                 onPress={onPullToDesk}
                 className="p-2 bg-phase-accent/20 rounded-md border border-phase-accent"
                 hitSlop={8}

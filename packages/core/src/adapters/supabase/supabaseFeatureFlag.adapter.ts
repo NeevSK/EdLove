@@ -1,7 +1,7 @@
+import { trackFeatureExposureInternal } from '../../logic/permissions/feature-engine';
 import type { IFeatureFlagPort } from '../../logic/ports/featureFlag.port';
 import type { UserContext } from '../../logic/schemas/user.schema';
 import { useFeatureStore } from '../../store/useFeatureStore';
-import { trackFeatureExposureInternal } from '../../logic/permissions/feature-engine';
 
 export class SupabaseFeatureFlagAdapter implements IFeatureFlagPort {
   async getFlags(context: UserContext): Promise<Record<string, boolean | string>> {
@@ -13,7 +13,7 @@ export class SupabaseFeatureFlagAdapter implements IFeatureFlagPort {
 
   subscribeToFlagChanges(
     context: UserContext,
-    callback: (flags: Record<string, boolean | string>) => void
+    callback: (flags: Record<string, boolean | string>) => void,
   ): () => void {
     // Return unsubscribe function
     return useFeatureStore.subscribe((state) => {

@@ -1,16 +1,17 @@
 import {
-  useReactTable,
+  type ColumnDef,
   getCoreRowModel,
-  getSortedRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  type TableOptions,
-  type ColumnDef,
+  getSortedRowModel,
   type SortingState,
+  type TableOptions,
+  useReactTable,
 } from '@tanstack/react-table';
 import { useState } from 'react';
 
-export interface UseSanctuaryTableOptions<TData> extends Omit<TableOptions<TData>, 'getCoreRowModel'> {
+export interface UseSanctuaryTableOptions<TData>
+  extends Omit<TableOptions<TData>, 'getCoreRowModel'> {
   data: TData[];
   columns: ColumnDef<TData, any>[];
   enableSorting?: boolean;

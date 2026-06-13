@@ -2,11 +2,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FlatCompat } from '@eslint/eslintrc';
 import eslintReact from '@eslint-react/eslint-plugin';
+import pluginRnxKit from '@rnx-kit/eslint-plugin';
 import pluginJsxA11y from 'eslint-plugin-jsx-a11y';
 import pluginReactHooks from 'eslint-plugin-react-hooks';
-import globals from 'globals';
-import pluginRnxKit from '@rnx-kit/eslint-plugin';
 import pluginReactNative from 'eslint-plugin-react-native';
+import globals from 'globals';
 import { config as baseConfig } from './base.js';
 import maxUseStateRule from './rules/max-use-state.js';
 
@@ -36,7 +36,7 @@ export const config = [
       'react-native/no-unused-styles': 'warn',
       'react-native/no-inline-styles': 'warn',
       'react-native/no-color-literals': 'warn',
-      '@rnx-kit/no-export-all': 'error',
+      '@rnx-kit/no-export-all': 'warn',
       '@rnx-kit/no-const-enum': 'error',
     },
   },

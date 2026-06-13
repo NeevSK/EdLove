@@ -1,9 +1,9 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
 import { flexRender, type Table } from '@tanstack/react-table';
-import SanctuaryFlashList from './SanctuaryFlashList';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { useThemedColors } from '../hooks/useThemedColors';
 import { Theme } from '../theme/Theme';
+import SanctuaryFlashList from './SanctuaryFlashList';
 
 export interface SanctuaryTableProps<TData> {
   table: Table<TData>;
@@ -25,7 +25,15 @@ export function SanctuaryTable<TData>({
   return (
     <View style={[styles.container, { borderColor: colors.border }]}>
       {/* Header Row */}
-      <View style={[styles.headerRow, { backgroundColor: (colors as any).surfaceVariant || colors.surface || '#f5f5f5', borderBottomColor: colors.border }]}>
+      <View
+        style={[
+          styles.headerRow,
+          {
+            backgroundColor: (colors as any).surfaceVariant || colors.surface || '#f5f5f5',
+            borderBottomColor: colors.border,
+          },
+        ]}
+      >
         {headers.map((header) => (
           <View
             key={header.id}

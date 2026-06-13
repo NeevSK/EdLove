@@ -1,6 +1,6 @@
-import React, { useRef } from 'react';
 import { flexRender, type Table } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import React, { useRef } from 'react';
 
 export interface SanctuaryVirtualTableWebProps<TData> {
   table: Table<TData>;
@@ -33,11 +33,9 @@ export function SanctuaryVirtualTable<TData>({
   const virtualItems = rowVirtualizer.getVirtualItems();
   const totalSize = rowVirtualizer.getTotalSize();
 
-  const paddingTop = virtualItems.length > 0 ? virtualItems[0]?.start ?? 0 : 0;
+  const paddingTop = virtualItems.length > 0 ? (virtualItems[0]?.start ?? 0) : 0;
   const paddingBottom =
-    virtualItems.length > 0
-      ? totalSize - (virtualItems[virtualItems.length - 1]?.end ?? 0)
-      : 0;
+    virtualItems.length > 0 ? totalSize - (virtualItems[virtualItems.length - 1]?.end ?? 0) : 0;
 
   return (
     <div
@@ -100,7 +98,10 @@ export function SanctuaryVirtualTable<TData>({
           })}
           {paddingBottom > 0 && (
             <tr>
-              <td style={{ height: `${paddingBottom}px` }} colSpan={table.getFlatHeaders().length} />
+              <td
+                style={{ height: `${paddingBottom}px` }}
+                colSpan={table.getFlatHeaders().length}
+              />
             </tr>
           )}
         </tbody>

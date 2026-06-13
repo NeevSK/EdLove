@@ -159,8 +159,15 @@ export default function GlobalHeader({
     setShowSecondaryActions((value) => !value);
   }, []);
 
-  const { notifications, unreadCount, isLoading, isRealtimeConnected, error, markAsRead, markAllRead } =
-    useNotifications(user?.id);
+  const {
+    notifications,
+    unreadCount,
+    isLoading,
+    isRealtimeConnected,
+    error,
+    markAsRead,
+    markAllRead,
+  } = useNotifications(user?.id);
 
   useEffect(() => {
     Animated.timing(animatedSecondary, {
@@ -320,8 +327,12 @@ export default function GlobalHeader({
           isLoading={isLoading}
           isRealtimeConnected={isRealtimeConnected}
           error={error}
-          onMarkRead={markAsRead}
-          onMarkAllRead={markAllRead}
+          onMarkRead={(id) => {
+            void markAsRead(id);
+          }}
+          onMarkAllRead={() => {
+            void markAllRead();
+          }}
         />
       </VStack>
     </Box>

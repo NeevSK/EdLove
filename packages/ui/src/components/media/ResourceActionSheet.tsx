@@ -138,6 +138,7 @@ export const ResourceActionSheet: React.FC<ResourceActionSheetProps> = ({
         </ScrollView>
 
         <Pressable
+          accessibilityRole="button"
           className="w-full py-4 items-center bg-red-500/10 rounded-2xl mb-4"
           onPress={onClose}
         >

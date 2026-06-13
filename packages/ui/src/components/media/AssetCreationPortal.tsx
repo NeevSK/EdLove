@@ -200,7 +200,13 @@ export function CollectionCreationModal({
           <SanctuaryButton variant="ghost" onPress={onClose}>
             Cancel
           </SanctuaryButton>
-          <SanctuaryButton onPress={handleComplete} isLoading={loading} isDisabled={!name.trim()}>
+          <SanctuaryButton
+            onPress={() => {
+              void handleComplete();
+            }}
+            isLoading={loading}
+            isDisabled={!name.trim()}
+          >
             Create
           </SanctuaryButton>
         </HStack>

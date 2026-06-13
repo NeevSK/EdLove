@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { storage } from '../lib/storage';
 
 const PERSISTENCE_KEY = 'GURUDEVI_GROUP_CREATION_STATE';
@@ -59,18 +59,24 @@ export function useGroupCreation() {
     }
   }, [state, isLoaded]);
 
-  const updateStep = (step: number) => setState((prev) => ({ ...prev, step }));
+  const updateStep = useCallback((step: number) => setState((prev) => ({ ...prev, step })), []);
 
-  const updateDetails = (details: Partial<GroupCreationState['details']>) =>
-    setState((prev) => ({ ...prev, details: { ...prev.details, ...details } }));
+  const updateDetails = useCallback(
+    (details: Partial<GroupCreationState['details']>) =>
+      setState((prev) => ({ ...prev, details: { ...prev.details, ...details } })),
+    [],
+  );
 
-  const updateSetup = (setup: Partial<GroupCreationState['setup']>) =>
-    setState((prev) => ({ ...prev, setup: { ...prev.setup, ...setup } }));
+  const updateSetup = useCallback(
+    (setup: Partial<GroupCreationState['setup']>) =>
+      setState((prev) => ({ ...prev, setup: { ...prev.setup, ...setup } })),
+    [],
+  );
 
-  const resetProgress = async () => {
+  const resetProgress = useCallback(async () => {
     storage.delete(PERSISTENCE_KEY);
     setState(initialState);
-  };
+  }, []);
 
   return useMemo(
     () => ({

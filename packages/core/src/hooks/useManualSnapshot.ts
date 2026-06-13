@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import { usePermissions } from '../logic/permissions/hooks/usePermissions';
 import { useTemporalStore } from '../store/useTemporalStore';
@@ -29,50 +29,53 @@ export function useManualSnapshot() {
   /**
    * Captures a snapshot of the current temporal state.
    */
-  const takeSnapshot = async (label: string = 'Snapshot Moment', additionalMetadata: any = {}) => {
-    if (!userId) return null;
+  const takeSnapshot = useCallback(
+    async (label: string = 'Snapshot Moment', additionalMetadata: any = {}) => {
+      if (!userId) return null;
 
-    setIsSaving(true);
-    try {
-      // In a real implementation, we would aggregate current state of all features here.
-      // For now, we capture the core temporal context and label.
-      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-        .from('snapshot_moments')
-        .insert([
-          {
-            user_id: userId,
-            // Keep database writes compatible with the current schema.
-            resonance_date: viewDate,
-            label,
-            metadata: {
-              ...additionalMetadata,
-              captured_at: new Date().toISOString(),
+      setIsSaving(true);
+      try {
+        // In a real implementation, we would aggregate current state of all features here.
+        // For now, we capture the core temporal context and label.
+        const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+          .from('snapshot_moments')
+          .insert([
+            {
+              user_id: userId,
+              // Keep database writes compatible with the current schema.
+              resonance_date: viewDate,
+              label,
+              metadata: {
+                ...additionalMetadata,
+                captured_at: new Date().toISOString(),
+              },
             },
-          },
-        ])
-        .select()
-        .single();
+          ])
+          .select()
+          .single();
 
-      if (error) throw error;
+        if (error) throw error;
 
-      // Analytics
-      trackSnapshot(label, viewDate).catch((e) => {
-        console.error('Snapshot: Failed to track analytics', e);
-      });
+        // Analytics
+        trackSnapshot(label, viewDate).catch((e) => {
+          console.error('Snapshot: Failed to track analytics', e);
+        });
 
-      if (!data) return null;
+        if (!data) return null;
 
-      return {
-        ...data,
-        snapshot_date: data.resonance_date,
-      } as SnapshotMoment;
-    } catch (error) {
-      console.error('Failed to capture snapshot:', error);
-      return null;
-    } finally {
-      setIsSaving(false);
-    }
-  };
+        return {
+          ...data,
+          snapshot_date: data.resonance_date,
+        } as SnapshotMoment;
+      } catch (error) {
+        console.error('Failed to capture snapshot:', error);
+        return null;
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [userId, viewDate, trackSnapshot],
+  );
 
   return useMemo(
     () => ({

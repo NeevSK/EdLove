@@ -57,7 +57,7 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
       >
         <View style={styles.headerLeft}>
           {onClose && (
-            <Pressable onPress={onClose} style={styles.iconButton}>
+            <Pressable accessibilityRole="button" onPress={onClose} style={styles.iconButton}>
               <X size={20} color={scene.text.primary} />
             </Pressable>
           )}
@@ -72,7 +72,11 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
         </View>
 
         <View style={styles.headerRight}>
-          <Pressable onPress={handleOpenExternal} style={styles.iconButton}>
+          <Pressable
+            accessibilityRole="button"
+            onPress={handleOpenExternal}
+            style={styles.iconButton}
+          >
             <ExternalLink size={18} color={scene.text.primary} />
           </Pressable>
         </View>
@@ -118,21 +122,33 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
             },
           ]}
         >
-          <Pressable style={[styles.toolbarButton, styles.disabled]} disabled>
+          <Pressable
+            accessibilityRole="button"
+            style={[styles.toolbarButton, styles.disabled]}
+            disabled
+          >
             <ChevronLeft size={24} color={scene.text.muted} />
           </Pressable>
 
-          <Pressable style={[styles.toolbarButton, styles.disabled]} disabled>
+          <Pressable
+            accessibilityRole="button"
+            style={[styles.toolbarButton, styles.disabled]}
+            disabled
+          >
             <ChevronRight size={24} color={scene.text.muted} />
           </Pressable>
 
           <View style={{ flex: 1 }} />
 
-          <Pressable onPress={() => window.location.reload()} style={styles.toolbarButton}>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => window.location.reload()}
+            style={styles.toolbarButton}
+          >
             <RotateCcw size={20} color={scene.text.primary} />
           </Pressable>
 
-          <Pressable onPress={handleShare} style={styles.toolbarButton}>
+          <Pressable accessibilityRole="button" onPress={handleShare} style={styles.toolbarButton}>
             <Share2 size={20} color={scene.text.primary} />
           </Pressable>
         </View>

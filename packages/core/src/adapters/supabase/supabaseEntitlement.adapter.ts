@@ -1,4 +1,4 @@
-import type { IEntitlementPort, EntitlementSnapshot } from '../../logic/ports/entitlement.port';
+import type { EntitlementSnapshot, IEntitlementPort } from '../../logic/ports/entitlement.port';
 import { useAuthStore } from '../../store/useAuthStore';
 
 export class SupabaseEntitlementAdapter implements IEntitlementPort {
@@ -29,7 +29,7 @@ export class SupabaseEntitlementAdapter implements IEntitlementPort {
 
   subscribeToEntitlementChanges(
     userId: string,
-    callback: (snapshot: EntitlementSnapshot) => void
+    callback: (snapshot: EntitlementSnapshot) => void,
   ): () => void {
     return useAuthStore.subscribe((state) => {
       const user = state.user;

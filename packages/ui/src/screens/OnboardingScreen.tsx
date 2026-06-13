@@ -3,8 +3,6 @@ import { authAPI, identityAPI, onboardingAPI } from '@repo/core/api';
 import { useStore } from '@repo/core/store';
 import type { Capacity } from '@repo/core/types';
 import { router } from 'expo-router';
-import { safeBack } from '../utils/navigation';
-
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +22,7 @@ import {
   VStack,
 } from '../gluestack';
 import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
+import { safeBack } from '../utils/navigation';
 
 // ──────────────────────────────────────────────────────────
 // CONSTANTS
@@ -176,56 +175,68 @@ const NameStep = memo(
     canProceed: boolean;
     isLoading?: boolean;
     onBackToWelcome: () => void;
-  }) => (
-    <StepShell
-      currentStep={0}
-      step="STEP 1 · ARRIVAL"
-      title={t('onboarding.nameTitle') || 'Welcome! What should we call you in Gurudevi?'}
-      subtitle={t('onboarding.nameSubtitle') || "Let's start your journey with a name."}
-    >
-      <VStack className="gap-6">
-        <Input className="rounded-comfortable border-phase-text-tertiary">
-          <InputField
-            placeholder={t('onboarding.namePlaceholder')}
-            value={name}
-            onChangeText={onNameChange}
-            className="text-phase-text-primary"
-            editable={!isLoading}
-            autoFocus
-            autoComplete="name"
-            returnKeyType="next"
-            onSubmitEditing={() => {
-              if (canProceed) onNext();
-            }}
-          />
-        </Input>
-        <Text className="text-phase-text-secondary text-sm">
-          {name.trim().length > 0 && name.trim().length < 2
-            ? 'Your name is a bit short. Try adding another character.'
-            : name === 'Guest User'
-              ? "Please choose a name other than 'Guest User'."
-              : t('onboarding.nameHint') ||
-                'Use the display name you want people to see inside the app.'}
-        </Text>
-        <Button
-          size="lg"
-          onPress={onNext}
-          isDisabled={!canProceed}
-          isLoading={isLoading}
-          className="bg-phase-accent mt-2"
-        >
-          <ButtonText className="text-phase-text-on-accent font-bold">
-            {t('onboarding.continue')}
-          </ButtonText>
-        </Button>
-        <Button variant="ghost" onPress={onBackToWelcome} className="mt-1">
-          <ButtonText className="text-phase-text-tertiary">
-            {t('onboarding.backToWelcome') || 'Back to Welcome'}
-          </ButtonText>
-        </Button>
-      </VStack>
-    </StepShell>
-  ),
+  }) => {
+    const inputRef = useRef<any>(null);
+
+    useEffect(() => {
+      // Focus name input on mount imperatively to respect static accessibility constraints
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }, []);
+
+    return (
+      <StepShell
+        currentStep={0}
+        step="STEP 1 · ARRIVAL"
+        title={t('onboarding.nameTitle') || 'Welcome! What should we call you in Gurudevi?'}
+        subtitle={t('onboarding.nameSubtitle') || "Let's start your journey with a name."}
+      >
+        <VStack className="gap-6">
+          <Input className="rounded-comfortable border-phase-text-tertiary">
+            <InputField
+              ref={inputRef}
+              placeholder={t('onboarding.namePlaceholder')}
+              value={name}
+              onChangeText={onNameChange}
+              className="text-phase-text-primary"
+              editable={!isLoading}
+              autoComplete="name"
+              returnKeyType="next"
+              onSubmitEditing={() => {
+                if (canProceed) onNext();
+              }}
+            />
+          </Input>
+          <Text className="text-phase-text-secondary text-sm">
+            {name.trim().length > 0 && name.trim().length < 2
+              ? 'Your name is a bit short. Try adding another character.'
+              : name === 'Guest User'
+                ? "Please choose a name other than 'Guest User'."
+                : t('onboarding.nameHint') ||
+                  'Use the display name you want people to see inside the app.'}
+          </Text>
+          <Button
+            size="lg"
+            onPress={onNext}
+            isDisabled={!canProceed}
+            isLoading={isLoading}
+            className="bg-phase-accent mt-2"
+          >
+            <ButtonText className="text-phase-text-on-accent font-bold">
+              {t('onboarding.continue')}
+            </ButtonText>
+          </Button>
+          <Button variant="ghost" onPress={onBackToWelcome} className="mt-1">
+            <ButtonText className="text-phase-text-tertiary">
+              {t('onboarding.backToWelcome') || 'Back to Welcome'}
+            </ButtonText>
+          </Button>
+        </VStack>
+      </StepShell>
+    );
+  },
 );
 NameStep.displayName = 'NameStep';
 

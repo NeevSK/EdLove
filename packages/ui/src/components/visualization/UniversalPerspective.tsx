@@ -50,6 +50,7 @@ export const UniversalPerspective: React.FC<PerspectiveViewProps> = (props) => {
         <HStack className="flex-1">
           {tabs.map((tab) => (
             <Pressable
+              accessibilityRole="button"
               key={tab}
               className={`flex-1 items-center justify-center ${activeTab === tab ? 'bg-phase-accent/10' : ''}`}
               onPress={() => setActiveTab(tab)}

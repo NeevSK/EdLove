@@ -13,6 +13,7 @@ export const SanctuarySignal = () => {
   return (
     <Box className="m-4">
       <Pressable
+        accessibilityRole="button"
         onPress={() => router.push('/auth')}
         className="group p-5 rounded-[24px] bg-white/5 border border-white/10 hover:border-phase-accent/30 transition-all duration-500 overflow-hidden relative shadow-xl"
         style={

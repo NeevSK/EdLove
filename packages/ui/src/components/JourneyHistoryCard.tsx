@@ -12,7 +12,7 @@ import {
 } from 'lucide-react-native';
 import type React from 'react';
 import { useMemo } from 'react';
-import { Box, HStack, Text, VStack } from '../gluestack';
+import { Box, HStack, Icon, Text, VStack } from '../gluestack';
 import { Pressable } from '../primitives';
 import { ResonantHeatmap } from './ResonantHeatmap';
 import { SanctuaryCard } from './SanctuaryCard';
@@ -87,7 +87,9 @@ export const JourneyHistoryCard: React.FC<JourneyHistoryCardProps> = ({
         <HStack className="items-center gap-3">
           <Pressable
             accessibilityRole="button"
-            onPress={() => takeSnapshot(`Snapshot: ${new Date().toLocaleDateString()}`)}
+            onPress={() => {
+              void takeSnapshot(`Snapshot: ${new Date().toLocaleDateString()}`);
+            }}
             disabled={isSaving}
             className={`p-1.5 rounded-lg bg-phase-accent/10 border border-phase-accent/20 ${isSaving ? 'opacity-30' : ''}`}
           >
@@ -120,7 +122,7 @@ export const JourneyHistoryCard: React.FC<JourneyHistoryCardProps> = ({
             </Text>
           ) : (
             events.map((event, index) => {
-              const Icon = getEventIcon(event.type);
+              const eventIconType = getEventIcon(event.type);
               const time = new Date(event.timestamp).toLocaleTimeString([], {
                 hour: '2-digit',
                 minute: '2-digit',
@@ -142,7 +144,7 @@ export const JourneyHistoryCard: React.FC<JourneyHistoryCardProps> = ({
                   <VStack className="flex-1 ml-3">
                     <HStack className="items-center justify-between mb-1">
                       <HStack className="items-center gap-1.5">
-                        <Icon size={14} color={event.accentColor || '#F6BF8C'} />
+                        <Icon as={eventIconType} size={14} color={event.accentColor || '#F6BF8C'} />
                         <Text className="text-sm font-semibold text-white">{event.title}</Text>
                       </HStack>
                       <Text className="text-[11px] text-phase-text-secondary/60">{time}</Text>

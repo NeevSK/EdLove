@@ -1,5 +1,5 @@
-import React from 'react';
 import { flexRender, type Table } from '@tanstack/react-table';
+import React from 'react';
 
 export interface SanctuaryTableWebProps<TData> {
   table: Table<TData>;

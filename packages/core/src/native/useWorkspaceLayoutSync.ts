@@ -127,7 +127,7 @@ export function useWorkspaceLayoutSync<
   const [isHydrated, setIsHydrated] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncError, setSyncError] = useState<Error | null>(null);
-  const lastSyncedSignatureRef = useRef<string | null>(null);
+  const lastSyncedLayoutRef = useRef<string | null>(null);
 
   const storageKey = userId
     ? buildWorkspaceLayoutStorageKey({
@@ -173,7 +173,7 @@ export function useWorkspaceLayoutSync<
 
       if (preferred) {
         setLayoutState(preferred);
-        lastSyncedSignatureRef.current = serializeLayout(preferred);
+        lastSyncedLayoutRef.current = serializeLayout(preferred);
       }
     } catch (error) {
       setSyncError(error as Error);
@@ -218,13 +218,13 @@ export function useWorkspaceLayoutSync<
         if (!isMounted) return;
 
         setLayoutState(preferred);
-        lastSyncedSignatureRef.current = serializeLayout(preferred);
+        lastSyncedLayoutRef.current = serializeLayout(preferred);
       } catch (error) {
         if (!isMounted) return;
 
         setSyncError(error as Error);
         setLayoutState(defaultLayout);
-        lastSyncedSignatureRef.current = serializeLayout(defaultLayout);
+        lastSyncedLayoutRef.current = serializeLayout(defaultLayout);
       } finally {
         if (isMounted) {
           setIsHydrated(true);
@@ -247,8 +247,8 @@ export function useWorkspaceLayoutSync<
   useEffect(() => {
     if (!layout || !userId || !isHydrated || !canUseRemoteSync(userId, enableRemoteSync)) return;
 
-    const signature = serializeLayout(layout);
-    if (signature === lastSyncedSignatureRef.current) return;
+    const serialized = serializeLayout(layout);
+    if (serialized === lastSyncedLayoutRef.current) return;
 
     let isCancelled = false;
 
@@ -266,7 +266,7 @@ export function useWorkspaceLayoutSync<
         );
 
         if (!isCancelled) {
-          lastSyncedSignatureRef.current = signature;
+          lastSyncedLayoutRef.current = serialized;
         }
       } catch (error) {
         if (!isCancelled) {

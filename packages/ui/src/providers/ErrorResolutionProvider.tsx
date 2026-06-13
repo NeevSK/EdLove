@@ -106,9 +106,11 @@ export const ErrorResolutionProvider: React.FC<{ children: React.ReactNode }> = 
                   <Button
                     key={i}
                     variant={(action.variant as any) || 'solid'}
-                    onPress={async () => {
-                      await action.onPress();
-                      dismissError();
+                    onPress={() => {
+                      void (async () => {
+                        await action.onPress();
+                        dismissError();
+                      })();
                     }}
                   >
                     <ButtonText>{action.label}</ButtonText>

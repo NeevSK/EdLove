@@ -5,7 +5,10 @@ import { ToastProvider, useToast } from '../providers/ToastProvider';
 const TestComponent = ({ message = 'Hello', type = 'info' as any }) => {
   const { showToast } = useToast();
   return (
-    <Pressable onPress={() => showToast({ message, type, duration: 100 })}>
+    <Pressable
+      accessibilityRole="button"
+      onPress={() => showToast({ message, type, duration: 100 })}
+    >
       <Text>Trigger Toast</Text>
     </Pressable>
   );

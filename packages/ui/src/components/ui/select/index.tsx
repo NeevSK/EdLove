@@ -125,6 +125,7 @@ export const SelectBackdrop = ({ className }: { className?: string }) => {
   const { setIsOpen } = useSelect();
   return (
     <Pressable
+      accessibilityRole="button"
       onPress={() => setIsOpen(false)}
       className={`absolute inset-0 bg-black/60 ${className || ''}`}
     />

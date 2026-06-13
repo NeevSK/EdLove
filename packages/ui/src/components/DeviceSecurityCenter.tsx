@@ -172,51 +172,57 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
-  const performUnlinkDevice = async (deviceId: string, isCurrent: boolean) => {
-    dispatch({ type: 'setBusyDeviceId', value: deviceId });
-    // Optimistically remove
-    startTransition(() => {
-      addOptimisticDevice(deviceId);
-    });
-
-    try {
-      await unlinkDevice(deviceId);
-      hapticSuccess();
-      showToast?.({
-        message:
-          syncPending || isCurrent ? 'Removal queued for sync.' : 'Device removed successfully.',
-        type: 'success',
+  const performUnlinkDevice = useCallback(
+    async (deviceId: string, isCurrent: boolean) => {
+      dispatch({ type: 'setBusyDeviceId', value: deviceId });
+      // Optimistically remove
+      startTransition(() => {
+        addOptimisticDevice(deviceId);
       });
-      await refresh();
-    } catch (_err) {
-      hapticError();
-      showToast?.({ message: 'Failed to remove device.', type: 'error' });
-    } finally {
-      dispatch({ type: 'setBusyDeviceId', value: null });
-    }
-  };
 
-  const performRevokeSession = async (sessionId: string, isCurrent: boolean) => {
-    dispatch({ type: 'setBusySessionId', value: sessionId });
-    startTransition(() => {
-      addOptimisticSession(sessionId);
-    });
+      try {
+        await unlinkDevice(deviceId);
+        hapticSuccess();
+        showToast?.({
+          message:
+            syncPending || isCurrent ? 'Removal queued for sync.' : 'Device removed successfully.',
+          type: 'success',
+        });
+        await refresh();
+      } catch (_err) {
+        hapticError();
+        showToast?.({ message: 'Failed to remove device.', type: 'error' });
+      } finally {
+        dispatch({ type: 'setBusyDeviceId', value: null });
+      }
+    },
+    [dispatch, addOptimisticDevice, unlinkDevice, syncPending, showToast, refresh],
+  );
 
-    try {
-      await revokeSession(sessionId);
-      hapticSuccess();
-      showToast?.({
-        message: isCurrent ? 'Current session revoked.' : 'Session revoked.',
-        type: 'success',
+  const performRevokeSession = useCallback(
+    async (sessionId: string, isCurrent: boolean) => {
+      dispatch({ type: 'setBusySessionId', value: sessionId });
+      startTransition(() => {
+        addOptimisticSession(sessionId);
       });
-      await refresh();
-    } catch (_err) {
-      hapticError();
-      showToast?.({ message: 'Failed to revoke session.', type: 'error' });
-    } finally {
-      dispatch({ type: 'setBusySessionId', value: null });
-    }
-  };
+
+      try {
+        await revokeSession(sessionId);
+        hapticSuccess();
+        showToast?.({
+          message: isCurrent ? 'Current session revoked.' : 'Session revoked.',
+          type: 'success',
+        });
+        await refresh();
+      } catch (_err) {
+        hapticError();
+        showToast?.({ message: 'Failed to revoke session.', type: 'error' });
+      } finally {
+        dispatch({ type: 'setBusySessionId', value: null });
+      }
+    },
+    [dispatch, addOptimisticSession, revokeSession, showToast, refresh],
+  );
 
   const handleAction = useCallback(
     (action: PendingConfirmAction) => {

@@ -50,6 +50,7 @@ export default function LotusDropdown({
       {label && <Text className="text-phase-text-primary font-medium tracking-wide">{label}</Text>}
 
       <Pressable
+        accessibilityRole="button"
         onPress={() => !isDisabled && setShowActionsheet(true)}
         className={`
                     flex-row items-center justify-between h-12 px-4 rounded-xl border

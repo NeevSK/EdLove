@@ -203,13 +203,14 @@ export default function GlobalHeader({
     <Box accessibilityRole="header" className="w-full relative" style={{ height: headerHeight }}>
       <Box
         className="absolute inset-0 border-b"
-        style={{
-          opacity: 0.98,
-          borderBottomColor: 'rgba(255,255,255,0.05)',
-          background:
-            'linear-gradient(180deg, rgba(13,17,24,0.96) 0%, rgba(16,20,29,0.94) 100%)',
-          backdropFilter: 'blur(16px)',
-        } as any}
+        style={
+          {
+            opacity: 0.98,
+            borderBottomColor: 'rgba(255,255,255,0.05)',
+            background: 'linear-gradient(180deg, rgba(13,17,24,0.96) 0%, rgba(16,20,29,0.94) 100%)',
+            backdropFilter: 'blur(16px)',
+          } as any
+        }
       />
 
       <VStack
@@ -316,9 +317,7 @@ export default function GlobalHeader({
                     <Bell
                       size={18}
                       className={
-                        error
-                          ? 'text-phase-text-secondary opacity-50'
-                          : 'text-phase-text-primary'
+                        error ? 'text-phase-text-secondary opacity-50' : 'text-phase-text-primary'
                       }
                     />
                     <Text className="text-sm text-phase-text-primary">Notifications</Text>
@@ -346,8 +345,12 @@ export default function GlobalHeader({
           isLoading={notifLoading}
           isRealtimeConnected={isRealtimeConnected}
           error={error}
-          onMarkRead={markAsRead}
-          onMarkAllRead={markAllRead}
+          onMarkRead={(id) => {
+            void markAsRead(id);
+          }}
+          onMarkAllRead={() => {
+            void markAllRead();
+          }}
         />
       </VStack>
     </Box>
