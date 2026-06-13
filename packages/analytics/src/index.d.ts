@@ -3,6 +3,7 @@ export type { DatabaseClient } from './engine/PerformanceAnalyzer';
 export * from './engine/PerformanceAnalyzer';
 export * from './engine/PostHogAnalytics';
 export type { DatabaseClient as PredictorDatabaseClient } from './ml/Predictor';
+
 import { type DatabaseClient, PerformanceAnalyzer } from './engine/PerformanceAnalyzer';
 import { posthogAnalytics } from './engine/PostHogAnalytics';
 import { Predictor as ML_Predictor } from './ml/Predictor';

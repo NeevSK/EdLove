@@ -1,0 +1,147 @@
+>>> Found 217 modified file(s).
+
+=== RUNNING SCOPED TYPE CHECKS ===
+>>> tsc --noEmit inside [apps/gurudevi-mobile]...
+> Executing: pnpm exec tsc --noEmit
+src/hooks/usePacer.ts(22,10): error TS2322: Type '(queryKey: any) => string' is not assignable to type 'string'.
+src/hooks/usePacer.ts(22,11): error TS7006: Parameter 'queryKey' implicitly has an 'any' type.
+src/hooks/usePacer.ts(38,7): error TS2353: Object literal may only specify known properties, and 'duration' does not exist in type 'ReactDebouncerOptions<(newValue: T) => void, {}>'.
+src/screens/TanStackPacerDemo.tsx(42,41): error TS2339: Property 'then' does not exist on type 'void'.
+../../packages/ai/src/hooks/useAIAgent.ts(92,5): error TS2339: Property 'input' does not exist on type 'BaseUseChatReturn<any, unknown> & Record<never, never>'.
+../../packages/ai/src/hooks/useAIAgent.ts(93,5): error TS2339: Property 'setInput' does not exist on type 'BaseUseChatReturn<any, unknown> & Record<never, never>'.
+../../packages/ai/src/hooks/useAIAgent.ts(94,5): error TS2339: Property 'handleSubmit' does not exist on type 'BaseUseChatReturn<any, unknown> & Record<never, never>'.
+../../packages/ai/src/hooks/useAIAgent.ts(98,5): error TS2353: Object literal may only specify known properties, and 'api' does not exist in type 'UseChatOptions<any, undefined, unknown>'.
+../../packages/ai/src/screens/AIAssistantScreen.web.tsx(32,33): error TS2339: Property 'sendMessage' does not exist on type '{ messages: UIMessage<any, unknown>[]; input: any; setInput: any; handleSubmit: any; isThinking: boolean; activeGaps: CoordinationGap[]; lastTimetableDraft: any; refreshStatus: () => Promise<...>; ... 5 more ...; error: Error | undefined; }'.
+../../packages/ai/src/screens/AIAssistantScreen.web.tsx(32,73): error TS2339: Property 'clearHistory' does not exist on type '{ messages: UIMessage<any, unknown>[]; input: any; setInput: any; handleSubmit: any; isThinking: boolean; activeGaps: CoordinationGap[]; lastTimetableDraft: any; refreshStatus: () => Promise<...>; ... 5 more ...; error: Error | undefined; }'.
+../../packages/ai/src/screens/AIAssistantScreen.web.tsx(363,26): error TS2339: Property 'content' does not exist on type 'UIMessage<any, unknown>'.
+../../packages/ai/src/screens/AIAssistantScreen.web.tsx(366,42): error TS2339: Property 'timestamp' does not exist on type 'UIMessage<any, unknown>'.
+
+⚠️ Command failed with exit code: 2
+>>> tsc --noEmit inside [apps/intuitui-web]...
+> Executing: pnpm exec tsc --noEmit
+
+>>> tsc --noEmit inside [apps/neevsk-web]...
+> Executing: pnpm exec tsc --noEmit
+
+>>> tsc --noEmit inside [apps/sanctuary-api]...
+> Executing: pnpm exec tsc --noEmit
+src/ai/adapters/AnthropicAdapter.ts(21,30): error TS2345: Argument of type 'string' is not assignable to parameter of type '"claude-opus-4-6" | "claude-opus-4-5" | "claude-sonnet-4-5" | "claude-haiku-4-5" | "claude-opus-4-1" | "claude-sonnet-4" | "claude-3-7-sonnet" | "claude-opus-4" | "claude-3-5-haiku" | "claude-3-haiku"'.
+src/ai/adapters/AnthropicAdapter.ts(22,7): error TS2322: Type '{ role: string; content: string; }[]' is not assignable to type 'ConstrainedModelMessage<{ inputModalities: ["text", "image", "document"]; messageMetadataByModality: AnthropicMessageMetadataByModality; }>[]'.
+  Type '{ role: string; content: string; }' is not assignable to type 'ConstrainedModelMessage<{ inputModalities: ["text", "image", "document"]; messageMetadataByModality: AnthropicMessageMetadataByModality; }>'.
+    Type '{ role: string; content: string; }' is not assignable to type 'Omit<ModelMessage<string | ContentPart<unknown, unknown, unknown, unknown, unknown>[] | null>, "content">'.
+      Types of property 'role' are incompatible.
+        Type 'string' is not assignable to type '"user" | "assistant" | "tool"'.
+src/ai/adapters/DeepSeekAdapter.ts(22,27): error TS2345: Argument of type 'string' is not assignable to parameter of type '"gpt-5.2" | "gpt-5.2-chat-latest" | "gpt-5.2-pro" | "gpt-5.1" | "gpt-5.1-codex" | "gpt-5" | "gpt-5-mini" | "gpt-5-nano" | "gpt-5-pro" | "gpt-5-codex" | "gpt-4.1" | "gpt-4.1-mini" | ... 25 more ... | "computer-use-preview"'.
+src/ai/adapters/DeepSeekAdapter.ts(26,7): error TS2322: Type '{ role: string; content: string; }[]' is not assignable to type 'ConstrainedModelMessage<{ inputModalities: ["text", "image"] | ["text"] | ["text", "audio"]; messageMetadataByModality: OpenAIMessageMetadataByModality; }>[]'.
+  Type '{ role: string; content: string; }' is not assignable to type 'ConstrainedModelMessage<{ inputModalities: ["text", "image"] | ["text"] | ["text", "audio"]; messageMetadataByModality: OpenAIMessageMetadataByModality; }>'.
+    Type '{ role: string; content: string; }' is not assignable to type 'Omit<ModelMessage<string | ContentPart<unknown, unknown, unknown, unknown, unknown>[] | null>, "content">'.
+      Types of property 'role' are incompatible.
+        Type 'string' is not assignable to type '"user" | "assistant" | "tool"'.
+src/ai/adapters/GeminiAdapter.ts(21,27): error TS2345: Argument of type 'string' is not assignable to parameter of type '"gemini-3-pro-preview" | "gemini-3-flash-preview" | "gemini-2.5-pro" | "gemini-2.5-flash" | "gemini-2.5-flash-preview-09-2025" | "gemini-2.5-flash-lite" | "gemini-2.5-flash-lite-preview-09-2025" | "gemini-2.0-flash" | "gemini-2.0-flash-lite"'.
+src/ai/adapters/GeminiAdapter.ts(22,7): error TS2322: Type '{ role: string; content: string; }[]' is not assignable to type 'ConstrainedModelMessage<{ inputModalities: ["text", "image", "audio", "video", "document"] | ["text", "image", "audio", "video"] | ["text", "audio", "video", "image"]; messageMetadataByModality: GeminiMessageMetadataByModality; }>[]'.
+  Type '{ role: string; content: string; }' is not assignable to type 'ConstrainedModelMessage<{ inputModalities: ["text", "image", "audio", "video", "document"] | ["text", "image", "audio", "video"] | ["text", "audio", "video", "image"]; messageMetadataByModality: GeminiMessageMetadataByModality; }>'.
+    Type '{ role: string; content: string; }' is not assignable to type 'Omit<ModelMessage<string | ContentPart<unknown, unknown, unknown, unknown, unknown>[] | null>, "content">'.
+      Types of property 'role' are incompatible.
+        Type 'string' is not assignable to type '"user" | "assistant" | "tool"'.
+src/ai/adapters/OpenAiAdapter.ts(21,27): error TS2345: Argument of type 'string' is not assignable to parameter of type '"gpt-5.2" | "gpt-5.2-chat-latest" | "gpt-5.2-pro" | "gpt-5.1" | "gpt-5.1-codex" | "gpt-5" | "gpt-5-mini" | "gpt-5-nano" | "gpt-5-pro" | "gpt-5-codex" | "gpt-4.1" | "gpt-4.1-mini" | ... 25 more ... | "computer-use-preview"'.
+src/ai/adapters/OpenAiAdapter.ts(22,7): error TS2322: Type '{ role: string; content: string; }[]' is not assignable to type 'ConstrainedModelMessage<{ inputModalities: ["text", "image"] | ["text"] | ["text", "audio"]; messageMetadataByModality: OpenAIMessageMetadataByModality; }>[]'.
+  Type '{ role: string; content: string; }' is not assignable to type 'ConstrainedModelMessage<{ inputModalities: ["text", "image"] | ["text"] | ["text", "audio"]; messageMetadataByModality: OpenAIMessageMetadataByModality; }>'.
+    Type '{ role: string; content: string; }' is not assignable to type 'Omit<ModelMessage<string | ContentPart<unknown, unknown, unknown, unknown, unknown>[] | null>, "content">'.
+      Types of property 'role' are incompatible.
+        Type 'string' is not assignable to type '"user" | "assistant" | "tool"'.
+src/ai/domain/Orchestrator.ts(46,9): error TS2353: Object literal may only specify known properties, and 'preferredProvider' does not exist in type '{ byokKeyInput?: string | undefined; schoolId?: string | undefined; }'.
+src/ai/routes.ts(14,22): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(key: never): unknown', gave the following error.
+    Argument of type '"user"' is not assignable to parameter of type 'never'.
+  Overload 2 of 2, '(key: never): never', gave the following error.
+    Argument of type '"user"' is not assignable to parameter of type 'never'.
+src/ai/routes.ts(15,20): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(key: never): unknown', gave the following error.
+    Argument of type '"db"' is not assignable to parameter of type 'never'.
+  Overload 2 of 2, '(key: never): never', gave the following error.
+    Argument of type '"db"' is not assignable to parameter of type 'never'.
+src/ai/routes.ts(17,21): error TS2339: Property 'id' does not exist on type '{}'.
+src/ai/routes.ts(46,12): error TS2339: Property 'id' does not exist on type '{}'.
+src/ai/routes.ts(58,56): error TS2339: Property 'id' does not exist on type '{}'.
+src/ai/routes.ts(79,38): error TS2339: Property 'id' does not exist on type '{}'.
+src/index.ts(514,18): error TS2322: Type 'string | File' is not assignable to type 'string | (string & { equals?: string | undefined; in?: string[] | undefined; notIn?: string[] | undefined; } & { lt?: string | undefined; lte?: string | undefined; gt?: string | undefined; gte?: string | undefined; between?: [start: ...] | undefined; } & { ...; } & { ...; }) | (string & ... 3 more ... & { ...; }) | ...'.
+  Type 'File' is not assignable to type 'string | (string & { equals?: string | undefined; in?: string[] | undefined; notIn?: string[] | undefined; } & { lt?: string | undefined; lte?: string | undefined; gt?: string | undefined; gte?: string | undefined; between?: [start: ...] | undefined; } & { ...; } & { ...; }) | (string & ... 3 more ... & { ...; }) | ...'.
+    Type 'File' is not assignable to type 'string & { equals?: string | null | undefined; in?: string[] | undefined; notIn?: string[] | undefined; } & { lt?: string | undefined; lte?: string | undefined; gt?: string | undefined; gte?: string | undefined; between?: [start: ...] | undefined; } & { ...; } & { ...; } & { ...; } & { ...; }'.
+      Type 'File' is not assignable to type 'string'.
+src/index.ts(519,20): error TS2322: Type 'string | File' is not assignable to type 'string | (string & { equals?: string | undefined; in?: string[] | undefined; notIn?: string[] | undefined; } & { lt?: string | undefined; lte?: string | undefined; gt?: string | undefined; gte?: string | undefined; between?: [start: ...] | undefined; } & { ...; } & { ...; }) | (string & ... 3 more ... & { ...; }) | ...'.
+  Type 'File' is not assignable to type 'string | (string & { equals?: string | undefined; in?: string[] | undefined; notIn?: string[] | undefined; } & { lt?: string | undefined; lte?: string | undefined; gt?: string | undefined; gte?: string | undefined; between?: [start: ...] | undefined; } & { ...; } & { ...; }) | (string & ... 3 more ... & { ...; }) | ...'.
+    Type 'File' is not assignable to type 'string & { equals?: string | null | undefined; in?: string[] | undefined; notIn?: string[] | undefined; } & { lt?: string | undefined; lte?: string | undefined; gt?: string | undefined; gte?: string | undefined; between?: [start: ...] | undefined; } & { ...; } & { ...; } & { ...; } & { ...; }'.
+      Type 'File' is not assignable to type 'string'.
+../../packages/core/src/api/supabase.ts(53,24): error TS2304: Cannot find name '__DEV__'.
+../../packages/core/src/api/supabase.ts(53,51): error TS2304: Cannot find name '__DEV__'.
+
+⚠️ Command failed with exit code: 2
+>>> tsc --noEmit inside [packages/admin]...
+> Executing: pnpm exec tsc --noEmit
+../ai/src/hooks/useAIAgent.ts(92,5): error TS2339: Property 'input' does not exist on type 'BaseUseChatReturn<any, unknown> & Record<never, never>'.
+../ai/src/hooks/useAIAgent.ts(93,5): error TS2339: Property 'setInput' does not exist on type 'BaseUseChatReturn<any, unknown> & Record<never, never>'.
+../ai/src/hooks/useAIAgent.ts(94,5): error TS2339: Property 'handleSubmit' does not exist on type 'BaseUseChatReturn<any, unknown> & Record<never, never>'.
+../ai/src/hooks/useAIAgent.ts(98,5): error TS2353: Object literal may only specify known properties, and 'api' does not exist in type 'UseChatOptions<any, undefined, unknown>'.
+../ai/src/screens/AIAssistantScreen.web.tsx(32,33): error TS2339: Property 'sendMessage' does not exist on type '{ messages: UIMessage<any, unknown>[]; input: any; setInput: any; handleSubmit: any; isThinking: boolean; activeGaps: CoordinationGap[]; lastTimetableDraft: any; refreshStatus: () => Promise<...>; ... 5 more ...; error: Error | undefined; }'.
+../ai/src/screens/AIAssistantScreen.web.tsx(32,73): error TS2339: Property 'clearHistory' does not exist on type '{ messages: UIMessage<any, unknown>[]; input: any; setInput: any; handleSubmit: any; isThinking: boolean; activeGaps: CoordinationGap[]; lastTimetableDraft: any; refreshStatus: () => Promise<...>; ... 5 more ...; error: Error | undefined; }'.
+../ai/src/screens/AIAssistantScreen.web.tsx(363,26): error TS2339: Property 'content' does not exist on type 'UIMessage<any, unknown>'.
+../ai/src/screens/AIAssistantScreen.web.tsx(366,42): error TS2339: Property 'timestamp' does not exist on type 'UIMessage<any, unknown>'.
+
+⚠️ Command failed with exit code: 2
+>>> tsc --noEmit inside [packages/ai]...
+> Executing: pnpm exec tsc --noEmit
+src/hooks/useAIAgent.ts(92,5): error TS2339: Property 'input' does not exist on type 'BaseUseChatReturn<any, unknown> & Record<never, never>'.
+src/hooks/useAIAgent.ts(93,5): error TS2339: Property 'setInput' does not exist on type 'BaseUseChatReturn<any, unknown> & Record<never, never>'.
+src/hooks/useAIAgent.ts(94,5): error TS2339: Property 'handleSubmit' does not exist on type 'BaseUseChatReturn<any, unknown> & Record<never, never>'.
+src/hooks/useAIAgent.ts(98,5): error TS2353: Object literal may only specify known properties, and 'api' does not exist in type 'UseChatOptions<any, undefined, unknown>'.
+src/screens/AIAssistantScreen.web.tsx(32,33): error TS2339: Property 'sendMessage' does not exist on type '{ messages: UIMessage<any, unknown>[]; input: any; setInput: any; handleSubmit: any; isThinking: boolean; activeGaps: CoordinationGap[]; lastTimetableDraft: any; refreshStatus: () => Promise<...>; ... 5 more ...; error: Error | undefined; }'.
+src/screens/AIAssistantScreen.web.tsx(32,73): error TS2339: Property 'clearHistory' does not exist on type '{ messages: UIMessage<any, unknown>[]; input: any; setInput: any; handleSubmit: any; isThinking: boolean; activeGaps: CoordinationGap[]; lastTimetableDraft: any; refreshStatus: () => Promise<...>; ... 5 more ...; error: Error | undefined; }'.
+src/screens/AIAssistantScreen.web.tsx(363,26): error TS2339: Property 'content' does not exist on type 'UIMessage<any, unknown>'.
+src/screens/AIAssistantScreen.web.tsx(366,42): error TS2339: Property 'timestamp' does not exist on type 'UIMessage<any, unknown>'.
+
+⚠️ Command failed with exit code: 2
+>>> tsc --noEmit inside [packages/analytics]...
+> Executing: pnpm exec tsc --noEmit
+
+>>> tsc --noEmit inside [packages/classroom]...
+> Executing: pnpm exec tsc --noEmit
+../ai/src/hooks/useAIAgent.ts(92,5): error TS2339: Property 'input' does not exist on type 'BaseUseChatReturn<any, unknown> & Record<never, never>'.
+../ai/src/hooks/useAIAgent.ts(93,5): error TS2339: Property 'setInput' does not exist on type 'BaseUseChatReturn<any, unknown> & Record<never, never>'.
+../ai/src/hooks/useAIAgent.ts(94,5): error TS2339: Property 'handleSubmit' does not exist on type 'BaseUseChatReturn<any, unknown> & Record<never, never>'.
+../ai/src/hooks/useAIAgent.ts(98,5): error TS2353: Object literal may only specify known properties, and 'api' does not exist in type 'UseChatOptions<any, undefined, unknown>'.
+../ai/src/screens/AIAssistantScreen.web.tsx(32,33): error TS2339: Property 'sendMessage' does not exist on type '{ messages: UIMessage<any, unknown>[]; input: any; setInput: any; handleSubmit: any; isThinking: boolean; activeGaps: CoordinationGap[]; lastTimetableDraft: any; refreshStatus: () => Promise<...>; ... 5 more ...; error: Error | undefined; }'.
+../ai/src/screens/AIAssistantScreen.web.tsx(32,73): error TS2339: Property 'clearHistory' does not exist on type '{ messages: UIMessage<any, unknown>[]; input: any; setInput: any; handleSubmit: any; isThinking: boolean; activeGaps: CoordinationGap[]; lastTimetableDraft: any; refreshStatus: () => Promise<...>; ... 5 more ...; error: Error | undefined; }'.
+../ai/src/screens/AIAssistantScreen.web.tsx(363,26): error TS2339: Property 'content' does not exist on type 'UIMessage<any, unknown>'.
+../ai/src/screens/AIAssistantScreen.web.tsx(366,42): error TS2339: Property 'timestamp' does not exist on type 'UIMessage<any, unknown>'.
+
+⚠️ Command failed with exit code: 2
+>>> tsc --noEmit inside [packages/community]...
+> Executing: pnpm exec tsc --noEmit
+
+>>> tsc --noEmit inside [packages/core]...
+> Executing: pnpm exec tsc --noEmit
+
+>>> tsc --noEmit inside [packages/form-builder-engine]...
+> Executing: pnpm exec tsc --noEmit
+
+>>> tsc --noEmit inside [packages/form-builder]...
+> Executing: pnpm exec tsc --noEmit
+
+>>> tsc --noEmit inside [packages/library]...
+> Executing: pnpm exec tsc --noEmit
+
+>>> tsc --noEmit inside [packages/profile]...
+> Executing: pnpm exec tsc --noEmit
+
+>>> tsc --noEmit inside [packages/scanner-kit]...
+> Executing: pnpm exec tsc --noEmit
+
+>>> tsc --noEmit inside [packages/schema]...
+> Executing: pnpm exec tsc --noEmit
+
+>>> tsc --noEmit inside [packages/self]...
+> Executing: pnpm exec tsc --noEmit
+
+>>> tsc --noEmit inside [packages/ui]...
+> Executing: pnpm exec tsc --noEmit
+

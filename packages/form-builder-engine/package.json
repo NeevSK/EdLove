@@ -55,6 +55,7 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@tanstack/form-core": "^0.20.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {

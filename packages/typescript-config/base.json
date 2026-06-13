@@ -9,6 +9,7 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "skipLibCheck": true,
+    "ignoreDeprecations": "6.0",
     "types": ["node", "@repo/types-shim"],
     "noUncheckedSideEffectImports": true,
     "noImplicitOverride": true,

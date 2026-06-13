@@ -24,10 +24,10 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-
+import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'expo-router';
+import { Platform } from 'react-native';
 import GuestConversionPrompt from '../shared/GuestConversionPrompt';
 
 // Constants for Classroom logic
@@ -121,6 +121,14 @@ interface CreateClassroomModalProps {
     syllabusId?: string;
   };
 }
+
+const loadPicker = () => {
+  try {
+    return require('@react-native-picker/picker').Picker;
+  } catch {
+    return null;
+  }
+};
 
 export default function CreateClassroomModal({
   isOpen,
@@ -632,29 +640,51 @@ export default function CreateClassroomModal({
                             {t('classroom.selectSection') || 'Select Institutional Section'}
                           </FormControlLabelText>
                         </FormControlLabel>
-                        <Box className="flex-row flex-wrap gap-3">
-                          {sections.map((section) => (
-                            <Button
-                              key={section.id}
-                              variant={
-                                state.academic.sectionId === section.id ? 'solid' : 'outline'
-                              }
-                              size="sm"
-                              onPress={() => handleSectionChange(section.id)}
-                              className={`rounded-full px-5 ${state.academic.sectionId === section.id ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'bg-transparent border-sanctuary-border'}`}
-                            >
-                              <ButtonText
-                                className={
-                                  state.academic.sectionId === section.id
-                                    ? 'text-white font-bold'
-                                    : 'text-sanctuary-text-secondary'
-                                }
+                      {(() => {
+                        const Picker = loadPicker();
+                        if (Picker && Platform.OS !== 'web') {
+                          return (
+                            <Box className="bg-sanctuary-surface-secondary border border-sanctuary-border rounded-2xl overflow-hidden mt-1 h-14 justify-center">
+                              <Picker
+                                selectedValue={state.academic.sectionId}
+                                onValueChange={(itemValue: string) => handleSectionChange(itemValue)}
+                                style={{ color: '#F6BF8C', backgroundColor: 'transparent' }}
+                                dropdownIconColor="#F6BF8C"
                               >
-                                {section.name}
-                              </ButtonText>
-                            </Button>
-                          ))}
-                        </Box>
+                                <Picker.Item label="-- Select Section --" value="" color="#A1A1AA" />
+                                {sections.map((section) => (
+                                  <Picker.Item key={section.id} label={section.name} value={section.id} color="#F6BF8C" />
+                                ))}
+                              </Picker>
+                            </Box>
+                          );
+                        }
+                        return (
+                          <Box className="flex-row flex-wrap gap-3">
+                            {sections.map((section) => (
+                              <Button
+                                key={section.id}
+                                variant={
+                                  state.academic.sectionId === section.id ? 'solid' : 'outline'
+                                }
+                                size="sm"
+                                onPress={() => handleSectionChange(section.id)}
+                                className={`rounded-full px-5 ${state.academic.sectionId === section.id ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'bg-transparent border-sanctuary-border'}`}
+                              >
+                                <ButtonText
+                                  className={
+                                    state.academic.sectionId === section.id
+                                      ? 'text-white font-bold'
+                                      : 'text-sanctuary-text-secondary'
+                                  }
+                                >
+                                  {section.name}
+                                </ButtonText>
+                              </Button>
+                            ))}
+                          </Box>
+                        );
+                      })()}
                       </FormControl>
                     </VStack>
                   )}
@@ -673,27 +703,49 @@ export default function CreateClassroomModal({
                         {t('classroom.selectGrade') || 'Target Grade Level'}
                       </FormControlLabelText>
                     </FormControlLabel>
-                    <Box className="flex-row flex-wrap gap-2">
-                      {grades.map((grade) => (
-                        <Button
-                          key={grade.id}
-                          variant={state.academic.gradeId === grade.id ? 'solid' : 'outline'}
-                          size="sm"
-                          onPress={() => handleGradeChange(grade.id)}
-                          className={`px-4 rounded-full h-10 ${state.academic.gradeId === grade.id ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'bg-transparent border-sanctuary-border'}`}
-                        >
-                          <ButtonText
-                            className={
-                              state.academic.gradeId === grade.id
-                                ? 'text-white font-bold'
-                                : 'text-sanctuary-text-secondary'
-                            }
-                          >
-                            {grade.number}
-                          </ButtonText>
-                        </Button>
-                      ))}
-                    </Box>
+                    {(() => {
+                      const Picker = loadPicker();
+                      if (Picker && Platform.OS !== 'web') {
+                        return (
+                          <Box className="bg-sanctuary-surface-secondary border border-sanctuary-border rounded-2xl overflow-hidden mt-1 h-14 justify-center">
+                            <Picker
+                              selectedValue={state.academic.gradeId}
+                              onValueChange={(itemValue: string) => handleGradeChange(itemValue)}
+                              style={{ color: '#F6BF8C', backgroundColor: 'transparent' }}
+                              dropdownIconColor="#F6BF8C"
+                            >
+                              <Picker.Item label="-- Select Grade --" value="" color="#A1A1AA" />
+                              {grades.map((grade) => (
+                                <Picker.Item key={grade.id} label={`Grade ${grade.number}`} value={grade.id} color="#F6BF8C" />
+                              ))}
+                            </Picker>
+                          </Box>
+                        );
+                      }
+                      return (
+                        <Box className="flex-row flex-wrap gap-2">
+                          {grades.map((grade) => (
+                            <Button
+                              key={grade.id}
+                              variant={state.academic.gradeId === grade.id ? 'solid' : 'outline'}
+                              size="sm"
+                              onPress={() => handleGradeChange(grade.id)}
+                              className={`px-4 rounded-full h-10 ${state.academic.gradeId === grade.id ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'bg-transparent border-sanctuary-border'}`}
+                            >
+                              <ButtonText
+                                className={
+                                  state.academic.gradeId === grade.id
+                                    ? 'text-white font-bold'
+                                    : 'text-sanctuary-text-secondary'
+                                }
+                              >
+                                {grade.number}
+                              </ButtonText>
+                            </Button>
+                          ))}
+                        </Box>
+                      );
+                    })()}
                   </FormControl>
                 </VStack>
               )}

@@ -90,6 +90,18 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
     };
   }, [audioUrl]);
 
+  const stopRecording = useCallback(() => {
+    if (mediaRecorderRef.current?.state === 'recording') {
+      mediaRecorderRef.current.stop();
+    }
+    if (durationTimer.current) clearInterval(durationTimer.current);
+    cancelAnimation(pulseScale);
+    cancelAnimation(waveHeight);
+    pulseScale.value = withTiming(1);
+    waveHeight.value = withTiming(12);
+    setRecordingState('recorded');
+  }, [pulseScale, waveHeight]);
+
   const startRecording = useCallback(async () => {
     if (recordingState === 'unsupported') return;
     try {
@@ -140,18 +152,6 @@ export default function VoiceJournaling({ userId, onComplete }: VoiceJournalingP
       setRecordingState('unsupported');
     }
   }, [recordingState, waveHeight, stopRecording, pulseScale]);
-
-  const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current?.state === 'recording') {
-      mediaRecorderRef.current.stop();
-    }
-    if (durationTimer.current) clearInterval(durationTimer.current);
-    cancelAnimation(pulseScale);
-    cancelAnimation(waveHeight);
-    pulseScale.value = withTiming(1);
-    waveHeight.value = withTiming(12);
-    setRecordingState('recorded');
-  }, [pulseScale, waveHeight]);
 
   const playRecording = useCallback(() => {
     if (!audioUrl) return;

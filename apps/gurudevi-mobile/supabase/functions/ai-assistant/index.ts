@@ -41,6 +41,8 @@ interface RequestBody {
       steady_surge: number;
     } | null;
     moonPhase?: string;
+    byokKey?: string; // Decrypted User key passed from client
+    billingMode?: 'baseline' | 'byok' | 'purchased';
   };
 }
 
@@ -51,7 +53,7 @@ interface ActiveGap {
   suggestedAction: string;
 }
 
-// \u2500\u2500 System prompt builder \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// ──── System prompt builder ─────────────────────────────────────────────────────────────
 
 function buildSystemPrompt(context: RequestBody['context'] = {}): string {
   const role = context.role ?? 'teacher';
@@ -60,8 +62,8 @@ function buildSystemPrompt(context: RequestBody['context'] = {}): string {
   const seeds = context.orientationSeeds;
   const moon = context.moonPhase;
 
-  // Core persona \u2014 always present
-  const core = `You are the Sanctuary Guide of Gurudevi \u2014 a wellbeing-centered school platform used by Sri Lankan educators, students, and school leaders.
+  // Core persona — always present
+  const core = `You are the Sanctuary Guide of Gurudevi — a wellbeing-centered school platform used by Sri Lankan educators, students, and school leaders.
 
 You are a thoughtful, warm, and grounded companion. You speak to the whole person, not just the professional. You follow the Socratic tradition: you ask good questions, reflect meaningfully, and never lecture.
 
@@ -75,7 +77,7 @@ The person you are speaking with is a ${role}${school}.`;
 As a teacher, their world balances lesson preparation, student relationships, wellbeing, and the sometimes-heavy weight of institutional demands. They may need practical help (curriculum, attendance, gradebook), emotional reflection (energy, stress, meaning), or creative thinking (new approaches, lesson ideas).`;
       case 'principal':
         return `
-As a principal, they hold the wellbeing of their entire school in their hands. They may be thinking about staff morale, school improvement, resource gaps, or their own leadership journey. They see the forest \u2014 help them see each tree too.`;
+As a principal, they hold the wellbeing of their entire school in their hands. They may be thinking about staff morale, school improvement, resource gaps, or their own leadership journey. They see the forest — help them see each tree too.`;
       case 'student':
         return `
 As a student, they are on a learning journey. They may need help understanding concepts, managing study stress, setting goals, or finding meaning in what they are learning. Meet them with curiosity and gentleness.`;
@@ -87,7 +89,7 @@ As a founder, they hold vision across many schools. They think in ecosystems and
     }
   })();
 
-  // Orientation seeds \u2014 silent personalisation
+  // Orientation seeds — silent personalisation
   let orientationContext = '';
   if (seeds) {
     const tendencies: string[] = [];
@@ -101,7 +103,7 @@ As a founder, they hold vision across many schools. They think in ecosystems and
     else if (seeds.steady_surge < 30) tendencies.push('works in energetic bursts');
 
     if (tendencies.length > 0) {
-      orientationContext = `\nBased on their learning orientation, this person ${tendencies.join(', ')}. Adjust your communication style accordingly \u2014 but never mention these tendencies explicitly.`;
+      orientationContext = `\nBased on their learning orientation, this person ${tendencies.join(', ')}. Adjust your communication style accordingly — but never mention these tendencies explicitly.`;
     }
   }
 
@@ -110,46 +112,46 @@ As a founder, they hold vision across many schools. They think in ecosystems and
   if (moon) {
     const moonGuide: Record<string, string> = {
       new_moon:
-        'This is a new moon phase \u2014 a time for new intentions, planting seeds, beginning. Honour that energy in your responses.',
+        'This is a new moon phase — a time for new intentions, planting seeds, beginning. Honour that energy in your responses.',
       waxing_crescent:
-        'The moon is waxing \u2014 energy is building. Good for action, plans, and momentum.',
+        'The moon is waxing — energy is building. Good for action, plans, and momentum.',
       first_quarter:
-        'The first quarter moon \u2014 decision and commitment. Support the person in clarifying what they are building.',
+        'The first quarter moon — decision and commitment. Support the person in clarifying what they are building.',
       waxing_gibbous:
-        'Almost full \u2014 refinement and preparation. Help them refine and strengthen what they have been building.',
+        'Almost full — refinement and preparation. Help them refine and strengthen what they have been building.',
       full_moon:
-        'Full moon \u2014 illumination and completion. Help them see clearly what has been accomplished and what needs releasing.',
+        'Full moon — illumination and completion. Help them see clearly what has been accomplished and what needs releasing.',
       waning_gibbous:
-        'The moon is waning \u2014 reflection and gratitude. This is a time to honour what has been done.',
+        'The moon is waning — reflection and gratitude. This is a time to honour what has been done.',
       last_quarter:
-        'Last quarter \u2014 release and forgiveness. Help them let go of what no longer serves.',
+        'Last quarter — release and forgiveness. Help them let go of what no longer serves.',
       waning_crescent:
-        'Waning crescent \u2014 rest and restoration. This is the quietest phase. Honour the need for stillness.',
+        'Waning crescent — rest and restoration. This is the quietest phase. Honour the need for stillness.',
     };
     const moonNote = moonGuide[moon.toLowerCase().replace(' ', '_')];
     if (moonNote) moonContext = `\n${moonNote}`;
   }
 
-  // Active gaps \u2014 urgent operational context
+  // Active gaps — urgent operational context
   let gapsContext = '';
   if (gaps.length > 0) {
     const highGaps = gaps.filter((g) => g.priority === 'high');
     if (highGaps.length > 0) {
       gapsContext =
         `\nThere are currently ${highGaps.length} high-priority items in their school flow:\n` +
-        highGaps.map((g) => `  - ${g.title} \u2192 ${g.suggestedAction}`).join('\n') +
+        highGaps.map((g) => `  - ${g.title} → ${g.suggestedAction}`).join('\n') +
         '\nYou may gently mention these if the conversation touches on school operations, but never be pushy.';
     }
   }
 
-  // Behaviour rules \u2014 always at the end
+  // Behaviour rules — always at the end
   const rules = `
 
 RULES:
 - Always respond in the same language the user writes in (English, Sinhala, or Tamil).
 - Never lecture. Ask one clear, thoughtful question when you want to deepen reflection.
 - Be warm, specific, and grounded. Avoid generic affirmations like "That's great!"
-- Keep responses concise \u2014 2\u20134 sentences is ideal. Go longer only when a longer answer is genuinely needed.
+- Keep responses concise — 2–4 sentences is ideal. Go longer only when a longer answer is genuinely needed.
 - If you don't know something specific about Sri Lankan education, ask rather than assume.
 - You are not a therapist. For serious mental health concerns, gently suggest professional support.
 - Never mention the orientation seeds or growth model explicitly.`;
@@ -157,19 +159,18 @@ RULES:
   return core + roleContext + orientationContext + moonContext + gapsContext + rules;
 }
 
-// \u2500\u2500 LLM call \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// ──── Streaming LLM call ─────────────────────────────────────────────────────────────
 
-async function callOpenAI(
+async function streamOpenAI(
+  apiKey: string,
+  model: string,
   systemPrompt: string,
   history: Array<{ role: string; content: string }>,
   userMessage: string,
-): Promise<string> {
-  const apiKey = Deno.env.get('OPENAI_API_KEY');
-  if (!apiKey) throw new Error('OPENAI_API_KEY not set');
-
+): Promise<ReadableStream> {
   const messages = [
     { role: 'system', content: systemPrompt },
-    ...history.slice(-10), // keep last 10 turns for context window efficiency
+    ...history.slice(-10),
     { role: 'user', content: userMessage },
   ];
 
@@ -180,57 +181,63 @@ async function callOpenAI(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'gpt-4o',
+      model,
       messages,
       max_tokens: 512,
       temperature: 0.7,
+      stream: true,
     }),
   });
 
   if (!response.ok) {
     const err = await response.text();
-    throw new Error(`OpenAI error ${response.status}: ${err}`);
+    throw new Error(`OpenAI stream initialization failed: ${err}`);
   }
 
-  const data = await response.json();
-  return data.choices?.[0]?.message?.content ?? 'I am here. How can I help?';
-}
+  const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
+  const reader = response.body?.getReader();
 
-async function callClaude(
-  systemPrompt: string,
-  history: Array<{ role: string; content: string }>,
-  userMessage: string,
-): Promise<string> {
-  const apiKey = Deno.env.get('ANTHROPIC_API_KEY');
-  if (!apiKey) throw new Error('ANTHROPIC_API_KEY not set');
+  return new ReadableStream({
+    async start(controller) {
+      try {
+        let buffer = '';
+        while (true) {
+          const { done, value } = await reader!.read();
+          if (done) break;
 
-  const messages = [...history.slice(-10), { role: 'user', content: userMessage }];
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'Content-Type': 'application/json',
+          for (const line of lines) {
+            const cleanLine = line.trim();
+            if (!cleanLine || cleanLine === 'data: [DONE]') continue;
+            if (cleanLine.startsWith('data: ')) {
+              try {
+                const parsed = JSON.parse(cleanLine.slice(6));
+                const text = parsed.choices?.[0]?.delta?.content;
+                if (text) {
+                  // Format stream event to match TanStack AI protocol: event: text\ndata: "..."\n\n
+                  controller.enqueue(encoder.encode(`event: text\ndata: ${JSON.stringify(text)}\n\n`));
+                }
+              } catch {
+                // Ignore parse errors on partial stream lines
+              }
+            }
+          }
+        }
+        controller.enqueue(encoder.encode('event: done\ndata: {}\n\n'));
+      } catch (err) {
+        controller.error(err);
+      } finally {
+        controller.close();
+      }
     },
-    body: JSON.stringify({
-      model: 'claude-3-5-sonnet-20241022',
-      system: systemPrompt,
-      messages,
-      max_tokens: 512,
-    }),
   });
-
-  if (!response.ok) {
-    const err = await response.text();
-    throw new Error(`Anthropic error ${response.status}: ${err}`);
-  }
-
-  const data = await response.json();
-  return data.content?.[0]?.text ?? 'I am here. How can I help?';
 }
 
-// \u2500\u2500 Main handler \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// ──── Main handler ───────────────────────────────────────────────────────────────────
 
 Deno.serve(async (req: Request) => {
   // CORS preflight
@@ -275,32 +282,61 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // Build the contextual system prompt
+    // Build the contextual system prompt (owning the voice)
     const systemPrompt = buildSystemPrompt(context);
 
-    // Try Claude first if key is available; fall back to OpenAI
-    let reply: string;
-    const hasAnthropic = !!Deno.env.get('ANTHROPIC_API_KEY');
-    const hasOpenAI = !!Deno.env.get('OPENAI_API_KEY');
+    // Resolve model and key based on Billing Mode (Seeded vs BYOK vs Purchased)
+    let apiKey = '';
+    let model = 'gpt-4o-mini'; // default budget model
+    const mode = context.billingMode ?? 'baseline';
 
-    if (hasAnthropic) {
-      reply = await callClaude(systemPrompt, history, message);
-    } else if (hasOpenAI) {
-      reply = await callOpenAI(systemPrompt, history, message);
+    if (mode === 'byok' && context.byokKey) {
+      apiKey = context.byokKey;
+      model = 'gpt-4o'; // Let BYOK users utilize full GPT-4o
+    } else if (mode === 'purchased') {
+      // Validate active subscription or tokens quota from database
+      const { data: sub } = await supabase
+        .from('user_subscriptions')
+        .select('tier')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .maybeSingle();
+
+      if (sub) {
+        apiKey = Deno.env.get('OPENAI_API_KEY') || '';
+        model = 'gpt-4o'; // Premium tier gets standard GPT-4o
+      } else {
+        // Fallback to baseline if active purchase not found
+        apiKey = Deno.env.get('OPENAI_API_KEY') || '';
+        model = 'gpt-4o-mini';
+      }
     } else {
-      // Graceful degradation \u2014 no API keys set yet
-      reply = buildLocalFallback(message, context.role ?? 'teacher');
+      // Baseline usage
+      apiKey = Deno.env.get('OPENAI_API_KEY') || '';
+      model = 'gpt-4o-mini';
     }
 
-    return new Response(JSON.stringify({ reply }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    if (!apiKey) {
+      throw new Error(`API key not configured for billing mode: ${mode}`);
+    }
+
+    // Stream response back in TanStack AI SSE format
+    const stream = await streamOpenAI(apiKey, model, systemPrompt, history, message);
+
+    return new Response(stream, {
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        Connection: 'keep-alive',
+      },
     });
   } catch (err) {
     console.error('[ai-assistant] error:', err);
     return new Response(
       JSON.stringify({
         error: 'Internal server error',
-        reply: buildLocalFallback('', 'teacher'),
+        details: err instanceof Error ? err.message : String(err),
       }),
       {
         status: 500,

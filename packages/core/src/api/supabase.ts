@@ -50,7 +50,7 @@ const supabaseOptions: any = {
           if (urlObj.searchParams.has(param)) {
             urlObj.searchParams.delete(param);
             didStrip = true;
-            if (__DEV__) {
+            if (typeof globalThis !== 'undefined' && (globalThis as any).__DEV__) {
               console.warn(`[Supabase] Stripped ghost param '${param}' from ${urlObj.pathname}`);
             }
           }

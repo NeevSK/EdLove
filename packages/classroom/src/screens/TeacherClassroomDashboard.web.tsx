@@ -41,6 +41,7 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { useReducer } from 'react';
 import {
   AttendanceView,
@@ -450,7 +451,7 @@ export default function TeacherClassroomDashboardWeb() {
           >
             <VStack className="gap-lg">
               <HStack className="items-center justify-between gap-md">
-                <Pressable onPress={() => router.back()}>
+                <Pressable onPress={() => safeBack('/workspace')}>
                   <HStack
                     className="items-center gap-xs px-md py-sm rounded-full border"
                     style={{

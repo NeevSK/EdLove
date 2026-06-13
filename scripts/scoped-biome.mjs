@@ -13,15 +13,20 @@ if (filesToProcess.length === 0) {
     // Get modified files in git
     const modified = execSync('git diff --name-only', { encoding: 'utf8' }).trim();
     // Get untracked files
-    const untracked = execSync('git ls-files --others --exclude-standard', { encoding: 'utf8' }).trim();
-    
+    const untracked = execSync('git ls-files --others --exclude-standard', {
+      encoding: 'utf8',
+    }).trim();
+
     const allFiles = [...modified.split('\n'), ...untracked.split('\n')]
       .map((f) => f.trim())
       .filter(Boolean)
       .filter((f) => /\.(js|ts|tsx|jsx|json)$/.test(f));
 
     // If running from a subdirectory (package-level), filter files to only those within the subdirectory
-    const relativeCwd = path.relative(process.env.PNPM_SCRIPT_SRC_DIR || process.cwd(), process.cwd());
+    const relativeCwd = path.relative(
+      process.env.PNPM_SCRIPT_SRC_DIR || process.cwd(),
+      process.cwd(),
+    );
     if (relativeCwd) {
       filesToProcess = allFiles
         .map((f) => path.resolve(f))
@@ -42,12 +47,22 @@ if (filesToProcess.length === 0) {
 }
 
 const action = isWrite ? 'check --write' : 'check';
-const filesList = filesToProcess.map((f) => `"${f}"`).join(' ');
-const cmd = `pnpm exec biome ${action} --no-errors-on-unmatched ${filesList}`;
+const chunkSize = 30;
+let success = true;
 
-console.log(`>>> Executing scoped Biome check: ${cmd}`);
-try {
-  execSync(cmd, { stdio: 'inherit' });
-} catch {
+for (let i = 0; i < filesToProcess.length; i += chunkSize) {
+  const chunk = filesToProcess.slice(i, i + chunkSize);
+  const filesList = chunk.map((f) => `"${f}"`).join(' ');
+  const cmd = `pnpm exec biome ${action} --no-errors-on-unmatched ${filesList}`;
+  console.log(`>>> Executing scoped Biome check (chunk ${Math.floor(i / chunkSize) + 1}/${Math.ceil(filesToProcess.length / chunkSize)}): ${cmd}`);
+  try {
+    execSync(cmd, { stdio: 'inherit' });
+  } catch (err) {
+    success = false;
+  }
+}
+
+if (!success) {
   process.exit(1);
 }
+

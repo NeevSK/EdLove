@@ -13,7 +13,7 @@ import {
   posthogAnalytics as initTracker,
   trackEvent,
 } from '@repo/analytics';
-import { GlobalProvider, coreRuntime, pushNotification, useAuth, useStore } from '@repo/core/logic';
+import { coreRuntime, GlobalProvider, pushNotification, useAuth, useStore, accountPin } from '@repo/core/logic';
 import { clearSentryUser, initSentry, injectPostHog, setSentryUser } from '@repo/core/monitoring';
 import { bootstrapPlatform, storage } from '@repo/core/native';
 import { usePermissionStore } from '@repo/core/store/usePermissionStore';
@@ -23,6 +23,7 @@ import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 import NetworkStatusBanner from '@repo/ui/components/NetworkStatusBanner';
 import { SanctuaryGlobalStyles } from '@repo/ui/components/SanctuaryGlobalStyles';
 import SanctuaryToast from '@repo/ui/components/SanctuaryToast';
+import { AccountPinModal } from '@repo/ui/components';
 import { EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';
 import { FABProvider } from '@repo/ui/context/FABContext';
 import { GluestackUIProvider } from '@repo/ui/gluestack';
@@ -31,9 +32,13 @@ import { ToastProvider } from '@repo/ui/providers';
 import { sanctuarySaffron } from '@repo/ui/theme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack, usePathname, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { StyleSheet as CSSStyleSheet, Platform } from 'react-native';
+import { useEffect, useState, useCallback } from 'react';
+import { StyleSheet as CSSStyleSheet, Platform, AppState, AppStateStatus, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import * as LocalAuthentication from 'expo-local-authentication';
+import * as SplashScreen from 'expo-splash-screen';
+import * as ScreenCapture from 'expo-screen-capture';
+import { Shield } from 'lucide-react-native';
 import { PWAInstallBanner } from '../src/components/web/PWAInstallBanner';
 import { fontAssets } from '../src/constants/Fonts';
 import { registerBackgroundSync } from '../src/lib/backgroundSync';
@@ -42,6 +47,10 @@ import {
   installMobileWorkflowEventBridge,
 } from '../src/lib/inngestEvents';
 import { LanguageUtils } from '../src/utils/LanguageUtils';
+
+void SplashScreen.preventAutoHideAsync().catch(() => {
+  // Native splash is best-effort; the in-app fallback covers slow boots.
+});
 
 if (
   Platform.OS !== 'web' &&
@@ -77,12 +86,18 @@ function BootstrapSideEffects() {
       });
     }
 
-    void bootstrapPlatform().then(() => {
-      installMobileWorkflowEventBridge();
-      void registerBackgroundSync();
-    });
+    void bootstrapPlatform()
+      .then(() => {
+        installMobileWorkflowEventBridge();
+        void registerBackgroundSync();
+      })
+      .catch((error) => {
+        console.warn('[bootstrapPlatform] continuing with fallback startup', error);
+      });
 
-    void LanguageUtils.init();
+    void LanguageUtils.init().catch((error) => {
+      console.warn('[LanguageUtils.init] continuing without language bootstrap', error);
+    });
   }, []);
 
   useEffect(() => {
@@ -136,8 +151,107 @@ function RootShell() {
   const hideToast = useStore((state) => state.hideToast);
   const [fontsReady, setFontsReady] = useState(false);
 
+  const [isUnlocked, setIsUnlocked] = useState(() => {
+    if (Platform.OS === 'web') return true;
+    return !storage.getBoolean('require_biometrics');
+  });
+
+  const [hasPinCode, setHasPinCode] = useState(false);
+  const [showPinUnlock, setShowPinUnlock] = useState(false);
+
   useEffect(() => {
-    void coreRuntime.asset.loadAsync(fontAssets).then(() => setFontsReady(true));
+    const checkUserPin = async () => {
+      if (session?.user?.id) {
+        const pinExists = await accountPin.hasPin(session.user.id);
+        setHasPinCode(pinExists);
+      } else {
+        setHasPinCode(false);
+      }
+    };
+    checkUserPin();
+  }, [session?.user?.id]);
+
+  const handlePinUnlockSubmit = useCallback(async (values: any) => {
+    if (!session?.user?.id) return;
+    const correct = await accountPin.verifyPin(session.user.id, values.pin);
+    if (correct) {
+      setIsUnlocked(true);
+      setShowPinUnlock(false);
+    } else {
+      throw new Error('Incorrect PIN code. Please try again.');
+    }
+  }, [session?.user?.id]);
+
+  const authenticateBiometrics = useCallback(async () => {
+    try {
+      const hasHardware = await LocalAuthentication.hasHardwareAsync();
+      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+      if (hasHardware && isEnrolled) {
+        const result = await LocalAuthentication.authenticateAsync({
+          promptMessage: 'Unlock Gurudevi Mobile',
+          fallbackLabel: 'Use Passcode',
+        });
+        if (result.success) {
+          setIsUnlocked(true);
+        }
+      } else {
+        setIsUnlocked(true);
+      }
+    } catch (err) {
+      console.warn('Biometric auth error:', err);
+      setIsUnlocked(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+
+    if (storage.getBoolean('require_biometrics')) {
+      void authenticateBiometrics();
+    }
+
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      if (nextAppState === 'active' && storage.getBoolean('require_biometrics')) {
+        setIsUnlocked(false);
+        void authenticateBiometrics();
+      }
+    };
+    const appStateSub = AppState.addEventListener('change', handleAppStateChange);
+
+    if (storage.getBoolean('prevent_screen_capture')) {
+      void ScreenCapture.preventScreenCaptureAsync();
+    }
+
+    return () => {
+      appStateSub.remove();
+    };
+  }, [authenticateBiometrics]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const timeout = setTimeout(() => {
+      if (!cancelled) {
+        console.warn('[font bootstrap] timed out, rendering app without waiting longer');
+        setFontsReady(true);
+      }
+    }, 8000);
+
+    void coreRuntime.asset
+      .loadAsync(fontAssets)
+      .catch((error) => {
+        console.warn('[font bootstrap] continuing with fallback fonts', error);
+      })
+      .finally(() => {
+        clearTimeout(timeout);
+        if (!cancelled) {
+          setFontsReady(true);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
   }, []);
 
   useEffect(() => {
@@ -205,6 +319,14 @@ function RootShell() {
     }
   }, [fontsReady, isProfileLoading, loading, onboardingCompleted, pathname, router, session]);
 
+  useEffect(() => {
+    if (loading || isProfileLoading || !fontsReady) return;
+
+    void SplashScreen.hideAsync().catch((error) => {
+      console.warn('[splash] hideAsync failed, continuing anyway', error);
+    });
+  }, [fontsReady, isProfileLoading, loading]);
+
   const loadPermissions = usePermissionStore((state) => state.loadPermissions);
 
   useEffect(() => {
@@ -222,6 +344,52 @@ function RootShell() {
       <SafeAreaProvider>
         <GluestackUIProvider>
           <FullScreenFallback />
+        </GluestackUIProvider>
+      </SafeAreaProvider>
+    );
+  }
+
+  if (!isUnlocked) {
+    return (
+      <SafeAreaProvider>
+        <GluestackUIProvider>
+          <Center className="flex-1 bg-obsidian gap-6 p-6">
+            <Center className="w-20 h-20 rounded-full bg-slate-900 border border-slate-800 items-center justify-center">
+              <Shield size={40} color="#E0E7FF" />
+            </Center>
+            <View style={{ alignItems: 'center', gap: 8 }}>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#FFFFFF' }}>App Locked</Text>
+              <Text style={{ fontSize: 14, color: '#94A3B8', textAlign: 'center' }}>
+                Gurudevi Mobile is locked. Authenticate to proceed.
+              </Text>
+            </View>
+            <TouchableOpacity 
+              onPress={authenticateBiometrics} 
+              style={{ backgroundColor: '#D4843A', paddingVertical: 12, paddingHorizontal: 24, borderRadius: 12, marginTop: 16 }}
+            >
+              <Text style={{ color: '#FFFFFF', fontWeight: 'bold', fontSize: 16 }}>Unlock App</Text>
+            </TouchableOpacity>
+
+            {hasPinCode && (
+              <TouchableOpacity 
+                onPress={() => setShowPinUnlock(true)} 
+                style={{ marginTop: 8 }}
+              >
+                <Text style={{ color: '#D4843A', fontWeight: 'bold', fontSize: 14 }}>Enter PIN instead</Text>
+              </TouchableOpacity>
+            )}
+
+            {showPinUnlock && (
+              <AccountPinModal
+                isOpen={showPinUnlock}
+                mode="verify"
+                onClose={() => setShowPinUnlock(false)}
+                onSubmit={handlePinUnlockSubmit}
+                accountLabel={session?.user?.email}
+                allowClose={true}
+              />
+            )}
+          </Center>
         </GluestackUIProvider>
       </SafeAreaProvider>
     );

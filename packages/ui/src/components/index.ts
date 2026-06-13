@@ -113,3 +113,4 @@ export { UserAvatar } from './UserAvatar';
 export * from './visualization';
 export { WebScreenHeader } from './WebScreenHeader.web';
 export * from './workspace';
+export { default as AccountPinModal } from './AccountPinModal';

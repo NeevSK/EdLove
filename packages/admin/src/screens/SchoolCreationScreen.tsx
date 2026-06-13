@@ -10,10 +10,9 @@ import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import StepIndicator from '@repo/ui/components/StepIndicator';
 import { Check } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, ScrollView, Spinner, Text, VStack } from '@repo/ui/primitives';
-
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'expo-router';
 
 // Step Components
 import StepBasicInfo from '../components/school/StepBasicInfo';

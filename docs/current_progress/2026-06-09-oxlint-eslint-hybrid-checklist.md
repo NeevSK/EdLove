@@ -1,3 +1,13 @@
+---
+title: "Implementation Checklist: Oxlint + ESLint Hybrid for Monorepo"
+status: "active"
+created: 2026-06-09
+updated: 2026-06-12
+author: "Naveen"
+scribe: "Antigravity"
+tags: [linting, infra, standards]
+---
+
 # Implementation Checklist: Oxlint + ESLint Hybrid for Monorepo
 
 ## Phase 1: Oxlint Setup (Foundation)

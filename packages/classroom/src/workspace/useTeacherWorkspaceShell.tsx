@@ -3,12 +3,12 @@ import { useFeatureAccess } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 import { FlowResolver } from '@repo/core/native';
 import { resolveQR } from '@repo/scanner-kit';
-import { useRouter } from 'expo-router';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { useSanctuaryToast } from '@repo/ui/hooks';
 import { Plus } from '@repo/ui/icons';
 import { Icon } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import { useRouter } from 'expo-router';
 
 import { useCallback, useState } from 'react';
 
@@ -18,9 +18,7 @@ type WorkspaceClassroom = {
   student_count?: number | null;
 };
 
-export function useTeacherWorkspaceShell(
-  _onRefresh?: () => void,
-) {
+export function useTeacherWorkspaceShell(_onRefresh?: () => void) {
   const router = useRouter();
   const { isDemoMode } = useStore();
   const { isGuest } = useFeatureAccess();

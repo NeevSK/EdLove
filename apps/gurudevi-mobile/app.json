@@ -31,7 +31,10 @@
               "pathPrefix": "/callback"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         },
         {
           "action": "VIEW",
@@ -42,7 +45,10 @@
               "host": "qr"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         },
         {
           "action": "VIEW",
@@ -59,7 +65,10 @@
               "pathPrefix": "/p"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -107,7 +116,33 @@
       "expo-sharing",
       "expo-sqlite",
       "expo-video",
-      "expo-notifications"
+      "expo-notifications",
+      "@react-native-community/datetimepicker",
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.org.edlove.gurudevi",
+          "enableGooglePay": false
+        }
+      ],
+      "expo-build-properties",
+      "expo-mail-composer",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 220,
+          "resizeMode": "contain",
+          "backgroundColor": "#0F131C",
+          "dark": {
+            "backgroundColor": "#0F131C"
+          }
+        }
+      ],
+      "expo-widgets",
+      "expo-router",
+      "react-native-enriched-markdown",
+      "react-native-nano-icons"
     ],
     "owner": "neevsk",
     "runtimeVersion": {

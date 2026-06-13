@@ -7,13 +7,13 @@ This is the **single source of truth** for everything related to deploying, main
 
 ## 1. Architecture
 
-### Entry Point
-- `package.json → "main": "index.ts"` → `App.tsx` via `registerRootComponent(App)`
-- Uses **classic Expo entry**, NOT expo-router file-based routing
-- `expo-router` plugin is intentionally absent from `app.json` — adding it breaks web silently
+-### Entry Point
+- `package.json → "main": "expo-router/entry"` boots the file-based route tree under `app/`
+- Expo Router owns the live web and native route graph
+- `app.json` keeps the Expo Router plugin enabled for the live route system
 - `app.json → expo.web.bundler: "metro"` is mandatory for Expo SDK 50+
-- Nested layouts and divergent web/mobile shells should be built with React Navigation stacks, tabs, and `.web.tsx` variants.
-- If a screen needs different structure on web, prefer a dedicated navigator or a web-specific screen component rather than switching the app to Expo Router.
+- Nested layouts and divergent web/mobile shells are built with Expo Router route groups, layout files, and `.web.tsx` variants.
+- If a screen needs different structure on web, prefer a web-specific route or layout boundary rather than reintroducing a navigator shell.
 
 ### Build Command
 ```bash
@@ -78,7 +78,7 @@ Produces a **static site** in `apps/gurudevi-mobile/dist/` served from any stati
 | `SanctuaryFlashList` | `@shopify/flash-list` recycler | `FlatList` |
 | `ScannerModal` | `expo-camera` + ML Kit OCR | Elegant paste-QR fallback (Vellum bg, Saffron icon) |
 | `WelcomeScreen` | Mobile-style centred card | Two-column split-panel landing page |
-| `TabNavigator` | Bottom tab bar | Fixed left sidebar (220px, collapsible to 64px) |
+| `app/(tabs)` layout | Bottom tab bar | Fixed left sidebar (220px, collapsible to 64px) |
 
 ---
 
@@ -97,15 +97,14 @@ All P0 and most P1/P2 items are now resolved:
 - [x] `public/robots.txt` — created with allow/disallow rules
 
 ### P2 — Resolved
-- [x] `App.tsx` — `NavigationContainer` `linking` config for URL-based deep links
-- [x] `App.tsx` — `document.title` updated per active tab/screen
+- [x] Root route layouts — URL-based deep links and `document.title` follow the active pathname
 - [x] `AuthScreen.tsx` — `autoComplete` + `textContentType` on email/password fields
 - [x] `AuthScreen.tsx` — OAuth `redirectTo` fixed to `window.location.origin`
 - [x] `SanctuaryCard.tsx` — hover: `cursor: 'pointer'` via `hoverStyle`
 - [x] `VoiceJournaling.tsx` — `setAudioModeAsync` + `requestRecordingPermissionsAsync` guarded for web
 - [x] `NetworkStatusBanner.tsx` — safe-area `insets.top` guarded for web
 - [x] `CommandPalette.tsx` — `pointerEvents` moved from prop to `style`
-- [x] `TabNavigator.web.tsx` — sidebar has `accessibilityRole="navigation"` + `accessibilityLabel`
+- [x] `app/(tabs)/_layout.web.tsx` — sidebar has `accessibilityRole="navigation"` + `accessibilityLabel`
 - [x] `useQRDeepLink.ts` — documented web no-op behaviour
 
 ### P3 — Completed
@@ -205,7 +204,7 @@ This is the **single source of truth** for everything related to deploying, main
 ## 1. Architecture
 
 ### Entry Point
-- `package.json → "main": "index.ts"` → `App.tsx` via `registerRootComponent(App)`
+- `package.json → "main": "expo-router/entry"` boots the route tree under `app/`
 - Uses **classic Expo entry**, NOT expo-router file-based routing
 - `expo-router` plugin is intentionally absent from `app.json` — adding it breaks web silently
 - `app.json → expo.web.bundler: "metro"` is mandatory for Expo SDK 50+
@@ -294,7 +293,7 @@ This throws before React mounts. Everything else was already handled. One file c
 - [ ] Verify `dist/CNAME` is included after `pnpm build:web`
 
 ### P2 — Web-Excellence Features
-- [ ] `App.tsx` — `NavigationContainer` `linking` config for URL-based deep links (Pattern C, `Platform.OS === 'web'` only)
+- [ ] Route-group refinements for URL-based deep links and document title behavior as the tree expands
   - `app.gurudevi.edlove.org/auth`, `app.gurudevi.edlove.org/ai`
 - [ ] Auth screen — Enter key submits login form (in `ScannerModal.web.tsx` and `AuthScreen.tsx` via `onKeyDown`)
 - [ ] `SanctuaryCard` — Hover state via `onHoverIn`/`onHoverOut` (Platform C inline)

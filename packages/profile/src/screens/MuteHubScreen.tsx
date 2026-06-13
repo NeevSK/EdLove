@@ -4,6 +4,7 @@ import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { Box, Center, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { router } from 'expo-router';
 
 import { CircleX, Shield, Trash2 } from 'lucide-react-native';
@@ -75,7 +76,7 @@ export default function MuteHubScreen() {
       <GlobalHeader
         title={t('profile.safety_hub') || 'Safety Hub'}
         showBack
-        onBack={() => router.back()}
+        onBack={() => safeBack('/profile')}
       />
       <ScrollView
         showsVerticalScrollIndicator={false}

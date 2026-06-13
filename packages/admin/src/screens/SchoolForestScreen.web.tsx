@@ -10,11 +10,11 @@
 
 import { type SchoolForestState, schoolForestAPI, type TeacherTree } from '@repo/core/api';
 import { usePermissions } from '@repo/core/logic';
-import { useRouter } from 'expo-router';
-
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { ArrowLeft, RefreshCw } from '@repo/ui/icons';
 import { Icon } from '@repo/ui/primitives';
+import { safeBack } from '@repo/ui/utils/navigation';
+import { useRouter } from 'expo-router';
 
 import React, { useEffect, useState } from 'react';
 
@@ -93,7 +93,7 @@ export default function SchoolForestScreen() {
         }}
       >
         <button
-          onClick={() => router.back()}
+          onClick={() => safeBack('/workspace')}
           style={{
             background: 'var(--background-alt)',
             border: 'none',

@@ -1,6 +1,4 @@
-import { useRouter } from 'expo-router';
 import { useSafeMutation } from '@repo/core/hooks';
-
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import {
@@ -20,6 +18,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import { useRouter } from 'expo-router';
 
 import { Calendar, Check, Plus, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
@@ -108,9 +107,7 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
   }
 
   if (!userId) {
-    return (
-      <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />
-    );
+    return <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />;
   }
 
   return (

@@ -1,12 +1,11 @@
-import { useRouter } from 'expo-router';
 import { usePermissions, useTemporalStore } from '@repo/core/logic';
-
 import FeatureInfoIcon from '@repo/ui/components/FeatureInfoIcon';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
 import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
 
 import React, { useCallback, useMemo } from 'react';
 import {

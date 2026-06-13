@@ -4,10 +4,8 @@
  * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
-import { useRouter } from 'expo-router';
 import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
-
 import {
   Box,
   Button,
@@ -22,6 +20,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
 
 import { ChevronRight, Leaf, Plus, Send, Sprout } from 'lucide-react-native';
 import { useState } from 'react';
@@ -159,7 +158,9 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
             notes.map((note, index) => (
               <Animated.View key={note.id} entering={FadeIn.delay(index * 100)} layout={Layout}>
                 <Pressable
-                  onPress={() => router.push({ pathname: '/self/wisdom/[id]', params: { id: note.id } })}
+                  onPress={() =>
+                    router.push({ pathname: '/self/wisdom/[id]', params: { id: note.id } })
+                  }
                   className="bg-white/5 p-lg rounded-2xl border border-white/5 active:bg-white/10 active:scale-[0.98] transition-all"
                 >
                   <HStack className="items-center justify-between">

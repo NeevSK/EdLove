@@ -31,5 +31,9 @@
       "type": "string"
     }
   },
-  "required": ["name", "subtitle", "chamber"]
+  "required": [
+    "name",
+    "subtitle",
+    "chamber"
+  ]
 }

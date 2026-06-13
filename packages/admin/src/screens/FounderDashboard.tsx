@@ -1,7 +1,5 @@
 import { useStore } from '@repo/core/logic';
 import type { School } from '@repo/core/types';
-import { useRouter } from 'expo-router';
-
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
@@ -26,6 +24,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFounderEcosystemStats } from '../bridge/founderWorkspace';

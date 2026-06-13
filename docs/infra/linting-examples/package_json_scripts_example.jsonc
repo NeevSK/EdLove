@@ -5,21 +5,21 @@
     // ===== Linting Pipeline =====
     "lint": "npm run lint:oxlint && npm run lint:eslint && npm run format:check",
     "lint:fix": "npm run lint:oxlint:fix && npm run lint:eslint:fix && npm run format:fix",
-    
+
     // Layer 1: Fast pre-pass (2–5 seconds for entire monorepo)
     "lint:oxlint": "oxlint . --deny-warnings",
     "lint:oxlint:fix": "oxlint . --fix",
-    
+
     // Layer 2: Framework-specific + custom rules (10–30 seconds)
     // Runs in each app via turbo or pnpm
     "lint:eslint": "eslint . --max-warnings 0",
     "lint:eslint:fix": "eslint . --fix",
-    
+
     // Layer 3: Format check (5–10 seconds)
     "format": "biome format --write .",
     "format:check": "biome format --check .",
     "format:fix": "biome format --write .",
-    
+
     // Combined quality check (runs all three in sequence)
     "quality": "npm run lint && npm run format"
   },

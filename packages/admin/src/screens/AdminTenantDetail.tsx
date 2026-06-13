@@ -1,5 +1,6 @@
 import { Text, VStack } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { useAdminWorkspaceSnapshot } from '../admin/adminRepository';
 import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
 
@@ -15,7 +16,7 @@ export default function AdminTenantDetail() {
       title="Tenant directory drill-in"
       description="Inspect a single tenant in context, with enough detail to support maintenance, customer care, and controlled fixes."
       caution="Cross-tenant admin access should be used to maintain the platform, not to impersonate tenant operators."
-      onBack={() => router.back()}
+      onBack={() => safeBack('/workspace')}
       stats={[
         {
           label: 'Known tenants',

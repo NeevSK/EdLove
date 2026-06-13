@@ -4,9 +4,10 @@ import type { AttendanceRecord } from '@repo/core/types';
 
 import { Check, ChevronLeft, Clock, Save, X } from '@repo/ui/icons';
 import { Icon } from '@repo/ui/primitives';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { safeBack } from '@repo/ui/utils/navigation';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 
 type Status = 'present' | 'absent' | 'late';
 
@@ -104,8 +105,10 @@ const STATUS_CONFIG: Record<
 
 export default function AttendanceScreenWeb() {
   const router = useRouter();
-  const { classroomId = '', classroomName = 'Classroom' } =
-    useLocalSearchParams<{ classroomId?: string; classroomName?: string }>();
+  const { classroomId = '', classroomName = 'Classroom' } = useLocalSearchParams<{
+    classroomId?: string;
+    classroomName?: string;
+  }>();
   const { user } = useStore();
 
   const [state, dispatch] = useReducer(attendanceReducer, initialState);
@@ -234,7 +237,7 @@ export default function AttendanceScreenWeb() {
           }}
         >
           <button
-            onClick={() => router.back()}
+            onClick={() => safeBack('/workspace')}
             style={{
               display: 'flex',
               alignItems: 'center',

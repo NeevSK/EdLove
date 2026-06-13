@@ -71,11 +71,6 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
 
-  useEffect(() => {
-    fetchStudents();
-    loadGroups();
-  }, [loadGroups, fetchStudents]);
-
   const fetchStudents = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -113,6 +108,11 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
     ];
     setGroups(mockGroups);
   }, []);
+
+  useEffect(() => {
+    fetchStudents();
+    loadGroups();
+  }, [loadGroups, fetchStudents]);
 
   const toggleStudentSelection = (studentId: string) => {
     hapticLight();

@@ -210,11 +210,6 @@ export const FormBuilder = ({
     }
   }, [fields.length, services]);
 
-  useEffect(() => {
-    if (activeTab === 'analytics' && templateId) {
-      void fetchResponses();
-    }
-  }, [activeTab, templateId, fetchResponses]);
   const fetchResponses = useCallback(async () => {
     setIsFetchingResponses(true);
     try {
@@ -226,6 +221,12 @@ export const FormBuilder = ({
       setIsFetchingResponses(false);
     }
   }, [services.api.forms, templateId]);
+
+  useEffect(() => {
+    if (activeTab === 'analytics' && templateId) {
+      void fetchResponses();
+    }
+  }, [activeTab, templateId, fetchResponses]);
   const handleExportCSV = () => {
     const csv = formAnalytics.toCSV(fields, responses);
     const blob = new Blob([csv], { type: 'text/csv' });

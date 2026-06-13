@@ -1,4 +1,8 @@
-import type { FormManager, FormState } from '@intuitui-labs/form-builder-engine/core';
+import type {
+  FormManager,
+  FormState,
+  MultiStepFormManager,
+} from '@intuitui-labs/form-builder-engine/core';
 import {
   Box,
   Button,
@@ -18,32 +22,102 @@ import {
 } from '@repo/ui/primitives';
 
 import { Info } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 interface NativeFormProps<T extends Record<string, any>> {
-  manager: FormManager<T>;
+  manager?: FormManager<T>;
+  multiStepManager?: MultiStepFormManager<T>;
   submitLabel?: string;
 }
 
 export default function NativeForm<T extends Record<string, any>>({
   manager,
+  multiStepManager,
   submitLabel = 'Submit',
 }: NativeFormProps<T>) {
-  const [state, setState] = useState<FormState<T>>(() => manager.getState());
+  const activeManager = multiStepManager ? multiStepManager.getFormManager() : manager;
+
+  if (!activeManager) {
+    throw new Error('NativeForm requires either a manager or a multiStepManager prop.');
+  }
+
+  const [state, setState] = useState<FormState<T>>(() => activeManager.getState());
+  const [currentPageIndex, setCurrentPageIndex] = useState(
+    multiStepManager ? multiStepManager.getCurrentPageIndex() : 0,
+  );
 
   useEffect(() => {
-    setState(manager.getState());
-    return manager.subscribe((next) => {
+    setState(activeManager.getState());
+    const unsubManager = activeManager.subscribe((next) => {
       setState({ ...next });
     });
-  }, [manager]);
 
-  const config = manager.getConfig();
+    let unsubMulti: (() => void) | undefined;
+    if (multiStepManager) {
+      unsubMulti = multiStepManager.subscribe((m) => {
+        setCurrentPageIndex(m.getCurrentPageIndex());
+      });
+    }
+
+    return () => {
+      unsubManager();
+      if (unsubMulti) unsubMulti();
+    };
+  }, [activeManager, multiStepManager]);
+
+  const fieldsToRender = useMemo(() => {
+    if (multiStepManager) {
+      const page = multiStepManager.getCurrentPage();
+      return page.fields;
+    }
+    const config = activeManager.getConfig();
+    return Object.keys(config.fields).map((name) => ({
+      name,
+      ...config.fields[name],
+    }));
+  }, [activeManager, multiStepManager, currentPageIndex]);
+
+  const handleNextOrSubmit = () => {
+    const run = async () => {
+      if (multiStepManager) {
+        if (multiStepManager.isLastStep()) {
+          await multiStepManager.submit();
+        } else {
+          multiStepManager.nextStep();
+        }
+      } else {
+        await activeManager.submit();
+      }
+    };
+    void run();
+  };
+
+  const isLastStep = multiStepManager ? multiStepManager.isLastStep() : true;
+  const showBackButton = multiStepManager && !multiStepManager.isFirstStep();
 
   return (
     <VStack className="w-full gap-10">
-      {(Object.keys(config.fields) as (keyof T)[]).map((fieldName) => {
-        const field = config.fields[fieldName];
+      {/* Pagination / Step Indicator */}
+      {multiStepManager && (
+        <VStack className="gap-2">
+          <Text className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+            Step {currentPageIndex + 1} of {multiStepManager.getTotalPages()}
+          </Text>
+          <HStack className="gap-1.5 w-full">
+            {multiStepManager.getPages().map((_, idx) => (
+              <Box
+                key={idx}
+                className={`h-1.5 flex-1 rounded-full ${
+                  idx <= currentPageIndex ? 'bg-teal-600' : 'bg-slate-100'
+                }`}
+              />
+            ))}
+          </HStack>
+        </VStack>
+      )}
+
+      {fieldsToRender.map((field: any) => {
+        const fieldName = field.name as keyof T;
         const value = (state.values as Record<string, any>)[fieldName as string];
         const error = (state.errors as Record<string, any>)[fieldName as string];
 
@@ -78,7 +152,7 @@ export default function NativeForm<T extends Record<string, any>>({
               </HStack>
             )}
 
-            {renderField(fieldName, field, value, manager, error)}
+            {renderField(fieldName, field, value, activeManager, error)}
 
             {error && (
               <HStack className="items-center gap-2">
@@ -90,11 +164,23 @@ export default function NativeForm<T extends Record<string, any>>({
         );
       })}
 
-      <Box className="pt-6">
+      <HStack className="pt-6 gap-4 w-full">
+        {showBackButton && (
+          <Button
+            onPress={() => multiStepManager.prevStep()}
+            variant="outline"
+            className="h-[64px] flex-1 rounded-2xl border-slate-200"
+          >
+            <ButtonText className="text-lg font-bold text-slate-700">Back</ButtonText>
+          </Button>
+        )}
+
         <Button
-          onPress={() => manager.submit()}
+          onPress={handleNextOrSubmit}
           isDisabled={state.isSubmitting}
-          className="h-[64px] w-full rounded-2xl bg-teal-700 shadow-lg active:scale-[0.98]"
+          className={`h-[64px] rounded-2xl bg-teal-700 shadow-lg active:scale-[0.98] ${
+            showBackButton ? 'flex-[2]' : 'w-full'
+          }`}
         >
           {state.isSubmitting ? (
             <HStack className="items-center gap-3">
@@ -102,10 +188,12 @@ export default function NativeForm<T extends Record<string, any>>({
               <ButtonText className="text-lg font-bold text-white">Broadcasting...</ButtonText>
             </HStack>
           ) : (
-            <ButtonText className="text-lg font-bold text-white">{submitLabel}</ButtonText>
+            <ButtonText className="text-lg font-bold text-white">
+              {isLastStep ? submitLabel : 'Next Step'}
+            </ButtonText>
           )}
         </Button>
-      </Box>
+      </HStack>
 
       {state.submitError && (
         <HStack className="rounded-2xl border border-rose-200 bg-rose-50 px-6 py-4 items-center gap-3">
@@ -140,10 +228,6 @@ function renderField<T extends Record<string, any>>(
           />
         </Textarea>
       );
-    // Note: 'select' is tricky as it's not a standard @repo/ui primitive in the same way.
-    // We'll keep it as a placeholder for now or use Select from @repo/ui if available.
-    // For the sake of "Zero-Legacy", we should definitely avoid raw HTML select.
-    // I'll use a simplified Pressable-based selection or the actual Select primitive if it exists.
     case 'select':
       return (
         <Box className={commonClass}>
@@ -155,7 +239,6 @@ function renderField<T extends Record<string, any>>(
         </Box>
       );
     case 'slider':
-      // Custom slider using Pressables for now or a standard Slider if @repo/ui has one
       return (
         <VStack className="space-y-4 py-2 px-1">
           <HStack className="w-full h-2 bg-slate-100 rounded-lg" />

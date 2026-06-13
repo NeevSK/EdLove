@@ -1,0 +1,10 @@
+{
+  "ignore": [
+    "**/archives/**",
+    "**/__mocks__/**",
+    "**/dist/**",
+    "**/node_modules/**",
+    "**/*.test.tsx",
+    "**/*.spec.tsx"
+  ]
+}

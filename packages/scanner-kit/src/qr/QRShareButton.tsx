@@ -22,6 +22,7 @@ const loadViewShot = async (): Promise<any> => {
 
 const loadSharing = () => optionalImport<any>('expo-sharing');
 const loadClipboard = () => optionalImport<any>('expo-clipboard');
+const loadMediaLibrary = () => optionalImport<any>('expo-media-library');
 
 interface QRShareButtonProps {
   /** Canonical gurudevi://qr?... URI produced by QRBuilder */
@@ -92,6 +93,35 @@ export default function QRShareButton({
     }
   };
 
+  const handleSaveToGallery = async () => {
+    try {
+      const viewShot = await loadViewShot();
+      if (!viewShot) {
+        console.warn('QRShareButton: react-native-view-shot not available');
+        return;
+      }
+
+      const MediaLibrary = await loadMediaLibrary();
+      if (!MediaLibrary) {
+        console.warn('QRShareButton: expo-media-library not available');
+        return;
+      }
+      if (!viewRef.current) return;
+
+      const uri = await viewShot.captureRef(viewRef, {
+        format: 'png',
+        quality: 1,
+      });
+
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status === 'granted') {
+        await MediaLibrary.saveToLibraryAsync(uri);
+      }
+    } catch (err) {
+      console.warn('QRShareButton: save to gallery failed', err);
+    }
+  };
+
   return (
     <Box className="items-center p-4 rounded-2xl" style={{ backgroundColor }}>
       <Box
@@ -103,15 +133,15 @@ export default function QRShareButton({
         <QRCodeGenerator value={value} size={size} label={label} />
       </Box>
 
-      <HStack className="w-full gap-3">
+      <HStack className="w-full gap-2">
         <Pressable
           onPress={handleShareImage}
           className="flex-1 border rounded-lg py-[10px] items-center"
           style={{ borderColor: accentColor }}
           accessibilityLabel="Share QR code as image"
         >
-          <Text className="text-[13px] font-semibold" style={{ color: accentColor }}>
-            Share Image
+          <Text className="text-[12px] font-semibold" style={{ color: accentColor }}>
+            Share
           </Text>
         </Pressable>
 
@@ -121,8 +151,19 @@ export default function QRShareButton({
           style={{ borderColor: accentColor }}
           accessibilityLabel="Copy QR link to clipboard"
         >
-          <Text className="text-[13px] font-semibold" style={{ color: accentColor }}>
+          <Text className="text-[12px] font-semibold" style={{ color: accentColor }}>
             Copy Link
+          </Text>
+        </Pressable>
+
+        <Pressable
+          onPress={handleSaveToGallery}
+          className="flex-1 border rounded-lg py-[10px] items-center"
+          style={{ borderColor: accentColor }}
+          accessibilityLabel="Save QR badge to photo gallery"
+        >
+          <Text className="text-[12px] font-semibold" style={{ color: accentColor }}>
+            Save
           </Text>
         </Pressable>
       </HStack>

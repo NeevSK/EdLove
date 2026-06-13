@@ -1,4 +1,5 @@
 import { Center, Spinner } from '@repo/ui/primitives';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
 import { Suspense, useCallback } from 'react';
 import AuthScreen from '../src/screens/AuthScreen';
@@ -19,8 +20,8 @@ export default function AuthRoute() {
   }, [router]);
 
   const handleBack = useCallback(() => {
-    router.back();
-  }, [router]);
+    safeBack('/welcome');
+  }, []);
 
   return (
     <Suspense fallback={<Fallback />}>

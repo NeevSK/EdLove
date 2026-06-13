@@ -14,3 +14,6 @@ export * from './media.factory';
 export * from './misc.factory';
 export * from './notification.factory';
 export * from './profile.factory';
+export * from './authz.factory';
+export * from './featureFlag.factory';
+

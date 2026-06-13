@@ -35,6 +35,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { router, useLocalSearchParams } from 'expo-router';
+import { safeBack } from '@repo/ui/utils/navigation';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FadeInDown } from 'react-native-reanimated';
@@ -102,7 +103,7 @@ export default function GroupDetailsScreen() {
     void fetchPosts(groupId);
   }, [groupId, user?.id, fetchPosts]);
 
-  const handleBack = React.useCallback(() => router.back(), []);
+  const handleBack = React.useCallback(() => safeBack('/community'), []);
   const handleShowAdmin = React.useCallback(() => setShowAdmin(true), []);
   const handleHideAdmin = React.useCallback(() => setShowAdmin(false), []);
   const handleShowQR = React.useCallback(() => setShowQRModal(true), []);

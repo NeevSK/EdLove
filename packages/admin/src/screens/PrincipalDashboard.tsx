@@ -1,8 +1,6 @@
 import { useFeatureAccess } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 import type { TotalState } from '@repo/core/store';
-import { useRouter } from 'expo-router';
-
 import { QRBuilder } from '@repo/scanner-kit';
 import QRCodeGenerator from '@repo/ui/components/QRCodeGenerator';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
@@ -11,6 +9,7 @@ import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { Building2, LayoutGrid, NotebookPen } from '@repo/ui/icons';
 import { Box, Button, ButtonText, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import { useRouter } from 'expo-router';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

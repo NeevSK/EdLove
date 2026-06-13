@@ -1,7 +1,7 @@
 /**
  * useQRDeepLink — Global listener for incoming gurudevi://qr deep links
  *
- * Call this hook once at the root level (App.tsx) when the user is authenticated.
+ * Call this hook once at the root Expo Router layout when the user is authenticated.
  * Handles two entry points:
  *   1. Cold start: app opened via a QR deep link (getInitialURL)
  *   2. Warm resume: app already open, incoming link event (addEventListener)
@@ -50,7 +50,7 @@ export function useQRDeepLink(onQRAction?: QRDeepLinkHandler) {
     // On web: Linking.getInitialURL() returns the current https:// URL.
     // dispatchOrStore() will check `url.startsWith('gurudevi://qr')` which
     // never matches an https URL — so this is a safe no-op on web.
-    // Web QR routes (/qr path) are handled by NavigationContainer linking instead.
+    // Web QR routes (/qr path) are handled by Expo Router route files instead.
     Linking.getInitialURL()
       .then((url) => {
         if (url) dispatchOrStore(url);

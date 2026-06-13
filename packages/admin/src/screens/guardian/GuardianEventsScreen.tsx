@@ -1,6 +1,7 @@
 import { useStore } from '@repo/core/logic';
-import { useRouter } from 'expo-router';
 import { Box, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
+import { safeBack } from '@repo/ui/utils/navigation';
 
 import { useGuardianWorkspaceData } from '../../guardian';
 import { GuardianRoomShell } from './GuardianRoomShell';
@@ -23,7 +24,7 @@ export default function GuardianEventsScreen() {
           value: events.filter((event) => event.requiresRsvp).length,
         },
       ]}
-      onBack={() => router.back()}
+      onBack={() => safeBack('/workspace')}
     >
       <ScrollView className="flex-1">
         <VStack className="gap-3 pb-8">

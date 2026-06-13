@@ -8,9 +8,9 @@
  * after the user is authenticated (we need a session for fetchCredentials).
  *
  * @example
- * // In App.tsx, inside your provider tree:
+ * // In the root Expo Router layout, inside your provider tree:
  * <PowerSyncGate>
- *   <NavigationContainer>...</NavigationContainer>
+ *   <Stack>...</Stack>
  * </PowerSyncGate>
  */
 import { type PropsWithChildren, useEffect, useRef } from 'react';

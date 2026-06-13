@@ -4,14 +4,13 @@
  * Visualizes internal batteries.
  */
 
-import { useRouter } from 'expo-router';
 import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
-
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import { useRouter } from 'expo-router';
 
 import { Battery, BatteryLow, BatteryMedium, Zap } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
@@ -134,9 +133,7 @@ export default function EnergyForecast({
   }
 
   if (!activeUserId) {
-    return (
-      <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />
-    );
+    return <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />;
   }
 
   const currentEnergy = displayLevel ? energyLevels[displayLevel - 1] : null;

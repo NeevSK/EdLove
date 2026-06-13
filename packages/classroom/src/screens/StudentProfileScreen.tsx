@@ -24,22 +24,26 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticMedium } from '@repo/ui/utils/haptics';
-
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 
 export default function StudentProfileScreen() {
   const { t } = useTranslation();
   const colors = useThemedColors();
   const router = useRouter();
-  const { studentId = '', classroomId = '', studentName = 'Student', classroomStudentId = '' } =
-    useLocalSearchParams<{
-      studentId?: string;
-      classroomId?: string;
-      studentName?: string;
-      classroomStudentId?: string;
-    }>();
+  const {
+    studentId = '',
+    classroomId = '',
+    studentName = 'Student',
+    classroomStudentId = '',
+  } = useLocalSearchParams<{
+    studentId?: string;
+    classroomId?: string;
+    studentName?: string;
+    classroomStudentId?: string;
+  }>();
   const { viewDate } = useTemporalStore();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -373,7 +377,7 @@ export default function StudentProfileScreen() {
     <VStack className="flex-1 bg-phase-canvas">
       <Box className="p-md pt-xl border-b border-phase-border bg-phase-surface">
         <HStack className="items-center gap-md mb-lg">
-          <Pressable onPress={() => router.back()} onPressIn={() => hapticMedium()}>
+          <Pressable onPress={() => safeBack('/workspace')} onPressIn={() => hapticMedium()}>
             <Icon as={ArrowLeft} size="xl" className="text-phase-text-primary" />
           </Pressable>
           <VStack>

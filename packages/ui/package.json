@@ -295,6 +295,16 @@
       "react-native": "./src/components/SanctuaryFlashList.tsx",
       "default": "./src/components/SanctuaryFlashList.tsx"
     },
+    "./components/SanctuaryTable": {
+      "import": "./src/components/SanctuaryTable.tsx",
+      "browser": "./src/components/SanctuaryTable.web.tsx",
+      "react-native": "./src/components/SanctuaryTable.tsx",
+      "default": "./src/components/SanctuaryTable.tsx"
+    },
+    "./components/SanctuaryVirtualTable": {
+      "browser": "./src/components/SanctuaryVirtualTable.web.tsx",
+      "default": "./src/components/SanctuaryVirtualTable.web.tsx"
+    },
     "./components/SanctuaryGlobalStyles": {
       "types": "./src/components/SanctuaryGlobalStyles.tsx",
       "import": "./src/components/SanctuaryGlobalStyles.tsx",
@@ -765,6 +775,11 @@
       "import": "./src/utils/stringUtils.ts",
       "default": "./src/utils/stringUtils.ts"
     },
+    "./utils/navigation": {
+      "types": "./src/utils/navigation.ts",
+      "import": "./src/utils/navigation.ts",
+      "default": "./src/utils/navigation.ts"
+    },
     "./utils/themeColors": {
       "types": "./src/utils/themeColors.ts",
       "import": "./src/utils/themeColors.ts",
@@ -795,14 +810,19 @@
     "@repo/core": "workspace:*",
     "@shopify/react-native-skia": "2.6.2",
     "@tanstack/react-query": "^5.101.0",
+    "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-virtual": "^3.0.0",
     "apca-w3": "^0.1.9",
     "culori": "^4.0.2",
     "date-fns": "^4.4.0",
     "expo-auth-session": "~56.0.13",
+    "expo-checkbox": "~56.0.1",
     "expo-clipboard": "~56.0.4",
     "expo-device": "*",
     "expo-file-system": "~56.0.7",
+    "expo-local-authentication": "~56.0.4",
     "expo-router": "~56.2.9",
+    "expo-screen-capture": "~56.0.4",
     "expo-sharing": "~56.0.16",
     "expo-video": "~56.1.2",
     "expo-web-browser": "~56.0.5",
@@ -820,7 +840,6 @@
   "peerDependencies": {
     "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-community/netinfo": "*",
-    "@react-navigation/native": "*",
     "@shopify/flash-list": "2.0.2",
     "@shopify/react-native-skia": "2.6.2",
     "expo-blur": "~56.0.3",

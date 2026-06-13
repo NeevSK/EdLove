@@ -24,9 +24,9 @@ import SandboxBanner from '@repo/ui/components/SandboxBanner';
 import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'expo-router';
 import type React from 'react';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'expo-router';
 import {
   useCurriculumPulse,
   useMappingTopologyQuery,

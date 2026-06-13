@@ -10,10 +10,10 @@
 
 import { TimetableScheduler } from '@repo/ai';
 import { usePermissions, useStore } from '@repo/core/logic';
-
+import { safeBack } from '@repo/ui/utils/navigation';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const PERIODS = [1, 2, 3, 4, 5, 6, 7];
@@ -102,7 +102,7 @@ export default function TimetableScreen() {
         }}
       >
         <button
-          onClick={() => router.back()}
+          onClick={() => safeBack('/workspace')}
           style={{
             background: 'none',
             border: 'none',

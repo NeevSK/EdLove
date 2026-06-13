@@ -1,11 +1,12 @@
 import posthogWeb from 'posthog-js';
 import { PostHog as PostHogNode } from 'posthog-node';
+import type { IAnalyticsPort } from '@repo/core';
 
 /**
  * Universal PostHog Analytics Engine
  * Supports: Browser (posthog-js) and Server (posthog-node)
  */
-export class PostHogAnalytics {
+export class PostHogAnalytics implements IAnalyticsPort {
   private instance: any = null;
   private isInitialized = false;
   private isBrowser = typeof window !== 'undefined';

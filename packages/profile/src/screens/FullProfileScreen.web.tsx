@@ -6,6 +6,7 @@ import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useThemedColors } from '@repo/ui/hooks';
 import { Box, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { AtSign, SquarePen, User as UserIcon } from 'lucide-react-native';
@@ -90,7 +91,7 @@ export default function FullProfileScreenWeb() {
 
   return (
     <ScreenWrapper scroll={false}>
-      <GlobalHeader title={t('profile.fullProfile')} showBack onBack={() => router.back()} />
+      <GlobalHeader title={t('profile.fullProfile')} showBack onBack={() => safeBack('/profile')} />
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         <Box className="max-w-[800px] mx-auto w-full p-6">
           <VStack space="2xl">

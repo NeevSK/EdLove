@@ -1,9 +1,9 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useStore } from '@repo/core/logic';
-
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useThemedColors } from '@repo/ui/hooks';
 import { Box, HStack, Icon, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { safeBack } from '@repo/ui/utils/navigation';
 
 import { ArrowLeft } from 'lucide-react-native';
 import { useCallback } from 'react';
@@ -56,7 +56,7 @@ export default function CollectionDetailScreen() {
           </Text>
           <HStack className="gap-2.5 mt-2">
             <Pressable
-              onPress={() => router.back()}
+              onPress={() => safeBack('/library')}
               className="h-10 px-6 rounded-xl border border-phase-border bg-phase-interactive/5 items-center justify-center"
             >
               <Text className="font-bold text-phaseText-primary">Back</Text>
@@ -78,7 +78,7 @@ export default function CollectionDetailScreen() {
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 40 }}>
         <Box className="px-md pt-md">
           <Pressable
-            onPress={() => router.back()}
+            onPress={() => safeBack('/library')}
             className="flex-row items-center gap-2 px-3.5 py-2.5 rounded-xl border border-phase-border bg-phase-surface/50 self-start"
           >
             <Icon as={ArrowLeft} size={16} color={colors.textPrimary} />

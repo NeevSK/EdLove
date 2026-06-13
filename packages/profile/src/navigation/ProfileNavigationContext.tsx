@@ -1,5 +1,5 @@
-import { router } from 'expo-router';
 import type { FullProfileParams } from '@repo/core/types';
+import { router } from 'expo-router';
 import type React from 'react';
 import { createContext, useContext } from 'react';
 
@@ -12,7 +12,6 @@ export interface ProfileNavigationCapabilities {
   openMuteHub?: () => void;
   openPublicProfile?: (target: { id: string; type: PublicProfileTargetType }) => void;
   openAuth?: () => void;
-  goBack?: () => void;
 }
 
 const ProfileNavigationContext = createContext<ProfileNavigationCapabilities | null>(null);
@@ -50,6 +49,5 @@ export function useProfileNavigation(): ProfileNavigationCapabilities {
       });
     },
     openAuth: () => router.push('/auth'),
-    goBack: () => router.back(),
   };
 }

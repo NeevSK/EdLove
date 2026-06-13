@@ -30,6 +30,7 @@ import {
 import { Theme } from '@repo/ui/theme';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { ChartColumn, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'lucide-react-native';
 import { cssInterop } from 'nativewind';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -234,7 +235,7 @@ export default function MapScreen() {
         title="Knowledge Cosmos"
         subtitle="Isomorphic Visualization Engine"
         showBack
-        onBack={() => router.back()}
+        onBack={() => safeBack('/library')}
         rightAction={
           <FeatureGuard feature="isProMember">
             <Pressable

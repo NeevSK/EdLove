@@ -2,7 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authAPI, identityAPI, onboardingAPI } from '@repo/core/api';
 import { useStore } from '@repo/core/store';
 import type { Capacity } from '@repo/core/types';
-import { useNavigation } from 'expo-router';
+import { router } from 'expo-router';
+import { safeBack } from '../utils/navigation';
 
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
@@ -405,7 +406,6 @@ const OnboardingScreen = memo(function OnboardingScreen({
   isAnonymous = false,
 }: OnboardingScreenProps) {
   const { t } = useTranslation();
-  const navigation = useNavigation<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
 
   const [state, dispatch] = useReducer(onboardingReducer, {
     currentStep: 0,
@@ -709,15 +709,8 @@ const OnboardingScreen = memo(function OnboardingScreen({
   }, []);
   const handleBackToWelcome = useCallback(() => {
     hapticLight();
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-    } else {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Welcome' }],
-      });
-    }
-  }, [navigation]);
+    safeBack('/welcome');
+  }, []);
 
   const currentTourScreen = useMemo(() => {
     if (currentStep < 2 || currentStep > 6) return null;

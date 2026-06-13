@@ -44,6 +44,9 @@ model User {
   capacity String?
   citizenship String @default("WANDERER") // WANDERER, SECOND_CLASS, FIRST_CLASS
   pricing_tier String @default("FREE") // FREE, PRO, INSTITUTIONAL
+  is_thuthimal Boolean? @default(false)
+  thuthimal_gifter String?
+  thuthimal_gifted_at DateTime?
   experience_years Int?
   subjects_taught String[]
   qualifications String[]

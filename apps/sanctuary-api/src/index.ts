@@ -1,6 +1,7 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from 'dotenv';
+import crypto from 'node:crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -40,6 +41,7 @@ import {
 import { canUseZenStackDb, createZenStackDb } from '@repo/database';
 import { check as checkCedar } from '@repo/policies';
 import { verifySupabaseJwt } from './jwt';
+import { aiRouter } from './ai/routes';
 
 interface Env {
   Variables: {
@@ -470,6 +472,67 @@ app.route('/api', libraryApp);
 const syncApp = new OpenAPIHono();
 registerRoute(syncApp, syncContract.uploadPowerSyncBatch, syncHandlers.uploadPowerSyncBatch);
 app.route('/api', syncApp);
+app.route('/api/ai', aiRouter);
+
+// Public Payments Webhook (Bypasses Bearer Auth)
+app.post('/payments/payhere-webhook', async (c) => {
+  const body = await c.req.parseBody();
+  const {
+    merchant_id,
+    order_id,
+    payment_id,
+    payhere_amount,
+    payhere_currency,
+    status_code,
+    md5sig,
+  } = body;
+
+  const merchantSecret = process.env.PAYHERE_MERCHANT_SECRET;
+  if (!merchantSecret) {
+    console.error('PAYHERE_MERCHANT_SECRET is not set in environment variables');
+    return c.text('Configuration Error', 500);
+  }
+
+  // Calculate MD5 signature to verify authenticity
+  const secretHash = crypto.createHash('md5').update(merchantSecret).digest('hex').toUpperCase();
+  const rawString = `${merchant_id}${order_id}${payhere_amount}${payhere_currency}${status_code}${secretHash}`;
+  const localSignature = crypto.createHash('md5').update(rawString).digest('hex').toUpperCase();
+
+  if (localSignature !== md5sig) {
+    console.error('Invalid signature received for order:', order_id);
+    return c.text('Unauthorized', 401);
+  }
+
+  // Signature matches! Let's process the payment
+  if (status_code === '2') {
+    console.log(`Payment successful for order ${order_id}, amount: ${payhere_amount} ${payhere_currency}`);
+
+    const systemDb = createZenStackDb({ id: 'system-payment-service' });
+
+    try {
+      const user = await systemDb.user.findUnique({
+        where: { id: order_id }
+      });
+
+      if (user) {
+        await systemDb.user.update({
+          where: { id: order_id },
+          data: {
+            pricing_tier: 'PRO',
+          }
+        });
+        console.log(`Successfully upgraded user ${order_id} to PRO tier.`);
+      } else {
+        console.log(`Order ID ${order_id} is not a direct user. Handling as transaction reference...`);
+      }
+    } catch (dbError) {
+      console.error('Database update failed during webhook handling:', dbError);
+      return c.text('Database Error', 500);
+    }
+  }
+
+  return c.text('OK', 200);
+});
 
 // --- 4. Documentation ---
 app.doc('/doc', {

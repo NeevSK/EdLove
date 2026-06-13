@@ -9,10 +9,10 @@ import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { ChevronRight, MessageSquare } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { router } from 'expo-router';
 import { communityAPI } from '../api/community';
 import type { DirectConversation } from '../types';
 

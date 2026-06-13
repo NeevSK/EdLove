@@ -12,6 +12,7 @@ import {
 } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
 
 import { useTranslation } from 'react-i18next';
@@ -42,7 +43,7 @@ export default function SchoolProfileScreenWeb({ schoolId }: { schoolId: string 
           <Pressable
             onPress={() => {
               hapticLight();
-              router.back();
+              safeBack('/workspace');
             }}
             className="flex-row items-center gap-2 px-4 py-2.5 rounded-2xl border border-phase-border bg-phase-surface shadow-sm active:scale-95 transition-all"
           >

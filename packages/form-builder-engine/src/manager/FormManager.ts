@@ -1,3 +1,4 @@
+import { FormApi } from '@tanstack/form-core';
 import type { ValidationResult } from '../validation/ValidationEngine';
 
 export interface FormFieldConfig<T = unknown> {
@@ -30,9 +31,11 @@ export type FormState<T extends Record<string, unknown>> = {
 };
 
 export class FormManager<T extends Record<string, unknown>> {
-  private state: FormState<T>;
-  private subscribers: Set<(state: FormState<T>) => void> = new Set();
+  private tsForm: FormApi<T, any>;
   public config: FormConfig<T>;
+  private fieldErrors: Partial<Record<keyof T, string>> = {};
+  private submitError: string | null = null;
+  private submitSuccess = false;
 
   constructor(config: FormConfig<T>) {
     this.config = config;
@@ -42,19 +45,36 @@ export class FormManager<T extends Record<string, unknown>> {
       (initialValues as Record<string, unknown>)[key] = config.fields[key].defaultValue ?? '';
     }
 
-    this.state = {
-      values: initialValues,
-      errors: {},
-      isSubmitting: false,
-      isDirty: false,
-      isValid: true,
-      submitError: null,
-      submitSuccess: false,
-    };
+    this.tsForm = new FormApi<T, any>({
+      defaultValues: initialValues,
+      onSubmit: async ({ value }: { value: T }) => {
+        this.submitError = null;
+        this.submitSuccess = false;
+        try {
+          await this.config.onSubmit(value);
+          this.submitSuccess = true;
+        } catch (err) {
+          this.submitError = err instanceof Error ? err.message : 'An error occurred';
+          if (this.config.onError) this.config.onError(this.submitError);
+          throw err;
+        }
+      },
+    });
   }
 
   public getState(): FormState<T> {
-    return { ...this.state };
+    const tsState = this.tsForm.state;
+    const errorsCount = Object.keys(this.fieldErrors).length;
+
+    return {
+      values: tsState.values,
+      errors: { ...this.fieldErrors },
+      isSubmitting: tsState.isSubmitting,
+      isDirty: tsState.isDirty,
+      isValid: errorsCount === 0,
+      submitError: this.submitError,
+      submitSuccess: this.submitSuccess,
+    };
   }
 
   public getConfig(): FormConfig<T> {
@@ -62,51 +82,49 @@ export class FormManager<T extends Record<string, unknown>> {
   }
 
   public subscribe(callback: (state: FormState<T>) => void): () => void {
-    this.subscribers.add(callback);
-    callback(this.state);
-    return () => this.subscribers.delete(callback);
-  }
-
-  private notify() {
-    this.subscribers.forEach((cb) => {
-      cb(this.state);
+    callback(this.getState());
+    return this.tsForm.store.subscribe(() => {
+      callback(this.getState());
     });
   }
 
   public setFieldValue<K extends keyof T>(field: K, value: T[K]) {
-    this.state.values[field] = value;
-    this.state.isDirty = true;
+    this.tsForm.setFieldValue(field as any, value as any, { touch: true });
     this.validateField(field);
-    this.notify();
   }
 
   public validateField(field: keyof T): boolean {
     const fieldConfig = this.config.fields[field];
-    const value = this.state.values[field];
+    const value = this.tsForm.state.values[field];
 
-    // 1. Check required
     if (fieldConfig.required && (!value || (typeof value === 'string' && value.trim() === ''))) {
-      this.state.errors[field] = `${fieldConfig.label || String(field)} is required`;
+      this.fieldErrors[field] = `${fieldConfig.label || String(field)} is required`;
     } else if (fieldConfig.validators) {
-      // 2. Run custom validators
       let errorFound = false;
       for (const validator of fieldConfig.validators) {
         const result = validator(value);
         if (!result.isValid) {
-          this.state.errors[field] = result.error;
+          this.fieldErrors[field] = result.error;
           errorFound = true;
           break;
         }
       }
       if (!errorFound) {
-        delete this.state.errors[field];
+        delete this.fieldErrors[field];
       }
     } else {
-      delete this.state.errors[field];
+      delete this.fieldErrors[field];
     }
 
-    this.state.isValid = Object.keys(this.state.errors).length === 0;
-    return !this.state.errors[field];
+    this.tsForm.store.setState((prev: any) => ({
+      ...prev,
+      errorMap: {
+        ...prev.errorMap,
+        ...this.fieldErrors,
+      },
+    }));
+
+    return !this.fieldErrors[field];
   }
 
   public validate(): boolean {
@@ -116,46 +134,22 @@ export class FormManager<T extends Record<string, unknown>> {
         allValid = false;
       }
     }
-    this.state.isValid = allValid;
-    this.notify();
     return allValid;
   }
 
   public async submit() {
     if (!this.validate()) return;
-
-    this.state.isSubmitting = true;
-    this.state.submitError = null;
-    this.state.submitSuccess = false;
-    this.notify();
-
     try {
-      await this.config.onSubmit(this.state.values);
-      this.state.submitSuccess = true;
-    } catch (err) {
-      this.state.submitError = err instanceof Error ? err.message : 'An error occurred';
-      if (this.config.onError) this.config.onError(this.state.submitError);
-    } finally {
-      this.state.isSubmitting = false;
-      this.notify();
+      await this.tsForm.handleSubmit();
+    } catch {
+      // Handled inside onSubmit callback
     }
   }
 
   public reset() {
-    const initialValues = {} as T;
-    for (const key in this.config.fields) {
-      (initialValues as Record<string, unknown>)[key] = this.config.fields[key].defaultValue ?? '';
-    }
-
-    this.state = {
-      values: initialValues,
-      errors: {},
-      isSubmitting: false,
-      isDirty: false,
-      isValid: true,
-      submitError: null,
-      submitSuccess: false,
-    };
-    this.notify();
+    this.fieldErrors = {};
+    this.submitError = null;
+    this.submitSuccess = false;
+    this.tsForm.reset();
   }
 }

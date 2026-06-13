@@ -7,11 +7,9 @@ import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Box, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
-
+import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFocusEffect } from '@react-navigation/native';
-import { useRouter } from 'expo-router';
 import { ClaimInviteModal, ClassroomList, CreateClassroomModal } from '../components';
 import CreateSchoolModal from '../components/CreateSchoolModal';
 import { useClassroomRoleData } from '../hooks';

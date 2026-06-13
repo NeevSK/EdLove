@@ -4,6 +4,7 @@ import { useThemedColors } from '@repo/ui/hooks';
 import { ArrowLeft, BookOpen, Clock, GraduationCap, Hash, User } from '@repo/ui/icons';
 import { Icon } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { useTranslation } from 'react-i18next';
 import { useClassroomProfile } from '../hooks/useClassroomProfile';
 
@@ -45,8 +46,8 @@ export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId
           marginBottom: '32px',
         }}
       >
-          <button
-          onClick={() => router.back()}
+        <button
+          onClick={() => safeBack('/workspace')}
           className="secondary-button"
           style={{
             display: 'flex',

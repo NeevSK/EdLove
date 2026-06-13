@@ -18,9 +18,9 @@ The complete list of things that genuinely need two files is **10 files across t
 
 ---
 
-## 2. Why This Approach (Not Expo Router)
+## 2. Why This Approach (Expo Router Live Shell, `.web.tsx` for Platform Divergence)
 
-### 2a. What we have: React Navigation + Metro `.web.tsx`
+### 2a. What we have: Expo Router + Metro `.web.tsx`
 
 The app uses React Navigation v7 with Metro as the web bundler. Metro has a built-in platform-resolution rule:
 
@@ -32,8 +32,8 @@ import X from './Foo'
 
 This means a `.web.tsx` file *completely replaces* its `.tsx` counterpart on web. The native file is never loaded. There is no inheritance or merging — it's full replacement.
 
-That also means nested layouts do not require Expo Router. You can still build:
-- nested stacks and tab shells in React Navigation
+That also means nested layouts do not require React Navigation shells. Expo Router route groups and `_layout.tsx` files give us:
+- nested stacks and tab shells
 - different web/mobile compositions via `.web.tsx`
 - dedicated web-only shells for larger screens or split panes
 
@@ -41,7 +41,7 @@ If you need an embedded browser inside the app, use `react-native-webview`. If y
 
 ### 2b. What Expo Router is
 
-Expo Router v4 (SDK 52+) is file-based routing built *on top of* React Navigation. It is a valid pattern, but it is not the architecture used by this app. The file system becomes the route map, and it can enable static HTML output (`output: 'static'` in app.json) for SEO.
+Expo Router v4 (SDK 52+) is file-based routing built *on top of* React Navigation. In this repo it is the live route architecture: the file system is the route map, and `_layout.tsx` files own the shell boundaries.
 
 ### 2c. The honest TCO comparison
 
@@ -49,30 +49,30 @@ Expo Router v4 (SDK 52+) is file-based routing built *on top of* React Navigatio
 |---|---|---|
 | **New screen cost** | 1 file in 99% of cases | 1 file in 99% of cases |
 | **Nav chrome** | 1 `.web.tsx` override total (done) | 1 `_layout.tsx` handles both |
-| **Deep links** | Manual `LinkingOptions` config in App.tsx | Automatic (file path = URL) |
+| **Deep links** | Expo Router route paths | Automatic (file path = URL) |
 | **SEO** | SPA — blank HTML, JS renders everything | Static HTML per route possible |
-| **Migration cost from here** | 0 (already here) | ~2–3 eng-weeks (many `navigate()` call sites, 5 stack navigators, all packages need `useLocalSearchParams` swap) |
-| **Risk** | Low — working today | Medium — all 5 packages (`@repo/classroom`, `@repo/community`, etc.) use `useNavigation()` internally |
+| **Migration cost from here** | 0 for the shell, incremental for package cleanup | Already underway |
+| **Risk** | Low — live shell is file-based | Medium — a few package screens still need param/back-behavior cleanup |
 | **Web UI flexibility** | ✅ Full — `.web.tsx` can be anything | ✅ Same (`.web.tsx` still works in Expo Router) |
 
 ### 2d. The decision
 
-**Stay on current approach** for the following reasons:
+**Stay on the current Expo Router approach** for the following reasons:
 
-1. **The double-file problem is largely a myth.** 10 files out of the entire codebase need a second version. The navigation chrome (`TabNavigator.web.tsx`) is the biggest one, and it's already done.
+1. **The double-file problem is largely a myth.** A small set of web-specific files need a second version. The navigation chrome is already handled in Expo Router layouts.
 
-2. **The migration cost is real.** Every package (`@repo/classroom`, `@repo/community`, `@repo/library`, `@repo/profile`, `@repo/self`) uses `useNavigation()` and `route.params` directly. Migrating them all simultaneously is a multi-week coordinated refactor with real regression risk.
+2. **The migration cost is real.** A few package screens still use route params or back behavior that should be converted to Expo Router primitives.
 
-3. **The only real benefit we're leaving on the table is SEO** (static HTML per route). For an app behind auth (teachers, students, principals), SEO is not a meaningful concern today.
+3. **The main benefit left is a cleaner route model** rather than a shell split. For an app behind auth, SEO is not the main lever.
 
 4. **If SEO becomes important** — for a public landing page, teacher discovery, school onboarding — the right answer is the existing `apps/gurudevi-marketingWeb` Astro site, not migrating the app router.
 
 ### 2e. When to reconsider
 
 Migrate to Expo Router if/when:
-- You need per-route static HTML for SEO (not behind auth)
-- The team grows and the manual `LinkingOptions` config becomes a maintenance burden
-- You're doing a major version bump anyway (SDK upgrade) and can do it together
+- You need a public marketing surface with static HTML for SEO
+- Route ownership becomes harder to reason about than it is today
+- You’re restructuring the app shell anyway and can make the swap as part of a larger refactor
 
 ---
 
@@ -317,12 +317,12 @@ When the bottom tab design changes → you only change `TabNavigator.tsx`.
 | Pre-history | `SanctuaryFlashList.web.tsx` (FlatList fallback) |
 | Pre-history | Skia component `.web.tsx` fallbacks (LivingCard, NoiseOverlay, TemporalGlass) |
 | Pre-history | `ScannerModal.web.tsx` (manual entry fallback) |
-| Pre-history | `TabNavigator.web.tsx` (sidebar navigation) |
+| Pre-history | `app/(tabs)/_layout.web.tsx` (sidebar navigation) |
 | Pre-history | `WelcomeScreen.web.tsx` (split-panel landing) |
 | Pre-history | Metro shims: sentry, posthog, get-random-values, url-polyfill, ml-kit |
 | Pre-history | `babel.config.js` `unstable_transformImportMeta: true` |
 | Pre-history | Metro `unstable_enablePackageExports` + CJS condition names |
-| Pre-history | `App.tsx` web `LinkingOptions` config |
+| Pre-history | root shell linking config before Expo Router |
 | Pre-history | `CommandPalette.tsx` (Cmd+K web power feature) |
 | Pre-history | `PWAInstallBanner.tsx` |
 | Pre-history | `useWebPageTitle.ts` (document.title sync) |

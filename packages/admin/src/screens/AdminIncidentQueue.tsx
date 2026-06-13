@@ -1,5 +1,6 @@
 import { Box, Text, VStack } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { useAdminWorkspaceSnapshot } from '../admin/adminRepository';
 import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
 
@@ -15,7 +16,7 @@ export default function AdminIncidentQueue() {
       title="Incident queue"
       description="Triage cross-tenant incidents, regressions, and operational noise with a monitor-first stance and explicit handoff."
       caution="Keep this room read-first until the incident is validated. Escalations should preserve a clear audit trail and a named tenant scope."
-      onBack={() => router.back()}
+      onBack={() => safeBack('/workspace')}
       stats={[
         {
           label: 'Open incidents',

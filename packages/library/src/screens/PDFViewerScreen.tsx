@@ -1,7 +1,7 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMediaDownloader } from '@repo/core/hooks';
-
 import { PdfViewer } from '@repo/ui/components/media/PdfViewer';
+import { safeBack } from '@repo/ui/utils/navigation';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 
 /**
@@ -26,8 +26,8 @@ export default function PDFViewerScreen() {
     });
 
   const handleBack = useCallback(() => {
-    router.back();
-  }, [router]);
+    safeBack('/library');
+  }, []);
 
   const handleDownload = useCallback(() => {
     void startDownload();

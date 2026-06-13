@@ -1,6 +1,7 @@
 import { useStore } from '@repo/core/logic';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Box, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { safeBack } from '@repo/ui/utils/navigation';
 
 import { useMemo } from 'react';
 import { useGuardianWorkspaceData } from '../../guardian';
@@ -39,7 +40,7 @@ export default function GuardianStudentDetailScreen() {
           value: student?.upcomingAssignments.length || 0,
         },
       ]}
-      onBack={() => router.back()}
+      onBack={() => safeBack('/workspace')}
     >
       <ScrollView className="flex-1">
         <VStack className="gap-4 pb-8">

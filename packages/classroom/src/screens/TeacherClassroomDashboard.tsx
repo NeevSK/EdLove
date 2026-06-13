@@ -51,6 +51,7 @@ import {
 import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { useMemo, useState } from 'react';
 import {
   AttendanceView,
@@ -480,7 +481,7 @@ export default function TeacherClassroomDashboard() {
   if (workspace.isLoading) {
     return (
       <ScreenWrapper>
-        <GlobalHeader title={classroomName} showBack onBack={() => router.back()} />
+        <GlobalHeader title={classroomName} showBack onBack={() => safeBack('/workspace')} />
         <VStack className="gap-md p-4">
           <SkeletonCard height={100} />
           <HStack className="gap-md mt-4">
@@ -549,7 +550,7 @@ export default function TeacherClassroomDashboard() {
         title={classroomName}
         subtitle={classroom?.subject || 'Classroom'}
         showBack
-        onBack={() => router.back()}
+        onBack={() => safeBack('/workspace')}
       />
       <ScrollView
         stickyHeaderIndices={[2]}

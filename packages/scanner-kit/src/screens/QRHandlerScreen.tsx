@@ -1,44 +1,32 @@
-/**
- * QRHandlerScreen — Modal screen that executes an incoming QR action
- *
- * Mounted as a modal in RootStack.Navigator. Receives a QRPayload via route params
- * (injected by useQRDeepLink) and executes the appropriate action with visual feedback.
- *
- * Handles:
- *   join_school   → joins school + community group, navigates to Classroom tab
- *   join_class    → joins classroom, navigates to Classroom tab
- *   join_group    → joins community group, navigates to Community tab
- *   claim_invite  → claims role-specific school invite
- *   user_invite   → stores attribution, navigates to Auth if needed
- *   thuthimal_gift → navigated from here to ThuthimalClaimScreen
- */
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { type RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { identityAPI } from '@repo/core/api';
 import { FlowResolver } from '@repo/core/native';
-
 import type { QRPayload } from '@repo/core/types';
-
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, Heading, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { safeBack } from '@repo/ui/utils/navigation';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type QRHandlerRouteParams = {
-  QRHandler: { payload: QRPayload };
-};
-
 export default function QRHandlerScreen() {
-  const navigation = useNavigation<any>();
-  const route = useRoute<RouteProp<QRHandlerRouteParams, 'QRHandler'>>();
+  const router = useRouter();
+  const params = useLocalSearchParams<{ payload?: string }>();
   const { t } = useTranslation();
   const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
   const [message, setMessage] = useState('');
 
-  const payload = route.params?.payload;
+  const payload = useMemo(() => {
+    if (!params.payload) return undefined;
+    try {
+      return JSON.parse(params.payload) as QRPayload;
+    } catch (error) {
+      console.error('[QRHandlerScreen] invalid QR payload', error);
+      return undefined;
+    }
+  }, [params.payload]);
 
   const executeAction = useCallback(
     async (p: QRPayload) => {
@@ -47,7 +35,7 @@ export default function QRHandlerScreen() {
         if (!myId) {
           // Store and redirect to auth
           await AsyncStorage.setItem('pending_qr_action', JSON.stringify(p));
-          navigation.navigate('Auth');
+          router.push('/auth');
           return;
         }
 
@@ -61,10 +49,14 @@ export default function QRHandlerScreen() {
           if (result.intent) {
             // Map Abstract Core Intent -> Mobile Specific Navigation
             const intentMap: Record<string, () => void> = {
-              GOTO_CLASSROOM: () => navigation.navigate('Main', { screen: 'Classroom' }),
-              GOTO_COMMUNITY: () => navigation.navigate('Main', { screen: 'Community' }),
-              GOTO_SELF: () => navigation.navigate('Main', { screen: 'Self' }),
-              GOTO_THUTHIMAL_CLAIM: () => navigation.replace('ThuthimalClaim', result.params),
+              GOTO_CLASSROOM: () => router.push('/workspace/classroom'),
+              GOTO_COMMUNITY: () => router.push('/community'),
+              GOTO_SELF: () => router.push('/self'),
+              GOTO_THUTHIMAL_CLAIM: () =>
+                router.replace({
+                  pathname: '/thuthimal-claim',
+                  params: result.params as Record<string, string>,
+                }),
             };
 
             const action = intentMap[result.intent];
@@ -76,7 +68,10 @@ export default function QRHandlerScreen() {
           setStatus('success');
           setMessage(t('qrHandler.actionSuccess'));
           if (result.intent === 'GOTO_THUTHIMAL_CLAIM') {
-            navigation.replace('ThuthimalClaim', result.params);
+            router.replace({
+              pathname: '/thuthimal-claim',
+              params: result.params as Record<string, string>,
+            });
           }
         } else {
           throw new Error(result.message);
@@ -86,19 +81,19 @@ export default function QRHandlerScreen() {
         hapticError();
         setStatus('error');
         setMessage(t('qrHandler.somethingWrong'));
-        setTimeout(() => navigation.goBack(), 2500);
+        setTimeout(() => safeBack('/self'), 2500);
       }
     },
-    [navigation, t],
+    [router, t],
   );
 
   useEffect(() => {
     if (!payload) {
-      navigation.goBack();
+      safeBack('/self');
       return;
     }
     void executeAction(payload);
-  }, [payload, navigation, executeAction]);
+  }, [payload, router, executeAction]);
 
   return (
     <ScreenWrapper>

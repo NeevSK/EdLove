@@ -11,9 +11,10 @@
 // need smaller codes.
 
 import QRCode from 'qrcode';
-import { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useMemo, useEffect } from 'react';
+import { StyleSheet, Text, View, Platform } from 'react-native';
 import Svg, { Rect } from 'react-native-svg';
+import * as Brightness from 'expo-brightness';
 
 export interface QRCodeGeneratorProps {
   value: string;
@@ -40,6 +41,31 @@ export default function QRCodeGenerator({
   borderRadius = 12,
   padding = 12,
 }: QRCodeGeneratorProps) {
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+
+    let originalBrightness = 0.5;
+    const boostBrightness = async () => {
+      try {
+        const { status } = await Brightness.requestPermissionsAsync();
+        if (status === 'granted') {
+          originalBrightness = await Brightness.getBrightnessAsync();
+          await Brightness.setBrightnessAsync(1.0);
+        }
+      } catch (err) {
+        console.warn('Failed to set brightness:', err);
+      }
+    };
+
+    boostBrightness();
+
+    return () => {
+      void Brightness.setBrightnessAsync(originalBrightness).catch((err) => {
+        console.warn('Failed to restore brightness:', err);
+      });
+    };
+  }, []);
+
   const matrix = useMemo(() => {
     if (!value) return null;
     try {

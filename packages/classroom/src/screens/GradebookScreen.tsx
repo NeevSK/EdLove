@@ -14,10 +14,9 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-
+import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocalSearchParams } from 'expo-router';
 import GradebookTable from '../components/grading/GradebookTable';
 import GradeEntryForm from '../components/grading/GradeEntryForm';
 import GradingSettings from '../components/grading/GradingSettings';

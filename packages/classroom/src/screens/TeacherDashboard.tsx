@@ -21,9 +21,9 @@ import {
   ScrollView,
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FadeInDown } from 'react-native-reanimated';
-import { useRouter } from 'expo-router';
 import { CreateClassroomModal } from '../components';
 import { TeacherWorkspaceShell } from '../components/teacher/TeacherWorkspaceShell';
 import {

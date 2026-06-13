@@ -25,6 +25,7 @@ import {
   TextareaInput,
   VStack,
 } from '@repo/ui/primitives';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import type React from 'react';
 import { useState } from 'react';
@@ -302,7 +303,7 @@ export default function GradebookScreenWeb() {
         <HStack className="items-center justify-between mb-8 gap-4 flex-wrap">
           <SanctuaryButton
             action="secondary"
-            onPress={() => router.back()}
+            onPress={() => safeBack('/workspace')}
             className="px-4 py-2 bg-phase-surface/40 border-phase-border/20"
           >
             <HStack className="items-center gap-1.5">

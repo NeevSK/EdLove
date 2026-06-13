@@ -18,6 +18,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { router, useLocalSearchParams } from 'expo-router';
 
 import {
@@ -152,7 +153,7 @@ export const FullProfileScreen = () => {
 
   return (
     <ScreenWrapper scroll={false}>
-      <GlobalHeader title={t('profile.fullProfile')} showBack onBack={() => router.back()} />
+      <GlobalHeader title={t('profile.fullProfile')} showBack onBack={() => safeBack('/profile')} />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{

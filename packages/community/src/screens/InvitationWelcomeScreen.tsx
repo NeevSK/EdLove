@@ -5,9 +5,9 @@ import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useSanctuaryToast } from '@repo/ui/hooks';
 import { ArrowRight, GraduationCap, ShieldCheck } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
+import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { router } from 'expo-router';
 
 interface InvitationWelcomeScreenProps {
   route?: {

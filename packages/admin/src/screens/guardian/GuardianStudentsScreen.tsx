@@ -1,6 +1,7 @@
 import { useStore } from '@repo/core/logic';
-import { useRouter } from 'expo-router';
 import { Box, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
+import { safeBack } from '@repo/ui/utils/navigation';
 
 import { useGuardianWorkspaceData } from '../../guardian';
 import { GuardianRoomShell } from './GuardianRoomShell';
@@ -26,16 +27,14 @@ export default function GuardianStudentsScreen() {
             : '0%',
         },
       ]}
-      onBack={() => router.back()}
+      onBack={() => safeBack('/workspace')}
     >
       <ScrollView className="flex-1">
         <VStack className="gap-3 pb-8">
           {students.map((student) => (
             <Pressable
               key={student.studentId}
-              onPress={() =>
-                router.push('/workspace')
-              }
+              onPress={() => router.push('/workspace')}
               className="active:opacity-80"
             >
               <Box className="rounded-3xl border border-starlightGray/20 bg-sacredWhite px-4 py-4">

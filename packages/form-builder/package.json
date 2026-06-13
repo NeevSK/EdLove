@@ -32,6 +32,8 @@
   "dependencies": {
     "@intuitui-labs/form-builder-engine": "workspace:*",
     "@repo/ui": "workspace:*",
+    "@tanstack/react-form": "^0.20.0",
+    "expo-router": "~56.2.10",
     "lucide-react": "^1.17.0",
     "lucide-react-native": "^1.17.0",
     "react-i18next": "^17.0.8"

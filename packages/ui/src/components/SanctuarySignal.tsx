@@ -1,6 +1,6 @@
 import { ArrowRight, Sparkles } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { useNavigation } from 'expo-router';
+import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -9,12 +9,11 @@ import { useTranslation } from 'react-i18next';
  */
 export const SanctuarySignal = () => {
   const { t } = useTranslation();
-  const navigation = useNavigation<any>();
 
   return (
     <Box className="m-4">
       <Pressable
-        onPress={() => navigation.navigate('Auth')}
+        onPress={() => router.push('/auth')}
         className="group p-5 rounded-[24px] bg-white/5 border border-white/10 hover:border-phase-accent/30 transition-all duration-500 overflow-hidden relative shadow-xl"
         style={
           {

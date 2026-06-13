@@ -10,3 +10,5 @@ export * from './useResponsive';
 export * from './useSafeAction';
 export * from './useTheme';
 export * from './useThemedColors';
+export * from './useSanctuaryTable';
+export * from './useAppStoreReview';

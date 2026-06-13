@@ -20,10 +20,11 @@ import {
   ThumbsUp,
 } from '@repo/ui/icons';
 import { Box, HStack, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { safeBack } from '@repo/ui/utils/navigation';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
 import { communityAPI } from '../api/community';
 import SocialShieldModal from '../components/SocialShieldModal';
 
@@ -155,10 +156,10 @@ export default function UserPublicProfileScreen() {
   return (
     <ScreenWrapper noTopInset scroll={false} className="bg-phase-canvas">
       <GlobalHeader
-      title={user?.full_name ?? userName ?? 'Profile'}
-      subtitle={capacityLabel}
-      showBack
-        onBack={() => router.back()}
+        title={user?.full_name ?? userName ?? 'Profile'}
+        subtitle={capacityLabel}
+        showBack
+        onBack={() => safeBack('/community')}
       />
 
       {loading ? (

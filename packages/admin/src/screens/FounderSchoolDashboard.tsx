@@ -1,7 +1,5 @@
 import { useFeatureAccess } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
-import { useRouter } from 'expo-router';
-
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import SandboxBanner from '@repo/ui/components/SandboxBanner';
@@ -19,6 +17,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import { useRouter } from 'expo-router';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

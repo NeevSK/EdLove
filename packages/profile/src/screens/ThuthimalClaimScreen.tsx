@@ -6,8 +6,6 @@
  */
 
 import { identityAPI, thuthimalAPI } from '@repo/core/api';
-import { router, useLocalSearchParams } from 'expo-router';
-
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import {
   AnimatedView,
@@ -21,6 +19,8 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
+import { safeBack } from '@repo/ui/utils/navigation';
+import { router, useLocalSearchParams } from 'expo-router';
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -138,7 +138,7 @@ export default function ThuthimalClaimScreen() {
               <Button
                 size="sm"
                 variant="outline"
-                onPress={() => router.back()}
+                onPress={() => safeBack('/profile')}
                 className="mt-4 border-phase-surface rounded-2xl"
               >
                 <ButtonText className="text-phase-text-primary">
@@ -167,7 +167,7 @@ export default function ThuthimalClaimScreen() {
             <Button
               size="lg"
               variant="outline"
-              onPress={() => router.back()}
+              onPress={() => safeBack('/profile')}
               className="mt-4 border-phase-surface rounded-2xl"
             >
               <ButtonText className="text-phase-text-primary">

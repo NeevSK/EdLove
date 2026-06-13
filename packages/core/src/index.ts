@@ -242,3 +242,20 @@ export * from './logic/workspace/canvas';
 export { resolveWorkspaceSwitcherTargets } from './logic/workspace/workspaceSwitcher';
 export { useWorkspaceLayoutSync } from './native/useWorkspaceLayoutSync';
 export { z };
+
+// Hexagonal Ports
+export type {
+  IEntitlementPort,
+  EntitlementSnapshot,
+  IFeatureFlagPort,
+  IAuthorizationPort,
+  AuthorizationRequest,
+  AuthorizationDecision,
+  IAnalyticsPort,
+} from './logic';
+
+// Hexagonal Adapters
+export { SupabaseEntitlementAdapter } from './adapters/supabase/supabaseEntitlement.adapter';
+export { SupabaseFeatureFlagAdapter } from './adapters/supabase/supabaseFeatureFlag.adapter';
+export { cryptoManager } from './logic';
+

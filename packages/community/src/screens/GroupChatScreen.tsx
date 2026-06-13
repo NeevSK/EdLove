@@ -17,7 +17,9 @@ import BaseChatScreen, { type SubscriptionConfig } from './BaseChatScreen';
 
 export default function GroupChatScreen() {
   const params = useLocalSearchParams<{ conversationId?: string; groupName?: string }>();
-  const groupId = Array.isArray(params.conversationId) ? params.conversationId[0] : params.conversationId;
+  const groupId = Array.isArray(params.conversationId)
+    ? params.conversationId[0]
+    : params.conversationId;
   const groupName = Array.isArray(params.groupName) ? params.groupName[0] : params.groupName;
 
   const { viewDate, isPastView } = useTemporalStore();

@@ -65,7 +65,6 @@ const SINGLETON_OVERRIDES = {
   'react-dom': path.resolve(projectRoot, 'node_modules/react-dom'),
   '@babel/runtime': path.resolve(projectRoot, 'node_modules/@babel/runtime'),
   'react-native-web': path.resolve(projectRoot, 'node_modules/react-native-web'),
-  '@react-navigation/native': path.resolve(projectRoot, 'node_modules/@react-navigation/native'),
   '@react-navigation/core': path.resolve(projectRoot, 'node_modules/@react-navigation/core'),
   '@react-native-async-storage/async-storage': path.resolve(
     projectRoot,

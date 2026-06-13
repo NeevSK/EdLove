@@ -3,6 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 
 /**
  * ScannerModal — QR code scanner for Gurudevi
@@ -63,7 +64,19 @@ export default function ScannerModal({
       setScanned(false);
       setProcessing(false);
       setGalleryError(null);
+      void activateKeepAwakeAsync().catch((err) => {
+        console.warn('Failed to activate keep awake:', err);
+      });
+    } else {
+      void deactivateKeepAwake().catch((err) => {
+        console.warn('Failed to deactivate keep awake:', err);
+      });
     }
+    return () => {
+      void deactivateKeepAwake().catch((err) => {
+        console.warn('Failed to deactivate keep awake:', err);
+      });
+    };
   }, [visible]);
 
   /**

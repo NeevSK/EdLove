@@ -60,6 +60,8 @@ export {
   notification,
   profile,
   pushNotification,
+  authz,
+  featureFlags,
 } from './managers/factory';
 export * from './mediaReducer';
 export * from './permissions/feature-engine';
@@ -67,8 +69,13 @@ export * from './permissions/guards/FeatureGuard';
 export * from './permissions/guards/RouteGuard';
 export * from './permissions/hooks/usePermissions';
 export type { IEventBusPort } from './ports/eventBus.port';
+export type { IEntitlementPort, EntitlementSnapshot } from './ports/entitlement.port';
+export type { IFeatureFlagPort } from './ports/featureFlag.port';
+export type { IAuthorizationPort, AuthorizationRequest, AuthorizationDecision } from './ports/authz.port';
+export type { IAnalyticsPort } from './ports/analytics.port';
 export * from './runtimeRegistry';
 export * from './schemas';
 export * from './store-slices';
 export * from './utils';
 export * from './workspace/index';
+export { cryptoManager } from './managers/CryptoManager';
