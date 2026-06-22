@@ -15,97 +15,31 @@
  */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { DrizzleAppSchema, wrapPowerSyncWithDrizzle } from '@powersync/drizzle-driver';
-import { OPSqliteOpenFactory } from '@powersync/op-sqlite';
+import { wrapPowerSyncWithDrizzle } from '@powersync/drizzle-driver';
 import { PowerSyncContext } from '@powersync/react';
 import { PowerSyncDatabase } from '@powersync/react-native';
-import { assertPowerSyncBootstrapReady } from '@repo/core/api/highways';
+import { OPSQLiteAdapter } from '@repo/core/adapters/powersync/opsqlite.adapter';
 import { AppSchema, injectNativePowerSyncDB } from '@repo/core/powersync';
-import * as Crypto from 'expo-crypto';
-import * as SecureStore from 'expo-secure-store';
+import { useStore } from '@repo/core/store/useStore';
 import { type PropsWithChildren, useEffect, useState } from 'react';
-import { Platform } from 'react-native';
-
-const SQLCIPHER_KEY_STORAGE_KEY = 'gurudevi-sqlite-cipher-key';
-
-let _nativePowerSyncInstance: PowerSyncDatabase | null = null;
-let _nativeDrizzleInstance: ReturnType<typeof wrapPowerSyncWithDrizzle<typeof AppSchema>> | null =
-  null;
-
-/**
- * Retrieves the device's SQLCipher database encryption key from SecureStore.
- * If no key exists, generates a secure random 256-bit key and stores it.
- */
-async function getOrCreateEncryptionKey(): Promise<string> {
-  try {
-    let key = await SecureStore.getItemAsync(SQLCIPHER_KEY_STORAGE_KEY);
-    if (!key) {
-      // Generate a secure, cryptographically random key
-      key = Crypto.randomUUID() + Crypto.randomUUID(); // Combined UUIDs provide a robust key string
-      await SecureStore.setItemAsync(SQLCIPHER_KEY_STORAGE_KEY, key, {
-        keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-      });
-      console.log('🔒 [SQLCipher] Generated new secure device-bound AES-256 database key.');
-    } else {
-      console.log('🔒 [SQLCipher] Secure database key successfully loaded.');
-    }
-    return key;
-  } catch (error) {
-    console.error('⚠️ [SQLCipher] Failed to load/generate encryption key from SecureStore:', error);
-    // Fallback key to prevent blocking offline app launch, although SecureStore is standard
-    return 'gurudevi-resilience-fallback-security-key';
-  }
-}
 
 type PowerSyncProviderProps = PropsWithChildren;
 
 export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
   const [db, setDb] = useState<PowerSyncDatabase | null>(null);
+  const accountId = useStore((state) => state.user?.id ?? 'anonymous');
 
   useEffect(() => {
     let active = true;
 
     async function initDB() {
       try {
-        if (Platform.OS === 'web') {
-          assertPowerSyncBootstrapReady();
-        }
-
-        if (_nativePowerSyncInstance && _nativeDrizzleInstance) {
-          if (active) setDb(_nativePowerSyncInstance);
-          return;
-        }
-
-        // 1. Fetch or create secure encryption key for SQLCipher
-        const encryptionKey = await getOrCreateEncryptionKey();
-
-        // 2. Configure the hardware-accelerated JSI C++ database connection factory
-        const factory = new OPSqliteOpenFactory({
-          dbFilename: 'gurudevi-powersync.db',
-          sqliteOptions: {
-            encryptionKey,
-          },
-        });
-
-        // 3. Compile Drizzle SQLite schema declarations to PowerSync format
-        const powersyncSchema = new DrizzleAppSchema(AppSchema);
-
-        // 4. Instantiate the native PowerSync client using the JSI op-sqlite adapter
-        const powersyncDb = new PowerSyncDatabase({
-          database: factory,
-          schema: powersyncSchema,
-        });
-
-        // 5. Wrap the active connection in Drizzle ORM
+        const adapter = new OPSQLiteAdapter(accountId);
+        const factory = await adapter.createDatabaseFactory(accountId);
+        const powersyncDb = new PowerSyncDatabase(factory as any);
         const drizzleDb = wrapPowerSyncWithDrizzle(powersyncDb as any, { schema: AppSchema });
 
-        // 6. Globally inject native JSI instances to bypass server-side mocks
         injectNativePowerSyncDB(powersyncDb, drizzleDb);
-
-        _nativePowerSyncInstance = powersyncDb;
-        _nativeDrizzleInstance = drizzleDb;
-
-        console.log('⚡ [PowerSync] JSI-Engine initialized with Drizzle ORM and SQLCipher.');
         if (active) setDb(powersyncDb);
       } catch (error) {
         console.error('❌ [PowerSync] Native JSI initialization failed:', error);
@@ -117,7 +51,7 @@ export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [accountId]);
 
   if (!db) {
     // Return null or splash screen during fast JSI load sequence (<20ms)
@@ -125,21 +59,4 @@ export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
   }
 
   return <PowerSyncContext.Provider value={db}>{children}</PowerSyncContext.Provider>;
-}
-
-/**
- * Direct access singletons for non-React native modules (e.g. background tasks, synchronization queues)
- */
-export function getNativePowerSyncDB(): PowerSyncDatabase {
-  if (!_nativePowerSyncInstance) {
-    throw new Error('PowerSync native database has not been initialized yet.');
-  }
-  return _nativePowerSyncInstance;
-}
-
-export function getNativeDrizzleDB() {
-  if (!_nativeDrizzleInstance) {
-    throw new Error('Drizzle native database wrapper has not been initialized yet.');
-  }
-  return _nativeDrizzleInstance;
 }

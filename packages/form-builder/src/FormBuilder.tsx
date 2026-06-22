@@ -1,4 +1,5 @@
 import { AnalyticsEngine as formAnalytics } from '@intuitui-labs/form-builder-engine/analytics';
+import { exportToStaticReact } from '@intuitui-labs/form-builder-engine/codegen';
 import { FormHydrator, type HydrationPayload } from '@intuitui-labs/form-builder-engine/hydration';
 import type {
   FieldDefinition,
@@ -33,7 +34,7 @@ import {
   Settings2,
   Trash2,
 } from 'lucide-react-native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import NativeForm from './NativeForm';
 import { defaultFormBuilderServices, type FormBuilderServices } from './services';
 
@@ -47,7 +48,7 @@ interface FormBuilderProps {
   isGuest?: boolean;
   services?: Partial<FormBuilderServices>;
 }
-const FormFieldItem = React.memo(
+const FormFieldItem = memo(
   ({
     field,
     index,
@@ -132,7 +133,7 @@ export const FormBuilder = ({
         ],
   );
   const [previewMode, setPreviewMode] = useState(false);
-  const [activeTab, setActiveTab] = useState<'editor' | 'logic' | 'analytics'>('editor');
+  const [activeTab, setActiveTab] = useState<'editor' | 'logic' | 'analytics' | 'code'>('editor');
   const fieldCounterRef = useRef(0);
   const addField = useCallback(() => {
     const id = `f-${fieldCounterRef.current++}-${Date.now().toString(36)}`;
@@ -353,7 +354,7 @@ export const FormBuilder = ({
         {/* Sub-navigation */}
         {!previewMode && (
           <HStack className="gap-6 border-b border-border pb-3">
-            {(['editor', 'logic', 'analytics'] as const).map((tab) => (
+            {(['editor', 'logic', 'analytics', 'code'] as const).map((tab) => (
               <Pressable key={tab} onPress={() => setActiveTab(tab)}>
                 <Text
                   className={`capitalize ${activeTab === tab ? 'font-bold' : 'font-normal'}`}
@@ -407,6 +408,13 @@ export const FormBuilder = ({
             </VStack>
 
             <VStack className="flex-1 gap-4">
+              <Box className="bg-white rounded-3xl p-6 border border-border shadow-sm mb-4">
+                <Heading size="sm" className="mb-4 text-center">
+                  Live Preview
+                </Heading>
+                <NativeForm manager={previewManager} submitLabel="Test Submission" />
+              </Box>
+
               <Box
                 className="p-6 rounded-3xl border border-border"
                 sx={{ backgroundColor: colors.tertiary }}
@@ -442,6 +450,30 @@ export const FormBuilder = ({
               Soon you will be able to define complex logic flows (If-Then-Else) based on student
               and teacher resonance.
             </Text>
+          </Box>
+        ) : activeTab === 'code' ? (
+          <Box className="bg-white rounded-[32px] p-8 border border-border shadow-lg flex-1">
+            <HStack className="justify-between items-center mb-6">
+              <Heading size="md">Generated React Component</Heading>
+              <Button
+                variant="outline"
+                action="secondary"
+                onPress={() => {
+                  if (typeof navigator !== 'undefined') {
+                    void navigator.clipboard.writeText(
+                      exportToStaticReact(title, fields, description),
+                    );
+                  }
+                }}
+              >
+                <ButtonText>Copy to Clipboard</ButtonText>
+              </Button>
+            </HStack>
+            <Box className="bg-gray-50 p-6 rounded-2xl border border-gray-100 overflow-x-auto">
+              <pre className="text-xs font-mono text-gray-800">
+                {exportToStaticReact(title, fields, description)}
+              </pre>
+            </Box>
           </Box>
         ) : (
           <VStack className="gap-6 p-5">

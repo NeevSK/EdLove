@@ -6,7 +6,7 @@ import { createFeatureSlice, type FeatureSlice } from './slices/feature.slice';
 /**
  * useFeatureStore - Sovereign domain store for Feature Flags.
  *
- * Persists to MMKV (Native) or LocalStorage (Web) to avoid UI flicker on launch.
+ * Persists the resolved rollout view to MMKV (Native) or LocalStorage (Web) to avoid UI flicker on launch.
  */
 export const useFeatureStore = create<FeatureSlice>()(
   persist(

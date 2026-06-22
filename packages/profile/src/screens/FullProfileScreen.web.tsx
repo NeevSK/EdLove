@@ -201,3 +201,5 @@ export default function FullProfileScreenWeb() {
     </ScreenWrapper>
   );
 }
+
+export { FullProfileScreenWeb as FullProfileScreen };

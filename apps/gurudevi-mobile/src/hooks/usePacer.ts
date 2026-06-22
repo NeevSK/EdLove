@@ -1,4 +1,4 @@
-import { useDebouncedCallback, useThrottledCallback } from '@tanstack/react-pacer';
+import { useAsyncThrottledCallback, useDebouncedCallback } from '@tanstack/react-pacer';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -15,12 +15,12 @@ export function useThrottledInvalidate(duration = 500) {
     async (queryKey: unknown[]) => {
       await queryClient.invalidateQueries({ queryKey });
     },
-    [queryClient]
+    [queryClient],
   );
 
-  return useThrottledCallback(invalidate, {
-    key: (queryKey) => JSON.stringify(queryKey),
-    duration,
+  return useAsyncThrottledCallback(invalidate, {
+    key: 'query-invalidation',
+    wait: duration,
   });
 }
 
@@ -35,7 +35,7 @@ export function useDebouncedValue<T>(value: T, delay = 300): T {
     (newValue: T) => {
       setDebouncedValue(newValue);
     },
-    { duration: delay }
+    { wait: delay },
   );
 
   useEffect(() => {

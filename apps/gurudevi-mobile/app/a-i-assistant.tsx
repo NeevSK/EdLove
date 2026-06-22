@@ -15,7 +15,10 @@ function Fallback() {
 function PremiumGuard() {
   return (
     <Center className="flex-1 bg-obsidian p-6">
-      <VStack className="items-center bg-phase-canvas rounded-[32px] p-8 max-w-sm border border-phase-surface/60 shadow-xl" space="md">
+      <VStack
+        className="items-center bg-phase-canvas rounded-[32px] p-8 max-w-sm border border-phase-surface/60 shadow-xl"
+        space="md"
+      >
         <Center className="w-16 h-16 bg-[#F2994A]/10 rounded-2xl mb-2">
           <Flower2 size={32} color="#F2994A" strokeWidth={2.5} />
         </Center>
@@ -46,4 +49,3 @@ export default function AIAssistantRoute() {
     </Suspense>
   );
 }
-

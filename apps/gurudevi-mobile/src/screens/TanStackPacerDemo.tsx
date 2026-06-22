@@ -8,11 +8,7 @@ const fetchMockSearchResults = async (query: string): Promise<string[]> => {
   if (!query) return [];
   // Simulate network latency
   await new Promise((resolve) => setTimeout(resolve, 300));
-  return [
-    `Result 1 for "${query}"`,
-    `Result 2 for "${query}"`,
-    `Result 3 for "${query}"`,
-  ];
+  return [`Result 1 for "${query}"`, `Result 2 for "${query}"`, `Result 3 for "${query}"`];
 };
 
 export default function TanStackPacerDemo() {
@@ -52,6 +48,8 @@ export default function TanStackPacerDemo() {
       <View style={styles.section}>
         <Text style={styles.sectionHeader}>1. Debounced Search (useDebouncedValue)</Text>
         <TextInput
+          accessibilityLabel="Search term input"
+          accessibilityHint="Enter a term to search query cache mock results"
           style={styles.input}
           placeholder="Type to search..."
           value={searchTerm}
@@ -75,7 +73,9 @@ export default function TanStackPacerDemo() {
 
       {/* Section 2: Throttled Invalidation */}
       <View style={styles.section}>
-        <Text style={styles.sectionHeader}>2. Throttled Sync Invalidation (useThrottledInvalidate)</Text>
+        <Text style={styles.sectionHeader}>
+          2. Throttled Sync Invalidation (useThrottledInvalidate)
+        </Text>
         <Text style={styles.text}>
           Simulate rapid database synchronization event stream (PowerSync triggers).
         </Text>
@@ -83,7 +83,9 @@ export default function TanStackPacerDemo() {
           <Button title="Trigger Rapid Db Invalidation" onPress={handleRapidDbSyncEvent} />
         </View>
         <Text style={styles.text}>Triggered Events Count: {syncClickCount}</Text>
-        <Text style={styles.text}>Actual Invalidation Executions (1s throttle): {actualInvalidationCount}</Text>
+        <Text style={styles.text}>
+          Actual Invalidation Executions (1s throttle): {actualInvalidationCount}
+        </Text>
       </View>
     </View>
   );

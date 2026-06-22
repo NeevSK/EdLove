@@ -1,10 +1,4 @@
 {
-  "files": [
-    "eslint.config.js",
-    "commitlint.config.js",
-    "packages/eslint-config/next.js",
-    "packages/eslint-config/react-internal.js"
-  ],
   "references": [
     {
       "path": "./packages/analytics"

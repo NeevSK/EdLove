@@ -5,8 +5,8 @@ import type { QRPayload } from '@repo/core/types';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, Heading, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { safeBack } from '@repo/ui/utils/navigation';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -137,6 +137,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
       id: internalId,
       email: profile.email || '',
       name: profile.display_name || undefined,
+      onboarding_completed: !!profile.onboarding_completed,
       activeBond: (perspective.activeBond || null) as Bond | null,
       availableBonds: (perspective.availableBonds || []) as Bond[],
     };
@@ -425,6 +426,10 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
   async updateProfile(userId: string, updates: Partial<User>): Promise<void> {
     const normalizedUpdates: Record<string, unknown> = { ...updates };
+    if ('email' in normalizedUpdates && normalizedUpdates.email === '') {
+      normalizedUpdates.email = null;
+    }
+
     if (
       'first_name' in normalizedUpdates ||
       'last_name' in normalizedUpdates ||
@@ -487,6 +492,47 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     if (error) throw new APIError('Failed to complete profile', error.code, error);
   }
   async completeOnboarding(userId: string): Promise<void> {
+    try {
+      const bonds = await this.getBonds(userId);
+      if (!bonds || bonds.length === 0) {
+        const profile = await this.getProfile(userId);
+        const capacity = profile.capacity || 'teacher';
+        console.log(`[completeOnboarding] User ${userId} has no bonds. Creating default PERSONAL_CLASSROOM sanctuary.`);
+        
+        const { data: pc, error: pcErr } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+          .from('personal_classrooms')
+          .insert({
+            name: `${profile.display_name || 'Sanctuary'}'s Workspace`,
+            type: capacity === 'student' ? 'student_classroom' : 'teacher_classroom',
+            user_id: userId,
+          })
+          .select('id')
+          .single();
+
+        if (pcErr) {
+          console.error('[completeOnboarding] Failed to create default personal classroom:', pcErr);
+        } else if (pc) {
+          const { error: bondErr } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+            .from('bonds')
+            .upsert(
+              {
+                user_id: userId,
+                entity_id: pc.id,
+                entity_type: 'PERSONAL_CLASSROOM',
+                capacity: capacity,
+                metadata: {},
+              },
+              { onConflict: 'user_id,entity_id,capacity' }
+            );
+          if (bondErr) {
+            console.error('[completeOnboarding] Failed to create default PERSONAL_CLASSROOM bond:', bondErr);
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[completeOnboarding] Failed to check/create default sanctuary:', e);
+    }
+
     const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('users')
       .update({

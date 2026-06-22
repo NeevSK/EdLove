@@ -14,9 +14,9 @@ import { socialAPI, supabase } from '@repo/core/api';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 
 import { formatTimestamp } from '@repo/ui/utils/dateTimeUtils';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { getInitialsFromName } from '@repo/ui/utils/stringUtils';
 import { router, useLocalSearchParams } from 'expo-router';
-import { safeBack } from '@repo/ui/utils/navigation';
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { communityAPI } from '../api/community';
@@ -190,10 +190,10 @@ export default function DirectMessageScreen() {
           background: 'var(--surface)',
         }}
       >
-          <button
-            type="button"
-            onClick={() => safeBack('/community')}
-            style={{
+        <button
+          type="button"
+          onClick={() => safeBack('/community')}
+          style={{
             background: 'none',
             border: 'none',
             cursor: 'pointer',

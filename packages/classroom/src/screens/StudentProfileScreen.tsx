@@ -24,8 +24,8 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticMedium } from '@repo/ui/utils/haptics';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { safeBack } from '@repo/ui/utils/navigation';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

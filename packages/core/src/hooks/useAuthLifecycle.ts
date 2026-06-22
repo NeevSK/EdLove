@@ -8,9 +8,8 @@ import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import type { SchoolType } from '../constants/SriLankanSchools';
 import { identifyUser, initPostHog, trackEvent } from '../lib/monitoring/posthog';
 import { clearSentryUser, initSentry, setSentryUser } from '../lib/monitoring/sentry';
-import { useAuthStore } from '../store/useAuthStore';
-import { usePermissionStore } from '../store/usePermissionStore';
 import { useStore } from '../store/useStore';
+import type { User } from '../types';
 import { APIError } from '../types/API';
 import type { Bond } from '../types/Identity';
 
@@ -18,12 +17,12 @@ const isAnonymousSession = (currentSession: Session | null) =>
   !!currentSession?.user && (currentSession.user.is_anonymous || !currentSession.user.email);
 
 /**
- * useAuthorityLifecycle (Native)
+ * useAuthLifecycle
  *
  * Orchestrates the "Reactive Capability Sync" and session management.
- * Optimized for Mobile performance via siphoned identity resolution.
+ * This is the heart of the POA system's reactivity.
  */
-export function useAuthorityLifecycle() {
+export function useAuthLifecycle() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
@@ -35,6 +34,7 @@ export function useAuthorityLifecycle() {
   const setOnboardingCompleted = useStore((state) => state.setOnboardingCompleted);
   const setAuthSession = useStore((state) => state.setAuthSession);
   const setAuthSessionResolved = useStore((state) => state.setAuthSessionResolved);
+  const setDemoMode = useStore((state) => state.setDemoMode);
 
   const fetchAndSetUserProfile = useCallback(async () => {
     setIsProfileLoading(true);
@@ -45,34 +45,29 @@ export function useAuthorityLifecycle() {
       const identity = await identityAPI.identifyActiveCitizen();
 
       if (identity) {
-        // 2. Update store
+        // 2. Update Store with ReBAC data
         // Cast simplified bonds to full Bond type - the store layer fills in additional fields
-        setUser(identity as unknown as Parameters<typeof setUser>[0]);
+        setUser(identity as unknown as User);
         setAvailableBonds(identity.availableBonds as unknown as Bond[]);
 
+        // Re-calculate perspective from bonds
         setPerspective({
           activeBond: identity.activeBond as unknown as Bond | undefined,
           availableBonds: identity.availableBonds as unknown as Bond[],
         });
 
-        // Load cryptographic permission snapshots asynchronously
-        usePermissionStore
-          .getState()
-          .loadPermissions(identity.id)
-          .catch((err) => {
-            console.error('[AuthorityLifecycle] Failed to load permissions snapshot:', err);
-          });
-
+        // 3. Handle Onboarding & School Logic
         const isEffectivelyOnboarded = !!identity.onboarding_completed;
         if (isEffectivelyOnboarded) {
           setOnboardingCompleted(true);
         }
 
-        if (identity.schoolId) {
+        const schoolId = identity.schoolId || null;
+        if (schoolId) {
           const { data: schoolData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
             .from('schools')
             .select('type')
-            .eq('id', identity.schoolId)
+            .eq('id', schoolId)
             .single();
 
           if (schoolData) {
@@ -82,7 +77,7 @@ export function useAuthorityLifecycle() {
           setSchoolType(null);
         }
 
-        // Monitoring identification
+        // 4. Monitoring identification (Relationship-aware)
         setSentryUser({
           id: identity.id,
           email: identity.email,
@@ -92,9 +87,9 @@ export function useAuthorityLifecycle() {
         identifyUser(identity.id, {
           email: identity.email,
           display_name: identity.display_name,
-          capacity: identity.activeBond?.capacity || null,
+          active_perspective: identity.activeBond?.capacity || null,
           total_bonds: (identity.availableBonds || []).length,
-          school_id: identity.schoolId,
+          school_id: schoolId,
         });
       }
     } catch (error) {
@@ -134,7 +129,6 @@ export function useAuthorityLifecycle() {
           setAvailableBonds([]);
           setSchoolType(null);
           setOnboardingCompleted(false);
-          usePermissionStore.getState().clearPermissions();
         }
       } catch (error) {
         if (error instanceof APIError) {
@@ -174,7 +168,6 @@ export function useAuthorityLifecycle() {
           setAvailableBonds([]);
           setSchoolType(null);
           setOnboardingCompleted(false);
-          usePermissionStore.getState().clearPermissions();
         } else if (event === 'SIGNED_OUT') {
           clearSentryUser();
           setUser(null);
@@ -182,7 +175,9 @@ export function useAuthorityLifecycle() {
           setAvailableBonds([]);
           setSchoolType(null);
           setOnboardingCompleted(false);
-          usePermissionStore.getState().clearPermissions();
+          setDemoMode(false);
+        } else if (currentSession) {
+          setDemoMode(false);
         }
       },
     );
@@ -197,6 +192,7 @@ export function useAuthorityLifecycle() {
     setSchoolType,
     setOnboardingCompleted,
     fetchAndSetUserProfile,
+    setDemoMode,
   ]);
 
   // 4. Realtime Profile Updates (Capability Sync)
@@ -214,26 +210,10 @@ export function useAuthorityLifecycle() {
           table: 'users',
           filter: `id=eq.${currentUser.id}`,
         },
-        (payload) => {
-          const handlePayload = async () => {
-            // Detect privilege change
-            const oldCapacity = useAuthStore.getState().activeBond?.capacity;
-            const newCapacity = (payload.new as { capacity?: string })?.capacity;
-            const capacityChanged = Boolean(newCapacity && newCapacity !== oldCapacity);
-
-            if (capacityChanged) {
-              try {
-                await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.refreshSession();
-              } catch (e) {
-                console.error('Auth: JWT refresh failed after capacity change', e);
-              }
-            }
-
-            refreshProfile().catch((e) => {
-              console.error('Auth: Profile refresh failed after remote update', e);
-            });
-          };
-          void handlePayload();
+        () => {
+          refreshProfile().catch((e) => {
+            console.error('Auth: Profile refresh failed after remote update', e);
+          });
         },
       )
       .subscribe();

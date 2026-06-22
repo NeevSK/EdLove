@@ -34,8 +34,8 @@ const STORAGE_KEYS = {
 const ENABLE_EXPERIMENTAL_DARK_MODE = typeof __DEV__ !== 'undefined' ? __DEV__ : false;
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const themeMode = useStore((state: any) => state.themeMode);
-  const setStoredThemeMode = useStore((state: any) => state.setThemeMode);
+  const themeMode = useStore((state: any) => state.themeMode ?? state.theme ?? 'system');
+  const setStoredThemeMode = useStore((state: any) => state.setTheme ?? state.setThemeMode);
 
   const [temporalPhase, setTemporalPhase] = useState<TemporalPhase>(() => getTemporalPhase());
   const [isVeilActive, setIsVeilActive] = useState(false);
@@ -75,14 +75,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       const next = getTemporalPhase();
       setTemporalPhase((prev) => (prev !== next ? next : prev));
     };
-    update();
     const interval = setInterval(update, 60000);
     return () => clearInterval(interval);
   }, []);
 
   const setThemeMode = useCallback(
     (mode: ThemeMode) => {
-      setStoredThemeMode(mode);
+      if (typeof setStoredThemeMode === 'function') {
+        setStoredThemeMode(mode);
+      } else {
+        console.warn('[ThemeProvider] setThemeMode store action is unavailable');
+      }
       if (mode === 'auto') setTemporalPhase(getTemporalPhase());
     },
     [setStoredThemeMode],
@@ -130,7 +133,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     ],
   );
 
-  return <ThemeContext value={value}>{children}</ThemeContext>;
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
 export function useThemeContext() {

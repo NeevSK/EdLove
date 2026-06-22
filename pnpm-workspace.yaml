@@ -99,6 +99,7 @@ allowBuilds:
   '@biomejs/biome': true
   '@google/genai': true
   '@img/sharp-win32-x64': true
+  '@journeyapps/wa-sqlite': true
   '@parcel/watcher': true
   '@playwright/browser-chromium': true
   '@prisma/client': true

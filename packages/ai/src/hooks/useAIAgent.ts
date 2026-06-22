@@ -1,8 +1,8 @@
 import { authAPI, identityAPI, moonPhaseAPI, supabase } from '@repo/core/api';
-import { usePermissions, useStore, cryptoManager } from '@repo/core/logic';
-
-import { useCallback, useState, useEffect } from 'react';
-import { useChat } from '@tanstack/ai-react';
+import { cryptoManager, usePermissions, useStore } from '@repo/core/logic';
+import { fetchServerSentEvents, useChat } from '@tanstack/ai-react';
+import type { MultimodalContent } from '@tanstack/ai-client';
+import { useCallback, useEffect, useState } from 'react';
 import { type CoordinationGap, TimetableScheduler } from '../api/agents';
 
 export interface Message {
@@ -23,7 +23,9 @@ export function useAIAgent() {
   const user = useStore((state) => state.user);
 
   // Billing configuration states
-  const [billingMode, setBillingModeState] = useState<'baseline' | 'byok' | 'purchased'>('baseline');
+  const [billingMode, setBillingModeState] = useState<'baseline' | 'byok' | 'purchased'>(
+    'baseline',
+  );
   const [byokKey, setByokKeyState] = useState<string>('');
   const [authToken, setAuthToken] = useState<string | null>(null);
 
@@ -70,9 +72,12 @@ export function useAIAgent() {
 
   // Fetch token asynchronously for the streaming headers
   useEffect(() => {
-    authAPI.getAuthSession().then((session) => {
-      setAuthToken(session?.access_token ?? null);
-    }).catch(() => null);
+    authAPI
+      .getAuthSession()
+      .then((session) => {
+        setAuthToken(session?.access_token ?? null);
+      })
+      .catch(() => null);
   }, []);
 
   // Fetch moon phase context
@@ -87,35 +92,65 @@ export function useAIAgent() {
   const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
 
   // TanStack AI useChat hook integration
-  const {
-    messages,
-    input,
-    setInput,
-    handleSubmit,
-    status,
-    error,
-  } = useChat({
-    api: `${apiBaseUrl}/api/ai/chat`,
-    headers: authToken ? {
-      Authorization: `Bearer ${authToken}`,
-    } : undefined,
-    body: () => ({
-      context: {
-        role: userRole ?? 'teacher',
-        schoolName: user?.school_id ? 'Gurudevi School' : undefined, // fallback or resolved school name
-        activeGaps: activeGaps.map(g => ({
-          type: g.type,
-          title: g.title,
-          priority: g.priority,
-          suggestedAction: g.suggestedAction,
-        })),
-        orientationSeeds: user?.orientation_seeds ?? null,
-        moonPhase,
-        billingMode,
-        byokKey: byokKey || undefined,
+  const connection = fetchServerSentEvents(
+    `${apiBaseUrl}/api/ai/chat`,
+    () => ({
+      headers: authToken
+        ? {
+            Authorization: `Bearer ${authToken}`,
+          }
+        : undefined,
+      body: {
+        context: {
+          role: userRole ?? 'teacher',
+          schoolName: user?.school_id ? 'Gurudevi School' : undefined, // fallback or resolved school name
+          activeGaps: activeGaps.map((g) => ({
+            type: g.type,
+            title: g.title,
+            priority: g.priority,
+            suggestedAction: g.suggestedAction,
+          })),
+          orientationSeeds: user?.orientation_seeds ?? null,
+          moonPhase,
+          billingMode,
+          byokKey: byokKey || undefined,
+        },
       },
-    }),
+    })
+  );
+
+  const { messages: rawMessages, sendMessage, clear, status, error } = useChat({
+    connection,
   });
+
+  const [input, setInput] = useState('');
+
+  const handleSubmit = useCallback(() => {
+    if (!input.trim()) return;
+    const content = input.trim();
+    setInput('');
+    void sendMessage(content);
+  }, [input, sendMessage]);
+
+  const mappedMessages: Message[] = (rawMessages || [])
+    .filter((msg) => msg.role !== 'system')
+    .map((msg) => {
+      const content = msg.parts
+        .map((part) => {
+          if (part.type === 'text') {
+            return part.content;
+          }
+          return '';
+        })
+        .join('');
+
+      return {
+        id: msg.id,
+        role: msg.role === 'user' ? 'user' : 'assistant',
+        content,
+        timestamp: msg.createdAt ? new Date(msg.createdAt).getTime() : Date.now(),
+      };
+    });
 
   /**
    * Workflow Assistant: Structural Repair
@@ -236,10 +271,12 @@ export function useAIAgent() {
   }, []);
 
   return {
-    messages,
+    messages: mappedMessages,
     input,
     setInput,
     handleSubmit,
+    sendMessage,
+    clearHistory: clear,
     isThinking: status === 'streaming' || status === 'submitted',
     activeGaps,
     lastTimetableDraft,

@@ -24,15 +24,8 @@ export default function AIAssistantScreen() {
   const router = useRouter();
   const { gradientNodes, accent, glass, text, isDark } = useTheme();
   const { t } = useTranslation();
-  const {
-    messages,
-    input,
-    setInput,
-    handleSubmit,
-    isThinking,
-    billingMode,
-    setBillingMode,
-  } = useAIAgent();
+  const { messages, input, setInput, handleSubmit, isThinking, billingMode, setBillingMode } =
+    useAIAgent();
   const userRole = useStore((state) => state.activeBond?.capacity ?? null);
   const flatListRef = useRef<FlatList>(null);
 
@@ -101,11 +94,15 @@ export default function AIAssistantScreen() {
                     {t('aiAssistant.title')}
                   </Text>
                 </HStack>
-                
+
                 {/* Billing Mode Selector Pill */}
                 <TouchableOpacity
                   onPress={() => {
-                    const modes: ('baseline' | 'byok' | 'purchased')[] = ['baseline', 'byok', 'purchased'];
+                    const modes: ('baseline' | 'byok' | 'purchased')[] = [
+                      'baseline',
+                      'byok',
+                      'purchased',
+                    ];
                     const nextMode = modes[(modes.indexOf(billingMode) + 1) % modes.length]!;
                     setBillingMode(nextMode);
                   }}

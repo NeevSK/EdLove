@@ -54,7 +54,7 @@ For every file audited, verify the following standards:
 
 ### 🧬 Packages/Core (Hooks)
 - [ ] `packages/core/src/hooks/useIdentity.ts`
-- [ ] `packages/core/src/hooks/useAuthorityLifecycle.ts`
+- [ ] `packages/core/src/hooks/useAuthLifecycle.ts`
 - [ ] `packages/core/src/hooks/usePendingActions.ts`
 
 ### 🎨 Packages/UI (Hooks)

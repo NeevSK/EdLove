@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 // Initialize Rozenite DevTools plugins during development environment builds
 if (__DEV__) {
   try {

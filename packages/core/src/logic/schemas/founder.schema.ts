@@ -63,7 +63,7 @@ export const EcosystemPulseSchema = z.object({
  */
 export const GlobalUserSchema = z.object({
   id: z.uuid(),
-  email: z.email(),
+  email: z.string().email().or(z.literal('')).nullable().optional(),
   full_name: z.string(),
   capacity: z.string(),
   avatar_url: z.url().nullable().optional(),

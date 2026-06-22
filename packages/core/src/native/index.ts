@@ -23,5 +23,5 @@ export {
 } from './runtimeAdapter';
 export { StorageKeys, storage } from './storage';
 export { supabaseAuthStorage } from './supabaseAuthStorage';
-export { useAuthorityLifecycle } from './useAuthorityLifecycle';
+export { useAuthLifecycle } from './useAuthLifecycle';
 export { useWorkspaceLayoutSync } from './useWorkspaceLayoutSync';

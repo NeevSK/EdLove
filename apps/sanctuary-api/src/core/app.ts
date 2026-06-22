@@ -1,0 +1,655 @@
+import { swaggerUI } from '@hono/swagger-ui';
+import { OpenAPIHono } from '@hono/zod-openapi';
+import {
+  adaptToHono,
+  adminContract,
+  adminHandlers,
+  communityContract,
+  communityHandlers,
+  dailyContentContract,
+  dailyContentHandlers,
+  educationalContract,
+  educationalHandlers,
+  gradingContract,
+  gradingHandlers,
+  identityContract,
+  identityHandlers,
+  libraryContract,
+  libraryHandlers,
+  operationsContract,
+  operationsHandlers,
+  profileContract,
+  profileHandlers,
+  type SovereignRoute,
+  selfContract,
+  selfHandlers,
+  syncContract,
+  syncHandlers,
+} from '@repo/core/api/server';
+import { canUseZenStackDb, createZenStackDb } from '@repo/database';
+import { check as checkCedar } from '@repo/policies';
+import { aiRouter } from '../ai/routes';
+import { verifySupabaseJwt } from '../jwt';
+
+interface Env {
+  Variables: {
+    db: ReturnType<typeof createZenStackDb>;
+    user: { id: string };
+  };
+}
+
+export const app = new OpenAPIHono<Env>();
+
+app.onError((err, c) => {
+  console.error('[UNCAUGHT ERROR]:', err);
+  return c.json(
+    {
+      error: 'Internal Server Error',
+      message: 'An unexpected error occurred.',
+    },
+    500,
+  );
+});
+
+// Helper to retrieve environment variables safely across runtimes.
+function getEnv(key: string): string | undefined {
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env[key];
+  }
+  if (typeof globalThis !== 'undefined' && (globalThis as any).ENV) {
+    return (globalThis as any).ENV[key];
+  }
+  return undefined;
+}
+
+// Pure JS MD5 implementation to ensure 100% WinterCG compliance (standard Web Crypto does not mandate MD5)
+async function md5Hex(str: string): Promise<string> {
+  const k = [
+    0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
+    0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be, 0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
+    0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa, 0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
+    0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed, 0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
+    0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c, 0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
+    0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05, 0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
+    0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039, 0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
+    0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1, 0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391,
+  ];
+  const s = [
+    7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9,
+    14, 20, 5, 9, 14, 20, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 6, 10, 15, 21,
+    6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21,
+  ];
+
+  const encoder = new TextEncoder();
+  const bytes = encoder.encode(str);
+  const words: number[] = [];
+  const len = bytes.length;
+  for (let i = 0; i < len; i++) {
+    words[i >> 2] |= bytes[i] << ((i % 4) * 8);
+  }
+
+  words[len >> 2] |= 0x80 << ((len % 4) * 8);
+  const wordsLen = (((len + 8) >> 6) + 1) * 16;
+  while (words.length < wordsLen) {
+    words.push(0);
+  }
+  words[wordsLen - 2] = len * 8;
+  words[wordsLen - 1] = 0;
+
+  let a = 0x67452301;
+  let b = 0xefcdab89;
+  let c = 0x98badcfe;
+  let d = 0x10325476;
+
+  for (let i = 0; i < wordsLen; i += 16) {
+    const originalA = a;
+    const originalB = b;
+    const originalC = c;
+    const originalD = d;
+
+    for (let j = 0; j < 64; j++) {
+      let f, g;
+      if (j < 16) {
+        f = (b & c) | (~b & d);
+        g = j;
+      } else if (j < 32) {
+        f = (d & b) | (~d & c);
+        g = (5 * j + 1) % 16;
+      } else if (j < 48) {
+        f = b ^ c ^ d;
+        g = (3 * j + 5) % 16;
+      } else {
+        f = c ^ (b | ~d);
+        g = (7 * j) % 16;
+      }
+
+      const temp = d;
+      const sum = (a + f + k[j] + (words[i + g] || 0)) | 0;
+      const rot = (sum << s[j]) | (sum >>> (32 - s[j]));
+      d = c;
+      c = b;
+      b = (b + rot) | 0;
+      a = temp;
+    }
+
+    a = (a + originalA) | 0;
+    b = (b + originalB) | 0;
+    c = (c + originalC) | 0;
+    d = (d + originalD) | 0;
+  }
+
+  const hex = (n: number) => {
+    let out = '';
+    for (let i = 0; i < 4; i++) {
+      out += ((n >> (i * 8)) & 0xff).toString(16).padStart(2, '0');
+    }
+    return out;
+  };
+  return hex(a) + hex(b) + hex(c) + hex(d);
+}
+
+// --- 1. Global Middleware ---
+app.use('*', async (c, next) => {
+  const requestId = globalThis.crypto.randomUUID();
+  c.header('x-request-id', requestId);
+
+  // CORS headers
+  const origin = c.req.header('Origin');
+  if (origin === 'http://localhost:8081' || origin === 'https://platform.gurudevi.edlove.org') {
+    c.header('Access-Control-Allow-Origin', origin);
+  }
+  c.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  c.header(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, x-school-id, x-capacity, x-grade-id, x-section-id, x-classroom-ids, x-child-student-ids, x-device-trust, x-network-zone',
+  );
+
+  // Handle preflight requests
+  if (c.req.method === 'OPTIONS') {
+    return c.text('', 200);
+  }
+
+  console.log(`[${requestId}] ${c.req.method} ${c.req.url}`);
+  await next();
+});
+
+// --- 2. Sovereign Auth & ZenStack (ReBAC) Middleware ---
+app.use('/api/*', async (c, next) => {
+  // 1. Resolve User from Header using Authoritative Asymmetric Cryptographic JWT Verification
+  const authHeader = c.req.header('Authorization');
+  let user = { id: 'anonymous' };
+
+  if (authHeader) {
+    if (!authHeader.startsWith('Bearer ')) {
+      return c.json(
+        {
+          error: 'Unauthorized',
+          message: 'Invalid Authorization header format. Must be Bearer token.',
+        },
+        401,
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    // Provide potential environment context overrides from Hono (e.g. c.env)
+    const verifiedPayload = await verifySupabaseJwt(token, c.env as any);
+
+    if (!verifiedPayload) {
+      return c.json(
+        {
+          error: 'Unauthorized',
+          message:
+            'Authoritative cryptographic identity verification failed (Invalid or Expired JWT).',
+        },
+        401,
+      );
+    }
+
+    user = { id: verifiedPayload.sub };
+  }
+
+  // 2. Inject ZenStack Enhanced DB
+  const dbUrl = (c.env as any)?.DATABASE_URL || getEnv('DATABASE_URL');
+  let db: ReturnType<typeof createZenStackDb> | null = null;
+  if (canUseZenStackDb(dbUrl)) {
+    db = createZenStackDb(user, dbUrl);
+  } else {
+    console.warn('DATABASE_URL not found. ReBAC enforcement will be offline.');
+  }
+
+  c.set('user', user);
+  if (db) c.set('db', db);
+
+  return await next();
+});
+
+// --- 3. Cedar Server Gate Check Middleware (Dynamic Route-level PEP) ---
+async function getRequestSecurityContext(c: any) {
+  const user = c.get('user') || { id: 'anonymous' };
+  const db = c.get('db');
+  const isAnonymousUser = user.id === 'anonymous';
+
+  let school_id = '';
+  let capacity = 'teacher';
+  let grade_id: string | undefined;
+  let section_id: string | undefined;
+  let classroom_ids: string[];
+  let child_student_ids: string[];
+
+  const clientHeaderSchoolId = c.req.header('x-school-id') || '';
+  const clientHeaderCapacity = c.req.header('x-capacity') || 'teacher';
+  const clientHeaderGradeId = c.req.header('x-grade-id') || undefined;
+  const clientHeaderSectionId = c.req.header('x-section-id') || undefined;
+
+  const xClassroomIds = c.req.header('x-classroom-ids');
+  const clientHeaderClassroomIds = xClassroomIds
+    ? xClassroomIds.split(',').map((id: string) => id.trim())
+    : [];
+
+  const xChildIds = c.req.header('x-child-student-ids');
+  const clientHeaderChildIds = xChildIds ? xChildIds.split(',').map((id: string) => id.trim()) : [];
+
+  let hydratedFromDb = false;
+  if (!isAnonymousUser && db) {
+    try {
+      const activeBond = (await db.bond.findFirst({
+        where: { user_id: user.id },
+      })) as any;
+      if (activeBond) {
+        capacity = activeBond.capacity;
+        if (activeBond.entity_type === 'SCHOOL') {
+          school_id = activeBond.entity_id || '';
+        }
+        hydratedFromDb = true;
+      }
+    } catch (err) {
+      console.warn('Server failed to resolve active bond from DB:', err);
+    }
+  }
+
+  if (!hydratedFromDb) {
+    school_id = clientHeaderSchoolId;
+    capacity = isAnonymousUser ? 'wanderer' : clientHeaderCapacity;
+    grade_id = clientHeaderGradeId;
+    section_id = clientHeaderSectionId;
+    classroom_ids = clientHeaderClassroomIds;
+    child_student_ids = clientHeaderChildIds;
+  } else {
+    if (clientHeaderCapacity === 'admin' && capacity !== 'admin') {
+      console.warn(
+        `[SENTINEL SECURITY ALERT] Blocked header privilege escalation attempt by user "${user.id}"`,
+      );
+      throw new Error('PrivilegeEscalation');
+    }
+    grade_id = clientHeaderGradeId;
+    section_id = clientHeaderSectionId;
+    classroom_ids = clientHeaderClassroomIds;
+    child_student_ids = clientHeaderChildIds;
+  }
+
+  const deviceTrust =
+    c.req.header('x-device-trust') || c.req.header('x-device-status') || 'standard';
+  const networkZone = c.req.header('x-network-zone') || 'trusted';
+
+  return {
+    user,
+    db,
+    principal: {
+      id: user.id,
+      type: capacity,
+      attributes: {
+        school_id,
+        capacity,
+        grade_id,
+        section_id,
+        classroom_ids,
+        child_student_ids,
+      },
+    },
+    context: {
+      device_trust: deviceTrust,
+      network_zone: networkZone,
+    },
+    school_id,
+    capacity,
+  };
+}
+
+function poa(route: SovereignRoute) {
+  return async (c: any, next: any) => {
+    if (c.req.method.toLowerCase() !== route.method.toLowerCase()) {
+      return await next();
+    }
+
+    // Special bypass for resolveIdentity bootstrapping
+    if (c.req.path.includes('/identity/resolveIdentity')) {
+      return await next();
+    }
+
+    let securityContext;
+    try {
+      securityContext = await getRequestSecurityContext(c);
+    } catch (err: any) {
+      if (err.message === 'PrivilegeEscalation') {
+        return c.json(
+          {
+            error: 'Forbidden',
+            message:
+              'Authoritative database policy rejects the requested administrative capability.',
+          },
+          403,
+        );
+      }
+      return c.json({ error: 'Internal Server Error' }, 500);
+    }
+
+    const { user, principal, context, school_id, capacity } = securityContext;
+    const policy = route.metadata.policy;
+    const cedarAction = policy.action;
+    const resourceType = policy.subject;
+
+    let resourceId = school_id || 'school_institutional';
+    const params = c.req.param();
+    const paramKeys = Object.keys(params);
+    if (paramKeys.length > 0) {
+      if (params.id) {
+        resourceId = params.id;
+      } else if (params.userId) {
+        resourceId = params.userId;
+      } else if (params.studentId) {
+        resourceId = params.studentId;
+      } else if (params.classroomId) {
+        resourceId = params.classroomId;
+      } else if (params.classroomStudentId) {
+        resourceId = params.classroomStudentId;
+      } else if (params.teacherId) {
+        resourceId = params.teacherId;
+      } else if (params.schoolId) {
+        resourceId = params.schoolId;
+      } else if (params.principalId) {
+        resourceId = params.principalId;
+      } else if (params.insightId) {
+        resourceId = params.insightId;
+      } else if (params.token) {
+        resourceId = params.token;
+      } else if (params.workspaceId) {
+        resourceId = params.workspaceId;
+      } else {
+        resourceId = params[paramKeys[0]];
+      }
+    } else {
+      if (resourceType === 'User') {
+        resourceId = user.id;
+      } else if (resourceType === 'MoodLog') {
+        resourceId = 'user_mood_log';
+      } else if (resourceType === 'FireJournal') {
+        resourceId = 'user_fire_journal';
+      } else if (resourceType === 'JoyMoments') {
+        resourceId = 'user_joy_moment';
+      } else if (resourceType === 'GratitudeEntries') {
+        resourceId = 'user_gratitude_entry';
+      }
+    }
+
+    let bodyClassroomId: string | undefined;
+    const method = c.req.method.toUpperCase();
+    if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
+      try {
+        const cloned = c.req.raw.clone();
+        const bodyJson = await cloned.json();
+        bodyClassroomId = bodyJson?.classroom_id ?? bodyJson?.classroomId;
+      } catch {
+        // Body is not JSON or cannot be read, ignore gracefully
+      }
+    }
+
+    const authResult = checkCedar({
+      principal,
+      action: cedarAction,
+      resource: {
+        id: resourceId,
+        type: resourceType,
+        attributes: {
+          ...(resourceType !== 'School' && { school_id }),
+          ...(bodyClassroomId && { classroom_id: bodyClassroomId }),
+          ...((resourceType === 'MoodLog' ||
+            resourceType === 'FireJournal' ||
+            resourceType === 'JoyMoments' ||
+            resourceType === 'GratitudeEntries' ||
+            resourceType === 'EnergyForecasts') && { user_id: user.id }),
+        },
+      },
+      context,
+    });
+
+    if (!authResult.permitted) {
+      return c.json(
+        {
+          error: 'Forbidden',
+          message: 'Access denied by authoritative Cedar policy engine (Double Gate Enforcement).',
+          reason: authResult.reason,
+          gaps: authResult.gaps,
+        },
+        403,
+      );
+    }
+
+    if (capacity === 'admin') {
+      console.info(
+        `[SENTINEL AUDIT LOG] Platform Admin Action Authorized:
+         - Operator ID: "${user.id}"
+         - Action: "${cedarAction}"
+         - Target Resource: "${resourceType}::${resourceId}"
+         - Path: "${c.req.method} ${c.req.path}"
+         - Device Trust: "${context.device_trust}"
+         - Network Zone: "${context.network_zone}"
+         - Status: APPROVED & AUDITED`,
+      );
+    }
+
+    return await next();
+  };
+}
+
+function registerRoute(apiApp: OpenAPIHono<any>, route: SovereignRoute, handler: any) {
+  apiApp.use(route.path, poa(route));
+  apiApp.openapi(adaptToHono(route), handler);
+}
+
+// Sovereign Routes (Vertical Slice: SELF)
+const selfApp = new OpenAPIHono();
+registerRoute(selfApp, selfContract.logMood, selfHandlers.logMood);
+registerRoute(selfApp, selfContract.getMoodHistory, selfHandlers.getMoodHistory);
+registerRoute(selfApp, selfContract.burnJournal, selfHandlers.burnJournal);
+registerRoute(selfApp, selfContract.getJournalHistory, selfHandlers.getJournalHistory);
+registerRoute(selfApp, selfContract.getTodayMood, selfHandlers.getTodayMood);
+registerRoute(selfApp, selfContract.getPreferences, selfHandlers.getPreferences);
+registerRoute(selfApp, selfContract.updatePreferences, selfHandlers.updatePreferences);
+
+// Sovereign Routes (Vertical Slice: PROFILE)
+const profileApp = new OpenAPIHono();
+registerRoute(profileApp, profileContract.getUserProfile, profileHandlers.getUserProfile);
+registerRoute(profileApp, profileContract.updateProfile, profileHandlers.updateProfile);
+registerRoute(profileApp, profileContract.getJourneySnapshot, profileHandlers.getJourneySnapshot);
+registerRoute(profileApp, profileContract.getSchoolPulse, profileHandlers.getSchoolPulse);
+
+// Sovereign Routes (Vertical Slice: COMMUNITY)
+const communityApp = new OpenAPIHono();
+registerRoute(communityApp, communityContract.getGroups, communityHandlers.getGroups);
+registerRoute(communityApp, communityContract.getGroup, communityHandlers.getGroup);
+registerRoute(communityApp, communityContract.createGroup, communityHandlers.createGroup);
+registerRoute(communityApp, communityContract.joinGroup, communityHandlers.joinGroup);
+registerRoute(communityApp, communityContract.getPosts, communityHandlers.getPosts);
+registerRoute(communityApp, communityContract.createPost, communityHandlers.createPost);
+registerRoute(communityApp, communityContract.toggleReaction, communityHandlers.toggleReaction);
+
+// Sovereign Routes (Vertical Slice: DAILY CONTENT)
+const dailyContentApp = new OpenAPIHono();
+registerRoute(dailyContentApp, dailyContentContract.getToday, dailyContentHandlers.getToday);
+registerRoute(dailyContentApp, dailyContentContract.getForDate, dailyContentHandlers.getForDate);
+registerRoute(dailyContentApp, dailyContentContract.getRecent, dailyContentHandlers.getRecent);
+
+// Sovereign Routes (Vertical Slice: EDUCATIONAL)
+const educationalApp = new OpenAPIHono();
+registerRoute(educationalApp, educationalContract.getByTeacher, educationalHandlers.getByTeacher);
+registerRoute(educationalApp, educationalContract.getById, educationalHandlers.getById);
+registerRoute(
+  educationalApp,
+  educationalContract.getClassroomResources,
+  educationalHandlers.getClassroomResources,
+);
+registerRoute(educationalApp, educationalContract.createLesson, educationalHandlers.createLesson);
+
+// Sovereign Routes (Vertical Slice: GRADING)
+const gradingApp = new OpenAPIHono();
+registerRoute(gradingApp, gradingContract.getReportCard, gradingHandlers.getReportCard);
+registerRoute(gradingApp, gradingContract.getClassroomGrades, gradingHandlers.getClassroomGrades);
+registerRoute(gradingApp, gradingContract.submitGrade, gradingHandlers.submitGrade);
+registerRoute(gradingApp, gradingContract.publishGrade, gradingHandlers.publishGrade);
+registerRoute(gradingApp, gradingContract.getGradingSettings, gradingHandlers.getGradingSettings);
+
+// Sovereign Routes (Vertical Slice: OPERATIONS)
+const operationsApp = new OpenAPIHono();
+registerRoute(operationsApp, operationsContract.getAttendance, operationsHandlers.getAttendance);
+registerRoute(
+  operationsApp,
+  operationsContract.recordAttendance,
+  operationsHandlers.recordAttendance,
+);
+registerRoute(
+  operationsApp,
+  operationsContract.batchRecordAttendance,
+  operationsHandlers.batchRecordAttendance,
+);
+registerRoute(
+  operationsApp,
+  operationsContract.getSchoolAttendancePulse,
+  operationsHandlers.getSchoolAttendancePulse,
+);
+
+// Sovereign Routes (Vertical Slice: IDENTITY)
+const identityApp = new OpenAPIHono();
+registerRoute(
+  identityApp,
+  identityContract.identifyActiveCitizen,
+  identityHandlers.resolveIdentity,
+);
+registerRoute(identityApp, identityContract.fetchUserProfile, identityHandlers.getProfile);
+registerRoute(
+  identityApp,
+  identityContract.resolveWorkspaceContext,
+  identityHandlers.getClassroomCapacitySummary,
+);
+registerRoute(identityApp, identityContract.modifyUserProfile, identityHandlers.updateProfile);
+
+// Sovereign Routes (Vertical Slice: ADMIN)
+const adminApp = new OpenAPIHono();
+registerRoute(adminApp, adminContract.getStaffPresence, adminHandlers.getStaffPresence);
+registerRoute(adminApp, adminContract.getTeacherCarousel, adminHandlers.getTeacherCarousel);
+registerRoute(adminApp, adminContract.submitLeave, adminHandlers.submitLeave);
+registerRoute(adminApp, adminContract.getSchool, adminHandlers.getSchool);
+
+// Sovereign Routes (Vertical Slice: LIBRARY)
+const libraryApp = new OpenAPIHono();
+registerRoute(libraryApp, libraryContract.getResources, libraryHandlers.getResources);
+registerRoute(libraryApp, libraryContract.getResource, libraryHandlers.getResource);
+registerRoute(libraryApp, libraryContract.searchLibrary, libraryHandlers.searchLibrary);
+registerRoute(libraryApp, libraryContract.engage, libraryHandlers.engage);
+registerRoute(libraryApp, libraryContract.getCollections, libraryHandlers.getCollections);
+registerRoute(libraryApp, libraryContract.getCollection, libraryHandlers.getCollection);
+
+app.route('/api', selfApp);
+app.route('/api', profileApp);
+app.route('/api', communityApp);
+app.route('/api', dailyContentApp);
+app.route('/api', educationalApp);
+app.route('/api', gradingApp);
+app.route('/api', operationsApp);
+app.route('/api', identityApp);
+app.route('/api', adminApp);
+app.route('/api', libraryApp);
+
+// Sovereign Routes (Vertical Slice: SYNC)
+const syncApp = new OpenAPIHono();
+registerRoute(syncApp, syncContract.uploadPowerSyncBatch, syncHandlers.uploadPowerSyncBatch);
+app.route('/api', syncApp);
+app.route('/api/ai', aiRouter);
+
+// Public Payments Webhook (Bypasses Bearer Auth)
+app.post('/payments/payhere-webhook', async (c) => {
+  const body = await c.req.parseBody();
+  const { merchant_id, order_id, payhere_amount, payhere_currency, status_code, md5sig } = body;
+
+  if (
+    typeof merchant_id !== 'string' ||
+    typeof order_id !== 'string' ||
+    typeof payhere_amount !== 'string' ||
+    typeof payhere_currency !== 'string' ||
+    typeof status_code !== 'string' ||
+    typeof md5sig !== 'string'
+  ) {
+    return c.text('Bad Request', 400);
+  }
+
+  const merchantSecret = getEnv('PAYHERE_MERCHANT_SECRET');
+  if (!merchantSecret) {
+    console.error('PAYHERE_MERCHANT_SECRET is not set in environment variables');
+    return c.text('Configuration Error', 500);
+  }
+
+  // Calculate MD5 signature to verify authenticity using standard Web Crypto API
+  const secretHash = (await md5Hex(merchantSecret)).toUpperCase();
+  const rawString = `${merchant_id}${order_id}${payhere_amount}${payhere_currency}${status_code}${secretHash}`;
+  const localSignature = (await md5Hex(rawString)).toUpperCase();
+
+  if (localSignature !== md5sig) {
+    console.error('Invalid signature received for order:', order_id);
+    return c.text('Unauthorized', 401);
+  }
+
+  // Signature matches! Let's process the payment
+  if (status_code === '2') {
+    console.log(
+      `Payment successful for order ${order_id}, amount: ${payhere_amount} ${payhere_currency}`,
+    );
+
+    const systemDb = createZenStackDb({ id: 'system-payment-service' });
+
+    try {
+      const user = await systemDb.user.findUnique({
+        where: { id: order_id },
+      });
+
+      if (user) {
+        await systemDb.user.update({
+          where: { id: order_id },
+          data: {
+            pricing_tier: 'PRO',
+          },
+        });
+        console.log(`Successfully upgraded user ${order_id} to PRO tier.`);
+      } else {
+        console.log(
+          `Order ID ${order_id} is not a direct user. Handling as transaction reference...`,
+        );
+      }
+    } catch (dbError) {
+      console.error('Database update failed during webhook handling:', dbError);
+      return c.text('Database Error', 500);
+    }
+  }
+
+  return c.text('OK', 200);
+});
+
+// --- 4. Documentation ---
+app.doc('/doc', {
+  openapi: '3.1.0',
+  info: {
+    title: 'Sanctuary API',
+    version: '2026.1.0',
+    description: 'Sovereign API Gateway (ZenStack v3.6.4 + Zod v4)',
+  },
+});
+
+app.get('/ui', swaggerUI({ url: '/doc' }));

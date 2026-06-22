@@ -188,7 +188,7 @@ export const ButtonIcon = ({ as: Icon, className, size, ...props }: any) => {
   const defaultSize = buttonSize === 'sm' ? 16 : buttonSize === 'lg' ? 22 : 18;
 
   return (
-    <View className="mx-1">
+    <View className="mx-1" testID={props.testID}>
       <Icon
         {...props}
         size={size || defaultSize}

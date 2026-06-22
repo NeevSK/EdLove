@@ -34,8 +34,8 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { router, useLocalSearchParams } from 'expo-router';
 import { safeBack } from '@repo/ui/utils/navigation';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FadeInDown } from 'react-native-reanimated';

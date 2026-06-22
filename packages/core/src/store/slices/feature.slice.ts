@@ -1,5 +1,6 @@
 import type { StateCreator } from 'zustand';
 import { type FeatureFlags, resolveFeatureFlags } from '../../logic/permissions/feature-engine';
+import { readFeatureRolloutCache } from '../../logic/permissions/feature-rollout-cache';
 import type { UserContext } from '../../logic/schemas/user.schema';
 
 /**
@@ -20,31 +21,33 @@ export interface FeatureSlice {
 
 export const createFeatureSlice: StateCreator<FeatureSlice> = (set, get) => ({
   // Default values before any context is resolved
-  flags: resolveFeatureFlags({
-    userId: null,
-    email: null,
-    // Sovereign ReBAC fields — required by UserContext schema
-    bonds: [],
-    primaryCapacity: null,
-    activeBond: null,
-    capacity: null,
-    traits: [],
-    schoolId: null,
-    pricing_tier: 'FREE',
-    tenancyName: null,
-    tenancy: null,
-    tenantKind: 'customer',
-    tier: 'free',
-    citizenship: 'WANDERER',
-    isAnonymous: true,
-    hasGlobalAccess: false,
-    isPersonal: false,
-    features: [],
-    flags: {},
-    sectionId: null,
-    gradeId: null,
-    classroomId: null,
-  }),
+  flags:
+    (readFeatureRolloutCache()?.flags as FeatureFlags | undefined) ??
+    resolveFeatureFlags({
+      userId: null,
+      email: null,
+      // Sovereign ReBAC fields — required by UserContext schema
+      bonds: [],
+      primaryCapacity: null,
+      activeBond: null,
+      capacity: null,
+      traits: [],
+      schoolId: null,
+      pricing_tier: 'FREE',
+      tenancyName: null,
+      tenancy: null,
+      tenantKind: 'customer',
+      tier: 'free',
+      citizenship: 'WANDERER',
+      isAnonymous: true,
+      hasGlobalAccess: false,
+      isPersonal: false,
+      features: [],
+      flags: {},
+      sectionId: null,
+      gradeId: null,
+      classroomId: null,
+    }),
 
   globalConfigs: {},
 

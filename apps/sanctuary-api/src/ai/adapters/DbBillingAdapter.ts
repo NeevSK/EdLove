@@ -11,7 +11,7 @@ export class DbBillingAdapter implements BillingPort {
       byokKeyInput?: string;
       schoolId?: string;
       preferredProvider?: 'openai' | 'gemini' | 'anthropic' | 'deepseek';
-    }
+    },
   ): Promise<{
     mode: 'baseline' | 'byok' | 'purchased';
     provider: 'openai' | 'gemini' | 'anthropic' | 'deepseek';
@@ -21,7 +21,7 @@ export class DbBillingAdapter implements BillingPort {
     // 1. Resolve BYOK
     if (requestedMode === 'byok' && options?.byokKeyInput) {
       let key = options.byokKeyInput;
-      
+
       // Decrypt client key if it is AES-256-GCM cipher text (contains iv:cipher:tag format)
       if (key.includes(':')) {
         try {
@@ -32,7 +32,8 @@ export class DbBillingAdapter implements BillingPort {
       }
 
       // Infer provider from key prefix or fallback to preferredProvider
-      let provider: 'openai' | 'gemini' | 'anthropic' | 'deepseek' = options.preferredProvider || 'openai';
+      let provider: 'openai' | 'gemini' | 'anthropic' | 'deepseek' =
+        options.preferredProvider || 'openai';
       let model = 'gpt-4o';
 
       if (key.startsWith('sk-ant-')) {
@@ -139,7 +140,7 @@ export class DbBillingAdapter implements BillingPort {
     userId: string,
     model: string,
     tokensUsed: number,
-    durationMs: number
+    durationMs: number,
   ): Promise<void> {
     if (!this.db) return;
 

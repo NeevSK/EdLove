@@ -989,3 +989,5 @@ export default function ProfileScreenWeb({
     </div>
   );
 }
+
+export { ProfileScreenWeb as ProfileScreen };

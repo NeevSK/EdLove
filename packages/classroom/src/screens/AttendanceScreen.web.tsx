@@ -4,8 +4,8 @@ import type { AttendanceRecord } from '@repo/core/types';
 
 import { Check, ChevronLeft, Clock, Save, X } from '@repo/ui/icons';
 import { Icon } from '@repo/ui/primitives';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { safeBack } from '@repo/ui/utils/navigation';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 

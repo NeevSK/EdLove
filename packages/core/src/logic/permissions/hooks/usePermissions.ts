@@ -5,6 +5,7 @@ import { usePermissionStore } from '../../../store/usePermissionStore';
 import { useTenantStore } from '../../../store/useTenantStore';
 import { type TenantKind, type UserContext, UserContextSchema } from '../../schemas/user.schema';
 import type { Actions, SubjectType } from '../abilities/base';
+import { sanctuaryFeature } from '../sanctuaryFeature';
 
 /**
  * usePermissions: The ONLY interface components ever touch for POA.
@@ -70,15 +71,18 @@ export const usePermissions = () => {
    */
   const can = useCallback(
     (action: Actions, subject: SubjectType) => {
-      // Snapshot-first evaluation: if the permission matrix is missing, deny.
-      if (!permissionsMap) {
-        return false;
-      }
-
-      const isAllowed = permissionsMap[subject as string]?.[action as string];
-      return isAllowed === true;
+      return sanctuaryFeature(
+        {
+          context,
+          flags,
+          permissionsMap,
+          initialized: true,
+        },
+        action as string,
+        subject as string,
+      ).permitted;
     },
-    [permissionsMap],
+    [context, flags, permissionsMap],
   );
 
   /**

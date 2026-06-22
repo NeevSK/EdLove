@@ -50,8 +50,8 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { safeBack } from '@repo/ui/utils/navigation';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
   AttendanceView,

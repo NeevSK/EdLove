@@ -3,8 +3,8 @@ import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { useThemedColors } from '@repo/ui/hooks';
 import { ArrowLeft, BookOpen, Clock, GraduationCap, Hash, User } from '@repo/ui/icons';
 import { Icon } from '@repo/ui/primitives';
-import { useRouter } from 'expo-router';
 import { safeBack } from '@repo/ui/utils/navigation';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useClassroomProfile } from '../hooks/useClassroomProfile';
 

@@ -13,17 +13,24 @@ import {
   posthogAnalytics as initTracker,
   trackEvent,
 } from '@repo/analytics';
-import { coreRuntime, GlobalProvider, pushNotification, useAuth, useStore, accountPin } from '@repo/core/logic';
+import {
+  accountPin,
+  coreRuntime,
+  GlobalProvider,
+  pushNotification,
+  useAuth,
+  useStore,
+} from '@repo/core/logic';
 import { clearSentryUser, initSentry, injectPostHog, setSentryUser } from '@repo/core/monitoring';
 import { bootstrapPlatform, storage } from '@repo/core/native';
 import { usePermissionStore } from '@repo/core/store/usePermissionStore';
 import { SyncManager } from '@repo/core/sync';
 import { useQRDeepLink } from '@repo/scanner-kit';
+import { AccountPinModal } from '@repo/ui/components';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 import NetworkStatusBanner from '@repo/ui/components/NetworkStatusBanner';
 import { SanctuaryGlobalStyles } from '@repo/ui/components/SanctuaryGlobalStyles';
 import SanctuaryToast from '@repo/ui/components/SanctuaryToast';
-import { AccountPinModal } from '@repo/ui/components';
 import { EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';
 import { FABProvider } from '@repo/ui/context/FABContext';
 import { GluestackUIProvider } from '@repo/ui/gluestack';
@@ -31,14 +38,23 @@ import { Box, Center, Spinner } from '@repo/ui/primitives';
 import { ToastProvider } from '@repo/ui/providers';
 import { sanctuarySaffron } from '@repo/ui/theme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Stack, usePathname, useRouter } from 'expo-router';
-import { useEffect, useState, useCallback } from 'react';
-import { StyleSheet as CSSStyleSheet, Platform, AppState, AppStateStatus, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as LocalAuthentication from 'expo-local-authentication';
-import * as SplashScreen from 'expo-splash-screen';
+import { usePathname, useRouter } from 'expo-router';
+import { Stack } from 'expo-router/stack';
 import * as ScreenCapture from 'expo-screen-capture';
+import * as SplashScreen from 'expo-splash-screen';
 import { Shield } from 'lucide-react-native';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  AppState,
+  AppStateStatus,
+  StyleSheet as CSSStyleSheet,
+  Platform,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { PWAInstallBanner } from '../src/components/web/PWAInstallBanner';
 import { fontAssets } from '../src/constants/Fonts';
 import { registerBackgroundSync } from '../src/lib/backgroundSync';
@@ -85,19 +101,6 @@ function BootstrapSideEffects() {
         trackEvent('app_initialized', { platform: Platform.OS });
       });
     }
-
-    void bootstrapPlatform()
-      .then(() => {
-        installMobileWorkflowEventBridge();
-        void registerBackgroundSync();
-      })
-      .catch((error) => {
-        console.warn('[bootstrapPlatform] continuing with fallback startup', error);
-      });
-
-    void LanguageUtils.init().catch((error) => {
-      console.warn('[LanguageUtils.init] continuing without language bootstrap', error);
-    });
   }, []);
 
   useEffect(() => {
@@ -142,22 +145,34 @@ function BootstrapSideEffects() {
   return null;
 }
 
-function RootShell() {
+function AppContent() {
   const router = useRouter();
   const pathname = usePathname();
   const { session, loading, isProfileLoading } = useAuth();
   const onboardingCompleted = useStore((state) => state.onboardingCompleted);
   const toast = useStore((state) => state.toast);
   const hideToast = useStore((state) => state.hideToast);
-  const [fontsReady, setFontsReady] = useState(false);
+  const [fontsReady, setFontsReady] = useState(() => !coreRuntime.isRegistered());
 
-  const [isUnlocked, setIsUnlocked] = useState(() => {
-    if (Platform.OS === 'web') return true;
-    return !storage.getBoolean('require_biometrics');
-  });
+  const [lockState, setLockState] = useState(() => ({
+    isUnlocked: Platform.OS === 'web' || !storage.getBoolean('require_biometrics'),
+    hasPinCode: false,
+    showPinUnlock: false,
+  }));
+  const { isUnlocked, hasPinCode, showPinUnlock } = lockState;
 
-  const [hasPinCode, setHasPinCode] = useState(false);
-  const [showPinUnlock, setShowPinUnlock] = useState(false);
+  const setIsUnlocked = useCallback(
+    (val: boolean) => setLockState((prev) => ({ ...prev, isUnlocked: val })),
+    [],
+  );
+  const setHasPinCode = useCallback(
+    (val: boolean) => setLockState((prev) => ({ ...prev, hasPinCode: val })),
+    [],
+  );
+  const setShowPinUnlock = useCallback(
+    (val: boolean) => setLockState((prev) => ({ ...prev, showPinUnlock: val })),
+    [],
+  );
 
   useEffect(() => {
     const checkUserPin = async () => {
@@ -168,19 +183,20 @@ function RootShell() {
         setHasPinCode(false);
       }
     };
-    checkUserPin();
+    void checkUserPin();
   }, [session?.user?.id]);
 
-  const handlePinUnlockSubmit = useCallback(async (values: any) => {
-    if (!session?.user?.id) return;
-    const correct = await accountPin.verifyPin(session.user.id, values.pin);
+  const userId = session?.user?.id;
+  const handlePinUnlockSubmit = async (values: any) => {
+    if (!userId) return;
+    const correct = await accountPin.verifyPin(userId, values.pin);
     if (correct) {
       setIsUnlocked(true);
       setShowPinUnlock(false);
     } else {
       throw new Error('Incorrect PIN code. Please try again.');
     }
-  }, [session?.user?.id]);
+  };
 
   const authenticateBiometrics = useCallback(async () => {
     try {
@@ -201,13 +217,15 @@ function RootShell() {
       console.warn('Biometric auth error:', err);
       setIsUnlocked(true);
     }
-  }, []);
+  }, [setIsUnlocked]);
 
   useEffect(() => {
     if (Platform.OS === 'web') return;
 
     if (storage.getBoolean('require_biometrics')) {
-      void authenticateBiometrics();
+      setTimeout(() => {
+        void authenticateBiometrics();
+      }, 0);
     }
 
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
@@ -228,6 +246,10 @@ function RootShell() {
   }, [authenticateBiometrics]);
 
   useEffect(() => {
+    if (!coreRuntime.isRegistered()) {
+      return;
+    }
+
     let cancelled = false;
     const timeout = setTimeout(() => {
       if (!cancelled) {
@@ -275,6 +297,7 @@ function RootShell() {
 
     // Token-Based Access Control (TOBAC) Route Guard
     if (session?.expires_at) {
+      // eslint-disable-next-line no-restricted-syntax
       const isExpired = session.expires_at < Date.now() / 1000;
       if (isExpired && pathname !== '/welcome' && pathname !== '/auth') {
         console.warn('[TOBAC ROUTE GUARD] Session token expired. Redirecting to /welcome');
@@ -283,38 +306,12 @@ function RootShell() {
       }
     }
 
-    const activeBond = (useStore.getState() as any).activeBond;
-    const activeCapacity = activeBond?.capacity || 'wanderer';
-    const allowedStaffCapacities = [
-      'principal',
-      'assistantPrincipal',
-      'teacher',
-      'gradeHead',
-      'sectionHead',
-      'staff',
-    ];
-    const allowedCitizenCapacities = [...allowedStaffCapacities, 'student', 'guardian'];
-
-    if (pathname?.startsWith('/workspace') && !allowedStaffCapacities.includes(activeCapacity)) {
-      console.warn(
-        `[TOBAC ROUTE GUARD] Denied routing to ${pathname} for capacity: ${activeCapacity}`,
-      );
-      router.replace('/self');
-      return;
-    }
-
     if (
-      (pathname?.startsWith('/community') || pathname?.startsWith('/library')) &&
-      !allowedCitizenCapacities.includes(activeCapacity)
+      pathname === '/' ||
+      pathname === '/welcome' ||
+      pathname === '/auth' ||
+      (onboardingCompleted && pathname === '/onboarding')
     ) {
-      console.warn(
-        `[TOBAC ROUTE GUARD] Denied access to ${pathname} for non-citizen capacity: ${activeCapacity}`,
-      );
-      router.replace('/self');
-      return;
-    }
-
-    if (pathname === '/' || pathname === '/welcome' || pathname === '/auth') {
       router.replace('/self');
     }
   }, [fontsReady, isProfileLoading, loading, onboardingCompleted, pathname, router, session]);
@@ -330,6 +327,8 @@ function RootShell() {
   const loadPermissions = usePermissionStore((state) => state.loadPermissions);
 
   useEffect(() => {
+    if (!coreRuntime.isRegistered()) return;
+
     if (session?.user?.id) {
       void loadPermissions(session.user.id);
     }
@@ -363,19 +362,31 @@ function RootShell() {
                 Gurudevi Mobile is locked. Authenticate to proceed.
               </Text>
             </View>
-            <TouchableOpacity 
-              onPress={authenticateBiometrics} 
-              style={{ backgroundColor: '#D4843A', paddingVertical: 12, paddingHorizontal: 24, borderRadius: 12, marginTop: 16 }}
+            <TouchableOpacity
+              accessibilityRole="button"
+              onPress={() => {
+                void authenticateBiometrics();
+              }}
+              style={{
+                backgroundColor: '#D4843A',
+                paddingVertical: 12,
+                paddingHorizontal: 24,
+                borderRadius: 12,
+                marginTop: 16,
+              }}
             >
               <Text style={{ color: '#FFFFFF', fontWeight: 'bold', fontSize: 16 }}>Unlock App</Text>
             </TouchableOpacity>
 
             {hasPinCode && (
-              <TouchableOpacity 
-                onPress={() => setShowPinUnlock(true)} 
+              <TouchableOpacity
+                accessibilityRole="button"
+                onPress={() => setShowPinUnlock(true)}
                 style={{ marginTop: 8 }}
               >
-                <Text style={{ color: '#D4843A', fontWeight: 'bold', fontSize: 14 }}>Enter PIN instead</Text>
+                <Text style={{ color: '#D4843A', fontWeight: 'bold', fontSize: 14 }}>
+                  Enter PIN instead
+                </Text>
               </TouchableOpacity>
             )}
 
@@ -397,64 +408,86 @@ function RootShell() {
 
   return (
     <ErrorBoundary name="Root Shell">
-      <QueryClientProvider client={queryClient}>
-        <EnvironmentProvider>
-          <GlobalProvider>
-            <GluestackUIProvider>
-              <SanctuaryGlobalStyles />
-              <FABProvider>
-                <Box className="flex-1">
-                  <ToastProvider>
-                    <ExternalLinkProvider>
-                      <SafeAreaProvider>
-                        <BootstrapSideEffects />
-                        <Stack screenOptions={{ headerShown: false }}>
-                          <Stack.Screen name="index" options={{ title: 'Welcome' }} />
-                          <Stack.Screen name="welcome" options={{ title: 'Welcome' }} />
-                          <Stack.Screen name="auth" options={{ title: 'Sign In' }} />
-                          <Stack.Screen name="onboarding" options={{ title: 'Getting Started' }} />
-                          <Stack.Screen name="self" options={{ title: 'Self' }} />
-                          <Stack.Screen name="community" options={{ title: 'Community' }} />
-                          <Stack.Screen name="workspace" options={{ title: 'Workspace' }} />
-                          <Stack.Screen name="library" options={{ title: 'Library' }} />
-                          <Stack.Screen name="profile" options={{ title: 'Profile' }} />
-                          <Stack.Screen name="notifications" options={{ title: 'Notifications' }} />
-                          <Stack.Screen name="settings" options={{ title: 'Settings' }} />
-                          <Stack.Screen
-                            name="invitation-welcome"
-                            options={{ presentation: 'modal' }}
-                          />
-                          <Stack.Screen name="qr" options={{ title: 'QR Scan' }} />
-                          <Stack.Screen
-                            name="thuthimal-claim"
-                            options={{ title: 'Thuthimal Badge' }}
-                          />
-                          <Stack.Screen name="public-form/[slug]" options={{ title: 'Form' }} />
-                        </Stack>
-                        <SyncManager
-                          dispatchQueuedMutation={dispatchQueuedMutationToSovereignBus}
-                        />
-                        <NetworkStatusBanner />
-                        {Platform.OS === 'web' && <PWAInstallBanner />}
-                        {toast && (
-                          <SanctuaryToast
-                            visible={!!toast}
-                            message={toast.message}
-                            type={toast.type}
-                            duration={toast.duration}
-                            onHide={hideToast}
-                          />
-                        )}
-                      </SafeAreaProvider>
-                    </ExternalLinkProvider>
-                  </ToastProvider>
-                </Box>
-              </FABProvider>
-            </GluestackUIProvider>
-          </GlobalProvider>
-        </EnvironmentProvider>
-      </QueryClientProvider>
+      <GluestackUIProvider>
+        <SanctuaryGlobalStyles />
+        <FABProvider>
+          <Box className="flex-1">
+            <ToastProvider>
+              <ExternalLinkProvider>
+                <SafeAreaProvider>
+                  <BootstrapSideEffects />
+                  <Stack screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="index" options={{ title: 'Welcome' }} />
+                    <Stack.Screen name="welcome" options={{ title: 'Welcome' }} />
+                    <Stack.Screen name="auth" options={{ title: 'Sign In' }} />
+                    <Stack.Screen name="onboarding" options={{ title: 'Getting Started' }} />
+                    <Stack.Screen name="invitation-welcome" options={{ presentation: 'modal' }} />
+                    <Stack.Screen name="qr" options={{ title: 'QR Scan' }} />
+                    <Stack.Screen name="thuthimal-claim" options={{ title: 'Thuthimal Badge' }} />
+                    <Stack.Screen name="public-form/[slug]" options={{ title: 'Form' }} />
+                  </Stack>
+                  <SyncManager dispatchQueuedMutation={dispatchQueuedMutationToSovereignBus} />
+                  <NetworkStatusBanner />
+                  {Platform.OS === 'web' && <PWAInstallBanner />}
+                  {toast && (
+                    <SanctuaryToast
+                      visible={!!toast}
+                      message={toast.message}
+                      type={toast.type}
+                      duration={toast.duration}
+                      onHide={hideToast}
+                    />
+                  )}
+                </SafeAreaProvider>
+              </ExternalLinkProvider>
+            </ToastProvider>
+          </Box>
+        </FABProvider>
+      </GluestackUIProvider>
     </ErrorBoundary>
+  );
+}
+
+function RootShell() {
+  const [bootstrapped, setBootstrapped] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    void bootstrapPlatform()
+      .then(() => {
+        if (!coreRuntime.isRegistered()) {
+          throw new Error('Core runtime failed to register during platform bootstrap.');
+        }
+        installMobileWorkflowEventBridge();
+        void registerBackgroundSync();
+        if (!cancelled) setBootstrapped(true);
+      })
+      .catch((error) => {
+        console.warn('[bootstrapPlatform] continuing with fallback startup', error);
+        if (!cancelled) setBootstrapped(true);
+      });
+
+    void LanguageUtils.init().catch((error) => {
+      console.warn('[LanguageUtils.init] continuing without language bootstrap', error);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <GlobalProvider>
+        {bootstrapped ? (
+          <EnvironmentProvider>
+            <AppContent />
+          </EnvironmentProvider>
+        ) : (
+          <FullScreenFallback />
+        )}
+      </GlobalProvider>
+    </QueryClientProvider>
   );
 }
 

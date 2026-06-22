@@ -3,20 +3,20 @@
   "type": "module",
   "version": "0.0.2",
   "scripts": {
-    "dev": "pnpm exec astro dev",
-    "build": "pnpm exec astro build",
-    "preview": "pnpm exec astro preview",
-    "astro": "pnpm exec astro",
-    "lint": "pnpm run lint:biome && pnpm run lint:eslint",
-    "check-types": "pnpm exec tsc --noEmit",
-    "lint:biome": "biome check .",
-    "lint:eslint": "eslint .",
-    "format": "node ../../scripts/scoped-biome.mjs --write",
-    "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:ui": "vitest --ui",
-    "clean": "rm -rf .turbo node_modules dist"
+    "dev": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec astro dev\" --name \"apps_gurudevi-marketingWeb-dev\"",
+    "build": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec astro build\" --name \"apps_gurudevi-marketingWeb-build\"",
+    "preview": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec astro preview\" --name \"apps_gurudevi-marketingWeb-preview\"",
+    "astro": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec astro\" --name \"apps_gurudevi-marketingWeb-astro\"",
+    "lint": "node ../../scripts/run-and-report.mjs --cmd \"pnpm run lint:biome && pnpm run lint:eslint\" --name \"apps_gurudevi-marketingWeb-lint\"",
+    "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --noEmit\" --name \"apps_gurudevi-marketingWeb-check-types\"",
+    "lint:biome": "node ../../scripts/run-and-report.mjs --cmd \"biome check .\" --name \"apps_gurudevi-marketingWeb-lint_biome\"",
+    "lint:eslint": "node ../../scripts/run-and-report.mjs --cmd \"eslint .\" --name \"apps_gurudevi-marketingWeb-lint_eslint\"",
+    "format": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs --write\" --name \"apps_gurudevi-marketingWeb-format\"",
+    "check-cycles": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/refactor/sovereign-cycle-checker.mjs\" --name \"apps_gurudevi-marketingWeb-check-cycles\"",
+    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"apps_gurudevi-marketingWeb-test\"",
+    "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest\" --name \"apps_gurudevi-marketingWeb-test_watch\"",
+    "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"apps_gurudevi-marketingWeb-test_ui\"",
+    "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"apps_gurudevi-marketingWeb-clean\""
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
@@ -41,5 +41,21 @@
     "eslint": "^10.4.1",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.8"
+  },
+  "_originalScripts": {
+    "dev": "pnpm exec astro dev",
+    "build": "pnpm exec astro build",
+    "preview": "pnpm exec astro preview",
+    "astro": "pnpm exec astro",
+    "lint": "pnpm run lint:biome && pnpm run lint:eslint",
+    "check-types": "pnpm exec tsc --noEmit",
+    "lint:biome": "biome check .",
+    "lint:eslint": "eslint .",
+    "format": "node ../../scripts/scoped-biome.mjs --write",
+    "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "clean": "rm -rf .turbo node_modules dist"
   }
 }

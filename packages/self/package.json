@@ -43,17 +43,17 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "lint": "pnpm run lint:biome && pnpm run lint:eslint",
-    "typecheck": "pnpm exec tsc --noEmit",
-    "check-types": "pnpm exec tsc --noEmit",
-    "clean": "rm -rf .turbo node_modules dist",
-    "lint:biome": "biome check .",
-    "lint:eslint": "eslint .",
-    "format": "node ../../scripts/scoped-biome.mjs --write",
-    "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:ui": "vitest --ui"
+    "lint": "node ../../scripts/run-and-report.mjs --cmd \"pnpm run lint:biome && pnpm run lint:eslint\" --name \"packages_self-lint\"",
+    "typecheck": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --noEmit\" --name \"packages_self-typecheck\"",
+    "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --noEmit\" --name \"packages_self-check-types\"",
+    "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"packages_self-clean\"",
+    "lint:biome": "node ../../scripts/run-and-report.mjs --cmd \"biome check .\" --name \"packages_self-lint_biome\"",
+    "lint:eslint": "node ../../scripts/run-and-report.mjs --cmd \"eslint .\" --name \"packages_self-lint_eslint\"",
+    "format": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs --write\" --name \"packages_self-format\"",
+    "check-cycles": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/refactor/sovereign-cycle-checker.mjs\" --name \"packages_self-check-cycles\"",
+    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_self-test\"",
+    "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest\" --name \"packages_self-test_watch\"",
+    "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"packages_self-test_ui\""
   },
   "dependencies": {
     "@repo/core": "workspace:*",
@@ -87,5 +87,18 @@
     "lucide-react-native": "*",
     "@supabase/supabase-js": "2.102.1",
     "@supabase/postgrest-js": "2.102.1"
+  },
+  "_originalScripts": {
+    "lint": "pnpm run lint:biome && pnpm run lint:eslint",
+    "typecheck": "pnpm exec tsc --noEmit",
+    "check-types": "pnpm exec tsc --noEmit",
+    "clean": "rm -rf .turbo node_modules dist",
+    "lint:biome": "biome check .",
+    "lint:eslint": "eslint .",
+    "format": "node ../../scripts/scoped-biome.mjs --write",
+    "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui"
   }
 }

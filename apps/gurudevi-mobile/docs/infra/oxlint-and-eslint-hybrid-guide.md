@@ -2,7 +2,7 @@
 title: "Oxlint and ESLint Hybrid Integration Guide"
 status: "active"
 created: 2026-06-09
-updated: 2026-06-09
+updated: 2026-06-20
 author: "Naveen"
 scribe: "Antigravity"
 tags: [eslint, oxlint, react-native, expo, infra]
@@ -36,17 +36,34 @@ To achieve sub-minute linting on 2,000+ files, we run a three-stage pipeline:
 ## 2. Package & App Configurations
 
 ### Root Baseline (`.oxlintrc.json`)
-Every package inherits from the root `.oxlintrc.json` baseline, which enables standard correctness and react rules while ignoring build artifacts:
+Every package inherits from the root `.oxlintrc.json` baseline, which enables standard correctness and react rules while ignoring build artifacts. **Starting with Oxlint v1.70.0 (Oxlint 1.7), we also enable high-speed native checks for React Compiler rules**:
 ```json
 {
+  "env": {
+    "browser": true,
+    "es2025": true,
+    "node": true
+  },
   "plugins": ["react", "import"],
   "categories": {
     "correctness": "error",
     "suspicious": "warn",
-    "style": "off"
+    "pedantic": "off",
+    "perf": "warn",
+    "style": "off",
+    "restriction": "warn",
+    "nursery": "off"
+  },
+  "rules": {
+    "react/react-compiler": "error"
   }
 }
 ```
+
+#### React Compiler Rule (`react/react-compiler`)
+- **Purpose**: Checks for violations of the Rules of React (e.g., conditional hook execution, mutations in render, reading refs during render).
+- **Speed**: Runs natively in Rust, executing the React Compiler's static analysis 5–6x faster than standard JS plugins.
+- **Config Option**: Can optionally report bailouts where the compiler decided not to optimize a component.
 
 ### Expo App Configurations
 To align with Expo's React Native configuration expectations:

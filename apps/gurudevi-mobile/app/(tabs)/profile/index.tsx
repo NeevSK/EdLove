@@ -1,3 +1,4 @@
-import { ProfileScreen } from '@repo/profile';
+import { ProfileScreen, ProfileScreenWeb } from '@repo/profile';
+import { Platform } from 'react-native';
 
-export default ProfileScreen;
+export default Platform.OS === 'web' ? ProfileScreenWeb : ProfileScreen;

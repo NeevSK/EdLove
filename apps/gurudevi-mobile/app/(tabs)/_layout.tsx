@@ -67,6 +67,7 @@ export default function TabsLayout() {
                   <Pressable
                     accessibilityRole="button"
                     accessibilityLabel="Open notifications"
+                    accessibilityHint="Navigates to the notifications page to view updates"
                     onPress={() => router.push('/notifications')}
                     style={{
                       position: 'relative',
@@ -104,6 +105,7 @@ export default function TabsLayout() {
                   <Pressable
                     accessibilityRole="button"
                     accessibilityLabel="Open settings"
+                    accessibilityHint="Navigates to the settings page to configure user preferences"
                     onPress={() => router.push('/settings')}
                     style={{
                       width: 40,
@@ -137,7 +139,7 @@ export default function TabsLayout() {
           }}
         />
         <Tabs.Screen
-          name="community"
+          name="community/index"
           options={{
             title: 'Community',
             tabBarIcon: ({ color, size }) => <Users color={color} size={size} />,
@@ -184,6 +186,7 @@ export default function TabsLayout() {
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="Close breathing reset"
+                accessibilityHint="Closes the breathing reset dialog"
                 onPress={() => setBreathingOpen(false)}
                 style={{
                   width: 36,

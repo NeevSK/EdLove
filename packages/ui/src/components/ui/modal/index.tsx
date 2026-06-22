@@ -58,6 +58,7 @@ export const Modal = ({
             className="w-full max-w-[500px]"
             accessibilityRole="alert"
             accessibilityViewIsModal={true}
+            accessible={true}
           >
             <Box className="bg-phase-elevated rounded-3xl overflow-hidden shadow-2xl border border-phase-interactive/10">
               {children}

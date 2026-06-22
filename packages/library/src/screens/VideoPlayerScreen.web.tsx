@@ -1,6 +1,6 @@
 import { VideoPlayer } from '@repo/ui/components/media/VideoPlayer';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { safeBack } from '@repo/ui/utils/navigation';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { useCallback } from 'react';
 

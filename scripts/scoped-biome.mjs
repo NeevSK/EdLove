@@ -54,7 +54,9 @@ for (let i = 0; i < filesToProcess.length; i += chunkSize) {
   const chunk = filesToProcess.slice(i, i + chunkSize);
   const filesList = chunk.map((f) => `"${f}"`).join(' ');
   const cmd = `pnpm exec biome ${action} --no-errors-on-unmatched ${filesList}`;
-  console.log(`>>> Executing scoped Biome check (chunk ${Math.floor(i / chunkSize) + 1}/${Math.ceil(filesToProcess.length / chunkSize)}): ${cmd}`);
+  console.log(
+    `>>> Executing scoped Biome check (chunk ${Math.floor(i / chunkSize) + 1}/${Math.ceil(filesToProcess.length / chunkSize)}): ${cmd}`,
+  );
   try {
     execSync(cmd, { stdio: 'inherit' });
   } catch (err) {
@@ -65,4 +67,3 @@ for (let i = 0; i < filesToProcess.length; i += chunkSize) {
 if (!success) {
   process.exit(1);
 }
-

@@ -19,20 +19,20 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "lint": "pnpm run lint:biome && pnpm run lint:eslint",
-    "check-types": "pnpm exec tsc --noEmit",
-    "generate": "pnpm exec zen generate --schema zenstack/schema.zmodel --output ../core/src/logic/generated",
-    "db:push": "pnpm exec zen db push --schema zenstack/schema.zmodel",
-    "db:studio": "pnpm exec zen studio --schema zenstack/schema.zmodel",
-    "db:migrate": "pnpm exec zen migrate dev --schema zenstack/schema.zmodel",
-    "lint:biome": "biome check .",
-    "lint:eslint": "eslint .",
-    "format": "node ../../scripts/scoped-biome.mjs --write",
-    "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:ui": "vitest --ui",
-    "clean": "rm -rf .turbo node_modules dist"
+    "lint": "node ../../scripts/run-and-report.mjs --cmd \"pnpm run lint:biome && pnpm run lint:eslint\" --name \"packages_database-lint\"",
+    "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --noEmit\" --name \"packages_database-check-types\"",
+    "generate": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec zen generate --schema zenstack/schema.zmodel --output ../core/src/logic/generated\" --name \"packages_database-generate\"",
+    "db:push": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec zen db push --schema zenstack/schema.zmodel\" --name \"packages_database-db_push\"",
+    "db:studio": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec zen studio --schema zenstack/schema.zmodel\" --name \"packages_database-db_studio\"",
+    "db:migrate": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec zen migrate dev --schema zenstack/schema.zmodel\" --name \"packages_database-db_migrate\"",
+    "lint:biome": "node ../../scripts/run-and-report.mjs --cmd \"biome check .\" --name \"packages_database-lint_biome\"",
+    "lint:eslint": "node ../../scripts/run-and-report.mjs --cmd \"eslint .\" --name \"packages_database-lint_eslint\"",
+    "format": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs --write\" --name \"packages_database-format\"",
+    "check-cycles": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/refactor/sovereign-cycle-checker.mjs\" --name \"packages_database-check-cycles\"",
+    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_database-test\"",
+    "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest\" --name \"packages_database-test_watch\"",
+    "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"packages_database-test_ui\"",
+    "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"packages_database-clean\""
   },
   "dependencies": {
     "@repo/schema": "workspace:*",
@@ -55,5 +55,21 @@
     "typescript": "^6.0.3",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.8"
+  },
+  "_originalScripts": {
+    "lint": "pnpm run lint:biome && pnpm run lint:eslint",
+    "check-types": "pnpm exec tsc --noEmit",
+    "generate": "pnpm exec zen generate --schema zenstack/schema.zmodel --output ../core/src/logic/generated",
+    "db:push": "pnpm exec zen db push --schema zenstack/schema.zmodel",
+    "db:studio": "pnpm exec zen studio --schema zenstack/schema.zmodel",
+    "db:migrate": "pnpm exec zen migrate dev --schema zenstack/schema.zmodel",
+    "lint:biome": "biome check .",
+    "lint:eslint": "eslint .",
+    "format": "node ../../scripts/scoped-biome.mjs --write",
+    "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "clean": "rm -rf .turbo node_modules dist"
   }
 }

@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "skills": {
+    "powersync": {
+      "source": "powersync-ja/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/powersync/SKILL.md",
+      "computedHash": "5f9cacdb73907af3a764559b92b6ba4fd62d3211033b593c5c2b010e65e787c1"
+    },
+    "superpowers": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/superpowers",
+      "computedHash": "pending"
+    },
+    "caveman": {
+      "source": "JuliusBrussee/caveman",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/caveman",
+      "computedHash": "pending"
+    },
+    "ponytail": {
+      "source": "DietrichGebert/ponytail",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ponytail",
+      "computedHash": "pending"
+    },
+    "grill-me": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/grill-me",
+      "computedHash": "pending"
+    },
+    "thermo-nuclear-code-review": {
+      "source": "cursor/plugins",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/cursor-plugins/cursor-team-kit/skills/thermo-nuclear-code-quality-review",
+      "computedHash": "pending"
+    }
+  }
+}

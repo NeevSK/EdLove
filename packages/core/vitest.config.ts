@@ -12,6 +12,22 @@ export default defineConfig({
     include: ['src/**/*.{test,spec}.ts', 'packages/core/src/**/*.{test,spec}.ts'],
     includeSource: ['src/logic/**/*.ts'],
     passWithNoTests: true,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html', 'lcov'],
+      exclude: [
+        'node_modules/',
+        'dist/',
+        '**/*.test.ts',
+        '**/*.spec.ts',
+        '**/*.config.ts',
+        '**/*.config.js',
+        '**/*.config.mjs',
+        '**/*.config.cjs',
+        '**/types/**',
+        '**/shims/**',
+      ],
+    },
     server: {
       deps: {
         external: [

@@ -219,7 +219,9 @@ async function streamOpenAI(
                 const text = parsed.choices?.[0]?.delta?.content;
                 if (text) {
                   // Format stream event to match TanStack AI protocol: event: text\ndata: "..."\n\n
-                  controller.enqueue(encoder.encode(`event: text\ndata: ${JSON.stringify(text)}\n\n`));
+                  controller.enqueue(
+                    encoder.encode(`event: text\ndata: ${JSON.stringify(text)}\n\n`),
+                  );
                 }
               } catch {
                 // Ignore parse errors on partial stream lines

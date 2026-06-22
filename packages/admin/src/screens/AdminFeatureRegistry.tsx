@@ -1,7 +1,7 @@
 import { usePermissions } from '@repo/core/logic';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { useRouter } from 'expo-router';
 import { safeBack } from '@repo/ui/utils/navigation';
+import { useRouter } from 'expo-router';
 
 import { useMemo, useState } from 'react';
 import {

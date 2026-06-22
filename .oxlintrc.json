@@ -22,6 +22,7 @@
   "rules": {
     "no-debugger": "error",
     "no-console": "warn",
+    "react/react-compiler": "error",
     "no-constant-condition": "error",
     "no-empty": "warn",
     "prefer-const": "warn",

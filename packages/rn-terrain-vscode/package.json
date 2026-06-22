@@ -13,9 +13,9 @@
   ],
   "main": "./dist/extension.js",
   "scripts": {
-    "vscode:prepublish": "pnpm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./"
+    "vscode:prepublish": "node ../../scripts/run-and-report.mjs --cmd \"pnpm run compile\" --name \"packages_rn-terrain-vscode-vscode_prepublish\"",
+    "compile": "node ../../scripts/run-and-report.mjs --cmd \"tsc -p ./\" --name \"packages_rn-terrain-vscode-compile\"",
+    "watch": "node ../../scripts/run-and-report.mjs --cmd \"tsc -watch -p ./\" --name \"packages_rn-terrain-vscode-watch\""
   },
   "dependencies": {
     "@rn-terrain/core": "workspace:*"
@@ -23,5 +23,10 @@
   "devDependencies": {
     "@types/vscode": "^1.120.0",
     "typescript": "^6.0.3"
+  },
+  "_originalScripts": {
+    "vscode:prepublish": "pnpm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
   }
 }

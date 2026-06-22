@@ -142,7 +142,7 @@ if (runLint) {
         env: { ...process.env, NODE_OPTIONS: '--max-old-space-size=4096' },
       },
       true,
-      30
+      30,
     );
     if (!ok) finalSuccess = false;
   }

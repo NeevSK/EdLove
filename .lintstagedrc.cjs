@@ -20,10 +20,13 @@ module.exports = {
     const commands = [];
     for (const chunk of chunks) {
       const chunkStr = chunk.map((f) => `"${f}"`).join(' ');
+      // Primary: Oxlint (fast, general-purpose linting)
       commands.push(`oxlint --fix ${chunkStr}`);
-      // Temporarily disabled due to ESLint 10/typescript-eslint compatibility runtime crash
-      // commands.push(`eslint --fix ${chunkStr}`);
+      // Secondary: ESLint (TypeScript, React Native, Expo specific rules)
+      commands.push(`eslint --fix ${chunkStr}`);
+      // Formatter: Biome (formatting + import organization)
       commands.push(`biome check --write --no-errors-on-unmatched ${chunkStr}`);
+      // Custom validation
       commands.push(`node scripts/surgical-check.mjs ${chunkStr}`);
     }
     return commands;

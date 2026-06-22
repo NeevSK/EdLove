@@ -1,10 +1,10 @@
-import { Hono } from 'hono';
 import { toServerSentEventsResponse } from '@tanstack/ai';
-import { OpenAiAdapter } from './adapters/OpenAiAdapter';
-import { GeminiAdapter } from './adapters/GeminiAdapter';
+import { Hono } from 'hono';
 import { AnthropicAdapter } from './adapters/AnthropicAdapter';
-import { DeepSeekAdapter } from './adapters/DeepSeekAdapter';
 import { DbBillingAdapter } from './adapters/DbBillingAdapter';
+import { DeepSeekAdapter } from './adapters/DeepSeekAdapter';
+import { GeminiAdapter } from './adapters/GeminiAdapter';
+import { OpenAiAdapter } from './adapters/OpenAiAdapter';
 import { Orchestrator } from './domain/Orchestrator';
 import { rateLimit } from './middleware/rateLimit';
 
@@ -42,15 +42,14 @@ aiRouter.post('/chat', rateLimit, async (c) => {
     });
 
     // 2. Resolve billing info beforehand for logging accuracy
-    const billingInfo = await billingAdapter.resolveBilling(
-      user.id,
-      context.billingMode ?? 'baseline',
-      {
+    const billingInfo = await billingAdapter
+      .resolveBilling(user.id, context.billingMode ?? 'baseline', {
         byokKeyInput: context.byokKey,
         schoolId: context.schoolId,
-        preferredProvider: context.billingMode === 'byok' ? undefined : (context.billingMode as any),
-      }
-    ).catch(() => null);
+        preferredProvider:
+          context.billingMode === 'byok' ? undefined : (context.billingMode as any),
+      })
+      .catch(() => null);
 
     const start = Date.now();
 
@@ -76,9 +75,10 @@ aiRouter.post('/chat', rateLimit, async (c) => {
         const durationMs = Date.now() - start;
         // Approximation: 4 tokens per chunk/event
         const tokensUsed = chunkCount * 4;
-        billingAdapter.logUsage(user.id, billingInfo?.model || 'gpt-4o-mini', tokensUsed, durationMs)
+        billingAdapter
+          .logUsage(user.id, billingInfo?.model || 'gpt-4o-mini', tokensUsed, durationMs)
           .catch((logErr) => console.error('[aiRouter] Logging failed:', logErr));
-      }
+      },
     });
 
     const transformedBody = originalBody.pipeThrough(transformStream);
@@ -95,7 +95,7 @@ aiRouter.post('/chat', rateLimit, async (c) => {
         error: 'Internal server error',
         details: err instanceof Error ? err.message : String(err),
       },
-      500
+      500,
     );
   }
 });

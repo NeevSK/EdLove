@@ -14,7 +14,6 @@ export const CapacitySchema = z.enum([
   'guardian',
   'librarian',
   'nurse',
-  'staff',
   'member',
 ]);
 

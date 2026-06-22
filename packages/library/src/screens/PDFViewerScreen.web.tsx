@@ -16,8 +16,8 @@ import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, HStack, useTheme } from '@repo/ui/primitives';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { safeBack } from '@repo/ui/utils/navigation';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { Bookmark, ExternalLink, RefreshCw } from 'lucide-react-native';
 import { useState } from 'react';

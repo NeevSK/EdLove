@@ -7,7 +7,7 @@ export class GeminiAdapter implements LlmPort {
     systemPrompt: string,
     history: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
     apiKey: string,
-    model: string
+    model: string,
   ): Promise<any> {
     const formattedMessages = [
       { role: 'system', content: systemPrompt },

@@ -10,11 +10,11 @@
 // resilience — damaged or partially obscured codes still scan. Use 'M' if you
 // need smaller codes.
 
-import QRCode from 'qrcode';
-import { useMemo, useEffect } from 'react';
-import { StyleSheet, Text, View, Platform } from 'react-native';
-import Svg, { Rect } from 'react-native-svg';
 import * as Brightness from 'expo-brightness';
+import QRCode from 'qrcode';
+import { useEffect, useMemo } from 'react';
+import { Platform, StyleSheet, Text, View } from 'react-native';
+import Svg, { Rect } from 'react-native-svg';
 
 export interface QRCodeGeneratorProps {
   value: string;

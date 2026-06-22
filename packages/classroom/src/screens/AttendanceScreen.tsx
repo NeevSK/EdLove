@@ -2,9 +2,9 @@ import { academicCyclesAPI, api, growthSignalsAPI } from '@repo/core/api';
 import { useSafeMutation } from '@repo/core/hooks';
 import { type AttendanceStatus, type StudentAttendance, useStore } from '@repo/core/logic';
 import { generateIdempotencyKey, getCurrentTimestamp } from '@repo/core/utils';
+import { useAppStoreReview } from '@repo/ui/hooks';
 import { Box, Button, ButtonText, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
-import { useAppStoreReview } from '@repo/ui/hooks';
 import { useLocalSearchParams } from 'expo-router';
 
 import { useCallback, useEffect, useState } from 'react';

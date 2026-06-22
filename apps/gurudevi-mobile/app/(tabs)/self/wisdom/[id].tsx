@@ -18,6 +18,7 @@ export default function WisdomDetailRoute() {
   return (
     <VStack className="flex-1 bg-obsidian px-5 py-6 gap-4">
       <Pressable
+        accessibilityRole="button"
         onPress={() => safeBack('/self')}
         className="self-start flex-row items-center gap-2 px-3.5 py-2 rounded-full bg-white/5 border border-white/10"
       >

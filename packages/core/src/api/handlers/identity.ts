@@ -140,14 +140,25 @@ export const identityHandlers = {
     const { id } = c.req.param();
     const body = await c.req.json();
 
-    const updated = await db.user.update({
-      where: { id },
-      data: body,
-      include: {
-        bonds: true,
-      },
-    });
+    console.log('[updateProfile] id:', id, 'body:', body);
+    if (body && 'email' in body && body.email === '') {
+      body.email = null;
+    }
 
-    return c.json(mapToIdentityPayload(updated), 200);
+    try {
+      console.log('[updateProfile] calling db.user.update...');
+      const updated = await db.user.update({
+        where: { id },
+        data: body,
+        include: {
+          bonds: true,
+        },
+      });
+      console.log('[updateProfile] db.user.update succeeded');
+      return c.json(mapToIdentityPayload(updated), 200);
+    } catch (err) {
+      console.error('[updateProfile] db.user.update error:', err);
+      throw err;
+    }
   },
 };

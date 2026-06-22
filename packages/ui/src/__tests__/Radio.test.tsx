@@ -30,14 +30,19 @@ describe('Radio Component (Robustness)', () => {
   });
 
   it('handles disabled state', async () => {
-    const _onChange = jest.fn();
-    const { getByText } = await render(
-      <Radio value="test" isDisabled={true}>
-        <RadioLabel>Disabled Radio</RadioLabel>
-      </Radio>,
+    const onChange = jest.fn();
+    const { getByRole } = await render(
+      <RadioGroup onChange={onChange}>
+        <Radio value="test" isDisabled={true}>
+          <RadioLabel>Disabled Radio</RadioLabel>
+        </Radio>
+      </RadioGroup>,
     );
 
-    fireEvent.press(getByText('Disabled Radio'));
-    // Since Radio takes value/onPress etc., implementation should block it.
+    const radio = getByRole('radio');
+    expect(radio.props.accessibilityState?.disabled).toBe(true);
+
+    fireEvent.press(radio);
+    expect(onChange).not.toHaveBeenCalled();
   });
 });

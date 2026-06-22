@@ -90,8 +90,7 @@ export const createSupabasePrincipalWorkspaceRepository = (
     },
 
     async generateInviteCode(schoolId, capacity, createdBy) {
-      const randomPart = crypto.randomUUID().replace(/-/g, '').substring(0, 6).toUpperCase();
-      const code = `GURU-${randomPart}-${capacity === 'teacher' ? 'TEACH' : 'ADMIN'}`;
+      const code = `GURU-${Math.random().toString(36).substring(2, 8).toUpperCase().padEnd(6, '0')}-${capacity === 'teacher' ? 'TEACH' : 'ADMIN'}`;
       const payload = {
         school_id: schoolId,
         code,

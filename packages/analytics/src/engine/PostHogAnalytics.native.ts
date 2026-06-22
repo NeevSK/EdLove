@@ -1,5 +1,5 @@
-import PostHog from 'posthog-react-native';
 import type { IAnalyticsPort } from '@repo/core';
+import PostHog from 'posthog-react-native';
 
 interface UserProperties {
   [key: string]: any;

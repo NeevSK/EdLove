@@ -65,7 +65,7 @@ export const Select = ({
 
 export const SelectTrigger = React.forwardRef<View, PressableProps & { className?: string }>(
   ({ children, className, ...props }, ref) => {
-    const { setIsOpen, isDisabled } = useSelect();
+    const { setIsOpen, isDisabled, isOpen } = useSelect();
 
     return (
       <Pressable
@@ -73,6 +73,11 @@ export const SelectTrigger = React.forwardRef<View, PressableProps & { className
         ref={ref as any}
         disabled={isDisabled}
         onPress={() => !isDisabled && setIsOpen(true)}
+        accessibilityRole="combobox"
+        accessibilityState={{
+          disabled: isDisabled,
+          expanded: isOpen,
+        }}
         className={`flex-row items-center justify-between p-4 border rounded-xl bg-phase-canvas border-phase-interactive/10 ${isDisabled ? 'opacity-50' : 'active:opacity-80'} ${className || ''}`}
       >
         {children}
@@ -160,6 +165,10 @@ export const SelectItem = ({ label, value: itemValue, className, ...props }: any
       onPress={() => {
         onValueChange(itemValue);
         setIsOpen(false);
+      }}
+      accessibilityRole="checkbox"
+      accessibilityState={{
+        checked: isSelected,
       }}
       {...props}
     >

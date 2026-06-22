@@ -84,6 +84,7 @@ export const InputField = React.forwardRef<
       {...props}
       ref={ref}
       editable={!isDisabled}
+      accessibilityState={{ disabled: isDisabled }}
       secureTextEntry={type === 'password'}
       keyboardType={type === 'number' ? 'numeric' : props.keyboardType}
       placeholderTextColor="#8B8599" // Fallback to theme-safe secondary

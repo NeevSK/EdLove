@@ -270,6 +270,17 @@ class PolymathPlatformServer {
           'https://mcp.expo.dev/mcp',
         ],
       },
+      {
+        name: 'growthbook',
+        envKey: 'GB_API_KEY',
+        command: 'node',
+        args: [
+          path.join(__dirname, '..', '..', '..', 'scripts', 'mcp-proxy.mjs'),
+          'pnpm',
+          'dlx',
+          '@growthbook/mcp',
+        ],
+      },
     ];
 
     for (const serverConf of servers) {

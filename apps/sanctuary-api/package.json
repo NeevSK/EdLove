@@ -4,12 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsup src/index.ts --format esm --clean",
-    "start": "node dist/index.js",
-    "lint": "biome check src",
-    "format": "node ../../scripts/scoped-biome.mjs --write",
-    "test": "vitest run"
+    "dev": "node ../../scripts/run-and-report.mjs --cmd \"tsx watch src/entry-node.ts\" --name \"apps_sanctuary-api-dev\"",
+    "dev:bun": "node ../../scripts/run-and-report.mjs --cmd \"bun --watch src/index.ts\" --name \"apps_sanctuary-api-dev_bun\"",
+    "build": "node ../../scripts/run-and-report.mjs --cmd \"tsup src/index.ts src/entry-node.ts --format esm --clean\" --name \"apps_sanctuary-api-build\"",
+    "start": "node ../../scripts/run-and-report.mjs --cmd \"node dist/entry-node.js\" --name \"apps_sanctuary-api-start\"",
+    "start:bun": "node ../../scripts/run-and-report.mjs --cmd \"bun src/index.ts\" --name \"apps_sanctuary-api-start_bun\"",
+    "lint": "node ../../scripts/run-and-report.mjs --cmd \"biome check src\" --name \"apps_sanctuary-api-lint\"",
+    "format": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs --write\" --name \"apps_sanctuary-api-format\"",
+    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"apps_sanctuary-api-test\"",
+    "test:bun": "node ../../scripts/run-and-report.mjs --cmd \"bun x vitest run\" --name \"apps_sanctuary-api-test_bun\""
   },
   "dependencies": {
     "@hono/node-server": "^2.0.4",
@@ -32,5 +35,16 @@
     "tsx": "^4.22.4",
     "typescript": "^6.0.3",
     "vitest": "^4.1.8"
+  },
+  "_originalScripts": {
+    "dev": "tsx watch src/entry-node.ts",
+    "dev:bun": "bun --watch src/index.ts",
+    "build": "tsup src/index.ts src/entry-node.ts --format esm --clean",
+    "start": "node dist/entry-node.js",
+    "start:bun": "bun src/index.ts",
+    "lint": "biome check src",
+    "format": "node ../../scripts/scoped-biome.mjs --write",
+    "test": "vitest run",
+    "test:bun": "bun x vitest run"
   }
 }

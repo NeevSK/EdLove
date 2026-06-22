@@ -40,8 +40,8 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { safeBack } from '@repo/ui/utils/navigation';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useReducer } from 'react';
 import {
   AttendanceView,

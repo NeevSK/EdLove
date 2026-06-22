@@ -640,51 +640,62 @@ export default function CreateClassroomModal({
                             {t('classroom.selectSection') || 'Select Institutional Section'}
                           </FormControlLabelText>
                         </FormControlLabel>
-                      {(() => {
-                        const Picker = loadPicker();
-                        if (Picker && Platform.OS !== 'web') {
+                        {(() => {
+                          const Picker = loadPicker();
+                          if (Picker && Platform.OS !== 'web') {
+                            return (
+                              <Box className="bg-sanctuary-surface-secondary border border-sanctuary-border rounded-2xl overflow-hidden mt-1 h-14 justify-center">
+                                <Picker
+                                  selectedValue={state.academic.sectionId}
+                                  onValueChange={(itemValue: string) =>
+                                    handleSectionChange(itemValue)
+                                  }
+                                  style={{ color: '#F6BF8C', backgroundColor: 'transparent' }}
+                                  dropdownIconColor="#F6BF8C"
+                                >
+                                  <Picker.Item
+                                    label="-- Select Section --"
+                                    value=""
+                                    color="#A1A1AA"
+                                  />
+                                  {sections.map((section) => (
+                                    <Picker.Item
+                                      key={section.id}
+                                      label={section.name}
+                                      value={section.id}
+                                      color="#F6BF8C"
+                                    />
+                                  ))}
+                                </Picker>
+                              </Box>
+                            );
+                          }
                           return (
-                            <Box className="bg-sanctuary-surface-secondary border border-sanctuary-border rounded-2xl overflow-hidden mt-1 h-14 justify-center">
-                              <Picker
-                                selectedValue={state.academic.sectionId}
-                                onValueChange={(itemValue: string) => handleSectionChange(itemValue)}
-                                style={{ color: '#F6BF8C', backgroundColor: 'transparent' }}
-                                dropdownIconColor="#F6BF8C"
-                              >
-                                <Picker.Item label="-- Select Section --" value="" color="#A1A1AA" />
-                                {sections.map((section) => (
-                                  <Picker.Item key={section.id} label={section.name} value={section.id} color="#F6BF8C" />
-                                ))}
-                              </Picker>
+                            <Box className="flex-row flex-wrap gap-3">
+                              {sections.map((section) => (
+                                <Button
+                                  key={section.id}
+                                  variant={
+                                    state.academic.sectionId === section.id ? 'solid' : 'outline'
+                                  }
+                                  size="sm"
+                                  onPress={() => handleSectionChange(section.id)}
+                                  className={`rounded-full px-5 ${state.academic.sectionId === section.id ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'bg-transparent border-sanctuary-border'}`}
+                                >
+                                  <ButtonText
+                                    className={
+                                      state.academic.sectionId === section.id
+                                        ? 'text-white font-bold'
+                                        : 'text-sanctuary-text-secondary'
+                                    }
+                                  >
+                                    {section.name}
+                                  </ButtonText>
+                                </Button>
+                              ))}
                             </Box>
                           );
-                        }
-                        return (
-                          <Box className="flex-row flex-wrap gap-3">
-                            {sections.map((section) => (
-                              <Button
-                                key={section.id}
-                                variant={
-                                  state.academic.sectionId === section.id ? 'solid' : 'outline'
-                                }
-                                size="sm"
-                                onPress={() => handleSectionChange(section.id)}
-                                className={`rounded-full px-5 ${state.academic.sectionId === section.id ? 'bg-sanctuarySaffron border-sanctuarySaffron' : 'bg-transparent border-sanctuary-border'}`}
-                              >
-                                <ButtonText
-                                  className={
-                                    state.academic.sectionId === section.id
-                                      ? 'text-white font-bold'
-                                      : 'text-sanctuary-text-secondary'
-                                  }
-                                >
-                                  {section.name}
-                                </ButtonText>
-                              </Button>
-                            ))}
-                          </Box>
-                        );
-                      })()}
+                        })()}
                       </FormControl>
                     </VStack>
                   )}
@@ -716,7 +727,12 @@ export default function CreateClassroomModal({
                             >
                               <Picker.Item label="-- Select Grade --" value="" color="#A1A1AA" />
                               {grades.map((grade) => (
-                                <Picker.Item key={grade.id} label={`Grade ${grade.number}`} value={grade.id} color="#F6BF8C" />
+                                <Picker.Item
+                                  key={grade.id}
+                                  label={`Grade ${grade.number}`}
+                                  value={grade.id}
+                                  color="#F6BF8C"
+                                />
                               ))}
                             </Picker>
                           </Box>

@@ -1,5 +1,5 @@
-import { type LlmPort } from '../ports/LlmPort';
 import { type BillingPort } from '../ports/BillingPort';
+import { type LlmPort } from '../ports/LlmPort';
 
 interface ActiveGap {
   type: string;
@@ -27,14 +27,14 @@ interface RequestContext {
 export class Orchestrator {
   constructor(
     private billingPort: BillingPort,
-    private getLlmAdapter: (provider: 'openai' | 'gemini' | 'anthropic' | 'deepseek') => LlmPort
+    private getLlmAdapter: (provider: 'openai' | 'gemini' | 'anthropic' | 'deepseek') => LlmPort,
   ) {}
 
   async processChat(
     userId: string,
     message: string,
     history: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
-    context: RequestContext
+    context: RequestContext,
   ): Promise<any> {
     // 1. Resolve Billing Tiers & API Keys & Provider
     const billing = await this.billingPort.resolveBilling(
@@ -43,8 +43,9 @@ export class Orchestrator {
       {
         byokKeyInput: context.byokKey,
         schoolId: context.schoolId,
-        preferredProvider: context.billingMode === 'byok' ? undefined : (context.billingMode as any), // pass preference
-      }
+        preferredProvider:
+          context.billingMode === 'byok' ? undefined : (context.billingMode as any), // pass preference
+      },
     );
 
     if (!billing.apiKey) {
@@ -59,22 +60,40 @@ export class Orchestrator {
       const llmAdapter = this.getLlmAdapter(billing.provider);
       return await llmAdapter.streamChat(systemPrompt, history, billing.apiKey, billing.model);
     } catch (err) {
-      console.warn(`[Orchestrator] Primary provider ${billing.provider} failed, evaluating fallback chain...`, err);
+      console.warn(
+        `[Orchestrator] Primary provider ${billing.provider} failed, evaluating fallback chain...`,
+        err,
+      );
 
       // Only execute fallback chain for platform-seeded tiers to prevent cost leakage on user keys
       if (billing.mode !== 'byok') {
-        const fallbacks: Array<{ provider: 'openai' | 'gemini' | 'anthropic'; key?: string; model: string }> = [
+        const fallbacks: Array<{
+          provider: 'openai' | 'gemini' | 'anthropic';
+          key?: string;
+          model: string;
+        }> = [
           { provider: 'openai', key: process.env.OPENAI_API_KEY, model: 'gpt-4o' },
-          { provider: 'anthropic', key: process.env.ANTHROPIC_API_KEY, model: 'claude-3-5-sonnet-20241022' },
-          { provider: 'gemini', key: process.env.GEMINI_API_KEY, model: 'gemini-1.5-pro' }
+          {
+            provider: 'anthropic',
+            key: process.env.ANTHROPIC_API_KEY,
+            model: 'claude-3-5-sonnet-20241022',
+          },
+          { provider: 'gemini', key: process.env.GEMINI_API_KEY, model: 'gemini-1.5-pro' },
         ];
 
         for (const fallback of fallbacks) {
           if (fallback.provider !== billing.provider && fallback.key) {
             try {
-              console.log(`[Orchestrator] Initiating fallback failover to ${fallback.provider} (${fallback.model})...`);
+              console.log(
+                `[Orchestrator] Initiating fallback failover to ${fallback.provider} (${fallback.model})...`,
+              );
               const fallbackAdapter = this.getLlmAdapter(fallback.provider);
-              return await fallbackAdapter.streamChat(systemPrompt, history, fallback.key, fallback.model);
+              return await fallbackAdapter.streamChat(
+                systemPrompt,
+                history,
+                fallback.key,
+                fallback.model,
+              );
             } catch (fallbackErr) {
               console.warn(`[Orchestrator] Fallback to ${fallback.provider} failed:`, fallbackErr);
             }

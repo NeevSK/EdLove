@@ -1,6 +1,6 @@
+import type { IAnalyticsPort } from '@repo/core';
 import posthogWeb from 'posthog-js';
 import { PostHog as PostHogNode } from 'posthog-node';
-import type { IAnalyticsPort } from '@repo/core';
 
 /**
  * Universal PostHog Analytics Engine

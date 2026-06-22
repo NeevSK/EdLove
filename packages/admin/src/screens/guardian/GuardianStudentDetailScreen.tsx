@@ -1,7 +1,7 @@
 import { useStore } from '@repo/core/logic';
 import { Box, ScrollView, Text, VStack } from '@repo/ui/primitives';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { safeBack } from '@repo/ui/utils/navigation';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { useMemo } from 'react';
 import { useGuardianWorkspaceData } from '../../guardian';

@@ -1,3 +1,4 @@
+// eslint-disable-next-line import-x/no-unresolved -- Astro-specific module
 import { getCollection } from 'astro:content';
 import { absoluteUrl, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '../lib/site';
 

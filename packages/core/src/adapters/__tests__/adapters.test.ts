@@ -9,6 +9,12 @@ vi.mock('../../logic/permissions/localEvaluator', () => ({
   checkLocalPermission: vi.fn(async () => true),
 }));
 
+// Mock feature-engine resolving feature flags
+vi.mock('../../logic/permissions/feature-engine', () => ({
+  resolveFeatureFlags: vi.fn(() => ({ isAIAssistantEnabled: true })),
+  trackFeatureExposureInternal: vi.fn(),
+}));
+
 // Mock useFeatureStore store
 const mockSubscribe = vi.fn();
 vi.mock('../../store/useFeatureStore', () => ({
@@ -54,11 +60,11 @@ describe('Hexagonal Adapters Verification', () => {
     const adapter = new SupabaseFeatureFlagAdapter();
     const context = { userId: 'user-1' } as unknown as UserContext;
 
-    const flags = await adapter.getFlags(context);
-    expect(flags.isAIAssistantEnabled).toBe(true);
+    const snapshot = await adapter.resolveFlags(context);
+    expect(snapshot.flags.isAIAssistantEnabled).toBe(true);
 
     const unsubscribe = adapter.subscribeToFlagChanges(context, (updated) => {
-      expect(updated.isAIAssistantEnabled).toBe(true);
+      expect(updated.flags.isAIAssistantEnabled).toBe(true);
     });
 
     unsubscribe();

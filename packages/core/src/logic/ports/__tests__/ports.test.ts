@@ -47,6 +47,16 @@ describe('Hexagonal Ports Interfaces Compilation & Contract Verification', () =>
 
   it('verifies IFeatureFlagPort contract behavior with mock implementation', async () => {
     const mockFeatureFlagPort: IFeatureFlagPort = {
+      resolveFlags: vi.fn(async (context: UserContext) => {
+        return {
+          flags: {
+            isAIAssistantEnabled: true,
+            modelName: 'claude-3-5-sonnet',
+          },
+          source: 'computed' as const,
+          refreshedAt: '2026-06-20T00:00:00Z',
+        };
+      }),
       getFlags: vi.fn(async (context: UserContext) => {
         return {
           isAIAssistantEnabled: true,
@@ -54,8 +64,11 @@ describe('Hexagonal Ports Interfaces Compilation & Contract Verification', () =>
         };
       }),
       subscribeToFlagChanges: vi.fn(
-        (context: UserContext, callback: (flags: Record<string, boolean | string>) => void) => {
-          callback({ isAIAssistantEnabled: true });
+        (
+          context: UserContext,
+          callback: (snapshot: { flags: Record<string, boolean | string> }) => void,
+        ) => {
+          callback({ flags: { isAIAssistantEnabled: true } });
           return () => {};
         },
       ),

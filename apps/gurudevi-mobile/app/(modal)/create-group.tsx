@@ -1,6 +1,6 @@
 import { CreateGroupModal } from '@repo/community';
-import { useCallback } from 'react';
 import { safeBack } from '@repo/ui/utils/navigation';
+import { useCallback } from 'react';
 
 export default function CreateGroupRoute() {
   const handleClose = useCallback(() => safeBack('/community'), []);

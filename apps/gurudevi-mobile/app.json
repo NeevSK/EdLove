@@ -142,7 +142,9 @@
       "expo-widgets",
       "expo-router",
       "react-native-enriched-markdown",
-      "react-native-nano-icons"
+      "react-native-nano-icons",
+      "@sentry/react-native",
+      "expo-background-task"
     ],
     "owner": "neevsk",
     "runtimeVersion": {

@@ -152,6 +152,7 @@ export { FormHydrator } from '@intuitui-labs/form-builder-engine/hydration';
 // Hexagonal Adapters
 export { SupabaseEntitlementAdapter } from './adapters/supabase/supabaseEntitlement.adapter';
 export { SupabaseFeatureFlagAdapter } from './adapters/supabase/supabaseFeatureFlag.adapter';
+export { GrowthBookFeatureRolloutAdapter } from './adapters/feature-rollout/growthBookFeatureRollout.adapter';
 export * from './api';
 export {
   adaptToHono,

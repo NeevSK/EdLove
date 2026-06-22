@@ -40,7 +40,7 @@ export async function detectDeviceTier(): Promise<{
 }> {
   try {
     // Web and pre-registration paths should stay conservative.
-    if (typeof navigator === 'undefined') {
+    if (typeof navigator === 'undefined' || !coreRuntime.isRegistered()) {
       return { tier: 'medium', memoryGB: 4 };
     }
 
@@ -64,7 +64,10 @@ export async function detectDeviceTier(): Promise<{
     }
 
     return { tier, memoryGB };
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.message?.includes('not registered')) {
+      return { tier: 'medium', memoryGB: 4 };
+    }
     console.warn('Failed to detect device tier:', error);
     return { tier: 'medium', memoryGB: 4 };
   }
@@ -75,7 +78,7 @@ export async function detectDeviceTier(): Promise<{
  */
 export async function detectNetworkQuality(): Promise<NetworkQuality> {
   try {
-    if (typeof navigator === 'undefined') {
+    if (typeof navigator === 'undefined' || !coreRuntime.isRegistered()) {
       return 'fair';
     }
 
@@ -111,7 +114,10 @@ export async function detectNetworkQuality(): Promise<NetworkQuality> {
 
     // Default to fair for other connection types
     return 'fair';
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.message?.includes('not registered')) {
+      return 'fair';
+    }
     console.warn('Failed to detect network quality:', error);
     return 'fair';
   }

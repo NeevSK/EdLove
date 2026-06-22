@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import type { AuthRequest, AuthResponse } from './types';
 
 const require = createRequire(import.meta.url);
-const { isAuthorized } = require('@cedar-policy/cedar-wasm/nodejs') as any;
+const { isAuthorized, schemaToJson } = require('@cedar-policy/cedar-wasm/nodejs') as any;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -13,13 +13,19 @@ const __dirname = dirname(__filename);
 const srcDir = join(__dirname, '..');
 
 // 1. Initialize and Cache Schema and Policies at Startup (Singleton pattern)
-let schemaText = '';
+let schemaJson: any = null;
 let concatenatedPolicies = '';
 const gapsMap: Record<string, string[]> = {};
 
 try {
   const schemaPath = join(srcDir, 'schema', 'schema.cedarschema');
-  schemaText = readFileSync(schemaPath, 'utf8');
+  const rawSchemaText = readFileSync(schemaPath, 'utf8');
+  const schemaParse = schemaToJson(rawSchemaText);
+  if (schemaParse.type === 'success') {
+    schemaJson = schemaParse.json;
+  } else {
+    throw new Error('Failed to parse Cedar schema: ' + JSON.stringify(schemaParse.errors));
+  }
 
   const policyFiles = [
     'platform/admin.cedar',
@@ -69,7 +75,7 @@ try {
  */
 export function check(request: AuthRequest): AuthResponse {
   try {
-    if (!schemaText || !concatenatedPolicies) {
+    if (!schemaJson || !concatenatedPolicies) {
       throw new Error('Cedar engine was not properly initialized');
     }
 
@@ -108,22 +114,37 @@ export function check(request: AuthRequest): AuthResponse {
       parents: [],
     };
 
+    // Map custom domain actions to standard Cedar CRUD actions
+    let mappedAction = request.action;
+    switch (mappedAction) {
+      case 'resolve':
+        mappedAction = 'read';
+        break;
+      case 'grade':
+      case 'submit':
+        mappedAction = 'create';
+        break;
+      case 'publish':
+      case 'override':
+      case 'verify':
+      case 'manage':
+        mappedAction = 'update';
+        break;
+    }
+
     // Call Cedar WebAssembly function
     const authResult = isAuthorized({
       principal: { type: 'User', id: request.principal.id },
-      action: { type: 'Action', id: request.action },
+      action: { type: 'Action', id: mappedAction },
       resource: { type: request.resource.type, id: request.resource.id },
       context: (request.context as Record<string, any>) || {},
-      schema: { human: schemaText },
-      slice: {
-        policies: concatenatedPolicies,
-        entities:
-          principalEntity.uid.type === resourceEntity.uid.type &&
-          principalEntity.uid.id === resourceEntity.uid.id
-            ? [principalEntity]
-            : [principalEntity, resourceEntity],
-        templateInstantiations: null,
-      },
+      schema: schemaJson,
+      policies: { staticPolicies: concatenatedPolicies },
+      entities:
+        principalEntity.uid.type === resourceEntity.uid.type &&
+        principalEntity.uid.id === resourceEntity.uid.id
+          ? [principalEntity]
+          : [principalEntity, resourceEntity],
     });
 
     if (authResult.type === 'failure') {
@@ -138,7 +159,8 @@ export function check(request: AuthRequest): AuthResponse {
       };
     }
 
-    const permitted = authResult.response.decision === 'Allow';
+    const decision = authResult.response.decision;
+    const permitted = decision === 'allow' || decision === 'Allow';
     const reasonList = Array.from(authResult.response.diagnostics.reason);
     const reason = reasonList.join(', ') || 'DefaultDeny';
 
