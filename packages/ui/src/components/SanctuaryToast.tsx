@@ -1,4 +1,4 @@
-import { AlertCircle, CheckCircle, Info, X } from 'lucide-react-native';
+import { CircleAlert, CircleCheck, Info, X } from 'lucide-react-native';
 import { useCallback, useEffect } from 'react';
 import { Platform } from 'react-native';
 import Animated, {
@@ -10,7 +10,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Pressable } from '../primitives';
 import { Box } from './ui/box';
-import { HStack } from './ui/hstack';
 import { Text } from './ui/text';
 
 export type ToastType = 'success' | 'error' | 'info';
@@ -36,9 +35,9 @@ export default function SanctuaryToast({
   const getIconData = () => {
     switch (type) {
       case 'success':
-        return { icon: CheckCircle, color: '#10B981' }; // phase-reward
+        return { icon: CircleCheck, color: '#10B981' }; // phase-reward
       case 'error':
-        return { icon: AlertCircle, color: '#EF4444' }; // phase-danger
+        return { icon: CircleAlert, color: '#EF4444' }; // phase-danger
       case 'info':
         return { icon: Info, color: '#F6BF8C' }; // phase-accent
     }
@@ -109,7 +108,7 @@ export default function SanctuaryToast({
           elevation: 12,
         }}
       >
-        <HStack className="items-center gap-3">
+        <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <Icon color={iconColor} size={24} />
           <Text style={{ color: '#FFFFFF', flex: 1, fontSize: 14, fontWeight: '500' }}>
             {message}
@@ -117,7 +116,7 @@ export default function SanctuaryToast({
           <Pressable accessibilityRole="button" onPress={hide} className="p-1 active:opacity-60">
             <X size={18} color="#9CA3AF" />
           </Pressable>
-        </HStack>
+        </Box>
       </Box>
     </Animated.View>
   );

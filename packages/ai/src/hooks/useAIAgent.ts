@@ -1,7 +1,8 @@
 import { authAPI, identityAPI, moonPhaseAPI, supabase } from '@repo/core/api';
-import { usePermissions, useStore } from '@repo/core/logic';
-
-import { useCallback, useState } from 'react';
+import { cryptoManager, usePermissions, useStore } from '@repo/core/logic';
+import { fetchServerSentEvents, useChat } from '@tanstack/ai-react';
+import type { MultimodalContent } from '@tanstack/ai-client';
+import { useCallback, useEffect, useState } from 'react';
 import { type CoordinationGap, TimetableScheduler } from '../api/agents';
 
 export interface Message {
@@ -9,36 +10,153 @@ export interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp: number;
-  gap?: CoordinationGap; // Link to a specific school gap if any
+  gap?: CoordinationGap;
 }
 
 /**
- * useAIAgent hook (Workflow Assistant)
- * Manages the conversational state and proactive interventions.
+ * useAIAgent hook (Workflow Assistant powered by TanStack AI)
+ * Manages the conversational state, billing modes, and proactive interventions.
  */
 export function useAIAgent() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content:
-        'Welcome to the Sanctuary. I am monitoring the school flow. How can I assist you today?',
-      timestamp: Date.now(),
-    },
-  ]);
-  const [isThinking, setIsThinking] = useState(false);
-  const [activeGaps, setActiveGaps] = useState<CoordinationGap[]>([]);
-  const [lastTimetableDraft, setLastTimetableDraft] = useState<any>(null);
   const { can } = usePermissions();
   const userRole = useStore((state) => state.activeBond?.capacity ?? null);
   const user = useStore((state) => state.user);
+
+  // Billing configuration states
+  const [billingMode, setBillingModeState] = useState<'baseline' | 'byok' | 'purchased'>(
+    'baseline',
+  );
+  const [byokKey, setByokKeyState] = useState<string>('');
+  const [authToken, setAuthToken] = useState<string | null>(null);
+
+  // Load configuration from local secure storage on mount
+  useEffect(() => {
+    async function loadConfig() {
+      try {
+        const storedMode = await cryptoManager.getItemAsync('ai_billing_mode');
+        if (storedMode === 'baseline' || storedMode === 'byok' || storedMode === 'purchased') {
+          setBillingModeState(storedMode);
+        }
+        const storedKey = await cryptoManager.getItemAsync('ai_byok_key');
+        if (storedKey) {
+          setByokKeyState(storedKey);
+        }
+      } catch (err) {
+        console.warn('Failed to load AI secure store config:', err);
+      }
+    }
+    loadConfig();
+  }, []);
+
+  const setBillingMode = useCallback(async (mode: 'baseline' | 'byok' | 'purchased') => {
+    setBillingModeState(mode);
+    try {
+      await cryptoManager.setItemAsync('ai_billing_mode', mode);
+    } catch (err) {
+      console.warn('Failed to persist billing mode:', err);
+    }
+  }, []);
+
+  const setByokKey = useCallback(async (key: string) => {
+    setByokKeyState(key);
+    try {
+      await cryptoManager.setItemAsync('ai_byok_key', key);
+    } catch (err) {
+      console.warn('Failed to persist byok key:', err);
+    }
+  }, []);
+
+  const [activeGaps, setActiveGaps] = useState<CoordinationGap[]>([]);
+  const [lastTimetableDraft, setLastTimetableDraft] = useState<any>(null);
+  const [isRefreshingGaps, setIsRefreshingGaps] = useState(false);
+
+  // Fetch token asynchronously for the streaming headers
+  useEffect(() => {
+    authAPI
+      .getAuthSession()
+      .then((session) => {
+        setAuthToken(session?.access_token ?? null);
+      })
+      .catch(() => null);
+  }, []);
+
+  // Fetch moon phase context
+  let moonPhase: string | undefined;
+  try {
+    const moonData = moonPhaseAPI.getCurrentMoonPhase();
+    moonPhase = moonData.name;
+  } catch {
+    /* non-fatal */
+  }
+
+  const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+
+  // TanStack AI useChat hook integration
+  const connection = fetchServerSentEvents(
+    `${apiBaseUrl}/api/ai/chat`,
+    () => ({
+      headers: authToken
+        ? {
+            Authorization: `Bearer ${authToken}`,
+          }
+        : undefined,
+      body: {
+        context: {
+          role: userRole ?? 'teacher',
+          schoolName: user?.school_id ? 'Gurudevi School' : undefined, // fallback or resolved school name
+          activeGaps: activeGaps.map((g) => ({
+            type: g.type,
+            title: g.title,
+            priority: g.priority,
+            suggestedAction: g.suggestedAction,
+          })),
+          orientationSeeds: user?.orientation_seeds ?? null,
+          moonPhase,
+          billingMode,
+          byokKey: byokKey || undefined,
+        },
+      },
+    })
+  );
+
+  const { messages: rawMessages, sendMessage, clear, status, error } = useChat({
+    connection,
+  });
+
+  const [input, setInput] = useState('');
+
+  const handleSubmit = useCallback(() => {
+    if (!input.trim()) return;
+    const content = input.trim();
+    setInput('');
+    void sendMessage(content);
+  }, [input, sendMessage]);
+
+  const mappedMessages: Message[] = (rawMessages || [])
+    .filter((msg) => msg.role !== 'system')
+    .map((msg) => {
+      const content = msg.parts
+        .map((part) => {
+          if (part.type === 'text') {
+            return part.content;
+          }
+          return '';
+        })
+        .join('');
+
+      return {
+        id: msg.id,
+        role: msg.role === 'user' ? 'user' : 'assistant',
+        content,
+        timestamp: msg.createdAt ? new Date(msg.createdAt).getTime() : Date.now(),
+      };
+    });
 
   /**
    * Workflow Assistant: Structural Repair
    * Triggers the TimetableScheduler to heal annual structural gaps.
    */
   const generateTimetable = useCallback(async (schoolId: string) => {
-    setIsThinking(true);
     const draft = await TimetableScheduler.generateDraft(schoolId, {
       maxDailyPeriods: 7,
       mandatorySubjects: ['Math', 'Science', 'Sinhala', 'English'],
@@ -46,28 +164,25 @@ export function useAIAgent() {
     });
 
     setLastTimetableDraft(draft);
-    setIsThinking(false);
     return draft;
   }, []);
 
   /**
-   * Checks for real operational gaps from Supabase:
-   * - Attendance not yet marked today
-   * - Overdue assignments with ungraded submissions
-   * Falls back to empty array on any error  non-fatal.
+   * Checks for real operational gaps from Supabase
    */
   const refreshStatus = useCallback(async () => {
+    setIsRefreshingGaps(true);
     const citizen = await identityAPI.identifyActiveCitizen().catch(() => null);
     const myId = citizen?.id || null;
     if (!myId) {
       setActiveGaps([]);
+      setIsRefreshingGaps(false);
       return [];
     }
 
     const gaps: CoordinationGap[] = [];
 
     try {
-      // 1. Classrooms with no attendance today
       const today = new Date().toISOString().split('T')[0];
       const { data: classrooms } = await supabase
         .from('classrooms')
@@ -100,7 +215,6 @@ export function useAIAgent() {
             });
           });
 
-        // 2. Assignments overdue with ungraded submissions
         const { data: overdue } = await supabase
           .from('assignments')
           .select('id, title, classroom_id, classrooms(name)')
@@ -115,7 +229,6 @@ export function useAIAgent() {
           const overdueAssignments = overdue as any[];
           const overdueIds = overdueAssignments.map((a: any) => a.id);
 
-          // Fetch all ungraded submissions for overdue assignments in a single query
           const { data: ungradedSubmissions } = await supabase
             .from('submissions')
             .select('assignment_id')
@@ -149,167 +262,30 @@ export function useAIAgent() {
         }
       }
     } catch {
-      // Non-fatal  AI context enrichment is best-effort
+      // Non-fatal AI context enrichment is best-effort
     }
 
     setActiveGaps(gaps);
+    setIsRefreshingGaps(false);
     return gaps;
   }, []);
 
-  /**
-   * Send a message to the real AI assistant edge function.
-   * Falls back to local Socratic generator if the edge function is unreachable.
-   */
-  const sendMessage = useCallback(
-    async (content: string) => {
-      if (!content.trim()) return;
-
-      const userMessage: Message = {
-        id: Date.now().toString(),
-        role: 'user',
-        content,
-        timestamp: Date.now(),
-      };
-
-      setMessages((prev) => [...prev, userMessage]);
-      setIsThinking(true);
-
-      // Build context for the edge function
-      const conversationHistory = messages.map((m) => ({
-        role: m.role,
-        content: m.content,
-      }));
-
-      // Get moon phase for context (best-effort, non-blocking)
-      let moonPhase: string | undefined;
-      try {
-        const moonData = moonPhaseAPI.getCurrentMoonPhase();
-        moonPhase = moonData.name;
-      } catch {
-        /* non-fatal */
-      }
-
-      // Fetch school name if available (best-effort)
-      let schoolName: string | undefined;
-      if (user?.school_id) {
-        try {
-          const { data } = await supabase
-            .from('schools')
-            .select('name')
-            .eq('id', user.school_id)
-            .maybeSingle();
-          schoolName = data?.name;
-        } catch {
-          /* non-fatal */
-        }
-      }
-
-      try {
-        // getSession() here is correct: we only need the JWT access_token to call
-        // the edge function  NOT session.user.id for any DB query.
-        const session = await authAPI.getAuthSession();
-        const token = session?.access_token;
-
-        if (!token) {
-          throw new Error('No auth token');
-        }
-
-        const response = await supabase.functions.invoke('ai-assistant', {
-          body: {
-            message: content,
-            history: conversationHistory,
-            context: {
-              role: userRole ?? 'teacher',
-              schoolName,
-              activeGaps,
-              orientationSeeds: user?.orientation_seeds ?? null,
-              moonPhase,
-            },
-          },
-        });
-
-        const reply = response.data?.reply as string | undefined;
-
-        if (reply) {
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: (Date.now() + 1).toString(),
-              role: 'assistant',
-              content: reply,
-              timestamp: Date.now(),
-            },
-          ]);
-          return;
-        }
-        throw new Error('Empty reply from edge function');
-      } catch (err) {
-        console.warn('[useAIAgent] edge function error, falling back to local:', err);
-        // Local fallback  still Socratic, just not LLM-powered
-        const fallback = generateLocalFallback(content, userRole, can);
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: (Date.now() + 1).toString(),
-            role: 'assistant',
-            content: fallback,
-            timestamp: Date.now(),
-          },
-        ]);
-      } finally {
-        setIsThinking(false);
-      }
-    },
-    [messages, userRole, user, activeGaps, can],
-  );
-
-  const clearHistory = useCallback(() => {
-    setMessages([
-      {
-        id: '1',
-        role: 'assistant',
-        content:
-          'Welcome to the Sanctuary. I am monitoring the school flow. How can I assist you today?',
-        timestamp: Date.now(),
-      },
-    ]);
-  }, []);
-
   return {
-    messages,
-    isThinking,
+    messages: mappedMessages,
+    input,
+    setInput,
+    handleSubmit,
+    sendMessage,
+    clearHistory: clear,
+    isThinking: status === 'streaming' || status === 'submitted',
     activeGaps,
     lastTimetableDraft,
-    sendMessage,
     refreshStatus,
     generateTimetable,
-    clearHistory,
+    billingMode,
+    setBillingMode,
+    byokKey,
+    setByokKey,
+    error,
   };
-}
-
-/**
- * Local Socratic fallback  used when the edge function is unreachable.
- * Keeps the AI feeling present even without network.
- */
-function generateLocalFallback(input: string, _role: string | null, can: any): string {
-  const lowerInput = input.toLowerCase();
-  if (lowerInput.includes('lesson') || lowerInput.includes('class')) {
-    return 'Lessons are more than delivery  they are shared experiences. How was the energy in the room?';
-  }
-  if (lowerInput.includes('tired') || lowerInput.includes('stress')) {
-    return 'Rest is not a luxury; it is a vital part of the cycle. How can you find a moment of stillness today?';
-  }
-  if (lowerInput.includes('student')) {
-    return 'Each student is a world unto themselves. What did one of them teach you today?';
-  }
-  if (can('read', 'PrincipalPulse')) {
-    return 'Leading a school means holding many realities at once. Which one needs your attention most right now?';
-  }
-  const reflections = [
-    'That is something worth sitting with. What feels most true about it to you?',
-    'If we look at this through the lens of growth, what becomes possible?',
-    'Reflection is the first step toward transformation. What else do you see in this situation?',
-    'That sounds significant. How does this align with your deeper values?',
-  ];
-  return reflections[Math.floor(Math.random() * reflections.length)] ?? reflections[0]!;
 }

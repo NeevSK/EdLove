@@ -6,7 +6,7 @@
 /* eslint-disable */
 
 import type { ModelResult as $ModelResult } from '@zenstackhq/orm';
-import type { SchemaType as $Schema } from './schema';
+import { type SchemaType as $Schema } from './schema';
 export type User = $ModelResult<$Schema, 'User'>;
 export type Bond = $ModelResult<$Schema, 'Bond'>;
 export type UserSocialLink = $ModelResult<$Schema, 'UserSocialLink'>;

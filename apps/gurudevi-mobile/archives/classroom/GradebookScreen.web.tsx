@@ -14,7 +14,7 @@ import {
   Award,
   Check,
   ChevronLeft,
-  Edit3,
+  SquarePen,
   Settings2,
   TrendingUp,
   Users,
@@ -686,7 +686,7 @@ export default function GradebookScreenWeb() {
                         onMouseOver={(e) => (e.currentTarget.style.background = 'var(--border)')}
                         onMouseOut={(e) => (e.currentTarget.style.background = 'none')}
                       >
-                        <Edit3 size={14} color="var(--ink-ghost)" />
+                        <SquarePen size={14} color="var(--ink-ghost)" />
                       </button>
                     </div>
                   );

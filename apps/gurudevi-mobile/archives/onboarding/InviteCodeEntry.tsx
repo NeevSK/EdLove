@@ -18,7 +18,7 @@ import {
 import { useToast } from '@repo/ui/providers';
 import { Theme } from '@repo/ui/theme';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-import { ArrowRight, HelpCircle } from 'lucide-react-native';
+import { ArrowRight, CircleQuestionMark } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -165,7 +165,7 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
           }}
         >
           <HStack space="sm" alignItems="flex-start">
-            <HelpCircle color={Theme.colors.sanctuarySaffron} size={20} />
+            <CircleQuestionMark color={Theme.colors.sanctuarySaffron} size={20} />
             <VStack space="xs" sx={{ flex: 1 }}>
               <Text color={Theme.colors.sacredWhite} size="sm" bold>
                 {t('invite.whereToFind') || 'Where to find your code?'}

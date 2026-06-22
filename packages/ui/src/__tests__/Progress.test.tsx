@@ -4,10 +4,12 @@ import { Progress, ProgressFilledTrack } from '../components/ui/progress';
 describe('Progress Component (Robustness)', () => {
   it('renders correctly with value', async () => {
     const { getByTestId } = await render(
-      <Progress value={50} testID="progress">
-        <ProgressFilledTrack testID="filled-track" />
+      <Progress value={50} testID="progress-bar">
+        <ProgressFilledTrack />
       </Progress>,
     );
-    // Filled track should have width 50%
+
+    const progress = getByTestId('progress-bar');
+    expect(progress.props.accessibilityValue).toEqual({ min: 0, max: 100, now: 50 });
   });
 });

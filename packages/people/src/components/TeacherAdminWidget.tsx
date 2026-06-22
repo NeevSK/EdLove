@@ -5,10 +5,10 @@ import { hapticLight } from '@repo/ui/utils/haptics';
 import {
   ArrowRightLeft,
   Calendar,
-  CheckSquare,
   ClipboardList,
   DollarSign,
   FileText,
+  SquareCheckBig,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -83,7 +83,7 @@ export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps
       visible: flags.isAccountingEnabled,
     },
     {
-      icon: CheckSquare,
+      icon: SquareCheckBig,
       label: t('teacher.admin.approvals') || 'Approvals',
       variant: 'error',
       visible: flags.isStaffManagementEnabled,

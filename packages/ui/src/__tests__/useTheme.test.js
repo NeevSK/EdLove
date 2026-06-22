@@ -7,7 +7,7 @@ describe('resolvePhaseTokens', () => {
     expect(tokens.scene.world.bg).toBe('#0F131C');
     expect(tokens.scene.chrome.bg).toBe(tokens.glass.surface.bg);
     expect(tokens.scene.elevated.bg).toBe(tokens.glass.modal.bg);
-    expect(tokens.text.onWorld).toBe('#FCF9F2');
+    expect(tokens.text.onWorld).toBe('#FFFFFF');
     expect(tokens.accent.action).toBe('#FDD925');
   });
 
@@ -16,7 +16,7 @@ describe('resolvePhaseTokens', () => {
 
     expect(tokens.scene.world.bg).toBe('#F5EDD6');
     expect(tokens.scene.canvas.bg).toBe('#DCFCE7');
-    expect(tokens.text.onCanvas).toBe('#2A2318');
+    expect(tokens.text.onCanvas).toBe('#000000');
     expect(tokens.accent.action).toBe('#8BBF7A');
     expect(tokens.text.onAccent).toBe(tokens.text.inverse);
   });
@@ -35,8 +35,8 @@ describe('resolvePhaseTokens', () => {
     const darkClassic = resolveClassicTokens(true);
 
     expect(lightClassic.scene.canvas.bg).toBe('#FAF7ED');
-    expect(lightClassic.text.onCanvas).toBe('#2A2318');
+    expect(lightClassic.text.onCanvas).toBe('#000000');
     expect(darkClassic.scene.world.bg).toBe('#0F131C');
-    expect(darkClassic.text.onWorld).toBe('#FCF9F2');
+    expect(darkClassic.text.onWorld).toBe('#FFFFFF');
   });
 });

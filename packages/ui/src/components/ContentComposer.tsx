@@ -160,7 +160,11 @@ export function ContentComposer(props: ComposerProps) {
                       />
                     </Input>
                     {pollOptions.length > 2 && (
-                      <Pressable onPress={() => onRemovePollOption(idx)} className="p-2">
+                      <Pressable
+                        accessibilityRole="button"
+                        onPress={() => onRemovePollOption(idx)}
+                        className="p-2"
+                      >
                         <Icon as={X} size="sm" className="text-ink/40" />
                       </Pressable>
                     )}
@@ -168,7 +172,11 @@ export function ContentComposer(props: ComposerProps) {
                 );
               })}
               {pollOptions.length < 5 && (
-                <Pressable onPress={onAddPollOption} className="flex-row items-center py-2 gap-2">
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={onAddPollOption}
+                  className="flex-row items-center py-2 gap-2"
+                >
                   <Icon as={Plus} size="xs" className="text-phase-interactive" />
                   <Text className="text-phase-interactive text-sm font-semibold">Add option</Text>
                 </Pressable>
@@ -203,6 +211,7 @@ export function ContentComposer(props: ComposerProps) {
                       const isActive = !showCustomDate && pollDurationHours === p.hours;
                       return (
                         <Pressable
+                          accessibilityRole="button"
                           key={p.label || 'none'}
                           onPress={() => {
                             onSetShowCustomDate(false);
@@ -221,6 +230,7 @@ export function ContentComposer(props: ComposerProps) {
 
                     {Platform.OS === 'web' && (
                       <Pressable
+                        accessibilityRole="button"
                         onPress={() => {
                           onSetShowCustomDate(true);
                           onSetPollDuration(null);
@@ -269,6 +279,7 @@ export function ContentComposer(props: ComposerProps) {
                   const active = selectedTags.includes(tag.id);
                   return (
                     <Pressable
+                      accessibilityRole="button"
                       key={tag.id}
                       onPress={() => onToggleTag(tag.id)}
                       className={`px-3 py-1.5 rounded-full border ${active ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-surface border-border'}`}
@@ -294,6 +305,7 @@ export function ContentComposer(props: ComposerProps) {
               alt="Selected image"
             />
             <Pressable
+              accessibilityRole="button"
               onPress={onRemoveImage}
               className="absolute top-2 right-2 bg-black/40 p-2 rounded-full"
             >
@@ -311,6 +323,7 @@ export function ContentComposer(props: ComposerProps) {
         <HStack className="gap-4">
           {allowMedia && (
             <Pressable
+              accessibilityRole="button"
               onPress={onPickImage}
               className={`p-3 rounded-xl ${selectedImage ? 'bg-phase-interactive/10' : 'bg-phase-surface'}`}
             >
@@ -321,11 +334,12 @@ export function ContentComposer(props: ComposerProps) {
               />
             </Pressable>
           )}
-          <Pressable className="p-3 bg-phase-surface rounded-xl">
+          <Pressable accessibilityRole="button" className="p-3 bg-phase-surface rounded-xl">
             <Icon as={Mic} size="md" className="text-ink/40" />
           </Pressable>
           {allowPolls && (
             <Pressable
+              accessibilityRole="button"
               onPress={onTogglePollMode}
               className={`p-3 rounded-xl ${isPollMode ? 'bg-phase-interactive' : 'bg-phase-surface'}`}
             >

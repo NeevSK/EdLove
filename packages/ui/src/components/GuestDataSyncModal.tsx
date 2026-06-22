@@ -1,6 +1,6 @@
 import { GuestDataSync } from '@repo/core/native';
 
-import { AlertCircle, AlertTriangle, Check } from 'lucide-react-native';
+import { Check, CircleAlert, TriangleAlert } from 'lucide-react-native';
 import { useCallback, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, HStack, Spinner, Text, VStack } from '../gluestack';
@@ -116,7 +116,7 @@ export default function GuestDataSyncModal({
 
   useEffect(() => {
     if (isOpen) {
-      fetchSyncSummary();
+      void fetchSyncSummary();
     } else {
       dispatch({ type: 'RESET' });
     }
@@ -172,7 +172,9 @@ export default function GuestDataSyncModal({
         </SanctuaryButton>
         <SanctuaryButton
           action="primary"
-          onPress={handleSync}
+          onPress={() => {
+            void handleSync();
+          }}
           isLoading={state.status === 'syncing'}
           className="flex-1"
         >
@@ -204,7 +206,7 @@ export default function GuestDataSyncModal({
         {state.status === 'confirm_skip' && (
           <VStack className="gap-4">
             <HStack className="gap-2 items-center">
-              <AlertTriangle size={18} className="text-phase-accent" />
+              <TriangleAlert size={18} className="text-phase-accent" />
               <Text className="font-bold text-phase-text-primary">
                 {t('sync.skipWarningTitle') || 'Your data will be lost'}
               </Text>
@@ -323,7 +325,7 @@ export default function GuestDataSyncModal({
         {state.error && (
           <Box className="p-4 bg-phase-danger/10 rounded-xl border border-phase-danger">
             <HStack className="gap-2">
-              <AlertCircle size={20} className="text-phase-danger" />
+              <CircleAlert size={20} className="text-phase-danger" />
               <Text className="text-phase-danger text-sm flex-1">{state.error}</Text>
             </HStack>
           </Box>

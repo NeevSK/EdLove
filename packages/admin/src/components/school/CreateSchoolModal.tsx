@@ -14,9 +14,9 @@ import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import {
   BookOpen,
   Building2,
-  CheckCircle,
   ChevronLeft,
   ChevronRight,
+  CircleCheck,
   Globe,
   MapPin,
   MessageSquare,
@@ -37,9 +37,8 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-
-import { useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
+import { useMemo, useState } from 'react';
 
 interface CreateSchoolModalProps {
   isOpen: boolean;
@@ -500,7 +499,7 @@ export default function CreateSchoolModal({
                 </Box>
                 <Box className="p-4 rounded-2xl bg-phase-success/5 border border-phase-success/20">
                   <HStack className="gap-3 items-center">
-                    <Icon as={CheckCircle} className="text-phase-success" size="sm" />
+                    <Icon as={CircleCheck} className="text-phase-success" size="sm" />
                     <Text className="text-xs font-bold text-phase-success/60 flex-1 leading-relaxed">
                       Establishing this sanctuary will automatically create a Community HQ and
                       assign you as the Principal.
@@ -513,7 +512,7 @@ export default function CreateSchoolModal({
             {state.step === 5 && (
               <VStack className="gap-8 items-center py-6">
                 <Box className="bg-phase-success/10 p-8 rounded-full border border-phase-success/20">
-                  <Icon as={CheckCircle} className="text-phase-success" size={64} />
+                  <Icon as={CircleCheck} className="text-phase-success" size={64} />
                 </Box>
 
                 <VStack className="gap-2 items-center">

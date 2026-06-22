@@ -1,10 +1,10 @@
-import { useNavigation } from '@react-navigation/native';
 import { FeatureGuard, useStore } from '@repo/core/logic';
-
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, HStack, Text, useTheme, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import { safeBack } from '@repo/ui/utils/navigation';
+import { useRouter } from 'expo-router';
 
 import { ChevronLeft, Send, Sparkles } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
@@ -21,19 +21,18 @@ import Animated, { FadeInUp, Layout } from 'react-native-reanimated';
 import { type Message, useAIAgent } from '../hooks/useAIAgent';
 
 export default function AIAssistantScreen() {
-  const navigation = useNavigation();
+  const router = useRouter();
   const { gradientNodes, accent, glass, text, isDark } = useTheme();
   const { t } = useTranslation();
-  const { messages, isThinking, sendMessage } = useAIAgent();
+  const { messages, input, setInput, handleSubmit, isThinking, billingMode, setBillingMode } =
+    useAIAgent();
   const userRole = useStore((state) => state.activeBond?.capacity ?? null);
-  const [inputText, setInputText] = useState('');
   const flatListRef = useRef<FlatList>(null);
 
   const handleSend = () => {
-    if (!inputText.trim()) return;
+    if (!input.trim()) return;
     hapticLight();
-    sendMessage(inputText);
-    setInputText('');
+    handleSubmit();
   };
 
   useEffect(() => {
@@ -44,7 +43,7 @@ export default function AIAssistantScreen() {
     }
   }, [messages]);
 
-  const renderMessage = ({ item }: { item: Message }) => {
+  const renderMessage = ({ item }: { item: any }) => {
     const isUser = item.role === 'user';
     return (
       <Animated.View
@@ -82,17 +81,44 @@ export default function AIAssistantScreen() {
           <HStack style={[styles.header, { borderBottomColor: glass.surface.border }]}>
             <TouchableOpacity
               accessibilityRole="button"
-              onPress={() => navigation.goBack()}
+              onPress={() => safeBack('/self')}
               style={[styles.backButton, { backgroundColor: glass.surface.bg }]}
             >
               <ChevronLeft color={text.primary} size={24} />
             </TouchableOpacity>
-            <VStack>
-              <HStack className="gap-xs items-center">
-                <Sparkles color="#B8A9E0" size={18} />
-                <Text className="font-bold text-lg text-phaseText-primary">
-                  {t('aiAssistant.title')}
-                </Text>
+            <VStack style={{ flex: 1 }}>
+              <HStack className="justify-between items-center w-full">
+                <HStack className="gap-xs items-center">
+                  <Sparkles color="#B8A9E0" size={18} />
+                  <Text className="font-bold text-lg text-phaseText-primary">
+                    {t('aiAssistant.title')}
+                  </Text>
+                </HStack>
+
+                {/* Billing Mode Selector Pill */}
+                <TouchableOpacity
+                  onPress={() => {
+                    const modes: ('baseline' | 'byok' | 'purchased')[] = [
+                      'baseline',
+                      'byok',
+                      'purchased',
+                    ];
+                    const nextMode = modes[(modes.indexOf(billingMode) + 1) % modes.length]!;
+                    setBillingMode(nextMode);
+                  }}
+                  style={{
+                    backgroundColor: glass.surface.bg,
+                    paddingHorizontal: 8,
+                    paddingVertical: 4,
+                    borderRadius: 12,
+                    borderWidth: 1,
+                    borderColor: glass.surface.border,
+                  }}
+                >
+                  <Text style={{ fontSize: 10, color: text.primary, fontWeight: 'bold' }}>
+                    {billingMode.toUpperCase()}
+                  </Text>
+                </TouchableOpacity>
               </HStack>
               <Text className="text-phaseText-secondary text-xs">{t('aiAssistant.subtitle')}</Text>
             </VStack>
@@ -125,7 +151,7 @@ export default function AIAssistantScreen() {
                 </Text>
                 <TouchableOpacity
                   accessibilityRole="button"
-                  onPress={() => (navigation as any).navigate('Welcome')}
+                  onPress={() => router.push('/welcome')}
                 >
                   <Text className="text-phase-accent font-bold text-sm">
                     {t('aiAssistant.continueLogin')}
@@ -149,20 +175,20 @@ export default function AIAssistantScreen() {
                   style={[styles.input, { color: text.primary }]}
                   placeholder={t('aiAssistant.placeholder')}
                   placeholderTextColor={text.secondary}
-                  value={inputText}
-                  onChangeText={setInputText}
+                  value={input}
+                  onChangeText={setInput}
                   multiline
                   maxLength={500}
                 />
                 <TouchableOpacity
                   accessibilityRole="button"
                   onPress={handleSend}
-                  disabled={!inputText.trim()}
+                  disabled={!input.trim()}
                   style={[
                     styles.sendButton,
                     {
                       backgroundColor: accent.action,
-                      opacity: inputText.trim() ? 1 : 0.5,
+                      opacity: input.trim() ? 1 : 0.5,
                     },
                   ]}
                 >

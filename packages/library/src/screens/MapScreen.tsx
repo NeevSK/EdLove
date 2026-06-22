@@ -1,4 +1,3 @@
-import { useRouter } from 'expo-router';
 import { FeatureGuard, useStore } from '@repo/core/logic';
 import {
   CaptureEngine,
@@ -29,8 +28,10 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { BlurView } from 'expo-blur';
-import { BarChart3, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
+import { ChartColumn, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'lucide-react-native';
 import { cssInterop } from 'nativewind';
 import React, { useEffect, useMemo, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -77,7 +78,7 @@ const PERSPECTIVES: Perspective[] = [
   {
     id: 'jyoti',
     label: 'Insight',
-    icon: BarChart3,
+    icon: ChartColumn,
     description: 'Analytic charts & metrics',
   },
   {
@@ -234,7 +235,7 @@ export default function MapScreen() {
         title="Knowledge Cosmos"
         subtitle="Isomorphic Visualization Engine"
         showBack
-        onBack={() => router.back()}
+        onBack={() => safeBack('/library')}
         rightAction={
           <FeatureGuard feature="isProMember">
             <Pressable

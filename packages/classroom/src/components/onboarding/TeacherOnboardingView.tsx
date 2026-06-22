@@ -1,6 +1,6 @@
 import {
-  ArrowRightCircle,
   ChevronRight,
+  CircleArrowRight,
   Plus,
   School,
   Search,
@@ -143,7 +143,7 @@ export default function TeacherOnboardingView({
                   <Text className="text-white font-black text-base uppercase tracking-widest">
                     Launch Teacher Sandbox
                   </Text>
-                  <Icon as={ArrowRightCircle} size="sm" className="text-white" />
+                  <Icon as={CircleArrowRight} size="sm" className="text-white" />
                 </HStack>
               </Pressable>
             </VStack>

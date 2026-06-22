@@ -1,5 +1,5 @@
-﻿import type { StudentAttendancePulse } from '@repo/core/api';
-import { AlertTriangle, GraduationCap, TrendingUp } from 'lucide-react-native';
+import type { StudentAttendancePulse } from '@repo/core/api';
+import { TriangleAlert, GraduationCap, TrendingUp } from 'lucide-react-native';
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -115,7 +115,7 @@ export const StudentPulse: React.FC<StudentPulseProps> = ({ pulse, atRiskCount, 
               gap: '4px',
             }}
           >
-            <AlertTriangle size={12} /> At Risk
+            <TriangleAlert size={12} /> At Risk
           </span>
           <div style={{ fontSize: '28px', fontWeight: '900' }}>{atRiskCount}</div>
           <div style={{ fontSize: '11px', color: 'var(--ink-ghost)' }}>Frequent absentees</div>

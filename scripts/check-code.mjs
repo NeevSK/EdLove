@@ -1,8 +1,7 @@
 import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
-
-import { existsSync } from 'node:fs';
 
 const args = process.argv.slice(2);
 
@@ -35,7 +34,10 @@ const reportFile = resolve(cwdArg, reportPath);
 const startTime = Date.now();
 
 const npmExecPath = process.env.npm_execpath;
-const isJsFile = npmExecPath && existsSync(npmExecPath) && (npmExecPath.endsWith('.js') || npmExecPath.endsWith('.cjs') || npmExecPath.endsWith('.mjs'));
+const isJsFile =
+  npmExecPath &&
+  existsSync(npmExecPath) &&
+  (npmExecPath.endsWith('.js') || npmExecPath.endsWith('.cjs') || npmExecPath.endsWith('.mjs'));
 const pnpmBinary = isJsFile ? npmExecPath : 'pnpm';
 
 const checks = [
@@ -76,7 +78,8 @@ process.exit(totalFailures === 0 ? 0 : 1);
 
 function runCheck(name, bin, args, cwd) {
   return new Promise((resolveResult) => {
-    const isJs = pnpmBinary.endsWith('.js') || pnpmBinary.endsWith('.cjs') || pnpmBinary.endsWith('.mjs');
+    const isJs =
+      pnpmBinary.endsWith('.js') || pnpmBinary.endsWith('.cjs') || pnpmBinary.endsWith('.mjs');
     const spawnCmd = isJs ? process.execPath : pnpmBinary;
     const spawnArgs = isJs
       ? [pnpmBinary, '--dir', cwd, 'exec', bin, ...args]

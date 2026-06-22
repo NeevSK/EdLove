@@ -125,7 +125,7 @@ class HTTPClient {
         throw new NetworkError('Network request failed');
       }
 
-      throw new Error('Unexpected error occurred');
+      throw new Error('Unexpected error occurred', { cause: error });
     }
   }
 

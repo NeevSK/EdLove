@@ -2,6 +2,7 @@ import { academicCyclesAPI, api, growthSignalsAPI } from '@repo/core/api';
 import { useSafeMutation } from '@repo/core/hooks';
 import { type AttendanceStatus, type StudentAttendance, useStore } from '@repo/core/logic';
 import { generateIdempotencyKey, getCurrentTimestamp } from '@repo/core/utils';
+import { useAppStoreReview } from '@repo/ui/hooks';
 import { Box, Button, ButtonText, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
 import { useLocalSearchParams } from 'expo-router';
@@ -11,6 +12,7 @@ import AttendanceSheet from '../components/AttendanceSheet';
 
 export default function AttendanceScreen() {
   const { classroomId = '' } = useLocalSearchParams<{ classroomId?: string }>();
+  const { triggerReview } = useAppStoreReview();
 
   const [students, setStudents] = useState<StudentAttendance[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -105,6 +107,7 @@ export default function AttendanceScreen() {
             event_metadata: { classroom_id: classroomId },
           });
         }
+        void triggerReview('attendance_marked', { minActions: 2, probability: 0.5 });
       },
       onError: (err: any) => {
         showToast(err.message || 'Failed to save attendance', 'error');

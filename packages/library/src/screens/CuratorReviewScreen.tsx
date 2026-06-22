@@ -1,7 +1,5 @@
-import { useNavigation } from 'expo-router/react-navigation';
 import { supabase } from '@repo/core/api';
 import { usePermissions, useStore } from '@repo/core/logic';
-
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
@@ -15,6 +13,8 @@ import {
   useTheme,
   VStack,
 } from '@repo/ui/primitives';
+import { safeBack } from '@repo/ui/utils/navigation';
+import { router } from 'expo-router';
 
 import { Check, RefreshCw, Trash2, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
@@ -67,7 +67,6 @@ const initialState: CuratorState = {
  */
 export default function CuratorReviewScreen() {
   const { can, flags } = usePermissions();
-  const navigation = useNavigation<any>();
   const theme = useTheme();
   const showToast = useStore((state) => state.showToast);
 
@@ -145,7 +144,7 @@ export default function CuratorReviewScreen() {
     [fetchBroken, showToast],
   );
 
-  const handleGoBack = useCallback(() => navigation.goBack(), [navigation]);
+  const handleGoBack = useCallback(() => safeBack('/library'), []);
   const setStagingTab = useCallback(() => dispatch({ type: 'SET_TAB', payload: 'staging' }), []);
   const setBrokenTab = useCallback(() => dispatch({ type: 'SET_TAB', payload: 'broken' }), []);
 

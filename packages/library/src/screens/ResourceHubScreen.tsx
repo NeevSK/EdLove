@@ -1,6 +1,4 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { coreRuntime, useStore } from '@repo/core/logic';
-
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useThemedColors } from '@repo/ui/hooks';
 import {
@@ -15,13 +13,14 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { openExternalURL } from '@repo/ui/utils';
-
+import { safeBack } from '@repo/ui/utils/navigation';
 import { useQuery } from '@tanstack/react-query';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   ArrowLeft,
+  CirclePlay,
   ExternalLink,
   Globe,
-  PlayCircle,
   QrCode,
   Share2,
   Sparkles,
@@ -199,12 +198,8 @@ export default function ResourceHubScreen() {
   );
 
   const handleBack = useCallback(() => {
-    if (router.canGoBack()) {
-      router.back();
-      return;
-    }
-    router.replace('/library');
-  }, [router]);
+    safeBack('/library');
+  }, []);
 
   const navigateIntoLibrary = useCallback(
     (screen: string, params: Record<string, unknown>) => {
@@ -447,7 +442,7 @@ export default function ResourceHubScreen() {
                 }
                 icon={
                   resource.type === 'movie_trailer' || resource.type === 'video' ? (
-                    <SanctuaryIcon as={PlayCircle} size={16} color="white" />
+                    <SanctuaryIcon as={CirclePlay} size={16} color="white" />
                   ) : (
                     <SanctuaryIcon as={ExternalLink} size={16} color="white" />
                   )

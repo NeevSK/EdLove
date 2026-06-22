@@ -1,18 +1,24 @@
-import { useStore } from '@repo/core/logic';
+import { accountPin, cryptoManager, storage, useStore } from '@repo/core/logic';
+import * as LocalAuthentication from 'expo-local-authentication';
+import * as ScreenCapture from 'expo-screen-capture';
 import {
   Check,
   ChevronRight,
   Eye,
+  EyeOff,
   Globe,
   Info,
+  Lock,
   Shield,
   Smartphone,
   Sparkles,
   Zap,
 } from 'lucide-react-native';
 import type React from 'react';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Platform, TextInput, TouchableOpacity } from 'react-native';
+import AccountPinModal from '../components/AccountPinModal';
 import DeviceSecurityCenter from '../components/DeviceSecurityCenter';
 import { NotificationSettingsPanel } from '../components/NotificationSettingsPanel';
 import { Box } from '../components/ui/box';
@@ -87,6 +93,87 @@ const SettingsOption = memo(function SettingsOption({
 SettingsOption.displayName = 'SettingsOption';
 
 /**
+ * Selection Modal Component
+ * Accessible modal for choosing options
+ */
+interface SelectionModalProps {
+  title: string;
+  options: Array<{
+    id: string;
+    label: string;
+    description: string;
+    icon: React.ReactNode;
+    isSelected: boolean;
+  }>;
+  onSelect: (id: any) => void;
+  onClose: () => void;
+}
+
+const SelectionOption = memo(function SelectionOption({
+  option,
+  onSelect,
+}: {
+  option: SelectionModalProps['options'][0];
+  onSelect: (id: any) => void;
+}) {
+  const handlePress = useCallback(() => {
+    hapticLight();
+    onSelect(option.id);
+  }, [option.id, onSelect]);
+
+  return (
+    <Pressable
+      onPress={handlePress}
+      className={`p-4 rounded-2xl border min-h-[72px] transition-all flex-row items-center gap-4 ${option.isSelected ? 'bg-phase-surface/50 border-phase-primary border-2' : 'bg-phase-surface border-phase-border'}`}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel={option.label}
+      accessibilityHint={option.description}
+      accessibilityState={{ selected: option.isSelected }}
+    >
+      <Box className="w-10 h-10 items-center justify-center">{option.icon}</Box>
+      <VStack className="flex-1 gap-1">
+        <Text className="text-base font-semibold text-phase-primary">{option.label}</Text>
+        <Text className="text-sm text-phase-secondary leading-relaxed">{option.description}</Text>
+      </VStack>
+      {option.isSelected && (
+        <Box className="text-phase-primary">
+          <Check size={24} />
+        </Box>
+      )}
+    </Pressable>
+  );
+});
+
+SelectionOption.displayName = 'SelectionOption';
+
+const SelectionModal = memo(function SelectionModal({
+  title,
+  options,
+  onSelect,
+  onClose,
+}: SelectionModalProps) {
+  return (
+    <Box className="absolute inset-0 bg-black/50 justify-end z-50">
+      <Pressable className="flex-1" onPress={onClose} accessible={false} />
+      <Box className="bg-phase-world rounded-t-[32px] p-6 pb-12 shadow-2xl">
+        <Text className="text-xl font-bold text-phase-primary mb-4">{title}</Text>
+        <VStack className="gap-2">
+          {options.map((option) => (
+            <SelectionOption key={option.id} option={option} onSelect={onSelect} />
+          ))}
+        </VStack>
+        <Button onPress={onClose} className="mt-4 bg-phase-surface h-14 rounded-2xl">
+          <ButtonText className="text-phase-primary font-bold">Close</ButtonText>
+        </Button>
+      </Box>
+    </Box>
+  );
+});
+
+SelectionModal.displayName = 'SelectionModal';
+
+/**
  * Settings Section Header
  */
 function SectionHeader({ title, description }: { title: string; description?: string }) {
@@ -130,6 +217,235 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
   const [_showThemeModal, setShowThemeModal] = useState(false);
   const [showFidelityModal, setShowFidelityModal] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
+
+  // Biometrics & Screen Capture States
+  const [requireBiometrics, setRequireBiometrics] = useState(() => {
+    return Platform.OS !== 'web' ? storage.getBoolean('require_biometrics') : false;
+  });
+  const [preventScreenCapture, setPreventScreenCapture] = useState(() => {
+    return Platform.OS !== 'web' ? storage.getBoolean('prevent_screen_capture') : false;
+  });
+  const [isBiometricSupported, setIsBiometricSupported] = useState(false);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      void LocalAuthentication.hasHardwareAsync().then((hasHardware: boolean) => {
+        void LocalAuthentication.isEnrolledAsync().then((isEnrolled: boolean) => {
+          setIsBiometricSupported(hasHardware && isEnrolled);
+        });
+      });
+    }
+  }, []);
+
+  const handleBiometricsToggle = useCallback(
+    async (val: boolean) => {
+      if (Platform.OS === 'web') return;
+      hapticLight();
+      if (val) {
+        try {
+          const auth = await LocalAuthentication.authenticateAsync({
+            promptMessage: t(
+              'settings.security.confirm_biometrics',
+              'Confirm biometrics to enable lock',
+            ),
+          });
+          if (auth.success) {
+            storage.set('require_biometrics', true);
+            setRequireBiometrics(true);
+            showToast({
+              message: t('settings.security.biometrics_enabled', 'Biometric lock enabled'),
+              type: 'success',
+            });
+          }
+        } catch (err) {
+          showToast({
+            message: t('settings.security.biometrics_failed', 'Biometric confirmation failed'),
+            type: 'error',
+          });
+        }
+      } else {
+        storage.set('require_biometrics', false);
+        setRequireBiometrics(false);
+        showToast({
+          message: t('settings.security.biometrics_disabled', 'Biometric lock disabled'),
+          type: 'success',
+        });
+      }
+    },
+    [showToast, t],
+  );
+
+  const handleScreenCaptureToggle = useCallback(
+    async (val: boolean) => {
+      if (Platform.OS === 'web') return;
+      hapticLight();
+      try {
+        if (val) {
+          await ScreenCapture.preventScreenCaptureAsync();
+          storage.set('prevent_screen_capture', true);
+          setPreventScreenCapture(true);
+          showToast({
+            message: t(
+              'settings.security.screencapture_prevented',
+              'Screen capture protection active',
+            ),
+            type: 'success',
+          });
+        } else {
+          await ScreenCapture.allowScreenCaptureAsync();
+          storage.set('prevent_screen_capture', false);
+          setPreventScreenCapture(false);
+          showToast({
+            message: t(
+              'settings.security.screencapture_allowed',
+              'Screen capture protection disabled',
+            ),
+            type: 'success',
+          });
+        }
+      } catch (err) {
+        showToast({
+          message: t(
+            'settings.security.screencapture_failed',
+            'Failed to update screen capture status',
+          ),
+          type: 'error',
+        });
+      }
+    },
+    [showToast, t],
+  );
+
+  const [hasPin, setHasPin] = useState(false);
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [pinModalMode, setPinModalMode] = useState<'create' | 'update' | 'remove'>('create');
+
+  useEffect(() => {
+    const checkPin = async () => {
+      if (user?.id) {
+        const pinExists = await accountPin.hasPin(user.id);
+        setHasPin(pinExists);
+      }
+    };
+    checkPin();
+  }, [user?.id]);
+
+  const handlePinSubmit = useCallback(
+    async (values: any) => {
+      if (!user?.id) return;
+      try {
+        if (pinModalMode === 'create') {
+          await accountPin.setPin(user.id, values.pin);
+          setHasPin(true);
+          showToast({
+            message: t('settings.security.pin_created', 'PIN set successfully'),
+            type: 'success',
+          });
+        } else if (pinModalMode === 'remove') {
+          const correct = await accountPin.verifyPin(user.id, values.pin);
+          if (correct) {
+            await accountPin.removePin(user.id);
+            setHasPin(false);
+            showToast({
+              message: t('settings.security.pin_removed', 'PIN removed successfully'),
+              type: 'success',
+            });
+          } else {
+            showToast({
+              message: t('settings.security.pin_incorrect', 'Incorrect PIN'),
+              type: 'error',
+            });
+            return;
+          }
+        } else if (pinModalMode === 'update') {
+          const correct = await accountPin.verifyPin(user.id, values.currentPin);
+          if (correct) {
+            await accountPin.setPin(user.id, values.nextPin);
+            showToast({
+              message: t('settings.security.pin_updated', 'PIN changed successfully'),
+              type: 'success',
+            });
+          } else {
+            showToast({
+              message: t('settings.security.pin_incorrect', 'Incorrect current PIN'),
+              type: 'error',
+            });
+            return;
+          }
+        }
+        setShowPinModal(false);
+      } catch (err: any) {
+        showToast({
+          message: err.message || 'Operation failed',
+          type: 'error',
+        });
+      }
+    },
+    [pinModalMode, user?.id, showToast, t],
+  );
+
+  // AI Assistant States
+  const [aiBillingMode, setAiBillingMode] = useState<'baseline' | 'byok' | 'purchased'>('baseline');
+  const [aiByokKey, setAiByokKey] = useState<string>('');
+  const [showAiKey, setShowAiKey] = useState<boolean>(false);
+
+  useEffect(() => {
+    const loadAiSettings = async () => {
+      try {
+        const savedMode = await cryptoManager.getItemAsync('ai_billing_mode');
+        if (savedMode === 'baseline' || savedMode === 'byok' || savedMode === 'purchased') {
+          setAiBillingMode(savedMode);
+        }
+        const savedKey = await cryptoManager.getItemAsync('ai_byok_key');
+        if (savedKey) {
+          setAiByokKey(savedKey);
+        }
+      } catch (err) {
+        console.warn('Failed to load AI secure store config:', err);
+      }
+    };
+    loadAiSettings();
+  }, []);
+
+  const handleAiBillingModeChange = useCallback(
+    async (mode: 'baseline' | 'byok' | 'purchased') => {
+      setAiBillingMode(mode);
+      try {
+        await cryptoManager.setItemAsync('ai_billing_mode', mode);
+        hapticSuccess();
+        showToast({
+          message: t('settings.ai.billing_mode_updated', 'AI billing mode updated'),
+          type: 'success',
+        });
+      } catch (err) {
+        showToast({
+          message: t('settings.ai.billing_mode_failed', 'Failed to update billing mode'),
+          type: 'error',
+        });
+      }
+    },
+    [showToast, t],
+  );
+
+  const handleAiByokKeyChange = useCallback(
+    async (key: string) => {
+      setAiByokKey(key);
+      try {
+        await cryptoManager.setItemAsync('ai_byok_key', key);
+        hapticSuccess();
+        showToast({
+          message: t('settings.ai.key_updated', 'API Key saved securely'),
+          type: 'success',
+        });
+      } catch (err) {
+        showToast({
+          message: t('settings.ai.key_failed', 'Failed to save API Key'),
+          type: 'error',
+        });
+      }
+    },
+    [showToast, t],
+  );
 
   // Theme mode labels
   const _themeLabel = useMemo(() => {
@@ -235,6 +551,58 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
   }, [navigation, user]);
 
   const handleTrubeLab = useCallback(() => navigation.navigate('TrubeLab'), [navigation]);
+
+  const handleContactSupport = useCallback(async () => {
+    hapticLight();
+    const bodyText = `Hi Support Team,\n\n[Write your message here]\n\n---\nDevice info:\nOS: ${Platform.OS}\nFidelity: ${fidelityLevel}\nLanguage: ${language}\n`;
+    try {
+      const MailComposer = require('expo-mail-composer');
+      const isAvailable = await MailComposer.isAvailableAsync();
+      if (isAvailable) {
+        await MailComposer.composeAsync({
+          recipients: ['support@gurudevi.org'],
+          subject: 'Gurudevi App Feedback / Support Request',
+          body: bodyText,
+        });
+      } else {
+        const url = `mailto:support@gurudevi.org?subject=${encodeURIComponent(
+          'Gurudevi App Feedback / Support Request',
+        )}&body=${encodeURIComponent(bodyText)}`;
+
+        const Linking = require('react-native').Linking;
+        if (await Linking.canOpenURL(url)) {
+          await Linking.openURL(url);
+        } else {
+          showToast({
+            message: t('settings.support.email_not_available', 'Email client not available'),
+            type: 'error',
+          });
+        }
+      }
+    } catch (err) {
+      console.warn('[AppSettingsScreen] MailComposer error:', err);
+      try {
+        const url = `mailto:support@gurudevi.org?subject=${encodeURIComponent(
+          'Gurudevi App Feedback / Support Request',
+        )}&body=${encodeURIComponent(bodyText)}`;
+
+        const Linking = require('react-native').Linking;
+        if (await Linking.canOpenURL(url)) {
+          await Linking.openURL(url);
+        } else {
+          showToast({
+            message: t('settings.support.email_not_available', 'Email client not available'),
+            type: 'error',
+          });
+        }
+      } catch (linkErr) {
+        showToast({
+          message: t('settings.support.composer_failed', 'Failed to open email composer'),
+          type: 'error',
+        });
+      }
+    }
+  }, [fidelityLevel, language, showToast, t]);
 
   const fidelityDescription = useMemo(
     () =>
@@ -460,6 +828,83 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
           onPress={handlePreviewProfile}
         />
 
+        {/* AI Assistant Configuration */}
+        <SectionHeader
+          title={t('settings.ai.title', 'AI Assistant')}
+          description={t(
+            'settings.ai.description',
+            'Configure billing resolution modes and custom developer API keys.',
+          )}
+        />
+        <Box className="bg-phase-surface border border-phase-border p-5 mb-4 rounded-[20px] gap-4">
+          <Text className="text-sm font-semibold text-phase-primary">
+            {t('settings.ai.select_mode', 'Billing Resolution Mode')}
+          </Text>
+          <HStack className="gap-2">
+            {(['baseline', 'byok', 'purchased'] as const).map((mode) => (
+              <Pressable
+                accessibilityRole="button"
+                key={mode}
+                onPress={() => {
+                  void handleAiBillingModeChange(mode);
+                }}
+                className={`flex-1 p-3 rounded-xl border items-center justify-center ${
+                  aiBillingMode === mode
+                    ? 'bg-phase-surface border-phase-primary'
+                    : 'bg-phase-surface border-phase-border'
+                }`}
+              >
+                <Text
+                  className={`text-xs font-bold ${
+                    aiBillingMode === mode ? 'text-phase-primary font-bold' : 'text-phase-secondary'
+                  }`}
+                >
+                  {mode === 'baseline'
+                    ? t('settings.ai.mode.baseline', 'Baseline')
+                    : mode === 'byok'
+                      ? t('settings.ai.mode.byok', 'BYOK')
+                      : t('settings.ai.mode.purchased', 'Premium')}
+                </Text>
+              </Pressable>
+            ))}
+          </HStack>
+
+          {aiBillingMode === 'byok' && (
+            <VStack className="gap-2 mt-2">
+              <Text className="text-sm font-semibold text-phase-primary">
+                {t('settings.ai.api_key', 'Custom API Key (OpenAI, Anthropic, Gemini)')}
+              </Text>
+              <HStack className="items-center bg-phase-world border border-phase-border rounded-xl px-3 h-12">
+                <TextInput
+                  accessibilityLabel="Text input field"
+                  secureTextEntry={!showAiKey}
+                  placeholder={t('settings.ai.key_placeholder', 'Enter sk-... or AIzaSy...')}
+                  placeholderTextColor="#9CA3AF"
+                  value={aiByokKey}
+                  onChangeText={(text) => {
+                    void handleAiByokKeyChange(text);
+                  }}
+                  className="flex-1 text-phase-primary text-sm h-full"
+                />
+                <TouchableOpacity
+                  accessibilityRole="button"
+                  onPress={() => setShowAiKey(!showAiKey)}
+                >
+                  <Box className="text-phase-secondary">
+                    {showAiKey ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </Box>
+                </TouchableOpacity>
+              </HStack>
+              <Text className="text-xs text-phase-secondary leading-relaxed">
+                {t(
+                  'settings.ai.byok_hint',
+                  'Keys are secured locally on your device hardware enclave and decrypted inline.',
+                )}
+              </Text>
+            </VStack>
+          )}
+        </Box>
+
         <SectionHeader
           title={t('settings.notificationPreferences', 'Notifications')}
           description={t('settings.notification_desc', 'Manage channel delivery and topic alerts')}
@@ -474,6 +919,120 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
           )}
         />
         <DeviceSecurityCenter compact={true} />
+
+        {Platform.OS !== 'web' && (
+          <VStack className="gap-2 mb-4 mt-2">
+            {isBiometricSupported && (
+              <Box className="bg-phase-surface border border-phase-border p-4 rounded-[20px]">
+                <HStack className="gap-4 items-center justify-between">
+                  <HStack className="gap-4 items-center flex-1">
+                    <Box className="w-10 h-10 rounded-[12px] bg-phase-surface items-center justify-center border border-phase-border">
+                      <Box className="text-phase-secondary">
+                        <Shield size={24} />
+                      </Box>
+                    </Box>
+                    <VStack className="flex-1 gap-1">
+                      <Text className="text-base font-semibold text-phase-primary">
+                        Biometric Lock
+                      </Text>
+                      <Text className="text-sm text-phase-secondary">
+                        Require biometric verification on app launch
+                      </Text>
+                    </VStack>
+                  </HStack>
+                  <Switch
+                    value={requireBiometrics}
+                    onValueChange={handleBiometricsToggle}
+                    trackColor={trackColor}
+                    thumbColor="#FFFFFF"
+                  />
+                </HStack>
+              </Box>
+            )}
+
+            <Box className="bg-phase-surface border border-phase-border p-4 rounded-[20px]">
+              <HStack className="gap-4 items-center justify-between">
+                <HStack className="gap-4 items-center flex-1">
+                  <Box className="w-10 h-10 rounded-[12px] bg-phase-surface items-center justify-center border border-phase-border">
+                    <Box className="text-phase-secondary">
+                      <EyeOff size={24} />
+                    </Box>
+                  </Box>
+                  <VStack className="flex-1 gap-1">
+                    <Text className="text-base font-semibold text-phase-primary">
+                      Screen Privacy
+                    </Text>
+                    <Text className="text-sm text-phase-secondary">
+                      Prevent screenshots and screen recording
+                    </Text>
+                  </VStack>
+                </HStack>
+                <Switch
+                  value={preventScreenCapture}
+                  onValueChange={handleScreenCaptureToggle}
+                  trackColor={trackColor}
+                  thumbColor="#FFFFFF"
+                />
+              </HStack>
+            </Box>
+            <Box className="bg-phase-surface border border-phase-border p-4 rounded-[20px]">
+              <HStack className="gap-4 items-center justify-between">
+                <HStack className="gap-4 items-center flex-1">
+                  <Box className="w-10 h-10 rounded-[12px] bg-phase-surface items-center justify-center border border-phase-border">
+                    <Box className="text-phase-secondary">
+                      <Lock size={24} />
+                    </Box>
+                  </Box>
+                  <VStack className="flex-1 gap-1">
+                    <Text className="text-base font-semibold text-phase-primary">App PIN Lock</Text>
+                    <Text className="text-sm text-phase-secondary">
+                      {hasPin ? 'PIN is active' : 'Secure your app with a PIN'}
+                    </Text>
+                  </VStack>
+                </HStack>
+                <HStack className="gap-2">
+                  {hasPin ? (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onPress={() => {
+                          setPinModalMode('update');
+                          setShowPinModal(true);
+                        }}
+                        className="h-10 rounded-xl"
+                      >
+                        <ButtonText className="text-xs">Change</ButtonText>
+                      </Button>
+                      <Button
+                        size="sm"
+                        action="negative"
+                        onPress={() => {
+                          setPinModalMode('remove');
+                          setShowPinModal(true);
+                        }}
+                        className="h-10 rounded-xl"
+                      >
+                        <ButtonText className="text-xs text-white">Remove</ButtonText>
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      size="sm"
+                      onPress={() => {
+                        setPinModalMode('create');
+                        setShowPinModal(true);
+                      }}
+                      className="h-10 rounded-xl"
+                    >
+                      <ButtonText className="text-xs">Set PIN</ButtonText>
+                    </Button>
+                  )}
+                </HStack>
+              </HStack>
+            </Box>
+          </VStack>
+        )}
 
         {/* Device Info Section */}
         <SectionHeader
@@ -530,6 +1089,23 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
           accessibilityLabel="Open Trube Lab"
           accessibilityHint="Experiment with living surface compositions and lighting."
         />
+        <SettingsOption
+          icon={
+            <Box className="text-phase-secondary">
+              <Sparkles size={24} />
+            </Box>
+          }
+          title={t('settings.support.contact', 'Contact Support')}
+          description={t(
+            'settings.support.contact_desc',
+            'Send us feedback or report an issue via email.',
+          )}
+          onPress={() => {
+            void handleContactSupport();
+          }}
+          accessibilityLabel={t('settings.support.contact', 'Contact Support')}
+          accessibilityHint={t('settings.support.contact_hint', 'Open the support email composer')}
+        />
 
         {/* Gentle guidance footer */}
         <Box className="p-5 bg-phase-surface/50 border border-phase-border rounded-[24px] mt-6 mb-12">
@@ -554,7 +1130,9 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
         <SelectionModal
           title={t('settings.fidelity.select')}
           options={fidelityOptions}
-          onSelect={handleFidelityChange}
+          onSelect={(level) => {
+            void handleFidelityChange(level as any);
+          }}
           onClose={handleCloseFidelity}
         />
       )}
@@ -564,8 +1142,20 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
         <SelectionModal
           title={t('settings.language.select')}
           options={languageOptions}
-          onSelect={handleLanguageChange}
+          onSelect={(lang) => {
+            void handleLanguageChange(lang as any);
+          }}
           onClose={handleCloseLanguage}
+        />
+      )}
+
+      {showPinModal && (
+        <AccountPinModal
+          isOpen={showPinModal}
+          mode={pinModalMode}
+          onClose={() => setShowPinModal(false)}
+          onSubmit={handlePinSubmit}
+          accountLabel={user?.display_name}
         />
       )}
     </Box>
@@ -575,84 +1165,3 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
 AppSettingsScreen.displayName = 'AppSettingsScreen';
 
 export default AppSettingsScreen;
-
-/**
- * Selection Modal Component
- * Accessible modal for choosing options
- */
-interface SelectionModalProps {
-  title: string;
-  options: Array<{
-    id: string;
-    label: string;
-    description: string;
-    icon: React.ReactNode;
-    isSelected: boolean;
-  }>;
-  onSelect: (id: any) => void;
-  onClose: () => void;
-}
-
-const SelectionOption = memo(function SelectionOption({
-  option,
-  onSelect,
-}: {
-  option: SelectionModalProps['options'][0];
-  onSelect: (id: any) => void;
-}) {
-  const handlePress = useCallback(() => {
-    hapticLight();
-    onSelect(option.id);
-  }, [option.id, onSelect]);
-
-  return (
-    <Pressable
-      onPress={handlePress}
-      className={`p-4 rounded-2xl border min-h-[72px] transition-all flex-row items-center gap-4 ${option.isSelected ? 'bg-phase-surface/50 border-phase-primary border-2' : 'bg-phase-surface border-phase-border'}`}
-      accessible={true}
-      accessibilityRole="button"
-      accessibilityLabel={option.label}
-      accessibilityHint={option.description}
-      accessibilityState={{ selected: option.isSelected }}
-    >
-      <Box className="w-10 h-10 items-center justify-center">{option.icon}</Box>
-      <VStack className="flex-1 gap-1">
-        <Text className="text-base font-semibold text-phase-primary">{option.label}</Text>
-        <Text className="text-sm text-phase-secondary leading-relaxed">{option.description}</Text>
-      </VStack>
-      {option.isSelected && (
-        <Box className="text-phase-primary">
-          <Check size={24} />
-        </Box>
-      )}
-    </Pressable>
-  );
-});
-
-SelectionOption.displayName = 'SelectionOption';
-
-const SelectionModal = memo(function SelectionModal({
-  title,
-  options,
-  onSelect,
-  onClose,
-}: SelectionModalProps) {
-  return (
-    <Box className="absolute inset-0 bg-black/50 justify-end z-50">
-      <Pressable className="flex-1" onPress={onClose} accessible={false} />
-      <Box className="bg-phase-world rounded-t-[32px] p-6 pb-12 shadow-2xl">
-        <Text className="text-xl font-bold text-phase-primary mb-4">{title}</Text>
-        <VStack className="gap-2">
-          {options.map((option) => (
-            <SelectionOption key={option.id} option={option} onSelect={onSelect} />
-          ))}
-        </VStack>
-        <Button onPress={onClose} className="mt-4 bg-phase-surface h-14 rounded-2xl">
-          <ButtonText className="text-phase-primary font-bold">Close</ButtonText>
-        </Button>
-      </Box>
-    </Box>
-  );
-});
-
-SelectionModal.displayName = 'SelectionModal';

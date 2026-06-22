@@ -3,7 +3,7 @@
  * Hardened v3 implementation.
  */
 
-import { AlertCircle, AlertTriangle, Info, X } from 'lucide-react-native';
+import { CircleAlert, Info, TriangleAlert, X } from 'lucide-react-native';
 import type { FC } from 'react';
 import { HStack, Pressable, Text, View } from '../gluestack';
 
@@ -26,13 +26,13 @@ const ErrorMessage: FC<ErrorMessageProps> = ({ message, type = 'gentle', onDismi
         return {
           containerClass: 'bg-phase-accent/20 border border-phase-accent/30',
           textClass: 'text-phase-accent',
-          Icon: AlertTriangle,
+          Icon: TriangleAlert,
         };
       case 'severe':
         return {
           containerClass: 'bg-phase-danger/10 border border-phase-danger/20',
           textClass: 'text-phase-danger',
-          Icon: AlertCircle,
+          Icon: CircleAlert,
         };
     }
   };

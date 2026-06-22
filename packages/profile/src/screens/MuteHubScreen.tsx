@@ -1,13 +1,13 @@
-import { router } from 'expo-router';
 import { socialAPI } from '@repo/core/api';
-
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { Box, Center, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import { safeBack } from '@repo/ui/utils/navigation';
+import { router } from 'expo-router';
 
-import { Shield, Trash2, XCircle } from 'lucide-react-native';
+import { CircleX, Shield, Trash2 } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, RefreshControl, ScrollView } from 'react-native';
@@ -76,7 +76,7 @@ export default function MuteHubScreen() {
       <GlobalHeader
         title={t('profile.safety_hub') || 'Safety Hub'}
         showBack
-        onBack={() => router.back()}
+        onBack={() => safeBack('/profile')}
       />
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -108,7 +108,7 @@ export default function MuteHubScreen() {
           {mutedUsers.length === 0 && !loading ? (
             <Center className="h-48 mt-8">
               <VStack space="md" className="items-center">
-                <Icon as={XCircle} size={48} color="#9DA1A3" className="opacity-30" />
+                <Icon as={CircleX} size={48} color="#9DA1A3" className="opacity-30" />
                 <Text className="text-phase-text-tertiary">
                   {t('profile.safety.noMutes') || 'Your list is empty.'}
                 </Text>

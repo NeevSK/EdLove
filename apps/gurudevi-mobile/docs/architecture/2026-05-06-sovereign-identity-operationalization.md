@@ -45,7 +45,7 @@ Since onboarding is the creation of the first Bond, we must ensure the "Initial 
 2.  Onboarding Screen calls `identity.createInitialBond('principal', { school_id: '...' })`.
 3.  The Adapter creates the record in the relevant table (e.g., `SchoolStaff` or `Principal` record).
 4.  The system invalidates the Identity Cache.
-5.  `useAuthorityLifecycle` fetches the new Bonds and sets the `activePerspective`.
+5.  `useAuthLifecycle` fetches the new Bonds and sets the `activePerspective`.
 
 ---
 

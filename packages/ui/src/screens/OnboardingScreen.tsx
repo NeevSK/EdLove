@@ -2,8 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authAPI, identityAPI, onboardingAPI } from '@repo/core/api';
 import { useStore } from '@repo/core/store';
 import type { Capacity } from '@repo/core/types';
-import { useNavigation } from 'expo-router';
-
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +21,7 @@ import {
   VStack,
 } from '../gluestack';
 import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
+import { safeBack } from '../utils/navigation';
 
 // ──────────────────────────────────────────────────────────
 // CONSTANTS
@@ -51,6 +50,9 @@ interface OnboardingUIState {
   schoolId: string | null;
   isProcessing: boolean;
   error: string | null;
+  showDevSandbox: boolean;
+  pricingTier: string;
+  citizenship: string;
 }
 
 type OnboardingAction =
@@ -62,7 +64,10 @@ type OnboardingAction =
   | { type: 'SET_ERROR'; error: string | null }
   | { type: 'NEXT_STEP' }
   | { type: 'PREV_STEP' }
-  | { type: 'RESTORE_PROGRESS'; progress: Partial<OnboardingUIState> };
+  | { type: 'RESTORE_PROGRESS'; progress: Partial<OnboardingUIState> }
+  | { type: 'SHOW_DEV_SANDBOX'; visible: boolean }
+  | { type: 'SET_PRICING'; pricing: string }
+  | { type: 'SET_CITIZENSHIP'; citizenship: string };
 
 function onboardingReducer(state: OnboardingUIState, action: OnboardingAction): OnboardingUIState {
   switch (action.type) {
@@ -84,6 +89,12 @@ function onboardingReducer(state: OnboardingUIState, action: OnboardingAction): 
       return { ...state, currentStep: Math.max(0, state.currentStep - 1), error: null };
     case 'RESTORE_PROGRESS':
       return { ...state, ...action.progress };
+    case 'SHOW_DEV_SANDBOX':
+      return { ...state, showDevSandbox: action.visible };
+    case 'SET_PRICING':
+      return { ...state, pricingTier: action.pricing };
+    case 'SET_CITIZENSHIP':
+      return { ...state, citizenship: action.citizenship };
     default:
       return state;
   }
@@ -175,56 +186,68 @@ const NameStep = memo(
     canProceed: boolean;
     isLoading?: boolean;
     onBackToWelcome: () => void;
-  }) => (
-    <StepShell
-      currentStep={0}
-      step="STEP 1 · ARRIVAL"
-      title={t('onboarding.nameTitle') || 'Welcome! What should we call you in Gurudevi?'}
-      subtitle={t('onboarding.nameSubtitle') || "Let's start your journey with a name."}
-    >
-      <VStack className="gap-6">
-        <Input className="rounded-comfortable border-phase-text-tertiary">
-          <InputField
-            placeholder={t('onboarding.namePlaceholder')}
-            value={name}
-            onChangeText={onNameChange}
-            className="text-phase-text-primary"
-            editable={!isLoading}
-            autoFocus
-            autoComplete="name"
-            returnKeyType="next"
-            onSubmitEditing={() => {
-              if (canProceed) onNext();
-            }}
-          />
-        </Input>
-        <Text className="text-phase-text-secondary text-sm">
-          {name.trim().length > 0 && name.trim().length < 2
-            ? 'Your name is a bit short. Try adding another character.'
-            : name === 'Guest User'
-              ? "Please choose a name other than 'Guest User'."
-              : t('onboarding.nameHint') ||
-                'Use the display name you want people to see inside the app.'}
-        </Text>
-        <Button
-          size="lg"
-          onPress={onNext}
-          isDisabled={!canProceed}
-          isLoading={isLoading}
-          className="bg-phase-accent mt-2"
-        >
-          <ButtonText className="text-phase-text-on-accent font-bold">
-            {t('onboarding.continue')}
-          </ButtonText>
-        </Button>
-        <Button variant="ghost" onPress={onBackToWelcome} className="mt-1">
-          <ButtonText className="text-phase-text-tertiary">
-            {t('onboarding.backToWelcome') || 'Back to Welcome'}
-          </ButtonText>
-        </Button>
-      </VStack>
-    </StepShell>
-  ),
+  }) => {
+    const inputRef = useRef<any>(null);
+
+    useEffect(() => {
+      // Focus name input on mount imperatively to respect static accessibility constraints
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }, []);
+
+    return (
+      <StepShell
+        currentStep={0}
+        step="STEP 1 · ARRIVAL"
+        title={t('onboarding.nameTitle') || 'Welcome! What should we call you in Gurudevi?'}
+        subtitle={t('onboarding.nameSubtitle') || "Let's start your journey with a name."}
+      >
+        <VStack className="gap-6">
+          <Input className="rounded-comfortable border-phase-text-tertiary">
+            <InputField
+              ref={inputRef}
+              placeholder={t('onboarding.namePlaceholder')}
+              value={name}
+              onChangeText={onNameChange}
+              className="text-phase-text-primary"
+              editable={!isLoading}
+              autoComplete="name"
+              returnKeyType="next"
+              onSubmitEditing={() => {
+                if (canProceed) onNext();
+              }}
+            />
+          </Input>
+          <Text className="text-phase-text-secondary text-sm">
+            {name.trim().length > 0 && name.trim().length < 2
+              ? 'Your name is a bit short. Try adding another character.'
+              : name === 'Guest User'
+                ? "Please choose a name other than 'Guest User'."
+                : t('onboarding.nameHint') ||
+                  'Use the display name you want people to see inside the app.'}
+          </Text>
+          <Button
+            size="lg"
+            onPress={onNext}
+            isDisabled={!canProceed}
+            isLoading={isLoading}
+            className="bg-phase-accent mt-2"
+          >
+            <ButtonText className="text-phase-text-on-accent font-bold">
+              {t('onboarding.continue')}
+            </ButtonText>
+          </Button>
+          <Button variant="ghost" onPress={onBackToWelcome} className="mt-1">
+            <ButtonText className="text-phase-text-tertiary">
+              {t('onboarding.backToWelcome') || 'Back to Welcome'}
+            </ButtonText>
+          </Button>
+        </VStack>
+      </StepShell>
+    );
+  },
 );
 NameStep.displayName = 'NameStep';
 
@@ -391,6 +414,180 @@ const TourStep = memo(
 );
 TourStep.displayName = 'TourStep';
 
+const DevSandboxConsoleInner = memo(
+  ({
+    onClose,
+    onSave,
+  }: {
+    onClose: () => void;
+    onSave: (
+      name: string,
+      role: Capacity,
+      pricing: string,
+      citizenship: string,
+      schoolId: string | null,
+    ) => void;
+  }) => {
+    const [name, setName] = useReducer((_: string, val: string) => val, 'Dev User');
+    const [role, setRole] = useReducer((_: Capacity, val: Capacity) => val, 'teacher');
+    const [pricing, setPricing] = useReducer((_: string, val: string) => val, 'FREE');
+    const [citizenship, setCitizenship] = useReducer((_: string, val: string) => val, 'WANDERER');
+    const [schoolId, setSchoolId] = useReducer((_: string, val: string) => val, '');
+
+    return (
+      <VStack className="flex-1 px-5 pt-5 pb-6">
+        <Box
+          className="rounded-generous border border-phase-border bg-phase-secondary overflow-hidden elevation-4"
+          style={{
+            shadowColor: '#6B6480',
+            shadowOffset: { width: 0, height: 14 },
+            shadowOpacity: 0.1,
+            shadowRadius: 24,
+          }}
+        >
+          <Box className="px-6 py-6 bg-phase-surface border-b border-phase-border">
+            <VStack className="gap-2">
+              <Text className="text-xs text-phase-accent font-bold tracking-widest uppercase">
+                DEVELOPER TOOLKIT
+              </Text>
+              <Heading size="xl" className="text-phase-text-primary">
+                ⚙️ Sandbox Console
+              </Heading>
+              <Text className="text-phase-text-secondary text-sm">
+                Simulate identity roles, pricing tiers, and citizenship levels directly into
+                local/staging environments.
+              </Text>
+            </VStack>
+          </Box>
+          <Box className="px-6 py-6 gap-5">
+            {/* Display Name Input */}
+            <VStack className="gap-2">
+              <Text className="text-sm font-bold text-phase-text-primary">Display Name</Text>
+              <Input className="rounded-comfortable border-phase-text-tertiary">
+                <InputField
+                  value={name}
+                  onChangeText={setName}
+                  placeholder="e.g. John Doe"
+                  className="text-phase-text-primary"
+                />
+              </Input>
+            </VStack>
+
+            {/* Role / Capacity selection */}
+            <VStack className="gap-2">
+              <Text className="text-sm font-bold text-phase-text-primary">Capacity / Role</Text>
+              <HStack className="gap-2 flex-wrap">
+                {(['teacher', 'student', 'principal', 'admin'] as Capacity[]).map((r) => (
+                  <Pressable
+                    key={r}
+                    onPress={() => setRole(r)}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: role === r }}
+                    accessibilityLabel={r}
+                    accessibilityHint={`Select role capacity as ${r}`}
+                    className={`px-4 py-2 border rounded-full ${role === r ? 'border-phase-accent bg-phase-accent/10' : 'border-phase-border bg-phase-canvas'}`}
+                  >
+                    <Text
+                      className={`text-xs font-bold ${role === r ? 'text-phase-accent' : 'text-phase-text-secondary'}`}
+                    >
+                      {r.toUpperCase()}
+                    </Text>
+                  </Pressable>
+                ))}
+              </HStack>
+            </VStack>
+
+            {/* Pricing Tier selection */}
+            <VStack className="gap-2">
+              <Text className="text-sm font-bold text-phase-text-primary">Pricing Tier</Text>
+              <HStack className="gap-2 flex-wrap">
+                {['FREE', 'PRO', 'INSTITUTIONAL'].map((p) => (
+                  <Pressable
+                    key={p}
+                    onPress={() => setPricing(p)}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: pricing === p }}
+                    accessibilityLabel={p}
+                    accessibilityHint={`Select pricing tier as ${p}`}
+                    className={`px-4 py-2 border rounded-full ${pricing === p ? 'border-phase-accent bg-phase-accent/10' : 'border-phase-border bg-phase-canvas'}`}
+                  >
+                    <Text
+                      className={`text-xs font-bold ${pricing === p ? 'text-phase-accent' : 'text-phase-text-secondary'}`}
+                    >
+                      {p}
+                    </Text>
+                  </Pressable>
+                ))}
+              </HStack>
+            </VStack>
+
+            {/* Citizenship selection */}
+            <VStack className="gap-2">
+              <Text className="text-sm font-bold text-phase-text-primary">Citizenship</Text>
+              <HStack className="gap-2 flex-wrap">
+                {['WANDERER', 'SECOND_CLASS', 'FIRST_CLASS'].map((c) => (
+                  <Pressable
+                    key={c}
+                    onPress={() => setCitizenship(c)}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: citizenship === c }}
+                    accessibilityLabel={c}
+                    accessibilityHint={`Select citizenship level as ${c}`}
+                    className={`px-4 py-2 border rounded-full ${citizenship === c ? 'border-phase-accent bg-phase-accent/10' : 'border-phase-border bg-phase-canvas'}`}
+                  >
+                    <Text
+                      className={`text-xs font-bold ${citizenship === c ? 'text-phase-accent' : 'text-phase-text-secondary'}`}
+                    >
+                      {c.replace('_', ' ')}
+                    </Text>
+                  </Pressable>
+                ))}
+              </HStack>
+            </VStack>
+
+            {/* School ID selection */}
+            <VStack className="gap-2">
+              <Text className="text-sm font-bold text-phase-text-primary">
+                School ID (Optional)
+              </Text>
+              <Input className="rounded-comfortable border-phase-text-tertiary">
+                <InputField
+                  value={schoolId}
+                  onChangeText={setSchoolId}
+                  placeholder="e.g. school-uuid"
+                  className="text-phase-text-primary"
+                />
+              </Input>
+            </VStack>
+
+            {/* Actions */}
+            <HStack className="gap-4 mt-4">
+              <Button variant="outline" onPress={onClose} className="flex-1 border-phase-border">
+                <ButtonText className="text-phase-text-primary">Cancel</ButtonText>
+              </Button>
+              <Button
+                onPress={() => onSave(name, role, pricing, citizenship, schoolId || null)}
+                className="bg-phase-accent flex-[2]"
+              >
+                <ButtonText className="text-phase-text-on-accent font-bold">
+                  Fast-Track Profile
+                </ButtonText>
+              </Button>
+            </HStack>
+          </Box>
+        </Box>
+      </VStack>
+    );
+  },
+);
+DevSandboxConsoleInner.displayName = 'DevSandboxConsole';
+
+const DevSandboxConsole =
+  (typeof __DEV__ !== 'undefined' && __DEV__) ||
+  process.env.EXPO_PUBLIC_ENABLE_DEV_SANDBOX === 'true'
+    ? DevSandboxConsoleInner
+    : () => null;
+
 // ──────────────────────────────────────────────────────────
 // MAIN COMPONENT
 // ──────────────────────────────────────────────────────────
@@ -405,7 +602,6 @@ const OnboardingScreen = memo(function OnboardingScreen({
   isAnonymous = false,
 }: OnboardingScreenProps) {
   const { t } = useTranslation();
-  const navigation = useNavigation<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
 
   const [state, dispatch] = useReducer(onboardingReducer, {
     currentStep: 0,
@@ -414,9 +610,12 @@ const OnboardingScreen = memo(function OnboardingScreen({
     schoolId: null,
     isProcessing: false,
     error: null,
+    showDevSandbox: false,
+    pricingTier: 'FREE',
+    citizenship: 'WANDERER',
   });
 
-  const { currentStep, name, selectedCapacity, isProcessing, error } = state;
+  const { currentStep, name, selectedCapacity, isProcessing, error, showDevSandbox } = state;
   const isOnline = useStore((s) => s.isOnline);
   const showToast = useStore((s) => s.showToast);
   const resolvedInternalIdRef = useRef<string | null>(null);
@@ -584,6 +783,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
   }, [currentStep, name, selectedCapacity, state.schoolId]);
 
   const handleCompleteOnboarding = useCallback(async () => {
+    if (isProcessing) return;
     dispatch({ type: 'SET_PROCESSING', isProcessing: true });
     showToast('Finalizing your sanctuary journey...', 'info', 2000);
     try {
@@ -608,7 +808,57 @@ const OnboardingScreen = memo(function OnboardingScreen({
       dispatch({ type: 'SET_ERROR', error: guidedMsg });
       showToast(guidedMsg, 'error', 5000);
     }
-  }, [name, selectedCapacity, onComplete, showToast, isAnonymous]);
+  }, [name, selectedCapacity, onComplete, showToast, isAnonymous, isProcessing]);
+
+  const handleDevFastTrack = useCallback(
+    async (
+      devName: string,
+      devRole: Capacity,
+      devPricing: string,
+      devCitizenship: string,
+      devSchoolId: string | null,
+    ) => {
+      dispatch({ type: 'SET_PROCESSING', isProcessing: true });
+      showToast('Applying sandbox settings...', 'info', 2000);
+      try {
+        const citizen = resolvedCitizenRef.current ?? (await identityAPI.identifyActiveCitizen());
+        resolvedCitizenRef.current = citizen;
+        const internalId = citizen?.id;
+        if (!internalId) throw new Error('Identity not resolved. Please try again.');
+
+        await onboardingAPI.createInitialBond(devRole, {
+          userId: internalId,
+          displayName: devName,
+          fullName: devName,
+          schoolId: devSchoolId || null,
+        });
+
+        await identityAPI.modifyUserProfile(internalId, {
+          display_name: devName,
+          pricing_tier: devPricing,
+          citizenship: devCitizenship,
+          school_id: devSchoolId || null,
+          profile_completed: true,
+        });
+
+        await onboardingAPI.completeOnboarding(internalId);
+        await AsyncStorage.removeItem('onboarding_progress');
+
+        hapticSuccess();
+        showToast(`Sandbox Profile Ready (${devRole})!`, 'success', 3000);
+        onComplete(devName, devRole, isAnonymous);
+      } catch (err) {
+        console.error('[Onboarding] Sandbox setup failed:', err);
+        hapticError();
+        const msg = err instanceof Error ? err.message : 'Sandbox setup failed.';
+        dispatch({ type: 'SET_ERROR', error: msg });
+        showToast(msg, 'error', 4000);
+      } finally {
+        dispatch({ type: 'SET_PROCESSING', isProcessing: false });
+      }
+    },
+    [onComplete, showToast, isAnonymous],
+  );
 
   const handleNext = useCallback(async () => {
     if (!canProceed || isProcessing) return;
@@ -633,6 +883,62 @@ const OnboardingScreen = memo(function OnboardingScreen({
       if (!internalId) throw new Error('Identity not resolved. Please try again.');
 
       if (currentStep === 0) {
+        const isDevSandboxEnabled =
+          (typeof __DEV__ !== 'undefined' && __DEV__) ||
+          process.env.EXPO_PUBLIC_ENABLE_DEV_SANDBOX === 'true';
+        if (isDevSandboxEnabled && name.trim().startsWith('dev::')) {
+          const rawInput = name.trim();
+          if (rawInput === 'dev::sandbox' || rawInput === 'dev::menu') {
+            dispatch({ type: 'SET_PROCESSING', isProcessing: false });
+            dispatch({ type: 'SHOW_DEV_SANDBOX', visible: true });
+            return;
+          }
+
+          // Parse inline config: e.g. dev::name:Naween,role:teacher,pricing:pro
+          const configContent = rawInput.substring(5);
+          const parts = configContent.split(',');
+          const config: Record<string, string> = {};
+          for (const part of parts) {
+            const colonIndex = part.indexOf(':');
+            if (colonIndex !== -1) {
+              const key = part.substring(0, colonIndex).trim().toLowerCase();
+              const val = part.substring(colonIndex + 1).trim();
+              config[key] = val;
+            }
+          }
+
+          const parsedName = config.name || config.display_name || 'Dev User';
+          const parsedRole = (config.role || config.capacity || 'teacher') as Capacity;
+          const parsedPricing = (config.pricing || config.tier || 'FREE').toUpperCase();
+          const parsedCitizenship = (config.citizenship || 'WANDERER').toUpperCase();
+          const parsedSchoolId = config.school || config.school_id || null;
+
+          showToast('Fast-tracking developer setup...', 'info', 2000);
+
+          await onboardingAPI.createInitialBond(parsedRole, {
+            userId: internalId,
+            displayName: parsedName,
+            fullName: parsedName,
+            schoolId: parsedSchoolId,
+          });
+
+          await identityAPI.modifyUserProfile(internalId, {
+            display_name: parsedName,
+            pricing_tier: parsedPricing,
+            citizenship: parsedCitizenship,
+            school_id: parsedSchoolId,
+            profile_completed: true,
+          });
+
+          await onboardingAPI.completeOnboarding(internalId);
+          await AsyncStorage.removeItem('onboarding_progress');
+
+          hapticSuccess();
+          showToast(`Developer Account (${parsedRole}) Setup Success!`, 'success', 3000);
+          onComplete(parsedName, parsedRole, isAnonymous);
+          return;
+        }
+
         const isAnonymousIdentity = !citizen?.email;
         if (isAnonymousIdentity) {
           showToast('Name saved locally. Choose your capacity next.', 'info', 1000);
@@ -687,6 +993,8 @@ const OnboardingScreen = memo(function OnboardingScreen({
     handleCompleteOnboarding,
     showToast,
     state.schoolId,
+    onComplete,
+    isAnonymous,
   ]);
 
   const handleBack = useCallback(() => {
@@ -709,15 +1017,8 @@ const OnboardingScreen = memo(function OnboardingScreen({
   }, []);
   const handleBackToWelcome = useCallback(() => {
     hapticLight();
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-    } else {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Welcome' }],
-      });
-    }
-  }, [navigation]);
+    safeBack('/welcome');
+  }, []);
 
   const currentTourScreen = useMemo(() => {
     if (currentStep < 2 || currentStep > 6) return null;
@@ -756,6 +1057,13 @@ const OnboardingScreen = memo(function OnboardingScreen({
             <Center className="flex-1">
               <Text className="text-phase-text-primary">Finalizing your sanctuary...</Text>
             </Center>
+          ) : showDevSandbox ? (
+            <DevSandboxConsole
+              onClose={() => dispatch({ type: 'SHOW_DEV_SANDBOX', visible: false })}
+              onSave={(devName, devRole, devPricing, devCitizenship, devSchoolId) => {
+                void handleDevFastTrack(devName, devRole, devPricing, devCitizenship, devSchoolId);
+              }}
+            />
           ) : (
             <>
               {currentStep === 0 && (

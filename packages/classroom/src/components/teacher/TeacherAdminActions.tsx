@@ -11,7 +11,7 @@ import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/pr
 
 import type React from 'react';
 
-const ICON_MAP: Record<string, LucideIcon> = {
+const ICON_MAP: Record<string, any> = {
   Settings: Settings,
   Users: Users,
   BookOpen: BookOpen,

@@ -2,9 +2,8 @@ import { formatDistanceToNow } from 'date-fns';
 import React from 'react';
 import { useTheme } from '../hooks/useTheme';
 import {
-  AlertTriangle,
   BookOpen,
-  CheckCircle2,
+  CircleCheck,
   FileText,
   Heart,
   Link2,
@@ -14,6 +13,7 @@ import {
   Share2,
   ShieldAlert,
   Sparkles,
+  TriangleAlert,
   UserX,
   Video,
   X as XIcon,
@@ -257,7 +257,7 @@ export const PostCard = React.memo(function PostCard({
           {urgency && urgency !== 'low' && (
             <Box className={`${urg.bgClass} px-2 py-0.5 rounded-md flex-row items-center gap-1`}>
               <Icon
-                as={AlertTriangle}
+                as={TriangleAlert}
                 size={11}
                 color={urgency === 'high' ? '#DC2626' : '#D97706'}
               />
@@ -266,7 +266,7 @@ export const PostCard = React.memo(function PostCard({
           )}
           {hasAcceptedAnswer && (
             <Box className="bg-emerald-600/10 px-2 py-0.5 rounded-md flex-row items-center gap-1">
-              <Icon as={CheckCircle2} size={11} color="#16A34A" />
+              <Icon as={CircleCheck} size={11} color="#16A34A" />
               <Text className="text-[11px] font-bold text-emerald-600">Answered</Text>
             </Box>
           )}

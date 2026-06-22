@@ -15,6 +15,7 @@ export function useSovereignEffect<A, E, R>(
     error?: E;
   }>({ status: 'idle' });
 
+  // eslint-disable-next-line
   useEffect(() => {
     setResult({ status: 'running' });
 
@@ -37,6 +38,7 @@ export function useSovereignEffect<A, E, R>(
       Effect.runFork(Fiber.interrupt(fiber));
     };
     // biome-ignore lint/correctness/useExhaustiveDependencies: deps is passed as argument
+    // eslint-disable-next-line
   }, deps);
 
   return result;

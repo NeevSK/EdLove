@@ -19,7 +19,7 @@ import type { SanctuaryFlashListProps } from './SanctuaryFlashList';
 function SanctuaryFlashListWeb<T>({
   data,
   renderItem,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   estimatedItemSize, // Used in v2
   refreshing = false,
   onRefresh,

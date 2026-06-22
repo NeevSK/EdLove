@@ -1,10 +1,11 @@
+import type { IAnalyticsPort } from '@repo/core';
 import PostHog from 'posthog-react-native';
 
 interface UserProperties {
   [key: string]: any;
 }
 
-export class PostHogAnalytics {
+export class PostHogAnalytics implements IAnalyticsPort {
   private posthog: PostHog | null = null;
   private isInitialized = false;
   private isDisabled = process.env.EXPO_PUBLIC_POSTHOG_ENABLED === 'false';

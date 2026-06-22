@@ -1,4 +1,11 @@
-import { BookOpen, ChevronRight, Layout, MessageSquare, Star, TrendingUp } from '@repo/ui/icons';
+import {
+  BookOpen,
+  ChevronRight,
+  MessageSquare,
+  PanelsTopLeft,
+  Star,
+  TrendingUp,
+} from '@repo/ui/icons';
 import { Box, Heading, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
 
@@ -26,7 +33,7 @@ export const StudentStudySuite = () => {
     },
     {
       label: 'Timetable',
-      icon: Layout,
+      icon: PanelsTopLeft,
       colorClass: 'text-sanctuary-success',
       onClick: () => router.push('/workspace'),
     },

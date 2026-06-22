@@ -1,6 +1,7 @@
 import { usePermissions } from '@repo/core/logic';
-import { useRouter } from 'expo-router';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { safeBack } from '@repo/ui/utils/navigation';
+import { useRouter } from 'expo-router';
 
 import { useMemo, useState } from 'react';
 import {
@@ -26,7 +27,7 @@ export default function AdminFeatureRegistry() {
       title="Admin feature registry"
       description="Inspect the admin control surface, the current feature gate posture, and the live maintenance state before staging changes."
       caution="This screen only stages global feature changes and guarded repairs. Commit only after reviewing the preview."
-      onBack={() => router.back()}
+      onBack={() => safeBack('/workspace')}
       stats={[
         {
           label: 'Enabled flags',

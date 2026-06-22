@@ -11,7 +11,7 @@ import {
   ClipboardList,
   FileText,
   GraduationCap,
-  Layers3,
+  Layers,
   LayoutGrid,
   MessageSquare,
   NotebookPen,
@@ -40,8 +40,9 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-import { useReducer } from 'react';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useReducer } from 'react';
 import {
   AttendanceView,
   ClassroomEchoSection,
@@ -84,7 +85,7 @@ const FEATURES: { id: FeatureId; label: string; icon: any }[] = [
   { id: 'echo', label: 'Echo', icon: MessageSquare },
   { id: 'observations', label: 'Observations', icon: Sparkles },
   { id: 'analysis', label: 'Analysis', icon: GraduationCap },
-  { id: 'legacy', label: 'Legacy', icon: Layers3 },
+  { id: 'legacy', label: 'Legacy', icon: Layers },
 ];
 
 const FEATURE_TONES: Record<FeatureId, { label: string; color: string; tint: string }> = {
@@ -171,8 +172,10 @@ const initialState = {
 
 export default function TeacherClassroomDashboardWeb() {
   const router = useRouter();
-  const { classroomId = '', classroomName = 'Classroom' } =
-    useLocalSearchParams<{ classroomId?: string; classroomName?: string }>();
+  const { classroomId = '', classroomName = 'Classroom' } = useLocalSearchParams<{
+    classroomId?: string;
+    classroomName?: string;
+  }>();
   const colors = useThemedColors();
   const { can, context } = usePermissions();
 
@@ -340,7 +343,7 @@ export default function TeacherClassroomDashboardWeb() {
                     style={{ borderColor: colors.border }}
                   >
                     <HStack className="items-center gap-1.5">
-                      <Icon as={Layers3} size={16} color={colors.text} />
+                      <Icon as={Layers} size={16} color={colors.text} />
                       <ButtonText style={{ color: colors.text }}>Groups</ButtonText>
                     </HStack>
                   </Button>
@@ -448,7 +451,7 @@ export default function TeacherClassroomDashboardWeb() {
           >
             <VStack className="gap-lg">
               <HStack className="items-center justify-between gap-md">
-                <Pressable onPress={() => router.back()}>
+                <Pressable onPress={() => safeBack('/workspace')}>
                   <HStack
                     className="items-center gap-xs px-md py-sm rounded-full border"
                     style={{

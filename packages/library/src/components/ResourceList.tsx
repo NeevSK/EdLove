@@ -20,7 +20,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-import { AlertTriangle, ArrowLeftRight, Play, X } from 'lucide-react-native';
+import { ArrowLeftRight, Play, TriangleAlert, X } from 'lucide-react-native';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { libraryAPI } from '../api/library';
@@ -257,7 +257,7 @@ function FlashPlaySheet({
               <SanctuaryButton
                 onPress={() => onReportBroken(resource.id)}
                 variant="outline"
-                leftIcon={AlertTriangle}
+                leftIcon={TriangleAlert}
               >
                 {''}
               </SanctuaryButton>

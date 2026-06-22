@@ -1,6 +1,6 @@
 import { api } from '@repo/core/api';
 
-import { AlertCircle, BookOpen, Lightbulb, Package, Users, Wifi } from '@repo/ui/icons';
+import { BookOpen, CircleAlert, Lightbulb, Package, Users, Wifi } from '@repo/ui/icons';
 import {
   ActivityIndicator,
   Box,
@@ -11,7 +11,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface ResourceNeed {
@@ -33,7 +33,7 @@ const ICON_MAP: Record<string, any> = {
   internet: Wifi,
   supplies: Package,
   support: Users,
-  other: AlertCircle,
+  other: CircleAlert,
 };
 
 export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashboardProps) {
@@ -70,7 +70,7 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
     }
   };
 
-  const fetchResourceNeeds = async () => {
+  const fetchResourceNeeds = useCallback(async () => {
     try {
       setIsLoading(true);
       const data = await api.inventory.getSchoolResourceNeeds(schoolId);
@@ -80,7 +80,7 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [schoolId]);
 
   useEffect(() => {
     if (schoolId) {
@@ -147,7 +147,7 @@ export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashbo
                   </Text>
                   {need.priority === 'urgent' && (
                     <HStack className="items-center gap-1.5 mt-1.5">
-                      <UIIcon as={AlertCircle} size="xs" className="text-phase-danger" />
+                      <UIIcon as={CircleAlert} size="xs" className="text-phase-danger" />
                       <Text className="text-[10px] font-black uppercase tracking-widest text-phase-danger">
                         {t('principal.resources.urgent') || 'Urgent Priority'}
                       </Text>

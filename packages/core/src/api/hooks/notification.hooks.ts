@@ -19,7 +19,7 @@ export function useNotificationHooks() {
   const userId = useStore((state) => state.user?.id);
 
   // Fetch list
-  const listQuery = useQuery({
+  const { data: notificationsData, isLoading: isListLoading } = useQuery({
     queryKey: notificationKeys.list(userId),
     queryFn: () => socialAPI.getNotifications(40),
     enabled: !!userId,
@@ -27,7 +27,7 @@ export function useNotificationHooks() {
   });
 
   // Unread badge count
-  const countQuery = useQuery({
+  const { data: countData } = useQuery({
     queryKey: notificationKeys.count(userId),
     queryFn: socialAPI.getUnreadNotificationCount,
     enabled: !!userId,
@@ -81,17 +81,17 @@ export function useNotificationHooks() {
 
   return useMemo(
     () => ({
-      notifications: listQuery.data ?? [],
-      isLoading: listQuery.isLoading,
-      unreadCount: countQuery.data ?? 0,
+      notifications: notificationsData ?? [],
+      isLoading: isListLoading,
+      unreadCount: countData ?? 0,
       markRead: markReadMutation.mutateAsync,
       markAllRead: markAllReadMutation.mutateAsync,
       isMarkingRead: markReadMutation.isPending || markAllReadMutation.isPending,
     }),
     [
-      listQuery.data,
-      listQuery.isLoading,
-      countQuery.data,
+      notificationsData,
+      isListLoading,
+      countData,
       markReadMutation.mutateAsync,
       markAllReadMutation.mutateAsync,
       markReadMutation.isPending,

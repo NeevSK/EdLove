@@ -89,13 +89,13 @@ export function useClassroomWorkspaceSurfaces({
   const renderNudge = () => {
     if (classroomData && !classroomData.profileCompleted && !isGuest) {
       return (
-          <SanctuaryNudge
-            title="Sanctuary Entry"
-            description="Complete your profile to unlock full school features."
-            actionLabel="Finish"
-            onAction={() => router.push('/profile')}
-            icon="profile"
-          />
+        <SanctuaryNudge
+          title="Sanctuary Entry"
+          description="Complete your profile to unlock full school features."
+          actionLabel="Finish"
+          onAction={() => router.push('/profile')}
+          icon="profile"
+        />
       );
     }
 

@@ -1,4 +1,5 @@
 import { Box, Text, VStack } from '@repo/ui/primitives';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
 import { useAdminWorkspaceSnapshot } from '../admin/adminRepository';
 import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
@@ -17,7 +18,7 @@ export default function AdminJobControl() {
       title="Guarded operator actions"
       description="Approve, retry, resync, or schedule remediation tasks with explicit operator intent and a clear audit trail."
       caution="Do not mutate tenant state casually here. Prefer preview, confirm, and then execute only when the scope is understood."
-      onBack={() => router.back()}
+      onBack={() => safeBack('/workspace')}
       stats={[
         {
           label: 'Approvals',

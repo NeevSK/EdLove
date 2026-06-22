@@ -2,12 +2,12 @@ import { Box, Heading, HStack, Pressable, Text, VStack } from '@repo/ui/primitiv
 import { openExternalURL } from '@repo/ui/utils';
 
 import {
-  AlertTriangle,
   ChevronRight,
   Info,
   LifeBuoy,
   MessageCircle,
   Star,
+  TriangleAlert,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -84,7 +84,7 @@ export default function SupportSection() {
         onPress={() => {}}
       />
       <SupportItem
-        icon={AlertTriangle}
+        icon={TriangleAlert}
         title={t('support.reportIssue', 'Signal Disruption')}
         subtitle={t('support.reportIssueDesc', 'Notify the architects of platform anomalies')}
         onPress={handleSupport}

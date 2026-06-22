@@ -3,7 +3,7 @@ import { useStore } from '@repo/core/logic';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
-import { AlertCircle, BookOpen, Users } from '@repo/ui/icons';
+import { BookOpen, CircleAlert, Users } from '@repo/ui/icons';
 import { Box, HStack, Icon, ScrollView, Text, VStack } from '@repo/ui/primitives';
 
 export default function GradeHeadDashboard({
@@ -47,7 +47,7 @@ export default function GradeHeadDashboard({
                   className="p-4 rounded-xl bg-phase-interactive/10 border border-phase-interactive"
                 >
                   <HStack className="gap-3 items-center">
-                    <Icon as={AlertCircle} className="text-phase-interactive" size="lg" />
+                    <Icon as={CircleAlert} className="text-phase-interactive" size="lg" />
                     <VStack className="flex-1">
                       <Text className="font-bold text-phaseText-primary">{gap.title}</Text>
                       <Text className="text-sm text-phaseText-secondary">{gap.description}</Text>

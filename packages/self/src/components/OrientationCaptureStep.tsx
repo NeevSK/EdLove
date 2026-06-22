@@ -29,7 +29,7 @@ import {
   ShieldCheck,
   User,
   Users,
-  Waves,
+  WavesHorizontal,
   Wrench,
   Zap,
 } from 'lucide-react-native';
@@ -142,7 +142,7 @@ const QUESTIONS: Question[] = [
         delta: { steady_surge: 22 },
       },
       {
-        icon: Waves,
+        icon: WavesHorizontal,
         label: 'Natural Flow',
         description: 'Let energy rise and fall naturally with the work',
         delta: { steady_surge: 10, reflect_act: -8 },

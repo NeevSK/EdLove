@@ -1,9 +1,8 @@
 import { resolveWorkspaceSwitcherTargets, usePermissions, useStore } from '@repo/core/logic';
 import type { WorkspaceSwitcherTarget } from '@repo/core/types';
-import { useRouter } from 'expo-router';
-
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, Text } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import {
   GuardianWorkspaceCanvas,
@@ -66,7 +65,7 @@ export default function GuardianDashboard() {
   );
 
   const handleOpenStudentsRoom = React.useCallback(() => {
-      router.push('/workspace');
+    router.push('/workspace');
   }, [router]);
 
   const handleOpenStudent = React.useCallback(

@@ -115,7 +115,9 @@ export default function QRShareButton({
 
       <PrimitiveView style={styles.buttonRow}>
         <TouchableOpacity
-          onPress={handleShareImage}
+          onPress={() => {
+            void handleShareImage();
+          }}
           style={[styles.button, { borderColor: accentColor }]}
           accessibilityLabel="Share QR code as image"
         >
@@ -123,7 +125,9 @@ export default function QRShareButton({
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={handleCopyLink}
+          onPress={() => {
+            void handleCopyLink();
+          }}
           style={[styles.button, { borderColor: accentColor }]}
           accessibilityLabel="Copy QR link to clipboard"
         >

@@ -18,10 +18,10 @@ import { Theme } from '@repo/ui/theme';
 
 import {
   BadgeCheck,
-  BarChart2,
   BookMarked,
   Bookmark,
   BookOpen,
+  ChartNoAxesColumn,
   Clapperboard,
   Cpu,
   File,
@@ -77,7 +77,7 @@ const TYPE_CONFIG: Record<
   guide: { icon: BookMarked, color: Theme.colors.gurudeviBlue, label: 'Guide' },
   reading: { icon: BookOpen, color: Theme.colors.sageGreen, label: 'Reading' },
   pedagogy: {
-    icon: BarChart2,
+    icon: ChartNoAxesColumn,
     color: Theme.colors.gurudeviViolet,
     label: 'Pedagogy',
   },
@@ -88,7 +88,7 @@ const TYPE_CONFIG: Record<
   note: { icon: StickyNote, color: Theme.colors.sageGreen, label: 'Note' },
   map: { icon: MapIcon, color: Theme.colors.sageGreen, label: 'Map' },
   infographic: {
-    icon: BarChart2,
+    icon: ChartNoAxesColumn,
     color: Theme.colors.amberGlow,
     label: 'Visual',
   },

@@ -19,8 +19,8 @@ import {
 import { useToast } from '@repo/ui/providers';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
-import { Calendar, CheckCircle2, Circle, Clock, Plus, Trash2 } from 'lucide-react-native';
-import { useEffect, useReducer } from 'react';
+import { Calendar, Circle, CircleCheck, Clock, Plus, Trash2 } from 'lucide-react-native';
+import { useCallback, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 
@@ -88,7 +88,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
     form: { name: '', startDate: '', endDate: '', isCurrent: false },
   });
 
-  const fetchCycles = async () => {
+  const fetchCycles = useCallback(async () => {
     try {
       const data = await api.academicCycles.getAll(schoolId);
       dispatch({ type: 'SET_CYCLES', cycles: data ?? [] });
@@ -96,7 +96,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
       console.error('Failed to fetch cycles:', error);
       dispatch({ type: 'SET_LOADING', isLoading: false });
     }
-  };
+  }, [schoolId]);
 
   useEffect(() => {
     void fetchCycles();
@@ -316,7 +316,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                   >
                     <HStack className="gap-2 items-center">
                       {state.form.isCurrent ? (
-                        <Icon as={CheckCircle2} size={18} className="text-phase-success" />
+                        <Icon as={CircleCheck} size={18} className="text-phase-success" />
                       ) : (
                         <Icon as={Circle} size={18} className="text-phaseText-muted" />
                       )}
@@ -385,7 +385,7 @@ export default function AcademicCycleManager({ schoolId, onBack }: AcademicCycle
                           accessibilityLabel={`Set ${cycle.name} as active`}
                           accessibilityHint="Switches the platform to use this academic cycle for all data projections"
                         >
-                          <Icon as={CheckCircle2} size={20} className="text-phaseText-muted" />
+                          <Icon as={CircleCheck} size={20} className="text-phaseText-muted" />
                         </Pressable>
                       )}
                       <Pressable

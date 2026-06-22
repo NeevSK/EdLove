@@ -1,4 +1,4 @@
-import { AlertCircle, ClipboardCheck, TrendingUp, UserPlus, Users } from '@repo/ui/icons';
+import { CircleAlert, ClipboardCheck, TrendingUp, UserPlus, Users } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
@@ -173,7 +173,7 @@ export default function StudentPulseSection({
                   Review Required
                 </Text>
               </VStack>
-              <Icon as={AlertCircle} size="xs" className="text-phase-danger opacity-40" />
+              <Icon as={CircleAlert} size="xs" className="text-phase-danger opacity-40" />
             </HStack>
           </Box>
         </Pressable>

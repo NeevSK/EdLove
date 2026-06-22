@@ -3,7 +3,7 @@ import { useThemedColors } from '@repo/ui/hooks';
 import { Box, Button, ButtonText, HStack, Text, VStack } from '@repo/ui/primitives';
 
 import { format } from 'date-fns';
-import { Calendar, CheckCircle2, Clock, LogIn, LogOut } from 'lucide-react-native';
+import { Calendar, CircleCheck, Clock, LogIn, LogOut } from 'lucide-react-native';
 import type React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -177,7 +177,7 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
               alignItems: 'center',
             }}
           >
-            <CheckCircle2 size={20} color={colors.success} />
+            <CircleCheck size={20} color={colors.success} />
             <Text sx={{ fontSize: 12, color: colors.text, marginTop: 8 }}>
               {t('staffPresence.viewHistory')}
             </Text>

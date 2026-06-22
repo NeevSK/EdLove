@@ -1,6 +1,6 @@
 {
-  "dependencyTypes": ["dev", "prod", "overrides", "pnpmOverrides"],
-  "filter": ".",
+  "$schema": "./node_modules/syncpack/schema.json",
+  "source": ["package.json", "packages/*/package.json", "apps/*/package.json"],
   "indent": "  ",
   "semverGroups": [
     {
@@ -14,7 +14,6 @@
     {
       "dependencies": ["@repo/*"],
       "packages": ["**"],
-      "isEnforced": true,
       "label": "Internal Workspace Packages"
     }
   ],

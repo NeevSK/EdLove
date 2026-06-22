@@ -149,6 +149,10 @@ export { AnalyticsEngine as formAnalytics } from '@intuitui-labs/form-builder-en
 export type { FormState } from '@intuitui-labs/form-builder-engine/core';
 export { FormManager } from '@intuitui-labs/form-builder-engine/core';
 export { FormHydrator } from '@intuitui-labs/form-builder-engine/hydration';
+// Hexagonal Adapters
+export { SupabaseEntitlementAdapter } from './adapters/supabase/supabaseEntitlement.adapter';
+export { SupabaseFeatureFlagAdapter } from './adapters/supabase/supabaseFeatureFlag.adapter';
+export { GrowthBookFeatureRolloutAdapter } from './adapters/feature-rollout/growthBookFeatureRollout.adapter';
 export * from './api';
 export {
   adaptToHono,
@@ -173,6 +177,17 @@ export type {
   QueuedMutationDispatchResult,
 } from './lib/sync/types';
 export { useMutationQueue } from './lib/sync/useMutationQueue';
+// Hexagonal Ports
+export type {
+  AuthorizationDecision,
+  AuthorizationRequest,
+  EntitlementSnapshot,
+  IAnalyticsPort,
+  IAuthorizationPort,
+  IEntitlementPort,
+  IFeatureFlagPort,
+} from './logic';
+export { cryptoManager } from './logic';
 export type {
   EntityDefinition,
   EntityMode,

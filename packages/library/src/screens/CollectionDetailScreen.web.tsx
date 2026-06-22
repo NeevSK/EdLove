@@ -1,10 +1,11 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useStore } from '@repo/core/logic';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 import { ActivityIndicator, Box, HStack, Text, useTheme, VStack } from '@repo/ui/primitives';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
+import { safeBack } from '@repo/ui/utils/navigation';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowLeft, Library, RefreshCw } from 'lucide-react-native';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -73,7 +74,7 @@ export default function CollectionDetailScreenWeb() {
         (err: any) => console.error("Couldn't load page", err),
       );
     },
-    [navigation],
+    [router],
   );
 
   const handleOpenResourceOptions = useCallback((resource: LibraryResource) => {
@@ -133,7 +134,7 @@ export default function CollectionDetailScreenWeb() {
           <HStack className="gap-3 w-full">
             <SanctuaryButton
               variant="outline"
-              onPress={() => router.back()}
+              onPress={() => safeBack('/library')}
               leftIcon={ArrowLeft}
               className="flex-1"
             >
@@ -159,7 +160,7 @@ export default function CollectionDetailScreenWeb() {
           actions={
             <SanctuaryButton
               variant="ghost"
-              onPress={() => router.back()}
+              onPress={() => safeBack('/library')}
               leftIcon={ArrowLeft}
               size="sm"
             >

@@ -26,7 +26,7 @@ import {
   ClipboardList,
   FileText,
   GraduationCap,
-  Layers3,
+  Layers,
   LayoutGrid,
   MessageSquare,
   NotebookPen,
@@ -50,8 +50,9 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
-import { useMemo, useState } from 'react';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useMemo, useState } from 'react';
 import {
   AttendanceView,
   ClassroomEchoSection,
@@ -95,7 +96,7 @@ const TEACHER_FEATURES: { id: FeatureId; label: string; icon: any }[] = [
   { id: 'echo', label: 'Echo', icon: MessageSquare },
   { id: 'observations', label: 'Observations', icon: Sparkles },
   { id: 'analysis', label: 'Analysis', icon: GraduationCap },
-  { id: 'legacy', label: 'Legacy', icon: Layers3 },
+  { id: 'legacy', label: 'Legacy', icon: Layers },
 ];
 
 const FEATURE_TONES: Record<FeatureId, { label: string; color: string; tint: string }> = {
@@ -163,8 +164,10 @@ const FEATURE_TONES: Record<FeatureId, { label: string; color: string; tint: str
 
 export default function TeacherClassroomDashboard() {
   const router = useRouter();
-  const { classroomId = '', classroomName = 'Classroom' } =
-    useLocalSearchParams<{ classroomId?: string; classroomName?: string }>();
+  const { classroomId = '', classroomName = 'Classroom' } = useLocalSearchParams<{
+    classroomId?: string;
+    classroomName?: string;
+  }>();
   const { can, context } = usePermissions();
   const [activeFeature, setActiveFeature] = useState<FeatureId>('insights');
   const [showGroupsModal, setShowGroupsModal] = useState(false);
@@ -391,7 +394,7 @@ export default function TeacherClassroomDashboard() {
                     className="bg-phase-surface px-5 py-2.5 rounded-full border border-phase-border/40 shadow-sm active:scale-95 transition-all"
                   >
                     <HStack className="items-center gap-2">
-                      <Icon as={Layers3} size="xs" className="text-phase-text-primary" />
+                      <Icon as={Layers} size="xs" className="text-phase-text-primary" />
                       <Text className="text-xs font-black text-phase-text-primary uppercase tracking-wider">
                         Groups
                       </Text>
@@ -478,7 +481,7 @@ export default function TeacherClassroomDashboard() {
   if (workspace.isLoading) {
     return (
       <ScreenWrapper>
-        <GlobalHeader title={classroomName} showBack onBack={() => router.back()} />
+        <GlobalHeader title={classroomName} showBack onBack={() => safeBack('/workspace')} />
         <VStack className="gap-md p-4">
           <SkeletonCard height={100} />
           <HStack className="gap-md mt-4">
@@ -547,7 +550,7 @@ export default function TeacherClassroomDashboard() {
         title={classroomName}
         subtitle={classroom?.subject || 'Classroom'}
         showBack
-        onBack={() => router.back()}
+        onBack={() => safeBack('/workspace')}
       />
       <ScrollView
         stickyHeaderIndices={[2]}

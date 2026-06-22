@@ -1,5 +1,3 @@
-import crypto from 'node:crypto';
-
 export interface VerifiedJwtPayload {
   sub: string;
   email?: string;
@@ -7,7 +5,7 @@ export interface VerifiedJwtPayload {
   [key: string]: any;
 }
 
-const jwkCache = new Map<string, crypto.KeyObject>();
+const jwkCache = new Map<string, any>();
 let jwksLastFetched = 0;
 const JWKS_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
@@ -22,6 +20,22 @@ const tokenVerificationCache = new Map<
 const VERIFIED_TOKEN_CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes cache lifetime
 
 /**
+ * Helper to retrieve environment variables safely across runtimes.
+ */
+function getEnv(key: string, envOverrides?: Record<string, string>): string | undefined {
+  if (envOverrides && key in envOverrides) {
+    return envOverrides[key];
+  }
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env[key];
+  }
+  if (typeof globalThis !== 'undefined' && (globalThis as any).ENV) {
+    return (globalThis as any).ENV[key];
+  }
+  return undefined;
+}
+
+/**
  * Periodically purges expired entries from the token verification cache to prevent memory leaks.
  */
 function cleanExpiredVerificationCache() {
@@ -31,13 +45,82 @@ function cleanExpiredVerificationCache() {
       tokenVerificationCache.delete(hash);
     }
   }
+  // Enforce capacity bounds (max 1000 entries)
+  while (tokenVerificationCache.size > 1000) {
+    const oldestKey = tokenVerificationCache.keys().next().value;
+    if (oldestKey) {
+      tokenVerificationCache.delete(oldestKey);
+    } else {
+      break;
+    }
+  }
+}
+
+/**
+ * Helper to generate a SHA-256 hash string for caching.
+ */
+async function computeSha256(str: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(str);
+  const hashBuffer = await globalThis.crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Decodes base64url string to standard UTF-8 string.
+ */
+function decodeBase64Url(str: string): string {
+  let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (base64.length % 4) {
+    base64 += '=';
+  }
+  return atob(base64);
+}
+
+/**
+ * Decodes base64url to Uint8Array.
+ */
+function base64UrlToUint8Array(str: string): Uint8Array {
+  const base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
+/**
+ * Helper to convert standard UTF-8 string to Uint8Array.
+ */
+function stringToUint8Array(str: string): Uint8Array {
+  return new TextEncoder().encode(str);
+}
+
+/**
+ * Convert PEM public key to DER binary.
+ */
+function pemToDer(pem: string): Uint8Array {
+  const pemHeader = '-----BEGIN PUBLIC KEY-----';
+  const pemFooter = '-----END PUBLIC KEY-----';
+  const pemContents = pem.replace(pemHeader, '').replace(pemFooter, '').replace(/\s+/g, '');
+  const binaryString = atob(pemContents);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
 }
 
 /**
  * Fetches JWKS from the Supabase Auth well-known endpoint and caches public keys.
  * Coalesces parallel requests to prevent cache stampedes under high load.
  */
-async function getPublicKeyFromJwks(kid: string): Promise<crypto.KeyObject | null> {
+async function getPublicKeyFromJwks(
+  kid: string,
+  envOverrides?: Record<string, string>,
+): Promise<any | null> {
   const cached = jwkCache.get(kid);
   if (cached) return cached;
 
@@ -47,13 +130,15 @@ async function getPublicKeyFromJwks(kid: string): Promise<crypto.KeyObject | nul
       activeJwksFetch = (async () => {
         try {
           const supabaseUrl =
-            process.env.EXPO_PUBLIC_SUPABASE_URL ||
-            process.env.SUPABASE_URL ||
+            getEnv('EXPO_PUBLIC_SUPABASE_URL', envOverrides) ||
+            getEnv('SUPABASE_URL', envOverrides) ||
             'https://qzoawolfkuwiuyaoiybz.supabase.co';
           const jwksUrl = `${supabaseUrl}/auth/v1/.well-known/jwks.json`;
 
           console.log(`[JWT] 🌐 Fetching JWKS from authoritative gateway (Coalesced): ${jwksUrl}`);
-          const response = await fetch(jwksUrl);
+          const response = await fetch(jwksUrl, {
+            signal: AbortSignal.timeout(4000),
+          });
           if (!response.ok) {
             throw new Error(`Failed to fetch JWKS: ${response.statusText}`);
           }
@@ -63,10 +148,17 @@ async function getPublicKeyFromJwks(kid: string): Promise<crypto.KeyObject | nul
             for (const key of jwks.keys) {
               if (key.kid && key.kty) {
                 try {
-                  const pubKey = crypto.createPublicKey({
-                    format: 'jwk',
+                  const pubKey = await globalThis.crypto.subtle.importKey(
+                    'jwk',
                     key,
-                  });
+                    {
+                      name: key.kty === 'EC' ? 'ECDSA' : 'RSASSA-PKCS1-v1_5',
+                      namedCurve: key.kty === 'EC' ? 'P-256' : undefined,
+                      hash: { name: 'SHA-256' },
+                    },
+                    true,
+                    ['verify'],
+                  );
                   jwkCache.set(key.kid, pubKey);
                 } catch (err) {
                   console.warn(`[JWT] ⚠️ Failed to import JWK key ${key.kid}:`, err);
@@ -94,9 +186,13 @@ async function getPublicKeyFromJwks(kid: string): Promise<crypto.KeyObject | nul
  * Verifies authenticity, integrity, and standard claims (exp, nbf, aud).
  * Integrates a SHA-256 token verification cache to prevent cryptographic CPU saturation.
  */
-export async function verifySupabaseJwt(token: string): Promise<VerifiedJwtPayload | null> {
+export async function verifySupabaseJwt(
+  token: string,
+  envOverrides?: Record<string, string>,
+): Promise<VerifiedJwtPayload | null> {
   // Support local development & integration test bypass in non-production environments
-  const isTestOrDev = process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development';
+  const nodeEnv = getEnv('NODE_ENV', envOverrides);
+  const isTestOrDev = nodeEnv === 'test' || nodeEnv === 'development';
   if (
     isTestOrDev &&
     (token === 'admin-user-1' ||
@@ -109,12 +205,7 @@ export async function verifySupabaseJwt(token: string): Promise<VerifiedJwtPaylo
   }
 
   // 1. Assert memory caching of verified token hashes (mitigates Signature Verification CPU Saturation)
-  const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
-
-  // Randomly execute eviction to prevent unbounded memory growth (10% probability per request)
-  if (Math.random() < 0.1) {
-    cleanExpiredVerificationCache();
-  }
+  const tokenHash = await computeSha256(token);
 
   const cachedResult = tokenVerificationCache.get(tokenHash);
   if (cachedResult && cachedResult.expiresAt > Date.now()) {
@@ -133,8 +224,8 @@ export async function verifySupabaseJwt(token: string): Promise<VerifiedJwtPaylo
     }
 
     const [headerB64, payloadB64, signatureB64] = parts;
-    const headerJson = Buffer.from(headerB64, 'base64url').toString('utf8');
-    const payloadJson = Buffer.from(payloadB64, 'base64url').toString('utf8');
+    const headerJson = decodeBase64Url(headerB64);
+    const payloadJson = decodeBase64Url(payloadB64);
 
     const header = JSON.parse(headerJson);
     const payload = JSON.parse(payloadJson);
@@ -161,19 +252,66 @@ export async function verifySupabaseJwt(token: string): Promise<VerifiedJwtPaylo
     }
 
     // Resolve cryptographic verification key
-    let publicKey: crypto.KeyObject | null = null;
+    let publicKey: any = null;
 
     // A. Check for static public key override in environment (e.g. PEM format or JWK JSON)
-    const envKey = process.env.SUPABASE_JWT_PUBLIC_KEY;
+    const envKey = getEnv('SUPABASE_JWT_PUBLIC_KEY', envOverrides);
     if (envKey) {
       try {
         if (envKey.trim().startsWith('{')) {
-          publicKey = crypto.createPublicKey({
-            format: 'jwk',
-            key: JSON.parse(envKey),
-          });
+          const parsedJwk = JSON.parse(envKey);
+          publicKey = await globalThis.crypto.subtle.importKey(
+            'jwk',
+            parsedJwk,
+            {
+              name: parsedJwk.kty === 'EC' ? 'ECDSA' : 'RSASSA-PKCS1-v1_5',
+              namedCurve: parsedJwk.kty === 'EC' ? 'P-256' : undefined,
+              hash: { name: 'SHA-256' },
+            },
+            true,
+            ['verify'],
+          );
         } else {
-          publicKey = crypto.createPublicKey(envKey);
+          try {
+            const cleanPem = envKey
+              .replace(/-----BEGIN RSA PUBLIC KEY-----/, '-----BEGIN PUBLIC KEY-----')
+              .replace(/-----END RSA PUBLIC KEY-----/, '-----END PUBLIC KEY-----');
+            const der = pemToDer(cleanPem);
+            publicKey = await globalThis.crypto.subtle.importKey(
+              'spki',
+              der,
+              {
+                name: 'RSASSA-PKCS1-v1_5',
+                hash: { name: 'SHA-256' },
+              },
+              true,
+              ['verify'],
+            );
+          } catch (webCryptoErr) {
+            // Fall back to Node's crypto to parse non-SPKI PEM formats (like PKCS#1) if running in Node/Bun
+            try {
+              if (typeof require !== 'undefined') {
+                // eslint-disable-next-line @typescript-eslint/no-require-imports
+                const nodeCrypto = require('node:crypto');
+                const nodeKey = nodeCrypto.createPublicKey(envKey);
+                const jwk = nodeKey.export({ format: 'jwk' });
+                publicKey = await globalThis.crypto.subtle.importKey(
+                  'jwk',
+                  jwk,
+                  {
+                    name: 'RSASSA-PKCS1-v1_5',
+                    hash: { name: 'SHA-256' },
+                  },
+                  true,
+                  ['verify'],
+                );
+              } else {
+                throw webCryptoErr;
+              }
+            } catch (fallbackErr) {
+              throw webCryptoErr;
+            }
+          }
         }
       } catch (err) {
         console.error(
@@ -185,7 +323,7 @@ export async function verifySupabaseJwt(token: string): Promise<VerifiedJwtPaylo
 
     // B. Resolve key from JWKS if not overridden
     if (!publicKey && header.kid) {
-      publicKey = await getPublicKeyFromJwks(header.kid);
+      publicKey = await getPublicKeyFromJwks(header.kid, envOverrides);
     }
 
     if (!publicKey) {
@@ -193,23 +331,17 @@ export async function verifySupabaseJwt(token: string): Promise<VerifiedJwtPaylo
       return null;
     }
 
-    // Perform signature validation using native asymmetric algorithms
-    const dataToVerify = Buffer.from(`${headerB64}.${payloadB64}`);
-    const signature = Buffer.from(signatureB64, 'base64url');
+    // Perform signature validation using Web Crypto APIs
+    const dataToVerify = stringToUint8Array(`${headerB64}.${payloadB64}`);
+    const signature = base64UrlToUint8Array(signatureB64);
 
-    // Resolve ECDSA P-1363 raw signature encoding if using ES256
-    const verifyOptions: any = {
-      key: publicKey,
-    };
-    if (header.alg === 'ES256') {
-      verifyOptions.dsaEncoding = 'ieee-p1363';
-    }
-
-    const isVerified = crypto.verify(
-      'sha256', // RS256 & ES256 both use SHA-256 hash
-      dataToVerify,
-      verifyOptions,
+    const isVerified = await globalThis.crypto.subtle.verify(
+      header.alg === 'ES256'
+        ? { name: 'ECDSA', hash: { name: 'SHA-256' } }
+        : { name: 'RSASSA-PKCS1-v1_5' },
+      publicKey,
       signature,
+      dataToVerify,
     );
 
     if (!isVerified) {
@@ -237,6 +369,7 @@ export async function verifySupabaseJwt(token: string): Promise<VerifiedJwtPaylo
       verifiedPayload.exp ? verifiedPayload.exp * 1000 : Date.now() + VERIFIED_TOKEN_CACHE_MAX_AGE,
     );
     tokenVerificationCache.set(tokenHash, { payload: verifiedPayload, expiresAt: cacheExpiresAt });
+    cleanExpiredVerificationCache();
 
     return verifiedPayload;
   } catch (err) {
@@ -248,8 +381,28 @@ export async function verifySupabaseJwt(token: string): Promise<VerifiedJwtPaylo
 /**
  * Manually populates the cache for testing.
  */
-export function setTestPublicKey(kid: string, key: crypto.KeyObject) {
-  jwkCache.set(kid, key);
+export async function setTestPublicKey(kid: string, key: any) {
+  let cryptoKey: any = key;
+  if (key && typeof key.export === 'function') {
+    // If it's a Node.js KeyObject, export it to JWK and import it as a standard Web CryptoKey
+    try {
+      const jwk = key.export({ format: 'jwk' });
+      cryptoKey = await globalThis.crypto.subtle.importKey(
+        'jwk',
+        jwk,
+        {
+          name: jwk.kty === 'EC' ? 'ECDSA' : 'RSASSA-PKCS1-v1_5',
+          namedCurve: jwk.kty === 'EC' ? 'P-256' : undefined,
+          hash: { name: 'SHA-256' },
+        },
+        true,
+        ['verify'],
+      );
+    } catch (err) {
+      console.error('[JWT] Failed to convert test key from KeyObject to CryptoKey:', err);
+    }
+  }
+  jwkCache.set(kid, cryptoKey);
 }
 
 /**

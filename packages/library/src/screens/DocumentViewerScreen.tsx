@@ -1,7 +1,7 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMediaDownloader } from '@repo/core/hooks';
-
 import { UniversalDocumentPortal } from '@repo/ui/components/media/UniversalDocumentPortal';
+import { safeBack } from '@repo/ui/utils/navigation';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 
 function resolveDocumentMimeType(format?: string) {
@@ -53,8 +53,8 @@ export function DocumentViewerScreen() {
     });
 
   const handleBack = useCallback(() => {
-    router.back();
-  }, [router]);
+    safeBack('/library');
+  }, []);
 
   const handleOpenNative = useCallback(async () => {
     await openInNativeViewer();

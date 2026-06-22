@@ -14,7 +14,6 @@ export { useEntity } from './useEntity';
 export { useFeatureAccess } from './useFeatureAccess';
 export { useForm } from './useForm';
 export { useGroupCreation } from './useGroupCreation';
-export { useGuardedNavigation } from './useGuardedNavigation';
 export { useIdentity } from './useIdentity';
 export { useJourneyHistory } from './useJourneyHistory';
 export { useLocalPermission } from './useLocalPermission';

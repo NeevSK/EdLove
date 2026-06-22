@@ -28,7 +28,8 @@ Before performing any task, you **MUST** read the following files:
 - Use `pnpm` for all logic/dependency changes.
 - Use `pnpm exec` instead of `npx`.
 - Use `pnpm dlx` for one-off tool executions.
-- Reason: Common package managers corrupt the workspace symlink topology.
+- **BIOME SCOPING**: You are FORBIDDEN from running workspace-wide formatting/checking (e.g. `biome check --write .` or `pnpm run format:fix`). You MUST scope Biome checks/fixes specifically to the changed files (e.g., `biome check --write file1.ts file2.ts`).
+- Reason: Global commands introduce huge unwanted modifications across unrelated packages in the monorepo.
 
 ## Documentation SOP Enforcement (STRICT)
 Whenever you create or modify any documentation (`.md` files), you **MUST** strictly follow `apps/gurudevi-mobile/docs/SOP.md`:

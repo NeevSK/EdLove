@@ -1,4 +1,4 @@
-import { AlertTriangle } from 'lucide-react-native';
+import { TriangleAlert } from 'lucide-react-native';
 import { Box, HStack, Text, VStack } from '../gluestack';
 import { SanctuaryButton } from './SanctuaryButton';
 import SanctuaryModal from './SanctuaryModal';
@@ -40,7 +40,7 @@ export default function DeleteAccountModal({
       isOpen={isOpen}
       onClose={onClose}
       title="Delete Account"
-      icon={<AlertTriangle color="#FF6347" size={22} />}
+      icon={<TriangleAlert color="#FF6347" size={22} />}
       footer={footer}
       size="md"
     >

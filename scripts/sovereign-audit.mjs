@@ -35,15 +35,19 @@ let exitCode = 0;
 const env = { ...process.env, NODE_OPTIONS: '--max-old-space-size=4096' };
 
 // Split command by && or ; and run sequentially
-const subCommands = command.split(/&&|;/).map(cmd => cmd.trim()).filter(Boolean);
+const subCommands = command
+  .split(/&&|;/)
+  .map((cmd) => cmd.trim())
+  .filter(Boolean);
 
 async function runCommandsSequentially() {
   for (const subCommand of subCommands) {
     console.log(`>>> Executing sub-command: ${subCommand}`);
     const code = await new Promise((resolve) => {
       const shell = process.platform === 'win32' ? 'powershell.exe' : '/bin/sh';
-      const shellArgs = process.platform === 'win32' ? ['-Command', subCommand] : ['-c', subCommand];
-      
+      const shellArgs =
+        process.platform === 'win32' ? ['-Command', subCommand] : ['-c', subCommand];
+
       const child = spawn(shell, shellArgs, {
         env,
         stdio: ['ignore', 'pipe', 'pipe'],

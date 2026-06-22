@@ -1,6 +1,4 @@
 import js from '@eslint/js';
-import eslintConfigPrettier from 'eslint-config-prettier';
-import pluginDeprecation from 'eslint-plugin-deprecation';
 import pluginImport from 'eslint-plugin-import-x';
 import eslintPluginOxlint from 'eslint-plugin-oxlint';
 import turboPlugin from 'eslint-plugin-turbo';
@@ -9,22 +7,28 @@ import tseslint from 'typescript-eslint';
 /**
  * A shared ESLint configuration for the repository.
  *
+ * ESLint serves as the niche/specialized linter for:
+ * - TypeScript deep type-aware linting
+ * - React Native and Expo specific rules
+ * - Import/export analysis with import-x
+ * - Turbo monorepo specific rules
+ * - React hooks and component rules
+ *
+ * Primary linting is handled by Oxlint for general JS/TS patterns.
+ *
  * @type {import("eslint").Linter.Config[]}
  * */
 export const config = [
   js.configs.recommended,
-  eslintConfigPrettier,
   ...tseslint.configs.recommended,
   pluginImport.flatConfigs.recommended,
   pluginImport.flatConfigs.typescript,
   {
     plugins: {
       turbo: turboPlugin,
-      deprecation: pluginDeprecation,
     },
     rules: {
       'turbo/no-undeclared-env-vars': 'warn',
-      'deprecation/deprecation': 'off',
       'no-unused-vars': 'off',
       'import-x/no-cycle': ['error', { maxDepth: 5 }],
     },
@@ -51,13 +55,13 @@ export const config = [
       '**/*.config.ts',
       '**/.astro/**',
       'docs/**',
+      '**/__tests__/**',
+      '**/*.test.ts',
+      '**/*.test.tsx',
+      '**/*.test.js',
+      '**/*.test.jsx',
+      '**/__mocks__/**',
     ],
-  },
-  {
-    files: ['**/*.d.ts'],
-    rules: {
-      'deprecation/deprecation': 'off',
-    },
   },
   ...eslintPluginOxlint.configs['flat/recommended'],
 ];

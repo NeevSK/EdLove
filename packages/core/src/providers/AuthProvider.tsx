@@ -1,7 +1,7 @@
 import type { Session } from '@supabase/supabase-js';
 import type React from 'react';
 import { createContext, type ReactNode, useContext } from 'react';
-import { useAuthorityLifecycle } from '../hooks/useAuthorityLifecycle';
+import { useAuthLifecycle } from '../hooks/useAuthLifecycle';
 
 interface AuthContextType {
   session: Session | null;
@@ -13,7 +13,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const authLifecycle = useAuthorityLifecycle();
+  const authLifecycle = useAuthLifecycle();
 
   return <AuthContext.Provider value={authLifecycle}>{children}</AuthContext.Provider>;
 };

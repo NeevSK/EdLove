@@ -1,8 +1,6 @@
 import { useFeatureAccess } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
-import { useRouter } from 'expo-router';
-
 import SandboxBanner from '@repo/ui/components/SandboxBanner';
 import { WorkspaceCanvas } from '@repo/ui/components/workspace/WorkspaceCanvas';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
@@ -10,6 +8,7 @@ import { useThemedColors } from '@repo/ui/hooks';
 import { Box, HStack, Pressable, ScrollView, Text } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useStudentDashboardSurfaces } from '../workspace/useStudentDashboardSurfaces';

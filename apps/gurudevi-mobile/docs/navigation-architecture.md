@@ -4,8 +4,8 @@ This document is the shared mental model for navigation in `gurudevi-mobile`.
 
 ## Core Idea
 
-We no longer treat navigation as a manually assembled React Navigation tree.
-Expo Router owns the route graph, and `app/` is the source of truth.
+Expo Router owns the live route graph, and `app/` is the source of truth.
+React Navigation remains only as an internal dependency of Expo Router and a few legacy compatibility surfaces outside the live shell.
 
 The domain model still matters, but it now maps onto route files and route groups.
 
@@ -18,7 +18,7 @@ The route shell should reflect that ecosystem rather than flattening everything 
 
 - Domain-oriented packages own screens, hooks, components, and flows.
 - `packages/core`, `packages/ui`, `packages/self`, `packages/community`, `packages/classroom`, `packages/library`, `packages/profile`, `packages/admin`, and `packages/workforce` still own the feature logic.
-- `app/` used to be a shell that hosted a custom React Navigation tree.
+- `app/` is now the live shell and route graph.
 
 ### Historical evolution
 
@@ -240,7 +240,8 @@ That switcher exists so we can separate concerns:
 - Use `<Link />` for declarative navigation.
 - Use `<Redirect />` for immediate route decisions.
 - Avoid `NavigationContainer` in Expo Router app code.
-- Avoid `createBottomTabNavigator` and `createNativeStackNavigator` in route composition unless there is a very specific compatibility reason.
+- Avoid `createBottomTabNavigator` and `createNativeStackNavigator` in live route composition.
+- Keep React Navigation-specific imports out of shared packages that render inside the live route tree.
 
 ## Why This Fits The Domain Packages
 
@@ -357,7 +358,7 @@ That is the cleanest way to keep the same role from splintering into confusing r
 
 ## Suggested Next Additions
 
-- A route map table from old React Navigation names to Expo Router paths.
+- A route map table from old React Navigation names to Expo Router paths, kept only for archive reference.
 - A section for deep-link payload conventions.
 - A section for web-vs-mobile divergence, especially settings and notifications.
 - A route ownership matrix for each domain package.

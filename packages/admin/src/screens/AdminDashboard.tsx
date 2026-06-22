@@ -1,8 +1,7 @@
 import { usePermissions, useStore } from '@repo/core/logic';
-import { useRouter } from 'expo-router';
-
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, Text, VStack } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
 import {
   AdminWorkspaceCanvas,
   useAdminWorkspaceCanvasSurfaces,

@@ -1,6 +1,4 @@
 import { useWorkspaceLayoutSync } from '@repo/core/native';
-import { useRouter } from 'expo-router';
-
 import {
   TeacherAdminPortalModal,
   TeacherEchoHistoryModal,
@@ -24,6 +22,7 @@ import {
   Pressable,
   ScrollView,
 } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { CreateClassroomModal } from '../components';

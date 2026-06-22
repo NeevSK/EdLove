@@ -12,7 +12,9 @@ import { useLocalSearchParams } from 'expo-router';
  */
 export default function GroupDetailsScreenWeb() {
   const params = useLocalSearchParams<{ communityId?: string }>();
-  const communityId = Array.isArray(params.communityId) ? params.communityId[0] : params.communityId;
+  const communityId = Array.isArray(params.communityId)
+    ? params.communityId[0]
+    : params.communityId;
 
   // Use the generic useEntity hook for the community_group entity
   const { instance, isLoading, error } = useEntity('community_group', communityId);

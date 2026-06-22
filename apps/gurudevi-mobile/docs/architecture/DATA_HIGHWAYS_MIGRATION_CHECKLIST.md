@@ -75,8 +75,8 @@ Fail loudly when:
 
 These should stay direct unless a deliberate migration changes the boundary:
 
-- `packages/core/src/hooks/useAuthorityLifecycle.ts`
-- `packages/core/src/native/useAuthorityLifecycle.ts`
+- `packages/core/src/hooks/useAuthLifecycle.ts`
+- `packages/core/src/native/useAuthLifecycle.ts`
 - `packages/core/src/lib/authorization.ts`
 - `packages/core/src/hooks/useIdentity.ts`
 - `packages/core/src/accounts/deviceAccounts.ts`

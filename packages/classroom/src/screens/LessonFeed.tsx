@@ -1,15 +1,7 @@
 import { api } from '@repo/core/api';
 import type { Assignment, Lesson, LessonMaterial } from '@repo/core/logic';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
-import {
-  CheckCircle2,
-  ChevronDown,
-  ChevronUp,
-  Edit2,
-  FileText,
-  Plus,
-  Trash2,
-} from '@repo/ui/icons';
+import { ChevronDown, ChevronUp, CircleCheck, FileText, Pen, Plus, Trash2 } from '@repo/ui/icons';
 import {
   AnimatedView,
   Box,
@@ -24,7 +16,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FadeInDown } from 'react-native-reanimated';
 
@@ -120,7 +112,7 @@ export default function LessonFeed({
     return normalizedTitle.includes(currentMonthName) && normalizedTitle.includes(currentYear);
   };
 
-  const loadFeed = async () => {
+  const loadFeed = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -163,16 +155,19 @@ export default function LessonFeed({
       setMonthlyGroups(calendarGroups);
 
       const currentMonthTitle = `${monthNames[now.getMonth()]} ${year}`;
-      if (Object.keys(expandedLessons).length === 0) {
-        setExpandedLessons({ [currentMonthTitle]: true });
-      }
+      setExpandedLessons((prev) => {
+        if (Object.keys(prev).length === 0) {
+          return { [currentMonthTitle]: true };
+        }
+        return prev;
+      });
     } catch (err: any) {
       console.error('Failed to load feed:', err);
       setError(err.message || 'Failed to load feed data');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [classroomId]);
 
   useEffect(() => {
     loadFeed();
@@ -212,7 +207,7 @@ export default function LessonFeed({
         {isTeacher && (
           <HStack className="gap-4">
             <Pressable onPress={() => onEditItem?.(material, 'material')}>
-              <Icon as={Edit2} size="sm" className="text-phaseText-secondary" />
+              <Icon as={Pen} size="sm" className="text-phaseText-secondary" />
             </Pressable>
             <Pressable onPress={() => onDeleteItem?.(material.id, 'material')}>
               <Icon as={Trash2} size="sm" className="text-phase-danger" />
@@ -248,7 +243,7 @@ export default function LessonFeed({
                 </Box>
                 {!isTeacher && isSubmitted && (
                   <HStack className="items-center gap-1">
-                    <Icon as={CheckCircle2} size="xs" className="text-phase-reward" />
+                    <Icon as={CircleCheck} size="xs" className="text-phase-reward" />
                     <Text className="text-xs font-bold text-phase-reward">Submitted</Text>
                   </HStack>
                 )}
@@ -267,7 +262,7 @@ export default function LessonFeed({
           {isTeacher && (
             <HStack className="gap-4">
               <Pressable onPress={() => onEditItem?.(assignment, 'assignment')}>
-                <Icon as={Edit2} size="sm" className="text-phaseText-secondary" />
+                <Icon as={Pen} size="sm" className="text-phaseText-secondary" />
               </Pressable>
               <Pressable onPress={() => onDeleteItem?.(assignment.id, 'assignment')}>
                 <Icon as={Trash2} size="sm" className="text-phase-danger" />

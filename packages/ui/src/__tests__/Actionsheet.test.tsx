@@ -31,7 +31,7 @@ describe('Actionsheet Component (Robustness)', () => {
 
   it('calls onClose when backdrop/overlay is pressed', async () => {
     const onClose = jest.fn();
-    const { getByTestId } = await render(
+    const { getByLabelText } = await render(
       <Actionsheet isOpen={true} onClose={onClose}>
         <ActionsheetContent>
           <ActionsheetItemText>Item 1</ActionsheetItemText>
@@ -39,8 +39,8 @@ describe('Actionsheet Component (Robustness)', () => {
       </Actionsheet>,
     );
 
-    // The Overlay usually provides the backdrop
-    // We expect the implementation to use a pressable backdrop
+    fireEvent.press(getByLabelText('backdrop'));
+    expect(onClose).toHaveBeenCalled();
   });
 
   it('handles item selection and closing', async () => {

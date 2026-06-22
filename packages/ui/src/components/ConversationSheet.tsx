@@ -118,7 +118,11 @@ function CommentRow({
         <Text className="text-sm text-ink/70 mt-1 leading-relaxed">{comment.content}</Text>
 
         <HStack className="items-center mt-2.5 gap-6">
-          <Pressable onPress={() => onUpvote(comment.id)} className="flex-row items-center">
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => onUpvote(comment.id)}
+            className="flex-row items-center"
+          >
             <Icon
               as={ThumbsUp}
               size="xs"
@@ -135,6 +139,7 @@ function CommentRow({
 
           {canMarkOfficial && onMarkOfficial && (
             <Pressable
+              accessibilityRole="button"
               onPress={() => onMarkOfficial(comment.id, !comment.isOfficial)}
               className="flex-row items-center"
             >
@@ -152,7 +157,11 @@ function CommentRow({
           )}
 
           {(isOwn || canDelete) && (
-            <Pressable onPress={() => onDelete(comment.id)} className="flex-row items-center p-1">
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => onDelete(comment.id)}
+              className="flex-row items-center p-1"
+            >
               <Icon as={Trash2} size="xs" className="text-ink/40" />
             </Pressable>
           )}
@@ -213,6 +222,7 @@ export function ConversationSheet({
             {/* Header */}
             <HStack className="items-center px-5 py-4 border-b border-border">
               <Pressable
+                accessibilityRole="button"
                 onPress={onClose}
                 className="w-10 h-10 items-center justify-center rounded-full bg-ink/5"
                 hitSlop={12}
@@ -266,6 +276,7 @@ export function ConversationSheet({
             <HStack className="items-end p-4 gap-3 border-t border-border bg-phase-surface/80">
               {allowAnonymous && (
                 <Pressable
+                  accessibilityRole="button"
                   onPress={() => setIsAnonymous((v) => !v)}
                   className={`w-11 h-11 rounded-2xl border items-center justify-center shrink-0 ${isAnonymous ? 'bg-phase-interactive border-phase-interactive' : 'bg-phase-surface border-border'}`}
                   hitSlop={8}
@@ -290,7 +301,10 @@ export function ConversationSheet({
               </Input>
 
               <Pressable
-                onPress={handleSend}
+                accessibilityRole="button"
+                onPress={() => {
+                  void handleSend();
+                }}
                 disabled={!draft.trim() || isPosting}
                 className={`w-11 h-11 rounded-2xl items-center justify-center shrink-0 ${!draft.trim() ? 'bg-ink/5' : 'bg-phase-interactive'}`}
               >

@@ -264,6 +264,7 @@ export default function WorkspaceCanvasDemo() {
           <HStack className="flex-wrap gap-2">
             {(['teacher', 'principal', 'founder'] as DemoRole[]).map((candidate) => (
               <Pressable
+                accessibilityRole="button"
                 key={candidate}
                 onPress={() => {
                   setRole(candidate);

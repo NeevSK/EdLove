@@ -9,8 +9,8 @@
     "rn-eval": "./src/index.ts"
   },
   "scripts": {
-    "check-types": "pnpm exec tsc --noEmit",
-    "clean": "rm -rf .turbo node_modules dist"
+    "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --noEmit\" --name \"packages_rn-terrain-cli-check-types\"",
+    "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"packages_rn-terrain-cli-clean\""
   },
   "dependencies": {
     "@rn-terrain/core": "workspace:*",
@@ -22,5 +22,9 @@
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "typescript": "^6.0.3"
+  },
+  "_originalScripts": {
+    "check-types": "pnpm exec tsc --noEmit",
+    "clean": "rm -rf .turbo node_modules dist"
   }
 }

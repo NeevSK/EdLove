@@ -16,7 +16,7 @@ export function useCommentHooks(postId: string | null) {
   const queryClient = useQueryClient();
   const activeBond = useAuthStore((state) => state.activeBond);
 
-  const query = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: postId ? commentKeys.list(postId) : ['community', 'comments', '__none__'],
     queryFn: () => communityAPI.getComments(postId!, 60),
     enabled: !!postId,
@@ -87,9 +87,9 @@ export function useCommentHooks(postId: string | null) {
 
   return useMemo(
     () => ({
-      comments: query.data ?? [],
-      isLoading: query.isLoading,
-      error: query.error,
+      comments: data ?? [],
+      isLoading,
+      error,
       createComment: createMutation.mutateAsync,
       isCreatingComment: createMutation.isPending,
       deleteComment: deleteMutation.mutateAsync,
@@ -99,9 +99,9 @@ export function useCommentHooks(postId: string | null) {
       markOfficialAnswer: markOfficialMutation.mutateAsync,
     }),
     [
-      query.data,
-      query.isLoading,
-      query.error,
+      data,
+      isLoading,
+      error,
       createMutation.mutateAsync,
       createMutation.isPending,
       deleteMutation.mutateAsync,

@@ -1,5 +1,6 @@
 import { BookOpenText, MessagesSquare, School } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
 
 import type React from 'react';
@@ -41,7 +42,7 @@ export default function GuardianCommunicationBridgeScreen() {
       eyebrow="School-home, bridge"
       title="Communication, bridge"
       description="This, room, helps, the, guardian, move from awareness, into, the, right, school, community, and, resource, spaces, without, losing, context."
-      onBack={() => router.back()}
+      onBack={() => safeBack('/workspace')}
     >
       <VStack className="gap-3">
         <BridgeCard

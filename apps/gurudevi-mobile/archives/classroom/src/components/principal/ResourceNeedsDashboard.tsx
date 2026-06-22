@@ -4,7 +4,7 @@ import { useThemedColors } from '@repo/ui/hooks';
 import { Box, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
 
 import { Theme, typography } from '@repo/ui/theme';
-import { AlertCircle, BookOpen, Lightbulb, Package, Users, Wifi } from 'lucide-react-native';
+import { CircleAlert, BookOpen, Lightbulb, Package, Users, Wifi } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,7 +26,7 @@ const ICON_MAP: Record<string, any> = {
   internet: Wifi,
   supplies: Package,
   support: Users,
-  other: AlertCircle,
+  other: CircleAlert,
 };
 export default function ResourceNeedsDashboard({ schoolId }: ResourceNeedsDashboardProps) {
   const { t } = useTranslation();

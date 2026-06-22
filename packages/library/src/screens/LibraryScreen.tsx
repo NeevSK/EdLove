@@ -2,7 +2,6 @@
  * LibraryScreen — Netflix-Style Holistic Digital Library
  */
 
-import { useRouter } from 'expo-router';
 import { identityAPI } from '@repo/core/api';
 import { useTracking } from '@repo/core/hooks';
 import { coreRuntime, FeatureGuard, useStore, useTemporalStore } from '@repo/core/logic';
@@ -35,6 +34,7 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
+import { useRouter } from 'expo-router';
 import {
   FileText,
   Layers,

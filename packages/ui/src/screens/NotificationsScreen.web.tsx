@@ -1,7 +1,7 @@
 import { useNotifications, useStore } from '@repo/core/logic';
 import type { AppNotification } from '@repo/core/types';
 import { formatDistanceToNow } from 'date-fns';
-import { Bell, CheckCircle2, Inbox, Info, Shield, Sparkles } from 'lucide-react-native';
+import { Bell, CircleCheck, Inbox, Info, Shield, Sparkles } from 'lucide-react-native';
 import React, { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WebScreenHeader } from '../components/WebScreenHeader.web';
@@ -51,7 +51,9 @@ const NotificationRow = memo(
     const icon = ICON_MAP[notif.type] ?? ICON_MAP.system;
 
     const handleClick = useCallback(() => {
-      if (!notif.is_read) onRead(notif.id);
+      if (!notif.is_read) {
+        void onRead(notif.id);
+      }
     }, [notif.id, notif.is_read, onRead]);
 
     return (
@@ -174,11 +176,13 @@ export default memo(function NotificationsScreenWeb() {
   // Automatically mark all as read when visiting this screen
   React.useEffect(() => {
     if (!isLoading && unreadCount > 0) {
-      markAllRead();
+      void markAllRead();
     }
   }, [isLoading, unreadCount, markAllRead]);
 
-  const handleMarkAllRead = useCallback(() => markAllRead(), [markAllRead]);
+  const handleMarkAllRead = useCallback(() => {
+    void markAllRead();
+  }, [markAllRead]);
 
   return (
     <div className="sanctuary-screen">
@@ -243,7 +247,7 @@ export default memo(function NotificationsScreenWeb() {
               }}
             >
               <button className="sanctuary-button-ghost" onClick={handleMarkAllRead}>
-                <CheckCircle2 size={14} />
+                <CircleCheck size={14} />
                 {t('notifications.markAllRead')}
               </button>
             </div>

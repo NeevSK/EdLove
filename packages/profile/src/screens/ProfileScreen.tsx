@@ -24,14 +24,14 @@ import {
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import type { TFunction } from 'i18next';
 import {
-  Edit3,
+  CircleQuestionMark,
   Eye,
   Heart,
-  HelpCircle,
   Info,
   LogOut,
   MessageSquare,
   Settings,
+  SquarePen,
   Trash2,
   UserPlus,
 } from 'lucide-react-native';
@@ -137,7 +137,7 @@ const IdentitySection = ({
           {isWanderer ? (
             <UserPlus size={18} color="#4A90E2" />
           ) : (
-            <Edit3 size={18} color="#4A90E2" />
+            <SquarePen size={18} color="#4A90E2" />
           )}
           <Text className="text-phase-text-primary font-bold">
             {isWanderer ? t('auth.createAccount') : t('profile.viewEditProfile')}
@@ -183,7 +183,7 @@ const SupportSection = ({ t, cardWidth }: SupportSectionProps) => (
         {t('profile.account.support')}
       </Heading>
       <ProfileListItem
-        icon={HelpCircle}
+        icon={CircleQuestionMark}
         label={t('profile.faqTitle')}
         onPress={() => hapticLight()}
       />

@@ -25,7 +25,12 @@ export const Overlay = React.forwardRef<View, any>(({ className, isOpen, ...prop
         zIndex: 1000,
       }}
     >
-      <Pressable {...props} ref={ref} className={`flex-1 bg-ink/60 ${className || ''}`} />
+      <Pressable
+        {...props}
+        ref={ref}
+        accessibilityLabel="backdrop"
+        className={`flex-1 bg-ink/60 ${className || ''}`}
+      />
     </Animated.View>
   );
 });

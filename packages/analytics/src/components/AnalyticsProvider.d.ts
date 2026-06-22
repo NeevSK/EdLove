@@ -1,4 +1,5 @@
 import { type ReactNode } from 'react';
+
 interface AnalyticsContextProps {
   track: (event: string, properties?: any) => void;
   identify: (userId: string, properties?: any) => void;

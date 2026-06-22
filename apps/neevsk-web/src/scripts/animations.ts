@@ -1,3 +1,4 @@
+// eslint-disable-next-line import-x/no-named-as-default -- GSAP default export pattern
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 

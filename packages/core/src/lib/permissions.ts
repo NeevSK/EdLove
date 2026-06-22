@@ -70,11 +70,6 @@ export function getCapacityLabel(capacity: Capacity, language: 'en' | 'si' | 'ta
       ta: '\u0B9A\u0BC6\u0BB5\u0BBF\u0BB2\u0BAF\u0BB0\u0BCD',
       en: 'Nurse',
     },
-    staff: {
-      si: 'කාර්ය මණ්ඩලය',
-      ta: 'பணியாளர்கள்',
-      en: 'Staff',
-    },
     member: {
       si: 'සාමාජික',
       ta: 'உறுப்பினர்',

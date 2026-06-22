@@ -17,7 +17,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 
-import { Battery, CheckCircle2 } from 'lucide-react-native';
+import { Battery, CircleCheck } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import Animated, { FadeIn, SlideInUp } from 'react-native-reanimated';
 import { ENERGY_COLORS } from '../constants/wellbeing';
@@ -117,7 +117,7 @@ export default function EnergyForecast({ userId }: EnergyForecastProps) {
         {saved && (
           <Animated.View entering={FadeIn}>
             <HStack className="items-center gap-1 bg-emeraldGreen/10 px-2 py-1 rounded-full border border-emeraldGreen/20">
-              <Icon as={CheckCircle2} size={10} className="text-emeraldGreen" />
+              <Icon as={CircleCheck} size={10} className="text-emeraldGreen" />
               <Text className="text-emeraldGreen text-[9px] font-black uppercase">Logged</Text>
             </HStack>
           </Animated.View>

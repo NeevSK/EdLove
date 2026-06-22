@@ -50,6 +50,9 @@ interface OnboardingUIState {
   schoolId: string | null;
   isProcessing: boolean;
   error: string | null;
+  showDevSandbox: boolean;
+  pricingTier: string;
+  citizenship: string;
 }
 
 type OnboardingAction =
@@ -61,7 +64,10 @@ type OnboardingAction =
   | { type: 'SET_ERROR'; error: string | null }
   | { type: 'NEXT_STEP' }
   | { type: 'PREV_STEP' }
-  | { type: 'RESTORE_PROGRESS'; progress: Partial<OnboardingUIState> };
+  | { type: 'RESTORE_PROGRESS'; progress: Partial<OnboardingUIState> }
+  | { type: 'SHOW_DEV_SANDBOX'; visible: boolean }
+  | { type: 'SET_PRICING'; pricing: string }
+  | { type: 'SET_CITIZENSHIP'; citizenship: string };
 
 function onboardingReducer(state: OnboardingUIState, action: OnboardingAction): OnboardingUIState {
   switch (action.type) {
@@ -83,6 +89,12 @@ function onboardingReducer(state: OnboardingUIState, action: OnboardingAction): 
       return { ...state, currentStep: Math.max(0, state.currentStep - 1), error: null };
     case 'RESTORE_PROGRESS':
       return { ...state, ...action.progress };
+    case 'SHOW_DEV_SANDBOX':
+      return { ...state, showDevSandbox: action.visible };
+    case 'SET_PRICING':
+      return { ...state, pricingTier: action.pricing };
+    case 'SET_CITIZENSHIP':
+      return { ...state, citizenship: action.citizenship };
     default:
       return state;
   }
@@ -274,7 +286,7 @@ const TourStep = memo(
           →
         </button>
       </div>
-      <button type="button" className="ob-btn-link" onClick={onSkip}>
+      <button type="button" className="ob-btn-link" onClick={onSkip} disabled={isCompleting}>
         {t('onboarding.skip')}
       </button>
     </div>
@@ -296,6 +308,138 @@ const Tracker = memo(({ currentStep }: { currentStep: number }) => (
   </div>
 ));
 Tracker.displayName = 'Tracker';
+
+const DevSandboxConsoleInner = memo(
+  ({
+    onClose,
+    onSave,
+  }: {
+    onClose: () => void;
+    onSave: (
+      name: string,
+      role: Capacity,
+      pricing: string,
+      citizenship: string,
+      schoolId: string | null,
+    ) => void;
+  }) => {
+    const [name, setName] = useReducer((_: string, val: string) => val, 'Dev User');
+    const [role, setRole] = useReducer((_: Capacity, val: Capacity) => val, 'teacher');
+    const [pricing, setPricing] = useReducer((_: string, val: string) => val, 'FREE');
+    const [citizenship, setCitizenship] = useReducer((_: string, val: string) => val, 'WANDERER');
+    const [schoolId, setSchoolId] = useReducer((_: string, val: string) => val, '');
+
+    return (
+      <div className="ob-step ob-dev-sandbox">
+        <div className="ob-step-shell">
+          <div className="ob-step-meta">DEVELOPER TOOLKIT</div>
+          <div className="ob-step-icon">⚙️</div>
+        </div>
+        <h2 className="ob-step-title">Sandbox Console</h2>
+        <p className="ob-step-subtitle">
+          Simulate identity roles, pricing tiers, and citizenship levels directly into local/staging
+          environments.
+        </p>
+
+        <div className="ob-form-group">
+          <label htmlFor="dev-display-name" className="ob-label">
+            Display Name
+          </label>
+          <input
+            id="dev-display-name"
+            type="text"
+            className="ob-input"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g. John Doe"
+          />
+        </div>
+
+        <div className="ob-form-group">
+          <span className="ob-label">Capacity / Role</span>
+          <div className="ob-pill-grid">
+            {(['teacher', 'student', 'principal', 'admin'] as Capacity[]).map((r) => (
+              <button
+                type="button"
+                key={r}
+                onClick={() => setRole(r)}
+                className={`ob-pill-btn ${role === r ? 'active' : ''}`}
+              >
+                {r.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="ob-form-group">
+          <span className="ob-label">Pricing Tier</span>
+          <div className="ob-pill-grid">
+            {['FREE', 'PRO', 'INSTITUTIONAL'].map((p) => (
+              <button
+                type="button"
+                key={p}
+                onClick={() => setPricing(p)}
+                className={`ob-pill-btn ${pricing === p ? 'active' : ''}`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="ob-form-group">
+          <span className="ob-label">Citizenship</span>
+          <div className="ob-pill-grid">
+            {['WANDERER', 'SECOND_CLASS', 'FIRST_CLASS'].map((c) => (
+              <button
+                type="button"
+                key={c}
+                onClick={() => setCitizenship(c)}
+                className={`ob-pill-btn ${citizenship === c ? 'active' : ''}`}
+              >
+                {c.replace('_', ' ')}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="ob-form-group">
+          <label htmlFor="dev-school-id" className="ob-label">
+            School ID (Optional)
+          </label>
+          <input
+            id="dev-school-id"
+            type="text"
+            className="ob-input"
+            value={schoolId}
+            onChange={(e) => setSchoolId(e.target.value)}
+            placeholder="e.g. school-uuid"
+          />
+        </div>
+
+        <div className="ob-actions">
+          <button type="button" className="ob-btn-secondary" onClick={onClose}>
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="ob-btn-primary"
+            onClick={() => onSave(name, role, pricing, citizenship, schoolId || null)}
+          >
+            Fast-Track Profile
+          </button>
+        </div>
+      </div>
+    );
+  },
+);
+DevSandboxConsoleInner.displayName = 'DevSandboxConsole';
+
+const DevSandboxConsole =
+  (typeof __DEV__ !== 'undefined' && __DEV__) ||
+  process.env.EXPO_PUBLIC_ENABLE_DEV_SANDBOX === 'true'
+    ? DevSandboxConsoleInner
+    : () => null;
 
 // ──────────────────────────────────────────────────────────
 // MAIN COMPONENT
@@ -320,9 +464,12 @@ export default memo(function OnboardingScreenWeb({
     schoolId: null,
     isProcessing: false,
     error: null,
+    showDevSandbox: false,
+    pricingTier: 'FREE',
+    citizenship: 'WANDERER',
   });
 
-  const { currentStep, name, selectedCapacity, isProcessing, error } = state;
+  const { currentStep, name, selectedCapacity, isProcessing, error, showDevSandbox } = state;
   const isOnline = useStore((s) => s.isOnline);
   const showToast = useStore((s) => s.showToast);
   const isNarrow = width < 900;
@@ -465,6 +612,7 @@ export default memo(function OnboardingScreenWeb({
   );
 
   const handleCompleteOnboarding = useCallback(async () => {
+    if (state.isProcessing) return;
     dispatch({ type: 'SET_PROCESSING', isProcessing: true });
     showToast('Finalizing your sanctuary journey...', 'info', 2000);
     try {
@@ -486,7 +634,57 @@ export default memo(function OnboardingScreenWeb({
       dispatch({ type: 'SET_ERROR', error: guidedMsg });
       showToast(guidedMsg, 'error', 5000);
     }
-  }, [name, selectedCapacity, onComplete, showToast, isAnonymous]);
+  }, [name, selectedCapacity, onComplete, showToast, isAnonymous, state.isProcessing]);
+
+  const handleDevFastTrack = useCallback(
+    async (
+      devName: string,
+      devRole: Capacity,
+      devPricing: string,
+      devCitizenship: string,
+      devSchoolId: string | null,
+    ) => {
+      dispatch({ type: 'SET_PROCESSING', isProcessing: true });
+      showToast('Applying sandbox settings...', 'info', 2000);
+      try {
+        const citizen = resolvedCitizenRef.current ?? (await identityAPI.identifyActiveCitizen());
+        resolvedCitizenRef.current = citizen;
+        const internalId = citizen?.id;
+        if (!internalId) throw new Error('Identity not resolved. Please try again.');
+
+        await onboardingAPI.createInitialBond(devRole, {
+          userId: internalId,
+          displayName: devName,
+          fullName: devName,
+          schoolId: devSchoolId || null,
+        });
+
+        await identityAPI.modifyUserProfile(internalId, {
+          display_name: devName,
+          pricing_tier: devPricing,
+          citizenship: devCitizenship,
+          school_id: devSchoolId || null,
+          profile_completed: true,
+        });
+
+        await onboardingAPI.completeOnboarding(internalId);
+        await AsyncStorage.removeItem('onboarding_progress');
+
+        hapticSuccess();
+        showToast(`Sandbox Profile Ready (${devRole})!`, 'success', 3000);
+        onComplete(devName, devRole, isAnonymous);
+      } catch (err) {
+        console.error('[Onboarding] Sandbox setup failed:', err);
+        hapticError();
+        const msg = err instanceof Error ? err.message : 'Sandbox setup failed.';
+        dispatch({ type: 'SET_ERROR', error: msg });
+        showToast(msg, 'error', 4000);
+      } finally {
+        dispatch({ type: 'SET_PROCESSING', isProcessing: false });
+      }
+    },
+    [onComplete, showToast, isAnonymous],
+  );
 
   const handleNext = useCallback(async () => {
     if (isProcessing) return;
@@ -511,6 +709,62 @@ export default memo(function OnboardingScreenWeb({
       if (!internalId) throw new Error('Identity not resolved. Please try again.');
 
       if (currentStep === 0) {
+        const isDevSandboxEnabled =
+          (typeof __DEV__ !== 'undefined' && __DEV__) ||
+          process.env.EXPO_PUBLIC_ENABLE_DEV_SANDBOX === 'true';
+        if (isDevSandboxEnabled && name.trim().startsWith('dev::')) {
+          const rawInput = name.trim();
+          if (rawInput === 'dev::sandbox' || rawInput === 'dev::menu') {
+            dispatch({ type: 'SET_PROCESSING', isProcessing: false });
+            dispatch({ type: 'SHOW_DEV_SANDBOX', visible: true });
+            return;
+          }
+
+          // Parse inline config
+          const configContent = rawInput.substring(5);
+          const parts = configContent.split(',');
+          const config: Record<string, string> = {};
+          for (const part of parts) {
+            const colonIndex = part.indexOf(':');
+            if (colonIndex !== -1) {
+              const key = part.substring(0, colonIndex).trim().toLowerCase();
+              const val = part.substring(colonIndex + 1).trim();
+              config[key] = val;
+            }
+          }
+
+          const parsedName = config.name || config.display_name || 'Dev User';
+          const parsedRole = (config.role || config.capacity || 'teacher') as Capacity;
+          const parsedPricing = (config.pricing || config.tier || 'FREE').toUpperCase();
+          const parsedCitizenship = (config.citizenship || 'WANDERER').toUpperCase();
+          const parsedSchoolId = config.school || config.school_id || null;
+
+          showToast('Fast-tracking developer setup...', 'info', 2000);
+
+          await onboardingAPI.createInitialBond(parsedRole, {
+            userId: internalId,
+            displayName: parsedName,
+            fullName: parsedName,
+            schoolId: parsedSchoolId,
+          });
+
+          await identityAPI.modifyUserProfile(internalId, {
+            display_name: parsedName,
+            pricing_tier: parsedPricing,
+            citizenship: parsedCitizenship,
+            school_id: parsedSchoolId,
+            profile_completed: true,
+          });
+
+          await onboardingAPI.completeOnboarding(internalId);
+          await AsyncStorage.removeItem('onboarding_progress');
+
+          hapticSuccess();
+          showToast(`Developer Account (${parsedRole}) Setup Success!`, 'success', 3000);
+          onComplete(parsedName, parsedRole, isAnonymous);
+          return;
+        }
+
         const isAnonymousIdentity = !citizen?.email;
         if (isAnonymousIdentity) {
           showToast('Name saved locally. Choose your capacity next.', 'info', 1000);
@@ -555,6 +809,8 @@ export default memo(function OnboardingScreenWeb({
     handleCompleteOnboarding,
     showToast,
     state.schoolId,
+    onComplete,
+    isAnonymous,
   ]);
 
   const handleNextPress = useCallback(() => {
@@ -604,6 +860,16 @@ export default memo(function OnboardingScreenWeb({
   }, [currentStep, tourScreens]);
 
   const renderCurrentStep = useCallback(() => {
+    if (showDevSandbox) {
+      return (
+        <DevSandboxConsole
+          onClose={() => dispatch({ type: 'SHOW_DEV_SANDBOX', visible: false })}
+          onSave={(devName, devRole, devPricing, devCitizenship, devSchoolId) => {
+            void handleDevFastTrack(devName, devRole, devPricing, devCitizenship, devSchoolId);
+          }}
+        />
+      );
+    }
     if (currentStep === 0) {
       return (
         <NameStep t={t} name={name} onNameChange={handleNameChange} onNext={handleNextPress} />
@@ -637,6 +903,8 @@ export default memo(function OnboardingScreenWeb({
     }
     return null;
   }, [
+    showDevSandbox,
+    handleDevFastTrack,
     currentStep,
     t,
     name,
@@ -1165,5 +1433,50 @@ const ONBOARDING_STYLES = `
         margin-top: 8px;
         margin-bottom: 0;
         min-height: 20px;
+    }
+
+    /* Dev Sandbox Console CSS */
+    .ob-dev-sandbox {
+        max-width: 480px;
+        width: 100%;
+        margin: 0 auto;
+    }
+    .ob-form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 16px;
+        text-align: left;
+    }
+    .ob-label {
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--ink, #2A2318);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .ob-pill-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .ob-pill-btn {
+        background: rgba(255, 255, 255, 0.4);
+        border: 1px solid var(--border, rgba(42,35,24,0.1));
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        color: var(--ink-secondary, #7A6E5F);
+        transition: all 0.2s ease;
+    }
+    .ob-pill-btn:hover {
+        background: rgba(255, 255, 255, 0.8);
+    }
+    .ob-pill-btn.active {
+        background: rgba(212, 132, 58, 0.1);
+        border-color: var(--action, #D4843A);
+        color: var(--action, #D4843A);
     }
 `;

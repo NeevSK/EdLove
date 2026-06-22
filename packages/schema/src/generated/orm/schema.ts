@@ -143,6 +143,25 @@ export class SchemaType implements SchemaDef {
           ] as readonly AttributeApplication[],
           default: 'FREE' as FieldDefault,
         },
+        is_thuthimal: {
+          name: 'is_thuthimal',
+          type: 'Boolean',
+          optional: true,
+          attributes: [
+            { name: '@default', args: [{ name: 'value', value: ExpressionUtils.literal(false) }] },
+          ] as readonly AttributeApplication[],
+          default: false as FieldDefault,
+        },
+        thuthimal_gifter: {
+          name: 'thuthimal_gifter',
+          type: 'String',
+          optional: true,
+        },
+        thuthimal_gifted_at: {
+          name: 'thuthimal_gifted_at',
+          type: 'DateTime',
+          optional: true,
+        },
         experience_years: {
           name: 'experience_years',
           type: 'Int',

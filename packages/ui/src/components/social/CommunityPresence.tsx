@@ -28,6 +28,23 @@ export interface CommunityPresenceProps {
   perspective: 'student' | 'teacher' | 'principal';
 }
 
+const getVibeClass = (vibe: string) => {
+  switch (vibe.toLowerCase()) {
+    case 'active':
+      return 'text-phase-interactive';
+    case 'focused':
+      return 'text-phase-interactive';
+    case 'reflecting':
+      return 'text-phase-interactive';
+    case 'teaching':
+      return 'text-ink';
+    case 'planning':
+      return 'text-phase-interactive';
+    default:
+      return 'text-ink/60';
+  }
+};
+
 export default function CommunityPresence({
   compact = false,
   hidePadding = false,
@@ -61,26 +78,9 @@ export default function CommunityPresence({
     opacity: pulseOpacity.value,
   }));
 
-  const getVibeClass = (vibe: string) => {
-    switch (vibe.toLowerCase()) {
-      case 'active':
-        return 'text-phase-interactive';
-      case 'focused':
-        return 'text-phase-interactive';
-      case 'reflecting':
-        return 'text-phase-interactive';
-      case 'teaching':
-        return 'text-ink';
-      case 'planning':
-        return 'text-phase-interactive';
-      default:
-        return 'text-ink/60';
-    }
-  };
-
   const vibeClass = useMemo(
     () => (isOffline ? 'text-ink/40' : getVibeClass(dominantVibe)),
-    [isOffline, dominantVibe, getVibeClass],
+    [isOffline, dominantVibe],
   );
 
   const roleLabel = useMemo(() => {

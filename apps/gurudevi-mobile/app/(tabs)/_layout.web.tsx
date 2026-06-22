@@ -293,6 +293,7 @@ export default function WebTabsLayout() {
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="Close breathing reset"
+                accessibilityHint="Closes the breathing reset dialog"
                 onPress={() => setBreathingOpen(false)}
                 style={{
                   width: 36,
@@ -345,6 +346,27 @@ function WebNavItemButton({
   label,
   onNavigate,
 }: WebNavItemButtonProps) {
+  console.log('[WebNavItemButton Debug]', label, {
+    type: typeof Icon,
+    isObject: Icon && typeof Icon === 'object',
+    keys: Icon && typeof Icon === 'object' ? Object.keys(Icon) : [],
+    hasDefault: Icon && typeof Icon === 'object' && 'default' in Icon,
+    hasRender: Icon && typeof Icon === 'object' && 'render' in Icon,
+    dollarType: Icon && typeof Icon === 'object' && '$$typeof' in Icon ? String((Icon as any).$$typeof) : 'none',
+  });
+
+  const resolveIcon = (iconVal: any): any => {
+    if (!iconVal) return null;
+    if (typeof iconVal === 'function') return iconVal;
+    if (typeof iconVal === 'object') {
+      if ('$$typeof' in iconVal) return iconVal;
+      if ('default' in iconVal) return resolveIcon(iconVal.default);
+    }
+    return iconVal;
+  };
+
+  const IconComponent = resolveIcon(Icon);
+
   return (
     <Pressable
       accessibilityRole="button"
@@ -364,7 +386,7 @@ function WebNavItemButton({
       }}
     >
       <Box style={{ position: 'relative' }}>
-        <Icon size={20} color={active ? '#F8F5EA' : 'rgba(248,245,234,0.7)'} />
+        {IconComponent && <IconComponent size={20} color={active ? '#F8F5EA' : 'rgba(248,245,234,0.7)'} />}
         {badge ? (
           <Box
             style={{

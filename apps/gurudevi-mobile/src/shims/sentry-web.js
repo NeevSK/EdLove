@@ -3,8 +3,8 @@
  *
  * @sentry/react-native is native-only. On web Metro redirects every import of
  * '@sentry/react-native' to this file (see metro.config.js resolveRequest).
- * All functions are no-ops so the rest of the codebase (sentry.ts, App.tsx)
- * continues to compile and run unchanged on web.
+ * All functions are no-ops so the rest of the codebase continues to compile
+ * and run on web without native Sentry bindings.
  */
 
 function noop() {}

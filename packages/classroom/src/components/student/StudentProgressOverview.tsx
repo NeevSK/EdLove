@@ -1,5 +1,5 @@
 import type { Assignment } from '@repo/core/logic';
-import { CheckCircle2, Sparkles, Target } from '@repo/ui/icons';
+import { CircleCheck, Sparkles, Target } from '@repo/ui/icons';
 import { Box, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { useMemo } from 'react';
 
@@ -58,7 +58,7 @@ export function StudentProgressOverview({
       <HStack className="gap-4">
         <Box className="flex-1 rounded-[32px] border border-sanctuary-border bg-sanctuary-surface p-5">
           <HStack className="items-center gap-2">
-            <Icon as={CheckCircle2} size="xs" className="text-sanctuary-success" />
+            <Icon as={CircleCheck} size="xs" className="text-sanctuary-success" />
             <Text className="text-sanctuary-text-tertiary text-[10px] font-black uppercase tracking-widest">
               Assignments
             </Text>

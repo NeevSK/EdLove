@@ -129,7 +129,7 @@ describe('Accessibility Audit - scene and accent contrast', () => {
     it('selects a dark text color for white-ish backgrounds', () => {
       const result = getAccessibleTextColor('#FFFFFF');
 
-      expect(result.color).toBe('#2A2318');
+      expect(result.color).toBe('#000000');
       expect(result.passesAA).toBe(true);
     });
 

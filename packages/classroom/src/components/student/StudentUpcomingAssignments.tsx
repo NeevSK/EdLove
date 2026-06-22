@@ -1,4 +1,4 @@
-import { CheckCircle2, Clock } from '@repo/ui/icons';
+import { CircleCheck, Clock } from '@repo/ui/icons';
 import { Box, Button, ButtonText, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 
 interface Assignment {
@@ -91,7 +91,7 @@ export const StudentUpcomingAssignments = ({
 
             {a.submitted && (
               <HStack className="items-center gap-2 bg-sanctuary-success/10 px-3 py-1.5 rounded-full">
-                <Icon as={CheckCircle2} size="xs" className="text-sanctuary-success" />
+                <Icon as={CircleCheck} size="xs" className="text-sanctuary-success" />
                 <Text className="text-[10px] font-black text-sanctuary-success uppercase tracking-widest">
                   Done
                 </Text>

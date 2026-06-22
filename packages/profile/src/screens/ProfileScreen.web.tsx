@@ -5,11 +5,11 @@ import { QRCodeGenerator } from '@repo/scanner-kit';
 import CitizenGate from '@repo/ui/components/CitizenGate';
 import {
   Briefcase,
-  CheckCircle2,
-  Edit3,
+  CircleCheck,
   FileText,
   Globe,
   GraduationCap,
+  SquarePen,
 } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -341,7 +341,7 @@ export default function ProfileScreenWeb({
                         fontWeight: 600,
                       }}
                     >
-                      <CheckCircle2 size={18} />
+                      <CircleCheck size={18} />
                       {t('profile.completion.done')}
                     </div>
                   ) : (
@@ -372,7 +372,7 @@ export default function ProfileScreenWeb({
                       }}
                       onClick={openInlineEdit}
                     >
-                      <Edit3 size={16} />
+                      <SquarePen size={16} />
                       {t('profile.viewEditProfile')}
                     </button>
                     <button
@@ -989,3 +989,5 @@ export default function ProfileScreenWeb({
     </div>
   );
 }
+
+export { ProfileScreenWeb as ProfileScreen };

@@ -1,6 +1,6 @@
-import { useRouter } from 'expo-router';
 import { useFeatureRegistry } from '@repo/core/hooks/useFeatureRegistry';
 import type { ClassroomWorkspaceSurface, PrincipalInsight } from '@repo/core/types/Workspace';
+import { useRouter } from 'expo-router';
 import { PrincipalOnboardingView } from '../components';
 import { ADMIN_REGISTRY } from '../constants/adminRegistry';
 import GradeHeadDashboard from '../screens/GradeHeadDashboard';

@@ -19,7 +19,6 @@
         "guardian",
         "librarian",
         "nurse",
-        "staff",
         "member"
       ]
     },
@@ -46,12 +45,19 @@
       "type": "object",
       "properties": {
         "id": { "type": "string", "format": "uuid" },
-        "email": { "type": "string", "format": "email" },
+        "email": {
+          "anyOf": [
+            { "type": "null" },
+            { "type": "string", "maxLength": 0 },
+            { "type": "string", "format": "email" }
+          ]
+        },
         "name": { "type": "string" },
         "display_name": { "type": "string" },
         "first_name": { "type": "string" },
         "last_name": { "type": "string" },
         "identity_state": { "type": "string" },
+        "onboarding_completed": { "type": "boolean" },
         "activeBond": {
           "type": ["object", "null"],
           "$ref": "#/definitions/Bond"
@@ -61,7 +67,7 @@
           "items": { "$ref": "#/definitions/Bond" }
         }
       },
-      "required": ["id", "email", "availableBonds"]
+      "required": ["id", "availableBonds"]
     },
     "FacetedProfile": {
       "type": "object",
@@ -73,7 +79,13 @@
         "first_name": { "type": "string" },
         "last_name": { "type": "string" },
         "identity_state": { "type": "string" },
-        "email": { "type": "string", "format": "email" },
+        "email": {
+          "anyOf": [
+            { "type": "null" },
+            { "type": "string", "maxLength": 0 },
+            { "type": "string", "format": "email" }
+          ]
+        },
         "tenant_kind": { "type": "string" },
         "onboarding_completed": { "type": "boolean" }
       }

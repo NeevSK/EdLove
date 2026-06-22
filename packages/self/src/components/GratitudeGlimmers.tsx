@@ -4,10 +4,8 @@
  * Standardized to Zero-Legacy: purged sx props and fixed syntax corruption in event handlers.
  */
 
-import { useRouter } from 'expo-router';
 import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
-
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import {
@@ -24,6 +22,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import { useRouter } from 'expo-router';
 
 import { ChevronLeft, Heart, MessageCircle, Plus, Save, Sparkles, User } from 'lucide-react-native';
 import { useState } from 'react';
@@ -122,9 +121,7 @@ export default function GratitudeGlimmers({
   }
 
   if (!activeUserId) {
-    return (
-      <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />
-    );
+    return <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />;
   }
 
   return (

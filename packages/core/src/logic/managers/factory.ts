@@ -6,8 +6,10 @@
  */
 
 export * from './auth.factory';
+export * from './authz.factory';
 export * from './community.factory';
 export * from './educational.factory';
+export * from './featureFlag.factory';
 export * from './growth.factory';
 export * from './identity.factory';
 export * from './media.factory';

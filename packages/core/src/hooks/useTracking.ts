@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { identityAPI } from '../api/identity';
 import { trackingAPI } from '../api/tracking';
 import { trackEvent } from '../lib/monitoring/posthog';
@@ -32,48 +32,57 @@ export function useTracking() {
   /**
    * Marks a feature as discovered.
    */
-  const discoverFeature = async (featureName: string) => {
-    if (!userId) return;
+  const discoverFeature = useCallback(
+    async (featureName: string) => {
+      if (!userId) return;
 
-    // Optimistic check to avoid unnecessary API calls
-    if (exploredFeatures.includes(featureName)) return;
+      // Optimistic check to avoid unnecessary API calls
+      if (exploredFeatures.includes(featureName)) return;
 
-    try {
-      await trackingAPI.logFeatureUsage(userId, featureName);
-      // PostHog Tracking
-      trackEvent('feature_discovered', {
-        feature_name: featureName,
-        user_id: userId,
-      });
+      try {
+        await trackingAPI.logFeatureUsage(userId, featureName);
+        // PostHog Tracking
+        trackEvent('feature_discovered', {
+          feature_name: featureName,
+          user_id: userId,
+        });
 
-      // Invalidate to refresh the explored list
-      await queryClient.invalidateQueries({
-        queryKey: ['explored_features', userId],
-      });
-    } catch (error) {
-      console.error(`Failed to track discovery for ${featureName}:`, error);
-    }
-  };
+        // Invalidate to refresh the explored list
+        await queryClient.invalidateQueries({
+          queryKey: ['explored_features', userId],
+        });
+      } catch (error) {
+        console.error(`Failed to track discovery for ${featureName}:`, error);
+      }
+    },
+    [userId, exploredFeatures, queryClient],
+  );
 
   /**
    * Checks if a feature has been discovered.
    */
-  const isDiscovered = (featureName: string) => {
-    return exploredFeatures.includes(featureName);
-  };
+  const isDiscovered = useCallback(
+    (featureName: string) => {
+      return exploredFeatures.includes(featureName);
+    },
+    [exploredFeatures],
+  );
 
   /**
    * Tracks a manual snapshot event.
    */
-  const trackSnapshot = async (label: string, viewDate: string) => {
-    if (!userId) return;
+  const trackSnapshot = useCallback(
+    async (label: string, viewDate: string) => {
+      if (!userId) return;
 
-    trackEvent('manual_snapshot_captured', {
-      label,
-      snapshot_date: viewDate,
-      user_id: userId,
-    });
-  };
+      trackEvent('manual_snapshot_captured', {
+        label,
+        snapshot_date: viewDate,
+        user_id: userId,
+      });
+    },
+    [userId],
+  );
 
   return useMemo(
     () => ({

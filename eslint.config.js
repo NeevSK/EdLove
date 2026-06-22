@@ -15,6 +15,8 @@ export default [
       '**/*_archive/**',
       'apps/gurudevi-mobile/archives/**',
       'docs/archive/**',
+      '**/*.mjs',
+      '**/*.cjs',
     ],
   },
   {

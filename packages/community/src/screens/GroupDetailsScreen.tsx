@@ -16,8 +16,8 @@ import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useLotusToast } from '@repo/ui/hooks';
 import {
   ChevronLeft,
+  EllipsisVertical,
   MessageSquare,
-  MoreVertical,
   QrCode,
   Settings,
   UserPlus,
@@ -34,9 +34,10 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
+import { safeBack } from '@repo/ui/utils/navigation';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { router, useLocalSearchParams } from 'expo-router';
 import { FadeInDown } from 'react-native-reanimated';
 import { communityAPI } from '../api/community';
 import { CommentSheet } from '../components/CommentSheet';
@@ -102,7 +103,7 @@ export default function GroupDetailsScreen() {
     void fetchPosts(groupId);
   }, [groupId, user?.id, fetchPosts]);
 
-  const handleBack = React.useCallback(() => router.back(), []);
+  const handleBack = React.useCallback(() => safeBack('/community'), []);
   const handleShowAdmin = React.useCallback(() => setShowAdmin(true), []);
   const handleHideAdmin = React.useCallback(() => setShowAdmin(false), []);
   const handleShowQR = React.useCallback(() => setShowQRModal(true), []);
@@ -361,7 +362,7 @@ export default function GroupDetailsScreen() {
               <Icon as={QrCode} size="sm" className="text-ink/60" />
             </Pressable>
             <Pressable className="w-10 h-10 rounded-xl bg-phase-surface border border-border items-center justify-center">
-              <Icon as={MoreVertical} size="sm" className="text-ink/60" />
+              <Icon as={EllipsisVertical} size="sm" className="text-ink/60" />
             </Pressable>
           </HStack>
         </HStack>

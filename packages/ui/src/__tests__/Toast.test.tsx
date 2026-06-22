@@ -1,47 +1,60 @@
 import { act, fireEvent, render } from '@testing-library/react-native';
-import { Pressable, Text } from '../primitives';
+import { Pressable, Text } from 'react-native';
 import { ToastProvider, useToast } from '../providers/ToastProvider';
 
-const TestComponent = ({ message = 'Hello', type = 'info' as any }) => {
+const TestComponent = ({ message = 'Hello', type = 'info' as any, duration = 3000 }) => {
   const { showToast } = useToast();
   return (
-    <Pressable onPress={() => showToast({ message, type, duration: 100 })}>
+    <Pressable accessibilityRole="button" onPress={() => showToast({ message, type, duration })}>
       <Text>Trigger Toast</Text>
     </Pressable>
   );
 };
 
 describe('Toast System Logic (2026 Standard)', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('triggers and shows a toast message via hook', async () => {
     const { getByText, queryByText } = await render(
       <ToastProvider>
-        <TestComponent message="Test Success" />
+        <TestComponent message="Test Success" duration={5000} />
       </ToastProvider>,
     );
 
-    expect(queryByText('Test Success')).toBeNull();
+    await fireEvent.press(getByText('Trigger Toast'));
 
-    fireEvent.press(getByText('Trigger Toast'));
+    await act(async () => {
+      jest.advanceTimersByTime(0);
+    });
 
-    expect(getByText('Test Success')).toBeTruthy();
+    expect(getByText(/Test Success/)).toBeTruthy();
   });
 
   it('automatically removes toast after duration', async () => {
-    jest.useFakeTimers();
     const { getByText, queryByText } = await render(
       <ToastProvider>
-        <TestComponent message="Timed Toast" />
+        <TestComponent message="Timed Toast" duration={100} />
       </ToastProvider>,
     );
 
-    fireEvent.press(getByText('Trigger Toast'));
-    expect(getByText('Timed Toast')).toBeTruthy();
+    await fireEvent.press(getByText('Trigger Toast'));
 
-    act(() => {
+    await act(async () => {
+      jest.advanceTimersByTime(0);
+    });
+
+    expect(getByText(/Timed Toast/)).toBeTruthy();
+
+    await act(async () => {
       jest.advanceTimersByTime(200);
     });
 
-    expect(queryByText('Timed Toast')).toBeNull();
-    jest.useRealTimers();
+    expect(queryByText(/Timed Toast/)).toBeNull();
   });
 });

@@ -1,1 +1,4 @@
-export { FullProfileScreen as default } from '@repo/profile';
+import { FullProfileScreen, FullProfileScreenWeb } from '@repo/profile';
+import { Platform } from 'react-native';
+
+export default Platform.OS === 'web' ? FullProfileScreenWeb : FullProfileScreen;

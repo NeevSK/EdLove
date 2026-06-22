@@ -3,7 +3,7 @@
  *
  * posthog-react-native is native-only. On web Metro redirects every import of
  * 'posthog-react-native' to this file (see metro.config.js resolveRequest).
- * All methods are no-ops; PostHogProvider passes children straight through.
+ * All methods are no-ops; the provider simply passes children through.
  */
 
 const _React = require('react');
@@ -45,7 +45,7 @@ class PostHog {
   }
 }
 
-// Pass-through provider so <PostHogProvider> works in App.tsx unchanged
+// Pass-through provider so <PostHogProvider> works on web without native code.
 function PostHogProvider({ children }) {
   return children;
 }

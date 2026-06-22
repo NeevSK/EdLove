@@ -26,7 +26,7 @@ export {
 } from '../lib/pendingGateAction';
 export { StorageKeys, storage } from '../lib/storage';
 export { useMutationQueue } from '../lib/sync/useMutationQueue';
-export { useAuthorityLifecycle } from '../native/useAuthorityLifecycle';
+export { useAuthLifecycle } from '../native/useAuthLifecycle';
 export { useAuth } from '../providers/AuthProvider';
 export { GlobalProvider } from '../providers/GlobalProvider';
 export { useAuthStore } from '../store/useAuthStore';
@@ -47,13 +47,16 @@ export * from './experience/ActivityPulseContext';
 export * from './forms';
 export * from './grading';
 export { default as i18n } from './i18n/config';
+export { cryptoManager } from './managers/CryptoManager';
 export { DeepLinkType } from './managers/DeepLinkManager';
 export {
   auth,
+  authz,
   community,
   deepLink,
   deviceIdentity,
   educational,
+  featureFlags,
   globalConfig,
   growth,
   identity,
@@ -66,7 +69,18 @@ export * from './permissions/feature-engine';
 export * from './permissions/guards/FeatureGuard';
 export * from './permissions/guards/RouteGuard';
 export * from './permissions/hooks/usePermissions';
+export * from './permissions/hooks/useSanctuaryFeature';
+export * from './permissions/sanctuaryFeature';
+export type { IAnalyticsPort } from './ports/analytics.port';
+export type {
+  AuthorizationDecision,
+  AuthorizationRequest,
+  IAuthorizationPort,
+} from './ports/authz.port';
+export type { EntitlementSnapshot, IEntitlementPort } from './ports/entitlement.port';
 export type { IEventBusPort } from './ports/eventBus.port';
+export type { IFeatureFlagPort } from './ports/featureFlag.port';
+export type { FeatureRolloutSnapshot, IFeatureRolloutPort } from './ports/featureRollout.port';
 export * from './runtimeRegistry';
 export * from './schemas';
 export * from './store-slices';

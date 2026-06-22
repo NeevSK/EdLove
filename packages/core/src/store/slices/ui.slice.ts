@@ -27,7 +27,7 @@ export const createUISlice: StateCreator<UISlice, [], [], UISlice> = (set) => ({
   isSidebarCollapsed: false,
   setSidebarCollapsed: (collapsed) => set({ isSidebarCollapsed: collapsed }),
   theme: 'system',
-  setTheme: (theme) => set({ theme }),
+  setTheme: (theme) => set({ theme, themeMode: theme }),
   themeMode: 'system',
   dismissedSampleIds: [],
   deskItems: [],

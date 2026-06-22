@@ -14,7 +14,24 @@
     "esModuleInterop": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@repo/admin/*": ["../../packages/admin/src/*"]
+      "@repo/admin/*": ["../../packages/admin/src/*"],
+      "@repo/ai/*": ["../../packages/ai/src/*"],
+      "@repo/analytics/*": ["../../packages/analytics/src/*"],
+      "@repo/classroom/*": ["../../packages/classroom/src/*"],
+      "@repo/community/*": ["../../packages/community/src/*"],
+      "@repo/core/*": ["../../packages/core/src/*"],
+      "@powersync/op-sqlite": ["../../packages/core/src/adapters/powersync/opsqlite.shim.ts"],
+      "@powersync/web": ["../../packages/core/src/adapters/powersync/wasqlite.shim.ts"],
+      "@powersync/react-native": ["../../packages/core/src/adapters/powersync/powersync-shim.ts"],
+      "@powersync/react": ["../../packages/core/src/adapters/powersync/powersync-react-shim.ts"],
+      "@repo/form-builder/*": ["../../packages/form-builder/src/*"],
+      "@repo/library/*": ["../../packages/library/src/*"],
+      "@repo/people/*": ["../../packages/people/src/*"],
+      "@repo/profile/*": ["../../packages/profile/src/*"],
+      "@repo/scanner-kit/*": ["../../packages/scanner-kit/src/*"],
+      "@repo/self/*": ["../../packages/self/src/*"],
+      "@repo/ui/*": ["../../packages/ui/src/*"],
+      "@repo/workforce/*": ["../../packages/workforce/src/*"]
     },
     "types": [
       "react",
@@ -25,7 +42,7 @@
       "@repo/types-shim"
     ]
   },
-  "include": ["src/**/*", "app/**/*", "App.tsx", "gluestack-ui.config.ts", "nativewind-env.d.ts"],
-  "exclude": ["node_modules", ".expo", "dist"],
+  "include": ["src/**/*", "app/**/*", "gluestack-ui.config.ts", "nativewind-env.d.ts"],
+  "exclude": ["node_modules", ".expo", "dist", "src/navigation", "App.tsx"],
   "extends": "../../packages/typescript-config/base.json"
 }

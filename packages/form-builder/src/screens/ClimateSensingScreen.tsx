@@ -2,8 +2,8 @@ import { FormManager } from '@intuitui-labs/form-builder-engine/core';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { Box, Center, ScrollView, Text, View } from '@repo/ui/primitives';
 
-import { CheckCircle2, Share2 } from 'lucide-react-native';
-import { useMemo, useState } from 'react';
+import { CircleCheck, Share2 } from 'lucide-react-native';
+import { useCallback, useMemo, useState } from 'react';
 import {
   type ClimateSensingData,
   createClimateSensingSchema,
@@ -23,16 +23,19 @@ export const ClimateSensingScreen = ({
 }: ClimateSensingScreenProps) => {
   const [isFinished, setIsFinished] = useState(false);
 
-  const handleSubmit = async (values: ClimateSensingData) => {
-    console.log(`Submitting Pulse for School ${schoolId}:`, values);
+  const handleSubmit = useCallback(
+    async (values: ClimateSensingData) => {
+      console.log(`Submitting Pulse for School ${schoolId}:`, values);
 
-    // Simulating the Persistence Adapter call
-    // In reality, this would be a Supabase mutation to EduSchoolPulseLog
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Simulating the Persistence Adapter call
+      // In reality, this would be a Supabase mutation to EduSchoolPulseLog
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    setIsFinished(true);
-    onCompleted?.();
-  };
+      setIsFinished(true);
+      onCompleted?.();
+    },
+    [schoolId, onCompleted],
+  );
 
   const manager = useMemo(
     () => new FormManager(createClimateSensingSchema(handleSubmit)),
@@ -44,7 +47,7 @@ export const ClimateSensingScreen = ({
       <Center className="flex-1 p-8 bg-phase-canvas">
         <Box className="w-full max-w-md items-center text-center">
           <Box className="bg-phase-success/10 p-6 rounded-full mb-6">
-            <CheckCircle2 size={64} className="text-phase-success" />
+            <CircleCheck size={64} className="text-phase-success" />
           </Box>
           <Text className="text-3xl font-bold text-phaseText-primary mb-2 text-center">
             Resonance Registered

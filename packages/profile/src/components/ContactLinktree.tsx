@@ -12,12 +12,12 @@ import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { hapticHeavy, hapticLight } from '@repo/ui/utils/haptics';
 import * as Clipboard from 'expo-clipboard';
 import {
-  Edit2,
   ExternalLink,
   Globe,
   Link,
   Mail,
   MessagesSquare,
+  Pen,
   Plus,
   Trash2,
 } from 'lucide-react-native';
@@ -262,7 +262,7 @@ export function ContactLinktree({
               className={`${isEditing ? 'bg-phase-interactive' : 'border-phase-surface'} rounded-xl px-4`}
             >
               <HStack space="xs" className="items-center">
-                <Edit2 size={14} color={isEditing ? 'white' : '#4A90E2'} />
+                <Pen size={14} color={isEditing ? 'white' : '#4A90E2'} />
                 <ButtonText
                   className={`${isEditing ? 'text-white' : 'text-phase-text-primary'} text-xs`}
                 >
@@ -338,7 +338,7 @@ export function ContactLinktree({
                         onPress={() => handleEditLink(link)}
                         className="p-2 rounded-lg bg-phase-surface"
                       >
-                        <Edit2 size={18} color="#4A90E2" />
+                        <Pen size={18} color="#4A90E2" />
                       </Pressable>
                       <Pressable
                         onPress={() => handleDeleteLink(link.id)}

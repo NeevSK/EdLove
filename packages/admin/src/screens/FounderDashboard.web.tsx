@@ -40,9 +40,8 @@ import {
   Zap,
 } from '@repo/ui/icons';
 import { Icon as SanctuaryIcon } from '@repo/ui/primitives';
-
-import { useState } from 'react';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { GlobalCreateModal } from '../components';
 
 type DashboardTab = 'pulse' | 'institutions' | 'staff' | 'sentinel';
@@ -1126,9 +1125,7 @@ export default function FounderDashboardWeb() {
                   <SchoolCard
                     key={school.id}
                     school={school}
-                    onPress={() =>
-                      router.push('/workspace')
-                    }
+                    onPress={() => router.push('/workspace')}
                   />
                 ))}
               </div>

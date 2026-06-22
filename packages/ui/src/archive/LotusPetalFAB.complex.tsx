@@ -12,7 +12,7 @@
  */
 
 import * as Haptics from 'expo-haptics';
-import { Edit, Flower2, MessageCircle, Plus, Upload } from 'lucide-react-native';
+import { SquarePen, Flower2, MessageCircle, Plus, Upload } from 'lucide-react-native';
 import type React from 'react';
 import { type FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, Image, PanResponder, StyleSheet } from 'react-native';
@@ -94,8 +94,8 @@ const fabConfig: Record<TabType, { IconComponent: IconComponentType; label: stri
     label: 'Upload resource',
   },
   profile: {
-    IconComponent: Edit,
-    label: 'Edit profile',
+    IconComponent: SquarePen,
+    label: 'SquarePen profile',
   },
 };
 

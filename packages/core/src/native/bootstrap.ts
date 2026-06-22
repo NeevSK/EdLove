@@ -8,6 +8,7 @@ import { NativeCryptoAdapter } from '../adapters/native/NativeCryptoAdapter';
 import { NativeNetworkAdapter } from '../adapters/native/NativeNetworkAdapter';
 import { SentryTelemetryAdapter } from '../adapters/native/SentryTelemetryAdapter';
 import { SimulatorDeviceIdentityAdapter } from '../adapters/native/SimulatorDeviceIdentityAdapter';
+import { WebCryptoAdapter } from '../adapters/WebCryptoAdapter';
 import { WebNetworkAdapter } from '../adapters/WebNetworkAdapter';
 import { cryptoManager } from '../logic/managers/CryptoManager';
 import { deviceIdentity } from '../logic/managers/DeviceIdentityManager';
@@ -18,7 +19,7 @@ import { telemetry } from '../logic/managers/TelemetryManager';
 
 import { coreRuntime } from '../logic/runtimeRegistry';
 import { Runtime } from './runtime';
-import { nativeRuntimeEnvironment } from './runtimeAdapter';
+import { nativeRuntimeEnvironment, webRuntimeEnvironment } from './runtimeAdapter';
 
 /**
  * Sovereign Bootstrap
@@ -36,6 +37,7 @@ export async function bootstrapPlatform() {
     networkManager.registerAdapter(new NativeNetworkAdapter());
     deviceIdentity.registerAdapter(new SimulatorDeviceIdentityAdapter());
   } else {
+    cryptoManager.registerAdapter(new WebCryptoAdapter());
     networkManager.registerAdapter(new WebNetworkAdapter());
   }
 
@@ -64,5 +66,5 @@ export async function bootstrapPlatform() {
 
   // 3. Register Core Runtime with all providers (asset, haptics, linking, etc.)
   //     This must happen after adapter initialization but before app mount
-  coreRuntime.register(nativeRuntimeEnvironment);
+  coreRuntime.register(isWeb ? webRuntimeEnvironment : nativeRuntimeEnvironment);
 }

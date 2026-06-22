@@ -1,4 +1,4 @@
-import { Bell, BookOpen, Check, CheckCircle, Info, Users, X } from 'lucide-react-native';
+import { Bell, BookOpen, Check, CircleCheck, Info, Users, X } from 'lucide-react-native';
 import { Dimensions } from 'react-native';
 import Animated, { Easing, SlideInLeft, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -34,7 +34,7 @@ function notificationIcon(type: string) {
     case 'new_submission':
       return BookOpen;
     case 'submission_graded':
-      return CheckCircle;
+      return CircleCheck;
     case 'new_post':
       return Users;
     case 'group_joined':

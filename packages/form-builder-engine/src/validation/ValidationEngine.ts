@@ -1,3 +1,5 @@
+import type { FormSchema } from '../schema/FormSchema';
+
 export interface ValidationResult {
   isValid: boolean;
   error?: string;
@@ -63,4 +65,49 @@ export const ValidationEngine = {
 
     return { isValid: true };
   },
+
+  validateForm(
+    payload: Record<string, unknown>,
+    schema: FormSchema
+  ): { isValid: boolean; errors: Record<string, string> } {
+    const errors: Record<string, string> = {};
+
+    for (const page of schema.pages) {
+      for (const field of page.fields) {
+        // Skip purely visual layout elements
+        if (field.type === 'heading' || field.type === 'divider') {
+          continue;
+        }
+
+        const value = payload[field.name];
+        
+        // Auto-select helper validator based on field type
+        let validatorName: 'email' | 'nonEmpty' | 'number' | undefined = undefined;
+        if (field.type === 'email') {
+          validatorName = 'email';
+        } else if (field.type === 'number') {
+          validatorName = 'number';
+        } else if (field.required) {
+          validatorName = 'nonEmpty';
+        }
+
+        const result = this.validateField(
+          value,
+          field.required,
+          validatorName,
+          field.label || field.name
+        );
+
+        if (!result.isValid && result.error) {
+          errors[field.name] = result.error;
+        }
+      }
+    }
+
+    return {
+      isValid: Object.keys(errors).length === 0,
+      errors,
+    };
+  },
 };
+

@@ -2,7 +2,7 @@ import { type InviteCodeData, validateInviteCode } from '@repo/core/logic';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useSanctuaryToast } from '@repo/ui/hooks';
-import { ArrowRight, HelpCircle, Shield } from '@repo/ui/icons';
+import { ArrowRight, CircleQuestionMark, Shield } from '@repo/ui/icons';
 import {
   Box,
   Heading,
@@ -150,7 +150,7 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
             <Box className="p-5 bg-phase-surface border border-border rounded-2xl mt-2">
               <HStack className="gap-4 items-start">
                 <Box className="w-8 h-8 rounded-full bg-phase-interactive/10 items-center justify-center">
-                  <Icon as={HelpCircle} className="text-phase-interactive" size="xs" />
+                  <Icon as={CircleQuestionMark} className="text-phase-interactive" size="xs" />
                 </Box>
                 <VStack className="gap-1 flex-1">
                   <Text className="text-ink text-xs font-black">

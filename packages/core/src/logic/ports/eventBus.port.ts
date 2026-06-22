@@ -31,6 +31,6 @@ export interface IEventBusPort {
  */
 export const UserCreatedEventSchema = z.object({
   id: z.uuid(),
-  email: z.email(),
+  email: z.string().email().or(z.literal('')).nullable().optional(),
   full_name: z.string(),
 });

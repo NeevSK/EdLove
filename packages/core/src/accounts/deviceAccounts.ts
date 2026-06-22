@@ -222,8 +222,10 @@ export const deviceAccounts = {
     if (isActiveAccount) {
       try {
         const installId = await deviceTrustAPI.getInstallId();
-        await deviceTrustAPI.logAuditEvent('ACCOUNT_REMOVED_FROM_DEVICE', { installId }, accountId);
-        await deviceTrustAPI.revokeMyInstallSecuritySessions(installId, 'removed_from_device');
+        await Promise.all([
+          deviceTrustAPI.logAuditEvent('ACCOUNT_REMOVED_FROM_DEVICE', { installId }, accountId),
+          deviceTrustAPI.revokeMyInstallSecuritySessions(installId, 'removed_from_device'),
+        ]);
       } catch (error) {
         console.warn('Failed to write device audit log for account removal.', error);
       }
@@ -232,8 +234,7 @@ export const deviceAccounts = {
     const accounts = await readRegistry();
     const nextAccounts = accounts.filter((entry) => entry.accountId !== accountId);
 
-    await removeStoredSessionForAccount(accountId);
-    await accountPin.removePin(accountId);
+    await Promise.all([removeStoredSessionForAccount(accountId), accountPin.removePin(accountId)]);
     await writeRegistry(nextAccounts);
 
     if (!isActiveAccount) {
@@ -264,15 +265,17 @@ export const deviceAccounts = {
 
     try {
       const installId = await deviceTrustAPI.getInstallId();
-      await deviceTrustAPI.logAuditEvent(
-        'ACCOUNT_SIGNED_OUT_FROM_DEVICE',
-        {
-          scope: 'current',
-          installId,
-        },
-        activeAccountId,
-      );
-      await deviceTrustAPI.revokeMyInstallSecuritySessions(installId, 'signed_out_locally');
+      await Promise.all([
+        deviceTrustAPI.logAuditEvent(
+          'ACCOUNT_SIGNED_OUT_FROM_DEVICE',
+          {
+            scope: 'current',
+            installId,
+          },
+          activeAccountId,
+        ),
+        deviceTrustAPI.revokeMyInstallSecuritySessions(installId, 'signed_out_locally'),
+      ]);
     } catch (error) {
       console.warn('Failed to synchronize sign-out for the current account.', error);
     }
@@ -281,9 +284,11 @@ export const deviceAccounts = {
   },
 
   async signOutAllAccounts() {
-    const accounts = await readRegistry();
+    const [accounts, installId] = await Promise.all([
+      readRegistry(),
+      deviceTrustAPI.getInstallId(),
+    ]);
     const activeAccountId = getActiveAccountId();
-    const installId = await deviceTrustAPI.getInstallId();
     await Promise.all(
       accounts.map(async (entry) => {
         if (!activeAccountId || entry.accountId !== activeAccountId) {

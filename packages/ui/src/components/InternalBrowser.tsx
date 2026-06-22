@@ -126,7 +126,7 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
       >
         <View style={styles.headerLeft}>
           {onClose && (
-            <Pressable onPress={onClose} style={styles.iconButton}>
+            <Pressable accessibilityRole="button" onPress={onClose} style={styles.iconButton}>
               <X size={20} color={scene.text.primary} />
             </Pressable>
           )}
@@ -142,6 +142,7 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
 
         <View style={styles.headerRight}>
           <Pressable
+            accessibilityRole="button"
             onPress={() => {
               void handleOpenExternal();
             }}
@@ -200,6 +201,7 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
           ]}
         >
           <Pressable
+            accessibilityRole="button"
             onPress={handleBack}
             disabled={!canGoBack}
             style={[styles.toolbarButton, !canGoBack && styles.disabled]}
@@ -208,6 +210,7 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
           </Pressable>
 
           <Pressable
+            accessibilityRole="button"
             onPress={handleForward}
             disabled={!canGoForward}
             style={[styles.toolbarButton, !canGoForward && styles.disabled]}
@@ -217,11 +220,12 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
 
           <View style={{ flex: 1 }} />
 
-          <Pressable onPress={handleReload} style={styles.toolbarButton}>
+          <Pressable accessibilityRole="button" onPress={handleReload} style={styles.toolbarButton}>
             <RotateCcw size={20} color={scene.text.primary} />
           </Pressable>
 
           <Pressable
+            accessibilityRole="button"
             onPress={() => {
               void handleShare();
             }}

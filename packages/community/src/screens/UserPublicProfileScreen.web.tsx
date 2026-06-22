@@ -29,10 +29,10 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
 import { communityAPI } from '../api/community';
 
 /**

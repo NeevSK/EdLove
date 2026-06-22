@@ -15,7 +15,7 @@ jobs:
       - name: 🏗 Setup pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 10
+          version: 11.8.0
 
       - name: 🏗 Setup Node
         uses: actions/setup-node@v4
@@ -31,18 +31,25 @@ jobs:
           cd apps/gurudevi-mobile
           node -e "try { require.resolve('@repo/ui/global.css'); console.log('✅ @repo/ui/global.css is resolvable'); } catch(e) { console.error('❌ @repo/ui/global.css NOT found'); process.exit(1); }"
 
-      - name: ✨ Lint
+      - name: ✨ Lint (Oxlint + ESLint)
         run: pnpm lint
+
+      - name: 🩺 React Doctor
+        run: pnpm run audit:react-doctor
+
+      - name: 🔍 Type-Check
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
+        run: pnpm check-types
 
       - name: 🌐 i18n policy checks
         run: pnpm run i18n:check
 
-      - name: 🔍 Type-Check (Mobile)
-        env:
-          NODE_OPTIONS: --max-old-space-size=8192
-        run: |
-          cd apps/gurudevi-mobile
-          pnpm exec tsc --noEmit
-
       - name: 🧪 Unit Tests
         run: pnpm test
+
+      - name: 📊 Test Coverage
+        run: pnpm test --coverage
+
+      - name: 🔒 Security Scan
+        run: pnpm run audit:security

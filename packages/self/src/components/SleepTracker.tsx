@@ -22,7 +22,7 @@ import {
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
-import { Moon, Stars } from 'lucide-react-native';
+import { Moon, Sparkles } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -42,11 +42,9 @@ interface SleepTrackerProps {
 
 export default function SleepTracker({ userId, disabled: componentDisabled }: SleepTrackerProps) {
   const { context } = usePermissions();
-  const activeUserId = userId || context.userId;
-  const { sleepLogs, refreshData, isLoading, addSleepLog } = useSleepTracker(
-    activeUserId ?? undefined,
-  );
-  const { t, i18n } = useTranslation();
+  const activeUserId = userId || context.userId || undefined;
+  const { sleepLogs, refreshData, isLoading, addSleepLog } = useSleepTracker(activeUserId);
+  const { t } = useTranslation();
 
   const [sleepQuality, setSleepQuality] = useState(3);
   const [hasLoggedToday, setHasLoggedToday] = useState(false);
@@ -205,7 +203,7 @@ export default function SleepTracker({ userId, disabled: componentDisabled }: Sl
       <Box className="items-center justify-center p-xl bg-obsidian rounded-comfortable min-h-[220px] relative border border-white/5">
         {/* Animated stars */}
         <AnimatedView style={[animatedStarsStyle]} className="absolute top-5 right-8">
-          <Icon as={Stars} className="text-indigo-400" size={24} />
+          <Icon as={Sparkles} className="text-indigo-400" size={24} />
         </AnimatedView>
 
         {/* Emoji Feedback */}

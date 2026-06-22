@@ -4,7 +4,6 @@
  * Modal/Bottom Sheet for configuring classroom grading preferences.
  */
 
-import { RadioIcon } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -97,9 +96,7 @@ export default function GradingSettings({
                   className={`p-4 rounded-generous border ${gradingMode === item.value ? 'bg-templeGold/10 border-templeGold/40' : 'bg-phase-surface/50 border-phase-canvas'}`}
                 >
                   <Radio value={item.value}>
-                    <RadioIndicator className="mr-4 border-phase-canvas">
-                      <RadioIcon className="bg-templeGold" />
-                    </RadioIndicator>
+                    <RadioIndicator className="mr-4 border-phase-canvas" />
                     <RadioLabel className="flex-1">
                       <VStack className="gap-0.5">
                         <Text

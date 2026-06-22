@@ -7,7 +7,7 @@
 
 import type { ImpactRipple } from '@repo/core/api';
 import { Box, Icon, Text, VStack } from '@repo/ui/primitives';
-import { Waves } from 'lucide-react-native';
+import { WavesHorizontal } from 'lucide-react-native';
 
 interface ImpactRipplesCardProps {
   ripples: ImpactRipple[];
@@ -36,7 +36,7 @@ export default function ImpactRipplesCard({ ripples }: ImpactRipplesCardProps) {
           >
             <VStack className="gap-2">
               <Box className="flex-row items-center gap-2">
-                <Icon as={Waves} size={12} className="text-indigo-400" />
+                <Icon as={WavesHorizontal} size={12} className="text-indigo-400" />
                 <Text className="text-xs font-bold text-sacredWhite/80">Positive Momentum</Text>
               </Box>
               <Text className="text-sm leading-relaxed text-sacredWhite/70 italic">

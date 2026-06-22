@@ -5,10 +5,8 @@
  * and improved visual hierarchy with Sanctuary V3 components.
  */
 
-import { useRouter } from 'expo-router';
 import { usePendingActions } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
-
 import { BreathAnimation } from '@repo/ui/components/BreathAnimation';
 import { DailyResonanceCard } from '@repo/ui/components/DailyResonanceCard';
 import { GlassCard } from '@repo/ui/components/GlassCard';
@@ -24,12 +22,13 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
+import { useRouter } from 'expo-router';
 
 import {
   BookOpen,
   Calendar,
-  CheckCircle,
   ChevronRight,
+  CircleCheck,
   Clock,
   Sparkles,
 } from 'lucide-react-native';
@@ -162,7 +161,7 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
                 </VStack>
               ) : !hasActions ? (
                 <HStack className="items-center py-4 gap-3 bg-emeraldGreen/5 border border-emeraldGreen/10 rounded-xl px-4 justify-center">
-                  <Icon as={CheckCircle} size={20} className="text-emeraldGreen" />
+                  <Icon as={CircleCheck} size={20} className="text-emeraldGreen" />
                   <Text className="text-emeraldGreen font-bold text-sm">
                     {t('pulse.allClear') || 'Your Sanctuary path is clear 🧘'}
                   </Text>

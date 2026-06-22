@@ -1,5 +1,5 @@
 import type { DownloadState } from '@repo/core/hooks';
-import { AlertCircle, Download, ExternalLink, FileText, Info, Sparkles } from 'lucide-react-native';
+import { CircleAlert, Download, ExternalLink, FileText, Info, Sparkles } from 'lucide-react-native';
 import { Box, HStack, Text, useTheme, VStack } from '../../primitives';
 import GlobalHeader from '../GlobalHeader';
 import { SanctuaryButton } from '../SanctuaryButton';
@@ -123,7 +123,7 @@ export function UniversalDocumentPortal({
 
           {errorMsg && (
             <HStack className="p-4 rounded-2xl bg-phase-danger/10 border border-phase-danger/20 items-center gap-3">
-              <AlertCircle size={20} color={theme.scene.danger.main} />
+              <CircleAlert size={20} color={theme.scene.danger.main} />
               <Text className="text-sm text-phase-danger font-medium flex-1">{errorMsg}</Text>
             </HStack>
           )}

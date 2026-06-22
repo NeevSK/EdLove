@@ -371,7 +371,7 @@ function TypeButton({
   active: boolean;
   onPress: () => void;
   label: string;
-  icon: LucideIcon;
+  icon: any;
 }) {
   return (
     <Button

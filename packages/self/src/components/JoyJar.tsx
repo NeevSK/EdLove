@@ -4,10 +4,8 @@
  * Standardized to Zero-Legacy: purged sx props and fixed syntax corruption in handlers.
  */
 
-import { useRouter } from 'expo-router';
 import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
-
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import {
@@ -25,6 +23,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import { useRouter } from 'expo-router';
 
 import { BookOpen, MessageSquare, Plus, Save, Sparkles, Star, User, X } from 'lucide-react-native';
 import { useState } from 'react';
@@ -125,9 +124,7 @@ export default function JoyJar({ userId, disabled: componentDisabled }: JoyJarPr
   }
 
   if (!activeUserId) {
-    return (
-      <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />
-    );
+    return <PositiveInvitation type="anonymous" onAction={() => router.push('/auth')} />;
   }
 
   return (

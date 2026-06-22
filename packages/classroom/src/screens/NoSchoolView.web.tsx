@@ -11,8 +11,8 @@ import {
   ArrowRight,
   BookOpen,
   Building2,
-  CheckCircle2,
   ChevronRight,
+  CircleCheck,
   Key,
   Search,
   Users,
@@ -108,7 +108,7 @@ function SuccessCard({
   return (
     <VStack className="items-center gap-4 py-6 px-4 text-center">
       <Center className="w-16 h-16 rounded-full bg-phase-success/10">
-        <Icon as={CheckCircle2} size="xl" className="text-phase-success" />
+        <Icon as={CircleCheck} size="xl" className="text-phase-success" />
       </Center>
       <Text className="text-[28px]">{emoji}</Text>
       <VStack className="items-center">
@@ -275,7 +275,7 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
                 <Text className="text-xs text-phaseText-muted">{t.desc}</Text>
               </VStack>
               {state.type === t.value && (
-                <Icon as={CheckCircle2} size="xs" className="text-phase-interactive" />
+                <Icon as={CircleCheck} size="xs" className="text-phase-interactive" />
               )}
             </Pressable>
           ))}

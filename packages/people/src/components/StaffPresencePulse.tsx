@@ -2,7 +2,7 @@ import { Box, Heading, HStack, Icon, Pressable, Spinner, Text, VStack } from '@r
 import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { format } from 'date-fns';
-import { Calendar, CheckCircle2, Clock, LogIn, LogOut } from 'lucide-react-native';
+import { Calendar, CircleCheck, Clock, LogIn, LogOut } from 'lucide-react-native';
 import type React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -151,7 +151,7 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
         </Pressable>
         <Pressable className="flex-1 active:scale-95 transition-all">
           <Box className="bg-phase-surface p-5 rounded-[24px] border border-phase-border items-center gap-2 shadow-sm">
-            <Icon as={CheckCircle2} size="sm" className="text-phase-interactive" />
+            <Icon as={CircleCheck} size="sm" className="text-phase-interactive" />
             <Text className="text-[11px] font-black text-phaseText-primary uppercase tracking-wider">
               {t('staffPresence.viewHistory') || 'Registry View'}
             </Text>

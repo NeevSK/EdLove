@@ -1,5 +1,6 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { VideoPlayer } from '@repo/ui/components/media/VideoPlayer';
+import { safeBack } from '@repo/ui/utils/navigation';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { useCallback } from 'react';
 
@@ -17,7 +18,7 @@ export default function VideoPlayerScreen() {
   const router = useRouter();
 
   const handleClose = useCallback(() => {
-    router.back();
+    safeBack('/library');
   }, [router]);
 
   return <VideoPlayer url={url} title={title} creator={creator} onClose={handleClose} />;

@@ -79,8 +79,16 @@ const mockDb = new Proxy(
 );
 
 vi.mock('@repo/database', () => ({
-  canUseZenStackDb: () => mockZenStackDbAvailable,
-  createZenStackDb: () => mockDb,
+  canUseZenStackDb: (dbUrl?: string) => {
+    if (dbUrl && dbUrl.includes('offline')) return true;
+    return mockZenStackDbAvailable;
+  },
+  createZenStackDb: (user: any, dbUrl?: string) => {
+    if (dbUrl && dbUrl.includes('offline')) {
+      throw new Error('Could not connect to database');
+    }
+    return mockDb;
+  },
 }));
 
 // Complete Mock CoreRuntimeEnvironment for backend test runs

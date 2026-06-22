@@ -9,23 +9,25 @@ export function OnboardingWrapper() {
   const showToast = useStore((state) => state.showToast);
 
   const handleComplete = useCallback(
-    async (_name: string, _capacity: any) => {
-      try {
-        showToast('Syncing your sanctuary profile...', 'info', 2000);
-        await refreshProfile();
+    (_name: string, _capacity: any) => {
+      void (async () => {
+        try {
+          showToast('Syncing your sanctuary profile...', 'info', 2000);
+          await refreshProfile();
 
-        const state = useStore.getState();
-        if (!state.onboardingCompleted) {
-          console.log('⚠️ [Onboarding] Store did not auto-update, forcing completion flag.');
-          state.setOnboardingCompleted(true);
+          const state = useStore.getState();
+          if (!state.onboardingCompleted) {
+            console.log('⚠️ [Onboarding] Store did not auto-update, forcing completion flag.');
+            state.setOnboardingCompleted(true);
+          }
+        } catch (err) {
+          console.error('Failed to refresh profile after onboarding:', err);
+          showToast(
+            'Profile sync failed, but your progress is saved. Please restart the app if you are stuck.',
+            'error',
+          );
         }
-      } catch (err) {
-        console.error('Failed to refresh profile after onboarding:', err);
-        showToast(
-          'Profile sync failed, but your progress is saved. Please restart the app if you are stuck.',
-          'error',
-        );
-      }
+      })();
     },
     [refreshProfile, showToast],
   );

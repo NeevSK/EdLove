@@ -65,7 +65,6 @@ const SINGLETON_OVERRIDES = {
   'react-dom': path.resolve(projectRoot, 'node_modules/react-dom'),
   '@babel/runtime': path.resolve(projectRoot, 'node_modules/@babel/runtime'),
   'react-native-web': path.resolve(projectRoot, 'node_modules/react-native-web'),
-  '@react-navigation/native': path.resolve(projectRoot, 'node_modules/@react-navigation/native'),
   '@react-navigation/core': path.resolve(projectRoot, 'node_modules/@react-navigation/core'),
   '@react-native-async-storage/async-storage': path.resolve(
     projectRoot,
@@ -79,7 +78,6 @@ const SINGLETON_OVERRIDES = {
     'node_modules/@react-native-community/slider',
   ),
   'react-native-webview': path.resolve(projectRoot, 'node_modules/react-native-webview'),
-  '@expo/vector-icons': path.resolve(projectRoot, 'node_modules/@expo/vector-icons'),
   'react-native-maps': path.resolve(projectRoot, 'node_modules/react-native-maps'),
   'react-native-linear-gradient': path.resolve(
     projectRoot,
@@ -117,6 +115,28 @@ if (fs.existsSync(packagesDir)) {
 }
 
 const PNPM_FALLBACK_MAPPINGS = {};
+const MAPPED_VERSIONS = {};
+
+function getVersionFromDir(dir) {
+  const parts = dir.split('@');
+  const versionPart = dir.startsWith('@') ? parts[2] : parts[1];
+  if (!versionPart) return '0.0.0';
+  return versionPart.split('_')[0];
+}
+
+function isVersionGreater(v1, v2) {
+  const parts1 = v1.split('.').map(Number);
+  const parts2 = v2.split('.').map(Number);
+  for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
+    const num1 = parts1[i] || 0;
+    const num2 = parts2[i] || 0;
+    if (num1 !== num2) {
+      return num1 > num2;
+    }
+  }
+  return false;
+}
+
 const pnpmRoot = path.resolve(workspaceRoot, 'node_modules/.pnpm');
 if (fs.existsSync(pnpmRoot)) {
   // We scan the virtual store for every package it contains.
@@ -126,18 +146,27 @@ if (fs.existsSync(pnpmRoot)) {
     const virtualNodeModules = path.resolve(pnpmRoot, dir, 'node_modules');
     if (fs.existsSync(virtualNodeModules)) {
       try {
+        const version = getVersionFromDir(dir);
         fs.readdirSync(virtualNodeModules).forEach((pkgName) => {
           if (pkgName.startsWith('@')) {
             const scopePath = path.resolve(virtualNodeModules, pkgName);
             fs.readdirSync(scopePath).forEach((subPkg) => {
               const fullName = `${pkgName}/${subPkg}`;
               if (!SINGLETON_OVERRIDES[fullName] && !INTERNAL_PACKAGE_MAPPINGS[fullName]) {
-                PNPM_FALLBACK_MAPPINGS[fullName] = path.resolve(scopePath, subPkg);
+                const existingVersion = MAPPED_VERSIONS[fullName];
+                if (!existingVersion || isVersionGreater(version, existingVersion)) {
+                  PNPM_FALLBACK_MAPPINGS[fullName] = path.resolve(scopePath, subPkg);
+                  MAPPED_VERSIONS[fullName] = version;
+                }
               }
             });
           } else {
             if (!SINGLETON_OVERRIDES[pkgName] && !INTERNAL_PACKAGE_MAPPINGS[pkgName]) {
-              PNPM_FALLBACK_MAPPINGS[pkgName] = path.resolve(virtualNodeModules, pkgName);
+              const existingVersion = MAPPED_VERSIONS[pkgName];
+              if (!existingVersion || isVersionGreater(version, existingVersion)) {
+                PNPM_FALLBACK_MAPPINGS[pkgName] = path.resolve(virtualNodeModules, pkgName);
+                MAPPED_VERSIONS[pkgName] = version;
+              }
             }
           }
         });
@@ -243,6 +272,13 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   // This allows .json and .wasm to use Metro's native loaders directly.
   if (moduleName.endsWith('.json') || moduleName.endsWith('.wasm')) {
     return (defaultResolveRequest || context.resolveRequest)(context, moduleName, platform);
+  }
+
+  if (moduleName === '@repo/workforce/WorkforceShell') {
+    return {
+      filePath: path.resolve(workspaceRoot, 'packages/workforce/src/WorkforceShell.tsx'),
+      type: 'sourceFile',
+    };
   }
 
   // B. (Removed) Manual Internal Resolver

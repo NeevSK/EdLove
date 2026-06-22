@@ -96,21 +96,23 @@ export function useDemoBridge() {
         },
         {
           text: t('demoMode.bridgeSave'),
-          onPress: async () => {
-            const { setBridging } = useStore.getState();
-            try {
-              // Enable bridging mode to bypass API interception
-              setBridging(true);
+          onPress: () => {
+            void (async () => {
+              const { setBridging } = useStore.getState();
+              try {
+                // Enable bridging mode to bypass API interception
+                setBridging(true);
 
-              // Bridge the data to reality
-              await processDemoLogs(demoLogs);
+                // Bridge the data to reality
+                await processDemoLogs(demoLogs);
 
-              hapticSuccess();
-            } finally {
-              setBridging(false);
-              clearDemoLogs();
-              setDemoMode(false);
-            }
+                hapticSuccess();
+              } finally {
+                setBridging(false);
+                clearDemoLogs();
+                setDemoMode(false);
+              }
+            })();
           },
         },
       ],

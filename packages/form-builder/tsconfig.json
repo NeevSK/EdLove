@@ -4,6 +4,7 @@
     "outDir": "dist",
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "composite": true,
     "paths": {
       "@/*": ["./src/*"]
     },

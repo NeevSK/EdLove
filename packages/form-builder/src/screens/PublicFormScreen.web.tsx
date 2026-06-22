@@ -1,10 +1,9 @@
 import { FormHydrator } from '@intuitui-labs/form-builder-engine/hydration';
-import { useRoute } from '@react-navigation/native';
-
 import LotusLoader from '@repo/ui/components/LotusLoader';
 import { useThemedColors } from '@repo/ui/hooks';
 import { Box, Heading, Text, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
+import { useLocalSearchParams } from 'expo-router';
 
 import { useEffect, useMemo, useState } from 'react';
 import NativeForm from '../NativeForm';
@@ -34,8 +33,8 @@ interface PublicFormScreenWebProps {
 }
 
 export default function PublicFormScreenWeb({ services }: PublicFormScreenWebProps) {
-  const route = useRoute<any>();
-  const { slug } = route.params || {};
+  const { slug } = useLocalSearchParams<{ slug?: string | string[] }>();
+  const normalizedSlug = Array.isArray(slug) ? slug[0] : slug;
   const colors = useThemedColors();
   const [loading, setLoading] = useState(true);
   const [template, setTemplate] = useState<FormTemplate | null>(null);
@@ -44,7 +43,7 @@ export default function PublicFormScreenWeb({ services }: PublicFormScreenWebPro
 
   const loadTemplate = useMemo(
     () => async () => {
-      if (!slug) {
+      if (!normalizedSlug) {
         setError('Form slug is missing.');
         setLoading(false);
         return;
@@ -55,7 +54,7 @@ export default function PublicFormScreenWeb({ services }: PublicFormScreenWebPro
           throw new Error('Public form host service is not configured.');
         }
 
-        const data = await services.loadFormBySlug(slug);
+        const data = await services.loadFormBySlug(normalizedSlug);
         setTemplate(data);
       } catch (err: any) {
         console.error('Failed to load form:', err);
@@ -64,7 +63,7 @@ export default function PublicFormScreenWeb({ services }: PublicFormScreenWebPro
         setLoading(false);
       }
     },
-    [services, slug],
+    [services, normalizedSlug],
   );
 
   useEffect(() => {

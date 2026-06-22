@@ -1,7 +1,8 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { usePermissions, useStore } from '@repo/core/logic';
 import { useWisdom } from '@repo/self';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { safeBack } from '@repo/ui/utils/navigation';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ChevronLeft, Leaf } from 'lucide-react-native';
 import { useMemo } from 'react';
 
@@ -17,7 +18,8 @@ export default function WisdomDetailRoute() {
   return (
     <VStack className="flex-1 bg-obsidian px-5 py-6 gap-4">
       <Pressable
-        onPress={() => router.back()}
+        accessibilityRole="button"
+        onPress={() => safeBack('/self')}
         className="self-start flex-row items-center gap-2 px-3.5 py-2 rounded-full bg-white/5 border border-white/10"
       >
         <ChevronLeft size={16} color="#F6BF8C" />

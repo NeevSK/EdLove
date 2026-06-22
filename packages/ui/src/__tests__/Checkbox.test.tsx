@@ -49,13 +49,16 @@ describe('Checkbox Component (Robustness)', () => {
 
   it('handles disabled state', async () => {
     const onChange = jest.fn();
-    const { getByText } = await render(
+    const { getByRole } = await render(
       <Checkbox value="test" isDisabled={true} onChange={onChange}>
         <CheckboxLabel>Disabled Checkbox</CheckboxLabel>
       </Checkbox>,
     );
 
-    fireEvent.press(getByText('Disabled Checkbox'));
+    const checkbox = getByRole('checkbox');
+    expect(checkbox.props.accessibilityState?.disabled).toBe(true);
+
+    fireEvent.press(checkbox);
     expect(onChange).not.toHaveBeenCalled();
   });
 });

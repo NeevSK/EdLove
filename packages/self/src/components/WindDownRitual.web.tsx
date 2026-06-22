@@ -5,7 +5,7 @@
  * Metro resolves this over WindDownRitual.tsx on the web platform.
  */
 
-import { CheckCircle2 } from 'lucide-react-native';
+import { CircleCheck } from 'lucide-react-native';
 import { useState } from 'react';
 import { saveWindDownRitual } from '../api/selfFeatureRepository';
 
@@ -195,7 +195,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
             'Saving...'
           ) : isLast ? (
             <>
-              <CheckCircle2 size={16} color="#fff" /> Complete Ritual
+              <CircleCheck size={16} color="#fff" /> Complete Ritual
             </>
           ) : (
             `Next -> ${nextStepLabel}`

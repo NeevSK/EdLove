@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const PERSISTENCE_KEY = 'GURUDEVI_CLASSROOM_CREATION_STATE';
 
@@ -71,27 +71,36 @@ export function useClassroomCreation() {
     }
   }, [state, isLoaded]);
 
-  const updateStep = (step: number) => setState((prev) => ({ ...prev, step }));
+  const updateStep = useCallback((step: number) => setState((prev) => ({ ...prev, step })), []);
 
-  const updateDetails = (details: Partial<ClassroomCreationState['details']>) =>
-    setState((prev) => ({ ...prev, details: { ...prev.details, ...details } }));
+  const updateDetails = useCallback(
+    (details: Partial<ClassroomCreationState['details']>) =>
+      setState((prev) => ({ ...prev, details: { ...prev.details, ...details } })),
+    [],
+  );
 
-  const updateAcademic = (academic: Partial<ClassroomCreationState['academic']>) =>
-    setState((prev) => ({
-      ...prev,
-      academic: { ...prev.academic, ...academic },
-    }));
+  const updateAcademic = useCallback(
+    (academic: Partial<ClassroomCreationState['academic']>) =>
+      setState((prev) => ({
+        ...prev,
+        academic: { ...prev.academic, ...academic },
+      })),
+    [],
+  );
 
-  const updateAesthetics = (aesthetics: Partial<ClassroomCreationState['aesthetics']>) =>
-    setState((prev) => ({
-      ...prev,
-      aesthetics: { ...prev.aesthetics, ...aesthetics },
-    }));
+  const updateAesthetics = useCallback(
+    (aesthetics: Partial<ClassroomCreationState['aesthetics']>) =>
+      setState((prev) => ({
+        ...prev,
+        aesthetics: { ...prev.aesthetics, ...aesthetics },
+      })),
+    [],
+  );
 
-  const resetProgress = async () => {
+  const resetProgress = useCallback(async () => {
     await AsyncStorage.removeItem(PERSISTENCE_KEY);
     setState(initialState);
-  };
+  }, []);
 
   return useMemo(
     () => ({

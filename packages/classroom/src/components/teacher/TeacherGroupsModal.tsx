@@ -2,7 +2,7 @@ import { classroomGroupsAPI } from '@repo/core/api';
 
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { useLotusToast } from '@repo/ui/hooks';
-import { Check, Edit3, Layers, Plus, Trash2, User } from '@repo/ui/icons';
+import { Check, Layers, Plus, SquarePen, Trash2, User } from '@repo/ui/icons';
 import {
   Box,
   Heading,
@@ -17,7 +17,7 @@ import {
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface TeacherGroupsModalProps {
   classroomId: string;
@@ -51,7 +51,7 @@ export default function TeacherGroupsModal({
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
-  const loadGroups = async () => {
+  const loadGroups = useCallback(async () => {
     setIsLoading(true);
     try {
       const data = await classroomGroupsAPI.getAll(classroomId);
@@ -62,7 +62,7 @@ export default function TeacherGroupsModal({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [classroomId, showToast]);
 
   useEffect(() => {
     if (isOpen) {
@@ -247,7 +247,7 @@ export default function TeacherGroupsModal({
                               onPress={() => startEditing(group)}
                               className="w-10 h-10 items-center justify-center rounded-full bg-phase-surface border border-phase-border/40 shadow-sm active:bg-phase-surface-secondary transition-all"
                             >
-                              <Icon as={Edit3} size="xs" className="text-phase-text-tertiary" />
+                              <Icon as={SquarePen} size="xs" className="text-phase-text-tertiary" />
                             </Pressable>
                             <Pressable
                               onPress={() => handleDelete(group.id)}

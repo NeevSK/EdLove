@@ -8,12 +8,12 @@ import { supabase } from '@repo/core/api';
 import { useStore } from '@repo/core/logic';
 
 import {
-  AlertTriangle,
-  CheckCircle2,
   ChevronRight,
+  CircleCheck,
   Heart,
   MessageSquare,
   Send,
+  TriangleAlert,
 } from '@repo/ui/icons';
 import {
   Box,
@@ -31,7 +31,7 @@ import {
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface FeedbackEcho {
@@ -49,8 +49,8 @@ interface FeedbackEcho {
 const CATEGORY_ICONS = {
   support: MessageSquare,
   morale: Heart,
-  facility: AlertTriangle,
-  recognition: CheckCircle2,
+  facility: TriangleAlert,
+  recognition: CircleCheck,
 };
 
 export default function DashboardEcho({ schoolId }: { schoolId: string }) {
@@ -94,7 +94,7 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
     ]);
   };
 
-  const fetchFeedback = async () => {
+  const fetchFeedback = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('school_echo_feedback')
@@ -113,7 +113,7 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [schoolId]);
 
   useEffect(() => {
     fetchFeedback();
@@ -220,7 +220,7 @@ export default function DashboardEcho({ schoolId }: { schoolId: string }) {
                           {item.source} · {item.category}
                         </Text>
                         <Text className="text-[10px] font-black text-phaseText-muted/50 uppercase">
-                          {new Date(item.created_at).toLocaleDateString(undefined, {
+                          {new Date(item.created_at).toLocaleDateString([], {
                             month: 'short',
                             day: 'numeric',
                           })}

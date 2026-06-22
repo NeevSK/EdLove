@@ -1,4 +1,5 @@
 import type { StudentPerformanceMetrics } from '../types/AnalyticsTypes';
+
 interface PerformanceDashboardProps {
   metrics: StudentPerformanceMetrics;
   insights?: string[];

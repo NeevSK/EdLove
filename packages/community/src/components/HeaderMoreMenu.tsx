@@ -2,7 +2,7 @@ import { identityAPI, supabase } from '@repo/core/api';
 import { usePermissions } from '@repo/core/logic';
 
 import { useLotusToast } from '@repo/ui/hooks';
-import { Bell, BellOff, MoreVertical, ShieldAlert, UserX } from '@repo/ui/icons';
+import { Bell, BellOff, EllipsisVertical, ShieldAlert, UserX } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticError, hapticSuccess } from '@repo/ui/utils';
 import { useEffect, useState } from 'react';
@@ -96,7 +96,7 @@ export default function HeaderMoreMenu({
         onPress={() => setIsMenuOpen(!isMenuOpen)}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
-        <Icon as={MoreVertical} size="lg" color="rgba(255,255,255,0.9)" />
+        <Icon as={EllipsisVertical} size="lg" color="rgba(255,255,255,0.9)" />
       </Pressable>
 
       {isMenuOpen && (

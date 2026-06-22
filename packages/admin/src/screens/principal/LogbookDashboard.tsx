@@ -1,6 +1,6 @@
 import LotusDropdown from '@repo/ui/components/LotusDropdown';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
-import { AlertTriangle, ArrowLeft, Footprints, Medal, Plus, StickyNote } from '@repo/ui/icons';
+import { ArrowLeft, Footprints, Medal, Plus, StickyNote, TriangleAlert } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -94,7 +94,7 @@ export const LogbookDashboard: React.FC<LogbookDashboardProps> = ({
       case 'walkthrough':
         return <Icon as={Footprints} size="xs" />;
       case 'concern':
-        return <Icon as={AlertTriangle} size="xs" />;
+        return <Icon as={TriangleAlert} size="xs" />;
       case 'commendation':
         return <Icon as={Medal} size="xs" />;
       default:

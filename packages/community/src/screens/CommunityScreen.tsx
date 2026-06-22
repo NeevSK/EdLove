@@ -8,11 +8,7 @@ import {
 import { useTracking } from '@repo/core/hooks';
 import { setPendingGateAction, usePermissions } from '@repo/core/logic';
 import { useStore, useTemporalStore } from '@repo/core/store';
-import type {
-  CommunityPost,
-  DirectConversation,
-  SanctuaryGroup,
-} from '@repo/core/types';
+import type { CommunityPost, DirectConversation, SanctuaryGroup } from '@repo/core/types';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { HorizontalChipRow } from '@repo/ui/components/HorizontalChipRow';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
@@ -22,10 +18,10 @@ import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWr
 import { useRegisterFAB } from '@repo/ui/context';
 import { Info, Plus } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, ScrollView, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { router } from 'expo-router';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { Platform } from 'react-native';
-import { router } from 'expo-router';
 import { CommentSheet } from '../components/CommentSheet';
 import CommunityHearth from '../components/CommunityHearth';
 import CreateGroupModal from '../components/CreateGroupModal';
@@ -292,20 +288,17 @@ export default function CommunityScreen() {
     dispatch({ type: 'SET_SELECTED_FILTER', payload: value });
   }, []);
 
-  const handlePostPress = useCallback(
-    (groupId?: string, groupName?: string) => {
-      if (groupId) {
-        router.push({
-          pathname: '/community/groups/[groupId]',
-          params: {
-            groupId,
-            groupName: groupName ?? 'Circle',
-          },
-        });
-      }
-    },
-    [],
-  );
+  const handlePostPress = useCallback((groupId?: string, groupName?: string) => {
+    if (groupId) {
+      router.push({
+        pathname: '/community/groups/[groupId]',
+        params: {
+          groupId,
+          groupName: groupName ?? 'Circle',
+        },
+      });
+    }
+  }, []);
 
   const handlePostLike = useCallback(
     (postId: string) => {
@@ -327,17 +320,14 @@ export default function CommunityScreen() {
     });
   }, []);
 
-  const handleAuthorPress = useCallback(
-    (authorId?: string, isAnonymous?: boolean) => {
-      if (authorId && !isAnonymous) {
-        router.push({
-          pathname: '/community/profile/[id]',
-          params: { id: authorId },
-        });
-      }
-    },
-    [],
-  );
+  const handleAuthorPress = useCallback((authorId?: string, isAnonymous?: boolean) => {
+    if (authorId && !isAnonymous) {
+      router.push({
+        pathname: '/community/profile/[id]',
+        params: { id: authorId },
+      });
+    }
+  }, []);
 
   const handleOpenCircle = useCallback(() => {
     const mainGroup = sanctuaryGroups[0];

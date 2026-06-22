@@ -1,4 +1,5 @@
 import { AnalyticsEngine as formAnalytics } from '@intuitui-labs/form-builder-engine/analytics';
+import { exportToStaticReact } from '@intuitui-labs/form-builder-engine/codegen';
 import { FormHydrator, type HydrationPayload } from '@intuitui-labs/form-builder-engine/hydration';
 import type {
   FieldDefinition,
@@ -22,18 +23,18 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import {
-  BarChart3,
+  ChartColumn,
   Clock,
   Download,
   Eye,
   GripVertical,
-  Layout,
+  PanelsTopLeft,
   Plus,
   Save,
   Settings2,
   Trash2,
 } from 'lucide-react-native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import NativeForm from './NativeForm';
 import { defaultFormBuilderServices, type FormBuilderServices } from './services';
 
@@ -47,7 +48,7 @@ interface FormBuilderProps {
   isGuest?: boolean;
   services?: Partial<FormBuilderServices>;
 }
-const FormFieldItem = React.memo(
+const FormFieldItem = memo(
   ({
     field,
     index,
@@ -111,7 +112,10 @@ export const FormBuilder = ({
   services: servicesOverride,
 }: FormBuilderProps) => {
   const colors = useThemedColors();
-  const services = { ...defaultFormBuilderServices, ...servicesOverride };
+  const services = useMemo(
+    () => ({ ...defaultFormBuilderServices, ...servicesOverride }),
+    [servicesOverride],
+  );
   const FeatureGate = services.featureGuard;
   const QRCodeGen = services.qrCodeGenerator;
   const [fields, setFields] = useState<FieldDefinition[]>(
@@ -129,7 +133,7 @@ export const FormBuilder = ({
         ],
   );
   const [previewMode, setPreviewMode] = useState(false);
-  const [activeTab, setActiveTab] = useState<'editor' | 'logic' | 'analytics'>('editor');
+  const [activeTab, setActiveTab] = useState<'editor' | 'logic' | 'analytics' | 'code'>('editor');
   const fieldCounterRef = useRef(0);
   const addField = useCallback(() => {
     const id = `f-${fieldCounterRef.current++}-${Date.now().toString(36)}`;
@@ -182,7 +186,7 @@ export const FormBuilder = ({
       const el = document.getElementById(styleId);
       if (el) el.remove();
     };
-  }, [services.runtime.device.getMetadata]);
+  }, [services.runtime.device]);
   // Auto-save logic
   useEffect(() => {
     if (fields.length > 0) {
@@ -207,12 +211,7 @@ export const FormBuilder = ({
     }
   }, [fields.length, services]);
 
-  useEffect(() => {
-    if (activeTab === 'analytics' && templateId) {
-      void fetchResponses();
-    }
-  }, [activeTab, templateId, fetchResponses]);
-  async function fetchResponses() {
+  const fetchResponses = useCallback(async () => {
     setIsFetchingResponses(true);
     try {
       const data = await services.api.forms.getResponses(templateId!);
@@ -222,7 +221,13 @@ export const FormBuilder = ({
     } finally {
       setIsFetchingResponses(false);
     }
-  }
+  }, [services.api.forms, templateId]);
+
+  useEffect(() => {
+    if (activeTab === 'analytics' && templateId) {
+      void fetchResponses();
+    }
+  }, [activeTab, templateId, fetchResponses]);
   const handleExportCSV = () => {
     const csv = formAnalytics.toCSV(fields, responses);
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -330,7 +335,7 @@ export const FormBuilder = ({
               onPress={() => setPreviewMode(!previewMode)}
               className="rounded-xl"
             >
-              <Icon as={previewMode ? Layout : Eye} className="mr-2" />
+              <Icon as={previewMode ? PanelsTopLeft : Eye} className="mr-2" />
               <ButtonText>{previewMode ? 'Back to Editor' : 'Live Preview'}</ButtonText>
             </Button>
             <Button
@@ -349,7 +354,7 @@ export const FormBuilder = ({
         {/* Sub-navigation */}
         {!previewMode && (
           <HStack className="gap-6 border-b border-border pb-3">
-            {(['editor', 'logic', 'analytics'] as const).map((tab) => (
+            {(['editor', 'logic', 'analytics', 'code'] as const).map((tab) => (
               <Pressable key={tab} onPress={() => setActiveTab(tab)}>
                 <Text
                   className={`capitalize ${activeTab === tab ? 'font-bold' : 'font-normal'}`}
@@ -403,6 +408,13 @@ export const FormBuilder = ({
             </VStack>
 
             <VStack className="flex-1 gap-4">
+              <Box className="bg-white rounded-3xl p-6 border border-border shadow-sm mb-4">
+                <Heading size="sm" className="mb-4 text-center">
+                  Live Preview
+                </Heading>
+                <NativeForm manager={previewManager} submitLabel="Test Submission" />
+              </Box>
+
               <Box
                 className="p-6 rounded-3xl border border-border"
                 sx={{ backgroundColor: colors.tertiary }}
@@ -439,6 +451,30 @@ export const FormBuilder = ({
               and teacher resonance.
             </Text>
           </Box>
+        ) : activeTab === 'code' ? (
+          <Box className="bg-white rounded-[32px] p-8 border border-border shadow-lg flex-1">
+            <HStack className="justify-between items-center mb-6">
+              <Heading size="md">Generated React Component</Heading>
+              <Button
+                variant="outline"
+                action="secondary"
+                onPress={() => {
+                  if (typeof navigator !== 'undefined') {
+                    void navigator.clipboard.writeText(
+                      exportToStaticReact(title, fields, description),
+                    );
+                  }
+                }}
+              >
+                <ButtonText>Copy to Clipboard</ButtonText>
+              </Button>
+            </HStack>
+            <Box className="bg-gray-50 p-6 rounded-2xl border border-gray-100 overflow-x-auto">
+              <pre className="text-xs font-mono text-gray-800">
+                {exportToStaticReact(title, fields, description)}
+              </pre>
+            </Box>
+          </Box>
         ) : (
           <VStack className="gap-6 p-5">
             <HStack className="justify-between items-center">
@@ -450,7 +486,7 @@ export const FormBuilder = ({
               </VStack>
               <HStack className="gap-2">
                 <Button variant="outline" action="secondary" onPress={handlePrintReport}>
-                  <Icon as={Layout} className="mr-2" />
+                  <Icon as={PanelsTopLeft} className="mr-2" />
                   <ButtonText>Print Report</ButtonText>
                 </Button>
                 <Button
@@ -530,7 +566,7 @@ export const FormBuilder = ({
                 className="p-14 items-center rounded-[32px] border border-dashed border-border"
                 sx={{ backgroundColor: colors.tertiary }}
               >
-                <Icon as={BarChart3} size={48} color={colors.textTertiary} />
+                <Icon as={ChartColumn} size={48} color={colors.textTertiary} />
                 <Heading size="sm" className="mt-4">
                   Listening for Resonance...
                 </Heading>

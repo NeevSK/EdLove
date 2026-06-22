@@ -7,14 +7,9 @@
  *
  * CORE PURITY: No platform-specific imports (React Native/Browser/Node) here.
  */
+import type { IAnalyticsPort } from '../../logic/ports/analytics.port';
 
-export interface IPostHog {
-  identify(userId: string, properties?: Record<string, any>): void;
-  capture(event: string, properties?: Record<string, any>): void;
-  screen?(screenName: string, properties?: Record<string, any>): void;
-  reset(): void;
-  flush?(): Promise<void>;
-}
+export type IPostHog = IAnalyticsPort;
 
 let _posthog: IPostHog | null = null;
 

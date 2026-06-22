@@ -1,0 +1,53 @@
+diff --git a/lib/rules/no-single-element-style-arrays.js b/lib/rules/no-single-element-style-arrays.js
+index ce43bc94cc63178c296a08cf9ecb24d6ee70fca0..faba7ce41f475d753acff71b1f0afed9ea5f1929 100644
+--- a/lib/rules/no-single-element-style-arrays.js
++++ b/lib/rules/no-single-element-style-arrays.js
+@@ -25,7 +25,7 @@ module.exports = {
+           'Single element style arrays are not necessary and cause unnecessary re-renders',
+         fix(fixer) {
+           const realStyleNode = JSXExpressionNode.value.expression.elements[0];
+-          const styleSource = context.getSourceCode().getText(realStyleNode);
++          const styleSource = (context.sourceCode || context.getSourceCode()).getText(realStyleNode);
+           return fixer.replaceText(JSXExpressionNode.value.expression, styleSource);
+         },
+       });
+diff --git a/lib/rules/sort-styles.js b/lib/rules/sort-styles.js
+index e2be0294a87d6aea0a335f6448ccb7417c053a99..d75d72fb38c831d4bcf76718e53eed5cbe8373b5 100644
+--- a/lib/rules/sort-styles.js
++++ b/lib/rules/sort-styles.js
+@@ -30,7 +30,7 @@ function create(context) {
+   const { ignoreStyleProperties } = options;
+   const isValidOrder = order === 'asc' ? (a, b) => a <= b : (a, b) => a >= b;
+ 
+-  const sourceCode = context.getSourceCode();
++  const sourceCode = context.sourceCode || context.getSourceCode();
+ 
+   function sort(array) {
+     return [].concat(array).sort((a, b) => {
+diff --git a/lib/util/Components.js b/lib/util/Components.js
+index f744d52fa076f5a284fd02ed5d852cbb51848b5b..fa04ee6e23d8f8e774eeba081b3a77857f121cee 100644
+--- a/lib/util/Components.js
++++ b/lib/util/Components.js
+@@ -100,7 +100,7 @@ Components.prototype.length = function () {
+ };
+ 
+ function componentRule(rule, context, _node) {
+-  const sourceCode = context.getSourceCode();
++  const sourceCode = context.sourceCode || context.getSourceCode();
+   const components = new Components();
+ 
+   // Utilities for component detection
+diff --git a/lib/util/stylesheet.js b/lib/util/stylesheet.js
+index 09811e9f4086ffdb47733524078185275c88f236..34cf687a48b4687e5d0c5707fea272aa32145310 100644
+--- a/lib/util/stylesheet.js
++++ b/lib/util/stylesheet.js
+@@ -86,8 +86,7 @@ StyleSheets.prototype.getObjectExpressions = function () {
+ };
+ 
+ let currentContent;
+-const getSourceCode = (node) => currentContent
+-  .getSourceCode(node)
++const getSourceCode = (node) => (currentContent.sourceCode || currentContent.getSourceCode(node))
+   .getText(node);
+ 
+ const getStyleSheetObjectNames = (settings) => settings['react-native/style-sheet-object-names'] || ['StyleSheet'];

@@ -1,8 +1,9 @@
+import ExpoCheckbox from 'expo-checkbox';
 import { Check } from 'lucide-react-native';
 import { cssInterop } from 'nativewind';
 import type React from 'react';
-import { createContext, useContext, useMemo, useState } from 'react';
-import { Pressable, Text, View, type ViewProps } from 'react-native';
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { Platform, Pressable, Text, View, type ViewProps } from 'react-native';
 
 cssInterop(View, { className: 'style' });
 cssInterop(Pressable, { className: 'style' });
@@ -48,6 +49,21 @@ export const CheckboxIndicator = ({
   className?: string;
 }) => {
   const { isChecked, isDisabled, isInvalid } = useCheckbox();
+
+  if (Platform.OS !== 'web') {
+    return (
+      <ExpoCheckbox
+        value={isChecked}
+        disabled={isDisabled}
+        color={isChecked ? '#F6BF8C' : undefined}
+        style={{
+          width: 22,
+          height: 22,
+          borderRadius: 6,
+        }}
+      />
+    );
+  }
 
   return (
     <View
@@ -181,16 +197,22 @@ export const CheckboxGroup = ({
   isDisabled?: boolean;
   className?: string;
 } & ViewProps) => {
-  const handleValueChange = (val: string) => {
-    if (isDisabled) return;
+  const handleValueChange = useCallback(
+    (val: string) => {
+      if (isDisabled) return;
 
-    const nextValue = value.includes(val) ? value.filter((v) => v !== val) : [...value, val];
-    onChange?.(nextValue);
-  };
+      const currentValues = value || [];
+      const nextValue = currentValues.includes(val)
+        ? currentValues.filter((v) => v !== val)
+        : [...currentValues, val];
+      onChange?.(nextValue);
+    },
+    [isDisabled, value, onChange],
+  );
 
   const contextValue = useMemo(
     () => ({
-      values: value,
+      values: value || [],
       onValueChange: handleValueChange,
       isDisabled,
     }),

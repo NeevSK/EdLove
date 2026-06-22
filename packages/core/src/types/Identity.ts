@@ -16,7 +16,6 @@ export type Capacity =
   | 'guardian'
   | 'librarian'
   | 'nurse'
-  | 'staff'
   | 'member';
 
 /**

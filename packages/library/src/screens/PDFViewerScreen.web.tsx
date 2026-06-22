@@ -12,11 +12,12 @@
  * No expo-file-system or expo-sharing imports here.
  */
 
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, HStack, useTheme } from '@repo/ui/primitives';
+import { safeBack } from '@repo/ui/utils/navigation';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { Bookmark, ExternalLink, RefreshCw } from 'lucide-react-native';
 import { useState } from 'react';
@@ -45,7 +46,7 @@ export default function PDFViewerScreen() {
         title={title}
         subtitle="Document Viewer"
         showBack
-        onBack={() => router.back()}
+        onBack={() => safeBack('/library')}
         rightAction={
           <Box
             className="rounded-full overflow-hidden"

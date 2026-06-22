@@ -18,20 +18,22 @@
   },
   "license": "MIT",
   "scripts": {
-    "lint": "pnpm run lint:biome && pnpm run lint:eslint",
-    "check-types": "pnpm exec tsc --noEmit",
-    "lint:biome": "biome check .",
-    "lint:eslint": "eslint .",
-    "format": "biome format --write .",
-    "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:ui": "vitest --ui",
-    "clean": "rm -rf .turbo node_modules dist"
+    "lint": "node ../../scripts/run-and-report.mjs --cmd \"pnpm run lint:biome && pnpm run lint:eslint\" --name \"packages_form-builder-lint\"",
+    "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --noEmit\" --name \"packages_form-builder-check-types\"",
+    "lint:biome": "node ../../scripts/run-and-report.mjs --cmd \"biome check .\" --name \"packages_form-builder-lint_biome\"",
+    "lint:eslint": "node ../../scripts/run-and-report.mjs --cmd \"eslint .\" --name \"packages_form-builder-lint_eslint\"",
+    "format": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs --write\" --name \"packages_form-builder-format\"",
+    "check-cycles": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/refactor/sovereign-cycle-checker.mjs\" --name \"packages_form-builder-check-cycles\"",
+    "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_form-builder-test\"",
+    "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"vitest\" --name \"packages_form-builder-test_watch\"",
+    "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"packages_form-builder-test_ui\"",
+    "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"packages_form-builder-clean\""
   },
   "dependencies": {
     "@intuitui-labs/form-builder-engine": "workspace:*",
     "@repo/ui": "workspace:*",
+    "@tanstack/react-form": "^0.20.0",
+    "expo-router": "~56.2.10",
     "lucide-react": "^1.17.0",
     "lucide-react-native": "^1.17.0",
     "react-i18next": "^17.0.8"
@@ -50,5 +52,17 @@
     "react": "*",
     "react-native": "*",
     "react-i18next": "*"
+  },
+  "_originalScripts": {
+    "lint": "pnpm run lint:biome && pnpm run lint:eslint",
+    "check-types": "pnpm exec tsc --noEmit",
+    "lint:biome": "biome check .",
+    "lint:eslint": "eslint .",
+    "format": "node ../../scripts/scoped-biome.mjs --write",
+    "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "clean": "rm -rf .turbo node_modules dist"
   }
 }

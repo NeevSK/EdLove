@@ -1,6 +1,6 @@
 import {
-  ArrowRightCircle,
   ChevronRight,
+  CircleArrowRight,
   GraduationCap,
   Search,
   ShieldCheck,
@@ -139,7 +139,7 @@ export default function StudentOnboardingView({
                   <Text className="text-white font-black text-base uppercase tracking-widest">
                     Start Learning Demo
                   </Text>
-                  <Icon as={ArrowRightCircle} size="sm" className="text-white" />
+                  <Icon as={CircleArrowRight} size="sm" className="text-white" />
                 </HStack>
               </Pressable>
             </VStack>

@@ -1,4 +1,3 @@
-import { useRouter } from 'expo-router';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import {
   Box,
@@ -15,8 +14,9 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import { useRouter } from 'expo-router';
 
-import { CheckCircle, Moon } from 'lucide-react-native';
+import { CircleCheck, Moon } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -132,7 +132,7 @@ export default function WindDownRitual({ userId }: WindDownRitualProps) {
 
         <Box className="p-xl bg-ink rounded-comfortable items-center">
           <VStack className="items-center w-full gap-lg">
-            <Icon as={CheckCircle} className="text-sanctuarySaffron" size={48} />
+            <Icon as={CircleCheck} className="text-sanctuarySaffron" size={48} />
 
             <VStack className="items-center gap-1">
               <Text className="text-sacredWhite text-lg font-bold text-center">

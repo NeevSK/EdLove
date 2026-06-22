@@ -7,8 +7,8 @@ import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
 import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 import { Bell, Compass, Info, Plus, Shield, Users } from '@repo/ui/icons';
 import { Box, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
-import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { router } from 'expo-router';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { CommentSheet } from '../components/CommentSheet';
 import CommunityHearth from '../components/CommunityHearth';
 import CreateGroupModal from '../components/CreateGroupModal';
@@ -248,15 +248,12 @@ export default function CommunityScreenWeb() {
     router.push('/auth');
   }, []);
 
-  const handleOpenGroup = useCallback(
-    (groupId: string, groupName?: string) => {
-      router.push({
-        pathname: '/community/groups/[groupId]',
-        params: { groupId, groupName },
-      });
-    },
-    [],
-  );
+  const handleOpenGroup = useCallback((groupId: string, groupName?: string) => {
+    router.push({
+      pathname: '/community/groups/[groupId]',
+      params: { groupId, groupName },
+    });
+  }, []);
 
   const renderGuestGate = (title: string, description: string) => (
     <div className="community-empty-card">

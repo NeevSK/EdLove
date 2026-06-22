@@ -2,7 +2,7 @@ import { api, identityAPI } from '@repo/core/api';
 import { useStore } from '@repo/core/logic';
 
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
-import { CheckCircle2, QrCode } from '@repo/ui/icons';
+import { CircleCheck, QrCode } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -79,7 +79,7 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
       {successData ? (
         <VStack className="items-center justify-center p-8 gap-6">
           <Box className="w-24 h-24 bg-phase-reward/10 rounded-full items-center justify-center border border-phase-reward/20">
-            <Icon as={CheckCircle2} size="xl" className="text-phase-reward" />
+            <Icon as={CircleCheck} size="xl" className="text-phase-reward" />
           </Box>
           <VStack className="items-center gap-2">
             <Heading className="text-3xl font-black text-phaseText-primary tracking-tighter">

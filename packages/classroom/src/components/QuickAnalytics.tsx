@@ -3,7 +3,7 @@ import { ProgressRing } from '@repo/graphics/charts';
 import { Card } from '@repo/ui/components/SanctuaryCard';
 import {
   ArrowRight,
-  LineChart as ChartIcon,
+  ChartLine as ChartIcon,
   CircleCheck,
   FileText,
   GraduationCap,

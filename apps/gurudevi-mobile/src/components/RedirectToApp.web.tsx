@@ -15,6 +15,7 @@ export const RedirectToApp = () => {
   const [session, setSession] = useState<{ user: { id: string } } | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     identityAPI.getMyInternalId().then((id: string | null) => {
       setSession(id ? { user: { id } } : null);
     });

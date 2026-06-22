@@ -1,5 +1,5 @@
 import type { StudentAttendancePulse } from '@repo/core/api';
-import { AlertTriangle, GraduationCap, TrendingUp } from '@repo/ui/icons';
+import { GraduationCap, TrendingUp, TriangleAlert } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
@@ -38,7 +38,7 @@ export const StudentPulse: React.FC<StudentPulseProps> = ({ pulse, atRiskCount, 
           className={`flex-row items-center gap-2 px-3 py-1.5 rounded-full ${isPositiveTrend ? 'bg-phase-success/10' : 'bg-phase-danger/10'}`}
         >
           <Icon
-            as={isPositiveTrend ? TrendingUp : AlertTriangle}
+            as={isPositiveTrend ? TrendingUp : TriangleAlert}
             size="xs"
             className={isPositiveTrend ? 'text-phase-success' : 'text-phase-danger'}
           />
@@ -68,7 +68,7 @@ export const StudentPulse: React.FC<StudentPulseProps> = ({ pulse, atRiskCount, 
           className="flex-1 p-6 rounded-3xl bg-phase-canvas border border-phase-border gap-2.5 shadow-inner active:scale-95 transition-all"
         >
           <HStack className="items-center gap-2">
-            <Icon as={AlertTriangle} size="xs" className="text-phase-danger" />
+            <Icon as={TriangleAlert} size="xs" className="text-phase-danger" />
             <Text className="text-[10px] font-black text-phase-danger uppercase tracking-[0.15em]">
               At Risk
             </Text>

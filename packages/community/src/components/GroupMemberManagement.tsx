@@ -5,8 +5,8 @@ import { useSanctuaryToast } from '@repo/ui/hooks';
 import { Info, Settings, Shield, UserCheck, UserX } from '@repo/ui/icons';
 import { Box, Button, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils';
-import { useCallback, useEffect, useReducer, useState } from 'react';
 import { router } from 'expo-router';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 import { communityAPI } from '../api/community';
 import type { CommunityGroup, GroupJoinPolicy, GroupJoinRequest, GroupMember } from '../types';
 import CreateGroupModal from './CreateGroupModal';
@@ -190,15 +190,12 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
     [handlePolicyChange],
   );
 
-  const handleProfileNavigation = useCallback(
-    (id: string) => {
-      router.push({
-        pathname: '/community/profile/[id]',
-        params: { id },
-      });
-    },
-    [],
-  );
+  const handleProfileNavigation = useCallback((id: string) => {
+    router.push({
+      pathname: '/community/profile/[id]',
+      params: { id },
+    });
+  }, []);
 
   const handleUpdateSuccess = useCallback((updatedGroup: CommunityGroup) => {
     dispatch({ type: 'SET_GROUP', payload: updatedGroup });

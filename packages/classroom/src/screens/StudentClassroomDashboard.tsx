@@ -24,9 +24,9 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
-
-import { useState } from 'react';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useState } from 'react';
 import {
   AttendanceView,
   ClassroomEchoSection,
@@ -59,8 +59,10 @@ const STUDENT_FEATURES: { id: FeatureId; label: string; icon: any }[] = [
 
 export default function StudentClassroomDashboard() {
   const router = useRouter();
-  const { classroomId = '', classroomName = 'Classroom' } =
-    useLocalSearchParams<{ classroomId?: string; classroomName?: string }>();
+  const { classroomId = '', classroomName = 'Classroom' } = useLocalSearchParams<{
+    classroomId?: string;
+    classroomName?: string;
+  }>();
   const [activeFeature, setActiveFeature] = useState<FeatureId>('insights');
   const [submissionModal, setSubmissionModal] = useState<Assignment | null>(null);
   const bottomPadding = useBottomTabPadding();
@@ -104,7 +106,7 @@ export default function StudentClassroomDashboard() {
   if (workspace.isLoading) {
     return (
       <ScreenWrapper>
-        <GlobalHeader title={classroomName} showBack onBack={() => router.back()} />
+        <GlobalHeader title={classroomName} showBack onBack={() => safeBack('/workspace')} />
         <VStack className="gap-4 p-6">
           <SkeletonCard height={100} />
           <HStack className="gap-4 mt-4">
@@ -130,7 +132,7 @@ export default function StudentClassroomDashboard() {
         title={classroomName}
         subtitle={classroom?.subject || 'Subject'}
         showBack
-        onBack={() => router.back()}
+        onBack={() => safeBack('/workspace')}
       />
       <ScrollView
         stickyHeaderIndices={[1]}

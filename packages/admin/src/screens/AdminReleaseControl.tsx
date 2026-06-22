@@ -1,6 +1,7 @@
 import { usePermissions } from '@repo/core/logic';
-import { useRouter } from 'expo-router';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { safeBack } from '@repo/ui/utils/navigation';
+import { useRouter } from 'expo-router';
 
 import { useState } from 'react';
 import { commitFeatureGateChanges, stageFeatureGateChanges } from '../admin/adminControl';
@@ -25,7 +26,7 @@ export default function AdminReleaseControl() {
       title="Release watch"
       description="Track deployment posture, feature flags, and post-release health for the cross-tenant platform."
       caution="Treat release changes as production changes. If maintenance is active, prefer read-only monitoring and staged rollouts."
-      onBack={() => router.back()}
+      onBack={() => safeBack('/workspace')}
       stats={[
         {
           label: 'Schools',

@@ -1,4 +1,3 @@
-import { useRouter } from 'expo-router';
 import {
   CaptureEngine,
   getAvailablePerspectives as getEnginePerspectives,
@@ -27,7 +26,9 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-import { BarChart3, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'lucide-react-native';
+import { safeBack } from '@repo/ui/utils/navigation';
+import { useRouter } from 'expo-router';
+import { ChartColumn, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { libraryAPI } from '../api/library';
 import { usePerspectiveLayout } from '../hooks/usePerspectiveLayout';
@@ -69,7 +70,7 @@ const PERSPECTIVES: Perspective[] = [
   {
     id: 'jyoti',
     label: 'Insight',
-    icon: BarChart3,
+    icon: ChartColumn,
     description: 'Analytic charts & metrics',
   },
   {
@@ -225,7 +226,7 @@ export default function MapScreen() {
         title="Knowledge Cosmos"
         subtitle="Isomorphic Visualization Engine"
         showBack
-        onBack={() => router.back()}
+        onBack={() => safeBack('/library')}
         rightAction={
           <Pressable
             onPress={handleExport}

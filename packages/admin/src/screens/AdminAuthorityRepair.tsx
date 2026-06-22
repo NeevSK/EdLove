@@ -1,6 +1,7 @@
 import { usePermissions } from '@repo/core/logic';
-import { useRouter } from 'expo-router';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { safeBack } from '@repo/ui/utils/navigation';
+import { useRouter } from 'expo-router';
 
 import { useState } from 'react';
 import { commitGuardedRepair, stageGuardedRepair } from '../admin/adminControl';
@@ -29,7 +30,7 @@ export default function AdminAuthorityRepair() {
       title="Authority integrity"
       description="Repair role drift, capability mismatch, and POA boundary problems across tenants without crossing into tenant-side admin behavior."
       caution="This room should stay narrowly scoped to maintenance. Any repair should be explicit, reversible, and reviewable."
-      onBack={() => router.back()}
+      onBack={() => safeBack('/workspace')}
       stats={[
         {
           label: 'Users in scope',

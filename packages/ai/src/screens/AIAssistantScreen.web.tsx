@@ -12,10 +12,10 @@
  *  - Responsive two-column layout on wide screens
  */
 
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { usePermissions, useStore } from '@repo/core/logic';
-
 import { formatTimestamp } from '@repo/ui/utils/dateTimeUtils';
+import { safeBack } from '@repo/ui/utils/navigation';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -23,8 +23,8 @@ import { useTranslation } from 'react-i18next';
 import { useAIAgent } from '../hooks/useAIAgent';
 
 export default function AIAssistantScreen() {
-  const navigation = useNavigation<any>();
-  const route = useRoute<any>();
+  const router = useRouter();
+  const params = useLocalSearchParams<{ initialMessage?: string }>();
   const { t } = useTranslation();
   const { context } = usePermissions();
   const { user } = useStore();
@@ -45,12 +45,12 @@ export default function AIAssistantScreen() {
 
   // Handle initial message from navigation context
   useEffect(() => {
-    const { initialMessage } = route.params || {};
+    const { initialMessage } = params;
     if (initialMessage && !initialMessageProcessed.current && !isThinking) {
       initialMessageProcessed.current = true;
       void sendMessage(initialMessage);
     }
-  }, [route.params, sendMessage, isThinking]);
+  }, [params, sendMessage, isThinking]);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -70,7 +70,7 @@ export default function AIAssistantScreen() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      void handleSend();
     }
   };
 
@@ -110,11 +110,7 @@ export default function AIAssistantScreen() {
           The AI assistant is personalised to your role, school, and learning orientation. Sign in
           to begin.
         </p>
-        <button
-          type="button"
-          className="premium-button"
-          onClick={() => navigation.navigate('Auth')}
-        >
+        <button type="button" className="premium-button" onClick={() => router.push('/auth')}>
           Sign In
         </button>
       </div>
@@ -251,7 +247,7 @@ export default function AIAssistantScreen() {
         >
           <button
             type="button"
-            onClick={() => navigation.goBack()}
+            onClick={() => safeBack('/self')}
             style={{
               background: 'none',
               border: 'none',
@@ -463,7 +459,9 @@ export default function AIAssistantScreen() {
           />
           <button
             type="button"
-            onClick={handleSend}
+            onClick={() => {
+              void handleSend();
+            }}
             disabled={!draft.trim() || isThinking}
             style={{
               width: '44px',

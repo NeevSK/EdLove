@@ -26,7 +26,7 @@ import {
 } from '@repo/ui/primitives';
 import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
 
-import { Bell, Clock, Droplet, Edit, Plus, Trash2 } from 'lucide-react-native';
+import { Bell, Clock, Droplet, Plus, SquarePen, Trash2 } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -264,7 +264,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
                       <>
                         <Pressable onPress={() => openEditModal(reminder)}>
                           <Box className="w-9 h-9 rounded-full bg-obsidian items-center justify-center">
-                            <Icon as={Edit} className="text-mistGray" size={16} />
+                            <Icon as={SquarePen} className="text-mistGray" size={16} />
                           </Box>
                         </Pressable>
                         <Pressable
@@ -293,13 +293,13 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
         </Text>
       </Box>
 
-      {/* Create/Edit Modal */}
+      {/* Create/SquarePen Modal */}
       <Modal isOpen={showCreateModal} onClose={closeModal}>
         <ModalBackdrop />
         <ModalContent className="bg-obsidian max-w-[400px]">
           <ModalHeader>
             <Heading className="text-sacredWhite" size="lg">
-              {editingReminder ? 'Edit Reminder' : 'New Reminder'}
+              {editingReminder ? 'SquarePen Reminder' : 'New Reminder'}
             </Heading>
             <ModalCloseButton />
           </ModalHeader>

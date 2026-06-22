@@ -8,7 +8,7 @@
  */
 
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
-import { Check as CheckIcon, Edit2, Plus, Trash2, Users } from '@repo/ui/icons';
+import { Check as CheckIcon, Pen, Plus, Trash2, Users } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -28,7 +28,7 @@ import {
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Types
@@ -71,12 +71,7 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
 
-  useEffect(() => {
-    fetchStudents();
-    loadGroups();
-  }, [loadGroups, fetchStudents]);
-
-  async function fetchStudents() {
+  const fetchStudents = useCallback(async () => {
     setIsLoading(true);
     try {
       // TODO: Replace with actual API call
@@ -96,9 +91,9 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, []);
 
-  function loadGroups() {
+  const loadGroups = useCallback(() => {
     // TODO: Load from API or AsyncStorage
     // For now, using local state
     const mockGroups: StudentGroup[] = [
@@ -112,7 +107,12 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
       },
     ];
     setGroups(mockGroups);
-  }
+  }, []);
+
+  useEffect(() => {
+    fetchStudents();
+    loadGroups();
+  }, [loadGroups, fetchStudents]);
 
   const toggleStudentSelection = (studentId: string) => {
     hapticLight();
@@ -229,7 +229,7 @@ export default function GroupManager({ classroomId }: GroupManagerProps) {
             <HStack className="gap-2">
               <Pressable onPress={() => openEditModal(group)}>
                 <Box className="p-2 rounded-xl bg-phase-surface border border-phase-border">
-                  <Icon as={Edit2} className="text-phase-text-tertiary" size="xs" />
+                  <Icon as={Pen} className="text-phase-text-tertiary" size="xs" />
                 </Box>
               </Pressable>
               <Pressable onPress={() => deleteGroup(group.id)}>

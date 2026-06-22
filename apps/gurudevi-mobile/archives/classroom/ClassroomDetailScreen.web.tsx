@@ -10,14 +10,14 @@ import {
   ArrowLeft,
   BookOpen,
   Calendar,
-  CheckCircle2,
+  CircleCheck,
   ClipboardList,
   Clock,
-  Edit2,
+  Pen,
   ExternalLink,
   Eye,
   FileText,
-  Filter,
+  Funnel,
   Layers,
   MessageCircle,
   NotebookPen,
@@ -1045,7 +1045,7 @@ export default function ClassroomDetailScreenWeb() {
                                   color: 'var(--ink-ghost)',
                                 }}
                               >
-                                <Edit2 size={13} />
+                                <Pen size={13} />
                               </button>
                               <button
                                 title="Remove from classroom"
@@ -1253,7 +1253,7 @@ export default function ClassroomDetailScreenWeb() {
                           })
                         }
                       >
-                        <CheckCircle2 size={13} /> Grade
+                        <CircleCheck size={13} /> Grade
                       </button>
                     )}
                   </div>
@@ -2056,7 +2056,7 @@ export default function ClassroomDetailScreenWeb() {
                   <Plus size={15} /> New Observation
                 </button>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Filter size={14} color="var(--ink-ghost)" />
+                  <Funnel size={14} color="var(--ink-ghost)" />
                   <select
                     value={obsFilter}
                     onChange={(e) => setObsFilter(e.target.value)}

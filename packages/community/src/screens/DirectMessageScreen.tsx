@@ -8,8 +8,8 @@
 import { supabase } from '@repo/core/api';
 
 import { useStore, useTemporalStore } from '@repo/core/store';
-import React from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
+import React from 'react';
 import { communityAPI } from '../api/community';
 import HeaderMoreMenu from '../components/HeaderMoreMenu';
 import type { ChatMessage } from '../types';

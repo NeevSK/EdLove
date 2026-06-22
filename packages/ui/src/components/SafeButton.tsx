@@ -46,7 +46,13 @@ export const SafeButton: React.FC<ISafeButtonProps> = ({
   });
 
   return (
-    <Button {...props} isLoading={isPending || isLoading} onPress={execute}>
+    <Button
+      {...props}
+      isLoading={isPending || isLoading}
+      onPress={() => {
+        void execute();
+      }}
+    >
       {children}
     </Button>
   );

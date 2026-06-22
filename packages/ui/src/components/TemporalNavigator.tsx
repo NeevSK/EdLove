@@ -1,5 +1,7 @@
 import { useTemporalStore } from '@repo/core/logic';
 import { Calendar, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react-native';
+import { useState } from 'react';
+import { Platform } from 'react-native';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';
 import { Box, HStack, Text } from '../gluestack';
 import { Pressable } from '../primitives';
@@ -10,8 +12,17 @@ import { Pressable } from '../primitives';
  * A premium UI component that allows users to travel through "Time".
  * Updates the global useTemporalStore which in turn refreshes data across the app.
  */
+const loadDateTimePicker = () => {
+  try {
+    return require('@react-native-community/datetimepicker').default;
+  } catch {
+    return null;
+  }
+};
+
 export const TemporalNavigator = () => {
   const { viewDate, setViewDate, resetToToday, phase } = useTemporalStore();
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const adjustDate = (days: number) => {
     const date = new Date(viewDate);
@@ -72,7 +83,14 @@ export const TemporalNavigator = () => {
         accessibilityRole="button"
         className="flex-row items-center px-3 active:opacity-70"
         onPress={() => {
-          /* In a real app, this triggers a DatePicker modal */
+          if (Platform.OS === 'web') {
+            const dateStr = prompt('Enter date (YYYY-MM-DD):', viewDate);
+            if (dateStr && !isNaN(Date.parse(dateStr))) {
+              setViewDate(new Date(dateStr).toISOString().split('T')[0] || '');
+            }
+          } else {
+            setShowDatePicker(true);
+          }
         }}
       >
         <Calendar size={16} color="#F6BF8C" className="mr-1.5" />
@@ -95,6 +113,26 @@ export const TemporalNavigator = () => {
           <ChevronRight size={20} color="#999" />
         </Pressable>
       </Box>
+      {showDatePicker &&
+        Platform.OS !== 'web' &&
+        (() => {
+          const DateTimePicker = loadDateTimePicker();
+          if (!DateTimePicker) return null;
+          return (
+            <DateTimePicker
+              value={new Date(viewDate)}
+              mode="date"
+              display="default"
+              onChange={(event: any, selectedDate?: Date) => {
+                setShowDatePicker(false);
+                if (selectedDate) {
+                  const dateStr = selectedDate.toISOString().split('T')[0] || '';
+                  setViewDate(dateStr);
+                }
+              }}
+            />
+          );
+        })()}
     </Animated.View>
   );
 };

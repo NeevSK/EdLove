@@ -220,3 +220,96 @@ export const nativeRuntimeEnvironment: CoreRuntimeEnvironment = {
   asset: nativeAssetProvider,
   notification: nativeNotificationProvider,
 };
+
+const webNoopEventHandle = { remove: () => undefined };
+
+export const webRuntimeEnvironment: CoreRuntimeEnvironment = {
+  storage: nativeStorageProvider as any,
+  device: {
+    getMetadata(): DeviceMetadata {
+      return {
+        modelName: globalThis.navigator?.userAgent ?? 'web',
+        osVersion: globalThis.navigator?.platform ?? null,
+        platform: 'web',
+      };
+    },
+    getTotalMemory: () => null,
+  },
+  haptics: {
+    impactLight: () => undefined,
+    impactMedium: () => undefined,
+    impactHeavy: () => undefined,
+    notificationSuccess: () => undefined,
+    notificationWarning: () => undefined,
+    notificationError: () => undefined,
+    selection: () => undefined,
+  },
+  linking: {
+    openURL: async (url: string) => {
+      globalThis.open?.(url, '_blank', 'noopener,noreferrer');
+    },
+    canOpenURL: async () => true,
+    addEventListener: () => webNoopEventHandle,
+    getInitialURL: async () => null,
+  },
+  location: {
+    requestPermissionsAsync: async () => ({ status: 'denied' }),
+    watchPositionAsync: async () => webNoopEventHandle,
+    Accuracy: {},
+  },
+  network: {
+    fetch: async () => ({
+      isConnected: globalThis.navigator?.onLine ?? null,
+      type: globalThis.navigator?.onLine ? 'wifi' : 'none',
+    }),
+  },
+  share: {
+    share: async () => undefined,
+  },
+  ui: {
+    setStatusBarHidden: () => undefined,
+  },
+  clipboard: {
+    getStringAsync: async () => '',
+    setStringAsync: async () => false,
+  },
+  secureStorage: {
+    getItemAsync: async (key: string) => globalThis.localStorage?.getItem(key) ?? null,
+    setItemAsync: async (key: string, value: string) => {
+      globalThis.localStorage?.setItem(key, value);
+      return;
+    },
+    deleteItemAsync: async (key: string) => {
+      globalThis.localStorage?.removeItem(key);
+      return;
+    },
+  },
+  backgroundTask: {
+    defineTask: () => undefined,
+    registerTaskAsync: async () => undefined,
+    unregisterTaskAsync: async () => undefined,
+    getStatusAsync: async () => BackgroundTaskStatus.Denied,
+    isTaskRegisteredAsync: async () => false,
+  },
+  asset: {
+    loadAsync: async () => undefined,
+  },
+  notification: {
+    getPushTokenAsync: async () => null,
+    getPermissionsAsync: async () => ({
+      status: 'denied',
+      canAskAgain: false,
+      expires: 'never',
+    }),
+    requestPermissionsAsync: async () => ({
+      status: 'denied',
+      canAskAgain: false,
+      expires: 'never',
+    }),
+    setBadgeCountAsync: async () => undefined,
+    getBadgeCountAsync: async () => 0,
+    addPushTokenListener: () => () => undefined,
+    addNotificationReceivedListener: () => () => undefined,
+    addNotificationResponseReceivedListener: () => () => undefined,
+  },
+};

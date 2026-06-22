@@ -3,12 +3,12 @@ import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
 import EntityModal from '@repo/ui/components/EntityModal';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
-import { CheckCircle } from '@repo/ui/icons';
+import { CircleCheck } from '@repo/ui/icons';
 import { Box, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils';
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { router } from 'expo-router';
 
 interface CreateGroupModalProps {
   isOpen: boolean;
@@ -63,7 +63,7 @@ export default function CreateGroupModal({
       <SanctuaryModal isOpen={isOpen} onClose={onClose} title="Circle Founded">
         <VStack className="gap-8 items-center py-8">
           <Box className="w-24 h-24 rounded-full bg-phase-interactive/10 items-center justify-center border border-phase-interactive/20">
-            <Icon as={CheckCircle} className="text-phase-interactive" size="xl" />
+            <Icon as={CircleCheck} className="text-phase-interactive" size="xl" />
           </Box>
 
           <VStack className="gap-2 items-center px-4">

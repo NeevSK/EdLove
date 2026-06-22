@@ -39,6 +39,7 @@ export async function checkLocalPermission(params: {
       if (policySizeBytes <= MAX_LOCAL_POLICY_SIZE_BYTES) {
         // Dynamically import WASM compiler (Hermes native WASM engine)
         // @ts-expect-error - Dynamic Cedar WASM web entrypoint load for browser/React-Native compatibility
+        // eslint-disable-next-line import-x/no-unresolved
         const { evaluate } = await import('@cedar-policy/cedar-wasm/web');
 
         // Fetch dynamic attributes
