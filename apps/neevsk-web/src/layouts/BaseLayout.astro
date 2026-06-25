@@ -26,6 +26,10 @@ import '../styles/themes/light-tech.scss';
 import '../styles/themes/warm-archive.scss';
 import '../styles/themes/digital-neon.scss';
 import '../styles/creative-signatures.scss';
+import CoherenceMeter from '../components/common/CoherenceMeter.astro';
+import Footer from '../components/common/Footer.astro';
+import Navigation from '../components/common/Navigation.astro';
+import StructuredData from '../components/StructuredData.astro';
 import {
   defaultOgImage,
   PERSON,
@@ -33,6 +37,7 @@ import {
   SITE_NAME,
   SITE_TITLE,
   SITE_URL,
+  SITE_KEYWORDS,
 } from '../lib/site';
 
 const canonical = Astro.url.href;

@@ -1,5 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navigation from '../components/common/Navigation.astro';
+import RealitySwitch from '../components/RealitySwitch.astro';
 import { absoluteUrl } from '../lib/site';
 
 const archiveEntries = await getCollection('archive', ({ data }) => !data.draft);

@@ -1,6 +1,8 @@
 ---
 import { getCollection, render } from 'astro:content';
 import { absoluteUrl } from '../../lib/site';
+import Layout from '../../layouts/Layout.astro';
+import CosmicParticles from '../../components/CosmicParticles.astro';
 
 export async function getStaticPaths() {
   const cosmosEntries = await getCollection('cosmos');
@@ -14,7 +16,7 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 const articleSlug = entry.id.replace(/\.(md|mdx)$/i, '');
 const articleUrl = absoluteUrl(`/cosmos/${articleSlug}`);
-const _structuredData = {
+const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'Article',
   headline: entry.data.title,

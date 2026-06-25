@@ -7,7 +7,7 @@ export interface Props {
 }
 
 const { variant = 'primary', href, class: className, ...rest } = Astro.props;
-const _Tag = href ? 'a' : 'button';
+const Tag = href ? 'a' : 'button';
 ---
 
 <Tag

@@ -1,5 +1,8 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import CosmicParticles from '../../components/CosmicParticles.astro';
+import ExpandableContent from '../../components/ExpandableContent.astro';
 
 const cosmosEntries = await getCollection('cosmos', ({ data }) => !data.draft);
 cosmosEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));

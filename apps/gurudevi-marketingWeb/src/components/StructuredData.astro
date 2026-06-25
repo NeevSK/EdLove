@@ -4,7 +4,7 @@ interface Props {
 }
 
 const { data } = Astro.props;
-const _normalized = (Array.isArray(data) ? data : [data]) as Record<string, any>[];
+const normalized = (Array.isArray(data) ? data : [data]) as Record<string, any>[];
 ---
 
 {normalized.map((entry) => (
