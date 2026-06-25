@@ -20,7 +20,7 @@
   },
   "scripts": {
     "lint": "node ../../scripts/run-and-report.mjs --cmd \"pnpm run lint:biome && pnpm run lint:eslint\" --name \"packages_database-lint\"",
-    "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --noEmit\" --name \"packages_database-check-types\"",
+    "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --build --noEmit --checkers 4 --builders 4\" --name \"packages_database-check-types\"",
     "generate": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec zen generate --schema zenstack/schema.zmodel --output ../core/src/logic/generated\" --name \"packages_database-generate\"",
     "db:push": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec zen db push --schema zenstack/schema.zmodel\" --name \"packages_database-db_push\"",
     "db:studio": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec zen studio --schema zenstack/schema.zmodel\" --name \"packages_database-db_studio\"",
@@ -52,13 +52,13 @@
     "@zenstackhq/sdk": "3.6.4",
     "@zenstackhq/zod": "3.6.4",
     "eslint": "^10.4.1",
-    "typescript": "^6.0.3",
+    "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.8"
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
-    "check-types": "pnpm exec tsc --noEmit",
+    "check-types": "pnpm exec tsc --build --noEmit --checkers 4 --builders 4",
     "generate": "pnpm exec zen generate --schema zenstack/schema.zmodel --output ../core/src/logic/generated",
     "db:push": "pnpm exec zen db push --schema zenstack/schema.zmodel",
     "db:studio": "pnpm exec zen studio --schema zenstack/schema.zmodel",

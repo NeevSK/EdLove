@@ -1,11 +1,17 @@
 ---
 title: "TypeScript 6.0.3 Modernization & Module Resolution Guide"
-status: "active"
+status: "superseded"
 created: 2026-05-25
-updated: 2026-05-25
-author: "Naween"
+updated: 2026-06-25
+author: "Naveen"
+scribe: "Antigravity"
 tags: [reorganized]
+superseded_by: "./2026-06-25-typescript-7-migration-guide.md"
 ---
+
+> [!IMPORTANT]
+> **This document has been superseded** by the [TypeScript 7.0 RC Migration Guide](./2026-06-25-typescript-7-migration-guide.md). Please refer to the new guide for active monorepo standards.
+
 
 # TypeScript 6.0.3 Modernization & Module Resolution Guide
 

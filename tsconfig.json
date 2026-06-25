@@ -35,6 +35,7 @@
     }
   ],
   "compilerOptions": {
+    "types": ["node"],
     "resolveJsonModule": true,
     "paths": {
       "@repo/analytics": ["./packages/analytics/src"],

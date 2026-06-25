@@ -94,6 +94,7 @@ patchedDependencies:
   '@react-native-ml-kit/barcode-scanning': 'patches/@react-native-ml-kit__barcode-scanning.patch'
   color@4.2.3: patches/color@4.2.3.patch
   eslint-plugin-react-native: patches/eslint-plugin-react-native.patch
+  react-native-css-interop@0.1.22: patches/react-native-css-interop@0.1.22.patch
 
 allowBuilds:
   '@biomejs/biome': true
