@@ -18,6 +18,7 @@ permit(
   resource
 ) when {
   resource is User &&
-  resource.id == principal.id
+  resource.id == principal.id &&
+  principal.capacity != "wanderer"
 };
 

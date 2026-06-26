@@ -13,7 +13,7 @@ export { useManualSnapshot } from '../hooks/useManualSnapshot';
 export { useNotifications } from '../hooks/useNotifications';
 export { useTemporalHeatmap } from '../hooks/useTemporalHeatmap';
 export { accountPin } from '../lib/accountPin';
-export { getAuthRouteDecision, isPublicBootstrapRoute } from './auth/bootstrapRoutes';
+export { getAuthRouteDecision, getAuthRouteTarget, isPublicBootstrapRoute } from './auth/bootstrapRoutes';
 export {
   getSessionIdentityMode,
   isAnonymousIdentity,

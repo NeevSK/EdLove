@@ -21,7 +21,8 @@ export function resolveOnboardingDevIntent(params: {
 
   const intent = parseDeveloperOnboardingTemplate(input);
   if (intent.kind === 'menu') return { kind: 'menu' };
-  return { kind: 'template', intent };
+  if (intent.kind === 'template') return { kind: 'template', intent };
+  return { kind: 'none' };
 }
 
 export function getDevOnboardingTemplateLabel(template: {
