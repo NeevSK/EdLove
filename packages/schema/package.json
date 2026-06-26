@@ -24,17 +24,17 @@
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules src/generated\" --name \"packages_schema-clean\""
   },
   "dependencies": {
-    "@zenstackhq/orm": "3.6.4",
-    "@zenstackhq/zod": "3.6.4",
+    "@zenstackhq/orm": "^3.8.0",
+    "@zenstackhq/zod": "^3.8.0",
     "decimal.js": "^10.6.0",
     "zod": "4.3.6"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@zenstackhq/cli": "3.6.4",
-    "@zenstackhq/language": "3.6.4",
-    "@zenstackhq/plugin-policy": "3.6.4",
-    "@zenstackhq/sdk": "3.6.4",
+    "@zenstackhq/cli": "^3.8.0",
+    "@zenstackhq/language": "^3.8.0",
+    "@zenstackhq/plugin-policy": "^3.8.0",
+    "@zenstackhq/sdk": "^3.8.0",
     "typescript": "rc"
   },
   "_originalScripts": {
