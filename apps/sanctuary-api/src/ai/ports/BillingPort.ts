@@ -5,6 +5,7 @@ export interface BillingPort {
     options?: {
       byokKeyInput?: string;
       schoolId?: string;
+      preferredProvider?: 'openai' | 'gemini' | 'anthropic' | 'deepseek';
     },
   ): Promise<{
     mode: 'baseline' | 'byok' | 'purchased';

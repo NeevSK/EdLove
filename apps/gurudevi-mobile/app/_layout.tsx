@@ -17,6 +17,8 @@ import {
   accountPin,
   coreRuntime,
   GlobalProvider,
+  getAuthRouteTarget,
+  getSessionIdentityMode,
   pushNotification,
   useAuth,
   useStore,
@@ -160,6 +162,15 @@ function AppContent() {
     showPinUnlock: false,
   }));
   const { isUnlocked, hasPinCode, showPinUnlock } = lockState;
+  const bootstrapReady = !loading && !isProfileLoading && fontsReady;
+  const sessionMode = getSessionIdentityMode(session);
+  const routeTarget = getAuthRouteTarget({
+    pathname,
+    bootstrapReady,
+    sessionMode,
+    onboardingCompleted,
+    hasSession: !!session,
+  });
 
   const setIsUnlocked = useCallback(
     (val: boolean) => setLockState((prev) => ({ ...prev, isUnlocked: val })),
@@ -277,23 +288,7 @@ function AppContent() {
   }, []);
 
   useEffect(() => {
-    if (loading || isProfileLoading || !fontsReady) return;
-
-    if (!session) {
-      if (
-        pathname !== '/welcome' &&
-        pathname !== '/auth' &&
-        !pathname?.startsWith('/public-form')
-      ) {
-        router.replace('/welcome');
-      }
-      return;
-    }
-
-    if (!onboardingCompleted && pathname !== '/onboarding') {
-      router.replace('/onboarding');
-      return;
-    }
+    if (!bootstrapReady) return;
 
     // Token-Based Access Control (TOBAC) Route Guard
     if (session?.expires_at) {
@@ -306,23 +301,25 @@ function AppContent() {
       }
     }
 
-    if (
-      pathname === '/' ||
-      pathname === '/welcome' ||
-      pathname === '/auth' ||
-      (onboardingCompleted && pathname === '/onboarding')
-    ) {
-      router.replace('/self');
+    if (routeTarget.redirectTo && pathname !== routeTarget.redirectTo) {
+      router.replace(routeTarget.redirectTo);
     }
-  }, [fontsReady, isProfileLoading, loading, onboardingCompleted, pathname, router, session]);
+  }, [
+    bootstrapReady,
+    pathname,
+    routeTarget.redirectTo,
+    router,
+    session,
+    onboardingCompleted,
+  ]);
 
   useEffect(() => {
-    if (loading || isProfileLoading || !fontsReady) return;
+    if (!bootstrapReady) return;
 
     void SplashScreen.hideAsync().catch((error) => {
       console.warn('[splash] hideAsync failed, continuing anyway', error);
     });
-  }, [fontsReady, isProfileLoading, loading]);
+  }, [bootstrapReady]);
 
   const loadPermissions = usePermissionStore((state) => state.loadPermissions);
 
@@ -338,7 +335,7 @@ function AppContent() {
     router.push({ pathname: '/qr', params: { payload: JSON.stringify(payload) } });
   });
 
-  if (loading || !fontsReady) {
+  if (!bootstrapReady) {
     return (
       <SafeAreaProvider>
         <GluestackUIProvider>

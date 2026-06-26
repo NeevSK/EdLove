@@ -39,10 +39,6 @@ module.exports = (api) => {
             transform: (member) => `lucide-react-native/dist/esm/icons/${kebabCase(member)}`,
             preventFullImport: true,
           },
-          '@repo/ui/icons': {
-            transform: (member) => `lucide-react-native/dist/esm/icons/${kebabCase(member)}`,
-            preventFullImport: true,
-          },
         },
       ],
     ],

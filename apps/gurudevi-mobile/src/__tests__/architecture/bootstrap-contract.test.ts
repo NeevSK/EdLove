@@ -1,0 +1,69 @@
+import { describe, expect, it } from 'vitest';
+import {
+  getBootstrapSessionState,
+} from '@repo/core/logic/auth/bootstrapContract';
+import { getAuthRouteTarget } from '@repo/core/logic/auth/bootstrapRoutes';
+
+describe('bootstrap contract', () => {
+  it('classifies the session bootstrap state', () => {
+    expect(
+      getBootstrapSessionState({
+        bootstrapReady: false,
+        sessionMode: null,
+        onboardingCompleted: false,
+        hasSession: false,
+      }),
+    ).toBe('booting');
+
+    expect(
+      getBootstrapSessionState({
+        bootstrapReady: true,
+        sessionMode: 'guest',
+        onboardingCompleted: false,
+        hasSession: false,
+      }),
+    ).toBe('guest');
+
+    expect(
+      getBootstrapSessionState({
+        bootstrapReady: true,
+        sessionMode: 'authenticated',
+        onboardingCompleted: false,
+        hasSession: true,
+      }),
+    ).toBe('onboarding-needed');
+
+    expect(
+      getBootstrapSessionState({
+        bootstrapReady: true,
+        sessionMode: 'authenticated',
+        onboardingCompleted: true,
+        hasSession: true,
+      }),
+    ).toBe('ready');
+  });
+
+  it('returns a richer route policy for app entry and logout', () => {
+    const onboarding = getAuthRouteTarget({
+      pathname: '/self',
+      bootstrapReady: true,
+      sessionMode: 'authenticated',
+      onboardingCompleted: false,
+      hasSession: true,
+    });
+
+    expect(onboarding.policy.state).toBe('onboarding-needed');
+    expect(onboarding.redirectTo).toBe('/onboarding');
+
+    const logout = getAuthRouteTarget({
+      pathname: '/self',
+      bootstrapReady: true,
+      sessionMode: 'guest',
+      onboardingCompleted: false,
+      hasSession: false,
+    });
+
+    expect(logout.policy.state).toBe('guest');
+    expect(logout.redirectTo).toBe('/welcome');
+  });
+});

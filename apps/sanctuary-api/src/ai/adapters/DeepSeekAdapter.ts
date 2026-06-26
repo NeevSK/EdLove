@@ -9,21 +9,21 @@ export class DeepSeekAdapter implements LlmPort {
     apiKey: string,
     model: string,
   ): Promise<any> {
-    const formattedMessages = [
+    const formattedMessages: Array<Record<string, string>> = [
       { role: 'system', content: systemPrompt },
       ...history.map((m) => ({
-        role: m.role as 'user' | 'assistant' | 'system',
+        role: m.role,
         content: m.content,
       })),
     ];
 
     // DeepSeek is OpenAI API-compatible, so we configure the OpenAI adapter with DeepSeek's URL
     return chat({
-      adapter: openaiText(model, {
+      adapter: openaiText(model as any, {
         apiKey,
         baseURL: 'https://api.deepseek.com/v1',
-      }),
-      messages: formattedMessages,
+      } as any),
+      messages: formattedMessages as any,
     });
   }
 }

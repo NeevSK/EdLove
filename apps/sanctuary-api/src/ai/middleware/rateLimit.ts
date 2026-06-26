@@ -6,11 +6,11 @@ interface RateLimitInfo {
 }
 
 const clientBuckets = new Map<string, RateLimitInfo>();
-const LIMIT = 10; // max requests
-const REFILL_RATE = 60000; // time window in ms (1 minute)
+const LIMIT = 10;
+const REFILL_RATE = 60000;
 
 export async function rateLimit(c: Context, next: Next) {
-  const user = c.get('user');
+  const user = c.get('user') as { id: string } | undefined;
   const clientId = user?.id || c.req.header('x-forwarded-for') || 'ip-anonymous';
 
   const now = Date.now();
@@ -21,7 +21,6 @@ export async function rateLimit(c: Context, next: Next) {
     clientBuckets.set(clientId, bucket);
   }
 
-  // Refill tokens based on time elapsed
   const elapsed = now - bucket.lastRefill;
   if (elapsed >= REFILL_RATE) {
     bucket.tokens = LIMIT;

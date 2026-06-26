@@ -1,5 +1,6 @@
 import { toServerSentEventsResponse } from '@tanstack/ai';
 import { Hono } from 'hono';
+import type { ContextVariableMap } from 'hono';
 import { AnthropicAdapter } from './adapters/AnthropicAdapter';
 import { DbBillingAdapter } from './adapters/DbBillingAdapter';
 import { DeepSeekAdapter } from './adapters/DeepSeekAdapter';
@@ -8,7 +9,15 @@ import { OpenAiAdapter } from './adapters/OpenAiAdapter';
 import { Orchestrator } from './domain/Orchestrator';
 import { rateLimit } from './middleware/rateLimit';
 
-export const aiRouter = new Hono<any>();
+type AiEnv = {
+  Variables: {
+    user: { id: string };
+    db: any;
+    requestId: string;
+  } & ContextVariableMap;
+};
+
+export const aiRouter = new Hono<AiEnv>();
 
 aiRouter.post('/chat', rateLimit, async (c) => {
   const user = c.get('user');

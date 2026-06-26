@@ -2,7 +2,7 @@
 title: "Gurudevi Mobile Documentation Vault Index"
 status: "active"
 created: 2026-06-10
-updated: 2026-06-10
+updated: 2026-06-26
 author: "Naveen"
 scribe: "Antigravity"
 tags: [index, portal]
@@ -18,6 +18,16 @@ Welcome to the documentation vault for `gurudevi-mobile`. This file serves as th
 
 | Date | Document | Category | Status | Summary |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-06-26** | [Route Flow Implementation Checklist](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/current_progress/2026-06-26-route-flow-implementation-checklist.md) | Current Progress | `draft` | Execution checklist for the route and onboarding cleanup. |
+| **2026-06-26** | [Developer Sandbox Console & Onboarding Parser](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/2026-06-26-developer-sandbox-console.md) | Architecture | `active` | Canonical hidden dev shortcut contract for onboarding name-step templates. |
+| **2026-06-26** | [Test Strategy: Jest vs Vitest for Gurudevi Mobile](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/current_progress/2026-06-26-test-strategy-jest-vs-vitest.md) | Current Progress | `draft` | Which test seam to use for route helpers, state machines, and Expo screen mounts. |
+| **2026-06-26** | [Logout and Bootstrap Contract](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/current_progress/2026-06-26-logout-bootstrap-contract.md) | Current Progress | `draft` | Canonical logout sequence and the public-entry reset behavior. |
+| **2026-06-26** | [Multi-Account Contract](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/current_progress/2026-06-26-multi-account-contract.md) | Current Progress | `draft` | Multi-account as a first-class capability, even before the UI surface exists. |
+| **2026-06-26** | [Canonical Account State Model](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/current_progress/2026-06-26-canonical-account-state-model.md) | Current Progress | `draft` | The shared state ladder for guest, auth, onboarding, ready, and multi-account. |
+| **2026-06-26** | [Route Flow Fishbone Analysis](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/current_progress/2026-06-26-route-flow-fishbone-analysis.md) | Current Progress | `draft` | Persistent analysis of the route, identity, onboarding, and permission spaghetti. |
+| **2026-06-26** | [Route Flow Proposed Solution](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/current_progress/2026-06-26-route-flow-proposed-solution.md) | Current Progress | `draft` | Proposed cleanup plan for a single canonical entry flow across web and mobile. |
+| **2026-06-26** | [Welcome, Auth, Guest, and Onboarding Flow](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/2026-06-26-welcome-auth-onboarding-flow.md) | Architecture | `active` | Canonical public-entry flow for welcome, guest, auth, onboarding, and app entry sequencing. |
+| **2026-06-26** | [Auth and Onboarding Highway Boundaries](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/AUTH_ONBOARDING_HIGHWAY_BOUNDARIES.md) | Architecture | `active` | Canonical auth bootstrap, shared route helpers, secure session storage, and onboarding state machine rules. |
 | **2026-06-12** | [AI Assistant Hono Migration & Sovereign Architecture](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/2026-06-12-ai-orchestrator-hono-migration.md) | Architecture | `active` | Migrated AI Assistant's orchestrator from Supabase Edge Functions to Hono with Hexagonal architecture, enclave decryption, rate-limiting, and failovers. |
 | **2026-06-12** | [Hexagonal Ports & Adapters Rollout](file:///c:/Users/Naween/projects/polymath-platform/packages/core/docs/architecture/2026-06-12-hexagonal-ports-adapters-rollout.md) | Architecture | `active` | Defined ports and concrete adapters for Telemetry (PostHog), Gating/Flags (Supabase/GrowthBook), and Authorization (Cedar). |
 | **2026-06-12** | [Web-Only Payments & Hexagonal Entitlements](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/decisions/2026-06-12-web-only-payments-and-entitlements.md) | Decisions | `active` | Architectural decision to bypass native Google/Apple payments, processing subscriptions on the web and syncing entitlements offline. |
@@ -69,6 +79,7 @@ Welcome to the documentation vault for `gurudevi-mobile`. This file serves as th
 *   [Workspace and Navigation Philosophy](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/Core/workspace-navigation-philosophy.md) - Five ecological circles, workspace dynamics, and Expo Router.
 *   [Technical Architecture and Constraints](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/Core/technical-architecture-constraints.md) - Multi-tenant RLS, offline-first sync (PowerSync), device boundaries.
 *   [Identity and Access Management (IAM)](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/Core/identity-and-access-management.md) - Cedar-style ReBAC, active bonds, offline attributes, and device trust.
+*   [Auth and Onboarding Highway Boundaries](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/AUTH_ONBOARDING_HIGHWAY_BOUNDARIES.md) - Canonical auth bootstrap helpers, route gating, secure session storage, and onboarding state rules.
 *   [Security and Data Integrity](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/Core/security-and-data-integrity.md) - PostgreSQL RLS, explicit sovereignty grants (ADR-002), HMAC signatures.
 *   [Offline-Online Synchronization Spec](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/Core/offline-online-sync-spec.md) - PowerSync queue execution, idempotency verification, Last-Write-Wins, and soft deletes.
 *   [Web-Native Compatibility Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/Core/web-native-compatibility-guide.md) - Platform resolutions, native package web shims, and layout responsive shells.
@@ -115,6 +126,7 @@ Welcome to the documentation vault for `gurudevi-mobile`. This file serves as th
 *   [Expo Router Migration and Major Dependencies Audit](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-10-migration-and-major-dependency-audit.md) - Deep-dive review of Expo Router transfer status, Expo mismatches, major updates list, and gesture handler risks.
 *   [Gurudevi Mobile and Shared Packages Dependency Audit](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-10-dependency-audit.md) - Deep-dive audit of outdated dependencies in gurudevi-mobile and shared libraries using taze.
 *   [Offline Security & Resilience Blueprint](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/offline-security-and-resilience.md) - Security controls, keys configuration, and system threat mitigation model.
+*   [Auth and Onboarding Highway Boundaries](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/AUTH_ONBOARDING_HIGHWAY_BOUNDARIES.md) - Same canonical auth/onboarding contract, listed here for security review and bootstrap visibility.
 *   [Offline Authorization Architecture](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/2026-05-18-gurudevi-offline-authorization-architecture.md) - Offline RBAC rule caches.
 *   [Sovereign ReBAC Developer Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/2026-05-06-sovereign-rebac-developer-guide.md) - Relationship-Based Access Control logic.
 *   [Offline IAM & Write Safety Audit](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/2026-05-20-gurudevi-offline-iam-write-safety-audit.md) - Data write validation report.

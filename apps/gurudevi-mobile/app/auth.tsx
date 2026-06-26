@@ -1,4 +1,5 @@
 import { Center, Spinner } from '@repo/ui/primitives';
+import { identityAPI } from '@repo/core/api';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
 import { Suspense, useCallback } from 'react';
@@ -15,7 +16,17 @@ function Fallback() {
 export default function AuthRoute() {
   const router = useRouter();
 
-  const handleSuccess = useCallback(() => {
+  const handleSuccess = useCallback(async () => {
+    try {
+      const citizen = await identityAPI.identifyActiveCitizen();
+      if (citizen?.onboarding_completed) {
+        router.replace('/self');
+        return;
+      }
+    } catch (error) {
+      console.warn('[auth route] unable to resolve onboarding completion after login', error);
+    }
+
     router.replace('/onboarding');
   }, [router]);
 

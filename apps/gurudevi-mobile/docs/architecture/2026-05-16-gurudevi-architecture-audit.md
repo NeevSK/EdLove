@@ -2,7 +2,7 @@
 title: "Sovereign Monorepo Architecture Audit (2026-05-16)"
 status: "active"
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-06-26
 author: "Naween"
 tags: [reorganized]
 ---
@@ -18,7 +18,7 @@ This report provides a definitive mapping of the Sovereign monorepo's package st
 | Package Name | Purpose | Key Dependencies |
 | :--- | :--- | :--- |
 | **`@repo/core`** | Central logic, API contracts, CASL composition, and identity management. | `@repo/database`, `@repo/schema`, `@casl/ability`, `hono` |
-| **`@repo/schema`** | Source of truth for ZenStack models and data-layer policies. | `@zenstackhq/orm`, `@zenstackhq/zod`, `zod` |
+| **`@repo/schema`** | Source of truth for ZenStack models, ReBAC policies, ORM metadata, and runtime Zod validation. | `@zenstackhq/orm`, `@zenstackhq/zod`, `zod` |
 | **`@repo/database`**| Database client factory (Kysely + ZenStack integration). | `@repo/schema`, `kysely`, `pg` |
 | **`@repo/ui`** | Shared UI components (React Native + Gluestack v3). | `gluestack-ui`, `lucide-react-native` |
 | **`@repo/classroom`**| Classroom domain (Screens, Hooks, and Components). | `@repo/core`, `@repo/ui`, `@repo/analytics`, `@repo/self` |
@@ -58,7 +58,7 @@ graph TD
 ### Actual Client
 The system uses **ZenStackClient (v3)** as an abstraction layer over **Kysely**.
 - **Query Builder**: Kysely.
-- **ORM Provider**: ZenStack (handling ReBAC enforcement and Zod generation).
+- **ORM Provider**: ZenStack (handling ReBAC enforcement and runtime Zod validation via `createSchemaFactory`).
 - **Driver**: `pg` (PostgreSQL Pool).
 
 ### Location
@@ -82,7 +82,7 @@ The system uses **ZenStackClient (v3)** as an abstraction layer over **Kysely**.
 | **Access Control (BFF)** | `@repo/core` | `src/logic/permissions/abilities/` |
 | **Business Logic** | `@repo/core` | `src/logic/managers/` and `src/api/handlers/` |
 | **CASL Abilities** | `@repo/core` | `src/logic/permissions/composer.ts` |
-| **Type Definitions** | `@repo/schema` | `src/generated/zod/` (Auto-generated) |
+| **Type Definitions** | `@repo/schema` | `src/generated/orm/` (Auto-generated models + input) + runtime Zod factory via `createSchemaFactory` |
 | **Domain Types** | `@repo/core` | `src/types/` |
 | **API Contracts** | `@repo/core` | `src/api/*.contract.ts` (ts-rest) |
 
@@ -96,6 +96,12 @@ The following concerns are duplicated or split across multiple packages, creatin
 2.  **Schema Validation (Duplicated)**: Data validation occurs in `schema.zmodel` (ZenStack) but is often re-defined or extended via manual Zod schemas in `@repo/core/src/logic/schemas/`.
 3.  **Identity Resolution (Distributed)**: The logic for determining "Who is this user?" exists in `composer.ts` (Core logic), `resolveIdentity.ts` (API Handler), and `useAuthStore` (Client state).
 4.  **SQL vs ZenStack (Legacy)**: Legacy RLS policies in `apps/gurudevi-mobile/supabase/migrations/` reference a `role` column, while the modern `@repo/schema` uses `bonds`. This is the most dangerous point of drift.
+
+### Resolved Drift (2026-06-26 Cleanup)
+
+- **Dead `plugin zod` codegen removed**: Replaced by V3 runtime `createSchemaFactory` pattern. Zod schemas are generated at runtime from ORM metadata instead of V2-style file codegen.
+- **Stale database scripts deleted**: `generate`, `db:push`, `db:studio`, `db:migrate` in `@repo/database` all referenced a nonexistent `zenstack/schema.zmodel` path — removed.
+- **ZenStack upgraded to v3.8.0** (from 3.6.4), all `@zenstackhq/*` packages aligned.
 
 ---
 

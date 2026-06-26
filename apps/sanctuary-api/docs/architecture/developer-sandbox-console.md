@@ -1,11 +1,12 @@
 ---
 title: "Developer Sandbox Console & Onboarding Parser"
-status: "active"
+status: "superseded"
 created: 2026-06-20
-updated: 2026-06-20
+updated: 2026-06-26
 author: "Naveen"
 scribe: "Antigravity"
 tags: [architecture, security, developer-tools]
+superseded_by: "../../../gurudevi-mobile/docs/architecture/2026-06-26-developer-sandbox-console.md"
 ---
 
 # Developer Sandbox Console & Onboarding Parser

@@ -9,17 +9,17 @@ export class OpenAiAdapter implements LlmPort {
     apiKey: string,
     model: string,
   ): Promise<any> {
-    const formattedMessages = [
+    const formattedMessages: Array<Record<string, string>> = [
       { role: 'system', content: systemPrompt },
       ...history.map((m) => ({
-        role: m.role as 'user' | 'assistant' | 'system',
+        role: m.role,
         content: m.content,
       })),
     ];
 
     return chat({
-      adapter: openaiText(model, { apiKey }),
-      messages: formattedMessages,
+      adapter: openaiText(model as any, { apiKey } as any),
+      messages: formattedMessages as any,
     });
   }
 }
