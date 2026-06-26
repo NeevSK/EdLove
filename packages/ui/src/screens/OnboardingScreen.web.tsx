@@ -12,6 +12,8 @@ import { useWindowDimensions } from 'react-native';
 import { GatewayFooter } from '../components/GatewayFooter.web';
 import { GatewayHeader } from '../components/GatewayHeader.web';
 import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
+import { isAnonymousIdentity } from '@repo/core/logic';
+import { getDevOnboardingTemplateLabel, resolveOnboardingDevIntent } from './onboardingDevFlow';
 
 // ──────────────────────────────────────────────────────────
 // CONSTANTS
@@ -448,11 +450,13 @@ const DevSandboxConsole =
 interface OnboardingScreenProps {
   onComplete: (name: string, capacity: Capacity, isAnonymous?: boolean) => void;
   isAnonymous?: boolean;
+  userId?: string | null;
 }
 
 export default memo(function OnboardingScreenWeb({
   onComplete,
   isAnonymous = false,
+  userId = null,
 }: OnboardingScreenProps) {
   const { t } = useTranslation();
   const { width } = useWindowDimensions();
@@ -477,19 +481,22 @@ export default memo(function OnboardingScreenWeb({
   const resolvedCitizenRef = useRef<Awaited<
     ReturnType<typeof identityAPI.identifyActiveCitizen>
   > | null>(null);
-  const anonymousBootstrapRequestedRef = useRef(false);
 
   // ── Restore saved progress or pre-fill from existing auth ────────────────────
   useEffect(() => {
     const initOnboarding = async () => {
-      let internalId: string | null = null;
+      if (!userId) {
+        console.log('⏳ OnboardingScreen.web: Waiting for userId prop to resolve...');
+        return;
+      }
+      const internalId = userId;
+      resolvedInternalIdRef.current = internalId;
+
       try {
         const citizen = await identityAPI.identifyActiveCitizen().catch(() => null);
         resolvedCitizenRef.current = citizen;
-        internalId = citizen?.id || null;
-        resolvedInternalIdRef.current = internalId;
       } catch (err) {
-        console.warn('[Onboarding] Failed to identify active citizen:', err);
+        console.warn('[Onboarding] Failed to pre-identify active citizen:', err);
       }
 
       try {
@@ -515,18 +522,6 @@ export default memo(function OnboardingScreenWeb({
           }
         } catch (e) {
           console.warn('[Onboarding] Failed to restore progress from storage:', e);
-        }
-
-        if (!internalId) {
-          if (anonymousBootstrapRequestedRef.current) {
-            return;
-          }
-          anonymousBootstrapRequestedRef.current = true;
-          console.log(
-            '🗝️ OnboardingScreen.web: No internalId found, initiating anonymous session...',
-          );
-          await authAPI.signInAnonymously();
-          return initOnboarding();
         }
 
         // USE NEW DOMAIN STATE API
@@ -709,50 +704,32 @@ export default memo(function OnboardingScreenWeb({
       if (!internalId) throw new Error('Identity not resolved. Please try again.');
 
       if (currentStep === 0) {
-        const isDevSandboxEnabled =
-          (typeof __DEV__ !== 'undefined' && __DEV__) ||
-          process.env.EXPO_PUBLIC_ENABLE_DEV_SANDBOX === 'true';
-        if (isDevSandboxEnabled && name.trim().startsWith('dev::')) {
-          const rawInput = name.trim();
-          if (rawInput === 'dev::sandbox' || rawInput === 'dev::menu') {
+        const devIntent = resolveOnboardingDevIntent({
+          isDevMode: typeof __DEV__ !== 'undefined' && __DEV__,
+          input: name,
+        });
+        if (devIntent.kind === 'menu') {
             dispatch({ type: 'SET_PROCESSING', isProcessing: false });
             dispatch({ type: 'SHOW_DEV_SANDBOX', visible: true });
             return;
           }
-
-          // Parse inline config
-          const configContent = rawInput.substring(5);
-          const parts = configContent.split(',');
-          const config: Record<string, string> = {};
-          for (const part of parts) {
-            const colonIndex = part.indexOf(':');
-            if (colonIndex !== -1) {
-              const key = part.substring(0, colonIndex).trim().toLowerCase();
-              const val = part.substring(colonIndex + 1).trim();
-              config[key] = val;
-            }
-          }
-
-          const parsedName = config.name || config.display_name || 'Dev User';
-          const parsedRole = (config.role || config.capacity || 'teacher') as Capacity;
-          const parsedPricing = (config.pricing || config.tier || 'FREE').toUpperCase();
-          const parsedCitizenship = (config.citizenship || 'WANDERER').toUpperCase();
-          const parsedSchoolId = config.school || config.school_id || null;
+        if (devIntent.kind === 'template') {
+          const template = devIntent.intent.template;
 
           showToast('Fast-tracking developer setup...', 'info', 2000);
 
-          await onboardingAPI.createInitialBond(parsedRole, {
+          await onboardingAPI.createInitialBond(template.role, {
             userId: internalId,
-            displayName: parsedName,
-            fullName: parsedName,
-            schoolId: parsedSchoolId,
+            displayName: template.name,
+            fullName: template.name,
+            schoolId: template.schoolId,
           });
 
           await identityAPI.modifyUserProfile(internalId, {
-            display_name: parsedName,
-            pricing_tier: parsedPricing,
-            citizenship: parsedCitizenship,
-            school_id: parsedSchoolId,
+            display_name: template.name,
+            pricing_tier: template.pricing,
+            citizenship: template.citizenship,
+            school_id: template.schoolId,
             profile_completed: true,
           });
 
@@ -760,17 +737,20 @@ export default memo(function OnboardingScreenWeb({
           await AsyncStorage.removeItem('onboarding_progress');
 
           hapticSuccess();
-          showToast(`Developer Account (${parsedRole}) Setup Success!`, 'success', 3000);
-          onComplete(parsedName, parsedRole, isAnonymous);
+          showToast(getDevOnboardingTemplateLabel(template), 'success', 3000);
+          onComplete(template.name, template.role, isAnonymous);
           return;
         }
 
-        const isAnonymousIdentity = !citizen?.email;
-        if (isAnonymousIdentity) {
+        if (isAnonymousIdentity(citizen)) {
           showToast('Name saved locally. Choose your capacity next.', 'info', 1000);
         } else {
           showToast('Syncing your identity...', 'info', 1000);
-          await identityAPI.modifyUserProfile(internalId, { display_name: name });
+          try {
+            await identityAPI.modifyUserProfile(internalId, { display_name: name });
+          } catch {
+            console.warn('[Onboarding] Failed to sync name to server, will retry later.');
+          }
         }
       } else if (currentStep === 1) {
         showToast(`Establishing your bond as ${selectedCapacity}...`, 'info', 1500);

@@ -5,6 +5,7 @@ import { FlowResolver, GuestDataSync } from '@repo/core/native';
 import { storage } from '@repo/core/storage';
 import type { Capacity, User } from '@repo/core/types';
 import { validateForm, validators } from '@repo/core/utils';
+import { getSessionIdentityMode } from '@repo/core/logic';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import { Mail, Shield } from 'lucide-react-native';
@@ -194,7 +195,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
 
       const redirectUrl = getRedirectUrl();
       const session = await authAPI.getAuthSession().catch(() => null);
-      const isAnon = session?.user?.is_anonymous || !session?.user?.email;
+      const isAnon = getSessionIdentityMode(session) === 'guest';
 
       // ── Native platform logic: use expo-auth-session ───
       try {
@@ -313,7 +314,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
       if (isSignUp) {
         showToast({ message: 'Creating your identity...', type: 'info', duration: 2000 });
         const currentSession = await authAPI.getAuthSession().catch(() => null);
-        const isAnon = currentSession?.user?.is_anonymous || !currentSession?.user?.email;
+        const isAnon = getSessionIdentityMode(currentSession) === 'guest';
 
         if (isAnon && currentSession?.user) {
           const existingName =

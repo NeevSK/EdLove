@@ -24,13 +24,16 @@ interface AnimatedContentProps {
   direction: 'up' | 'down' | 'none';
 }
 
+// Constants to avoid negative literals in worklets
+const Y_OFFSET = 20;
+
 /**
  * AnimatedContent - Internal component that owns the Reanimated shared values.
  * Only mounted when the JSI runtime is confirmed ready, preventing Bridgeless crashes.
  */
 const AnimatedContent = ({ children, delay, duration, direction }: AnimatedContentProps) => {
   const opacity = useSharedValue(0);
-  const translateY = useSharedValue(direction === 'up' ? 20 : direction === 'down' ? -20 : 0);
+  const translateY = useSharedValue(direction === 'up' ? Y_OFFSET : direction === 'down' ? -Y_OFFSET : 0);
 
   useEffect(() => {
     opacity.value = withDelay(delay, withTiming(1, { duration, easing: Easing.out(Easing.quad) }));

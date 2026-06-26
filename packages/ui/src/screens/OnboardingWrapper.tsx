@@ -34,10 +34,10 @@ export function OnboardingWrapper() {
 
   return (
     <OnboardingScreen
+      userId={session?.user?.id}
       isAnonymous={
         storeUser?.is_anonymous === true ||
-        session?.user?.is_anonymous === true ||
-        !session?.user?.email
+        session?.user?.is_anonymous === true
       }
       onComplete={handleComplete}
     />

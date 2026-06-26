@@ -14,6 +14,12 @@
       "browser": "./src/index.web.ts",
       "default": "./src/index.ts"
     },
+    "./icons": {
+      "types": "./src/icons.native.ts",
+      "browser": "./src/icons.web.ts",
+      "react-native": "./src/icons.native.ts",
+      "default": "./src/icons.native.ts"
+    },
     "./global.css": {
       "default": "./src/global.css"
     },

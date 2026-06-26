@@ -14,6 +14,9 @@ import { Text } from './ui/text';
 
 export type ToastType = 'success' | 'error' | 'info';
 
+// Constants to avoid negative literals in worklets
+const HIDDEN_Y_OFFSET = 120;
+
 interface SanctuaryToastProps {
   message: string;
   type?: ToastType;
@@ -29,7 +32,7 @@ export default function SanctuaryToast({
   onHide,
   duration = 3000,
 }: SanctuaryToastProps) {
-  const translateY = useSharedValue(-120);
+  const translateY = useSharedValue(-HIDDEN_Y_OFFSET);
   const opacity = useSharedValue(0);
 
   const getIconData = () => {
@@ -47,7 +50,7 @@ export default function SanctuaryToast({
 
   const hide = useCallback(() => {
     opacity.value = withTiming(0);
-    translateY.value = withTiming(-120, {}, (finished) => {
+    translateY.value = withTiming(-HIDDEN_Y_OFFSET, {}, (finished) => {
       if (finished && visible) {
         runOnJS(onHide)();
       }
