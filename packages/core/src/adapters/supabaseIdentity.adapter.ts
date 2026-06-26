@@ -135,7 +135,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
     return {
       id: internalId,
-      email: profile.email || '',
+      email: profile.email ?? null,
       name: profile.display_name || undefined,
       onboarding_completed: !!profile.onboarding_completed,
       activeBond: (perspective.activeBond || null) as Bond | null,

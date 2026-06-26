@@ -26,6 +26,8 @@ import type {
   PowerSyncCredentials,
 } from './powersync-shim';
 
+import { getConsistentIdempotencyKey } from '../../utils/idempotency';
+
 const POWERSYNC_URL = process.env.EXPO_PUBLIC_POWERSYNC_URL ?? '';
 
 export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
@@ -77,6 +79,9 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
         `[PowerSync] Uploading transactional batch of ${batch.crud.length} mutations through Sanctuary API.`,
       );
 
+      // Generate idempotency key (SHA-256 of stringified CRUD operations)
+      const idempotencyKey = await getConsistentIdempotencyKey(batch.crud);
+
       const res = await (client.api as any).powersync.upload.$post(
         {
           json: {
@@ -91,6 +96,7 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
         {
           headers: {
             Authorization: `Bearer ${session.access_token}`,
+            'X-Idempotency-Key': idempotencyKey,
           },
         },
       );

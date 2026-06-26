@@ -43,6 +43,21 @@ export const normalizeError = (error: unknown, instanceId?: string): SovereignEr
     }
   }
 
+  // 4. Handle standard HTTP Exceptions (e.g. Hono HTTPException)
+  if (error && typeof error === 'object' && 'status' in error) {
+    const httpError = error as { status: number; message?: string };
+    if (typeof httpError.status === 'number') {
+      return new SovereignError({
+        title: 'HTTP Gateway Exception',
+        detail: httpError.message || `HTTP request failed with status ${httpError.status}`,
+        status: httpError.status,
+        category: ErrorCategory.NETWORK,
+        code: `HTTP_${httpError.status}`,
+        instance: instanceId,
+      });
+    }
+  }
+
   // 4. Fallback for Unknown Errors
   return new SovereignError({
     title: 'Unexpected Platform Error',

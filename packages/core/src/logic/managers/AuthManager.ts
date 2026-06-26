@@ -12,6 +12,8 @@ export interface AuthManagerConfig {
 }
 
 export class AuthManager {
+  private anonymousSignInPromise: Promise<any> | null = null;
+
   constructor(
     private authPort: IAuthPort,
     private identityPort: IIdentityPort,
@@ -183,14 +185,27 @@ export class AuthManager {
   }
 
   async signInAnonymously() {
-    const result = await this.authPort.signInAnonymously({
-      data: {
-        is_anonymous: true,
-        citizenship: 'WANDERER',
-      },
-    });
+    const currentSession = await this.authPort.getSession().catch(() => null);
+    const currentUser = currentSession?.user;
 
-    return result;
+    if (currentUser?.is_anonymous) {
+      return { session: currentSession, user: currentUser };
+    }
+
+    if (!this.anonymousSignInPromise) {
+      this.anonymousSignInPromise = this.authPort
+        .signInAnonymously({
+          data: {
+            is_anonymous: true,
+            citizenship: 'WANDERER',
+          },
+        })
+        .finally(() => {
+          this.anonymousSignInPromise = null;
+        });
+    }
+
+    return await this.anonymousSignInPromise;
   }
 
   async linkAnonymousToEmail(

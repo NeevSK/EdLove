@@ -1,3 +1,5 @@
+declare var __DEV__: boolean | undefined;
+
 /**
  * Sovereign Error Architecture (2026 Standard)
  * -------------------------------------------

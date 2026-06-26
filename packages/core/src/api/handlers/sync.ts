@@ -52,6 +52,20 @@ const tableToModelMap: Record<string, string> = {
   staff_leaves: 'staffLeave',
 };
 
+const idempotencyCache = new Map<string, { success: boolean; processedCount: number; timestamp: number }>();
+
+// Clean up cache periodically (e.g. keys older than 10 minutes)
+if (typeof globalThis !== 'undefined' && !(globalThis as any).__idempotencyCleanupInterval) {
+  (globalThis as any).__idempotencyCleanupInterval = setInterval(() => {
+    const now = Date.now();
+    for (const [key, val] of idempotencyCache.entries()) {
+      if (now - val.timestamp > 10 * 60 * 1000) {
+        idempotencyCache.delete(key);
+      }
+    }
+  }, 5 * 60 * 1000);
+}
+
 /**
  * Sync Domain Handlers
  *
@@ -67,6 +81,20 @@ export const syncHandlers = {
     const db = c.get('db');
     if (!db) {
       return c.json({ error: 'Database context not available' }, 500);
+    }
+
+    const idempotencyKey = c.req.header('X-Idempotency-Key');
+    if (idempotencyKey && idempotencyCache.has(idempotencyKey)) {
+      console.log(`[Sync] Duplicate batch detected via idempotency key: "${idempotencyKey}". Returning cached response.`);
+      const cached = idempotencyCache.get(idempotencyKey)!;
+      return c.json(
+        {
+          success: cached.success,
+          processedCount: cached.processedCount,
+          idempotent: true,
+        },
+        200,
+      );
     }
 
     const { crud } = await c.req.json();
@@ -127,6 +155,14 @@ export const syncHandlers = {
       });
 
       console.log(`[Sync] Successfully synchronized ${crud.length} mutations to platform ledger.`);
+
+      if (idempotencyKey) {
+        idempotencyCache.set(idempotencyKey, {
+          success: true,
+          processedCount: crud.length,
+          timestamp: Date.now(),
+        });
+      }
 
       return c.json(
         {

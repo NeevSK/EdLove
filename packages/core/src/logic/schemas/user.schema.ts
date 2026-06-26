@@ -49,7 +49,7 @@ export const UserContextSchema = z.preprocess(
   normalizeUserContextInput,
   z.object({
     userId: z.uuid().nullish().default(null),
-    email: z.string().email().or(z.literal('')).nullish().default(null),
+    email: z.string().email().nullish().default(null),
 
     // Sovereign ReBAC Context
     bonds: z

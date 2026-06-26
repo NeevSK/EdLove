@@ -10,11 +10,25 @@ export const generateIdempotencyKey = (prefix?: string) => {
 };
 
 /**
- * Returns a consistent idempotency key for a specific set of data.
- * Useful for "fire-and-forget" syncs that might trigger multiple times.
+ * Returns a consistent, reproducible idempotency key for any data payload.
+ * Uses SHA-256 to hash the serialized JSON content.
  */
-export const getConsistentIdempotencyKey = async (_data: any) => {
-  // In a real 2026 app, we might use a hash of the data.
-  // For now, simple UUID is fine if stored in local state.
-  return uuidv4();
+export const getConsistentIdempotencyKey = async (data: any): Promise<string> => {
+  const content = JSON.stringify(data);
+  try {
+    if (typeof globalThis !== 'undefined' && globalThis.crypto?.subtle) {
+      const msgUint8 = new TextEncoder().encode(content);
+      const hashBuffer = await globalThis.crypto.subtle.digest('SHA-256', msgUint8);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+  } catch (e) {
+    console.warn('[Idempotency] Crypto hash failed, falling back to basic hash', e);
+  }
+  // Fallback basic hash
+  let hash = 5381;
+  for (let i = 0; i < content.length; i++) {
+    hash = (hash * 33) ^ content.charCodeAt(i);
+  }
+  return (hash >>> 0).toString(16);
 };
