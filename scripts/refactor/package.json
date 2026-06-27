@@ -1,0 +1,8 @@
+{
+  "name": "@repo/refactor-scripts",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "typescript": "^6.0.3"
+  }
+}

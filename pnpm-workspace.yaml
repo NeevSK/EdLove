@@ -14,6 +14,9 @@ publicHoistPattern:
   - '*@expo/config-plugins*'
 
 overrides:
+  "@typescript-eslint/typescript-estree>typescript": "npm:@typescript/typescript6@^6.0.0"
+  "@typescript-eslint/parser>typescript": "npm:@typescript/typescript6@^6.0.0"
+  "@eslint-react/core>typescript": "npm:@typescript/typescript6@^6.0.0"
   '@zenstackhq/cli': '3.6.4'
   '@zenstackhq/orm': '3.6.4'
   '@zenstackhq/language': '3.6.4'
@@ -94,6 +97,7 @@ patchedDependencies:
   '@react-native-ml-kit/barcode-scanning': 'patches/@react-native-ml-kit__barcode-scanning.patch'
   color@4.2.3: patches/color@4.2.3.patch
   eslint-plugin-react-native: patches/eslint-plugin-react-native.patch
+  react-native-css-interop@0.1.22: patches/react-native-css-interop@0.1.22.patch
 
 allowBuilds:
   '@biomejs/biome': true

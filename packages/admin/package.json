@@ -83,7 +83,7 @@
   },
   "scripts": {
     "lint": "node ../../scripts/run-and-report.mjs --cmd \"pnpm run lint:biome && pnpm run lint:eslint\" --name \"packages_admin-lint\"",
-    "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --noEmit\" --name \"packages_admin-check-types\"",
+    "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --build --noEmit --checkers 4 --builders 4\" --name \"packages_admin-check-types\"",
     "lint:biome": "node ../../scripts/run-and-report.mjs --cmd \"biome check .\" --name \"packages_admin-lint_biome\"",
     "lint:eslint": "node ../../scripts/run-and-report.mjs --cmd \"eslint .\" --name \"packages_admin-lint_eslint\"",
     "format": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs --write\" --name \"packages_admin-format\"",
@@ -120,7 +120,7 @@
     "@types/react": "^19.2.17",
     "@types/react-native": "workspace:*",
     "eslint": "^10.4.1",
-    "typescript": "^6.0.3",
+    "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.8"
   },
@@ -130,7 +130,7 @@
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
-    "check-types": "pnpm exec tsc --noEmit",
+    "check-types": "pnpm exec tsc --build --noEmit --checkers 4 --builders 4",
     "lint:biome": "biome check .",
     "lint:eslint": "eslint .",
     "format": "node ../../scripts/scoped-biome.mjs --write",

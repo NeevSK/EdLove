@@ -29,8 +29,8 @@
   },
   "scripts": {
     "lint": "node ../../scripts/run-and-report.mjs --cmd \"pnpm run lint:biome && pnpm run lint:eslint\" --name \"packages_ai-lint\"",
-    "typecheck": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --noEmit\" --name \"packages_ai-typecheck\"",
-    "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --noEmit\" --name \"packages_ai-check-types\"",
+    "typecheck": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --build --noEmit --checkers 4 --builders 4\" --name \"packages_ai-typecheck\"",
+    "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --build --noEmit --checkers 4 --builders 4\" --name \"packages_ai-check-types\"",
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"packages_ai-clean\"",
     "lint:biome": "node ../../scripts/run-and-report.mjs --cmd \"biome check .\" --name \"packages_ai-lint_biome\"",
     "lint:eslint": "node ../../scripts/run-and-report.mjs --cmd \"eslint .\" --name \"packages_ai-lint_eslint\"",
@@ -56,7 +56,7 @@
     "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.2.17",
     "eslint": "^10.4.1",
-    "typescript": "^6.0.3",
+    "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.8"
   },
@@ -70,8 +70,8 @@
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
-    "typecheck": "pnpm exec tsc --noEmit",
-    "check-types": "pnpm exec tsc --noEmit",
+    "typecheck": "pnpm exec tsc --build --noEmit --checkers 4 --builders 4",
+    "check-types": "pnpm exec tsc --build --noEmit --checkers 4 --builders 4",
     "clean": "rm -rf .turbo node_modules dist",
     "lint:biome": "biome check .",
     "lint:eslint": "eslint .",

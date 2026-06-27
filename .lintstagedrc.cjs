@@ -13,7 +13,10 @@ module.exports = {
         !file.includes('/archives/') &&
         !file.includes('\\archives\\') &&
         !file.includes('/archive/') &&
-        !file.includes('\\archive\\'),
+        !file.includes('\\archive\\') &&
+        !file.includes('/.astro/') &&
+        !file.includes('\\.astro\\') &&
+        !file.endsWith('.d.ts'),
     );
     if (filteredFiles.length === 0) return [];
     const chunks = chunkArray(filteredFiles, 10);

@@ -18,6 +18,8 @@ Welcome to the documentation vault for `sanctuary-api` (Sovereign API Gateway). 
 
 | Date | Document | Category | Status | Summary |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-06-25** | [Astro v6 to v7 Breaking Changes](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/infra/2026-06-25-astro-v6-to-v7-breaking-changes.md) | Infrastructure | `active` | Breakdowns of strict Rust HTML compilation, whitespace JSX-style compression, Vite 8 upgrade, and removed DB/Transitions APIs. |
+| **2026-06-25** | [Astro v7 Upgrade Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/infra/astro-v7-upgrade-guide.md) | Infrastructure | `active` | Migration guide from Astro v6 to Astro v7 including Vite 8, Rust compiler strictness, Sätteri Markdown pipeline, and removed features. |
 | **2026-06-20** | [Developer Sandbox Console](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/developer-sandbox-console.md) | Architecture | `active` | Document the Developer Sandbox Console & Inline Parser trigger flow, configuration parameters, and compile-time bundle security constraints. |
 | **2026-06-20** | [Docs SOP](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/docs-sop.md) | Standards | `active` | Document rules, file formatting, lifecycle rules, and frontmatter requirements. |
 | **2026-06-20** | [Infrastructure & Cost Evaluation](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/infrastructure-and-cost-evaluation.md) | Infrastructure | `active` | Evaluate API workload CPU/RAM profiling, V8 edge vs. Node container serverless capabilities, and long-run free tier strategies. |
@@ -36,3 +38,9 @@ Welcome to the documentation vault for `sanctuary-api` (Sovereign API Gateway). 
 *   [Tech Stack & Standards](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/tech-stack-and-standards.md) - Sovereign API Gateway architecture using Hono, WinterCG targets, Cedar WASM v4, ZenStack v3, and database pooling rules.
 *   [Testing Standards](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/testing-standards.md) - Integrated automated test strategies using Vitest, Hono test client, and safety validation boundaries.
 *   [AI Hono Migration (2026-06-12)](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/2026-06-12-ai-orchestrator-hono-migration.md) - Edge function migration and AI assistant routing structures.
+
+### ⚙️ Infrastructure & Operations
+*   [Astro v6 to v7 Breaking Changes](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/infra/2026-06-25-astro-v6-to-v7-breaking-changes.md) - Deep dive guide for breaking API changes, compiler updates, and configurations during migration.
+*   [Astro v7 Upgrade Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/infra/astro-v7-upgrade-guide.md) - Migration checklist and breaking changes reference for upgrading to Astro v7.0.
+
+

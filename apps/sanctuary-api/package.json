@@ -33,7 +33,7 @@
     "@biomejs/biome": "^2.4.16",
     "tsup": "^8.5.1",
     "tsx": "^4.22.4",
-    "typescript": "^6.0.3",
+    "typescript": "rc",
     "vitest": "^4.1.8"
   },
   "_originalScripts": {

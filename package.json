@@ -95,8 +95,7 @@
     "supabase": "^2.98.2",
     "syncpack": "^13.0.0",
     "turbo": "^2.6.0",
-    "typescript": "^5.9.3",
-    "typescript-eslint-parser": "^22.0.0"
+    "typescript": "rc"
   },
   "packageManager": "pnpm@11.8.0",
   "engines": {
