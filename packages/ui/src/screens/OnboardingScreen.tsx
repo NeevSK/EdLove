@@ -21,6 +21,14 @@ import {
   VStack,
 } from '../gluestack';
 import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
+import {
+  canProceedOnboardingStep,
+  getOnboardingPhase,
+  getOnboardingStepLabel,
+} from './onboardingFlow';
+import {
+} from './devOnboardingFastTrack';
+import { getDevOnboardingTemplateLabel, resolveOnboardingDevIntent } from './onboardingDevFlow';
 import { safeBack } from '../utils/navigation';
 
 // ──────────────────────────────────────────────────────────
@@ -200,7 +208,7 @@ const NameStep = memo(
     return (
       <StepShell
         currentStep={0}
-        step="STEP 1 · ARRIVAL"
+        step={getOnboardingStepLabel(0)}
         title={t('onboarding.nameTitle') || 'Welcome! What should we call you in Gurudevi?'}
         subtitle={t('onboarding.nameSubtitle') || "Let's start your journey with a name."}
       >
@@ -595,11 +603,13 @@ const DevSandboxConsole =
 interface OnboardingScreenProps {
   onComplete: (name: string, capacity: Capacity, isAnonymous?: boolean) => void;
   isAnonymous?: boolean;
+  userId?: string | null;
 }
 
 const OnboardingScreen = memo(function OnboardingScreen({
   onComplete,
   isAnonymous = false,
+  userId = null,
 }: OnboardingScreenProps) {
   const { t } = useTranslation();
 
@@ -616,6 +626,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
   });
 
   const { currentStep, name, selectedCapacity, isProcessing, error, showDevSandbox } = state;
+  const currentPhase = getOnboardingPhase(currentStep);
   const isOnline = useStore((s) => s.isOnline);
   const showToast = useStore((s) => s.showToast);
   const resolvedInternalIdRef = useRef<string | null>(null);
@@ -627,14 +638,18 @@ const OnboardingScreen = memo(function OnboardingScreen({
   // ── Restore saved progress or pre-fill from existing auth ──────────
   useEffect(() => {
     const initOnboarding = async () => {
-      let internalId: string | null = null;
+      if (!userId) {
+        console.log('⏳ OnboardingScreen: Waiting for userId prop to resolve...');
+        return;
+      }
+      const internalId = userId;
+      resolvedInternalIdRef.current = internalId;
+
       try {
         const citizen = await identityAPI.identifyActiveCitizen().catch(() => null);
         resolvedCitizenRef.current = citizen;
-        internalId = citizen?.id || null;
-        resolvedInternalIdRef.current = internalId;
       } catch (err) {
-        console.warn('[Onboarding] Failed to identify active citizen:', err);
+        console.warn('[Onboarding] Failed to pre-identify active citizen:', err);
       }
 
       try {
@@ -664,17 +679,6 @@ const OnboardingScreen = memo(function OnboardingScreen({
       }
 
       try {
-        // No saved progress — pre-fill for verified (non-anonymous) users with a real name
-        if (!internalId) {
-          if (anonymousBootstrapRequestedRef.current) {
-            return;
-          }
-          anonymousBootstrapRequestedRef.current = true;
-          console.log('🧭 OnboardingScreen: No internalId found, initiating anonymous session...');
-          await authAPI.signInAnonymously();
-          return initOnboarding();
-        }
-
         // USE NEW DOMAIN STATE API
         const capacitySummary = await identityAPI.resolveWorkspaceContext(internalId);
         const initialDomainState = capacitySummary.onboarding_state;
@@ -718,7 +722,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
       }
     };
     void initOnboarding();
-  }, [onComplete, showToast, isAnonymous]);
+  }, [onComplete, showToast, isAnonymous, userId]);
 
   const tourScreens = useMemo(
     () => [
@@ -758,13 +762,17 @@ const OnboardingScreen = memo(function OnboardingScreen({
 
   const canProceed = useMemo(() => {
     if (isProcessing) return false;
-    if (currentStep === 0) return name.trim().length >= 2 && name !== 'Guest User';
-    return true;
-  }, [currentStep, name, isProcessing]);
+    return canProceedOnboardingStep({
+      phase: currentPhase,
+      name,
+      selectedCapacity,
+      schoolId: state.schoolId,
+    });
+  }, [currentPhase, name, isProcessing, selectedCapacity, state.schoolId]);
 
   // Save progress whenever step/name/role/seeds change (so app-close resumes correctly)
   useEffect(() => {
-    if (currentStep === 0 && !name) return; // Nothing to save yet
+    if (currentStep === 0 && !name) return;
     const userId = resolvedInternalIdRef.current;
     if (!userId) return;
 
@@ -882,51 +890,33 @@ const OnboardingScreen = memo(function OnboardingScreen({
       const internalId = citizen?.id;
       if (!internalId) throw new Error('Identity not resolved. Please try again.');
 
-      if (currentStep === 0) {
-        const isDevSandboxEnabled =
-          (typeof __DEV__ !== 'undefined' && __DEV__) ||
-          process.env.EXPO_PUBLIC_ENABLE_DEV_SANDBOX === 'true';
-        if (isDevSandboxEnabled && name.trim().startsWith('dev::')) {
-          const rawInput = name.trim();
-          if (rawInput === 'dev::sandbox' || rawInput === 'dev::menu') {
+      if (currentPhase === 'arrival') {
+        const devIntent = resolveOnboardingDevIntent({
+          isDevMode: typeof __DEV__ !== 'undefined' && __DEV__,
+          input: name,
+        });
+        if (devIntent.kind === 'menu') {
             dispatch({ type: 'SET_PROCESSING', isProcessing: false });
             dispatch({ type: 'SHOW_DEV_SANDBOX', visible: true });
             return;
           }
-
-          // Parse inline config: e.g. dev::name:Naween,role:teacher,pricing:pro
-          const configContent = rawInput.substring(5);
-          const parts = configContent.split(',');
-          const config: Record<string, string> = {};
-          for (const part of parts) {
-            const colonIndex = part.indexOf(':');
-            if (colonIndex !== -1) {
-              const key = part.substring(0, colonIndex).trim().toLowerCase();
-              const val = part.substring(colonIndex + 1).trim();
-              config[key] = val;
-            }
-          }
-
-          const parsedName = config.name || config.display_name || 'Dev User';
-          const parsedRole = (config.role || config.capacity || 'teacher') as Capacity;
-          const parsedPricing = (config.pricing || config.tier || 'FREE').toUpperCase();
-          const parsedCitizenship = (config.citizenship || 'WANDERER').toUpperCase();
-          const parsedSchoolId = config.school || config.school_id || null;
+        if (devIntent.kind === 'template') {
+          const template = devIntent.intent.template;
 
           showToast('Fast-tracking developer setup...', 'info', 2000);
 
-          await onboardingAPI.createInitialBond(parsedRole, {
+          await onboardingAPI.createInitialBond(template.role, {
             userId: internalId,
-            displayName: parsedName,
-            fullName: parsedName,
-            schoolId: parsedSchoolId,
+            displayName: template.name,
+            fullName: template.name,
+            schoolId: template.schoolId,
           });
 
           await identityAPI.modifyUserProfile(internalId, {
-            display_name: parsedName,
-            pricing_tier: parsedPricing,
-            citizenship: parsedCitizenship,
-            school_id: parsedSchoolId,
+            display_name: template.name,
+            pricing_tier: template.pricing,
+            citizenship: template.citizenship,
+            school_id: template.schoolId,
             profile_completed: true,
           });
 
@@ -934,8 +924,8 @@ const OnboardingScreen = memo(function OnboardingScreen({
           await AsyncStorage.removeItem('onboarding_progress');
 
           hapticSuccess();
-          showToast(`Developer Account (${parsedRole}) Setup Success!`, 'success', 3000);
-          onComplete(parsedName, parsedRole, isAnonymous);
+          showToast(getDevOnboardingTemplateLabel(template), 'success', 3000);
+          onComplete(template.name, template.role, isAnonymous);
           return;
         }
 
@@ -948,7 +938,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
           await identityAPI.modifyUserProfile(internalId, { display_name: name });
           console.log('✅ [Onboarding] Name synced.');
         }
-      } else if (currentStep === 1) {
+      } else if (currentPhase === 'identity') {
         // STEP 1 -> 2: Identity Selection & Initial Bond Creation
         console.log('🏗️ [Onboarding] Initializing Bond for capacity:', selectedCapacity);
 
@@ -962,7 +952,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
         });
         console.log('🔗 [Onboarding] Initial Bond created.');
         showToast('Identity bond secured.', 'success', 1000);
-      } else if (currentStep === 6) {
+      } else if (currentPhase === 'complete') {
         // Final Step
         await handleCompleteOnboarding();
         return;
@@ -987,6 +977,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
     canProceed,
     isProcessing,
     isOnline,
+    currentPhase,
     currentStep,
     name,
     selectedCapacity,
@@ -1021,9 +1012,9 @@ const OnboardingScreen = memo(function OnboardingScreen({
   }, []);
 
   const currentTourScreen = useMemo(() => {
-    if (currentStep < 2 || currentStep > 6) return null;
-    return tourScreens[currentStep - 2];
-  }, [currentStep, tourScreens]);
+    if (currentPhase === 'arrival' || currentPhase === 'identity') return null;
+    return tourScreens[Math.max(0, currentStep - 2)];
+  }, [currentPhase, currentStep, tourScreens]);
 
   return (
     <ScreenWrapper>
@@ -1066,7 +1057,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
             />
           ) : (
             <>
-              {currentStep === 0 && (
+              {currentPhase === 'arrival' && (
                 <NameStep
                   t={t}
                   name={name}
@@ -1079,7 +1070,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
                   onBackToWelcome={handleBackToWelcome}
                 />
               )}
-              {currentStep === 1 && (
+              {currentPhase === 'identity' && (
                 <IdentityStep
                   t={t}
                   capacity={selectedCapacity}
@@ -1092,7 +1083,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
                   isAnonymous={isAnonymous}
                 />
               )}
-              {currentStep >= 2 && currentStep <= 6 && currentTourScreen && (
+              {(currentPhase === 'mandatory' || currentPhase === 'optional' || currentPhase === 'complete') && currentTourScreen && (
                 <TourStep
                   t={t}
                   index={currentStep}

@@ -1,6 +1,6 @@
 import { authAPI } from '@repo/core/auth';
 import { LanguageUtils } from '@repo/core/logic';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image } from 'react-native';
 import ScreenWrapper from '../components/ScreenWrapper';
@@ -26,6 +26,7 @@ import { useSanctuaryToast } from '../providers/ToastProvider';
 import { Theme } from '../theme/Theme';
 import { EXTERNAL_URLS } from '../utils';
 import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
+import { getGuestEntryErrorMessage } from './welcomeFlow';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const LOGO = require('../../assets/icon.png');
@@ -78,6 +79,7 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
   const { accent } = useTheme();
   const [acceptedTerms, setAcceptedTerms] = useState(true);
   const [isConnecting, setIsConnecting] = useState(false);
+  const guestEntryInFlightRef = useRef(false);
   const { showToast } = useSanctuaryToast();
 
   const changeLanguage = useCallback((langCode: string) => {
@@ -95,6 +97,7 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
   }, [showToast, t]);
 
   const handleStartExploring = useCallback(async () => {
+    if (isConnecting || guestEntryInFlightRef.current) return;
     if (!acceptedTerms) {
       hapticError();
       showTermsToast();
@@ -102,6 +105,7 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
     }
 
     hapticSuccess();
+    guestEntryInFlightRef.current = true;
     setIsConnecting(true);
     try {
       await authAPI.signInAnonymously();
@@ -110,11 +114,15 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
       console.error('Guest login failed:', error);
       showToast({
         message:
-          (error as Error)?.message ||
-          t('auth.guestLoginFailed') ||
-          'We could not open the sanctuary doors for you right now. Please try again.',
+          getGuestEntryErrorMessage(
+            error,
+            t('auth.guestLoginFailed') ||
+              'We could not open the sanctuary doors for you right now. Please try again.',
+          ),
         type: 'error',
       });
+    } finally {
+      guestEntryInFlightRef.current = false;
       setIsConnecting(false);
     }
   }, [acceptedTerms, onGuest, showTermsToast, showToast, t]);

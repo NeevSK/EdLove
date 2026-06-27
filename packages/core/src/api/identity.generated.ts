@@ -4,6 +4,7 @@
  */
 
 import { z } from 'zod';
+import { IdentityStateSchema } from '../logic/schemas/identity.schema';
 
 export const CapacitySchema = z.enum(['admin', 'founder', 'developer', 'teacher', 'student', 'principal', 'assistantPrincipal', 'gradeHead', 'sectionHead', 'parent', 'guardian', 'librarian', 'nurse', 'member']);
 
@@ -23,12 +24,12 @@ export type Bond = z.infer<typeof BondSchema>;
 
 export const IdentitySchema = z.object({
   id: z.uuid(),
-  email: z.string().email().or(z.literal('')).nullable().optional(),
+  email: z.string().email().nullable().optional(),
   name: z.string().optional(),
   display_name: z.string().optional(),
   first_name: z.string().optional(),
   last_name: z.string().optional(),
-  identity_state: z.string().optional(),
+  identity_state: IdentityStateSchema.optional(),
   onboarding_completed: z.boolean().optional(),
   activeBond: BondSchema.nullable().optional(),
   availableBonds: z.array(BondSchema),
@@ -43,11 +44,10 @@ export const FacetedProfileSchema = z.object({
   display_name: z.string().optional(),
   first_name: z.string().optional(),
   last_name: z.string().optional(),
-  identity_state: z.string().optional(),
-  email: z.string().email().or(z.literal('')).nullable().optional(),
+  identity_state: IdentityStateSchema.optional(),
+  email: z.string().email().nullable().optional(),
   tenant_kind: z.string().optional(),
   onboarding_completed: z.boolean().optional(),
 });
 
 export type FacetedProfile = z.infer<typeof FacetedProfileSchema>;
-

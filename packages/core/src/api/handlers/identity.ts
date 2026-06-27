@@ -17,7 +17,7 @@ const mapToIdentityPayload = (user: any) => {
 
   return {
     id: user.id,
-    email: user.email || '',
+    email: user.email ?? null,
     name: user.display_name || user.full_name || '',
     display_name: user.display_name || user.full_name || '',
     activeBond,
@@ -43,13 +43,13 @@ export const identityHandlers = {
       return c.json(
         {
           id: user.id,
-          email: '',
+          email: null,
           name: '',
           display_name: '',
           school_id: null,
           schoolId: null,
           onboarding_completed: false,
-          onboarding_state: 'pending',
+          onboarding_state: 'ARRIVAL',
           activeBond: null,
           availableBonds: [],
         },
@@ -100,7 +100,7 @@ export const identityHandlers = {
           school_id: null,
           profile_completed: false,
           onboarding_completed: false,
-          onboarding_state: 'pending',
+          onboarding_state: 'ARRIVAL',
           real_class_count: 0,
           profile: null,
         },

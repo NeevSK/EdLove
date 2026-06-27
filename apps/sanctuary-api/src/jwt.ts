@@ -279,7 +279,7 @@ export async function verifySupabaseJwt(
             const der = pemToDer(cleanPem);
             publicKey = await globalThis.crypto.subtle.importKey(
               'spki',
-              der,
+              der as BufferSource,
               {
                 name: 'RSASSA-PKCS1-v1_5',
                 hash: { name: 'SHA-256' },
@@ -340,8 +340,8 @@ export async function verifySupabaseJwt(
         ? { name: 'ECDSA', hash: { name: 'SHA-256' } }
         : { name: 'RSASSA-PKCS1-v1_5' },
       publicKey,
-      signature,
-      dataToVerify,
+      signature as BufferSource,
+      dataToVerify as BufferSource,
     );
 
     if (!isVerified) {

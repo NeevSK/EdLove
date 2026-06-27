@@ -23,6 +23,7 @@ The refactor is directionally correct (ReBAC bonds + identity decoupling), but t
 - DB policies and helpers still frequently assume `auth.uid()` equals `public.users.id`, even though identity-decoupling explicitly breaks that assumption.
 - The identity core was partially centralized, but the port/manager/adapters are not fully consistent, so the project does not typecheck.
 - “Perspective” (active bond) is now persisted, but the type model and DB schema are not aligned (missing bond status in runtime objects).
+- Auth bootstrap and onboarding now have a shared helper path in `packages/core/src/logic/auth/bootstrapRoutes.ts`, with UI screens importing through `@repo/core/logic` only.
 
 This produces two kinds of risk:
 

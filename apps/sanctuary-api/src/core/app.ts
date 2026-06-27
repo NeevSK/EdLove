@@ -1,4 +1,5 @@
 import { swaggerUI } from '@hono/swagger-ui';
+import { apiReference } from '@scalar/hono-api-reference';
 import { OpenAPIHono } from '@hono/zod-openapi';
 import {
   adaptToHono,
@@ -14,6 +15,8 @@ import {
   gradingHandlers,
   identityContract,
   identityHandlers,
+  onboardingContract,
+  onboardingHandlers,
   libraryContract,
   libraryHandlers,
   operationsContract,
@@ -30,25 +33,47 @@ import { canUseZenStackDb, createZenStackDb } from '@repo/database';
 import { check as checkCedar } from '@repo/policies';
 import { aiRouter } from '../ai/routes';
 import { verifySupabaseJwt } from '../jwt';
+import { normalizeError } from '@repo/core/logic/utils/errorNormalizer';
+import { secureHeaders } from 'hono/secure-headers';
+import { bodyLimit } from 'hono/body-limit';
+import { timeout } from 'hono/timeout';
+import { compress } from 'hono/compress';
+import { csrf } from 'hono/csrf';
+import { etag } from 'hono/etag';
+import { timing, startTime, endTime } from 'hono/timing';
+import { cors } from 'hono/cors';
+import { logger } from 'hono/logger';
+import { requestId } from 'hono/request-id';
+import { HTTPException } from 'hono/http-exception';
+import { createFactory } from 'hono/factory';
 
 interface Env {
   Variables: {
     db: ReturnType<typeof createZenStackDb>;
     user: { id: string };
+    requestId: string;
   };
 }
 
 export const app = new OpenAPIHono<Env>();
+const factory = createFactory<Env>();
 
 app.onError((err, c) => {
-  console.error('[UNCAUGHT ERROR]:', err);
-  return c.json(
-    {
-      error: 'Internal Server Error',
-      message: 'An unexpected error occurred.',
-    },
-    500,
-  );
+  if (err instanceof HTTPException) {
+    const res = err.getResponse();
+    if (c.res) {
+      for (const [key, value] of c.res.headers.entries()) {
+        if (!res.headers.has(key)) {
+          res.headers.set(key, value);
+        }
+      }
+    }
+    return res;
+  }
+  const requestId = c.get('requestId') || 'unknown';
+  const sovereign = normalizeError(err, requestId);
+  console.error(`[${requestId}] UNCAUGHT:`, sovereign.details);
+  return c.json(sovereign.details, sovereign.details.status as any);
 });
 
 // Helper to retrieve environment variables safely across runtimes.
@@ -149,29 +174,126 @@ async function md5Hex(str: string): Promise<string> {
 }
 
 // --- 1. Global Middleware ---
-app.use('*', async (c, next) => {
-  const requestId = globalThis.crypto.randomUUID();
-  c.header('x-request-id', requestId);
 
-  // CORS headers
-  const origin = c.req.header('Origin');
-  if (origin === 'http://localhost:8081' || origin === 'https://platform.gurudevi.edlove.org') {
-    c.header('Access-Control-Allow-Origin', origin);
+// Mount core security and transport optimization middlewares
+app.use('*', secureHeaders());
+app.use('*', compress());
+app.use('*', bodyLimit({ maxSize: 5 * 1024 * 1024 })); // 5MB limit
+
+// CORS (dynamic — allow any localhost origin in dev, restricted list in production)
+app.use(
+  '*',
+  cors({
+    origin: (origin) => {
+      if (!origin) return null;
+      if (origin.startsWith('http://localhost') || origin.startsWith('https://localhost')) {
+        return origin;
+      }
+      const allowedOrigins = ['https://platform.gurudevi.edlove.org'];
+      return allowedOrigins.includes(origin) ? origin : null;
+    },
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowHeaders: [
+      'Content-Type',
+      'Authorization',
+      'x-school-id',
+      'x-capacity',
+      'x-grade-id',
+      'x-section-id',
+      'x-classroom-ids',
+      'x-child-student-ids',
+      'x-device-trust',
+      'x-network-zone',
+      'x-idempotency-key',
+    ],
+  }),
+);
+
+// Mount optimization & request profiling middlewares
+app.use('/api/*', async (c, next) => {
+  if (c.req.header('Authorization')) {
+    return next();
   }
-  c.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  c.header(
-    'Access-Control-Allow-Headers',
-    'Content-Type, Authorization, x-school-id, x-capacity, x-grade-id, x-section-id, x-classroom-ids, x-child-student-ids, x-device-trust, x-network-zone',
-  );
-
-  // Handle preflight requests
-  if (c.req.method === 'OPTIONS') {
-    return c.text('', 200);
-  }
-
-  console.log(`[${requestId}] ${c.req.method} ${c.req.url}`);
-  await next();
+  return csrf()(c, next);
 });
+app.use('/api/*', etag());
+app.use('/api/*', timing());
+
+// Cache-Control headers for read-heavy routes
+app.get('/api/library/*', async (c, next) => {
+  await next();
+  c.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=600');
+});
+app.get('/api/daily-content/*', async (c, next) => {
+  await next();
+  c.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=600');
+});
+
+// Adaptive Timeouts
+app.use('/api/*', async (c, next) => {
+  if (c.req.path.includes('/powersync/upload')) {
+    return next();
+  }
+  return timeout(10000)(c, next); // 10s default timeout
+});
+app.use('/api/powersync/upload', timeout(45000)); // 45s bulk sync timeout
+
+// Rate Limiter (custom in-memory — no built-in equivalent in hono core)
+const RATE_LIMIT_WINDOW = 60 * 1000;
+const RATE_LIMIT_MAX = 100;
+const rateLimitCache = new Map<string, { count: number; resetTime: number }>();
+
+if (typeof globalThis !== 'undefined' && !(globalThis as any).__rateLimitCleanupInterval) {
+  (globalThis as any).__rateLimitCleanupInterval = setInterval(() => {
+    const now = Date.now();
+    for (const [key, val] of rateLimitCache.entries()) {
+      if (now > val.resetTime) rateLimitCache.delete(key);
+    }
+  }, 60 * 1000);
+}
+
+const rateLimitHandler = factory.createMiddleware(async (c, next) => {
+  if (
+    c.req.path.startsWith('/payments/') ||
+    c.req.path === '/doc' || c.req.path === '/ui' || c.req.path === '/reference' ||
+    c.req.method === 'OPTIONS'
+  ) {
+    return next();
+  }
+
+  const ip = c.req.header('CF-Connecting-IP') || c.req.header('X-Forwarded-For') || c.req.header('X-Forwarding-For') || 'unknown-ip';
+  const now = Date.now();
+  const record = rateLimitCache.get(ip) || { count: 0, resetTime: now + RATE_LIMIT_WINDOW };
+
+  if (now > record.resetTime) {
+    record.count = 1;
+    record.resetTime = now + RATE_LIMIT_WINDOW;
+  } else {
+    record.count++;
+  }
+  rateLimitCache.set(ip, record);
+
+  c.header('X-RateLimit-Limit', String(RATE_LIMIT_MAX));
+  c.header('X-RateLimit-Remaining', String(Math.max(0, RATE_LIMIT_MAX - record.count)));
+  c.header('X-RateLimit-Reset', String(Math.ceil((record.resetTime - now) / 1000)));
+
+  if (record.count > RATE_LIMIT_MAX) {
+    return c.json(
+      { error: 'Too Many Requests', message: 'Rate limit exceeded. Please try again later.' },
+      429,
+    );
+  }
+  return next();
+});
+
+// Rate Limiter
+app.use('/api/*', rateLimitHandler);
+
+// Logger (structured request/response logging)
+app.use('*', logger());
+
+// Request ID (built-in — available via c.get('requestId'))
+app.use('*', requestId());
 
 // --- 2. Sovereign Auth & ZenStack (ReBAC) Middleware ---
 app.use('/api/*', async (c, next) => {
@@ -181,28 +303,22 @@ app.use('/api/*', async (c, next) => {
 
   if (authHeader) {
     if (!authHeader.startsWith('Bearer ')) {
-      return c.json(
-        {
-          error: 'Unauthorized',
-          message: 'Invalid Authorization header format. Must be Bearer token.',
-        },
-        401,
-      );
+      throw new HTTPException(401, {
+        message: 'Invalid Authorization header format. Must be Bearer token.',
+      });
     }
 
     const token = authHeader.replace('Bearer ', '');
     // Provide potential environment context overrides from Hono (e.g. c.env)
+    startTime(c, 'jwt', 'JWT Verification');
     const verifiedPayload = await verifySupabaseJwt(token, c.env as any);
+    endTime(c, 'jwt');
 
     if (!verifiedPayload) {
-      return c.json(
-        {
-          error: 'Unauthorized',
-          message:
-            'Authoritative cryptographic identity verification failed (Invalid or Expired JWT).',
-        },
-        401,
-      );
+      throw new HTTPException(401, {
+        message:
+          'Authoritative cryptographic identity verification failed (Invalid or Expired JWT).',
+      });
     }
 
     user = { id: verifiedPayload.sub };
@@ -316,13 +432,16 @@ async function getRequestSecurityContext(c: any) {
 }
 
 function poa(route: SovereignRoute) {
-  return async (c: any, next: any) => {
+  return factory.createMiddleware(async (c, next) => {
     if (c.req.method.toLowerCase() !== route.method.toLowerCase()) {
       return await next();
     }
 
-    // Special bypass for resolveIdentity bootstrapping
-    if (c.req.path.includes('/identity/resolveIdentity')) {
+    // Special bypass for resolveIdentity bootstrapping and anonymous capacity summary
+    if (
+      c.req.path.includes('/identity/resolveIdentity') ||
+      c.req.path.includes('/identity/classroom-capacity-summary/anonymous')
+    ) {
       return await next();
     }
 
@@ -331,16 +450,19 @@ function poa(route: SovereignRoute) {
       securityContext = await getRequestSecurityContext(c);
     } catch (err: any) {
       if (err.message === 'PrivilegeEscalation') {
-        return c.json(
-          {
-            error: 'Forbidden',
-            message:
-              'Authoritative database policy rejects the requested administrative capability.',
-          },
-          403,
-        );
+        throw new HTTPException(403, {
+          message:
+            'Authoritative database policy rejects the requested administrative capability.',
+          res: new Response(
+            JSON.stringify({
+              error: 'Forbidden',
+              message: 'Authoritative database policy rejects the requested administrative capability.',
+            }),
+            { status: 403, headers: { 'Content-Type': 'application/json' } },
+          ),
+        });
       }
-      return c.json({ error: 'Internal Server Error' }, 500);
+      throw new HTTPException(500, { message: 'Internal Server Error' });
     }
 
     const { user, principal, context, school_id, capacity } = securityContext;
@@ -349,7 +471,7 @@ function poa(route: SovereignRoute) {
     const resourceType = policy.subject;
 
     let resourceId = school_id || 'school_institutional';
-    const params = c.req.param();
+    const params = c.req.param() as Record<string, string | undefined>;
     const paramKeys = Object.keys(params);
     if (paramKeys.length > 0) {
       if (params.id) {
@@ -375,7 +497,7 @@ function poa(route: SovereignRoute) {
       } else if (params.workspaceId) {
         resourceId = params.workspaceId;
       } else {
-        resourceId = params[paramKeys[0]];
+        resourceId = params[paramKeys[0]] || 'unknown';
       }
     } else {
       if (resourceType === 'User') {
@@ -403,6 +525,7 @@ function poa(route: SovereignRoute) {
       }
     }
 
+    startTime(c, 'cedar', 'Cedar Policy Evaluation');
     const authResult = checkCedar({
       principal,
       action: cedarAction,
@@ -421,17 +544,21 @@ function poa(route: SovereignRoute) {
       },
       context,
     });
+    endTime(c, 'cedar');
 
     if (!authResult.permitted) {
-      return c.json(
-        {
-          error: 'Forbidden',
-          message: 'Access denied by authoritative Cedar policy engine (Double Gate Enforcement).',
-          reason: authResult.reason,
-          gaps: authResult.gaps,
-        },
-        403,
-      );
+      throw new HTTPException(403, {
+        message: 'Access denied by authoritative Cedar policy engine (Double Gate Enforcement).',
+        res: new Response(
+          JSON.stringify({
+            error: 'Forbidden',
+            message: 'Access denied by authoritative Cedar policy engine',
+            reason: authResult.reason,
+            gaps: authResult.gaps,
+          }),
+          { status: 403, headers: { 'Content-Type': 'application/json' } },
+        ),
+      });
     }
 
     if (capacity === 'admin') {
@@ -448,11 +575,69 @@ function poa(route: SovereignRoute) {
     }
 
     return await next();
-  };
+  });
+}
+
+import { featureFlags } from '@repo/core/logic/managers/featureFlag.factory';
+import type { FeatureFlags } from '@repo/core/logic/permissions/feature-engine';
+
+const routeFeatureFlagMap: Record<string, keyof FeatureFlags> = {
+  '/api/community': 'isCommunityEnabled',
+  '/api/grades': 'isStudentGradesWorkspaceEnabled',
+  '/api/educational': 'isLibraryManagementEnabled',
+  '/api/sync': 'isPowerSyncEnabled',
+  '/api/ai': 'isAIAssistantEnabled',
+  '/api/admin': 'isStaffManagementEnabled',
+};
+
+function featureFlagGate(route: SovereignRoute) {
+  return factory.createMiddleware(async (c, next) => {
+    let flagKey: keyof FeatureFlags | undefined;
+    for (const prefix of Object.keys(routeFeatureFlagMap)) {
+      if (route.path.startsWith(prefix) || c.req.path.startsWith(prefix)) {
+        flagKey = routeFeatureFlagMap[prefix];
+        break;
+      }
+    }
+
+    if (flagKey) {
+      const user = c.get('user') || { id: 'anonymous' };
+      const schoolId = c.req.header('x-school-id') || null;
+      const capacity = c.req.header('x-capacity') || null;
+
+      const userContext = {
+        userId: user.id === 'anonymous' ? null : user.id,
+        email: null,
+        schoolId: schoolId,
+        primaryCapacity: capacity,
+        activeBond: capacity ? { capacity } : null,
+        isAnonymous: user.id === 'anonymous',
+      };
+
+      const resolved = await featureFlags.resolveFlags(userContext as any);
+      const isEnabled = resolved.flags[flagKey];
+
+      if (isEnabled === false) {
+        console.warn(
+          `[Feature Gate] Access denied: flag "${flagKey}" is disabled for route "${route.path}"`,
+        );
+        throw new HTTPException(503, {
+          message: 'This feature is currently disabled.',
+          res: new Response(
+            JSON.stringify({ error: 'FeatureDisabled', flag: flagKey }),
+            { status: 503, headers: { 'Content-Type': 'application/json' } },
+          ),
+        });
+      }
+    }
+
+    return await next();
+  });
 }
 
 function registerRoute(apiApp: OpenAPIHono<any>, route: SovereignRoute, handler: any) {
   apiApp.use(route.path, poa(route));
+  apiApp.use(route.path, featureFlagGate(route));
   apiApp.openapi(adaptToHono(route), handler);
 }
 
@@ -542,6 +727,11 @@ registerRoute(
 );
 registerRoute(identityApp, identityContract.modifyUserProfile, identityHandlers.updateProfile);
 
+// Sovereign Routes (Vertical Slice: ONBOARDING)
+const onboardingApp = new OpenAPIHono();
+registerRoute(onboardingApp, onboardingContract.createInitialBond, onboardingHandlers.createInitialBond);
+registerRoute(onboardingApp, onboardingContract.completeOnboarding, onboardingHandlers.completeOnboarding);
+
 // Sovereign Routes (Vertical Slice: ADMIN)
 const adminApp = new OpenAPIHono();
 registerRoute(adminApp, adminContract.getStaffPresence, adminHandlers.getStaffPresence);
@@ -566,6 +756,7 @@ app.route('/api', educationalApp);
 app.route('/api', gradingApp);
 app.route('/api', operationsApp);
 app.route('/api', identityApp);
+app.route('/api', onboardingApp);
 app.route('/api', adminApp);
 app.route('/api', libraryApp);
 
@@ -653,3 +844,5 @@ app.doc('/doc', {
 });
 
 app.get('/ui', swaggerUI({ url: '/doc' }));
+app.get('/reference', apiReference({ spec: { url: '/doc' } }));
+

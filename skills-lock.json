@@ -1,6 +1,24 @@
 {
   "version": 1,
   "skills": {
+    "caveman": {
+      "source": "JuliusBrussee/caveman",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/caveman",
+      "computedHash": "pending"
+    },
+    "grill-me": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/grill-me",
+      "computedHash": "pending"
+    },
+    "ponytail": {
+      "source": "DietrichGebert/ponytail",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ponytail",
+      "computedHash": "pending"
+    },
     "powersync": {
       "source": "powersync-ja/agent-skills",
       "sourceType": "github",
@@ -13,29 +31,65 @@
       "skillPath": ".claude/skills/superpowers",
       "computedHash": "pending"
     },
-    "caveman": {
-      "source": "JuliusBrussee/caveman",
-      "sourceType": "github",
-      "skillPath": ".claude/skills/caveman",
-      "computedHash": "pending"
-    },
-    "ponytail": {
-      "source": "DietrichGebert/ponytail",
-      "sourceType": "github",
-      "skillPath": ".claude/skills/ponytail",
-      "computedHash": "pending"
-    },
-    "grill-me": {
-      "source": "mattpocock/skills",
-      "sourceType": "github",
-      "skillPath": ".claude/skills/grill-me",
-      "computedHash": "pending"
-    },
     "thermo-nuclear-code-review": {
       "source": "cursor/plugins",
       "sourceType": "github",
       "skillPath": ".claude/skills/cursor-plugins/cursor-team-kit/skills/thermo-nuclear-code-quality-review",
       "computedHash": "pending"
+    },
+    "zenstack-access-control": {
+      "source": "zenstackhq/skills",
+      "sourceType": "github",
+      "skillPath": "skills/zenstack-access-control/SKILL.md",
+      "computedHash": "f2a9ed7cd1d476257b2cd8d045120cc768b83fbc57d5ce0f2e3742bfa381b8c4"
+    },
+    "zenstack-crud-server": {
+      "source": "zenstackhq/skills",
+      "sourceType": "github",
+      "skillPath": "skills/zenstack-crud-server/SKILL.md",
+      "computedHash": "d0e6ef153a134c7725d988bbc621295e49a917fb7d81beea391604493429a963"
+    },
+    "zenstack-db-migration": {
+      "source": "zenstackhq/skills",
+      "sourceType": "github",
+      "skillPath": "skills/zenstack-db-migration/SKILL.md",
+      "computedHash": "a766cfd9377509d97fbb21ba339d8cca85a4823f0a2896a040c60efb89be5599"
+    },
+    "zenstack-migrate-from-prisma": {
+      "source": "zenstackhq/skills",
+      "sourceType": "github",
+      "skillPath": "skills/zenstack-migrate-from-prisma/SKILL.md",
+      "computedHash": "3bb86f8c61d4cbe4a2ba6b7c76e13174bebda41691412f12c5ca7aba6f77b5e4"
+    },
+    "zenstack-migrate-from-v2": {
+      "source": "zenstackhq/skills",
+      "sourceType": "github",
+      "skillPath": "skills/zenstack-migrate-from-v2/SKILL.md",
+      "computedHash": "96bacfe93789d91a18369f4ef1e912cc58b893c008e9c9d4b520ee8712fe7659"
+    },
+    "zenstack-plugin-dev": {
+      "source": "zenstackhq/skills",
+      "sourceType": "github",
+      "skillPath": "skills/zenstack-plugin-dev/SKILL.md",
+      "computedHash": "dcee37d5634a914a39d33ec3fea235a54d6004339d6e6dba795be4ba56ba59bc"
+    },
+    "zenstack-project-setup": {
+      "source": "zenstackhq/skills",
+      "sourceType": "github",
+      "skillPath": "skills/zenstack-project-setup/SKILL.md",
+      "computedHash": "eaafacc114e3a625deac5f4d9b7e95aa573366a6168a26f86547d5aaa84649a6"
+    },
+    "zenstack-querying": {
+      "source": "zenstackhq/skills",
+      "sourceType": "github",
+      "skillPath": "skills/zenstack-querying/SKILL.md",
+      "computedHash": "f47d167aedaf9639b0859ce025ff4b4f75971751cb581313a0d2ff22db9aa41a"
+    },
+    "zenstack-schema-modeling": {
+      "source": "zenstackhq/skills",
+      "sourceType": "github",
+      "skillPath": "skills/zenstack-schema-modeling/SKILL.md",
+      "computedHash": "c53846f82dc5545d1f78838cd3b02c8c92917651ff9825f8c4e330b8923eca6b"
     }
   }
 }

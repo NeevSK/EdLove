@@ -35,6 +35,7 @@ module.exports = {
     // Packages import from deep paths like '@gluestack-ui/themed/build/components/Box'
     // which bypass a jest.mock('@gluestack-ui/themed') (only matches root).
     '^@gluestack-ui/themed(.*)$': '<rootDir>/__mocks__/gluestack-themed.js',
+    '^react-native-css-interop$': '<rootDir>/__mocks__/react-native-css-interop.js',
     // EnvironmentContext uses native APIs; provide a jest-friendly stub.
     '^.+/context/EnvironmentContext(\\.tsx)?$': '<rootDir>/__mocks__/EnvironmentContext.js',
     // Native packages with JSI/C++ requirements get manual mocks

@@ -16,13 +16,20 @@ publicHoistPattern:
 overrides:
   "@typescript-eslint/typescript-estree>typescript": "npm:@typescript/typescript6@^6.0.0"
   "@typescript-eslint/parser>typescript": "npm:@typescript/typescript6@^6.0.0"
+  "@typescript-eslint/eslint-plugin>typescript": "npm:@typescript/typescript6@^6.0.0"
+  "@typescript-eslint/type-utils>typescript": "npm:@typescript/typescript6@^6.0.0"
+  "@typescript-eslint/utils>typescript": "npm:@typescript/typescript6@^6.0.0"
+  "typescript-eslint>typescript": "npm:@typescript/typescript6@^6.0.0"
   "@eslint-react/core>typescript": "npm:@typescript/typescript6@^6.0.0"
-  '@zenstackhq/cli': '3.6.4'
-  '@zenstackhq/orm': '3.6.4'
-  '@zenstackhq/language': '3.6.4'
-  '@zenstackhq/sdk': '3.6.4'
-  '@zenstackhq/zod': '3.6.4'
-  '@zenstackhq/schema': '3.6.4'
+  "@eslint-react/eslint-plugin>typescript": "npm:@typescript/typescript6@^6.0.0"
+  "eslint-import-resolver-typescript>typescript": "npm:@typescript/typescript6@^6.0.0"
+  "eslint-plugin-deprecation>typescript": "npm:@typescript/typescript6@^6.0.0"
+  '@zenstackhq/cli': '3.8.0'
+  '@zenstackhq/orm': '3.8.0'
+  '@zenstackhq/language': '3.8.0'
+  '@zenstackhq/sdk': '3.8.0'
+  '@zenstackhq/zod': '3.8.0'
+  '@zenstackhq/schema': '3.8.0'
   zod: '4.3.6'
   zod-validation-error: '5.0.0'
   kysely: '0.28.16'

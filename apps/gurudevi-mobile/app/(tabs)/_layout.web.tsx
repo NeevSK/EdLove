@@ -1,6 +1,7 @@
 import { useNotifications, useRewards } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 import { BreathGuide } from '@repo/self';
+import type { LucideIcon } from '@repo/ui/icons';
 import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
 import { Box, Modal, ModalContent, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { router, Slot, usePathname } from 'expo-router';
@@ -11,7 +12,7 @@ import { resolveResponsiveShellMode } from '../../src/lib/responsiveShell';
 
 type NavItem = {
   href: string;
-  icon: typeof Heart;
+  icon: LucideIcon;
   label: string;
   group?: 'primary' | 'utility';
   badge?: number;
@@ -332,7 +333,7 @@ type WebNavItemButtonProps = {
   badge?: number;
   expanded: boolean;
   href: string;
-  icon: typeof Heart;
+  icon: LucideIcon;
   label: string;
   onNavigate: (href: string) => void;
 };
@@ -346,27 +347,6 @@ function WebNavItemButton({
   label,
   onNavigate,
 }: WebNavItemButtonProps) {
-  console.log('[WebNavItemButton Debug]', label, {
-    type: typeof Icon,
-    isObject: Icon && typeof Icon === 'object',
-    keys: Icon && typeof Icon === 'object' ? Object.keys(Icon) : [],
-    hasDefault: Icon && typeof Icon === 'object' && 'default' in Icon,
-    hasRender: Icon && typeof Icon === 'object' && 'render' in Icon,
-    dollarType: Icon && typeof Icon === 'object' && '$$typeof' in Icon ? String((Icon as any).$$typeof) : 'none',
-  });
-
-  const resolveIcon = (iconVal: any): any => {
-    if (!iconVal) return null;
-    if (typeof iconVal === 'function') return iconVal;
-    if (typeof iconVal === 'object') {
-      if ('$$typeof' in iconVal) return iconVal;
-      if ('default' in iconVal) return resolveIcon(iconVal.default);
-    }
-    return iconVal;
-  };
-
-  const IconComponent = resolveIcon(Icon);
-
   return (
     <Pressable
       accessibilityRole="button"
@@ -386,7 +366,7 @@ function WebNavItemButton({
       }}
     >
       <Box style={{ position: 'relative' }}>
-        {IconComponent && <IconComponent size={20} color={active ? '#F8F5EA' : 'rgba(248,245,234,0.7)'} />}
+        <Icon size={20} color={active ? '#F8F5EA' : 'rgba(248,245,234,0.7)'} />
         {badge ? (
           <Box
             style={{

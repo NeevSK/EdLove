@@ -62,7 +62,7 @@ export const identityContract = {
     method: 'get',
     path: '/identity/classroom-capacity-summary/:id',
     request: {
-      params: z.strictObject({ id: z.uuid() }),
+      params: z.strictObject({ id: z.union([z.uuid(), z.literal('anonymous')]) }),
     },
     responses: {
       200: {

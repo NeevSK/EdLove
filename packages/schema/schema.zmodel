@@ -10,12 +10,6 @@ plugin orm {
 
 plugin policy {
   provider = "@zenstackhq/plugin-policy"
-  output = "src/generated/policy"
-}
-
-plugin zod {
-  provider = "@zenstackhq/zod"
-  output = "src/generated/zod"
 }
 
 /*

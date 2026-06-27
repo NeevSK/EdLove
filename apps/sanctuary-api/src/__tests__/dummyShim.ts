@@ -27,6 +27,10 @@ export const useNavigation = () => ({
   addListener: () => () => {},
 });
 
+export const getItemAsync = async () => null;
+export const setItemAsync = async () => {};
+export const deleteItemAsync = async () => {};
+
 export default {
   manifest: {},
   expoVersion: '1.0.0',

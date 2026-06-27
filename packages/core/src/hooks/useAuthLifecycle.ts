@@ -5,6 +5,7 @@ import { authAPI } from '../api/auth';
 import { assertHighway } from '../api/highways';
 import { identityAPI } from '../api/identity';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
+import { getSessionIdentityMode } from '../logic/auth/identityState';
 import type { SchoolType } from '../constants/SriLankanSchools';
 import { identifyUser, initPostHog, trackEvent } from '../lib/monitoring/posthog';
 import { clearSentryUser, initSentry, setSentryUser } from '../lib/monitoring/sentry';
@@ -12,9 +13,6 @@ import { useStore } from '../store/useStore';
 import type { User } from '../types';
 import { APIError } from '../types/API';
 import type { Bond } from '../types/Identity';
-
-const isAnonymousSession = (currentSession: Session | null) =>
-  !!currentSession?.user && (currentSession.user.is_anonymous || !currentSession.user.email);
 
 /**
  * useAuthLifecycle
@@ -121,7 +119,7 @@ export function useAuthLifecycle() {
         setSession(initialSession);
         setAuthSession(initialSession);
 
-        if (initialSession?.user && !isAnonymousSession(initialSession)) {
+        if (getSessionIdentityMode(initialSession) === 'authenticated') {
           await fetchAndSetUserProfile();
         } else if (initialSession?.user) {
           setUser(null);
@@ -160,7 +158,7 @@ export function useAuthLifecycle() {
         setAuthSession(currentSession);
         setAuthSessionResolved(true);
 
-        if (currentSession?.user && !isAnonymousSession(currentSession)) {
+        if (getSessionIdentityMode(currentSession) === 'authenticated') {
           await fetchAndSetUserProfile();
         } else if (currentSession?.user) {
           setUser(null);

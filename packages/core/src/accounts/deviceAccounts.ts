@@ -3,6 +3,7 @@ import { deviceTrustAPI } from '../api/deviceTrust';
 import { assertHighway } from '../api/highways';
 import { identityAPI } from '../api/identity';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
+import { getSessionIdentityMode } from '../logic/auth/identityState';
 import { accountPin } from '../lib/accountPin';
 import { getActiveAccountId, setActiveAccountId } from '../lib/accountScope';
 import { storage } from '../lib/storage';
@@ -94,9 +95,9 @@ export const deviceAccounts = {
     if (!session?.user) return null;
 
     const authUserId = session.user.id;
-    const isAnonymous =
-      session.user.is_anonymous === true || !session.user.email || profile?.is_anonymous === true;
-    if (isAnonymous) {
+    const identityMode = getSessionIdentityMode(session);
+    const isAnonymous = identityMode === 'guest' || profile?.is_anonymous === true;
+    if (isAnonymous || identityMode === 'sandbox') {
       return null;
     }
 

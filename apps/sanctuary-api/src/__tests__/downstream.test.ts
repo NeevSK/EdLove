@@ -222,11 +222,12 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
       },
     );
 
-    // Outage should be caught by global onError boundary and return generic 500 error envelope
+    // Outage should be caught by global onError boundary and return structured SovereignError
     expect(res.status).toBe(500);
     const body = await res.json();
-    expect(body.error).toBe('Internal Server Error');
-    expect(body.message).toBe('An unexpected error occurred.');
+    expect(body.title).toBe('Unexpected Platform Error');
+    expect(body.code).toBe('INTERNAL_SERVER_ERROR');
+    expect(body.detail).toContain('Could not connect to database');
   });
 
   it('should catch malformed body parameters and return a structured 400 Bad Request validation response', async () => {
@@ -252,5 +253,70 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
     const body = await res.json();
     expect(body.success).toBe(false);
     expect(body.error.name).toBe('ZodError');
+  });
+
+  it('should include rate limiting headers on API routes', async () => {
+    setHydratedTeacher();
+    const res = await app.request('/api/library/collections', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer teacher-user-1',
+        'x-capacity': 'teacher',
+        'x-school-id': schoolId,
+      },
+    });
+
+    expect(res.headers.get('X-RateLimit-Limit')).toBe('100');
+    expect(res.headers.get('X-RateLimit-Remaining')).toBeDefined();
+    expect(res.headers.get('X-RateLimit-Reset')).toBeDefined();
+    expect(res.headers.get('Server-Timing')).toContain('jwt');
+    expect(res.headers.get('Server-Timing')).toContain('cedar');
+
+    const etagVal = res.headers.get('ETag');
+    expect(etagVal).toBeDefined();
+
+    // Conditional GET request using ETag should yield 304 Not Modified
+    const condRes = await app.request('/api/library/collections', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer teacher-user-1',
+        'x-capacity': 'teacher',
+        'x-school-id': schoolId,
+        'If-None-Match': etagVal!,
+      },
+    });
+    expect(condRes.status).toBe(304);
+  });
+
+  it('should include Cache-Control headers on read-heavy routes', async () => {
+    setHydratedTeacher();
+    const res = await app.request('/api/library/collections', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer teacher-user-1',
+        'x-capacity': 'teacher',
+        'x-school-id': schoolId,
+      },
+    });
+
+    expect(res.headers.get('Cache-Control')).toBe('public, max-age=60, stale-while-revalidate=600');
+  });
+
+  it('should reject payloads larger than 5MB with a 413 Payload Too Large status', async () => {
+    // Generate a payload slightly larger than 5MB
+    const largeBody = 'a'.repeat(6 * 1024 * 1024);
+
+    const res = await app.request('/api/grades', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer teacher-user-1',
+        'x-capacity': 'teacher',
+        'x-school-id': schoolId,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ data: largeBody }),
+    });
+
+    expect(res.status).toBe(413);
   });
 });

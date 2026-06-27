@@ -11,3 +11,6 @@ export default {
   fetch: app.fetch,
   port,
 };
+
+export { app } from './core/app';
+export type AppType = typeof app;

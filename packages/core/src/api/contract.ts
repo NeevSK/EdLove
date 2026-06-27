@@ -131,3 +131,6 @@ export function createSovereignClient<T extends import('hono').Hono<any, any, an
     },
   });
 }
+
+// 2026 Compile-Time RPC Type Bridging Helpers
+export type { InferRequestType, InferResponseType } from 'hono/client';

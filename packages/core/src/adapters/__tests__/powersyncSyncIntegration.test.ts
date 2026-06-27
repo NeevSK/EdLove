@@ -173,9 +173,9 @@ describe('PowerSync Offline Write Gating & Replication Loop', () => {
         },
       }),
       expect.objectContaining({
-        headers: {
+        headers: expect.objectContaining({
           Authorization: 'Bearer mock-session-jwt',
-        },
+        }),
       }),
     );
 

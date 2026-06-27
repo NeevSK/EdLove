@@ -6865,3 +6865,2167 @@ description: "Use only when the user explicitly asks to stage, commit, push, and
 
 
 <!-- END SKILL: yeet -->
+
+<!-- START SKILL: zenstack-access-control -->
+
+---
+name: zenstack-access-control
+description: Add access control to a ZenStack V3 schema. Use when writing access policies (@@allow / @@deny), the auth() function, field-level rules, post-update rules, or setting up the policy plugin and $setAuth runtime. (For data validation — @email/@length/@@validate — see zenstack-querying.)
+---
+
+# ZenStack V3 — Access Control
+
+ZenStack enforces access policies declared in ZModel at the ORM layer. Policies live next to your
+models (see `zenstack-schema-modeling`); enforcement is opt-in via a runtime plugin. For client/query
+basics — and for **data validation** — see `zenstack-querying`.
+
+After editing policies, run `zen generate` to regenerate the client (it also validates the schema,
+policy expressions included). If you only want to validate without regenerating, run `zen check`.
+
+## Runtime setup (required for policies to apply)
+
+Policies do nothing until you (1) declare the plugin in the schema and (2) install it on the client.
+
+**Schema:**
+
+```zmodel
+plugin policy {
+    provider = '@zenstackhq/plugin-policy'
+}
+```
+
+Install the package: `npm install @zenstackhq/plugin-policy`.
+
+**Client:**
+
+```ts
+import { ZenStackClient } from '@zenstackhq/orm';
+import { PolicyPlugin } from '@zenstackhq/plugin-policy';
+
+const db = new ZenStackClient(schema, { dialect });   // raw, unprotected
+export const authDb = db.$use(new PolicyPlugin());     // access control enforced
+```
+
+`ZenStackClient` instances are **immutable** — `$use()` and `$setAuth()` return new (cheap, shallow-
+clone) instances and never mutate the original. Query with `db` to bypass policies (e.g. trusted
+server code) and with the policy-enforced client for user-facing access.
+
+## The current user — `auth()` and `$setAuth()`
+
+Bind the authenticated user per request; `auth()` in policies resolves to it.
+
+```ts
+const userDb = authDb.$setAuth(user);   // user-bound client
+await userDb.post.findMany();           // policies evaluated against `user`
+```
+
+- No `$setAuth()` → anonymous mode → `auth()` is `null`. `$setAuth(undefined)` forces anonymous.
+- Read the bound user back via `client.$auth`.
+
+**Define what `auth()` returns**, by priority: a `model`/`type` annotated `@@auth`, otherwise a
+model literally named `User`, otherwise a compile error. Using a `type` decouples the auth shape
+from your tables:
+
+```zmodel
+type Auth {
+    id   Int
+    role String
+    @@auth
+}
+```
+
+## Policy rules — `@@allow` / `@@deny`
+
+```
+@@allow(operation, condition)
+@@deny(operation, condition)
+```
+
+**Operations** (comma-separate to combine): `create`, `read`, `update`, `delete`, `post-update`,
+and `all` (= create+read+update+delete, **not** post-update).
+
+**Evaluation** (secure by default): any matching `@@deny` → denied; else any matching `@@allow` →
+allowed; else denied. `read`/`update`/`delete` silently *filter out* rows that fail, rather than
+erroring; `create` is checked before insert.
+
+```zmodel
+model User {
+    id    Int    @id @default(autoincrement())
+    email String @unique
+    posts Post[]
+
+    @@allow('create,read', true)        // anyone can sign up; profiles public
+    @@allow('all', auth().id == id)     // the user has full access to themselves
+}
+
+model Post {
+    id        Int     @id @default(autoincrement())
+    title     String
+    published Boolean @default(false)
+    author    User    @relation(fields: [authorId], references: [id])
+    authorId  Int
+
+    @@deny('all', auth() == null)       // no anonymous access
+    @@allow('read', published)          // published posts readable by anyone
+    @@allow('all', auth().id == authorId) // author has full access
+}
+```
+
+## Policy expressions
+
+- Operators: `==` `!=` `>` `>=` `<` `<=`, `&&` `||` `!`, and field references.
+- **To-one relations**: dot access — `auth().city == profile.address.city`.
+- **To-many relations**: collection predicates
+  - `relation?[cond]` — **some** match
+  - `relation![cond]` — **all** match
+  - `relation^[cond]` — **none** match
+
+  ```zmodel
+  @@deny('delete', posts?[published == true])   // can't delete a user with published posts
+  ```
+- Use `this` to escape the collection scope: `comments?[author.verified && this.published]`.
+- **`create` rules** can only reference *owned* relations (those whose FK the model holds) — other
+  relations don't exist yet at creation time.
+- **`check(relation [, op])`** delegates the check to a to-one relation's policies, avoiding
+  duplication: `@@allow('read', check(user))` / `@@allow('update', check(user, 'update'))`.
+- Helper functions usable in expressions: `contains`, `startsWith`, `endsWith` (each takes an
+  optional case-insensitive flag), `has`, `hasSome`, `hasEvery`, `isEmpty`, `currentModel()`,
+  `currentOperation()`.
+
+## Field-level policies (v3.2.0+, preview)
+
+Single-`@` `@allow` / `@deny` on a field, operations `read` and `update` only.
+
+```zmodel
+model User {
+    id    Int    @id
+    email String @allow('update', auth() == this)  // only the owner can change it
+    name  String @deny('read', auth() == null)     // hidden from anonymous readers
+}
+```
+
+- Failing a **read** policy *nullifies* the field (returned as `null`, still usable in SQL
+  computations) — you can't distinguish a real `null` from a denied one.
+- Failing an **update** policy rejects the whole update (`ORMError`, reason `REJECTED_BY_POLICY`).
+
+## Post-update rules
+
+`post-update` expresses conditions that must hold *after* an update; field references see the
+**new** values, and `before()` reads the **old** values. (This replaces V2's `future()`.)
+
+```zmodel
+model Post {
+    published Boolean @default(false)
+    authorId  Int
+
+    @@deny('post-update', published == true && auth().id != authorId)  // only author can publish
+    @@deny('post-update', before().authorId != authorId)               // authorId is immutable
+}
+```
+
+If a model has no `post-update` rule, an update only needs to pass `update`. If it has any, at least
+one `@@allow('post-update', ...)` must pass.
+
+## Execution order & error reasons
+
+Per mutation, policies are checked **before** the database is touched (after any input validation —
+see `zenstack-querying`). Policy-related `ORMError.reason` values: `REJECTED_BY_POLICY` (policy) and
+`NOT_FOUND` (missing or filtered out by a read policy). `REJECTED_BY_POLICY` further carries
+`rejectedByPolicyReason`: `NO_ACCESS`, `CANNOT_READ_BACK` (mutation allowed but result not readable
+back), or `OTHER`.
+
+## Limitations
+
+- Database-level cascade deletes/updates and triggers are **not** policed by ZenStack.
+- Raw SQL (`$queryRaw`/`$executeRaw`) and query-builder access bypass policies. Allow raw SQL while
+  the policy plugin is installed only via `new PolicyPlugin({ dangerouslyAllowRawSql: true })`
+  (v3.5.0+).
+
+## Reference docs
+
+Full ZenStack documentation for this topic is bundled under [`references/`](references/):
+
+- [access-control-overview.md](references/access-control-overview.md) — how access control works
+- [write-policies.md](references/write-policies.md) — `@@allow`/`@@deny`, `auth()`, expressions
+- [enforcing-policies.md](references/enforcing-policies.md) — policy plugin + `$setAuth` runtime
+- [post-update.md](references/post-update.md) — `post-update` rules and `before()`
+- [field-level.md](references/field-level.md) — field-level read/update policies
+- [zmodel-expression-reference.md](references/zmodel-expression-reference.md) — policy expression reference
+- [policy-plugin-reference.md](references/policy-plugin-reference.md) — policy plugin options
+
+
+<!-- END SKILL: zenstack-access-control -->
+
+<!-- START SKILL: zenstack-crud-server -->
+
+---
+name: zenstack-crud-server
+description: Expose ZenStack V3 data as automatic CRUD web APIs ("Query as a Service") and consume them. Use when adding REST/RPC endpoints with a server adapter (Express, Fastify, Next.js, Nuxt, SvelteKit, Hono, Elysia, TanStack Start), wiring per-request access control via getClient/$setAuth, generating an OpenAPI spec, or calling the API from a client (fetch-client, TanStack Query hooks).
+---
+
+# ZenStack V3 — Automatic CRUD Services (Query as a Service)
+
+ZenStack turns your data model into secure CRUD web APIs with no hand-written controllers. Two
+pieces combine:
+
+- **API handler** — framework-agnostic; defines the API style (RPC or RESTful) and translates HTTP
+  requests into ORM queries. From `@zenstackhq/server/api`.
+- **Server adapter** — framework-specific glue that installs a handler into Express/Next.js/etc. and
+  supplies a per-request, policy-enforced ORM client. From `@zenstackhq/server/<framework>`.
+
+```
+HTTP request → server adapter → API handler (RPC | REST) → ZenStack ORM (policies applied) → DB
+```
+
+This builds on the other skills: define the schema with `zenstack-schema-modeling`, secure it with
+`zenstack-access-control`, and create the base client with `zenstack-querying`. Install the server
+package: `npm install @zenstackhq/server`.
+
+## API handlers
+
+**RPC** — mirrors the ORM API 1:1. Routes look like `GET /post/findMany?q=<urlencoded-json>` and
+`POST /post/create` (body `{ data: ... }`); responses are wrapped in `{ data: ... }`.
+
+```ts
+import { RPCApiHandler } from '@zenstackhq/server/api';
+import { schema } from '~/zenstack/schema';
+
+const apiHandler = new RPCApiHandler({ schema });
+```
+
+RPC endpoints: every ORM op (`findMany`, `findUnique`, `findFirst`, `count`, `aggregate`,
+`groupBy`, `create`, `createMany`, `createManyAndReturn`, `upsert`, `update`, `updateMany`,
+`updateManyAndReturn`, `delete`, `deleteMany`), plus `$procs/<name>` for custom procedures and
+`$transaction/sequential`. Status codes: `201` create, `200` other success, `400` malformed,
+`403` policy violation, `404` not found, `422` validation error, `500` unexpected.
+
+**RESTful** — JSON:API v1.1 compliant. Routes like `GET /post`, `GET /post/:id`, `POST /post`,
+`PUT|PATCH /post/:id`, `DELETE /post/:id`, plus relationship routes.
+
+```ts
+import { RestApiHandler } from '@zenstackhq/server/api'; // note: RestApiHandler, not RESTful
+
+const apiHandler = new RestApiHandler({
+    schema,
+    endpoint: 'http://localhost:3000/api', // required — used to build resource links
+});
+```
+
+`RestApiHandler` options: `endpoint` (required), `pageSize` (default 100; `Infinity` disables
+paging), `modelNameMapping` (`{ User: 'users' }`), `externalIdMapping` (`{ Tag: 'name' }`),
+`nestedRoutes` (bool). REST query params: `filter[field]=`, `filter[field$op]=` (`$lt`,`$gt`,
+`$contains`,`$startsWith`,…), `sort=field,-other`, `page[offset]=`/`page[limit]=`,
+`include=rel,rel.nested`, `fields[type]=a,b`.
+
+Both handlers also accept `queryOptions` for **slicing/omitting** what the API exposes:
+
+```ts
+new RPCApiHandler({
+    schema,
+    queryOptions: {
+        slicing: {
+            includedModels: ['User', 'Post'],
+            models: { post: { excludedOperations: ['delete'] } },
+        },
+        omit: { user: { password: true } },
+    },
+});
+```
+
+## Server adapters — `getClient` is where access control lives
+
+Every adapter takes `apiHandler` and a `getClient(request) => ClientContract` callback. Return a
+**policy-enforced client bound to the current user** via `$setAuth` (see `zenstack-access-control`),
+so each request is isolated:
+
+```ts
+getClient: (req) => authDb.$setAuth(getSessionUser(req)),
+```
+
+`authDb` is `db.$use(new PolicyPlugin())`. Return `authDb.$setAuth(undefined)` for anonymous, or the
+raw `db` to bypass policies (rarely what you want for a public API).
+
+### Express
+
+```ts
+import { ZenStackMiddleware } from '@zenstackhq/server/express';
+
+app.use(express.json());
+app.use(
+    '/api/model',
+    ZenStackMiddleware({
+        apiHandler,
+        getClient: (req) => authDb.$setAuth(getSessionUser(req)),
+    }),
+);
+```
+
+(Optional `sendResponse: false` writes to `res.locals` and calls `next()` instead.)
+
+### Fastify
+
+```ts
+import { ZenStackFastifyPlugin } from '@zenstackhq/server/fastify';
+
+server.register(ZenStackFastifyPlugin, {
+    prefix: '/api/model', // required
+    apiHandler,
+    getClient: (req) => authDb.$setAuth(getSessionUser(req)),
+});
+```
+
+### Next.js — App Router
+
+```ts
+// src/app/api/model/[...path]/route.ts
+import { NextRequestHandler } from '@zenstackhq/server/next';
+
+const handler = NextRequestHandler({
+    apiHandler,
+    getClient: (req) => authDb.$setAuth(getSessionUser(req)),
+    useAppDir: true,
+});
+export {
+    handler as GET,
+    handler as POST,
+    handler as PUT,
+    handler as PATCH,
+    handler as DELETE,
+};
+```
+
+### Next.js — Pages Router
+
+```ts
+// src/pages/api/model/[...path].ts
+import { NextRequestHandler } from '@zenstackhq/server/next';
+
+export default NextRequestHandler({
+    apiHandler,
+    getClient: (req, res) => authDb.$setAuth(getSessionUser(req, res)),
+});
+```
+
+### Nuxt
+
+```ts
+// server/api/model/[...].ts
+import { createEventHandler } from '@zenstackhq/server/nuxt';
+
+export default createEventHandler({
+    apiHandler,
+    getClient: (event) => authDb.$setAuth(getSessionUser(event)),
+});
+```
+
+### SvelteKit (API route — preferred; wildcard param must be named `path`)
+
+```ts
+// src/routes/api/model/[...path]/+server.ts
+import { SvelteKitRouteHandler } from '@zenstackhq/server/sveltekit';
+
+const handler = SvelteKitRouteHandler({
+    apiHandler,
+    getClient: (event) => authDb.$setAuth(getSessionUser(event)),
+});
+export const GET = handler,
+    POST = handler,
+    PUT = handler,
+    PATCH = handler,
+    DELETE = handler;
+```
+
+(Legacy `SvelteKitHandler` in `hooks.server.ts` with a `prefix` option is deprecated.)
+
+### Hono
+
+```ts
+import { createHonoHandler } from '@zenstackhq/server/hono';
+
+app.use(
+    '/api/model/*',
+    createHonoHandler({
+        apiHandler,
+        getClient: (ctx) => authDb.$setAuth(getSessionUser(ctx)),
+    }),
+);
+```
+
+### Elysia
+
+```ts
+import { createElysiaHandler } from '@zenstackhq/server/elysia';
+
+app.group('/crud', (app) =>
+    app.use(
+        createElysiaHandler({
+            apiHandler,
+            basePath: '/api/model',
+            getClient: (ctx) => authDb.$setAuth(getSessionUser(ctx)),
+        }),
+    ),
+);
+```
+
+### TanStack Start
+
+```ts
+// app/routes/api/$.ts
+import { TanStackStartHandler } from '@zenstackhq/server/tanstack-start';
+
+const handler = TanStackStartHandler({
+    apiHandler,
+    getClient: (req) => authDb.$setAuth(getSessionUser(req)),
+});
+export const Route = createFileRoute('/api/$')({
+    server: {
+        handlers: {
+            GET: handler,
+            POST: handler,
+            PUT: handler,
+            PATCH: handler,
+            DELETE: handler,
+        },
+    },
+});
+```
+
+## Data type serialization
+
+Handlers use **superjson** so non-JSON types survive the wire: `DateTime` → ISO string, `Bytes` →
+base64, `BigInt`/`Decimal` → string. The generated client SDKs handle this automatically. If you
+hand-craft requests, include the superjson `meta` under a `serialization` key
+(`{ "data": ..., "meta": { "serialization": <meta> } }`); responses carry the same.
+
+## Consuming the API
+
+### Fetch client (v3.7.0+, RPC APIs only)
+
+```ts
+import { createClient } from '@zenstackhq/fetch-client';
+import { schema } from '~/zenstack/schema';
+
+const client = createClient(schema, {
+    endpoint: 'https://example.com/api/model',
+});
+const users = await client.user.findMany({ include: { posts: true } });
+await client.post.create({ data: { title: 'Hello' } });
+```
+
+Add auth via a custom `fetch`:
+
+```ts
+import type { FetchFn } from '@zenstackhq/fetch-client';
+const fetchFn: FetchFn = (url, init) =>
+    fetch(url, {
+        ...init,
+        headers: { ...init?.headers, authorization: `Bearer ${getToken()}` },
+    });
+createClient(schema, { endpoint, fetch: fetchFn });
+```
+
+Custom procedures: `client.$procs.getStats.query()` / `client.$procs.send.mutate({ args })`.
+Sequential tx: `client.$transaction([{ model, op, args }, ...])`.
+
+### TanStack Query hooks (RPC APIs only; React 18+/Vue 3+/Svelte 5.25+)
+
+Install `@zenstackhq/tanstack-query` and the matching `@tanstack/*-query`. Provide settings near the
+root (React shown; Vue uses `provideQuerySettingsContext`, Svelte `setQuerySettingsContext`):
+
+```tsx
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QuerySettingsProvider } from '@zenstackhq/tanstack-query/react';
+
+<QueryClientProvider client={new QueryClient()}>
+    <QuerySettingsProvider value={{ endpoint: '/api/model' }}>
+        {children}
+    </QuerySettingsProvider>
+</QueryClientProvider>;
+```
+
+Hooks mirror the ORM client via `useClientQueries(schema)`:
+
+```ts
+import { useClientQueries } from '@zenstackhq/tanstack-query/react';
+
+const client = useClientQueries(schema);
+const { data } = client.user.useFindMany({ include: { posts: true } });
+const create = client.post.useCreate();
+create.mutate({ data: { title: 'New post' } });
+```
+
+- **Auto invalidation**: mutations invalidate affected queries automatically (respects nested
+  reads/writes and cascades). Opt out per mutation with `{ invalidateQueries: false }`.
+- **Optimistic updates**: `client.post.useCreate({ optimisticUpdate: true })`; customize with
+  `optimisticUpdateProvider`.
+- Also: `useInfiniteFindMany`, `$procs.<name>.useQuery()/useMutation()`,
+  `$transaction.useSequential()`, and `DbNull`/`JsonNull`/`AnyNull` exports for JSON nulls.
+
+A community **Pinia Colada** integration exists as `zenstack-pinia-colada` (Vue 3).
+
+## OpenAPI spec
+
+Both handlers can emit an OpenAPI spec via `generateSpec()` (RPC v3.6.0+, REST v3.5.0+):
+
+```ts
+import type { OpenApiSpecOptions } from '@zenstackhq/server/api';
+
+app.get('/api/openapi.json', async (_req, res) => {
+    const spec = await apiHandler.generateSpec({
+        title: 'My Blog API',
+        version: '2.0.0',
+        respectAccessPolicies: true, // emit 403 responses for policy-protected models
+    });
+    res.json(spec);
+});
+```
+
+Options: `title` (default `'ZenStack Generated API'`), `version` (default `'1.0.0'`), `description`,
+`summary`, `respectAccessPolicies` (default false). `queryOptions.slicing`/`omit` on the handler
+also shape what appears in the spec.
+
+## Reference docs
+
+Full ZenStack documentation for this topic is bundled under [`references/`](references/):
+
+- [service-overview.md](references/service-overview.md) — automatic CRUD service overview
+- [server-adapter.md](references/server-adapter.md) — server adapter concepts
+- [api-handler-overview.md](references/api-handler-overview.md) — API handlers overview
+- [api-handler-rpc.md](references/api-handler-rpc.md) — RPC API handler
+- [api-handler-rest.md](references/api-handler-rest.md) — RESTful API handler
+- [client-sdk-overview.md](references/client-sdk-overview.md) — client SDK overview
+- [fetch-client.md](references/fetch-client.md) — fetch client
+- [tanstack-query.md](references/tanstack-query.md) — TanStack Query hooks
+- [openapi-overview.md](references/openapi-overview.md) — OpenAPI overview
+- [openapi-rpc.md](references/openapi-rpc.md) — OpenAPI for RPC
+- [openapi-restful.md](references/openapi-restful.md) — OpenAPI for REST
+- [api-reference.md](references/api-reference.md) — server API reference
+- Server adapters: [express](references/adapter-express.md), [fastify](references/adapter-fastify.md), [next](references/adapter-next.md), [nuxt](references/adapter-nuxt.md), [sveltekit](references/adapter-sveltekit.md), [hono](references/adapter-hono.md), [elysia](references/adapter-elysia.md), [tanstack-start](references/adapter-tanstack-start.md)
+
+
+<!-- END SKILL: zenstack-crud-server -->
+
+<!-- START SKILL: zenstack-db-migration -->
+
+---
+name: zenstack-db-migration
+description: Manage database schema migrations in ZenStack V3. Use when creating/applying migrations (zen migrate dev/deploy/reset/status/resolve), prototyping with zen db push, introspecting an existing database with zen db pull, seeding, handling unsupported features (views) with --create-only, or wiring migrations into a deployment pipeline.
+---
+
+# ZenStack V3 — Database Migrations
+
+ZenStack keeps your database schema in sync with your ZModel data model. Migration is built on top
+of [Prisma Migrate](https://www.prisma.io/docs/orm/prisma-migrate): the `zen` CLI generates a Prisma
+schema from your ZModel under the hood and wraps the corresponding Prisma command. If you know Prisma
+Migrate, the workflow is identical — just swap `prisma` for `zen`. Existing migration history keeps
+working once moved into ZenStack's layout (`prisma/migrations` → `zenstack/migrations`, the default
+location next to `zenstack/schema.zmodel`).
+
+This skill assumes a project is already set up (see `zenstack-project-setup`). Schema authoring is in
+`zenstack-schema-modeling`. `@zenstackhq/cli` carries a peer dependency on `prisma`, installed
+automatically when needed.
+
+> Run `zen generate` after schema changes to refresh generated types; migration commands operate on
+> the schema independently of the generated client.
+
+## Two ways to evolve the schema
+
+| Approach | Command | When |
+| -------- | ------- | ---- |
+| **Schema prototyping** | `zen db push` | Local dev/experimentation — syncs the DB to the schema with **no migration file**. Fast, but loses history. **Never in production.** |
+| **Tracked migrations** | `zen migrate dev` → `zen migrate deploy` | Anything you ship — generates reviewable, committed SQL migration files applied deterministically across environments. |
+
+Typical loop: prototype with `db push` while iterating, then create a migration with `migrate dev`
+once the shape settles.
+
+## Commands
+
+All migration/db commands accept `--schema <file>` (defaults to `zenstack/schema.zmodel`) and
+`--migrations <path>` (the directory holding `migrations/`).
+
+### `zen migrate dev` — create + apply a migration (development)
+
+Diffs the schema against migration history, generates a new timestamped migration file, and applies
+it to the dev database. Prompts if a full reset is required (e.g. drift).
+
+```bash
+zen migrate dev --name add_published_flag
+```
+
+- `-n, --name <name>` — name the migration (otherwise you're prompted).
+- `--create-only` — generate the migration file **without applying it**. Use this to hand-edit SQL,
+  or to implement features the migration engine doesn't generate yet (e.g. database views — create
+  an empty migration and write the SQL manually), then apply later with `zen migrate dev`.
+
+Review the generated SQL before committing it to source control.
+
+### `zen migrate deploy` — apply pending migrations (production)
+
+Applies all not-yet-applied migrations. Idempotent and non-interactive — this is the command for
+your **deployment pipeline**. It never generates new migrations or resets data.
+
+```bash
+zen migrate deploy
+```
+
+### `zen migrate status` — inspect migration state
+
+Shows which migrations are applied vs. pending. Useful in CI before deploying.
+
+```bash
+zen migrate status
+```
+
+### `zen migrate resolve` — fix history without touching the schema
+
+Marks a migration as applied or rolled back — for manual recovery (e.g. a migration applied
+out-of-band, or a failed one). Does not change the database schema.
+
+```bash
+zen migrate resolve --applied 20240101120000_add_users
+zen migrate resolve --rolled-back 20240101120000_add_users
+```
+
+### `zen migrate reset` — wipe and reapply (development)
+
+Drops all tables and replays every migration from scratch. Destructive — **dev/testing only, never
+production**.
+
+```bash
+zen migrate reset --force   # --force skips the confirmation prompt
+```
+
+If a seed script is configured, it runs after reset (use `--skip-seed` to skip).
+
+### `zen db push` — sync schema, no migration file (development)
+
+Pushes the schema straight to the database. Great for rapid prototyping; no history is recorded.
+
+```bash
+zen db push
+zen db push --accept-data-loss   # proceed despite data-loss warnings
+zen db push --force-reset        # reset the DB before pushing
+```
+
+### `zen db pull` — introspect an existing database (v3.4.0+, experimental)
+
+Loads the database schema, diffs it against your ZModel, and updates the ZModel to match. Useful for
+adopting ZenStack on an existing DB, or re-syncing after out-of-band DB changes. This has its own
+implementation (not Prisma's introspection engine).
+
+```bash
+zen db pull
+```
+
+Options: `-o, --output <path>`, `--model-casing <pascal|camel|snake|none>` (default `pascal`),
+`--field-casing <...>` (default `camel`), `--always-map` (always emit `@map`/`@@map`),
+`--quote <double|single>` (default `single`), `--indent <number>` (default `4`).
+
+> **Warning:** `zen db pull` can overwrite your schema file. Commit or back it up first.
+
+### `zen db seed` — seed the database
+
+Runs the seed script declared in `package.json` under `zenstack.seed`:
+
+```json
+{ "zenstack": { "seed": "tsx ./zenstack/seed.ts" } }
+```
+
+```bash
+zen db seed
+zen db seed -- --users 10   # args after -- are forwarded to the seed script
+```
+
+## Workflows
+
+**Development**
+
+1. Edit `zenstack/schema.zmodel`.
+2. `zen db push` to try it instantly while iterating (optionally `zen db seed`).
+3. When the shape is final, `zen migrate dev --name <change>` to create the migration.
+4. Review the SQL, commit the migration file.
+
+**Production / CI deployment**
+
+```bash
+zen migrate deploy
+```
+
+Run it in the release pipeline. Optionally gate on `zen migrate status` first. Do **not** run
+`db push`, `migrate dev`, or `migrate reset` against production.
+
+**Adopt an existing database**
+
+`zen init` → set the datasource `url` → `zen db pull` → refine the schema (policies, computed
+fields) → `zen generate`. See `zenstack-project-setup`.
+
+## Adopting from Prisma
+
+Because migration wraps Prisma Migrate, your existing migration history keeps working once you move
+the `prisma/migrations` directory to `zenstack/migrations` (ZenStack's default, next to
+`zenstack/schema.zmodel`) and replace the `prisma migrate ...` / `prisma db ...` scripts with the
+`zen` equivalents. Full framework migration is covered by `zenstack-migrate-from-prisma`.
+
+## Reference docs
+
+Full ZenStack documentation for this topic is bundled under [`references/`](references/):
+
+- [migration.md](references/migration.md) — migration concepts and workflows
+- [introspection.md](references/introspection.md) — `zen db pull` introspection
+- [cli-reference.md](references/cli-reference.md) — complete `migrate`/`db` command + option reference
+
+
+<!-- END SKILL: zenstack-db-migration -->
+
+<!-- START SKILL: zenstack-migrate-from-prisma -->
+
+---
+name: zenstack-migrate-from-prisma
+description: Migrate an existing Prisma project to ZenStack V3. Use when replacing Prisma/@prisma/client with ZenStack, converting schema.prisma to ZModel, swapping PrismaClient for ZenStackClient, updating generate/migrate scripts, mapping Prisma custom generators and client extensions, or keeping Prisma migrate tooling working.
+---
+
+# Migrating from Prisma to ZenStack V3
+
+ZenStack V3 is designed as a drop-in upgrade path for Prisma: it keeps a Prisma-compatible query API
+and a schema language (ZModel) that is a superset of the Prisma schema. Most apps migrate with
+mechanical changes and no query rewrites. Supported databases: **PostgreSQL, MySQL, SQLite**.
+
+For general setup/CLI details see `zenstack-project-setup`; for the client/dialect see
+`zenstack-querying`; for schema syntax see `zenstack-schema-modeling`.
+
+## At a glance
+
+| Prisma | ZenStack V3 |
+| ------ | ----------- |
+| `prisma`, `@prisma/client` | `@zenstackhq/cli` (dev), `@zenstackhq/schema`, `@zenstackhq/orm` |
+| `schema.prisma` | `zenstack/schema.zmodel` (Prisma schema is valid ZModel) |
+| `prisma generate` | `zen generate` |
+| `prisma db push` / `migrate dev` / `migrate deploy` | `zen db push` / `zen migrate dev` / `zen migrate deploy` |
+| `new PrismaClient()` | `new ZenStackClient(schema, { dialect })` |
+| bundled DB engine | you install a DB driver (`pg` / `mysql2` / `better-sqlite3`) |
+
+## Step 1 — Swap dependencies
+
+```bash
+npm uninstall prisma @prisma/client
+npm install @zenstackhq/schema @zenstackhq/orm
+npm install --save-dev @zenstackhq/cli
+```
+
+ZenStack does **not** bundle a database engine — install the driver for your database:
+
+| Database   | Install |
+| ---------- | ------- |
+| PostgreSQL | `npm install pg` + `npm install -D @types/pg` |
+| MySQL      | `npm install mysql2` |
+| SQLite     | `npm install better-sqlite3` + `npm install -D @types/better-sqlite3` |
+
+> `@zenstackhq/cli` has a peer dependency on `prisma`, which is installed automatically when needed
+> for migration commands (ZenStack's migrate commands wrap Prisma Migrate).
+
+## Step 2 — Move and rename the schema
+
+Move `schema.prisma` → `zenstack/schema.zmodel`. **No edits are required** — every valid Prisma
+schema is valid ZModel. Optional cleanup:
+
+- Drop the `generator client { ... }` block (no effect in ZenStack — code gen is driven by
+  `zen generate`).
+- The `datasource` block is kept; its `url` is used by the migration engine (the ORM runtime gets
+  its connection from the driver/dialect instead).
+- If you used Prisma's multi-file/multi-schema feature, merge files using ZModel `import`
+  statements.
+
+Run **`zen check`** to confirm the converted schema is valid (syntax + semantics) before moving on.
+
+Once moved, you can start adding ZenStack-only features that Prisma lacks — access policies
+(`zenstack-access-control`), `@@delegate` polymorphism, typed JSON, mixins, computed fields
+(`zenstack-schema-modeling`).
+
+## Step 3 — Update the generate script
+
+```json
+{ "scripts": { "generate": "zen generate" } }
+```
+
+Run `zen generate` after every schema change, before using the client.
+
+## Step 4 — Replace the client
+
+Swap `new PrismaClient()` for `new ZenStackClient(schema, { dialect })`, supplying a Kysely dialect
+for your driver (see `zenstack-querying` for all dialects). PostgreSQL example:
+
+```ts
+import { ZenStackClient } from '@zenstackhq/orm';
+import { PostgresDialect } from '@zenstackhq/orm/dialects/postgres';
+import { schema } from './zenstack/schema';
+import { Pool } from 'pg';
+
+export const db = new ZenStackClient(schema, {
+    dialect: new PostgresDialect({
+        pool: new Pool({ connectionString: process.env.DATABASE_URL }),
+    }),
+});
+```
+
+Your existing `findMany`/`create`/`update`/etc. calls keep working — the ORM API is
+Prisma-compatible.
+
+## Step 5 — Update type references
+
+- Model types (e.g. `User`) — import from the generated `models`.
+- Input/argument types (e.g. `UserCreateArgs`) — import from the generated `input`.
+
+Most code relies on inferred types and needs no explicit imports.
+
+## Step 6 — Update migration scripts
+
+```json
+{
+  "scripts": {
+    "db:push": "zen db push",
+    "migrate:dev": "zen migrate dev",
+    "migrate:deploy": "zen migrate deploy"
+  }
+}
+```
+
+Move your existing migration history from `prisma/migrations` to `zenstack/migrations` (ZenStack's
+default location, next to `zenstack/schema.zmodel`). It continues to work unchanged since ZenStack
+migrate wraps Prisma Migrate. See the `zenstack-db-migration` skill for the full migration workflow.
+
+## Special case — Prisma custom generators
+
+If you depend on Prisma custom generators (e.g. zod, ERD, type generators) that read a
+`schema.prisma`, keep emitting one with the `@core/prisma` plugin and chain the commands:
+
+```zmodel
+plugin prisma {
+    provider = '@core/prisma'
+    output = './schema.prisma'
+}
+```
+
+```json
+{ "scripts": { "generate": "zen generate && prisma generate --schema=zenstack/schema.prisma" } }
+```
+
+## Mapping Prisma Client extensions
+
+| Prisma extension | ZenStack equivalent |
+| ---------------- | ------------------- |
+| **Query** extension (intercept calls) | A runtime plugin via `db.$use(...)` with an `onQuery` hook |
+| **Result** extension (computed fields) | `@computed` field in ZModel + the `computedFields` option on `ZenStackClient` (see `zenstack-schema-modeling`) |
+
+## After migrating
+
+Verify with: `zen generate` → typecheck → run your test suite / app. Then incrementally adopt
+ZenStack's value-add features (access control, query builder escape hatch, auto CRUD APIs via
+`zenstack-crud-server`).
+
+> Already on **ZenStack V2**? Start here (V2 was Prisma-based), then apply the V2→V3 deltas in
+> `zenstack-project-setup` (package renames, policy plugin, `post-update`/`before()`, types+mixins,
+> grouped hooks).
+
+## Reference docs
+
+Full ZenStack documentation for this topic is bundled under [`references/`](references/):
+
+- [migrate-prisma.md](references/migrate-prisma.md) — official "Migrating from Prisma" guide
+
+
+<!-- END SKILL: zenstack-migrate-from-prisma -->
+
+<!-- START SKILL: zenstack-migrate-from-v2 -->
+
+---
+name: zenstack-migrate-from-v2
+description: Upgrade an existing ZenStack V2 project to V3. Use when renaming V2 packages (zenstack, @zenstackhq/runtime), moving access control to the policy plugin, converting future() to post-update/before(), replacing abstract models with types+mixins, updating server adapters (getPrisma → getClient), and migrating client-side TanStack Query hooks.
+---
+
+# Migrating from ZenStack V2 to V3
+
+ZenStack V3 is a major rewrite: the Prisma ORM engine is replaced with ZenStack's own engine built
+on [Kysely](https://kysely.dev), while the ZModel schema stays largely compatible and the query API
+stays PrismaClient-compatible. Supported databases: **PostgreSQL, MySQL, SQLite**.
+
+Because V2 was Prisma-based, the migration has two layers: the generic Prisma→ZenStack changes, then
+the V2-specific deltas below. For general setup/CLI see `zenstack-project-setup`.
+
+## Step 1 — Do the Prisma migration first
+
+V2 ran on Prisma, so start with the **`zenstack-migrate-from-prisma`** skill (swap deps, move the
+schema to `zenstack/schema.zmodel`, replace the client with `ZenStackClient`, update generate/migrate
+scripts). Then apply the V2-specific steps below.
+
+## Step 2 — Rename ZenStack packages
+
+```bash
+npm uninstall zenstack @zenstackhq/runtime
+npm install @zenstackhq/schema @zenstackhq/orm
+npm install --save-dev @zenstackhq/cli
+```
+
+| V2 | V3 |
+| -- | -- |
+| `zenstack` (CLI) | `@zenstackhq/cli` |
+| `@zenstackhq/runtime` | `@zenstackhq/orm` |
+| — | `@zenstackhq/schema` (new) |
+
+The CLI command moves from `zenstack <cmd>` to `zen <cmd>` (e.g. `zen generate`).
+
+## Step 3 — Access control is now a plugin
+
+In V2 access control was built into the runtime (`enhance(prisma)`). In V3 it's an opt-in plugin.
+
+1. Install it: `npm install @zenstackhq/plugin-policy`
+2. Declare it in the schema:
+   ```zmodel
+   plugin policy {
+       provider = '@zenstackhq/plugin-policy'
+   }
+   ```
+3. Wrap the client and bind the user per request:
+   ```ts
+   import { ZenStackClient } from '@zenstackhq/orm';
+   import { PolicyPlugin } from '@zenstackhq/plugin-policy';
+
+   export const db = new ZenStackClient(schema, { dialect });
+   export const authDb = db.$use(new PolicyPlugin());   // was: enhance(prisma, { user })
+   // per request:
+   const userDb = authDb.$setAuth(user);                // was: passing { user } to enhance()
+   ```
+
+See `zenstack-access-control` for the full policy/runtime model.
+
+## Step 4 — Post-update policies: `future()` → `post-update` + `before()`
+
+V2 expressed post-update conditions with `future()` inside an `update` rule. V3 uses a dedicated
+`post-update` operation, where bare field references mean the **new** values and `before()` reads the
+**old** ones.
+
+```zmodel
+// V2
+@@deny('update', future().ownerId != ownerId)
+
+// V3
+@@deny('post-update', ownerId != before().ownerId)
+```
+
+## Step 5 — Abstract models → types + mixins
+
+V2's `abstract model` + `extends` becomes a `type` applied with `with` (see
+`zenstack-schema-modeling`).
+
+```zmodel
+// V2
+abstract model Timestamped {
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+model Post extends Timestamped { title String }
+
+// V3
+type Timestamped {
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+model Post with Timestamped { title String }
+```
+
+(Note: `extends` still exists in V3, but for **polymorphism** via `@@delegate`, which is a different
+feature — don't use it as a plain mixin replacement.)
+
+## Step 6 — Server adapters
+
+V3 requires you to pass an explicit `apiHandler` (`RPCApiHandler` or `RestApiHandler`), and the
+client-supplying callback is renamed `getPrisma` → `getClient`:
+
+```ts
+// V2
+ZenStackMiddleware({ getPrisma: (req) => enhance(prisma, { user: getUser(req) }) });
+
+// V3
+ZenStackMiddleware({
+    apiHandler: new RPCApiHandler({ schema }),
+    getClient: (req) => authDb.$setAuth(getUser(req)),
+});
+```
+
+See `zenstack-crud-server` for all frameworks and both API styles.
+
+## Step 7 — Client-side hooks (TanStack Query)
+
+Flat hook names are replaced by hooks grouped under a client that mirrors the ORM:
+
+```ts
+// V2
+import { useFindManyUser } from '~/hooks';
+const { data } = useFindManyUser({ where: { ... } });
+
+// V3
+import { useClientQueries } from '@zenstackhq/tanstack-query/react';
+import { schema } from '~/zenstack/schema';
+
+const client = useClientQueries(schema);
+const { data } = client.user.useFindMany({ where: { ... } });
+```
+
+**SWR support was dropped** in V3. See `zenstack-crud-server` for the full TanStack Query setup.
+
+## Step 8 — Other plugin/utility migrations
+
+- **Zod**: now a utility rather than a plugin (see the zod utility docs).
+- **OpenAPI**: folded into the automatic CRUD API handlers — generate a spec via
+  `apiHandler.generateSpec()` (see `zenstack-crud-server`).
+- **Custom plugins**: the V3 plugin system is revised; consult the current plugin docs.
+
+## After upgrading
+
+Run `zen generate`, typecheck, and exercise your test suite / app. Confirm access control behaves as
+expected now that it's an explicit `$use(new PolicyPlugin())` + `$setAuth()` flow rather than V2's
+implicit `enhance()`.
+
+## Reference docs
+
+Full ZenStack documentation for this topic is bundled under [`references/`](references/):
+
+- [migrate-v2.md](references/migrate-v2.md) — official "Migrating from ZenStack v2" guide
+
+
+<!-- END SKILL: zenstack-migrate-from-v2 -->
+
+<!-- START SKILL: zenstack-plugin-dev -->
+
+---
+name: zenstack-plugin-dev
+description: Develop ZenStack V3 plugins. Use when building or declaring a plugin — custom ZModel attributes/functions, CLI code generators (CliPlugin with a generate callback for `zen generate`), or runtime plugins installed via $use/definePlugin (onQuery, onKyselyQuery, onEntityMutation hooks, extending the client, custom query args, computed result fields).
+---
+
+# ZenStack V3 — Plugin Development
+
+> Plugins are a **preview** feature and may change in future releases.
+
+A ZenStack plugin can extend the toolkit at **three levels**, independently or together:
+
+1. **Schema (ZModel)** — contribute custom attributes (e.g. `@password`) and functions to the
+   schema language.
+2. **CLI (code generation)** — participate in `zen generate` to emit artifacts from the schema.
+3. **Runtime (ORM)** — install on the client to intercept queries, hook CRUD lifecycle events,
+   transform SQL, add custom methods, or compute fields.
+
+ZenStack's `plugin` replaces Prisma's `generator`. To declare/consume plugins in a schema see
+`zenstack-schema-modeling`; this skill is about *authoring* them.
+
+Packages: `@zenstackhq/orm` (runtime plugin types), `@zenstackhq/sdk` (CLI plugin types + ZModel
+AST). Install the SDK as a dev dependency: `npm install -D @zenstackhq/sdk`.
+
+## Declaring a plugin in ZModel
+
+```zmodel
+plugin myPlugin {
+    provider = './my-plugin'   // local .ts/.js/.mts/.mjs file, a folder with an index, or an npm package
+    output   = './generated'   // arbitrary key=value options, readable by the plugin
+}
+```
+
+`provider` resolution order: local file path → folder with an index → npm package. CLI plugins must
+be **ESM**; TypeScript providers are loaded via [jiti](https://github.com/unjs/jiti). The built-in
+`@core/typescript` plugin runs automatically; `@core/prisma` emits a Prisma schema.
+
+## Runtime plugins
+
+A runtime plugin is an object implementing `RuntimePlugin` from `@zenstackhq/orm`. Define it three
+ways; `definePlugin` gives the best type inference:
+
+```ts
+import { definePlugin, type RuntimePlugin } from '@zenstackhq/orm';
+
+// plain object / definePlugin (recommended)
+const plugin = definePlugin({ id: 'my-plugin', /* hooks… */ });
+
+// or a class
+class MyPlugin implements RuntimePlugin<typeof schema> {
+    id = 'my-plugin';
+    /* hooks… */
+}
+```
+
+Install on the client (immutable — returns a new client, original unchanged); remove with
+`$unuse(id)` / `$unuseAll()`. You can also pass `plugins: [...]` to the `ZenStackClient` constructor.
+
+```ts
+const db = new ZenStackClient(schema, { dialect });
+const withPlugin = db.$use(plugin);              // new client
+const plain = withPlugin.$unuse('my-plugin');    // remove by id
+// or: new ZenStackClient(schema, { dialect, plugins: [plugin] });
+```
+
+Every plugin needs a unique `id`. Add any combination of the hooks below.
+
+### `onQuery` — intercept ORM operations
+
+Fires for ORM API calls only (`findMany`, `create`, …), **not** the query builder. Wrap, modify
+args, short-circuit, or post-process results via `proceed`.
+
+```ts
+definePlugin({
+    id: 'timing',
+    onQuery: async ({ model, operation, args, proceed }) => {
+        const start = Date.now();
+        const result = await proceed(args);
+        console.log(`${model}.${operation} took ${Date.now() - start}ms`);
+        return result;
+    },
+});
+```
+
+### `onKyselyQuery` — intercept/transform SQL
+
+The lowest-level hook: every DB access (ORM *and* query builder) flows through Kysely here, so you
+can inspect or rewrite the SQL AST (`OperationNode`) before `proceed`. Good for soft-deletes,
+injected filters, column transforms.
+
+```ts
+import type { OnKyselyQueryCallback } from '@zenstackhq/orm';
+
+const hook: OnKyselyQueryCallback<typeof schema> = async ({ query, proceed }) => {
+    // inspect/transform `query` (a Kysely OperationNode), e.g. with an OperationNodeTransformer
+    return proceed(query);
+};
+definePlugin({ id: 'sql-rewrite', onKyselyQuery: hook });
+```
+
+### `onEntityMutation` — before/after create·update·delete
+
+Lifecycle hooks around entity mutations, with lazy loaders for the affected rows.
+
+```ts
+definePlugin({
+    id: 'audit',
+    onEntityMutation: {
+        runAfterMutationWithinTransaction: false, // default: run after the tx commits
+        async beforeEntityMutation({ model, action, loadBeforeMutationEntities }) {
+            // action: 'create' | 'update' | 'delete'
+            if (model === 'Post' && action === 'update') {
+                const before = await loadBeforeMutationEntities();
+            }
+        },
+        async afterEntityMutation({ model, action, loadAfterMutationEntities }) {
+            const after = await loadAfterMutationEntities();
+        },
+    },
+});
+```
+
+Set `runAfterMutationWithinTransaction: true` to run the after-hook atomically inside the mutation's
+transaction. Note: mutations triggered by DB cascades are **not** captured, and the loaders can be
+expensive on bulk mutations.
+
+### Extending the client (`client`)
+
+Add custom methods/properties under `client`. Names **must be `$`-prefixed** so they don't shadow
+model accessors; grouping under one `$namespace` object is recommended.
+
+```ts
+const cacheDb = db.$use(definePlugin({
+    id: 'cache',
+    client: {
+        $cache: {
+            get stats() { return { hits: 0, misses: 0 }; },
+            async invalidate() { /* … */ },
+        },
+    },
+}));
+await cacheDb.$cache.invalidate();
+```
+
+### Custom query args (`queryArgs`)
+
+Accept extra options on ORM calls, validated with a Zod schema. Target `$all`, the
+`$create`/`$read`/`$update`/`$delete` groups, or specific operations.
+
+```ts
+import { z } from 'zod';
+
+definePlugin({
+    id: 'cache',
+    queryArgs: {
+        $read: z.object({ cache: z.strictObject({ ttl: z.number().positive().optional() }).optional() }),
+    },
+    onQuery: ({ args, proceed }) => proceed(args), // read (args as any).cache
+});
+// await db.user.findMany({ where: {...}, cache: { ttl: 60 } });
+```
+
+### Computed result fields (`result`, v3.5.0+)
+
+Add virtual fields computed after a query from declared `needs` fields.
+
+```ts
+definePlugin({
+    id: 'full-name',
+    result: {
+        user: {
+            fullName: {
+                needs: { firstName: true, lastName: true },
+                compute: (user) => `${user.firstName} ${user.lastName}`,
+            },
+        },
+    },
+});
+```
+
+## CLI plugins (code generation)
+
+A CLI plugin is an ESM module whose **default export** is a `CliPlugin` with a `generate` callback.
+It runs during `zen generate`, receiving the parsed ZModel AST.
+
+```ts
+import type { CliPlugin } from '@zenstackhq/sdk';
+import { isDataModel, type InvocationExpr } from '@zenstackhq/sdk/ast';
+import fs from 'node:fs';
+
+const plugin: CliPlugin = {
+    name: 'Password Report',
+    // statusText is optional
+    generate: ({ model, defaultOutputPath, pluginOptions }) => {
+        if (pluginOptions['report'] !== true) return;       // options come from the ZModel plugin block
+        let out = '# Password Fields\n\n';
+        for (const dm of model.declarations.filter(isDataModel)) {
+            for (const field of dm.fields) {
+                const attr = field.attributes.find((a) => a.decl.$refText === '@password');
+                if (attr) out += `- ${dm.name}.${field.name}\n`;
+            }
+        }
+        fs.writeFileSync(`${defaultOutputPath}/password-fields.md`, out, 'utf-8');
+    },
+};
+export default plugin;
+```
+
+`generate` receives `{ model, defaultOutputPath, pluginOptions }` — the ZModel AST, the resolved
+output directory (the `output` option or a default), and the options from the `plugin` block.
+
+## Schema plugins (custom attributes & functions)
+
+Declare new ZModel attributes/functions in a `.zmodel` the plugin ships, then use them in the app
+schema. `@@@targetField` constrains where an attribute applies.
+
+```zmodel
+// my-plugin/plugin.zmodel
+attribute @password(hasher: Any) @@@targetField([StringField])
+function bcryptHasher(rounds: Int): Any {}
+```
+
+```zmodel
+// app schema
+model User {
+    id       Int    @id @default(autoincrement())
+    password String @password(hasher: bcryptHasher(10))
+}
+```
+
+## End-to-end pattern: password hasher
+
+The docs' worked example combines all three levels into one plugin package:
+
+1. **Schema** — `plugin.zmodel` defines `@password` + `bcryptHasher()`; the app schema applies
+   `@password(hasher: bcryptHasher(10))` to a field.
+2. **CLI** — a `CliPlugin.generate` walks the AST and emits a "password fields" report when the
+   `report` option is set.
+3. **Runtime** — a `RuntimePlugin` with `onKyselyQuery` uses a Kysely `OperationNodeTransformer` to
+   detect `@password` fields (via `schema.models[...].fields[...].attributes`) and hash values on
+   `INSERT`/`UPDATE` before they hit the database.
+
+Install with `db.$use(new PasswordHasherPlugin())` (or the `plugins` constructor option), then
+`npm install -D @zenstackhq/sdk` and `zen generate` to run the CLI side.
+
+> Use **Zod v4** for `queryArgs` schemas to match ZenStack's bundled version.
+
+## Reference docs
+
+Full ZenStack documentation for this topic is bundled under [`references/`](references/):
+
+- [plugin-dev.md](references/plugin-dev.md) — end-to-end plugin development guide
+- [runtime-plugins-overview.md](references/runtime-plugins-overview.md) — runtime plugin model
+- [extending-orm-client.md](references/extending-orm-client.md) — client methods, query args, computed fields
+- [entity-mutation-hooks.md](references/entity-mutation-hooks.md) — before/after mutation hooks
+- [kysely-query-hooks.md](references/kysely-query-hooks.md) — `onKyselyQuery` SQL transformation
+- [query-api-hooks.md](references/query-api-hooks.md) — `onQuery` ORM interception
+- [zmodel-plugin.md](references/zmodel-plugin.md) — declaring plugins in ZModel
+- [zmodel-plugin-reference.md](references/zmodel-plugin-reference.md) — `plugin` block reference
+
+
+<!-- END SKILL: zenstack-plugin-dev -->
+
+<!-- START SKILL: zenstack-project-setup -->
+
+---
+name: zenstack-project-setup
+description: Set up, configure, and manage a ZenStack V3 project. Use when installing ZenStack, scaffolding a new project, or running the `zen` CLI (generate). (For database schema migrations use zenstack-db-migration; to migrate a Prisma project use zenstack-migrate-from-prisma; to upgrade from ZenStack V2 use zenstack-migrate-from-v2.)
+---
+
+# ZenStack V3 — Project Setup & Migrations
+
+ZenStack V3 is a TypeScript database toolkit with a Prisma-compatible ORM API built on
+[Kysely](https://kysely.dev) (no Rust/WASM). The schema is written in **ZModel** (`.zmodel`), a
+superset of the Prisma schema language. This skill covers installing, scaffolding, the CLI, and
+migrations. For schema syntax see `zenstack-schema-modeling`; for queries see `zenstack-querying`;
+for access control see `zenstack-access-control`.
+
+> Always confirm exact package versions and commands against the live docs at
+> https://zenstack.dev/docs when something looks off — V3 evolves quickly.
+
+## Prerequisites
+
+- **Node.js** v20+
+- **TypeScript** v5.8.0+
+- VSCode extension: "ZenStack V3" (language id `zmodel-v3`) — distinct from the V2 extension.
+
+## Installing
+
+### Scaffold a new project (recommended)
+
+```bash
+npm create zenstack my-project
+```
+
+### Initialize ZenStack in an existing project
+
+```bash
+npx @zenstackhq/cli zen init
+```
+
+Then create `zenstack/schema.zmodel` and run `zen generate`.
+
+### Manual install
+
+```bash
+npm install @zenstackhq/schema @zenstackhq/orm
+npm install --save-dev @zenstackhq/cli
+```
+
+ZenStack does **not** bundle database drivers — install one yourself:
+
+| Database   | Install |
+| ---------- | ------- |
+| PostgreSQL | `npm install pg` + `npm install -D @types/pg` |
+| MySQL      | `npm install mysql2` |
+| SQLite     | `npm install better-sqlite3` + `npm install -D @types/better-sqlite3` |
+
+Add access control only if needed: `npm install @zenstackhq/plugin-policy` (see
+`zenstack-access-control`).
+
+## Project structure
+
+- **Schema**: `zenstack/schema.zmodel` (default; override with `--schema`).
+- **Generated output**: emitted next to the schema (override with `--output`). Import it as
+  `import { schema } from './zenstack/schema'`.
+- You may commit the generated TypeScript, or `.gitignore` it and run `zen generate` in CI.
+
+## The `zen` CLI
+
+The CLI is invoked as `zen` (or `zenstack` — equivalent). Add scripts to `package.json`:
+
+```json
+{
+  "scripts": {
+    "generate": "zen generate",
+    "db:push": "zen db push",
+    "migrate:dev": "zen migrate dev",
+    "migrate:deploy": "zen migrate deploy"
+  }
+}
+```
+
+| Command | Purpose |
+| ------- | ------- |
+| `zen check` | **Only** validate `schema.zmodel` for syntax and semantic errors — does not regenerate anything. Use when you just want to confirm the schema is valid. |
+| `zen generate` | Compile `schema.zmodel` → TypeScript (regenerate the database client); also validates the schema as it compiles. **Run after every schema change**, before using the client. Flags: `--schema <path>`, `--output <path>`. |
+| `zen db push` | Push schema to the DB **without** a migration file. Dev/testing only — never in production. |
+| `zen db pull` | Introspect an existing DB and update the ZModel schema (v3.4.0+, experimental). Can overwrite your schema — back up / use source control first. |
+| `zen migrate dev` | Create a migration from schema changes and apply it (dev only). `--create-only` makes an empty migration to edit by hand (e.g. for views). |
+| `zen migrate deploy` | Apply all pending migrations. Use this in your production/deploy pipeline. |
+| `zen migrate reset` | Drop all tables and reapply migrations. Dev/testing only. |
+| `zen migrate status` | Show applied vs. pending migrations. |
+| `zen migrate resolve` | Mark a migration applied/rolled-back without changing the schema (manual recovery). |
+
+> Migration commands wrap Prisma Migrate; `@zenstackhq/cli` has a peer dependency on `prisma` that
+> is installed automatically when needed.
+
+For the full migration story — `migrate dev`/`deploy`/`reset`/`status`/`resolve`, `db push`/`pull`,
+seeding, `--create-only`, and deployment-pipeline guidance — see the `zenstack-db-migration` skill.
+
+## Workflows
+
+**Development loop**
+
+1. Edit `zenstack/schema.zmodel`.
+2. `zen generate` (regenerate types).
+3. `zen db push` to try changes locally without a migration, *or* `zen migrate dev` to create a
+   reviewable, committable migration file.
+4. Review the migration SQL, then commit it.
+
+**Production deploy**
+
+```bash
+zen migrate deploy
+```
+
+**Adopt ZenStack on an existing database**
+
+1. `zen init`
+2. Set the datasource `url` in `zenstack/schema.zmodel`.
+3. `zen db pull` to generate the schema from the DB.
+4. Refine it (add access policies, computed fields, etc.).
+5. `zen generate`.
+
+## Migrating from Prisma
+
+See the dedicated `zenstack-migrate-from-prisma` skill — it walks through swapping dependencies,
+converting `schema.prisma` to ZModel, replacing `PrismaClient` with `ZenStackClient`, updating the
+generate/migrate scripts, and mapping Prisma custom generators and client extensions.
+
+## Migrating from ZenStack V2
+
+See the dedicated `zenstack-migrate-from-v2` skill — it covers the package renames, moving access
+control to the policy plugin, the `future()` → `post-update`/`before()` change, abstract models →
+types+mixins, the `getPrisma` → `getClient` server-adapter change, and the client-side hook
+migration.
+
+## Reference docs
+
+Full ZenStack documentation for this topic is bundled under [`references/`](references/):
+
+- [prerequisite.md](references/prerequisite.md) — supported Node/TypeScript versions, IDE setup
+- [quick-start.md](references/quick-start.md) — scaffolding and the install paths
+- [cli.md](references/cli.md) — overview of every `zen` CLI command
+- [cli-reference.md](references/cli-reference.md) — full CLI reference
+- [migration.md](references/migration.md) — dev/production migration workflow
+- [introspection.md](references/introspection.md) — `zen db pull` from an existing database
+
+
+<!-- END SKILL: zenstack-project-setup -->
+
+<!-- START SKILL: zenstack-querying -->
+
+---
+name: zenstack-querying
+description: Query and mutate data with the ZenStack V3 client. Use when creating a ZenStackClient (SQLite/Postgres/MySQL dialect), using the Prisma-compatible ORM API (findMany/create/update/etc.), relation queries (select/include), computed fields, polymorphic models, strongly-typed JSON, data validation on writes (@email/@length/@@validate), transactions, the Kysely query-builder escape hatch ($qb / $expr), custom procedures, raw SQL, logging, or handling ORMError.
+---
+
+# ZenStack V3 — Querying
+
+The ZenStack client exposes a **Prisma-compatible ORM API** for everyday queries plus a **Kysely
+query builder** (`$qb`) for anything SQL-shaped that the ORM API can't express. Schema syntax is in
+`zenstack-schema-modeling`; access control in `zenstack-access-control`.
+
+## Creating the client
+
+Import `ZenStackClient` from `@zenstackhq/orm`, pass the generated `schema` plus a Kysely `dialect`.
+Install the matching driver yourself (see `zenstack-project-setup`).
+
+**SQLite** (`better-sqlite3`):
+
+```ts
+import { ZenStackClient } from '@zenstackhq/orm';
+import { SqliteDialect } from '@zenstackhq/orm/dialects/sqlite';
+import SQLite from 'better-sqlite3';
+import { schema } from './zenstack/schema';
+
+export const db = new ZenStackClient(schema, {
+    dialect: new SqliteDialect({ database: new SQLite('./dev.db') }),
+});
+```
+
+**PostgreSQL** (`pg`):
+
+```ts
+import { ZenStackClient } from '@zenstackhq/orm';
+import { PostgresDialect } from '@zenstackhq/orm/dialects/postgres';
+import { schema } from './zenstack/schema';
+import { Pool } from 'pg';
+
+export const db = new ZenStackClient(schema, {
+    dialect: new PostgresDialect({ pool: new Pool({ connectionString: process.env.DATABASE_URL }) }),
+});
+```
+
+**MySQL** (`mysql2`):
+
+```ts
+import { MysqlDialect } from '@zenstackhq/orm/dialects/mysql';
+import { createPool } from 'mysql2';
+
+export const db = new ZenStackClient(schema, {
+    dialect: new MysqlDialect({ pool: createPool(process.env.DATABASE_URL) }),
+});
+```
+
+Types are fully inferred from the schema — no separate model imports needed for most code. When you
+need an explicit type: `ClientContract<SchemaType>` for the client, or import generated `models` /
+`input` types, or use the `ModelResult` generic from `@zenstackhq/orm` to compute a row type from a
+given `select`/`include`.
+
+To enforce access policies, wrap this client with the policy plugin — see
+`zenstack-access-control`.
+
+## ORM API
+
+Model accessors live on the client (`db.user`, `db.post`, …). The API matches Prisma Client.
+
+**Read**: `findMany`, `findUnique`, `findUniqueOrThrow`, `findFirst`, `findFirstOrThrow`,
+`exists` (v3.2.0+, cheaper than `findFirst`/`count`), `count`, `aggregate`, `groupBy`.
+
+```ts
+const users = await db.user.findMany({
+    where: { age: { gt: 18 }, email: { endsWith: '@acme.com' } },
+    orderBy: { createdAt: 'desc' },
+    skip: 0,
+    take: 20,
+});
+const user = await db.user.findUnique({ where: { id: 1 } });
+const n = await db.user.count({ where: { age: { gte: 18 } } });
+```
+
+**Filter operators**: `equals`, `not`, `in`, `notIn`, `contains`, `startsWith`, `endsWith`, `lt`,
+`lte`, `gt`, `gte`, `between`; logical `AND`/`OR`/`NOT`; list `has`/`hasEvery`/`hasSome`/`isEmpty`
+(Postgres). For to-many relations filter with `some`/`every`/`none`; for to-one, filter fields
+directly.
+
+**Aggregate / groupBy** support `_count`, `_sum`, `_avg`, `_min`, `_max`; `groupBy` filters
+aggregates via `having`:
+
+```ts
+await db.post.groupBy({ by: 'authorId', _count: true, having: { viewCount: { _sum: { gt: 100 } } } });
+```
+
+**Create**: `create` (supports nested writes, runs in a transaction), `createMany` (no nested
+relations; returns a count), `createManyAndReturn`.
+
+```ts
+await db.user.create({
+    data: { email: 'a@b.com', posts: { create: [{ title: 'Hello' }] } },
+});
+```
+
+**Update**: `update`, `updateMany` / `updateManyAndReturn` (scalar fields only), `upsert`. List
+fields use `push` / `set`:
+
+```ts
+await db.post.update({ where: { id: 1 }, data: { topics: { push: 'webdev' } } });
+await db.post.upsert({
+    where: { id: 1 },
+    create: { id: 1, title: 'New' },
+    update: { title: 'Updated' },
+});
+```
+
+**Delete**: `delete`, `deleteMany`, `deleteManyAndReturn`.
+
+## Relation queries — `select` / `include` / `omit`
+
+- `select`: pick specific fields; for a relation pass a nested object. Mutually exclusive with
+  `include`/`omit`.
+- `include`: pull in relations (`true` for all fields, or an object to filter/`where` the relation).
+  Mutually exclusive with `select`.
+- `omit`: drop specific scalar fields. Mutually exclusive with `select`.
+
+```ts
+await db.user.findMany({
+    include: { posts: { where: { published: true }, select: { id: true, title: true } } },
+});
+```
+
+Nested writes inside `create`/`update`/`upsert` can `create`, `connect`, `disconnect`, update, and
+delete related records (deeply), all within a transaction.
+
+## Computed fields
+
+A field declared `@computed` in ZModel (see `zenstack-schema-modeling`) is evaluated **on the
+database side**. Provide its implementation as a Kysely expression in the `computedFields` client
+option; thereafter it behaves like a regular field — returned by queries, and usable in `select`,
+`where`, `orderBy`, and `aggregate`.
+
+```ts
+const db = new ZenStackClient(schema, {
+    dialect,
+    computedFields: {
+        User: {
+            // SQL: (SELECT COUNT(*) FROM "Post" WHERE "Post"."authorId" = "User"."id")
+            postCount: (eb) =>
+                eb.selectFrom('Post')
+                    .whereRef('Post.authorId', '=', 'id')
+                    .select(({ fn }) => fn.countAll<number>().as('count')), // selection must be named
+        },
+    },
+});
+
+await db.user.findFirst();                                   // postCount included
+await db.user.findFirst({ select: { email: true, postCount: true } });
+await db.user.findMany({ where: { postCount: { gt: 1 } }, orderBy: { postCount: 'desc' } });
+await db.user.aggregate({ _avg: { postCount: true } });
+```
+
+The callback's second arg is a `context` with `modelAlias` — use `sql.ref(\`${modelAlias}.id\`)`
+(import `sql` from `@zenstackhq/orm/helpers`) to qualify the containing model's columns on conflicts.
+
+## Polymorphic models
+
+For models using `@@delegate` inheritance (see `zenstack-schema-modeling`), query via the usual model
+accessors:
+
+- **Create** concrete models (`db.video.create(...)`) — the base row is created automatically. Base
+  models **cannot** be created directly.
+- **Query a base** model (`db.content.findMany()`) and each result includes the concrete model's
+  fields (unless you narrow with `select`). Querying a concrete model returns base + concrete fields.
+- **Delete** either side and the counterpart row is removed too.
+
+```ts
+const user = await db.user.create({ data: { email: 'u1@test.com' } });
+await db.post.create({ data: { name: 'Post1', content: 'Hi', ownerId: user.id } });
+await db.video.create({ data: { name: 'Video1', url: 'http://v/1', ownerId: user.id } });
+
+const content = await db.content.findFirstOrThrow();   // includes concrete fields
+await db.user.findFirstOrThrow({ include: { contents: true } });
+```
+
+The discriminator value is typed as a string literal (or enum member), so checking it **narrows** the
+result type to the matching concrete model:
+
+```ts
+const c = await db.content.findUniqueOrThrow({ where: { id: 1 } });
+if (c.type === 'video') console.log(c.url);    // narrowed to Video
+else if (c.type === 'image') console.log(c.data);
+```
+
+## Strongly-typed JSON
+
+A field typed with a custom `type` + `@json` (see `zenstack-schema-modeling`) is returned **strongly
+typed** (derived from the ZModel type), and inputs are validated against that type on
+create/update. Validation is *loose* — extra fields not in the type are allowed.
+
+```ts
+// query results are typed: user.profile.age / user.profile.gender
+const user = await db.user.create({
+    data: { email: 'u1@test.com', profile: { gender: 'male', age: 20 } },
+});
+
+await db.user.update({
+    where: { id: user.id },
+    data: { profile: { ...user.profile, tag: 'vip' } }, // extra `tag` is allowed
+});
+```
+
+## Data validation
+
+Validation rules are declared in ZModel and enforced by the ORM on `create`/`update` inputs (not on
+the query builder / raw SQL). Failures throw `ORMError` with reason `INVALID_INPUT`. Each attribute
+takes an optional trailing `message`.
+
+**Field attributes**
+
+- String length / lists: `@length(min?, max?)`
+- String content: `@startsWith`, `@endsWith`, `@contains`, `@email`, `@url`, `@phone` (E.164),
+  `@datetime` (ISO 8601), `@regex(pattern)`
+- String transforms (applied before save): `@lower`, `@upper`, `@trim`
+- Numbers: `@gt`, `@gte`, `@lt`, `@lte`
+
+```zmodel
+model User {
+    email    String  @email("Invalid email")
+    password String  @length(8, 128)
+    age      Int     @gte(0) @lte(150)
+    website  String? @url
+}
+```
+
+**Model-level `@@validate(condition, message?, path?)`** for cross-field rules, with helper
+functions: `now()`, `length()`, `startsWith`/`endsWith`/`contains`, `isEmail`/`isUrl`/`isPhone`/
+`isDateTime`, `regex()`, `has`/`hasSome`/`hasEvery`/`isEmpty`.
+
+```zmodel
+model Event {
+    startDate DateTime
+    endDate   DateTime
+    tags      String[]
+    @@validate(endDate > startDate, "End date must be after start date")
+    @@validate(!isEmpty(tags), "At least one tag is required")
+}
+```
+
+Validation runs before access policies and before the database is touched. For access control see
+`zenstack-access-control`. After editing validation rules (or any ZModel — including `procedure`
+declarations), run `zen generate` to regenerate the client (it also validates the schema); run
+`zen check` if you only want to validate without regenerating.
+
+## Transactions — `$transaction`
+
+**Sequential** — array of operations, executed in order, no cross-access:
+
+```ts
+const [a, b] = await db.$transaction([
+    db.user.create({ data: { name: 'Alice' } }),
+    db.user.create({ data: { name: 'Bob' } }),
+]);
+```
+
+**Interactive** — callback receiving a transaction client; results feed later steps. Keep it short.
+
+```ts
+const post = await db.$transaction(async (tx) => {
+    const user = await tx.user.create({ data: { name: 'Alice' } });
+    return tx.post.create({ data: { title: 'Hi', authorId: user.id } });
+});
+```
+
+> ORM call results are lazy promises — they don't run until awaited (directly or inside
+> `$transaction`).
+
+## Kysely query builder — `$qb` and `$expr`
+
+Use the full Kysely API (typed from the schema) when the ORM API isn't enough. See
+https://kysely.dev for the builder API.
+
+```ts
+const rows = await db.$qb
+    .selectFrom('User')
+    .select(['id', 'name'])
+    .where('age', '>', 18)
+    .execute();
+```
+
+Inject a Kysely expression into an ORM `where` with `$expr` to mix the two:
+
+```ts
+await db.post.findMany({
+    where: {
+        published: true,
+        $expr: (eb) => eb('viewCount', '>', 100),
+    },
+});
+```
+
+> The query builder bypasses access policies and ORM-level validation — keep that in mind when a
+> policy plugin is installed.
+
+## Custom procedures (v3.2.0+)
+
+Declare typed operations in ZModel, implement them at client construction, call via `$procs`.
+
+```zmodel
+procedure getUserFeeds(userId: Int, limit: Int?) : Post[]
+mutation procedure signUp(email: String) : User
+```
+
+```ts
+const db = new ZenStackClient(schema, {
+    dialect,
+    procedures: {
+        getUserFeeds: ({ client, args }) =>
+            client.post.findMany({ where: { authorId: args.userId }, take: args.limit }),
+        signUp: ({ client, args }) => client.user.create({ data: { email: args.email } }),
+    },
+});
+
+const user = await db.$procs.signUp({ args: { email: 'alice@example.com' } });
+const feeds = await db.$procs.getUserFeeds({ args: { userId: user.id, limit: 20 } });
+```
+
+Args are validated against the ZModel types before the callback runs; return values are not — match
+them yourself. Throw `ORMError` for failures.
+
+## Raw SQL
+
+`$queryRaw` / `$executeRaw` use tagged templates (parameterized, safe); the `*Unsafe` variants take
+plain strings and are injection-prone.
+
+```ts
+const users = await db.$queryRaw<{ id: number; email: string }[]>`
+    SELECT id, email FROM "User" WHERE role = ${role}`;
+const affected = await db.$executeRaw`UPDATE "User" SET name = ${name} WHERE id = ${id}`;
+```
+
+Raw SQL bypasses access control; with the policy plugin installed it requires
+`dangerouslyAllowRawSql`.
+
+## Logging
+
+Pass a `log` option to `ZenStackClient` — an array of levels, or a function. It's forwarded to the
+underlying Kysely instance.
+
+```ts
+const db = new ZenStackClient(schema, {
+    dialect,
+    log: ['query', 'error'],
+    // or a function:
+    // log: (event) => console.log(`[${event.level}] ${event.queryDurationMillis}ms`),
+});
+```
+
+## Error handling
+
+All ORM errors are `ORMError`. Inspect `error.reason` (`CONFIG_ERROR`, `INVALID_INPUT`, `NOT_FOUND`,
+`REJECTED_BY_POLICY`, `DB_QUERY_ERROR`, `NOT_SUPPORTED`, `INTERNAL_ERROR`); other fields include
+`model`, `dbErrorCode`, `dbErrorMessage`, `rejectedByPolicyReason`, and (for `DB_QUERY_ERROR`)
+`sql`/`sqlParams`.
+
+```ts
+import { ORMError } from '@zenstackhq/orm';
+
+try {
+    await userDb.post.create({ data: { title: '' } });
+} catch (e) {
+    if (e instanceof ORMError && e.reason === 'REJECTED_BY_POLICY') {
+        // handle access-denied
+    }
+}
+```
+
+## Reference docs
+
+Full ZenStack documentation for this topic is bundled under [`references/`](references/):
+
+- [client.md](references/client.md) — creating the `ZenStackClient` (SQLite/Postgres/MySQL dialects)
+- [orm-overview.md](references/orm-overview.md) — ORM overview
+- [api-overview.md](references/api-overview.md) — ORM API overview
+- [api-find.md](references/api-find.md) — find operations
+- [api-create.md](references/api-create.md) — create / nested writes
+- [api-update.md](references/api-update.md) — update / upsert / nested writes
+- [api-delete.md](references/api-delete.md) — delete operations
+- [api-filter.md](references/api-filter.md) — filter operators
+- [api-aggregate.md](references/api-aggregate.md) — aggregate
+- [api-count.md](references/api-count.md) — count
+- [api-group-by.md](references/api-group-by.md) — groupBy
+- [api-transaction.md](references/api-transaction.md) — `$transaction`
+- [api-raw-sql.md](references/api-raw-sql.md) — raw SQL
+- [query-builder.md](references/query-builder.md) — the Kysely `$qb` escape hatch
+- [custom-procedures.md](references/custom-procedures.md) — custom procedures
+- [computed-fields.md](references/computed-fields.md) — computed fields at runtime
+- [polymorphism.md](references/polymorphism.md) — querying polymorphic models
+- [typed-json.md](references/typed-json.md) — strongly-typed JSON fields at runtime
+- [validation.md](references/validation.md) — data validation
+- [input-validation-reference.md](references/input-validation-reference.md) — validation attribute reference
+- [inferred-types.md](references/inferred-types.md) — inferred model/input types
+- [logging.md](references/logging.md) — client logging configuration
+- [errors.md](references/errors.md) — `ORMError` and error reasons
+
+
+<!-- END SKILL: zenstack-querying -->
+
+<!-- START SKILL: zenstack-schema-modeling -->
+
+---
+name: zenstack-schema-modeling
+description: Author ZModel (.zmodel) data schemas for ZenStack V3. Use when defining models, fields, field/model attributes, relations (1-1, 1-many, many-many, self), enums, custom types & mixins, polymorphic models (@@delegate), strongly-typed JSON fields, or computed fields.
+---
+
+# ZenStack — Schema Modeling (ZModel)
+
+ZModel is ZenStack's schema language — a superset of Prisma's schema. The schema lives at
+`zenstack/schema.zmodel` by default. For access policies/validation use `zenstack-access-control`;
+for queries use `zenstack-querying`.
+
+After editing the schema:
+
+```bash
+zen check      # only validate the schema for syntax/semantic errors (use --schema <file> for a non-default path)
+zen generate   # regenerate the database client — also validates the schema as it compiles
+```
+
+Run `zen check` when you just want to confirm the schema is valid; run `zen generate` when you want
+to regenerate the client (the normal step after a schema change).
+
+Strings accept both single and double quotes. **Every valid Prisma schema is valid ZModel**, so
+existing Prisma knowledge transfers directly — the sections below cover both the basics and the
+additions ZModel layers on top.
+
+## Datasource
+
+Exactly one `datasource` block per schema. The ORM runtime doesn't use `url` (the driver carries
+the connection); the migration engine does.
+
+```zmodel
+datasource db {
+    provider = 'postgresql'        // 'postgresql' | 'mysql' | 'sqlite'
+    url      = env('DATABASE_URL') // or 'file:./dev.db' for SQLite
+}
+```
+
+> ZModel has **no `generator` block**. Code generation is driven by `zen generate`; optional behavior
+> is configured with `plugin` blocks (e.g. `plugin policy`, `plugin prisma`).
+
+## Models & fields
+
+```zmodel
+model User {
+    id        Int      @id @default(autoincrement())
+    email     String   @unique
+    name      String?              // optional
+    role      Role     @default(USER)
+    tags      String[]             // list
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+```
+
+**Scalar types**: `String`, `Boolean`, `Int`, `BigInt`, `Float`, `Decimal`, `DateTime`, `Json`,
+`Bytes`, `Unsupported("...")`.
+
+**Modifiers**: `?` optional, `[]` list. A field cannot be both optional *and* a list.
+
+### Field attributes (`@`)
+
+`@id`, `@unique`, `@default(...)`, `@updatedAt`, `@map('col')`, `@relation(...)`, `@db.*` (native
+type, e.g. `@db.VarChar(64)`), `@json` (typed-JSON field), `@computed` (virtual field).
+
+### Model attributes (`@@`)
+
+`@@id([a, b])` (composite PK), `@@unique([a, b])`, `@@index([a, b])`, `@@map('table')`,
+`@@delegate(field)` (polymorphism), plus `@@allow` / `@@deny` / `@@validate` (see
+`zenstack-access-control`).
+
+```zmodel
+model City {
+    country String
+    name    String
+    @@id([country, name])     // composite primary key
+    @@map('cities')
+}
+```
+
+A model needs an identifier: a `@id` field, an `@@id([...])`, or — failing those — a `@unique`
+field / `@@unique([...])`.
+
+### Default value functions
+
+`autoincrement()`, `now()`, `cuid()`, `uuid()` / `uuid(4)`, `ulid()`, `nanoid()`,
+`dbgenerated("...")`, plus literals and enum values.
+
+Since v3.1.0, string ID generators accept a `format` with `%s`:
+
+```zmodel
+id String @id @default(uuid(4, "user_%s"))   // -> "user_<uuid>"
+```
+
+## Enums
+
+```zmodel
+enum Role {
+    USER
+    ADMIN
+}
+```
+
+Enum value names are global and must not collide.
+
+## Relations
+
+The **owner** side holds the foreign key (`@relation(fields: [...], references: [...])`).
+
+**One-to-one** — FK is `@unique`; the non-owner side is optional:
+
+```zmodel
+model User {
+    id      Int      @id
+    profile Profile?
+}
+model Profile {
+    id     Int  @id
+    user   User @relation(fields: [userId], references: [id])
+    userId Int  @unique
+}
+```
+
+**One-to-many** — list on the non-owner side:
+
+```zmodel
+model User {
+    id    Int    @id
+    posts Post[]
+}
+model Post {
+    id       Int  @id
+    author   User @relation(fields: [authorId], references: [id])
+    authorId Int
+}
+```
+
+**Many-to-many (implicit)** — list on both sides; the migration engine creates the join table:
+
+```zmodel
+model User { id Int @id  posts Post[] }
+model Post { id Int @id  editors User[] }
+```
+
+**Many-to-many (explicit)** — model the join table yourself when it needs extra fields:
+
+```zmodel
+model UserPost {
+    user   User @relation(fields: [userId], references: [id])
+    userId Int
+    post   Post @relation(fields: [postId], references: [id])
+    postId Int
+    @@id([userId, postId])
+}
+```
+
+**Named relations** disambiguate multiple relations between the same two models (give both ends the
+same name): `@relation('UserPosts', ...)`.
+
+**Self-relations** use a named relation, e.g. a one-to-many manager/reports tree:
+
+```zmodel
+model Employee {
+    id           Int        @id
+    managerId    Int?
+    manager      Employee?  @relation('Mgmt', fields: [managerId], references: [id])
+    subordinates Employee[] @relation('Mgmt')
+}
+```
+
+**Referential actions** on the owner side: `onDelete` / `onUpdate` with `Cascade`, `Restrict`,
+`NoAction`, `SetNull`, `SetDefault`.
+
+```zmodel
+author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+```
+
+## Custom types & mixins
+
+A `type` declaration is **not** backed by a table. Use it for typed JSON (below) or as a **mixin**
+of reusable fields, applied with `with`:
+
+```zmodel
+type BaseFields {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model User with BaseFields {
+    email String @unique
+}
+model Post with BaseFields {
+    title String
+}
+```
+
+Mixin fields are inlined into the model. Multiple mixins are allowed if names don't conflict. This is
+ZModel's mechanism for sharing fields across models (use it instead of an abstract base model).
+
+A type may even carry relation fields (v3.6.0+), but then it can only be used as a mixin, not as a
+JSON field:
+
+```zmodel
+type AuditMixin {
+    createdBy   User   @relation('CreatedBy', fields: [createdById], references: [id])
+    createdById String
+}
+model Post with AuditMixin { title String }
+```
+
+## Polymorphism — `@@delegate`
+
+Multi-table inheritance: a base model with a discriminator field and `@@delegate`, concrete models
+using `extends`. Concrete and base rows share the same id; you create concrete models, never the
+base directly.
+
+```zmodel
+model Content {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    owner     User     @relation(fields: [ownerId], references: [id])
+    ownerId   Int
+    type      String   // discriminator
+    @@delegate(type)
+}
+
+model Post extends Content {
+    content String
+}
+model Image extends Content {
+    data Bytes
+}
+```
+
+Customize the stored discriminator value with `@@delegateMap` (v3.7.1+), which also works with enum
+discriminators:
+
+```zmodel
+model Video extends Content {
+    url String
+    @@delegateMap("video")
+}
+```
+
+## Strongly-typed JSON
+
+Define a `type`, use it as a field type, and mark the field `@json`. The column is plain JSON in the
+database, but ZenStack validates writes and returns a typed value.
+
+```zmodel
+type Address {
+    street  String
+    city    String
+    zip     Int
+}
+model User {
+    id      Int     @id
+    address Address @json
+}
+```
+
+## Computed fields
+
+Declare a virtual field with `@computed`; implement it with a Kysely expression in the client
+config. It can be selected, filtered, sorted, and referenced in policies.
+
+```zmodel
+model User {
+    id        Int @id
+    postCount Int @computed
+}
+```
+
+```ts
+const db = new ZenStackClient(schema, {
+    dialect,
+    computedFields: {
+        User: {
+            postCount: (eb) =>
+                eb.selectFrom('Post')
+                    .whereRef('Post.authorId', '=', 'id')
+                    .select(({ fn }) => fn.countAll<number>().as('count')),
+        },
+    },
+});
+```
+
+## ZModel additions over Prisma
+
+- No `generator` block (use `zen generate` + `plugin`s).
+- `type` declarations + `with` mixins, `@@delegate` polymorphism, `@json` typed JSON, and
+  `@computed` fields are ZenStack additions Prisma lacks.
+- Single or double quotes are both fine.
+
+## Reference docs
+
+Full ZenStack documentation for this topic is bundled under [`references/`](references/):
+
+- [modeling-overview.md](references/modeling-overview.md) — data modeling concepts
+- [datasource.md](references/datasource.md) — the `datasource` block
+- [model.md](references/model.md) — models, fields, ids, defaults
+- [attribute.md](references/attribute.md) — field & model attributes
+- [relation.md](references/relation.md) — 1-1, 1-many, many-many, self relations
+- [enum.md](references/enum.md) — enums
+- [custom-type.md](references/custom-type.md) — `type` declarations
+- [mixin.md](references/mixin.md) — reusable field mixins (`with`)
+- [polymorphism.md](references/polymorphism.md) — `@@delegate` polymorphic models
+- [typed-json.md](references/typed-json.md) — strongly-typed JSON fields
+- [computed-fields.md](references/computed-fields.md) — `@computed` fields
+- [zmodel-attribute-reference.md](references/zmodel-attribute-reference.md) — complete attribute reference
+- [zmodel-function-reference.md](references/zmodel-function-reference.md) — attribute-function reference
+
+
+<!-- END SKILL: zenstack-schema-modeling -->

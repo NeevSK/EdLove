@@ -130,7 +130,8 @@
     "openingSanctuary": "Initializing Sanctuary...",
     "description": "Your AI-powered educational companion.",
     "start": "Get Started",
-    "message": "Welcome to Gurudevi"
+    "message": "Welcome to Gurudevi",
+    "footer": "Part of the EdLove Constellation · Made with 💖 in Sri Lanka"
   },
   "tabs": {
     "self": "Self",

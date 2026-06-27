@@ -211,6 +211,12 @@ If another app exists in the monorepo, it should follow the same shape while sti
 
 The rule is consistency of startup model, not identical file names.
 
+## Related Boundary Docs
+
+- [Auth and Onboarding Highway Boundaries](./AUTH_ONBOARDING_HIGHWAY_BOUNDARIES.md)
+- [PowerSync Web / Native Boot Boundary](./2026-06-14-powersync-web-native-boot-boundary.md)
+- [Web-Native Compatibility Guide](../Core/web-native-compatibility-guide.md)
+
 ## What Belongs Where
 
 ### Entrypoint

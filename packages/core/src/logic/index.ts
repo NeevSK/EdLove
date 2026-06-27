@@ -13,6 +13,14 @@ export { useManualSnapshot } from '../hooks/useManualSnapshot';
 export { useNotifications } from '../hooks/useNotifications';
 export { useTemporalHeatmap } from '../hooks/useTemporalHeatmap';
 export { accountPin } from '../lib/accountPin';
+export { getAuthRouteDecision, getAuthRouteTarget, isPublicBootstrapRoute } from './auth/bootstrapRoutes';
+export {
+  getSessionIdentityMode,
+  isAnonymousIdentity,
+  isAnonymousSession,
+  isDemoSession,
+  isSandboxSession,
+} from './auth/identityState';
 export {
   type InviteCodeData,
   incrementInviteCodeUsage,

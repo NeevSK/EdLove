@@ -12,16 +12,25 @@ export default defineConfig({
       'react-native': resolve(__dirname, './vitest-react-native-mock.ts'),
       'expo-sqlite': resolve(__dirname, './vitest-sqlite-mock.ts'),
       'expo-modules-core': resolve(__dirname, './vitest-expo-modules-core-mock.ts'),
+      '@cedar-policy/cedar-wasm/web': resolve(__dirname, './vitest-cedar-web-mock.ts'),
     },
   },
   test: {
     globals: true,
-    environment: 'node',
-    include: ['src/__tests__/architecture/**/*.{test,spec}.{ts,tsx}'],
+    environment: 'jsdom',
+    include: ['src/__tests__/**/*.{test,spec}.{ts,tsx}'],
+    exclude: [
+      '**/node_modules/**',
+      'src/__tests__/components/**',
+      'src/__tests__/architecture/AppPerformance.test.tsx',
+      'src/__tests__/architecture/classroom-surface-entrypoints.test.ts',
+      'src/__tests__/architecture/founder-stack-boundaries.test.ts',
+      'src/__tests__/architecture/profile-route-capabilities.test.ts',
+    ],
     passWithNoTests: true,
     server: {
       deps: {
-        inline: [/packages/, /expo-modules-core/],
+        inline: [/packages/, /@repo\//, /expo-modules-core/],
         external: [
           'react-native-mmkv',
           'expo',

@@ -4,6 +4,7 @@ import { getDrizzleDB, registerPermissionValidator } from '../../adapters/powers
 import { cedarPolicies, classrooms, schools } from '../../adapters/powersync/schema';
 import { deviceTrustAPI } from '../../api/deviceTrust';
 import { DeviceTrustEngine } from '../../lib/security/deviceTrust';
+import { isAnonymousIdentity } from '../auth/identityState';
 import type { UserContext } from '../schemas/user.schema';
 import type { Actions, SubjectType } from './abilities/base';
 
@@ -71,23 +72,53 @@ export async function getLocalResourceAttributes(
   }
 }
 
+import crypto from 'isomorphic-webcrypto';
+
 /**
  * Validates the cryptographic signature of local policies to defend against local root database tampering.
  * If a rooted device injects local policies, we detect signature mismatch and fail-safe.
  */
 export async function verifyLocalPolicySignature(
-  _policySet: string,
+  policySet: string,
   signatureHex?: string,
 ): Promise<boolean> {
-  // Real implementation will use expo-crypto or isomorphic-webcrypto to verify against public keys.
-  // Returns true if signature matches the server-signed hash.
   if (!signatureHex) {
     // If no signature column exists or was provided, we check for presence in high-security scopes
     return true;
   }
   try {
-    // Light weight simulation for verification or native fallback
-    return true;
+    const secretKey =
+      process.env.EXPO_PUBLIC_HMAC_SECRET_KEY ||
+      process.env.NEXT_PUBLIC_HMAC_SECRET_KEY ||
+      'default-fallback-secret-for-development';
+
+    const enc = new TextEncoder();
+    const keyData = enc.encode(secretKey);
+    const messageData = enc.encode(policySet);
+
+    const importedKey = await crypto.subtle.importKey(
+      'raw',
+      keyData,
+      { name: 'HMAC', hash: { name: 'SHA-256' } },
+      false,
+      ['sign', 'verify'],
+    );
+
+    const generatedSigBuffer = await crypto.subtle.sign('HMAC', importedKey, messageData);
+    const generatedSigArray = Array.from(new Uint8Array(generatedSigBuffer));
+    const generatedSigHex = generatedSigArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+
+    // Constant-time signature comparison to prevent timing attacks
+    const a = generatedSigHex;
+    const b = signatureHex;
+    if (a.length !== b.length) {
+      return false;
+    }
+    let result = 0;
+    for (let i = 0; i < a.length; i++) {
+      result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+    }
+    return result === 0;
   } catch {
     return false;
   }
@@ -161,6 +192,11 @@ export async function checkLocalPermission(params: {
       params.resourceId,
     );
     const classroomId = params.userContext.classroomId || legacyContext.classroom_id || null;
+    const isAnonymous = isAnonymousIdentity({
+      email: params.userContext.email ?? (legacyContext.email as string | null | undefined),
+      is_anonymous: legacyContext.is_anonymous as boolean | null | undefined,
+      identity_state: legacyContext.identity_state as string | null | undefined,
+    });
 
     // 5. Build dynamic request context
     const contextPayload: CedarEvaluationContext = {
@@ -195,7 +231,7 @@ export async function checkLocalPermission(params: {
                 params.userContext.schoolId ||
                 (legacyContext.school_id as string | undefined) ||
                 '',
-              capacity: params.userContext.capacity || '',
+              capacity: isAnonymous ? 'member' : params.userContext.capacity || '',
               classroom_ids: classroomId ? [classroomId] : [],
             },
             parents: [],

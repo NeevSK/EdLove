@@ -1,7 +1,11 @@
-import { community, educational, identity, notification, profile } from '../logic/managers/factory';
+import { APIError } from '../types/API';
+import { community, educational, notification, profile } from '../logic/managers/factory';
 import type { Capacity } from '../logic/schemas/capacity.schema';
 import type { Perspective } from '../types/Identity';
 import type { ClassroomJoinRequest, RequestStatus, SchoolJoinRequest } from '../types/Onboarding';
+import { createSovereignClient, type AppType, SOVEREIGN_API_URL } from './base';
+
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 /**
  * Onboarding API (Sovereign Orchestration)
@@ -13,15 +17,28 @@ export const onboardingAPI = {
    */
 
   async getActivePerspective(): Promise<Perspective | null> {
+    const { identity } = await import('../logic/managers/factory');
     return identity.getActivePerspective();
   },
 
   async createInitialBond(orientation: Capacity, context: Record<string, any>): Promise<void> {
-    await identity.createInitialBond(orientation, context);
+    const res = await (client.api as any).identity['initial-bond'].$post({
+      json: { orientation, context },
+    });
+    if (!res.ok) {
+      throw new APIError('Failed to create initial bond', res.status.toString());
+    }
+    await res.json();
   },
 
   async completeOnboarding(userId: string): Promise<void> {
-    await identity.completeOnboarding(userId);
+    const res = await (client.api as any).identity['complete-onboarding'].$post({
+      json: { userId },
+    });
+    if (!res.ok) {
+      throw new APIError('Failed to complete onboarding', res.status.toString());
+    }
+    await res.json();
   },
 
   /**

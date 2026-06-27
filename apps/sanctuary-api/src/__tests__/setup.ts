@@ -5,6 +5,7 @@ import { coreRuntime } from '../../../../packages/core/src/logic/runtimeRegistry
 
 let mockZenStackDbAvailable = true;
 let mockActiveBond: any = null;
+let mockUserData: any = null;
 
 export function setMockZenStackDbAvailable(available: boolean) {
   mockZenStackDbAvailable = available;
@@ -12,6 +13,10 @@ export function setMockZenStackDbAvailable(available: boolean) {
 
 export function setMockActiveBond(bond: any) {
   mockActiveBond = bond;
+}
+
+export function setMockUserData(data: any) {
+  mockUserData = data;
 }
 
 function createMockDelegate(name: string): any {
@@ -28,13 +33,16 @@ function createMockDelegate(name: string): any {
             });
           }
           if (name === 'user') {
-            return async (args: any = {}) => ({
-              id: args?.where?.id ?? 'mock-user-id',
-              email: 'mock-user@example.com',
-              full_name: 'Mock User',
-              onboarding_completed: true,
-              onboarding_state: 'COMPLETED',
-            });
+            return async (args: any = {}) => {
+              if (mockUserData) return mockUserData;
+              return {
+                id: args?.where?.id ?? 'mock-user-id',
+                email: 'mock-user@example.com',
+                full_name: 'Mock User',
+                onboarding_completed: true,
+                onboarding_state: 'COMPLETED',
+              };
+            };
           }
           return async (args: any = {}) => ({
             id: args?.where?.id ?? `${name}-mock-id`,

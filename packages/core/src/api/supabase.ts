@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { storage } from '../lib/storage';
+import { supabaseAuthStorage } from '../lib/authStorage';
 
 // Configuration from environment variables
 let supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
@@ -21,12 +21,7 @@ if (!supabaseUrl || !supabasePublishableKey) {
 
 const supabaseOptions: any = {
   auth: {
-    // Wrap StorageManager to satisfy Supabase's GoTrue storage interface
-    storage: {
-      getItem: (key: string) => storage.getString(key) ?? null,
-      setItem: (key: string, value: string) => storage.set(key, value),
-      removeItem: (key: string) => storage.delete(key),
-    },
+    storage: supabaseAuthStorage,
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: typeof globalThis.window !== 'undefined',

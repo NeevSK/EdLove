@@ -12,6 +12,9 @@ import { Box, Center, Text, VStack } from '../gluestack';
 
 const { width } = Dimensions.get('window');
 
+// Constants to avoid negative literals in worklets
+const HIDDEN_Y_OFFSET = 200;
+
 interface AchievementUnlockOverlayProps {
   title: string;
   visible: boolean;
@@ -29,14 +32,14 @@ export default function AchievementUnlockOverlay({
   visible,
   onHide,
 }: AchievementUnlockOverlayProps) {
-  const translateY = useSharedValue(-200);
+  const translateY = useSharedValue(-HIDDEN_Y_OFFSET);
   const scale = useSharedValue(0.8);
   const opacity = useSharedValue(0);
 
   const performHide = useCallback(() => {
     opacity.value = withTiming(0, { duration: 300 });
     scale.value = withTiming(0.8, { duration: 300 });
-    translateY.value = withTiming(-200, { duration: 400 }, (finished) => {
+    translateY.value = withTiming(-HIDDEN_Y_OFFSET, { duration: 400 }, (finished) => {
       if (finished) {
         runOnJS(onHide)();
       }

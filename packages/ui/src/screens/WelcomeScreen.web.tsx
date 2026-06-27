@@ -20,7 +20,7 @@
 
 import { authAPI } from '@repo/core/auth';
 import { handleAPIError } from '@repo/core/logic';
-import { memo, useCallback, useMemo, useReducer } from 'react';
+import { memo, useCallback, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GatewayFooter } from '../components/GatewayFooter.web';
 import { GatewayHeader } from '../components/GatewayHeader.web';
@@ -319,6 +319,7 @@ export const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => 
   const { t } = useTranslation();
   const { gradientNodes } = useTheme();
   const { width } = useWindowDimensions();
+  const guestEntryInFlightRef = useRef(false);
 
   const [state, dispatch] = useReducer(welcomeReducer, {
     acceptedTerms: true,
@@ -332,17 +333,21 @@ export const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => 
   const bgFrom = gradientNodes[0];
 
   const startExploring = useCallback(async () => {
+    if (isConnecting || guestEntryInFlightRef.current) return;
     if (!acceptedTerms) {
       hapticError();
       return;
     }
     hapticSuccess();
+    guestEntryInFlightRef.current = true;
     dispatch({ type: 'SET_CONNECTING', connecting: true });
     try {
       await authAPI.signInAnonymously();
       if (onGuest) onGuest();
     } catch (err) {
       handleAPIError(err);
+    } finally {
+      guestEntryInFlightRef.current = false;
       dispatch({ type: 'SET_CONNECTING', connecting: false });
     }
   }, [acceptedTerms, onGuest]);

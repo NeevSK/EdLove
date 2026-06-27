@@ -112,4 +112,47 @@ describe('AuthManager', () => {
     );
     expect(result.user?.id).toBe('user-1');
   });
+
+  it('runs logout teardown before remote sign-out', async () => {
+    authPort.signOut.mockResolvedValue(undefined);
+    const onSignOut = vi.fn().mockResolvedValue(undefined);
+    const clearAll = vi.fn();
+
+    const managerWithHooks = new AuthManager(authPort as any, identityPort as any, {
+      onSignOut,
+      storage: {
+        clearAll,
+      },
+    });
+
+    await managerWithHooks.signOut();
+
+    expect(onSignOut).toHaveBeenCalledTimes(1);
+    expect(clearAll).toHaveBeenCalledTimes(1);
+    expect(authPort.signOut).toHaveBeenCalledTimes(1);
+    expect(mockLogAuditEvent).toHaveBeenCalledWith(
+      'AUTH_SIGN_OUT',
+      expect.objectContaining({
+        method: 'session',
+        outcome: 'success',
+      }),
+      undefined,
+    );
+  });
+
+  it('continues account deletion by signing out after remote removal', async () => {
+    authPort.executeRpc.mockResolvedValue(undefined);
+    authPort.signOut.mockResolvedValue(undefined);
+
+    const managerWithHooks = new AuthManager(authPort as any, identityPort as any, {
+      storage: {
+        clearAll: vi.fn(),
+      },
+    });
+
+    await managerWithHooks.deleteAccount();
+
+    expect(authPort.executeRpc).toHaveBeenCalledWith('delete_user_account');
+    expect(authPort.signOut).toHaveBeenCalledTimes(1);
+  });
 });

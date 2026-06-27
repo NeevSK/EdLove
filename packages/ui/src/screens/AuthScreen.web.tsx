@@ -4,6 +4,7 @@ import { useIdentity } from '@repo/core/hooks';
 import { storage } from '@repo/core/storage';
 import type { Capacity, User } from '@repo/core/types';
 import { validateForm, validators } from '@repo/core/utils';
+import { getSessionIdentityMode, isAnonymousIdentity } from '@repo/core/logic';
 import { Key } from 'lucide-react-native';
 import { memo, useCallback, useEffect, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -159,7 +160,7 @@ export const AuthScreenWeb = memo(
       try {
         const redirectUrl = window.location.origin;
         const session = await authAPI.getAuthSession().catch(() => null);
-        const isAnonymousSession = session?.user?.is_anonymous || !session?.user?.email;
+        const isAnonymousSession = getSessionIdentityMode(session) === 'guest';
 
         if (isAnonymousSession && session?.user) {
           await authAPI.linkOAuthIdentity('google', redirectUrl);
@@ -184,7 +185,7 @@ export const AuthScreenWeb = memo(
       try {
         const redirectUrl = window.location.origin;
         const session = await authAPI.getAuthSession().catch(() => null);
-        const isAnonymousSession = session?.user?.is_anonymous || !session?.user?.email;
+        const isAnonymousSession = getSessionIdentityMode(session) === 'guest';
 
         if (isAnonymousSession && session?.user) {
           await authAPI.registerPasskey(redirectUrl, true);
@@ -223,7 +224,7 @@ export const AuthScreenWeb = memo(
       try {
         if (mode === 'signup') {
           showToast({ message: 'Creating your identity...', type: 'info', duration: 2000 });
-          const isAnonymousUser = currentUser?.is_anonymous || !currentUser?.email;
+          const isAnonymousUser = isAnonymousIdentity(currentUser);
 
           if (isAnonymousUser) {
             const existingName =
