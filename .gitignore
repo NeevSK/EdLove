@@ -61,3 +61,7 @@ diagnostics/
 scratch/
 packages/library/lint_results.json
 
+# TypeScript Build Info
+*.tsbuildinfo
+
+

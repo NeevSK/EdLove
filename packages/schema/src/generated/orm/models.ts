@@ -43,7 +43,6 @@ export type Section = $ModelResult<$Schema, "Section">;
 export type SchoolGrade = $ModelResult<$Schema, "SchoolGrade">;
 export type StaffLeave = $ModelResult<$Schema, "StaffLeave">;
 export type CalendarEvent = $ModelResult<$Schema, "CalendarEvent">;
-export type Guardian = $ModelResult<$Schema, "Guardian">;
 export type StudentGuardianRelationship = $ModelResult<$Schema, "StudentGuardianRelationship">;
 export type Account = $ModelResult<$Schema, "Account">;
 export type LedgerEntry = $ModelResult<$Schema, "LedgerEntry">;
