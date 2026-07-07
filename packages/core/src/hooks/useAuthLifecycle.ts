@@ -1,5 +1,5 @@
 import type { Session } from '@supabase/supabase-js';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import { authAPI } from '../api/auth';
 import { assertHighway } from '../api/highways';
@@ -25,6 +25,11 @@ export function useAuthLifecycle() {
   const [loading, setLoading] = useState(true);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
 
+  // Tracks whether the very first profile load has completed successfully.
+  // After that, subsequent tab-focus/token-refresh fetches run silently
+  // without toggling isProfileLoading, preventing the blank screen on tab switch.
+  const hasBootstrappedRef = useRef(false);
+
   const setUser = useStore((state) => state.setUser);
   const setPerspective = useStore((state) => state.setPerspective);
   const setAvailableBonds = useStore((state) => state.setAvailableBonds);
@@ -35,7 +40,12 @@ export function useAuthLifecycle() {
   const setDemoMode = useStore((state) => state.setDemoMode);
 
   const fetchAndSetUserProfile = useCallback(async () => {
-    setIsProfileLoading(true);
+    // Only block the UI with a loading spinner on the very first boot fetch.
+    // All subsequent fetches (tab focus, token refresh) run silently.
+    const isFirstLoad = !hasBootstrappedRef.current;
+    if (isFirstLoad) {
+      setIsProfileLoading(true);
+    }
     try {
       assertHighway('identity_bootstrap', 'direct-api');
       // 1. Resolve Sovereign Identity (Bonds & Perspectives)
@@ -93,7 +103,12 @@ export function useAuthLifecycle() {
     } catch (error) {
       console.warn('❌ Profile: Fetching encountered an error:', error);
     } finally {
-      setIsProfileLoading(false);
+      if (isFirstLoad) {
+        setIsProfileLoading(false);
+      }
+      // Mark bootstrap as complete after the first attempt, whether it succeeded
+      // or failed — so tab switches never trigger the spinner again.
+      hasBootstrappedRef.current = true;
     }
   }, [setUser, setPerspective, setAvailableBonds, setSchoolType, setOnboardingCompleted]);
 
@@ -119,7 +134,8 @@ export function useAuthLifecycle() {
         setSession(initialSession);
         setAuthSession(initialSession);
 
-        if (getSessionIdentityMode(initialSession) === 'authenticated') {
+        const sessionMode = getSessionIdentityMode(initialSession);
+        if (sessionMode === 'authenticated' || sessionMode === 'guest') {
           await fetchAndSetUserProfile();
         } else if (initialSession?.user) {
           setUser(null);
@@ -158,7 +174,8 @@ export function useAuthLifecycle() {
         setAuthSession(currentSession);
         setAuthSessionResolved(true);
 
-        if (getSessionIdentityMode(currentSession) === 'authenticated') {
+        const currentMode = getSessionIdentityMode(currentSession);
+        if (currentMode === 'authenticated' || currentMode === 'guest') {
           await fetchAndSetUserProfile();
         } else if (currentSession?.user) {
           setUser(null);
