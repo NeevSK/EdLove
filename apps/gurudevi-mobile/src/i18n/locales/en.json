@@ -66,6 +66,11 @@
     "admin": "Admin",
     "founder": "Founding Guardian"
   },
+  "identity": {
+    "teacher": "Teacher",
+    "student": "Student",
+    "principal": "Principal"
+  },
   "auth": {
     "tagline": "Education born from love, built with love.",
     "signInEmail": "Sign in with Email",
@@ -1124,7 +1129,15 @@
       "teacher": "Manage classrooms & student wellbeing",
       "student": "Track learning & personal growth",
       "principal": "Oversee school operations & staff"
-    }
+    },
+    "roleTitle": "Choose your role",
+    "roleSubtitle": "Select how you will engage with the sanctuary",
+    "roleDesc": {
+      "teacher": "Manage classrooms & student wellbeing",
+      "student": "Track learning & personal growth",
+      "principal": "Oversee school operations & staff"
+    },
+    "saving": "Saving..."
   },
   "settings": {
     "title": "App Settings",
