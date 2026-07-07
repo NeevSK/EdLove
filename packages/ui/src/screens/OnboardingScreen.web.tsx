@@ -610,6 +610,7 @@ export default memo(function OnboardingScreenWeb({
     if (state.isProcessing) return;
     dispatch({ type: 'SET_PROCESSING', isProcessing: true });
     showToast('Finalizing your sanctuary journey...', 'info', 2000);
+    let completed = false;
     try {
       const citizen = resolvedCitizenRef.current ?? (await identityAPI.identifyActiveCitizen());
       resolvedCitizenRef.current = citizen;
@@ -620,14 +621,33 @@ export default memo(function OnboardingScreenWeb({
       await AsyncStorage.removeItem('onboarding_progress');
       hapticSuccess();
       showToast('Sanctuary entry granted! Welcome home.', 'success', 3000);
+      completed = true;
       onComplete(name, selectedCapacity, isAnonymous);
     } catch (err: unknown) {
       console.error('❌ Error completing onboarding:', err);
       hapticError();
-      const baseMsg = err instanceof Error ? err.message : 'Failed to finalize onboarding.';
-      const guidedMsg = `${baseMsg} Please check your connection and try again to enter the sanctuary.`;
+      // Detect lock-steal / abort errors from Supabase Web Locks and show a friendly retry message
+      const isAbortLike =
+        err instanceof Error &&
+        (err.name === 'AbortError' ||
+          err.message?.includes('AbortError') ||
+          err.message?.includes('Lock broken') ||
+          err.message?.includes('lock'));
+      const baseMsg = isAbortLike
+        ? 'A temporary conflict occurred. Please tap Complete again.'
+        : err instanceof Error
+          ? err.message
+          : 'Failed to finalize onboarding.';
+      const guidedMsg = isAbortLike
+        ? baseMsg
+        : `${baseMsg} Please check your connection and try again.`;
       dispatch({ type: 'SET_ERROR', error: guidedMsg });
       showToast(guidedMsg, 'error', 5000);
+    } finally {
+      // Always clear the processing state unless we successfully navigated away
+      if (!completed) {
+        dispatch({ type: 'SET_PROCESSING', isProcessing: false });
+      }
     }
   }, [name, selectedCapacity, onComplete, showToast, isAnonymous, state.isProcessing]);
 
