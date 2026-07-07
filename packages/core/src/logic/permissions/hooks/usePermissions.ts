@@ -27,7 +27,10 @@ export const usePermissions = () => {
 
     const rawContext: UserContext = {
       userId: user?.id || null,
-      email: user?.email || null,
+      email:
+        user?.email && !user.email.startsWith('anonymous@') && user.email.includes('.')
+          ? user.email
+          : null,
 
       // Sovereign ReBAC Context
       bonds: availableBonds as UserContext['bonds'],

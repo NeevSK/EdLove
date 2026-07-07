@@ -27,6 +27,15 @@ describe('bootstrap contract', () => {
     expect(
       getBootstrapSessionState({
         bootstrapReady: true,
+        sessionMode: 'guest',
+        onboardingCompleted: false,
+        hasSession: true,
+      }),
+    ).toBe('onboarding-needed');
+
+    expect(
+      getBootstrapSessionState({
+        bootstrapReady: true,
         sessionMode: 'authenticated',
         onboardingCompleted: false,
         hasSession: true,
@@ -54,6 +63,17 @@ describe('bootstrap contract', () => {
 
     expect(onboarding.policy.state).toBe('onboarding-needed');
     expect(onboarding.redirectTo).toBe('/onboarding');
+
+    const guestOnboarding = getAuthRouteTarget({
+      pathname: '/self',
+      bootstrapReady: true,
+      sessionMode: 'guest',
+      onboardingCompleted: false,
+      hasSession: true,
+    });
+
+    expect(guestOnboarding.policy.state).toBe('onboarding-needed');
+    expect(guestOnboarding.redirectTo).toBe('/onboarding');
 
     const logout = getAuthRouteTarget({
       pathname: '/self',

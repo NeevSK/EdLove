@@ -1,9 +1,9 @@
 import { useNotifications, useRewards } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 import { BreathGuide } from '@repo/self';
-import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
-import GlobalHeader from '@repo/ui/components/GlobalHeader';
-import { Box, Modal, ModalContent, Pressable, Text } from '@repo/ui/primitives';
+import { AchievementUnlockOverlay, GlobalHeader } from '@repo/ui/components';
+import { Modal, ModalContent } from '@repo/ui/components/ui/modal';
+import { Box, Pressable, Text } from '@repo/ui/primitives';
 import { router, Tabs, usePathname } from 'expo-router';
 import { Bell, Heart, Library, School, Settings, User, Users, X } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';

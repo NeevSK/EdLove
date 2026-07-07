@@ -33,7 +33,7 @@ export function getBootstrapSessionState(params: {
   const { bootstrapReady, sessionMode, onboardingCompleted, hasSession } = params;
 
   if (!bootstrapReady) return 'booting';
-  if (!hasSession || sessionMode === 'guest') return 'guest';
+  if (!hasSession) return 'guest';
   if (!onboardingCompleted) return 'onboarding-needed';
   return 'ready';
 }

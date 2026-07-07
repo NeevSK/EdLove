@@ -834,6 +834,7 @@
     "expo-video": "~56.1.2",
     "expo-web-browser": "~56.0.5",
     "gluestack-ui": "3.0.0",
+    "lucide-react": "^1.17.0",
     "lucide-react-native": "^1.17.0",
     "nativewind": "4.1.23",
     "qrcode": "^1.5.4",

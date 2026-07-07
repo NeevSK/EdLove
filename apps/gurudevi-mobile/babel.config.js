@@ -1,5 +1,6 @@
 module.exports = (api) => {
-  api.cache(true);
+  const isWeb = api.caller((caller) => caller && caller.platform === 'web');
+  api.cache.using(() => isWeb);
 
   const kebabCase = (str) =>
     str
@@ -13,17 +14,7 @@ module.exports = (api) => {
       [
         'babel-preset-expo',
         {
-          // zustand@5 (and similar packages) ship pre-compiled code that uses
-          // `import.meta.env.MODE` for dev/prod detection.  Metro serves the
-          // web bundle as a classic <script> (no type="module"), so any bare
-          // `import.meta` reference causes:
-          //   SyntaxError: Cannot use 'import.meta' outside a module
-          //
-          // Setting this to true makes babel-preset-expo's
-          // import-meta-transform-plugin replace every `import.meta` with
-          // `globalThis.__ExpoImportMetaRegistry`, which Expo's winter runtime
-          // sets up before the app boots.  This keeps the classic-script bundle
-          // compatible without changing the output format.
+          // unstable_transformImportMeta: true
           unstable_transformImportMeta: true,
           reactCompiler: true,
         },
@@ -32,7 +23,7 @@ module.exports = (api) => {
     ],
     plugins: [
       require('react-native-worklets/plugin'),
-      [
+      !isWeb && [
         'transform-imports',
         {
           'lucide-react-native': {
@@ -41,6 +32,6 @@ module.exports = (api) => {
           },
         },
       ],
-    ],
+    ].filter(Boolean),
   };
 };

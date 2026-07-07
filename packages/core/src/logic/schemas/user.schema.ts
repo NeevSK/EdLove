@@ -28,8 +28,14 @@ const normalizeUserContextInput = (value: unknown) => {
   if (!value || typeof value !== 'object') return value;
   const input = value as Record<string, unknown>;
 
+  let email = typeof input.email === 'string' ? input.email.trim() : null;
+  if (email && (email.startsWith('anonymous@') || !email.includes('.') || email === '')) {
+    email = null;
+  }
+
   return {
     ...input,
+    email,
     userId: input.userId ?? null,
     primaryCapacity: input.primaryCapacity ?? null,
     activeBond: input.activeBond ?? null,

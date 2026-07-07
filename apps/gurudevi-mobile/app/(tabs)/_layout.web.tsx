@@ -2,10 +2,10 @@ import { useNotifications, useRewards } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 import { BreathGuide } from '@repo/self';
 import type { LucideIcon } from '@repo/ui/icons';
-import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
-import { Box, Modal, ModalContent, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { AchievementUnlockOverlay } from '@repo/ui/components';
+import { Box, Pressable, Text, View, VStack } from '@repo/ui/primitives';
 import { router, Slot, usePathname } from 'expo-router';
-import { Bell, Heart, Library, Menu, School, Settings, User, Users, X } from 'lucide-react-native';
+import { Bell, Heart, Library, Menu, School, Settings, User, Users, X } from '@repo/ui/icons';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, useWindowDimensions, type ViewStyle } from 'react-native';
 import { resolveResponsiveShellMode } from '../../src/lib/responsiveShell';
@@ -275,9 +275,32 @@ export default function WebTabsLayout() {
         onHide={() => setShowCelebration(false)}
       />
 
-      <Modal isOpen={isBreathingOpen} onClose={() => setBreathingOpen(false)}>
-        <ModalContent className="bg-phase-canvas">
-          <Box style={{ padding: 16, gap: 12 }}>
+      {isBreathingOpen && (
+        <View
+          style={{
+            position: 'absolute',
+            inset: 0,
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9999,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0,0,0,0.6)',
+          }}
+        >
+          <Box
+            style={{
+              width: '100%',
+              maxWidth: 500,
+              borderRadius: 24,
+              backgroundColor: '#FAF7ED',
+              overflow: 'hidden',
+              padding: 16,
+              gap: 12,
+            }}
+          >
             <Box
               style={{
                 flexDirection: 'row',
@@ -312,8 +335,8 @@ export default function WebTabsLayout() {
               <BreathGuide onComplete={() => setBreathingOpen(false)} />
             </Box>
           </Box>
-        </ModalContent>
-      </Modal>
+        </View>
+      )}
     </Box>
   );
 }
