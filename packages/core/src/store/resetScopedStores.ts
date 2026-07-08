@@ -7,6 +7,7 @@ import { resolveFeatureFlags } from '../logic/permissions/feature-engine';
 import type { UISlice } from './slices/ui.slice';
 import { useAuthStore } from './useAuthStore';
 import { useFeatureStore } from './useFeatureStore';
+import { useGrowthStore } from './useGrowthStore';
 import { useTenantStore } from './useTenantStore';
 import { useUIStore } from './useUIStore';
 
@@ -115,6 +116,7 @@ export const resetScopedStores = () => {
   useAuthStore.setState(authScopedDefaults);
   useTenantStore.setState(tenantScopedDefaults);
   useUIStore.setState(uiScopedDefaults);
+  useGrowthStore.getState().resetGrowthState();
   useFeatureStore.setState((state) => ({
     ...state,
     flags: featureScopedDefaults,
@@ -132,6 +134,7 @@ export const rehydrateScopedStores = async () => {
     useAuthStore.persist?.rehydrate?.(),
     useTenantStore.persist?.rehydrate?.(),
     useUIStore.persist?.rehydrate?.(),
+    useGrowthStore.persist?.rehydrate?.(),
     useFeatureStore.persist?.rehydrate?.(),
     useMutationQueue.persist?.rehydrate?.(),
   ]);

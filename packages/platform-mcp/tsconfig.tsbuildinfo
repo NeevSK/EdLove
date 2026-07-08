@@ -1,0 +1,1 @@
+{"version":"7.0.1-rc","root":["./src/index.ts","./src/services/auditservice.ts","./src/services/discoveryservice.ts","./src/services/documentservice.ts","./src/services/helpservice.ts","./src/services/jinaservice.ts","./src/services/maintenanceservice.ts","./src/services/scoutservice.ts","./src/utils/constants.ts","./src/utils/execution.ts","./src/utils/pathutils.ts"]}

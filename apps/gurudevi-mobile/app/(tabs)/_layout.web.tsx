@@ -12,7 +12,7 @@ import { resolveResponsiveShellMode } from '../../src/lib/responsiveShell';
 
 type NavItem = {
   href: string;
-  icon: LucideIcon;
+  icon: any;
   label: string;
   group?: 'primary' | 'utility';
   badge?: number;

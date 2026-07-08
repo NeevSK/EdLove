@@ -5,3 +5,4 @@ export { type TotalState, useStore } from './useStore';
 export * from './useTemporalStore';
 export { useTenantStore } from './useTenantStore';
 export { useUIStore } from './useUIStore';
+export { useGrowthStore } from './useGrowthStore';

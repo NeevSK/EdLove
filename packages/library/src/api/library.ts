@@ -99,8 +99,8 @@ const rawLibraryAPI = {
   async getResources(filters: ResourceFilters = {}): Promise<LibraryResource[]> {
     let query = supabase.from('nodes').select(`
                 *,
-                creator: users!nodes_creator_id_fkey(full_name),
-                verified_by_user: users!nodes_verified_by_fkey(full_name)
+                creator: users!library_items_uploader_id_fkey(full_name),
+                verified_by_user: users!library_resources_verified_by_fkey(full_name)
       `);
     // Apply filters
     if (filters.type) query = query.eq('type', filters.type);
@@ -186,6 +186,8 @@ const rawLibraryAPI = {
     if (filters.offset)
       query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1);
     const { data, error } = await query;
+    console.log("--> API fetched nodes count:", data?.length, "Error:", error);
+
     if (error) {
       throw new APIError('Failed to fetch resources', error.code, error);
     }
@@ -224,8 +226,8 @@ const rawLibraryAPI = {
         .from('nodes')
         .select(`
                     *,
-                    creator: users!nodes_creator_id_fkey(full_name),
-                    verified_by_user: users!nodes_verified_by_fkey(full_name)
+                    creator: users!library_items_uploader_id_fkey(full_name),
+                    verified_by_user: users!library_resources_verified_by_fkey(full_name)
                 `)
         .in('id', ids);
       if (error) throw error;
@@ -282,8 +284,8 @@ const rawLibraryAPI = {
       .from('nodes')
       .select(`
                 *,
-                creator: users!nodes_creator_id_fkey(full_name),
-                verified_by_user: users!nodes_verified_by_fkey(full_name)
+                creator: users!library_items_uploader_id_fkey(full_name),
+                verified_by_user: users!library_resources_verified_by_fkey(full_name)
       `)
       .eq('id', id)
       .single();
@@ -356,7 +358,7 @@ const rawLibraryAPI = {
     // Direct Rewards: Add 50 points for contribution
     try {
       const { rewardsAPI } = await import('@repo/core/api');
-      void rewardsAPI.addPoints(creatorId, 50).catch(() => {});
+      void rewardsAPI.addPoints(creatorId, 50).catch(() => { });
     } catch (e) {
       console.warn('Rewards API not available for points', e);
     }
@@ -375,8 +377,8 @@ const rawLibraryAPI = {
       .eq('id', id)
       .select(`
         *,
-        creator: users!nodes_creator_id_fkey(full_name),
-          verified_by_user: users!nodes_verified_by_fkey(full_name)
+        creator: users!library_items_uploader_id_fkey(full_name),
+        verified_by_user: users!library_resources_verified_by_fkey(full_name)
             `)
       .single();
     if (error) {
@@ -547,7 +549,7 @@ const rawLibraryAPI = {
             sourceEntityType: 'resource',
             sourceEntityId: resourceId,
           })
-          .catch(() => {});
+          .catch(() => { });
       }
     }
   },
@@ -564,8 +566,8 @@ const rawLibraryAPI = {
       .eq('id', resourceId)
       .select(`
             *,
-            creator: users!nodes_creator_id_fkey(full_name),
-              verified_by_user: users!nodes_verified_by_fkey(full_name)
+            creator: users!library_items_uploader_id_fkey(full_name),
+            verified_by_user: users!library_resources_verified_by_fkey(full_name)
                 `)
       .single();
     if (error) {
@@ -589,7 +591,7 @@ const rawLibraryAPI = {
       .select(`
 resource: nodes!resource_engagements_resource_id_fkey(
           *,
-  creator: users!nodes_creator_id_fkey(full_name)
+  creator: users!library_items_uploader_id_fkey(full_name)
 )
   `)
       .eq('user_id', userId)
@@ -870,9 +872,9 @@ resource: nodes!resource_engagements_resource_id_fkey(
     let resources: LibraryResource[] = asOf
       ? []
       : (data.collection_nodes || []).map((cn: any) => ({
-          ...cn.nodes,
-          creator_name: cn.nodes?.creator_name || 'System', // Use denormalized name from node
-        }));
+        ...cn.nodes,
+        creator_name: cn.nodes?.creator_name || 'System', // Use denormalized name from node
+      }));
     const fallbackNodeIds = membershipNodeIds.length > 0 ? membershipNodeIds : data.resource_ids;
     if (resources.length === 0 && fallbackNodeIds?.length > 0) {
       const { data: resData } = await supabase.from('nodes').select('*').in('id', fallbackNodeIds);

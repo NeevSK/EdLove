@@ -1,0 +1,1 @@
+{"version":"7.0.1-rc","root":["./src/budgeting.ts","./src/cheques.ts","./src/index.ts","./src/ledger.ts","./src/types.ts"]}
