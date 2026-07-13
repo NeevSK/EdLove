@@ -10,10 +10,15 @@ import type { CollectionFilters, CreateCollectionInput, CreateResourceInput, Lib
 // Keys for React Query
 export const LIBRARY_KEYS = {
   all: ['library'] as const,
+  // Prefix-only keys (no filters appended) — use these for invalidation so React Query
+  // matches ALL queries for that entity regardless of which filters were used.
+  resourcesAll: () => [...LIBRARY_KEYS.all, 'resources'] as const,
+  collectionsAll: () => [...LIBRARY_KEYS.all, 'collections'] as const,
+  // Full keys with filters — use these as queryKey in useQuery/useInfiniteQuery.
   resources: (filters: ResourceFilters = {}) =>
-    [...LIBRARY_KEYS.all, 'resources', filters] as const,
+    [...LIBRARY_KEYS.resourcesAll(), filters] as const,
   collections: (filters: CollectionFilters = {}) =>
-    [...LIBRARY_KEYS.all, 'collections', filters] as const,
+    [...LIBRARY_KEYS.collectionsAll(), filters] as const,
   collection: (id: string) => [...LIBRARY_KEYS.all, 'collection', id] as const,
   resource: (id: string) => [...LIBRARY_KEYS.all, 'resource', id] as const,
   bookmarked: (userId: string) =>
@@ -36,7 +41,7 @@ export const useLibraryRealtime = () => {
         'postgres_changes',
         { event: '*', schema: 'public', table: 'collections' },
         (payload: any) => {
-          void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collections() });
+          void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
           void queryClient.invalidateQueries({ queryKey: [...LIBRARY_KEYS.all, 'collections-count'] });
 
           const id = payload.new?.id || payload.old?.id;
@@ -54,7 +59,7 @@ export const useLibraryRealtime = () => {
         'postgres_changes',
         { event: '*', schema: 'public', table: 'collection_nodes' },
         (payload: any) => {
-          void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collections() });
+          void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
 
           const collectionId = payload.new?.collection_id || payload.old?.collection_id;
           if (collectionId) {
@@ -71,7 +76,7 @@ export const useLibraryRealtime = () => {
         'postgres_changes',
         { event: '*', schema: 'public', table: 'nodes' },
         (payload: any) => {
-          void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resources() });
+          void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resourcesAll() });
           void queryClient.invalidateQueries({ queryKey: [...LIBRARY_KEYS.all, 'resources-count'] });
 
           const id = payload.new?.id || payload.old?.id;
@@ -191,7 +196,7 @@ export const useLibrary = (
       return libraryAPI.createResource(input, creatorId, creatorRole);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resources() });
+      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resourcesAll() });
     },
   });
 
@@ -201,7 +206,7 @@ export const useLibrary = (
       return libraryAPI.endorseResource(resourceId, userId);
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resources() });
+      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resourcesAll() });
       queryClient.invalidateQueries({
         queryKey: LIBRARY_KEYS.resource(variables.resourceId),
       });
@@ -214,7 +219,7 @@ export const useLibrary = (
       return libraryAPI.bookmarkResource(resourceId, userId);
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resources() });
+      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resourcesAll() });
       queryClient.invalidateQueries({
         queryKey: LIBRARY_KEYS.bookmarked(variables.userId),
       });
@@ -236,7 +241,7 @@ export const useLibrary = (
       return libraryAPI.addToCollection(collectionId, resourceId);
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collections() });
+      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
       queryClient.invalidateQueries({
         queryKey: LIBRARY_KEYS.collection(variables.collectionId),
       });
@@ -258,7 +263,7 @@ export const useLibrary = (
       return libraryAPI.removeFromCollection(collectionId, resourceId);
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collections() });
+      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
       queryClient.invalidateQueries({
         queryKey: LIBRARY_KEYS.collection(variables.collectionId),
       });
@@ -277,7 +282,7 @@ export const useLibrary = (
       return libraryAPI.createCollection(input, creatorId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collections() });
+      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
       queryClient.invalidateQueries({ queryKey: [...LIBRARY_KEYS.all, 'collections-count'] });
     },
   });
@@ -294,7 +299,7 @@ export const useLibrary = (
       return libraryAPI.updateCollection(id, updates);
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collections() });
+      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
       queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(variables.id) });
     },
   });
@@ -305,7 +310,7 @@ export const useLibrary = (
       return libraryAPI.deleteCollection(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collections() });
+      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
       queryClient.invalidateQueries({ queryKey: [...LIBRARY_KEYS.all, 'collections-count'] });
     },
   });
@@ -313,7 +318,7 @@ export const useLibrary = (
   const syncLibrary = useCallback(async () => {
     await knowledgeSync.performSync();
     // Use queryClient directly to invalidate instead of causing a dependency on the query object itself
-    queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resources() });
+    queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resourcesAll() });
   }, [queryClient]);
 
   const resources = useMemo(
