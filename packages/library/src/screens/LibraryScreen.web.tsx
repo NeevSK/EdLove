@@ -9,7 +9,6 @@ import {
 import { ResourceActionSheet } from '@repo/ui/components/media/ResourceActionSheet';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import { SmartShelf } from '@repo/ui/components/SmartShelf';
-import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
 import { UniversalPerspective } from '@repo/ui/components/visualization';
 import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
@@ -20,16 +19,21 @@ import { useRouter } from 'expo-router';
 import {
   Bookmark,
   Clock,
+  Edit2,
   Flame,
   Globe,
   Layers,
   LayoutGrid,
   Library,
   List,
+  Lock,
   Map as MapIcon,
+  MoreVertical,
   Play,
   Plus,
   Search,
+  Trash2,
+  Users,
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -48,6 +52,7 @@ import type {
   LibraryResource,
   ResourceFilters,
   ResourceType,
+  ResourceVisibility,
 } from '../types';
 import { buildLibraryExternalLinkOptions } from '../utils/externalLinks';
 
@@ -240,13 +245,28 @@ export default function LibraryScreenWeb() {
 
   const {
     resources: rawResources,
-    loading,
+    isLoadingResources,
+    isFetchingNextResources,
+    hasNextResources,
     fetchNextResources,
     fetchResources,
-    hasNextResources,
-    isFetchingNextResources,
+    categories: rawCategories,
+    isLoadingCategories,
     collections: rawCollections,
+    isLoadingCollections,
+    totalResourcesCount,
+    totalCollectionsCount,
+    createResource,
+    isCreatingResource,
+    endorseResource,
+    bookmarkResource,
+    isBookmarking,
+    addToCollection,
+    updateCollection,
+    deleteCollection,
     syncLibrary,
+    loading,
+    error: libraryError,
   } = useLibrary(libraryFilters as ResourceFilters, libraryFilters as ResourceFilters);
 
   // Sync Library on mount (Parity)
@@ -258,8 +278,6 @@ export default function LibraryScreenWeb() {
   }, [syncLibrary]);
 
   // Public Collection Fallback (Parity)
-  const viewDate = useTemporalStore((state) => state.viewDate);
-  const viewScale = useTemporalStore((state) => state.viewScale);
   const isFetchingPublicRef = useRef(false);
 
   useEffect(() => {
@@ -277,8 +295,6 @@ export default function LibraryScreenWeb() {
         .getCollections({
           limit: 10,
           visibility: 'public',
-          viewDate,
-          viewScale,
         })
         .then((cols: any) => {
           dispatch({ type: 'SET_PUBLIC_COLLECTIONS', collections: cols });
@@ -298,11 +314,10 @@ export default function LibraryScreenWeb() {
     rawCollections.length,
     publicCollections.length,
     fallbackAttempted,
-    viewDate,
-    viewScale,
   ]);
 
   const resources = useMemo(() => rawResources, [rawResources]);
+  const categories = useMemo(() => rawCategories, [rawCategories]);
   const collections = useMemo(
     () => (rawCollections.length > 0 ? rawCollections : publicCollections),
     [rawCollections, publicCollections],
@@ -611,9 +626,7 @@ export default function LibraryScreenWeb() {
             </div>
           }
         />
-        <div style={{ marginBottom: '20px' }}>
-          <TemporalNavigator />
-        </div>
+        {/* No temporal filter in library tab */}
 
         {/* 2. FILTERS & SEARCH */}
         <div
@@ -875,6 +888,37 @@ export default function LibraryScreenWeb() {
 
                 {viewMode === 'shelf' && (
                   <>
+                    {categories.length > 0 && (
+                      <SmartShelf title="Matching Categories">
+                        <SanctuaryFlashList
+                          data={categories}
+                          horizontal
+                          showsHorizontalScrollIndicator={false}
+                          keyExtractor={(col: LibraryCollection) => `search-cat-${col.id}`}
+                          estimatedItemSize={320}
+                          contentContainerStyle={{ paddingBottom: 16 }}
+                          renderItem={({ item: col }: { item: LibraryCollection }) => (
+                            <Box className="mr-5 w-[320px]">
+                              <LibraryThumbnailCard
+                                title={col.name}
+                                type="collection"
+                                subject={col.subjects?.[0] || 'Curated'}
+                                onPress={() =>
+                                  router.push({
+                                    pathname: '/library/collections/[id]',
+                                    params: {
+                                      id: col.id,
+                                      title: col.name,
+                                    },
+                                  })
+                                }
+                              />
+                            </Box>
+                          )}
+                        />
+                      </SmartShelf>
+                    )}
+
                     {collections.length > 0 && (
                       <SmartShelf title="Matching Collections">
                         <SanctuaryFlashList
@@ -998,8 +1042,8 @@ export default function LibraryScreenWeb() {
                 }}
               >
                 <SanctuaryPulse
-                  resourceCount={resources.length}
-                  collectionCount={collections.length}
+                  resourceCount={totalResourcesCount}
+                  collectionCount={totalCollectionsCount}
                   bookmarkCount={bookmarkedIds.size}
                 />
 
@@ -1032,13 +1076,13 @@ export default function LibraryScreenWeb() {
                   )}
                 </div>
 
-                {collections.length > 0 && (
-                  <SmartShelf title="Featured Collections">
+                {categories.length > 0 && (
+                  <SmartShelf title="Featured Categories">
                     <SanctuaryFlashList
-                      data={collections}
+                      data={categories}
                       horizontal
                       showsHorizontalScrollIndicator={false}
-                      keyExtractor={(col: LibraryCollection) => col.id}
+                      keyExtractor={(col: LibraryCollection) => `feat-cat-${col.id}`}
                       estimatedItemSize={320}
                       contentContainerStyle={{ paddingBottom: 16 }}
                       renderItem={({ item: col }: { item: LibraryCollection }) => (
@@ -1061,6 +1105,58 @@ export default function LibraryScreenWeb() {
                           />
                         </Box>
                       )}
+                    />
+                  </SmartShelf>
+                )}
+
+                {collections.length > 0 && (
+                  <SmartShelf title="Featured Collections">
+                    <SanctuaryFlashList
+                      data={collections}
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      keyExtractor={(col: LibraryCollection) => `feat-col-${col.id}`}
+                      estimatedItemSize={320}
+                      contentContainerStyle={{ paddingBottom: 16 }}
+                      renderItem={({ item: col }: { item: LibraryCollection }) => {
+                        const isOwner = !!user?.id && col.creator_id === user.id;
+                        return (
+                          <Box className="mr-5">
+                            <CollectionPreviewCard
+                              title={col.name}
+                              typeLabel={
+                                col.is_virtual ? t('library.dynamic') : t('library.collection')
+                              }
+                              resourceCount={col.used_by_count ?? col.resource_ids?.length ?? 0}
+                              visibility={col.visibility}
+                              isOwner={isOwner}
+                              onClick={() =>
+                                router.push({
+                                  pathname: '/library/collections/[id]',
+                                  params: {
+                                    id: col.id,
+                                    title: col.name,
+                                  },
+                                })
+                              }
+                              onChangeVisibility={(v) =>
+                                updateCollection({ id: col.id, updates: { visibility: v } as any })
+                              }
+                              onDelete={() => {
+                                if (window.confirm(`Delete "${col.name}"? This cannot be undone.`)) {
+                                  deleteCollection(col.id);
+                                }
+                              }}
+                              onEdit={() =>
+                                router.push({
+                                  pathname: '/library/collections/[id]',
+                                  params: { id: col.id, title: col.name },
+                                })
+                              }
+                            />
+                          </Box>
+                        );
+                      }}
                     />
                   </SmartShelf>
                 )}
@@ -1244,7 +1340,7 @@ function SanctuaryPulse({
       accent: 'rgba(221,155,40,0.14)',
     },
     {
-      label: 'Collections',
+      label: 'Categories',
       value: collectionCount,
       accent: 'rgba(103,152,214,0.14)',
     },
@@ -1368,67 +1464,242 @@ function CollectionPreviewCard({
   typeLabel,
   resourceCount,
   onClick,
+  visibility,
+  isOwner = false,
+  onChangeVisibility,
+  onDelete,
+  onEdit,
 }: {
   title: string;
   typeLabel: string;
   resourceCount: number;
   onClick: () => void;
+  visibility?: ResourceVisibility;
+  isOwner?: boolean;
+  onChangeVisibility?: (v: ResourceVisibility) => void;
+  onDelete?: () => void;
+  onEdit?: () => void;
 }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const visConfig: Record<string, { icon: any; color: string; label: string }> = {
+    private:  { icon: Lock,  color: '#e88c30', label: 'Private' },
+    personal: { icon: Lock,  color: '#e88c30', label: 'Private' },
+    shared:   { icon: Users, color: '#6798d6', label: 'Shared'  },
+    public:   { icon: Globe, color: '#34a853', label: 'Public'  },
+    class:    { icon: Users, color: '#6798d6', label: 'Class'   },
+    school:   { icon: Users, color: '#6798d6', label: 'School'  },
+    grade:    { icon: Users, color: '#6798d6', label: 'Grade'   },
+  };
+  const vc = visibility ? (visConfig[visibility] ?? visConfig.public) : null;
+
+  const visOptions: { value: ResourceVisibility; label: string; icon: any; color: string }[] = [
+    { value: 'private', label: 'Private', icon: Lock,  color: '#e88c30' },
+    { value: 'shared',  label: 'Shared',  icon: Users, color: '#6798d6' },
+    { value: 'public',  label: 'Public',  icon: Globe, color: '#34a853' },
+  ];
+
   return (
-    <button
-      type="button"
-      className="sanctuary-card"
-      onClick={onClick}
-      style={{
-        width: '264px',
-        minHeight: '184px',
-        padding: '18px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        borderRadius: '20px',
-        border: '1px solid var(--border)',
-        background:
-          'linear-gradient(160deg, rgba(221,155,40,0.14) 0%, rgba(103,152,214,0.12) 52%, rgba(255,255,255,0.92) 100%)',
-        textAlign: 'left',
-        cursor: 'pointer',
-      }}
-    >
-      <div
+    <div style={{ position: 'relative' }}>
+      <button
+        type="button"
+        className="sanctuary-card"
+        onClick={onClick}
         style={{
-          fontSize: '11px',
-          color: 'var(--action)',
-          fontWeight: '800',
-          letterSpacing: '0.05em',
-          textTransform: 'uppercase',
-        }}
-      >
-        {typeLabel}
-      </div>
-      <div
-        style={{
-          fontWeight: '700',
-          fontSize: '20px',
-          color: 'var(--ink)',
-          lineHeight: 1.15,
-        }}
-      >
-        {title}
-      </div>
-      <div
-        style={{
+          width: '264px',
+          minHeight: '184px',
+          padding: '18px',
           display: 'flex',
+          flexDirection: 'column',
           justifyContent: 'space-between',
-          alignItems: 'center',
-          color: 'var(--ink-ghost)',
-          fontSize: '13px',
-          fontWeight: '600',
+          borderRadius: '20px',
+          border: isOwner && vc && vc.color !== '#34a853'
+            ? `1px solid ${vc.color}55`
+            : '1px solid var(--border)',
+          background:
+            'linear-gradient(160deg, rgba(221,155,40,0.14) 0%, rgba(103,152,214,0.12) 52%, rgba(255,255,255,0.92) 100%)',
+          textAlign: 'left',
+          cursor: 'pointer',
         }}
       >
-        <span>{resourceCount} resources</span>
-        <span style={{ color: 'var(--action)' }}>Open</span>
-      </div>
-    </button>
+        {/* Type label row */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div
+            style={{
+              fontSize: '11px',
+              color: 'var(--action)',
+              fontWeight: '800',
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+            }}
+          >
+            {typeLabel}
+          </div>
+          {/* Visibility badge */}
+          {vc && isOwner && (
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '3px 8px',
+                borderRadius: '999px',
+                background: `${vc.color}18`,
+                border: `1px solid ${vc.color}40`,
+              }}
+            >
+              <vc.icon size={11} color={vc.color} />
+              <span style={{ fontSize: '11px', fontWeight: 800, color: vc.color }}>{vc.label}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Title */}
+        <div
+          style={{
+            fontWeight: '700',
+            fontSize: '20px',
+            color: 'var(--ink)',
+            lineHeight: 1.15,
+          }}
+        >
+          {title}
+        </div>
+
+        {/* Footer */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            color: 'var(--ink-ghost)',
+            fontSize: '13px',
+            fontWeight: '600',
+          }}
+        >
+          <span>{resourceCount} resources</span>
+          <span style={{ color: 'var(--action)' }}>Open →</span>
+        </div>
+      </button>
+
+      {/* ⋯ owner menu button */}
+      {isOwner && (
+        <div style={{ position: 'absolute', top: '12px', right: '12px' }}>
+          <button
+            onClick={(e) => { e.stopPropagation(); setMenuOpen((v) => !v); }}
+            style={{
+              background: 'rgba(0,0,0,0.08)',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '5px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <MoreVertical size={15} color="var(--ink)" />
+          </button>
+
+          {/* Dropdown menu */}
+          {menuOpen && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '100%',
+                right: 0,
+                marginTop: '4px',
+                background: 'var(--surface)',
+                border: '1px solid rgba(0,0,0,0.12)',
+                borderRadius: '14px',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.14)',
+                minWidth: '200px',
+                padding: '8px',
+                zIndex: 100,
+              }}
+            >
+              {/* Edit */}
+              <button
+                onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onEdit?.(); }}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '9px 10px',
+                  background: 'none',
+                  border: 'none',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  color: 'var(--ink)',
+                }}
+              >
+                <Edit2 size={14} color="var(--ink)" /> Edit
+              </button>
+
+              {/* Divider */}
+              <div style={{ height: '1px', background: 'rgba(0,0,0,0.06)', margin: '4px 0' }} />
+
+              {/* Visibility options */}
+              <div style={{ padding: '4px 10px 2px', fontSize: '10px', fontWeight: 800, color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Visibility</div>
+              {visOptions.map((opt) => {
+                const isActive = visibility === opt.value;
+                const Ic = opt.icon;
+                return (
+                  <button
+                    key={opt.value}
+                    onClick={(e) => { e.stopPropagation(); setMenuOpen(false); if (!isActive) onChangeVisibility?.(opt.value); }}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '8px 10px',
+                      background: isActive ? `${opt.color}14` : 'none',
+                      border: 'none',
+                      borderRadius: '10px',
+                      cursor: isActive ? 'default' : 'pointer',
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      color: isActive ? opt.color : 'var(--ink)',
+                    }}
+                  >
+                    <Ic size={13} color={isActive ? opt.color : 'var(--ink-ghost)'} />
+                    {opt.label}{isActive ? ' ✓' : ''}
+                  </button>
+                );
+              })}
+
+              {/* Divider */}
+              <div style={{ height: '1px', background: 'rgba(0,0,0,0.06)', margin: '4px 0' }} />
+
+              {/* Delete */}
+              <button
+                onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onDelete?.(); }}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '9px 10px',
+                  background: 'rgba(220,60,60,0.08)',
+                  border: 'none',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  color: '#dc3c3c',
+                }}
+              >
+                <Trash2 size={14} color="#dc3c3c" /> Delete
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 

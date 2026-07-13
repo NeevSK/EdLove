@@ -134,6 +134,8 @@ export interface CollectionFilters {
   offset?: number;
   viewDate?: string;
   viewScale?: TemporalScale;
+  only_virtual?: boolean;
+  exclude_virtual?: boolean;
 }
 export interface CreateResourceInput {
   title: string;

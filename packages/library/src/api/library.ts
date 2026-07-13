@@ -197,6 +197,31 @@ const rawLibraryAPI = {
       verified_by_name: resource.verified_by_user?.full_name,
     }));
   },
+  async getResourcesCount(): Promise<number> {
+    const { count, error } = await supabase
+      .from('nodes')
+      .select('*', { count: 'exact', head: true });
+    if (error) {
+      console.error('Failed to fetch total resources count:', error);
+      return 0;
+    }
+    return count || 0;
+  },
+  async getCollectionsCount(): Promise<number> {
+    const { count: explicitCount } = await supabase
+      .from('collections')
+      .select('*', { count: 'exact', head: true });
+
+    const [{ data: subjects }, { data: topics }] = await Promise.all([
+      supabase.rpc('get_node_subjects_count'),
+      supabase.rpc('get_node_topics_count'),
+    ]);
+
+    const subjectsCount = subjects?.length || 0;
+    const topicsCount = topics?.length || 0;
+
+    return (explicitCount || 0) + subjectsCount + topicsCount;
+  },
   /**
    * Search resources locally using SQLite FTS5 index.
    */
@@ -630,12 +655,15 @@ resource: nodes!resource_engagements_resource_id_fkey(
    */
   async getCollections(filters: CollectionFilters = {}): Promise<LibraryCollection[]> {
     const asOf = getTemporalAsOf(filters.viewDate);
+    let explicitCollections: LibraryCollection[] = [];
+
     // 1. Fetch explicit collections from the DB
-    let query = supabase.from('collections').select(`
-                *,
-                creator: users!resource_collections_creator_id_fkey(full_name),
-                collection_nodes(node_id)
-            `);
+    if (!filters.only_virtual) {
+      let query = supabase.from('collections').select(`
+                  *,
+                  creator: users!resource_collections_creator_id_fkey(full_name),
+                  collection_nodes(node_id)
+              `);
     // RLS alignment: For guests/unauthenticated users, allow public OR verified collections
     const userId = await identityAPI.getMyInternalId();
     if (!userId) {
@@ -648,7 +676,9 @@ resource: nodes!resource_engagements_resource_id_fkey(
       // For now, simpler OR for visibility logic
       if (!filters.creator_id) {
         query = query.or(
-          `visibility.in.(public,shared),verified.eq.true,and(creator_id.eq.${userId},visibility.eq.personal)`,
+          // Public/shared collections visible to everyone
+          // Plus ALL collections where the logged-in user is the creator (any visibility)
+          `visibility.in.(public,shared),creator_id.eq.${userId}`,
         );
       }
     }
@@ -675,7 +705,7 @@ resource: nodes!resource_engagements_resource_id_fkey(
     if (error)
       throw new APIError(`Failed to fetch collections: ${error.message}`, error.code, error);
     // Map explicit collections with their resources
-    const explicitCollections = await Promise.all(
+    explicitCollections = await Promise.all(
       (explicitData || []).map(async (col: any) => {
         let nodeIds = (col.collection_nodes || []).map((cn: any) => cn.node_id);
         if (asOf) {
@@ -714,12 +744,13 @@ resource: nodes!resource_engagements_resource_id_fkey(
         };
       }),
     );
-    const activeExplicit = explicitCollections.filter((col) => col.resource_ids?.length > 0);
+    }
+    const activeExplicit = explicitCollections;
     // 2. Synthesize Virtual Collections from Subjects & Topics (Dynamic)
     // We only synthesize virtuals if we are not specifically looking for a single user's private collections
     let subjectVirtuals: LibraryCollection[] = [];
     let topicVirtuals: LibraryCollection[] = [];
-    if (!filters.creator_id || filters.visibility === 'public') {
+    if (!filters.exclude_virtual && (!filters.creator_id || filters.visibility === 'public')) {
       const [{ data: subjectsData }, { data: topicsData }] = await Promise.all([
         supabase.rpc('get_node_subjects_count'),
         supabase.rpc('get_node_topics_count'),
@@ -1202,6 +1233,8 @@ const libraryCoverage = assertContractCoverage(
       getCollectionById: 'getCollection',
     },
     internalMethods: [
+      'getResourcesCount',
+      'getCollectionsCount',
       'searchMapUniverse',
       'searchResourcesLocal',
       'createResource',

@@ -17,7 +17,6 @@ import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { SmartShelf } from '@repo/ui/components/SmartShelf';
-import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import {
   AnimatedView,
@@ -36,16 +35,23 @@ import { Theme } from '@repo/ui/theme';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { useRouter } from 'expo-router';
 import {
+  Edit2,
   FileText,
+  Globe,
   Layers,
   LayoutGrid,
   Library,
   List,
+  Lock,
   Map as MapIcon,
+  MoreVertical,
   Play,
   Plus,
+  Trash2,
+  Users,
 } from 'lucide-react-native';
-import React, { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { FadeInDown } from 'react-native-reanimated';
 import { libraryAPI } from '../api/library';
@@ -269,8 +275,6 @@ export default function LibraryScreen() {
 
   // --- 2. ATOMIC SELECTORS & DERIVATIONS ---
   const isPastView = useTemporalStore((state) => state.isPastView);
-  const viewDate = useTemporalStore((state) => state.viewDate);
-  const viewScale = useTemporalStore((state) => state.viewScale);
   const deskItems = useStore((state) => state.deskItems);
   const user = useStore((state) => state.user);
   const _showToast = useStore((state) => state.showToast);
@@ -312,7 +316,8 @@ export default function LibraryScreen() {
 
   const {
     resources: rawResources,
-    collections: rawUserCollections,
+    categories: rawCategories,
+    collections: rawCollections,
     loading,
     error: libraryError,
     fetchResources,
@@ -323,6 +328,10 @@ export default function LibraryScreen() {
     bookmarkResource,
     addToCollection,
     isAddingToCollection,
+    updateCollection,
+    deleteCollection,
+    totalResourcesCount,
+    totalCollectionsCount,
   } = useLibrary(libraryFilters, libraryFilters);
 
   // Get Bookmarks
@@ -342,7 +351,7 @@ export default function LibraryScreen() {
     if (
       !loading &&
       rawResources.length === 0 &&
-      rawUserCollections.length === 0 &&
+      rawCollections.length === 0 &&
       publicCollections.length === 0 &&
       !fallbackAttempted &&
       !isFetchingPublicRef.current
@@ -353,8 +362,6 @@ export default function LibraryScreen() {
         .getCollections({
           limit: 10,
           visibility: 'public',
-          viewDate,
-          viewScale,
         })
         .then((cols: any) => {
           dispatch({ type: 'SET_PUBLIC_COLLECTIONS', collections: cols });
@@ -371,17 +378,16 @@ export default function LibraryScreen() {
   }, [
     loading,
     rawResources.length,
-    rawUserCollections.length,
+    rawCollections.length,
     publicCollections.length,
     fallbackAttempted,
-    viewDate,
-    viewScale,
   ]);
 
   const resources = useMemo(() => rawResources, [rawResources]);
+  const categories = useMemo(() => rawCategories, [rawCategories]);
   const collections = useMemo(
-    () => (rawUserCollections.length > 0 ? rawUserCollections : publicCollections),
-    [rawUserCollections, publicCollections],
+    () => (rawCollections.length > 0 ? rawCollections : publicCollections),
+    [rawCollections, publicCollections],
   );
 
   const trending = useMemo(
@@ -438,12 +444,19 @@ export default function LibraryScreen() {
       });
     }
 
+    if (categories.length > 0) {
+      rows.push({
+        type: 'CATEGORIES',
+        id: 'categories',
+        items: categories,
+      });
+    }
+
     if (collections.length > 0) {
       rows.push({
         type: 'COLLECTIONS',
         id: 'collections',
         items: collections,
-        isUser: rawUserCollections.length > 0,
       });
     }
 
@@ -485,9 +498,9 @@ export default function LibraryScreen() {
     heroResource,
     resources,
     bookmarkedResources,
+    categories,
     collections,
     deskItems,
-    rawUserCollections,
     orderedShelfDefs,
     trending,
     newArrivals,
@@ -613,15 +626,13 @@ export default function LibraryScreen() {
           limit: 10,
           visibility: 'public',
           userId: userId ?? undefined,
-          viewDate,
-          viewScale,
         });
         dispatch({ type: 'SET_PUBLIC_COLLECTIONS', collections: pub });
       }
       dispatch({ type: 'SET_REFRESHING', refreshing: false });
     };
     void runRefresh().catch((err) => console.error('Refresh failed:', err));
-  }, [fetchResources, resources.length, viewDate, viewScale]);
+  }, [fetchResources, resources.length]);
 
   const handleCreateCollection = useCallback(
     async (data: { name: string; description: string }) => {
@@ -825,8 +836,8 @@ export default function LibraryScreen() {
         case 'PULSE':
           return (
             <SanctuaryPulse
-              resourceCount={resources.length}
-              collectionCount={collections.length}
+              resourceCount={totalResourcesCount}
+              collectionCount={totalCollectionsCount}
               bookmarkCount={bookmarkedResources.length}
             />
           );
@@ -871,10 +882,10 @@ export default function LibraryScreen() {
               ))}
             </SmartShelf>
           );
-        case 'COLLECTIONS':
+        case 'CATEGORIES':
           return (
             <Box className="mb-lg">
-              <SmartShelf title={item.isUser ? '📚 Your Collections' : '🌟 Discover Collections'}>
+              <SmartShelf title="🌟 Discover Categories">
                 {item.items.map((col: any) => (
                   <CollectionCard
                     key={col.id}
@@ -888,6 +899,101 @@ export default function LibraryScreen() {
                     onPress={handleOpenCollectionDetail}
                   />
                 ))}
+              </SmartShelf>
+            </Box>
+          );
+        case 'COLLECTIONS':
+          return (
+            <Box className="mb-lg">
+              <SmartShelf title="📚 Featured Collections">
+                {item.items.map((col: any) => {
+                  const isOwner = !!user?.id && col.creator_id === user.id;
+                  const vis = col.visibility;
+
+                  const handleOwnerLongPress = () => {
+                    const visOptions = [
+                      { label: vis === 'private' ? 'Private ✓ (current)' : 'Make Private 🔒', value: 'private' },
+                      { label: vis === 'shared'  ? 'Shared ✓ (current)'  : 'Make Shared 👥',  value: 'shared'  },
+                      { label: vis === 'public'  ? 'Public ✓ (current)'  : 'Make Public 🌐',  value: 'public'  },
+                    ];
+                    Alert.alert(
+                      col.name,
+                      'Manage your collection',
+                      [
+                        ...visOptions
+                          .filter((o) => o.value !== vis)
+                          .map((o) => ({
+                            text: o.label,
+                            onPress: () =>
+                              updateCollection({ id: col.id, updates: { visibility: o.value } as any }),
+                          })),
+                        {
+                          text: '✏️ Edit (open detail)',
+                          onPress: () => handleOpenCollectionDetail(col),
+                        },
+                        {
+                          text: '🗑️ Delete',
+                          style: 'destructive' as const,
+                          onPress: () =>
+                            Alert.alert(
+                              'Delete Collection',
+                              `Delete "${col.name}"? This cannot be undone.`,
+                              [
+                                { text: 'Cancel', style: 'cancel' },
+                                {
+                                  text: 'Delete',
+                                  style: 'destructive',
+                                  onPress: () => deleteCollection(col.id),
+                                },
+                              ],
+                            ),
+                        },
+                        { text: 'Cancel', style: 'cancel' as const },
+                      ],
+                    );
+                  };
+
+                  return (
+                    <Box key={col.id} style={{ position: 'relative' }}>
+                      <CollectionCard
+                        title={col.name}
+                        creator={col.creator_name}
+                        resourceCount={col.resource_ids?.length || 0}
+                        subjectTag={col.subjects?.[0] || 'General'}
+                        thumbnailUrl={col.thumbnail_url}
+                        verified={col.is_official}
+                        contextData={col}
+                        onPress={handleOpenCollectionDetail}
+                        onPullToDesk={isOwner ? handleOwnerLongPress : undefined}
+                      />
+                      {/* Owner visibility badge overlay */}
+                      {isOwner && vis !== 'public' && (
+                        <Box
+                          style={{
+                            position: 'absolute',
+                            top: 8,
+                            left: 8,
+                            backgroundColor:
+                              vis === 'shared' ? 'rgba(103,152,214,0.88)' : 'rgba(232,140,48,0.88)',
+                            borderRadius: 8,
+                            paddingHorizontal: 8,
+                            paddingVertical: 3,
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: '#fff',
+                              fontSize: 10,
+                              fontWeight: '800',
+                            }}
+                          >
+                            {vis === 'shared' ? '👥 Shared' : '🔒 Private'}
+                          </Text>
+                        </Box>
+                      )}
+                    </Box>
+                  );
+                })}
               </SmartShelf>
             </Box>
           );
@@ -942,9 +1048,7 @@ export default function LibraryScreen() {
           </HStack>
         }
       />
-      <Box className="px-md pb-sm">
-        <TemporalNavigator />
-      </Box>
+
 
       {libraryError ? (
         <VStack className="p-md mt-lg items-center gap-3">
@@ -1114,7 +1218,7 @@ export default function LibraryScreen() {
       <CollectionPickerModal
         visible={isCollectionPickerVisible}
         onClose={handleCloseCollectionPicker}
-        collections={rawUserCollections as any}
+        collections={rawCollections as any}
         onSelect={handleAddToCollection}
         isAdding={isAddingToCollection}
       />
@@ -1149,7 +1253,7 @@ const SanctuaryPulse = memo(
           accent: `${theme.accent.action}18`,
         },
         {
-          label: 'Collections',
+          label: 'Categories',
           value: collectionCount,
           accent: `${theme.accent.reward}16`,
         },
