@@ -1,7 +1,8 @@
 
 
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
+import { supabase } from '@repo/core/api';
 import { libraryAPI } from '../api/library';
 import { knowledgeSync } from '../api/sync';
 import type { CollectionFilters, CreateCollectionInput, CreateResourceInput, LibraryCollection, ResourceFilters } from '../types';
@@ -20,11 +21,82 @@ export const LIBRARY_KEYS = {
   sync: () => [...LIBRARY_KEYS.all, 'sync'] as const,
 };
 
+/**
+ * Custom hook to listen to Supabase Realtime changes on library tables (collections, nodes, collection_nodes)
+ * and automatically invalidate React Query caches to keep all screens up-to-date in real-time.
+ */
+export const useLibraryRealtime = () => {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    // 1. Listen for changes in collections (inserts, updates, deletes)
+    const collectionsChannel = supabase
+      .channel('library-collections-realtime-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'collections' },
+        (payload: any) => {
+          void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collections() });
+          void queryClient.invalidateQueries({ queryKey: [...LIBRARY_KEYS.all, 'collections-count'] });
+
+          const id = payload.new?.id || payload.old?.id;
+          if (id) {
+            void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(id) });
+          }
+        }
+      )
+      .subscribe();
+
+    // 2. Listen for changes in collection_nodes (resource added/removed from collection)
+    const collectionNodesChannel = supabase
+      .channel('library-collection-nodes-realtime-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'collection_nodes' },
+        (payload: any) => {
+          void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collections() });
+
+          const collectionId = payload.new?.collection_id || payload.old?.collection_id;
+          if (collectionId) {
+            void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(collectionId) });
+          }
+        }
+      )
+      .subscribe();
+
+    // 3. Listen for changes in nodes (resources created, updated, deleted)
+    const nodesChannel = supabase
+      .channel('library-nodes-realtime-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'nodes' },
+        (payload: any) => {
+          void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resources() });
+          void queryClient.invalidateQueries({ queryKey: [...LIBRARY_KEYS.all, 'resources-count'] });
+
+          const id = payload.new?.id || payload.old?.id;
+          if (id) {
+            void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resource(id) });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(collectionsChannel);
+      void supabase.removeChannel(collectionNodesChannel);
+      void supabase.removeChannel(nodesChannel);
+    };
+  }, [queryClient]);
+};
+
 export const useLibrary = (
   resourceFilters: ResourceFilters = {},
   collectionFilters: CollectionFilters = {},
 ) => {
   const queryClient = useQueryClient();
+  useLibraryRealtime(); // Enable automatic Supabase Realtime synchronization
+
   const temporalResourceFilters = useMemo(
     () => ({ ...resourceFilters }),
     [resourceFilters],
@@ -320,6 +392,7 @@ export const useLibrary = (
   };
 };
 export const useCollection = (id: string, userId?: string) => {
+  useLibraryRealtime(); // Enable real-time updates on collection detail view
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: LIBRARY_KEYS.collection(id),
     queryFn: () => libraryAPI.getCollectionById(id, userId),
