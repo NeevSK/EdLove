@@ -264,6 +264,7 @@ export default function LibraryScreenWeb() {
     addToCollection,
     updateCollection,
     deleteCollection,
+    createCollection,
     syncLibrary,
     loading,
     error: libraryError,
@@ -1224,18 +1225,17 @@ export default function LibraryScreenWeb() {
         onSubmit={async (data) => {
           if (!user?.id) return;
           try {
-            await libraryAPI.createCollection(
-              {
+            await createCollection({
+              input: {
                 ...data,
                 resource_ids: [],
-                subject: data.name, // fallback subject
+                subject: data.name,
                 grades: [],
                 visibility: 'school',
               },
-              user.id,
-            );
+              creatorId: user.id,
+            });
             showToast('Collection created!', 'success');
-            await fetchResources();
             dispatch({
               type: 'SET_MODAL',
               name: 'collectionCreation',

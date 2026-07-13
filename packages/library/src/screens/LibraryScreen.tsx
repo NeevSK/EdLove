@@ -330,6 +330,7 @@ export default function LibraryScreen() {
     isAddingToCollection,
     updateCollection,
     deleteCollection,
+    createCollection,
     totalResourcesCount,
     totalCollectionsCount,
   } = useLibrary(libraryFilters, libraryFilters);
@@ -641,20 +642,18 @@ export default function LibraryScreen() {
         const userId = await identityAPI.getMyInternalId();
         if (!userId) return;
 
-        await libraryAPI.createCollection(
-          {
+        await createCollection({
+          input: {
             ...data,
             resource_ids: [],
             subject: '',
             grades: [],
             visibility: 'private',
           },
-          userId,
-        );
+          creatorId: userId,
+        });
 
-        await fetchResources();
-        dispatch({ type: 'SET_REFRESHING', refreshing: true });
-        setTimeout(() => dispatch({ type: 'SET_REFRESHING', refreshing: false }), 500);
+        dispatch({ type: 'SET_MODAL', name: 'collection', isOpen: false });
       } catch (err) {
         console.error('Failed to create collection:', err);
       }
