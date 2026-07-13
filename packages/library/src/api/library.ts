@@ -865,31 +865,26 @@ resource: nodes!resource_engagements_resource_id_fkey(
     const isUUID =
       userId &&
       /^[0-9a-f]{8}-[0-9a-f]{4}-[12345][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userId);
+
+    // Step 1: Fetch the collection row + creator name (no fragile FK-hint joins on collection_nodes)
     let query = supabase
       .from('collections')
-      .select(`
-                *,
-                creator: users!resource_collections_creator_id_fkey(full_name),
-                collection_nodes!library_collection_items_collection_id_fkey(
-                    nodes!library_collection_items_item_id_fkey(*)
-                )
-            `)
+      .select('*, creator:users(full_name)')
       .eq('id', id);
     // For anonymous users or guests with local IDs, only fetch public/verified collections
     if (!isUUID) {
       query = query.or('is_public.eq.true,verified.eq.true');
     }
-    const { data, error } = await query.single();
+    const { data, error } = await query.maybeSingle();
     if (error) throw new APIError('Failed to fetch collection', error.code, error);
-    // Combine resources from junction table and array fallback
+    if (!data) throw new APIError('Collection not found', 'NOT_FOUND', null);
+
+    // Step 2: Handle temporal membership (past view)
     let membershipNodeIds: string[] = [];
     if (asOf) {
       const { data: membershipData, error: membershipError } = await supabase.rpc(
         'get_collection_membership_as_of',
-        {
-          p_collection_id: id,
-          p_as_of: asOf,
-        },
+        { p_collection_id: id, p_as_of: asOf },
       );
       if (membershipError) {
         throw new APIError(
@@ -900,18 +895,29 @@ resource: nodes!resource_engagements_resource_id_fkey(
       }
       membershipNodeIds = (membershipData || []).map((entry: any) => entry.node_id);
     }
-    let resources: LibraryResource[] = asOf
-      ? []
-      : (data.collection_nodes || []).map((cn: any) => ({
-        ...cn.nodes,
-        creator_name: cn.nodes?.creator_name || 'System', // Use denormalized name from node
-      }));
-    const fallbackNodeIds = membershipNodeIds.length > 0 ? membershipNodeIds : data.resource_ids;
-    if (resources.length === 0 && fallbackNodeIds?.length > 0) {
-      const { data: resData } = await supabase.from('nodes').select('*').in('id', fallbackNodeIds);
+
+    // Step 3: Fetch resources — try collection_nodes junction table first, fall back to resource_ids array
+    let resources: LibraryResource[] = [];
+    if (!asOf) {
+      const { data: cnData } = await supabase
+        .from('collection_nodes')
+        .select('node_id')
+        .eq('collection_id', id);
+      const junctionNodeIds = (cnData || []).map((r: any) => r.node_id).filter(Boolean);
+      const nodeIds = junctionNodeIds.length > 0 ? junctionNodeIds : (data.resource_ids || []);
+      if (nodeIds.length > 0) {
+        const { data: resData } = await supabase.from('nodes').select('*').in('id', nodeIds);
+        resources = resData || [];
+      }
+    } else if (membershipNodeIds.length > 0) {
+      const { data: resData } = await supabase.from('nodes').select('*').in('id', membershipNodeIds);
+      resources = resData || [];
+    } else if (data.resource_ids?.length > 0) {
+      const { data: resData } = await supabase.from('nodes').select('*').in('id', data.resource_ids);
       resources = resData || [];
     }
-    // Check for endorsements
+
+    // Step 4: Check for endorsements
     let has_endorsed = false;
     if (userId) {
       const { data: endData } = await supabase
@@ -924,7 +930,7 @@ resource: nodes!resource_engagements_resource_id_fkey(
     }
     return {
       ...data,
-      creator_name: data.creator?.full_name || data.creator_name || 'System',
+      creator_name: (data.creator as any)?.full_name || data.creator_name || 'System',
       resources,
       resource_ids: resources.map((r) => r.id),
       has_endorsed,

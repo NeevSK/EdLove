@@ -12,12 +12,13 @@ import {
   Globe,
   Library,
   Lock,
+  Plus,
   RefreshCw,
   Trash2,
   Users,
   X,
 } from 'lucide-react-native';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert } from 'react-native';
 import { LibraryThumbnailCard } from '../components/LibraryThumbnailCard';
@@ -27,6 +28,109 @@ import { useQueryClient } from '@tanstack/react-query';
 import { LIBRARY_KEYS } from '../hooks/useLibrary';
 import type { LibraryCollection, LibraryResource, ResourceVisibility } from '../types';
 import { buildLibraryExternalLinkOptions } from '../utils/externalLinks';
+import { supabase } from '@repo/core/api';
+
+// ─── Resource Search Results (inline picker for Add Resources panel) ──────────────────────
+function ResourceSearchResults({
+  search,
+  existingResourceIds,
+  addingId,
+  onAdd,
+}: {
+  collectionId: string;
+  search: string;
+  existingResourceIds: string[];
+  addingId: string | null;
+  onAdd: (resourceId: string) => Promise<void>;
+}) {
+  const [results, setResults] = useState<LibraryResource[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const existingSet = useMemo(() => new Set(existingResourceIds), [existingResourceIds]);
+
+  useEffect(() => {
+    const q = search.trim();
+    if (!q) {
+      // Show recent resources when no search term
+      setIsSearching(true);
+      supabase
+        .from('nodes')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(20)
+        .then(({ data }) => {
+          setResults(data || []);
+          setIsSearching(false);
+        });
+      return;
+    }
+    const timer = setTimeout(() => {
+      setIsSearching(true);
+      supabase
+        .from('nodes')
+        .select('*')
+        .ilike('title', `%${q}%`)
+        .limit(20)
+        .then(({ data }) => {
+          setResults(data || []);
+          setIsSearching(false);
+        });
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  if (isSearching) {
+    return <Text style={{ color: 'var(--ink-ghost)' as any, fontSize: 13, paddingVertical: 8 }}>Searching…</Text>;
+  }
+  if (!results.length) {
+    return <Text style={{ color: 'var(--ink-ghost)' as any, fontSize: 13, paddingVertical: 8 }}>No resources found.</Text>;
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '320px', overflowY: 'auto' }}>
+      {results.map((r) => {
+        const alreadyAdded = existingSet.has(r.id!);
+        return (
+          <div
+            key={r.id}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '8px 12px',
+              borderRadius: '10px',
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.07)',
+              gap: '12px',
+            }}
+          >
+            <span style={{ fontSize: '13px', color: 'var(--ink)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {r.title}
+            </span>
+            <button
+              disabled={alreadyAdded || addingId === r.id}
+              onClick={() => onAdd(r.id!)}
+              style={{
+                padding: '4px 12px',
+                borderRadius: '8px',
+                border: 'none',
+                background: alreadyAdded ? 'rgba(52,168,83,0.15)' : 'rgba(103,152,214,0.2)',
+                color: alreadyAdded ? '#34a853' : '#6798d6',
+                fontWeight: 700,
+                fontSize: '11px',
+                cursor: alreadyAdded ? 'default' : 'pointer',
+                whiteSpace: 'nowrap',
+                opacity: addingId === r.id ? 0.5 : 1,
+              }}
+            >
+              {alreadyAdded ? '✓ Added' : addingId === r.id ? 'Adding…' : '+ Add'}
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 function LoadingState() {
   return (
@@ -78,6 +182,7 @@ function OwnerPanel({
   onVisibilityChange,
   onEdit,
   onDelete,
+  onAddResources,
   isUpdating,
   isDeleting,
 }: {
@@ -85,6 +190,7 @@ function OwnerPanel({
   onVisibilityChange: (v: ResourceVisibility) => void;
   onEdit: () => void;
   onDelete: () => void;
+  onAddResources: () => void;
   isUpdating: boolean;
   isDeleting: boolean;
 }) {
@@ -157,6 +263,27 @@ function OwnerPanel({
               </button>
             );
           })}
+
+        {/* Add Resources button */}
+        <button
+          onClick={onAddResources}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '5px',
+            padding: '6px 12px',
+            borderRadius: '10px',
+            border: '1px solid rgba(103,152,214,0.4)',
+            background: 'rgba(103,152,214,0.1)',
+            color: '#6798d6',
+            fontSize: '12px',
+            fontWeight: 700,
+            cursor: 'pointer',
+          }}
+        >
+          <Plus size={12} color="#6798d6" />
+          Add Resources
+        </button>
 
         {/* Edit button */}
         <button
@@ -364,6 +491,9 @@ export default function CollectionDetailScreenWeb() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
+  const [isAddResourcesOpen, setIsAddResourcesOpen] = useState(false);
+  const [resourceSearch, setResourceSearch] = useState('');
+  const [addingResourceId, setAddingResourceId] = useState<string | null>(null);
 
   const isOwner = !!user?.id && !!collection?.creator_id && collection.creator_id === user.id;
 
@@ -374,7 +504,7 @@ export default function CollectionDetailScreenWeb() {
       setIsUpdating(true);
       try {
         await libraryAPI.updateCollection(collection.id, { visibility } as any);
-        queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collections() });
+        queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
         queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(collection.id) });
       } catch (e) {
         console.error('Failed to update visibility', e);
@@ -391,7 +521,7 @@ export default function CollectionDetailScreenWeb() {
       setIsUpdating(true);
       try {
         await libraryAPI.updateCollection(collection.id, { name, description } as any);
-        queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collections() });
+        queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
         queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(collection.id) });
         setIsEditModalOpen(false);
       } catch (e) {
@@ -412,7 +542,7 @@ export default function CollectionDetailScreenWeb() {
     setIsDeleting(true);
     try {
       await libraryAPI.deleteCollection(collection.id);
-      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collections() });
+      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
       router.replace('/library');
     } catch (e) {
       console.error('Failed to delete collection', e);
@@ -598,9 +728,69 @@ export default function CollectionDetailScreenWeb() {
             onVisibilityChange={handleVisibilityChange}
             onEdit={() => setIsEditModalOpen(true)}
             onDelete={handleDelete}
+            onAddResources={() => setIsAddResourcesOpen(true)}
             isUpdating={isUpdating}
             isDeleting={isDeleting}
           />
+        )}
+
+        {/* Add Resources Panel */}
+        {isOwner && isAddResourcesOpen && (
+          <div
+            style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '18px',
+              padding: '20px',
+              marginBottom: '16px',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+              <span style={{ fontSize: '15px', fontWeight: 800, color: 'var(--ink)' }}>Add Resources</span>
+              <button
+                onClick={() => setIsAddResourcesOpen(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <input
+              type="text"
+              placeholder="Search resources by title..."
+              value={resourceSearch}
+              onChange={(e) => setResourceSearch((e.target as HTMLInputElement).value)}
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                borderRadius: '10px',
+                border: '1px solid rgba(255,255,255,0.12)',
+                background: 'rgba(255,255,255,0.06)',
+                color: 'var(--ink)',
+                fontSize: '14px',
+                outline: 'none',
+                marginBottom: '12px',
+                boxSizing: 'border-box',
+              }}
+            />
+            <ResourceSearchResults
+              collectionId={collection.id}
+              search={resourceSearch}
+              existingResourceIds={collection.resource_ids || []}
+              addingId={addingResourceId}
+              onAdd={async (resourceId) => {
+                setAddingResourceId(resourceId);
+                try {
+                  await libraryAPI.addToCollection(collection.id, resourceId);
+                  queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
+                  queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(collection.id) });
+                } catch (e) {
+                  console.error('Failed to add resource', e);
+                } finally {
+                  setAddingResourceId(null);
+                }
+              }}
+            />
+          </div>
         )}
 
         <Box className="mt-4 mb-10 p-8 rounded-3xl bg-white/5 border border-white/5">
