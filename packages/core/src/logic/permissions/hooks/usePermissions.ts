@@ -58,7 +58,10 @@ export const usePermissions = () => {
       },
       tenantKind: 'customer' as TenantKind,
       isAnonymous: !user,
-      hasGlobalAccess: activeBond?.capacity === 'founder' || activeBond?.capacity === 'admin',
+      hasGlobalAccess:
+        activeBond?.capacity === 'founder' ||
+        activeBond?.capacity === 'admin' ||
+        activeBond?.capacity === 'developer',
       isPersonal,
       sectionId: null,
       gradeId: null,
