@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "table": "schema_migrations",
+      "mode": "exact",
+      "reason": "Supabase internal migration tracking table",
+      "owner": "Supabase",
+      "reviewedAt": "2026-06-27",
+      "reviewer": "Antigravity"
+    },
+    {
+      "table": "spatial_ref_sys",
+      "mode": "exact",
+      "reason": "PostGIS system reference table",
+      "owner": "PostGIS",
+      "reviewedAt": "2026-06-27",
+      "reviewer": "Antigravity"
+    },
+    {
+      "table": "pg_*",
+      "mode": "glob",
+      "reason": "Postgres internal system tables",
+      "owner": "Postgres",
+      "reviewedAt": "2026-06-27",
+      "reviewer": "Antigravity"
+    }
+  ]
+}

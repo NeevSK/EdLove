@@ -34,7 +34,7 @@ model User {
   nic_number String?
   public_profile Boolean? @default(true)
   profile_completed Boolean? @default(false)
-  is_anonymous Boolean? @default(false)
+  is_anonymous Boolean @default(false)
   capacity String?
   citizenship String @default("WANDERER") // WANDERER, SECOND_CLASS, FIRST_CLASS
   pricing_tier String @default("FREE") // FREE, PRO, INSTITUTIONAL
@@ -51,6 +51,12 @@ model User {
   metadata Json?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  last_seen_at DateTime?
+  escrowed_recovery_key String?
+  tier_id String?
+  deleted_at DateTime?
+  deleted_by String?
+  deletion_reason String?
   posts     Post[]
   memberships GroupMember[]
   social_links UserSocialLink[]
@@ -81,8 +87,8 @@ model User {
   staff_leaves StaffLeave[]
   
   // Guardian & Relationship
-  guardian Guardian?
   student_guardian_links StudentGuardianRelationship[] @relation("StudentGuardians")
+  student_guardian_links_as_guardian StudentGuardianRelationship[] @relation("GuardianStudents")
 
   // Accounting & Payments
   invoices Invoice[]
@@ -159,11 +165,14 @@ model Classroom {
   subject          String?
   description      String?
   color_theme      String?
-  syllabus_version String?
   is_archived      Boolean  @default(false)
-  academic_year    String?
+  academic_year    String
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
+  created_by       String?
+  deleted_at       DateTime?
+  deleted_by       String?
+  deletion_reason  String?
 
   school           School?    @relation(fields: [school_id], references: [id])
   teacher          User?      @relation("TeacherClassrooms", fields: [teacher_id], references: [id])
@@ -295,24 +304,26 @@ model Group {
   id          String   @id @default(uuid())
   name        String
   description String?
-  school_id   String?
-  creator_id  String
-  type        String   @default("general") // class, interest, general
-  visibility  String   @default("public")  // public, private
-  join_policy String   @default("open")    // open, restricted, closed
-  is_public   Boolean  @default(true)
+  school_id   String
+  created_by  String?
+  group_type  String?  @default("general") // class, interest, general
+  join_policy String?  @default("open")    // open, restricted, closed
+  is_public   Boolean? @default(true)
   created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  classroom_id String?
+  image_url   String?
+  member_count Int?    @default(0)
+  handle      String?
 
   members     GroupMember[]
   posts       Post[]
   messages    GroupMessage[]
-  school      School?  @relation(fields: [school_id], references: [id])
+  school      School   @relation(fields: [school_id], references: [id])
 
   // Permissions
-  @@allow('read', is_public || visibility == 'public')
+  @@allow('read', is_public == true)
   @@allow('read', members?[user_id == auth().id])
-  @@allow('all', creator_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', created_by == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
 
   @@map("community_groups")
 }
@@ -329,9 +340,9 @@ model GroupMember {
 
   @@unique([user_id, group_id])
 
-  @@allow('read', group.is_public || group.members?[user_id == auth().id])
+  @@allow('read', group.is_public == true || group.members?[user_id == auth().id])
   @@allow('all', auth() != null && user_id == auth().id)
-  @@allow('all', group.creator_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', group.created_by == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
 
   @@map("community_group_members")
 }
@@ -342,13 +353,14 @@ model Post {
   author_id        String
   school_id        String?
   content          String
-  post_type        String   @default("discussion")
-  visibility       String   @default("school")
-  author_tier      String   // Maps to RoleSchema
+  post_type        String?  @default("discussion")
+  author_role      String?
   media_url        String?
   media_type       String?
+  poll_data        Json?
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
+  deleted_at       DateTime?
 
   group            Group    @relation(fields: [group_id], references: [id])
   author           User     @relation(fields: [author_id], references: [id])
@@ -358,7 +370,7 @@ model Post {
   @@allow('all', auth() != null && author_id == auth().id)
   
   // Members of the group can read posts
-  @@allow('read', group.is_public || group.members?[user_id == auth().id])
+  @@allow('read', group.is_public == true || group.members?[user_id == auth().id])
 
   @@map("community_posts")
 }
@@ -463,23 +475,19 @@ model School {
   id         String   @id @default(uuid())
   name       String
   handle     String?  @unique
-  status     String   @default("pending") // active, pending, rejected
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  // Metadata Fields
-  type                  String?  // Legacy field
-  tenant_kind           String?
-  official_type         String?
-  province_id           String?
-  district_id           String?
-  city                  String?
-  address               String?
-  student_type          String?
-  religious_affiliation String?
-  student_count         Int?
-  created_by            String?
-  avatar_url            String?
+  created_by String?
+  tenant_kind String   @default("customer")
+  type       String?
+  is_sample  Boolean? @default(false)
+  census_id  String?
+  custom_branding Json?
+  last_census_sync DateTime?
+  sync_status String? @default("synced")
+  avatar_url String?
+  deleted_at DateTime?
+  deleted_by String?
+  deletion_reason String?
 
   classrooms Classroom[]
   groups     Group[]
@@ -489,9 +497,6 @@ model School {
   // HR & Staff
   staff_leaves StaffLeave[]
   calendar_events CalendarEvent[]
-
-  // Guardian
-  guardians Guardian[]
 
   // Permissions: Everyone authenticated can read basic info; users can manage their own creations
   @@allow('read', auth() != null)
@@ -862,46 +867,18 @@ model CalendarEvent {
 // GUARDIAN DOMAIN
 // ============================================================================
 
-model Guardian {
-  id                 String   @id @default(uuid())
-  user_id            String?  @unique
-  relationship_type  String   // parent, guardian, caregiver
-  contact_info       Json
-  verification_status String  @default("pending") // pending, verified, rejected
-  custody_info       Json?
-  emergency_contact  Json?
-  created_at         DateTime @default(now())
-  updated_at         DateTime @updatedAt
-  school_id          String
-
-  user               User?    @relation(fields: [user_id], references: [id])
-  school             School   @relation(fields: [school_id], references: [id])
-  students           StudentGuardianRelationship[]
-
-  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
-  @@allow('read', auth() != null)
-  @@map("guardians")
-}
-
 model StudentGuardianRelationship {
   id                String   @id @default(uuid())
   student_id        String
   guardian_id       String
   relationship_type String
-  permissions       Json     @default("[]")
-  custody_level     String   @default("full")
-  effective_date    DateTime @default(now())
-  termination_date  DateTime?
-  is_active         Boolean  @default(true)
   created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
-  school_id         String
 
   student           User     @relation("StudentGuardians", fields: [student_id], references: [id])
-  guardian          Guardian @relation(fields: [guardian_id], references: [id])
+  guardian          User     @relation("GuardianStudents", fields: [guardian_id], references: [id])
 
   @@unique([student_id, guardian_id])
-  @@allow('read', auth().id == student_id || auth().id == guardian.user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('read', auth().id == student_id || auth().id == guardian_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
   @@map("student_guardian_relationships")
 }
