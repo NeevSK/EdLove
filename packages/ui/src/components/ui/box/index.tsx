@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import { type StyleProp, View, type ViewProps, type ViewStyle } from 'react-native';
 
@@ -25,3 +25,4 @@ const Box = React.forwardRef<View, IBoxProps>(
 Box.displayName = 'Box';
 
 export { Box };
+

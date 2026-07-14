@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import {
   Pressable,
@@ -124,3 +124,4 @@ export const InputIcon = ({ as: Icon, className, color, size, ...props }: any) =
 };
 
 export { Input };
+

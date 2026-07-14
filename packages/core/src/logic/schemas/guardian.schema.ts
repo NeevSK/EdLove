@@ -1,12 +1,6 @@
 import { makeModelSchema } from '@repo/schema';
 import { z } from 'zod';
 
-/**
- * GuardianSchema - Identity of a student protector.
- * Derived from ZenStack Guardian model.
- */
-export const GuardianIdentitySchema = makeModelSchema('Guardian');
-
 export const GuardianContactInfoSchema = z.object({
   primaryPhone: z.string(),
   secondaryPhone: z.string().optional(),
@@ -43,6 +37,21 @@ export const GuardianEmergencyContactSchema = z.object({
   phone: z.string(),
   isPrimary: z.boolean(),
 });
+
+export const GuardianIdentitySchema = z.object({
+  id: z.string(),
+  user_id: z.string().nullable().optional(),
+  relationship_type: z.enum(['parent', 'guardian', 'caregiver']),
+  contact_info: GuardianContactInfoSchema,
+  verification_status: z.enum(['pending', 'verified', 'rejected']).default('pending'),
+  custody_info: GuardianCustodyInfoSchema.optional(),
+  emergency_contact: GuardianEmergencyContactSchema.optional(),
+  school_id: z.string(),
+  tenant_id: z.string(),
+  created_at: z.string().optional(),
+  updated_at: z.string().optional(),
+});
+
 
 export const GuardianProfileCreateSchema = z.object({
   userId: z.uuid().optional(),
@@ -101,11 +110,20 @@ export const GuardianPermissionConfigSchema = z.object({
 
 export const GuardianNotificationSettingsSchema = z.record(z.string(), z.any());
 
-/**
- * StudentGuardianRelationshipSchema - The legal and social link between student and guardian.
- * Derived from ZenStack StudentGuardianRelationship model.
- */
-export const StudentGuardianRelationshipSchema = makeModelSchema('StudentGuardianRelationship');
+export const StudentGuardianRelationshipSchema = z.object({
+  id: z.string(),
+  student_id: z.string(),
+  guardian_id: z.string(),
+  relationship_type: z.string(),
+  permissions: z.array(GuardianPermissionConfigSchema).default([]),
+  custody_level: z.string().default('full'),
+  effective_date: z.string(),
+  termination_date: z.string().nullable().optional(),
+  is_active: z.boolean().default(true),
+  created_at: z.string(),
+  updated_at: z.string(),
+  school_id: z.string(),
+});
 
 export const GuardianGradeInfoSchema = z.object({
   subject: z.string(),

@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
 import { Pressable, View, type ViewProps } from 'react-native';
@@ -126,3 +126,4 @@ ActionsheetContent.displayName = 'ActionsheetContent';
 ActionsheetItem.displayName = 'ActionsheetItem';
 
 export { Actionsheet as default };
+

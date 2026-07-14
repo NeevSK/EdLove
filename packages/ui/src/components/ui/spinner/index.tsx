@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import { ActivityIndicator, type ActivityIndicatorProps } from 'react-native';
 
@@ -17,3 +17,4 @@ export const Spinner = React.forwardRef<
 ));
 
 Spinner.displayName = 'Spinner';
+

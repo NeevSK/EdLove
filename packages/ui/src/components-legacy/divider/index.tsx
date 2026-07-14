@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import {
   type ActivityIndicatorProps,
@@ -26,3 +26,4 @@ export const Spinner = ({
 }: ActivityIndicatorProps & { className?: string }) => (
   <ActivityIndicator {...props} className={className} />
 );
+

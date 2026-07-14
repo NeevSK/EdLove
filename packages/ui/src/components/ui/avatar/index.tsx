@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
 import { Text, View, type ViewProps } from 'react-native';
@@ -101,3 +101,4 @@ AvatarFallbackText.displayName = 'AvatarFallbackText';
 AvatarImage.displayName = 'AvatarImage';
 
 export { Avatar as default };
+

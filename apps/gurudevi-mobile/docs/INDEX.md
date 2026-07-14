@@ -18,6 +18,7 @@ Welcome to the documentation vault for `gurudevi-mobile`. This file serves as th
 
 | Date | Document | Category | Status | Summary |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-07-14** | [Gluestack UI v5 and Styling Subsystem Migration Report](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-07-14-gluestack-v5-migration-report.md) | Infrastructure | `active` | Technical report detailing Gluestack UI v5 & NativeWind v5 changes, cssInterop bypasses, and long-term actions. |
 | **2026-06-26** | [Route Flow Implementation Checklist](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/current_progress/2026-06-26-route-flow-implementation-checklist.md) | Current Progress | `draft` | Execution checklist for the route and onboarding cleanup. |
 | **2026-06-26** | [Developer Sandbox Console & Onboarding Parser](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/2026-06-26-developer-sandbox-console.md) | Architecture | `active` | Canonical hidden dev shortcut contract for onboarding name-step templates. |
 | **2026-06-26** | [Test Strategy: Jest vs Vitest for Gurudevi Mobile](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/current_progress/2026-06-26-test-strategy-jest-vs-vitest.md) | Current Progress | `draft` | Which test seam to use for route helpers, state machines, and Expo screen mounts. |
@@ -109,6 +110,7 @@ Welcome to the documentation vault for `gurudevi-mobile`. This file serves as th
 
 
 ### 📦 Platform, Infrastructure & Deployment Guides (Vercel, Cloudflare, Expo, PNPM, ESLint)
+*   [Gluestack UI v5 and Styling Subsystem Migration Report](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-07-14-gluestack-v5-migration-report.md) - Report on the structural changes, immediate workarounds, and long-term migration vectors for Gluestack v5 and NativeWind v5.
 *   [Mobile Bundle Size Optimization Execution Report](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-11-mobile-bundle-optimization-report.md) - Report detailing audit, leak plugging, and tree-shaking optimizations resulting in a 1.28 MB reduction in bundle size.
 *   [Monorepo Upgrade and Navigation Purge Execution Report](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-10-monorepo-upgrade-and-cleanup-execution.md) - Report on Expo SDK 56 alignment, major version upgrades, and navigation cleanups.
 *   [Dependency Alignment and Upgrade Testing Playbook](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-10-dependency-alignment-and-upgrade-testing.md) - Diagnostic tools and step-by-step procedures for testing major version updates.

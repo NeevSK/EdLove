@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import type { View, ViewProps } from 'react-native';
 import { View as PrimitiveView } from '../../primitives';
@@ -37,3 +37,4 @@ const HStack = React.forwardRef<View, IHStackProps>(
 HStack.displayName = 'HStack';
 
 export { HStack };
+

@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import type { PressableProps, TextInput, TextInputProps, View, ViewProps } from 'react-native';
 import {
@@ -68,3 +68,4 @@ export const InputIcon = ({ as: Icon, className, color, size, ...props }: any) =
   if (!Icon) return null;
   return <Icon {...props} size={size || 20} color={color || '#6B7280'} className={className} />;
 };
+

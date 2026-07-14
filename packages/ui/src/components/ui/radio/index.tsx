@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
 import { Pressable, Text, View, type ViewProps } from 'react-native';
@@ -173,3 +173,4 @@ Radio.displayName = 'Radio';
 RadioGroup.displayName = 'RadioGroup';
 
 export { Radio as default };
+

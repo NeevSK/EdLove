@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
 import { View, type ViewProps } from 'react-native';
@@ -116,3 +116,4 @@ ModalHeader.displayName = 'ModalHeader';
 ModalFooter.displayName = 'ModalFooter';
 
 export { Modal as default };
+

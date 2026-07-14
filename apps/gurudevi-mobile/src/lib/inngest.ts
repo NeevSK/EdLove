@@ -14,6 +14,6 @@ const inngestClient = new Inngest({
   eventKey: process.env.EXPO_PUBLIC_INNGEST_EVENT_KEY,
 });
 
-export const inngest = createInngestEventBusAdapter(inngestClient);
+export const inngest = createInngestEventBusAdapter(inngestClient as any);
 
 export default inngest;

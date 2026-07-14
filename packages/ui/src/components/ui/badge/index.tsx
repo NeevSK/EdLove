@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import { Text, type TextProps, View, type ViewProps } from 'react-native';
 
@@ -28,3 +28,4 @@ Badge.displayName = 'Badge';
 BadgeText.displayName = 'BadgeText';
 
 export { Badge, BadgeText };
+

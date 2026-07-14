@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import { type PressableProps, Pressable as RNPressable } from 'react-native';
 
@@ -23,3 +23,4 @@ const Pressable = React.forwardRef<any, IPressableProps>(
 Pressable.displayName = 'Pressable';
 
 export { Pressable };
+

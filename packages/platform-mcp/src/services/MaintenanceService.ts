@@ -101,6 +101,21 @@ export class MaintenanceService {
     return toMcpText(result.combined, !result.ok);
   }
 
+  handleTazeAudit(args: { write?: boolean; exclude?: string }) {
+    console.error('Sovereign Maintenance: Running taze package audit...');
+    const cmdArgs = [];
+    if (args.exclude) {
+      cmdArgs.push('--exclude', args.exclude);
+    }
+    if (args.write) {
+      cmdArgs.push('-w');
+    }
+    const result = runCommand('npx', ['taze', ...cmdArgs], {
+      shell: process.platform === 'win32',
+    });
+    return toMcpText(result.combined, !result.ok);
+  }
+
   handleLintFix(args: { target?: string }) {
     const target = normalizeTarget(args.target || '.');
     console.error(`Sovereign Maintenance: Fixing lint violations in ${target}`);

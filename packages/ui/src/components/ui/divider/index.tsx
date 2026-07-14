@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import { View, type ViewProps } from 'react-native';
 
@@ -23,3 +23,4 @@ export const Divider = React.forwardRef<View, IDividerProps>(
 );
 
 Divider.displayName = 'Divider';
+

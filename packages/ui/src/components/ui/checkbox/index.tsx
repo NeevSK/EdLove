@@ -1,6 +1,6 @@
-import ExpoCheckbox from 'expo-checkbox';
+﻿import ExpoCheckbox from 'expo-checkbox';
 import { Check } from 'lucide-react-native';
-import { cssInterop } from 'nativewind';
+import { cssInterop } from 'react-native-css-interop';
 import type React from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { Platform, Pressable, Text, View, type ViewProps } from 'react-native';
@@ -232,3 +232,4 @@ Checkbox.displayName = 'Checkbox';
 CheckboxGroup.displayName = 'CheckboxGroup';
 
 export { Checkbox as default };
+

@@ -1,6 +1,6 @@
-// View implementation
+﻿// View implementation
 
-import { cssInterop } from 'nativewind';
+import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import {
   type PressableProps,
@@ -35,3 +35,4 @@ export const Pressable = React.forwardRef<any, PressableProps & { className?: st
     return <Component {...props} ref={ref} className={className} />;
   },
 );
+

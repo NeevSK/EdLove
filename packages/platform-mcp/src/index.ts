@@ -915,6 +915,7 @@ class PolymathPlatformServer {
                   'deprecations',
                   'memory_sinks',
                   'cognitive_load',
+                  'taze',
                 ],
               },
               params: {
@@ -1121,6 +1122,8 @@ class PolymathPlatformServer {
               return this.audit.handleAuditA11y(params);
             case 'dependency_health':
               return this.maintenance.handleAuditDependencyHealth();
+            case 'taze':
+              return this.maintenance.handleTazeAudit(params);
             case 'i18n':
               return this.audit.handleAuditI18n();
             case 'colors':

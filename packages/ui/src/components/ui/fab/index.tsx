@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
 import { Pressable, type ViewProps } from 'react-native';
@@ -90,3 +90,4 @@ FabLabel.displayName = 'FabLabel';
 FabIcon.displayName = 'FabIcon';
 
 export { Fab as default };
+

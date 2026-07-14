@@ -68,16 +68,16 @@ function mapGuardianIdentity(row: Record<string, unknown>): GuardianIdentity {
   const r = row as any;
   return GuardianIdentitySchema.parse({
     id: r.id,
-    userId: r.userId ?? r.user_id,
-    relationshipType: r.relationshipType ?? r.relationship_type,
-    contactInfo: r.contactInfo ?? r.contact_info,
-    verificationStatus: r.verificationStatus ?? r.verification_status,
-    custodyInfo: r.custodyInfo ?? r.custody_info,
-    emergencyContact: r.emergencyContact ?? r.emergency_contact,
-    createdAt: r.createdAt ?? r.created_at,
-    updatedAt: r.updatedAt ?? r.updated_at,
-    schoolId: r.schoolId ?? r.school_id,
-    tenantId: r.tenantId ?? r.tenant_id,
+    user_id: r.userId ?? r.user_id,
+    relationship_type: r.relationshipType ?? r.relationship_type,
+    contact_info: r.contactInfo ?? r.contact_info,
+    verification_status: r.verificationStatus ?? r.verification_status,
+    custody_info: r.custodyInfo ?? r.custody_info,
+    emergency_contact: r.emergencyContact ?? r.emergency_contact,
+    created_at: r.createdAt ?? r.created_at,
+    updated_at: r.updatedAt ?? r.updated_at,
+    school_id: r.schoolId ?? r.school_id,
+    tenant_id: r.tenantId ?? r.tenant_id,
   });
 }
 
@@ -85,17 +85,17 @@ function mapGuardianRelationship(row: Record<string, unknown>): StudentGuardianR
   const r = row as any;
   return StudentGuardianRelationshipSchema.parse({
     id: r.id,
-    studentId: r.studentId ?? r.student_id,
-    guardianId: r.guardianId ?? r.guardian_id,
-    relationshipType: r.relationshipType ?? r.relationship_type,
+    student_id: r.studentId ?? r.student_id,
+    guardian_id: r.guardianId ?? r.guardian_id,
+    relationship_type: r.relationshipType ?? r.relationship_type,
     permissions: r.permissions ?? [],
-    custodyLevel: r.custodyLevel ?? r.custody_level,
-    effectiveDate: r.effectiveDate ?? r.effective_date,
-    terminationDate: r.terminationDate ?? r.termination_date,
-    isActive: r.isActive ?? r.is_active,
-    createdAt: r.createdAt ?? r.created_at,
-    updatedAt: r.updatedAt ?? r.updated_at,
-    schoolId: r.schoolId ?? r.school_id,
+    custody_level: r.custodyLevel ?? r.custody_level,
+    effective_date: r.effectiveDate ?? r.effective_date,
+    termination_date: r.terminationDate ?? r.termination_date,
+    is_active: r.isActive ?? r.is_active,
+    created_at: r.createdAt ?? r.created_at,
+    updated_at: r.updatedAt ?? r.updated_at,
+    school_id: r.schoolId ?? r.school_id,
   });
 }
 

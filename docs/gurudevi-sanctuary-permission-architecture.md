@@ -4,17 +4,8 @@
 > This document covers the intended design of the permission system — the three gates, Cedar as unified authz, flag taxonomy, and intersection with the data/state lifecycle.
 
 ---
-## 0. Capacity/Role
- We use Rebac. We have capacity/role for any user in relation(bond) to any entity. And users can have more than one yet there is primary one chosen intially and others later. then there will be active one which is used when what role user actually use now etc.  main capacities are,
- 1. Teacher
- 2. Student
- 3. Principal
- 4. Parent/Gaurdina
- 5. Developer
- 6.Founder
 
-
-## 1. Core Philosophy for permissions after the role is established
+## 1. Core Philosophy
 
 The permission system answers one question per gate, in order, cheapest first:
 
@@ -39,27 +30,27 @@ Nothing else makes permission decisions.
 Citizenship describes registration depth — how far into the system a user has committed. It is not pricing. It is not role. It is independent of both.
 
 ```
-Level 1 — THIRD_CLASS (WANDERER/GUEST)
+Level 1 — WANDERER
   Supabase anonymous session.
   Guest access. Can read public content.
   Cannot write, cannot join structures, cannot have a bond.
   Prompt: "Create an account to continue."
 
-Level 2 — SECOND_CLASS  (PERSONAL)
+Level 2 — SECOND_CLASS  
   Signed up with email or provider.
   Has an account. Can use app personally.
   Can have a personal workspace.
   Cannot join a school structure.
   Prompt: "Join a school to access this."
 
-Level 3 — FIRST_CLASS (INSTITUTIPNAL)
+Level 3 — FIRST_CLASS
   Joined a school — either invited or created one.
   Full participant in the platform's intended use.
   Can hold bonds (teacher, student, parent, principal, founder, admin).
   No citizenship prompt — Cedar and entitlement gate from here.
 ```
 
-Citizenship is stored as an integer: `1 | 2 | 3`. Higher = more access. Feature requirements use `citizenship >= feature.citizenshipRequired` for evaluation. The string enum (`THIRD_CLASS | SECOND_CLASS | FIRST_CLASS`) is the canonical type — the integer is the comparison value.
+Citizenship is stored as an integer: `1 | 2 | 3`. Higher = more access. Feature requirements use `citizenship >= feature.citizenshipRequired` for evaluation. The string enum (`WANDERER | SECOND_CLASS | FIRST_CLASS`) is the canonical type — the integer is the comparison value.
 
 **Key invariant:** Citizenship is never checked inside Cedar policies. Cedar assumes a valid session. Citizenship is the pre-Cedar gate that confirms the session is sufficiently real to warrant Cedar evaluation.
 
@@ -70,7 +61,7 @@ Citizenship is stored as an integer: `1 | 2 | 3`. Higher = more access. Feature 
 ### Gate 1 — Citizenship Evaluator
 
 ```typescript
-type CitizenshipLevel = 1 | 2 | 3  //  | SECOND_CLASS | FIRST_CLASS
+type CitizenshipLevel = 1 | 2 | 3  // WANDERER | SECOND_CLASS | FIRST_CLASS
 
 // Evaluates: user.citizenship >= feature.citizenshipRequired
 // Source: user record, read from Zustand useAuthStore
@@ -138,7 +129,6 @@ flag_type: operational   kill-switch, maintenance mode, infra ready
            development   WIP, not yet shipped to any user
            beta          early access, opt-in rollout
            experiment    A/B test, cohort targeting
-           web           Only available in web/tablet version
 ```
 
 **What flags must never contain:**
@@ -322,7 +312,7 @@ Zone A write flow
 
 Zone B/C write flow
   → citizenship gate runs first
-  → THRID_CLASS cannot create outbox entry
+  → WANDERER cannot create outbox entry
   → SECOND_CLASS can queue personal posts
   → FIRST_CLASS can queue school-context posts
   → Cedar still gates what they can post to

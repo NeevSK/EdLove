@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import { ScrollView as RNScrollView, type ScrollViewProps } from 'react-native';
 
@@ -21,3 +21,4 @@ const ScrollView = React.forwardRef<any, IScrollViewProps>(
 ScrollView.displayName = 'ScrollView';
 
 export { ScrollView };
+
