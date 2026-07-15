@@ -348,11 +348,31 @@ const rawLibraryAPI = {
     creatorId: string,
     creatorRole: string,
   ): Promise<LibraryResource> {
+    // Normalize input fields to match exact DB column types:
+    //  - `language` in DB is TEXT[] but the TypeScript input type uses a single string
+    //  - `subjects` in DB is TEXT[] — the input has both `subject` (string) and `subjects` (array)
+    //  - Strip any key that is not a valid column (e.g. bare `subject`)
+    const { subject, language, subjects, languages, ...restInput } = input;
+    const dbLanguage: string[] = languages && languages.length > 0
+      ? languages
+      : Array.isArray(language)
+        ? (language as string[])
+        : language
+          ? [language as string]
+          : ['en'];
+    const dbSubjects: string[] = subjects && subjects.length > 0
+      ? subjects
+      : subject
+        ? [subject]
+        : [];
+
     const { data, error } = await supabase
       .from('nodes')
       .insert([
         {
-          ...input,
+          ...restInput,
+          language: dbLanguage,
+          subjects: dbSubjects,
           creator_id: creatorId,
           creator_role: creatorRole,
           is_community: true, // User-contributed content
@@ -363,14 +383,23 @@ const rawLibraryAPI = {
           verified: VERIFIED_LIBRARY_CAPACITIES.has(toLibraryBondCapacity(creatorRole)), // Auto-verify for trusted capacities
         },
       ])
-      .select(`
-      *,
-      creator: users(full_name)
-        `)
+      .select('id')   // Only fetch id; avoids SELECT RLS visibility gate blocking the creator's own new row
       .single();
+
     if (error) {
       throw new APIError('Failed to create resource', error.code, error);
     }
+
+    // Re-fetch the full row separately — the SELECT policy allows creators to read their
+    // own rows via `creator_id = auth.uid()`, even for non-public / non-verified resources.
+    const { data: fullData } = await supabase
+      .from('nodes')
+      .select('*, creator: users(full_name)')
+      .eq('id', data.id)
+      .maybeSingle();
+
+    const resourceData = fullData ?? { id: data.id, creator: null, creator_name: null };
+
     // Trigger Growth Signals (Whispered Moment & Nourishing dimension)
     growthSignalsAPI.emitSilent({
       user_id: creatorId,
@@ -388,8 +417,11 @@ const rawLibraryAPI = {
       console.warn('Rewards API not available for points', e);
     }
     return {
-      ...data,
-      creator_name: data.creator?.full_name || data.creator_name || 'System',
+      ...resourceData,
+      creator_name:
+        (fullData as typeof fullData & { creator?: { full_name?: string } | null })?.creator?.full_name
+        ?? (resourceData as { creator_name?: string | null }).creator_name
+        ?? 'System',
     };
   },
   /**
@@ -741,6 +773,7 @@ resource: nodes!resource_engagements_resource_id_fkey(
           creator_name: col.creator?.full_name || 'System',
           resources,
           resource_ids: nodeIds,
+          used_by_count: nodeIds.length,
         };
       }),
     );
@@ -933,6 +966,7 @@ resource: nodes!resource_engagements_resource_id_fkey(
       creator_name: (data.creator as any)?.full_name || data.creator_name || 'System',
       resources,
       resource_ids: resources.map((r) => r.id),
+      used_by_count: resources.length,
       has_endorsed,
     };
   },

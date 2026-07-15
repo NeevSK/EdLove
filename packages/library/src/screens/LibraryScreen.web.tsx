@@ -64,6 +64,45 @@ function StackFallback() {
   );
 }
 
+function getLibraryCreateErrorMessage(err: unknown): string {
+  const apiError = err as {
+    message?: unknown;
+    code?: unknown;
+    details?: { devDetails?: { code?: unknown; message?: unknown; hint?: unknown } } | undefined;
+  } | null;
+  const nestedError = apiError?.details?.devDetails;
+  const rawMessage =
+    typeof nestedError?.message === 'string'
+      ? nestedError.message
+      : err instanceof Error
+        ? err.message
+        : typeof apiError?.message === 'string'
+          ? apiError.message
+          : typeof err === 'string'
+            ? err
+            : '';
+  const code =
+    typeof nestedError?.code === 'string'
+      ? nestedError.code
+      : apiError && typeof apiError.code === 'string'
+        ? apiError.code
+        : ''
+  const hint = typeof nestedError?.hint === 'string' ? nestedError.hint : '';
+  const signal = `${code} ${rawMessage} ${hint}`.toLowerCase();
+
+  if (
+    code === '42501' ||
+    signal.includes('row-level security') ||
+    signal.includes('permission denied') ||
+    signal.includes('violates row-level security policy') ||
+    signal.includes('failed to create resource')
+  ) {
+    return 'Your account is hitting the library onboarding or RLS gate. The DB is rejecting the insert, so the next step is to apply the onboarding migration and re-test.';
+  }
+
+  return rawMessage || 'Failed to add resource';
+}
+
 export default function LibraryScreenWeb() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -1270,17 +1309,26 @@ export default function LibraryScreenWeb() {
                       ? 'document'
                       : 'document',
                 url: data.url,
+                // DB column is `subjects TEXT[]` — send as array
                 subject: data.tags?.[0] ?? 'General',
-                topics: data.tags,
+                subjects: data.tags && data.tags.length > 0 ? data.tags : ['General'],
+                topics: data.tags ?? [],
                 grades: [],
                 difficulty: 'intermediate',
+                // DB column is `language TEXT[]` — must be an array
                 language: 'english',
+                languages: ['english'],
                 visibility: 'school',
               };
+              const creatorRole =
+                user.capacity ??
+                (user as User & { authority?: string; role?: string }).authority ??
+                (user as User & { authority?: string; role?: string }).role ??
+                'student';
               const created = await libraryAPI.createResource(
                 input,
                 user.id,
-                (user as User & { authority?: string }).authority || 'student',
+                creatorRole,
               );
               supabase.functions
                 .invoke('library-etl', {
@@ -1295,7 +1343,8 @@ export default function LibraryScreenWeb() {
               showToast('Resource contributed! It will be reviewed before publishing.', 'success');
               void fetchResources();
             } catch (err: unknown) {
-              showToast((err as Error).message ?? 'Failed to add resource', 'error');
+              console.error('[LibraryScreen] resource create failed:', err);
+              showToast(getLibraryCreateErrorMessage(err), 'error');
             }
           })();
         }}

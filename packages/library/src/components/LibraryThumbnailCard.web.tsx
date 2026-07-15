@@ -14,8 +14,10 @@ import {
 } from 'lucide-react-native';
 import type React from 'react';
 import { useState } from 'react';
+import type { LibraryResource } from '../types';
 
 interface LibraryThumbnailCardWebProps {
+  resource?: LibraryResource;
   title?: string;
   type?: string;
   subject?: string;
@@ -24,9 +26,9 @@ interface LibraryThumbnailCardWebProps {
   verified?: boolean;
   isLocked?: boolean;
   has_bookmarked?: boolean;
-  onPress: () => void;
-  onLongPress?: () => void;
-  onBookmarkToggle?: () => void | Promise<void>;
+  onPress: (resource: LibraryResource) => void;
+  onLongPress?: (resource: LibraryResource) => void;
+  onBookmarkToggle?: (resource: LibraryResource) => void | Promise<void>;
 }
 
 const TYPE_CONFIG: Record<
@@ -56,6 +58,7 @@ function resolveType(type?: string): keyof typeof TYPE_CONFIG {
 }
 
 export function LibraryThumbnailCard({
+  resource,
   title,
   type,
   subject,
@@ -78,13 +81,13 @@ export function LibraryThumbnailCard({
     <button
       className="sanctuary-card"
       type="button"
-      onClick={onPress}
+      onClick={() => onPress(resource ?? ({} as LibraryResource))}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onContextMenu={(event) => {
-        if (!onLongPress) return;
+        if (!onLongPress || !resource) return;
         event.preventDefault();
-        void onLongPress();
+        void onLongPress(resource);
       }}
       style={{
         width: '100%',
@@ -186,7 +189,9 @@ export function LibraryThumbnailCard({
                 type="button"
                 onClick={(event) => {
                   event.stopPropagation();
-                  void onBookmarkToggle();
+                  if (resource) {
+                    void onBookmarkToggle(resource);
+                  }
                 }}
                 style={{
                   width: '30px',
