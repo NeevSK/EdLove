@@ -7,20 +7,11 @@
 
 import type { SocialLink } from '@repo/core/types';
 import { LivingGlow } from '@repo/ui/components/LivingGlow';
+import { ExternalLink, Globe, Link, Mail, MessagesSquare, Pen, Plus, Trash2 } from '@repo/ui/icons';
 import { Box, Button, ButtonText, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { hapticHeavy, hapticLight } from '@repo/ui/utils/haptics';
 import * as Clipboard from 'expo-clipboard';
-import {
-  ExternalLink,
-  Globe,
-  Link,
-  Mail,
-  MessagesSquare,
-  Pen,
-  Plus,
-  Trash2,
-} from 'lucide-react-native';
 import type React from 'react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -285,7 +285,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
   let globalIndex = 0;
 
   return (
-    <Box className="absolute inset-0 z-[1000]" pointerEvents="box-none">
+    <Box className="absolute inset-0 z-[1000]" style={{ pointerEvents: 'box-none' }}>
       {/* Backdrop */}
       <AnimatedView style={backdropStyle} className="absolute inset-0 bg-black/40">
         <Pressable
@@ -296,7 +296,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
         />
       </AnimatedView>
 
-      <Box className="flex-1 items-center pt-[12%]" pointerEvents="box-none">
+      <Box className="flex-1 items-center pt-[12%]" style={{ pointerEvents: 'box-none' }}>
         <AnimatedView
           accessibilityViewIsModal
           style={[

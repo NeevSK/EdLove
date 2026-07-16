@@ -1,8 +1,7 @@
 import { FormManager } from '@intuitui-labs/form-builder-engine/core';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { CircleCheck, Share2 } from '@repo/ui/icons';
 import { Box, Center, ScrollView, Text, View } from '@repo/ui/primitives';
-
-import { CircleCheck, Share2 } from 'lucide-react-native';
 import { useCallback, useMemo, useState } from 'react';
 import {
   type ClimateSensingData,

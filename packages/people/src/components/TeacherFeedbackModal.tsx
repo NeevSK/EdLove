@@ -1,4 +1,5 @@
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { ChevronDown, CircleCheck, Heart, MessageSquare, TriangleAlert } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -19,7 +20,6 @@ import {
   TextareaInput,
   VStack,
 } from '@repo/ui/primitives';
-import { ChevronDown, CircleCheck, Heart, MessageSquare, TriangleAlert } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { teacherFeedbackAPI } from '../feedback';

@@ -4,6 +4,7 @@
  * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
+import { History, MessageSquare, Plus, X } from '@repo/ui/icons';
 import {
   Box,
   Heading,
@@ -16,9 +17,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-
 import { formatDistanceToNow } from 'date-fns';
-import { History, MessageSquare, Plus, X } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import Animated, { FadeIn, FadeInUp, Layout } from 'react-native-reanimated';
 import { MOOD_COLORS, MOOD_LABELS, MOOD_OPTIONS } from '../constants/wellbeing';

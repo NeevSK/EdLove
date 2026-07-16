@@ -4,7 +4,7 @@ import { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';
 import { TemporalProvider } from '@repo/ui/components/TemporalProvider';
 import { TemporalShield } from '@repo/ui/components/TemporalShield';
 
-import { Lightbulb, Sparkles } from 'lucide-react-native';
+import { Lightbulb, Sparkles } from '@repo/ui/icons';
 import { useTranslation } from 'react-i18next';
 import { BaseSelfView } from '../../components/BaseSelfView';
 import { ImpactRipplesCard } from '../../components/ImpactRipplesCard';

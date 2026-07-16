@@ -4,9 +4,8 @@
  * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
+import { Activity, Zap } from '@repo/ui/icons';
 import { AnimatedView, Box, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
-
-import { Activity, Zap } from 'lucide-react-native';
 import { FadeInUp, LinearTransition } from 'react-native-reanimated';
 import { ENERGY_COLORS } from '../constants/wellbeing';
 

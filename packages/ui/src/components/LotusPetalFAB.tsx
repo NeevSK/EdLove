@@ -1,4 +1,4 @@
-import { Wind } from 'lucide-react-native';
+import { Wind } from '@repo/ui/icons';
 import type React from 'react';
 import { type FC, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Animated, {

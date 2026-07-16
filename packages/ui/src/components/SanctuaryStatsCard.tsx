@@ -1,4 +1,4 @@
-import { Trophy } from 'lucide-react-native';
+import { Trophy } from '@repo/ui/icons';
 import { Box, HStack, Text, VStack } from '../gluestack';
 import { SanctuaryProgressBar } from './SanctuaryProgressBar';
 

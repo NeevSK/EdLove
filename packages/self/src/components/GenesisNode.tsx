@@ -4,8 +4,8 @@
  * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
+import { Rocket } from '@repo/ui/icons';
 import { Box, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
-import { Rocket } from 'lucide-react-native';
 import type React from 'react';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 

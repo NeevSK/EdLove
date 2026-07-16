@@ -2,7 +2,7 @@ import { SkeletonCard } from '@repo/ui/components';
 import { useThemedColors } from '@repo/ui/hooks';
 import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-import { ChevronRight, TrendingUp } from 'lucide-react-native';
+import { ChevronRight, TrendingUp } from '@repo/ui/icons';
 import { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { type StudentPrincipalPulse, staffOperationsAPI } from '../staff';

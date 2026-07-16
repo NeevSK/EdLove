@@ -23,7 +23,7 @@ import {
   Map as MapIcon,
   Play,
   Plus,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {

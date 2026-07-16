@@ -6,11 +6,10 @@
  * This ensures identical performance behavior and component recycling across all platforms.
  */
 
+import { BookOpen } from '@repo/ui/icons';
 import { FlashList } from '@shopify/flash-list';
-import { BookOpen } from 'lucide-react-native';
 import React, { useCallback } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
-import { useThemedColors } from '../hooks/useThemedColors';
 import { RefreshControl } from '../primitives';
 import { Theme } from '../theme/Theme';
 import EmptyState from './EmptyState';
@@ -29,8 +28,6 @@ function SanctuaryFlashListWeb<T>({
   ListEmptyComponent,
   ...props
 }: SanctuaryFlashListProps<T>) {
-  const _colors = useThemedColors();
-
   const renderEmpty = useCallback(() => {
     if (emptyComponent) return emptyComponent;
 
@@ -42,7 +39,7 @@ function SanctuaryFlashListWeb<T>({
 
     return (
       <EmptyState
-        icon={BookOpen}
+        icon={BookOpen as any}
         title="Silence in the Sanctuary"
         description="Your first discovery is waiting to be found here."
       />
@@ -68,7 +65,7 @@ function SanctuaryFlashListWeb<T>({
             tintColor={refreshColor || Theme.colors.sanctuarySaffron}
             colors={[refreshColor || Theme.colors.sanctuarySaffron]}
           />
-        ) : undefined
+        ) : null
       }
     />
   );

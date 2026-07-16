@@ -11,7 +11,7 @@ import {
   Lock,
   ThumbsUp,
   Video,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
 import type React from 'react';
 import { useState } from 'react';
 

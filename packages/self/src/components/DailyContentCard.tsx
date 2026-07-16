@@ -5,9 +5,8 @@
  */
 
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { ChevronDown, ChevronUp, Lightbulb, Sparkles, User } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-
-import { ChevronDown, ChevronUp, Lightbulb, Sparkles, User } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';

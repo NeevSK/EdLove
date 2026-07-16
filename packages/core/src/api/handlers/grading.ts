@@ -1,4 +1,5 @@
 import type { Context } from 'hono';
+import { dispatchPushSafely } from '../pushDispatcher';
 
 /**
  * Grading Domain Handlers (Hono + ZenStack ReBAC)
@@ -97,6 +98,14 @@ export const gradingHandlers = {
         executor_id: user.id,
         metadata: { publication_state: 'published' },
       },
+    });
+
+    dispatchPushSafely({
+      userId: grade.student_id,
+      title: 'Grade published',
+      body: `A new grade is available: ${grade.grade}`,
+      category: 'academic',
+      data: { url: `/grades/${grade.id}`, gradeId: grade.id },
     });
 
     return c.json(grade, 200);

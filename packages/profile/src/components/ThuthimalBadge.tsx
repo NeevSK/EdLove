@@ -1,5 +1,5 @@
+import { Flower2 } from '@repo/ui/icons';
 import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
-import { Flower2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 interface ThuthimalBadgeProps {

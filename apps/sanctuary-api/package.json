@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "node ../../scripts/run-and-report.mjs --cmd \"tsx watch src/entry-node.ts\" --name \"apps_sanctuary-api-dev\"",
     "dev:bun": "node ../../scripts/run-and-report.mjs --cmd \"bun --watch src/index.ts\" --name \"apps_sanctuary-api-dev_bun\"",
-    "build": "node ../../scripts/run-and-report.mjs --cmd \"tsdown\" --name \"apps_sanctuary-api-build\"",
-    "start": "node ../../scripts/run-and-report.mjs --cmd \"node dist/entry-node.mjs\" --name \"apps_sanctuary-api-start\"",
+    "build": "node ../../scripts/run-and-report.mjs --cmd \"tsup src/index.ts src/entry-node.ts --format esm --clean\" --name \"apps_sanctuary-api-build\"",
+    "start": "node ../../scripts/run-and-report.mjs --cmd \"node dist/entry-node.js\" --name \"apps_sanctuary-api-start\"",
     "start:bun": "node ../../scripts/run-and-report.mjs --cmd \"bun src/index.ts\" --name \"apps_sanctuary-api-start_bun\"",
     "lint": "node ../../scripts/run-and-report.mjs --cmd \"biome check src\" --name \"apps_sanctuary-api-lint\"",
     "format": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs --write\" --name \"apps_sanctuary-api-format\"",

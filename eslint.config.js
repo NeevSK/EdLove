@@ -20,6 +20,15 @@ export default [
     ],
   },
   {
+    plugins: {
+      react: {
+        rules: {
+          'react-compiler': {
+            create() { return {}; }
+          }
+        }
+      }
+    },
     rules: {
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',

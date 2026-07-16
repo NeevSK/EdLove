@@ -2,7 +2,7 @@ import { useThemedColors } from '@repo/ui/hooks';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
-import { Banknote, CalendarDays, TrendingUp, UserCheck } from 'lucide-react-native';
+import { Banknote, CalendarDays, TrendingUp, UserCheck } from '@repo/ui/icons';
 import { useTranslation } from 'react-i18next';
 
 interface PrincipalAdminWidgetProps {

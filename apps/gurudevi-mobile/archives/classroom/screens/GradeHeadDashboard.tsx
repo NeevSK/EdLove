@@ -5,7 +5,7 @@ import { SanctuaryButton } from '@repo/ui/components';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-import { CircleAlert, BookOpen, Users } from 'lucide-react-native';
+import { CircleAlert, BookOpen, Users } from '@repo/ui/icons';
 import { ScrollView, StyleSheet } from 'react-native';
 export default function GradeHeadDashboard({
   schoolId,

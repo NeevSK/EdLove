@@ -2,7 +2,7 @@ import { useThemedColors } from '@repo/ui/hooks';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
-import { ArrowRight, LayoutGrid, Milestone, NotebookPen, UserPlus } from 'lucide-react-native';
+import { ArrowRight, LayoutGrid, Milestone, NotebookPen, UserPlus } from '@repo/ui/icons';
 import { useTranslation } from 'react-i18next';
 
 interface ManagementStationProps {

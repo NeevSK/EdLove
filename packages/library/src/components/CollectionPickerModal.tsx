@@ -1,3 +1,4 @@
+import { ChevronRight, Folder, Lock, X } from '@repo/ui/icons';
 import {
   Box,
   Center,
@@ -12,8 +13,6 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-
-import { ChevronRight, Folder, Lock, X } from 'lucide-react-native';
 import type React from 'react';
 import type { LibraryCollection } from '../types';
 

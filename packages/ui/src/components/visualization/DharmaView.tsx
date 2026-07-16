@@ -1,5 +1,5 @@
 import type { PerspectiveViewProps } from '@repo/core/types';
-import { CircleCheck, Circle as CircleIcon, Lock } from 'lucide-react-native';
+import { CircleCheck, Circle as CircleIcon, Lock } from '@repo/ui/icons';
 import type React from 'react';
 import { useTheme } from '../../hooks/useTheme';
 import { Box, HStack, ScrollView, Text, VStack } from '../../primitives';

@@ -12,7 +12,7 @@
  */
 
 import * as Haptics from 'expo-haptics';
-import { SquarePen, Flower2, MessageCircle, Plus, Upload } from 'lucide-react-native';
+import { SquarePen, Flower2, MessageCircle, Plus, Upload } from '@repo/ui/icons';
 import type React from 'react';
 import { type FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, Image, PanResponder, StyleSheet } from 'react-native';

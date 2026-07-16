@@ -23,6 +23,7 @@
     "no-debugger": "error",
     "no-console": "warn",
     "react/react-compiler": "error",
+    "import/no-relative-parent-imports": "off",
     "no-constant-condition": "error",
     "no-empty": "warn",
     "prefer-const": "warn",

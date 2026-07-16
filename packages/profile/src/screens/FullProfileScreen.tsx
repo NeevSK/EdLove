@@ -7,6 +7,19 @@ import IdentityCard from '@repo/ui/components/IdentityCard';
 import { SanctuaryProgressBar } from '@repo/ui/components/SanctuaryProgressBar';
 import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 import {
+  AtSign,
+  BookOpen,
+  Briefcase,
+  FileText,
+  FingerprintPattern,
+  GraduationCap,
+  Heart,
+  Phone,
+  School,
+  SquarePen,
+  User as UserIcon,
+} from '@repo/ui/icons';
+import {
   Box,
   Button,
   ButtonText,
@@ -20,20 +33,6 @@ import {
 import { hapticSuccess } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { router, useLocalSearchParams } from 'expo-router';
-
-import {
-  AtSign,
-  BookOpen,
-  Briefcase,
-  FileText,
-  FingerprintPattern,
-  GraduationCap,
-  Heart,
-  Phone,
-  School,
-  SquarePen,
-  User as UserIcon,
-} from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, useWindowDimensions } from 'react-native';

@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, ExternalLink, RotateCcw, Share2, X } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, ExternalLink, RotateCcw, Share2, X } from '@repo/ui/icons';
 import type React from 'react';
 import { StyleSheet } from 'react-native';
 import { useTheme } from '../hooks/useTheme';

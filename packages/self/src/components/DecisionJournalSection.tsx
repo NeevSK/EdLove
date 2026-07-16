@@ -8,6 +8,7 @@ import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { History, Quote, Send } from '@repo/ui/icons';
 import {
   Box,
   Heading,
@@ -21,8 +22,6 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
-
-import { History, Quote, Send } from 'lucide-react-native';
 import { useState } from 'react';
 import Animated, { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
 import { useDecisionJournal } from '../hooks/useDecisionJournal';

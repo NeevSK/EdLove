@@ -5,7 +5,7 @@
  * Metro resolves this over StudentGoals.tsx on the web platform.
  */
 
-import { Circle, CircleCheck, Target } from 'lucide-react-native';
+import { Circle, CircleCheck, Target } from '@repo/ui/icons';
 import { useState } from 'react';
 import { useStudentGoals } from '../hooks/useStudentGoals';
 import type { Goal } from '../types';

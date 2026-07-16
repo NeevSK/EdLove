@@ -1,5 +1,5 @@
+import { Search } from '@repo/ui/icons';
 import { fireEvent, render } from '@testing-library/react-native';
-import { Search } from 'lucide-react-native';
 import { Input, InputField, InputIcon, InputSlot } from '../components/ui/input';
 
 describe('Input Component (Robustness)', () => {

@@ -1,7 +1,6 @@
+import { Check, Pen, X } from '@repo/ui/icons';
 import { Box, HStack, Input, InputField, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
-
-import { Check, Pen, X } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { ProfileValidator } from '../lib/validator';
 

@@ -85,6 +85,48 @@ self.addEventListener('fetch', (event) => {
   }
 });
 
+//  WEB PUSH
+// Push delivery is intentionally implemented here rather than through
+// expo-notifications. Browser subscriptions use Web Push/VAPID and are not
+// compatible with ExpoPushToken values.
+self.addEventListener('push', (event) => {
+  let payload = {};
+  try {
+    payload = event.data?.json() ?? {};
+  } catch {
+    payload = { body: event.data?.text() ?? '' };
+  }
+
+  const title = payload.title || 'Gurudevi';
+  const data = payload.data || {};
+  const targetUrl = data.url || payload.url || '/';
+  const options = {
+    body: payload.body || '',
+    icon: payload.icon || '/favicon.ico',
+    badge: payload.badge || '/favicon.ico',
+    data: { ...data, url: targetUrl },
+    tag: payload.tag || undefined,
+    renotify: Boolean(payload.renotify),
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const targetUrl = event.notification?.data?.url || '/';
+
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+      const existingClient = clients.find((client) => client.url.startsWith(self.location.origin));
+      if (existingClient) {
+        return existingClient.navigate(targetUrl).then(() => existingClient.focus());
+      }
+      return self.clients.openWindow(new URL(targetUrl, self.location.origin).href);
+    }),
+  );
+});
+
 //  STRATEGIES
 
 async function cacheFirst(cacheName, request) {

@@ -10,6 +10,17 @@ import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import {
+  Book,
+  ChevronDown,
+  CircleAlert,
+  Clock,
+  Cloud,
+  Coffee,
+  Plus,
+  Trash,
+  X,
+} from '@repo/ui/icons';
+import {
   Box,
   Heading,
   HStack,
@@ -38,18 +49,6 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { useToast } from '@repo/ui/providers';
-
-import {
-  Book,
-  ChevronDown,
-  CircleAlert,
-  Clock,
-  Cloud,
-  Coffee,
-  Plus,
-  Trash,
-  X,
-} from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown, FadeInRight, Layout } from 'react-native-reanimated';

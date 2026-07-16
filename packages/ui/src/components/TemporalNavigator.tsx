@@ -1,5 +1,5 @@
 import { useTemporalStore } from '@repo/core/logic';
-import { Calendar, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react-native';
+import { Calendar, ChevronLeft, ChevronRight, RotateCcw } from '@repo/ui/icons';
 import { useState } from 'react';
 import { Platform } from 'react-native';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';

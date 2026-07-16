@@ -7,6 +7,7 @@
  */
 
 import { type CalendarEvent, staffManagementAPI } from '@repo/core/api';
+import { Plus } from '@repo/ui/icons';
 import {
   Box,
   HStack,
@@ -19,8 +20,6 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
-
-import { Plus } from 'lucide-react-native';
 import { useEffect, useReducer } from 'react';
 
 interface InstitutionalCalendarSectionProps {

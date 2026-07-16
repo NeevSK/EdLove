@@ -6,6 +6,7 @@
 
 import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
+import { ChevronRight, Leaf, Plus, Send, Sprout } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -21,8 +22,6 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
-
-import { ChevronRight, Leaf, Plus, Send, Sprout } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';

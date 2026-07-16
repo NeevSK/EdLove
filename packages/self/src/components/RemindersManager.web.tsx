@@ -4,6 +4,7 @@
  * Standardized to Zero-Legacy: purged raw HTML styles and integrated @repo/ui primitives.
  */
 
+import { Bell, Droplets, Plus, Trash2, X } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -18,8 +19,6 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-
-import { Bell, Droplets, Plus, Trash2, X } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
 import {

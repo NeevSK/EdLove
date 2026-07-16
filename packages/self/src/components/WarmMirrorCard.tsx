@@ -4,8 +4,8 @@
  * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
+import { BookOpen } from '@repo/ui/icons';
 import { Box, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
-import { BookOpen } from 'lucide-react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
 interface WarmMirrorCardProps {

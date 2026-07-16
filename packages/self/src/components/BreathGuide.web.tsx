@@ -3,8 +3,8 @@
  * 4-2-6-2 breathing rhythm optimized for web performance.
  */
 
+import { Activity, Pause, Play, RotateCcw, ShieldCheck, Wind } from '@repo/ui/icons';
 import { Box, Button, ButtonText, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
-import { Activity, Pause, Play, RotateCcw, ShieldCheck, Wind } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 
 interface BreathGuideProps {

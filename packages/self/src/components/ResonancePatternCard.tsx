@@ -6,10 +6,9 @@
 
 import { usePermissions } from '@repo/core/logic';
 import type { OrientationSeeds } from '@repo/profile';
+import { Activity, ArrowRight, Sparkles } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-
 import { Canvas, Circle, Group, Line, Path, Skia, vec } from '@shopify/react-native-skia';
-import { Activity, ArrowRight, Sparkles } from 'lucide-react-native';
 import { useMemo } from 'react';
 import Animated, { FadeIn, SlideInRight } from 'react-native-reanimated';
 import { useOrientationInference } from '../hooks/useOrientationInference';

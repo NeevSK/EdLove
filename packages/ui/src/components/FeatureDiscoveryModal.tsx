@@ -1,4 +1,4 @@
-import { Info } from 'lucide-react-native';
+import { Info } from '@repo/ui/icons';
 import { Box, Heading, Text, VStack } from '../gluestack';
 import SanctuaryModal from './SanctuaryModal';
 

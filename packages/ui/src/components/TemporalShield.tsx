@@ -1,5 +1,5 @@
 import { useTemporalStore } from '@repo/core/logic';
-import { Shield } from 'lucide-react-native';
+import { Shield } from '@repo/ui/icons';
 import type React from 'react';
 import { StyleSheet } from 'react-native';
 import { Text, View } from '../primitives';

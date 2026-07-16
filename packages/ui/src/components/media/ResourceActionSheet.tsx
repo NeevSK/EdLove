@@ -1,5 +1,5 @@
 import type { BaseResource } from '@repo/core/types';
-import { Bookmark, CirclePlay, FileText, FolderPlus, Info, Share2 } from 'lucide-react-native';
+import { Bookmark, CirclePlay, FileText, FolderPlus, Info, Share2 } from '@repo/ui/icons';
 import type React from 'react';
 import {
   Actionsheet,

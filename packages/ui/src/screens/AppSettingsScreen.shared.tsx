@@ -1,6 +1,4 @@
 import { accountPin, cryptoManager, storage, useStore } from '@repo/core/logic';
-import * as LocalAuthentication from 'expo-local-authentication';
-import * as ScreenCapture from 'expo-screen-capture';
 import {
   Check,
   ChevronRight,
@@ -13,7 +11,9 @@ import {
   Smartphone,
   Sparkles,
   Zap,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
+import * as LocalAuthentication from 'expo-local-authentication';
+import * as ScreenCapture from 'expo-screen-capture';
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

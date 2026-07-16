@@ -4,6 +4,17 @@ import { config } from '@repo/eslint-config/react-internal';
 export default [
   ...config,
   {
+    plugins: {
+      react: {
+        rules: {
+          'react-compiler': {
+            create() { return {}; }
+          }
+        }
+      }
+    }
+  },
+  {
     rules: {
       'no-restricted-imports': [
         'error',

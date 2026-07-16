@@ -3,6 +3,7 @@ import { usePermissions, useStore } from '@repo/core/logic';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Check, RefreshCw, Trash2, X } from '@repo/ui/icons';
 import {
   Box,
   HStack,
@@ -15,8 +16,6 @@ import {
 } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { router } from 'expo-router';
-
-import { Check, RefreshCw, Trash2, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 
 // --- Types & State Machine (Pillar 2: Reducer Pattern) ---

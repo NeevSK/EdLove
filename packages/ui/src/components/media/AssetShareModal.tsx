@@ -1,5 +1,5 @@
 import { coreRuntime, QRBuilder } from '@repo/core/logic';
-import { Share2 } from 'lucide-react-native';
+import { Share2 } from '@repo/ui/icons';
 import { useCallback } from 'react';
 import { Box, Text, VStack } from '../../primitives';
 import QRCodeGenerator from '../QRCodeGenerator';

@@ -1,6 +1,6 @@
 import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
+import { Globe, Mail, Phone, School } from '@repo/ui/icons';
 import { VStack } from '@repo/ui/primitives';
-import { Globe, Mail, Phone, School } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 interface StepBasicInfoProps {

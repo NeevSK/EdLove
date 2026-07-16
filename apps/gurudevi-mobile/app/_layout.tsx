@@ -36,6 +36,7 @@ import SanctuaryToast from '@repo/ui/components/SanctuaryToast';
 import { EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';
 import { FABProvider } from '@repo/ui/context/FABContext';
 import { GluestackUIProvider } from '@repo/ui/gluestack';
+import { Shield } from '@repo/ui/icons';
 import { Box, Center, Spinner } from '@repo/ui/primitives';
 import { ToastProvider } from '@repo/ui/providers';
 import { sanctuarySaffron } from '@repo/ui/theme';
@@ -45,7 +46,6 @@ import { usePathname, useRouter } from 'expo-router';
 import { Stack } from 'expo-router/stack';
 import * as ScreenCapture from 'expo-screen-capture';
 import * as SplashScreen from 'expo-splash-screen';
-import { Shield } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import {
   AppState,
@@ -80,6 +80,11 @@ if (
 
 const queryClient = new QueryClient();
 
+// Inject the platform analytics adapter before any auth/bootstrap effects run.
+// This prevents the core bridge from observing an uninitialized PostHog instance
+// during the first render cycle.
+injectPostHog(initTracker);
+
 function FullScreenFallback() {
   return (
     <Center className="flex-1 bg-obsidian">
@@ -92,7 +97,6 @@ function BootstrapSideEffects() {
   const currentUser = useStore((state) => state.user);
 
   useEffect(() => {
-    injectPostHog(initTracker);
     initSentry();
 
     const posthogApiKey = process.env.EXPO_PUBLIC_POSTHOG_API_KEY;
@@ -304,14 +308,7 @@ function AppContent() {
     if (routeTarget.redirectTo && pathname !== routeTarget.redirectTo) {
       router.replace(routeTarget.redirectTo);
     }
-  }, [
-    bootstrapReady,
-    pathname,
-    routeTarget.redirectTo,
-    router,
-    session,
-    onboardingCompleted,
-  ]);
+  }, [bootstrapReady, pathname, routeTarget.redirectTo, router, session, onboardingCompleted]);
 
   useEffect(() => {
     if (!bootstrapReady) return;

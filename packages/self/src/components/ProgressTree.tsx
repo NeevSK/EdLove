@@ -4,6 +4,7 @@
  * Standardized to Zero-Legacy: purged legacy components and integrated Sanctuary design system.
  */
 
+import { Flower2, Leaf, Shapes, Sparkles, Sprout, TreePine } from '@repo/ui/icons';
 import {
   AnimatedView,
   Box,
@@ -16,7 +17,6 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
-import { Flower2, Leaf, Shapes, Sparkles, Sprout, TreePine } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {

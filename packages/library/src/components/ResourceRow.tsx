@@ -2,8 +2,6 @@ import { formatDuration, formatFileSize } from '@repo/core/lib';
 import type { BaseResource } from '@repo/core/types';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
-import { Box, HStack, Text, useTheme, VStack } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
 import {
   ArrowLeftRight,
   BookMarked,
@@ -23,7 +21,9 @@ import {
   StickyNote,
   Trash2,
   Video,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
+import { Box, HStack, Text, useTheme, VStack } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
 import type React from 'react';
 // ============================================================================
 // CONFIG

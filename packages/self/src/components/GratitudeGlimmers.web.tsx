@@ -7,8 +7,8 @@
  * Metro resolves this over GratitudeGlimmers.tsx on the web platform.
  */
 
+import { Heart, Plus } from '@repo/ui/icons';
 import { formatDistanceToNow } from 'date-fns';
-import { Heart, Plus } from 'lucide-react-native';
 import { useState } from 'react';
 import { useGratitude } from '../hooks/useGratitude';
 import type { GratitudeEntry } from '../types';

@@ -1,7 +1,7 @@
 import { useTeacherProfessionalHistory } from '@repo/profile';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { Award, BookOpen, Calendar, School, Users } from '@repo/ui/icons';
 import { Box, HStack, Icon, ScrollView, Text, VStack } from '@repo/ui/primitives';
-import { Award, BookOpen, Calendar, School, Users } from 'lucide-react-native';
 import Animated, { FadeInRight } from 'react-native-reanimated';
 
 type TeachingHistoryRecord = {

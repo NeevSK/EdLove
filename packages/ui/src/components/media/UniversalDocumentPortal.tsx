@@ -1,5 +1,5 @@
 import type { DownloadState } from '@repo/core/hooks';
-import { CircleAlert, Download, ExternalLink, FileText, Info, Sparkles } from 'lucide-react-native';
+import { CircleAlert, Download, ExternalLink, FileText, Info, Sparkles } from '@repo/ui/icons';
 import { Box, HStack, Text, useTheme, VStack } from '../../primitives';
 import GlobalHeader from '../GlobalHeader';
 import { SanctuaryButton } from '../SanctuaryButton';

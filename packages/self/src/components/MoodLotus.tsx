@@ -1,7 +1,6 @@
 import { GlassCard } from '@repo/ui/components/GlassCard';
+import { CloudRain, Flower2, Sun, Wind, Zap } from '@repo/ui/icons';
 import { AnimatedView, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-
-import { CloudRain, Flower2, Sun, Wind, Zap } from 'lucide-react-native';
 import type React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

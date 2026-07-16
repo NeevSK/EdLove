@@ -7,6 +7,7 @@ import { formatDuration, formatFileSize } from '@repo/core/lib';
 import { useStore } from '@repo/core/logic';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import { ArrowLeftRight, Play, TriangleAlert, X } from '@repo/ui/icons';
 import {
   Actionsheet,
   ActionsheetBackdrop,
@@ -20,7 +21,6 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-import { ArrowLeftRight, Play, TriangleAlert, X } from 'lucide-react-native';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { libraryAPI } from '../api/library';

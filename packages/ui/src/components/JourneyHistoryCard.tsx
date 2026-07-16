@@ -9,7 +9,7 @@ import {
   Sparkles,
   TrendingUp,
   Zap,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
 import type React from 'react';
 import { useMemo } from 'react';
 import { Box, HStack, Icon, Text, VStack } from '../gluestack';
@@ -35,7 +35,7 @@ interface JourneyHistoryCardProps {
   className?: string;
 }
 
-const getEventIcon = (type: string): LucideIcon => {
+const getEventIcon = (type: string): any => {
   switch (type) {
     case 'mood':
       return Sparkles;

@@ -15,6 +15,7 @@ import {
   VatyaView,
 } from '@repo/ui/components/visualization';
 import { useResponsive } from '@repo/ui/hooks';
+import { ChartColumn, FileCheck, Globe, Network, Orbit, Route, Wind, X } from '@repo/ui/icons';
 import {
   Box,
   HStack,
@@ -28,7 +29,6 @@ import {
 import { Theme } from '@repo/ui/theme';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
-import { ChartColumn, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { libraryAPI } from '../api/library';
 import { usePerspectiveLayout } from '../hooks/usePerspectiveLayout';

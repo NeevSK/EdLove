@@ -1,5 +1,5 @@
+import { ChevronDown } from '@repo/ui/icons';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { ChevronDown } from 'lucide-react-native';
 import React from 'react';
 import {
   Select,

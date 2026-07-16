@@ -1,5 +1,5 @@
+import { BookOpen, Clock, Compass, QrCode, Users, Zap } from '@repo/ui/icons';
 import { Box, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
-import { BookOpen, Clock, Compass, QrCode, Users, Zap } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 interface Achievement {

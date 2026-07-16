@@ -4,8 +4,8 @@
  * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
+import { Plus, Sparkles } from '@repo/ui/icons';
 import { Box, Button, ButtonText, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
-import { Plus, Sparkles } from 'lucide-react-native';
 import type React from 'react';
 import Animated, { FadeIn } from 'react-native-reanimated';
 

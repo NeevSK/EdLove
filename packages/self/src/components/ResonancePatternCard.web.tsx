@@ -6,9 +6,8 @@
 
 import { usePermissions } from '@repo/core/logic';
 import type { OrientationSeeds } from '@repo/profile';
+import { Activity, ArrowRight, Sparkles } from '@repo/ui/icons';
 import { AnimatedView, Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-
-import { Activity, ArrowRight, Sparkles } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { FadeIn, SlideInRight } from 'react-native-reanimated';
 import { useOrientationInference } from '../hooks/useOrientationInference';

@@ -188,6 +188,7 @@ export const nativeNotificationProvider: any = {
   getBadgeCountAsync: () => Notifications.getBadgeCountAsync(),
 
   addPushTokenListener: (callback: (token: string) => void) => {
+    if (Platform.OS === 'web') return () => undefined;
     const subscription = Notifications.addPushTokenListener((token: any) => callback(token.data));
     return () => subscription.remove();
   },

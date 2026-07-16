@@ -8,6 +8,18 @@ import type {
 } from '@intuitui-labs/form-builder-engine/schema';
 import { useThemedColors } from '@repo/ui/hooks';
 import {
+  ChartColumn,
+  Clock,
+  Download,
+  Eye,
+  GripVertical,
+  PanelsTopLeft,
+  Plus,
+  Save,
+  Settings2,
+  Trash2,
+} from '@repo/ui/icons';
+import {
   Box,
   Button,
   ButtonText,
@@ -22,18 +34,6 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-import {
-  ChartColumn,
-  Clock,
-  Download,
-  Eye,
-  GripVertical,
-  PanelsTopLeft,
-  Plus,
-  Save,
-  Settings2,
-  Trash2,
-} from 'lucide-react-native';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import NativeForm from './NativeForm';
 import { defaultFormBuilderServices, type FormBuilderServices } from './services';

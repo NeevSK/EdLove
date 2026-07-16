@@ -1,5 +1,5 @@
 import { usePermissions } from '@repo/core/logic';
-import { Briefcase, Crown, GraduationCap, ShieldAlert, User } from 'lucide-react-native';
+import { Briefcase, Crown, GraduationCap, ShieldAlert, User } from '@repo/ui/icons';
 import type React from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

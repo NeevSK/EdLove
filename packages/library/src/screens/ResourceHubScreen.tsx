@@ -2,6 +2,15 @@ import { coreRuntime, useStore } from '@repo/core/logic';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useThemedColors } from '@repo/ui/hooks';
 import {
+  ArrowLeft,
+  CirclePlay,
+  ExternalLink,
+  Globe,
+  QrCode,
+  Share2,
+  Sparkles,
+} from '@repo/ui/icons';
+import {
   Box,
   HStack,
   Pressable,
@@ -16,15 +25,6 @@ import { openExternalURL } from '@repo/ui/utils';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import {
-  ArrowLeft,
-  CirclePlay,
-  ExternalLink,
-  Globe,
-  QrCode,
-  Share2,
-  Sparkles,
-} from 'lucide-react-native';
 import type React from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { libraryAPI } from '../api/library';

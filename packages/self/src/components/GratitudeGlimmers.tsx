@@ -8,6 +8,7 @@ import { useSafeMutation } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { ChevronLeft, Heart, MessageCircle, Plus, Save, Sparkles, User } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -23,8 +24,6 @@ import {
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
-
-import { ChevronLeft, Heart, MessageCircle, Plus, Save, Sparkles, User } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInRight, FadeInUp } from 'react-native-reanimated';

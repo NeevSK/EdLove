@@ -1,4 +1,5 @@
 import type { Context } from 'hono';
+import { dispatchPushSafely } from '../pushDispatcher';
 
 /**
  * Community Domain Handlers (Hono + ZenStack ReBAC)
@@ -132,6 +133,20 @@ export const communityHandlers = {
         author_tier,
       },
     });
+
+    const members = await db.groupMember.findMany({
+      where: { group_id, status: 'active', user_id: { not: user.id } },
+      select: { user_id: true },
+    });
+    for (const member of members) {
+      dispatchPushSafely({
+        userId: member.user_id,
+        title: 'New community post',
+        body: content.slice(0, 140),
+        category: 'community',
+        data: { url: `/community/${group_id}/post/${post.id}`, postId: post.id },
+      });
+    }
 
     return c.json(post, 201);
   },

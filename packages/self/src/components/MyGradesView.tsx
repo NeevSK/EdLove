@@ -1,6 +1,6 @@
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { BookOpen, MessageSquare } from '@repo/ui/icons';
 import { Box, HStack, Icon, ScrollView, Text, VStack } from '@repo/ui/primitives';
-import { BookOpen, MessageSquare } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useStudentGrades } from '../hooks/useStudentGrades';

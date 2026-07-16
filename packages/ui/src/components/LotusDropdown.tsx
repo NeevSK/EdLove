@@ -1,4 +1,4 @@
-import { ChevronDown, CircleAlert } from 'lucide-react-native';
+import { ChevronDown, CircleAlert } from '@repo/ui/icons';
 import { useState } from 'react';
 import {
   Actionsheet,

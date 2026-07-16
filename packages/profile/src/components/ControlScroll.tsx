@@ -1,5 +1,16 @@
 import type { ThemeMode } from '@repo/ui/context';
 import {
+  Check,
+  ChevronRight,
+  Database,
+  Globe,
+  Moon,
+  Smartphone,
+  Sun,
+  X,
+  Zap,
+} from '@repo/ui/icons';
+import {
   Box,
   Divider,
   Heading,
@@ -11,18 +22,6 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-
-import {
-  Check,
-  ChevronRight,
-  Database,
-  Globe,
-  Moon,
-  Smartphone,
-  Sun,
-  X,
-  Zap,
-} from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from 'react-native';

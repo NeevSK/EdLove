@@ -11,7 +11,7 @@
  *   </SmartShelf>
  */
 
-import { ChevronRight } from 'lucide-react-native';
+import { ChevronRight } from '@repo/ui/icons';
 import type React from 'react';
 import { StyleSheet } from 'react-native';
 import { useThemedColors } from '../hooks/useThemedColors';

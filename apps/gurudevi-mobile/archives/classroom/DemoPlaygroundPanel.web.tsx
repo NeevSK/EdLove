@@ -11,7 +11,7 @@
  *   left: var(--sidebar-w)   = 240px desktop / 0px mobile
  */
 
-import { X, Zap } from 'lucide-react-native';
+import { X, Zap } from '@repo/ui/icons';
 import { useEffect, useState } from 'react';
 import PrincipalSchoolView from '../classroom/views/PrincipalSchoolView.web';
 import StudentDashboard from '../classroom/views/StudentDashboard.web';

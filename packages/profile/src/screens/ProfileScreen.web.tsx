@@ -3,14 +3,7 @@ import { usePermissions, useStore } from '@repo/core/logic';
 import { StaffPresencePulse } from '@repo/people';
 import { QRCodeGenerator } from '@repo/scanner-kit';
 import CitizenGate from '@repo/ui/components/CitizenGate';
-import {
-  Briefcase,
-  CircleCheck,
-  FileText,
-  Globe,
-  GraduationCap,
-  SquarePen,
-} from 'lucide-react-native';
+import { Briefcase, CircleCheck, FileText, Globe, GraduationCap, SquarePen } from '@repo/ui/icons';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AvatarDisplay } from '../components/AvatarDisplay';

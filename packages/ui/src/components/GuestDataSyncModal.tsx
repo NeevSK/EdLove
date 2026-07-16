@@ -1,6 +1,6 @@
 import { GuestDataSync } from '@repo/core/native';
 
-import { Check, CircleAlert, TriangleAlert } from 'lucide-react-native';
+import { Check, CircleAlert, TriangleAlert } from '@repo/ui/icons';
 import { useCallback, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, HStack, Spinner, Text, VStack } from '../gluestack';

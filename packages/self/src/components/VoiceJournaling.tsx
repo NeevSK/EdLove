@@ -4,6 +4,7 @@
  * Simple, focused, and intimate interface.
  */
 
+import { Check, Mic, Square, Volume2, X } from '@repo/ui/icons';
 import {
   AnimatedView,
   Box,
@@ -15,8 +16,6 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-
-import { Check, Mic, Square, Volume2, X } from 'lucide-react-native';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

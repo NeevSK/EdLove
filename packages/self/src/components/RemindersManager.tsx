@@ -4,6 +4,7 @@
  * Default: "Drink water intermittently while teaching"
  */
 
+import { Bell, Clock, Droplet, Plus, SquarePen, Trash2 } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -25,8 +26,6 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
-
-import { Bell, Clock, Droplet, Plus, SquarePen, Trash2 } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {

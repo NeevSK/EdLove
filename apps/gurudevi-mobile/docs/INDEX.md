@@ -2,7 +2,7 @@
 title: "Gurudevi Mobile Documentation Vault Index"
 status: "active"
 created: 2026-06-10
-updated: 2026-06-26
+updated: 2026-07-14
 author: "Naveen"
 scribe: "Antigravity"
 tags: [index, portal]
@@ -18,6 +18,8 @@ Welcome to the documentation vault for `gurudevi-mobile`. This file serves as th
 
 | Date | Document | Category | Status | Summary |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-07-14** | [React Native Web Sustainability and Gurudevi Web Capability Plan](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/current_progress/2026-07-14-react-native-web-sustainability-plan.md) | Current Progress / Architecture | `active` | Separates React Native Web rendering from Gurudevi-owned browser capabilities and defines now/future work, including Web Push. |
+| **2026-07-16** | [Icon Layer Fishbone Cleanup Plan](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/current_progress/2026-07-16-icon-layer-fishbone-cleanup-plan.md) | Current Progress | `active` | Fishbone analysis of Lucide imports, bridge usage, Babel rewriting, and the migration plan for shared icons. |
 | **2026-07-14** | [Gluestack UI v5 and Styling Subsystem Migration Report](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-07-14-gluestack-v5-migration-report.md) | Infrastructure | `active` | Technical report detailing Gluestack UI v5 & NativeWind v5 changes, cssInterop bypasses, and long-term actions. |
 | **2026-06-26** | [Route Flow Implementation Checklist](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/current_progress/2026-06-26-route-flow-implementation-checklist.md) | Current Progress | `draft` | Execution checklist for the route and onboarding cleanup. |
 | **2026-06-26** | [Developer Sandbox Console & Onboarding Parser](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/2026-06-26-developer-sandbox-console.md) | Architecture | `active` | Canonical hidden dev shortcut contract for onboarding name-step templates. |
@@ -102,6 +104,7 @@ Welcome to the documentation vault for `gurudevi-mobile`. This file serves as th
 *   [Protocol-Oriented Authority (POA) SSOT](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/poa-authority-ssot.md) - Core authorization specifications.
 
 ### 🏛️ Architecture Decision Records (ADRs)
+*   [Icon Bridge Contract](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/decisions/2026-07-16-icon-bridge-contract.md) - Canonical icon import contract that keeps Lucide implementation details behind `@repo/ui/icons`.
 *   [Web-Only Payments & Hexagonal Entitlements](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/decisions/2026-06-12-web-only-payments-and-entitlements.md) - Bypassing native IAP store fees via secure web checkout systems and power-syncing subscription entitlements.
 *   [Decoupled TanStack Table and Virtual Integration](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/decisions/2026-06-12-decoupled-tanstack-table-and-virtual-integration.md) - Decoupling table data models and logic from platform viewports and virtualization renderers.
 *   [React Query and TanStack Pacer Integration](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/decisions/2026-06-12-react-query-pacer-integration.md) - Combining React Query and TanStack Pacer to throttle database synchronization invalidation loops and manage task timing.
@@ -110,6 +113,7 @@ Welcome to the documentation vault for `gurudevi-mobile`. This file serves as th
 
 
 ### 📦 Platform, Infrastructure & Deployment Guides (Vercel, Cloudflare, Expo, PNPM, ESLint)
+*   [Expo, EAS, and GitHub Build Verification Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/expo-eas-build-verification-guide.md) - Low-bandwidth and full validation path for Expo configuration, Metro bundles, native Android builds, EAS, and GitHub runners.
 *   [Gluestack UI v5 and Styling Subsystem Migration Report](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-07-14-gluestack-v5-migration-report.md) - Report on the structural changes, immediate workarounds, and long-term migration vectors for Gluestack v5 and NativeWind v5.
 *   [Mobile Bundle Size Optimization Execution Report](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-11-mobile-bundle-optimization-report.md) - Report detailing audit, leak plugging, and tree-shaking optimizations resulting in a 1.28 MB reduction in bundle size.
 *   [Monorepo Upgrade and Navigation Purge Execution Report](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/infra/2026-06-10-monorepo-upgrade-and-cleanup-execution.md) - Report on Expo SDK 56 alignment, major version upgrades, and navigation cleanups.

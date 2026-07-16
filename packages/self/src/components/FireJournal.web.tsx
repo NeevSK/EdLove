@@ -5,6 +5,7 @@
  * Purged raw HTML fragments in favor of @repo/ui primitives and NativeWind v4.
  */
 
+import { CircleCheck, Flame } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -17,7 +18,6 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { CircleCheck, Flame } from 'lucide-react-native';
 import { useState } from 'react';
 import { useFireJournal } from '../hooks/useFireJournal';
 

@@ -15,7 +15,7 @@ jobs:
       - name: 🏗 Setup pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 11.9.0
+          version: 11.13.0
 
       - name: 🏗 Setup Node
         uses: actions/setup-node@v4
@@ -25,6 +25,9 @@ jobs:
 
       - name: 📦 Install dependencies
         run: pnpm install --frozen-lockfile --fetch-timeout 100000
+
+      - name: 🔍 Check Icon Bridge Contract
+        run: pnpm check:icons
 
       - name: 🔍 Verify Module Resolution (Critical CSS)
         run: |

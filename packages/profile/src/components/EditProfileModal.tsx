@@ -1,5 +1,6 @@
 import { profileAPI } from '@repo/core/api';
 import { type Capacity, handleAPIError, usePermissions } from '@repo/core/logic';
+import { Camera, ChevronDown, Save, X } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -28,9 +29,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-
 import * as ImagePicker from 'expo-image-picker';
-import { Camera, ChevronDown, Save, X } from 'lucide-react-native';
 import { useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Keyboard, Modal, Platform, TouchableWithoutFeedback } from 'react-native';

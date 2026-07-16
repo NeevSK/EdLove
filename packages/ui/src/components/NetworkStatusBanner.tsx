@@ -1,5 +1,5 @@
 import { useMutationQueue, useStore } from '@repo/core/logic';
-import { WifiOff } from 'lucide-react-native';
+import { WifiOff } from '@repo/ui/icons';
 import { Platform } from 'react-native';
 import Animated, { SlideInUp, SlideOutUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

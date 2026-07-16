@@ -3,7 +3,7 @@ import {
   resolveWorkspaceSurfaceLayout,
 } from '@repo/core/logic';
 import type { WorkspaceRendererConfig } from '@repo/core/types';
-import { LayoutGrid, Pin } from 'lucide-react-native';
+import { LayoutGrid, Pin } from '@repo/ui/icons';
 import { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { Text } from '../../gluestack';

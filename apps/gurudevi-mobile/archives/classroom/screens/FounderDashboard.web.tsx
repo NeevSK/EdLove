@@ -32,7 +32,7 @@ import {
   Users,
   Wind,
   Zap,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import GlobalCreateModal from '../components/GlobalCreateModal';

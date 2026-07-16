@@ -1,12 +1,11 @@
 import { FeatureGuard, useStore } from '@repo/core/logic';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { ChevronLeft, Send, Sparkles } from '@repo/ui/icons';
 import { Box, HStack, Text, useTheme, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
-
-import { ChevronLeft, Send, Sparkles } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {

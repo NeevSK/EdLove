@@ -1,4 +1,4 @@
-import type { LucideIcon } from 'lucide-react-native';
+import type { LucideIcon } from '@repo/ui/icons';
 import { Box, Center, Heading, Text, VStack } from '../gluestack';
 import { SanctuaryButton } from './SanctuaryButton';
 

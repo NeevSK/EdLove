@@ -1,6 +1,6 @@
 import { type TotalState, useNotifications, usePermissions, useStore } from '@repo/core/logic';
+import { Bell, ChevronLeft, Menu, MoreHorizontal, Search, X } from '@repo/ui/icons';
 import { router } from 'expo-router';
-import { Bell, ChevronLeft, Menu, MoreHorizontal, Search, X } from 'lucide-react-native';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import { useTranslation } from 'react-i18next';

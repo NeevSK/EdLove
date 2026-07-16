@@ -4,6 +4,7 @@
  * Standardized to Zero-Legacy: purged corrupted imports and migrated to Sanctuary V3 architecture.
  */
 
+import { Calendar, ChevronDown, Clock, MapPin, Plus, Trash2 } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -24,8 +25,6 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-
-import { Calendar, ChevronDown, Clock, MapPin, Plus, Trash2 } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTimetable } from '../hooks/useTimetable';
 import type { Period } from '../types';

@@ -1,7 +1,4 @@
 import { usePermissions } from '@repo/core/logic';
-import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { hapticLight } from '@repo/ui/utils/haptics';
-
 import {
   ArrowRightLeft,
   Calendar,
@@ -9,7 +6,9 @@ import {
   DollarSign,
   FileText,
   SquareCheckBig,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
+import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 import { useTranslation } from 'react-i18next';
 
 interface TeacherAdminWidgetProps {

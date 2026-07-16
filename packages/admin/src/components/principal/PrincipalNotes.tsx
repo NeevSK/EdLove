@@ -4,6 +4,17 @@ import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import {
+  Bell,
+  ChevronDown,
+  Eye,
+  Lightbulb,
+  NotebookPen,
+  Pin,
+  SquareCheckBig,
+  StickyNote,
+  X,
+} from '@repo/ui/icons';
+import {
   ActivityIndicator,
   Box,
   FlatList,
@@ -18,18 +29,6 @@ import {
 } from '@repo/ui/primitives';
 import { useToast } from '@repo/ui/providers';
 import { hapticLight } from '@repo/ui/utils/haptics';
-
-import {
-  Bell,
-  ChevronDown,
-  Eye,
-  Lightbulb,
-  NotebookPen,
-  Pin,
-  SquareCheckBig,
-  StickyNote,
-  X,
-} from 'lucide-react-native';
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useReducer } from 'react';
 import { Platform } from 'react-native';

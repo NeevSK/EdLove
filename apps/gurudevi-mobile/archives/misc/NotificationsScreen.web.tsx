@@ -3,7 +3,7 @@ import { type AppNotification, useNotifications, useStore } from '@repo/core/log
 import { WebScreenHeader } from '@repo/ui/components';
 
 import { formatDistanceToNow } from 'date-fns';
-import { Bell, CircleCheck, Inbox, Info, Shield, Sparkles } from 'lucide-react-native';
+import { Bell, CircleCheck, Inbox, Info, Shield, Sparkles } from '@repo/ui/icons';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StackFallback } from '../components/web/WebScreenShimmer';

@@ -5,7 +5,7 @@ import {
   Globe,
   ShieldAlert,
   ShieldCheck,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
 import React, { useEffect, useMemo, useState } from 'react';
 import { SanctuaryButton } from '../components/SanctuaryButton';
 import SanctuaryModal from '../components/SanctuaryModal';

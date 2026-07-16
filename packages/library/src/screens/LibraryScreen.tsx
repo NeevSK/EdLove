@@ -20,6 +20,16 @@ import { SmartShelf } from '@repo/ui/components/SmartShelf';
 import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import {
+  FileText,
+  Layers,
+  LayoutGrid,
+  Library,
+  List,
+  Map as MapIcon,
+  Play,
+  Plus,
+} from '@repo/ui/icons';
+import {
   AnimatedView,
   Box,
   HStack,
@@ -35,16 +45,6 @@ import {
 import { Theme } from '@repo/ui/theme';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { useRouter } from 'expo-router';
-import {
-  FileText,
-  Layers,
-  LayoutGrid,
-  Library,
-  List,
-  Map as MapIcon,
-  Play,
-  Plus,
-} from 'lucide-react-native';
 import React, { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FadeInDown } from 'react-native-reanimated';

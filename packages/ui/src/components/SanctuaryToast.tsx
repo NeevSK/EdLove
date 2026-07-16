@@ -1,4 +1,7 @@
-import { CircleAlert, CircleCheck, Info, X } from 'lucide-react-native';
+/* eslint-disable react/react-compiler */
+'use no memo';
+
+import { CircleAlert, CircleCheck, Info, X } from '@repo/ui/icons';
 import { useCallback, useEffect } from 'react';
 import { Platform } from 'react-native';
 import Animated, {
@@ -32,6 +35,7 @@ export default function SanctuaryToast({
   onHide,
   duration = 3000,
 }: SanctuaryToastProps) {
+  'use no memo';
   const translateY = useSharedValue(-HIDDEN_Y_OFFSET);
   const opacity = useSharedValue(0);
 
@@ -43,6 +47,8 @@ export default function SanctuaryToast({
         return { icon: CircleAlert, color: '#EF4444' }; // phase-danger
       case 'info':
         return { icon: Info, color: '#F6BF8C' }; // phase-accent
+      default:
+        return { icon: Info, color: '#F6BF8C' };
     }
   };
 

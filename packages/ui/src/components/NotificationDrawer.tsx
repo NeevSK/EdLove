@@ -1,4 +1,4 @@
-import { Bell, BookOpen, Check, CircleCheck, Info, Users, X } from 'lucide-react-native';
+import { Bell, BookOpen, Check, CircleCheck, Info, Users, X } from '@repo/ui/icons';
 import { Dimensions } from 'react-native';
 import Animated, { Easing, SlideInLeft, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

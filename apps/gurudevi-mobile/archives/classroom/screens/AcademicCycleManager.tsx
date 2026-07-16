@@ -17,7 +17,7 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-import { Calendar, CircleCheck, Circle, Clock, Plus, Trash2 } from 'lucide-react-native';
+import { Calendar, CircleCheck, Circle, Clock, Plus, Trash2 } from '@repo/ui/icons';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, StyleSheet, TouchableOpacity } from 'react-native';

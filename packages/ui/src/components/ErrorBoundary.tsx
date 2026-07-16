@@ -1,4 +1,4 @@
-import { RefreshCw, TriangleAlert } from 'lucide-react-native';
+import { RefreshCw, TriangleAlert } from '@repo/ui/icons';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Platform, Text as RNText, StyleSheet, TouchableOpacity } from 'react-native';
 import { Box, Button, ButtonIcon, ButtonText, Center, Heading, Text, VStack } from '../gluestack';

@@ -1,8 +1,7 @@
+import { Calendar, CircleCheck, Clock, LogIn, LogOut } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
-
 import { format } from 'date-fns';
-import { Calendar, CircleCheck, Clock, LogIn, LogOut } from 'lucide-react-native';
 import type React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

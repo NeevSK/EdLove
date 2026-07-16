@@ -1,9 +1,8 @@
+import { ArrowLeft, Copy, Plus, UserPlus, X } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { useToast } from '@repo/ui/providers';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-
 import { formatDistanceToNow } from 'date-fns';
-import { ArrowLeft, Copy, Plus, UserPlus, X } from 'lucide-react-native';
 import type React from 'react';
 import { useCallback, useEffect, useReducer } from 'react';
 import { Platform } from 'react-native';

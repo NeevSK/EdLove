@@ -1,4 +1,4 @@
-import { ChevronRight, Folder, Lock, X } from 'lucide-react-native';
+import { ChevronRight, Folder, Lock, X } from '@repo/ui/icons';
 import type React from 'react';
 import {
   Box,

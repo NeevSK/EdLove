@@ -1,4 +1,4 @@
-import { LogIn, Plus, Sparkles } from 'lucide-react-native';
+import { LogIn, Plus, Sparkles } from '@repo/ui/icons';
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Center, Heading, Text, VStack } from '../gluestack';

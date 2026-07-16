@@ -5,7 +5,7 @@
  * On web we use a direct Supabase insert with optimistic local update
  * and a clean HTML form. Metro resolves this over WisdomSeeds.tsx on web.
  */
-import { Lightbulb } from 'lucide-react-native';
+import { Lightbulb } from '@repo/ui/icons';
 import { useState } from 'react';
 import { useWisdom } from '../hooks/useWisdom';
 

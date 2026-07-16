@@ -5,6 +5,7 @@
  */
 
 import { useTemporalStore } from '@repo/core/logic';
+import { Activity, ChevronRight, CircleCheck, Clock, Wind } from '@repo/ui/icons';
 import {
   AnimatedView,
   Box,
@@ -20,8 +21,6 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-
-import { Activity, ChevronRight, CircleCheck, Clock, Wind } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
 import { useMoodLogs } from '../hooks/useMoodLogs';

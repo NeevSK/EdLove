@@ -65,8 +65,7 @@ export const NoiseOverlay: React.FC<NoiseOverlayProps> = ({
 
   return (
     <Canvas
-      style={[StyleSheet.absoluteFill, styles.canvas]}
-      pointerEvents="none" // Never intercepts touches
+      style={[StyleSheet.absoluteFill, styles.canvas, { pointerEvents: 'none' }]} // Never intercepts touches
     >
       <Rect x={0} y={0} width={width} height={height}>
         <Paint>

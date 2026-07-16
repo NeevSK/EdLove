@@ -1,6 +1,5 @@
+import { Plus } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-
-import { Plus } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 interface StepHierarchyProps {

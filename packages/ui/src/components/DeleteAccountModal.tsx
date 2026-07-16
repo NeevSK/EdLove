@@ -1,4 +1,4 @@
-import { TriangleAlert } from 'lucide-react-native';
+import { TriangleAlert } from '@repo/ui/icons';
 import { Box, HStack, Text, VStack } from '../gluestack';
 import { SanctuaryButton } from './SanctuaryButton';
 import SanctuaryModal from './SanctuaryModal';

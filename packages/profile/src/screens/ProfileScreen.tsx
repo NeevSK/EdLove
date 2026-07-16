@@ -10,6 +10,18 @@ import { NotificationSettingsPanel } from '@repo/ui/components/NotificationSetti
 import { SanctuaryProgressBar } from '@repo/ui/components/SanctuaryProgressBar';
 import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 import {
+  CircleQuestionMark,
+  Eye,
+  Heart,
+  Info,
+  LogOut,
+  MessageSquare,
+  Settings,
+  SquarePen,
+  Trash2,
+  UserPlus,
+} from '@repo/ui/icons';
+import {
   Box,
   Button,
   ButtonText,
@@ -23,18 +35,6 @@ import {
 } from '@repo/ui/primitives';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import type { TFunction } from 'i18next';
-import {
-  CircleQuestionMark,
-  Eye,
-  Heart,
-  Info,
-  LogOut,
-  MessageSquare,
-  Settings,
-  SquarePen,
-  Trash2,
-  UserPlus,
-} from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Platform, RefreshControl, ScrollView, useWindowDimensions } from 'react-native';

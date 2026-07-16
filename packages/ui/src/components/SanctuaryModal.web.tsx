@@ -1,4 +1,4 @@
-import { X } from 'lucide-react-native';
+import { X } from '@repo/ui/icons';
 import type React from 'react';
 import { Dimensions } from 'react-native';
 import { Box, HStack, Text, VStack } from '../gluestack';
@@ -48,11 +48,7 @@ export default function SanctuaryModal({
       <Box
         className={`bg-phase-elevated border border-phase-surface rounded-generous shadow-2xl overflow-hidden max-w-[95vw] ${sizeClasses[size]} ${className}`}
         style={{
-          shadowColor: '#6B6480',
-          shadowOffset: { width: 0, height: 10 },
-          shadowOpacity: 0.3,
-          shadowRadius: 20,
-          elevation: 10,
+          boxShadow: '0 10px 20px rgba(107, 100, 128, 0.3)',
         }}
       >
         {/* Header */}

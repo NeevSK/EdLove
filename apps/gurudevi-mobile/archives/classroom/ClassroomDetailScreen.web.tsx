@@ -30,7 +30,7 @@ import {
   UserPlus,
   Users,
   UserX,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { StackFallback } from '../components/web/WebScreenShimmer';

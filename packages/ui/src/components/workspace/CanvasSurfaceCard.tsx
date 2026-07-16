@@ -1,5 +1,5 @@
 import type { ResolvedWorkspaceSurface } from '@repo/core/types';
-import { EyeOff, Info, Lock, MoveDiagonal2, Pin, Sparkles } from 'lucide-react-native';
+import { EyeOff, Info, Lock, MoveDiagonal2, Pin, Sparkles } from '@repo/ui/icons';
 import type React from 'react';
 import { useCallback } from 'react';
 import { StyleSheet } from 'react-native';

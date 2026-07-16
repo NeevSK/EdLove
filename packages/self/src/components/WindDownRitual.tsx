@@ -1,4 +1,5 @@
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { CircleCheck, Moon } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -15,8 +16,6 @@ import {
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
-
-import { CircleCheck, Moon } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

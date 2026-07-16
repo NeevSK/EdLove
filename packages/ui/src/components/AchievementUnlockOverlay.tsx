@@ -1,4 +1,4 @@
-import { Trophy } from 'lucide-react-native';
+import { Trophy } from '@repo/ui/icons';
 import { useCallback, useEffect } from 'react';
 import { Dimensions } from 'react-native';
 import Animated, {

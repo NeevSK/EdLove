@@ -1,5 +1,17 @@
 import type { PrivacyLevel, SocialLink, SocialPlatform } from '@repo/core/types';
 import {
+  Check,
+  Globe,
+  Link,
+  Mail,
+  MessagesSquare,
+  Plus,
+  Shield,
+  ShieldAlert,
+  ShieldCheck,
+  X,
+} from '@repo/ui/icons';
+import {
   Box,
   Button,
   ButtonText,
@@ -11,19 +23,6 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-
-import {
-  Check,
-  Globe,
-  Link,
-  Mail,
-  MessagesSquare,
-  Plus,
-  Shield,
-  ShieldAlert,
-  ShieldCheck,
-  X,
-} from 'lucide-react-native';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -5,7 +5,7 @@ import { ScreenWrapper } from '@repo/ui';
 import { Box, HStack, Text, useTheme, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
-import { ChevronLeft, Send, Sparkles } from 'lucide-react-native';
+import { ChevronLeft, Send, Sparkles } from '@repo/ui/icons';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {

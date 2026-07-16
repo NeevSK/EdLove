@@ -5,6 +5,7 @@
  */
 
 import { useTemporalStore } from '@repo/core/logic';
+import { Check, Moon, Plus, Target, Trash2, X } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -20,8 +21,6 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-
-import { Check, Moon, Plus, Target, Trash2, X } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
 import { useTomorrowPrep } from '../hooks/useTomorrowPrep';

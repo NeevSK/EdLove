@@ -3,6 +3,7 @@ import { CaptureEngine } from '@repo/graphics/algorithms';
 import { radarLayout } from '@repo/graphics/layouts';
 import { GlassCard } from '@repo/ui/components/GlassCard';
 import { useResponsive } from '@repo/ui/hooks';
+import { FileCheck, Save, Sparkles, X } from '@repo/ui/icons';
 import {
   Box,
   HStack,
@@ -22,7 +23,6 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-import { FileCheck, Save, Sparkles, X } from 'lucide-react-native';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import Svg, { Circle, G, Line, Polygon, Text as SvgText } from 'react-native-svg';

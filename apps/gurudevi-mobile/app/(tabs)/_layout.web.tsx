@@ -1,11 +1,11 @@
 import { useNotifications, useRewards } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 import { BreathGuide } from '@repo/self';
-import type { LucideIcon } from '@repo/ui/icons';
 import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
+import type { LucideIcon } from '@repo/ui/icons';
+import { Bell, Heart, Library, Menu, School, Settings, User, Users, X } from '@repo/ui/icons';
 import { Box, Modal, ModalContent, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { router, Slot, usePathname } from 'expo-router';
-import { Bell, Heart, Library, Menu, School, Settings, User, Users, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, useWindowDimensions, type ViewStyle } from 'react-native';
 import { resolveResponsiveShellMode } from '../../src/lib/responsiveShell';

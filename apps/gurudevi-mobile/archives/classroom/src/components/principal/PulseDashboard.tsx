@@ -4,7 +4,7 @@ import { SkeletonLoader } from '@repo/ui/components/SkeletonLoader';
 import { useThemedColors } from '@repo/ui/hooks';
 import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-import { HeartPulse, TrendingUp, Users, Zap } from 'lucide-react-native';
+import { HeartPulse, TrendingUp, Users, Zap } from '@repo/ui/icons';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
 interface PulseDashboardProps {

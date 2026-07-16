@@ -5,7 +5,7 @@
  * Metro resolves this over WindDownRitual.tsx on the web platform.
  */
 
-import { CircleCheck } from 'lucide-react-native';
+import { CircleCheck } from '@repo/ui/icons';
 import { useState } from 'react';
 import { saveWindDownRitual } from '../api/selfFeatureRepository';
 

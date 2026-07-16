@@ -1,4 +1,4 @@
-import { CircleAlert } from 'lucide-react-native';
+import { CircleAlert } from '@repo/ui/icons';
 import type React from 'react';
 import { Theme } from '../theme/Theme';
 import {

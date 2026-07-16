@@ -3,9 +3,8 @@ import { usePermissions, useStore } from '@repo/core/logic';
 import { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';
 import { TemporalProvider } from '@repo/ui/components/TemporalProvider';
 import { TemporalShield } from '@repo/ui/components/TemporalShield';
+import { Activity, BookOpen } from '@repo/ui/icons';
 import { Icon } from '@repo/ui/primitives';
-
-import { Activity, BookOpen } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { BaseSelfView } from '../../components/BaseSelfView';
 import DailyRhythm from '../../components/DailyRhythm';

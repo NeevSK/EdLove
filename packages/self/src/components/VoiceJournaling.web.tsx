@@ -7,6 +7,7 @@
  */
 
 import { usePermissions } from '@repo/core/logic';
+import { Check, CircleAlert, Mic, Play, Square, Trash2 } from '@repo/ui/icons';
 import {
   AnimatedView,
   Box,
@@ -20,8 +21,6 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
-
-import { Check, CircleAlert, Mic, Play, Square, Trash2 } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {

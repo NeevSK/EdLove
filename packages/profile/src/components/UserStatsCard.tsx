@@ -1,4 +1,5 @@
 import type { Capacity } from '@repo/core/types';
+import { Activity, BookOpen, Clock, Database, Globe, Star, Users } from '@repo/ui/icons';
 import {
   Box,
   Heading,
@@ -8,7 +9,6 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { Activity, BookOpen, Clock, Database, Globe, Star, Users } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 interface UserStatsCardProps {

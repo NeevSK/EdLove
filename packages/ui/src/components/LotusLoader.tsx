@@ -1,4 +1,4 @@
-import { Flower } from 'lucide-react-native';
+import { Flower } from '@repo/ui/icons';
 import { useEffect } from 'react';
 import Animated, {
   Easing,

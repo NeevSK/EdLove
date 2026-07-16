@@ -1,5 +1,5 @@
 import { mediaInitialState, mediaReducer } from '@repo/core/logic';
-import { Pause, Play, RotateCcw, RotateCw, X } from 'lucide-react-native';
+import { Pause, Play, RotateCcw, RotateCw, X } from '@repo/ui/icons';
 import type React from 'react';
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { Box } from '../../components/ui/box';

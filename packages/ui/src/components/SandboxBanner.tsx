@@ -1,5 +1,5 @@
 import { useStore } from '@repo/core/logic';
-import { X, Zap } from 'lucide-react-native';
+import { X, Zap } from '@repo/ui/icons';
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, HStack, Pressable, Text } from '../gluestack';

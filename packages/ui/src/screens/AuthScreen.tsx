@@ -1,14 +1,14 @@
 import { authAPI, identityAPI } from '@repo/core/api';
 import { handleAPIError } from '@repo/core/api/interceptor';
 import { useIdentity } from '@repo/core/hooks';
+import { getSessionIdentityMode } from '@repo/core/logic';
 import { FlowResolver, GuestDataSync } from '@repo/core/native';
 import { storage } from '@repo/core/storage';
 import type { Capacity, User } from '@repo/core/types';
 import { validateForm, validators } from '@repo/core/utils';
-import { getSessionIdentityMode } from '@repo/core/logic';
+import { Mail, Shield } from '@repo/ui/icons';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
-import { Mail, Shield } from 'lucide-react-native';
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';

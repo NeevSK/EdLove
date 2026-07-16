@@ -1,11 +1,11 @@
 import { authAPI, identityAPI } from '@repo/core/api';
 import { handleAPIError } from '@repo/core/api/interceptor';
 import { useIdentity } from '@repo/core/hooks';
+import { getSessionIdentityMode, isAnonymousIdentity } from '@repo/core/logic';
 import { storage } from '@repo/core/storage';
 import type { Capacity, User } from '@repo/core/types';
 import { validateForm, validators } from '@repo/core/utils';
-import { getSessionIdentityMode, isAnonymousIdentity } from '@repo/core/logic';
-import { Key } from 'lucide-react-native';
+import { Key } from '@repo/ui/icons';
 import { memo, useCallback, useEffect, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BreathAnimation } from '../components/BreathAnimation';

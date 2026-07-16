@@ -3,6 +3,7 @@ import type { AcademicCycle } from '@repo/core/types';
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { Calendar, Circle, CircleCheck, Clock, Plus, Trash2 } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -18,8 +19,6 @@ import {
 } from '@repo/ui/primitives';
 import { useToast } from '@repo/ui/providers';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-
-import { Calendar, Circle, CircleCheck, Clock, Plus, Trash2 } from 'lucide-react-native';
 import { useCallback, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';

@@ -1,12 +1,5 @@
 import { useTemporalStore } from '@repo/core/logic';
-import {
-  Calendar,
-  PanelsTopLeft as LayoutIcon,
-  Search,
-  Wifi,
-  WifiOff,
-  Zap,
-} from 'lucide-react-native';
+import { Calendar, PanelsTopLeft as LayoutIcon, Search, Wifi, WifiOff, Zap } from '@repo/ui/icons';
 import type React from 'react';
 import { useState } from 'react';
 import { Modal } from 'react-native';

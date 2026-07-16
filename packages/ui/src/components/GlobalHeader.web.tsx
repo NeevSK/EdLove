@@ -1,5 +1,4 @@
 import { type TotalState, useNotifications, usePermissions, useStore } from '@repo/core/logic';
-import { router } from 'expo-router';
 import {
   Bell,
   ChevronLeft,
@@ -10,7 +9,8 @@ import {
   School,
   Search,
   X,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
+import { router } from 'expo-router';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import { useTranslation } from 'react-i18next';
