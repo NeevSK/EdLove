@@ -34,7 +34,7 @@ module.exports = {
       // Duplicate detection: catches copy-paste spaghetti before it enters the repo.
       // --min-lines 8: ignores short repeated patterns (imports, type declarations).
       // Scoped to changed files only — fast enough for pre-commit.
-      commands.push(`jscpd ${chunkStr} --min-lines 8 --min-tokens 50 --reporters console --exitCode 1`);
+      commands.push(`jscpd ${chunkStr} --min-lines 8 --min-tokens 50 --reporters console --exit-code 1`);
     }
     return commands;
   },

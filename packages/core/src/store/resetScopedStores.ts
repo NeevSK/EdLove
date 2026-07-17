@@ -86,13 +86,10 @@ export async function globalLogoutAndPurge(queryClient?: QueryClient) {
 
     // 2. Cryptographic Partition Wipe
     try {
-      const mmkvModule: any = await import('react-native-mmkv');
-      const MMKV = mmkvModule.MMKV;
-      if (MMKV) {
-        const storeId = `gurudevi-tenant-${currentAccountId}`;
-        const store = new MMKV({ id: storeId });
-        store.clearAll();
-      }
+      const { createMMKV } = await import('react-native-mmkv');
+      const storeId = `gurudevi-tenant-${currentAccountId}`;
+      const store = createMMKV({ id: storeId });
+      store.clearAll();
     } catch {
       // AsyncStorage Fallback Wipe
     }
