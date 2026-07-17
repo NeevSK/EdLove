@@ -54,9 +54,8 @@ export async function bootstrapPlatform() {
     storage.registerAdapter(new AsyncStorageAdapter());
   } else {
     try {
-      const mmkvModule = (await import('react-native-mmkv')) as any;
-      const MMKVClass = mmkvModule.MMKV;
-      const mmkv = new MMKVClass({ id: 'gurudevi-store' });
+      const { createMMKV } = await import('react-native-mmkv');
+      const mmkv = createMMKV({ id: 'gurudevi-store' });
       storage.registerAdapter(new FallbackMMKVStorageAdapter(mmkv));
     } catch (e) {
       console.warn('Boot: MMKV init failed, falling back to AsyncStorage', e);

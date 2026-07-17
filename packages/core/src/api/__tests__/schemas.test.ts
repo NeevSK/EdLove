@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { AttendanceSchema } from '../../logic/schemas/attendance.schema';
 import { ClassroomSchema } from '../../logic/schemas/classroom.schema';
 import { LessonSchema } from '../../logic/schemas/lesson.schema';
@@ -17,6 +18,7 @@ describe('API Schema Validation (Zero-Trust)', () => {
       subject: 'Mathematics',
       grade_id: OTHER_UUID,
       section_id: UUID,
+      academic_year: '2025-2026',
       is_archived: false,
       created_at: NOW,
       updated_at: NOW,

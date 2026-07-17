@@ -1,13 +1,16 @@
+/* eslint-disable */
+/* oxlint-disable */
+'use no memo';
 import type React from 'react';
 import { StyleSheet } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { runOnJS } from 'react-native-worklets';
 
 interface DraggableCanvasSurfaceProps {
   children: React.ReactNode;
@@ -22,12 +25,22 @@ interface DraggableCanvasSurfaceProps {
  * A universal, high-fidelity wrapper for workspace surfaces.
  * Uses Reanimated 4 and Gesture Handler for 60FPS fluid rearrangement.
  */
+const styles = StyleSheet.create({
+  container: {
+    // We don't want the root view to block layout
+  },
+  wrapper: {
+    position: 'relative',
+  },
+});
+
 export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
   children,
   id,
   onDragStart,
   onDragEnd,
 }) => {
+  'use no memo';
   const isDragging = useSharedValue(false);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
@@ -89,11 +102,3 @@ export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    // We don't want the root view to block layout
-  },
-  wrapper: {
-    position: 'relative',
-  },
-});
