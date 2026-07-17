@@ -239,6 +239,18 @@ class PolymathPlatformServer {
         ],
       },
       {
+        name: 'jscpd',
+        envKey: 'EXPO_TOKEN',
+        alwaysRun: true,
+        command: 'node',
+        args: [
+          path.join(__dirname, '..', 'node_modules', 'jscpd', 'run-jscpd.js'),
+          '--mcp',
+          '--directory',
+          'apps/gurudevi-mobile',
+        ],
+      },
+      {
         name: 'github',
         envKey: 'GITHUB_PERSONAL_ACCESS_TOKEN',
         command: 'node',

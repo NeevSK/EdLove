@@ -274,6 +274,20 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     return (defaultResolveRequest || context.resolveRequest)(context, moduleName, platform);
   }
 
+  // Workspace packages are mapped to their source roots below. That mapping
+  // intentionally bypasses package `exports`, so resolve conditional native
+  // adapters explicitly before delegating to Metro.
+  if (moduleName === '@repo/core/native/webPush') {
+    return {
+      filePath: path.resolve(
+        workspaceRoot,
+        'packages/core/src/native',
+        platform === 'web' ? 'webPush.web.ts' : 'webPush.native.ts',
+      ),
+      type: 'sourceFile',
+    };
+  }
+
   if (moduleName === '@repo/workforce/WorkforceShell') {
     return {
       filePath: path.resolve(workspaceRoot, 'packages/workforce/src/WorkforceShell.tsx'),

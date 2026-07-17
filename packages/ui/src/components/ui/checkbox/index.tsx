@@ -84,7 +84,7 @@ export const CheckboxIndicator = ({
   );
 };
 
-export const CheckIcon = Check;
+export const CheckIcon: import('@repo/ui/icons').LucideIcon = Check;
 
 export const CheckboxIcon = ({ as: Icon = Check, className, size = 14 }: any) => {
   const { isChecked } = useCheckbox();

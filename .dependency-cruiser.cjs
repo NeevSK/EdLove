@@ -144,6 +144,50 @@ module.exports = {
         path: '^packages/database/',
       },
     },
+    {
+      name: 'mobile-screens-not-to-app',
+      severity: 'error',
+      comment: 'Mobile screens, components, hooks, and lib must never import from the app/ routing layer.',
+      from: {
+        path: '^apps/gurudevi-mobile/src/',
+      },
+      to: {
+        path: '^apps/gurudevi-mobile/app/',
+      },
+    },
+    {
+      name: 'mobile-components-not-to-screens',
+      severity: 'error',
+      comment: 'Mobile components, hooks, utils, and libraries must never import from screens.',
+      from: {
+        path: '^apps/gurudevi-mobile/src/(components|ui|hooks|lib|utils|providers|services)/',
+      },
+      to: {
+        path: '^apps/gurudevi-mobile/src/screens/',
+      },
+    },
+    {
+      name: 'mobile-hooks-not-to-ui',
+      severity: 'error',
+      comment: 'Mobile business logic hooks, services, and libraries must never import UI components or screens.',
+      from: {
+        path: '^apps/gurudevi-mobile/src/(hooks|lib|services|utils)/',
+      },
+      to: {
+        path: '^apps/gurudevi-mobile/src/(components|ui|screens)/',
+      },
+    },
+    {
+      name: 'mobile-utils-isolation',
+      severity: 'error',
+      comment: 'Mobile pure utilities must remain leaf nodes and not import from screens, hooks, or providers.',
+      from: {
+        path: '^apps/gurudevi-mobile/src/utils/',
+      },
+      to: {
+        path: '^apps/gurudevi-mobile/src/(screens|components|ui|hooks|providers|services)/',
+      },
+    },
   ],
   options: {
     exclude: {

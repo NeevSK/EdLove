@@ -145,7 +145,8 @@
       "react-native-nano-icons",
       "@sentry/react-native",
       "expo-background-task",
-      "expo-status-bar"
+      "expo-status-bar",
+      "@react-native-vector-icons/lucide"
     ],
     "owner": "neevsk",
     "runtimeVersion": {

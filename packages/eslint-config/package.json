@@ -25,6 +25,7 @@
     "eslint-plugin-react-native": "^5.0.0",
     "@rnx-kit/eslint-plugin": "^0.5.2",
     "eslint-config-expo": "~56.0.4",
+    "eslint-plugin-sonarjs": "^4.2.0",
     "eslint-plugin-turbo": "^2.9.16",
     "globals": "^17.6.0",
     "typescript": "^5.5.4",

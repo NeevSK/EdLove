@@ -551,6 +551,7 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
   }, [navigation, user]);
 
   const handleTrubeLab = useCallback(() => navigation.navigate('TrubeLab'), [navigation]);
+  const handleIconLab = useCallback(() => navigation.navigate('icon-lab'), [navigation]);
 
   const handleContactSupport = useCallback(async () => {
     hapticLight();
@@ -1089,6 +1090,20 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
           accessibilityLabel="Open Trube Lab"
           accessibilityHint="Experiment with living surface compositions and lighting."
         />
+        {__DEV__ && (
+          <SettingsOption
+            icon={
+              <Box className="text-phase-secondary">
+                <Sparkles size={24} />
+              </Box>
+            }
+            title="Iconography Lab"
+            description="Compare Lucide, Phosphor, and native Lucide rendering."
+            onPress={handleIconLab}
+            accessibilityLabel="Open Iconography Lab"
+            accessibilityHint="Compare icon systems across mobile and web."
+          />
+        )}
         <SettingsOption
           icon={
             <Box className="text-phase-secondary">
