@@ -17,19 +17,16 @@
 import { wrapPowerSyncWithDrizzle } from '@powersync/drizzle-driver';
 import { assertPowerSyncBootstrapReady } from '../../api/highways';
 import { coreRuntime } from '../../logic/runtimeRegistry';
-import { useStore } from '../../store/useStore';
-import { ErrorCategory, SovereignError } from '../../types/Errors';
 import { PowerSyncDatabase } from './powersync-shim';
 import { AppSchema } from './schema';
+import { createSecureDrizzleProxy } from './secureDrizzleProxy';
+export {
+  registerPermissionValidator,
+  setActiveCapabilityToken,
+} from './secureDrizzleProxy';
 
 let _instance: PowerSyncDatabase | null = null;
 let _drizzleInstance: ReturnType<typeof wrapPowerSyncWithDrizzle<typeof AppSchema>> | null = null;
-
-let _permissionValidator: ((params: any) => Promise<boolean>) | null = null;
-
-export function registerPermissionValidator(validator: (params: any) => Promise<boolean>): void {
-  _permissionValidator = validator;
-}
 
 function assertBrowserPowerSyncReady() {
   assertPowerSyncBootstrapReady();
@@ -39,98 +36,6 @@ function assertBrowserPowerSyncReady() {
       'PowerSync bootstrap guard: browser code touched PowerSync before runtime registration. Initialize the runtime before accessing PowerSync.',
     );
   }
-}
-
-/**
- * Creates an isomorphic Proxy over the Drizzle database instance to intercept
- * all asynchronous mutations, verifying them against offline Cedar snapshots before execution.
- */
-function createSecureDrizzleProxy(db: any): any {
-  if (!db) return db;
-  return new Proxy(db, {
-    get(target, prop, receiver) {
-      const originalValue = Reflect.get(target, prop, receiver);
-
-      if (prop === 'insert' || prop === 'update' || prop === 'delete') {
-        return (tableObj: any) => {
-          const tableName = tableObj?._?.name || tableObj?.name || 'unknown_table';
-          const action = prop === 'insert' ? 'create' : prop === 'update' ? 'update' : 'delete';
-          const builder = originalValue.apply(target, [tableObj]);
-
-          return new Proxy(builder, {
-            get(builderTarget, builderProp, builderReceiver) {
-              const originalBuilderValue = Reflect.get(builderTarget, builderProp, builderReceiver);
-
-              if (builderProp === 'execute' || builderProp === 'then') {
-                return (...args: any[]) => {
-                  if (!_permissionValidator) {
-                    // Fallback to bypass for non-mobile environments (e.g. Hono server shims, test runners)
-                    if (builderProp === 'then') {
-                      const promise = originalBuilderValue.apply(builderTarget, []);
-                      return promise.then(...args);
-                    }
-                    return originalBuilderValue.apply(builderTarget, args);
-                  }
-
-                  const state = useStore.getState();
-                  const userContext = {
-                    userId: state.user?.id || null,
-                    email: state.user?.email || null,
-                    schoolId: state.user?.school_id || null,
-                    activeBond: state.activeBond as any,
-                    isAnonymous: !state.user || !!state.user?.is_anonymous,
-                  };
-
-                  const resourceType =
-                    tableName.charAt(0).toUpperCase() +
-                    tableName
-                      .slice(1)
-                      .replace(/_([a-z])/g, (_: string, letter: string) => letter.toUpperCase());
-
-                  return _permissionValidator({
-                    action: action as any,
-                    resourceType: resourceType as any,
-                    resourceId: 'local-drizzle-write-interceptor',
-                    userContext,
-                  }).then((isAllowed) => {
-                    if (!isAllowed) {
-                      throw new SovereignError({
-                        title: 'Unauthorized Local Mutation',
-                        detail: `Access denied. Direct local database write to table "${tableName}" is blocked for action "${action}".`,
-                        status: 403,
-                        category: ErrorCategory.AUTHORIZATION,
-                        code: 'LOCAL_WRITE_VIOLATION',
-                      });
-                    }
-                    if (builderProp === 'then') {
-                      const promise = originalBuilderValue.apply(builderTarget, []);
-                      return promise.then(...args);
-                    }
-                    return originalBuilderValue.apply(builderTarget, args);
-                  });
-                };
-              }
-              return typeof originalBuilderValue === 'function'
-                ? originalBuilderValue.bind(builderTarget)
-                : originalBuilderValue;
-            },
-          });
-        };
-      }
-
-      if (prop === 'transaction') {
-        return (callback: any, config: any) => {
-          const secureCallback = async (tx: any) => {
-            const secureTx = createSecureDrizzleProxy(tx);
-            return callback(secureTx);
-          };
-          return originalValue.apply(target, [secureCallback, config]);
-        };
-      }
-
-      return typeof originalValue === 'function' ? originalValue.bind(target) : originalValue;
-    },
-  });
 }
 
 /**

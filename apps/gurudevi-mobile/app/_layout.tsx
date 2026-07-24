@@ -7,6 +7,10 @@ import 'react-native-worklets';
 import 'react-native-get-random-values';
 import '@repo/ui/global.css';
 
+import { registerAppCatalog } from '../src/boot/registerAppCatalog';
+registerAppCatalog();
+
+
 import {
   identifyUser,
   initPostHog,
@@ -25,7 +29,9 @@ import {
 } from '@repo/core/logic';
 import { clearSentryUser, initSentry, injectPostHog, setSentryUser } from '@repo/core/monitoring';
 import { bootstrapPlatform, storage } from '@repo/core/native';
-import { usePermissionStore } from '@repo/core/store/usePermissionStore';
+import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
+import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
+import { warmCedarWasm } from '@repo/core/logic/permissions/cedarClientEvaluator';
 import { SyncManager } from '@repo/core/sync';
 import { useQRDeepLink } from '@repo/scanner-kit';
 import { AccountPinModal } from '@repo/ui/components';
@@ -318,15 +324,20 @@ function AppContent() {
     });
   }, [bootstrapReady]);
 
-  const loadPermissions = usePermissionStore((state) => state.loadPermissions);
+  const loadDecisions = useCedarDecisionStore((state) => state.loadDecisions);
+  const loadEntitlements = useEntitlementStore((state) => state.loadEntitlements);
 
   useEffect(() => {
     if (!coreRuntime.isRegistered()) return;
 
+    // Warm Cedar WASM singleton at boot per D4 Section 1
+    warmCedarWasm();
+
     if (session?.user?.id) {
-      void loadPermissions(session.user.id);
+      void loadDecisions(session.user.id);
+      void loadEntitlements(session.user.id);
     }
-  }, [session?.user?.id, loadPermissions]);
+  }, [session?.user?.id, loadDecisions, loadEntitlements]);
 
   useQRDeepLink((payload: unknown) => {
     router.push({ pathname: '/qr', params: { payload: JSON.stringify(payload) } });

@@ -135,7 +135,7 @@ export { GlobalProvider } from './providers/GlobalProvider';
 export type { FeatureSlice } from './store/slices/feature.slice';
 export { useAuthStore } from './store/useAuthStore';
 export { useFeatureStore } from './store/useFeatureStore';
-export { usePermissionStore } from './store/usePermissionStore';
+export { useCedarDecisionStore } from './store/useCedarDecisionStore';
 // 2. Logic State & Storage (Zustand & Supabase)
 export { type TotalState, useStore } from './store/useStore';
 export { type TemporalScale, useTemporalStore } from './store/useTemporalStore';
@@ -148,10 +148,16 @@ import { z } from 'zod';
 export { AnalyticsEngine as formAnalytics } from '@intuitui-labs/form-builder-engine/analytics';
 export type { FormState } from '@intuitui-labs/form-builder-engine/core';
 export { FormManager } from '@intuitui-labs/form-builder-engine/core';
-export { FormHydrator } from '@intuitui-labs/form-builder-engine/hydration';
+export type { ValidatorRule } from '@intuitui-labs/form-builder-engine/schema';
+export {
+  FormHydrator,
+  registerCustomValidator,
+  clearCustomValidators,
+} from '@intuitui-labs/form-builder-engine/hydration';
+export { applyRule, validateRules } from '@intuitui-labs/form-builder-engine/validation';
 // Hexagonal Adapters
 export { SupabaseEntitlementAdapter } from './adapters/supabase/supabaseEntitlement.adapter';
-export { SupabaseFeatureFlagAdapter } from './adapters/supabase/supabaseFeatureFlag.adapter';
+
 export { GrowthBookFeatureRolloutAdapter } from './adapters/feature-rollout/growthBookFeatureRollout.adapter';
 export * from './api';
 export {

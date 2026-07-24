@@ -17,6 +17,8 @@ import {
   classrooms,
   type MoodLog,
   moodLogs,
+  type PolicyVersion,
+  policyVersion,
   type School,
   type Student,
   schools,
@@ -127,4 +129,37 @@ export function useSchool(schoolId: string): School | null {
 
   const rows = useDrizzleQuery<School>(query);
   return rows[0] || null;
+}
+
+/**
+ * usePolicyVersion — reactively watches for policy_version changes.
+ * When the hash changes, Active capability tokens are invalidated
+ * per ADR-006 and ADR-012.
+ */
+export function usePolicyVersion(): PolicyVersion | null {
+  const db = getDrizzleDB();
+  const query = db.select().from(policyVersion).limit(1);
+
+  const rows = useDrizzleQuery<PolicyVersion>(query);
+  return rows[0] || null;
+}
+
+/**
+ * usePolicyVersionInvalidation — watches policy_version and clears
+ * capability tokens when the hash changes.
+ * Consumers don't need to call this directly; it's wired at the app level.
+ */
+let _lastPolicyHash: string | null = null;
+
+export function usePolicyVersionInvalidation(): void {
+  const version = usePolicyVersion();
+
+  if (version && version.hash !== _lastPolicyHash) {
+    if (_lastPolicyHash !== null) {
+      // Hash changed — invalidate tokens
+      const { setActiveCapabilityToken } = require('./database');
+      setActiveCapabilityToken(null);
+    }
+    _lastPolicyHash = version.hash;
+  }
 }

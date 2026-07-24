@@ -73,9 +73,6 @@ export {
   pushNotification,
 } from './managers/factory';
 export * from './mediaReducer';
-export * from './permissions/feature-engine';
-export * from './permissions/guards/FeatureGuard';
-export * from './permissions/guards/RouteGuard';
 export * from './permissions/hooks/usePermissions';
 export * from './permissions/hooks/useSanctuaryFeature';
 export * from './permissions/sanctuaryFeature';
@@ -94,3 +91,8 @@ export * from './schemas';
 export * from './store-slices';
 export * from './utils';
 export * from './workspace/index';
+export * from './registry/citizenship';
+export * from './registry/domainEntry';
+export * from './registry/appCatalog';
+export * from './registry/useDomainFeature';
+

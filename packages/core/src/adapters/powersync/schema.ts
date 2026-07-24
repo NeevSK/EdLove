@@ -1,3 +1,15 @@
+// ─── Pricing Manifest (Entitlement Source of Truth) ───────────────────────────
+export const pricingManifest = sqliteTable(
+  'pricing_manifest',
+  {
+    id: text('id').primaryKey(),
+    tier: text('tier').notNull(), // 'FREE' | 'PRO' | 'INSTITUTIONAL'
+    features: text('features').notNull(), // JSON array of entitlement keys
+    updatedAt: text('updated_at').notNull(),
+  },
+  (table) => [index('pricing_manifest_tier_idx').on(table.tier)],
+);
+
 /**
  * PowerSync Schema — Client-Side Drizzle SQLite Table Definitions (May 2026)
  *
@@ -134,6 +146,16 @@ export const permissionSnapshots = sqliteTable(
   (table) => [index('permission_snapshots_user_idx').on(table.userId)],
 );
 
+// ─── Policy Version (Token Invalidation Key, ADR-006) ──────────────────────────
+export const policyVersion = sqliteTable(
+  'policy_version',
+  {
+    id: text('id').primaryKey(),
+    hash: text('hash').notNull(),
+    updatedAt: text('updated_at').notNull(),
+  },
+);
+
 // ─── Form Templates ───────────────────────────────────────────────────────────
 export const formTemplates = sqliteTable(
   'form_templates',
@@ -177,8 +199,10 @@ export const AppSchema = {
   schools,
   cedarPolicies,
   permissionSnapshots,
+  policyVersion,
   formTemplates,
   formResponses,
+  pricingManifest,
 };
 
 // ─── Relational TypeScript Types ──────────────────────────────────────────────
@@ -208,3 +232,9 @@ export type InsertDrizzleFormResponse = typeof formResponses.$inferInsert;
 
 export type PermissionSnapshot = typeof permissionSnapshots.$inferSelect;
 export type InsertPermissionSnapshot = typeof permissionSnapshots.$inferInsert;
+
+export type PricingManifest = typeof pricingManifest.$inferSelect;
+export type InsertPricingManifest = typeof pricingManifest.$inferInsert;
+
+export type PolicyVersion = typeof policyVersion.$inferSelect;
+export type InsertPolicyVersion = typeof policyVersion.$inferInsert;

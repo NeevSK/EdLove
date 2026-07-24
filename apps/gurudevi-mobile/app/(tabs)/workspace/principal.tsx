@@ -1,11 +1,11 @@
 import PrincipalDashboard from '@repo/admin/screens/PrincipalDashboard';
-import { usePermissionStore } from '@repo/core';
+import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { usePermissions } from '@repo/core/logic';
 import { Center, Spinner } from '@repo/ui/primitives';
 
 export default function PrincipalRoute() {
   const { context } = usePermissions();
-  const loading = usePermissionStore((state: any) => state.isLoading);
+  const loading = useCedarDecisionStore((state: any) => state.isLoading);
 
   if (loading) {
     return (

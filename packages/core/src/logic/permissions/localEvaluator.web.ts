@@ -1,5 +1,5 @@
 import type { UserContext } from '../schemas/user.schema';
-import type { Actions, SubjectType } from './abilities/base';
+import type { Action, Subject } from '../../types/authorization';
 
 export async function getLocalResourceAttributes(
   _resourceType: string,
@@ -16,8 +16,8 @@ export async function verifyLocalPolicySignature(
 }
 
 export async function checkLocalPermission(_params: {
-  action: Actions;
-  resourceType: SubjectType;
+  action: Action;
+  resourceType: Subject;
   resourceId: string;
   userContext: Partial<UserContext>;
 }): Promise<boolean> {

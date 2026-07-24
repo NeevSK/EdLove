@@ -1,5 +1,4 @@
 export { useAccountDeletion } from './useAccountDeletion';
-export { useCapacityFeatures } from './useAuthorityFeatures';
 export { useBanyanGrowth } from './useBanyanGrowth';
 export { useClassroomCreation } from './useClassroomCreation';
 export { useDeviceAccounts } from './useDeviceAccounts';
@@ -11,12 +10,11 @@ export {
   useTeacherInsights,
 } from './useDomainServices';
 export { useEntity } from './useEntity';
-export { useFeatureAccess } from './useFeatureAccess';
+export { useIsGuest } from './useIsGuest';
 export { useForm } from './useForm';
 export { useGroupCreation } from './useGroupCreation';
 export { useIdentity } from './useIdentity';
 export { useJourneyHistory } from './useJourneyHistory';
-export { useLocalPermission } from './useLocalPermission';
 export { useManualSnapshot } from './useManualSnapshot';
 export { type DownloadState, useMediaDownloader } from './useMediaDownloader';
 export { useNaturePaths } from './useNaturePaths';

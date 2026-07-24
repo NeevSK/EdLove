@@ -1,24 +1,4 @@
-import { type AbilityClass, createMongoAbility, type MongoAbility } from '@casl/ability';
-import type {
-  Assignment,
-  AttendanceRecord,
-  Classroom,
-  CommunityReaction,
-  Group,
-  GroupMember,
-  GroupMessage,
-  InventoryItem,
-  Lesson,
-  LessonMaterial,
-  Post,
-  School,
-  StudentAcademicRecord,
-  StudentGrade,
-  ThuthimalGift,
-  User,
-} from '../../../types';
-
-export type Actions =
+export type Action =
   | 'manage'
   | 'create'
   | 'read'
@@ -33,7 +13,8 @@ export type Actions =
   | 'access'
   | 'join';
 
-export type Subjects =
+export type Subject =
+  | 'all'
   | 'StudentProfile'
   | 'TeacherProfile'
   | 'Lesson'
@@ -99,34 +80,4 @@ export type Subjects =
   | 'StaffManagement'
   | 'TrustNetwork'
   | 'LibraryArchive'
-  | 'ProFeatures'
-  | 'all';
-
-/**
- * Subject type definitions for conditional checks.
- * This allows us to avoid 'any' in subject conditions.
- */
-export type SubjectType =
-  | 'all'
-  | Subjects
-  | User
-  | Classroom
-  | StudentGrade
-  | Assignment
-  | Lesson
-  | LessonMaterial
-  | School
-  | AttendanceRecord
-  | InventoryItem
-  | Group
-  | Post
-  | GroupMember
-  | GroupMessage
-  | CommunityReaction
-  | StudentAcademicRecord
-  | ThuthimalGift;
-
-export type AppAbilities = [Actions, SubjectType];
-export type AppAbility = MongoAbility<AppAbilities>;
-
-export const AppAbility = createMongoAbility as unknown as AbilityClass<AppAbility>;
+  | 'ProFeatures';

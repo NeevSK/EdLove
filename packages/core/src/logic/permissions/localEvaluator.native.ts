@@ -2,8 +2,9 @@ import { eq } from 'drizzle-orm';
 import { getDrizzleDB, registerPermissionValidator } from '../../adapters/powersync/database';
 import { cedarPolicies, permissionSnapshots } from '../../adapters/powersync/schema';
 import type { UserContext } from '../schemas/user.schema';
-import type { Actions, SubjectType } from './abilities/base';
+import type { Action, Subject } from '../../types/authorization';
 import { getLocalResourceAttributes } from './localEvaluator';
+import { evaluateShape2 } from './cedarClientEvaluator';
 import { verifySnapshotSignature } from './signature';
 
 /**
@@ -18,14 +19,14 @@ import { verifySnapshotSignature } from './signature';
  * Ensures high fidelity offline capabilities without compromising robustness.
  */
 export async function checkLocalPermission(params: {
-  action: Actions;
-  resourceType: SubjectType;
+  action: Action;
+  resourceType: Subject;
   resourceId: string;
   userContext: Partial<UserContext>;
 }): Promise<boolean> {
   const legacyContext = params.userContext as Record<string, unknown>;
 
-  // --- Step A: Attempt Dynamic Cedar WASM Evaluation ---
+  // --- Step A: Attempt Cedar WASM Evaluation via Singleton (ADR-005) ---
   try {
     const db = getDrizzleDB();
     const localPolicies = await db.select().from(cedarPolicies);
@@ -37,65 +38,37 @@ export async function checkLocalPermission(params: {
       // Safe Boundary check to protect lower-end Android memory
       const MAX_LOCAL_POLICY_SIZE_BYTES = 100 * 1024;
       if (policySizeBytes <= MAX_LOCAL_POLICY_SIZE_BYTES) {
-        // Dynamically import WASM compiler (Hermes native WASM engine)
-        // @ts-expect-error - Dynamic Cedar WASM web entrypoint load for browser/React-Native compatibility
-        // eslint-disable-next-line import-x/no-unresolved
-        const { evaluate } = await import('@cedar-policy/cedar-wasm/web');
-
-        // Fetch dynamic attributes
         const resourceAttributes = await getLocalResourceAttributes(
           params.resourceType as string,
           params.resourceId,
         );
         const classroomId = params.userContext.classroomId || legacyContext.classroom_id || null;
 
-        const contextPayload = {
-          device: {
-            is_trusted: true,
-            trust_status: 'standard',
+        const permitted = await evaluateShape2(rawPolicyString, {
+          user: {
+            id: params.userContext.userId || (legacyContext.user_id as string) || '',
+            attrs: {
+              school_id:
+                params.userContext.schoolId ||
+                (legacyContext.school_id as string | undefined) ||
+                '',
+              capacity: params.userContext.capacity || '',
+              classroom_ids: classroomId ? [classroomId] : [],
+            },
           },
-        };
-
-        const decision = await evaluate({
-          policies: rawPolicyString,
-          schema: '',
-          request: {
-            principal: {
-              type: 'User',
-              id: params.userContext.userId || legacyContext.user_id || '',
-            },
-            action: { type: 'Action', id: params.action },
-            resource: { type: params.resourceType as string, id: params.resourceId },
-            context: contextPayload,
-          },
-          entities: [
-            {
-              uid: { type: 'User', id: params.userContext.userId || legacyContext.user_id || '' },
-              attrs: {
-                school_id:
-                  params.userContext.schoolId ||
-                  (legacyContext.school_id as string | undefined) ||
-                  '',
-                capacity: params.userContext.capacity || '',
-                classroom_ids: classroomId ? [classroomId] : [],
-              },
-              parents: [],
-            },
-            {
-              uid: { type: params.resourceType as string, id: params.resourceId },
-              attrs: resourceAttributes,
-              parents: [],
-            },
-          ],
+          action: params.action,
+          resourceType: params.resourceType as string,
+          resourceId: params.resourceId,
+          resourceAttrs: resourceAttributes,
         });
 
-        console.log('[LocalEvaluator.native] Dynamic Cedar WASM evaluation succeeded.');
-        return decision.decision === 'Allow';
+        console.log('[LocalEvaluator.native] Cedar WASM evaluation via singleton succeeded.');
+        return permitted;
       }
     }
   } catch (wasmError) {
     console.warn(
-      '[LocalEvaluator.native] Dynamic WASM evaluation failed/unsupported. Falling back to signed permission snapshot...',
+      '[LocalEvaluator.native] WASM evaluation failed/unsupported. Falling back to signed permission snapshot...',
       wasmError,
     );
   }

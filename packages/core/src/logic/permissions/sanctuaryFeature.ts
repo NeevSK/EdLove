@@ -1,46 +1,107 @@
-import type { UserContext } from '../schemas/user.schema';
-import type { FeatureFlags } from './feature-engine';
+import {
+  CITIZENSHIP,
+  type CitizenshipLevel,
+  type CitizenshipName,
+  meetsCitizenship,
+} from '../registry/citizenship';
+import type { EntitlementSnapshot } from '../ports/entitlement.port';
 
-export type SanctuaryFeatureReason = 'not_initialized' | 'feature_disabled' | 'authz_denied';
+export {
+  CITIZENSHIP,
+  type CitizenshipLevel,
+  type CitizenshipName,
+  meetsCitizenship,
+};
 
-export interface SanctuaryFeatureResult {
-  permitted: boolean;
-  reason?: SanctuaryFeatureReason;
-  featureKey?: keyof FeatureFlags | string;
+export type PricingTier = 'FREE' | 'PRO' | 'INSTITUTIONAL';
+export type FlagType = 'operational' | 'development' | 'beta' | 'experiment';
+
+export type SanctuaryFeatureResult =
+  | { permitted: true; featureKey?: string }
+  | { permitted: false; reason: 'not_initialized'; featureKey?: string }
+  | {
+      permitted: false;
+      reason: 'citizenship';
+      required: CitizenshipLevel;
+      current: CitizenshipLevel;
+      featureKey?: string;
+    }
+  | {
+      permitted: false;
+      reason: 'entitlement';
+      required: PricingTier;
+      current: PricingTier;
+      featureKey?: string;
+    }
+  | { permitted: false; reason: 'authz'; policy?: string; featureKey?: string }
+  | { permitted: false; reason: 'feature'; flagKey: string; flagType: FlagType; featureKey?: string };
+
+export interface SanctuaryEvaluationContext {
+  cedarSnapshotLoaded: boolean;
+  entitlementManifestLoaded: boolean;
+  citizenship: CitizenshipLevel;
+  entitlement: EntitlementSnapshot;
+  cedarDecision: 'allow' | 'deny' | 'no_decision';
+  cedarPolicy?: string;
+  flagActive: boolean;
+  flagKey: string;
+  flagType: FlagType;
 }
 
-export interface SanctuaryFeatureRequirement {
-  featureKey?: keyof FeatureFlags | string;
+export interface FeatureRequirement {
+  citizenshipRequired: CitizenshipLevel;
+  entitlementModule?: string;
+  entitlementTier?: PricingTier;
+  flagKey?: string;
 }
 
-export interface SanctuaryFeatureContext {
-  context: UserContext;
-  flags: FeatureFlags;
-  permissionsMap: Record<string, Record<string, boolean>> | null;
-  initialized?: boolean;
-}
+
 
 export function sanctuaryFeature(
-  ctx: SanctuaryFeatureContext,
-  action: string,
-  subject: string,
-  requirement: SanctuaryFeatureRequirement = {},
+  ctx: SanctuaryEvaluationContext,
+  requirement: FeatureRequirement,
 ): SanctuaryFeatureResult {
-  if (ctx.initialized === false) {
-    return { permitted: false, reason: 'not_initialized', featureKey: requirement.featureKey };
+  if (!ctx.cedarSnapshotLoaded || !ctx.entitlementManifestLoaded) {
+    return { permitted: false, reason: 'not_initialized' };
   }
 
-  const featureKey = requirement.featureKey;
-  if (featureKey && !ctx.flags[featureKey as keyof FeatureFlags]) {
-    return { permitted: false, reason: 'feature_disabled', featureKey };
+  // Gate 1 — citizenship
+  if (!meetsCitizenship(ctx.citizenship, requirement.citizenshipRequired)) {
+    return {
+      permitted: false,
+      reason: 'citizenship',
+      required: requirement.citizenshipRequired,
+      current: ctx.citizenship,
+    };
   }
 
-  if (ctx.permissionsMap) {
-    const isAllowed = ctx.permissionsMap[subject]?.[action];
-    if (isAllowed !== true) {
-      return { permitted: false, reason: 'authz_denied', featureKey };
+  // Gate 2 — entitlement
+  if (requirement.entitlementModule) {
+    if (!ctx.entitlement.activeEntitlements.includes(requirement.entitlementModule)) {
+      const requiredTier = requirement.entitlementTier ?? 'PRO';
+      return {
+        permitted: false,
+        reason: 'entitlement',
+        required: requiredTier,
+        current: ctx.entitlement.pricingTier,
+      };
     }
   }
 
-  return { permitted: true, featureKey };
+  // Gate 3 — Cedar
+  if (ctx.cedarDecision === 'deny' || ctx.cedarDecision === 'no_decision') {
+    return { permitted: false, reason: 'authz', policy: ctx.cedarPolicy };
+  }
+
+  // Cross-cut — feature flag
+  if (ctx.flagKey && !ctx.flagActive) {
+    return {
+      permitted: false,
+      reason: 'feature',
+      flagKey: ctx.flagKey,
+      flagType: ctx.flagType,
+    };
+  }
+
+  return { permitted: true };
 }

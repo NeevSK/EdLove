@@ -5,7 +5,6 @@ export * from './classroom.schema';
 export * from './classroom-note.schema';
 export * from './community.schema';
 export * from './dashboard.schema';
-export * from './feature-registry.schema';
 export * from './founder.schema';
 export * from './grading.schema';
 export * from './growth.schema';

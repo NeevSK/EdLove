@@ -1,7 +1,7 @@
 import { assertHighway } from '../api/highways';
 import { identityAPI } from '../api/identity';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-import type { Actions } from '../logic/permissions/abilities/base';
+import type { Action } from '../types/authorization';
 import { checkLocalPermission } from '../logic/permissions/localEvaluator';
 import { APIError } from '../types/API';
 
@@ -36,7 +36,7 @@ export async function requireClassroomAccess(classroomId: string, capability: st
   }
 
   const isAllowed = await checkLocalPermission({
-    action: capability as Actions,
+    action: capability as Action,
     resourceType: 'Classroom',
     resourceId: classroomId,
     userContext: {

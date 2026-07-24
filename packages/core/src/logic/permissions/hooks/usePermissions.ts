@@ -1,24 +1,27 @@
 import { useCallback, useMemo } from 'react';
 import { useAuthStore } from '../../../store/useAuthStore';
+import { useCedarDecisionStore } from '../../../store/useCedarDecisionStore';
+import { useEntitlementStore } from '../../../store/useEntitlementStore';
 import { useFeatureStore } from '../../../store/useFeatureStore';
-import { usePermissionStore } from '../../../store/usePermissionStore';
 import { useTenantStore } from '../../../store/useTenantStore';
 import { type TenantKind, type UserContext, UserContextSchema } from '../../schemas/user.schema';
-import type { Actions, SubjectType } from '../abilities/base';
-import { sanctuaryFeature } from '../sanctuaryFeature';
+import type { Action, Subject } from '../../../types/authorization';
+import { sanctuaryFeature, CITIZENSHIP } from '../sanctuaryFeature';
 
 /**
- * usePermissions: The ONLY interface components ever touch for POA.
- * Decoupled from legacy CASL abilities, utilizing the new cryptographically-signed
- * PermissionSnapshot architecture.
+ * @deprecated Use useSanctuaryFeature() for permission checks and
+ * useAuthStore / useFeatureStore / useCedarDecisionStore directly for reads.
+ * This facade is kept for backward compatibility — it delegates to the
+ * new store internally.
  */
 export const usePermissions = () => {
   const user = useAuthStore((state) => state.user);
   const schoolType = useTenantStore((state) => state.schoolType);
   const flags = useFeatureStore((state) => state.flags);
-  const permissionsMap = usePermissionStore((state) => state.permissionsMap);
+  const cedarSnapshotLoaded = useCedarDecisionStore((state) => state.snapshotLoaded);
+  const getDecision = useCedarDecisionStore((state) => state.getDecision);
+  const { activeEntitlements, pricingTier, manifestLoaded } = useEntitlementStore();
 
-  // Build a single canonical context from the current identity state.
   const context: UserContext = useMemo(() => {
     const activePerspective = useAuthStore.getState().activePerspective;
     const availableBonds = useAuthStore.getState().availableBonds || [];
@@ -29,7 +32,6 @@ export const usePermissions = () => {
       userId: user?.id || null,
       email: user?.email || null,
 
-      // Sovereign ReBAC Context
       bonds: availableBonds as UserContext['bonds'],
       primaryCapacity: availableBonds[0]?.capacity || null,
       activeBond: activeBond as UserContext['activeBond'],
@@ -62,34 +64,53 @@ export const usePermissions = () => {
       classroomId: activeBond?.entity_type === 'CLASSROOM' ? activeBond.entity_id : null,
     };
 
-    // Strict validation via Zod
     return UserContextSchema.parse(rawContext);
   }, [user, schoolType]);
 
-  /**
-   * can: Check if action on subject is allowed.
-   */
   const can = useCallback(
-    (action: Actions, subject: SubjectType) => {
+    (action: Action, subject: Subject) => {
+      const citizenshipStr = user?.citizenship ?? 'THIRD_CLASS';
+      const citizenship =
+        citizenshipStr === 'WANDERER' || citizenshipStr === 'THIRD_CLASS'
+          ? CITIZENSHIP.THIRD_CLASS
+          : citizenshipStr === 'SECOND_CLASS'
+            ? CITIZENSHIP.SECOND_CLASS
+            : CITIZENSHIP.FIRST_CLASS;
+
+      const cedarDecision = user?.id
+        ? getDecision(subject as string, action as string)
+        : 'no_decision';
+
+      const flagKey = `${subject as string}.${action as string}`;
+      const flagEntry = (flags as any)?.[flagKey];
+      const flagActive = flagEntry?.value ?? true;
+      const flagType = flagEntry?.type ?? 'operational';
+
       return sanctuaryFeature(
         {
-          context,
-          flags,
-          permissionsMap,
-          initialized: true,
+          cedarSnapshotLoaded,
+          entitlementManifestLoaded: manifestLoaded,
+          citizenship,
+          entitlement: {
+            pricingTier: pricingTier as 'FREE' | 'PRO' | 'INSTITUTIONAL',
+            activeEntitlements,
+            expirationDate: null,
+          },
+          cedarDecision,
+          flagActive,
+          flagKey,
+          flagType,
         },
-        action as string,
-        subject as string,
+        {
+          citizenshipRequired: CITIZENSHIP.THIRD_CLASS,
+        },
       ).permitted;
     },
-    [context, flags, permissionsMap],
+    [user, flags, cedarSnapshotLoaded, getDecision, activeEntitlements, pricingTier, manifestLoaded],
   );
 
-  /**
-   * cannot: Check if action on subject is forbidden.
-   */
   const cannot = useCallback(
-    (action: Actions, subject: SubjectType) => {
+    (action: Action, subject: Subject) => {
       return !can(action, subject);
     },
     [can],
