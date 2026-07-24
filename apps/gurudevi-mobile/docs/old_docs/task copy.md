@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # Gurudevi Development Tasks
 
 ## ðŸ”´ PHASE 1: Sri Lankan School System Implementation (In Progress)

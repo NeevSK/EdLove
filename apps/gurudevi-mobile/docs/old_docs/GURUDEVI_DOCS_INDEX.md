@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # ðŸ“š Gurudevi Mobile App - Complete Documentation Index
 
 Welcome to the comprehensive documentation for the Gurudevi mobile application.

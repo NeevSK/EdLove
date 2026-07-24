@@ -1,3 +1,5 @@
+> **Superseded** � kept for historical reference.
+> See active docs at docs/INDEX.md.
 # 🏛️ Gurudevi Mobile App - Comprehensive Analysis & Documentation
 ## Solution Architecture Review by Veteran React Native Developer
 

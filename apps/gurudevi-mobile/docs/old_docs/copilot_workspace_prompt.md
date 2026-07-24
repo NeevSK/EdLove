@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # GitHub Copilot Workspace Prompt (AGGRESSIVE - Full Migration)
 
 **Copy this entire prompt into a new GitHub Issue, then assign it to Copilot Workspace**

@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # Protocol-Oriented Authority (POA): The Gurudevi Architectural "True North"
 
 ## 1. The Philosophical Shift

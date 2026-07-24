@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # Gurudevi Alpha - Complete Final Specification
 ## Everything You Need to Build and Ship
 

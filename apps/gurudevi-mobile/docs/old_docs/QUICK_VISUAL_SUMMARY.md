@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # ðŸŽ¯ Quick Visual Summary - Community & Library Features
 
 ## What You Asked For

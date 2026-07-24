@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # ğŸ« MISSION 02: Teacher Workbench
 
 **Role**: You are a React Native expert specializing in "Productivity UI" ( Lists, Swipe Actions, Data Entry).

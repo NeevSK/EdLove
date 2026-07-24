@@ -1,3 +1,6 @@
+> **Superseded** by GrowthBook rollout engine (see ADR-013, featureFlag.factory.ts).
+> Kept for historical reference.
+
 # Guidance: Feature Flag Rollout (Remote Config)
 
 This document outlines the systematic move from a static `feature-engine.ts` to a dynamic, Supabase-backed remote configuration system.

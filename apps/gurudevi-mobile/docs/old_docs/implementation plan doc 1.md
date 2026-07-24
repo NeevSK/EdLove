@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # Gurudevi Strategic Architecture Plan: Ecology Platform with School-Scoped ERP
 
 ## Summary

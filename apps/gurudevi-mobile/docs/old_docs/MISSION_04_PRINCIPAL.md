@@ -1,3 +1,5 @@
+> **Superseded** � kept for historical reference.
+> See active docs at docs/INDEX.md.
 # 🏛️ MISSION 04: The Principal's Office
 
 **Role**: You are a React Native expert specializing in "Dashboard & Admin UI".

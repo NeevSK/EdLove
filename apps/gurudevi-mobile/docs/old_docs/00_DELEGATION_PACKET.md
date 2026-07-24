@@ -1,3 +1,5 @@
+> **Superseded** � kept for historical reference.
+> See active docs at docs/INDEX.md.
 # 📦 Mission Delegation Packet (v2.0)
 
 **⚠️ CRITICAL UPDATE:** The architecture has changed to a modular structure using `src/lib/api/`. Do NOT use the old monolithic `src/lib/api.ts` file.

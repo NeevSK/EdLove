@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # ðŸš€ Gurudevi Onboarding System Design
 ## Progressive Profiling + Invite-Based Architecture
 

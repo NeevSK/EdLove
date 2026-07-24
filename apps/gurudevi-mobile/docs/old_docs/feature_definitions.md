@@ -1,3 +1,5 @@
+> **Superseded** � kept for historical reference.
+> See active docs at docs/INDEX.md.
 # 🗺️ Gurudevi Feature Definitions & Design Strategy
 
 **Purpose**: To untangle the complexity of 5 major feature areas and align on a clear implementation path.

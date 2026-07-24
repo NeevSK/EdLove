@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # ðŸš€ Gurudevi Mobile - Quick Reference Guide
 
 **Quick access guide for developers**

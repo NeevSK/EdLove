@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # ðŸŽ¨ UI/UX Redesign Master Plan
 
 **Goal**: Transform the "functional" UI into a "Soulful, Artistic, and Premium" experience (The "Gurudevi" Aesthetic).

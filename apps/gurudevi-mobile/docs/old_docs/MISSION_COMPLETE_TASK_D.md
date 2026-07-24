@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # Mission Complete: Role-Based Classroom List (Task D)
 
 ## ðŸŽ‰ Summary

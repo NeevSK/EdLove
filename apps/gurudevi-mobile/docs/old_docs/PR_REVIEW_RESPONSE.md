@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # ðŸ“‹ PR Review Response Summary
 
 **Date**: February 6, 2026  

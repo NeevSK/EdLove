@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # MISSION 02: Teacher Workbench - Implementation Summary
 
 ## âœ… Task Completed
