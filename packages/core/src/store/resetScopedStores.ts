@@ -3,7 +3,7 @@ import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
 import { getActiveAccountId, setActiveAccountId } from '../lib/accountScope';
 import { DeviceTrustEngine } from '../lib/security/deviceTrust';
 import { useMutationQueue } from '../lib/sync/useMutationQueue';
-import { resolveFeatureFlags } from '../logic/permissions/feature-engine';
+import { DEFAULT_FEATURE_FLAGS } from './types/featureFlags';
 import type { UISlice } from './slices/ui.slice';
 import { useAuthStore } from './useAuthStore';
 import { useFeatureStore } from './useFeatureStore';
@@ -45,30 +45,7 @@ const uiScopedDefaults: Partial<UISlice> = {
   isBreathingOpen: false,
 };
 
-const featureScopedDefaults = resolveFeatureFlags({
-  userId: null,
-  email: null,
-  bonds: [],
-  primaryCapacity: null,
-  activeBond: null,
-  capacity: null,
-  traits: [],
-  schoolId: null,
-  pricing_tier: 'FREE',
-  tenancyName: null,
-  tenancy: null,
-  tenantKind: 'customer',
-  tier: 'free',
-  citizenship: 'WANDERER',
-  isAnonymous: true,
-  hasGlobalAccess: false,
-  isPersonal: false,
-  features: [],
-  flags: {},
-  sectionId: null,
-  gradeId: null,
-  classroomId: null,
-});
+const featureScopedDefaults = { ...DEFAULT_FEATURE_FLAGS };
 
 /**
  * THE SACRED WASH
