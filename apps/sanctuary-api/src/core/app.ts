@@ -579,7 +579,7 @@ function poa(route: SovereignRoute) {
 }
 
 import { featureFlags } from '@repo/core/logic/managers/featureFlag.factory';
-import type { FeatureFlags } from '@repo/core/logic/permissions/feature-engine';
+import type { FeatureFlags } from '@repo/core/store/types/featureFlags';
 
 const routeFeatureFlagMap: Record<string, keyof FeatureFlags> = {
   '/api/community': 'isCommunityEnabled',

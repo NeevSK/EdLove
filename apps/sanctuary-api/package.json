@@ -15,6 +15,9 @@
     "test:bun": "node ../../scripts/run-and-report.mjs --cmd \"bun x vitest run\" --name \"apps_sanctuary-api-test_bun\""
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.18",
+    "@ai-sdk/google": "^4.0.21",
+    "@ai-sdk/openai": "^4.0.17",
     "@hono/node-server": "^2.0.6",
     "@hono/swagger-ui": "^0.6.1",
     "@hono/zod-openapi": "^1.4.0",
@@ -26,7 +29,9 @@
     "@tanstack/ai-anthropic": "^0.6.0",
     "@tanstack/ai-gemini": "^0.6.0",
     "@tanstack/ai-openai": "^0.6.0",
+    "ai": "^7.0.34",
     "dotenv": "^17.4.2",
+    "foglamp": "^0.7.1",
     "hono": "^4.12.27",
     "zod": "^4.4.3"
   },

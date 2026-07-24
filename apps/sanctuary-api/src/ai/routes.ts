@@ -1,11 +1,14 @@
-import { toServerSentEventsResponse } from '@tanstack/ai';
-import { Hono } from 'hono';
 import type { ContextVariableMap } from 'hono';
+import { Hono } from 'hono';
 import { AnthropicAdapter } from './adapters/AnthropicAdapter';
 import { DbBillingAdapter } from './adapters/DbBillingAdapter';
 import { DeepSeekAdapter } from './adapters/DeepSeekAdapter';
 import { GeminiAdapter } from './adapters/GeminiAdapter';
 import { OpenAiAdapter } from './adapters/OpenAiAdapter';
+import { VercelAnthropicAdapter } from './adapters/VercelAnthropicAdapter';
+import { VercelDeepSeekAdapter } from './adapters/VercelDeepSeekAdapter';
+import { VercelGeminiAdapter } from './adapters/VercelGeminiAdapter';
+import { VercelOpenAiAdapter } from './adapters/VercelOpenAiAdapter';
 import { Orchestrator } from './domain/Orchestrator';
 import { rateLimit } from './middleware/rateLimit';
 
@@ -35,9 +38,24 @@ aiRouter.post('/chat', rateLimit, async (c) => {
       return c.json({ error: 'Message is required' }, 400);
     }
 
-    // 1. Setup Ports & Core Domain Orchestrator with Dynamic Factory Injection
+    // 1. Select SDK family via env flag
+    const useVercelSdk = process.env.AI_SDK === 'vercel';
+
+    // 2. Setup Ports & Core Domain Orchestrator with Dynamic Factory Injection
     const billingAdapter = new DbBillingAdapter(db);
     const orchestrator = new Orchestrator(billingAdapter, (provider) => {
+      if (useVercelSdk) {
+        switch (provider) {
+          case 'gemini':
+            return new VercelGeminiAdapter();
+          case 'anthropic':
+            return new VercelAnthropicAdapter();
+          case 'deepseek':
+            return new VercelDeepSeekAdapter();
+          default:
+            return new VercelOpenAiAdapter();
+        }
+      }
       switch (provider) {
         case 'gemini':
           return new GeminiAdapter();
@@ -50,7 +68,7 @@ aiRouter.post('/chat', rateLimit, async (c) => {
       }
     });
 
-    // 2. Resolve billing info beforehand for logging accuracy
+    // 3. Resolve billing info beforehand for logging accuracy
     const billingInfo = await billingAdapter
       .resolveBilling(user.id, context.billingMode ?? 'baseline', {
         byokKeyInput: context.byokKey,
@@ -62,16 +80,8 @@ aiRouter.post('/chat', rateLimit, async (c) => {
 
     const start = Date.now();
 
-    // 3. Process chat and generate stream
-    const stream = await orchestrator.processChat(user.id, message, history, context);
-
-    // 4. Convert stream to standard response
-    const sseResponse = toServerSentEventsResponse(stream);
-    const originalBody = sseResponse.body;
-
-    if (!originalBody) {
-      return sseResponse;
-    }
+    // 4. Process chat and generate SSE stream
+    const originalBody = await orchestrator.processChat(user.id, message, history, context);
 
     // 5. Intercept stream using TransformStream to record audit log on completion
     let chunkCount = 0;
@@ -82,7 +92,6 @@ aiRouter.post('/chat', rateLimit, async (c) => {
       },
       flush() {
         const durationMs = Date.now() - start;
-        // Approximation: 4 tokens per chunk/event
         const tokensUsed = chunkCount * 4;
         billingAdapter
           .logUsage(user.id, billingInfo?.model || 'gpt-4o-mini', tokensUsed, durationMs)
@@ -93,9 +102,11 @@ aiRouter.post('/chat', rateLimit, async (c) => {
     const transformedBody = originalBody.pipeThrough(transformStream);
 
     return new Response(transformedBody, {
-      status: sseResponse.status,
-      statusText: sseResponse.statusText,
-      headers: sseResponse.headers,
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        Connection: 'keep-alive',
+      },
     });
   } catch (err: any) {
     console.error('[aiRouter] error:', err);

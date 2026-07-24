@@ -1,4 +1,4 @@
-import { chat } from '@tanstack/ai';
+import { chat, toServerSentEventsStream } from '@tanstack/ai';
 import { openaiText } from '@tanstack/ai-openai';
 import { type LlmPort } from '../ports/LlmPort';
 
@@ -8,7 +8,7 @@ export class OpenAiAdapter implements LlmPort {
     history: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
     apiKey: string,
     model: string,
-  ): Promise<any> {
+  ): Promise<ReadableStream> {
     const formattedMessages: Array<Record<string, string>> = [
       { role: 'system', content: systemPrompt },
       ...history.map((m) => ({
@@ -17,9 +17,11 @@ export class OpenAiAdapter implements LlmPort {
       })),
     ];
 
-    return chat({
+    const stream = chat({
       adapter: openaiText(model as any, { apiKey } as any),
       messages: formattedMessages as any,
     });
+
+    return toServerSentEventsStream(stream);
   }
 }
