@@ -1,3 +1,4 @@
+import { Effect } from 'effect';
 import { SafeZustandStorage } from './storageWrapper';
 
 // Keys for MMKV storage
@@ -13,6 +14,27 @@ const createLocalId = () => {
   const suffix = globalThis.crypto?.randomUUID?.() ?? `seq-${localIdCounter}`;
   return `local-${Date.now()}-${suffix}`;
 };
+
+function readStorage$(key: string): Effect.Effect<string | null> {
+  return Effect.tryPromise(() => SafeZustandStorage.getItem(key) as Promise<string | null>).pipe(
+    Effect.catchAll((e) =>
+      Effect.sync(() => {
+        console.error(`[GuestDataManager] Failed to read ${key}:`, e);
+        return null;
+      }),
+    ),
+  );
+}
+
+function writeStorage$(key: string, data: unknown): Effect.Effect<void> {
+  return Effect.promise(async () => { await SafeZustandStorage.setItem(key, JSON.stringify(data) ?? ''); }).pipe(
+    Effect.catchAll((e) =>
+      Effect.sync(() => {
+        console.error(`[GuestDataManager] Failed to write ${key}:`, e);
+      }),
+    ),
+  );
+}
 
 export interface GuestTimetablePeriod {
   localId: string;
@@ -54,176 +76,198 @@ export class GuestDataManager {
   // ============ Timetable Methods ============
 
   static async getTimetable(dayOfWeek: number): Promise<GuestTimetablePeriod[]> {
-    try {
-      const data = await SafeZustandStorage.getItem(GUEST_TIMETABLE_KEY);
-      if (!data) return [];
-
-      const allPeriods: GuestTimetablePeriod[] = JSON.parse(data);
-      return allPeriods.filter((p) => p.day_of_week === dayOfWeek);
-    } catch (error) {
-      console.error('Failed to get guest timetable:', error);
-      return [];
-    }
+    return Effect.runPromise(
+      readStorage$(GUEST_TIMETABLE_KEY).pipe(
+        Effect.map((data) => {
+          if (!data) return [];
+          const allPeriods: GuestTimetablePeriod[] = JSON.parse(data);
+          return allPeriods.filter((p) => p.day_of_week === dayOfWeek);
+        }),
+        Effect.catchAll(() => Effect.succeed([])),
+      ),
+    );
   }
 
   static async addTimetablePeriod(
     period: Omit<GuestTimetablePeriod, 'localId'>,
   ): Promise<GuestTimetablePeriod> {
-    try {
-      const data = await SafeZustandStorage.getItem(GUEST_TIMETABLE_KEY);
-      const allPeriods: GuestTimetablePeriod[] = data ? JSON.parse(data) : [];
+    return Effect.runPromise(
+      Effect.gen(function* () {
+        const data = yield* readStorage$(GUEST_TIMETABLE_KEY);
+        const allPeriods: GuestTimetablePeriod[] = data ? JSON.parse(data) : [];
 
-      const newPeriod: GuestTimetablePeriod = {
-        ...period,
-        localId: createLocalId(),
-      };
+        const newPeriod: GuestTimetablePeriod = {
+          ...period,
+          localId: createLocalId(),
+        };
 
-      allPeriods.push(newPeriod);
-      await SafeZustandStorage.setItem(GUEST_TIMETABLE_KEY, JSON.stringify(allPeriods));
-
-      return newPeriod;
-    } catch (error) {
-      console.error('Failed to add guest timetable period:', error);
-      throw error;
-    }
+        allPeriods.push(newPeriod);
+        yield* writeStorage$(GUEST_TIMETABLE_KEY, allPeriods);
+        return newPeriod;
+      }).pipe(
+        Effect.catchAll((e) =>
+          Effect.sync(() => {
+            console.error('Failed to add guest timetable period:', e);
+            throw e;
+          }),
+        ),
+      ),
+    );
   }
 
   static async updateTimetablePeriod(
     localId: string,
     updates: Partial<GuestTimetablePeriod>,
   ): Promise<void> {
-    try {
-      const data = await SafeZustandStorage.getItem(GUEST_TIMETABLE_KEY);
-      if (!data) return;
+    return Effect.runPromise(
+      Effect.gen(function* () {
+        const data = yield* readStorage$(GUEST_TIMETABLE_KEY);
+        if (!data) return;
 
-      const allPeriods: GuestTimetablePeriod[] = JSON.parse(data);
-      const index = allPeriods.findIndex((p) => p.localId === localId);
+        const allPeriods: GuestTimetablePeriod[] = JSON.parse(data);
+        const index = allPeriods.findIndex((p) => p.localId === localId);
 
-      if (index !== -1) {
-        allPeriods[index] = {
-          ...allPeriods[index],
-          ...updates,
-        } as GuestTimetablePeriod;
-        await SafeZustandStorage.setItem(GUEST_TIMETABLE_KEY, JSON.stringify(allPeriods));
-      }
-    } catch (error) {
-      console.error('Failed to update guest timetable period:', error);
-      throw error;
-    }
+        if (index !== -1) {
+          allPeriods[index] = { ...allPeriods[index], ...updates } as GuestTimetablePeriod;
+          yield* writeStorage$(GUEST_TIMETABLE_KEY, allPeriods);
+        }
+      }).pipe(
+        Effect.catchAll((e) =>
+          Effect.sync(() => {
+            console.error('Failed to update guest timetable period:', e);
+            throw e;
+          }),
+        ),
+      ),
+    );
   }
 
   static async deleteTimetablePeriod(localId: string): Promise<void> {
-    try {
-      const data = await SafeZustandStorage.getItem(GUEST_TIMETABLE_KEY);
-      if (!data) return;
+    return Effect.runPromise(
+      Effect.gen(function* () {
+        const data = yield* readStorage$(GUEST_TIMETABLE_KEY);
+        if (!data) return;
 
-      const allPeriods: GuestTimetablePeriod[] = JSON.parse(data);
-      const filtered = allPeriods.filter((p) => p.localId !== localId);
-
-      await SafeZustandStorage.setItem(GUEST_TIMETABLE_KEY, JSON.stringify(filtered));
-    } catch (error) {
-      console.error('Failed to delete guest timetable period:', error);
-      throw error;
-    }
+        const allPeriods: GuestTimetablePeriod[] = JSON.parse(data);
+        const filtered = allPeriods.filter((p) => p.localId !== localId);
+        yield* writeStorage$(GUEST_TIMETABLE_KEY, filtered);
+      }).pipe(
+        Effect.catchAll((e) =>
+          Effect.sync(() => {
+            console.error('Failed to delete guest timetable period:', e);
+            throw e;
+          }),
+        ),
+      ),
+    );
   }
 
   // ============ Mood Log Methods ============
 
   static async getMoodLogs(): Promise<GuestMoodLog[]> {
-    try {
-      const data = await SafeZustandStorage.getItem(GUEST_MOOD_LOGS_KEY);
-      return data ? JSON.parse(data) : [];
-    } catch (error) {
-      console.error('Failed to get guest mood logs:', error);
-      return [];
-    }
+    return Effect.runPromise(
+      readStorage$(GUEST_MOOD_LOGS_KEY).pipe(
+        Effect.map((data) => (data ? JSON.parse(data) : [])),
+        Effect.catchAll(() => Effect.succeed([])),
+      ),
+    );
   }
 
   static async addMoodLog(mood: number, note?: string): Promise<GuestMoodLog> {
-    try {
-      const data = await SafeZustandStorage.getItem(GUEST_MOOD_LOGS_KEY);
-      const logs: GuestMoodLog[] = data ? JSON.parse(data) : [];
+    return Effect.runPromise(
+      Effect.gen(function* () {
+        const data = yield* readStorage$(GUEST_MOOD_LOGS_KEY);
+        const logs: GuestMoodLog[] = data ? JSON.parse(data) : [];
 
-      const newLog: GuestMoodLog = {
-        localId: createLocalId(),
-        mood,
-        note,
-        timestamp: new Date().toISOString(),
-      };
+        const newLog: GuestMoodLog = {
+          localId: createLocalId(),
+          mood,
+          note,
+          timestamp: new Date().toISOString(),
+        };
 
-      logs.push(newLog);
-      await SafeZustandStorage.setItem(GUEST_MOOD_LOGS_KEY, JSON.stringify(logs));
-
-      return newLog;
-    } catch (error) {
-      console.error('Failed to add guest mood log:', error);
-      throw error;
-    }
+        logs.push(newLog);
+        yield* writeStorage$(GUEST_MOOD_LOGS_KEY, logs);
+        return newLog;
+      }).pipe(
+        Effect.catchAll((e) =>
+          Effect.sync(() => {
+            console.error('Failed to add guest mood log:', e);
+            throw e;
+          }),
+        ),
+      ),
+    );
   }
 
   // ============ Journal Entry Methods ============
 
   static async getJournalEntries(): Promise<GuestJournalEntry[]> {
-    try {
-      const data = await SafeZustandStorage.getItem(GUEST_JOURNAL_ENTRIES_KEY);
-      return data ? JSON.parse(data) : [];
-    } catch (error) {
-      console.error('Failed to get guest journal entries:', error);
-      return [];
-    }
+    return Effect.runPromise(
+      readStorage$(GUEST_JOURNAL_ENTRIES_KEY).pipe(
+        Effect.map((data) => (data ? JSON.parse(data) : [])),
+        Effect.catchAll(() => Effect.succeed([])),
+      ),
+    );
   }
 
   static async addJournalEntry(content: string): Promise<GuestJournalEntry> {
-    try {
-      const data = await SafeZustandStorage.getItem(GUEST_JOURNAL_ENTRIES_KEY);
-      const entries: GuestJournalEntry[] = data ? JSON.parse(data) : [];
+    return Effect.runPromise(
+      Effect.gen(function* () {
+        const data = yield* readStorage$(GUEST_JOURNAL_ENTRIES_KEY);
+        const entries: GuestJournalEntry[] = data ? JSON.parse(data) : [];
 
-      const newEntry: GuestJournalEntry = {
-        localId: createLocalId(),
-        content,
-        timestamp: new Date().toISOString(),
-      };
+        const newEntry: GuestJournalEntry = {
+          localId: createLocalId(),
+          content,
+          timestamp: new Date().toISOString(),
+        };
 
-      entries.push(newEntry);
-      await SafeZustandStorage.setItem(GUEST_JOURNAL_ENTRIES_KEY, JSON.stringify(entries));
-
-      return newEntry;
-    } catch (error) {
-      console.error('Failed to add guest journal entry:', error);
-      throw error;
-    }
+        entries.push(newEntry);
+        yield* writeStorage$(GUEST_JOURNAL_ENTRIES_KEY, entries);
+        return newEntry;
+      }).pipe(
+        Effect.catchAll((e) =>
+          Effect.sync(() => {
+            console.error('Failed to add guest journal entry:', e);
+            throw e;
+          }),
+        ),
+      ),
+    );
   }
 
   // ============ Student Methods ============
 
   static async getStudents(): Promise<GuestStudent[]> {
-    try {
-      const data = await SafeZustandStorage.getItem(GUEST_STUDENTS_KEY);
-      return data ? JSON.parse(data) : [];
-    } catch (error) {
-      console.error('Failed to get guest students:', error);
-      return [];
-    }
+    return Effect.runPromise(
+      readStorage$(GUEST_STUDENTS_KEY).pipe(
+        Effect.map((data) => (data ? JSON.parse(data) : [])),
+        Effect.catchAll(() => Effect.succeed([])),
+      ),
+    );
   }
 
   static async addStudents(students: Omit<GuestStudent, 'localId'>[]): Promise<GuestStudent[]> {
-    try {
-      const data = await SafeZustandStorage.getItem(GUEST_STUDENTS_KEY);
-      const existing: GuestStudent[] = data ? JSON.parse(data) : [];
+    return Effect.runPromise(
+      Effect.gen(function* () {
+        const data = yield* readStorage$(GUEST_STUDENTS_KEY);
+        const existing: GuestStudent[] = data ? JSON.parse(data) : [];
 
-      const newStudents = students.map((s) => ({
-        ...s,
-        localId: createLocalId(),
-      }));
+        const newStudents = students.map((s) => ({ ...s, localId: createLocalId() }));
 
-      const updated = [...existing, ...newStudents];
-      await SafeZustandStorage.setItem(GUEST_STUDENTS_KEY, JSON.stringify(updated));
-
-      return newStudents;
-    } catch (error) {
-      console.error('Failed to add guest students:', error);
-      throw error;
-    }
+        const updated = [...existing, ...newStudents];
+        yield* writeStorage$(GUEST_STUDENTS_KEY, updated);
+        return newStudents;
+      }).pipe(
+        Effect.catchAll((e) =>
+          Effect.sync(() => {
+            console.error('Failed to add guest students:', e);
+            throw e;
+          }),
+        ),
+      ),
+    );
   }
 
   // ============ Data Summary & Clearing ============

@@ -1,4 +1,5 @@
 import type { Session } from '@supabase/supabase-js';
+import { Effect, Queue } from 'effect';
 import { deviceTrustAPI } from '../api/deviceTrust';
 import { assertHighway } from '../api/highways';
 import { identityAPI } from '../api/identity';
@@ -68,11 +69,40 @@ async function setActiveAccount(accountId: string | null) {
   storage.delete(ACTIVE_ACCOUNT_KEY);
 }
 
+class DeviceAccountError {
+  readonly _tag = 'DeviceAccountError';
+  constructor(readonly message: string) {}
+}
+
 function toSessionTokens(session: Session) {
   return {
     access_token: session.access_token,
     refresh_token: session.refresh_token,
   };
+}
+
+/**
+ * Serial queue for fire-and-forget audit/security operations.
+ * Prevents thundering herd on deviceTrustAPI when multiple account
+ * actions fire audit ops concurrently.
+ */
+const auditQueue = Effect.runSync(Queue.unbounded<() => Promise<unknown>>());
+
+Effect.runFork(
+  Queue.take(auditQueue).pipe(
+    Effect.flatMap((task) =>
+      Effect.promise(task).pipe(
+        Effect.catchAll((e) =>
+          Effect.sync(() => console.warn('[deviceAccounts] Audit op failed', e)),
+        ),
+      ),
+    ),
+    Effect.forever,
+  ),
+);
+
+function queueAuditOp(fn: () => Promise<unknown>) {
+  Effect.runFork(Queue.offer(auditQueue, fn));
 }
 
 export const deviceAccounts = {
@@ -138,30 +168,26 @@ export const deviceAccounts = {
     await writeRegistry(nextAccounts);
     await setActiveAccount(accountId);
 
-    try {
-      const trust = await deviceTrustAPI.syncCurrentAccountDevice(accountId);
+    deviceTrustAPI.syncCurrentAccountDevice(accountId).then((trust) => {
       if (trust && !trust.isTrusted) {
-        console.warn(
-          'Device trust API marked this install as untrusted. Phase 1 is advisory-only, so access is not hard-blocked yet.',
-        );
+        console.warn('[deviceAccounts] Device trust API marked this install as untrusted');
       }
+    });
 
-      await deviceTrustAPI.logAuditEvent(
+    queueAuditOp(() =>
+      deviceTrustAPI.logAuditEvent(
         'ACCOUNT_CAPTURED_ON_DEVICE',
-        {
-          authUserId,
-          email: nextRecord.email,
-        },
+        { authUserId, email: nextRecord.email },
         accountId,
-      );
-      await deviceTrustAPI.upsertCurrentSecuritySession({
+      ),
+    );
+    queueAuditOp(() =>
+      deviceTrustAPI.upsertCurrentSecuritySession({
         accountId,
         authUserId,
         authStrength: 'session',
-      });
-    } catch (error) {
-      console.warn('Failed to synchronize device trust during account capture.', error);
-    }
+      }),
+    );
 
     return nextRecord;
   },
@@ -170,7 +196,7 @@ export const deviceAccounts = {
     const previousAccountId = getActiveAccountId();
     const storedSession = await getStoredSessionForAccount(accountId);
     if (!storedSession?.access_token || !storedSession?.refresh_token) {
-      throw new Error('This account is no longer available on this device.');
+      throw new DeviceAccountError('This account is no longer available on this device.');
     }
 
     await setActiveAccount(accountId);
@@ -193,43 +219,45 @@ export const deviceAccounts = {
       ),
     );
 
-    try {
-      const trust = await deviceTrustAPI.touchCurrentDevice(accountId);
+    deviceTrustAPI.touchCurrentDevice(accountId).then((trust) => {
       if (trust && !trust.isTrusted) {
-        console.warn(
-          'Device trust API marked this install as untrusted. Phase 1 is advisory-only, so the session remains available.',
-        );
+        console.warn('[deviceAccounts] Device trust API marked this install as untrusted');
       }
+    });
 
-      await deviceTrustAPI.logAuditEvent(
+    queueAuditOp(() =>
+      deviceTrustAPI.logAuditEvent(
         'ACCOUNT_SWITCHED_ON_DEVICE',
-        {
-          fromAccountId: previousAccountId,
-        },
+        { fromAccountId: previousAccountId },
         accountId,
-      );
-      await deviceTrustAPI.upsertCurrentSecuritySession({
+      ),
+    );
+    queueAuditOp(() =>
+      deviceTrustAPI.upsertCurrentSecuritySession({
         accountId,
         authUserId: null,
         authStrength: 'switch',
-      });
-    } catch (error) {
-      console.warn('Failed to synchronize device trust during account switch.', error);
-    }
+      }),
+    );
   },
 
   async removeAccount(accountId: string) {
     const isActiveAccount = getActiveAccountId() === accountId;
     if (isActiveAccount) {
-      try {
-        const installId = await deviceTrustAPI.getInstallId();
-        await Promise.all([
-          deviceTrustAPI.logAuditEvent('ACCOUNT_REMOVED_FROM_DEVICE', { installId }, accountId),
-          deviceTrustAPI.revokeMyInstallSecuritySessions(installId, 'removed_from_device'),
-        ]);
-      } catch (error) {
-        console.warn('Failed to write device audit log for account removal.', error);
-      }
+      deviceTrustAPI.getInstallId().then((installId) => {
+        if (installId) {
+          queueAuditOp(() =>
+            Promise.all([
+              deviceTrustAPI.logAuditEvent(
+                'ACCOUNT_REMOVED_FROM_DEVICE',
+                { installId },
+                accountId,
+              ),
+              deviceTrustAPI.revokeMyInstallSecuritySessions(installId, 'removed_from_device'),
+            ]),
+          );
+        }
+      });
     }
 
     const accounts = await readRegistry();
@@ -264,22 +292,20 @@ export const deviceAccounts = {
       return [];
     }
 
-    try {
-      const installId = await deviceTrustAPI.getInstallId();
-      await Promise.all([
-        deviceTrustAPI.logAuditEvent(
-          'ACCOUNT_SIGNED_OUT_FROM_DEVICE',
-          {
-            scope: 'current',
-            installId,
-          },
-          activeAccountId,
-        ),
-        deviceTrustAPI.revokeMyInstallSecuritySessions(installId, 'signed_out_locally'),
-      ]);
-    } catch (error) {
-      console.warn('Failed to synchronize sign-out for the current account.', error);
-    }
+    deviceTrustAPI.getInstallId().then((installId) => {
+      if (installId) {
+        queueAuditOp(() =>
+          Promise.all([
+            deviceTrustAPI.logAuditEvent(
+              'ACCOUNT_SIGNED_OUT_FROM_DEVICE',
+              { scope: 'current', installId },
+              activeAccountId,
+            ),
+            deviceTrustAPI.revokeMyInstallSecuritySessions(installId, 'signed_out_locally'),
+          ]),
+        );
+      }
+    });
 
     return this.removeAccount(activeAccountId);
   },
@@ -290,26 +316,21 @@ export const deviceAccounts = {
       deviceTrustAPI.getInstallId(),
     ]);
     const activeAccountId = getActiveAccountId();
-    await Promise.all(
-      accounts.map(async (entry) => {
-        if (!activeAccountId || entry.accountId !== activeAccountId) {
-          return;
-        }
-        try {
-          await deviceTrustAPI.logAuditEvent(
+    for (const entry of accounts) {
+      if (!activeAccountId || entry.accountId !== activeAccountId) {
+        continue;
+      }
+      queueAuditOp(() =>
+        Promise.all([
+          deviceTrustAPI.logAuditEvent(
             'ACCOUNT_SIGNED_OUT_FROM_DEVICE',
-            {
-              scope: 'all',
-              installId,
-            },
+            { scope: 'all', installId },
             entry.accountId,
-          );
-          await deviceTrustAPI.revokeMyInstallSecuritySessions(installId, 'signed_out_all_locally');
-        } catch (error) {
-          console.warn('Failed to write device audit log during global sign-out.', error);
-        }
-      }),
-    );
+          ),
+          deviceTrustAPI.revokeMyInstallSecuritySessions(installId, 'signed_out_all_locally'),
+        ]),
+      );
+    }
     await Promise.all(
       accounts.map((entry) =>
         Promise.all([

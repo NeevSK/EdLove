@@ -1,18 +1,16 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { UserContext } from '../../logic/schemas/user.schema';
 import { CedarAuthorizationAdapter } from '../cedar/cedarAuthorization.adapter';
 import { SupabaseEntitlementAdapter } from '../supabase/supabaseEntitlement.adapter';
-import { SupabaseFeatureFlagAdapter } from '../supabase/supabaseFeatureFlag.adapter';
 
-// Mock checkLocalPermission
-vi.mock('../../logic/permissions/localEvaluator', () => ({
-  checkLocalPermission: vi.fn(async () => true),
+// Mock cedarClientEvaluator
+import { evaluateShape2 as mockEvaluateShape2 } from '../../logic/permissions/cedarClientEvaluator';
+vi.mock('../../logic/permissions/cedarClientEvaluator', () => ({
+  evaluateShape2: vi.fn(async () => true),
 }));
 
-// Mock feature-engine resolving feature flags
-vi.mock('../../logic/permissions/feature-engine', () => ({
-  resolveFeatureFlags: vi.fn(() => ({ isAIAssistantEnabled: true })),
-  trackFeatureExposureInternal: vi.fn(),
+// Mock getLocalResourceAttributes
+vi.mock('../../logic/permissions/localEvaluator', () => ({
+  getLocalResourceAttributes: vi.fn(async () => ({})),
 }));
 
 // Mock useFeatureStore store
@@ -30,7 +28,49 @@ vi.mock('../../store/useFeatureStore', () => ({
   },
 }));
 
-// Mock useAuthStore store
+// Mock Supabase client
+vi.mock('../../api/supabase', () => ({
+  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__: {
+    from: (table: string) => {
+      if (table === 'users') {
+        return {
+          select: () => ({
+            eq: (col: string, val: string) => ({
+              maybeSingle: async () => {
+                if (val === 'user-1') {
+                  return { data: { pricing_tier: 'PRO' }, error: null };
+                }
+                return { data: null, error: null };
+              },
+            }),
+          }),
+        };
+      }
+      return { select: () => ({ eq: () => ({ limit: () => [] }) }) };
+    },
+  },
+}));
+
+// Drizzle DB mock: from() returns a thenable for await, plus .where() chain for pricingManifest
+const mockLimit = vi.fn();
+const mockWhere = vi.fn(() => ({ limit: mockLimit }));
+
+const POLICIES_RESULT = [
+  { id: '1', content: 'permit(principal, action, resource);' },
+];
+const mockFrom = vi.fn(() => {
+  const chain = { where: mockWhere };
+  // Make the chain thenable so await resolves to the policies array
+  (chain as any).then = (resolve: any) => resolve(POLICIES_RESULT);
+  return chain;
+});
+const mockSelect = vi.fn(() => ({ from: mockFrom }));
+
+vi.mock('../powersync/database', () => ({
+  getDrizzleDB: () => ({ select: mockSelect }),
+}));
+
+// Mock useAuthStore store (still needed by other adapters)
 vi.mock('../../store/useAuthStore', () => ({
   useAuthStore: {
     getState: () => ({
@@ -43,7 +83,7 @@ vi.mock('../../store/useAuthStore', () => ({
 }));
 
 describe('Hexagonal Adapters Verification', () => {
-  it('verifies CedarAuthorizationAdapter compiles and calls checkLocalPermission', async () => {
+  it('verifies CedarAuthorizationAdapter compiles and calls evaluateShape2', async () => {
     const adapter = new CedarAuthorizationAdapter();
     const res = await adapter.isAuthorized({
       principalId: 'user-1',
@@ -56,27 +96,18 @@ describe('Hexagonal Adapters Verification', () => {
     expect(res.reason).toBe('CedarPolicyEvaluation');
   });
 
-  it('verifies SupabaseFeatureFlagAdapter compiles and queries Zustand flags', async () => {
-    const adapter = new SupabaseFeatureFlagAdapter();
-    const context = { userId: 'user-1' } as unknown as UserContext;
-
-    const snapshot = await adapter.resolveFlags(context);
-    expect(snapshot.flags.isAIAssistantEnabled).toBe(true);
-
-    const unsubscribe = adapter.subscribeToFlagChanges(context, (updated) => {
-      expect(updated.flags.isAIAssistantEnabled).toBe(true);
-    });
-
-    unsubscribe();
-  });
-
-  it('verifies SupabaseEntitlementAdapter compiles and resolves user entitlements', async () => {
+  it('verifies SupabaseEntitlementAdapter compiles and resolves user entitlements from DB', async () => {
+    mockLimit.mockResolvedValue([{ features: JSON.stringify(['ai_chat']), tier: 'PRO' }]);
     const adapter = new SupabaseEntitlementAdapter();
+
     const res = await adapter.getEntitlements('user-1');
     expect(res.pricingTier).toBe('PRO');
     expect(res.activeEntitlements).toContain('ai_chat');
 
+    // Second call: unknown user, FREE tier, pricing_manifest returns nothing for FREE
+    mockLimit.mockResolvedValue([]);
     const res2 = await adapter.getEntitlements('non-matching-user');
     expect(res2.pricingTier).toBe('FREE');
+    expect(res2.activeEntitlements).toEqual([]);
   });
 });

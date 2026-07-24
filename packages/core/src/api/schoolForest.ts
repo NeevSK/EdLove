@@ -22,6 +22,7 @@
  *   await schoolForestAPI.sendGratitudeGift(principalId, teacherId, 'lantern', message);
  */
 
+import { Effect } from 'effect';
 import { checkLocalPermission } from '../logic/permissions/localEvaluator';
 import { APIError } from '../types/API';
 import { identityAPI } from './identity';
@@ -512,16 +513,17 @@ export const schoolForestAPI = {
       );
     }
 
-    // Also create an Impact Ripple so it arrives through the normal delivery channel
-    void impactRipplesAPI
-      .createRipple({
-        recipientUserId,
-        actorUserId: principalUserId,
-        rippleType: 'principal_recognition',
-        sourceEntityType: 'gratitude_gift',
-        sourceEntityId: undefined,
-      })
-      .catch(() => {});
+    Effect.runFork(
+      Effect.promise(() =>
+        impactRipplesAPI.createRipple({
+          recipientUserId,
+          actorUserId: principalUserId,
+          rippleType: 'principal_recognition',
+          sourceEntityType: 'gratitude_gift',
+          sourceEntityId: undefined,
+        }),
+      ).pipe(Effect.catchAll((e) => Effect.logError('[SchoolForest] createRipple failed', e))),
+    );
   },
 
   /**

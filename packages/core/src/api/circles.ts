@@ -1,3 +1,4 @@
+import { Effect } from 'effect';
 import {
   CommunityGroupSchema,
   GroupMemberSchema,
@@ -6,6 +7,7 @@ import {
 import { applyTemporalFilter } from '../logic/utils/temporalUtils';
 import type { TemporalScale } from '../store/useTemporalStore';
 import type { Group } from '../types';
+import { APIError } from '../types/API';
 import { growthSignalsAPI } from './growthSignals';
 import { identityAPI } from './identity';
 import { impactRipplesAPI } from './impactRipples';
@@ -123,15 +125,17 @@ export const circleAPI = {
     });
 
     if (group?.creator_id && group.creator_id !== userId) {
-      void impactRipplesAPI
-        .createRipple({
-          recipientUserId: group.creator_id,
-          actorUserId: userId,
-          rippleType: 'circle_joined',
-          sourceEntityType: 'circle',
-          sourceEntityId: groupId,
-        })
-        .catch(() => {});
+      Effect.runFork(
+        Effect.promise(() =>
+          impactRipplesAPI.createRipple({
+            recipientUserId: group.creator_id,
+            actorUserId: userId,
+            rippleType: 'circle_joined',
+            sourceEntityType: 'circle',
+            sourceEntityId: groupId,
+          }),
+        ).pipe(Effect.catchAll((e) => Effect.logError('[circles] createRipple failed', e))),
+      );
     }
 
     return GroupMemberSchema.parse(data);
@@ -187,7 +191,7 @@ export const circleAPI = {
    */
   async sendGroupMessage(groupId: string, content: string) {
     const identity = await identityAPI.identifyActiveCitizen();
-    if (!identity) throw new Error('Not authenticated');
+    if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
     const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('group_messages')

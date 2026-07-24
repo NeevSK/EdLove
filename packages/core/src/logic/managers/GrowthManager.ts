@@ -1,3 +1,4 @@
+import { Effect } from 'effect';
 import { GROWTH_SIGNAL_MAP, type GrowthSignalType } from '../../api/growthSignals.generated';
 import type {
   BanyanStage,
@@ -120,6 +121,15 @@ const WHISPERED_MOMENT_SPECS: WhisperedMomentSpec[] = [
   },
 ];
 
+function fireAndForget<T>(fn: () => Promise<T>, label: string): Effect.Effect<void, never, never> {
+  return Effect.forkDaemon(
+    Effect.promise(fn).pipe(
+      Effect.catchAll((e) => Effect.logError(`[GrowthManager] ${label} failed`, e)),
+      Effect.asVoid,
+    ),
+  ).pipe(Effect.asVoid);
+}
+
 export class GrowthManager {
   constructor(private growthPort: IGrowthPort) {}
 
@@ -128,7 +138,11 @@ export class GrowthManager {
     event_type: GrowthSignalType;
     event_metadata?: Record<string, unknown>;
   }): void {
-    void this.emitSignal(input).catch(() => {});
+    Effect.runFork(
+      Effect.promise(() => this.emitSignal(input)).pipe(
+        Effect.catchAll((e) => Effect.logError('[GrowthManager] emitSilent failed', e)),
+      ),
+    );
   }
 
   async emitSignal(input: {
@@ -138,34 +152,44 @@ export class GrowthManager {
   }): Promise<void> {
     const { user_id: userId, event_type: signalType, event_metadata: metadata = {} } = input;
     const dimension = GROWTH_SIGNAL_MAP[signalType];
+    const self = this;
 
-    // 1. Record event
-    try {
-      await this.growthPort.recordEvent({
-        user_id: userId,
-        dimension,
-        event_type: signalType,
-        event_metadata: metadata,
-      });
-    } catch (e) {
-      console.warn('[GrowthManager] Failed to record event', e);
-      return;
-    }
+    await Effect.runPromise(
+      Effect.gen(function* () {
+        yield* Effect.tryPromise({
+          try: () => self.growthPort.recordEvent({ user_id: userId, dimension, event_type: signalType, event_metadata: metadata }),
+          catch: (e) => e,
+        }).pipe(
+          Effect.catchAll((e) => {
+            console.warn('[GrowthManager] Failed to record event', e);
+            return Effect.void;
+          }),
+        );
 
-    // 2. Increment dimension
-    void this.growthPort.incrementDimension(userId, `${dimension}_signals`).catch(() => {});
+        yield* fireAndForget(
+          () => self.growthPort.incrementDimension(userId, `${dimension}_signals`),
+          'incrementDimension',
+        );
 
-    // 3. Evaluate moments
-    void this.checkWhisperedMoments(userId, signalType).catch(() => {});
+        yield* fireAndForget(
+          () => self.checkWhisperedMoments(userId, signalType),
+          'checkWhisperedMoments',
+        );
 
-    // 4. Advance paths
-    void this.advancePaths(userId, signalType, metadata).catch(() => {});
+        yield* fireAndForget(
+          () => self.advancePaths(userId, signalType, metadata),
+          'advancePaths',
+        );
 
-    // 5. Challenges
-    const metric = SIGNAL_TO_CHALLENGE_METRIC[signalType];
-    if (metric) {
-      void this.recordChallengeContribution(userId, metric, metadata).catch(() => {});
-    }
+        const metric = SIGNAL_TO_CHALLENGE_METRIC[signalType];
+        if (metric) {
+          yield* fireAndForget(
+            () => self.recordChallengeContribution(userId, metric, metadata),
+            'recordChallengeContribution',
+          );
+        }
+      }),
+    );
   }
 
   private async checkWhisperedMoments(userId: string, signalType: GrowthSignalType) {
@@ -215,7 +239,7 @@ export class GrowthManager {
         return (await this.growthPort.countEvents(userId, ['assignment_graded'])) >= 10;
       case 'the_seeker': {
         const data = await this.growthPort.getEventMetadata(userId, 'app_opened');
-        const sections = new Set(data.map((m) => m.section).filter(Boolean));
+        const sections = new Set(data.map((m: any) => m.section).filter(Boolean));
         return ['community', 'library', 'self', 'classroom'].every((s) => sections.has(s));
       }
       case 'first_branch':
@@ -257,11 +281,9 @@ export class GrowthManager {
 
     const updates: Partial<UserGrowthState> = {};
 
-    // Bhumi (Lotus) Path
     const nextBhumi = this.evaluateBhumiTransition(state.bhumi_stage, state);
     if (nextBhumi) updates.bhumi_stage = nextBhumi;
 
-    // Banyan (Vata) Path
     if (BANYAN_SIGNALS.has(signalType)) {
       if (signalType === 'peer_mentored')
         updates.peer_mentored_count = (state.peer_mentored_count || 0) + 1;
@@ -272,7 +294,6 @@ export class GrowthManager {
       if (nextBanyan) updates.banyan_stage = nextBanyan;
     }
 
-    // River (Ganga) Path
     if (RIVER_SIGNALS.has(signalType)) {
       if (signalType === 'lesson_completed')
         updates.lessons_completed_count = (state.lessons_completed_count || 0) + 1;
@@ -283,7 +304,6 @@ export class GrowthManager {
       if (nextRiver) updates.river_stage = nextRiver;
     }
 
-    // Crystal Path
     if (signalType === 'crystal_found' || signalType === 'fractal_moment') {
       const isFractal = signalType === 'fractal_moment';
 
@@ -294,21 +314,23 @@ export class GrowthManager {
         updates.fractal_moments_count = (state.fractal_moments_count || 0) + 1;
       }
 
-      // Record the actual discovery record
-      void this.growthPort
-        .recordCrystalDiscovery({
-          user_id: userId,
-          crystal_type:
-            (metadata.crystal_type as any) || (isFractal ? 'fractal_crystal' : 'subject_crystal'),
-          subject_tags: (metadata.subject_tags as string[]) || [],
-          crystal_name_en:
-            (metadata.name_en as string) ||
-            (isFractal ? 'Fractal Connection' : 'Knowledge Crystal'),
-          crystal_description_en: (metadata.description_en as string) || null,
-          is_fractal_moment: isFractal,
-          source_entity_id: (metadata.source_entity_id as string) || null,
-        })
-        .catch(() => {});
+      Effect.runFork(
+        Effect.promise(() =>
+          this.growthPort.recordCrystalDiscovery({
+            user_id: userId,
+            crystal_type:
+              (metadata.crystal_type as 'subject_crystal' | 'connection_crystal' | 'deep_crystal' | 'fractal_crystal') || (isFractal ? 'fractal_crystal' : 'subject_crystal'),
+            subject_tags: (metadata.subject_tags as string[]) || [],
+            crystal_name_en:
+              (metadata.name_en as string) || (isFractal ? 'Fractal Connection' : 'Knowledge Crystal'),
+            crystal_description_en: (metadata.description_en as string) || null,
+            is_fractal_moment: isFractal,
+            source_entity_id: (metadata.source_entity_id as string) || null,
+          }),
+        ).pipe(
+          Effect.catchAll((e) => Effect.logError('[GrowthManager] recordCrystalDiscovery failed', e)),
+        ),
+      );
 
       const nextCrystal = this.evaluateCrystalTransition(state.crystal_tier, {
         ...state,
@@ -422,33 +444,52 @@ export class GrowthManager {
     const schoolId = metadata.school_id as string;
     const classroomId = metadata.classroom_id as string;
 
-    const challenges = await this.growthPort.getChallenges({
-      schoolId,
-      classroomId,
-      status: 'active',
-    });
+    const self = this;
+    await Effect.runPromise(
+      Effect.gen(function* () {
+        const [challenges, compasses] = yield* Effect.all(
+          [
+            Effect.promise(() =>
+              self.growthPort.getChallenges({ schoolId, classroomId, status: 'active' }),
+            ),
+            Effect.promise(() =>
+              self.growthPort.getPersonalCompasses({ userId, status: 'active' }),
+            ),
+          ],
+          { concurrency: 2 },
+        );
 
-    for (const challenge of challenges) {
-      if (challenge.metric === metric) {
-        await this.growthPort.updateChallenge(challenge.id, {
-          current_count: (challenge.current_count || 0) + 1,
-        });
-      }
-    }
+        const updates: Array<Effect.Effect<void>> = [];
 
-    const compasses = await this.growthPort.getPersonalCompasses({ userId, status: 'active' });
-    for (const compass of compasses) {
-      if (compass.metric === metric) {
-        await this.growthPort.updatePersonalCompass(compass.id, {
-          current_count: (compass.current_count || 0) + 1,
-        });
-      }
-    }
+        for (const challenge of challenges) {
+          if (challenge.metric === metric) {
+            updates.push(
+              Effect.promise(() =>
+                self.growthPort.updateChallenge(challenge.id, {
+                  current_count: (challenge.current_count || 0) + 1,
+                }),
+              ),
+            );
+          }
+        }
+
+        for (const compass of compasses) {
+          if (compass.metric === metric) {
+            updates.push(
+              Effect.promise(() =>
+                self.growthPort.updatePersonalCompass(compass.id, {
+                  current_count: (compass.current_count || 0) + 1,
+                }),
+              ),
+            );
+          }
+        }
+
+        yield* Effect.all(updates, { concurrency: 'unbounded' });
+      }),
+    );
   }
 
-  /**
-   * Public API for state retrieval
-   */
   async getGrowthState(userId: string) {
     return this.growthPort.getGrowthState(userId);
   }
@@ -487,9 +528,16 @@ export class GrowthManager {
 
   async clearPersonalCompass(userId: string) {
     const compasses = await this.getPersonalCompasses(userId);
-    for (const compass of compasses) {
-      await this.growthPort.updatePersonalCompass(compass.id, { status: 'expired' });
-    }
+    await Effect.runPromise(
+      Effect.all(
+        compasses.map((compass) =>
+          Effect.promise(() =>
+            this.growthPort.updatePersonalCompass(compass.id, { status: 'expired' }),
+          ),
+        ),
+        { concurrency: 'unbounded' },
+      ),
+    );
   }
 
   async recordCrystalDiscovery(discovery: Omit<CrystalDiscovery, 'id' | 'created_at'>) {
@@ -505,9 +553,6 @@ export class GrowthManager {
     return this.growthPort.recordContribution(userId, metric, classroomId, schoolId);
   }
 
-  /**
-   * Impact Ripples
-   */
   async createRipple(input: CreateRippleInput) {
     return this.growthPort.createRipple(input);
   }
@@ -524,9 +569,6 @@ export class GrowthManager {
     return this.growthPort.getDeliveredRipples(userId, since);
   }
 
-  /**
-   * Sacred Missions (Manifestos)
-   */
   async getManifestos(schoolId: string, userId?: string) {
     return this.growthPort.getManifestos(schoolId, userId);
   }
@@ -549,10 +591,6 @@ export class GrowthManager {
   async unendorseManifesto(manifestoId: string, userId: string) {
     return this.growthPort.unendorseManifesto(manifestoId, userId);
   }
-
-  /**
-   * Challenge Progress & Narrative
-   */
 
   getProgress(challenge: Challenge): ChallengeProgress {
     const fraction =

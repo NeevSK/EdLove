@@ -9,4 +9,5 @@ export type {
   FormPage,
   FormResponse,
   FormSchema,
+  ValidatorRule,
 } from '@intuitui-labs/form-builder-engine/schema';

@@ -1,12 +1,8 @@
 import { Effect, Fiber, Runtime } from 'effect';
 import { useCallback, useEffect, useState } from 'react';
 
-/**
- * Hook to run an Effect-TS effect within a React lifecycle.
- * Automatically handles cancellation (interruption) on unmount.
- */
-export function useSovereignEffect<A, E, R>(
-  effect: Effect.Effect<A, E, R>,
+export function useSovereignEffect<A, E>(
+  effect: Effect.Effect<A, E, never>,
   deps: React.DependencyList = [],
 ) {
   const [result, setResult] = useState<{
@@ -15,13 +11,11 @@ export function useSovereignEffect<A, E, R>(
     error?: E;
   }>({ status: 'idle' });
 
-  // eslint-disable-next-line
   useEffect(() => {
     setResult({ status: 'running' });
 
-    // 1. Create a fiber to track the execution
-    const program = Effect.gen(function* (_) {
-      const value = yield* _(effect);
+    const program = Effect.gen(function* () {
+      const value = yield* effect;
       setResult({ status: 'success', data: value });
     }).pipe(
       Effect.catchAll((error) => {
@@ -30,10 +24,8 @@ export function useSovereignEffect<A, E, R>(
       }),
     );
 
-    const runtime = Runtime.defaultRuntime as Runtime.Runtime<R>;
-    const fiber = Runtime.runFork(runtime)(program);
+    const fiber = Runtime.runFork(Runtime.defaultRuntime)(program);
 
-    // 2. Cleanup: Interrupt the fiber if the component unmounts
     return () => {
       Effect.runFork(Fiber.interrupt(fiber));
     };
@@ -44,12 +36,8 @@ export function useSovereignEffect<A, E, R>(
   return result;
 }
 
-/**
- * Hook to get a callback that runs an Effect.
- * Useful for event handlers (e.g., button clicks).
- */
-export function useSovereignCallback<Args extends Array<unknown>, A, E, R>(
-  effectFn: (...args: Args) => Effect.Effect<A, E, R>,
+export function useSovereignCallback<Args extends Array<unknown>, A, E>(
+  effectFn: (...args: Args) => Effect.Effect<A, E, never>,
 ) {
   const [status, setStatus] = useState<'idle' | 'running' | 'success' | 'failure'>('idle');
 
@@ -57,7 +45,7 @@ export function useSovereignCallback<Args extends Array<unknown>, A, E, R>(
     (...args: Args) => {
       setStatus('running');
 
-      return Runtime.runPromise(Runtime.defaultRuntime as Runtime.Runtime<R>)(
+      return Runtime.runPromise(Runtime.defaultRuntime)(
         effectFn(...args).pipe(
           Effect.tap(() => Effect.sync(() => setStatus('success'))),
           Effect.catchAll((e) => {

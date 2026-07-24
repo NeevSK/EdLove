@@ -12,7 +12,7 @@
  * these tests must be updated to reflect the new behavior.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { getDrizzleDB, registerPermissionValidator, setActiveCapabilityToken } from '../powersync/database';
+import { getDrizzleDB, registerPermissionValidator, setActiveCapabilityToken, registerPolicyVersionHash, registerOperationContext, resetSecureDrizzleState } from '../powersync/database';
 
 vi.mock('../../store/useStore', () => ({
   useStore: {
@@ -213,7 +213,7 @@ describe('secureDrizzleProxy — current per-write behavior (characterization)',
 
   describe('capability token path (ADR-012)', () => {
     beforeEach(() => {
-      setActiveCapabilityToken(null);
+      resetSecureDrizzleState();
       vi.clearAllMocks();
     });
 
@@ -222,6 +222,8 @@ describe('secureDrizzleProxy — current per-write behavior (characterization)',
       registerPermissionValidator(mockValidator);
       const tableObj = { _: { name: 'students' } };
 
+      registerPolicyVersionHash('abc123');
+      registerOperationContext('attendance:write');
       setActiveCapabilityToken({
         tokenId: 'tok-1',
         principalId: 'user-123',
@@ -237,6 +239,52 @@ describe('secureDrizzleProxy — current per-write behavior (characterization)',
 
       expect(mockValidator).not.toHaveBeenCalled();
       expect(mockExecute).toHaveBeenCalled();
+    });
+
+    it('falls back to per-write when policyVersionHash does not match', async () => {
+      const mockValidator = vi.fn().mockResolvedValue(true);
+      registerPermissionValidator(mockValidator);
+      const tableObj = { _: { name: 'students' } };
+
+      registerPolicyVersionHash('current-version-456');
+      registerOperationContext('attendance:write');
+      setActiveCapabilityToken({
+        tokenId: 'tok-stale',
+        principalId: 'user-123',
+        tenantId: 'school-456',
+        operationContext: 'attendance:write',
+        deviceId: 'device-1',
+        issuedAt: Date.now(),
+        expiresAt: Date.now() + 60_000,
+        policyVersionHash: 'old-version-123',
+      });
+
+      await secureDb.insert(tableObj).execute();
+
+      expect(mockValidator).toHaveBeenCalledTimes(1);
+    });
+
+    it('falls back to per-write when operationContext does not match', async () => {
+      const mockValidator = vi.fn().mockResolvedValue(true);
+      registerPermissionValidator(mockValidator);
+      const tableObj = { _: { name: 'students' } };
+
+      registerPolicyVersionHash('abc123');
+      registerOperationContext('attendance:write');
+      setActiveCapabilityToken({
+        tokenId: 'tok-wrong-ctx',
+        principalId: 'user-123',
+        tenantId: 'school-456',
+        operationContext: 'payments:process',
+        deviceId: 'device-1',
+        issuedAt: Date.now(),
+        expiresAt: Date.now() + 60_000,
+        policyVersionHash: 'abc123',
+      });
+
+      await secureDb.insert(tableObj).execute();
+
+      expect(mockValidator).toHaveBeenCalledTimes(1);
     });
 
     it('falls back to per-write validator when token is expired', async () => {
