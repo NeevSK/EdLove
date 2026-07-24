@@ -4,24 +4,41 @@ import type { CapabilityToken } from '../../logic/ports/authz.port';
 
 let _permissionValidator: ((params: any) => Promise<boolean>) | null = null;
 let _activeToken: CapabilityToken | null = null;
+let _currentPolicyHash: string | null = null;
+let _currentOperationContext: string | null = null;
 
-export function registerPermissionValidator(validator: (params: any) => Promise<boolean>): void {
+export function registerPermissionValidator(validator: ((params: any) => Promise<boolean>) | null): void {
   _permissionValidator = validator;
 }
 
-/**
- * Set an active capability token for the current operation context.
- * When set, secureDrizzleProxy validates writes against this token
- * instead of calling _permissionValidator per-write.
- * Set to null to revert to per-write behavior.
- */
 export function setActiveCapabilityToken(token: CapabilityToken | null): void {
   _activeToken = token;
+}
+
+export function registerPolicyVersionHash(hash: string | null): void {
+  _currentPolicyHash = hash;
+}
+
+export function registerOperationContext(context: string | null): void {
+  _currentOperationContext = context;
+}
+
+export function resetSecureDrizzleState(): void {
+  _permissionValidator = null;
+  _activeToken = null;
+  _currentPolicyHash = null;
+  _currentOperationContext = null;
 }
 
 function isTokenValid(token: CapabilityToken): { valid: boolean; reason?: string } {
   if (Date.now() > token.expiresAt) {
     return { valid: false, reason: 'Token expired' };
+  }
+  if (_currentPolicyHash && token.policyVersionHash !== _currentPolicyHash) {
+    return { valid: false, reason: 'Policy version changed since token issuance' };
+  }
+  if (_currentOperationContext && token.operationContext !== _currentOperationContext) {
+    return { valid: false, reason: 'Operation context mismatch' };
   }
   return { valid: true };
 }

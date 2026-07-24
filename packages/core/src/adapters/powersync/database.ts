@@ -23,6 +23,9 @@ import { createSecureDrizzleProxy } from './secureDrizzleProxy';
 export {
   registerPermissionValidator,
   setActiveCapabilityToken,
+  registerPolicyVersionHash,
+  registerOperationContext,
+  resetSecureDrizzleState,
 } from './secureDrizzleProxy';
 
 let _instance: PowerSyncDatabase | null = null;

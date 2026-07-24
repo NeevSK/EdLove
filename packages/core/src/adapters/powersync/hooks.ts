@@ -155,9 +155,10 @@ export function usePolicyVersionInvalidation(): void {
   const version = usePolicyVersion();
 
   if (version && version.hash !== _lastPolicyHash) {
+    const { setActiveCapabilityToken, registerPolicyVersionHash } = require('./database');
+    registerPolicyVersionHash(version.hash);
     if (_lastPolicyHash !== null) {
       // Hash changed — invalidate tokens
-      const { setActiveCapabilityToken } = require('./database');
       setActiveCapabilityToken(null);
     }
     _lastPolicyHash = version.hash;
