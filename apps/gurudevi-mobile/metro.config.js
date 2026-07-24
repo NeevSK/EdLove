@@ -231,6 +231,7 @@ const WEB_SHIMS = {
   '@maplibre/maplibre-react-native': path.resolve(projectRoot, 'src/shims/maplibre-web.js'),
   '@intuitui-labs/lk-edu-geo': path.resolve(projectRoot, 'src/shims/lk-edu-geo-web.js'),
   'srilankan-postalcode-backend': path.resolve(projectRoot, 'src/shims/postalcode-backend-web.js'),
+  'react-native-ease': path.resolve(projectRoot, 'src/shims/ease-web.js'),
 };
 
 const UNIVERSAL_SHIMS = {

@@ -1,28 +1,165 @@
 /**
- * Web shim for expo-file-system.
+ * Web shim for expo-file-system (Modern API).
  *
  * expo-file-system is a native-only module with no web implementation.
- * It is imported in PDFViewerScreen.tsx, but on web Metro resolves
- * PDFViewerScreen.web.tsx instead  so this module is never actually
- * called in a browser context.
+ * This shim provides no-op stubs for the modern object-based API (File, Directory, Paths)
+ * introduced in SDK 54 and stable in SDK 57.
  *
- * However, Metro still resolves ALL imports in every file it encounters while
- * building the dependency graph.  If another file (transitively) imports
- * expo-file-system and is NOT shimmed by a .web.tsx counterpart, the native
- * module init would crash the web build.
+ * The shim ensures that:
+ * 1. Metro can resolve imports without crashing the web build
+ * 2. Code using the modern API compiles and runs gracefully on web (operations are no-ops)
+ * 3. Type safety is maintained with class-based stubs
  *
- * This shim provides no-op stubs for every function used in this codebase
- * so those paths compile and run gracefully on web (they just do nothing).
+ * Legacy API compatibility is also provided for gradual migration.
  */
 
-module.exports = {
-  // Properties
+// Modern API - Paths
+const Paths = {
+  get cache() {
+    return 'file:///cache/';
+  },
+  get document() {
+    return 'file:///documents/';
+  },
+  get bundle() {
+    return 'file:///bundle/';
+  },
+};
+
+// Modern API - File class
+class File {
+  constructor(...pathSegments) {
+    this.uri = pathSegments.filter(Boolean).join('/');
+    this.exists = false;
+    this.size = 0;
+    this.modificationTime = 0;
+    this.type = 'file';
+  }
+
+  // Async methods
+  async text() {
+    return '';
+  }
+
+  async bytes() {
+    return new Uint8Array(0);
+  }
+
+  async base64() {
+    return '';
+  }
+
+  async write(content) {
+    // No-op on web
+  }
+
+  async delete() {
+    // No-op on web
+  }
+
+  async copy(destination) {
+    // No-op on web
+  }
+
+  async move(destination) {
+    // No-op on web
+  }
+
+  // Sync methods
+  textSync() {
+    return '';
+  }
+
+  bytesSync() {
+    return new Uint8Array(0);
+  }
+
+  base64Sync() {
+    return '';
+  }
+
+  writeSync(content) {
+    // No-op on web
+  }
+
+  deleteSync() {
+    // No-op on web
+  }
+
+  copySync(destination) {
+    // No-op on web
+  }
+
+  moveSync(destination) {
+    // No-op on web
+  }
+
+  // Blob interface
+  async arrayBuffer() {
+    return new ArrayBuffer(0);
+  }
+
+  get [Symbol.toStringTag]() {
+    return 'File';
+  }
+}
+
+// Modern API - Directory class
+class Directory {
+  constructor(...pathSegments) {
+    this.uri = pathSegments.filter(Boolean).join('/');
+    this.exists = false;
+    this.type = 'directory';
+  }
+
+  async create() {
+    // No-op on web
+  }
+
+  async delete() {
+    // No-op on web
+  }
+
+  async copy(destination) {
+    // No-op on web
+  }
+
+  async move(destination) {
+    // No-op on web
+  }
+
+  async read() {
+    return [];
+  }
+
+  createSync() {
+    // No-op on web
+  }
+
+  deleteSync() {
+    // No-op on web
+  }
+
+  copySync(destination) {
+    // No-op on web
+  }
+
+  moveSync(destination) {
+    // No-op on web
+  }
+
+  readSync() {
+    return [];
+  }
+}
+
+// Legacy API compatibility (for gradual migration)
+const LegacyFileSystem = {
   cacheDirectory: null,
   documentDirectory: null,
   bundleDirectory: null,
   bundledAssets: null,
 
-  // Functions  all return safe default values
   getInfoAsync: async () => ({
     exists: false,
     isDirectory: false,
@@ -48,4 +185,15 @@ module.exports = {
   EncodingType: { UTF8: 'utf8', Base64: 'base64' },
   FileSystemSessionType: { BACKGROUND: 'background', FOREGROUND: 'foreground' },
   FileSystemUploadType: { BINARY_DATA: 'binaryData', MULTIPART: 'multipart' },
+};
+
+module.exports = {
+  // Modern API exports
+  File,
+  Directory,
+  Paths,
+  // Legacy API for backward compatibility
+  default: LegacyFileSystem,
+  // Named legacy exports
+  ...LegacyFileSystem,
 };

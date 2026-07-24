@@ -705,6 +705,8 @@ export function AnimatedCard(props: CardProps) {
 ### Phase 1: Critical Fixes (Week 1 - COMPLETED)
 - [x] Fix `runOnJS` import in DraggableCanvasSurface.tsx
 - [x] Fix `runOnJS` import in SanctuaryToast.tsx
+- [x] Add react-native-worklets to packages/ui dependencies
+- [x] Upgrade to Worklets v0.11.1
 - [ ] Test gesture handlers with new imports
 - [ ] Test toast animations with new imports
 - [ ] Verify no runtime errors
