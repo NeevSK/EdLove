@@ -244,7 +244,8 @@ class PolymathPlatformServer {
         alwaysRun: true,
         command: 'node',
         args: [
-          path.join(__dirname, '..', 'node_modules', 'jscpd', 'run-jscpd.js'),
+          // jscpd is a root devDependency — resolve from monorepo root
+          path.join(__dirname, '..', '..', '..', 'node_modules', 'jscpd', 'run-jscpd.js'),
           '--mcp',
           '--directory',
           'apps/gurudevi-mobile',

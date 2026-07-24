@@ -63,6 +63,14 @@ export const config = [
       'local/max-use-state': ['error', { max: 3 }],
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
+      'no-restricted-imports': [
+        'error',
+        {
+          name: 'lucide-react-native',
+          message:
+            'Import icons from @repo/ui/icons instead of directly from lucide-react-native. See 2026-07-16-icon-bridge-contract.md.',
+        },
+      ],
       'no-restricted-syntax': [
         'error',
         {
