@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { EaseView } from 'react-native-ease';
 import { useTheme } from '../hooks/useTheme';
 import { Check, Clock, Lock } from '../icons';
 import { Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '../primitives';
@@ -169,23 +169,16 @@ function PollOptionRow({
   onVote,
 }: PollOptionRowProps) {
   const theme = useTheme();
-  const progress = useSharedValue(0);
 
-  useEffect(() => {
-    if (showResults) {
-      const pct = totalVotes > 0 ? (count / totalVotes) * 100 : 0;
-      progress.value = withTiming(pct, { duration: 500 });
-    } else {
-      progress.value = 0;
-    }
-  }, [count, totalVotes, showResults, progress]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    width: `${progress.value}%`,
-  }));
+  const pct = showResults ? (totalVotes > 0 ? (count / totalVotes) : 0) : 0;
 
   const isWinner = isExpired && count > 0 && count === maxCount;
   const canTap = !isExpired && !isVoting;
+  const barColor = isWinner
+    ? `${Theme.colors.sanctuarySaffron}20`
+    : isSelected
+      ? `${theme.accent.action}15`
+      : `${theme.scene.interactive.bg}40`;
 
   return (
     <Pressable
@@ -200,17 +193,15 @@ function PollOptionRow({
       `}
     >
       {showResults && (
-        <Reanimated.View
+        <EaseView
+          animate={{ scaleX: pct / 100 }}
+          transition={{ type: 'timing', duration: 500 }}
+          transformOrigin={{ x: 0, y: 0.5 }}
           style={[
             StyleSheet.absoluteFill,
             {
-              backgroundColor: isWinner
-                ? `${Theme.colors.sanctuarySaffron}20`
-                : isSelected
-                  ? `${theme.accent.action}15`
-                  : `${theme.scene.interactive.bg}40`,
+              backgroundColor: barColor,
             },
-            animatedStyle,
           ]}
         />
       )}

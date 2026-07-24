@@ -10,6 +10,16 @@ export type FieldType =
   | 'slider'
   | 'likert';
 
+export type ValidatorRule =
+  | { type: 'required'; message?: string }
+  | { type: 'email'; message?: string }
+  | { type: 'minLength'; value: number; message?: string }
+  | { type: 'maxLength'; value: number; message?: string }
+  | { type: 'min'; value: number; message?: string }
+  | { type: 'max'; value: number; message?: string }
+  | { type: 'pattern'; value: string; message?: string }
+  | { type: 'custom'; name: string };
+
 export interface FormField {
   id: string;
   name: string;
@@ -25,6 +35,7 @@ export interface FormField {
   order: number;
   config?: Record<string, unknown>;
   conditions?: unknown[];
+  rules?: ValidatorRule[];
 }
 
 export interface FieldDefinition {
@@ -41,6 +52,7 @@ export interface FieldDefinition {
   scaleType?: 'emoji' | 'numeric';
   config?: Record<string, unknown>;
   conditions?: unknown[];
+  rules?: ValidatorRule[];
 }
 
 export interface FormPage {

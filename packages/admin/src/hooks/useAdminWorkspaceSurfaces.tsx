@@ -43,12 +43,7 @@ export function appendAdminWorkspaceSurfaces(
   const citizenshipLevel =
     citizenship === 'FIRST_CLASS' ? 2 : citizenship === 'SECOND_CLASS' ? 1 : 0;
 
-  const adminGated = useFeatureRegistry(ADMIN_REGISTRY, {
-    citizenship: citizenshipLevel,
-    isPro,
-    capabilities: userCapabilities,
-    can,
-  });
+  const adminGated = useFeatureRegistry(ADMIN_REGISTRY);
 
   // --- Principal Dashboard ---
   const principalGate = adminGated.principal_dashboard;

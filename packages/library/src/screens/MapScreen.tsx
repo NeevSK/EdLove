@@ -1,4 +1,5 @@
-import { FeatureGuard, useStore } from '@repo/core/logic';
+import { useStore } from '@repo/core/logic';
+import { SanctuaryGuard } from '@repo/ui';
 import {
   CaptureEngine,
   getAvailablePerspectives as getEnginePerspectives,
@@ -237,7 +238,11 @@ export default function MapScreen() {
         showBack
         onBack={() => safeBack('/library')}
         rightAction={
-          <FeatureGuard feature="isProMember">
+          <SanctuaryGuard
+            action="export"
+            subject="LibraryMap"
+            requirement={{ citizenshipRequired: 2, entitlementTier: 'PRO' }}
+          >
             <Pressable
               onPress={() => {
                 void handleExport();
@@ -249,12 +254,12 @@ export default function MapScreen() {
                 opacity: isExporting || pressed ? 0.5 : 1,
               })}
             >
-              <SanctuaryIcon as={FileCheck} size={18} color={accentColor} className="mr-2" />
-              <Text className="text-xs font-bold" style={{ color: accentColor }}>
-                {isExporting ? '...' : 'EXPORT'}
+              <FileCheck size={20} className="text-phase-accent mr-2" />
+              <Text className="text-sm font-semibold text-phase-accent">
+                {isExporting ? 'Exporting...' : 'Export Map'}
               </Text>
             </Pressable>
-          </FeatureGuard>
+          </SanctuaryGuard>
         }
       />
 

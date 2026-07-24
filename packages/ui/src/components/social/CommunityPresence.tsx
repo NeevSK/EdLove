@@ -1,19 +1,6 @@
-/**
- * COMMUNITY PRESENCE
- * Shows how many teachers/students are currently online based on role.
- * Refactored for Sanctuary V3.
- * Promoted to @repo/ui/components/social
- */
-
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
+import { EaseView } from 'react-native-ease';
 import { Users, WifiOff } from '../../icons';
 import { Box, Heading, HStack, Icon, Spinner, Text, View, VStack } from '../../primitives';
 
@@ -57,26 +44,6 @@ export default function CommunityPresence({
   const { t } = useTranslation();
   const dominantVibe = userVibe;
 
-  const pulseScale = useSharedValue(1);
-  const pulseOpacity = useSharedValue(0.6);
-
-  useEffect(() => {
-    pulseScale.value = withRepeat(
-      withTiming(1.3, { duration: 2500, easing: Easing.inOut(Easing.ease) }),
-      -1,
-      true,
-    );
-    pulseOpacity.value = withRepeat(
-      withTiming(0.2, { duration: 2500, easing: Easing.inOut(Easing.ease) }),
-      -1,
-      true,
-    );
-  }, [pulseOpacity, pulseScale]);
-
-  const pulseStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: pulseScale.value }],
-    opacity: pulseOpacity.value,
-  }));
 
   const vibeClass = useMemo(
     () => (isOffline ? 'text-ink/40' : getVibeClass(dominantVibe)),
@@ -129,9 +96,13 @@ export default function CommunityPresence({
             <Icon as={Users} className={vibeClass} size="lg" />
           )}
           {!isOffline && (
-            <Animated.View style={pulseStyle}>
+            <EaseView
+              initialAnimate={{ scale: 1, opacity: 0.6 }}
+              animate={{ scale: 1.3, opacity: 0.2 }}
+              transition={{ type: 'timing', duration: 2500, easing: 'easeInOut', loop: 'reverse' }}
+            >
               <Box className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-phase-interactive" />
-            </Animated.View>
+            </EaseView>
           )}
         </View>
         <VStack className="gap-0.5">

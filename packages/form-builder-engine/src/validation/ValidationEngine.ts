@@ -1,8 +1,73 @@
-import type { FormSchema } from '../schema/FormSchema';
+import type { FormSchema, ValidatorRule } from '../schema/FormSchema';
 
 export interface ValidationResult {
   isValid: boolean;
   error?: string;
+}
+
+export function applyRule(rule: ValidatorRule, value: unknown, fieldName?: string): ValidationResult {
+  switch (rule.type) {
+    case 'required': {
+      const invalid =
+        value === undefined ||
+        value === null ||
+        (typeof value === 'string' && value.trim() === '');
+      return invalid
+        ? { isValid: false, error: rule.message || `${fieldName || 'Field'} is required` }
+        : { isValid: true };
+    }
+    case 'email': {
+      if (value === undefined || value === null || value === '') return { isValid: true };
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return regex.test(String(value))
+        ? { isValid: true }
+        : { isValid: false, error: rule.message || 'Invalid email format' };
+    }
+    case 'minLength': {
+      if (typeof value !== 'string') return { isValid: true };
+      return value.length >= rule.value
+        ? { isValid: true }
+        : { isValid: false, error: rule.message || `Must be at least ${rule.value} characters` };
+    }
+    case 'maxLength': {
+      if (typeof value !== 'string') return { isValid: true };
+      return value.length <= rule.value
+        ? { isValid: true }
+        : { isValid: false, error: rule.message || `Must be at most ${rule.value} characters` };
+    }
+    case 'min': {
+      const num = Number(value);
+      return !Number.isNaN(num) && num >= rule.value
+        ? { isValid: true }
+        : { isValid: false, error: rule.message || `Must be at least ${rule.value}` };
+    }
+    case 'max': {
+      const num = Number(value);
+      return !Number.isNaN(num) && num <= rule.value
+        ? { isValid: true }
+        : { isValid: false, error: rule.message || `Must be at most ${rule.value}` };
+    }
+    case 'pattern': {
+      if (typeof value !== 'string') return { isValid: true };
+      try {
+        return new RegExp(rule.value).test(value)
+          ? { isValid: true }
+          : { isValid: false, error: rule.message || 'Invalid format' };
+      } catch {
+        return { isValid: true };
+      }
+    }
+    case 'custom':
+      return { isValid: true };
+  }
+}
+
+export function validateRules(rules: ValidatorRule[], value: unknown, fieldName?: string): ValidationResult {
+  for (const rule of rules) {
+    const result = applyRule(rule, value, fieldName);
+    if (!result.isValid) return result;
+  }
+  return { isValid: true };
 }
 
 export const ValidationEngine = {

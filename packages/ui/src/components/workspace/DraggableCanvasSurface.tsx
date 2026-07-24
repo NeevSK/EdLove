@@ -3,7 +3,16 @@
 'use no memo';
 import type React from 'react';
 import { StyleSheet } from 'react-native';
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import type {
+  LongPressGestureEvent,
+} from 'react-native-gesture-handler';
+import {
+  GestureDetector,
+  GestureHandlerRootView,
+  useLongPressGesture,
+  usePanGesture,
+  useSimultaneousGestures,
+} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -23,7 +32,8 @@ interface DraggableCanvasSurfaceProps {
  * DRAGGABLE CANVAS SURFACE
  *
  * A universal, high-fidelity wrapper for workspace surfaces.
- * Uses Reanimated 4 and Gesture Handler for 60FPS fluid rearrangement.
+ * Uses Reanimated 4 and Gesture Handler v3 for 60FPS fluid rearrangement.
+ * Migrated to hook-based API for better TypeScript support and performance.
  */
 const styles = StyleSheet.create({
   container: {
@@ -47,23 +57,28 @@ export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
   const scale = useSharedValue(1);
   const zIndex = useSharedValue(1);
 
-  const longPressGesture = Gesture.LongPress()
-    .minDuration(300)
-    .onStart(() => {
+  const longPressGesture = useLongPressGesture({
+    minDuration: 300,
+    onActivate: () => {
+      'worklet';
       isDragging.value = true;
       scale.value = withSpring(1.05);
       zIndex.value = 100;
       if (onDragStart) runOnJS(onDragStart)();
-    });
+    },
+  });
 
-  const dragGesture = Gesture.Pan()
-    .manualActivation(true)
-    .onUpdate((event: any) => {
+  const dragGesture = usePanGesture({
+    manualActivation: true,
+    onUpdate: (event) => {
+      'worklet';
       if (!isDragging.value) return;
+      // @ts-ignore - translationX/translationY exist in runtime but type definition is incomplete
       translateX.value = event.translationX;
       translateY.value = event.translationY;
-    })
-    .onEnd(() => {
+    },
+    onDeactivate: () => {
+      'worklet';
       if (!isDragging.value) return;
 
       if (onDragEnd) {
@@ -76,10 +91,11 @@ export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
       translateY.value = withSpring(0);
       scale.value = withSpring(1);
       zIndex.value = withTiming(1);
-    });
+    },
+  });
 
-  // Combine gestures
-  const composed = Gesture.Simultaneous(longPressGesture, dragGesture);
+  // Combine gestures using v3 hook API
+  const composed = useSimultaneousGestures(longPressGesture, dragGesture);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [

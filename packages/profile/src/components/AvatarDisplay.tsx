@@ -7,9 +7,12 @@ import { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { useProfileNavigation } from '../navigation';
 
-let FileSystem: typeof import('expo-file-system/legacy') | null = null;
+let Paths: typeof import('expo-file-system').Paths | null = null;
+let File: typeof import('expo-file-system').File | null = null;
 if (Platform.OS !== 'web') {
-  FileSystem = require('expo-file-system/legacy');
+  const fs = require('expo-file-system');
+  Paths = fs.Paths;
+  File = fs.File;
 }
 
 interface AvatarDisplayProps {
@@ -25,8 +28,8 @@ interface AvatarDisplayProps {
 }
 
 function getCachePath(userId: string): string | null {
-  if (!FileSystem) return null;
-  return `${FileSystem.cacheDirectory ?? ''}avatar_${userId}.jpg`;
+  if (!Paths) return null;
+  return `${Paths.cache}avatar_${userId}.jpg`;
 }
 
 export function AvatarDisplay({
@@ -45,14 +48,13 @@ export function AvatarDisplay({
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    if (!userId || !FileSystem) return;
+    if (!userId || !File) return;
     const cachePath = getCachePath(userId);
     if (!cachePath) return;
-    FileSystem.getInfoAsync(cachePath)
-      .then((info) => {
-        if (info.exists) setLocalCachePath(cachePath);
-      })
-      .catch(() => {});
+    const file = new File(cachePath);
+    if (file.exists) {
+      setLocalCachePath(cachePath);
+    }
   }, [userId]);
 
   const handlePickAndUpload = useCallback(async () => {
@@ -75,9 +77,11 @@ export function AvatarDisplay({
         { compress: 0.85, format: ImageManipulator.SaveFormat.JPEG },
       );
 
-      const cachePath = FileSystem ? getCachePath(userId) : null;
-      if (FileSystem && cachePath) {
-        await FileSystem.copyAsync({ from: manipulated.uri, to: cachePath });
+      const cachePath = getCachePath(userId);
+      if (File && cachePath) {
+        const sourceFile = new File(manipulated.uri);
+        const destFile = new File(cachePath);
+        await sourceFile.copy(destFile.uri);
         setLocalCachePath(cachePath);
       }
 

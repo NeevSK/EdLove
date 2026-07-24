@@ -4,7 +4,8 @@
 
 import { identityAPI } from '@repo/core/api';
 import { useTracking } from '@repo/core/hooks';
-import { coreRuntime, FeatureGuard, useStore, useTemporalStore } from '@repo/core/logic';
+import { coreRuntime, useStore, useTemporalStore } from '@repo/core/logic';
+import { SanctuaryGuard } from '@repo/ui';
 import { CollectionCard } from '@repo/ui/components/CollectionCard';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { HorizontalChipRow } from '@repo/ui/components/HorizontalChipRow';
@@ -842,7 +843,7 @@ export default function LibraryScreen() {
               subject="LibraryCuratorDashboard"
             >
               <CuratorInvitation onPress={handleNavigateToCuratorReview} />
-            </FeatureGuard>
+            </SanctuaryGuard>
           );
         case 'CONTINUE_LEARNING':
           return (
@@ -982,7 +983,7 @@ export default function LibraryScreen() {
                   <Text className="text-[13px] font-bold text-phaseText-primary">+ Collection</Text>
                 </Pressable>
               </HStack>
-            </FeatureGuard>
+            </SanctuaryGuard>
           )}
 
           <Box className="flex-1 bg-phase-surface">

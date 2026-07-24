@@ -1,4 +1,5 @@
-import { FeatureGuard } from '@repo/core/logic';
+import { } from '@repo/core/logic';
+import { SanctuaryGuard } from '@repo/ui';
 import { Plus, ScanLine } from '@repo/ui/icons';
 import { Button, ButtonText, HStack, Icon } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
@@ -6,7 +7,7 @@ import { hapticLight } from '@repo/ui/utils/haptics';
 export function TeacherPrimaryActions({ onCreateClassroom }: { onCreateClassroom: () => void }) {
   return (
     <HStack className="gap-4 flex-wrap items-center">
-      <FeatureGuard action="create" subject="Classroom">
+      <SanctuaryGuard action="create" subject="Classroom" requirement={{ citizenshipRequired: 3 }}>
         <Button
           action="primary"
           onPress={() => {
@@ -22,8 +23,8 @@ export function TeacherPrimaryActions({ onCreateClassroom }: { onCreateClassroom
             </ButtonText>
           </HStack>
         </Button>
-      </FeatureGuard>
-      <FeatureGuard action="read" subject="Classroom">
+      </SanctuaryGuard>
+      <SanctuaryGuard action="read" subject="Classroom" requirement={{ citizenshipRequired: 3 }}>
         <Button
           variant="outline"
           className="rounded-full px-8 h-14 border-phase-canvas bg-phase-surface/50 shadow-sm active:bg-phase-canvas/20"
@@ -36,7 +37,7 @@ export function TeacherPrimaryActions({ onCreateClassroom }: { onCreateClassroom
             </ButtonText>
           </HStack>
         </Button>
-      </FeatureGuard>
+      </SanctuaryGuard>
     </HStack>
   );
 }

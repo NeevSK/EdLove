@@ -1,13 +1,5 @@
-import { Runtime } from '@repo/core/native';
-
-import React, { useEffect } from 'react';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withDelay,
-  withTiming,
-} from 'react-native-reanimated';
+import React from 'react';
+import { EaseView } from 'react-native-ease';
 import { View } from '../primitives';
 
 interface BreathAnimationProps {
@@ -17,66 +9,23 @@ interface BreathAnimationProps {
   direction?: 'up' | 'down' | 'none';
 }
 
-interface AnimatedContentProps {
-  children: React.ReactNode;
-  delay: number;
-  duration: number;
-  direction: 'up' | 'down' | 'none';
-}
-
-// Constants to avoid negative literals in worklets
 const Y_OFFSET = 20;
 
-/**
- * AnimatedContent - Internal component that owns the Reanimated shared values.
- * Only mounted when the JSI runtime is confirmed ready, preventing Bridgeless crashes.
- */
-const AnimatedContent = ({ children, delay, duration, direction }: AnimatedContentProps) => {
-  const opacity = useSharedValue(0);
-  const translateY = useSharedValue(direction === 'up' ? Y_OFFSET : direction === 'down' ? -Y_OFFSET : 0);
-
-  useEffect(() => {
-    opacity.value = withDelay(delay, withTiming(1, { duration, easing: Easing.out(Easing.quad) }));
-    translateY.value = withDelay(
-      delay,
-      withTiming(0, { duration, easing: Easing.out(Easing.quad) }),
-    );
-  }, [delay, duration, translateY, opacity]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ translateY: translateY.value }],
-  }));
-
-  return <Animated.View style={animatedStyle}>{children}</Animated.View>;
-};
-
-/**
- * BreathAnimation - Implements the "Breath-like Motion" from TAIL_FIN.md
- * Provides a staggered, smooth entry for UI elements.
- * Defers JSI-heavy Reanimated hooks into a child component that is only
- * rendered once the runtime is ready, preventing Bridgeless-mode crashes.
- */
 export const BreathAnimation = ({
   children,
   delay = 0,
   duration = 500,
   direction = 'up',
 }: BreathAnimationProps) => {
-  const [isReady, setIsReady] = React.useState(Runtime.isReady());
-
-  useEffect(() => {
-    if (isReady) return;
-    return Runtime.onReady(() => setIsReady(true));
-  }, [isReady]);
-
-  if (!isReady) {
-    return <View>{children}</View>;
-  }
+  const translateY = direction === 'up' ? Y_OFFSET : direction === 'down' ? -Y_OFFSET : 0;
 
   return (
-    <AnimatedContent delay={delay} duration={duration} direction={direction}>
+    <EaseView
+      initialAnimate={{ opacity: 0, translateY }}
+      animate={{ opacity: 1, translateY: 0 }}
+      transition={{ type: 'timing', duration, easing: [0, 0, 0.58, 1], delay }}
+    >
       {children}
-    </AnimatedContent>
+    </EaseView>
   );
 };

@@ -1,6 +1,7 @@
 import { appendAdminWorkspaceSurfaces } from '@repo/admin';
 import { useFeatureRegistry } from '@repo/core/hooks/useFeatureRegistry';
-import { FeatureGuard } from '@repo/core/logic';
+import { } from '@repo/core/logic';
+import { SanctuaryGuard } from '@repo/ui';
 import type {
   ClassroomWorkspaceSurface,
   ClassroomWorkspaceSurfaceId,
@@ -80,12 +81,7 @@ export function useClassroomWorkspaceSurfaces({
   const router = useRouter();
   const citizenshipLevel = CITIZENSHIP_MAP[citizenship] ?? 0;
 
-  const classroomGated = useFeatureRegistry(CLASSROOM_REGISTRY, {
-    citizenship: citizenshipLevel,
-    isPro,
-    capabilities: userCapabilities,
-    can,
-  });
+  const classroomGated = useFeatureRegistry(CLASSROOM_REGISTRY);
   const renderNudge = () => {
     if (classroomData && !classroomData.profileCompleted && !isGuest) {
       return (
@@ -101,7 +97,7 @@ export function useClassroomWorkspaceSurfaces({
 
     return (
       <>
-        <FeatureGuard action="read" subject="TeacherPulse">
+        <SanctuaryGuard action="read" subject="TeacherPulse" requirement={{ citizenshipRequired: 3 }}>
           <SanctuaryNudge
             title={t('classroom.nudges.breathing.title') || 'Feeling Overwhelmed?'}
             description={
@@ -112,8 +108,8 @@ export function useClassroomWorkspaceSurfaces({
             onAction={() => setBreathingOpen(true)}
             icon={Wind}
           />
-        </FeatureGuard>
-        <FeatureGuard action="read" subject="PrincipalPulse">
+        </SanctuaryGuard>
+        <SanctuaryGuard action="read" subject="PrincipalPulse" requirement={{ citizenshipRequired: 3 }}>
           <SanctuaryNudge
             title={t('principal.nudges.breathing.title') || 'Leadership Clarity'}
             description={
@@ -124,8 +120,8 @@ export function useClassroomWorkspaceSurfaces({
             onAction={() => setBreathingOpen(true)}
             icon={Wind}
           />
-        </FeatureGuard>
-        <FeatureGuard action="read" subject="FounderPulse">
+        </SanctuaryGuard>
+        <SanctuaryGuard action="read" subject="FounderPulse" requirement={{ citizenshipRequired: 3 }}>
           <SanctuaryNudge
             title={t('founder.nudges.breathing.title') || 'Visionary Pulse'}
             description={
@@ -136,8 +132,8 @@ export function useClassroomWorkspaceSurfaces({
             onAction={() => setBreathingOpen(true)}
             icon={Wind}
           />
-        </FeatureGuard>
-        <FeatureGuard action="read" subject="StudentPulse">
+        </SanctuaryGuard>
+        <SanctuaryGuard action="read" subject="StudentPulse" requirement={{ citizenshipRequired: 3 }}>
           <SanctuaryNudge
             title={t('student.nudges.breathing.title') || 'Learning Fuel'}
             description={
@@ -148,7 +144,7 @@ export function useClassroomWorkspaceSurfaces({
             onAction={() => setBreathingOpen(true)}
             icon={Wind}
           />
-        </FeatureGuard>
+        </SanctuaryGuard>
       </>
     );
   };

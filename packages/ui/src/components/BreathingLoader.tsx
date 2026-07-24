@@ -1,28 +1,8 @@
-/**
- * BREATHING LOADER - Pulsing Circle Animation
- *
- * A simple loader component with a breathing animation:
- * - Pulsing circle that scales from 0.8 to 1.0
- * - 1.5 second infinite loop cycle
- * - Centered in parent container
- * - Customizable size and color
- * - Respects reduced-motion accessibility preference
- *
- * Philosophy: Calm, meditative loading state that doesn't distract
- */
-
-import { type FC, useEffect } from 'react';
+import { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet } from 'react-native';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
+import { StyleSheet, View } from 'react-native';
+import { EaseView } from 'react-native-ease';
 import { useAccessibility } from '../hooks/useAccessibility';
-import { View } from '../primitives';
 import { Theme } from '../theme/Theme';
 
 interface BreathingLoaderProps {
@@ -42,26 +22,6 @@ const BreathingLoader: FC<BreathingLoaderProps> = ({
 }) => {
   const { isReduceMotionEnabled } = useAccessibility();
   const { t } = useTranslation();
-  const scale = useSharedValue(SCALE_MIN);
-
-  useEffect(() => {
-    if (isReduceMotionEnabled) {
-      scale.value = SCALE_MAX;
-      return;
-    }
-    scale.value = withRepeat(
-      withTiming(SCALE_MAX, {
-        duration: ANIMATION_DURATION,
-        easing: Easing.inOut(Easing.ease),
-      }),
-      -1,
-      true,
-    );
-  }, [isReduceMotionEnabled, scale]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
 
   return (
     <View
@@ -70,7 +30,14 @@ const BreathingLoader: FC<BreathingLoaderProps> = ({
       accessibilityRole="progressbar"
       accessibilityLabel={t('accessibility.loading')}
     >
-      <Animated.View
+      <EaseView
+        initialAnimate={{ scale: isReduceMotionEnabled ? SCALE_MAX : SCALE_MIN }}
+        animate={{ scale: isReduceMotionEnabled ? SCALE_MAX : SCALE_MAX }}
+        transition={
+          isReduceMotionEnabled
+            ? { type: 'none' }
+            : { type: 'timing', duration: ANIMATION_DURATION, easing: 'easeInOut', loop: 'reverse' }
+        }
         style={[
           styles.circle,
           {
@@ -79,7 +46,6 @@ const BreathingLoader: FC<BreathingLoaderProps> = ({
             borderRadius: size / 2,
             backgroundColor: color,
           },
-          animatedStyle,
         ]}
       />
     </View>

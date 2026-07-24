@@ -1,5 +1,6 @@
 import { useTracking } from '@repo/core/hooks';
-import { FeatureGuard, usePermissions } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { SanctuaryGuard } from '@repo/ui';
 
 import { useEffect } from 'react';
 import {
@@ -24,7 +25,7 @@ export default function SelfScreen() {
   }, [discoverFeature]);
 
   return (
-    <FeatureGuard feature="isSelfWorkspaceEnabled">
+    <SanctuaryGuard action="read" subject="isSelfWorkspaceEnabled" requirement={{ flagKey: "isSelfWorkspaceEnabled" }}>
       {(() => {
         const role = context.capacity;
 
@@ -54,6 +55,6 @@ export default function SelfScreen() {
 
         return <StudentSelfView />;
       })()}
-    </FeatureGuard>
+    </SanctuaryGuard>
   );
 }

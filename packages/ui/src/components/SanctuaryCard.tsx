@@ -1,22 +1,7 @@
-/**
- * SANCTUARY CARD - Reusable Card Component
- *
- * A versatile card component that follows sanctuary design principles:
- * - Organic corners (never sharp)
- * - Soft shadows when elevated
- * - Lift animation when pressable
- *
- * Philosophy: Simple, reusable foundation for UI cards
- */
-
 import { type FC, useState } from 'react';
 import { Platform } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { EaseView } from 'react-native-ease';
 import { Box, Pressable, Text, VStack } from '../gluestack';
-
-// ============================================================================
-// TYPES
-// ============================================================================
 
 interface SanctuaryCardProps {
   title?: string;
@@ -32,16 +17,8 @@ interface SanctuaryCardProps {
   className?: string;
 }
 
-// ============================================================================
-// CONSTANTS
-// ============================================================================
-
 const LIFT_SCALE_NORMAL = 1.0;
 const LIFT_SCALE_PRESSED = 1.02;
-
-// ============================================================================
-// MAIN COMPONENT
-// ============================================================================
 
 const SanctuaryCard: FC<SanctuaryCardProps> = ({
   title,
@@ -56,47 +33,22 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
   accessibilityLabel,
   className,
 }) => {
-  // Hover state - only meaningful on web (desktop pointer devices)
   const [hovered, setHovered] = useState(false);
-
-  // Shared value for lift animation
-  const scale = useSharedValue(LIFT_SCALE_NORMAL);
-
-  // ============================================================================
-  // ANIMATION: LIFT EFFECT (when pressable)
-  // ============================================================================
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: scale.value }],
-    };
-  });
+  const [pressed, setPressed] = useState(false);
 
   const handlePressIn = () => {
-    if (onPress || href) {
-      scale.value = withSpring(LIFT_SCALE_PRESSED, {
-        damping: 15,
-        stiffness: 150,
-      });
-    }
+    if (onPress || href) setPressed(true);
   };
 
   const handlePressOut = () => {
-    if (onPress || href) {
-      scale.value = withSpring(LIFT_SCALE_NORMAL, {
-        damping: 15,
-        stiffness: 150,
-      });
-    }
+    if (onPress || href) setPressed(false);
   };
 
-  // ============================================================================
-  // RENDER: Container Level
-  // ============================================================================
-
   const content = (
-    <Animated.View
-      style={[onPress || href ? animatedStyle : undefined, style]}
+    <EaseView
+      animate={(onPress || href) ? { scale: pressed ? LIFT_SCALE_PRESSED : LIFT_SCALE_NORMAL } : undefined}
+      transition={(onPress || href) ? { type: 'spring', damping: 15, stiffness: 150 } : undefined}
+      style={style}
       className={`
                 bg-phase-surface border border-white/5 rounded-3xl overflow-hidden
                 ${elevated ? 'shadow-xl shadow-black/20' : ''}
@@ -105,13 +57,8 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
             `}
     >
       <VStack className="p-6">
-        {/* Title Section */}
         {title && <Text className="text-xl font-bold text-phase-text-primary mb-4">{title}</Text>}
-
-        {/* Children Content */}
         <Box className="gap-4">{children}</Box>
-
-        {/* Footer Section */}
         {footer && (
           <VStack className="mt-4 gap-4">
             <Box className="h-px bg-white/5 opacity-30" />
@@ -119,7 +66,7 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
           </VStack>
         )}
       </VStack>
-    </Animated.View>
+    </EaseView>
   );
 
   if (onPress || href) {

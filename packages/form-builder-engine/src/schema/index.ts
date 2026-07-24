@@ -6,4 +6,5 @@ export type {
   FormResponse,
   FormSchema,
   FormSettings,
+  ValidatorRule,
 } from '../schema/FormSchema';

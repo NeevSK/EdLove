@@ -1,4 +1,5 @@
-import { FeatureGuard, useStore } from '@repo/core/logic';
+import { useStore } from '@repo/core/logic';
+import { SanctuaryGuard } from '@repo/ui';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { ChevronLeft, Send, Sparkles } from '@repo/ui/icons';
 import { Box, HStack, Text, useTheme, VStack } from '@repo/ui/primitives';
@@ -70,7 +71,7 @@ export default function AIAssistantScreen() {
   };
 
   return (
-    <FeatureGuard feature="isAIAssistantEnabled">
+    <SanctuaryGuard action="read" subject="isAIAssistantEnabled" requirement={{ flagKey: "isAIAssistantEnabled" }}>
       <ScreenWrapper backgroundColor={gradientNodes[0]}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -198,7 +199,7 @@ export default function AIAssistantScreen() {
           </Box>
         </KeyboardAvoidingView>
       </ScreenWrapper>
-    </FeatureGuard>
+    </SanctuaryGuard>
   );
 }
 

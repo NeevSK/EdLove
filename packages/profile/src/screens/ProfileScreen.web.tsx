@@ -1,8 +1,8 @@
 import { usePermissions, useStore } from '@repo/core/logic';
+import { SignupPrompt } from '@repo/ui';
 
 import { StaffPresencePulse } from '@repo/people';
 import { QRCodeGenerator } from '@repo/scanner-kit';
-import CitizenGate from '@repo/ui/components/CitizenGate';
 import { Briefcase, CircleCheck, FileText, Globe, GraduationCap, SquarePen } from '@repo/ui/icons';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -426,11 +426,7 @@ export default function ProfileScreenWeb({
 
                 {isOwnProfile && context.isAnonymous && (
                   <div style={{ marginTop: '12px' }}>
-                    <CitizenGate
-                      context="profile"
-                      title="Upgrade to edit your profile"
-                      description="Create an account to save your identity across devices and unlock citizen features."
-                      actionLabel="Create account"
+                    <SignupPrompt
                       onAction={() => navigation.openAuth?.()}
                     />
                   </div>

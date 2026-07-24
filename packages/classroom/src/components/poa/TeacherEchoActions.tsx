@@ -1,4 +1,5 @@
-import { FeatureGuard } from '@repo/core/logic';
+import { } from '@repo/core/logic';
+import { SanctuaryGuard } from '@repo/ui';
 import { ClipboardList, MessageCircle } from '@repo/ui/icons';
 import { Button, ButtonText, HStack, Icon } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
@@ -9,7 +10,7 @@ export function TeacherEchoActions() {
 
   return (
     <HStack className="gap-4 flex-wrap items-center">
-      <FeatureGuard action="read" subject="School">
+      <SanctuaryGuard action="read" subject="School" requirement={{ citizenshipRequired: 3 }}>
         <Button
           variant="outline"
           onPress={hapticLight}
@@ -22,8 +23,8 @@ export function TeacherEchoActions() {
             </ButtonText>
           </HStack>
         </Button>
-      </FeatureGuard>
-      <FeatureGuard action="read" subject="School">
+      </SanctuaryGuard>
+      <SanctuaryGuard action="read" subject="School" requirement={{ citizenshipRequired: 3 }}>
         <Button
           variant="outline"
           onPress={hapticLight}
@@ -36,7 +37,7 @@ export function TeacherEchoActions() {
             </ButtonText>
           </HStack>
         </Button>
-      </FeatureGuard>
+      </SanctuaryGuard>
     </HStack>
   );
 }

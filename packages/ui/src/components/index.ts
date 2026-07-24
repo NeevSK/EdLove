@@ -5,9 +5,7 @@ export { default as AchievementUnlockOverlay } from './AchievementUnlockOverlay'
 export { AdaptiveLayout } from './AdaptiveLayout';
 export * from './BreathAnimation';
 export { default as BreathingLoader } from './BreathingLoader';
-export { CapabilityGuard } from './CapabilityGuard';
-export type { CitizenGateProps } from './CitizenGate';
-export { default as CitizenGate } from './CitizenGate';
+export { SanctuaryGuard } from './SanctuaryGuard';
 export type { CollectionCardProps } from './CollectionCard';
 export { CollectionCard } from './CollectionCard';
 export type { ComposerProps, Tag as ComposerTag } from './ContentComposer';
@@ -113,3 +111,6 @@ export { UserAvatar } from './UserAvatar';
 export * from './visualization';
 export { WebScreenHeader } from './WebScreenHeader.web';
 export * from './workspace';
+export { SignupPrompt } from './prompts/SignupPrompt';
+export { SchoolJoinPrompt } from './prompts/SchoolJoinPrompt';
+export { UpgradePrompt } from './prompts/UpgradePrompt';

@@ -1,4 +1,5 @@
-import { FeatureGuard } from '@repo/core/logic';
+import { } from '@repo/core/logic';
+import { SanctuaryGuard } from '@repo/ui';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import SandboxBanner from '@repo/ui/components/SandboxBanner';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
@@ -140,7 +141,7 @@ export function PrincipalNativeDashboardShell({
               }
             >
               {children}
-            </FeatureGuard>
+            </SanctuaryGuard>
           )}
         </VStack>
       </ScrollView>

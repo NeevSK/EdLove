@@ -1,4 +1,5 @@
-import { FeatureGuard } from '@repo/core/logic';
+import { } from '@repo/core/logic';
+import { SanctuaryGuard } from '@repo/ui';
 import { History, MessageSquare, Plus, QrCode } from '@repo/ui/icons';
 import { Icon, Pressable, Text } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
@@ -10,7 +11,7 @@ interface ActionProps {
 }
 
 export const TeacherCreateClassroomAction: React.FC<ActionProps> = ({ onCreateClassroom }) => (
-  <FeatureGuard action="create" subject="Classroom">
+  <SanctuaryGuard action="create" subject="Classroom" requirement={{ citizenshipRequired: 3 }}>
     <Pressable
       onPress={() => {
         hapticLight();
@@ -23,11 +24,11 @@ export const TeacherCreateClassroomAction: React.FC<ActionProps> = ({ onCreateCl
         Create Sanctuary
       </Text>
     </Pressable>
-  </FeatureGuard>
+  </SanctuaryGuard>
 );
 
 export const TeacherScanQRAction: React.FC = () => (
-  <FeatureGuard action="manage" subject="Attendance">
+  <SanctuaryGuard action="manage" subject="Attendance" requirement={{ citizenshipRequired: 3 }}>
     <Pressable
       onPress={hapticLight}
       className="flex-row items-center gap-2.5 px-8 py-3 rounded-full bg-phase-surface/50 border border-phase-canvas shadow-sm active:bg-phase-canvas/20"
@@ -37,11 +38,11 @@ export const TeacherScanQRAction: React.FC = () => (
         Scan Resonance
       </Text>
     </Pressable>
-  </FeatureGuard>
+  </SanctuaryGuard>
 );
 
 export const TeacherPrincipalEchoAction: React.FC = () => (
-  <FeatureGuard action="read" subject="Announcement">
+  <SanctuaryGuard action="read" subject="Announcement" requirement={{ citizenshipRequired: 3 }}>
     <Pressable
       onPress={hapticLight}
       className="flex-row items-center gap-2.5 px-8 py-3 rounded-full bg-phase-surface/50 border border-phase-canvas shadow-sm active:bg-phase-canvas/20"
@@ -51,11 +52,11 @@ export const TeacherPrincipalEchoAction: React.FC = () => (
         Principal's Echo
       </Text>
     </Pressable>
-  </FeatureGuard>
+  </SanctuaryGuard>
 );
 
 export const TeacherMyEchoesAction: React.FC = () => (
-  <FeatureGuard action="manage" subject="Announcement">
+  <SanctuaryGuard action="manage" subject="Announcement" requirement={{ citizenshipRequired: 3 }}>
     <Pressable
       onPress={hapticLight}
       className="flex-row items-center gap-2.5 px-8 py-3 rounded-full bg-phase-surface/50 border border-phase-canvas shadow-sm active:bg-phase-canvas/20"
@@ -65,5 +66,5 @@ export const TeacherMyEchoesAction: React.FC = () => (
         My Echoes
       </Text>
     </Pressable>
-  </FeatureGuard>
+  </SanctuaryGuard>
 );
