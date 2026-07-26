@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { GrowthBookFeatureRolloutAdapter } from '../feature-rollout/growthBookFeatureRollout.adapter';
 import type { UserContext } from '../../logic/schemas/user.schema';
+import { GrowthBookFeatureRolloutAdapter } from '../feature-rollout/growthBookFeatureRollout.adapter';
 
 // Mock GrowthBook SDK internally to prevent network calls
 vi.mock('@growthbook/growthbook', () => {
@@ -10,8 +10,8 @@ vi.mock('@growthbook/growthbook', () => {
 
     constructor() {}
 
-    loadFeatures() {
-      return Promise.resolve();
+    init() {
+      return Promise.resolve({ success: true, source: 'network' });
     }
 
     setAttributes(attrs: any) {
@@ -54,6 +54,7 @@ describe('GrowthBookFeatureRolloutAdapter', () => {
 
     const snapshot = await adapter.resolveFlags(context);
     expect(snapshot.flags['new-dashboard']).toBe(true);
+    expect(snapshot.source).toBe('remote');
 
     const contextFree = {
       userId: 'user-123',

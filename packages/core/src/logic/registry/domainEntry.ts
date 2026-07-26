@@ -15,11 +15,30 @@ import { CITIZENSHIP } from '@/logic/registry/citizenship';
  */
 
 export const FeatureStateSchema = z.enum([
-  'development',   // not shipped to any user
-  'beta',          // early access, opt-in rollout
-  'live',          // fully shipped and stable
-  'deprecated',    // being phased out
+  'development', // not shipped to any user
+  'beta', // early access, opt-in rollout
+  'live', // fully shipped and stable
+  'deprecated', // being phased out
 ]);
+
+export const FeatureFlagClassSchema = z.enum(['release', 'experiment', 'beta', 'operational']);
+
+export const FeatureLifecycleSchema = z
+  .object({
+    owner: z.string().min(1),
+    createdAt: z.string().date(),
+    reviewAt: z.string().date(),
+    removalTarget: z.string().date().optional(),
+    permanentJustification: z.string().min(1).optional(),
+    flagClass: FeatureFlagClassSchema.optional(),
+  })
+  .refine(({ removalTarget, permanentJustification }) => removalTarget || permanentJustification, {
+    message: 'Lifecycle metadata requires a removalTarget or permanentJustification.',
+  });
+
+export function defineFeatureLifecycle(lifecycle: FeatureLifecycle): FeatureLifecycle {
+  return FeatureLifecycleSchema.parse(lifecycle);
+}
 
 export const CitizenshipLevelSchema = z.union([
   z.literal(CITIZENSHIP.FIRST_CLASS),
@@ -27,13 +46,7 @@ export const CitizenshipLevelSchema = z.union([
   z.literal(CITIZENSHIP.THIRD_CLASS),
 ]);
 
-export const TabDomainSchema = z.enum([
-  'self',
-  'workspace',
-  'community',
-  'library',
-  'profile',
-]);
+export const TabDomainSchema = z.enum(['self', 'workspace', 'community', 'library', 'profile']);
 
 export const DomainEntrySchema = z.object({
   // ── Identity ──────────────────────────────────────────────────────
@@ -52,6 +65,15 @@ export const DomainEntrySchema = z.object({
   // 'deprecated' domains are hidden and being removed.
   state: FeatureStateSchema,
   flagKey: z.string().optional(),
+  lifecycle: FeatureLifecycleSchema,
+  presentation: z
+    .object({
+      title: z.string(),
+      accentColor: z.string(),
+      energyVibe: z.tuple([z.string(), z.string()]).optional(),
+      featureIds: z.array(z.string()).optional(),
+    })
+    .optional(),
 
   // ── Gate requirements ─────────────────────────────────────────────
   // What useSanctuaryFeature evaluates.
@@ -77,4 +99,6 @@ export const DomainEntrySchema = z.object({
 
 export type DomainEntry = z.infer<typeof DomainEntrySchema>;
 export type FeatureState = z.infer<typeof FeatureStateSchema>;
+export type FeatureFlagClass = z.infer<typeof FeatureFlagClassSchema>;
+export type FeatureLifecycle = z.infer<typeof FeatureLifecycleSchema>;
 export type TabDomain = z.infer<typeof TabDomainSchema>;

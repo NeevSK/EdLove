@@ -1,4 +1,5 @@
 import { GrowthBook, setPolyfills } from '@growthbook/growthbook';
+import { trackEvent } from '@/lib/monitoring/posthog';
 import { storage } from '@/lib/storage';
 import type {
   FeatureRolloutSnapshot,
@@ -16,6 +17,8 @@ setPolyfills({
 
 export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
   private growthbook: GrowthBook;
+  private readonly initialization: Promise<void>;
+  private snapshotSource: FeatureRolloutSnapshot['source'] = 'computed';
 
   constructor(apiHost?: string, clientKey?: string) {
     this.growthbook = new GrowthBook({
@@ -34,11 +37,24 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
       },
     });
 
-    // Auto load cached features from storage polyfill on initialization
-    void this.growthbook.loadFeatures({ autoRefresh: true }).catch(() => {});
+    // Resolve the initial payload before evaluating flags. GrowthBook may use a
+    // last-known-good cache when offline and can stream later updates.
+    this.initialization = this.growthbook
+      .init({ streaming: true })
+      .then((result) => {
+        this.snapshotSource =
+          result.source === 'cache' ? 'cache' : result.source === 'network' ? 'remote' : 'computed';
+      })
+      .catch(() => {
+        // The local persisted snapshot remains the safe fallback when the
+        // control plane is unavailable.
+        this.snapshotSource = 'computed';
+      });
   }
 
   async resolveFlags(context: UserContext): Promise<FeatureRolloutSnapshot> {
+    await this.initialization;
+
     // Map UserContext to GrowthBook attributes
     const attributes = {
       id: context.userId || undefined,
@@ -64,7 +80,7 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
 
     return {
       flags,
-      source: 'computed',
+      source: this.snapshotSource,
       refreshedAt: new Date().toISOString(),
     };
   }
@@ -85,6 +101,9 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
   }
 
   trackExposure(flagKey: string, value: boolean | string): void {
-    console.debug(`[GrowthBook Exposure] ${flagKey} = ${value}`);
+    trackEvent('feature_flag_exposure', {
+      flag_key: flagKey,
+      flag_value: value,
+    });
   }
 }

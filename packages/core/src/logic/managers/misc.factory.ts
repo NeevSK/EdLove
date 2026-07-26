@@ -1,6 +1,5 @@
 import { createSupabaseRealtimeAdapter } from '@/adapters/realtime/supabase.adapter';
 import { createSupabaseAuditRepository } from '@/adapters/supabase/auditRepository';
-import { SupabaseGlobalConfigAdapter } from '@/adapters/supabase/globalConfig.adapter';
 import { createSupabaseTeacherInsightsRepository } from '@/adapters/supabase/teacherInsightsRepository';
 import { createSupabaseTeacherRepository } from '@/adapters/supabase/teacherRepository';
 import { SupabaseDeviceSecurityAdapter } from '@/adapters/supabaseDeviceSecurity.adapter';
@@ -10,7 +9,6 @@ import { auth } from '@/logic/managers/auth.factory';
 import { DeepLinkManager } from '@/logic/managers/DeepLinkManager';
 import { DeviceIdentityManager } from '@/logic/managers/DeviceIdentityManager';
 import { DeviceSecurityManager } from '@/logic/managers/DeviceSecurityManager';
-import { GlobalConfigManager } from '@/logic/managers/GlobalConfigManager';
 import { RealtimeManager } from '@/logic/managers/RealtimeManager';
 import { TeacherInsightsManager } from '@/logic/managers/TeacherInsightsManager';
 import { TeacherManager } from '@/logic/managers/TeacherManager';
@@ -52,11 +50,6 @@ export const teacher = new TeacherManager(
 export const teacherInsights = new TeacherInsightsManager(
   createSupabaseTeacherInsightsRepository(__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__),
 );
-
-/**
- * globalConfig: The Global Sovereign Config Instance.
- */
-export const globalConfig = new GlobalConfigManager(new SupabaseGlobalConfigAdapter());
 
 /**
  * deviceIdentity: The Global Sovereign DeviceIdentity Instance.

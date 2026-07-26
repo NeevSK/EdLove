@@ -1,7 +1,7 @@
-import { getDomainEntry } from '@/logic/registry/appCatalog';
 import { useSanctuaryFeature } from '@/logic/permissions/hooks/useSanctuaryFeature';
-import type { DomainEntry } from '@/logic/registry/domainEntry';
 import type { SanctuaryFeatureResult } from '@/logic/permissions/sanctuaryFeature';
+import { getDomainEntry } from '@/logic/registry/appCatalog';
+import type { DomainEntry } from '@/logic/registry/domainEntry';
 
 export interface DomainFeatureResult {
   entry: DomainEntry;
@@ -30,6 +30,7 @@ export function useDomainFeature(domainId: string): DomainFeatureResult {
       entitlementModule: entry.entitlementModule,
       entitlementTier: entry.entitlementTier,
       flagKey: entry.flagKey,
+      lifecycleState: entry.state,
     },
   );
 
@@ -40,10 +41,6 @@ export function useDomainFeature(domainId: string): DomainFeatureResult {
  * useDomainFeatures — evaluate multiple domains at once.
  * Useful for tab bars that need to know which tabs to show.
  */
-export function useDomainFeatures(
-  domainIds: string[],
-): Record<string, DomainFeatureResult> {
-  return Object.fromEntries(
-    domainIds.map((id) => [id, useDomainFeature(id)]),
-  );
+export function useDomainFeatures(domainIds: string[]): Record<string, DomainFeatureResult> {
+  return Object.fromEntries(domainIds.map((id) => [id, useDomainFeature(id)]));
 }

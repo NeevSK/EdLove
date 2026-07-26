@@ -4,6 +4,8 @@ export interface FeatureRolloutSnapshot {
   flags: Record<string, boolean | string>;
   source: 'cache' | 'remote' | 'computed';
   refreshedAt: string;
+  /** True when the snapshot exceeded the local offline continuity window. */
+  stale?: boolean;
 }
 
 export interface IFeatureRolloutPort {

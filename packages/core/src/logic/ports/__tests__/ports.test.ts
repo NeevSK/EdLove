@@ -6,9 +6,7 @@ import type {
   IAnalyticsPort,
   IAuthorizationPort,
   IEntitlementPort,
-  IFeatureFlagPort,
 } from '../../index';
-import type { UserContext } from '../../schemas/user.schema';
 
 describe('Hexagonal Ports Interfaces Compilation & Contract Verification', () => {
   it('verifies IEntitlementPort contract behavior with mock implementation', async () => {
@@ -43,49 +41,6 @@ describe('Hexagonal Ports Interfaces Compilation & Contract Verification', () =>
     expect(res.pricingTier).toBe('PRO');
     expect(res.activeEntitlements).toContain('ai_report_cards');
     expect(mockEntitlementPort.getEntitlements).toHaveBeenCalledWith('user-1');
-  });
-
-  it('verifies IFeatureFlagPort contract behavior with mock implementation', async () => {
-    const mockFeatureFlagPort: IFeatureFlagPort = {
-      resolveFlags: vi.fn(async (context: UserContext) => {
-        return {
-          flags: {
-            isAIAssistantEnabled: true,
-            modelName: 'claude-3-5-sonnet',
-          },
-          source: 'computed' as const,
-          refreshedAt: '2026-06-20T00:00:00Z',
-        };
-      }),
-      getFlags: vi.fn(async (context: UserContext) => {
-        return {
-          isAIAssistantEnabled: true,
-          modelName: 'claude-3-5-sonnet',
-        };
-      }),
-      subscribeToFlagChanges: vi.fn(
-        (
-          context: UserContext,
-          callback: (snapshot: { flags: Record<string, boolean | string> }) => void,
-        ) => {
-          callback({ flags: { isAIAssistantEnabled: true } });
-          return () => {};
-        },
-      ),
-      trackExposure: vi.fn((flagKey: string, value: boolean | string) => {}),
-    };
-
-    const dummyContext = {
-      userId: 'user-1',
-      isAnonymous: false,
-    } as unknown as UserContext;
-
-    const flags = await mockFeatureFlagPort.getFlags(dummyContext);
-    expect(flags.isAIAssistantEnabled).toBe(true);
-    expect(flags.modelName).toBe('claude-3-5-sonnet');
-
-    mockFeatureFlagPort.trackExposure('isAIAssistantEnabled', true);
-    expect(mockFeatureFlagPort.trackExposure).toHaveBeenCalledWith('isAIAssistantEnabled', true);
   });
 
   it('verifies IAuthorizationPort contract behavior with mock implementation', async () => {
