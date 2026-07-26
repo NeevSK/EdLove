@@ -38,6 +38,7 @@
     "check:circular": "node scripts/sovereign-audit.mjs --cmd \"pnpm exec depcruise packages apps --config .dependency-cruiser.cjs --output-type err\" --filter \"no-circular\" --log \"reports/circular_deps.txt\"",
     "check:unused": "node scripts/sovereign-audit.mjs --cmd \"pnpm exec depcruise packages apps --config .dependency-cruiser.cjs --output-type err\" --filter \"no-orphans\" --log \"reports/unused_code.txt\"",
     "check:architecture": "node scripts/sovereign-audit.mjs --cmd \"pnpm exec depcruise packages apps --config .dependency-cruiser.cjs --output-type err\" --log \"reports/architecture.txt\"",
+    "check:deep-imports": "node scripts/check-deep-imports.mjs",
     "check:hygiene": "node ./scripts/run-and-report.mjs --cmd \"node ./scripts/check-hygiene.mjs\" --name \"package_json-check_hygiene\"",
     "check:self-boundaries": "node ./scripts/run-and-report.mjs --cmd \"node scripts/check-self-boundaries.mjs\" --name \"package_json-check_self-boundaries\"",
     "check:classroom-boundaries": "node ./scripts/run-and-report.mjs --cmd \"node scripts/check-classroom-boundaries.mjs\" --name \"package_json-check_classroom-boundaries\"",

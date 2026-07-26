@@ -48,6 +48,10 @@ You are operating inside a **quality-gated workspace**. This document enforces a
   * **Layer 1 (`packages/ui`):** Can never import from domains (`packages/classroom`, `packages/people`, etc.) or apps.
   * **No App Leaks:** Code under `packages/` can never import from `apps/` (like `apps/gurudevi-mobile`).
   * **Database Isolation:** Direct database imports from `packages/database` are forbidden outside `core` and `database` themselves. Apps and domains must access database types and objects through core type wrappers.
+  * **Path Alias Standard:** All internal relative imports within packages and apps must use `@/*` path aliases (e.g. `import { foo } from '@/components/foo'`).
+  * **Subpath Exports & Public APIs:** Cross-package imports must target declared package subpaths (`@repo/ui/components`, `@repo/core/logic`) or root package exports (`@repo/ui`). Literal deep `/src/` imports across package boundaries are strictly prohibited and verified by `pnpm check:deep-imports`.
+  * **Copy-Paste & Duplication Prevention:** Duplicate blocks across files must be prevented (`pnpm run audit:duplication` / `jscpd`).
+  * **Cognitive Complexity Budget:** Cognitive complexity must remain under 15 for all functions and React components.
 
 ---
 
