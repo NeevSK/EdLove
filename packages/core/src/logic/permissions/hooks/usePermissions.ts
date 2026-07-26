@@ -1,12 +1,16 @@
 import { useCallback, useMemo } from 'react';
+import { CITIZENSHIP, sanctuaryFeature } from '@/logic/permissions/sanctuaryFeature';
+import {
+  resolveFeatureFlagClass,
+  resolveFeatureFlagValue,
+} from '@/logic/registry/featureLifecycleManifest';
+import { type TenantKind, type UserContext, UserContextSchema } from '@/logic/schemas/user.schema';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useCedarDecisionStore } from '@/store/useCedarDecisionStore';
 import { useEntitlementStore } from '@/store/useEntitlementStore';
 import { useFeatureStore } from '@/store/useFeatureStore';
 import { useTenantStore } from '@/store/useTenantStore';
-import { type TenantKind, type UserContext, UserContextSchema } from '@/logic/schemas/user.schema';
 import type { Action, Subject } from '@/types/authorization';
-import { sanctuaryFeature, CITIZENSHIP } from '@/logic/permissions/sanctuaryFeature';
 
 /**
  * @deprecated Use useSanctuaryFeature() for permission checks and
@@ -42,10 +46,7 @@ export const usePermissions = () => {
         user?.citizenship === 'SECOND_CLASS' || user?.citizenship === 'FIRST_CLASS'
           ? user.citizenship
           : 'WANDERER',
-      pricing_tier:
-        user?.pricing_tier === 'PRO' || user?.pricing_tier === 'INSTITUTIONAL'
-          ? user.pricing_tier
-          : 'FREE',
+      pricing_tier: pricingTier === 'PRO' || pricingTier === 'INSTITUTIONAL' ? pricingTier : 'FREE',
       features: user?.features || [],
       flags: user?.flags || {},
 
@@ -65,7 +66,7 @@ export const usePermissions = () => {
     };
 
     return UserContextSchema.parse(rawContext);
-  }, [user, schoolType]);
+  }, [user, schoolType, pricingTier]);
 
   const can = useCallback(
     (action: Action, subject: Subject) => {
@@ -82,9 +83,8 @@ export const usePermissions = () => {
         : 'no_decision';
 
       const flagKey = `${subject as string}.${action as string}`;
-      const flagEntry = (flags as any)?.[flagKey];
-      const flagActive = flagEntry?.value ?? true;
-      const flagType = flagEntry?.type ?? 'operational';
+      const flagActive = resolveFeatureFlagValue(flags, flagKey);
+      const flagType = resolveFeatureFlagClass(flagKey);
 
       return sanctuaryFeature(
         {
@@ -106,7 +106,15 @@ export const usePermissions = () => {
         },
       ).permitted;
     },
-    [user, flags, cedarSnapshotLoaded, getDecision, activeEntitlements, pricingTier, manifestLoaded],
+    [
+      user,
+      flags,
+      cedarSnapshotLoaded,
+      getDecision,
+      activeEntitlements,
+      pricingTier,
+      manifestLoaded,
+    ],
   );
 
   const cannot = useCallback(

@@ -13,14 +13,6 @@ export { useManualSnapshot } from '@/hooks/useManualSnapshot';
 export { useNotifications } from '@/hooks/useNotifications';
 export { useTemporalHeatmap } from '@/hooks/useTemporalHeatmap';
 export { accountPin } from '@/lib/accountPin';
-export { getAuthRouteDecision, getAuthRouteTarget, isPublicBootstrapRoute } from '@/logic/auth/bootstrapRoutes';
-export {
-  getSessionIdentityMode,
-  isAnonymousIdentity,
-  isAnonymousSession,
-  isDemoSession,
-  isSandboxSession,
-} from '@/logic/auth/identityState';
 export {
   type InviteCodeData,
   incrementInviteCodeUsage,
@@ -34,18 +26,19 @@ export {
 } from '@/lib/pendingGateAction';
 export { StorageKeys, storage } from '@/lib/storage';
 export { useMutationQueue } from '@/lib/sync/useMutationQueue';
-export { useAuthLifecycle } from '@/native/useAuthLifecycle';
-export { useAuth } from '@/providers/AuthProvider';
-export { GlobalProvider } from '@/providers/GlobalProvider';
-export { useAuthStore } from '@/store/useAuthStore';
-export { useFeatureStore } from '@/store/useFeatureStore';
-export { type TotalState, useStore } from '@/store/useStore';
-export { type TemporalScale, useTemporalStore } from '@/store/useTemporalStore';
-// Types (Agnostic / logic-layer)
-export type { Bond } from '@/types';
-export type { APIError } from '@/types/API';
-export type { LessonMaterial } from '@/types/LessonMaterial';
 export * from '@/logic/apiInterceptor';
+export {
+  getAuthRouteDecision,
+  getAuthRouteTarget,
+  isPublicBootstrapRoute,
+} from '@/logic/auth/bootstrapRoutes';
+export {
+  getSessionIdentityMode,
+  isAnonymousIdentity,
+  isAnonymousSession,
+  isDemoSession,
+  isSandboxSession,
+} from '@/logic/auth/identityState';
 export * from '@/logic/domains';
 export * from '@/logic/entities';
 export * from '@/logic/events/bus';
@@ -65,7 +58,6 @@ export {
   deviceIdentity,
   educational,
   featureFlags,
-  globalConfig,
   growth,
   identity,
   notification,
@@ -84,15 +76,29 @@ export type {
 } from '@/logic/ports/authz.port';
 export type { EntitlementSnapshot, IEntitlementPort } from '@/logic/ports/entitlement.port';
 export type { IEventBusPort } from '@/logic/ports/eventBus.port';
-export type { IFeatureFlagPort } from '@/logic/ports/featureFlag.port';
-export type { FeatureRolloutSnapshot, IFeatureRolloutPort } from '@/logic/ports/featureRollout.port';
+export type {
+  FeatureRolloutSnapshot,
+  IFeatureRolloutPort,
+} from '@/logic/ports/featureRollout.port';
+export * from '@/logic/registry/appCatalog';
+export * from '@/logic/registry/citizenship';
+export * from '@/logic/registry/domainEntry';
+export * from '@/logic/registry/featureLifecycleManifest';
+export * from '@/logic/registry/useDomainFeature';
+export * from '@/logic/registry/featureLifecyclePolicy';
 export * from '@/logic/runtimeRegistry';
 export * from '@/logic/schemas';
 export * from '@/logic/store-slices';
 export * from '@/logic/utils';
 export * from '@/logic/workspace/index';
-export * from '@/logic/registry/citizenship';
-export * from '@/logic/registry/domainEntry';
-export * from '@/logic/registry/appCatalog';
-export * from '@/logic/registry/useDomainFeature';
-
+export { useAuthLifecycle } from '@/native/useAuthLifecycle';
+export { useAuth } from '@/providers/AuthProvider';
+export { GlobalProvider } from '@/providers/GlobalProvider';
+export { useAuthStore } from '@/store/useAuthStore';
+export { useFeatureStore } from '@/store/useFeatureStore';
+export { type TotalState, useStore } from '@/store/useStore';
+export { type TemporalScale, useTemporalStore } from '@/store/useTemporalStore';
+// Types (Agnostic / logic-layer)
+export type { Bond } from '@/types';
+export type { APIError } from '@/types/API';
+export type { LessonMaterial } from '@/types/LessonMaterial';

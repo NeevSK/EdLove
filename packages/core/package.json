@@ -59,6 +59,11 @@
       "import": "./src/logic/index.ts",
       "default": "./src/logic/index.ts"
     },
+    "./logic/registry/*": {
+      "types": "./src/logic/registry/*.ts",
+      "import": "./src/logic/registry/*.ts",
+      "default": "./src/logic/registry/*.ts"
+    },
     "./logic/schemas/*": {
       "types": "./src/logic/schemas/*.ts",
       "import": "./src/logic/schemas/*.ts",

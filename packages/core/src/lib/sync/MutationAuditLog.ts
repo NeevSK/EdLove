@@ -13,6 +13,7 @@ export interface AuditEntry {
   attempts: number;
   queuedAt: number; // Unix ms
   updatedAt: number; // Last status change
+  summary?: string;
   syncedAt?: number;
   lastError?: string;
 }

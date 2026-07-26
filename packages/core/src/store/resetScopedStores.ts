@@ -3,8 +3,8 @@ import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
 import { getActiveAccountId, setActiveAccountId } from '@/lib/accountScope';
 import { DeviceTrustEngine } from '@/lib/security/deviceTrust';
 import { useMutationQueue } from '@/lib/sync/useMutationQueue';
-import { DEFAULT_FEATURE_FLAGS } from '@/store/types/featureFlags';
 import type { UISlice } from '@/store/slices/ui.slice';
+import { DEFAULT_FEATURE_FLAGS } from '@/store/types/featureFlags';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useFeatureStore } from '@/store/useFeatureStore';
 import { useTenantStore } from '@/store/useTenantStore';
@@ -92,7 +92,7 @@ export const resetScopedStores = () => {
   useFeatureStore.setState((state) => ({
     ...state,
     flags: featureScopedDefaults,
-    globalConfigs: {},
+    snapshot: null,
   }));
   useMutationQueue.setState({
     queue: [],

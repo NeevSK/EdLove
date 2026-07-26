@@ -1,15 +1,40 @@
 import type { StateCreator } from 'zustand';
 import { featureFlags } from '@/logic/managers/featureFlag.factory';
-import { DEFAULT_FEATURE_FLAGS, type FeatureFlags } from '@/store/types/featureFlags';
+import type { FeatureRolloutSnapshot } from '@/logic/ports/featureRollout.port';
+import { FEATURE_FLAG_MANIFEST } from '@/logic/registry/featureLifecycleManifest';
 import type { UserContext } from '@/logic/schemas/user.schema';
+import { DEFAULT_FEATURE_FLAGS, type FeatureFlags } from '@/store/types/featureFlags';
 
 export interface FeatureSlice {
   flags: FeatureFlags;
-  globalConfigs: Record<string, string | boolean>;
+  snapshot: FeatureRolloutSnapshot | null;
 
-  setGlobalConfigs: (configs: Record<string, string | boolean>) => void;
+  applySnapshot: (snapshot: FeatureRolloutSnapshot) => void;
 
   recomputeFlags: (context: UserContext) => void;
+}
+
+/** Maximum time a persisted rollout snapshot can influence temporary flags. */
+export const FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+
+export function normalizeFeatureRolloutSnapshot(
+  snapshot: FeatureRolloutSnapshot,
+  now = Date.now(),
+): FeatureRolloutSnapshot {
+  const refreshedAt = Date.parse(snapshot.refreshedAt);
+  const stale =
+    !Number.isFinite(refreshedAt) || now - refreshedAt > FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS;
+
+  if (!stale) return { ...snapshot, stale: false };
+
+  const flags = Object.fromEntries(
+    Object.entries(snapshot.flags).filter(([key]) => {
+      const metadata = FEATURE_FLAG_MANIFEST[key as keyof typeof FEATURE_FLAG_MANIFEST];
+      return metadata?.class === 'operational';
+    }),
+  );
+
+  return { ...snapshot, flags, stale: true };
 }
 
 function toBoolean(value: boolean | string): boolean {
@@ -30,29 +55,28 @@ function applyFeatureFlags(
   return result;
 }
 
-export const createFeatureSlice: StateCreator<FeatureSlice> = (set, get) => ({
-  flags: { ...DEFAULT_FEATURE_FLAGS },
+export const createFeatureSlice: StateCreator<FeatureSlice> = (set) => {
+  const applySnapshot = (snapshot: FeatureRolloutSnapshot) => {
+    const normalizedSnapshot = normalizeFeatureRolloutSnapshot(snapshot);
+    set({
+      snapshot: normalizedSnapshot,
+      flags: applyFeatureFlags(DEFAULT_FEATURE_FLAGS, normalizedSnapshot.flags),
+    });
+  };
 
-  globalConfigs: {},
-
-  setGlobalConfigs: (configs) => {
-    set({ globalConfigs: configs });
-  },
-
-  recomputeFlags: (context) => {
-    featureFlags
-      .resolveFlags(context)
-      .then((snapshot) => {
-        const flags = applyFeatureFlags(DEFAULT_FEATURE_FLAGS, snapshot.flags);
-        const globalOverrides = get().globalConfigs;
-        if (Object.keys(globalOverrides).length > 0) {
-          set({ flags: applyFeatureFlags(flags, globalOverrides) });
-        } else {
-          set({ flags });
-        }
-      })
-      .catch((err) => {
-        console.warn('[FeatureSlice] resolveFlags failed, keeping defaults:', err);
-      });
-  },
-});
+  return {
+    flags: { ...DEFAULT_FEATURE_FLAGS },
+    snapshot: null,
+    applySnapshot,
+    recomputeFlags: (context) => {
+      featureFlags
+        .resolveFlags(context)
+        .then((snapshot) => {
+          applySnapshot(snapshot);
+        })
+        .catch((err) => {
+          console.warn('[FeatureSlice] resolveFlags failed, keeping defaults:', err);
+        });
+    },
+  };
+};

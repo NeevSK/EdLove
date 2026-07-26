@@ -3,6 +3,7 @@ export { useBanyanGrowth } from '@/hooks/useBanyanGrowth';
 export { useClassroomCreation } from '@/hooks/useClassroomCreation';
 export { useDeviceAccounts } from '@/hooks/useDeviceAccounts';
 export { useDeviceSecurity } from '@/hooks/useDeviceSecurity';
+export { useDomainRollout } from '@/hooks/useDomainRollout';
 export {
   useClassroomNotes,
   useDomainServices,
@@ -10,10 +11,10 @@ export {
   useTeacherInsights,
 } from '@/hooks/useDomainServices';
 export { useEntity } from '@/hooks/useEntity';
-export { useIsGuest } from '@/hooks/useIsGuest';
 export { useForm } from '@/hooks/useForm';
 export { useGroupCreation } from '@/hooks/useGroupCreation';
 export { useIdentity } from '@/hooks/useIdentity';
+export { useIsGuest } from '@/hooks/useIsGuest';
 export { useJourneyHistory } from '@/hooks/useJourneyHistory';
 export { useManualSnapshot } from '@/hooks/useManualSnapshot';
 export { type DownloadState, useMediaDownloader } from '@/hooks/useMediaDownloader';

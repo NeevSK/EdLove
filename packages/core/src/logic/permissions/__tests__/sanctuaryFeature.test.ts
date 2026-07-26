@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   CITIZENSHIP,
-  meetsCitizenship,
-  sanctuaryFeature,
-  type SanctuaryEvaluationContext,
   type FeatureRequirement,
+  meetsCitizenship,
+  type SanctuaryEvaluationContext,
+  sanctuaryFeature,
 } from '../sanctuaryFeature';
 
 describe('meetsCitizenship', () => {
@@ -103,11 +103,40 @@ describe('sanctuaryFeature', () => {
     });
   });
 
-  it('fails feature flag gate when flag is inactive', () => {
+  it('does not expose entitlement failure before Cedar authorization', () => {
     const res = sanctuaryFeature(
-      { ...baseCtx, flagActive: false },
+      {
+        ...baseCtx,
+        cedarDecision: 'deny',
+        entitlement: { ...baseCtx.entitlement, activeEntitlements: [] },
+      },
       baseReq,
     );
+    expect(res).toEqual({ reason: 'authz', permitted: false });
+  });
+
+  it('fails feature flag gate when flag is inactive', () => {
+    const res = sanctuaryFeature({ ...baseCtx, flagActive: false }, baseReq);
+    expect(res).toEqual({
+      permitted: false,
+      reason: 'feature',
+      flagKey: 'attendance.manage',
+      flagType: 'operational',
+    });
+  });
+
+  it('does not expose development capabilities', () => {
+    const res = sanctuaryFeature(baseCtx, { ...baseReq, lifecycleState: 'development' });
+    expect(res).toEqual({
+      permitted: false,
+      reason: 'feature',
+      flagKey: 'attendance.manage',
+      flagType: 'development',
+    });
+  });
+
+  it('does not expose deprecated capabilities', () => {
+    const res = sanctuaryFeature(baseCtx, { ...baseReq, lifecycleState: 'deprecated' });
     expect(res).toEqual({
       permitted: false,
       reason: 'feature',

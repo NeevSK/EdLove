@@ -1,14 +1,18 @@
 import { useMemo } from 'react';
+import {
+  CITIZENSHIP,
+  type FeatureRequirement,
+  type SanctuaryFeatureResult,
+  sanctuaryFeature,
+} from '@/logic/permissions/sanctuaryFeature';
+import {
+  resolveFeatureFlagClass,
+  resolveFeatureFlagValue,
+} from '@/logic/registry/featureLifecycleManifest';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useCedarDecisionStore } from '@/store/useCedarDecisionStore';
 import { useEntitlementStore } from '@/store/useEntitlementStore';
 import { useFeatureStore } from '@/store/useFeatureStore';
-import {
-  sanctuaryFeature,
-  type SanctuaryFeatureResult,
-  type FeatureRequirement,
-  CITIZENSHIP,
-} from '@/logic/permissions/sanctuaryFeature';
 
 export function useSanctuaryFeature(
   action: string,
@@ -40,9 +44,8 @@ export function useSanctuaryFeature(
 
     // Flag resolution
     const flagKey = requirement.flagKey ?? `${subject}.${action}`;
-    const flagEntry = (flags as any)?.[flagKey];
-    const flagActive = flagEntry?.value ?? true; // fail open unless explicit false
-    const flagType = flagEntry?.type ?? 'operational';
+    const flagActive = resolveFeatureFlagValue(flags, flagKey);
+    const flagType = resolveFeatureFlagClass(flagKey);
 
     return sanctuaryFeature(
       {
@@ -72,5 +75,8 @@ export function useSanctuaryFeature(
     getDecision,
     flags,
     principalId,
+    activeEntitlements,
+    pricingTier,
+    manifestLoaded,
   ]);
 }

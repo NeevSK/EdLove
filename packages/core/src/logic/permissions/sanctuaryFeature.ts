@@ -1,20 +1,16 @@
+import type { EntitlementSnapshot } from '@/logic/ports/entitlement.port';
 import {
   CITIZENSHIP,
   type CitizenshipLevel,
   type CitizenshipName,
   meetsCitizenship,
 } from '@/logic/registry/citizenship';
-import type { EntitlementSnapshot } from '@/logic/ports/entitlement.port';
 
-export {
-  CITIZENSHIP,
-  type CitizenshipLevel,
-  type CitizenshipName,
-  meetsCitizenship,
-};
+export { CITIZENSHIP, type CitizenshipLevel, type CitizenshipName, meetsCitizenship };
 
 export type PricingTier = 'FREE' | 'PRO' | 'INSTITUTIONAL';
-export type FlagType = 'operational' | 'development' | 'beta' | 'experiment';
+export type FlagType = 'operational' | 'release' | 'development' | 'beta' | 'experiment';
+export type FeatureLifecycleState = 'development' | 'beta' | 'live' | 'deprecated';
 
 export type SanctuaryFeatureResult =
   | { permitted: true; featureKey?: string }
@@ -34,7 +30,13 @@ export type SanctuaryFeatureResult =
       featureKey?: string;
     }
   | { permitted: false; reason: 'authz'; policy?: string; featureKey?: string }
-  | { permitted: false; reason: 'feature'; flagKey: string; flagType: FlagType; featureKey?: string };
+  | {
+      permitted: false;
+      reason: 'feature';
+      flagKey: string;
+      flagType: FlagType;
+      featureKey?: string;
+    };
 
 export interface SanctuaryEvaluationContext {
   cedarSnapshotLoaded: boolean;
@@ -53,9 +55,8 @@ export interface FeatureRequirement {
   entitlementModule?: string;
   entitlementTier?: PricingTier;
   flagKey?: string;
+  lifecycleState?: FeatureLifecycleState;
 }
-
-
 
 export function sanctuaryFeature(
   ctx: SanctuaryEvaluationContext,
@@ -75,7 +76,14 @@ export function sanctuaryFeature(
     };
   }
 
-  // Gate 2 — entitlement
+  // Gate 2 — Cedar. Cedar is the authoritative security boundary and must
+  // take precedence over commercial failure reasons for protected UI actions.
+  if (ctx.cedarDecision === 'deny' || ctx.cedarDecision === 'no_decision') {
+    return { permitted: false, reason: 'authz', policy: ctx.cedarPolicy };
+  }
+
+  // Gate 3 — entitlement. Entitlement controls commercial access; it never
+  // grants authorization and is evaluated only after Cedar permits the actor.
   if (requirement.entitlementModule) {
     if (!ctx.entitlement.activeEntitlements.includes(requirement.entitlementModule)) {
       const requiredTier = requirement.entitlementTier ?? 'PRO';
@@ -88,12 +96,16 @@ export function sanctuaryFeature(
     }
   }
 
-  // Gate 3 — Cedar
-  if (ctx.cedarDecision === 'deny' || ctx.cedarDecision === 'no_decision') {
-    return { permitted: false, reason: 'authz', policy: ctx.cedarPolicy };
+  // Cross-cut — feature lifecycle and rollout
+  if (requirement.lifecycleState === 'development' || requirement.lifecycleState === 'deprecated') {
+    return {
+      permitted: false,
+      reason: 'feature',
+      flagKey: requirement.flagKey ?? 'lifecycle',
+      flagType: requirement.lifecycleState === 'development' ? 'development' : 'operational',
+    };
   }
 
-  // Cross-cut — feature flag
   if (ctx.flagKey && !ctx.flagActive) {
     return {
       permitted: false,

@@ -1,5 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createFeatureSlice } from '../slices/feature.slice';
+import {
+  createFeatureSlice,
+  FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS,
+  normalizeFeatureRolloutSnapshot,
+} from '../slices/feature.slice';
 
 const mockResolveFlags = vi.fn();
 
@@ -16,9 +20,39 @@ describe('featureSlice', () => {
 
   beforeEach(() => {
     set = vi.fn();
-    get = vi.fn(() => ({ globalConfigs: {} }));
-    slice = createFeatureSlice(set, get);
+    get = vi.fn(() => ({ applySnapshot: vi.fn() }));
+    slice = createFeatureSlice(set as any, get as any, {} as any);
     vi.clearAllMocks();
+  });
+
+  async function resolveAndReadFlags(flags: Record<string, boolean | string>) {
+    mockResolveFlags.mockResolvedValue({
+      flags,
+      source: 'remote',
+      refreshedAt: new Date().toISOString(),
+    });
+
+    slice.recomputeFlags({ userId: 'user-123' } as any);
+    await vi.waitFor(() => {
+      expect(set).toHaveBeenCalled();
+    });
+
+    return (set.mock.calls[0]?.[0] as any).flags;
+  }
+
+  it('fails closed for temporary flags in an expired snapshot', () => {
+    const now = Date.parse('2026-07-26T00:00:00.000Z');
+    const snapshot = normalizeFeatureRolloutSnapshot(
+      {
+        flags: { isAIAssistantEnabled: true, isUnderMaintenance: false },
+        source: 'cache',
+        refreshedAt: new Date(now - FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS - 1).toISOString(),
+      },
+      now,
+    );
+
+    expect(snapshot.stale).toBe(true);
+    expect(snapshot.flags).toEqual({ isUnderMaintenance: false });
   });
 
   describe('recomputeFlags', () => {
@@ -36,39 +70,17 @@ describe('featureSlice', () => {
     });
 
     it('updates state with resolved flags, merged with defaults', async () => {
-      const context = { userId: 'user-123' };
-      mockResolveFlags.mockResolvedValue({
-        flags: { isInventoryEnabled: true, isPaymentsEnabled: true },
-        source: 'remote',
-        refreshedAt: new Date().toISOString(),
+      const flags = await resolveAndReadFlags({
+        isInventoryEnabled: true,
+        isUnderMaintenance: false,
       });
-
-      slice.recomputeFlags(context as any);
-      await vi.waitFor(() => {
-        expect(set).toHaveBeenCalled();
-      });
-
-      const setCall = set.mock.calls[0][0];
-      expect(setCall.flags.isInventoryEnabled).toBe(true);
-      expect(setCall.flags.isPaymentsEnabled).toBe(true);
-      expect(setCall.flags.isLibraryManagementEnabled).toBe(true);
+      expect(flags.isInventoryEnabled).toBe(true);
+      expect(flags.isUnderMaintenance).toBe(false);
     });
 
     it('keeps default flags when GrowthBook returns empty flags', async () => {
-      mockResolveFlags.mockResolvedValue({
-        flags: {},
-        source: 'remote',
-        refreshedAt: new Date().toISOString(),
-      });
-
-      slice.recomputeFlags({ userId: 'user-123' } as any);
-      await vi.waitFor(() => {
-        expect(set).toHaveBeenCalled();
-      });
-
-      const setCall = set.mock.calls[0][0];
-      expect(setCall.flags.isLibraryManagementEnabled).toBe(true);
-      expect(setCall.flags.isPaymentsEnabled).toBe(false);
+      const flags = await resolveAndReadFlags({});
+      expect(flags.isUnderMaintenance).toBe(false);
     });
 
     it('keeps existing flags on GrowthBook rejection', async () => {
@@ -81,40 +93,13 @@ describe('featureSlice', () => {
       });
     });
 
-    it('applies global config overrides on top of GrowthBook flags', async () => {
-      get = vi.fn(() => ({ globalConfigs: { isAIAssistantEnabled: true } }));
-      slice = createFeatureSlice(set, get);
-
-      mockResolveFlags.mockResolvedValue({
-        flags: { isAIAssistantEnabled: false },
-        source: 'remote',
-        refreshedAt: new Date().toISOString(),
-      });
-
-      slice.recomputeFlags({ userId: 'user-123' } as any);
-      await vi.waitFor(() => {
-        expect(set).toHaveBeenCalled();
-      });
-
-      const setCall = set.mock.calls[0][0];
-      expect(setCall.flags.isAIAssistantEnabled).toBe(true);
-    });
-
     it('converts string "true"/"false" values to booleans', async () => {
-      mockResolveFlags.mockResolvedValue({
-        flags: { isInventoryEnabled: 'true', isPaymentsEnabled: 'false' },
-        source: 'remote',
-        refreshedAt: new Date().toISOString(),
+      const flags = await resolveAndReadFlags({
+        isInventoryEnabled: 'true',
+        isUnderMaintenance: 'true',
       });
-
-      slice.recomputeFlags({ userId: 'user-123' } as any);
-      await vi.waitFor(() => {
-        expect(set).toHaveBeenCalled();
-      });
-
-      const setCall = set.mock.calls[0][0];
-      expect(setCall.flags.isInventoryEnabled).toBe(true);
-      expect(setCall.flags.isPaymentsEnabled).toBe(false);
+      expect(flags.isInventoryEnabled).toBe(true);
+      expect(flags.isUnderMaintenance).toBe(true);
     });
   });
 });

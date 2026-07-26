@@ -1,73 +1,29 @@
 export interface FeatureFlags {
   isInventoryEnabled: boolean;
-  isPaymentsEnabled: boolean;
   isAccountingEnabled: boolean;
-  isStaffManagementEnabled: boolean;
-  isStudentReportingEnabled: boolean;
-  isTemplateManagementEnabled: boolean;
-  isLibraryManagementEnabled: boolean;
-  canUseOCR: boolean;
   isAIAssistantEnabled: boolean;
-  isPublicSensingEnabled: boolean;
-  isNewOnboardingEnabled: boolean;
   isGuardianWorkspaceEnabled: boolean;
-  isStudentAssignmentQueueEnabled: boolean;
-  isStudentGoalsWorkspaceEnabled: boolean;
-  isStudentGradesWorkspaceEnabled: boolean;
-  isStudentProgressWorkspaceEnabled: boolean;
-  isStudentRewardsWorkspaceEnabled: boolean;
   isDevelopingWorkspace: boolean;
-  isSelfWorkspaceEnabled: boolean;
-  isWorkforceEnabled: boolean;
   isDevelopingWorkforce: boolean;
-  isFormBuilderEnabled: boolean;
   isDevelopingFormBuilder: boolean;
   isGraphicsEngineEnabled: boolean;
   isAnalyticsEnabled: boolean;
-  isCommunityEnabled: boolean;
-  isMessagingEnabled: boolean;
   isSocialShieldEnabled: boolean;
-  isDevelopingAI: boolean;
-  isDevelopingAnalyticsDashboard: boolean;
-  isDevelopingVoiceNavigation: boolean;
   isUnderMaintenance: boolean;
   isPowerSyncEnabled: boolean;
-  isBackgroundSyncEnabled: boolean;
 }
 
 export const DEFAULT_FEATURE_FLAGS: FeatureFlags = {
   isInventoryEnabled: false,
-  isPaymentsEnabled: false,
   isAccountingEnabled: false,
-  isLibraryManagementEnabled: true,
-  isStaffManagementEnabled: true,
-  isStudentReportingEnabled: true,
-  isTemplateManagementEnabled: true,
-  canUseOCR: false,
   isAIAssistantEnabled: false,
-  isPublicSensingEnabled: true,
-  isNewOnboardingEnabled: false,
   isGuardianWorkspaceEnabled: false,
-  isStudentAssignmentQueueEnabled: true,
-  isStudentGoalsWorkspaceEnabled: true,
-  isStudentGradesWorkspaceEnabled: true,
-  isStudentProgressWorkspaceEnabled: true,
-  isStudentRewardsWorkspaceEnabled: false,
   isDevelopingWorkspace: false,
-  isSelfWorkspaceEnabled: true,
-  isWorkforceEnabled: true,
   isDevelopingWorkforce: false,
-  isFormBuilderEnabled: true,
   isDevelopingFormBuilder: false,
   isGraphicsEngineEnabled: true,
   isAnalyticsEnabled: true,
-  isCommunityEnabled: true,
-  isMessagingEnabled: true,
   isSocialShieldEnabled: true,
-  isDevelopingAI: false,
-  isDevelopingAnalyticsDashboard: false,
-  isDevelopingVoiceNavigation: false,
   isUnderMaintenance: false,
   isPowerSyncEnabled: false,
-  isBackgroundSyncEnabled: true,
 };

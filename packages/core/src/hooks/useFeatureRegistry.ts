@@ -1,14 +1,15 @@
 import { useMemo } from 'react';
-import type { DomainFeature } from '@/types/Workspace';
+import {
+  CITIZENSHIP,
+  type SanctuaryFeatureResult,
+  sanctuaryFeature,
+} from '@/logic/permissions/sanctuaryFeature';
+import { resolveFeatureFlagValue } from '@/logic/registry/featureLifecycleManifest';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useCedarDecisionStore } from '@/store/useCedarDecisionStore';
 import { useEntitlementStore } from '@/store/useEntitlementStore';
 import { useFeatureStore } from '@/store/useFeatureStore';
-import {
-  sanctuaryFeature,
-  CITIZENSHIP,
-  type SanctuaryFeatureResult,
-} from '@/logic/permissions/sanctuaryFeature';
+import type { DomainFeature } from '@/types/Workspace';
 
 export interface FeatureGatingResult {
   visible: boolean;
@@ -43,9 +44,8 @@ export function useFeatureRegistry(
         const cedarDecision = principalId ? getDecision(subject, action) : 'no_decision';
 
         const flagKey = feature.flagKey ?? `${subject}.${action}`;
-        const flagEntry = (flags as any)?.[flagKey];
-        const flagActive = flagEntry?.value ?? true;
-        const flagType = flagEntry?.type ?? 'operational';
+        const flagActive = resolveFeatureFlagValue(flags, flagKey);
+        const flagType = feature.lifecycle.flagClass ?? 'operational';
 
         const result = sanctuaryFeature(
           {
@@ -67,11 +67,12 @@ export function useFeatureRegistry(
             entitlementModule: feature.entitlementModule,
             entitlementTier: feature.entitlementTier,
             flagKey: feature.flagKey,
+            lifecycleState: feature.state,
           },
         );
 
         const gatingResult: FeatureGatingResult = {
-          visible: true,
+          visible: feature.state !== 'development' && feature.state !== 'deprecated',
           locked: !result.permitted,
           reason: result.permitted ? undefined : (result as any).reason,
         };
@@ -92,5 +93,3 @@ export function useFeatureRegistry(
     flags,
   ]);
 }
-
-
