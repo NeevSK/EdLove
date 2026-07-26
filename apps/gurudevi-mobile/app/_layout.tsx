@@ -8,8 +8,8 @@ import 'react-native-get-random-values';
 import '@repo/ui/global.css';
 
 import { registerAppCatalog } from '@/boot/registerAppCatalog';
-registerAppCatalog();
 
+registerAppCatalog();
 
 import {
   identifyUser,
@@ -27,11 +27,11 @@ import {
   useAuth,
   useStore,
 } from '@repo/core/logic';
+import { warmCedarWasm } from '@repo/core/logic/permissions/cedarClientEvaluator';
 import { clearSentryUser, initSentry, injectPostHog, setSentryUser } from '@repo/core/monitoring';
 import { bootstrapPlatform, storage } from '@repo/core/native';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
-import { warmCedarWasm } from '@repo/core/logic/permissions/cedarClientEvaluator';
 import { SyncManager } from '@repo/core/sync';
 import { useQRDeepLink } from '@repo/scanner-kit';
 import { AccountPinModal } from '@repo/ui/components';
@@ -45,6 +45,7 @@ import { GluestackUIProvider } from '@repo/ui/gluestack';
 import { Shield } from '@repo/ui/icons';
 import { Box, Center, Spinner } from '@repo/ui/primitives';
 import { ToastProvider } from '@repo/ui/providers';
+import { FeatureProvider } from '@repo/ui/providers/FeatureProvider';
 import { sanctuarySaffron } from '@repo/ui/theme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as LocalAuthentication from 'expo-local-authentication';
@@ -421,16 +422,18 @@ function AppContent() {
               <ExternalLinkProvider>
                 <SafeAreaProvider>
                   <BootstrapSideEffects />
-                  <Stack screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="index" options={{ title: 'Welcome' }} />
-                    <Stack.Screen name="welcome" options={{ title: 'Welcome' }} />
-                    <Stack.Screen name="auth" options={{ title: 'Sign In' }} />
-                    <Stack.Screen name="onboarding" options={{ title: 'Getting Started' }} />
-                    <Stack.Screen name="invitation-welcome" options={{ presentation: 'modal' }} />
-                    <Stack.Screen name="qr" options={{ title: 'QR Scan' }} />
-                    <Stack.Screen name="thuthimal-claim" options={{ title: 'Thuthimal Badge' }} />
-                    <Stack.Screen name="public-form/[slug]" options={{ title: 'Form' }} />
-                  </Stack>
+                  <FeatureProvider>
+                    <Stack screenOptions={{ headerShown: false }}>
+                      <Stack.Screen name="index" options={{ title: 'Welcome' }} />
+                      <Stack.Screen name="welcome" options={{ title: 'Welcome' }} />
+                      <Stack.Screen name="auth" options={{ title: 'Sign In' }} />
+                      <Stack.Screen name="onboarding" options={{ title: 'Getting Started' }} />
+                      <Stack.Screen name="invitation-welcome" options={{ presentation: 'modal' }} />
+                      <Stack.Screen name="qr" options={{ title: 'QR Scan' }} />
+                      <Stack.Screen name="thuthimal-claim" options={{ title: 'Thuthimal Badge' }} />
+                      <Stack.Screen name="public-form/[slug]" options={{ title: 'Form' }} />
+                    </Stack>
+                  </FeatureProvider>
                   <SyncManager dispatchQueuedMutation={dispatchQueuedMutationToSovereignBus} />
                   <NetworkStatusBanner />
                   {Platform.OS === 'web' && <PWAInstallBanner />}
