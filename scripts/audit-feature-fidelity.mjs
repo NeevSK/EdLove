@@ -14,10 +14,7 @@ const __dirname = path.dirname(__filename);
 const ROOT = path.join(__dirname, '..');
 
 const DOCS_DIR = path.join(ROOT, 'docs');
-const FEATURE_ENGINE_PATH = path.join(
-  ROOT,
-  'packages/core/src/logic/permissions/feature-engine.ts',
-);
+const FEATURE_FLAGS_PATH = path.join(ROOT, 'packages/core/src/store/types/featureFlags.ts');
 
 const execution = new AlchemistExecution('audit_feature_fidelity');
 
@@ -138,15 +135,11 @@ function extractFeaturesFromDocs(doc, features) {
 }
 
 function readFeatureFlags() {
-  if (!fs.existsSync(FEATURE_ENGINE_PATH)) return [];
-  const content = fs.readFileSync(FEATURE_ENGINE_PATH, 'utf-8');
-  const flagRegex = /is([A-Z][a-zA-Z0-9]+)Enabled: boolean/g;
-  const flags = [];
-  let match;
-  while ((match = flagRegex.exec(content)) !== null) {
-    flags.push(`is${match[1]}Enabled`);
-  }
-  return flags;
+  if (!fs.existsSync(FEATURE_FLAGS_PATH)) return [];
+  const content = fs.readFileSync(FEATURE_FLAGS_PATH, 'utf-8');
+  const interfaceMatch = content.match(/export interface FeatureFlags\s*{([\s\S]*?)}/);
+  if (!interfaceMatch) return [];
+  return [...interfaceMatch[1].matchAll(/^\s*(\w+)\s*:\s*boolean/gm)].map(([, key]) => key);
 }
 
 function checkFilesystemCoverage(name, technicalKey, paths, knownFiles) {
