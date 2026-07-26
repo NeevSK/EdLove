@@ -1,6 +1,5 @@
 import { useTracking } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
-import { SanctuaryGuard } from '@repo/ui';
 
 import { useEffect } from 'react';
 import {
@@ -24,37 +23,31 @@ export default function SelfScreen() {
     void discoverFeature('section_self');
   }, [discoverFeature]);
 
-  return (
-    <SanctuaryGuard action="read" subject="isSelfWorkspaceEnabled" requirement={{ flagKey: "isSelfWorkspaceEnabled" }}>
-      {(() => {
-        const role = context.capacity;
+  const role = context.capacity;
 
-        if (can('manage', 'FounderDashboard')) {
-          return <FounderSelfView />;
-        }
+  if (can('manage', 'FounderDashboard')) {
+    return <FounderSelfView />;
+  }
 
-        if (can('manage', 'AdminDashboard')) {
-          return <AdminSelfView />;
-        }
+  if (can('manage', 'AdminDashboard')) {
+    return <AdminSelfView />;
+  }
 
-        if (can('manage', 'PrincipalDashboard')) {
-          return <PrincipalSelfView />;
-        }
+  if (can('manage', 'PrincipalDashboard')) {
+    return <PrincipalSelfView />;
+  }
 
-        if (can('manage', 'TeacherDashboard') || role === 'teacher') {
-          return <TeacherSelfView />;
-        }
+  if (can('manage', 'TeacherDashboard') || role === 'teacher') {
+    return <TeacherSelfView />;
+  }
 
-        if (role === 'guardian' || role === 'parent') {
-          return <GuardianSelfView />;
-        }
+  if (role === 'guardian' || role === 'parent') {
+    return <GuardianSelfView />;
+  }
 
-        if (can('manage', 'StudentDashboard') || role === 'student') {
-          return <StudentSelfView />;
-        }
+  if (can('manage', 'StudentDashboard') || role === 'student') {
+    return <StudentSelfView />;
+  }
 
-        return <StudentSelfView />;
-      })()}
-    </SanctuaryGuard>
-  );
+  return <StudentSelfView />;
 }

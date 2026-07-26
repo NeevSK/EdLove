@@ -1,6 +1,7 @@
-import { usePermissions } from '@repo/core/logic';
+import { useFeatureStore, usePermissions } from '@repo/core/logic';
+import { getDomainsByTab } from '@repo/core/logic/registry/appCatalog';
 import { useMemo } from 'react';
-import { SANCTUARY_DOMAINS } from '@/constants/selfRegistry';
+import type { SelfDomain } from '@/constants/selfRegistry';
 
 /**
  * Hook to resolve available Sanctuary domains based on user traits and bonds.
@@ -8,30 +9,32 @@ import { SANCTUARY_DOMAINS } from '@/constants/selfRegistry';
  */
 export function useSanctuaryRegistry() {
   const { context, can } = usePermissions();
-  const role = context.capacity;
+  const flags = useFeatureStore((state) => state.flags);
+  const catalogDomains = useMemo(() => getDomainsByTab('self'), []);
 
   const availableDomains = useMemo(() => {
-    const traits = context.traits || [];
-    return Object.values(SANCTUARY_DOMAINS).filter((domain) => {
-      // 1. Dynamic Cedar/ReBAC Snapshot evaluation takes absolute priority
-      if (domain.capabilityRequirement) {
+    return catalogDomains
+      .filter((domain) => {
+        if (domain.state !== 'live' && domain.state !== 'beta') return false;
+        if (
+          domain.flagKey &&
+          Object.prototype.hasOwnProperty.call(flags, domain.flagKey) &&
+          flags[domain.flagKey as keyof typeof flags] === false
+        ) {
+          return false;
+        }
+        if (!domain.capabilityRequirement) return true;
         const { action, subject } = domain.capabilityRequirement;
         return can(action as any, subject as any);
-      }
-
-      // 2. Legacy/Static Trait requirement check fallback
-      if (!domain.traitRequirement) return true;
-
-      // Check for role-based requirement
-      if (domain.traitRequirement.startsWith('role:')) {
-        const requiredRole = domain.traitRequirement.split(':')[1];
-        return role === requiredRole;
-      }
-
-      // Check for specific trait requirement
-      return traits.includes(domain.traitRequirement);
-    });
-  }, [role, context.traits, can]);
+      })
+      .map<SelfDomain>((domain) => ({
+        id: domain.id,
+        title: domain.presentation?.title ?? domain.label,
+        accentColor: domain.presentation?.accentColor ?? '#8B5CF6',
+        energyVibe: domain.presentation?.energyVibe,
+        features: domain.presentation?.featureIds ?? [],
+      }));
+  }, [catalogDomains, can, flags]);
 
   return {
     domains: availableDomains,

@@ -194,14 +194,6 @@ export function useAdminWorkspaceCanvasSurfaces({
 }: {
   data: AdminWorkspaceData;
   featureFlags: {
-    isInventoryEnabled: boolean;
-    isStaffManagementEnabled: boolean;
-    isTemplateManagementEnabled: boolean;
-    isAIAssistantEnabled: boolean;
-    isDevelopingWorkspace: boolean;
-    isDevelopingAI: boolean;
-    isDevelopingAnalyticsDashboard: boolean;
-    isDevelopingFormBuilder: boolean;
     isUnderMaintenance: boolean;
   };
   onOpenIncidentQueue: () => void;

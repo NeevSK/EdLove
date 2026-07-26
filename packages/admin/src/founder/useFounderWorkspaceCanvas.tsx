@@ -1,3 +1,4 @@
+import { useDomainRollout } from '@repo/core/hooks';
 import { WORKSPACE_CANVAS_ZONES } from '@repo/core/logic';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
 import type {
@@ -483,7 +484,6 @@ export function useFounderWorkspaceCanvasSurfaces({
   schools,
   primarySchool,
   workspaceTargets,
-  flags,
   canCreateSchool,
   onCreateInstitution,
   onOpenInstitution,
@@ -497,10 +497,6 @@ export function useFounderWorkspaceCanvasSurfaces({
   schools: School[];
   primarySchool: School | null;
   workspaceTargets: WorkspaceSwitcherTarget[];
-  flags: {
-    isInventoryEnabled: boolean;
-    isLibraryManagementEnabled: boolean;
-  };
   canCreateSchool: boolean;
   onCreateInstitution: () => void;
   onOpenInstitution: (school: School) => void;
@@ -510,6 +506,9 @@ export function useFounderWorkspaceCanvasSurfaces({
   onOpenCommunity: () => void;
   onOpenLibrary: () => void;
 }) {
+  const isLibraryManagementEnabled = useDomainRollout('archive');
+  const isInventoryEnabled = useDomainRollout('inventory');
+
   return useMemo<FounderWorkspaceSurface[]>(() => {
     const nextSurfaces: FounderWorkspaceSurface[] = [
       createFounderSurface('platform_pulse', {
@@ -635,7 +634,7 @@ export function useFounderWorkspaceCanvasSurfaces({
       }),
     ];
 
-    if (flags.isInventoryEnabled) {
+    if (isInventoryEnabled) {
       nextSurfaces.push(
         createFounderSurface('resource_ecology', {
           defaultZone: 'outlook',
@@ -651,7 +650,7 @@ export function useFounderWorkspaceCanvasSurfaces({
       );
     }
 
-    if (flags.isLibraryManagementEnabled) {
+    if (isLibraryManagementEnabled) {
       nextSurfaces.push(
         createFounderSurface('knowledge_atlas', {
           defaultZone: 'outlook',
@@ -670,8 +669,8 @@ export function useFounderWorkspaceCanvasSurfaces({
     return nextSurfaces;
   }, [
     canCreateSchool,
-    flags.isInventoryEnabled,
-    flags.isLibraryManagementEnabled,
+    isInventoryEnabled,
+    isLibraryManagementEnabled,
     onCreateInstitution,
     onOpenCommunity,
     onOpenFounderSchool,

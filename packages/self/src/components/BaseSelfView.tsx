@@ -8,15 +8,11 @@ import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primi
 import { useRouter } from 'expo-router';
 
 import React, { useCallback, useMemo } from 'react';
-import {
-  FEATURE_DISCOVERY_DATA,
-  FEATURE_EMOJIS,
-  SANCTUARY_DOMAINS,
-} from '@/constants/selfRegistry';
-import { useDynamicSelfFeatures } from '@/hooks/useDynamicSelfFeatures';
-import { useFeatureActivity } from '@/hooks/useFeatureActivity';
 import type { BaseSelfViewProps, SelfViewFeature } from '@/components/BaseSelfView.types';
 import { FeatureErrorBoundary } from '@/components/FeatureErrorBoundary';
+import { FEATURE_DISCOVERY_DATA, FEATURE_EMOJIS } from '@/constants/selfRegistry';
+import { useDynamicSelfFeatures } from '@/hooks/useDynamicSelfFeatures';
+import { useFeatureActivity } from '@/hooks/useFeatureActivity';
 
 const TEMPORAL_SCALES = ['day', 'week', 'month', 'year'] as const;
 
@@ -47,7 +43,7 @@ export function BaseSelfView({
           ...feature,
           domainId: domain.id,
           domainColor: domain.accentColor,
-          energyVibe: SANCTUARY_DOMAINS[domain.id]?.energyVibe,
+          energyVibe: domain.energyVibe,
         })),
       ),
       ...(domains.some((domain) => domain.content)

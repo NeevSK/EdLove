@@ -721,7 +721,8 @@ class PolymathPlatformServer {
         },
         {
           name: 'detect_stale_feature_flags',
-          description: 'Identifies feature flags that are statically true and can be removed.',
+          description:
+            'Audits feature and catalog lifecycle contracts, reporting unused, fully launched, overdue, orphaned, and retired-key violations.',
           inputSchema: { type: 'object', properties: {} },
         },
         {

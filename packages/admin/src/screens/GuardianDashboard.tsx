@@ -1,4 +1,9 @@
-import { resolveWorkspaceSwitcherTargets, usePermissions, useStore } from '@repo/core/logic';
+import {
+  resolveWorkspaceSwitcherTargets,
+  useDomainFeature,
+  usePermissions,
+  useStore,
+} from '@repo/core/logic';
 import type { WorkspaceSwitcherTarget } from '@repo/core/types';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, Text } from '@repo/ui/primitives';
@@ -23,7 +28,8 @@ type GuardianResolvedSurface = GuardianWorkspaceSurface & {
 
 export default function GuardianDashboard() {
   const router = useRouter();
-  const { can, flags } = usePermissions();
+  const { can } = usePermissions();
+  const { result: guardianFeature } = useDomainFeature('guardian-workspace');
   const user = useStore((state) => state.user);
   const { dashboard, isLoading, error } = useGuardianWorkspaceData(user?.id || '');
 
@@ -157,7 +163,7 @@ export default function GuardianDashboard() {
     );
   }
 
-  if (!flags.isGuardianWorkspaceEnabled) {
+  if (!guardianFeature.permitted) {
     return (
       <GuardianDashboardScreen
         guardianId={user.id}

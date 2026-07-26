@@ -1,4 +1,5 @@
 import { useCommentHooks } from '@repo/core/api/hooks';
+import { useDomainRollout } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 import type { Comment } from '@repo/core/types';
 import { ConversationSheet } from '@repo/ui/components/ConversationSheet';
@@ -21,7 +22,8 @@ export function CommentSheet({
   postType,
   onClose,
 }: CommentSheetProps) {
-  const { can, flags } = usePermissions();
+  const { can } = usePermissions();
+  const isCommunityEnabled = useDomainRollout('hearth');
   const {
     comments,
     isLoading,
@@ -110,7 +112,7 @@ export function CommentSheet({
       showOfficialBadge={true}
       canMarkOfficial={isPostAuthor && postType === 'question'}
       canDeleteAll={can('delete', 'Comment')}
-      allowAnonymous={flags.isCommunityEnabled} // Based on community-wide setting
+      allowAnonymous={isCommunityEnabled} // Based on the catalog-owned community rollout
       // Handlers
       onPost={handlePost}
       onDelete={handleDelete}

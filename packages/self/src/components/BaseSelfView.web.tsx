@@ -5,15 +5,10 @@ import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
 import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
 import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { useEffect, useMemo, useState } from 'react';
-
-import {
-  FEATURE_DISCOVERY_DATA,
-  FEATURE_EMOJIS,
-  SANCTUARY_DOMAINS,
-} from '@/constants/selfRegistry';
-import { useFeatureActivity } from '@/hooks/useFeatureActivity';
 import type { BaseSelfViewProps, SelfViewFeature } from '@/components/BaseSelfView.types';
 import { FeatureErrorBoundary } from '@/components/FeatureErrorBoundary';
+import { FEATURE_DISCOVERY_DATA, FEATURE_EMOJIS } from '@/constants/selfRegistry';
+import { useFeatureActivity } from '@/hooks/useFeatureActivity';
 
 /**
  * BaseSelfView.web - Capability-Driven Sanctuary for Web.
@@ -33,7 +28,7 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
           ...feature,
           domainId: domain.id,
           domainColor: domain.accentColor,
-          energyVibe: SANCTUARY_DOMAINS[domain.id]?.energyVibe,
+          energyVibe: domain.energyVibe,
         })),
       ),
       ...(sideBar

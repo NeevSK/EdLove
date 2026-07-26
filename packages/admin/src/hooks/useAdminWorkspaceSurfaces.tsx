@@ -46,7 +46,7 @@ export function appendAdminWorkspaceSurfaces(
   const adminGated = useFeatureRegistry(ADMIN_REGISTRY);
 
   // --- Principal Dashboard ---
-  const principalGate = adminGated.principal_dashboard;
+  const principalGate = adminGated.principal;
   if (principalGate?.visible) {
     const principalContent =
       !schoolIdToUse && !isDemoModeTriggered ? (
@@ -78,7 +78,7 @@ export function appendAdminWorkspaceSurfaces(
   }
 
   // --- Section Head Dashboard ---
-  const sectionHeadGate = adminGated.section_head;
+  const sectionHeadGate = adminGated['section-head'];
   if (sectionHeadGate?.visible) {
     surfaces.push({
       ...sectionHeadGate.feature,
@@ -94,7 +94,7 @@ export function appendAdminWorkspaceSurfaces(
   }
 
   // --- Grade Head Dashboard ---
-  const gradeHeadGate = adminGated.grade_head;
+  const gradeHeadGate = adminGated['grade-head'];
   if (gradeHeadGate?.visible) {
     surfaces.push({
       ...gradeHeadGate.feature,

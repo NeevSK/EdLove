@@ -1,4 +1,4 @@
-import { } from '@repo/core/logic';
+import {} from '@repo/core/logic';
 import { SanctuaryGuard } from '@repo/ui';
 import type React from 'react';
 import { Platform, View, type ViewStyle } from 'react-native';
@@ -30,7 +30,11 @@ export const SanctuaryCanvas: React.FC<SanctuaryCanvasProps> = ({
   const standardContent = render?.standard ? render.standard() : null;
 
   return (
-    <SanctuaryGuard action="read" subject="isGraphicsEngineEnabled" requirement={{ flagKey: "isGraphicsEngineEnabled" }}>
+    <SanctuaryGuard
+      action="read"
+      subject="isGraphicsEngineEnabled"
+      requirement={{ flagKey: 'isGraphicsEngineEnabled' }}
+    >
       {Platform.OS === 'web' ? (
         <View style={[{ width, height, overflow: 'hidden' }, style]}>
           {standardContent}

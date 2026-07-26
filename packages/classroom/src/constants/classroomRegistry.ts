@@ -1,7 +1,15 @@
+import { defineFeatureLifecycle } from '@repo/core/logic/registry/domainEntry';
 import type { DomainFeature } from '@repo/core/types';
 
+const REGISTRY_LIFECYCLE = defineFeatureLifecycle({
+  owner: 'classroom',
+  createdAt: '2026-07-26',
+  reviewAt: '2026-09-30',
+  permanentJustification: 'Stable catalog capability governed by the AppCatalog owner.',
+});
+
 export const CLASSROOM_REGISTRY: Record<string, DomainFeature> = {
-  teacher_dashboard: {
+  teacher: {
     id: 'teacher',
     surfaceId: 'teacher',
     ownerPackage: 'classroom',
@@ -13,11 +21,12 @@ export const CLASSROOM_REGISTRY: Record<string, DomainFeature> = {
     mobileSupport: true,
     webSupport: true,
     state: 'live',
+    lifecycle: REGISTRY_LIFECYCLE,
     capabilityRequirement: { action: 'read', subject: 'TeacherDashboard' },
     tabDomain: 'workspace',
     analyticsKey: 'workspace.teacher_dashboard',
   },
-  student_dashboard: {
+  student: {
     id: 'student',
     surfaceId: 'student',
     ownerPackage: 'classroom',
@@ -29,6 +38,7 @@ export const CLASSROOM_REGISTRY: Record<string, DomainFeature> = {
     mobileSupport: true,
     webSupport: true,
     state: 'live',
+    lifecycle: REGISTRY_LIFECYCLE,
     capabilityRequirement: { action: 'read', subject: 'StudentDashboard' },
     tabDomain: 'workspace',
     analyticsKey: 'workspace.student_dashboard',

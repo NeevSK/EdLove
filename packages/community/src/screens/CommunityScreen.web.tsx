@@ -1,6 +1,6 @@
 import { communityAPI } from '@repo/core/api';
 import { useManifestoHooks, useNotificationHooks } from '@repo/core/api/hooks';
-import { usePendingGateAction } from '@repo/core/hooks';
+import { useDomainRollout, usePendingGateAction } from '@repo/core/hooks';
 import { setPendingGateAction, usePermissions, useStore } from '@repo/core/logic';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
@@ -16,7 +16,6 @@ import CreatePostModal from '@/components/CreatePostModal';
 import { PostCard } from '@/components/PostCard';
 import { useCommunity } from '@/hooks/useCommunity';
 import { useCommunityGroups } from '@/hooks/useCommunityGroups';
-import type { CommunityPost, DirectConversation } from '@/types';
 import AnnouncementsScreen from '@/screens/AnnouncementsScreen';
 import {
   type CommunityWorkspaceMode,
@@ -26,6 +25,7 @@ import {
   getCommunityQuickPaths,
   mapCommunitySurfaceSlots,
 } from '@/screens/communityWorkspace.shared';
+import type { CommunityPost, DirectConversation } from '@/types';
 
 type CommunityState = {
   activeMode: CommunityWorkspaceMode;
@@ -112,7 +112,9 @@ const initialState: CommunityState = {
 export default function CommunityScreenWeb() {
   const { can } = usePermissions();
   const { user, flags } = useStore();
-  const { isCommunityEnabled, isMessagingEnabled, isSocialShieldEnabled } = flags;
+  const isCommunityEnabled = useDomainRollout('hearth');
+  const isMessagingRolloutEnabled = useDomainRollout('messages');
+  const { isSocialShieldEnabled } = flags;
   const pending = usePendingGateAction();
   const { unreadCount } = useNotificationHooks();
 
@@ -121,6 +123,7 @@ export default function CommunityScreenWeb() {
   const canReadFeed = can('read', 'CommunityFeed');
   const canReadGroups = can('read', 'CommunityGroups');
   const canReadMessages = can('read', 'DirectMessages');
+  const isMessagingEnabled = isMessagingRolloutEnabled && canReadMessages;
   const canCreatePost = can('create', 'Post');
   const canCreateGroup = can('create', 'Group');
   const canReadAnnouncements = Boolean(schoolId) && can('read', 'Group');

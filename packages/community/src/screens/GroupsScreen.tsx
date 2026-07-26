@@ -1,4 +1,5 @@
 import { isDemo } from '@repo/core/api/demo';
+import { useDomainRollout } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
@@ -40,7 +41,8 @@ export default function GroupsScreen({
   onNavigateToGroup,
 }: GroupsScreenProps) {
   const { t } = useTranslation();
-  const { can, flags } = usePermissions();
+  const { can } = usePermissions();
+  const isCommunityEnabled = useDomainRollout('hearth');
   const [activeSubTab, setActiveSubTab] = useState<GroupsSubTab>(userId ? 'sanctuary' : 'galaxy');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -152,7 +154,7 @@ export default function GroupsScreen({
 
   const renderGalaxyActions = () => {
     if (activeSubTab !== 'galaxy') return null;
-    if (!flags.isCommunityEnabled || !can('create', 'Group')) return null;
+    if (!isCommunityEnabled || !can('create', 'Group')) return null;
 
     return (
       <AnimatedView entering={FadeInDown.duration(600).delay(300).springify()}>
@@ -229,7 +231,7 @@ export default function GroupsScreen({
           action="primary"
           onPress={handleCreateGroupPress}
           className="h-14 rounded-2xl px-10"
-          isDisabled={!flags.isCommunityEnabled || !can('create', 'Group')}
+          isDisabled={!isCommunityEnabled || !can('create', 'Group')}
         >
           <Text className="text-white font-black">
             {t('community.groups.foundCircle') || 'Found a New Circle'}
@@ -243,7 +245,7 @@ export default function GroupsScreen({
     handleGalaxyTabPress,
     handleCreateGroupPress,
     t,
-    flags.isCommunityEnabled,
+    isCommunityEnabled,
     can,
   ]);
 

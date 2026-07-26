@@ -5,7 +5,7 @@ import {
   useManifestoHooks,
   usePostsInfiniteQuery,
 } from '@repo/core/api/hooks';
-import { useTracking } from '@repo/core/hooks';
+import { useDomainRollout, useTracking } from '@repo/core/hooks';
 import { setPendingGateAction, usePermissions } from '@repo/core/logic';
 import { useStore, useTemporalStore } from '@repo/core/store';
 import type { CommunityPost, DirectConversation, SanctuaryGroup } from '@repo/core/types';
@@ -160,6 +160,8 @@ export default function CommunityScreen() {
   const { can } = usePermissions();
   const { isPastView } = useTemporalStore();
   const { user, flags } = useStore();
+  const isCommunityEnabled = useDomainRollout('hearth');
+  const isMessagingRolloutEnabled = useDomainRollout('messages');
 
   const userId = user?.id ?? 'guest';
   const schoolId = user?.school_id ?? undefined;
@@ -171,8 +173,7 @@ export default function CommunityScreen() {
   const canCreateGroup = can('create', 'Group');
   const canReadAnnouncements = Boolean(schoolId) && can('read', 'Group');
 
-  const isMessagingEnabled = flags.isMessagingEnabled && canReadMessages;
-  const isCommunityEnabled = flags.isCommunityEnabled;
+  const isMessagingEnabled = isMessagingRolloutEnabled && canReadMessages;
 
   const [state, dispatch] = useReducer(communityScreenReducer, initialState);
 
@@ -215,11 +216,11 @@ export default function CommunityScreen() {
   );
   const modeChips = useMemo(
     () =>
-      getCommunityModeOptions(canReadAnnouncements, flags.isMessagingEnabled).map((mode) => ({
+      getCommunityModeOptions(canReadAnnouncements, isMessagingRolloutEnabled).map((mode) => ({
         label: mode.label,
         value: mode.key,
       })),
-    [canReadAnnouncements, flags.isMessagingEnabled],
+    [canReadAnnouncements, isMessagingRolloutEnabled],
   );
 
   const handleFabPress = useCallback(() => {

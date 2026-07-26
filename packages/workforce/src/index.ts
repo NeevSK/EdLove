@@ -27,4 +27,5 @@ export interface WorkforceAssignment {
   status: 'active' | 'inactive' | 'planned';
 }
 
+export * from '@/constants/workforceRegistry';
 export { default as WorkforceShell } from '@/WorkforceShell';

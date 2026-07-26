@@ -1,4 +1,5 @@
 import { supabase } from '@repo/core/api';
+import { useDomainRollout } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
@@ -65,14 +66,14 @@ const initialState: CuratorState = {
  * 2026 Sovereign Refactor: Zero-Legacy State & Memory Engineering.
  */
 export default function CuratorReviewScreen() {
-  const { can, flags } = usePermissions();
+  const { can } = usePermissions();
+  const isLibraryEnabled = useDomainRollout('archive');
   const theme = useTheme();
   const showToast = useStore((state) => state.showToast);
 
   const [state, dispatch] = useReducer(curatorReducer, initialState);
 
   // --- Permissions Stability ---
-  const isLibraryEnabled = flags.isLibraryManagementEnabled;
   const canManage = can('manage', 'LibraryCuratorDashboard');
 
   // --- Action Logic (Pillar 2: Stabilized Callbacks) ---

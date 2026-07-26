@@ -1,7 +1,6 @@
 import { usePermissions } from '@repo/core/logic';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
-import { useRouter } from 'expo-router';
 
 import { useState } from 'react';
 import { commitFeatureGateChanges, stageFeatureGateChanges } from '@/admin/adminControl';
@@ -9,11 +8,10 @@ import { useAdminWorkspaceSnapshot } from '@/admin/adminRepository';
 import { AdminRoomPanel, AdminRoomShell } from '@/screens/AdminRoomShell';
 
 export default function AdminReleaseControl() {
-  const router = useRouter();
   const { snapshot: data } = useAdminWorkspaceSnapshot();
   const { flags } = usePermissions();
   const [preview, setPreview] = useState(() =>
-    stageFeatureGateChanges([{ key: 'MAINTENANCE_MODE', value: false }], 'platform'),
+    stageFeatureGateChanges([{ key: 'isUnderMaintenance', value: false }], 'platform'),
   );
 
   if (!data) {
@@ -78,7 +76,10 @@ export default function AdminReleaseControl() {
               <Pressable
                 onPress={() =>
                   setPreview(
-                    stageFeatureGateChanges([{ key: 'MAINTENANCE_MODE', value: true }], 'platform'),
+                    stageFeatureGateChanges(
+                      [{ key: 'isUnderMaintenance', value: true }],
+                      'platform',
+                    ),
                   )
                 }
                 className="active:opacity-80"
@@ -93,7 +94,7 @@ export default function AdminReleaseControl() {
                 onPress={() =>
                   setPreview(
                     stageFeatureGateChanges(
-                      [{ key: 'MAINTENANCE_MODE', value: false }],
+                      [{ key: 'isUnderMaintenance', value: false }],
                       'platform',
                     ),
                   )
@@ -111,7 +112,7 @@ export default function AdminReleaseControl() {
                 className="active:opacity-80"
               >
                 <Box className="rounded-full bg-phase-primary px-4 py-2">
-                  <Text className="text-[12px] font-bold text-white">Commit preview</Text>
+                  <Text className="text-[12px] font-bold text-white">Queue GrowthBook change</Text>
                 </Box>
               </Pressable>
             </HStack>

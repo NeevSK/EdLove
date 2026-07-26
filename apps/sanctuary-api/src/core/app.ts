@@ -1,5 +1,4 @@
 import { swaggerUI } from '@hono/swagger-ui';
-import { apiReference } from '@scalar/hono-api-reference';
 import { OpenAPIHono } from '@hono/zod-openapi';
 import {
   adaptToHono,
@@ -15,10 +14,10 @@ import {
   gradingHandlers,
   identityContract,
   identityHandlers,
-  onboardingContract,
-  onboardingHandlers,
   libraryContract,
   libraryHandlers,
+  onboardingContract,
+  onboardingHandlers,
   operationsContract,
   operationsHandlers,
   profileContract,
@@ -29,23 +28,28 @@ import {
   syncContract,
   syncHandlers,
 } from '@repo/core/api/server';
+import {
+  type FeatureFlagKey,
+  resolveFeatureFlagValue,
+} from '@repo/core/logic/registry/featureLifecycleManifest';
+import { normalizeError } from '@repo/core/logic/utils/errorNormalizer';
 import { canUseZenStackDb, createZenStackDb } from '@repo/database';
 import { check as checkCedar } from '@repo/policies';
-import { aiRouter } from '../ai/routes';
-import { verifySupabaseJwt } from '../jwt';
-import { normalizeError } from '@repo/core/logic/utils/errorNormalizer';
-import { secureHeaders } from 'hono/secure-headers';
+import { apiReference } from '@scalar/hono-api-reference';
 import { bodyLimit } from 'hono/body-limit';
-import { timeout } from 'hono/timeout';
 import { compress } from 'hono/compress';
+import { cors } from 'hono/cors';
 import { csrf } from 'hono/csrf';
 import { etag } from 'hono/etag';
-import { timing, startTime, endTime } from 'hono/timing';
-import { cors } from 'hono/cors';
+import { createFactory } from 'hono/factory';
+import { HTTPException } from 'hono/http-exception';
 import { logger } from 'hono/logger';
 import { requestId } from 'hono/request-id';
-import { HTTPException } from 'hono/http-exception';
-import { createFactory } from 'hono/factory';
+import { secureHeaders } from 'hono/secure-headers';
+import { timeout } from 'hono/timeout';
+import { endTime, startTime, timing } from 'hono/timing';
+import { aiRouter } from '../ai/routes';
+import { verifySupabaseJwt } from '../jwt';
 
 interface Env {
   Variables: {
@@ -255,13 +259,19 @@ if (typeof globalThis !== 'undefined' && !(globalThis as any).__rateLimitCleanup
 const rateLimitHandler = factory.createMiddleware(async (c, next) => {
   if (
     c.req.path.startsWith('/payments/') ||
-    c.req.path === '/doc' || c.req.path === '/ui' || c.req.path === '/reference' ||
+    c.req.path === '/doc' ||
+    c.req.path === '/ui' ||
+    c.req.path === '/reference' ||
     c.req.method === 'OPTIONS'
   ) {
     return next();
   }
 
-  const ip = c.req.header('CF-Connecting-IP') || c.req.header('X-Forwarded-For') || c.req.header('X-Forwarding-For') || 'unknown-ip';
+  const ip =
+    c.req.header('CF-Connecting-IP') ||
+    c.req.header('X-Forwarded-For') ||
+    c.req.header('X-Forwarding-For') ||
+    'unknown-ip';
   const now = Date.now();
   const record = rateLimitCache.get(ip) || { count: 0, resetTime: now + RATE_LIMIT_WINDOW };
 
@@ -451,12 +461,12 @@ function poa(route: SovereignRoute) {
     } catch (err: any) {
       if (err.message === 'PrivilegeEscalation') {
         throw new HTTPException(403, {
-          message:
-            'Authoritative database policy rejects the requested administrative capability.',
+          message: 'Authoritative database policy rejects the requested administrative capability.',
           res: new Response(
             JSON.stringify({
               error: 'Forbidden',
-              message: 'Authoritative database policy rejects the requested administrative capability.',
+              message:
+                'Authoritative database policy rejects the requested administrative capability.',
             }),
             { status: 403, headers: { 'Content-Type': 'application/json' } },
           ),
@@ -579,23 +589,18 @@ function poa(route: SovereignRoute) {
 }
 
 import { featureFlags } from '@repo/core/logic/managers/featureFlag.factory';
-import type { FeatureFlags } from '@repo/core/store/types/featureFlags';
 
-const routeFeatureFlagMap: Record<string, keyof FeatureFlags> = {
-  '/api/community': 'isCommunityEnabled',
-  '/api/grades': 'isStudentGradesWorkspaceEnabled',
-  '/api/educational': 'isLibraryManagementEnabled',
+const routeFeatureFlagMap = {
   '/api/sync': 'isPowerSyncEnabled',
   '/api/ai': 'isAIAssistantEnabled',
-  '/api/admin': 'isStaffManagementEnabled',
-};
+} as const satisfies Record<string, FeatureFlagKey>;
 
 function featureFlagGate(route: SovereignRoute) {
   return factory.createMiddleware(async (c, next) => {
-    let flagKey: keyof FeatureFlags | undefined;
+    let flagKey: keyof typeof routeFeatureFlagMap | undefined;
     for (const prefix of Object.keys(routeFeatureFlagMap)) {
       if (route.path.startsWith(prefix) || c.req.path.startsWith(prefix)) {
-        flagKey = routeFeatureFlagMap[prefix];
+        flagKey = prefix as keyof typeof routeFeatureFlagMap;
         break;
       }
     }
@@ -615,7 +620,7 @@ function featureFlagGate(route: SovereignRoute) {
       };
 
       const resolved = await featureFlags.resolveFlags(userContext as any);
-      const isEnabled = resolved.flags[flagKey];
+      const isEnabled = resolveFeatureFlagValue(resolved.flags, routeFeatureFlagMap[flagKey]);
 
       if (isEnabled === false) {
         console.warn(
@@ -624,7 +629,7 @@ function featureFlagGate(route: SovereignRoute) {
         throw new HTTPException(503, {
           message: 'This feature is currently disabled.',
           res: new Response(
-            JSON.stringify({ error: 'FeatureDisabled', flag: flagKey }),
+            JSON.stringify({ error: 'FeatureDisabled', flag: routeFeatureFlagMap[flagKey] }),
             { status: 503, headers: { 'Content-Type': 'application/json' } },
           ),
         });
@@ -729,8 +734,16 @@ registerRoute(identityApp, identityContract.modifyUserProfile, identityHandlers.
 
 // Sovereign Routes (Vertical Slice: ONBOARDING)
 const onboardingApp = new OpenAPIHono();
-registerRoute(onboardingApp, onboardingContract.createInitialBond, onboardingHandlers.createInitialBond);
-registerRoute(onboardingApp, onboardingContract.completeOnboarding, onboardingHandlers.completeOnboarding);
+registerRoute(
+  onboardingApp,
+  onboardingContract.createInitialBond,
+  onboardingHandlers.createInitialBond,
+);
+registerRoute(
+  onboardingApp,
+  onboardingContract.completeOnboarding,
+  onboardingHandlers.completeOnboarding,
+);
 
 // Sovereign Routes (Vertical Slice: ADMIN)
 const adminApp = new OpenAPIHono();
@@ -845,4 +858,3 @@ app.doc('/doc', {
 
 app.get('/ui', swaggerUI({ url: '/doc' }));
 app.get('/reference', apiReference({ spec: { url: '/doc' } }));
-

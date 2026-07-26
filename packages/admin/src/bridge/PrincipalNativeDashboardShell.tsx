@@ -1,5 +1,4 @@
-import { } from '@repo/core/logic';
-import { SanctuaryGuard } from '@repo/ui';
+import { useDomainFeature } from '@repo/core/logic';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import SandboxBanner from '@repo/ui/components/SandboxBanner';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
@@ -76,7 +75,7 @@ export function PrincipalNativeDashboardShell({
   error,
   children,
 }: PrincipalNativeDashboardShellProps) {
-  // We use NativeWind for styling, so theme hook is removed as it's legacy.
+  const { result: workspaceShellFeature } = useDomainFeature('workspace-shell');
 
   return (
     <>
@@ -126,22 +125,17 @@ export function PrincipalNativeDashboardShell({
               <SkeletonCard height={220} />
               <SkeletonCard height={220} />
             </VStack>
+          ) : workspaceShellFeature.permitted ? (
+            children
           ) : (
-            <FeatureGuard
-              feature="isDevelopingWorkspace"
-              fallback={
-                <Box className="p-xl bg-phase-canvas rounded-3xl border border-dashed border-phase-border items-center justify-center min-h-[300px]">
-                  <Text className="text-phaseText-secondary font-bold text-center">
-                    Workspace is currently under development.
-                  </Text>
-                  <Text className="text-phaseText-muted text-[12px] mt-2 text-center">
-                    Stay tuned for updates on governance and institutional signals.
-                  </Text>
-                </Box>
-              }
-            >
-              {children}
-            </SanctuaryGuard>
+            <Box className="p-xl bg-phase-canvas rounded-3xl border border-dashed border-phase-border items-center justify-center min-h-[300px]">
+              <Text className="text-phaseText-secondary font-bold text-center">
+                Workspace is currently under development.
+              </Text>
+              <Text className="text-phaseText-muted text-[12px] mt-2 text-center">
+                Stay tuned for updates on governance and institutional signals.
+              </Text>
+            </Box>
           )}
         </VStack>
       </ScrollView>

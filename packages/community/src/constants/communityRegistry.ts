@@ -1,4 +1,12 @@
+import { defineFeatureLifecycle } from '@repo/core/logic/registry/domainEntry';
 import type { DomainFeature } from '@repo/core/types';
+
+const REGISTRY_LIFECYCLE = defineFeatureLifecycle({
+  owner: 'community',
+  createdAt: '2026-07-26',
+  reviewAt: '2026-09-30',
+  permanentJustification: 'Stable catalog capability governed by the AppCatalog owner.',
+});
 
 export const COMMUNITY_REGISTRY: Record<string, DomainFeature> = {
   hearth: {
@@ -13,6 +21,7 @@ export const COMMUNITY_REGISTRY: Record<string, DomainFeature> = {
     mobileSupport: true,
     webSupport: true,
     state: 'live',
+    lifecycle: REGISTRY_LIFECYCLE,
     capabilityRequirement: { action: 'read', subject: 'CommunityFeed' },
     tabDomain: 'community',
     analyticsKey: 'community.hearth',
@@ -29,6 +38,7 @@ export const COMMUNITY_REGISTRY: Record<string, DomainFeature> = {
     mobileSupport: true,
     webSupport: true,
     state: 'live',
+    lifecycle: REGISTRY_LIFECYCLE,
     capabilityRequirement: { action: 'read', subject: 'CommunityGroups' },
     tabDomain: 'community',
     analyticsKey: 'community.circles',
@@ -45,11 +55,12 @@ export const COMMUNITY_REGISTRY: Record<string, DomainFeature> = {
     mobileSupport: true,
     webSupport: true,
     state: 'live',
+    lifecycle: REGISTRY_LIFECYCLE,
     capabilityRequirement: { action: 'read', subject: 'DirectMessages' },
     tabDomain: 'community',
     analyticsKey: 'community.messages',
   },
-  trust_network: {
+  trust: {
     id: 'trust',
     surfaceId: 'trust',
     ownerPackage: 'community',
@@ -63,6 +74,7 @@ export const COMMUNITY_REGISTRY: Record<string, DomainFeature> = {
     mobileSupport: false,
     webSupport: true,
     state: 'live',
+    lifecycle: REGISTRY_LIFECYCLE,
     capabilityRequirement: { action: 'read', subject: 'TrustNetwork' },
     tabDomain: 'community',
     analyticsKey: 'community.trust_network',

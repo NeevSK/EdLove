@@ -1,4 +1,4 @@
-import type { DomainEntry } from '@repo/core/logic/registry/domainEntry';
+import { type DomainEntry, defineFeatureLifecycle } from '@repo/core/logic/registry/domainEntry';
 
 /**
  * SelfSection Registry
@@ -20,77 +20,15 @@ export interface SelfDomain {
   accentColor: string;
   /** Gradient colors for the 'Energy Sensing' UI (2026 Pattern) */
   energyVibe?: [string, string];
-  traitRequirement?: string; // ReBAC Trait (e.g., 'role:student', 'capability:somatic')
-  capabilityRequirement?: { action: string; subject: string }; // 2026 Dynamic Cedar alignment
   features: string[]; // IDs of features in this domain
 }
 
-/**
- * Global Registry of all possible Domains.
- */
-export const SANCTUARY_DOMAINS: Record<string, SelfDomain> = {
-  journey: {
-    id: 'journey',
-    title: 'Journey Overview',
-    accentColor: '#10B981',
-    energyVibe: ['#ECFDF5', '#D1FAE5'],
-    features: ['journey_timeline'],
-  },
-  pulse: {
-    id: 'pulse',
-    title: 'Inner Pulse',
-    accentColor: '#8B5CF6',
-    energyVibe: ['#F5F3FF', '#EDE9FE'],
-    features: ['daily_pulse', 'mood_lotus', 'wisdom_seeds'],
-  },
-  growth: {
-    id: 'growth',
-    title: 'Growth Sanctuary',
-    accentColor: '#3B82F6',
-    energyVibe: ['#EFF6FF', '#DBEAFE'],
-    traitRequirement: 'role:student',
-    capabilityRequirement: { action: 'read', subject: 'StudentDashboard' },
-    features: ['study_rhythm', 'personal_goals', 'academic_grades'],
-  },
-  care: {
-    id: 'care',
-    title: 'Care & Rhythm',
-    accentColor: '#EF4444',
-    energyVibe: ['#FEF2F2', '#FEE2E2'],
-    features: ['sleep_tracker', 'joy_jar', 'gratitude_glimmers'],
-  },
-  reflection: {
-    id: 'reflection',
-    title: 'Reflection Tools',
-    accentColor: '#F59E0B',
-    energyVibe: ['#FFFBEB', '#FEF3C7'],
-    features: ['fire_journal', 'voice_journal', 'tomorrow_prep'],
-  },
-  working: {
-    id: 'working',
-    title: 'Working Rhythm',
-    accentColor: '#10B981',
-    energyVibe: ['#F0FDF4', '#DCFCE7'],
-    traitRequirement: 'role:teacher',
-    capabilityRequirement: { action: 'read', subject: 'TeacherDashboard' },
-    features: ['daily_rhythm', 'tomorrow_prep', 'reminders', 'decisions', 'professional_history'],
-  },
-  leadership: {
-    id: 'leadership',
-    title: 'Leadership Focus',
-    accentColor: '#F59E0B',
-    energyVibe: ['#FFF7ED', '#FFEDD5'],
-    traitRequirement: 'role:principal',
-    capabilityRequirement: { action: 'read', subject: 'PrincipalDashboard' },
-    features: [
-      'decisions',
-      'resonance_patterns',
-      'wisdom_seeds',
-      'monthly_reflection',
-      'governance_history',
-    ],
-  },
-};
+const SELF_LIFECYCLE = defineFeatureLifecycle({
+  owner: 'self',
+  createdAt: '2026-07-26',
+  reviewAt: '2026-09-30',
+  permanentJustification: 'Stable self workspace catalog capability governed by the Self owner.',
+});
 
 export const SELF_REGISTRY: Record<string, DomainEntry> = {
   journey: {
@@ -101,6 +39,13 @@ export const SELF_REGISTRY: Record<string, DomainEntry> = {
     mobileSupport: true,
     webSupport: true,
     state: 'live',
+    lifecycle: SELF_LIFECYCLE,
+    presentation: {
+      title: 'Journey Overview',
+      accentColor: '#10B981',
+      energyVibe: ['#ECFDF5', '#D1FAE5'],
+      featureIds: ['journey_timeline'],
+    },
     citizenshipRequired: 3, // Open to all (Third Class)
     capabilityRequirement: { action: 'read', subject: 'SelfJourney' },
     tabDomain: 'self',
@@ -116,6 +61,13 @@ export const SELF_REGISTRY: Record<string, DomainEntry> = {
     mobileSupport: true,
     webSupport: true,
     state: 'live',
+    lifecycle: SELF_LIFECYCLE,
+    presentation: {
+      title: 'Inner Pulse',
+      accentColor: '#8B5CF6',
+      energyVibe: ['#F5F3FF', '#EDE9FE'],
+      featureIds: ['daily_pulse', 'mood_lotus', 'wisdom_seeds'],
+    },
     citizenshipRequired: 3,
     capabilityRequirement: { action: 'read', subject: 'InnerPulse' },
     tabDomain: 'self',
@@ -131,6 +83,13 @@ export const SELF_REGISTRY: Record<string, DomainEntry> = {
     mobileSupport: true,
     webSupport: true,
     state: 'live',
+    lifecycle: SELF_LIFECYCLE,
+    presentation: {
+      title: 'Growth Sanctuary',
+      accentColor: '#3B82F6',
+      energyVibe: ['#EFF6FF', '#DBEAFE'],
+      featureIds: ['study_rhythm', 'personal_goals', 'academic_grades'],
+    },
     citizenshipRequired: 3,
     capabilityRequirement: { action: 'read', subject: 'StudentDashboard' },
     tabDomain: 'self',
@@ -146,6 +105,13 @@ export const SELF_REGISTRY: Record<string, DomainEntry> = {
     mobileSupport: true,
     webSupport: true,
     state: 'live',
+    lifecycle: SELF_LIFECYCLE,
+    presentation: {
+      title: 'Care & Rhythm',
+      accentColor: '#EF4444',
+      energyVibe: ['#FEF2F2', '#FEE2E2'],
+      featureIds: ['sleep_tracker', 'joy_jar', 'gratitude_glimmers'],
+    },
     citizenshipRequired: 3,
     capabilityRequirement: { action: 'read', subject: 'SelfCare' },
     tabDomain: 'self',
@@ -161,6 +127,13 @@ export const SELF_REGISTRY: Record<string, DomainEntry> = {
     mobileSupport: true,
     webSupport: true,
     state: 'live',
+    lifecycle: SELF_LIFECYCLE,
+    presentation: {
+      title: 'Reflection Tools',
+      accentColor: '#F59E0B',
+      energyVibe: ['#FFFBEB', '#FEF3C7'],
+      featureIds: ['fire_journal', 'voice_journal', 'tomorrow_prep'],
+    },
     citizenshipRequired: 3,
     capabilityRequirement: { action: 'read', subject: 'SelfReflection' },
     tabDomain: 'self',
@@ -176,6 +149,19 @@ export const SELF_REGISTRY: Record<string, DomainEntry> = {
     mobileSupport: true,
     webSupport: true,
     state: 'live',
+    lifecycle: SELF_LIFECYCLE,
+    presentation: {
+      title: 'Working Rhythm',
+      accentColor: '#10B981',
+      energyVibe: ['#F0FDF4', '#DCFCE7'],
+      featureIds: [
+        'daily_rhythm',
+        'tomorrow_prep',
+        'reminders',
+        'decisions',
+        'professional_history',
+      ],
+    },
     citizenshipRequired: 2, // Second Class (signed up teachers)
     capabilityRequirement: { action: 'read', subject: 'TeacherDashboard' },
     tabDomain: 'self',
@@ -191,6 +177,19 @@ export const SELF_REGISTRY: Record<string, DomainEntry> = {
     mobileSupport: true,
     webSupport: true,
     state: 'live',
+    lifecycle: SELF_LIFECYCLE,
+    presentation: {
+      title: 'Leadership Focus',
+      accentColor: '#F59E0B',
+      energyVibe: ['#FFF7ED', '#FFEDD5'],
+      featureIds: [
+        'decisions',
+        'resonance_patterns',
+        'wisdom_seeds',
+        'monthly_reflection',
+        'governance_history',
+      ],
+    },
     citizenshipRequired: 1, // First Class (Institutional)
     capabilityRequirement: { action: 'read', subject: 'PrincipalDashboard' },
     tabDomain: 'self',

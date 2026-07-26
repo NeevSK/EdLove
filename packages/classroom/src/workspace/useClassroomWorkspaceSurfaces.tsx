@@ -1,11 +1,11 @@
 import { appendAdminWorkspaceSurfaces } from '@repo/admin';
 import { useFeatureRegistry } from '@repo/core/hooks/useFeatureRegistry';
-import { } from '@repo/core/logic';
-import { SanctuaryGuard } from '@repo/ui';
+import {} from '@repo/core/logic';
 import type {
   ClassroomWorkspaceSurface,
   ClassroomWorkspaceSurfaceId,
 } from '@repo/core/types/Workspace';
+import { SanctuaryGuard } from '@repo/ui';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SanctuaryNudge } from '@repo/ui/components/SanctuaryNudge';
 import SandboxBanner from '@repo/ui/components/SandboxBanner';
@@ -97,7 +97,11 @@ export function useClassroomWorkspaceSurfaces({
 
     return (
       <>
-        <SanctuaryGuard action="read" subject="TeacherPulse" requirement={{ citizenshipRequired: 3 }}>
+        <SanctuaryGuard
+          action="read"
+          subject="TeacherPulse"
+          requirement={{ citizenshipRequired: 3 }}
+        >
           <SanctuaryNudge
             title={t('classroom.nudges.breathing.title') || 'Feeling Overwhelmed?'}
             description={
@@ -109,7 +113,11 @@ export function useClassroomWorkspaceSurfaces({
             icon={Wind}
           />
         </SanctuaryGuard>
-        <SanctuaryGuard action="read" subject="PrincipalPulse" requirement={{ citizenshipRequired: 3 }}>
+        <SanctuaryGuard
+          action="read"
+          subject="PrincipalPulse"
+          requirement={{ citizenshipRequired: 3 }}
+        >
           <SanctuaryNudge
             title={t('principal.nudges.breathing.title') || 'Leadership Clarity'}
             description={
@@ -121,7 +129,11 @@ export function useClassroomWorkspaceSurfaces({
             icon={Wind}
           />
         </SanctuaryGuard>
-        <SanctuaryGuard action="read" subject="FounderPulse" requirement={{ citizenshipRequired: 3 }}>
+        <SanctuaryGuard
+          action="read"
+          subject="FounderPulse"
+          requirement={{ citizenshipRequired: 3 }}
+        >
           <SanctuaryNudge
             title={t('founder.nudges.breathing.title') || 'Visionary Pulse'}
             description={
@@ -133,7 +145,11 @@ export function useClassroomWorkspaceSurfaces({
             icon={Wind}
           />
         </SanctuaryGuard>
-        <SanctuaryGuard action="read" subject="StudentPulse" requirement={{ citizenshipRequired: 3 }}>
+        <SanctuaryGuard
+          action="read"
+          subject="StudentPulse"
+          requirement={{ citizenshipRequired: 3 }}
+        >
           <SanctuaryNudge
             title={t('student.nudges.breathing.title') || 'Learning Fuel'}
             description={
@@ -171,7 +187,7 @@ export function useClassroomWorkspaceSurfaces({
     });
 
     // --- Teacher Dashboard ---
-    const teacherGate = classroomGated.teacher_dashboard;
+    const teacherGate = classroomGated.teacher;
     if (teacherGate?.visible) {
       const teacherContent =
         classroomData.realClassCount === 0 && !isDemoModeTriggered ? (
@@ -210,7 +226,7 @@ export function useClassroomWorkspaceSurfaces({
     }
 
     // --- Student Dashboard ---
-    const studentGate = classroomGated.student_dashboard;
+    const studentGate = classroomGated.student;
     if (studentGate?.visible) {
       const studentContent =
         classroomData.realClassCount === 0 && !isDemoModeTriggered ? (
@@ -269,8 +285,8 @@ export function useClassroomWorkspaceSurfaces({
     surfaceInsights,
     isPro,
     userCapabilities,
-    classroomGated.student_dashboard,
-    classroomGated.teacher_dashboard,
+    classroomGated.student,
+    classroomGated.teacher,
     citizenship,
   ]);
 }

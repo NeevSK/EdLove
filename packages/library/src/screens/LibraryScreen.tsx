@@ -3,9 +3,8 @@
  */
 
 import { identityAPI } from '@repo/core/api';
-import { useTracking } from '@repo/core/hooks';
-import { coreRuntime, useStore, useTemporalStore } from '@repo/core/logic';
-import { SanctuaryGuard } from '@repo/ui';
+import { useDomainRollout, useTracking } from '@repo/core/hooks';
+import { coreRuntime, usePermissions, useStore, useTemporalStore } from '@repo/core/logic';
 import { CollectionCard } from '@repo/ui/components/CollectionCard';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { HorizontalChipRow } from '@repo/ui/components/HorizontalChipRow';
@@ -153,6 +152,8 @@ CuratorInvitation.displayName = 'CuratorInvitation';
 export default function LibraryScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { can } = usePermissions();
+  const isLibraryManagementEnabled = useDomainRollout('archive');
 
   // --- 1. STATE MACHINE (Mechanism) ---
   interface LibraryState {
@@ -836,15 +837,9 @@ export default function LibraryScreen() {
         case 'MAP_INVITATION':
           return <MapInvitation onPress={handleNavigateToMap} />;
         case 'CURATOR_INVITATION_GUARD':
-          return (
-            <FeatureGuard
-              feature="isLibraryManagementEnabled"
-              action="manage"
-              subject="LibraryCuratorDashboard"
-            >
-              <CuratorInvitation onPress={handleNavigateToCuratorReview} />
-            </SanctuaryGuard>
-          );
+          return isLibraryManagementEnabled && can('manage', 'LibraryCuratorDashboard') ? (
+            <CuratorInvitation onPress={handleNavigateToCuratorReview} />
+          ) : null;
         case 'CONTINUE_LEARNING':
           return (
             <SmartShelf title="▶ Continue Learning">
@@ -910,6 +905,8 @@ export default function LibraryScreen() {
       handleLongPressResource,
       handleOpenCollectionDetail,
       renderShelf,
+      isLibraryManagementEnabled,
+      can,
     ],
   );
 
@@ -969,21 +966,19 @@ export default function LibraryScreen() {
         </VStack>
       ) : (
         <Box className="flex-1">
-          {!isSearchMode && (
-            <FeatureGuard feature="isLibraryManagementEnabled" action="create" subject="Library">
-              <HStack className="px-md py-3 gap-3">
-                <Pressable
-                  onPress={handleOpenCollectionModal}
-                  accessibilityRole="button"
-                  accessibilityLabel="Create Collection"
-                  accessibilityHint="Opens a form to create a new resource collection"
-                  className="flex-row items-center gap-2 px-4 py-2.5 rounded-2xl bg-phase-interactive/10 border border-phase-interactive/50"
-                >
-                  <Icon as={Library} size={14} color={theme.accent.action} />
-                  <Text className="text-[13px] font-bold text-phaseText-primary">+ Collection</Text>
-                </Pressable>
-              </HStack>
-            </SanctuaryGuard>
+          {!isSearchMode && isLibraryManagementEnabled && can('create', 'Library') && (
+            <HStack className="px-md py-3 gap-3">
+              <Pressable
+                onPress={handleOpenCollectionModal}
+                accessibilityRole="button"
+                accessibilityLabel="Create Collection"
+                accessibilityHint="Opens a form to create a new resource collection"
+                className="flex-row items-center gap-2 px-4 py-2.5 rounded-2xl bg-phase-interactive/10 border border-phase-interactive/50"
+              >
+                <Icon as={Library} size={14} color={theme.accent.action} />
+                <Text className="text-[13px] font-bold text-phaseText-primary">+ Collection</Text>
+              </Pressable>
+            </HStack>
           )}
 
           <Box className="flex-1 bg-phase-surface">

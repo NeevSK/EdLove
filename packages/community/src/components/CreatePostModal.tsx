@@ -1,4 +1,4 @@
-import { usePermissions } from '@repo/core/logic';
+import { useDomainRollout } from '@repo/core/hooks';
 import { ContentComposer } from '@repo/ui/components/ContentComposer';
 import { useComposerLogic } from '@/hooks/useComposerLogic';
 
@@ -26,7 +26,7 @@ export default function CreatePostModal({
   groupId = 'general',
   onSuccess,
 }: CreatePostModalProps) {
-  const { flags } = usePermissions();
+  const isCommunityEnabled = useDomainRollout('hearth');
   const { state, actions } = useComposerLogic(groupId, onClose);
 
   if (!isOpen) return null;
@@ -54,7 +54,7 @@ export default function CreatePostModal({
       pollCustomEndsAt={state.pollCustomEndsAt}
       showCustomDate={state.showCustomDate}
       // Features
-      allowPolls={flags.isCommunityEnabled}
+      allowPolls={isCommunityEnabled}
       allowMedia={true}
       allowTags={true}
       // Handlers
