@@ -1,4 +1,4 @@
-import type { LibraryResource } from '../types';
+import type { LibraryResource } from '@/types';
 
 const LIBRARY_SHARE_BASE_URL = 'https://platform.gurudevi.edlove.org/p/library/resource';
 

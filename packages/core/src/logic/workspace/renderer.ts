@@ -3,14 +3,14 @@ import type {
   WorkspaceRendererMode,
   WorkspaceRendererPlatform,
   WorkspaceRuntimePlatform,
-} from '../../types';
+} from '@/types';
 
 export type {
   WorkspaceRendererConfig,
   WorkspaceRendererMode,
   WorkspaceRendererPlatform,
   WorkspaceRuntimePlatform,
-} from '../../types';
+} from '@/types';
 
 export interface ResolveWorkspaceRendererOptions {
   runtimePlatform: WorkspaceRuntimePlatform;

@@ -1,1 +1,1 @@
-﻿export * from './Wellbeing';
+﻿export * from '@/types/Wellbeing';

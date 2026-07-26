@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import * as Keychain from 'react-native-keychain';
-import type { IDeviceIdentity } from '../../logic/interfaces/deviceIdentity.port';
+import type { IDeviceIdentity } from '@/logic/interfaces/deviceIdentity.port';
 
 /**
  * NativeDeviceIdentityAdapter

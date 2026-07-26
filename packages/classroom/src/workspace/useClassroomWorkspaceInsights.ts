@@ -1,9 +1,9 @@
 import { api } from '@repo/core/api';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useSchoolStats } from '../hooks/useSchoolStats';
-import type { ClassroomWorkspaceSurfaceId } from '../types/workspace';
-import { useStudentWorkspaceData } from './useStudentWorkspaceData';
+import { useSchoolStats } from '@/hooks/useSchoolStats';
+import type { ClassroomWorkspaceSurfaceId } from '@/types/workspace';
+import { useStudentWorkspaceData } from '@/workspace/useStudentWorkspaceData';
 
 type SurfaceInsight = {
   summary?: string;

@@ -21,7 +21,7 @@ import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { useMemo } from 'react';
-import { type FounderCapabilityId, getFounderCapabilityMeta } from './workspace';
+import { type FounderCapabilityId, getFounderCapabilityMeta } from '@/founder/workspace';
 
 export type FounderWorkspaceSurfaceId =
   | 'platform_pulse'

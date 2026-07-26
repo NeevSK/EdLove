@@ -1,8 +1,8 @@
-import { deviceTrustAPI } from '../../api/deviceTrust';
-import type { Capacity } from '../../types';
-import { APIError } from '../../types/API';
-import type { AuthSession, AuthUser, IAuthPort } from '../ports/auth.port';
-import type { IIdentityPort } from '../ports/identity.port';
+import { deviceTrustAPI } from '@/api/deviceTrust';
+import type { Capacity } from '@/types';
+import { APIError } from '@/types/API';
+import type { AuthSession, AuthUser, IAuthPort } from '@/logic/ports/auth.port';
+import type { IIdentityPort } from '@/logic/ports/identity.port';
 
 export interface AuthManagerConfig {
   onSignOut?: () => Promise<void>;

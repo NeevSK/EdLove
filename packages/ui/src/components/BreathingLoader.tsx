@@ -2,8 +2,8 @@ import { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { EaseView } from 'react-native-ease';
-import { useAccessibility } from '../hooks/useAccessibility';
-import { Theme } from '../theme/Theme';
+import { useAccessibility } from '@/hooks/useAccessibility';
+import { Theme } from '@/theme/Theme';
 
 interface BreathingLoaderProps {
   size?: number;

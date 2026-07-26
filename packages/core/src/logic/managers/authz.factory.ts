@@ -1,4 +1,4 @@
-import { CedarAuthorizationAdapter } from '../../adapters/cedar/cedarAuthorization.adapter';
+import { CedarAuthorizationAdapter } from '@/adapters/cedar/cedarAuthorization.adapter';
 
 /**
  * authz: The Global Sovereign Authorization Instance.

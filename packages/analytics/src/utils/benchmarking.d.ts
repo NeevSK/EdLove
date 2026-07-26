@@ -1,4 +1,4 @@
-import type { BenchmarkData } from '../types/AnalyticsTypes';
+import type { BenchmarkData } from '@/types/AnalyticsTypes';
 export declare const EDUCATION_BENCHMARKS: BenchmarkData[];
 export declare function getBenchmarkData(
   institutionType: 'public' | 'private' | 'charter',

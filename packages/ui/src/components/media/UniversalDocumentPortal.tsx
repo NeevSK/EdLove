@@ -1,9 +1,9 @@
 import type { DownloadState } from '@repo/core/hooks';
 import { CircleAlert, Download, ExternalLink, FileText, Info, Sparkles } from '@repo/ui/icons';
-import { Box, HStack, Text, useTheme, VStack } from '../../primitives';
-import GlobalHeader from '../GlobalHeader';
-import { SanctuaryButton } from '../SanctuaryButton';
-import ScreenWrapper from '../ScreenWrapper';
+import { Box, HStack, Text, useTheme, VStack } from '@/primitives';
+import GlobalHeader from '@/components/GlobalHeader';
+import { SanctuaryButton } from '@/components/SanctuaryButton';
+import ScreenWrapper from '@/components/ScreenWrapper';
 
 export interface UniversalDocumentPortalProps {
   title: string;

@@ -5,12 +5,12 @@ import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 import { ArrowRight } from '@repo/ui/icons';
 import { Box, Heading, Icon, Pressable, Text } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
-import CreateClassroomModal from '../components/CreateClassroomModal';
-import PrincipalOnboardingView from '../components/onboarding/PrincipalOnboardingView.web';
-import PrincipalDashboardWebSurface from './PrincipalDashboard.web';
+import CreateClassroomModal from '@/components/CreateClassroomModal';
+import PrincipalOnboardingView from '@/components/onboarding/PrincipalOnboardingView.web';
+import PrincipalDashboardWebSurface from '@/screens/PrincipalDashboard.web';
 // Direct imports for sub-views
-import StudentDashboardWeb from './StudentDashboard.web';
-import TeacherDashboardWeb from './TeacherDashboard.web';
+import StudentDashboardWeb from '@/screens/StudentDashboard.web';
+import TeacherDashboardWeb from '@/screens/TeacherDashboard.web';
 
 /**
  * ClassroomScreen.web.tsx (POA 100% Realized)

@@ -1,2 +1,2 @@
-export * from './GuardianChildrenList';
-export * from './GuardianHeader';
+export * from '@/components/poa/GuardianChildrenList';
+export * from '@/components/poa/GuardianHeader';

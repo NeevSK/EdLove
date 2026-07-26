@@ -1,4 +1,4 @@
-import { type ResilienceOptions, withResilience } from '../offline/resilience';
+import { type ResilienceOptions, withResilience } from '@/offline/resilience';
 
 export interface LocalFirstReadOptions<T> extends ResilienceOptions {
   fetchRemote: () => Promise<T>;

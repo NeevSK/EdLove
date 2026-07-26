@@ -1,6 +1,6 @@
 import { usePermissions } from '@repo/core/logic';
 import { useMemo } from 'react';
-import { SANCTUARY_DOMAINS } from '../constants/selfRegistry';
+import { SANCTUARY_DOMAINS } from '@/constants/selfRegistry';
 
 /**
  * Hook to resolve available Sanctuary domains based on user traits and bonds.

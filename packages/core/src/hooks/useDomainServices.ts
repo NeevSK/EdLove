@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-import { createDomainServices } from '../logic/domains/factory';
-import { useStore } from '../store/useStore';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { createDomainServices } from '@/logic/domains/factory';
+import { useStore } from '@/store/useStore';
 
 /**
  * useDomainServices Hook

@@ -1,6 +1,6 @@
-import { SafeZustandStorage } from '../lib/storageWrapper';
-import { useTemporalStore } from '../store/useTemporalStore';
-import { createTemporalProxy } from './temporalProxy';
+import { SafeZustandStorage } from '@/lib/storageWrapper';
+import { useTemporalStore } from '@/store/useTemporalStore';
+import { createTemporalProxy } from '@/api/temporalProxy';
 
 describe('createTemporalProxy', () => {
   afterEach(() => {

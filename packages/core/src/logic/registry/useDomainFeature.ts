@@ -1,7 +1,7 @@
-import { getDomainEntry } from './appCatalog';
-import { useSanctuaryFeature } from '../permissions/hooks/useSanctuaryFeature';
-import type { DomainEntry } from './domainEntry';
-import type { SanctuaryFeatureResult } from '../permissions/sanctuaryFeature';
+import { getDomainEntry } from '@/logic/registry/appCatalog';
+import { useSanctuaryFeature } from '@/logic/permissions/hooks/useSanctuaryFeature';
+import type { DomainEntry } from '@/logic/registry/domainEntry';
+import type { SanctuaryFeatureResult } from '@/logic/permissions/sanctuaryFeature';
 
 export interface DomainFeatureResult {
   entry: DomainEntry;

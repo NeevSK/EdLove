@@ -1,8 +1,8 @@
 import { v7 as uuidv7 } from 'uuid';
-import { type ActiveCitizen, identityAPI } from '../api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-import { coreRuntime } from '../logic/runtimeRegistry';
-import { APIError } from '../types/API';
+import { type ActiveCitizen, identityAPI } from '@/api/identity';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { coreRuntime } from '@/logic/runtimeRegistry';
+import { APIError } from '@/types/API';
 
 const DEVICE_INSTALL_ID_KEY = 'gurudevi-device-install-id';
 const SERVER_DEVICE_ID_KEY = 'gurudevi-server-device-id';

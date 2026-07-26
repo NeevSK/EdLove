@@ -6,7 +6,7 @@ import type {
   ClassroomWorkspaceCapabilityKey,
   ClassroomWorkspaceSurface,
   ClassroomWorkspaceSurfaceId,
-} from '../types/workspace';
+} from '@/types/workspace';
 
 export function useClassroomWorkspaceLayout(
   userId: string | null | undefined,

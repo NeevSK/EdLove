@@ -1,4 +1,4 @@
-import { useStore } from '../store/useStore';
+import { useStore } from '@/store/useStore';
 
 /**
  * Global API Interceptor & Error Handler (Layer 1)

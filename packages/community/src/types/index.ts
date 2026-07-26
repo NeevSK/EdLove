@@ -39,4 +39,4 @@ export type {
   SanctuaryManifesto,
   Urgency,
   UserBadge,
-} from './Community';
+} from '@/types/Community';

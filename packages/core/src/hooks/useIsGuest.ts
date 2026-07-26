@@ -1,4 +1,4 @@
-import { useAuthStore } from '../store/useAuthStore';
+import { useAuthStore } from '@/store/useAuthStore';
 
 /**
  * useIsGuest — returns true if the current user is anonymous/not logged in.

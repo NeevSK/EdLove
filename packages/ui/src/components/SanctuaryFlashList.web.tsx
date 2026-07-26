@@ -10,10 +10,10 @@ import { BookOpen } from '@repo/ui/icons';
 import { FlashList } from '@shopify/flash-list';
 import React, { useCallback } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
-import { RefreshControl } from '../primitives';
-import { Theme } from '../theme/Theme';
-import EmptyState from './EmptyState';
-import type { SanctuaryFlashListProps } from './SanctuaryFlashList';
+import { RefreshControl } from '@/primitives';
+import { Theme } from '@/theme/Theme';
+import EmptyState from '@/components/EmptyState';
+import type { SanctuaryFlashListProps } from '@/components/SanctuaryFlashList';
 
 function SanctuaryFlashListWeb<T>({
   data,

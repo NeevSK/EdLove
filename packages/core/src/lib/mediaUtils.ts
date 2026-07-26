@@ -5,7 +5,7 @@
  * UI components MUST use these helpers instead of hardcoding provider logic.
  */
 
-import type { MediaAsset } from '../types/Media';
+import type { MediaAsset } from '@/types/Media';
 
 /**
  * Resolve the best available URL from a MediaAsset.

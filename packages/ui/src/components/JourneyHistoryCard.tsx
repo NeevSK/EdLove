@@ -12,11 +12,11 @@ import {
 } from '@repo/ui/icons';
 import type React from 'react';
 import { useMemo } from 'react';
-import { Box, HStack, Icon, Text, VStack } from '../gluestack';
-import { Pressable } from '../primitives';
-import { ResonantHeatmap } from './ResonantHeatmap';
-import { SanctuaryCard } from './SanctuaryCard';
-import { SanctuaryChip } from './SanctuaryChip';
+import { Box, HStack, Icon, Text, VStack } from '@/gluestack';
+import { Pressable } from '@/primitives';
+import { ResonantHeatmap } from '@/components/ResonantHeatmap';
+import { SanctuaryCard } from '@/components/SanctuaryCard';
+import { SanctuaryChip } from '@/components/SanctuaryChip';
 
 export interface JourneyEvent {
   id: string;

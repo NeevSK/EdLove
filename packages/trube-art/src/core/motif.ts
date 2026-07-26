@@ -1,4 +1,4 @@
-import { clamp } from './color';
+import { clamp } from '@/core/color';
 
 export const TRUBE_MOTIF_NAMES = ['lotus-sketch', 'branch-flow', 'tide-lines'] as const;
 export type TrubeMotifName = (typeof TRUBE_MOTIF_NAMES)[number];

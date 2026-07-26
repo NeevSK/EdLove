@@ -3,7 +3,7 @@ import type { EntityType } from '@repo/core/logic';
 import IdentityCard, { type IdentityData } from '@repo/ui/components/IdentityCard';
 import { Box, Center, Spinner } from '@repo/ui/primitives';
 import { useLocalSearchParams } from 'expo-router';
-import { useProfile } from '../hooks/useProfile';
+import { useProfile } from '@/hooks/useProfile';
 
 export default function PublicProfileScreenWeb() {
   const params = useLocalSearchParams<{ id?: string; type?: EntityType }>();

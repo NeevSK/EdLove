@@ -1,11 +1,11 @@
 import type { StudentGrade } from '@repo/core/logic';
-import type { GPACalculationOptions, GradingScale } from '../types/AnalyticsTypes';
+import type { GPACalculationOptions, GradingScale } from '@/types/AnalyticsTypes';
 import {
   type GradebookEntry,
   SIMPLIFIED_GRADING_SCALE,
   STANDARD_GRADING_SCALE,
   WEIGHTED_GRADING_SCALE,
-} from '../types/GradingTypes';
+} from '@/types/GradingTypes';
 
 export class GPACalculator {
   private scale: GradingScale;

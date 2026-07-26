@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
-import { useAuthStore } from '../../store/useAuthStore';
-import { communityAPI } from '../community';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../supabase';
+import { useAuthStore } from '@/store/useAuthStore';
+import { communityAPI } from '@/api/community';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
 
 export const commentKeys = {
   all: ['community', 'comments'] as const,

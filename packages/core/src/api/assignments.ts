@@ -1,9 +1,9 @@
-import { educational } from '../logic/managers/factory';
+import { educational } from '@/logic/managers/factory';
 import type {
   StudentAssignment,
   StudentSubmissionSummary,
-} from '../logic/schemas/classroom.schema';
-import type { Assignment } from '../types';
+} from '@/logic/schemas/classroom.schema';
+import type { Assignment } from '@/types';
 
 export const assignmentsAPI = {
   /**

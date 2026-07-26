@@ -1,8 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
-import type { Lesson } from '../../../logic/schemas/lesson.schema';
-import { LessonSchema } from '../../../logic/schemas/lesson.schema';
-import { APIError } from '../../../types/API';
+import type { Lesson } from '@/logic/schemas/lesson.schema';
+import { LessonSchema } from '@/logic/schemas/lesson.schema';
+import { APIError } from '@/types/API';
 
 export const createLessonRepository = (supabase: SupabaseClient) => ({
   async getLessons(classroomId: string) {

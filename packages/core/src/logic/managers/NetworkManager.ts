@@ -1,4 +1,4 @@
-import type { INetwork } from '../interfaces/network.port';
+import type { INetwork } from '@/logic/interfaces/network.port';
 
 /**
  * NetworkManager - Sovereign Dispatcher for Connectivity.

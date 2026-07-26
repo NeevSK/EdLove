@@ -4,8 +4,8 @@ import {
   type DeviceSecuritySession,
   type DeviceTrustSummary,
   deviceTrustAPI,
-} from '../api/deviceTrust';
-import type { IDeviceSecurityPort } from '../logic/ports/deviceSecurity.port';
+} from '@/api/deviceTrust';
+import type { IDeviceSecurityPort } from '@/logic/ports/deviceSecurity.port';
 
 /**
  * SupabaseDeviceSecurityAdapter

@@ -1,6 +1,6 @@
 import type React from 'react';
 import { type ReactNode, useEffect } from 'react';
-import { useAuth } from './AuthProvider';
+import { useAuth } from '@/providers/AuthProvider';
 
 /**
  * AuthorityLifecycleProvider: Orchestrates the high-level transitions

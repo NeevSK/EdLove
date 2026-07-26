@@ -3,8 +3,8 @@ import {
   WorkspaceLayoutDeleteSchema,
   WorkspaceLayoutRecordSchema,
   WorkspaceLayoutUpsertSchema,
-} from '../logic/schemas/workspace-layout.schema';
-import type { SovereignContract } from './contract';
+} from '@/logic/schemas/workspace-layout.schema';
+import type { SovereignContract } from '@/api/contract';
 
 const workspaceLayoutAuthority = (action: 'read' | 'update' | 'delete', subject: string) =>
   ({

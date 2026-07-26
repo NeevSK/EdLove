@@ -11,8 +11,8 @@ import { hapticLight } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FadeInDown } from 'react-native-reanimated';
-import { useStudentDashboardSurfaces } from '../workspace/useStudentDashboardSurfaces';
-import { useStudentWorkspaceData } from '../workspace/useStudentWorkspaceData';
+import { useStudentDashboardSurfaces } from '@/workspace/useStudentDashboardSurfaces';
+import { useStudentWorkspaceData } from '@/workspace/useStudentWorkspaceData';
 
 interface StudentDashboardProps {
   onRefresh?: () => void;

@@ -28,7 +28,7 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
-import GuestConversionPrompt from '../shared/GuestConversionPrompt';
+import GuestConversionPrompt from '@/shared/GuestConversionPrompt';
 
 // Constants for Classroom logic
 const CLASSROOM_THEMES = [

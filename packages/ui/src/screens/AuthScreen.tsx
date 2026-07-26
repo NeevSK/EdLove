@@ -12,11 +12,11 @@ import * as WebBrowser from 'expo-web-browser';
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BreathAnimation } from '../components/BreathAnimation';
-import { default as GuestDataSyncModal } from '../components/GuestDataSyncModal';
-import { LivingGlow } from '../components/LivingGlow';
-import { SanctuaryBackground } from '../components/SanctuaryBackground';
-import ScreenWrapper from '../components/ScreenWrapper';
+import { BreathAnimation } from '@/components/BreathAnimation';
+import { default as GuestDataSyncModal } from '@/components/GuestDataSyncModal';
+import { LivingGlow } from '@/components/LivingGlow';
+import { SanctuaryBackground } from '@/components/SanctuaryBackground';
+import ScreenWrapper from '@/components/ScreenWrapper';
 import {
   Box,
   Button,
@@ -28,10 +28,10 @@ import {
   InputField,
   Text,
   VStack,
-} from '../gluestack';
-import { useTheme } from '../hooks/useTheme';
-import { useSanctuaryToast } from '../providers/ToastProvider';
-import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
+} from '@/gluestack';
+import { useTheme } from '@/hooks/useTheme';
+import { useSanctuaryToast } from '@/providers/ToastProvider';
+import { hapticError, hapticLight, hapticSuccess } from '@/utils/haptics';
 
 // Required for expo-auth-session to complete the auth session on Android
 WebBrowser.maybeCompleteAuthSession();

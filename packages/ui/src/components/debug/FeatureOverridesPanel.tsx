@@ -1,6 +1,6 @@
 import { type FeatureFlags, useAuthStore, useFeatureStore } from '@repo/core/logic';
 import type React from 'react';
-import { Box, HStack, ScrollView, Switch, Text, VStack } from '../../gluestack';
+import { Box, HStack, ScrollView, Switch, Text, VStack } from '@/gluestack';
 
 /**
  * FeatureOverridesPanel - Developer Tooling for Flag Toggling.

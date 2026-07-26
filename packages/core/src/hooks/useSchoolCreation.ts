@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
-import { storage } from '../lib/storage';
+import { storage } from '@/lib/storage';
 
 const PERSISTENCE_KEY = 'GURUDEVI_SCHOOL_CREATION_STATE';
 

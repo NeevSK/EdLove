@@ -1,2 +1,2 @@
-export * from './AdministrativeHierarchy';
-export * from './PostalCodes';
+export * from '@/data/AdministrativeHierarchy';
+export * from '@/data/PostalCodes';

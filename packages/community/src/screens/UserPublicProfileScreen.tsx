@@ -25,8 +25,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
-import { communityAPI } from '../api/community';
-import SocialShieldModal from '../components/SocialShieldModal';
+import { communityAPI } from '@/api/community';
+import SocialShieldModal from '@/components/SocialShieldModal';
 
 interface PublicUser {
   id: string;

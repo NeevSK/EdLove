@@ -4,9 +4,9 @@ import {
   ClassroomSchema,
   StudentStatsSchema,
   TeacherStatsSchema,
-} from '../../logic/schemas/classroom.schema';
-import { assignmentsAPI } from '../assignments';
-import { classroomsAPI } from '../classrooms';
+} from '@/logic/schemas/classroom.schema';
+import { assignmentsAPI } from '@/api/assignments';
+import { classroomsAPI } from '@/api/classrooms';
 
 /**
  * useTeacherClassroomsQuery  Fetch all sanctuaries managed by a teacher.

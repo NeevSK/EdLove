@@ -1,6 +1,6 @@
-import type { ValidatorRule } from '../schema/FormSchema';
-import { type FormConfig, type FormFieldConfig, FormManager } from '../manager/FormManager';
-import { applyRule, ValidationEngine } from '../validation/ValidationEngine';
+import type { ValidatorRule } from '@/schema/FormSchema';
+import { type FormConfig, type FormFieldConfig, FormManager } from '@/manager/FormManager';
+import { applyRule, ValidationEngine } from '@/validation/ValidationEngine';
 
 export interface HydratedFieldDefinition {
   name: string;

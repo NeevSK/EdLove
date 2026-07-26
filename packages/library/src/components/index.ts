@@ -1,7 +1,7 @@
-export { default as CollectionPickerModal } from './CollectionPickerModal';
-export { default as LibraryResourceCard } from './LibraryResourceCard';
-export { default as LibraryThumbnailCard } from './LibraryThumbnailCard';
-export * from './modals/index';
-export { ResourceList } from './ResourceList';
-export { ResourceRow } from './ResourceRow';
-export { ResourceShareQRModal } from './ResourceShareQRModal';
+export { default as CollectionPickerModal } from '@/components/CollectionPickerModal';
+export { default as LibraryResourceCard } from '@/components/LibraryResourceCard';
+export { default as LibraryThumbnailCard } from '@/components/LibraryThumbnailCard';
+export * from '@/components/modals/index';
+export { ResourceList } from '@/components/ResourceList';
+export { ResourceRow } from '@/components/ResourceRow';
+export { ResourceShareQRModal } from '@/components/ResourceShareQRModal';

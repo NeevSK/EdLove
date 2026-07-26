@@ -14,7 +14,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import type React from 'react';
-import type { LibraryCollection } from '../types';
+import type { LibraryCollection } from '@/types';
 
 interface CollectionPickerModalProps {
   visible: boolean;

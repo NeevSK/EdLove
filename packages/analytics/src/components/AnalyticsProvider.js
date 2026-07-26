@@ -11,7 +11,7 @@ export function useAnalyticsContext() {
   return context;
 }
 
-import { ActivityPulseProvider } from '../context/ActivityPulseContext';
+import { ActivityPulseProvider } from '@/context/ActivityPulseContext';
 export function AnalyticsProvider({ children, apiKey, enabled = true, options }) {
   if (!apiKey || !enabled) {
     return _jsx(ActivityPulseProvider, { children: children });

@@ -4,8 +4,8 @@ import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { useMemo } from 'react';
-import { useGuardianWorkspaceData } from '../../guardian';
-import { GuardianRoomShell } from './GuardianRoomShell';
+import { useGuardianWorkspaceData } from '@/guardian';
+import { GuardianRoomShell } from '@/screens/guardian/GuardianRoomShell';
 
 export default function GuardianStudentDetailScreen() {
   const router = useRouter();

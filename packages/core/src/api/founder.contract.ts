@@ -1,14 +1,14 @@
 import { z } from 'zod';
-import { ClassroomSchema } from '../logic/schemas/classroom.schema';
-import { CommunityGroupSchema } from '../logic/schemas/community.schema';
+import { ClassroomSchema } from '@/logic/schemas/classroom.schema';
+import { CommunityGroupSchema } from '@/logic/schemas/community.schema';
 import {
   EcosystemPulseSchema,
   EcosystemStatsSchema,
   GlobalUserSchema,
   SentinelAuditLogSchema,
-} from '../logic/schemas/founder.schema';
-import { SchoolSchema } from '../logic/schemas/school.schema';
-import type { SovereignContract } from './contract';
+} from '@/logic/schemas/founder.schema';
+import { SchoolSchema } from '@/logic/schemas/school.schema';
+import type { SovereignContract } from '@/api/contract';
 
 const founderAuthority = (action: 'create' | 'read' | 'update' | 'delete', subject: string) =>
   ({ policy: { action, subject } }) as const;

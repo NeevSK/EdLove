@@ -1,9 +1,9 @@
-import { APIError } from '../types/API';
-import { community, educational, notification, profile } from '../logic/managers/factory';
-import type { Capacity } from '../logic/schemas/capacity.schema';
-import type { Perspective } from '../types/Identity';
-import type { ClassroomJoinRequest, RequestStatus, SchoolJoinRequest } from '../types/Onboarding';
-import { createSovereignClient, type AppType, SOVEREIGN_API_URL } from './base';
+import { APIError } from '@/types/API';
+import { community, educational, notification, profile } from '@/logic/managers/factory';
+import type { Capacity } from '@/logic/schemas/capacity.schema';
+import type { Perspective } from '@/types/Identity';
+import type { ClassroomJoinRequest, RequestStatus, SchoolJoinRequest } from '@/types/Onboarding';
+import { createSovereignClient, type AppType, SOVEREIGN_API_URL } from '@/api/base';
 
 const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 

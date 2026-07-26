@@ -2,8 +2,8 @@ import { useStore, useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 
 import { useCallback, useEffect, useState } from 'react';
-import { createWisdomNote, fetchWisdomNotes } from '../api/selfFeatureRepository';
-import type { WisdomNote } from '../types';
+import { createWisdomNote, fetchWisdomNotes } from '@/api/selfFeatureRepository';
+import type { WisdomNote } from '@/types';
 
 const WISDOM_CACHE_KEY = 'gurudevi-wisdom-cache';
 /**

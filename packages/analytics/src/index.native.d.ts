@@ -1,8 +1,8 @@
-export * from './engine/GPACalculator';
-export * from './engine/PerformanceAnalyzer';
-export * from './engine/PostHogAnalytics';
-export * from './types/AnalyticsTypes';
-export * from './types/GradingTypes';
+export * from '@/engine/GPACalculator';
+export * from '@/engine/PerformanceAnalyzer';
+export * from '@/engine/PostHogAnalytics';
+export * from '@/types/AnalyticsTypes';
+export * from '@/types/GradingTypes';
 /**
  * Native Init Helper
  */

@@ -1,7 +1,7 @@
 /**
  * Self-Healing Web Shim for react-native-gesture-handler
  */
-import bridge from './universal-bridge';
+import bridge from '@/shims/universal-bridge';
 
 const GestureHandlerRootView = 'div';
 const PanGestureHandler = 'div';

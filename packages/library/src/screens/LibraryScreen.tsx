@@ -49,14 +49,14 @@ import { useRouter } from 'expo-router';
 import React, { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FadeInDown } from 'react-native-reanimated';
-import { libraryAPI } from '../api/library';
-import { CollectionPickerModal } from '../components/CollectionPickerModal';
-import { LibraryThumbnailCard } from '../components/LibraryThumbnailCard';
-import { ResourceList } from '../components/ResourceList';
-import { getOrderedShelfDefs } from '../constants/shelf';
-import { useBookmarkedResources, useLibrary } from '../hooks/useLibrary';
-import type { LibraryResource } from '../types';
-import { buildLibraryExternalLinkOptions } from '../utils/externalLinks';
+import { libraryAPI } from '@/api/library';
+import { CollectionPickerModal } from '@/components/CollectionPickerModal';
+import { LibraryThumbnailCard } from '@/components/LibraryThumbnailCard';
+import { ResourceList } from '@/components/ResourceList';
+import { getOrderedShelfDefs } from '@/constants/shelf';
+import { useBookmarkedResources, useLibrary } from '@/hooks/useLibrary';
+import type { LibraryResource } from '@/types';
+import { buildLibraryExternalLinkOptions } from '@/utils/externalLinks';
 
 const LIBRARY_UI_CATEGORIES = [
   { id: 'All', en: 'All' },

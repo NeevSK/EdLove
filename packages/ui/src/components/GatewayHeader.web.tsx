@@ -1,8 +1,8 @@
 import type React from 'react';
 import { useCallback } from 'react';
-import { useLanguage } from '../context/LanguageProvider';
-import type { Language } from '../context/types';
-import { useTheme } from '../hooks/useTheme';
+import { useLanguage } from '@/context/LanguageProvider';
+import type { Language } from '@/context/types';
+import { useTheme } from '@/hooks/useTheme';
 
 export const GatewayHeader: React.FC = () => {
   const { language, setLanguage } = useLanguage();

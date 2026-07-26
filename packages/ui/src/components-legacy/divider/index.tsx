@@ -6,7 +6,7 @@ import {
   type TextProps,
   type ViewProps,
 } from 'react-native';
-import { ActivityIndicator, View } from '../../primitives';
+import { ActivityIndicator, View } from '@/primitives';
 
 cssInterop(ActivityIndicator, { className: 'style' });
 

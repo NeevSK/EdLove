@@ -10,8 +10,8 @@ import {
 } from '@shopify/react-native-skia';
 import type React from 'react';
 import { StyleSheet, type ViewStyle } from 'react-native';
-import { useTheme } from '../hooks/useTheme';
-import { View } from '../primitives';
+import { useTheme } from '@/hooks/useTheme';
+import { View } from '@/primitives';
 
 interface LivingCardProps {
   children: React.ReactNode;

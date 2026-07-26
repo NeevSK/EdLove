@@ -9,8 +9,8 @@ import {
   getAdminAuditEntries,
   getAdminFeatureSnapshot,
   stageFeatureGateChanges,
-} from '../admin/adminControl';
-import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
+} from '@/admin/adminControl';
+import { AdminRoomPanel, AdminRoomShell } from '@/screens/AdminRoomShell';
 
 export default function AdminFeatureRegistry() {
   const router = useRouter();

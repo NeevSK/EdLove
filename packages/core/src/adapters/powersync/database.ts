@@ -15,18 +15,18 @@
  *   const rows = await db.select().from(students);
  */
 import { wrapPowerSyncWithDrizzle } from '@powersync/drizzle-driver';
-import { assertPowerSyncBootstrapReady } from '../../api/highways';
-import { coreRuntime } from '../../logic/runtimeRegistry';
-import { PowerSyncDatabase } from './powersync-shim';
-import { AppSchema } from './schema';
-import { createSecureDrizzleProxy } from './secureDrizzleProxy';
+import { assertPowerSyncBootstrapReady } from '@/api/highways';
+import { coreRuntime } from '@/logic/runtimeRegistry';
+import { PowerSyncDatabase } from '@/adapters/powersync/powersync-shim';
+import { AppSchema } from '@/adapters/powersync/schema';
+import { createSecureDrizzleProxy } from '@/adapters/powersync/secureDrizzleProxy';
 export {
   registerPermissionValidator,
   setActiveCapabilityToken,
   registerPolicyVersionHash,
   registerOperationContext,
   resetSecureDrizzleState,
-} from './secureDrizzleProxy';
+} from '@/adapters/powersync/secureDrizzleProxy';
 
 let _instance: PowerSyncDatabase | null = null;
 let _drizzleInstance: ReturnType<typeof wrapPowerSyncWithDrizzle<typeof AppSchema>> | null = null;

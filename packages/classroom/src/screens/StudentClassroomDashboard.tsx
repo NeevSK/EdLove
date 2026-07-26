@@ -33,10 +33,10 @@ import {
   ClassroomHolisticInsights,
   ResourcesView,
   SubmissionModal,
-} from '../components';
-import ClassroomNotes from '../components/ClassroomNotes';
-import { useStudentClassroomWorkspaceData } from '../workspace/useStudentClassroomWorkspaceData';
-import LessonFeed from './LessonFeed';
+} from '@/components';
+import ClassroomNotes from '@/components/ClassroomNotes';
+import { useStudentClassroomWorkspaceData } from '@/workspace/useStudentClassroomWorkspaceData';
+import LessonFeed from '@/screens/LessonFeed';
 
 type FeatureId =
   | 'insights'

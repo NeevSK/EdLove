@@ -5,8 +5,8 @@ import type { Capacity } from '@repo/core/types';
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ProgressIndicator } from '../components/ProgressIndicator';
-import ScreenWrapper from '../components/ScreenWrapper';
+import { ProgressIndicator } from '@/components/ProgressIndicator';
+import ScreenWrapper from '@/components/ScreenWrapper';
 import {
   Box,
   Button,
@@ -19,17 +19,17 @@ import {
   Pressable,
   Text,
   VStack,
-} from '../gluestack';
-import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
+} from '@/gluestack';
+import { hapticError, hapticLight, hapticSuccess } from '@/utils/haptics';
 import {
   canProceedOnboardingStep,
   getOnboardingPhase,
   getOnboardingStepLabel,
-} from './onboardingFlow';
+} from '@/screens/onboardingFlow';
 import {
-} from './devOnboardingFastTrack';
-import { getDevOnboardingTemplateLabel, resolveOnboardingDevIntent } from './onboardingDevFlow';
-import { safeBack } from '../utils/navigation';
+} from '@/screens/devOnboardingFastTrack';
+import { getDevOnboardingTemplateLabel, resolveOnboardingDevIntent } from '@/screens/onboardingDevFlow';
+import { safeBack } from '@/utils/navigation';
 
 // ──────────────────────────────────────────────────────────
 // CONSTANTS

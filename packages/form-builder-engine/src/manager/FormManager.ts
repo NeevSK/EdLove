@@ -1,5 +1,5 @@
 import { FormApi } from '@tanstack/form-core';
-import type { ValidationResult } from '../validation/ValidationEngine';
+import type { ValidationResult } from '@/validation/ValidationEngine';
 
 export interface FormFieldConfig<T = unknown> {
   label?: string;

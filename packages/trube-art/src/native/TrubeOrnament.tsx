@@ -3,9 +3,9 @@ import React from 'react';
 import type { LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native';
 import { View } from 'react-native';
 import { useDerivedValue } from 'react-native-reanimated';
-import type { TrubeOrnamentSpec } from '../core/ornament';
-import { resolveOrnament } from '../core/ornament';
-import { useTrubeTime } from '../core/soul/TimeLayer';
+import type { TrubeOrnamentSpec } from '@/core/ornament';
+import { resolveOrnament } from '@/core/ornament';
+import { useTrubeTime } from '@/core/soul/TimeLayer';
 
 export interface TrubeOrnamentProps {
   ornament: TrubeOrnamentSpec;

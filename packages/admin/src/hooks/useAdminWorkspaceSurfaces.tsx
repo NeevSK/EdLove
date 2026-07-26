@@ -1,11 +1,11 @@
 import { useFeatureRegistry } from '@repo/core/hooks/useFeatureRegistry';
 import type { ClassroomWorkspaceSurface, PrincipalInsight } from '@repo/core/types/Workspace';
 import { useRouter } from 'expo-router';
-import { PrincipalOnboardingView } from '../components';
-import { ADMIN_REGISTRY } from '../constants/adminRegistry';
-import GradeHeadDashboard from '../screens/GradeHeadDashboard';
-import PrincipalDashboard from '../screens/PrincipalDashboard';
-import SectionHeadDashboard from '../screens/SectionHeadDashboard';
+import { PrincipalOnboardingView } from '@/components';
+import { ADMIN_REGISTRY } from '@/constants/adminRegistry';
+import GradeHeadDashboard from '@/screens/GradeHeadDashboard';
+import PrincipalDashboard from '@/screens/PrincipalDashboard';
+import SectionHeadDashboard from '@/screens/SectionHeadDashboard';
 
 export function appendAdminWorkspaceSurfaces(
   surfaces: ClassroomWorkspaceSurface[],

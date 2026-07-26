@@ -27,4 +27,4 @@ export interface WorkforceAssignment {
   status: 'active' | 'inactive' | 'planned';
 }
 
-export { default as WorkforceShell } from './WorkforceShell';
+export { default as WorkforceShell } from '@/WorkforceShell';

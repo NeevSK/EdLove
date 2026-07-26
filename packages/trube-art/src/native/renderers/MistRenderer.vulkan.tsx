@@ -1,6 +1,6 @@
-import { MIST_SOUL } from '../../core/soul/MistSoul';
-import type { TrubeRendererProps } from '../renderers/types';
-import { NativeSubstrateRenderer } from './NativeSubstrateRenderer';
+import { MIST_SOUL } from '@/core/soul/MistSoul';
+import type { TrubeRendererProps } from '@/native/renderers/types';
+import { NativeSubstrateRenderer } from '@/native/renderers/NativeSubstrateRenderer';
 
 /**
  * MistRendererVulkan  Tier 1 path leveraging the NativeSubstrateRenderer base.

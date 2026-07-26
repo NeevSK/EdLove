@@ -15,7 +15,7 @@ export const OnboardingStates = {
   COMPLETED: 'COMPLETED',
 } as const;
 
-import type { Bond } from '../../../types/Identity';
+import type { Bond } from '@/types/Identity';
 
 /**
  * Maps raw user profile data to an explicit onboarding state.

@@ -1,11 +1,11 @@
 import type { PerspectiveViewProps } from '@repo/core/types';
 import type React from 'react';
 import { useMemo } from 'react';
-import { useThemedColors } from '../../hooks/useThemedColors';
-import { Box } from '../../primitives';
-import { Theme } from '../../theme/Theme';
-import { UnifiedMapView } from '../maps/UnifiedMapView';
-import { UnifiedMarker } from '../maps/UnifiedMarker';
+import { useThemedColors } from '@/hooks/useThemedColors';
+import { Box } from '@/primitives';
+import { Theme } from '@/theme/Theme';
+import { UnifiedMapView } from '@/components/maps/UnifiedMapView';
+import { UnifiedMarker } from '@/components/maps/UnifiedMarker';
 
 /**
  * TerraView - The Geographical Perspective.

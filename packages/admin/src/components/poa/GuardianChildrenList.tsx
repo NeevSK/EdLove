@@ -1,7 +1,7 @@
 import { Box, Text } from '@repo/ui/primitives';
 import type React from 'react';
-import type { StudentOverview } from '../../guardian';
-import { GuardianStudentsGrid } from '../guardian/GuardianStudentsGrid';
+import type { StudentOverview } from '@/guardian';
+import { GuardianStudentsGrid } from '@/components/guardian/GuardianStudentsGrid';
 
 interface GuardianChildrenListProps {
   students: StudentOverview[];

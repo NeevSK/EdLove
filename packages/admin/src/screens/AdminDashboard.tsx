@@ -6,9 +6,9 @@ import {
   AdminWorkspaceCanvas,
   useAdminWorkspaceCanvasSurfaces,
   useAdminWorkspaceLayout,
-} from '../admin/useAdminWorkspaceCanvas';
-import { useAdminWorkspaceData } from '../admin/useAdminWorkspaceData';
-import { resolveAdminWorkspaceView } from '../admin/workspace';
+} from '@/admin/useAdminWorkspaceCanvas';
+import { useAdminWorkspaceData } from '@/admin/useAdminWorkspaceData';
+import { resolveAdminWorkspaceView } from '@/admin/workspace';
 
 interface AdminDashboardProps {
   userId?: string | null;

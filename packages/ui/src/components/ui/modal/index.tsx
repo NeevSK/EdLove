@@ -3,9 +3,9 @@ import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
 import { View, type ViewProps } from 'react-native';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
-import { Box } from '../box';
-import { Overlay } from '../overlay';
-import { Portal } from '../portal';
+import { Box } from '@/components/ui/box';
+import { Overlay } from '@/components/ui/overlay';
+import { Portal } from '@/components/ui/portal';
 
 cssInterop(View, { className: 'style' });
 

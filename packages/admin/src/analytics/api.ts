@@ -1,4 +1,4 @@
-import { multiTenantAnalyticsEngine } from './engine';
+import { multiTenantAnalyticsEngine } from '@/analytics/engine';
 import type {
   Anomaly,
   BenchmarkInsights,
@@ -14,7 +14,7 @@ import type {
   TenantComparison,
   TenantMetrics,
   Trend,
-} from './types';
+} from '@/analytics/types';
 
 export interface MultiTenantAnalyticsAPI {
   // Data aggregation

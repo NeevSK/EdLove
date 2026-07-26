@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { PowerSyncDatabase } from './powersync-shim';
+import type { PowerSyncDatabase } from '@/adapters/powersync/powersync-shim';
 
 export const PowerSyncContext = React.createContext<PowerSyncDatabase | null>(null);
 

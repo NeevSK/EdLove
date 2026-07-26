@@ -27,7 +27,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import { useAttendance } from '../hooks/useAttendance';
+import { useAttendance } from '@/hooks/useAttendance';
 
 // Status configuration with semantic mappings
 const STATUS_CONFIG = {

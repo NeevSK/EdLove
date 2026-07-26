@@ -3,8 +3,8 @@ import { LanguageUtils } from '@repo/core/logic';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image } from 'react-native';
-import ScreenWrapper from '../components/ScreenWrapper';
-import { useTheme } from '../hooks/useTheme';
+import ScreenWrapper from '@/components/ScreenWrapper';
+import { useTheme } from '@/hooks/useTheme';
 import {
   Box,
   Button,
@@ -21,12 +21,12 @@ import {
   Spinner,
   Text,
   VStack,
-} from '../primitives';
-import { useSanctuaryToast } from '../providers/ToastProvider';
-import { Theme } from '../theme/Theme';
-import { EXTERNAL_URLS } from '../utils';
-import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
-import { getGuestEntryErrorMessage } from './welcomeFlow';
+} from '@/primitives';
+import { useSanctuaryToast } from '@/providers/ToastProvider';
+import { Theme } from '@/theme/Theme';
+import { EXTERNAL_URLS } from '@/utils';
+import { hapticError, hapticLight, hapticSuccess } from '@/utils/haptics';
+import { getGuestEntryErrorMessage } from '@/screens/welcomeFlow';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const LOGO = require('../../assets/icon.png');

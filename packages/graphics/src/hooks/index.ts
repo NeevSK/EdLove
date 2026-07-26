@@ -1,2 +1,2 @@
-export * from './useGeoData';
-export * from './useSriLankaLocation';
+export * from '@/hooks/useGeoData';
+export * from '@/hooks/useSriLankaLocation';

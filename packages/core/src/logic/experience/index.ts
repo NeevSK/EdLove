@@ -1,1 +1,1 @@
-export * from './mode';
+export * from '@/logic/experience/mode';

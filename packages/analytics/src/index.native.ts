@@ -1,12 +1,12 @@
-export * from './engine/GPACalculator';
-export * from './engine/PerformanceAnalyzer';
-export * from './engine/PostHogAnalytics'; // Correctly picks up .native.ts if in Metro, or I should name it explicitly
+export * from '@/engine/GPACalculator';
+export * from '@/engine/PerformanceAnalyzer';
+export * from '@/engine/PostHogAnalytics'; // Correctly picks up .native.ts if in Metro, or I should name it explicitly
 
 // Re-export shared types
-export * from './types/AnalyticsTypes';
-export * from './types/GradingTypes';
+export * from '@/types/AnalyticsTypes';
+export * from '@/types/GradingTypes';
 
-import { posthogAnalytics } from './engine/PostHogAnalytics';
+import { posthogAnalytics } from '@/engine/PostHogAnalytics';
 
 /**
  * Native Init Helper

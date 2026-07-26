@@ -1,8 +1,8 @@
 import type { DSDivision, GNDivision } from '@intuitui-labs/lk-edu-geo';
 import * as Location from 'expo-location';
 import { useCallback, useMemo, useState } from 'react';
-import { Drilldown } from '../data/AdministrativeHierarchy';
-import { inferFromPostalCode } from '../data/PostalCodes';
+import { Drilldown } from '@/data/AdministrativeHierarchy';
+import { inferFromPostalCode } from '@/data/PostalCodes';
 
 export interface LocationState {
   provinceId: string;

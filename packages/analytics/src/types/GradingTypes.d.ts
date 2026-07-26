@@ -1,4 +1,4 @@
-import { type GradingScale } from './AnalyticsTypes';
+import { type GradingScale } from '@/types/AnalyticsTypes';
 export declare const STANDARD_GRADING_SCALE: GradingScale;
 export declare const SIMPLIFIED_GRADING_SCALE: GradingScale;
 export declare const WEIGHTED_GRADING_SCALE: GradingScale;

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { SafeZustandStorage } from '../lib/storageWrapper';
-import { createTenantSlice, type TenantSlice } from './slices/tenant.slice';
+import { SafeZustandStorage } from '@/lib/storageWrapper';
+import { createTenantSlice, type TenantSlice } from '@/store/slices/tenant.slice';
 
 /**
  * useTenantStore: Sovereign store for multi-tenant context and school configuration.

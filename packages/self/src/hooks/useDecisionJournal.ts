@@ -2,8 +2,8 @@ import { useStore, useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 
 import { useCallback, useEffect, useState } from 'react';
-import { createDecisionLog, fetchDecisionLogs } from '../api/selfFeatureRepository';
-import type { DecisionLog } from '../types';
+import { createDecisionLog, fetchDecisionLogs } from '@/api/selfFeatureRepository';
+import type { DecisionLog } from '@/types';
 
 const DECISION_journal_CACHE_KEY = 'gurudevi-decision-journal-cache';
 /**

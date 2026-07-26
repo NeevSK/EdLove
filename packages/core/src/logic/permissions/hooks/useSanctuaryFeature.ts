@@ -1,14 +1,14 @@
 import { useMemo } from 'react';
-import { useAuthStore } from '../../../store/useAuthStore';
-import { useCedarDecisionStore } from '../../../store/useCedarDecisionStore';
-import { useEntitlementStore } from '../../../store/useEntitlementStore';
-import { useFeatureStore } from '../../../store/useFeatureStore';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useCedarDecisionStore } from '@/store/useCedarDecisionStore';
+import { useEntitlementStore } from '@/store/useEntitlementStore';
+import { useFeatureStore } from '@/store/useFeatureStore';
 import {
   sanctuaryFeature,
   type SanctuaryFeatureResult,
   type FeatureRequirement,
   CITIZENSHIP,
-} from '../sanctuaryFeature';
+} from '@/logic/permissions/sanctuaryFeature';
 
 export function useSanctuaryFeature(
   action: string,

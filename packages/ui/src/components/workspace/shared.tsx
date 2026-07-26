@@ -6,11 +6,11 @@ import type { WorkspaceRendererConfig } from '@repo/core/types';
 import { LayoutGrid, Pin } from '@repo/ui/icons';
 import { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { Text } from '../../gluestack';
-import { useThemedColors } from '../../hooks/useThemedColors';
-import { View } from '../../primitives';
-import { Theme } from '../../theme/Theme';
-import type { WorkspaceCanvasProps } from './types';
+import { Text } from '@/gluestack';
+import { useThemedColors } from '@/hooks/useThemedColors';
+import { View } from '@/primitives';
+import { Theme } from '@/theme/Theme';
+import type { WorkspaceCanvasProps } from '@/components/workspace/types';
 
 export function useWorkspaceCanvasData<
   TSurfaceId extends string = string,

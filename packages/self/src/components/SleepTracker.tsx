@@ -32,7 +32,7 @@ import {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import { useSleepTracker } from '../hooks/useSleepTracker';
+import { useSleepTracker } from '@/hooks/useSleepTracker';
 
 interface SleepTrackerProps {
   userId?: string;

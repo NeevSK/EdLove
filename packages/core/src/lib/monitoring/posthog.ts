@@ -7,7 +7,7 @@
  *
  * CORE PURITY: No platform-specific imports (React Native/Browser/Node) here.
  */
-import type { IAnalyticsPort } from '../../logic/ports/analytics.port';
+import type { IAnalyticsPort } from '@/logic/ports/analytics.port';
 
 export type IPostHog = IAnalyticsPort;
 

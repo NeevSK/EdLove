@@ -1,6 +1,6 @@
 import { usePermissions } from '@repo/core/logic';
 import { ContentComposer } from '@repo/ui/components/ContentComposer';
-import { useComposerLogic } from '../hooks/useComposerLogic';
+import { useComposerLogic } from '@/hooks/useComposerLogic';
 
 interface CreatePostModalProps {
   isOpen: boolean;

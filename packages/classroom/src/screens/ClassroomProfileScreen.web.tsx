@@ -6,7 +6,7 @@ import { Icon } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { useClassroomProfile } from '../hooks/useClassroomProfile';
+import { useClassroomProfile } from '@/hooks/useClassroomProfile';
 
 export default function ClassroomProfileScreenWeb({ classroomId }: { classroomId: string }) {
   const { t } = useTranslation();

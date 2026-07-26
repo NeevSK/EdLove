@@ -3,15 +3,15 @@ import {
   CommunityGroupSchema,
   GroupMemberSchema,
   GroupMessageSchema,
-} from '../logic/schemas/community.schema';
-import { applyTemporalFilter } from '../logic/utils/temporalUtils';
-import type { TemporalScale } from '../store/useTemporalStore';
-import type { Group } from '../types';
-import { APIError } from '../types/API';
-import { growthSignalsAPI } from './growthSignals';
-import { identityAPI } from './identity';
-import { impactRipplesAPI } from './impactRipples';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
+} from '@/logic/schemas/community.schema';
+import { applyTemporalFilter } from '@/logic/utils/temporalUtils';
+import type { TemporalScale } from '@/store/useTemporalStore';
+import type { Group } from '@/types';
+import { APIError } from '@/types/API';
+import { growthSignalsAPI } from '@/api/growthSignals';
+import { identityAPI } from '@/api/identity';
+import { impactRipplesAPI } from '@/api/impactRipples';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
 
 /**
  * Circles API (formerly Groups)

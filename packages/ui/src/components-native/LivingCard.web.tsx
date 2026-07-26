@@ -1,6 +1,6 @@
 import type React from 'react';
 import { StyleSheet, type ViewStyle } from 'react-native';
-import { View } from '../primitives';
+import { View } from '@/primitives';
 
 interface LivingCardProps {
   children: React.ReactNode;

@@ -10,7 +10,7 @@ import {
   PrincipalSelfView,
   StudentSelfView,
   TeacherSelfView,
-} from './self';
+} from '@/screens/self';
 
 /**
  * SelfScreen  declarative entry point for the user's sanctuary.

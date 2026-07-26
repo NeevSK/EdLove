@@ -5,8 +5,8 @@ import {
   Pressable,
   TextInput as PrimitiveTextInput,
   View as PrimitiveView,
-} from '../../primitives';
-import { useFormControl } from '../form-control';
+} from '@/primitives';
+import { useFormControl } from '@/components-legacy/form-control';
 
 cssInterop(PrimitiveView, { className: 'style' });
 cssInterop(PrimitiveTextInput, { className: 'style' });

@@ -1,10 +1,10 @@
 import { createWorkspaceRendererConfig } from '@repo/core/logic';
 import type { WorkspaceRuntimePlatform } from '@repo/core/types';
 import { Platform, useWindowDimensions } from 'react-native';
-import { MobileWorkspaceCanvas } from './renderers/MobileWorkspaceCanvas';
-import { TabletWorkspaceCanvas } from './renderers/TabletWorkspaceCanvas';
-import { WebWorkspaceCanvas } from './renderers/WebWorkspaceCanvas';
-import type { WorkspaceCanvasProps } from './types';
+import { MobileWorkspaceCanvas } from '@/components/workspace/renderers/MobileWorkspaceCanvas';
+import { TabletWorkspaceCanvas } from '@/components/workspace/renderers/TabletWorkspaceCanvas';
+import { WebWorkspaceCanvas } from '@/components/workspace/renderers/WebWorkspaceCanvas';
+import type { WorkspaceCanvasProps } from '@/components/workspace/types';
 
 export function ResponsiveWorkspaceCanvas<
   TSurfaceId extends string = string,

@@ -1,4 +1,4 @@
-import { teacherInsights } from '../logic/managers/factory';
+import { teacherInsights } from '@/logic/managers/factory';
 import type {
   TeacherInsightAuditEvent,
   TeacherInsightLifecycleEvent,
@@ -11,7 +11,7 @@ import type {
   TeacherStudentObservationZod,
   TeacherStudentPotentialUpsert,
   TeacherStudentPotentialZod,
-} from '../logic/schemas/teacher-insights.schema';
+} from '@/logic/schemas/teacher-insights.schema';
 
 export const teacherInsightsAPI = {
   /**

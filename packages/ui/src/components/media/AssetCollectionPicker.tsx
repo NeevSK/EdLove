@@ -13,7 +13,7 @@ import {
   Pressable,
   Text,
   VStack,
-} from '../../gluestack';
+} from '@/gluestack';
 
 export interface PickerItem {
   id: string;

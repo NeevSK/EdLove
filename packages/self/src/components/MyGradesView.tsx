@@ -3,7 +3,7 @@ import { BookOpen, MessageSquare } from '@repo/ui/icons';
 import { Box, HStack, Icon, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { useStudentGrades } from '../hooks/useStudentGrades';
+import { useStudentGrades } from '@/hooks/useStudentGrades';
 
 interface MyGradesViewProps {
   userId?: string;

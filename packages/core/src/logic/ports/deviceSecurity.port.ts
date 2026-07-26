@@ -3,7 +3,7 @@ import type {
   DeviceSecurityEvent,
   DeviceSecuritySession,
   DeviceTrustSummary,
-} from '../../api/deviceTrust';
+} from '@/api/deviceTrust';
 
 /**
  * IDeviceSecurityPort

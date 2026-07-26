@@ -1,5 +1,5 @@
-import { media } from '../logic/managers/media.factory';
-import type { FileUploadOptions } from '../logic/ports/storage.port';
+import { media } from '@/logic/managers/media.factory';
+import type { FileUploadOptions } from '@/logic/ports/storage.port';
 
 /**
  * Media API

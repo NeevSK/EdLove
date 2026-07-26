@@ -11,7 +11,7 @@ import type {
   Period,
   SleepLog,
   WisdomNote,
-} from '../types';
+} from '@/types';
 
 export interface ReminderRecord {
   id: string;

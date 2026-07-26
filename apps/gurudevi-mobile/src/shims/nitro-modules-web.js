@@ -1,7 +1,7 @@
 /**
  * Self-Healing Web Shim for react-native-nitro-modules
  */
-import bridge from './universal-bridge';
+import bridge from '@/shims/universal-bridge';
 
 const NitroModules = bridge('react-native-nitro-modules', {
   NitroModules: bridge('NitroModules', {}),

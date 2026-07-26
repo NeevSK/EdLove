@@ -24,8 +24,8 @@ import type {
   GuardianNotification,
   SchoolEvent,
   StudentOverview,
-} from './types';
-import { type GuardianCapabilityId, getGuardianCapabilityMeta } from './workspace';
+} from '@/guardian/types';
+import { type GuardianCapabilityId, getGuardianCapabilityMeta } from '@/guardian/workspace';
 
 export type GuardianWorkspaceSurfaceId =
   | 'workspace_switcher'

@@ -1,2 +1,2 @@
-export type { FieldAnalytics } from '../analytics/AnalyticsEngine';
-export { AnalyticsEngine } from '../analytics/AnalyticsEngine';
+export type { FieldAnalytics } from '@/analytics/AnalyticsEngine';
+export { AnalyticsEngine } from '@/analytics/AnalyticsEngine';

@@ -1,5 +1,5 @@
-import { APIError } from '../types/API';
-import { identityAPI } from './identity';
+import { APIError } from '@/types/API';
+import { identityAPI } from '@/api/identity';
 
 const DEVICE_INSTALL_ID_KEY = 'gurudevi-web-device-install-id';
 

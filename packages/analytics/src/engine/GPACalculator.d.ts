@@ -1,6 +1,6 @@
 import { StudentGrade } from '@repo/core/logic';
-import type { GPACalculationOptions } from '../types/AnalyticsTypes';
-import { type GradebookEntry } from '../types/GradingTypes';
+import type { GPACalculationOptions } from '@/types/AnalyticsTypes';
+import { type GradebookEntry } from '@/types/GradingTypes';
 export declare class GPACalculator {
   private scale;
   constructor(options?: GPACalculationOptions);

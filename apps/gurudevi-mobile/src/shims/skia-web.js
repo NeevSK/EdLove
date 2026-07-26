@@ -2,7 +2,7 @@
  * Self-Healing Web Shim for @shopify/react-native-skia
  */
 import React from 'react';
-import bridge from './universal-bridge';
+import bridge from '@/shims/universal-bridge';
 
 const _View = (props) => React.createElement('div', props, props.children);
 const Group = (props) => React.createElement('div', props, props.children);

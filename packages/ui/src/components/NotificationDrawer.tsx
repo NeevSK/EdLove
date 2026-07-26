@@ -2,10 +2,10 @@ import { Bell, BookOpen, Check, CircleCheck, Info, Users, X } from '@repo/ui/ico
 import { Dimensions } from 'react-native';
 import Animated, { Easing, SlideInLeft, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Box, Heading, HStack, Portal, Pressable, Text, VStack } from '../gluestack';
-import { ScrollView } from '../primitives';
-import { hapticLight } from '../utils/haptics';
-import { SkeletonAvatar, SkeletonTextLine } from './SkeletonLoader';
+import { Box, Heading, HStack, Portal, Pressable, Text, VStack } from '@/gluestack';
+import { ScrollView } from '@/primitives';
+import { hapticLight } from '@/utils/haptics';
+import { SkeletonAvatar, SkeletonTextLine } from '@/components/SkeletonLoader';
 
 const { width } = Dimensions.get('window');
 const DRAWER_WIDTH = width * 0.65;

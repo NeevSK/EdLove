@@ -1,4 +1,4 @@
-import type { SocialLink, User } from '../../../types';
+import type { SocialLink, User } from '@/types';
 import type {
   CommunityProfile,
   ProfileHistoryEntry,
@@ -9,7 +9,7 @@ import type {
   ProfileRepository,
   ProfileTemporalReadOptions,
   PulseMetrics,
-} from './ports';
+} from '@/logic/domains/profile/ports';
 
 export interface ProfileServices {
   getUserProfile(userId: string): Promise<User | null>;

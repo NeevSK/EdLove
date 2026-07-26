@@ -6,13 +6,13 @@ import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, Easing } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Box, HStack, Text, VStack } from '../gluestack';
-import { Pressable } from '../primitives';
-import { hapticLight } from '../utils/haptics';
-import { safeBack } from '../utils/navigation';
-import NotificationDrawer from './NotificationDrawer';
-import SanctuaryInput from './SanctuaryInput';
-import { UserAvatar } from './UserAvatar';
+import { Box, HStack, Text, VStack } from '@/gluestack';
+import { Pressable } from '@/primitives';
+import { hapticLight } from '@/utils/haptics';
+import { safeBack } from '@/utils/navigation';
+import NotificationDrawer from '@/components/NotificationDrawer';
+import SanctuaryInput from '@/components/SanctuaryInput';
+import { UserAvatar } from '@/components/UserAvatar';
 
 export interface GlobalHeaderProps {
   title?: string;

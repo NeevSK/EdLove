@@ -1,1 +1,1 @@
-export * from './educational';
+export * from '@/adapters/supabase/educational';

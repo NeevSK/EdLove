@@ -1,5 +1,5 @@
-import type { UserContext } from '../schemas/user.schema';
-import type { Action, Subject } from '../../types/authorization';
+import type { UserContext } from '@/logic/schemas/user.schema';
+import type { Action, Subject } from '@/types/authorization';
 
 export async function getLocalResourceAttributes(
   _resourceType: string,

@@ -2,7 +2,7 @@ import type {
   WorkspaceLayoutDelete,
   WorkspaceLayoutRecord,
   WorkspaceLayoutUpsert,
-} from '../../schemas/workspace-layout.schema';
+} from '@/logic/schemas/workspace-layout.schema';
 
 export interface WorkspaceLayoutRepository {
   getLayout(

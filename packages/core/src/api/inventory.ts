@@ -3,11 +3,11 @@
  */
 
 import { z } from 'zod';
-import { InventoryItemSchema } from '../logic/schemas/inventory_item.schema';
-import type { InventoryItem } from '../types';
-import { APIError } from '../types/API';
-import { operationsContract } from './operations.contract';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
+import { InventoryItemSchema } from '@/logic/schemas/inventory_item.schema';
+import type { InventoryItem } from '@/types';
+import { APIError } from '@/types/API';
+import { operationsContract } from '@/api/operations.contract';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
 
 /**
  * API methods for Managing Classroom Inventory.

@@ -1,4 +1,4 @@
-import type { AuditLogEntry, IAuditRepository } from '../domains/audit/ports';
+import type { AuditLogEntry, IAuditRepository } from '@/logic/domains/audit/ports';
 
 /**
  * AuditManager

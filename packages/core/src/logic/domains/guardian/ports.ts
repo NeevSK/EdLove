@@ -6,7 +6,7 @@ import type {
   GuardianProfileCreate,
   GuardianVerificationDocument,
   StudentGuardianRelationship,
-} from '../../schemas/guardian.schema';
+} from '@/logic/schemas/guardian.schema';
 
 export interface GuardianRepository {
   createGuardianProfile(data: GuardianProfileCreate): Promise<GuardianIdentity>;

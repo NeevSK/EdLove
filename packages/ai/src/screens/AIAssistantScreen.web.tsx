@@ -20,7 +20,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAIAgent } from '../hooks/useAIAgent';
+import { useAIAgent } from '@/hooks/useAIAgent';
 
 export default function AIAssistantScreen() {
   const router = useRouter();

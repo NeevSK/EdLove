@@ -5,14 +5,14 @@ import type {
   AssignmentSubmission,
   StudentAssignment,
   StudentSubmissionSummary,
-} from '../../../logic/schemas/classroom.schema';
+} from '@/logic/schemas/classroom.schema';
 import {
   AssignmentSchema,
   AssignmentSubmissionSchema,
   StudentAssignmentSchema,
   StudentSubmissionSummarySchema,
-} from '../../../logic/schemas/classroom.schema';
-import { APIError } from '../../../types/API';
+} from '@/logic/schemas/classroom.schema';
+import { APIError } from '@/types/API';
 
 export const createAssignmentRepository = (supabase: SupabaseClient) => ({
   async getAssignments(classroomId: string) {

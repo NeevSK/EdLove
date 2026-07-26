@@ -34,19 +34,19 @@ import {
   useSchoolPulseQuery,
   useSchoolStatsQuery,
   useStaffResonance,
-} from '../hooks/useDashboardHooks';
-import type { FeedbackEcho, GradeProgress } from '../insights';
-import type { ResourceNeedSummary } from '../inventory';
-import type { PrincipalObservation } from '../observations';
-import type { PrincipalWorkspaceView } from '../principal/workspace';
-import { resolvePrincipalWorkspaceView } from '../principal/workspace';
-import { type StudentPrincipalPulse, staffOperationsAPI } from '../staff';
-import { PrincipalWorkspaceContainer } from './PrincipalWorkspaceContainer';
-import { CyclesDashboard } from './principal/CyclesDashboard';
-import { HierarchyDashboard } from './principal/HierarchyDashboard';
-import { InvitesDashboard } from './principal/InvitesDashboard';
-import { LegacyDashboard } from './principal/LegacyDashboard';
-import { LogbookDashboard } from './principal/LogbookDashboard';
+} from '@/hooks/useDashboardHooks';
+import type { FeedbackEcho, GradeProgress } from '@/insights';
+import type { ResourceNeedSummary } from '@/inventory';
+import type { PrincipalObservation } from '@/observations';
+import type { PrincipalWorkspaceView } from '@/principal/workspace';
+import { resolvePrincipalWorkspaceView } from '@/principal/workspace';
+import { type StudentPrincipalPulse, staffOperationsAPI } from '@/staff';
+import { PrincipalWorkspaceContainer } from '@/screens/PrincipalWorkspaceContainer';
+import { CyclesDashboard } from '@/screens/principal/CyclesDashboard';
+import { HierarchyDashboard } from '@/screens/principal/HierarchyDashboard';
+import { InvitesDashboard } from '@/screens/principal/InvitesDashboard';
+import { LegacyDashboard } from '@/screens/principal/LegacyDashboard';
+import { LogbookDashboard } from '@/screens/principal/LogbookDashboard';
 
 const DEMO_PRINCIPAL_SCHOOL_ID = 'mock-school';
 

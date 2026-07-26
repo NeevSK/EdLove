@@ -60,15 +60,15 @@ import {
   InventoryView,
   ResourcesView,
   StudentList,
-} from '../components';
-import ClassroomNotes from '../components/ClassroomNotes';
-import TeacherAnalysisWorkspace from '../components/teacher/TeacherAnalysisWorkspace';
-import TeacherAssignmentsWorkspace from '../components/teacher/TeacherAssignmentsWorkspace';
-import TeacherGroupsModal from '../components/teacher/TeacherGroupsModal';
-import TeacherObservationsWorkspace from '../components/teacher/TeacherObservationsWorkspace';
-import { useTeacherClassroomWorkspaceData } from '../workspace/useTeacherClassroomWorkspaceData';
-import AttendanceReportScreen from './AttendanceReportScreen';
-import LessonFeed from './LessonFeed';
+} from '@/components';
+import ClassroomNotes from '@/components/ClassroomNotes';
+import TeacherAnalysisWorkspace from '@/components/teacher/TeacherAnalysisWorkspace';
+import TeacherAssignmentsWorkspace from '@/components/teacher/TeacherAssignmentsWorkspace';
+import TeacherGroupsModal from '@/components/teacher/TeacherGroupsModal';
+import TeacherObservationsWorkspace from '@/components/teacher/TeacherObservationsWorkspace';
+import { useTeacherClassroomWorkspaceData } from '@/workspace/useTeacherClassroomWorkspaceData';
+import AttendanceReportScreen from '@/screens/AttendanceReportScreen';
+import LessonFeed from '@/screens/LessonFeed';
 
 type FeatureId =
   | 'insights'

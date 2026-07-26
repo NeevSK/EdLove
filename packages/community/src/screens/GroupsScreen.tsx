@@ -19,9 +19,9 @@ import {
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FadeInDown } from 'react-native-reanimated';
-import GroupCard from '../components/GroupCard';
-import { useCommunityGroups } from '../hooks/useCommunityGroups';
-import type { Group } from '../types';
+import GroupCard from '@/components/GroupCard';
+import { useCommunityGroups } from '@/hooks/useCommunityGroups';
+import type { Group } from '@/types';
 
 type GroupsSubTab = 'sanctuary' | 'galaxy';
 

@@ -1,6 +1,6 @@
 import { supabase } from '@repo/core/api';
 
-import type { ManifestoStatus, ManifestoVibe, SanctuaryManifesto } from '../types';
+import type { ManifestoStatus, ManifestoVibe, SanctuaryManifesto } from '@/types';
 
 export type { ManifestoStatus, ManifestoVibe, SanctuaryManifesto };
 

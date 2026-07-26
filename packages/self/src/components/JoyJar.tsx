@@ -28,7 +28,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FadeInUp, SlideInRight } from 'react-native-reanimated';
-import { useJoyJar } from '../hooks/useJoyJar';
+import { useJoyJar } from '@/hooks/useJoyJar';
 
 interface JoyJarProps {
   userId?: string;

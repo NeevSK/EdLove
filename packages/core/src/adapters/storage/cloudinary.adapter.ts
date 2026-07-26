@@ -1,5 +1,5 @@
-import { uploadToCloudinary } from '../../lib/cloudinary';
-import type { IFileStoragePort } from '../../logic/ports/storage.port';
+import { uploadToCloudinary } from '@/lib/cloudinary';
+import type { IFileStoragePort } from '@/logic/ports/storage.port';
 
 /**
  * CloudinaryAdapter

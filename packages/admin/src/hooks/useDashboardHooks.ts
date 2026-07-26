@@ -8,12 +8,12 @@ import {
 import type { School, SchoolStats } from '@repo/core/types';
 
 import { useQuery } from '@tanstack/react-query';
-import { approvalsAPI } from '../approvals';
-import { adminCalendarAPI } from '../calendar';
-import { insightsAPI } from '../insights';
-import { adminInventoryAPI } from '../inventory';
-import { observationsAPI } from '../observations';
-import { staffOperationsAPI } from '../staff';
+import { approvalsAPI } from '@/approvals';
+import { adminCalendarAPI } from '@/calendar';
+import { insightsAPI } from '@/insights';
+import { adminInventoryAPI } from '@/inventory';
+import { observationsAPI } from '@/observations';
+import { staffOperationsAPI } from '@/staff';
 
 /**
  * Hook for School Pulse (metrics like resonance score)

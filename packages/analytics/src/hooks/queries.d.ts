@@ -1,5 +1,5 @@
-import { Predictor } from '../ml/Predictor';
-import type { PredictionRequest } from '../types/AnalyticsTypes';
+import { Predictor } from '@/ml/Predictor';
+import type { PredictionRequest } from '@/types/AnalyticsTypes';
 export declare const predictor: Predictor;
 export declare function useStudentPerformance(
   studentId: string,

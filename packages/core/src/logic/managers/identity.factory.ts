@@ -1,5 +1,5 @@
-import { SupabaseIdentityAdapter } from '../../adapters/supabaseIdentity.adapter';
-import { IdentityManager } from './IdentityManager';
+import { SupabaseIdentityAdapter } from '@/adapters/supabaseIdentity.adapter';
+import { IdentityManager } from '@/logic/managers/IdentityManager';
 
 /**
  * identity: The Global Sovereign Identity Instance.

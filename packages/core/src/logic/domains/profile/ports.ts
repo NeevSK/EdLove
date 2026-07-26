@@ -1,6 +1,6 @@
 import type { UserGrowthState } from '@repo/schema';
-import type { TemporalScale } from '../../../store';
-import type { SocialLink, User } from '../../../types';
+import type { TemporalScale } from '@/store';
+import type { SocialLink, User } from '@/types';
 
 export type { UserGrowthState };
 

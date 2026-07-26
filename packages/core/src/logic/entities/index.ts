@@ -1,1 +1,1 @@
-export * from './entity-protocol';
+export * from '@/logic/entities/entity-protocol';

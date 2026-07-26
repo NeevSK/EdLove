@@ -11,8 +11,8 @@
  * ad-hoc in screens.
  */
 
-import type { QRAction, QRPayload } from '../../types/QRPayload';
-import { QR_VERSION } from '../../types/QRPayload';
+import type { QRAction, QRPayload } from '@/types/QRPayload';
+import { QR_VERSION } from '@/types/QRPayload';
 
 export type QRResolveResult =
   | { ok: true; payload: QRPayload }

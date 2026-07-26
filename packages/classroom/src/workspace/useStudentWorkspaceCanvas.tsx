@@ -10,7 +10,7 @@ import type {
   StudentDashboardCapabilityKey,
   StudentDashboardSurface,
   StudentDashboardSurfaceId,
-} from './useStudentDashboardSurfaces';
+} from '@/workspace/useStudentDashboardSurfaces';
 
 type StudentResolvedSurface = StudentDashboardSurface &
   ResolvedWorkspaceSurface<StudentDashboardSurfaceId, StudentDashboardCapabilityKey>;

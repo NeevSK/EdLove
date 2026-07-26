@@ -3,9 +3,9 @@
  * Export role-specific Self section views
  */
 
-export { default as AdminSelfView } from './AdminSelfView';
-export { default as FounderSelfView } from './FounderSelfView';
-export { default as GuardianSelfView } from './GuardianSelfView';
-export { default as PrincipalSelfView } from './PrincipalSelfView';
-export { default as StudentSelfView } from './StudentSelfView';
-export { default as TeacherSelfView } from './TeacherSelfView';
+export { default as AdminSelfView } from '@/screens/self/AdminSelfView';
+export { default as FounderSelfView } from '@/screens/self/FounderSelfView';
+export { default as GuardianSelfView } from '@/screens/self/GuardianSelfView';
+export { default as PrincipalSelfView } from '@/screens/self/PrincipalSelfView';
+export { default as StudentSelfView } from '@/screens/self/StudentSelfView';
+export { default as TeacherSelfView } from '@/screens/self/TeacherSelfView';

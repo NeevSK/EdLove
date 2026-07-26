@@ -9,7 +9,7 @@
 import { useTemporalStore } from '@repo/core/logic';
 
 import { useEffect, useState } from 'react';
-import { fetchInteractionCountForView } from '../api/selfInsightsRepository';
+import { fetchInteractionCountForView } from '@/api/selfInsightsRepository';
 
 interface ProgressTreeProps {
   userId?: string;

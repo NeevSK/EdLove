@@ -1,19 +1,19 @@
-import { createSupabaseRealtimeAdapter } from '../../adapters/realtime/supabase.adapter';
-import { createSupabaseAuditRepository } from '../../adapters/supabase/auditRepository';
-import { SupabaseGlobalConfigAdapter } from '../../adapters/supabase/globalConfig.adapter';
-import { createSupabaseTeacherInsightsRepository } from '../../adapters/supabase/teacherInsightsRepository';
-import { createSupabaseTeacherRepository } from '../../adapters/supabase/teacherRepository';
-import { SupabaseDeviceSecurityAdapter } from '../../adapters/supabaseDeviceSecurity.adapter';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
-import { AuditManager } from './AuditManager';
-import { auth } from './auth.factory';
-import { DeepLinkManager } from './DeepLinkManager';
-import { DeviceIdentityManager } from './DeviceIdentityManager';
-import { DeviceSecurityManager } from './DeviceSecurityManager';
-import { GlobalConfigManager } from './GlobalConfigManager';
-import { RealtimeManager } from './RealtimeManager';
-import { TeacherInsightsManager } from './TeacherInsightsManager';
-import { TeacherManager } from './TeacherManager';
+import { createSupabaseRealtimeAdapter } from '@/adapters/realtime/supabase.adapter';
+import { createSupabaseAuditRepository } from '@/adapters/supabase/auditRepository';
+import { SupabaseGlobalConfigAdapter } from '@/adapters/supabase/globalConfig.adapter';
+import { createSupabaseTeacherInsightsRepository } from '@/adapters/supabase/teacherInsightsRepository';
+import { createSupabaseTeacherRepository } from '@/adapters/supabase/teacherRepository';
+import { SupabaseDeviceSecurityAdapter } from '@/adapters/supabaseDeviceSecurity.adapter';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { AuditManager } from '@/logic/managers/AuditManager';
+import { auth } from '@/logic/managers/auth.factory';
+import { DeepLinkManager } from '@/logic/managers/DeepLinkManager';
+import { DeviceIdentityManager } from '@/logic/managers/DeviceIdentityManager';
+import { DeviceSecurityManager } from '@/logic/managers/DeviceSecurityManager';
+import { GlobalConfigManager } from '@/logic/managers/GlobalConfigManager';
+import { RealtimeManager } from '@/logic/managers/RealtimeManager';
+import { TeacherInsightsManager } from '@/logic/managers/TeacherInsightsManager';
+import { TeacherManager } from '@/logic/managers/TeacherManager';
 
 /**
  * deepLink: The Global Sovereign DeepLink Instance.

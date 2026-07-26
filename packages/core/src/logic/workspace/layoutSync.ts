@@ -1,9 +1,9 @@
-import type { WorkspaceLayout } from '../../types';
+import type { WorkspaceLayout } from '@/types';
 import type {
   WorkspaceLayoutRecord,
   WorkspaceLayoutTarget,
   WorkspaceLayoutUpsert,
-} from '../schemas/workspace-layout.schema';
+} from '@/logic/schemas/workspace-layout.schema';
 
 export type WorkspaceLayoutPlatformKind = 'web' | 'native';
 export type WorkspaceLayoutScreenClass = 'compact' | 'expanded';

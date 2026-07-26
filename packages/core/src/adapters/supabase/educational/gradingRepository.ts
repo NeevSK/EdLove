@@ -1,11 +1,11 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
-import type { ClassroomGradingSettings, Grade } from '../../../logic/schemas/grading.schema';
+import type { ClassroomGradingSettings, Grade } from '@/logic/schemas/grading.schema';
 import {
   ClassroomGradingSettingsSchema,
   StudentGradeSchema,
-} from '../../../logic/schemas/grading.schema';
-import { APIError } from '../../../types/API';
+} from '@/logic/schemas/grading.schema';
+import { APIError } from '@/types/API';
 
 export const createGradingRepository = (supabase: SupabaseClient) => ({
   async upsertGrade(input: {

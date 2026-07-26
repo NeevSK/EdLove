@@ -5,8 +5,8 @@ import { getDrizzleDB } from '@repo/core/powersync';
 import { desc, eq } from 'drizzle-orm';
 import { Platform } from 'react-native';
 
-import type { FireJournalEntry, MoodLog } from '../types';
-import { selfAPI } from './self';
+import type { FireJournalEntry, MoodLog } from '@/types';
+import { selfAPI } from '@/api/self';
 
 const MOOD_SEQUENCE: NonNullable<MoodLog['mood']>[] = [
   'joyful',

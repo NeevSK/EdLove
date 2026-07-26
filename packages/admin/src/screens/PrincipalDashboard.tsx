@@ -13,13 +13,13 @@ import { useRouter } from 'expo-router';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PrincipalNativeDashboardShell } from '../bridge/PrincipalNativeDashboardShell';
-import { CreateSchoolModal, PrincipalNotes } from '../components';
-import { useSchoolStats } from '../hooks/useSchoolStats';
-import { usePrincipalWorkspaceSurfaces } from '../principal/usePrincipalWorkspaceSurfaces';
-import type { PrincipalWorkspaceView, PrincipalZoneId } from '../principal/workspace';
-import AcademicCycleManager from './AcademicCycleManager';
-import { PrincipalNativeWorkspace } from './PrincipalNativeWorkspace';
+import { PrincipalNativeDashboardShell } from '@/bridge/PrincipalNativeDashboardShell';
+import { CreateSchoolModal, PrincipalNotes } from '@/components';
+import { useSchoolStats } from '@/hooks/useSchoolStats';
+import { usePrincipalWorkspaceSurfaces } from '@/principal/usePrincipalWorkspaceSurfaces';
+import type { PrincipalWorkspaceView, PrincipalZoneId } from '@/principal/workspace';
+import AcademicCycleManager from '@/screens/AcademicCycleManager';
+import { PrincipalNativeWorkspace } from '@/screens/PrincipalNativeWorkspace';
 
 interface PrincipalDashboardProps {
   schoolId: string;

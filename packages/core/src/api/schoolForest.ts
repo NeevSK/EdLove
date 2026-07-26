@@ -23,11 +23,11 @@
  */
 
 import { Effect } from 'effect';
-import { checkLocalPermission } from '../logic/permissions/localEvaluator';
-import { APIError } from '../types/API';
-import { identityAPI } from './identity';
-import { impactRipplesAPI } from './impactRipples';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
+import { checkLocalPermission } from '@/logic/permissions/localEvaluator';
+import { APIError } from '@/types/API';
+import { identityAPI } from '@/api/identity';
+import { impactRipplesAPI } from '@/api/impactRipples';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
 
 // ────────────────────────────────────────────────────────────────────────────
 // TYPES

@@ -1,5 +1,5 @@
 import { Duration, Effect, pipe, Schedule } from 'effect';
-import { APIError } from '../types/API';
+import { APIError } from '@/types/API';
 
 /**
  * Default retry: exponential backoff starting at 200ms, max 3 attempts (4 total).

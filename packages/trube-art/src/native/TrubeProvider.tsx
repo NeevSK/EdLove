@@ -1,8 +1,8 @@
 import type React from 'react';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { AppState } from 'react-native';
-import type { TrubeEnvironment, TrubeThermalState } from '../core/types';
-import { driverManager } from './DriverManager';
+import type { TrubeEnvironment, TrubeThermalState } from '@/core/types';
+import { driverManager } from '@/native/DriverManager';
 
 interface TrubeTelemetry {
   onFailover?: (reason: string) => void;

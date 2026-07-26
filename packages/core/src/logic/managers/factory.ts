@@ -5,14 +5,14 @@
  * Transitioning toward a Registry-based Inversion of Control (IoC).
  */
 
-export * from './auth.factory';
-export * from './authz.factory';
-export * from './community.factory';
-export * from './educational.factory';
-export * from './featureFlag.factory';
-export * from './growth.factory';
-export * from './identity.factory';
-export * from './media.factory';
-export * from './misc.factory';
-export * from './notification.factory';
-export * from './profile.factory';
+export * from '@/logic/managers/auth.factory';
+export * from '@/logic/managers/authz.factory';
+export * from '@/logic/managers/community.factory';
+export * from '@/logic/managers/educational.factory';
+export * from '@/logic/managers/featureFlag.factory';
+export * from '@/logic/managers/growth.factory';
+export * from '@/logic/managers/identity.factory';
+export * from '@/logic/managers/media.factory';
+export * from '@/logic/managers/misc.factory';
+export * from '@/logic/managers/notification.factory';
+export * from '@/logic/managers/profile.factory';

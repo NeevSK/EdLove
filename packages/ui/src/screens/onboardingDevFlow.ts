@@ -4,7 +4,7 @@ import {
   parseDeveloperOnboardingTemplate,
   shouldUseDeveloperSandbox,
   type DeveloperOnboardingIntent,
-} from './devOnboardingFastTrack';
+} from '@/screens/devOnboardingFastTrack';
 
 export type OnboardingDevResolution =
   | { kind: 'none' }

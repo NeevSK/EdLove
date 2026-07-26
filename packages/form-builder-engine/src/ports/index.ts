@@ -4,4 +4,4 @@ export type {
   FormStorage,
   FormSync,
   QRCodePort,
-} from '../adapters/interfaces';
+} from '@/adapters/interfaces';

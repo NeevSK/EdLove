@@ -3,10 +3,10 @@ import { EyeOff, Info, Lock, MoveDiagonal2, Pin, Sparkles } from '@repo/ui/icons
 import type React from 'react';
 import { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
-import { Text } from '../../gluestack';
-import { useThemedColors } from '../../hooks/useThemedColors';
-import { Pressable, View } from '../../primitives';
-import { Theme } from '../../theme/Theme';
+import { Text } from '@/gluestack';
+import { useThemedColors } from '@/hooks/useThemedColors';
+import { Pressable, View } from '@/primitives';
+import { Theme } from '@/theme/Theme';
 
 export interface CanvasSurfaceCardProps<
   TSurfaceId extends string = string,

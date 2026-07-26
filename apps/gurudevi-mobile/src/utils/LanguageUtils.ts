@@ -1,5 +1,5 @@
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
-import i18n from '../i18n/config';
+import i18n from '@/i18n/config';
 
 const LANGUAGE_STORAGE_KEY = 'gurudevi-user-language';
 /**

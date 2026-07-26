@@ -4,7 +4,7 @@ import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
 
 import type React from 'react';
-import { GuardianRoomShell } from './GuardianRoomShell';
+import { GuardianRoomShell } from '@/screens/guardian/GuardianRoomShell';
 
 function BridgeCard({
   icon: Icon,

@@ -1,5 +1,5 @@
-import { authAPI } from './auth';
-import { identityAPI } from './identity';
+import { authAPI } from '@/api/auth';
+import { identityAPI } from '@/api/identity';
 
 export type SovereignAuthGateway = typeof authAPI;
 export type SovereignIdentityGateway = typeof identityAPI;

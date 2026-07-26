@@ -1,8 +1,8 @@
 import { useStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { useCallback, useEffect, useState } from 'react';
-import { createGratitudeEntry, fetchGratitudeEntries } from '../api/selfFeatureRepository';
-import type { GratitudeEntry } from '../types';
+import { createGratitudeEntry, fetchGratitudeEntries } from '@/api/selfFeatureRepository';
+import type { GratitudeEntry } from '@/types';
 
 const GRATITUDE_CACHE_KEY = 'gurudevi-gratitude-cache';
 /**

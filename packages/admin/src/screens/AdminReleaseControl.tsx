@@ -4,9 +4,9 @@ import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
 
 import { useState } from 'react';
-import { commitFeatureGateChanges, stageFeatureGateChanges } from '../admin/adminControl';
-import { useAdminWorkspaceSnapshot } from '../admin/adminRepository';
-import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
+import { commitFeatureGateChanges, stageFeatureGateChanges } from '@/admin/adminControl';
+import { useAdminWorkspaceSnapshot } from '@/admin/adminRepository';
+import { AdminRoomPanel, AdminRoomShell } from '@/screens/AdminRoomShell';
 
 export default function AdminReleaseControl() {
   const router = useRouter();

@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
-import { realtime } from '../../logic/managers/factory';
-import { useStore } from '../../store/useStore';
-import type { Notification } from '../../types/Community';
-import { socialAPI } from '../social';
+import { realtime } from '@/logic/managers/factory';
+import { useStore } from '@/store/useStore';
+import type { Notification } from '@/types/Community';
+import { socialAPI } from '@/api/social';
 
 export const notificationKeys = {
   all: ['notifications'] as const,

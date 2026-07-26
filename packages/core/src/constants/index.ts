@@ -1,1 +1,1 @@
-export * from './SriLankanSchools';
+export * from '@/constants/SriLankanSchools';

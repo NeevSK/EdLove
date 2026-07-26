@@ -1,53 +1,53 @@
-import { academicCyclesAPI } from './academicCycles';
-import { announcementAPI } from './announcements';
-import { authAPI } from './auth';
-import { circleAPI } from './circles';
-import { contextualChallengesAPI } from './contextualChallenges';
-import { dailyContentAPI } from './dailyContent';
-import { readLocalFirst, writeLocalFirst } from './dataGateway';
-import { demoAPI } from './demo';
-import { deviceTrustAPI } from './deviceTrust';
-import { echoAPI } from './echo';
-import { formTemplatesAPI } from './formTemplates';
-import { createSovereignGateway, sovereignGateway } from './gateway';
-import { groupsAPI } from './groups';
-import { historyAPI } from './history';
-import { libraryAPI } from './library';
-import { mappingAPI } from './mapping';
-import { mediaAPI } from './media';
-import { messagingAPI } from './messaging';
-import { moonPhaseAPI } from './moonPhase';
-import { naturePathsAPI } from './naturePaths';
-import { onboardingAPI } from './onboarding';
-import { growthAPI, growthStateAPI, missionsAPI, proAPI, ripplesAPI } from './orchestration/growth';
-import { presenceAPI } from './presence';
-import { principalNotesAPI } from './principalNotes';
-import { privacyAPI } from './privacy';
+import { academicCyclesAPI } from '@/api/academicCycles';
+import { announcementAPI } from '@/api/announcements';
+import { authAPI } from '@/api/auth';
+import { circleAPI } from '@/api/circles';
+import { contextualChallengesAPI } from '@/api/contextualChallenges';
+import { dailyContentAPI } from '@/api/dailyContent';
+import { readLocalFirst, writeLocalFirst } from '@/api/dataGateway';
+import { demoAPI } from '@/api/demo';
+import { deviceTrustAPI } from '@/api/deviceTrust';
+import { echoAPI } from '@/api/echo';
+import { formTemplatesAPI } from '@/api/formTemplates';
+import { createSovereignGateway, sovereignGateway } from '@/api/gateway';
+import { groupsAPI } from '@/api/groups';
+import { historyAPI } from '@/api/history';
+import { libraryAPI } from '@/api/library';
+import { mappingAPI } from '@/api/mapping';
+import { mediaAPI } from '@/api/media';
+import { messagingAPI } from '@/api/messaging';
+import { moonPhaseAPI } from '@/api/moonPhase';
+import { naturePathsAPI } from '@/api/naturePaths';
+import { onboardingAPI } from '@/api/onboarding';
+import { growthAPI, growthStateAPI, missionsAPI, proAPI, ripplesAPI } from '@/api/orchestration/growth';
+import { presenceAPI } from '@/api/presence';
+import { principalNotesAPI } from '@/api/principalNotes';
+import { privacyAPI } from '@/api/privacy';
 // profileAPI is imported from orchestration/identity below to use the proxied version
-import { resourcesAPI } from './resources';
-import { rewardsAPI } from './rewards';
-import { schoolForestAPI } from './schoolForest';
-import { socialAPI } from './social';
-import { studentObservationsAPI } from './studentObservations';
-import { studentPotentialAPI } from './studentPotential';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
-import { tasksAPI } from './teacher';
-import { trackingAPI } from './tracking';
-import { warmMirrorAPI } from './warmMirror';
+import { resourcesAPI } from '@/api/resources';
+import { rewardsAPI } from '@/api/rewards';
+import { schoolForestAPI } from '@/api/schoolForest';
+import { socialAPI } from '@/api/social';
+import { studentObservationsAPI } from '@/api/studentObservations';
+import { studentPotentialAPI } from '@/api/studentPotential';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { tasksAPI } from '@/api/teacher';
+import { trackingAPI } from '@/api/tracking';
+import { warmMirrorAPI } from '@/api/warmMirror';
 
-export * from './base';
-export { adminHandlers } from './handlers/admin';
-export { communityHandlers } from './handlers/community';
-export { educationalHandlers } from './handlers/educational';
-export { gradingHandlers } from './handlers/grading';
-export { identityHandlers } from './handlers/identity';
-export { libraryHandlers } from './handlers/library';
-export { operationsHandlers } from './handlers/operations';
-export { profileHandlers } from './handlers/profile';
-export { selfHandlers } from './handlers/self';
-export { syncHandlers } from './handlers/sync';
+export * from '@/api/base';
+export { adminHandlers } from '@/api/handlers/admin';
+export { communityHandlers } from '@/api/handlers/community';
+export { educationalHandlers } from '@/api/handlers/educational';
+export { gradingHandlers } from '@/api/handlers/grading';
+export { identityHandlers } from '@/api/handlers/identity';
+export { libraryHandlers } from '@/api/handlers/library';
+export { operationsHandlers } from '@/api/handlers/operations';
+export { profileHandlers } from '@/api/handlers/profile';
+export { selfHandlers } from '@/api/handlers/self';
+export { syncHandlers } from '@/api/handlers/sync';
 
-import { communityAPI } from './orchestration/community';
+import { communityAPI } from '@/api/orchestration/community';
 import {
   assignmentsAPI,
   classroomGroupsAPI,
@@ -57,16 +57,16 @@ import {
   lessonMaterialsAPI,
   lessonsAPI,
   studentsAPI,
-} from './orchestration/educational';
-import { accountingAPI, paymentsAPI } from './orchestration/erp';
+} from '@/api/orchestration/educational';
+import { accountingAPI, paymentsAPI } from '@/api/orchestration/erp';
 // --- Orchestrated APIs (Extracted Domains) ---
-import { identityAPI, profileAPI } from './orchestration/identity';
+import { identityAPI, profileAPI } from '@/api/orchestration/identity';
 import {
   attendanceAPI,
   inventoryAPI,
   schoolAPI,
   staffManagementAPI,
-} from './orchestration/operations';
+} from '@/api/orchestration/operations';
 import {
   founderAPI,
   gradingAPI,
@@ -74,10 +74,10 @@ import {
   longitudinalAPI,
   principalWorkspaceAPI,
   teacherInsightsAPI,
-} from './orchestration/specialized';
+} from '@/api/orchestration/specialized';
 
 export type { CalendarEvent } from '@repo/schema';
-export type { ClassroomNote } from '../types/ClassroomNote';
+export type { ClassroomNote } from '@/types/ClassroomNote';
 export type {
   BanyanStage,
   BhumiStage,
@@ -87,58 +87,58 @@ export type {
   RippleType,
   RiverStage,
   UserGrowthState,
-} from '../types/Growth';
-export type { PrincipalNote } from '../types/PrincipalNote';
+} from '@/types/Growth';
+export type { PrincipalNote } from '@/types/PrincipalNote';
 // --- Re-exports (Types & Contracts) ---
-export * from './admin.contract';
-export * from './announcements';
-export * from './circles';
-export * from './classroomGroups';
-export * from './classroomNotes.contract';
-export * from './community.contract';
-export * from './contextualChallenges';
-export * from './contractCoverage';
-export * from './educational.contract';
-export * from './erp';
-export * from './erp.contract';
-export * from './founder.contract';
-export * from './grading.contract';
-export * from './growth.contract';
-export * from './growthSignals';
-export * from './guardian';
-export * from './guardian.contract';
-export * from './history';
-export * from './hooks';
-export * from './identity.contract';
-export * from './impactRipples';
-export * from './library.contract';
-export * from './longitudinal';
-export * from './longitudinal.contract';
-export * from './mapping';
-export * from './mockData';
-export * from './moonPhase';
-export * from './naturePaths';
-export * from './operations.contract';
-export * from './principalNotes';
-export * from './principalWorkspace';
-export * from './principalWorkspace.contract';
-export * from './privacy';
-export * from './pro.contract';
-export * from './profile.contract';
-export * from './sacredMissions';
-export * from './schoolForest';
-export * from './self.contract';
-export * from './staffManagement';
-export * from './studentObservations';
-export * from './studentPotential';
-export * from './sync.contract';
-export * from './teacherInsights';
-export * from './teacherInsights.contract';
-export * from './temporalProxy';
-export * from './thuthimal';
-export * from './userGrowthState';
-export * from './warmMirror';
-export * from './workspaceLayout.contract';
+export * from '@/api/admin.contract';
+export * from '@/api/announcements';
+export * from '@/api/circles';
+export * from '@/api/classroomGroups';
+export * from '@/api/classroomNotes.contract';
+export * from '@/api/community.contract';
+export * from '@/api/contextualChallenges';
+export * from '@/api/contractCoverage';
+export * from '@/api/educational.contract';
+export * from '@/api/erp';
+export * from '@/api/erp.contract';
+export * from '@/api/founder.contract';
+export * from '@/api/grading.contract';
+export * from '@/api/growth.contract';
+export * from '@/api/growthSignals';
+export * from '@/api/guardian';
+export * from '@/api/guardian.contract';
+export * from '@/api/history';
+export * from '@/api/hooks';
+export * from '@/api/identity.contract';
+export * from '@/api/impactRipples';
+export * from '@/api/library.contract';
+export * from '@/api/longitudinal';
+export * from '@/api/longitudinal.contract';
+export * from '@/api/mapping';
+export * from '@/api/mockData';
+export * from '@/api/moonPhase';
+export * from '@/api/naturePaths';
+export * from '@/api/operations.contract';
+export * from '@/api/principalNotes';
+export * from '@/api/principalWorkspace';
+export * from '@/api/principalWorkspace.contract';
+export * from '@/api/privacy';
+export * from '@/api/pro.contract';
+export * from '@/api/profile.contract';
+export * from '@/api/sacredMissions';
+export * from '@/api/schoolForest';
+export * from '@/api/self.contract';
+export * from '@/api/staffManagement';
+export * from '@/api/studentObservations';
+export * from '@/api/studentPotential';
+export * from '@/api/sync.contract';
+export * from '@/api/teacherInsights';
+export * from '@/api/teacherInsights.contract';
+export * from '@/api/temporalProxy';
+export * from '@/api/thuthimal';
+export * from '@/api/userGrowthState';
+export * from '@/api/warmMirror';
+export * from '@/api/workspaceLayout.contract';
 
 export {
   __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__,

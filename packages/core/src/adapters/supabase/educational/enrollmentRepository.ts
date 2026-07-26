@@ -1,13 +1,13 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
-import type { EnrollmentRecord } from '../../../logic/domains/educational/ports';
-import type { ClassroomGroup, ClassroomStudent } from '../../../logic/schemas/classroom.schema';
+import type { EnrollmentRecord } from '@/logic/domains/educational/ports';
+import type { ClassroomGroup, ClassroomStudent } from '@/logic/schemas/classroom.schema';
 import {
   ClassroomGroupSchema,
   ClassroomStudentSchema,
-} from '../../../logic/schemas/classroom.schema';
-import { StudentSchema } from '../../../logic/schemas/student.schema';
-import { APIError } from '../../../types/API';
+} from '@/logic/schemas/classroom.schema';
+import { StudentSchema } from '@/logic/schemas/student.schema';
+import { APIError } from '@/types/API';
 
 export const createEnrollmentRepository = (supabase: SupabaseClient) => ({
   async getClassroomGroups(classroomId: string) {

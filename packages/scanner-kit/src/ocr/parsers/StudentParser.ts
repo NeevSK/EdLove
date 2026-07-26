@@ -8,8 +8,8 @@
  * - Supports Sinhala (U+0D80\u2013U+0DFF) and Tamil (U+0B80\u2013U+0BFF) scripts
  */
 
-import type { ScannedStudent } from '../../types';
-import type { OCRRawResult } from '../types';
+import type { ScannedStudent } from '@/types';
+import type { OCRRawResult } from '@/ocr/types';
 
 /** Minimum confidence to consider a block reliable */
 const CONFIDENCE_THRESHOLD = 0.4;

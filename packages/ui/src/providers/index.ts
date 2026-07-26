@@ -1,3 +1,3 @@
-export * from './FeatureProvider';
-export * from './SanctuaryProvider';
-export * from './ToastProvider';
+export * from '@/providers/FeatureProvider';
+export * from '@/providers/SanctuaryProvider';
+export * from '@/providers/ToastProvider';

@@ -4,8 +4,8 @@ import {
   ImpactRippleSchema,
   SanctuaryManifestoSchema,
   UserGrowthStateSchema,
-} from '../logic/schemas/growth.schema';
-import type { SovereignContract } from './contract';
+} from '@/logic/schemas/growth.schema';
+import type { SovereignContract } from '@/api/contract';
 
 const growthAuthority = (
   action: 'manage' | 'create' | 'read' | 'update' | 'delete' | 'submit' | 'verify',

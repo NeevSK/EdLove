@@ -11,8 +11,8 @@
  */
 
 import { useEffect, useState } from 'react';
-import { driverManager } from '../native/DriverManager';
-import { getSurfaceNames } from './soul/SoulLibrary';
+import { driverManager } from '@/native/DriverManager';
+import { getSurfaceNames } from '@/core/soul/SoulLibrary';
 
 export type PrewarmStatus = 'idle' | 'warming' | 'ready' | 'partial' | 'unavailable';
 

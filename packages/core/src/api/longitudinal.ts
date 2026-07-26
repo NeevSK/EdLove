@@ -1,14 +1,14 @@
-import { selectLatestTemporalRecordsAsOf, toTemporalCutoff } from '../lib/temporalEvents';
+import { selectLatestTemporalRecordsAsOf, toTemporalCutoff } from '@/lib/temporalEvents';
 import type {
   LongitudinalEntityType,
   StudentLongitudinalEvent,
   StudentLongitudinalSnapshot,
   StudentLongitudinalTimeline,
-} from '../logic/schemas/temporal.schema';
-import { StudentLongitudinalEventSchema } from '../logic/schemas/temporal.schema';
-import { APIError } from '../types/API';
-import { longitudinalContract } from './longitudinal.contract';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
+} from '@/logic/schemas/temporal.schema';
+import { StudentLongitudinalEventSchema } from '@/logic/schemas/temporal.schema';
+import { APIError } from '@/types/API';
+import { longitudinalContract } from '@/api/longitudinal.contract';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
 
 async function listEvents(
   studentId: string,

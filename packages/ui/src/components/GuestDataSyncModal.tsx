@@ -3,9 +3,9 @@ import { GuestDataSync } from '@repo/core/native';
 import { Check, CircleAlert, TriangleAlert } from '@repo/ui/icons';
 import { useCallback, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, HStack, Spinner, Text, VStack } from '../gluestack';
-import { SanctuaryButton } from './SanctuaryButton';
-import SanctuaryModal from './SanctuaryModal';
+import { Box, HStack, Spinner, Text, VStack } from '@/gluestack';
+import { SanctuaryButton } from '@/components/SanctuaryButton';
+import SanctuaryModal from '@/components/SanctuaryModal';
 
 interface GuestDataSyncModalProps {
   isOpen: boolean;

@@ -3,8 +3,8 @@ import type {
   DeviceSecurityEvent,
   DeviceSecuritySession,
   DeviceTrustSummary,
-} from '../../api/deviceTrust';
-import type { IDeviceSecurityPort } from '../ports/deviceSecurity.port';
+} from '@/api/deviceTrust';
+import type { IDeviceSecurityPort } from '@/logic/ports/deviceSecurity.port';
 
 /**
  * DeviceSecurityManager

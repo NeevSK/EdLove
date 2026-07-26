@@ -1,6 +1,6 @@
-import { api } from '../../api';
-import { createSovereignClient, SOVEREIGN_API_URL } from '../../api/base';
-import { deviceTrustAPI } from '../../api/deviceTrust';
+import { api } from '@/api';
+import { createSovereignClient, SOVEREIGN_API_URL } from '@/api/base';
+import { deviceTrustAPI } from '@/api/deviceTrust';
 
 const client = createSovereignClient(SOVEREIGN_API_URL);
 

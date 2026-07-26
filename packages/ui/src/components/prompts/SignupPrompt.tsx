@@ -1,5 +1,5 @@
 import React from 'react';
-import PositiveInvitation from '../PositiveInvitation';
+import PositiveInvitation from '@/components/PositiveInvitation';
 import { LogIn } from '@repo/ui/icons';
 
 interface SignupPromptProps {

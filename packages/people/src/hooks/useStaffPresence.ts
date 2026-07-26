@@ -3,7 +3,7 @@ import { handleAPIError } from '@repo/core/logic';
 import type { StaffAttendance, StaffLeave } from '@repo/core/types';
 
 import { useCallback, useEffect, useState } from 'react';
-import { staffAPI } from '../staff';
+import { staffAPI } from '@/staff';
 
 export function useStaffPresence(userId?: string, schoolId?: string) {
   const [attendance, setAttendance] = useState<StaffAttendance[]>([]);

@@ -1,5 +1,5 @@
-import { cryptoManager } from '../logic/managers/CryptoManager';
-import { getActiveAccountId, scopeStorageKey } from './accountScope';
+import { cryptoManager } from '@/logic/managers/CryptoManager';
+import { getActiveAccountId, scopeStorageKey } from '@/lib/accountScope';
 
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 

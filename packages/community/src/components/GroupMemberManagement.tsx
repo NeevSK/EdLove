@@ -7,9 +7,9 @@ import { Box, Button, Heading, HStack, Icon, Pressable, Text, VStack } from '@re
 import { hapticLight } from '@repo/ui/utils';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useReducer, useState } from 'react';
-import { communityAPI } from '../api/community';
-import type { CommunityGroup, GroupJoinPolicy, GroupJoinRequest, GroupMember } from '../types';
-import CreateGroupModal from './CreateGroupModal';
+import { communityAPI } from '@/api/community';
+import type { CommunityGroup, GroupJoinPolicy, GroupJoinRequest, GroupMember } from '@/types';
+import CreateGroupModal from '@/components/CreateGroupModal';
 
 interface GroupMemberManagementProps {
   groupId: string;

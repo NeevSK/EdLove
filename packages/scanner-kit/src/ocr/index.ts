@@ -1,13 +1,13 @@
 // Types
 
 // Pipeline
-export { defaultOCRPipeline, OCRPipeline } from './OCRPipeline';
-export type { ParsedStudent } from './parsers/StudentParser';
+export { defaultOCRPipeline, OCRPipeline } from '@/ocr/OCRPipeline';
+export type { ParsedStudent } from '@/ocr/parsers/StudentParser';
 // Parsers
-export { parseStudents } from './parsers/StudentParser';
-export { parseTable } from './parsers/TableParser';
-export { GoogleVisionProvider } from './providers/GoogleVisionProvider';
+export { parseStudents } from '@/ocr/parsers/StudentParser';
+export { parseTable } from '@/ocr/parsers/TableParser';
+export { GoogleVisionProvider } from '@/ocr/providers/GoogleVisionProvider';
 // Providers
-export { MLKitProvider } from './providers/MLKitProvider';
-export { OpenAIVisionProvider } from './providers/OpenAIVisionProvider';
-export * from './types';
+export { MLKitProvider } from '@/ocr/providers/MLKitProvider';
+export { OpenAIVisionProvider } from '@/ocr/providers/OpenAIVisionProvider';
+export * from '@/ocr/types';

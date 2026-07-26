@@ -14,10 +14,10 @@ import { Wind } from '@repo/ui/icons';
 import { Box } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
 import { useMemo } from 'react';
-import { StudentOnboardingView, TeacherOnboardingView } from '../components';
-import { CLASSROOM_REGISTRY } from '../constants/classroomRegistry';
-import StudentDashboard from '../screens/StudentDashboard';
-import TeacherDashboard from '../screens/TeacherDashboard';
+import { StudentOnboardingView, TeacherOnboardingView } from '@/components';
+import { CLASSROOM_REGISTRY } from '@/constants/classroomRegistry';
+import StudentDashboard from '@/screens/StudentDashboard';
+import TeacherDashboard from '@/screens/TeacherDashboard';
 
 type UseClassroomWorkspaceSurfacesArgs = {
   can: (action: string, subject: string, field?: string) => boolean;

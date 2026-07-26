@@ -1,3 +1,3 @@
-export * from './LivingCard';
-export * from './NoiseOverlay';
-export * from './TemporalGlass';
+export * from '@/components-native/LivingCard';
+export * from '@/components-native/NoiseOverlay';
+export * from '@/components-native/TemporalGlass';

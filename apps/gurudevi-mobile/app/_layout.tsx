@@ -7,7 +7,7 @@ import 'react-native-worklets';
 import 'react-native-get-random-values';
 import '@repo/ui/global.css';
 
-import { registerAppCatalog } from '../src/boot/registerAppCatalog';
+import { registerAppCatalog } from '@/boot/registerAppCatalog';
 registerAppCatalog();
 
 
@@ -63,14 +63,14 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { PWAInstallBanner } from '../src/components/web/PWAInstallBanner';
-import { fontAssets } from '../src/constants/Fonts';
-import { registerBackgroundSync } from '../src/lib/backgroundSync';
+import { PWAInstallBanner } from '@/components/web/PWAInstallBanner';
+import { fontAssets } from '@/constants/Fonts';
+import { registerBackgroundSync } from '@/lib/backgroundSync';
 import {
   dispatchQueuedMutationToSovereignBus,
   installMobileWorkflowEventBridge,
-} from '../src/lib/inngestEvents';
-import { LanguageUtils } from '../src/utils/LanguageUtils';
+} from '@/lib/inngestEvents';
+import { LanguageUtils } from '@/utils/LanguageUtils';
 
 void SplashScreen.preventAutoHideAsync().catch(() => {
   // Native splash is best-effort; the in-app fallback covers slow boots.

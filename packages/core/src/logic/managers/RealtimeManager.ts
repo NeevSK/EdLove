@@ -2,7 +2,7 @@ import type {
   IRealtimePort,
   RealtimeCallback,
   RealtimeSubscriptionOptions,
-} from '../ports/realtime.port';
+} from '@/logic/ports/realtime.port';
 
 /**
  * RealtimeManager

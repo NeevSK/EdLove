@@ -1,8 +1,8 @@
 import type React from 'react';
 import { Text, View } from 'react-native';
-import type { SafeActionProgress } from '../hooks/useSafeAction';
-import { Progress, ProgressFilledTrack } from './ui/progress';
-import { Spinner } from './ui/spinner';
+import type { SafeActionProgress } from '@/hooks/useSafeAction';
+import { Progress, ProgressFilledTrack } from '@/components/ui/progress';
+import { Spinner } from '@/components/ui/spinner';
 
 interface LifecycleMonitorProps {
   progress: SafeActionProgress | null;

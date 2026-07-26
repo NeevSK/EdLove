@@ -1,2 +1,2 @@
-export * from './posthog';
-export * from './sentry';
+export * from '@/lib/monitoring/posthog';
+export * from '@/lib/monitoring/sentry';

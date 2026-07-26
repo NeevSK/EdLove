@@ -8,8 +8,8 @@
  * @see https://docs.powersync.com/usage/use-case-examples/drizzle
  */
 import { and, desc, eq } from 'drizzle-orm';
-import { getDrizzleDB } from './database';
-import { useQuery, useStatus } from './powersync-react-shim';
+import { getDrizzleDB } from '@/adapters/powersync/database';
+import { useQuery, useStatus } from '@/adapters/powersync/powersync-react-shim';
 import {
   type Attendance,
   attendance,
@@ -23,7 +23,7 @@ import {
   type Student,
   schools,
   students,
-} from './schema';
+} from '@/adapters/powersync/schema';
 
 // ─── Generic Reactive Query Hooks ────────────────────────────────────────────
 

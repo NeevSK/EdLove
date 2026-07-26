@@ -21,8 +21,8 @@ import { useRouter } from 'expo-router';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFounderSchoolStats } from '../bridge/founderWorkspace';
-import { CreateSchoolModal } from '../components';
+import { useFounderSchoolStats } from '@/bridge/founderWorkspace';
+import { CreateSchoolModal } from '@/components';
 
 interface FounderSchoolDashboardProps {
   schoolId: string;

@@ -10,13 +10,13 @@ import { hapticLight } from '@repo/ui/utils/haptics';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ClaimInviteModal, ClassroomList, CreateClassroomModal } from '../components';
-import CreateSchoolModal from '../components/CreateSchoolModal';
-import { useClassroomRoleData } from '../hooks';
-import { ClassroomWorkspaceCanvas } from '../workspace/ClassroomWorkspaceCanvas';
-import { useClassroomWorkspaceInsights } from '../workspace/useClassroomWorkspaceInsights';
-import { useClassroomWorkspaceLayout } from '../workspace/useClassroomWorkspaceLayout';
-import { useClassroomWorkspaceSurfaces } from '../workspace/useClassroomWorkspaceSurfaces';
+import { ClaimInviteModal, ClassroomList, CreateClassroomModal } from '@/components';
+import CreateSchoolModal from '@/components/CreateSchoolModal';
+import { useClassroomRoleData } from '@/hooks';
+import { ClassroomWorkspaceCanvas } from '@/workspace/ClassroomWorkspaceCanvas';
+import { useClassroomWorkspaceInsights } from '@/workspace/useClassroomWorkspaceInsights';
+import { useClassroomWorkspaceLayout } from '@/workspace/useClassroomWorkspaceLayout';
+import { useClassroomWorkspaceSurfaces } from '@/workspace/useClassroomWorkspaceSurfaces';
 
 export default function ClassroomScreen() {
   const { t } = useTranslation();

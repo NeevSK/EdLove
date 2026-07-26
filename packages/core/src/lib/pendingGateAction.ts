@@ -1,4 +1,4 @@
-import { storage } from './storage';
+import { storage } from '@/lib/storage';
 
 export type PendingGateAction =
   | { kind: 'community_open_create_group'; createdAt: number }

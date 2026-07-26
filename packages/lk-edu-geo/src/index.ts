@@ -1,4 +1,4 @@
-import dataRaw from './data/lk-edu-data.json';
+import dataRaw from '@/data/lk-edu-data.json';
 
 import type {
   District,
@@ -10,7 +10,7 @@ import type {
   Province,
   School,
   Zone,
-} from './types.js';
+} from '@/types.js';
 
 export type {
   District,
@@ -22,7 +22,7 @@ export type {
   Province,
   School,
   Zone,
-} from './types.js';
+} from '@/types.js';
 
 const data = dataRaw as unknown as LKEduData;
 

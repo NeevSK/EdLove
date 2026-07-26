@@ -1,9 +1,9 @@
 import type { PerspectiveViewProps } from '@repo/core/types';
 import { Canvas, Circle, Line } from '@shopify/react-native-skia';
 import type React from 'react';
-import { useTheme } from '../../hooks/useTheme';
-import { useThemedColors } from '../../hooks/useThemedColors';
-import { Box } from '../../primitives';
+import { useTheme } from '@/hooks/useTheme';
+import { useThemedColors } from '@/hooks/useThemedColors';
+import { Box } from '@/primitives';
 
 /**
  * VastuView - The "Structural/Tree" Perspective.

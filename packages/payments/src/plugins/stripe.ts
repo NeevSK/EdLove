@@ -1,4 +1,4 @@
-import type { PaymentIntent, PaymentProvider, PaymentStatus } from '../types';
+import type { PaymentIntent, PaymentProvider, PaymentStatus } from '@/types';
 
 export class StripeProvider implements PaymentProvider {
   id = 'stripe';

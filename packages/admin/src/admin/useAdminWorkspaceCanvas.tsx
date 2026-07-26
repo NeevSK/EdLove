@@ -22,8 +22,8 @@ import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { useMemo } from 'react';
-import type { AdminWorkspaceData } from './useAdminWorkspaceData';
-import { type AdminCapabilityId, getAdminCapabilityMeta } from './workspace';
+import type { AdminWorkspaceData } from '@/admin/useAdminWorkspaceData';
+import { type AdminCapabilityId, getAdminCapabilityMeta } from '@/admin/workspace';
 
 export type AdminWorkspaceSurfaceId =
   | 'operator_brief'

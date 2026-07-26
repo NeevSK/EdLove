@@ -4,8 +4,8 @@
  * API methods for managing custom form designs and their submissions.
  */
 
-import { APIError, type FormResponse, type FormTemplate, type PaginationParams } from '../types';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
+import { APIError, type FormResponse, type FormTemplate, type PaginationParams } from '@/types';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
 
 export const formTemplatesAPI = {
   /**

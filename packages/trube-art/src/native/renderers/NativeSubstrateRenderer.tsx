@@ -3,11 +3,11 @@ import { StyleSheet } from 'react-native';
 import { NitroModules } from 'react-native-nitro-modules';
 import { runOnJS, useFrameCallback } from 'react-native-reanimated';
 import { Canvas, type CanvasRef } from 'react-native-wgpu';
-import { ScoreComposer } from '../../core/soul/ScoreComposer';
-import { soulLibrary } from '../../core/soul/SoulLibrary';
-import { driverManager } from '../DriverManager';
-import type { TrubeRendererProps } from '../renderers/types';
-import type { TrubeGPUDriver } from '../TrubeDriver.nitro';
+import { ScoreComposer } from '@/core/soul/ScoreComposer';
+import { soulLibrary } from '@/core/soul/SoulLibrary';
+import { driverManager } from '@/native/DriverManager';
+import type { TrubeRendererProps } from '@/native/renderers/types';
+import type { TrubeGPUDriver } from '@/native/TrubeDriver.nitro';
 
 interface NativeSubstrateProps extends TrubeRendererProps {
   soul: any;

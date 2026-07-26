@@ -1,6 +1,6 @@
-import { emitSchoolClassroomCreatedFromBridge } from '../logic/events/runtimeBridge';
-import type { School } from '../types';
-import { founderServices } from './runtimes/founder.runtime';
+import { emitSchoolClassroomCreatedFromBridge } from '@/logic/events/runtimeBridge';
+import type { School } from '@/types';
+import { founderServices } from '@/api/runtimes/founder.runtime';
 
 /**
  * Founder API

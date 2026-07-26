@@ -10,8 +10,8 @@ import {
   useState,
 } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
-import type { NetworkQuality, RealityState } from './types';
-import { detectDeviceTier, detectNetworkQuality, shouldUseDataSaver } from './utils';
+import type { NetworkQuality, RealityState } from '@/context/types';
+import { detectDeviceTier, detectNetworkQuality, shouldUseDataSaver } from '@/context/utils';
 
 interface RealityContextValue {
   reality: RealityState;

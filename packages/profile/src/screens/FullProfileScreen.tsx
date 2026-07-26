@@ -37,15 +37,15 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, useWindowDimensions } from 'react-native';
 import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { AddSocialLinkModal } from '../components/AddSocialLinkModal';
-import { AvatarDisplay } from '../components/AvatarDisplay';
-import { ContactLinktree } from '../components/ContactLinktree';
-import { EditableItem } from '../components/EditableItem';
-import { GiveThuthimalModal } from '../components/GiveThuthimalModal';
-import { useProfile } from '../hooks/useProfile';
-import { useProfileCompletion } from '../hooks/useProfileCompletion';
-import { useSocialLinks } from '../hooks/useSocialLinks';
-import type { UserProfile } from '../types';
+import { AddSocialLinkModal } from '@/components/AddSocialLinkModal';
+import { AvatarDisplay } from '@/components/AvatarDisplay';
+import { ContactLinktree } from '@/components/ContactLinktree';
+import { EditableItem } from '@/components/EditableItem';
+import { GiveThuthimalModal } from '@/components/GiveThuthimalModal';
+import { useProfile } from '@/hooks/useProfile';
+import { useProfileCompletion } from '@/hooks/useProfileCompletion';
+import { useSocialLinks } from '@/hooks/useSocialLinks';
+import type { UserProfile } from '@/types';
 
 const readParam = (value: string | string[] | undefined) =>
   Array.isArray(value) ? value[0] : value;

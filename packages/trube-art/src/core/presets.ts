@@ -1,4 +1,4 @@
-import type { TrubeSurfaceName, TrubeSurfacePreset } from './types';
+import type { TrubeSurfaceName, TrubeSurfacePreset } from '@/core/types';
 
 export const SURFACE_PRESETS: Record<TrubeSurfaceName, TrubeSurfacePreset> = {
   aurora: {

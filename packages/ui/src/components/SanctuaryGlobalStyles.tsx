@@ -1,7 +1,7 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { useTheme } from '../hooks/useTheme';
-import { hexToRgba } from '../utils/colorUtils';
+import { useTheme } from '@/hooks/useTheme';
+import { hexToRgba } from '@/utils/colorUtils';
 
 /**
  * SanctuaryGlobalStyles (Web-only)

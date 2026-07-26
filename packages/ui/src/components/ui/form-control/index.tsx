@@ -1,7 +1,7 @@
 import React from 'react';
-import { Text } from '../text';
-import { View } from '../view';
-import { VStack } from '../vstack';
+import { Text } from '@/components/ui/text';
+import { View } from '@/components/ui/view';
+import { VStack } from '@/components/ui/vstack';
 
 const FormControlContext = React.createContext<{
   id?: string;

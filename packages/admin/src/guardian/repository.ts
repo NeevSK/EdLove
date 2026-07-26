@@ -1,6 +1,6 @@
 import { api } from '@repo/core/api';
 
-import type { GuardianIdentity } from './types';
+import type { GuardianIdentity } from '@/guardian/types';
 
 export type GuardianLinkedStudentRow = {
   id: string;

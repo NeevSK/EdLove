@@ -20,7 +20,7 @@ import {
   type DocumentStatus,
   type DocumentWorkflow,
   documentWorkflowAPI,
-} from '../document-workflow/api';
+} from '@/document-workflow/api';
 
 interface DocumentListScreenWebProps {
   schoolId: string;

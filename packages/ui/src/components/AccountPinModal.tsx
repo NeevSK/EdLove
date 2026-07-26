@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
-import { Box, HStack, Text, VStack } from '../gluestack';
-import { Lock, Shield, Smartphone } from '../icons';
-import { Theme } from '../theme/Theme';
-import { SanctuaryButton } from './SanctuaryButton';
-import SanctuaryInput from './SanctuaryInput';
-import SanctuaryModal from './SanctuaryModal';
+import { Box, HStack, Text, VStack } from '@/gluestack';
+import { Lock, Shield, Smartphone } from '@/icons';
+import { Theme } from '@/theme/Theme';
+import { SanctuaryButton } from '@/components/SanctuaryButton';
+import SanctuaryInput from '@/components/SanctuaryInput';
+import SanctuaryModal from '@/components/SanctuaryModal';
 
 export type AccountPinModalMode = 'create' | 'verify' | 'update' | 'remove';
 

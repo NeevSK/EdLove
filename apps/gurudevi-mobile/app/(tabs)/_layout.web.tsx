@@ -8,7 +8,7 @@ import { Box, Modal, ModalContent, Pressable, Text, VStack } from '@repo/ui/prim
 import { router, Slot, usePathname } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, useWindowDimensions, type ViewStyle } from 'react-native';
-import { resolveResponsiveShellMode } from '../../src/lib/responsiveShell';
+import { resolveResponsiveShellMode } from '@/lib/responsiveShell';
 
 type NavItem = {
   href: string;

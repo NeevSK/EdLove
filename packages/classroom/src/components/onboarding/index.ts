@@ -1,2 +1,2 @@
-export { default as StudentOnboardingView } from './StudentOnboardingView';
-export { default as TeacherOnboardingView } from './TeacherOnboardingView';
+export { default as StudentOnboardingView } from '@/components/onboarding/StudentOnboardingView';
+export { default as TeacherOnboardingView } from '@/components/onboarding/TeacherOnboardingView';

@@ -2,8 +2,8 @@ import { useTemporalStore } from '@repo/core/logic';
 import { Shield } from '@repo/ui/icons';
 import type React from 'react';
 import { StyleSheet } from 'react-native';
-import { Text, View } from '../primitives';
-import { Theme } from '../theme/Theme';
+import { Text, View } from '@/primitives';
+import { Theme } from '@/theme/Theme';
 
 interface TemporalShieldProps {
   children: React.ReactNode;

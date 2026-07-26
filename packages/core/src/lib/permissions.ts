@@ -1,4 +1,4 @@
-import type { Capacity } from '../types/Identity';
+import type { Capacity } from '@/types/Identity';
 
 /**
  * Get capacity display name.

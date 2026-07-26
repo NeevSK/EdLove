@@ -1,15 +1,15 @@
-export { authAPI } from '../api/auth';
-export { identityAPI } from '../api/identity';
+export { authAPI } from '@/api/auth';
+export { identityAPI } from '@/api/identity';
 export {
   __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__,
   __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ as supabase,
-} from '../api/supabase';
-export { bootstrapPlatform } from './bootstrap';
-export { deviceTrustAPI } from './deviceTrust';
-export { FlowResolver } from './flows/FlowResolver';
-export { GuestDataManager } from './guestDataManager';
-export { GuestDataSync } from './guestDataSync';
-export { Runtime } from './runtime';
+} from '@/api/supabase';
+export { bootstrapPlatform } from '@/native/bootstrap';
+export { deviceTrustAPI } from '@/native/deviceTrust';
+export { FlowResolver } from '@/native/flows/FlowResolver';
+export { GuestDataManager } from '@/native/guestDataManager';
+export { GuestDataSync } from '@/native/guestDataSync';
+export { Runtime } from '@/native/runtime';
 export {
   nativeDeviceProvider,
   nativeHapticsProvider,
@@ -20,8 +20,8 @@ export {
   nativeShareProvider,
   nativeStorageProvider,
   nativeUIProvider,
-} from './runtimeAdapter';
-export { StorageKeys, storage } from './storage';
-export { supabaseAuthStorage } from './supabaseAuthStorage';
-export { useAuthLifecycle } from './useAuthLifecycle';
-export { useWorkspaceLayoutSync } from './useWorkspaceLayoutSync';
+} from '@/native/runtimeAdapter';
+export { StorageKeys, storage } from '@/native/storage';
+export { supabaseAuthStorage } from '@/native/supabaseAuthStorage';
+export { useAuthLifecycle } from '@/native/useAuthLifecycle';
+export { useWorkspaceLayoutSync } from '@/native/useWorkspaceLayoutSync';

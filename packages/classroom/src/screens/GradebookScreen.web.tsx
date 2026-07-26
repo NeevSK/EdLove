@@ -29,8 +29,8 @@ import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import type React from 'react';
 import { useState } from 'react';
-import type { SortOption } from '../hooks/useGradebook';
-import { useGradebook } from '../hooks/useGradebook';
+import type { SortOption } from '@/hooks/useGradebook';
+import { useGradebook } from '@/hooks/useGradebook';
 
 // -- Helpers --------------------------------------------------
 

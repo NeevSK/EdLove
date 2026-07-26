@@ -1,7 +1,7 @@
-export { initializeTrubeArt } from '../index';
-export * from './renderers/CompatibilityRenderer';
-export * from './TrubeCanvas';
-export * from './TrubeMotif';
-export * from './TrubeOrnament';
-export * from './TrubeStage';
-export * from './TrubeView';
+export { initializeTrubeArt } from '@/index';
+export * from '@/native/renderers/CompatibilityRenderer';
+export * from '@/native/TrubeCanvas';
+export * from '@/native/TrubeMotif';
+export * from '@/native/TrubeOrnament';
+export * from '@/native/TrubeStage';
+export * from '@/native/TrubeView';

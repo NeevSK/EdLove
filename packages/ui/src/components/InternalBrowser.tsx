@@ -4,7 +4,7 @@ import type React from 'react';
 import { useCallback, useReducer, useRef } from 'react';
 import { Linking, Share, StyleSheet } from 'react-native';
 import { WebView, type WebViewNavigation } from 'react-native-webview';
-import { ActivityIndicator, Pressable, Text, useTheme, View } from '../primitives';
+import { ActivityIndicator, Pressable, Text, useTheme, View } from '@/primitives';
 
 export interface InternalBrowserProps {
   url: string;

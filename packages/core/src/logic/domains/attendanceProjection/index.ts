@@ -1,2 +1,2 @@
-export * from './ports';
-export * from './services';
+export * from '@/logic/domains/attendanceProjection/ports';
+export * from '@/logic/domains/attendanceProjection/services';

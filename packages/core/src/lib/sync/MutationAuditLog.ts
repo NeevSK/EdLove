@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { SafeZustandStorage } from '../../lib/storageWrapper';
+import { SafeZustandStorage } from '@/lib/storageWrapper';
 
-import type { MutationOutcome } from './types';
+import type { MutationOutcome } from '@/lib/sync/types';
 
 export interface AuditEntry {
   id: string; // Same UUID as QueuedMutation.id

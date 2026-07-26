@@ -6,7 +6,7 @@ import { Theme } from '@repo/ui/theme';
 import { useLocalSearchParams } from 'expo-router';
 
 import { useEffect, useMemo, useState } from 'react';
-import NativeForm from '../NativeForm';
+import NativeForm from '@/NativeForm';
 
 interface FormTemplateField {
   name: string;

@@ -5,7 +5,7 @@ import {
   useStudentGrowthPulse,
   useStudentQuestsPulse,
   useStudentRegistry,
-} from '../hooks/useStudentDashboardHooks';
+} from '@/hooks/useStudentDashboardHooks';
 
 const DEMO_STATS = {
   enrolledClasses: 3,

@@ -1,6 +1,6 @@
-import { FormHydrator } from '../hydrator/FormHydrator';
-import type { FormPage, FormSchema } from '../schema/FormSchema';
-import { FormManager } from './FormManager';
+import { FormHydrator } from '@/hydrator/FormHydrator';
+import type { FormPage, FormSchema } from '@/schema/FormSchema';
+import { FormManager } from '@/manager/FormManager';
 
 export class MultiStepFormManager<T extends Record<string, unknown>> {
   private schema: FormSchema;

@@ -1,5 +1,5 @@
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-import { generateRandomString } from '../utils/random';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { generateRandomString } from '@/utils/random';
 
 /**
  * Invite Code Validation and Management

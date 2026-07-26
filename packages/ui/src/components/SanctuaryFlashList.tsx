@@ -2,9 +2,9 @@ import { BookOpen } from '@repo/ui/icons';
 import { FlashList, type FlashListProps } from '@shopify/flash-list';
 import React, { useCallback } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
-import { RefreshControl } from '../primitives';
-import { Theme } from '../theme/Theme';
-import EmptyState from './EmptyState';
+import { RefreshControl } from '@/primitives';
+import { Theme } from '@/theme/Theme';
+import EmptyState from '@/components/EmptyState';
 
 export interface SanctuaryFlashListProps<T> extends Omit<FlashListProps<T>, 'refreshControl'> {
   /** Estimated size of a single list item (Optional in v2, Auto-calculated) */

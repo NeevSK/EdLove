@@ -1,4 +1,4 @@
-import { community } from '../logic/managers/factory';
+import { community } from '@/logic/managers/factory';
 
 /**
  * Announcements API

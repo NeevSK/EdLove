@@ -1,7 +1,7 @@
 import type React from 'react';
 import { useMemo } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
-import { SanctuaryCanvas } from './SanctuaryCanvas';
+import { SanctuaryCanvas } from '@/components/SanctuaryCanvas';
 
 interface ResonanceVisualizerProps {
   score: number; // 0-100

@@ -1,5 +1,5 @@
 import type { Context } from 'hono';
-import { dispatchPushSafely } from '../pushDispatcher';
+import { dispatchPushSafely } from '@/api/pushDispatcher';
 
 /**
  * Grading Domain Handlers (Hono + ZenStack ReBAC)

@@ -1,9 +1,9 @@
 import { Platform } from 'react-native';
 import { NitroModules } from 'react-native-nitro-modules';
-import type { TrubeBackend } from '../core/types';
-import { SkiaDriver } from './SkiaDriver';
-import type { TrubeGPUDriver } from './TrubeDriver.nitro';
-import { WebGPUDriver } from './WebGPUDriver';
+import type { TrubeBackend } from '@/core/types';
+import { SkiaDriver } from '@/native/SkiaDriver';
+import type { TrubeGPUDriver } from '@/native/TrubeDriver.nitro';
+import { WebGPUDriver } from '@/native/WebGPUDriver';
 
 /**
  * DriverManager: Orchestrates the Triple-Tier Rendering Hierarchy.

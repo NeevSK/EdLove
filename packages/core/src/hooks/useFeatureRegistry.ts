@@ -1,14 +1,14 @@
 import { useMemo } from 'react';
-import type { DomainFeature } from '../types/Workspace';
-import { useAuthStore } from '../store/useAuthStore';
-import { useCedarDecisionStore } from '../store/useCedarDecisionStore';
-import { useEntitlementStore } from '../store/useEntitlementStore';
-import { useFeatureStore } from '../store/useFeatureStore';
+import type { DomainFeature } from '@/types/Workspace';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useCedarDecisionStore } from '@/store/useCedarDecisionStore';
+import { useEntitlementStore } from '@/store/useEntitlementStore';
+import { useFeatureStore } from '@/store/useFeatureStore';
 import {
   sanctuaryFeature,
   CITIZENSHIP,
   type SanctuaryFeatureResult,
-} from '../logic/permissions/sanctuaryFeature';
+} from '@/logic/permissions/sanctuaryFeature';
 
 export interface FeatureGatingResult {
   visible: boolean;

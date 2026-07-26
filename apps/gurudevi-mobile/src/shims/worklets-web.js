@@ -1,7 +1,7 @@
 /**
  * Self-Healing Web Shim for react-native-worklets
  */
-import bridge from './universal-bridge';
+import bridge from '@/shims/universal-bridge';
 
 const Worklets = bridge('react-native-worklets', {
   createRunOnJS: (fn) => fn,

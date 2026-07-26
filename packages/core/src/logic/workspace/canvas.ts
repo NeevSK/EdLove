@@ -3,7 +3,7 @@ import type {
   WorkspaceLayout,
   WorkspaceSurfaceDefinition,
   WorkspaceZoneId,
-} from '../../types';
+} from '@/types';
 
 export const WORKSPACE_CANVAS_ZONES = [
   'today',

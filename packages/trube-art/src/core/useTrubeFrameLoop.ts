@@ -18,8 +18,8 @@
 import { useRef } from 'react';
 import { NitroModules } from 'react-native-nitro-modules';
 import { useFrameCallback } from 'react-native-reanimated';
-import type { TrubeGPUDriver } from '../native/TrubeDriver.nitro';
-import type { TrubeSurfaceName } from './types';
+import type { TrubeGPUDriver } from '@/native/TrubeDriver.nitro';
+import type { TrubeSurfaceName } from '@/core/types';
 
 // =============================================================================
 // \u00A7 1 \u2014 Surface-aware temporal skip table

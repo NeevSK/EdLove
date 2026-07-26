@@ -24,7 +24,7 @@ import {
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useState } from 'react';
 import Animated, { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
-import { useDecisionJournal } from '../hooks/useDecisionJournal';
+import { useDecisionJournal } from '@/hooks/useDecisionJournal';
 
 interface DecisionJournalSectionProps {
   userId: string | null;

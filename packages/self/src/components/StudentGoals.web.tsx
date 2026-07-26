@@ -7,8 +7,8 @@
 
 import { Circle, CircleCheck, Target } from '@repo/ui/icons';
 import { useState } from 'react';
-import { useStudentGoals } from '../hooks/useStudentGoals';
-import type { Goal } from '../types';
+import { useStudentGoals } from '@/hooks/useStudentGoals';
+import type { Goal } from '@/types';
 
 interface StudentGoalsProps {
   userId: string;

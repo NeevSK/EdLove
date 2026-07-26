@@ -3,8 +3,8 @@ import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/pr
 
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
-import type { PrincipalWorkspaceView } from '../../principal/workspace';
-import { getPrincipalFeatureScopeMeta } from './PrincipalIAScope';
+import type { PrincipalWorkspaceView } from '@/principal/workspace';
+import { getPrincipalFeatureScopeMeta } from '@/screens/principal/PrincipalIAScope';
 
 interface CommandCenterProps {
   onNavigate: (view: PrincipalWorkspaceView) => void;

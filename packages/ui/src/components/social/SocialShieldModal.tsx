@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
-import { LifeBuoy, ShieldCheck, ShieldOff, TriangleAlert, UserX } from '../../icons';
-import { Box, HStack, Icon, Pressable, Text, VStack } from '../../primitives';
-import { SanctuaryButton } from '../SanctuaryButton';
-import SanctuaryModal from '../SanctuaryModal';
+import { LifeBuoy, ShieldCheck, ShieldOff, TriangleAlert, UserX } from '@/icons';
+import { Box, HStack, Icon, Pressable, Text, VStack } from '@/primitives';
+import { SanctuaryButton } from '@/components/SanctuaryButton';
+import SanctuaryModal from '@/components/SanctuaryModal';
 
 export type ReportTarget = 'teacher' | 'principal' | 'platform';
 export type ModalStep = 'reason' | 'target';

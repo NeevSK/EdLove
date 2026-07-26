@@ -14,10 +14,10 @@ import { Icon } from '@repo/ui/primitives';
  */
 
 import { useEffect, useState } from 'react';
-import StudentDashboard from './StudentDashboard';
-import TeacherDashboard from './TeacherDashboard';
+import StudentDashboard from '@/screens/StudentDashboard';
+import TeacherDashboard from '@/screens/TeacherDashboard';
 
-// import PrincipalDashboard from './PrincipalDashboard';
+// import PrincipalDashboard from '@/screens/PrincipalDashboard';
 
 type DemoRole = 'teacher' | 'principal' | 'student';
 

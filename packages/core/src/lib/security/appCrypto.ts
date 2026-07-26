@@ -1,5 +1,5 @@
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
-import { cryptoManager } from '../../logic/managers/CryptoManager';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { cryptoManager } from '@/logic/managers/CryptoManager';
 
 export const AppCryptoEngine = {
   /**

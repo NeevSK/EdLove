@@ -1,7 +1,7 @@
 import React from 'react';
 import type { View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { Pressable } from '../view';
+import { Pressable } from '@/components-legacy/view';
 
 /**
  * Overlay (Backdrop)

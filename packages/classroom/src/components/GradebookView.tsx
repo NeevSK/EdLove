@@ -14,9 +14,9 @@ import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useGradebook } from '../hooks/useGradebook';
-import GradebookTable from './grading/GradebookTable';
-import GradingSettings from './grading/GradingSettings';
+import { useGradebook } from '@/hooks/useGradebook';
+import GradebookTable from '@/components/grading/GradebookTable';
+import GradingSettings from '@/components/grading/GradingSettings';
 
 interface GradebookViewProps {
   classroomId: string;

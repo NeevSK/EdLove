@@ -1,4 +1,4 @@
-import type { FieldDefinition } from '../schema/FormSchema';
+import type { FieldDefinition } from '@/schema/FormSchema';
 
 export function exportToStaticReact(
   title: string,

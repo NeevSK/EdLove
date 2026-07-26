@@ -1,9 +1,9 @@
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
-import type { ICommunityRepository, PostFilters } from '../../logic/domains/community/ports';
-import { CommunityPostSchema } from '../../logic/schemas/community.schema';
-import { applyTemporalFilter } from '../../logic/utils/temporalUtils';
-import type { Comment, PollStatus, Post } from '../../types';
-import { APIError } from '../../types/API';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import type { ICommunityRepository, PostFilters } from '@/logic/domains/community/ports';
+import { CommunityPostSchema } from '@/logic/schemas/community.schema';
+import { applyTemporalFilter } from '@/logic/utils/temporalUtils';
+import type { Comment, PollStatus, Post } from '@/types';
+import { APIError } from '@/types/API';
 
 export class SupabaseCommunityRepository implements ICommunityRepository {
   private get client() {

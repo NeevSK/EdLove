@@ -8,8 +8,8 @@ import { Lightbulb, Sparkles, User } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { useEffect, useState } from 'react';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';
-import { dailyContentAPI } from '../api/dailyContent';
-import type { DailyContent } from '../types/Wellbeing';
+import { dailyContentAPI } from '@/api/dailyContent';
+import type { DailyContent } from '@/types/Wellbeing';
 
 interface DailyContentCardProps {
   type: 'motivation' | 'did_you_know';

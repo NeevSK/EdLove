@@ -1,3 +1,3 @@
-export * from './api';
-export * from './hooks';
-export * from './screens';
+export * from '@/api';
+export * from '@/hooks';
+export * from '@/screens';

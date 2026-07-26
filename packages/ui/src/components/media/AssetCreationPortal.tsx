@@ -1,7 +1,7 @@
 import { useCallback, useReducer } from 'react';
-import { HStack, Input, InputField, VStack } from '../../primitives';
-import { SanctuaryButton } from '../SanctuaryButton';
-import SanctuaryModal from '../SanctuaryModal';
+import { HStack, Input, InputField, VStack } from '@/primitives';
+import { SanctuaryButton } from '@/components/SanctuaryButton';
+import SanctuaryModal from '@/components/SanctuaryModal';
 
 // ──────────────────────────────────────────────────────────
 // ASSET CREATION MODAL

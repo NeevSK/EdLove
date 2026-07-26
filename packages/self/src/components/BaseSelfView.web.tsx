@@ -10,10 +10,10 @@ import {
   FEATURE_DISCOVERY_DATA,
   FEATURE_EMOJIS,
   SANCTUARY_DOMAINS,
-} from '../constants/selfRegistry';
-import { useFeatureActivity } from '../hooks/useFeatureActivity';
-import type { BaseSelfViewProps, SelfViewFeature } from './BaseSelfView.types';
-import { FeatureErrorBoundary } from './FeatureErrorBoundary';
+} from '@/constants/selfRegistry';
+import { useFeatureActivity } from '@/hooks/useFeatureActivity';
+import type { BaseSelfViewProps, SelfViewFeature } from '@/components/BaseSelfView.types';
+import { FeatureErrorBoundary } from '@/components/FeatureErrorBoundary';
 
 /**
  * BaseSelfView.web - Capability-Driven Sanctuary for Web.

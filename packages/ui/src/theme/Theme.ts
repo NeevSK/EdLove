@@ -8,8 +8,8 @@
  * Philosophy: Every value has meaning and serves the sanctuary aesthetic.
  */
 
-import type { TemporalPhase } from '../context/types';
-import { compositeColorOverBackground, getTextOnBackground } from '../utils/colorUtils';
+import type { TemporalPhase } from '@/context/types';
+import { compositeColorOverBackground, getTextOnBackground } from '@/utils/colorUtils';
 
 // ============================================================================
 // COLORS - Sanctuary Palette

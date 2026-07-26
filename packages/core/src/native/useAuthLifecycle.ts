@@ -2,20 +2,20 @@ import type { Session } from '@supabase/supabase-js';
 import { Effect } from 'effect';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
-import { authAPI } from '../api/auth';
-import { assertHighway } from '../api/highways';
-import { identityAPI } from '../api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-import type { SchoolType } from '../constants/SriLankanSchools';
-import { getSessionIdentityMode } from '../logic/auth/identityState';
-import { identifyUser, initPostHog, trackEvent } from '../lib/monitoring/posthog';
-import { clearSentryUser, initSentry, setSentryUser } from '../lib/monitoring/sentry';
-import { setActiveCapabilityToken } from '../adapters/powersync/database';
-import { useAuthStore } from '../store/useAuthStore';
-import { useCedarDecisionStore } from '../store/useCedarDecisionStore';
-import { useStore } from '../store/useStore';
-import { APIError } from '../types/API';
-import type { Bond } from '../types/Identity';
+import { authAPI } from '@/api/auth';
+import { assertHighway } from '@/api/highways';
+import { identityAPI } from '@/api/identity';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import type { SchoolType } from '@/constants/SriLankanSchools';
+import { getSessionIdentityMode } from '@/logic/auth/identityState';
+import { identifyUser, initPostHog, trackEvent } from '@/lib/monitoring/posthog';
+import { clearSentryUser, initSentry, setSentryUser } from '@/lib/monitoring/sentry';
+import { setActiveCapabilityToken } from '@/adapters/powersync/database';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useCedarDecisionStore } from '@/store/useCedarDecisionStore';
+import { useStore } from '@/store/useStore';
+import { APIError } from '@/types/API';
+import type { Bond } from '@/types/Identity';
 
 /**
  * useAuthLifecycle (Native)

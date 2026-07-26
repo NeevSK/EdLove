@@ -10,8 +10,8 @@
 import { Plus, Sparkles } from '@repo/ui/icons';
 import { formatDistanceToNow } from 'date-fns';
 import { useState } from 'react';
-import { useJoyJar } from '../hooks/useJoyJar';
-import type { JoyMoment } from '../types';
+import { useJoyJar } from '@/hooks/useJoyJar';
+import type { JoyMoment } from '@/types';
 
 interface JoyJarProps {
   userId?: string;

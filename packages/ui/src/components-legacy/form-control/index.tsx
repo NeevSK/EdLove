@@ -2,7 +2,7 @@
 import type React from 'react';
 import { createContext, useContext } from 'react';
 import { Text as RNText, type TextProps, type ViewProps } from 'react-native';
-import { View } from '../../primitives';
+import { View } from '@/primitives';
 
 cssInterop(View, { className: 'style' });
 cssInterop(RNText, { className: 'style' });

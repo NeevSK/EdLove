@@ -1,10 +1,10 @@
-import { growth } from '../logic';
+import { growth } from '@/logic';
 import type {
   Challenge,
   ChallengeMetric,
   ChallengeProgress,
   PersonalCompass,
-} from '../types/Growth';
+} from '@/types/Growth';
 
 /**
  * contextualChallengesAPI (Legacy Proxy)

@@ -10,8 +10,8 @@ import {
   HStack,
   Text,
   VStack,
-} from '../gluestack';
-import { Pressable } from '../primitives';
+} from '@/gluestack';
+import { Pressable } from '@/primitives';
 
 interface LotusDropdownProps {
   label?: string;

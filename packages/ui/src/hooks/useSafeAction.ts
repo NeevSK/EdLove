@@ -1,7 +1,7 @@
 import { SovereignError } from '@repo/core/lib';
 import { useCallback, useState } from 'react';
-import { useErrorResolution } from '../providers/ErrorResolutionProvider';
-import { useToast } from '../providers/ToastProvider';
+import { useErrorResolution } from '@/providers/ErrorResolutionProvider';
+import { useToast } from '@/providers/ToastProvider';
 
 export interface SafeActionProgress {
   message: string;

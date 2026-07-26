@@ -28,9 +28,9 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useAccessibility } from '../hooks/useAccessibility';
-import { Pressable, Text, View } from '../primitives';
-import { Theme } from '../theme/Theme';
+import { useAccessibility } from '@/hooks/useAccessibility';
+import { Pressable, Text, View } from '@/primitives';
+import { Theme } from '@/theme/Theme';
 
 // ============================================================================
 // TYPES

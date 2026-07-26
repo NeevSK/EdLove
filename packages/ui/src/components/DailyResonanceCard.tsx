@@ -1,6 +1,6 @@
 import type { LucideIcon } from '@repo/ui/icons';
-import { Box, HStack, Text, VStack } from '../gluestack';
-import { SanctuaryCard } from './SanctuaryCard';
+import { Box, HStack, Text, VStack } from '@/gluestack';
+import { SanctuaryCard } from '@/components/SanctuaryCard';
 
 interface DailyResonanceCardProps {
   title: string;

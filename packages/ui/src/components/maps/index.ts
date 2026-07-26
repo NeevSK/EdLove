@@ -1,3 +1,3 @@
-export * from './MapProvider';
-export * from './UnifiedMapView';
-export * from './UnifiedMarker';
+export * from '@/components/maps/MapProvider';
+export * from '@/components/maps/UnifiedMapView';
+export * from '@/components/maps/UnifiedMarker';

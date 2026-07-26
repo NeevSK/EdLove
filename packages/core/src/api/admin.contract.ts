@@ -1,12 +1,12 @@
 import { z } from 'zod';
-import { SchoolSchema } from '../logic/schemas/school.schema';
+import { SchoolSchema } from '@/logic/schemas/school.schema';
 import {
   CalendarEventSchema,
   StaffLeaveSchema,
   StaffPresenceSummarySchema,
   TeacherCarouselItemSchema,
-} from '../logic/schemas/staff.schema';
-import type { SovereignContract } from './contract';
+} from '@/logic/schemas/staff.schema';
+import type { SovereignContract } from '@/api/contract';
 
 const adminAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',

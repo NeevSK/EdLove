@@ -7,11 +7,11 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useMemo, useReducer } from 'react';
 import { StyleSheet } from 'react-native';
-import { Box, Button, ButtonText, Heading, HStack, Text, VStack } from '../gluestack';
-import { Key, UserMinus, Users } from '../icons';
-import { useSanctuaryToast } from '../providers/ToastProvider';
-import { hapticError, hapticSuccess } from '../utils/haptics';
-import AccountPinModal, { type AccountPinModalMode } from './AccountPinModal';
+import { Box, Button, ButtonText, Heading, HStack, Text, VStack } from '@/gluestack';
+import { Key, UserMinus, Users } from '@/icons';
+import { useSanctuaryToast } from '@/providers/ToastProvider';
+import { hapticError, hapticSuccess } from '@/utils/haptics';
+import AccountPinModal, { type AccountPinModalMode } from '@/components/AccountPinModal';
 
 // ── Types & Reducer ──────────────────────────────────────────────────────────
 

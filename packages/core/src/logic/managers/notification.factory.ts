@@ -1,9 +1,9 @@
-import { SupabaseNotificationAdapter } from '../../adapters/supabaseNotification.adapter';
-import { SupabasePushNotificationAdapter } from '../../adapters/supabasePushNotification.adapter';
-import { coreRuntime } from '../runtimeRegistry';
-import { deepLink } from './misc.factory';
-import { NotificationManager } from './NotificationManager';
-import { PushNotificationManager } from './PushNotificationManager';
+import { SupabaseNotificationAdapter } from '@/adapters/supabaseNotification.adapter';
+import { SupabasePushNotificationAdapter } from '@/adapters/supabasePushNotification.adapter';
+import { coreRuntime } from '@/logic/runtimeRegistry';
+import { deepLink } from '@/logic/managers/misc.factory';
+import { NotificationManager } from '@/logic/managers/NotificationManager';
+import { PushNotificationManager } from '@/logic/managers/PushNotificationManager';
 
 /**
  * notification: The Global Sovereign Notification Instance.

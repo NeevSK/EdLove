@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { growth } from '../logic';
-import { usePermissions } from '../logic/permissions/hooks/usePermissions';
-import type { BanyanStage } from '../types/Growth';
+import { growth } from '@/logic';
+import { usePermissions } from '@/logic/permissions/hooks/usePermissions';
+import type { BanyanStage } from '@/types/Growth';
 
 /**
  * useBanyanGrowth

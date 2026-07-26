@@ -1,7 +1,7 @@
 import type React from 'react';
 import { useRef } from 'react';
-import { HStack, Icon, Pressable, Text } from '../primitives';
-import { hapticLight } from '../utils/haptics';
+import { HStack, Icon, Pressable, Text } from '@/primitives';
+import { hapticLight } from '@/utils/haptics';
 
 interface PredictiveButtonProps {
   onPress: () => void;

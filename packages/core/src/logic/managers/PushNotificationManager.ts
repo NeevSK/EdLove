@@ -1,7 +1,7 @@
-import type { CoreRuntimeEnvironment, PushNotificationProvider } from '../../types/runtime';
-import type { IPushNotificationPort } from '../ports/pushNotification.port';
+import type { CoreRuntimeEnvironment, PushNotificationProvider } from '@/types/runtime';
+import type { IPushNotificationPort } from '@/logic/ports/pushNotification.port';
 
-import type { DeepLinkManager } from './DeepLinkManager';
+import type { DeepLinkManager } from '@/logic/managers/DeepLinkManager';
 
 /**
  * PushNotificationManager: Orchestrates native push notifications.

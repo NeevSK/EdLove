@@ -1,4 +1,4 @@
-import type { FileUploadOptions, IFileStoragePort } from '../ports/storage.port';
+import type { FileUploadOptions, IFileStoragePort } from '@/logic/ports/storage.port';
 
 /**
  * MediaManager

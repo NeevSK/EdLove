@@ -6,9 +6,9 @@ import { Box, HStack, Icon, Pressable, ScrollView, Text, VStack } from '@repo/ui
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback } from 'react';
-import { LibraryThumbnailCard } from '../components/LibraryThumbnailCard';
-import { useCollection } from '../hooks/useLibrary';
-import type { LibraryResource } from '../types';
+import { LibraryThumbnailCard } from '@/components/LibraryThumbnailCard';
+import { useCollection } from '@/hooks/useLibrary';
+import type { LibraryResource } from '@/types';
 
 export default function CollectionDetailScreen() {
   const router = useRouter();

@@ -1,15 +1,15 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import semver from 'semver';
-import { supabase } from './db';
-import { calculateVitalityScore } from './scoring';
+import { supabase } from '@/db';
+import { calculateVitalityScore } from '@/scoring';
 import type {
   DeveloperContext,
   EcosystemTopology,
   ProjectAudit,
   VitalityCardFull,
   Warning,
-} from './types';
+} from '@/types';
 
 // Helper to map DB row to canonical VitalityCard structure
 function mapRowToCard(row: any): VitalityCardFull {

@@ -5,8 +5,8 @@ import {
   SIMPLIFIED_GRADING_SCALE,
   STANDARD_GRADING_SCALE,
   WEIGHTED_GRADING_SCALE,
-} from '../../types/Grading';
-import type { StudentGrade } from '../schemas/grading.schema';
+} from '@/types/Grading';
+import type { StudentGrade } from '@/logic/schemas/grading.schema';
 
 export class GPACalculator {
   private scale: GradingScale;

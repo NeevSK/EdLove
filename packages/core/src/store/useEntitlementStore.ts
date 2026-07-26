@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { SupabaseEntitlementAdapter } from '../adapters/supabase/supabaseEntitlement.adapter';
+import { SupabaseEntitlementAdapter } from '@/adapters/supabase/supabaseEntitlement.adapter';
 
 const _adapter = new SupabaseEntitlementAdapter();
 

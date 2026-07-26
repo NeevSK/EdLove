@@ -3,8 +3,8 @@ import {
   type CitizenshipLevel,
   type CitizenshipName,
   meetsCitizenship,
-} from '../registry/citizenship';
-import type { EntitlementSnapshot } from '../ports/entitlement.port';
+} from '@/logic/registry/citizenship';
+import type { EntitlementSnapshot } from '@/logic/ports/entitlement.port';
 
 export {
   CITIZENSHIP,

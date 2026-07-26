@@ -1,7 +1,7 @@
 import type React from 'react';
-import { Box, Text } from '../../primitives';
-import { useMap } from './MapProvider';
-import type { UnifiedMarkerProps } from './UnifiedMarker.types';
+import { Box, Text } from '@/primitives';
+import { useMap } from '@/components/maps/MapProvider';
+import type { UnifiedMarkerProps } from '@/components/maps/UnifiedMarker.types';
 
 const MapLibreGL = require('@maplibre/maplibre-react-native') as {
   PointAnnotation: React.ComponentType<any>;

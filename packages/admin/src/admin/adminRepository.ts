@@ -1,7 +1,7 @@
 import { historyAPI, supabase } from '@repo/core/api';
 
 import { useEffect, useState } from 'react';
-import { getAdminAuditEntries } from './adminControl';
+import { getAdminAuditEntries } from '@/admin/adminControl';
 
 export interface AdminWorkspaceSnapshot {
   schoolCount: number;

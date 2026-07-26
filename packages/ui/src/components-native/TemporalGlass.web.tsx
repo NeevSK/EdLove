@@ -1,7 +1,7 @@
 import { useActivityPulse } from '@repo/core/logic';
 import type React from 'react';
 import { StyleSheet, type ViewStyle } from 'react-native';
-import { View } from '../primitives';
+import { View } from '@/primitives';
 
 interface TemporalGlassProps {
   children: React.ReactNode;

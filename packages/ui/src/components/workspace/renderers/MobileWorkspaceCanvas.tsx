@@ -1,10 +1,10 @@
 import type { WorkspaceRendererConfig } from '@repo/core/types';
 import { StyleSheet } from 'react-native';
-import { View } from '../../../primitives';
-import { Theme } from '../../../theme/Theme';
-import { CanvasZoneColumn } from '../CanvasZoneColumn';
-import { useWorkspaceCanvasData, WorkspaceCanvasEmptyState, WorkspaceCanvasHero } from '../shared';
-import type { WorkspaceCanvasProps } from '../types';
+import { View } from '@/primitives';
+import { Theme } from '@/theme/Theme';
+import { CanvasZoneColumn } from '@/components/workspace/CanvasZoneColumn';
+import { useWorkspaceCanvasData, WorkspaceCanvasEmptyState, WorkspaceCanvasHero } from '@/components/workspace/shared';
+import type { WorkspaceCanvasProps } from '@/components/workspace/types';
 
 export interface MobileWorkspaceCanvasProps<
   TSurfaceId extends string = string,

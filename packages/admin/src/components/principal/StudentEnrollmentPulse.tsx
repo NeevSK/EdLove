@@ -3,7 +3,7 @@ import { Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/pr
 import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useEffect, useState } from 'react';
-import { type StudentPrincipalPulse, staffOperationsAPI } from '../../staff';
+import { type StudentPrincipalPulse, staffOperationsAPI } from '@/staff';
 
 interface StudentPulseSectionProps {
   schoolId: string;

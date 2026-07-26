@@ -12,11 +12,11 @@ import {
   FEATURE_DISCOVERY_DATA,
   FEATURE_EMOJIS,
   SANCTUARY_DOMAINS,
-} from '../constants/selfRegistry';
-import { useDynamicSelfFeatures } from '../hooks/useDynamicSelfFeatures';
-import { useFeatureActivity } from '../hooks/useFeatureActivity';
-import type { BaseSelfViewProps, SelfViewFeature } from './BaseSelfView.types';
-import { FeatureErrorBoundary } from './FeatureErrorBoundary';
+} from '@/constants/selfRegistry';
+import { useDynamicSelfFeatures } from '@/hooks/useDynamicSelfFeatures';
+import { useFeatureActivity } from '@/hooks/useFeatureActivity';
+import type { BaseSelfViewProps, SelfViewFeature } from '@/components/BaseSelfView.types';
+import { FeatureErrorBoundary } from '@/components/FeatureErrorBoundary';
 
 const TEMPORAL_SCALES = ['day', 'week', 'month', 'year'] as const;
 

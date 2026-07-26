@@ -1,1 +1,1 @@
-export { accountingAPI, paymentsAPI } from '../erp';
+export { accountingAPI, paymentsAPI } from '@/api/erp';

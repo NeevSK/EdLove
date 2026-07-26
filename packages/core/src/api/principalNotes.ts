@@ -10,11 +10,11 @@
  * but remain in the record forever (the history matters).
  */
 
-import { APIError } from '../types/API';
-import type { PrincipalNote } from '../types/PrincipalNote';
+import { APIError } from '@/types/API';
+import type { PrincipalNote } from '@/types/PrincipalNote';
 
-import { identityAPI } from './identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
+import { identityAPI } from '@/api/identity';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
 
 export const principalNotesAPI = {
   /**

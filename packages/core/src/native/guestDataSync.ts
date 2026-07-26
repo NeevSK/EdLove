@@ -1,7 +1,7 @@
-import { authAPI } from '../api/auth';
-import { createSovereignClient, SOVEREIGN_API_URL } from '../api/base';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-import { GuestDataManager } from './guestDataManager';
+import { authAPI } from '@/api/auth';
+import { createSovereignClient, SOVEREIGN_API_URL } from '@/api/base';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { GuestDataManager } from '@/native/guestDataManager';
 
 export interface SyncProgress {
   total: number;

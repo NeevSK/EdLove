@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
-import { check } from '../engine/evaluator';
-import type { PermissionSnapshot, UserContext } from './types';
+import { check } from '@/engine/evaluator';
+import type { PermissionSnapshot, UserContext } from '@/snapshot/types';
 
 /**
  * Runs Cedar check() for every meaningful permission combination and generates

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { type ColorPalette, GeoThematicEngine } from '../../algorithms/GeoThematicEngine';
-import { SriLankaMap } from './SriLankaMap';
+import { type ColorPalette, GeoThematicEngine } from '@/algorithms/GeoThematicEngine';
+import { SriLankaMap } from '@/components/maps/SriLankaMap';
 
 interface GeographicPerspectiveProps {
   title: string;

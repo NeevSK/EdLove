@@ -1,6 +1,6 @@
-import { marksToGPA } from '../../../lib/grading';
-import { APIError } from '../../../types/API';
-import type { Attendance as AttendanceRecord } from '../../schemas/attendance.schema';
+import { marksToGPA } from '@/lib/grading';
+import { APIError } from '@/types/API';
+import type { Attendance as AttendanceRecord } from '@/logic/schemas/attendance.schema';
 import type {
   Assignment,
   AssignmentSubmission,
@@ -15,11 +15,11 @@ import type {
   StudentSubmissionSummary,
   TeacherProfessionalRecord,
   TeacherStats,
-} from '../../schemas/classroom.schema';
-import type { ClassroomGradingSettings, Grade } from '../../schemas/grading.schema';
-import type { Lesson } from '../../schemas/lesson.schema';
-import type { Material as LessonMaterial } from '../../schemas/material.schema';
-import type { EducationalRepository, EducationalSideEffects, EnrollmentRecord } from './ports';
+} from '@/logic/schemas/classroom.schema';
+import type { ClassroomGradingSettings, Grade } from '@/logic/schemas/grading.schema';
+import type { Lesson } from '@/logic/schemas/lesson.schema';
+import type { Material as LessonMaterial } from '@/logic/schemas/material.schema';
+import type { EducationalRepository, EducationalSideEffects, EnrollmentRecord } from '@/logic/domains/educational/ports';
 
 export interface EducationalServices {
   classrooms: {

@@ -1,5 +1,5 @@
-import type { AppNotification, NotificationStatus } from '../../types';
-import type { INotificationPort } from '../ports/notification.port';
+import type { AppNotification, NotificationStatus } from '@/types';
+import type { INotificationPort } from '@/logic/ports/notification.port';
 
 /**
  * NotificationManager: The Domain Orchestrator for Notifications.

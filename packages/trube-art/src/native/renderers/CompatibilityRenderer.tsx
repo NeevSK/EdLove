@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-import type { TrubeRendererProps } from './types';
+import type { TrubeRendererProps } from '@/native/renderers/types';
 
 function layerStyle(color: string, opacity: number, inset: number, radius: number) {
   return {

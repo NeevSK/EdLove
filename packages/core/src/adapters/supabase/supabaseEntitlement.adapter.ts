@@ -1,8 +1,8 @@
 import { eq } from 'drizzle-orm';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
-import { getDrizzleDB } from '../powersync/database';
-import { pricingManifest } from '../powersync/schema';
-import type { EntitlementSnapshot, IEntitlementPort } from '../../logic/ports/entitlement.port';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { getDrizzleDB } from '@/adapters/powersync/database';
+import { pricingManifest } from '@/adapters/powersync/schema';
+import type { EntitlementSnapshot, IEntitlementPort } from '@/logic/ports/entitlement.port';
 
 async function getUserPricingTier(userId: string): Promise<string> {
   try {

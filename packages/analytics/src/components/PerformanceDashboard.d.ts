@@ -1,4 +1,4 @@
-import type { StudentPerformanceMetrics } from '../types/AnalyticsTypes';
+import type { StudentPerformanceMetrics } from '@/types/AnalyticsTypes';
 
 interface PerformanceDashboardProps {
   metrics: StudentPerformanceMetrics;

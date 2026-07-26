@@ -1,7 +1,7 @@
 import { Flower } from '@repo/ui/icons';
 import { EaseView } from 'react-native-ease';
-import { Center, Text, VStack } from '../gluestack';
-import { ActivityIndicator } from '../primitives';
+import { Center, Text, VStack } from '@/gluestack';
+import { ActivityIndicator } from '@/primitives';
 
 interface LotusLoaderProps {
   size?: 'sm' | 'md' | 'lg';

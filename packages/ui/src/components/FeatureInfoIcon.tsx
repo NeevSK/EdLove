@@ -1,7 +1,7 @@
 import { Info } from '@repo/ui/icons';
 import { useState } from 'react';
-import { Pressable } from '../primitives';
-import FeatureDiscoveryModal from './FeatureDiscoveryModal';
+import { Pressable } from '@/primitives';
+import FeatureDiscoveryModal from '@/components/FeatureDiscoveryModal';
 
 export interface FeatureInfoIconProps {
   title: string;

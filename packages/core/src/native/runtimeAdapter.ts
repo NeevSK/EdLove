@@ -24,9 +24,9 @@ import type {
   ShareOptions,
   ShareProvider,
   UIProvider,
-} from '../types/runtime';
-import { BackgroundTaskResult, BackgroundTaskStatus } from '../types/runtime';
-import { storage } from './storage';
+} from '@/types/runtime';
+import { BackgroundTaskResult, BackgroundTaskStatus } from '@/types/runtime';
+import { storage } from '@/native/storage';
 
 export const nativeStorageProvider = {
   async getItem(key: string) {

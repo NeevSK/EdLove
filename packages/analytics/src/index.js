@@ -1,23 +1,23 @@
 // Core analytics exports - No UI dependencies to prevent circular dependencies
-export * from './engine/GPACalculator';
-export * from './engine/PerformanceAnalyzer';
-export * from './engine/PostHogAnalytics';
+export * from '@/engine/GPACalculator';
+export * from '@/engine/PerformanceAnalyzer';
+export * from '@/engine/PostHogAnalytics';
 
 // Factory functions to create instances with database client
-import { PerformanceAnalyzer } from './engine/PerformanceAnalyzer';
-import { posthogAnalytics } from './engine/PostHogAnalytics';
-import { Predictor as ML_Predictor } from './ml/Predictor';
+import { PerformanceAnalyzer } from '@/engine/PerformanceAnalyzer';
+import { posthogAnalytics } from '@/engine/PostHogAnalytics';
+import { Predictor as ML_Predictor } from '@/ml/Predictor';
 export const createPerformanceAnalyzer = (db) => new PerformanceAnalyzer(db);
 export const createPredictor = (db) => new ML_Predictor(db);
-export * from './ml/InsightGenerator';
+export * from '@/ml/InsightGenerator';
 // ML and prediction exports
-export * from './ml/Predictor';
+export * from '@/ml/Predictor';
 // Types and interfaces
-export * from './types/AnalyticsTypes';
-export * from './types/GradingTypes';
+export * from '@/types/AnalyticsTypes';
+export * from '@/types/GradingTypes';
 // Utility functions
-export * from './utils/analyticsHelpers';
-export * from './utils/benchmarking';
+export * from '@/utils/analyticsHelpers';
+export * from '@/utils/benchmarking';
 // PostHog Universal Helpers
 export { posthogAnalytics };
 export const initPostHog = async (apiKey, hostOrOptions) => {

@@ -1,4 +1,4 @@
-import type { FieldDefinition, FormResponse } from '../schema/FormSchema';
+import type { FieldDefinition, FormResponse } from '@/schema/FormSchema';
 
 export interface FieldAnalytics {
   fieldId: string;

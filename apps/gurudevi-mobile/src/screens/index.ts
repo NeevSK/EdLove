@@ -73,5 +73,5 @@ export {
   default as WelcomeScreen,
   default as WelcomeScreenWeb,
 } from '@repo/ui/screens/WelcomeScreen';
-export { default as AuthScreen } from './AuthScreen';
-export { default as TanStackPacerDemo } from './TanStackPacerDemo';
+export { default as AuthScreen } from '@/screens/AuthScreen';
+export { default as TanStackPacerDemo } from '@/screens/TanStackPacerDemo';

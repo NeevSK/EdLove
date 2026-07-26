@@ -1,6 +1,6 @@
-import type { Task } from '../../types';
-import { APIError } from '../../types/API';
-import type { TeacherRepository } from '../domains/teacher/ports';
+import type { Task } from '@/types';
+import { APIError } from '@/types/API';
+import type { TeacherRepository } from '@/logic/domains/teacher/ports';
 
 /**
  * TeacherManager

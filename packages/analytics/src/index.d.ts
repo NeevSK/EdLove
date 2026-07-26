@@ -1,17 +1,17 @@
-export * from './engine/GPACalculator';
-export type { DatabaseClient } from './engine/PerformanceAnalyzer';
-export * from './engine/PerformanceAnalyzer';
-export * from './engine/PostHogAnalytics';
-export type { DatabaseClient as PredictorDatabaseClient } from './ml/Predictor';
+export * from '@/engine/GPACalculator';
+export type { DatabaseClient } from '@/engine/PerformanceAnalyzer';
+export * from '@/engine/PerformanceAnalyzer';
+export * from '@/engine/PostHogAnalytics';
+export type { DatabaseClient as PredictorDatabaseClient } from '@/ml/Predictor';
 
-import { type DatabaseClient, PerformanceAnalyzer } from './engine/PerformanceAnalyzer';
-import { posthogAnalytics } from './engine/PostHogAnalytics';
-import { Predictor as ML_Predictor } from './ml/Predictor';
+import { type DatabaseClient, PerformanceAnalyzer } from '@/engine/PerformanceAnalyzer';
+import { posthogAnalytics } from '@/engine/PostHogAnalytics';
+import { Predictor as ML_Predictor } from '@/ml/Predictor';
 export declare const createPerformanceAnalyzer: (db: DatabaseClient) => PerformanceAnalyzer;
 export declare const createPredictor: (db: DatabaseClient) => ML_Predictor;
 export type { ClassroomGradingSettings, StudentGrade } from '@repo/core/logic';
-export * from './ml/InsightGenerator';
-export * from './ml/Predictor';
+export * from '@/ml/InsightGenerator';
+export * from '@/ml/Predictor';
 export type {
   CustomReportConfig,
   GPACalculationOptions,
@@ -19,11 +19,11 @@ export type {
   LiveMetrics,
   StudentPerformanceMetrics,
   TenantMetrics,
-} from './types/AnalyticsTypes';
-export * from './types/AnalyticsTypes';
-export * from './types/GradingTypes';
-export * from './utils/analyticsHelpers';
-export * from './utils/benchmarking';
+} from '@/types/AnalyticsTypes';
+export * from '@/types/AnalyticsTypes';
+export * from '@/types/GradingTypes';
+export * from '@/utils/analyticsHelpers';
+export * from '@/utils/benchmarking';
 export { posthogAnalytics };
 export declare const initPostHog: (
   apiKey: string,

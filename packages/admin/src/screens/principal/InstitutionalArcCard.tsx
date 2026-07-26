@@ -6,8 +6,8 @@ import { hapticLight } from '@repo/ui/utils/haptics';
 import type React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PRINCIPAL_FEATURE_REGISTRY } from './PrincipalFeatureRegistry';
-import { getPrincipalFeatureScopeMeta } from './PrincipalIAScope';
+import { PRINCIPAL_FEATURE_REGISTRY } from '@/screens/principal/PrincipalFeatureRegistry';
+import { getPrincipalFeatureScopeMeta } from '@/screens/principal/PrincipalIAScope';
 
 interface InstitutionalArcCardProps {
   featureId: string;

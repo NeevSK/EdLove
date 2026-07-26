@@ -10,7 +10,7 @@ import type {
   CommunityPost,
   DirectConversation,
   SanctuaryManifesto,
-} from '../types';
+} from '@/types';
 
 export type CommunityWorkspaceMode = 'feed' | 'circles' | 'messages' | 'announcements';
 

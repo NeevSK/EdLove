@@ -1,6 +1,6 @@
-import type { ScoreBreakdown, VitalityCard } from '../types';
-import { calculateRhythmStatus } from './rhythm';
-import { applyVendorPrior } from './vendor-priors';
+import type { ScoreBreakdown, VitalityCard } from '@/types';
+import { calculateRhythmStatus } from '@/scoring/rhythm';
+import { applyVendorPrior } from '@/scoring/vendor-priors';
 
 export function calculateVitalityScore(data: Partial<VitalityCard>): ScoreBreakdown {
   const maintenance = scoreMaintenanceHealth(data);

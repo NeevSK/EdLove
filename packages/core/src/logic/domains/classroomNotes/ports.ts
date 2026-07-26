@@ -3,7 +3,7 @@ import type {
   ClassroomNoteLifecycleEvent,
   ClassroomNoteRecord,
   ClassroomNoteUpdate,
-} from '../../schemas/classroom-note.schema';
+} from '@/logic/schemas/classroom-note.schema';
 
 export interface ClassroomNotesRepository {
   listVisibleNotes(classroomId: string): Promise<ClassroomNoteRecord[]>;

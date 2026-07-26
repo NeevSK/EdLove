@@ -1,5 +1,5 @@
-import { useTemporalStore } from '../../store/useTemporalStore';
-import { applyTemporalFilter, getTemporalRange } from './temporalUtils';
+import { useTemporalStore } from '@/store/useTemporalStore';
+import { applyTemporalFilter, getTemporalRange } from '@/logic/utils/temporalUtils';
 
 describe('temporalUtils', () => {
   afterEach(() => {

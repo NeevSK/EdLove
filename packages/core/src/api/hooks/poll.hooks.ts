@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { useAuthStore } from '../../store/useAuthStore';
-import { communityAPI } from '../community';
+import { useAuthStore } from '@/store/useAuthStore';
+import { communityAPI } from '@/api/community';
 
 export const pollKeys = {
   all: ['community', 'polls'] as const,

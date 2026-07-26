@@ -1,4 +1,4 @@
-import type { GradingScale } from './AnalyticsTypes';
+import type { GradingScale } from '@/types/AnalyticsTypes';
 
 export const STANDARD_GRADING_SCALE: GradingScale = {
   name: 'Standard 4.0 Scale',

@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
-import type { AuthSlice } from './slices/auth.slice';
-import type { FeatureSlice } from './slices/feature.slice';
-import type { TenantSlice } from './slices/tenant.slice';
-import type { UISlice } from './slices/ui.slice';
-import { useAuthStore } from './useAuthStore';
-import { useFeatureStore } from './useFeatureStore';
-import { useTenantStore } from './useTenantStore';
-import { useUIStore } from './useUIStore';
+import type { AuthSlice } from '@/store/slices/auth.slice';
+import type { FeatureSlice } from '@/store/slices/feature.slice';
+import type { TenantSlice } from '@/store/slices/tenant.slice';
+import type { UISlice } from '@/store/slices/ui.slice';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useFeatureStore } from '@/store/useFeatureStore';
+import { useTenantStore } from '@/store/useTenantStore';
+import { useUIStore } from '@/store/useUIStore';
 
 /**
  * TotalState - The union of all domain stores.

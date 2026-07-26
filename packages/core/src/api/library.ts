@@ -1,5 +1,5 @@
-import { APIError } from '../types/API';
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
+import { APIError } from '@/types/API';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@/api/base';
 
 /**
  * LIBRARY API (Sovereign RPC Proxy)

@@ -1,12 +1,12 @@
 import { useCallback, useMemo } from 'react';
-import { useAuthStore } from '../../../store/useAuthStore';
-import { useCedarDecisionStore } from '../../../store/useCedarDecisionStore';
-import { useEntitlementStore } from '../../../store/useEntitlementStore';
-import { useFeatureStore } from '../../../store/useFeatureStore';
-import { useTenantStore } from '../../../store/useTenantStore';
-import { type TenantKind, type UserContext, UserContextSchema } from '../../schemas/user.schema';
-import type { Action, Subject } from '../../../types/authorization';
-import { sanctuaryFeature, CITIZENSHIP } from '../sanctuaryFeature';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useCedarDecisionStore } from '@/store/useCedarDecisionStore';
+import { useEntitlementStore } from '@/store/useEntitlementStore';
+import { useFeatureStore } from '@/store/useFeatureStore';
+import { useTenantStore } from '@/store/useTenantStore';
+import { type TenantKind, type UserContext, UserContextSchema } from '@/logic/schemas/user.schema';
+import type { Action, Subject } from '@/types/authorization';
+import { sanctuaryFeature, CITIZENSHIP } from '@/logic/permissions/sanctuaryFeature';
 
 /**
  * @deprecated Use useSanctuaryFeature() for permission checks and

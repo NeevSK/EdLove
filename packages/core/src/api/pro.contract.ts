@@ -3,8 +3,8 @@ import {
   ProClaimResultSchema,
   ProGiftSchema,
   UserEntitlementsSchema,
-} from '../logic/schemas/pro.schema';
-import type { SovereignContract } from './contract';
+} from '@/logic/schemas/pro.schema';
+import type { SovereignContract } from '@/api/contract';
 
 const proAuthority = (
   action: 'manage' | 'create' | 'read' | 'update' | 'delete' | 'submit' | 'verify',

@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect } from 'react';
-import { posthogAnalytics } from '../engine/PostHogAnalytics.web';
+import { posthogAnalytics } from '@/engine/PostHogAnalytics.web';
 
 interface Props {
   children: ReactNode;
@@ -11,7 +11,7 @@ interface Props {
   };
 }
 
-import { ActivityPulseProvider } from '../context/ActivityPulseContext';
+import { ActivityPulseProvider } from '@/context/ActivityPulseContext';
 
 export function AnalyticsProvider({ children, apiKey, enabled = true, options }: Props) {
   useEffect(() => {

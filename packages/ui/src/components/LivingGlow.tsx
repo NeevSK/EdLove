@@ -2,7 +2,7 @@ import type React from 'react';
 import { useMemo } from 'react';
 import type { ViewProps } from 'react-native';
 import { EaseView } from 'react-native-ease';
-import { Box } from '../gluestack';
+import { Box } from '@/gluestack';
 
 interface LivingGlowProps extends ViewProps {
   children?: React.ReactNode;

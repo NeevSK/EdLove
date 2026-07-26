@@ -1,5 +1,5 @@
 import { Platform, Switch as RNSwitch, type SwitchProps } from 'react-native';
-import { useTheme } from '../../../hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 /**
  * Switch Component

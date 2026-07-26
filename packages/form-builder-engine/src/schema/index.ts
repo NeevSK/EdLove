@@ -7,4 +7,4 @@ export type {
   FormSchema,
   FormSettings,
   ValidatorRule,
-} from '../schema/FormSchema';
+} from '@/schema/FormSchema';

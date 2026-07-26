@@ -7,7 +7,7 @@ import type {
   TeacherDashboardCapabilityKey,
   TeacherDashboardSurface,
   TeacherDashboardSurfaceId,
-} from '../../workspace/useTeacherDashboardSurfaces';
+} from '@/workspace/useTeacherDashboardSurfaces';
 
 interface TeacherWorkspaceShellProps {
   surfaces: TeacherDashboardSurface[];

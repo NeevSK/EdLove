@@ -1,5 +1,5 @@
 import { useFrameCallback, useSharedValue } from 'react-native-reanimated';
-import { driverManager } from '../../native/DriverManager';
+import { driverManager } from '@/native/DriverManager';
 
 /**
  * Surface-aware refresh rates (Plan constraint)

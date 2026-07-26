@@ -1,6 +1,6 @@
 import type { UserGrowthState } from '@repo/schema';
-import { mediaAPI } from '../../api/media';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
+import { mediaAPI } from '@/api/media';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
 import type {
   CommunityProfile,
   ProfileHistoryEntry,
@@ -12,10 +12,10 @@ import type {
   PulseMetrics,
   UserRewardsSnapshot,
   WhisperedMomentSnapshot,
-} from '../../logic/domains/profile/ports';
-import { getTemporalRange } from '../../logic/utils/temporalUtils';
-import type { SocialLink, User } from '../../types';
-import { APIError } from '../../types';
+} from '@/logic/domains/profile/ports';
+import { getTemporalRange } from '@/logic/utils/temporalUtils';
+import type { SocialLink, User } from '@/types';
+import { APIError } from '@/types';
 
 const RISING_THRESHOLD = 1.2;
 const FAILING_THRESHOLD = 0.5;

@@ -1,4 +1,4 @@
-import type { DomainEntry, TabDomain } from './domainEntry';
+import type { DomainEntry, TabDomain } from '@/logic/registry/domainEntry';
 
 /**
  * AppCatalog — the single assembled registry of all domains.

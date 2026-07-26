@@ -1,26 +1,26 @@
 // Core analytics exports - No UI dependencies to prevent circular dependencies
-export * from './engine/GPACalculator';
+export * from '@/engine/GPACalculator';
 // Export database client interface for dependency injection
-export type { DatabaseClient } from './engine/PerformanceAnalyzer';
-export * from './engine/PerformanceAnalyzer';
-export * from './engine/PostHogAnalytics';
-export type { DatabaseClient as PredictorDatabaseClient } from './ml/Predictor';
+export type { DatabaseClient } from '@/engine/PerformanceAnalyzer';
+export * from '@/engine/PerformanceAnalyzer';
+export * from '@/engine/PostHogAnalytics';
+export type { DatabaseClient as PredictorDatabaseClient } from '@/ml/Predictor';
 
 // Factory functions to create instances with database client
-import { type DatabaseClient, PerformanceAnalyzer } from './engine/PerformanceAnalyzer';
-import { posthogAnalytics } from './engine/PostHogAnalytics';
-import { Predictor as ML_Predictor } from './ml/Predictor';
+import { type DatabaseClient, PerformanceAnalyzer } from '@/engine/PerformanceAnalyzer';
+import { posthogAnalytics } from '@/engine/PostHogAnalytics';
+import { Predictor as ML_Predictor } from '@/ml/Predictor';
 export const createPerformanceAnalyzer = (db: DatabaseClient) => new PerformanceAnalyzer(db);
 export const createPredictor = (db: DatabaseClient) => new ML_Predictor(db);
 export type { ClassroomGradingSettings, StudentGrade } from '@repo/core/logic';
-export * from './ml/InsightGenerator';
+export * from '@/ml/InsightGenerator';
 // ML and prediction exports
-export * from './ml/Predictor';
+export * from '@/ml/Predictor';
 // Types and interfaces
-export * from './types';
+export * from '@/types';
 // Utility functions
-export * from './utils/analyticsHelpers';
-export * from './utils/benchmarking';
+export * from '@/utils/analyticsHelpers';
+export * from '@/utils/benchmarking';
 // PostHog Universal Helpers
 export { posthogAnalytics };
 export const initPostHog = async (

@@ -1,4 +1,4 @@
-import type { Attendance as AttendanceRecord } from '../../schemas/attendance.schema';
+import type { Attendance as AttendanceRecord } from '@/logic/schemas/attendance.schema';
 import type {
   Assignment,
   AssignmentSubmission,
@@ -12,11 +12,11 @@ import type {
   StudentAssignment,
   StudentSubmissionSummary,
   TeacherProfessionalRecord,
-} from '../../schemas/classroom.schema';
-import type { ClassroomGradingSettings, Grade } from '../../schemas/grading.schema';
-import type { Lesson } from '../../schemas/lesson.schema';
-import type { Material as LessonMaterial } from '../../schemas/material.schema';
-import type { Student } from '../../schemas/student.schema';
+} from '@/logic/schemas/classroom.schema';
+import type { ClassroomGradingSettings, Grade } from '@/logic/schemas/grading.schema';
+import type { Lesson } from '@/logic/schemas/lesson.schema';
+import type { Material as LessonMaterial } from '@/logic/schemas/material.schema';
+import type { Student } from '@/logic/schemas/student.schema';
 
 export type EnrollmentRecord = Student;
 

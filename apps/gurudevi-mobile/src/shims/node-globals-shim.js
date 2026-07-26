@@ -41,12 +41,12 @@ if (typeof g.process === 'undefined') {
 // We use try-catch or conditional imports if possible, but in Metro/Babel,
 // static imports are safer as they are always processed.
 import { Buffer } from 'buffer';
-import crypto from './crypto-web';
-import fs from './fs-web';
-import os from './os-web';
-import path from './path-web';
-import stream from './stream-web';
-import util from './util-web';
+import crypto from '@/shims/crypto-web';
+import fs from '@/shims/fs-web';
+import os from '@/shims/os-web';
+import path from '@/shims/path-web';
+import stream from '@/shims/stream-web';
+import util from '@/shims/util-web';
 
 if (typeof g.Buffer === 'undefined') {
   g.Buffer = Buffer;

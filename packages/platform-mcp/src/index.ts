@@ -18,12 +18,12 @@ import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprot
 import * as dotenv from 'dotenv';
 
 // --- Service Imports: The Modular Sovereignty ---
-import { AuditService } from './services/AuditService.js';
-import { DiscoveryService } from './services/DiscoveryService.js';
-import { DocumentService } from './services/DocumentService.js';
-import { HelpService } from './services/HelpService.js';
-import { MaintenanceService } from './services/MaintenanceService.js';
-import { ScoutService } from './services/ScoutService.js';
+import { AuditService } from '@/services/AuditService.js';
+import { DiscoveryService } from '@/services/DiscoveryService.js';
+import { DocumentService } from '@/services/DocumentService.js';
+import { HelpService } from '@/services/HelpService.js';
+import { MaintenanceService } from '@/services/MaintenanceService.js';
+import { ScoutService } from '@/services/ScoutService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

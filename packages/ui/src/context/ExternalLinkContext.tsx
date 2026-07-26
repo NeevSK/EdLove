@@ -7,17 +7,17 @@ import {
   ShieldCheck,
 } from '@repo/ui/icons';
 import React, { useEffect, useMemo, useState } from 'react';
-import { SanctuaryButton } from '../components/SanctuaryButton';
-import SanctuaryModal from '../components/SanctuaryModal';
-import { Box, Pressable as GSPressable, HStack, Text, VStack } from '../gluestack';
-import { useSanctuaryToast } from '../providers/ToastProvider';
+import { SanctuaryButton } from '@/components/SanctuaryButton';
+import SanctuaryModal from '@/components/SanctuaryModal';
+import { Box, Pressable as GSPressable, HStack, Text, VStack } from '@/gluestack';
+import { useSanctuaryToast } from '@/providers/ToastProvider';
 import {
   clearStoredExternalOpenPreference,
   type ExternalLinkTrustLevel,
   type ExternalOpenMethod,
   registerExternalLinkRuntime,
-} from '../utils/linking';
-import { useReality } from './EnvironmentContext';
+} from '@/utils/linking';
+import { useReality } from '@/context/EnvironmentContext';
 
 interface PendingRequest {
   url: string;

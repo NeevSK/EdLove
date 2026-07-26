@@ -1,18 +1,18 @@
 import type { Session } from '@supabase/supabase-js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
-import { authAPI } from '../api/auth';
-import { assertHighway } from '../api/highways';
-import { identityAPI } from '../api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-import { getSessionIdentityMode } from '../logic/auth/identityState';
-import type { SchoolType } from '../constants/SriLankanSchools';
-import { identifyUser, initPostHog, trackEvent } from '../lib/monitoring/posthog';
-import { clearSentryUser, initSentry, setSentryUser } from '../lib/monitoring/sentry';
-import { useStore } from '../store/useStore';
-import type { User } from '../types';
-import { APIError } from '../types/API';
-import type { Bond } from '../types/Identity';
+import { authAPI } from '@/api/auth';
+import { assertHighway } from '@/api/highways';
+import { identityAPI } from '@/api/identity';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { getSessionIdentityMode } from '@/logic/auth/identityState';
+import type { SchoolType } from '@/constants/SriLankanSchools';
+import { identifyUser, initPostHog, trackEvent } from '@/lib/monitoring/posthog';
+import { clearSentryUser, initSentry, setSentryUser } from '@/lib/monitoring/sentry';
+import { useStore } from '@/store/useStore';
+import type { User } from '@/types';
+import { APIError } from '@/types/API';
+import type { Bond } from '@/types/Identity';
 
 /**
  * useAuthLifecycle

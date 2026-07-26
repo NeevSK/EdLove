@@ -16,12 +16,12 @@ import {
   ManagementStation,
   PrincipalGovernanceTimeline,
   PrincipalModuleAtlas,
-} from '../components';
+} from '@/components';
 import {
   getPrincipalCapabilitiesByZone,
   type PrincipalWorkspaceView,
   type PrincipalZoneId,
-} from '../principal/workspace';
+} from '@/principal/workspace';
 
 type PrincipalWorkspaceStats =
   | {

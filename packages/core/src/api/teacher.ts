@@ -1,6 +1,6 @@
-import { requireTeacherAccess } from '../lib/authorization';
-import { teacher, teacherInsights } from '../logic/managers/factory';
-import type { Task, TeacherNote } from '../types';
+import { requireTeacherAccess } from '@/lib/authorization';
+import { teacher, teacherInsights } from '@/logic/managers/factory';
+import type { Task, TeacherNote } from '@/types';
 
 // ============================================================================
 // TASKS API

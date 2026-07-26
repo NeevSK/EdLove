@@ -1,8 +1,8 @@
 import type React from 'react';
 import { Image, StyleSheet } from 'react-native';
-import { Text, View } from '../primitives';
-import { Theme } from '../theme/Theme';
-import { getInitialsFromName } from '../utils/stringUtils';
+import { Text, View } from '@/primitives';
+import { Theme } from '@/theme/Theme';
+import { getInitialsFromName } from '@/utils/stringUtils';
 
 export interface UserAvatarProps {
   avatarUrl?: string | null;

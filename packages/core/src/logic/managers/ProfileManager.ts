@@ -1,10 +1,10 @@
-import type { SocialLink } from '../../types';
+import type { SocialLink } from '@/types';
 import type {
   ProfileJourneyHistoryReadOptions,
   ProfileJourneyReadOptions,
   ProfileRepository,
   ProfileTemporalReadOptions,
-} from '../domains/profile/ports';
+} from '@/logic/domains/profile/ports';
 
 /**
  * ProfileManager

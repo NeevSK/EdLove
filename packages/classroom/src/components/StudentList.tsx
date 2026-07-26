@@ -23,7 +23,7 @@ import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
 import * as Clipboard from 'expo-clipboard';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AddStudentModal } from './AddStudentModal';
+import { AddStudentModal } from '@/components/AddStudentModal';
 
 interface StudentListProps {
   classroomId: string;

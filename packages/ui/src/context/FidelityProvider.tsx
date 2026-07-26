@@ -8,9 +8,9 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { useReality } from './RealityProvider';
-import type { FidelityLevel } from './types';
-import { computeEffectiveFidelity } from './utils';
+import { useReality } from '@/context/RealityProvider';
+import type { FidelityLevel } from '@/context/types';
+import { computeEffectiveFidelity } from '@/context/utils';
 
 interface FidelityContextValue {
   fidelityLevel: FidelityLevel;

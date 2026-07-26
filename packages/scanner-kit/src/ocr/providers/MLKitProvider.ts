@@ -7,7 +7,7 @@
  */
 
 import TextRecognition from '@react-native-ml-kit/text-recognition';
-import type { OCRBlock, OCRProvider, OCRRawResult } from '../types';
+import type { OCRBlock, OCRProvider, OCRRawResult } from '@/ocr/types';
 
 export class MLKitProvider implements OCRProvider {
   readonly name = 'mlkit' as const;

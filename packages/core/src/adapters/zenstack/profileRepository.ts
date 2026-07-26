@@ -1,5 +1,5 @@
 import type { User as ZenStackUser } from '@repo/schema';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
 import type {
   CommunityProfile,
   ProfileHistoryEntry,
@@ -13,11 +13,11 @@ import type {
   UserPreferences,
   UserRewardsSnapshot,
   WhisperedMomentSnapshot,
-} from '../../logic/domains/profile/ports';
-import type { IFileStoragePort } from '../../logic/ports/storage.port';
-import { getTemporalRange } from '../../logic/utils/temporalUtils';
-import type { SocialLink, User } from '../../types';
-import { APIError } from '../../types';
+} from '@/logic/domains/profile/ports';
+import type { IFileStoragePort } from '@/logic/ports/storage.port';
+import { getTemporalRange } from '@/logic/utils/temporalUtils';
+import type { SocialLink, User } from '@/types';
+import { APIError } from '@/types';
 
 const RISING_THRESHOLD = 1.2;
 const FAILING_THRESHOLD = 0.5;

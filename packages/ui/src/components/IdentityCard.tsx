@@ -10,10 +10,10 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { Box, Center, HStack, Pressable, Text, VStack } from '../gluestack';
-import { QRBuilder, QRCodeGenerator } from '../qr';
-import { hapticLight } from '../utils/haptics';
-import { UserAvatar } from './UserAvatar';
+import { Box, Center, HStack, Pressable, Text, VStack } from '@/gluestack';
+import { QRBuilder, QRCodeGenerator } from '@/qr';
+import { hapticLight } from '@/utils/haptics';
+import { UserAvatar } from '@/components/UserAvatar';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CARD_WIDTH = SCREEN_WIDTH - 48; // Standardized spacing

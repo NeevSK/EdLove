@@ -14,8 +14,8 @@
 import { BadgeCheck, Bookmark, BookOpen } from '@repo/ui/icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ImageBackground } from 'react-native';
-import { Box, HStack, Text, VStack } from '../gluestack';
-import { Pressable } from '../primitives';
+import { Box, HStack, Text, VStack } from '@/gluestack';
+import { Pressable } from '@/primitives';
 
 // ============================================================================
 // CONSTANTS

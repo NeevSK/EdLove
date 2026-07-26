@@ -1,7 +1,7 @@
 import { type FC, useState } from 'react';
 import { Platform } from 'react-native';
 import { EaseView } from 'react-native-ease';
-import { Box, Pressable, Text, VStack } from '../gluestack';
+import { Box, Pressable, Text, VStack } from '@/gluestack';
 
 interface SanctuaryCardProps {
   title?: string;

@@ -1,9 +1,9 @@
 import type React from 'react';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
-import { View } from '../../primitives';
-import { Box } from '../box';
-import { Overlay } from '../overlay';
-import { Portal } from '../portal';
+import { View } from '@/primitives';
+import { Box } from '@/components-legacy/box';
+import { Overlay } from '@/components-legacy/overlay';
+import { Portal } from '@/components-legacy/portal';
 
 /**
  * Modal Component

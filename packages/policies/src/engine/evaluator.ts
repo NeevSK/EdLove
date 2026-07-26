@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { AuthRequest, AuthResponse } from './types';
+import type { AuthRequest, AuthResponse } from '@/engine/types';
 
 const require = createRequire(import.meta.url);
 const { isAuthorized, schemaToJson } = require('@cedar-policy/cedar-wasm/nodejs') as any;

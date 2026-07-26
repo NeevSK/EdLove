@@ -1,14 +1,14 @@
-import { marksToGPA } from '../../lib/grading';
-import { APIError } from '../../types/API';
-import type { LessonMaterial } from '../../types/LessonMaterial';
-import type { EducationalRepository } from '../domains/educational/ports';
-import type { INotificationPort } from '../ports/notification.port';
-import type { ISessionPort } from '../ports/session.port';
-import type { Assignment, Classroom, Lesson } from '../schemas/classroom.schema';
-import type { ClassroomGradingSettings } from '../schemas/grading.schema';
-import type { CommunityManager } from './CommunityManager';
-import type { GrowthManager } from './GrowthManager';
-import type { ProfileManager } from './ProfileManager';
+import { marksToGPA } from '@/lib/grading';
+import { APIError } from '@/types/API';
+import type { LessonMaterial } from '@/types/LessonMaterial';
+import type { EducationalRepository } from '@/logic/domains/educational/ports';
+import type { INotificationPort } from '@/logic/ports/notification.port';
+import type { ISessionPort } from '@/logic/ports/session.port';
+import type { Assignment, Classroom, Lesson } from '@/logic/schemas/classroom.schema';
+import type { ClassroomGradingSettings } from '@/logic/schemas/grading.schema';
+import type { CommunityManager } from '@/logic/managers/CommunityManager';
+import type { GrowthManager } from '@/logic/managers/GrowthManager';
+import type { ProfileManager } from '@/logic/managers/ProfileManager';
 
 /**
  * EducationalManager

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { SafeZustandStorage } from '../lib/storageWrapper';
-import { createFeatureSlice, type FeatureSlice } from './slices/feature.slice';
+import { SafeZustandStorage } from '@/lib/storageWrapper';
+import { createFeatureSlice, type FeatureSlice } from '@/store/slices/feature.slice';
 
 /**
  * useFeatureStore - Sovereign domain store for Feature Flags.

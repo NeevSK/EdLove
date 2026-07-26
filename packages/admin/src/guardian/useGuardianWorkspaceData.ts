@@ -1,7 +1,7 @@
 import { api } from '@repo/core/api';
 
 import { useCallback, useEffect, useState } from 'react';
-import type { GuardianDashboardData } from './types';
+import type { GuardianDashboardData } from '@/guardian/types';
 
 export function useGuardianWorkspaceData(guardianId: string) {
   const [dashboard, setDashboard] = useState<GuardianDashboardData | null>(null);

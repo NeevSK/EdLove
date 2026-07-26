@@ -1,14 +1,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT_DIR } from '../utils/constants.js';
+import { ROOT_DIR } from '@/utils/constants.js';
 import {
   executeSovereignTool,
   getPlatformDescriptor,
   runCommand,
   runPowerShellScript,
   runShellCommand,
-} from '../utils/execution.js';
-import { describeTarget, normalizeTarget } from '../utils/pathUtils.js';
+} from '@/utils/execution.js';
+import { describeTarget, normalizeTarget } from '@/utils/pathUtils.js';
 
 function toMcpText(stdout: string, isError?: boolean) {
   return {

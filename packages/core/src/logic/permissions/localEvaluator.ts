@@ -1,12 +1,12 @@
 import { eq } from 'drizzle-orm';
-import { getDrizzleDB, registerPermissionValidator } from '../../adapters/powersync/database';
-import { cedarPolicies, classrooms, schools } from '../../adapters/powersync/schema';
-import { evaluateShape2 } from './cedarClientEvaluator';
-import { deviceTrustAPI } from '../../api/deviceTrust';
-import { DeviceTrustEngine } from '../../lib/security/deviceTrust';
-import { isAnonymousIdentity } from '../auth/identityState';
-import type { UserContext } from '../schemas/user.schema';
-import type { Action, Subject } from '../../types/authorization';
+import { getDrizzleDB, registerPermissionValidator } from '@/adapters/powersync/database';
+import { cedarPolicies, classrooms, schools } from '@/adapters/powersync/schema';
+import { evaluateShape2 } from '@/logic/permissions/cedarClientEvaluator';
+import { deviceTrustAPI } from '@/api/deviceTrust';
+import { DeviceTrustEngine } from '@/lib/security/deviceTrust';
+import { isAnonymousIdentity } from '@/logic/auth/identityState';
+import type { UserContext } from '@/logic/schemas/user.schema';
+import type { Action, Subject } from '@/types/authorization';
 
 const MAX_LOCAL_POLICY_SIZE_BYTES = 100 * 1024;
 

@@ -2,6 +2,9 @@
   "extends": "../../packages/typescript-config/base.json",
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "lib": ["es2020", "dom"],
     "target": "es2020",
     "module": "esnext",

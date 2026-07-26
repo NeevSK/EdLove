@@ -1,4 +1,4 @@
-import { tsl } from './tsl';
+import { tsl } from '@/core/soul/tsl';
 
 export const AURORA_SOUL = (() => {
   const uv = tsl.env.uv();

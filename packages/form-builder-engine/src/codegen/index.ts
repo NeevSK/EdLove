@@ -1,1 +1,1 @@
-export * from './ReactCodeGen';
+export * from '@/codegen/ReactCodeGen';

@@ -4,7 +4,7 @@ import { useThemedColors } from '@repo/ui/hooks';
 import { Box, HStack, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { colors } from '@repo/ui/theme';
 import { jsx as _jsx, jsxs as _jsxs } from 'react/jsx-runtime';
-import { formatGPA, getGradeColor, getPerformanceLevel } from '../utils/analyticsHelpers';
+import { formatGPA, getGradeColor, getPerformanceLevel } from '@/utils/analyticsHelpers';
 export function PerformanceDashboard({ metrics, insights = [], recommendations = [] }) {
   const themeColors = useThemedColors();
   const performanceLevel = getPerformanceLevel(metrics.averageMarks);

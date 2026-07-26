@@ -1,8 +1,8 @@
 import type { StyleProp, ViewStyle } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 
-import type { TrubeEnvironment, TrubeStageSpec } from '../core/types';
-import { TrubeCanvas } from './TrubeCanvas';
+import type { TrubeEnvironment, TrubeStageSpec } from '@/core/types';
+import { TrubeCanvas } from '@/native/TrubeCanvas';
 
 export interface TrubeStageProps {
   stage: TrubeStageSpec;

@@ -1,3 +1,3 @@
-export * from './community';
-export * from './presence';
-export * from './sacredMissions';
+export * from '@/api/community';
+export * from '@/api/presence';
+export * from '@/api/sacredMissions';

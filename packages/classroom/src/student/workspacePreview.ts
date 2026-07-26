@@ -1,4 +1,4 @@
-import type { StudentCapabilityId } from './workspace';
+import type { StudentCapabilityId } from '@/student/workspace';
 
 export type StudentWorkspacePresentation = 'live' | 'preview';
 

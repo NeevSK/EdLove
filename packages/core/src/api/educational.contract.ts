@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { ClassroomSchema, LessonSchema } from '../logic/schemas/classroom.schema';
+import { ClassroomSchema, LessonSchema } from '@/logic/schemas/classroom.schema';
 import {
   ClassroomNoteLifecycleEventSchema,
   ClassroomNoteSchema,
-} from '../logic/schemas/classroom-note.schema';
-import type { SovereignContract } from './contract';
+} from '@/logic/schemas/classroom-note.schema';
+import type { SovereignContract } from '@/api/contract';
 
 const classroomAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
   ({

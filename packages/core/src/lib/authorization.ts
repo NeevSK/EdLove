@@ -1,9 +1,9 @@
-import { assertHighway } from '../api/highways';
-import { identityAPI } from '../api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-import type { Action } from '../types/authorization';
-import { checkLocalPermission } from '../logic/permissions/localEvaluator';
-import { APIError } from '../types/API';
+import { assertHighway } from '@/api/highways';
+import { identityAPI } from '@/api/identity';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import type { Action } from '@/types/authorization';
+import { checkLocalPermission } from '@/logic/permissions/localEvaluator';
+import { APIError } from '@/types/API';
 
 /**
  * requireAuth  Ensures the user is authenticated.

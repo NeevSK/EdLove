@@ -1,4 +1,4 @@
-import type { CoreRuntimeEnvironment } from '../types/runtime';
+import type { CoreRuntimeEnvironment } from '@/types/runtime';
 
 let runtime: CoreRuntimeEnvironment | null = null;
 

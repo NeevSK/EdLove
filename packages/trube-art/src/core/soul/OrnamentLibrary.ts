@@ -1,4 +1,4 @@
-import { type TSLExpression, tsl } from './tsl';
+import { type TSLExpression, tsl } from '@/core/soul/tsl';
 
 export const OrnamentLibrary = {
   /**

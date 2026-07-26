@@ -2,7 +2,7 @@ import { Card } from '@repo/ui/components/SanctuaryCard';
 import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 import { colors } from '@repo/ui/theme';
 import { jsx as _jsx, jsxs as _jsxs } from 'react/jsx-runtime';
-import { formatGPA, getGradeColor } from '../utils/analyticsHelpers';
+import { formatGPA, getGradeColor } from '@/utils/analyticsHelpers';
 export function GPAInsights({
   studentId,
   currentGPA,

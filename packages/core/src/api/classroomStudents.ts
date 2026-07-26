@@ -1,5 +1,5 @@
-import { educational } from '../logic/managers/factory';
-import type { Student as EnrollmentRecord } from '../logic/schemas/student.schema';
+import { educational } from '@/logic/managers/factory';
+import type { Student as EnrollmentRecord } from '@/logic/schemas/student.schema';
 
 export const classroomStudentsAPI = {
   /**

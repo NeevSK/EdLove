@@ -1,8 +1,8 @@
 import type React from 'react';
-import { ArrowLeftRight, Check, TriangleAlert } from '../icons';
-import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '../primitives';
-import { Theme } from '../theme/Theme';
-import { hapticLight, hapticSuccess } from '../utils/haptics';
+import { ArrowLeftRight, Check, TriangleAlert } from '@/icons';
+import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@/primitives';
+import { Theme } from '@/theme/Theme';
+import { hapticLight, hapticSuccess } from '@/utils/haptics';
 
 interface ConflictResolverProps {
   conflict: {

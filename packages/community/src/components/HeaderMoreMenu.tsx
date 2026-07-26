@@ -6,8 +6,8 @@ import { Bell, BellOff, EllipsisVertical, ShieldAlert, UserX } from '@repo/ui/ic
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticError, hapticSuccess } from '@repo/ui/utils';
 import { useEffect, useState } from 'react';
-import { useSocialShield } from '../hooks/useSocialShield';
-import SocialShieldModal from './SocialShieldModal';
+import { useSocialShield } from '@/hooks/useSocialShield';
+import SocialShieldModal from '@/components/SocialShieldModal';
 
 interface HeaderMoreMenuProps {
   conversationId?: string;

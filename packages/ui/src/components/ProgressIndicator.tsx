@@ -1,5 +1,5 @@
 import type React from 'react';
-import { Box, HStack, Text, VStack } from '../gluestack';
+import { Box, HStack, Text, VStack } from '@/gluestack';
 
 interface ProgressIndicatorProps {
   currentStep: number;

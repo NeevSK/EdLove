@@ -26,7 +26,7 @@ import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FadeInRight, FadeInUp, Layout } from 'react-native-reanimated';
-import { useStudentGoals } from '../hooks/useStudentGoals';
+import { useStudentGoals } from '@/hooks/useStudentGoals';
 
 interface StudentGoalsProps {
   userId: string;

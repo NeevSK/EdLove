@@ -1,5 +1,5 @@
 import * as NativeSentry from '@sentry/react-native';
-import type { ITelemetry } from '../../logic/interfaces/telemetry.port';
+import type { ITelemetry } from '@/logic/interfaces/telemetry.port';
 
 export class SentryTelemetryAdapter implements ITelemetry {
   init(options: { dsn: string; environment: string; release?: string }) {

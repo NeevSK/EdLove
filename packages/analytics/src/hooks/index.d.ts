@@ -5,6 +5,6 @@ export {
   usePredictions,
   useStudentPerformance,
   useStudentPerformanceData,
-} from './queries';
-export { usePerformanceData } from './usePerformanceData';
+} from '@/hooks/queries';
+export { usePerformanceData } from '@/hooks/usePerformanceData';
 //# sourceMappingURL=index.d.ts.map

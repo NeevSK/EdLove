@@ -2,7 +2,7 @@ import {
   PRINCIPAL_CAPABILITY_REGISTRY,
   type PrincipalCapabilityId,
   type PrincipalFeatureScope,
-} from '../../principal/workspace';
+} from '@/principal/workspace';
 
 export interface FeatureInfo {
   title: string;

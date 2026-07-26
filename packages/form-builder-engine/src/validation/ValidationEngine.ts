@@ -1,4 +1,4 @@
-import type { FormSchema, ValidatorRule } from '../schema/FormSchema';
+import type { FormSchema, ValidatorRule } from '@/schema/FormSchema';
 
 export interface ValidationResult {
   isValid: boolean;

@@ -1,5 +1,5 @@
-export * from './CaptureEngine';
-export * from './CatchmentAnalysis';
-export * from './GeoThematicEngine';
-export * from './KnowledgeParser';
-export { getAvailablePerspectives } from './perspective';
+export * from '@/algorithms/CaptureEngine';
+export * from '@/algorithms/CatchmentAnalysis';
+export * from '@/algorithms/GeoThematicEngine';
+export * from '@/algorithms/KnowledgeParser';
+export { getAvailablePerspectives } from '@/algorithms/perspective';

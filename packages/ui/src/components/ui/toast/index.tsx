@@ -2,8 +2,8 @@
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
 import { View, type ViewProps } from 'react-native';
-import { Box } from '../box';
-import { Text } from '../text';
+import { Box } from '@/components/ui/box';
+import { Text } from '@/components/ui/text';
 
 cssInterop(View, { className: 'style' });
 

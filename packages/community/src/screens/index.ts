@@ -1,9 +1,9 @@
-import AnnouncementsScreen from './AnnouncementsScreen';
-import BaseChatScreen from './BaseChatScreen';
-import DirectMessagesListScreen from './DirectMessagesListScreen';
-import GroupsScreen from './GroupsScreen';
-import InvitationWelcomeScreen from './InvitationWelcomeScreen';
-import InviteCodeEntry from './InviteCodeEntry';
+import AnnouncementsScreen from '@/screens/AnnouncementsScreen';
+import BaseChatScreen from '@/screens/BaseChatScreen';
+import DirectMessagesListScreen from '@/screens/DirectMessagesListScreen';
+import GroupsScreen from '@/screens/GroupsScreen';
+import InvitationWelcomeScreen from '@/screens/InvitationWelcomeScreen';
+import InviteCodeEntry from '@/screens/InviteCodeEntry';
 
 export {
   AnnouncementsScreen,

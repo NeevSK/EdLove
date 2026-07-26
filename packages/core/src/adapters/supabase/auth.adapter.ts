@@ -1,6 +1,6 @@
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
-import type { AuthMfaFactor, AuthSession, AuthUser, IAuthPort } from '../../logic/ports/auth.port';
-import { APIError } from '../../types/API';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import type { AuthMfaFactor, AuthSession, AuthUser, IAuthPort } from '@/logic/ports/auth.port';
+import { APIError } from '@/types/API';
 
 export class SupabaseAuthAdapter implements IAuthPort {
   private get client() {

@@ -6,21 +6,21 @@ import { TemporalShield } from '@repo/ui/components/TemporalShield';
 
 import { Lightbulb, Sparkles } from '@repo/ui/icons';
 import { useTranslation } from 'react-i18next';
-import { BaseSelfView } from '../../components/BaseSelfView';
-import { ImpactRipplesCard } from '../../components/ImpactRipplesCard';
-import MoodLotus from '../../components/MoodLotus';
-import { MoodPickerCard } from '../../components/MoodPickerCard';
-import { PulseDashboard } from '../../components/PulseDashboard';
-import { ResonanceTimeline } from '../../components/ResonanceTimeline';
-import VoiceJournaling from '../../components/VoiceJournaling';
-import { WarmMirrorCard } from '../../components/WarmMirrorCard';
-import WelcomeModal from '../../components/WelcomeModal';
-import WisdomSeeds from '../../components/WisdomSeeds';
-import { useJournalEntries } from '../../hooks/useJournalEntries';
-import { useMoodLogs } from '../../hooks/useMoodLogs';
-import { useWellbeingEnrichment } from '../../hooks/useWellbeingEnrichment';
-import { useWisdom } from '../../hooks/useWisdom';
-import { MoodSection, PhilosophySection, VisionSection } from '../../views/sections';
+import { BaseSelfView } from '@/components/BaseSelfView';
+import { ImpactRipplesCard } from '@/components/ImpactRipplesCard';
+import MoodLotus from '@/components/MoodLotus';
+import { MoodPickerCard } from '@/components/MoodPickerCard';
+import { PulseDashboard } from '@/components/PulseDashboard';
+import { ResonanceTimeline } from '@/components/ResonanceTimeline';
+import VoiceJournaling from '@/components/VoiceJournaling';
+import { WarmMirrorCard } from '@/components/WarmMirrorCard';
+import WelcomeModal from '@/components/WelcomeModal';
+import WisdomSeeds from '@/components/WisdomSeeds';
+import { useJournalEntries } from '@/hooks/useJournalEntries';
+import { useMoodLogs } from '@/hooks/useMoodLogs';
+import { useWellbeingEnrichment } from '@/hooks/useWellbeingEnrichment';
+import { useWisdom } from '@/hooks/useWisdom';
+import { MoodSection, PhilosophySection, VisionSection } from '@/views/sections';
 
 export default function FounderSelfView() {
   const { t } = useTranslation();

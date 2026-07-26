@@ -30,9 +30,9 @@ import { Theme } from '@repo/ui/theme';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { libraryAPI } from '../api/library';
-import { usePerspectiveLayout } from '../hooks/usePerspectiveLayout';
-import type { KnowledgeNode, KnowledgeTopology } from '../types/Library';
+import { libraryAPI } from '@/api/library';
+import { usePerspectiveLayout } from '@/hooks/usePerspectiveLayout';
+import type { KnowledgeNode, KnowledgeTopology } from '@/types/Library';
 
 type PerspectiveId = 'astro' | 'terra' | 'dharma' | 'vastu' | 'jyoti' | 'vatya';
 interface Perspective {

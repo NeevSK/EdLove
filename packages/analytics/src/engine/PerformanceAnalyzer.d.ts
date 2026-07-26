@@ -1,4 +1,4 @@
-import { type ClassAnalytics, type StudentPerformanceMetrics } from '../types/AnalyticsTypes';
+import { type ClassAnalytics, type StudentPerformanceMetrics } from '@/types/AnalyticsTypes';
 export interface DatabaseClient {
   from: (table: string) => any;
 }

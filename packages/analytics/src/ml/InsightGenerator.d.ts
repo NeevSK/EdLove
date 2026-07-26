@@ -1,4 +1,4 @@
-import type { ClassAnalytics, StudentPerformanceMetrics } from '../types/AnalyticsTypes';
+import type { ClassAnalytics, StudentPerformanceMetrics } from '@/types/AnalyticsTypes';
 export declare class InsightGenerator {
   /**
    * Generate automated insights from analytics data

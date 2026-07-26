@@ -34,7 +34,7 @@ import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import type React from 'react';
 import { useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useInventory } from '../hooks/useInventory';
+import { useInventory } from '@/hooks/useInventory';
 
 const CATEGORIES: {
   id: InventoryCategory | 'all';

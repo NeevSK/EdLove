@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { type AdminWorkspaceSnapshot, useAdminWorkspaceSnapshot } from './adminRepository';
+import { type AdminWorkspaceSnapshot, useAdminWorkspaceSnapshot } from '@/admin/adminRepository';
 
 export interface AdminWorkspaceData {
   schoolCount: number;

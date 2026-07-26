@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { PowerSyncDatabase as PowerSyncDatabaseType } from './powersync-shim';
-import { AppSchema } from './schema';
+import type { PowerSyncDatabase as PowerSyncDatabaseType } from '@/adapters/powersync/powersync-shim';
+import { AppSchema } from '@/adapters/powersync/schema';
 
 type QueryLike = {
   findFirst: (_args?: any) => Promise<null>;

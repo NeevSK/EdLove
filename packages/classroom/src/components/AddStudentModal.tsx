@@ -23,7 +23,7 @@ import { useToast } from '@repo/ui/providers';
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import OCRStudentImport from './OCRStudentImport';
+import OCRStudentImport from '@/components/OCRStudentImport';
 
 interface AddStudentModalProps {
   isOpen: boolean;

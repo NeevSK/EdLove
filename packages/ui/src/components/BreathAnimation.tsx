@@ -1,6 +1,6 @@
 import React from 'react';
 import { EaseView } from 'react-native-ease';
-import { View } from '../primitives';
+import { View } from '@/primitives';
 
 interface BreathAnimationProps {
   children: React.ReactNode;

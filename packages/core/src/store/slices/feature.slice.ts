@@ -1,7 +1,7 @@
 import type { StateCreator } from 'zustand';
-import { featureFlags } from '../../logic/managers/featureFlag.factory';
-import { DEFAULT_FEATURE_FLAGS, type FeatureFlags } from '../types/featureFlags';
-import type { UserContext } from '../../logic/schemas/user.schema';
+import { featureFlags } from '@/logic/managers/featureFlag.factory';
+import { DEFAULT_FEATURE_FLAGS, type FeatureFlags } from '@/store/types/featureFlags';
+import type { UserContext } from '@/logic/schemas/user.schema';
 
 export interface FeatureSlice {
   flags: FeatureFlags;

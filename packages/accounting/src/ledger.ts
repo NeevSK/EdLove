@@ -1,6 +1,6 @@
 import { supabase } from '@repo/core/api';
 
-import type { FinancialTransaction, LedgerEntry } from './types';
+import type { FinancialTransaction, LedgerEntry } from '@/types';
 
 export class Ledger {
   /**

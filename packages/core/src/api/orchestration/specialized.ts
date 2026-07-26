@@ -1,17 +1,17 @@
-import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
-import { founderAPI as rawFounderAPI } from '../founder';
-import { founderContract } from '../founder.contract';
-import { gradingAPI as rawGradingAPI } from '../grading';
-import { gradingContract } from '../grading.contract';
-import { guardianAPI as rawGuardianAPI } from '../guardian';
-import { guardianContract } from '../guardian.contract';
-import { longitudinalAPI as rawLongitudinalAPI } from '../longitudinal';
-import { longitudinalContract } from '../longitudinal.contract';
-import { principalWorkspaceAPI as rawPrincipalWorkspaceAPI } from '../principalWorkspace';
-import { principalWorkspaceContract } from '../principalWorkspace.contract';
-import { teacherInsightsAPI as rawTeacherInsightsAPI } from '../teacherInsights';
-import { teacherInsightsContract } from '../teacherInsights.contract';
-import { createTemporalProxy } from '../temporalProxy';
+import { assertContractCoverage, defineContractCoverage } from '@/api/contractCoverage';
+import { founderAPI as rawFounderAPI } from '@/api/founder';
+import { founderContract } from '@/api/founder.contract';
+import { gradingAPI as rawGradingAPI } from '@/api/grading';
+import { gradingContract } from '@/api/grading.contract';
+import { guardianAPI as rawGuardianAPI } from '@/api/guardian';
+import { guardianContract } from '@/api/guardian.contract';
+import { longitudinalAPI as rawLongitudinalAPI } from '@/api/longitudinal';
+import { longitudinalContract } from '@/api/longitudinal.contract';
+import { principalWorkspaceAPI as rawPrincipalWorkspaceAPI } from '@/api/principalWorkspace';
+import { principalWorkspaceContract } from '@/api/principalWorkspace.contract';
+import { teacherInsightsAPI as rawTeacherInsightsAPI } from '@/api/teacherInsights';
+import { teacherInsightsContract } from '@/api/teacherInsights.contract';
+import { createTemporalProxy } from '@/api/temporalProxy';
 
 const _gradingCoverage = assertContractCoverage(
   rawGradingAPI,

@@ -1,6 +1,6 @@
-import { SafeZustandStorage } from '../lib/storageWrapper';
-import { applyTemporalFilter } from '../logic/utils/temporalUtils';
-import { useTemporalStore } from '../store/useTemporalStore';
+import { SafeZustandStorage } from '@/lib/storageWrapper';
+import { applyTemporalFilter } from '@/logic/utils/temporalUtils';
+import { useTemporalStore } from '@/store/useTemporalStore';
 
 /**
  * createTemporalProxy

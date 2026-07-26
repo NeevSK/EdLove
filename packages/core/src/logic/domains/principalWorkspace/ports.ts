@@ -6,7 +6,7 @@ import type {
   PrincipalObservationCreate,
   PrincipalObservationFollowUpCreate,
   PrincipalObservationZod,
-} from '../../schemas/principal-workspace.schema';
+} from '@/logic/schemas/principal-workspace.schema';
 
 export interface PrincipalWorkspaceRepository {
   listInviteCodes(schoolId: string): Promise<InviteCodeZod[]>;

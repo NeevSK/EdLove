@@ -1,9 +1,9 @@
-import type { IdentityMode } from './identityState';
+import type { IdentityMode } from '@/logic/auth/identityState';
 import {
   getBootstrapSessionState,
   type BootstrapRoutePolicy,
   type BootstrapSessionState,
-} from './bootstrapContract';
+} from '@/logic/auth/bootstrapContract';
 
 export type RouteDecision = 'booting' | 'public' | 'onboarding' | 'app';
 

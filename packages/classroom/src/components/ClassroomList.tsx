@@ -21,7 +21,7 @@ import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import CreateClassroomModal from './CreateClassroomModal';
+import CreateClassroomModal from '@/components/CreateClassroomModal';
 
 interface ClassroomListProps {
   onClassroomPress?: (classroom: WorkspaceClassroom) => void;

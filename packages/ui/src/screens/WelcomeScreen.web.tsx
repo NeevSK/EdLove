@@ -22,9 +22,9 @@ import { authAPI } from '@repo/core/auth';
 import { handleAPIError } from '@repo/core/logic';
 import { memo, useCallback, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GatewayFooter } from '../components/GatewayFooter.web';
-import { GatewayHeader } from '../components/GatewayHeader.web';
-import { useTheme } from '../hooks/useTheme';
+import { GatewayFooter } from '@/components/GatewayFooter.web';
+import { GatewayHeader } from '@/components/GatewayHeader.web';
+import { useTheme } from '@/hooks/useTheme';
 import {
   ActivityIndicator,
   Pressable,
@@ -34,11 +34,11 @@ import {
   useWindowDimensions,
   View,
   VStack,
-} from '../primitives';
-import { Theme } from '../theme/Theme';
-import { EXTERNAL_URLS } from '../utils';
-import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
-import { openExternalURL } from '../utils/linking';
+} from '@/primitives';
+import { Theme } from '@/theme/Theme';
+import { EXTERNAL_URLS } from '@/utils';
+import { hapticError, hapticLight, hapticSuccess } from '@/utils/haptics';
+import { openExternalURL } from '@/utils/linking';
 
 // ──────────────────────────────────────────────────────────
 // Constants

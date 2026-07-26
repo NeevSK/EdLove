@@ -1,4 +1,4 @@
-import { GPACalculator } from './GPACalculator';
+import { GPACalculator } from '@/engine/GPACalculator';
 export class PerformanceAnalyzer {
   gpaCalculator;
   db;

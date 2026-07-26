@@ -12,15 +12,15 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
-import { AddSocialLinkModal } from '../components/AddSocialLinkModal';
-import { AvatarDisplay } from '../components/AvatarDisplay';
-import { ContactLinktree } from '../components/ContactLinktree';
-import { EditableItem } from '../components/EditableItem';
-import { GiveThuthimalModal } from '../components/GiveThuthimalModal';
-import { useProfile } from '../hooks/useProfile';
-import { useProfileCompletion } from '../hooks/useProfileCompletion';
-import { useSocialLinks } from '../hooks/useSocialLinks';
-import type { UserProfile } from '../types';
+import { AddSocialLinkModal } from '@/components/AddSocialLinkModal';
+import { AvatarDisplay } from '@/components/AvatarDisplay';
+import { ContactLinktree } from '@/components/ContactLinktree';
+import { EditableItem } from '@/components/EditableItem';
+import { GiveThuthimalModal } from '@/components/GiveThuthimalModal';
+import { useProfile } from '@/hooks/useProfile';
+import { useProfileCompletion } from '@/hooks/useProfileCompletion';
+import { useSocialLinks } from '@/hooks/useSocialLinks';
+import type { UserProfile } from '@/types';
 
 export default function FullProfileScreenWeb() {
   const params = useLocalSearchParams<{ id?: string; userId?: string; full_name?: string }>();

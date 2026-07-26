@@ -19,8 +19,8 @@ import { useTranslation } from 'react-i18next';
 import {
   getPrincipalCapabilitiesByZone,
   type PrincipalWorkspaceView,
-} from '../../principal/workspace';
-import { getPrincipalFeatureScopeMeta } from './PrincipalIAScope';
+} from '@/principal/workspace';
+import { getPrincipalFeatureScopeMeta } from '@/screens/principal/PrincipalIAScope';
 
 export interface DashboardContentProps {
   school: any;

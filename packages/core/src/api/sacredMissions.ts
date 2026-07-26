@@ -1,5 +1,5 @@
-import { growth } from '../logic';
-import type { ManifestoVibe, SanctuaryManifesto } from '../types/Growth';
+import { growth } from '@/logic';
+import type { ManifestoVibe, SanctuaryManifesto } from '@/types/Growth';
 
 /**
  * sacredMissionsAPI (Legacy Proxy)

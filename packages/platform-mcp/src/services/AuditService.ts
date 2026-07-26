@@ -1,10 +1,10 @@
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
-import { ROOT_DIR } from '../utils/constants.js';
-import { executeSovereignTool, runCommand, runPowerShellScript } from '../utils/execution.js';
-import { findSurgicalReport, normalizeTarget, readReport } from '../utils/pathUtils.js';
-import type { AnalysisIssue, DocumentService } from './DocumentService.js';
+import { ROOT_DIR } from '@/utils/constants.js';
+import { executeSovereignTool, runCommand, runPowerShellScript } from '@/utils/execution.js';
+import { findSurgicalReport, normalizeTarget, readReport } from '@/utils/pathUtils.js';
+import type { AnalysisIssue, DocumentService } from '@/services/DocumentService.js';
 
 function toText(text: string, isError?: boolean) {
   return {

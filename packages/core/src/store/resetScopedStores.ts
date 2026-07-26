@@ -1,14 +1,14 @@
 import type { QueryClient } from '@tanstack/react-query';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-import { getActiveAccountId, setActiveAccountId } from '../lib/accountScope';
-import { DeviceTrustEngine } from '../lib/security/deviceTrust';
-import { useMutationQueue } from '../lib/sync/useMutationQueue';
-import { DEFAULT_FEATURE_FLAGS } from './types/featureFlags';
-import type { UISlice } from './slices/ui.slice';
-import { useAuthStore } from './useAuthStore';
-import { useFeatureStore } from './useFeatureStore';
-import { useTenantStore } from './useTenantStore';
-import { useUIStore } from './useUIStore';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { getActiveAccountId, setActiveAccountId } from '@/lib/accountScope';
+import { DeviceTrustEngine } from '@/lib/security/deviceTrust';
+import { useMutationQueue } from '@/lib/sync/useMutationQueue';
+import { DEFAULT_FEATURE_FLAGS } from '@/store/types/featureFlags';
+import type { UISlice } from '@/store/slices/ui.slice';
+import { useAuthStore } from '@/store/useAuthStore';
+import { useFeatureStore } from '@/store/useFeatureStore';
+import { useTenantStore } from '@/store/useTenantStore';
+import { useUIStore } from '@/store/useUIStore';
 
 const authScopedDefaults = {
   userName: 'Gurudevi',

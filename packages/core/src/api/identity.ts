@@ -1,6 +1,6 @@
-import { APIError } from '../types/API';
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
-import { assertHighway } from './highways';
+import { APIError } from '@/types/API';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@/api/base';
+import { assertHighway } from '@/api/highways';
 
 /**
  * Simplified bond structure returned by the identity API

@@ -35,8 +35,8 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import NativeForm from './NativeForm';
-import { defaultFormBuilderServices, type FormBuilderServices } from './services';
+import NativeForm from '@/NativeForm';
+import { defaultFormBuilderServices, type FormBuilderServices } from '@/services';
 
 interface FormBuilderProps {
   initialFields?: FieldDefinition[];

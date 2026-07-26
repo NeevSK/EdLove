@@ -1,5 +1,5 @@
 import { Effect } from 'effect';
-import { SafeZustandStorage } from './storageWrapper';
+import { SafeZustandStorage } from '@/native/storageWrapper';
 
 // Keys for MMKV storage
 const GUEST_TIMETABLE_KEY = 'guest-timetable';

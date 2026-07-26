@@ -13,9 +13,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { config } from '../../gluestack-ui.config';
-import { dispatchQueuedMutationToSovereignBus } from '../lib/inngestEvents';
-import { useAssets } from './AssetProvider';
-import { DeepLinkProvider } from './DeepLinkProvider';
+import { dispatchQueuedMutationToSovereignBus } from '@/lib/inngestEvents';
+import { useAssets } from '@/providers/AssetProvider';
+import { DeepLinkProvider } from '@/providers/DeepLinkProvider';
 
 const queryClient = new QueryClient();
 

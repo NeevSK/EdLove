@@ -42,7 +42,7 @@ import {
 import { Icon as SanctuaryIcon } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { GlobalCreateModal } from '../components';
+import { GlobalCreateModal } from '@/components';
 
 type DashboardTab = 'pulse' | 'institutions' | 'staff' | 'sentinel';
 

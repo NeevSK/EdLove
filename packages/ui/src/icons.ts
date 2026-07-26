@@ -1,1 +1,1 @@
-export * from './icons.native';
+export * from '@/icons.native';

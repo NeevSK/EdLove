@@ -6,7 +6,7 @@ import { formatDistanceToNow } from 'date-fns';
 import type React from 'react';
 import { useCallback, useEffect, useReducer } from 'react';
 import { Platform } from 'react-native';
-import { type InviteCode, invitesAPI } from '../../invites';
+import { type InviteCode, invitesAPI } from '@/invites';
 
 // —————————————————————————————————————————————————————————————————————————————
 // TYPES

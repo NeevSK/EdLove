@@ -1,6 +1,6 @@
-import { APIError } from '../types/API';
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ as supabase } from './supabase';
+import { APIError } from '@/types/API';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@/api/base';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ as supabase } from '@/api/supabase';
 
 /**
  * CLASSROOMS API (Sovereign RPC Proxy)

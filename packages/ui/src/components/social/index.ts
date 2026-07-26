@@ -1,4 +1,4 @@
-export * from './CommunityPresence';
-export { default as CommunityPresence } from './CommunityPresence';
-export * from './SocialShieldModal';
-export { default as SocialShieldModal } from './SocialShieldModal';
+export * from '@/components/social/CommunityPresence';
+export { default as CommunityPresence } from '@/components/social/CommunityPresence';
+export * from '@/components/social/SocialShieldModal';
+export { default as SocialShieldModal } from '@/components/social/SocialShieldModal';

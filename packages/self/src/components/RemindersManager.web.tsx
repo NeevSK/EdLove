@@ -27,7 +27,7 @@ import {
   fetchReminders,
   type ReminderRecord,
   updateReminder,
-} from '../api/selfFeatureRepository';
+} from '@/api/selfFeatureRepository';
 
 type Reminder = ReminderRecord;
 

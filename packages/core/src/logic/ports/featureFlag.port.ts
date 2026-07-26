@@ -1,7 +1,7 @@
-import type { UserContext } from '../schemas/user.schema';
-import type { FeatureRolloutSnapshot, IFeatureRolloutPort } from './featureRollout.port';
+import type { UserContext } from '@/logic/schemas/user.schema';
+import type { FeatureRolloutSnapshot, IFeatureRolloutPort } from '@/logic/ports/featureRollout.port';
 
-export type { FeatureRolloutSnapshot, IFeatureRolloutPort } from './featureRollout.port';
+export type { FeatureRolloutSnapshot, IFeatureRolloutPort } from '@/logic/ports/featureRollout.port';
 
 /**
  * @deprecated Prefer IFeatureRolloutPort.

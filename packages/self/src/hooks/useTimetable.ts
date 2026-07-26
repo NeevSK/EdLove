@@ -9,11 +9,11 @@ import {
   deleteTimetablePeriod,
   fetchTimetablePeriods,
   updateTimetablePeriod,
-} from '../api/selfFeatureRepository';
+} from '@/api/selfFeatureRepository';
 
 const TIMETABLE_CACHE_KEY = 'gurudevi-timetable-cache';
 
-import type { Period } from '../types';
+import type { Period } from '@/types';
 export const useTimetable = (activeDay: number) => {
   const isOnline = useStore((state) => state.isOnline);
   const [periods, setPeriods] = useState<Period[]>([]);

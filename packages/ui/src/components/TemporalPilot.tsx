@@ -3,9 +3,9 @@ import { Calendar, PanelsTopLeft as LayoutIcon, Search, Wifi, WifiOff, Zap } fro
 import type React from 'react';
 import { useState } from 'react';
 import { Modal } from 'react-native';
-import { Box, HStack, Text } from '../gluestack';
-import { Pressable } from '../primitives';
-import { TemporalScrubber } from './TemporalScrubber';
+import { Box, HStack, Text } from '@/gluestack';
+import { Pressable } from '@/primitives';
+import { TemporalScrubber } from '@/components/TemporalScrubber';
 
 /**
  * TemporalPilot

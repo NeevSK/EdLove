@@ -28,7 +28,7 @@ import {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useProgressTree } from '../hooks/useProgressTree';
+import { useProgressTree } from '@/hooks/useProgressTree';
 
 interface ProgressTreeProps {
   userId?: string;

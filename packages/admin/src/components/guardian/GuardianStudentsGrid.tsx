@@ -1,7 +1,7 @@
 import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
 
 import type React from 'react';
-import type { StudentOverview } from '../../guardian';
+import type { StudentOverview } from '@/guardian';
 
 interface GuardianStudentsGridProps {
   students: StudentOverview[];

@@ -11,19 +11,19 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useFAB } from '../context/FABContext';
-import { Box, HStack, Pressable, Text, VStack } from '../gluestack';
-import { useAccessibility } from '../hooks/useAccessibility';
-import { Dimensions, PanResponder, Platform } from '../primitives';
-import { hapticLight } from '../utils/haptics';
-import { useBottomTabPadding } from './ScreenWrapper';
-import { UniversalModal } from './UniversalModal';
+import { useFAB } from '@/context/FABContext';
+import { Box, HStack, Pressable, Text, VStack } from '@/gluestack';
+import { useAccessibility } from '@/hooks/useAccessibility';
+import { Dimensions, PanResponder, Platform } from '@/primitives';
+import { hapticLight } from '@/utils/haptics';
+import { useBottomTabPadding } from '@/components/ScreenWrapper';
+import { UniversalModal } from '@/components/UniversalModal';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
-import type { ActionItem, TabType } from '../types/fab';
+import type { ActionItem, TabType } from '@/types/fab';
 
 interface LotusPetalFABProps {
   currentTab?: TabType;

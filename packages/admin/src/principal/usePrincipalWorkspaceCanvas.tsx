@@ -22,23 +22,23 @@ import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives'
 
 import type React from 'react';
 import { useMemo } from 'react';
-import DashboardEcho from '../components/principal/DashboardEcho';
-import InstitutionalCalendarSection from '../components/principal/InstitutionalCalendarSection';
-import LeaveApprovalSection from '../components/principal/LeaveApprovalSection';
-import ManagementStation from '../components/principal/ManagementStation';
-import MorningSituationalBrief from '../components/principal/MorningSituationalBrief';
-import PrincipalGovernanceTimeline from '../components/principal/PrincipalGovernanceTimeline';
-import PrincipalObservationsSection from '../components/principal/PrincipalObservationsSection';
-import PulseDashboard from '../components/principal/PulseDashboard';
-import ResourceNeedsDashboard from '../components/principal/ResourceNeedsDashboard';
-import TeacherCarousel from '../components/principal/TeacherCarousel';
+import DashboardEcho from '@/components/principal/DashboardEcho';
+import InstitutionalCalendarSection from '@/components/principal/InstitutionalCalendarSection';
+import LeaveApprovalSection from '@/components/principal/LeaveApprovalSection';
+import ManagementStation from '@/components/principal/ManagementStation';
+import MorningSituationalBrief from '@/components/principal/MorningSituationalBrief';
+import PrincipalGovernanceTimeline from '@/components/principal/PrincipalGovernanceTimeline';
+import PrincipalObservationsSection from '@/components/principal/PrincipalObservationsSection';
+import PulseDashboard from '@/components/principal/PulseDashboard';
+import ResourceNeedsDashboard from '@/components/principal/ResourceNeedsDashboard';
+import TeacherCarousel from '@/components/principal/TeacherCarousel';
 import {
   getPrincipalCapabilityMeta,
   type PrincipalCapabilityId,
   type PrincipalWorkspaceSurfaceId,
   type PrincipalWorkspaceView,
-} from './workspace';
-import { getPrincipalPreviewSummary } from './workspacePreview';
+} from '@/principal/workspace';
+import { getPrincipalPreviewSummary } from '@/principal/workspacePreview';
 
 export type PrincipalWorkspaceSurface = WorkspaceSurfaceDefinition<
   PrincipalWorkspaceSurfaceId,

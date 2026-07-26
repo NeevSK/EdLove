@@ -1,13 +1,13 @@
 import { Duration, Effect, Schedule } from 'effect';
-import { createSovereignClient, SOVEREIGN_API_URL } from '../../api/base';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
-import { sovereignBus } from '../../lib/sync/eventBus';
+import { createSovereignClient, SOVEREIGN_API_URL } from '@/api/base';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { sovereignBus } from '@/lib/sync/eventBus';
 import type {
   AbstractPowerSyncDatabase,
   PowerSyncBackendConnector,
   PowerSyncCredentials,
-} from './powersync-shim';
-import { getConsistentIdempotencyKey } from '../../utils/idempotency';
+} from '@/adapters/powersync/powersync-shim';
+import { getConsistentIdempotencyKey } from '@/utils/idempotency';
 
 const POWERSYNC_URL = process.env.EXPO_PUBLIC_POWERSYNC_URL ?? '';
 

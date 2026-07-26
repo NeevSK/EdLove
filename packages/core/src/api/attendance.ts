@@ -1,8 +1,8 @@
 import { Data, Duration, Effect, pipe, Schedule } from 'effect';
-import { APIError } from '../types/API';
-import type { AppType } from './base';
-import { createSovereignClient, SOVEREIGN_API_URL } from './base';
-import type { StudentAttendancePulse } from './staffManagement';
+import { APIError } from '@/types/API';
+import type { AppType } from '@/api/base';
+import { createSovereignClient, SOVEREIGN_API_URL } from '@/api/base';
+import type { StudentAttendancePulse } from '@/api/staffManagement';
 
 const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
