@@ -79,7 +79,6 @@ This document is the package-local source of truth for `packages/ui`.
 | `src/components/CitizenGate.tsx` | shared component | unknown-unverified | canonical | keep | Shared component layer; several files still import the internal gluestack bridge and must be healed over time. |
 | `src/components/CollectionCard.tsx` | shared component | unknown-unverified | canonical | keep | Shared component layer; several files still import the internal gluestack bridge and must be healed over time. |
 | `src/components/DailyResonanceCard.tsx` | shared component | unknown-unverified | canonical | keep | Shared component layer; several files still import the internal gluestack bridge and must be healed over time. |
-| `src/components/debug/FeatureOverridesPanel.tsx` | shared component | unknown-unverified | canonical | keep | Shared component layer; several files still import the internal gluestack bridge and must be healed over time. |
 | `src/components/DeleteAccountModal.tsx` | shared component | unknown-unverified | canonical | keep | Shared component layer; several files still import the internal gluestack bridge and must be healed over time. |
 | `src/components/DeviceAccountManager.tsx` | shared component | unknown-unverified | canonical | keep | Shared component layer; several files still import the internal gluestack bridge and must be healed over time. |
 | `src/components/EmptyState.tsx` | shared component | unknown-unverified | canonical | keep | Shared component layer; several files still import the internal gluestack bridge and must be healed over time. |

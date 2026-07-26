@@ -415,11 +415,6 @@
       "import": "./src/components/WebScreenHeader.web.tsx",
       "default": "./src/components/WebScreenHeader.web.tsx"
     },
-    "./components/debug/FeatureOverridesPanel": {
-      "types": "./src/components/debug/FeatureOverridesPanel.tsx",
-      "import": "./src/components/debug/FeatureOverridesPanel.tsx",
-      "default": "./src/components/debug/FeatureOverridesPanel.tsx"
-    },
     "./components/maps": {
       "types": "./src/components/maps/index.ts",
       "import": "./src/components/maps/index.ts",
