@@ -1,4 +1,14 @@
-> **Superseded** by GrowthBook rollout engine (see ADR-013, featureFlag.factory.ts).
+---
+title: "Legacy Supabase Feature Flag Rollout"
+status: "superseded"
+created: 2026-04-22
+updated: 2026-07-26
+author: "Naveen"
+tags: [feature-flags, supabase, legacy, superseded]
+superseded_by: "../architecture/feature-lifecycle-management.md"
+---
+
+> **Superseded** by GrowthBook rollout engine and the feature lifecycle-management SSOT.
 > Kept for historical reference.
 
 # Guidance: Feature Flag Rollout (Remote Config)

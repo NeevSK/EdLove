@@ -4,6 +4,8 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'
 
 jobs:
   quality-check:
@@ -44,6 +46,29 @@ jobs:
         env:
           NODE_OPTIONS: --max-old-space-size=8192
         run: pnpm check-types
+
+      - name: ♻️ Feature lifecycle contract
+        run: pnpm run audit:feature-lifecycle
+
+      - name: 🧹 Feature lifecycle archival dry run
+        run: pnpm run feature-lifecycle:archive
+
+      - name: 🧪 Feature lifecycle focused tests
+        run: pnpm run test:feature-lifecycle
+
+      - name: 🌱 GrowthBook control-plane inventory
+        if: ${{ secrets.GROWTHBOOK_FEATURES_ENDPOINT != '' || secrets.GROWTHBOOK_API_KEY != '' }}
+        env:
+          GROWTHBOOK_FEATURES_ENDPOINT: ${{ secrets.GROWTHBOOK_FEATURES_ENDPOINT }}
+          GROWTHBOOK_API_KEY: ${{ secrets.GROWTHBOOK_API_KEY }}
+          GROWTHBOOK_FEATURE_SCOPE_PREFIX: ${{ vars.GROWTHBOOK_FEATURE_SCOPE_PREFIX }}
+        run: pnpm run audit:feature-lifecycle:control-plane
+
+      - name: 🗄️ Legacy feature schema evidence
+        if: ${{ secrets.FEATURE_LIFECYCLE_DB_URL != '' }}
+        env:
+          FEATURE_LIFECYCLE_DB_URL: ${{ secrets.FEATURE_LIFECYCLE_DB_URL }}
+        run: pnpm run feature-lifecycle:schema-check -- --execute
 
       - name: 🌐 i18n policy checks
         run: pnpm run i18n:check

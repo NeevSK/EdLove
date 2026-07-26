@@ -32,9 +32,10 @@ This is not in the reference list and is architecturally rare. [`localEvaluator.
 - Dynamic resource attribute resolution from local Drizzle SQLite (works for offline-created entities)
 - `DeviceTrustEngine` integration: `trust_status` is passed as Cedar context variable
 
-### GrowthBook Feature Flags: ✅ Implemented (Dual-Adapter)
-- [`featureFlag.factory.ts`](file:///c:/Users/Naween/projects/polymath-platform/packages/core/src/logic/managers/featureFlag.factory.ts) auto-selects between `GrowthBookFeatureRolloutAdapter` (when `EXPO_PUBLIC_GROWTHBOOK_CLIENT_KEY` is present) and `SupabaseFeatureFlagAdapter` (Supabase `global_configs` table fallback)
-- **Gap**: Only client-side. No API gateway evaluation (see Architecture Direction doc, P1 priority)
+### GrowthBook Feature Flags: ✅ Implemented (single rollout authority)
+- [`featureFlag.factory.ts`](file:///c:/Users/Naween/projects/polymath-platform/packages/core/src/logic/managers/featureFlag.factory.ts) wires the GrowthBook rollout adapter; Supabase is not a feature-rollout fallback.
+- The mobile client applies GrowthBook snapshots locally, while the Sanctuary API applies route-level GrowthBook gates before handlers.
+- Lifecycle ownership, AppCatalog mapping, stale-flag auditing, and server/CI archival are documented in [Feature Lifecycle Management](../../../../apps/gurudevi-mobile/docs/architecture/feature-lifecycle-management.md).
 
 ---
 

@@ -1,3 +1,13 @@
+---
+title: "Legacy Feature Engine Architecture"
+status: "superseded"
+created: 2026-04-23
+updated: 2026-07-26
+author: "Naveen"
+tags: [feature-flags, legacy, superseded]
+superseded_by: "../architecture/feature-lifecycle-management.md"
+---
+
 # Feature Engine Architecture & Development Guide
 
 ## Overview

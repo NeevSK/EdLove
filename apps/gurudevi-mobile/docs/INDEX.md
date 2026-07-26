@@ -2,7 +2,7 @@
 title: "Gurudevi Mobile Documentation Vault Index"
 status: "active"
 created: 2026-06-10
-updated: 2026-07-14
+updated: 2026-07-26
 author: "Naveen"
 scribe: "Antigravity"
 tags: [index, portal]
@@ -11,6 +11,19 @@ tags: [index, portal]
 # Gurudevi Mobile Documentation Vault Index
 
 Welcome to the documentation vault for `gurudevi-mobile`. This file serves as the entry point and index for all system documentation.
+
+---
+
+## Feature lifecycle authority — read first
+
+These documents are the current authority for capability inventory, rollout, stale-flag governance, and retirement. Older Supabase/RPC feature-flag documents remain historical and must not be used as implementation guidance.
+
+1. [Feature Lifecycle Management](./architecture/feature-lifecycle-management.md) — continuously maintained source of truth.
+2. [Lifecycle Audit and Consolidated Plan](./architecture/2026-07-26-feature-flag-lifecycle-audit-and-plan.md) — dated implementation evidence.
+3. [Feature Lifecycle Decision](./decisions/004-feature-lifecycle-management.md) — current architecture boundary.
+4. [Legacy Schema Retirement Runbook](./architecture/2026-07-26-feature-flag-schema-retirement-runbook.md) — production-only retirement procedure.
+5. [New Capability and Feature Flag Checklist](./architecture/NEW_FEATURE_CHECKLIST.md) — onboarding procedure for developers and agents.
+6. [Feature Gate Order and Context Ownership](./decisions/005-feature-gate-order-and-context-ownership.md) — authorization, entitlement, rollout, and offline boundaries.
 
 ---
 

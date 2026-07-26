@@ -54,12 +54,19 @@ tags: [docs, index, changelog]
 
 | Document | Description |
 |---|---|
+| [MIGRATION-GUIDE.md](MIGRATION-GUIDE.md) | Dependency migration process — general pattern for any package |
+| [infra/version-management.md](infra/version-management.md) | Version management tooling analysis & recommendation |
 | [infra/developer-workflow-guide.md](infra/developer-workflow-guide.md) | Developer workflow |
 | [infra/git-branching-model.md](infra/git-branching-model.md) | Git branching strategy |
 | [infra/code-quality-workflow.md](infra/code-quality-workflow.md) | Code quality and audit workflow |
 | [infra/code-checkers.md](infra/code-checkers.md) | Available checkers and commands |
 
 ## Changelog
+
+### 2026-07-18
+
+- **Added**: `MIGRATION-GUIDE.md` — General dependency migration process grounded in archaeology findings
+- **Added**: `infra/version-management.md` — Version management tooling analysis: migrate from `@changesets/cli` to pnpm native versioning (v11.13.0)
 
 ### 2026-06-26
 

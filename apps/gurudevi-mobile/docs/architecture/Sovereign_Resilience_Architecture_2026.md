@@ -71,7 +71,7 @@ The platform does **not** follow "Online-First with Caching." It is **Action-Fir
 ### 🟢 Path 1 — Resonant Sync (PowerSync, In Transition)
 | Attribute | Detail |
 | :--- | :--- |
-| **When active** | `isPowerSyncEnabled` feature flag = `true` (via `global_configs` in Supabase) |
+| **When active** | `isPowerSyncEnabled` evaluates `true` from the GrowthBook snapshot |
 | **What it syncs** | Standard CRUD — Attendance rows, Mood logs, Profile data |
 | **Mechanism** | Postgres logical replication → local SQLite encrypted via SQLCipher (`op-sqlite` JSI C++ engine) |
 | **Cost** | $0 free (50 concurrent) / $50/mo (1,000 concurrent) |
@@ -149,7 +149,7 @@ The platform does **not** follow "Online-First with Caching." It is **Action-Fir
 
 ## 6. Feature Flags (Sync-Specific)
 
-Managed via `global_configs` table in Supabase → propagated via `FeatureSyncManager`.
+Feature rollout is managed by GrowthBook and locally cached snapshots. Supabase `global_configs` is not a feature-rollout authority. See [Feature Lifecycle Management](./feature-lifecycle-management.md).
 
 | Flag Key | Default | Effect |
 | :--- | :--- | :--- |
@@ -177,7 +177,7 @@ For complete transition patterns, details on dual-database isolation, SQLCipher 
 ### To Activate (3 Steps)
 1. **Get credentials**: Sign up at [app.powersync.com](https://app.powersync.com), create a project, connect to your Supabase instance.
 2. **Set env var**: Add `EXPO_PUBLIC_POWERSYNC_URL=wss://your-instance.powersync.journeyapps.com` to your `.env`.
-3. **Flip feature flag**: Set `ENABLE_POWERSYNC = 'true'` in your Supabase `global_configs` table. No code change, no deploy needed.
+3. **Flip feature flag**: change the `isPowerSyncEnabled` rollout in GrowthBook. The mobile client receives the evaluated snapshot and never mutates the control plane.
 
 ### Sync Rules (Required on PowerSync Dashboard)
 Create `sync-rules.yaml` in your PowerSync project:

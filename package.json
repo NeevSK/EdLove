@@ -51,6 +51,11 @@
     "version:all": "node ./scripts/run-and-report.mjs --cmd \"pnpm exec changeset version && pnpm install\" --name \"package_json-version_all\"",
     "mcp:supabase:debug": "node ./scripts/run-and-report.mjs --cmd \"node --no-warnings scripts/mcp-proxy.mjs node node_modules/@supabase/mcp-server-supabase/dist/index.js --project-ref ${env.SUPABASE_PROJECT_REF}\" --name \"package_json-mcp_supabase_debug\"",
     "audit:deprecations": "node ./scripts/run-and-report.mjs --cmd \"powershell -ExecutionPolicy Bypass -File scripts/audit-deprecations.ps1\" --name \"package_json-audit_deprecations\"",
+    "audit:feature-lifecycle": "node scripts/audit-feature-flags.mjs --strict",
+    "audit:feature-lifecycle:control-plane": "node scripts/audit-growthbook-features.mjs --strict",
+    "test:feature-lifecycle": "pnpm --filter @repo/core exec vitest run src/adapters/__tests__/growthbook.test.ts src/logic/permissions/__tests__/sanctuaryFeature.test.ts src/logic/registry/__tests__ src/store/__tests__/featureSlice.test.ts",
+    "feature-lifecycle:archive": "node scripts/archive-growthbook-flags.mjs",
+    "feature-lifecycle:schema-check": "node scripts/check-legacy-feature-flag-schema.mjs",
     "audit:duplication": "node ./scripts/run-and-report.mjs --cmd \"jscpd apps/gurudevi-mobile/src apps/gurudevi-mobile/app packages/core/src --min-lines 8 --min-tokens 50 --reporters console\" --name \"package_json-audit_duplication\"",
     "preinstall": "node -e \"if(process.env.npm_config_user_agent && !/pnpm/.test(process.env.npm_config_user_agent)) { console.error('\\u001b[31mFATAL: This project requires pnpm. Use \\'pnpm install\\' to continue.\\u001b[0m'); process.exit(1); }\""
   },

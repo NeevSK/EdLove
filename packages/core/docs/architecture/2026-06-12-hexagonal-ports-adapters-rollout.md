@@ -1,14 +1,17 @@
 ---
 title: "Rollout of Hexagonal Ports & Adapters for Telemetry, Gating, and Permissions"
-status: "active"
+status: "superseded"
 created: 2026-06-12
 updated: 2026-06-12
 author: "Naveen"
 scribe: "Antigravity"
-tags: [architecture, hexagonal, core, security, telemetry]
+tags: [architecture, hexagonal, core, security, telemetry, superseded]
+superseded_by: "../../../../apps/gurudevi-mobile/docs/architecture/feature-lifecycle-management.md"
 ---
 
 # Hexagonal Ports & Adapters Rollout (June 2026)
+
+> Superseded note: this historical record describes the earlier feature-flag port and Supabase adapter direction. The current rollout authority is GrowthBook, with AppCatalog lifecycle metadata and local last-known-good snapshots. See [Feature Lifecycle Management](../../../../apps/gurudevi-mobile/docs/architecture/feature-lifecycle-management.md).
 
 This document records the architectural changes introduced to decouple the **Gurudevi** core logic and mobile shell from vendor-specific telemetry (PostHog), remote configurations/flags (GrowthBook), monetization entitlements (RevenueCat), and authorization engines (Cedar/CASL).
 
@@ -61,7 +64,7 @@ We defined the following core interfaces:
 
 ### Concrete Adapters Implemented
 1. **`CedarAuthorizationAdapter` (`cedar/`):** Implementation of `IAuthorizationPort` that wraps the local offline Cedar WebAssembly evaluator and SQLite snapshot policy checks.
-2. **`SupabaseFeatureFlagAdapter` (`supabase/`):** Implementation of `IFeatureFlagPort` that plugs into the local Zustand store and recomputes flags reactively.
+2. **Historical only — `SupabaseFeatureFlagAdapter` (`supabase/`):** This earlier implementation was removed. GrowthBook is now the only rollout backend.
 3. **`PostHogAnalytics` (Web & Native):** Explicitly modified the existing PostHog engine wrappers to satisfy `IAnalyticsPort` compile checks.
 
 ### Wiring Factory
