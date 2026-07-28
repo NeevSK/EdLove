@@ -5,7 +5,7 @@
 
 /* eslint-disable */
 
-import { type SchemaType as $Schema } from "@/generated/orm/schema";
+import { type SchemaType as $Schema } from "./schema";
 import type { FindManyArgs as $FindManyArgs, FindUniqueArgs as $FindUniqueArgs, FindFirstArgs as $FindFirstArgs, ExistsArgs as $ExistsArgs, CreateArgs as $CreateArgs, CreateManyArgs as $CreateManyArgs, CreateManyAndReturnArgs as $CreateManyAndReturnArgs, UpdateArgs as $UpdateArgs, UpdateManyArgs as $UpdateManyArgs, UpdateManyAndReturnArgs as $UpdateManyAndReturnArgs, UpsertArgs as $UpsertArgs, DeleteArgs as $DeleteArgs, DeleteManyArgs as $DeleteManyArgs, CountArgs as $CountArgs, AggregateArgs as $AggregateArgs, GroupByArgs as $GroupByArgs, WhereInput as $WhereInput, SelectInput as $SelectInput, IncludeInput as $IncludeInput, OmitInput as $OmitInput, UncheckedCreateInput as $UncheckedCreateInput, CheckedCreateInput as $CheckedCreateInput, UncheckedUpdateInput as $UncheckedUpdateInput, CheckedUpdateInput as $CheckedUpdateInput, QueryOptions as $QueryOptions } from "@zenstackhq/orm";
 import type { SimplifiedPlainResult as $Result, SelectIncludeOmit as $SelectIncludeOmit } from "@zenstackhq/orm";
 export type UserFindManyArgs = $FindManyArgs<$Schema, "User">;
@@ -58,6 +58,31 @@ export type BondCheckedCreateInput = $CheckedCreateInput<$Schema, "Bond">;
 export type BondUncheckedUpdateInput = $UncheckedUpdateInput<$Schema, "Bond">;
 export type BondCheckedUpdateInput = $CheckedUpdateInput<$Schema, "Bond">;
 export type BondGetPayload<Args extends $SelectIncludeOmit<$Schema, "Bond", true>, Options extends $QueryOptions<$Schema> = $QueryOptions<$Schema>> = $Result<$Schema, "Bond", Args, Options>;
+export type UserEntitlementGrantFindManyArgs = $FindManyArgs<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantFindUniqueArgs = $FindUniqueArgs<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantFindFirstArgs = $FindFirstArgs<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantExistsArgs = $ExistsArgs<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantCreateArgs = $CreateArgs<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantCreateManyArgs = $CreateManyArgs<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantCreateManyAndReturnArgs = $CreateManyAndReturnArgs<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantUpdateArgs = $UpdateArgs<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantUpdateManyArgs = $UpdateManyArgs<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantUpdateManyAndReturnArgs = $UpdateManyAndReturnArgs<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantUpsertArgs = $UpsertArgs<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantDeleteArgs = $DeleteArgs<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantDeleteManyArgs = $DeleteManyArgs<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantCountArgs = $CountArgs<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantAggregateArgs = $AggregateArgs<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantGroupByArgs = $GroupByArgs<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantWhereInput = $WhereInput<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantSelect = $SelectInput<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantInclude = $IncludeInput<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantOmit = $OmitInput<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantUncheckedCreateInput = $UncheckedCreateInput<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantCheckedCreateInput = $CheckedCreateInput<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantUncheckedUpdateInput = $UncheckedUpdateInput<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantCheckedUpdateInput = $CheckedUpdateInput<$Schema, "UserEntitlementGrant">;
+export type UserEntitlementGrantGetPayload<Args extends $SelectIncludeOmit<$Schema, "UserEntitlementGrant", true>, Options extends $QueryOptions<$Schema> = $QueryOptions<$Schema>> = $Result<$Schema, "UserEntitlementGrant", Args, Options>;
 export type UserSocialLinkFindManyArgs = $FindManyArgs<$Schema, "UserSocialLink">;
 export type UserSocialLinkFindUniqueArgs = $FindUniqueArgs<$Schema, "UserSocialLink">;
 export type UserSocialLinkFindFirstArgs = $FindFirstArgs<$Schema, "UserSocialLink">;
