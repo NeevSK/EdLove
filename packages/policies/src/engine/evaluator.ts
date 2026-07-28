@@ -85,6 +85,8 @@ export function check(request: AuthRequest): AuthResponse {
       attrs: {
         id: request.principal.id,
         school_id: request.principal.attributes.school_id,
+        active_entity_id: request.principal.attributes.active_entity_id,
+        active_entity_type: request.principal.attributes.active_entity_type,
         capacity: request.principal.attributes.capacity,
         ...(request.principal.attributes.grade_id && {
           grade_id: request.principal.attributes.grade_id,

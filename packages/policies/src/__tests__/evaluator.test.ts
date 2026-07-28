@@ -1,5 +1,9 @@
+import { generateKeyPairSync } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { check, generateSnapshot } from '../index';
+
+const { privateKey: snapshotPrivateKey } = generateKeyPairSync('ed25519');
+const snapshotSigningKey = snapshotPrivateKey.export({ format: 'pem', type: 'pkcs8' }).toString();
 
 describe('Sovereign Authorization Engine', () => {
   it('should allow platform admin full CRUD on any resource', () => {
@@ -285,9 +289,13 @@ describe('Sovereign Authorization Engine', () => {
       id: 'principal-1',
       school_id: 'school-a',
       capacity: 'principal',
+      active_bond_id: 'bond-principal-1',
+      active_entity_id: 'school-a',
+      active_entity_type: 'SCHOOL',
+      policy_version: 'policy-v1',
     };
 
-    const snapshot = generateSnapshot(principalUser);
+    const snapshot = generateSnapshot(principalUser, snapshotSigningKey);
 
     expect(snapshot.userId).toBe('principal-1');
     expect(snapshot.schoolId).toBe('school-a');

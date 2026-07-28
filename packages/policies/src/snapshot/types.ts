@@ -1,7 +1,11 @@
 export interface UserContext {
   id: string;
-  school_id: string;
+  school_id?: string;
   capacity: string;
+  active_bond_id: string;
+  active_entity_id: string;
+  active_entity_type: string;
+  policy_version: string;
   classroom_ids?: string[];
   grade_id?: string;
   section_id?: string;
@@ -13,7 +17,11 @@ export interface PermissionSnapshot {
   generatedAt: string; // server ISO timestamp
   expiresAt: string; // generatedAt + 24h
   userId: string;
-  schoolId: string;
+  activeBondId: string;
+  activeEntityId: string;
+  activeEntityType: string;
+  schoolId: string | null;
+  policyVersion: string;
   permissions: {
     [resourceType: string]: {
       [action: string]: boolean;
@@ -25,5 +33,5 @@ export interface PermissionSnapshot {
       availableFrom?: string;
     };
   };
-  signature: string; // HMAC of the above using server secret
+  signature: string; // Ed25519 signature of the above using the server private key
 }

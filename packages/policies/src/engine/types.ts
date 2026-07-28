@@ -4,6 +4,8 @@ export interface AuthRequest {
     id: string;
     attributes: {
       school_id: string;
+      active_entity_id?: string;
+      active_entity_type?: string;
       capacity: string;
       classroom_ids?: string[];
       grade_id?: string;
