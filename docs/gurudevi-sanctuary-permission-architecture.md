@@ -1,4 +1,18 @@
+---
+title: "Gurudevi Sanctuary Permission System Architecture"
+status: "superseded"
+created: 2026-06-01
+updated: 2026-07-26
+author: "Naveen"
+tags: [architecture, permissions, historical]
+superseded_by: "../apps/gurudevi-mobile/docs/architecture/identity-app-device-lifecycle.md"
+---
+
 # Gurudevi — Sanctuary Permission System Architecture
+
+> Superseded on 2026-07-26 by [Identity, App, Device, and Account Lifecycle](../apps/gurudevi-mobile/docs/architecture/identity-app-device-lifecycle.md).
+> This document remains as historical design context. Its `WANDERER` gate,
+> anonymous no-bond rule, and old citizenship ordering are not current policy.
 > Draft 1 — June 2026
 > Companion to: gurudevi-architecture-draft-1.md, gurudevi-data-state-lifecycle.md
 > This document covers the intended design of the permission system — the three gates, Cedar as unified authz, flag taxonomy, and intersection with the data/state lifecycle.

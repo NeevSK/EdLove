@@ -2,7 +2,7 @@
 title: "2026 Advanced Tools & Patterns: Adoption Matrix"
 status: "active"
 created: 2026-06-25
-updated: 2026-06-25
+updated: 2026-07-26
 author: "Naveen"
 scribe: "Antigravity"
 tags: [api, architecture, strategy, local-first, ai, crdt, orama, onnx, effect]
@@ -124,9 +124,9 @@ export async function buildStudentIndex(students: Student[]) {
 Index is rebuilt lazily after PowerSync sync events via `sovereignBus.on('powersync:sync_complete', ...)`.
 
 ### 3.3 Signed Permission Snapshot Verification (Full Loop)
-The [`schema.ts`](file:///c:/Users/Naween/projects/polymath-platform/packages/core/src/adapters/powersync/schema.ts) already defines a `permissionSnapshots` table with an HMAC-SHA-256 `signature` column — but `verifyLocalPolicySignature` in `localEvaluator.ts` currently returns `true` unconditionally. This verification loop must be closed:
-- **Server**: When a permission snapshot is written to the `permission_snapshots` table, sign `(userId + schoolId + permissions + expiresAt)` with a private HMAC key stored in the gateway environment.
-- **Client**: On `localEvaluator` startup, verify the snapshot signature using the corresponding public key distributed via PowerSync. Reject any snapshot that fails.
+The `permissionSnapshots` table uses an Ed25519 `signature` column. The Sanctuary API signs `(userId + activeBondId + schoolId + policyVersion + permissions + expiresAt)` with a private key stored only in the gateway environment.
+- **Server**: When a permission snapshot is written, sign the complete scoped payload with `SNAPSHOT_SIGNING_PRIVATE_KEY`.
+- **Client**: On local snapshot load, verify the signature with `EXPO_PUBLIC_SNAPSHOT_SIGNING_PUBLIC_KEY`. Reject any snapshot that fails.
 - **Expiry enforcement**: Reject snapshots where `expiresAt < now()`. Force a network round-trip before Cedar evaluation resumes.
 
 ### 3.4 Request Idempotency Keys for Offline Write Safety

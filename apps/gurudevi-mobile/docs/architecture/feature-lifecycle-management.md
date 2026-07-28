@@ -35,13 +35,20 @@ Every user-facing domain or meaningful capability is owned by a package registry
 
 The catalog contains declarations, not live user-specific evaluations or GrowthBook targeting rules.
 
+Registry access requirements are declarative: `citizenshipRequired` controls registration level, `mobileSupport`/`webSupport` controls platform availability, `capabilityRequirement` identifies the Cedar action/subject, and entitlement fields describe commercial access. `entitlementTier` is the hierarchical subscription requirement (`FREE < PRO < INSTITUTIONAL`); `entitlementModule` is an independent add-on or capability entitlement. If both are present, both must pass. `entitlementScope` defaults to the individual plan; institution-backed capabilities must opt into `active_bond` or `active_entity` so a school grant cannot unlock unrelated personal features.
+
+`THIRD_CLASS` is the least restrictive citizenship requirement. Because citizenship levels are ordered (`FIRST_CLASS = 1`, `SECOND_CLASS = 2`, `THIRD_CLASS = 3`) and access uses `current <= required`, a `THIRD_CLASS` requirement is available to every citizenship level. It does not bypass Cedar, entitlements, platform support, or rollout.
+
 AppCatalog boot validates every manifest record with the lifecycle schema before domain registration completes; malformed lifecycle metadata therefore cannot enter a running client silently.
 
 Rollout snapshot fallback is lifecycle-aware: launched release and operational controls retain their safe default when a remote key is absent, while beta and experiment flags fail closed until GrowthBook returns an explicit value.
 
 Persisted snapshots are a last-known-good continuity mechanism, not an indefinite authority. They have a seven-day freshness window. After that window, stale beta and experiment values are discarded and resolve to their safe disabled default; stale operational values remain available as emergency controls until a fresh GrowthBook evaluation arrives. Snapshot source and stale status are retained for diagnostics.
 
-GrowthBook exposure callbacks emit the privacy-minimal `feature_flag_exposure` analytics event containing only the flag key and evaluated value; rollout code must not add identity, authorization, or entitlement data to that event.
+GrowthBook exposure callbacks emit the privacy-minimal typed `feature_exposed`
+product event containing only the feature key and evaluated value plus the
+approved event-time context snapshot; rollout code must not add identity,
+authorization, entitlement, or domain identifiers to that event.
 
 The same lifecycle resolver is used at the Sanctuary API route boundary, so missing beta or experiment values fail closed consistently on mobile and server.
 

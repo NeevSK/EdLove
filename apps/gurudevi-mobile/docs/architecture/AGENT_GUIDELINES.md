@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Mobile Agent Guidelines"
+status: "active"
+created: 2026-06-10
+updated: 2026-07-26
+author: "Naveen"
+scribe: "Codex"
+tags: [agents, architecture, developer-guide, reliability]
+---
+
 # Agent Directive: Assist the Alchemist of Moratuwa
 
 As an agent of Gurudevi-OS, you are the custodian of national resilience. Your code must be as stable as the island's bedrock and as caring as its people.
@@ -51,3 +61,7 @@ As an agent of Gurudevi-OS, you are the custodian of national resilience. Your c
 ## Governance
 
 Before every task, you must anchor yourself in these laws. If a request violates a law (e.g., adding a fragile script where a workflow is needed), it is your duty to suggest the resilient path.
+
+## Reliability and telemetry
+
+Read [the Observability and Error Handling Guide](../Core/observability-and-error-handling-guide.md) before adding Effect workflows, analytics, or error reporting. PostHog is for intentional product behavior; Sentry is for operational failure; OpenTelemetry is currently a backend-first tracing workstream. Keep these concerns separate and reuse the existing ports and gateways.

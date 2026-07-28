@@ -2,7 +2,7 @@
 title: "Sanctuary API Documentation Vault Index"
 status: "active"
 created: 2026-06-20
-updated: 2026-06-25
+updated: 2026-07-26
 author: "Naveen"
 scribe: "Antigravity"
 tags: [index, portal]
@@ -18,6 +18,9 @@ Welcome to the documentation vault for `sanctuary-api` (Sovereign API Gateway). 
 
 | Date | Document | Category | Status | Summary |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-07-26** | [Hono and Rust Authoritative Evaluator](file:///c:/Users/Naween/projects/polymath-platform/native-capabilities/docs/hono-rust-evaluator.md) | Architecture | `active` | Defines Hono as the PEP, Rust Cedarling as the authoritative PDP, and the local/cloud deployment modes. |
+| **2026-07-26** | [Hono and Bun OpenTelemetry Feature Specification](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/2026-07-26-otel-hono-bun-feature-spec.md) | Architecture | `implemented` | Acceptance contract for runtime-neutral Hono tracing, W3C propagation, privacy redaction, OTLP failure isolation, and Node/Bun support. |
+| **2026-07-26** | [Sanctuary API Observability and OpenTelemetry Plan](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/2026-07-26-observability-and-tracing-plan.md) | Architecture | `implemented` | Implemented API tracing adapter, runtime configuration, sampling, privacy controls, release runbook, and Node/Bun boundaries. |
 | **2026-06-26** | [Guest Session Lifecycle & POA Specification](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/2026-06-26-guest-session-lifecycle.md) | Architecture | `active` | Architectural specification of the guest session lifecycle, showing sequence flow and explaining the PEP/PDP structure. |
 | **2026-06-25** | [2026 Tools & Patterns Adoption Matrix](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/2026-06-25-tools-adoption-matrix.md) | Architecture | `active` | Precision adoption decisions for Orama, PGlite, CRDTs, ONNX, Effect-TS, and 12 other 2026 patterns. Includes original additions: permission snapshot verification loop, idempotency keys, policy canary, and Orama offline index. |
 | **2026-06-25** | [Sovereign API Architecture Direction 2026](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/2026-06-25-sovereign-api-architecture-direction.md) | Architecture | `active` | Comprehensive strategy covering current alignment, P0-P3 priority fixes, ZKP identity, MCP agentic sight, feature flag gateway middleware, OTel tracing, and AI streaming. |
@@ -43,6 +46,7 @@ Welcome to the documentation vault for `sanctuary-api` (Sovereign API Gateway). 
 *   [Guest Session Lifecycle & POA Specification](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/2026-06-26-guest-session-lifecycle.md) - Lifecycle, sequence diagram flow, and Proof of Authority (POA) explanation for guests.
 *   [Infrastructure & Cost Evaluation](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/infrastructure-and-cost-evaluation.md) - Workload memory/CPU footprint audit, serverless adapters vs. persistent container comparison, and zero-cost scaling plans.
 *   [Tech Stack & Standards](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/tech-stack-and-standards.md) - Sovereign API Gateway architecture using Hono, WinterCG targets, Cedar WASM v4, ZenStack v3, and database pooling rules.
+*   [Hono and Rust Authoritative Evaluator](file:///c:/Users/Naween/projects/polymath-platform/native-capabilities/docs/hono-rust-evaluator.md) - Rust Cedarling authority boundary, transport contract, failure behavior, and migration sequence.
 *   [Testing Standards](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/testing-standards.md) - Integrated automated test strategies using Vitest, Hono test client, and safety validation boundaries.
 *   [AI Hono Migration (2026-06-12)](file:///c:/Users/Naween/projects/polymath-platform/apps/sanctuary-api/docs/architecture/2026-06-12-ai-orchestrator-hono-migration.md) - Edge function migration and AI assistant routing structures.
 

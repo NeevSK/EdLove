@@ -19,6 +19,13 @@ Use this checklist for every new user-facing capability. A feature flag is a rol
 - [ ] Declare mobile/web support and authorization requirements.
 - [ ] Declare commercial entitlement requirements, if any.
 
+Use `entitlementTier` for subscription-level access and `entitlementModule` for an independent add-on. When both are present, the subscription tier and the add-on must both be active.
+
+- [ ] Declare entitlement scope explicitly when access comes from a verified
+  school/entity (`active_bond`, `active_entity`, or `add_on`). Leave scope
+  unset for the individual FREE/PRO plan. Never use `FIRST_CLASS` as a proxy
+  for institutional entitlement.
+
 The `AppCatalog` answers what exists. It must not contain user-specific rollout decisions.
 
 ## 2. Decide whether a flag is necessary
@@ -38,6 +45,7 @@ Use the standard protected-operation sequence:
 `initialization → authentication → Cedar authorization → entitlement → lifecycle/rollout → operation`
 
 - [ ] Cedar remains authoritative for authorization.
+- [ ] Treat `THIRD_CLASS` as the broadest citizenship requirement; it still does not bypass Cedar or commercial access.
 - [ ] Entitlements remain authoritative for commercial access.
 - [ ] GrowthBook only controls rollout or experimentation.
 - [ ] Do not use pricing tier, entitlement, or rollout as a substitute for Cedar.

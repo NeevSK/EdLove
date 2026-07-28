@@ -1,5 +1,11 @@
 # CURRENT STATE: What Gurudevi Is Right Now
 
+> **Historical snapshot — superseded 2026-07-26.** This March 2026 inventory
+> contains retired guest-session and older stack claims. For current identity,
+> bond, authorization, and feature-lifecycle rules, use the [Feature Access
+> Architecture](../architecture/2026-07-26-feature-access-local-server-architecture.md)
+> and [Feature Lifecycle Management](../architecture/feature-lifecycle-management.md).
+
 > Comprehensive snapshot of the app's current architecture, feature status, known issues, and technical decisions as of March 2026.
 > **IMPORTANT**: This document is reconciled against actual code, not just documentation claims. Status symbols reflect code reality, not intent.
 >

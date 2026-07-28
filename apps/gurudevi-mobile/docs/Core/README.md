@@ -16,7 +16,7 @@ This directory contains the fundamental blueprints and directives for the Gurude
 * [Workspace and Navigation Philosophy](./workspace-navigation-philosophy.md): Tab logic and Expo Router static mapping.
 * [Technical Architecture and Constraints](./technical-architecture-constraints.md): Multi-tenant RLS, offline-first sync (PowerSync), device/session boundaries.
 * [Identity and Access Management (IAM)](./identity-and-access-management.md): Cedar-style ReBAC, active bonds, offline attributes, and device trust.
-* [Security and Data Integrity](./security-and-data-integrity.md): PostgreSQL RLS, explicit sovereignty grants (ADR-002), HMAC signatures.
+* [Security and Data Integrity](./security-and-data-integrity.md): PostgreSQL RLS, explicit sovereignty grants (ADR-002), Ed25519 signatures.
 * [Offline-Online Synchronization Spec](./offline-online-sync-spec.md): PowerSync queue execution, idempotency, Last-Write-Wins, and soft deletes.
 * [Web-Native Compatibility Guide](./web-native-compatibility-guide.md): Platform resolutions, native package web shims, and layout responsive shells.
 * [Sanctuary API and Backend Spec](./sanctuary-api-and-backend-spec.md): Dynamic Hono routes, ZenStack Zod v4 schemas, and MCP hosts.

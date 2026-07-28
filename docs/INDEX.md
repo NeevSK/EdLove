@@ -18,6 +18,7 @@ tags: [docs, index, changelog]
 - **`decisions/`** — Architecture Decision Records (ADRs)
 - **`infra/`** — CI/CD, builds, developer workflow, code quality
 - **`RN Terrain/`** — React Native specific documentation
+- **`../native-capabilities/`** — Platform-wide Rust, UniFFI, Expo-module, Nitro, testing, and native-boundary standards
 
 ## Core Docs
 

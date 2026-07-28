@@ -223,9 +223,6 @@ Every flag must have an owner, purpose, type, default, rollout source, intended 
 
 ### Current next slice
 
-1. Verify production ownership/data retention for the legacy `FeatureFlag` schema model before creating a deprecation migration.
-2. Add explicit GrowthBook archive/history operations to the admin lifecycle workflow.
-3. The former fully-launched release flags have been migrated to live catalog capabilities and removed from the active manifest after zero-reference verification; the append-only retired-key history preserves their retirement dates and reasons, while five operational controls are retained by policy.
-4. Run the full repository verification suite and separate unrelated baseline failures from lifecycle changes.
+The remaining work is now maintained in the [Feature Lifecycle Future Work](feature-lifecycle-future-work.md) roadmap. The former fully-launched release flags have been migrated to live catalog capabilities and removed from the active manifest after zero-reference verification; the append-only retired-key history preserves their retirement dates and reasons, while five operational controls are retained by policy.
 
-The local policy boundary for step 2 is now implemented in `featureLifecyclePolicy.ts` and `queueFeatureLifecycleAction`; the remaining integration is the authenticated GrowthBook control-plane adapter and its deployment environment, which must not be embedded in the mobile client.
+The local policy boundary is implemented in `featureLifecyclePolicy.ts` and `queueFeatureLifecycleAction`; the remaining integration is the authenticated GrowthBook control-plane adapter and its deployment environment, which must not be embedded in the mobile client.

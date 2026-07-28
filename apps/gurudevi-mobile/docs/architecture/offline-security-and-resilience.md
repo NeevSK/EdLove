@@ -2,7 +2,7 @@
 title: "Offline Security & Resilience Architecture Blueprint"
 status: "active"
 created: 2026-06-10
-updated: 2026-06-10
+updated: 2026-07-26
 author: "Naveen"
 scribe: "Antigravity"
 tags: [security, architecture, offline, resilience, database]
@@ -19,27 +19,27 @@ This document specifies the threat models, security architecture patterns, and f
 | Threat Vector | Source / Target | Likelihood / Impact | Mitigation Strategy | Status / Enforcement |
 | :--- | :--- | :--- | :--- | :--- |
 | **Local Write Injection** | Rooted Android/iOS filesystem modification directly to SQLite. | Medium / High | **Secure Drizzle Proxy Wrapper** intercepting all write mutations (`insert`, `update`, `delete`) combined with **Server-Side Gateway PEP** validation. | Implemented & Active ([database.ts](file:///c:/Users/Naween/projects/polymath-platform/packages/core/src/adapters/powersync/database.ts)) |
-| **Identity Swapping / Hijacking** | Copying valid HMAC snapshots from one user context into another client database. | Low / High | **Identity Matching Constraint**: Reconstructed payload forces `userId` comparison against active JWT session context. | Implemented & Active ([localEvaluator.native.ts](file:///c:/Users/Naween/projects/polymath-platform/packages/core/src/logic/permissions/localEvaluator.native.ts)) |
-| **Payload Tampering** | Modifying offline policy files or snapshot maps to force permissions. | Medium / High | **SubtleCrypto HMAC SHA-256 Signature Verification** executing on every snapshot database load. | Implemented & Active ([signature.ts](file:///c:/Users/Naween/projects/polymath-platform/packages/core/src/logic/permissions/signature.ts)) |
+| **Identity Swapping / Hijacking** | Copying a valid snapshot from one user or bond context into another client database. | Low / High | **Identity and active-bond matching**: the reconstructed payload is checked against the authenticated session's current context. | Implemented & Active ([localEvaluator.native.ts](file:///c:/Users/Naween/projects/polymath-platform/packages/core/src/logic/permissions/localEvaluator.native.ts)) |
+| **Payload Tampering** | Modifying offline policy files or snapshot maps to force permissions. | Medium / High | **Ed25519 public-key signature verification** executes on every snapshot database load; the signing private key is never shipped to clients. | Implemented & Active ([signature.ts](file:///c:/Users/Naween/projects/polymath-platform/packages/core/src/logic/permissions/signature.ts)) |
 | **Denial of Service (Memory Exhaustion)** | Overwhelming low-end devices by compiling very large Cedar rules. | Medium / Low | **Max Policy Size Bound**: Strict limits (`MAX_LOCAL_POLICY_SIZE_BYTES = 100KB`) on compiled policy payloads. | Implemented & Active ([localEvaluator.native.ts](file:///c:/Users/Naween/projects/polymath-platform/packages/core/src/logic/permissions/localEvaluator.native.ts)) |
 | **Database Theft at Rest** | forensic dumps of SQL data from stolen physical storage. | High / High | **SQLCipher AES-256 Encryption** using dynamic, hardware-backed keys resolved from iOS Keychain or Android Keystore. | Native Standard |
 
 ---
 
-## 2. Dynamic Secret Management
+## 2. Asymmetric Snapshot Signing
 
-HMAC signature validation uses the `TextEncoder` and `crypto.subtle.importKey` interface to verify the integrity of the downloaded permission lease.
+Snapshot validation uses the `TextEncoder` and `crypto.subtle.verify` interface to verify the downloaded permission lease with an Ed25519 public key.
 
 ```mermaid
 sequenceDiagram
     participant S as Sanctuary Cloud
     participant C as Mobile Client
-    participant K as iOS/Android Keystore
+    participant K as App Configuration / Keychain
 
     S->>C: Syncs Signed PermissionSnapshot (via PowerSync stream)
-    C->>K: Resolves environment secrets (EXPO_PUBLIC_HMAC_SECRET_KEY)
+    C->>K: Resolves public key (EXPO_PUBLIC_SNAPSHOT_SIGNING_PUBLIC_KEY)
     C->>C: Reconstructs JSON payload (generatedAt, expiresAt, userId...)
-    C->>C: Validates SubtleCrypto HMAC SHA-256 signature
+    C->>C: Validates SubtleCrypto Ed25519 signature
     alt Signature Valid & Lease Active
         C->>C: Bootstraps local session / evaluates queries
     else Tampered/Expired Signature
@@ -48,12 +48,11 @@ sequenceDiagram
 ```
 
 ### Environment Configuration
-The secret signature key is loaded dynamically from standard configurations, avoiding hardcoded values in production bundles:
+The server private key is protected in CI/operator secrets. Only the matching public key is distributed to clients:
 ```typescript
-const secretKey =
-  process.env.EXPO_PUBLIC_HMAC_SECRET_KEY ||
-  process.env.NEXT_PUBLIC_HMAC_SECRET_KEY ||
-  'default-fallback-secret-for-development';
+const publicKey =
+  process.env.EXPO_PUBLIC_SNAPSHOT_SIGNING_PUBLIC_KEY ||
+  process.env.NEXT_PUBLIC_SNAPSHOT_SIGNING_PUBLIC_KEY;
 ```
 
 ---
@@ -85,5 +84,5 @@ When multiple users authenticate on the same physical device, their respective p
 ### B. Multi-Device Synchronization & Validation
 When the same user accounts are active on multiple physical devices simultaneously:
 1. **Isolated SQLite Instances**: Each physical device hosts its own distinct, isolated instance of the SQLite database and PowerSync transaction queue.
-2. **Stateless Cryptographic Leases**: The permission snapshot generated on the server is stateless. The signature (`HMAC SHA-256`) is bound strictly to the user's context values (`userId`, `schoolId`, `permissions`, etc.) and the expiration lease.
+2. **Stateless Cryptographic Leases**: The permission snapshot generated on the server is stateless. The Ed25519 signature is bound strictly to the user's context values (`userId`, `activeBondId`, `policyVersion`, `permissions`, etc.) and the expiration lease.
 3. **Independent Local Verifications**: Because the verification process uses stateless cryptography, each device can verify the signature independently without needing peer-to-peer handshakes or online validation queries, ensuring seamless offline authorization across all of the user's active devices.

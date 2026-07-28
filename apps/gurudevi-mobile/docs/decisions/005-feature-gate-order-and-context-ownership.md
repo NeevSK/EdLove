@@ -32,6 +32,8 @@ The client may evaluate a different internal order for rendering performance, bu
 
 The canonical commercial context for rollout targeting comes from the entitlement port/store. A user profile pricing field may be used as an input during billing synchronization, but it is not an independent runtime authority. GrowthBook pricing attributes are rollout cohort inputs only.
 
+Commercial requirements have two independent dimensions: `entitlementTier` is hierarchical subscription access (`FREE < PRO < INSTITUTIONAL`), while `entitlementModule` represents an add-on or named capability entitlement. A feature may require either dimension or both.
+
 ## Offline and PowerSync boundary
 
 GrowthBook definition fetch and local snapshot evaluation are independent of PowerSync data synchronization. PowerSync must not be required to resolve the flag that decides whether PowerSync starts. Fresh cached temporary flags may continue within the seven-day window; stale temporary flags fail closed, while documented operational controls retain their emergency safe behavior.

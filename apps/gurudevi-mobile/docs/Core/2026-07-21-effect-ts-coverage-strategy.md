@@ -61,12 +61,12 @@ The codebase endures real pain daily from the gaps Effect fills:
 | `effect` version | `^3.22.0` (latest v3) |
 | `@effect/platform` | Removed — was unused |
 | `.effect.ts` files | None — merged into `attendance.ts` (strategy: in-place, no parallel files) |
-| React hooks | `useSovereignEffect` fixed — accepts `Effect<A, E, never>`, uses `Runtime.defaultRuntime` (no `R` cast) |
+| React hooks | `useSovereignEffect` accepts `Effect<A, E, never>`, uses `Effect.runFork`, guards state updates after cleanup, and interrupts its fiber |
 | Effect usage in API | `attendance.ts` — 4 methods rewritten with Effect internally (retry, timeout, typed errors, Promise boundary) |
 | Consumers using Effect | None yet — `attendanceAPI` still returns Promise (backward compatible); `attendanceAPI$` exports Effect versions |
 | v4 beta references | None |
 | Effect Schema usage | None (all validation via Zod v4) |
-| Layer/DI usage | None |
+| Layer/DI usage | GrowthManager has an experimental `Context.Tag`/`Layer` composition module; no broad migration is claimed |
 | Stream usage | None |
 
 ---

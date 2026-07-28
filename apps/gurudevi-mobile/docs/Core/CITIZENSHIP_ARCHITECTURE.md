@@ -5,17 +5,21 @@ It is intentionally aligned with the identity contract in `packages/core/docs/ID
 
 ## Core Model
 
-The platform now treats identity as four separate axes:
+The platform treats identity as separate axes:
 
-- `identity_state`: whether the session is `anonymous`, `onboarded`, or `verified`
+- session mode: no session, Supabase anonymous session, or non-anonymous session
+- onboarding state: whether the user has completed the mandatory setup
+- citizenship: registration/verification level (`THIRD_CLASS`, `SECOND_CLASS`, `FIRST_CLASS`)
 - `display_name`: the name shown in app UI
 - `first_name` / `last_name`: structured profile identity
 - `capacity`: the user’s real domain role in ReBAC
 
 ## Key Rules
 
-- `identity_state` is the only guest/anonymous marker.
-- `guest` is not a capacity or role in the canonical model.
+- Supabase anonymous sessions are valid onboarding identities, not public-only visitors.
+- Anonymous users use the normal Cedar policy surface; there is no guest Cedar policy.
+- A valid authenticated session is not the same as a verified account.
+- `guest` is not a capacity, role, citizenship level, or bond type.
 - `display_name` is the user-facing name.
 - `full_name` is a compatibility mirror only.
 - `username` is a public handle, not a display name or role.
@@ -27,18 +31,19 @@ Citizenship still describes participation depth, but it is separate from guest s
 
 | Level | Name | Meaning |
 | :--- | :--- | :--- |
-| 0 | Wanderer | Anonymous session, local-first or pre-onboarding state |
-| 1 | 2nd Class | Authenticated user with private cloud sync |
-| 2 | 1st Class | Authenticated user with institutional bonds |
+| 3 | Third Class | Anonymous or lowest authenticated registration state |
+| 2 | Second Class | Verified email/provider account |
+| 1 | First Class | Explicitly granted elevated registration/institutional status |
 
 This lifecycle is about participation and data residency, not about role.
 
 ## What Onboarding Owns
 
-Onboarding now owns:
+Onboarding owns:
 
 - `display_name`
-- initial bond / capacity selection
+- explicit primary capacity selection
+- creation of the initial personal-sanctuary bond
 
 Onboarding does not own:
 
@@ -57,10 +62,10 @@ Profile completion now owns:
 
 ## What Auth Bootstrap Owns
 
-Auth bootstrap now owns:
+Auth bootstrap owns:
 
-- `identity_state`
-- initial auth metadata
+- session mode and token validity
+- routing to onboarding when the onboarding contract is incomplete
 
 It should not invent a guest role or a guest capacity.
 
@@ -71,7 +76,7 @@ Database triggers and migrations should:
 - normalize `display_name`
 - mirror `full_name` only for compatibility
 - preserve `first_name`, `last_name`, and `username`
-- keep `identity_state` authoritative for anonymous vs onboarded state
+- keep `is_anonymous`, onboarding completion, and citizenship as separate persisted facts
 
 ## What UI Should Show
 
@@ -84,15 +89,17 @@ Database triggers and migrations should:
 
 Citizenship is still useful as a participation model:
 
-- Wanderer: anonymous session
-- 2nd Class: authenticated, personal cloud
-- 1st Class: authenticated, institution-bound
+- Third Class: anonymous or lowest authenticated registration
+- Second Class: verified email/provider account
+- First Class: explicit elevated/institutional status
 
 But citizenship is not the same thing as role, and it is not the same thing as session state.
 
 ## Decision Summary
 
-- `identity_state` wins for anonymous/onboarded/verified state.
+- session mode wins for runtime authentication state.
+- onboarding completion wins for app-entry readiness.
+- citizenship wins for registration/verification access requirements.
 - `display_name` wins for visible UI name.
 - `first_name` + `last_name` win for structured identity.
 - `capacity` wins for permissions and domain behavior.
@@ -104,8 +111,7 @@ The implementation now follows a pure model:
 
 - no guest capacity
 - no guest role
-- no guest bond type
-- anonymous users are modeled by `identity_state`
-- onboarding collects display name first
+- no guest capacity, role, citizenship, or bond type
+- anonymous users may be onboarded and use a personal-sanctuary bond
+- onboarding collects display name and primary capacity
 - structured identity is completed later
-

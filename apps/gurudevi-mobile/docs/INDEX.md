@@ -24,6 +24,27 @@ These documents are the current authority for capability inventory, rollout, sta
 4. [Legacy Schema Retirement Runbook](./architecture/2026-07-26-feature-flag-schema-retirement-runbook.md) — production-only retirement procedure.
 5. [New Capability and Feature Flag Checklist](./architecture/NEW_FEATURE_CHECKLIST.md) — onboarding procedure for developers and agents.
 6. [Feature Gate Order and Context Ownership](./decisions/005-feature-gate-order-and-context-ownership.md) — authorization, entitlement, rollout, and offline boundaries.
+7. [Feature Access: Local and Server Architecture](./architecture/2026-07-26-feature-access-local-server-architecture.md) — bootstrap context, authority boundaries, and enforcement parity.
+8. [Entity-Bond and Policy Parity Foundation](./architecture/2026-07-26-entity-bond-policy-parity-feature-spec.md) — canonical bond scope, ZenStack/Cedar vocabulary, and offline authority rules.
+9. [Identity, App, Device, and Account Lifecycle](./architecture/identity-app-device-lifecycle.md) — authoritative app/user/device topology, guest conversion, onboarding, citizenship, institutional joining, and entitlement boundaries.
+10. [Feature Lifecycle Future Work](./architecture/feature-lifecycle-future-work.md) — remaining production control-plane, legacy-schema, and governance work.
+11. [Capability Policy Composition Guide](./architecture/capability-policy-composition-guide.md) — how capacity, school type, citizenship, entitlement, platform, and rollout criteria are assigned to the correct authority.
+
+## Platform-wide native capability work
+
+1. [Native Capabilities](../../../native-capabilities/README.md) — middle-out architecture, capability contracts, testing/error/debugging standards, mental models, and roadmap for Rust/UniFFI, Expo modules, and Nitro.
+
+## Reliability and observability authority — read before Effect or telemetry work
+
+1. [Observability and Error Handling Guide](./Core/observability-and-error-handling-guide.md) — day-to-day developer and agent rules.
+2. [Effect, PostHog, Sentry, and OpenTelemetry Boundary](./decisions/2026-07-26-effect-observability-boundary.md) — why each system exists, what it owns, and what is intentionally deferred.
+3. [Sanctuary API Observability and OpenTelemetry Plan](../../sanctuary-api/docs/architecture/2026-07-26-observability-and-tracing-plan.md) — backend-first tracing scope and mobile deferral criteria.
+4. [Effect and OpenTelemetry Coherence and Coverage Audit](./architecture/2026-07-26-effect-otel-coherence-and-coverage-audit.md) — evidence-based coverage matrix, coherence rules, gaps, and completion definition.
+5. [Effect and OpenTelemetry Production Roadmap](./Core/effect-otel-production-roadmap.md) — living implementation order, exit gates, and review rules.
+6. [Product Analytics and PostHog Contract](./architecture/2026-07-26-product-analytics-posthog-spec.md) — canonical product dimensions, event vocabulary, privacy boundaries, and PostHog ownership.
+7. [Product Analytics Developer Guide](./architecture/product-analytics-guide.md) — practical rules for adding product events.
+8. [Effect-TS Coding Guide](./Core/effect-ts-coding-guide.md) — Effect patterns and anti-patterns.
+9. [Product Analytics Future Work](./architecture/product-analytics-future-work.md) — remaining privacy, event-quality, dashboard, and offline-verification work.
 
 ---
 
@@ -101,7 +122,7 @@ These documents are the current authority for capability inventory, rollout, sta
 *   [Technical Architecture and Constraints](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/Core/technical-architecture-constraints.md) - Multi-tenant RLS, offline-first sync (PowerSync), device boundaries.
 *   [Identity and Access Management (IAM)](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/Core/identity-and-access-management.md) - Cedar-style ReBAC, active bonds, offline attributes, and device trust.
 *   [Auth and Onboarding Highway Boundaries](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/architecture/AUTH_ONBOARDING_HIGHWAY_BOUNDARIES.md) - Canonical auth bootstrap helpers, route gating, secure session storage, and onboarding state rules.
-*   [Security and Data Integrity](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/Core/security-and-data-integrity.md) - PostgreSQL RLS, explicit sovereignty grants (ADR-002), HMAC signatures.
+*   [Security and Data Integrity](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/Core/security-and-data-integrity.md) - PostgreSQL RLS, explicit sovereignty grants (ADR-002), Ed25519-signed authorization artifacts.
 *   [Offline-Online Synchronization Spec](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/Core/offline-online-sync-spec.md) - PowerSync queue execution, idempotency verification, Last-Write-Wins, and soft deletes.
 *   [Web-Native Compatibility Guide](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/Core/web-native-compatibility-guide.md) - Platform resolutions, native package web shims, and layout responsive shells.
 *   [Sanctuary API and Backend Spec](file:///c:/Users/Naween/projects/polymath-platform/apps/gurudevi-mobile/docs/Core/sanctuary-api-and-backend-spec.md) - Dynamic Hono route schemas, ZenStack Zod v4 validation, and MCP hosts.

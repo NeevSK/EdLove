@@ -321,23 +321,26 @@ yield* Effect.forkDaemon(
 ```typescript
 // ✅ CORRECT — graceful degradation with logging
 pipe(
-  Effect.promise(() => audit.log({ ... })),
+  Effect.tryPromise({
+    try: () => audit.log({ ... }),
+    catch: (e) => new AuditError({ cause: e }),
+  }),
   Effect.catchAll((e) => Effect.logError(`Audit logging crashed: ${e}`)),
   Effect.asVoid,
 );
 ```
 
-### 7.5 React Hooks (broken — being fixed)
+### 7.5 React Hooks
 
 ```typescript
-// ❌ CURRENT — unsound Runtime cast, zero consumers
-const runtime = Runtime.defaultRuntime as Runtime.Runtime<R>;
-
-// ✓ FIX — accept Layer and build runtime from it
+// ✅ Current scope — effects must require no environment (`R = never`).
+// useSovereignEffect uses Effect.runFork and interrupts the fiber on cleanup.
 export function useSovereignEffect<A, E, R>(
-  effect: Effect.Effect<A, E, R>,
-  options?: { layer?: Layer.Layer<never, E, R>; deps?: React.DependencyList },
+  effect: Effect.Effect<A, E, never>,
+  deps?: React.DependencyList,
 ) { ... }
+
+// FUTURE — introduce ManagedRuntime only when a hook genuinely needs `R`.
 ```
 
 ---
@@ -492,7 +495,10 @@ export const AttendanceManagerLive = Layer.effect(
           catch: (e) => new AttendanceError({ message: 'Failed to record', cause: e }),
         }),
       getByDate: (...args) =>
-        Effect.promise(() => db.attendance.getByDate(...args)),
+        Effect.tryPromise({
+          try: () => db.attendance.getByDate(...args),
+          catch: (e) => new AttendanceError({ message: 'Failed to load attendance', cause: e }),
+        }),
     });
   }),
 );
@@ -687,17 +693,18 @@ Domain Service          (Effect — typed errors, retry, DI)
 Infrastructure          (Supabase client, HTTP, SovereignError boundary)
 ```
 
-### 11.2 Current Hook Pattern (broken — being fixed)
+### 11.2 Current Hook Pattern
 
 ```typescript
-// ❌ DO NOT USE — Runtime.defaultRuntime cast is unsound, zero consumers
-const runtime = Runtime.defaultRuntime as Runtime.Runtime<R>;
+// ✅ Current hook scope — only for effects with R = never.
+// useSovereignEffect uses Effect.runFork and interrupts its fiber on cleanup.
+// Do not pass environment-dependent effects until a ManagedRuntime is provided.
 ```
 
 ### 11.3 Target Hook Pattern
 
 ```typescript
-// ✅ TARGET — uses ManagedRuntime with Layer
+// FUTURE — use ManagedRuntime only when the hook must provide an Effect environment.
 function useSovereignEffect<A, E, R>(
   effect: Effect.Effect<A, E, R>,
   layer?: Layer.Layer<never, E, R>,
@@ -842,7 +849,10 @@ function readStorage$(key: string): Effect.Effect<string | null> {
 }
 
 function writeStorage$(key: string, data: unknown): Effect.Effect<void> {
-  return Effect.promise(async () => { await storage.setItem(key, JSON.stringify(data) ?? ''); }).pipe(
+  return Effect.tryPromise({
+    try: async () => { await storage.setItem(key, JSON.stringify(data) ?? ''); },
+    catch: (e) => new StorageError({ cause: e }),
+  }).pipe(
     Effect.catchAll((e) =>
       Effect.sync(() => { console.error(`Failed to write ${key}:`, e); }),
     ),
@@ -921,7 +931,10 @@ Consuming in an Effect workflow:
 ```typescript
 Effect.gen(function* () {
   const growth = yield* GrowthManagerTag;
-  yield* Effect.promise(() => growth.emitSignal({ user_id, event_type, event_metadata }));
+  yield* Effect.tryPromise({
+    try: () => growth.emitSignal({ user_id, event_type, event_metadata }),
+    catch: (e) => new GrowthError({ cause: e }),
+  });
 });
 ```
 
