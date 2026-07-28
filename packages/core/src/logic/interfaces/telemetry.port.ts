@@ -4,11 +4,11 @@
  */
 export interface ITelemetry {
   init: (options: { dsn: string; environment: string; release?: string }) => void;
-  captureException: (error: any, context?: any) => void;
+  captureException: (error: unknown, context?: Record<string, unknown>) => void;
   addBreadcrumb: (breadcrumb: {
     message: string;
     category?: string;
-    data?: any;
+    data?: Record<string, unknown>;
     level?: string;
   }) => void;
   setUser: (user: { id: string; email?: string; username?: string } | null) => void;

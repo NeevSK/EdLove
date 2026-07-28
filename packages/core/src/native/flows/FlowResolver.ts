@@ -1,4 +1,5 @@
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { trackProductEvent } from '@/lib/monitoring/posthog';
 // Note: We'll use dynamic imports or passing refs for communityAPI to avoid circular deps if necessary,
 // but for now let's assume core is the base.
 import type { Capacity, QRPayload } from '@/types';
@@ -87,7 +88,7 @@ export class FlowResolver {
   private static async executeJoinSchool(
     schoolId: string,
     groupId: string,
-    userId: string,
+    _userId: string,
     handle?: string,
   ): Promise<FlowResult> {
     let finalSchoolId = schoolId;
@@ -107,30 +108,12 @@ export class FlowResolver {
       }
     }
 
-    // 1. Update user's school association
-    const { error: userError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-      .from('users')
-      .update({ school_id: finalSchoolId })
-      .eq('id', userId);
-
-    if (userError) throw userError;
-
-    // 2. Join the automated school community group
-    const { error: groupError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-      .from('group_members')
-      .upsert({
-        group_id: finalGroupId,
-        user_id: userId,
-        status: 'active',
-        is_admin: false,
-      });
-
-    if (groupError) console.warn('[FlowResolver] Group join warning:', groupError);
-
     return {
-      outcome: 'success',
-      message: 'Successfully joined school and community!',
+      outcome: 'redirect',
+      message:
+        'School discovered. Use an official school invite code to complete membership and receive a school bond.',
       intent: 'GOTO_CLASSROOM',
+      params: { schoolId: finalSchoolId, groupId: finalGroupId, requiresOfficialInvite: true },
     };
   }
 
@@ -265,6 +248,8 @@ export class FlowResolver {
           message: data.message || 'Failed to claim invite',
         };
       }
+
+      trackProductEvent('school_bond_claimed');
 
       return {
         outcome: 'success',

@@ -59,6 +59,15 @@ export const UserContextSchema = z.preprocess(
 
     primaryCapacity: z.string().nullish().default(null),
     activeBond: BondSchema.nullish().default(null),
+    activeEntityId: z.string().nullish().default(null),
+    activeEntityType: z.string().nullish().default(null),
+    schoolType: z.string().nullish().default(null),
+    onboarding_completed: z.boolean().nullish().default(false),
+    effective_entitlement_scope: z
+      .enum(['individual', 'active_bond', 'active_entity', 'add_on'])
+      .nullish()
+      .default('individual'),
+    effective_entitlement_tier: z.enum(['FREE', 'PRO', 'INSTITUTIONAL']).nullish().default('FREE'),
     capacity: CapacitySchema.nullish().default(null),
     traits: z.array(z.string()).nullish().default([]),
 
@@ -83,7 +92,12 @@ export const UserContextSchema = z.preprocess(
     isPersonal: z.boolean().nullish().default(false),
 
     tier: z.string().nullish().default('free'),
-    citizenship: z.enum(['WANDERER', 'SECOND_CLASS', 'FIRST_CLASS']).default('WANDERER'),
+    citizenship: z
+      .preprocess(
+        (value) => (value === 'WANDERER' ? 'THIRD_CLASS' : value),
+        z.enum(['THIRD_CLASS', 'SECOND_CLASS', 'FIRST_CLASS']),
+      )
+      .default('THIRD_CLASS'),
     pricing_tier: z.enum(['FREE', 'PRO', 'INSTITUTIONAL']).default('FREE'),
     features: z
       .array(z.string())
@@ -121,5 +135,10 @@ if ((import.meta as any).vitest) {
       updated_at: new Date().toISOString(),
     };
     expect(() => UserSchema.parse(invalidUser)).toThrow();
+  });
+
+  it('defaults authenticated context citizenship to THIRD_CLASS and normalizes WANDERER', () => {
+    expect(UserContextSchema.parse({}).citizenship).toBe('THIRD_CLASS');
+    expect(UserContextSchema.parse({ citizenship: 'WANDERER' }).citizenship).toBe('THIRD_CLASS');
   });
 }

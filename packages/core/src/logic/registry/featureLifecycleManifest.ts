@@ -154,9 +154,7 @@ export type FeatureFlagKey = keyof typeof FEATURE_FLAG_MANIFEST;
 
 export function validateFeatureFlagManifest(): void {
   Object.entries(FEATURE_FLAG_MANIFEST).forEach(([key, metadata]) => {
-    FeatureFlagMetadataSchema.parse(metadata, {
-      path: [key],
-    });
+    FeatureFlagMetadataSchema.parse(metadata);
 
     const declaredDefault = DEFAULT_FEATURE_FLAGS[key as keyof typeof DEFAULT_FEATURE_FLAGS];
     if (declaredDefault !== metadata.safeDefault) {
@@ -255,12 +253,9 @@ export function resolveFeatureFlagClass(key: string): FeatureFlagMetadata['class
   return FEATURE_FLAG_MANIFEST[key as keyof typeof FEATURE_FLAG_MANIFEST]?.class ?? 'operational';
 }
 
-export function resolveFeatureFlagValue(
-  flags: Record<string, boolean | string>,
-  key: string,
-): boolean {
+export function resolveFeatureFlagValue(flags: object, key: string): boolean {
   if (Object.prototype.hasOwnProperty.call(flags, key)) {
-    const value = flags[key];
+    const value = (flags as Record<string, boolean | string>)[key];
     return typeof value === 'boolean' ? value : value === 'true';
   }
 

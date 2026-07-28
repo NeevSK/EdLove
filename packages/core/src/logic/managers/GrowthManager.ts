@@ -16,6 +16,7 @@ import type {
   UserGrowthState,
 } from '@/types/Growth';
 import type { IGrowthPort } from '@/logic/ports/growth.port';
+import { tryPromise } from '@/utils/effect';
 
 export * from '@/types/Growth';
 
@@ -123,7 +124,7 @@ const WHISPERED_MOMENT_SPECS: WhisperedMomentSpec[] = [
 
 function fireAndForget<T>(fn: () => Promise<T>, label: string): Effect.Effect<void, never, never> {
   return Effect.forkDaemon(
-    Effect.promise(fn).pipe(
+    tryPromise(fn).pipe(
       Effect.catchAll((e) => Effect.logError(`[GrowthManager] ${label} failed`, e)),
       Effect.asVoid,
     ),
@@ -139,7 +140,7 @@ export class GrowthManager {
     event_metadata?: Record<string, unknown>;
   }): void {
     Effect.runFork(
-      Effect.promise(() => this.emitSignal(input)).pipe(
+      tryPromise(() => this.emitSignal(input)).pipe(
         Effect.catchAll((e) => Effect.logError('[GrowthManager] emitSilent failed', e)),
       ),
     );
@@ -315,7 +316,7 @@ export class GrowthManager {
       }
 
       Effect.runFork(
-        Effect.promise(() =>
+        tryPromise(() =>
           this.growthPort.recordCrystalDiscovery({
             user_id: userId,
             crystal_type:
@@ -449,22 +450,22 @@ export class GrowthManager {
       Effect.gen(function* () {
         const [challenges, compasses] = yield* Effect.all(
           [
-            Effect.promise(() =>
+            tryPromise(() =>
               self.growthPort.getChallenges({ schoolId, classroomId, status: 'active' }),
             ),
-            Effect.promise(() =>
+            tryPromise(() =>
               self.growthPort.getPersonalCompasses({ userId, status: 'active' }),
             ),
           ],
           { concurrency: 2 },
         );
 
-        const updates: Array<Effect.Effect<void>> = [];
+        const updates: Array<Effect.Effect<void, Error>> = [];
 
         for (const challenge of challenges) {
           if (challenge.metric === metric) {
             updates.push(
-              Effect.promise(() =>
+              tryPromise(() =>
                 self.growthPort.updateChallenge(challenge.id, {
                   current_count: (challenge.current_count || 0) + 1,
                 }),
@@ -476,7 +477,7 @@ export class GrowthManager {
         for (const compass of compasses) {
           if (compass.metric === metric) {
             updates.push(
-              Effect.promise(() =>
+              tryPromise(() =>
                 self.growthPort.updatePersonalCompass(compass.id, {
                   current_count: (compass.current_count || 0) + 1,
                 }),
@@ -531,7 +532,7 @@ export class GrowthManager {
     await Effect.runPromise(
       Effect.all(
         compasses.map((compass) =>
-          Effect.promise(() =>
+          tryPromise(() =>
             this.growthPort.updatePersonalCompass(compass.id, { status: 'expired' }),
           ),
         ),

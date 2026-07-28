@@ -1,5 +1,5 @@
 import { GrowthBook, setPolyfills } from '@growthbook/growthbook';
-import { trackEvent } from '@/lib/monitoring/posthog';
+import { trackProductEvent } from '@/lib/monitoring/posthog';
 import { storage } from '@/lib/storage';
 import type {
   FeatureRolloutSnapshot,
@@ -19,6 +19,7 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
   private growthbook: GrowthBook;
   private readonly initialization: Promise<void>;
   private snapshotSource: FeatureRolloutSnapshot['source'] = 'computed';
+  private currentContext: UserContext | null = null;
 
   constructor(apiHost?: string, clientKey?: string) {
     this.growthbook = new GrowthBook({
@@ -54,6 +55,7 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
 
   async resolveFlags(context: UserContext): Promise<FeatureRolloutSnapshot> {
     await this.initialization;
+    this.currentContext = context;
 
     // Map UserContext to GrowthBook attributes
     const attributes = {
@@ -65,6 +67,9 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
       primaryCapacity: context.primaryCapacity,
       activeBond: context.activeBond,
       bonds: context.bonds,
+      school_type: context.schoolType,
+      effective_entitlement_scope: context.effective_entitlement_scope,
+      effective_entitlement_tier: context.effective_entitlement_tier,
       isAnonymous: context.isAnonymous,
       hasGlobalAccess: context.hasGlobalAccess,
     };
@@ -101,9 +106,25 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
   }
 
   trackExposure(flagKey: string, value: boolean | string): void {
-    trackEvent('feature_flag_exposure', {
-      flag_key: flagKey,
-      flag_value: value,
-    });
+    trackProductEvent(
+      'feature_exposed',
+      {
+        feature_id: flagKey,
+        flag_value: value,
+      },
+      {
+        identity_mode: this.currentContext?.isAnonymous ? 'anonymous' : 'authenticated',
+        citizenship: this.currentContext?.citizenship,
+        onboarding_completed: Boolean(this.currentContext?.onboarding_completed),
+        active_capacity: this.currentContext?.activeBond?.capacity ?? null,
+        active_entity_type: this.currentContext?.activeEntityType ?? null,
+        school_type: this.currentContext?.schoolType ?? null,
+        personal_pricing_tier: this.currentContext?.pricing_tier === 'PRO' ? 'PRO' : 'FREE',
+        effective_entitlement_scope:
+          this.currentContext?.effective_entitlement_scope ?? 'individual',
+        effective_entitlement_tier: this.currentContext?.effective_entitlement_tier ?? 'FREE',
+        analytics_schema_version: 1,
+      },
+    );
   }
 }

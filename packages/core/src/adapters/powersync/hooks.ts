@@ -7,8 +7,14 @@
  *
  * @see https://docs.powersync.com/usage/use-case-examples/drizzle
  */
+
 import { and, desc, eq } from 'drizzle-orm';
-import { getDrizzleDB } from '@/adapters/powersync/database';
+import { useEffect } from 'react';
+import {
+  getDrizzleDB,
+  registerPolicyVersionHash,
+  setActiveCapabilityToken,
+} from '@/adapters/powersync/database';
 import { useQuery, useStatus } from '@/adapters/powersync/powersync-react-shim';
 import {
   type Attendance,
@@ -151,16 +157,18 @@ export function usePolicyVersion(): PolicyVersion | null {
  */
 let _lastPolicyHash: string | null = null;
 
-export function usePolicyVersionInvalidation(): void {
+export function usePolicyVersionInvalidation(onInvalidated?: () => void): void {
   const version = usePolicyVersion();
 
-  if (version && version.hash !== _lastPolicyHash) {
-    const { setActiveCapabilityToken, registerPolicyVersionHash } = require('./database');
+  useEffect(() => {
+    if (!version || version.hash === _lastPolicyHash) return;
+
     registerPolicyVersionHash(version.hash);
     if (_lastPolicyHash !== null) {
-      // Hash changed — invalidate tokens
+      // Hash changed — invalidate tokens and all locally cached Cedar decisions.
       setActiveCapabilityToken(null);
+      onInvalidated?.();
     }
     _lastPolicyHash = version.hash;
-  }
+  }, [onInvalidated, version]);
 }

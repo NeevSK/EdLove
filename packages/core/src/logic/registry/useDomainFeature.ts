@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import { useSanctuaryFeature } from '@/logic/permissions/hooks/useSanctuaryFeature';
 import type { SanctuaryFeatureResult } from '@/logic/permissions/sanctuaryFeature';
 import { getDomainEntry } from '@/logic/registry/appCatalog';
@@ -27,6 +28,7 @@ export function useDomainFeature(domainId: string): DomainFeatureResult {
     entry.capabilityRequirement.subject,
     {
       citizenshipRequired: entry.citizenshipRequired,
+      platformSupported: Platform.OS === 'web' ? entry.webSupport : entry.mobileSupport,
       entitlementModule: entry.entitlementModule,
       entitlementTier: entry.entitlementTier,
       flagKey: entry.flagKey,

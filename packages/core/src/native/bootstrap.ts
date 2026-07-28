@@ -38,6 +38,10 @@ export async function bootstrapPlatform() {
     deviceIdentity.registerAdapter(new SimulatorDeviceIdentityAdapter());
   } else {
     cryptoManager.registerAdapter(new WebCryptoAdapter());
+    const { BrowserSentryTelemetryAdapter } = await import(
+      '@/adapters/web/SentryTelemetryAdapter'
+    );
+    telemetry.registerAdapter(new BrowserSentryTelemetryAdapter());
     networkManager.registerAdapter(new WebNetworkAdapter());
   }
 

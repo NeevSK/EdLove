@@ -1,14 +1,14 @@
 import { marksToGPA } from '@/lib/grading';
-import { APIError } from '@/types/API';
-import type { LessonMaterial } from '@/types/LessonMaterial';
 import type { EducationalRepository } from '@/logic/domains/educational/ports';
+import type { CommunityManager } from '@/logic/managers/CommunityManager';
+import type { GrowthManager } from '@/logic/managers/GrowthManager';
+import type { ProfileManager } from '@/logic/managers/ProfileManager';
 import type { INotificationPort } from '@/logic/ports/notification.port';
 import type { ISessionPort } from '@/logic/ports/session.port';
 import type { Assignment, Classroom, Lesson } from '@/logic/schemas/classroom.schema';
 import type { ClassroomGradingSettings } from '@/logic/schemas/grading.schema';
-import type { CommunityManager } from '@/logic/managers/CommunityManager';
-import type { GrowthManager } from '@/logic/managers/GrowthManager';
-import type { ProfileManager } from '@/logic/managers/ProfileManager';
+import { APIError } from '@/types/API';
+import type { LessonMaterial } from '@/types/LessonMaterial';
 
 /**
  * EducationalManager
@@ -260,9 +260,9 @@ export class EducationalManager {
       const result = await this.repo.updateSchoolJoinRequest(requestId, status);
 
       if (status === 'approved' && result) {
-        // Orchestrate side-effects: update user school and notify
-        await this.profile.updateProfile(result.user_id, { school_id: result.school_id });
-
+        // Approval notification is retained, but school membership must be
+        // completed through the official invite-claim transaction. A profile
+        // school_id write is never sufficient to create an institutional bond.
         await this.notification.createNotification(
           result.user_id,
           'join_request_approved',

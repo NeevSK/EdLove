@@ -7,8 +7,62 @@ import type {
   IAuthorizationPort,
   IEntitlementPort,
 } from '../../index';
+import { satisfiesEntitlementRequirement } from '../entitlement.port';
 
 describe('Hexagonal Ports Interfaces Compilation & Contract Verification', () => {
+  it('evaluates subscription tiers and add-on modules independently', () => {
+    const snapshot: EntitlementSnapshot = {
+      pricingTier: 'PRO',
+      activeEntitlements: ['attendance_management'],
+      expirationDate: null,
+    };
+
+    expect(
+      satisfiesEntitlementRequirement(snapshot, {
+        tierAtLeast: 'PRO',
+        modulesAllOf: ['attendance_management'],
+      }),
+    ).toBe(true);
+    expect(
+      satisfiesEntitlementRequirement(snapshot, {
+        tierAtLeast: 'INSTITUTIONAL',
+      }),
+    ).toBe(false);
+  });
+
+  it('keeps institutional grants scoped to the active bond', () => {
+    const snapshot: EntitlementSnapshot = {
+      pricingTier: 'FREE',
+      activeEntitlements: [],
+      expirationDate: null,
+      grants: [
+        {
+          id: 'school-grant',
+          scope: 'active_bond',
+          scopeId: 'bond-school-1',
+          tier: 'INSTITUTIONAL',
+          modules: ['attendance_management'],
+          expiresAt: null,
+          status: 'ACTIVE',
+        },
+      ],
+    };
+
+    expect(
+      satisfiesEntitlementRequirement(snapshot, {
+        scope: 'active_bond',
+        tierAtLeast: 'INSTITUTIONAL',
+        modulesAllOf: ['attendance_management'],
+      }),
+    ).toBe(true);
+    expect(
+      satisfiesEntitlementRequirement(snapshot, {
+        tierAtLeast: 'PRO',
+        modulesAllOf: ['attendance_management'],
+      }),
+    ).toBe(false);
+  });
+
   it('verifies IEntitlementPort contract behavior with mock implementation', async () => {
     const mockEntitlementPort: IEntitlementPort = {
       getEntitlements: vi.fn(async (userId: string): Promise<EntitlementSnapshot> => {

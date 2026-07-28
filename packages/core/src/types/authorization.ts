@@ -11,7 +11,8 @@ export type Action =
   | 'resolve'
   | 'purchase'
   | 'access'
-  | 'join';
+  | 'join'
+  | 'use_ai';
 
 export type Subject =
   | 'all'
@@ -60,6 +61,7 @@ export type Subject =
   | 'FounderPulse'
   | 'AdminPulse'
   | 'AIAssistantScale'
+  | 'AIAssistant'
   | 'SchoolForest'
   | 'HealthRecords'
   | 'Library'

@@ -1,4 +1,13 @@
-import type { EntitlementSnapshot } from '@/logic/ports/entitlement.port';
+import {
+  type FeatureAccessContext,
+  isFeatureAccessContextReady,
+} from '@/logic/permissions/accessContext';
+import {
+  type EntitlementScope,
+  type EntitlementSnapshot,
+  meetsSubscriptionTier,
+  resolveScopedEntitlement,
+} from '@/logic/ports/entitlement.port';
 import {
   CITIZENSHIP,
   type CitizenshipLevel,
@@ -8,9 +17,14 @@ import {
 
 export { CITIZENSHIP, type CitizenshipLevel, type CitizenshipName, meetsCitizenship };
 
-export type PricingTier = 'FREE' | 'PRO' | 'INSTITUTIONAL';
+export type PricingTier = EntitlementSnapshot['pricingTier'];
 export type FlagType = 'operational' | 'release' | 'development' | 'beta' | 'experiment';
 export type FeatureLifecycleState = 'development' | 'beta' | 'live' | 'deprecated';
+
+/** Subscription tiers are ordered; higher tiers include lower-tier access. */
+export function meetsPricingTier(current: PricingTier, required: PricingTier): boolean {
+  return meetsSubscriptionTier(current, required);
+}
 
 export type SanctuaryFeatureResult =
   | { permitted: true; featureKey?: string }
@@ -27,6 +41,7 @@ export type SanctuaryFeatureResult =
       reason: 'entitlement';
       required: PricingTier;
       current: PricingTier;
+      scope?: EntitlementScope;
       featureKey?: string;
     }
   | { permitted: false; reason: 'authz'; policy?: string; featureKey?: string }
@@ -36,24 +51,17 @@ export type SanctuaryFeatureResult =
       flagKey: string;
       flagType: FlagType;
       featureKey?: string;
-    };
+    }
+  | { permitted: false; reason: 'platform'; featureKey?: string };
 
-export interface SanctuaryEvaluationContext {
-  cedarSnapshotLoaded: boolean;
-  entitlementManifestLoaded: boolean;
-  citizenship: CitizenshipLevel;
-  entitlement: EntitlementSnapshot;
-  cedarDecision: 'allow' | 'deny' | 'no_decision';
-  cedarPolicy?: string;
-  flagActive: boolean;
-  flagKey: string;
-  flagType: FlagType;
-}
+export type SanctuaryEvaluationContext = FeatureAccessContext;
 
 export interface FeatureRequirement {
   citizenshipRequired: CitizenshipLevel;
+  platformSupported?: boolean;
   entitlementModule?: string;
   entitlementTier?: PricingTier;
+  entitlementScope?: EntitlementScope;
   flagKey?: string;
   lifecycleState?: FeatureLifecycleState;
 }
@@ -62,8 +70,12 @@ export function sanctuaryFeature(
   ctx: SanctuaryEvaluationContext,
   requirement: FeatureRequirement,
 ): SanctuaryFeatureResult {
-  if (!ctx.cedarSnapshotLoaded || !ctx.entitlementManifestLoaded) {
+  if (!isFeatureAccessContextReady(ctx)) {
     return { permitted: false, reason: 'not_initialized' };
+  }
+
+  if (requirement.platformSupported === false) {
+    return { permitted: false, reason: 'platform' };
   }
 
   // Gate 1 — citizenship
@@ -84,16 +96,36 @@ export function sanctuaryFeature(
 
   // Gate 3 — entitlement. Entitlement controls commercial access; it never
   // grants authorization and is evaluated only after Cedar permits the actor.
-  if (requirement.entitlementModule) {
-    if (!ctx.entitlement.activeEntitlements.includes(requirement.entitlementModule)) {
-      const requiredTier = requirement.entitlementTier ?? 'PRO';
-      return {
-        permitted: false,
-        reason: 'entitlement',
-        required: requiredTier,
-        current: ctx.entitlement.pricingTier,
-      };
-    }
+  // A tier is the subscription level; a module is an independent add-on or
+  // capability entitlement. When both are declared, both must pass.
+  const entitlement = resolveScopedEntitlement(
+    ctx.entitlement,
+    requirement.entitlementScope ?? 'individual',
+  );
+  if (
+    requirement.entitlementTier &&
+    !meetsPricingTier(entitlement.pricingTier, requirement.entitlementTier)
+  ) {
+    return {
+      permitted: false,
+      reason: 'entitlement',
+      required: requirement.entitlementTier,
+      current: entitlement.pricingTier,
+      ...(requirement.entitlementScope ? { scope: requirement.entitlementScope } : {}),
+    };
+  }
+
+  if (
+    requirement.entitlementModule &&
+    !entitlement.activeEntitlements.includes(requirement.entitlementModule)
+  ) {
+    return {
+      permitted: false,
+      reason: 'entitlement',
+      required: requirement.entitlementTier ?? 'PRO',
+      current: entitlement.pricingTier,
+      ...(requirement.entitlementScope ? { scope: requirement.entitlementScope } : {}),
+    };
   }
 
   // Cross-cut — feature lifecycle and rollout

@@ -12,6 +12,7 @@ import { growthSignalsAPI } from '@/api/growthSignals';
 import { identityAPI } from '@/api/identity';
 import { impactRipplesAPI } from '@/api/impactRipples';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { tryPromise } from '@/utils/effect';
 
 /**
  * Circles API (formerly Groups)
@@ -126,7 +127,7 @@ export const circleAPI = {
 
     if (group?.creator_id && group.creator_id !== userId) {
       Effect.runFork(
-        Effect.promise(() =>
+        tryPromise(() =>
           impactRipplesAPI.createRipple({
             recipientUserId: group.creator_id,
             actorUserId: userId,

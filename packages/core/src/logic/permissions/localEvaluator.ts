@@ -1,10 +1,10 @@
 import { eq } from 'drizzle-orm';
 import { getDrizzleDB, registerPermissionValidator } from '@/adapters/powersync/database';
 import { cedarPolicies, classrooms, schools } from '@/adapters/powersync/schema';
-import { evaluateShape2 } from '@/logic/permissions/cedarClientEvaluator';
 import { deviceTrustAPI } from '@/api/deviceTrust';
 import { DeviceTrustEngine } from '@/lib/security/deviceTrust';
 import { isAnonymousIdentity } from '@/logic/auth/identityState';
+import { evaluateShape2 } from '@/logic/permissions/cedarClientEvaluator';
 import type { UserContext } from '@/logic/schemas/user.schema';
 import type { Action, Subject } from '@/types/authorization';
 
@@ -98,7 +98,8 @@ export async function checkLocalPermission(params: {
       params.resourceType as string,
       params.resourceId,
     );
-    const classroomId = params.userContext.classroomId || legacyContext.classroom_id || null;
+    const classroomId =
+      params.userContext.classroomId || (legacyContext.classroom_id as string | undefined) || null;
     const isAnonymous = isAnonymousIdentity({
       email: params.userContext.email ?? (legacyContext.email as string | null | undefined),
       is_anonymous: legacyContext.is_anonymous as boolean | null | undefined,
@@ -112,8 +113,14 @@ export async function checkLocalPermission(params: {
           id: params.userContext.userId || (legacyContext.user_id as string) || '',
           attrs: {
             school_id:
-              params.userContext.schoolId ||
-              (legacyContext.school_id as string | undefined) ||
+              params.userContext.schoolId || (legacyContext.school_id as string | undefined) || '',
+            active_entity_id:
+              params.userContext.activeEntityId ||
+              (legacyContext.active_entity_id as string | undefined) ||
+              '',
+            active_entity_type:
+              params.userContext.activeEntityType ||
+              (legacyContext.active_entity_type as string | undefined) ||
               '',
             capacity: isAnonymous ? 'member' : params.userContext.capacity || '',
             classroom_ids: classroomId ? [classroomId] : [],

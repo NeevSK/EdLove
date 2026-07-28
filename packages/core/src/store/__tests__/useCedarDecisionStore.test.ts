@@ -6,6 +6,9 @@ const mockDrizzle = {
     permissionSnapshots: {
       findFirst: vi.fn(),
     },
+    policyVersion: {
+      findFirst: vi.fn(),
+    },
   },
 };
 
@@ -20,7 +23,9 @@ vi.mock('../../logic/permissions/signature', () => ({
 const MOCK_SNAPSHOT = {
   id: 'snap-1',
   userId: 'user-123',
+  activeBondId: 'school-1',
   schoolId: 'school-1',
+  policyVersion: 'policy-v1',
   generatedAt: '2026-07-23T00:00:00.000Z',
   expiresAt: '2027-07-23T00:00:00.000Z',
   permissions: JSON.stringify({
@@ -39,8 +44,10 @@ describe('useCedarDecisionStore', () => {
       snapshotLoaded: false,
       isLoading: false,
       error: null,
+      snapshotScopeId: null,
     });
     vi.clearAllMocks();
+    mockDrizzle.query.policyVersion.findFirst.mockResolvedValue({ hash: 'policy-v1' });
   });
 
   describe('loadDecisions', () => {
@@ -67,6 +74,17 @@ describe('useCedarDecisionStore', () => {
         School: { read: 'allow', manage: 'allow' },
         StudentDashboard: { read: 'allow' },
       });
+    });
+
+    it('records the active bond scope for the loaded snapshot', async () => {
+      mockDrizzle.query.permissionSnapshots.findFirst.mockResolvedValue(MOCK_SNAPSHOT);
+
+      await useCedarDecisionStore.getState().loadDecisions('user-123', 'school-1');
+
+      expect(useCedarDecisionStore.getState().snapshotScopeId).toBe('school-1');
+      expect(mockDrizzle.query.permissionSnapshots.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({ where: expect.anything() }),
+      );
     });
 
     it('sets snapshotLoaded to false when no snapshot record exists', async () => {
@@ -119,7 +137,9 @@ describe('useCedarDecisionStore', () => {
       mockDrizzle.query.permissionSnapshots.findFirst.mockResolvedValue(MOCK_SNAPSHOT);
       await useCedarDecisionStore.getState().loadDecisions('user-123');
 
-      expect(useCedarDecisionStore.getState().getDecision('NonExistent', 'read')).toBe('no_decision');
+      expect(useCedarDecisionStore.getState().getDecision('NonExistent', 'read')).toBe(
+        'no_decision',
+      );
     });
 
     it('returns no_decision when decisions not loaded', () => {

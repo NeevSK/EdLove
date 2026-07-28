@@ -85,6 +85,7 @@ export const DomainEntrySchema = z.object({
   }),
   entitlementModule: z.string().optional(),
   entitlementTier: z.enum(['FREE', 'PRO', 'INSTITUTIONAL']).optional(),
+  entitlementScope: z.enum(['individual', 'active_bond', 'active_entity', 'add_on']).optional(),
 
   // ── UI / routing ──────────────────────────────────────────────────
   tabDomain: TabDomainSchema,

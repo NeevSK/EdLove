@@ -1,5 +1,7 @@
 import { useCallback, useMemo } from 'react';
+import { resolveBondScope } from '@/logic/permissions/bondScope';
 import { CITIZENSHIP, sanctuaryFeature } from '@/logic/permissions/sanctuaryFeature';
+import { resolveScopedEntitlement } from '@/logic/ports/entitlement.port';
 import {
   resolveFeatureFlagClass,
   resolveFeatureFlagValue,
@@ -20,17 +22,30 @@ import type { Action, Subject } from '@/types/authorization';
  */
 export const usePermissions = () => {
   const user = useAuthStore((state) => state.user);
+  const activeBondState = useAuthStore((state) => state.activeBond);
   const schoolType = useTenantStore((state) => state.schoolType);
   const flags = useFeatureStore((state) => state.flags);
   const cedarSnapshotLoaded = useCedarDecisionStore((state) => state.snapshotLoaded);
   const getDecision = useCedarDecisionStore((state) => state.getDecision);
-  const { activeEntitlements, pricingTier, manifestLoaded } = useEntitlementStore();
+  const { activeEntitlements, grants, pricingTier, manifestLoaded, readiness } =
+    useEntitlementStore();
 
   const context: UserContext = useMemo(() => {
     const activePerspective = useAuthStore.getState().activePerspective;
     const availableBonds = useAuthStore.getState().availableBonds || [];
     const activeBond = activePerspective?.activeBond ?? null;
-    const isPersonal = schoolType === 'personal_workspace';
+    const bondScope = resolveBondScope(activeBond);
+    const isPersonal = bondScope.isPersonal || schoolType === 'personal_workspace';
+    const entitlementScope = isPersonal ? 'individual' : 'active_bond';
+    const effectiveEntitlement = resolveScopedEntitlement(
+      {
+        pricingTier,
+        activeEntitlements,
+        grants,
+        expirationDate: null,
+      },
+      entitlementScope,
+    );
 
     const rawContext: UserContext = {
       userId: user?.id || null,
@@ -45,12 +60,18 @@ export const usePermissions = () => {
       citizenship:
         user?.citizenship === 'SECOND_CLASS' || user?.citizenship === 'FIRST_CLASS'
           ? user.citizenship
-          : 'WANDERER',
+          : 'THIRD_CLASS',
       pricing_tier: pricingTier === 'PRO' || pricingTier === 'INSTITUTIONAL' ? pricingTier : 'FREE',
       features: user?.features || [],
       flags: user?.flags || {},
 
-      schoolId: activeBond?.entity_type === 'SCHOOL' ? activeBond.entity_id : null,
+      schoolId: bondScope.schoolId,
+      activeEntityId: bondScope.activeEntityId,
+      activeEntityType: bondScope.activeEntityType,
+      schoolType: schoolType ?? null,
+      onboarding_completed: Boolean(user?.onboarding_completed),
+      effective_entitlement_scope: entitlementScope,
+      effective_entitlement_tier: effectiveEntitlement.pricingTier,
       tenancyName: null,
       tenancy: {
         kind: 'customer' as TenantKind,
@@ -88,12 +109,17 @@ export const usePermissions = () => {
 
       return sanctuaryFeature(
         {
+          userId: user?.id ?? null,
+          activeBondId: activeBondState?.id ?? null,
+          primaryCapacity: activeBondState?.capacity ?? null,
           cedarSnapshotLoaded,
           entitlementManifestLoaded: manifestLoaded,
+          entitlementReadiness: readiness,
           citizenship,
           entitlement: {
             pricingTier: pricingTier as 'FREE' | 'PRO' | 'INSTITUTIONAL',
             activeEntitlements,
+            grants,
             expirationDate: null,
           },
           cedarDecision,
@@ -112,8 +138,11 @@ export const usePermissions = () => {
       cedarSnapshotLoaded,
       getDecision,
       activeEntitlements,
+      grants,
       pricingTier,
       manifestLoaded,
+      readiness,
+      activeBondState,
     ],
   );
 

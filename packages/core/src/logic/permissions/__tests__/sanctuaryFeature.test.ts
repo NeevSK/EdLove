@@ -3,6 +3,7 @@ import {
   CITIZENSHIP,
   type FeatureRequirement,
   meetsCitizenship,
+  meetsPricingTier,
   type SanctuaryEvaluationContext,
   sanctuaryFeature,
 } from '../sanctuaryFeature';
@@ -91,6 +92,22 @@ describe('sanctuaryFeature', () => {
     });
   });
 
+  it('enforces subscription tiers independently from add-on modules', () => {
+    expect(meetsPricingTier('INSTITUTIONAL', 'PRO')).toBe(true);
+    expect(meetsPricingTier('PRO', 'INSTITUTIONAL')).toBe(false);
+    expect(
+      sanctuaryFeature(
+        { ...baseCtx, entitlement: { ...baseCtx.entitlement, pricingTier: 'FREE' } },
+        { ...baseReq, entitlementModule: undefined, entitlementTier: 'PRO' },
+      ),
+    ).toEqual({
+      permitted: false,
+      reason: 'entitlement',
+      required: 'PRO',
+      current: 'FREE',
+    });
+  });
+
   it('fails authz gate when Cedar denies', () => {
     const res = sanctuaryFeature(
       { ...baseCtx, cedarDecision: 'deny', cedarPolicy: 'policy-1' },
@@ -133,6 +150,15 @@ describe('sanctuaryFeature', () => {
       flagKey: 'attendance.manage',
       flagType: 'development',
     });
+  });
+
+  it('rejects a capability that is unsupported on the current platform', () => {
+    expect(
+      sanctuaryFeature(baseCtx, {
+        ...baseReq,
+        platformSupported: false,
+      }),
+    ).toEqual({ permitted: false, reason: 'platform' });
   });
 
   it('does not expose deprecated capabilities', () => {

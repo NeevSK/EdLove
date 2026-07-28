@@ -74,18 +74,41 @@ export type {
   AuthorizationRequest,
   IAuthorizationPort,
 } from '@/logic/ports/authz.port';
-export type { EntitlementSnapshot, IEntitlementPort } from '@/logic/ports/entitlement.port';
+export type {
+  EntitlementGrant,
+  EntitlementReadiness,
+  EntitlementRequirement,
+  EntitlementScope,
+  EntitlementScopeContext,
+  EntitlementSnapshot,
+  IEntitlementPort,
+  SubscriptionTier,
+} from '@/logic/ports/entitlement.port';
+export {
+  meetsSubscriptionTier,
+  resolveScopedEntitlement,
+  satisfiesEntitlementRequirement,
+} from '@/logic/ports/entitlement.port';
 export type { IEventBusPort } from '@/logic/ports/eventBus.port';
 export type {
   FeatureRolloutSnapshot,
   IFeatureRolloutPort,
 } from '@/logic/ports/featureRollout.port';
+export {
+  PRODUCT_ANALYTICS_EVENTS,
+  type ProductAnalyticsContext,
+  type ProductAnalyticsEntitlementScope,
+  type ProductAnalyticsEvent,
+  type ProductAnalyticsEventName,
+  type ProductAnalyticsEventProperties,
+  type ProductAnalyticsScalar,
+} from '@/logic/ports/productAnalytics.port';
 export * from '@/logic/registry/appCatalog';
 export * from '@/logic/registry/citizenship';
 export * from '@/logic/registry/domainEntry';
 export * from '@/logic/registry/featureLifecycleManifest';
-export * from '@/logic/registry/useDomainFeature';
 export * from '@/logic/registry/featureLifecyclePolicy';
+export * from '@/logic/registry/useDomainFeature';
 export * from '@/logic/runtimeRegistry';
 export * from '@/logic/schemas';
 export * from '@/logic/store-slices';

@@ -1,4 +1,4 @@
-import crypto from 'isomorphic-webcrypto';
+import { generateKeyPairSync, sign as nodeSign } from 'node:crypto';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { checkLocalPermission } from '../localEvaluator.native';
 import { verifySnapshotSignature } from '../signature';
@@ -12,6 +12,9 @@ const mockDrizzle = {
     permissionSnapshots: {
       findFirst: vi.fn(),
     },
+    policyVersion: {
+      findFirst: vi.fn().mockResolvedValue({ hash: 'policy-v1' }),
+    },
   },
 };
 
@@ -20,47 +23,48 @@ vi.mock('../../../adapters/powersync/database', () => ({
   registerPermissionValidator: vi.fn(),
 }));
 
-// Helper to sign snapshot payload using the exact same HMAC mechanism and key ordering
+const { privateKey: snapshotPrivateKey, publicKey: snapshotPublicKey } =
+  generateKeyPairSync('ed25519');
+const snapshotPublicKeyDer = snapshotPublicKey.export({ format: 'der', type: 'spki' }) as Buffer;
+process.env.EXPO_PUBLIC_SNAPSHOT_SIGNING_PUBLIC_KEY = snapshotPublicKeyDer
+  .subarray(-32)
+  .toString('base64');
+
+// Helper to sign snapshot payload using the exact same Ed25519 payload ordering.
 async function generateTestSignature(params: {
   generatedAt: string;
   expiresAt: string;
   userId: string;
+  activeBondId?: string;
+  activeEntityId?: string;
+  activeEntityType?: string;
   schoolId: string;
+  policyVersion?: string;
   permissions: any;
   temporalHints?: any;
 }): Promise<string> {
-  const secretKey = 'default-fallback-secret-for-development';
-
   // Construct with strict key order matching verifySnapshotSignature
   const payload = {
     generatedAt: params.generatedAt,
     expiresAt: params.expiresAt,
     userId: params.userId,
+    activeBondId: params.activeBondId,
+    activeEntityId: params.activeEntityId,
+    activeEntityType: params.activeEntityType,
     schoolId: params.schoolId,
+    policyVersion: params.policyVersion,
     permissions: params.permissions,
     temporalHints: params.temporalHints || {},
   };
 
-  const enc = new TextEncoder();
-  const keyData = enc.encode(secretKey);
-  const messageData = enc.encode(JSON.stringify(payload));
-
-  const importedKey = await crypto.subtle.importKey(
-    'raw',
-    keyData,
-    { name: 'HMAC', hash: { name: 'SHA-256' } },
-    false,
-    ['sign'],
-  );
-
-  const signatureBuffer = await crypto.subtle.sign('HMAC', importedKey, messageData);
-  const sigArray = Array.from(new Uint8Array(signatureBuffer));
-  return sigArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+  const signature = nodeSign(null, Buffer.from(JSON.stringify(payload)), snapshotPrivateKey);
+  return `ed25519:${signature.toString('base64')}`;
 }
 
 describe('localEvaluator.native (Snapshot PDP)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockDrizzle.query.policyVersion.findFirst.mockResolvedValue({ hash: 'policy-v1' });
   });
 
   describe('verifySnapshotSignature', () => {
@@ -68,7 +72,11 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
       const permissionsObj = { Classroom: { read: true, create: true } };
       const basePayload = {
         userId: 'user-123',
+        activeBondId: 'bond-123',
+        activeEntityId: 'entity-123',
+        activeEntityType: 'SCHOOL',
         schoolId: 'school-123',
+        policyVersion: 'policy-v1',
         generatedAt: '2026-05-10T12:00:00Z',
         expiresAt: '2026-05-11T12:00:00Z',
         permissions: permissionsObj,
@@ -79,7 +87,11 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
 
       const snapshotRecord = {
         userId: basePayload.userId,
+        activeBondId: 'bond-123',
+        activeEntityId: 'entity-123',
+        activeEntityType: 'SCHOOL',
         schoolId: basePayload.schoolId,
+        policyVersion: 'policy-v1',
         generatedAt: basePayload.generatedAt,
         expiresAt: basePayload.expiresAt,
         permissions: JSON.stringify(basePayload.permissions),
@@ -95,7 +107,11 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
       const permissionsObj = { Classroom: { read: true, create: true } };
       const basePayload = {
         userId: 'user-123',
+        activeBondId: 'bond-123',
+        activeEntityId: 'entity-123',
+        activeEntityType: 'SCHOOL',
         schoolId: 'school-123',
+        policyVersion: 'policy-v1',
         generatedAt: '2026-05-10T12:00:00Z',
         expiresAt: '2026-05-11T12:00:00Z',
         permissions: permissionsObj,
@@ -106,7 +122,11 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
 
       const tamperedRecord = {
         userId: basePayload.userId,
+        activeBondId: 'bond-123',
+        activeEntityId: 'entity-123',
+        activeEntityType: 'SCHOOL',
         schoolId: basePayload.schoolId,
+        policyVersion: 'policy-v1',
         generatedAt: basePayload.generatedAt,
         expiresAt: basePayload.expiresAt,
         permissions: JSON.stringify({ Classroom: { read: true, create: true, delete: true } }), // modified permissions
@@ -120,9 +140,19 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
   });
 
   describe('checkLocalPermission', () => {
-    const userContext = {
+    const userContext: any = {
       userId: 'user-123',
+      activeBond: {
+        id: 'bond-123',
+        user_id: 'user-123',
+        entity_id: 'entity-123',
+        entity_type: 'SCHOOL',
+        capacity: 'teacher',
+        status: 'active',
+      } as const,
       schoolId: 'school-123',
+      activeEntityId: 'entity-123',
+      activeEntityType: 'SCHOOL',
       capacity: 'teacher' as const,
     };
 
@@ -143,6 +173,9 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
       mockDrizzle.query.permissionSnapshots.findFirst.mockResolvedValueOnce({
         userId: 'user-123',
         schoolId: 'school-123',
+        activeBondId: 'bond-123',
+        activeEntityId: 'entity-123',
+        activeEntityType: 'SCHOOL',
         generatedAt: '2026-05-10T12:00:00Z',
         expiresAt: '2026-05-11T12:00:00Z',
         permissions: JSON.stringify({ Classroom: { read: true } }),
@@ -166,6 +199,10 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
       const basePayload = {
         userId: 'user-123',
         schoolId: 'school-123',
+        activeBondId: 'bond-123',
+        activeEntityId: 'entity-123',
+        activeEntityType: 'SCHOOL',
+        policyVersion: 'policy-v1',
         generatedAt: '2026-05-08T12:00:00Z',
         expiresAt: expiredTime,
         permissions: permissionsObj,
@@ -177,6 +214,10 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
       mockDrizzle.query.permissionSnapshots.findFirst.mockResolvedValueOnce({
         userId: basePayload.userId,
         schoolId: basePayload.schoolId,
+        activeBondId: 'bond-123',
+        activeEntityId: basePayload.activeEntityId,
+        activeEntityType: basePayload.activeEntityType,
+        policyVersion: basePayload.policyVersion,
         generatedAt: basePayload.generatedAt,
         expiresAt: basePayload.expiresAt,
         permissions: JSON.stringify(basePayload.permissions),
@@ -205,6 +246,10 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
       const basePayload = {
         userId: 'user-123',
         schoolId: 'school-123',
+        activeBondId: 'bond-123',
+        activeEntityId: 'entity-123',
+        activeEntityType: 'SCHOOL',
+        policyVersion: 'policy-v1',
         generatedAt: '2026-05-10T12:00:00Z',
         expiresAt: '2026-05-12T12:00:00Z',
         permissions: permissionsObj,
@@ -216,6 +261,10 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
       mockDrizzle.query.permissionSnapshots.findFirst.mockResolvedValueOnce({
         userId: basePayload.userId,
         schoolId: basePayload.schoolId,
+        activeBondId: 'bond-123',
+        activeEntityId: basePayload.activeEntityId,
+        activeEntityType: basePayload.activeEntityType,
+        policyVersion: basePayload.policyVersion,
         generatedAt: basePayload.generatedAt,
         expiresAt: basePayload.expiresAt,
         permissions: JSON.stringify(basePayload.permissions),
@@ -244,6 +293,10 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
       const basePayload = {
         userId: 'user-123',
         schoolId: 'school-123',
+        activeBondId: 'bond-123',
+        activeEntityId: 'entity-123',
+        activeEntityType: 'SCHOOL',
+        policyVersion: 'policy-v1',
         generatedAt: '2026-05-10T12:00:00Z',
         expiresAt: '2026-05-12T12:00:00Z',
         permissions: permissionsObj,
@@ -255,6 +308,10 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
       mockDrizzle.query.permissionSnapshots.findFirst.mockResolvedValueOnce({
         userId: basePayload.userId,
         schoolId: basePayload.schoolId,
+        activeBondId: 'bond-123',
+        activeEntityId: basePayload.activeEntityId,
+        activeEntityType: basePayload.activeEntityType,
+        policyVersion: basePayload.policyVersion,
         generatedAt: basePayload.generatedAt,
         expiresAt: basePayload.expiresAt,
         permissions: JSON.stringify(basePayload.permissions),
@@ -290,6 +347,10 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
       const basePayload = {
         userId: 'user-123',
         schoolId: 'school-123',
+        activeBondId: 'bond-123',
+        activeEntityId: 'entity-123',
+        activeEntityType: 'SCHOOL',
+        policyVersion: 'policy-v1',
         generatedAt: '2026-05-10T12:00:00Z',
         expiresAt: '2026-05-12T12:00:00Z',
         permissions: permissionsObj,
@@ -300,6 +361,10 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
       mockDrizzle.query.permissionSnapshots.findFirst.mockResolvedValueOnce({
         userId: basePayload.userId,
         schoolId: basePayload.schoolId,
+        activeBondId: 'bond-123',
+        activeEntityId: basePayload.activeEntityId,
+        activeEntityType: basePayload.activeEntityType,
+        policyVersion: basePayload.policyVersion,
         generatedAt: basePayload.generatedAt,
         expiresAt: basePayload.expiresAt,
         permissions: JSON.stringify(basePayload.permissions),
@@ -329,6 +394,10 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
       const userBPayload = {
         userId: 'user-B',
         schoolId: 'school-123',
+        activeBondId: 'bond-123',
+        activeEntityId: 'entity-123',
+        activeEntityType: 'SCHOOL',
+        policyVersion: 'policy-v1',
         generatedAt: '2026-05-10T12:00:00Z',
         expiresAt: '2026-05-12T12:00:00Z',
         permissions: { Classroom: { read: true } },
@@ -345,6 +414,10 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
         return Promise.resolve({
           userId: userBPayload.userId,
           schoolId: userBPayload.schoolId,
+          activeBondId: 'bond-123',
+          activeEntityId: userBPayload.activeEntityId,
+          activeEntityType: userBPayload.activeEntityType,
+          policyVersion: userBPayload.policyVersion,
           generatedAt: userBPayload.generatedAt,
           expiresAt: userBPayload.expiresAt,
           permissions: JSON.stringify(userBPayload.permissions),
@@ -370,6 +443,10 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
       const userBPayload = {
         userId: 'user-B',
         schoolId: 'school-123',
+        activeBondId: 'bond-123',
+        activeEntityId: 'entity-123',
+        activeEntityType: 'SCHOOL',
+        policyVersion: 'policy-v1',
         generatedAt: '2026-05-10T12:00:00Z',
         expiresAt: '2026-05-12T12:00:00Z',
         permissions: { Classroom: { read: true } },
@@ -382,6 +459,10 @@ describe('localEvaluator.native (Snapshot PDP)', () => {
       mockDrizzle.query.permissionSnapshots.findFirst.mockResolvedValueOnce({
         userId: 'user-123', // Swapped by attacker
         schoolId: userBPayload.schoolId,
+        activeBondId: 'bond-123',
+        activeEntityId: userBPayload.activeEntityId,
+        activeEntityType: userBPayload.activeEntityType,
+        policyVersion: userBPayload.policyVersion,
         generatedAt: userBPayload.generatedAt,
         expiresAt: userBPayload.expiresAt,
         permissions: JSON.stringify(userBPayload.permissions),

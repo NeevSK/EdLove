@@ -10,9 +10,9 @@ export async function getLocalResourceAttributes(
 
 export async function verifyLocalPolicySignature(
   _policySet: string,
-  _signatureHex?: string,
+  _signature?: string,
 ): Promise<boolean> {
-  return true;
+  return false;
 }
 
 export async function checkLocalPermission(_params: {

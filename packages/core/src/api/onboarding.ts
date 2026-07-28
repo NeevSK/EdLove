@@ -1,9 +1,13 @@
-import { APIError } from '@/types/API';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@/api/base';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { trackProductEvent } from '@/lib/monitoring/posthog';
 import { community, educational, notification, profile } from '@/logic/managers/factory';
 import type { Capacity } from '@/logic/schemas/capacity.schema';
+import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@/native/guestIdentity';
+import { setGuestScope } from '@/native/guestScope';
+import { APIError } from '@/types/API';
 import type { Perspective } from '@/types/Identity';
 import type { ClassroomJoinRequest, RequestStatus, SchoolJoinRequest } from '@/types/Onboarding';
-import { createSovereignClient, type AppType, SOVEREIGN_API_URL } from '@/api/base';
 
 const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
@@ -22,6 +26,27 @@ export const onboardingAPI = {
   },
 
   async createInitialBond(orientation: Capacity, context: Record<string, any>): Promise<void> {
+    trackProductEvent('onboarding_started');
+    const { data: sessionData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getSession();
+    const guestUser = sessionData.session?.user;
+    if (guestUser?.is_anonymous) {
+      setGuestScope(guestUser.id);
+      const bondId = globalThis.crypto?.randomUUID?.() ?? `guest-bond-${guestUser.id}`;
+      const bond = {
+        id: bondId,
+        user_id: guestUser.id,
+        entity_id: `personal-${guestUser.id}`,
+        entity_type: 'PERSONAL_CLASSROOM' as const,
+        capacity: orientation,
+        status: 'active' as const,
+      };
+      await updateLocalGuestIdentity(guestUser.id, {
+        display_name: String(context.displayName ?? ''),
+        availableBonds: [bond],
+        activeBond: bond,
+      });
+      return;
+    }
     const res = await (client.api as any).identity['initial-bond'].$post({
       json: { orientation, context },
     });
@@ -32,6 +57,20 @@ export const onboardingAPI = {
   },
 
   async completeOnboarding(userId: string): Promise<void> {
+    const { data: sessionData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getSession();
+    if (sessionData.session?.user?.is_anonymous && sessionData.session.user.id === userId) {
+      setGuestScope(userId);
+      const local = await getLocalGuestIdentity(userId);
+      if (!local.activeBond || !local.activeBond.capacity) {
+        throw new APIError(
+          'Select a primary capacity before completing onboarding',
+          'ONBOARDING_CAPACITY_REQUIRED',
+        );
+      }
+      await updateLocalGuestIdentity(userId, { onboarding_completed: true });
+      trackProductEvent('onboarding_completed');
+      return;
+    }
     const res = await (client.api as any).identity['complete-onboarding'].$post({
       json: { userId },
     });
@@ -39,6 +78,34 @@ export const onboardingAPI = {
       throw new APIError('Failed to complete onboarding', res.status.toString());
     }
     await res.json();
+    trackProductEvent('onboarding_completed');
+  },
+
+  /** Creates the founder's verified school bond after an official school is created. */
+  async createFounderSchoolBond(userId: string, schoolId: string): Promise<string> {
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'create_school_founder_bond',
+      { p_school_id: schoolId, p_user_id: userId },
+    );
+    if (error) throw new APIError('Failed to establish the school founder bond', error.code, error);
+    if (!data?.success || typeof data.bond_id !== 'string') {
+      throw new APIError(
+        data?.message || 'School founder bond was not established',
+        'SCHOOL_BOND_NOT_CREATED',
+      );
+    }
+    return data.bond_id;
+  },
+
+  async revokeSchoolBond(userId: string, schoolId: string): Promise<void> {
+    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      'revoke_school_bond',
+      { p_school_id: schoolId, p_user_id: userId },
+    );
+    if (error) throw new APIError('Failed to revoke the school bond', error.code, error);
+    if (!data?.success) {
+      throw new APIError(data?.message || 'School bond was not revoked', 'SCHOOL_BOND_NOT_REVOKED');
+    }
   },
 
   /**
@@ -137,7 +204,7 @@ export const onboardingAPI = {
     type: 'school' | 'classroom',
   ): Promise<void> {
     if (type === 'school') {
-      await profile.updateProfile(userId, { school_id: null });
+      await this.revokeSchoolBond(userId, targetId);
     } else {
       await educational.classroomStudents.remove(targetId);
 

@@ -1,9 +1,9 @@
-import type { IdentityMode } from '@/logic/auth/identityState';
 import {
-  getBootstrapSessionState,
   type BootstrapRoutePolicy,
   type BootstrapSessionState,
+  getBootstrapSessionState,
 } from '@/logic/auth/bootstrapContract';
+import type { IdentityMode } from '@/logic/auth/identityState';
 
 export type RouteDecision = 'booting' | 'public' | 'onboarding' | 'app';
 
@@ -18,6 +18,7 @@ export function getAuthRouteDecision(params: {
   bootstrapReady: boolean;
   sessionMode: IdentityMode | null;
   onboardingCompleted: boolean;
+  hasActiveCapacity?: boolean;
   hasSession?: boolean;
 }): RouteDecision {
   return getAuthRouteTarget(params).decision;
@@ -51,7 +52,7 @@ export function getAuthRouteTarget(params: {
     };
   }
 
-  if (state === 'guest') {
+  if (state === 'public') {
     return {
       decision: 'public',
       redirectTo: isPublicPath ? null : '/welcome',

@@ -1,13 +1,14 @@
 import { Duration, Effect, Schedule } from 'effect';
-import { createSovereignClient, SOVEREIGN_API_URL } from '@/api/base';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
-import { sovereignBus } from '@/lib/sync/eventBus';
 import type {
   AbstractPowerSyncDatabase,
   PowerSyncBackendConnector,
   PowerSyncCredentials,
 } from '@/adapters/powersync/powersync-shim';
+import { createSovereignClient, SOVEREIGN_API_URL } from '@/api/base';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { sovereignBus } from '@/lib/sync/eventBus';
 import { getConsistentIdempotencyKey } from '@/utils/idempotency';
+import { tryPromise } from '@/utils/effect';
 
 const POWERSYNC_URL = process.env.EXPO_PUBLIC_POWERSYNC_URL ?? '';
 
@@ -20,9 +21,10 @@ class PowerSyncUploadError {
 }
 
 function fetchSession$(): Effect.Effect<{ access_token: string }, PowerSyncUploadError> {
-  return Effect.promise(() => __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getSession()).pipe(
+  return tryPromise(() => __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getSession()).pipe(
+    Effect.mapError((error) => new PowerSyncUploadError(0, error.message)),
     Effect.flatMap(({ data: { session }, error }) =>
-      error || !session
+      error || !session || session.user?.is_anonymous
         ? Effect.fail(new PowerSyncUploadError(0, 'no_session'))
         : Effect.succeed(session),
     ),
@@ -38,7 +40,7 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
   async uploadData(database: AbstractPowerSyncDatabase): Promise<void> {
     await Effect.runPromise(
       Effect.gen(function* () {
-        const batch = yield* Effect.promise(() => database.getCrudBatch(200));
+        const batch = yield* tryPromise(() => database.getCrudBatch(200));
         if (!batch || batch.crud.length === 0) return;
 
         const session = yield* fetchSession$().pipe(
@@ -46,9 +48,7 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
         );
 
         const client = createSovereignClient(SOVEREIGN_API_URL);
-        const idempotencyKey = yield* Effect.promise(() =>
-          getConsistentIdempotencyKey(batch.crud),
-        );
+        const idempotencyKey = yield* tryPromise(() => getConsistentIdempotencyKey(batch.crud));
 
         const body = batch.crud.map((c) => ({
           id: c.id,
@@ -57,7 +57,7 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
           opData: c.opData,
         }));
 
-        yield* Effect.promise(() =>
+        yield* tryPromise(() =>
           (client.api as any).powersync.upload.$post(
             { json: body },
             {
@@ -70,13 +70,12 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
         ).pipe(
           Effect.flatMap((res: any) => {
             if (!res.ok) {
-              return Effect.promise(() => res.json()).pipe(
+              return tryPromise(() => res.json()).pipe(
                 Effect.flatMap((errorData: any) =>
                   Effect.fail(
                     new PowerSyncUploadError(
                       res.status,
-                      errorData?.message ||
-                        `Sanctuary API sync failed with status ${res.status}`,
+                      errorData?.message || `Sanctuary API sync failed with status ${res.status}`,
                     ),
                   ),
                 ),
@@ -94,7 +93,7 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
           }),
         );
 
-        yield* Effect.promise(() => batch.complete());
+        yield* tryPromise(() => batch.complete());
 
         const tablesAffected = Array.from(new Set(batch.crud.map((c) => c.table)));
         sovereignBus.emit('powersync:sync_complete', { tablesAffected });

@@ -1,8 +1,11 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Platform } from 'react-native';
 import { identityAPI } from '@/api/identity';
 import { trackingAPI } from '@/api/tracking';
-import { trackEvent } from '@/lib/monitoring/posthog';
+import { trackProductEvent } from '@/lib/monitoring/posthog';
+import { usePermissions } from '@/logic/permissions/hooks/usePermissions';
+import type { ProductAnalyticsContext } from '@/logic/ports/productAnalytics.port';
 
 /**
  * Hook for tracking feature discovery and exploration status.
@@ -10,6 +13,25 @@ import { trackEvent } from '@/lib/monitoring/posthog';
 export function useTracking() {
   const queryClient = useQueryClient();
   const [userId, setUserId] = useState<string | null>(null);
+  const { context } = usePermissions();
+  const analyticsContext = useMemo(
+    () => ({
+      platform: (Platform.OS === 'ios' || Platform.OS === 'android' || Platform.OS === 'web'
+        ? Platform.OS
+        : 'unknown') as ProductAnalyticsContext['platform'],
+      identity_mode: context.isAnonymous ? ('anonymous' as const) : ('authenticated' as const),
+      citizenship: context.citizenship,
+      onboarding_completed: Boolean(context.onboarding_completed),
+      active_capacity: context.activeBond?.capacity ?? null,
+      active_entity_type: context.activeEntityType ?? null,
+      school_type: context.schoolType ?? null,
+      personal_pricing_tier: context.pricing_tier === 'PRO' ? ('PRO' as const) : ('FREE' as const),
+      effective_entitlement_scope: context.effective_entitlement_scope ?? 'individual',
+      effective_entitlement_tier: context.effective_entitlement_tier ?? 'FREE',
+      analytics_schema_version: 1 as const,
+    }),
+    [context],
+  );
 
   useEffect(() => {
     const getUserId = async () => {
@@ -42,10 +64,7 @@ export function useTracking() {
       try {
         await trackingAPI.logFeatureUsage(userId, featureName);
         // PostHog Tracking
-        trackEvent('feature_discovered', {
-          feature_name: featureName,
-          user_id: userId,
-        });
+        trackProductEvent('feature_opened', { feature_id: featureName }, analyticsContext);
 
         // Invalidate to refresh the explored list
         await queryClient.invalidateQueries({
@@ -55,7 +74,7 @@ export function useTracking() {
         console.error(`Failed to track discovery for ${featureName}:`, error);
       }
     },
-    [userId, exploredFeatures, queryClient],
+    [userId, exploredFeatures, queryClient, analyticsContext],
   );
 
   /**
@@ -75,13 +94,18 @@ export function useTracking() {
     async (label: string, viewDate: string) => {
       if (!userId) return;
 
-      trackEvent('manual_snapshot_captured', {
-        label,
-        snapshot_date: viewDate,
-        user_id: userId,
-      });
+      trackProductEvent(
+        'feature_action_completed',
+        {
+          feature_id: 'manual_snapshot',
+          action: 'captured',
+          has_label: Boolean(label),
+          view_date: viewDate,
+        },
+        analyticsContext,
+      );
     },
-    [userId],
+    [userId, analyticsContext],
   );
 
   return useMemo(

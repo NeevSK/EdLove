@@ -14,10 +14,10 @@
  *   clearDecisions()  → called on logout / account swap
  */
 
+import { and, eq } from 'drizzle-orm';
 import { create } from 'zustand';
-import { eq } from 'drizzle-orm';
 import { getDrizzleDB } from '@/adapters/powersync/database';
-import { permissionSnapshots } from '@/adapters/powersync/schema';
+import { permissionSnapshots, policyVersion } from '@/adapters/powersync/schema';
 import { verifySnapshotSignature } from '@/logic/permissions/signature';
 
 export type CedarDecision = 'allow' | 'deny' | 'no_decision';
@@ -28,8 +28,9 @@ export interface CedarDecisionState {
   snapshotLoaded: boolean;
   isLoading: boolean;
   error: string | null;
+  snapshotScopeId: string | null;
 
-  loadDecisions: (userId: string) => Promise<void>;
+  loadDecisions: (userId: string, scopeId?: string | null) => Promise<void>;
 
   getDecision: (subject: string, action: string) => CedarDecision;
 
@@ -41,10 +42,11 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
   snapshotLoaded: false,
   isLoading: false,
   error: null,
+  snapshotScopeId: null,
 
-  loadDecisions: async (userId: string) => {
+  loadDecisions: async (userId: string, scopeId?: string | null) => {
     if (!userId) {
-      set({ decisions: null, snapshotLoaded: false, isLoading: false });
+      set({ decisions: null, snapshotLoaded: false, isLoading: false, snapshotScopeId: null });
       return;
     }
 
@@ -53,15 +55,56 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
     try {
       const db = getDrizzleDB();
       const record = await db.query.permissionSnapshots.findFirst({
-        where: eq(permissionSnapshots.userId, userId),
+        where: scopeId
+          ? and(
+              eq(permissionSnapshots.userId, userId),
+              eq(permissionSnapshots.activeBondId, scopeId),
+            )
+          : eq(permissionSnapshots.userId, userId),
       });
 
       if (!record) {
-        set({ decisions: null, snapshotLoaded: false, isLoading: false });
+        set({
+          decisions: null,
+          snapshotLoaded: false,
+          isLoading: false,
+          snapshotScopeId: scopeId ?? null,
+        });
         return;
       }
 
-      // HMAC signature verification
+      if (scopeId && record.activeBondId !== scopeId) {
+        set({
+          decisions: null,
+          snapshotLoaded: false,
+          isLoading: false,
+          snapshotScopeId: scopeId,
+          error: 'Permission snapshot scope mismatch',
+        });
+        return;
+      }
+
+      const currentPolicyVersion = await db.query.policyVersion?.findFirst?.();
+      if (
+        (scopeId &&
+          (!currentPolicyVersion?.hash ||
+            !record.policyVersion ||
+            record.policyVersion !== currentPolicyVersion.hash)) ||
+        (!scopeId &&
+          currentPolicyVersion?.hash &&
+          record.policyVersion !== currentPolicyVersion.hash)
+      ) {
+        set({
+          decisions: null,
+          snapshotLoaded: false,
+          isLoading: false,
+          snapshotScopeId: scopeId ?? null,
+          error: 'Permission snapshot policy version is stale',
+        });
+        return;
+      }
+
+      // Ed25519 signature verification
       const isSignatureValid = await verifySnapshotSignature(record);
       if (!isSignatureValid) {
         console.error('[CedarDecisionStore] Cryptographic tamper detected on permission snapshot');
@@ -70,6 +113,7 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
           snapshotLoaded: false,
           error: 'Cryptographic tamper detected on permission snapshot',
           isLoading: false,
+          snapshotScopeId: scopeId ?? null,
         });
         return;
       }
@@ -82,6 +126,7 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
           snapshotLoaded: false,
           error: 'Permission snapshot has expired',
           isLoading: false,
+          snapshotScopeId: scopeId ?? null,
         });
         return;
       }
@@ -100,7 +145,13 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
         }
       }
 
-      set({ decisions, snapshotLoaded: true, isLoading: false });
+      set({
+        decisions,
+        snapshotLoaded: true,
+        isLoading: false,
+        error: null,
+        snapshotScopeId: scopeId ?? record.activeBondId ?? record.schoolId,
+      });
     } catch (err) {
       console.error('[CedarDecisionStore] Error loading decisions:', err);
       set({
@@ -108,6 +159,7 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
         snapshotLoaded: false,
         error: err instanceof Error ? err.message : String(err),
         isLoading: false,
+        snapshotScopeId: scopeId ?? null,
       });
     }
   },
@@ -124,5 +176,6 @@ export const useCedarDecisionStore = create<CedarDecisionState>((set, get) => ({
       snapshotLoaded: false,
       isLoading: false,
       error: null,
+      snapshotScopeId: null,
     }),
 }));

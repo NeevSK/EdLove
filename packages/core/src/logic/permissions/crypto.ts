@@ -1,48 +1,33 @@
 import crypto from 'isomorphic-webcrypto';
 
-/**
- * Validates the cryptographic signature of local policies to defend against local root database tampering.
- * If a rooted device injects local policies, we detect signature mismatch and fail-safe.
- */
+/** Validates a server-signed local Cedar policy bundle. */
 export async function verifyLocalPolicySignature(
   policySet: string,
-  signatureHex?: string,
+  signature?: string,
 ): Promise<boolean> {
-  if (!signatureHex) {
-    return true;
-  }
+  if (!signature?.startsWith('ed25519:')) return false;
   try {
-    const secretKey =
-      process.env.EXPO_PUBLIC_HMAC_SECRET_KEY ||
-      process.env.NEXT_PUBLIC_HMAC_SECRET_KEY ||
-      'default-fallback-secret-for-development';
-
-    const enc = new TextEncoder();
-    const keyData = enc.encode(secretKey);
-    const messageData = enc.encode(policySet);
-
+    const publicKey =
+      process.env.EXPO_PUBLIC_SNAPSHOT_SIGNING_PUBLIC_KEY ||
+      process.env.NEXT_PUBLIC_SNAPSHOT_SIGNING_PUBLIC_KEY;
+    if (!publicKey) return false;
+    const decode = (value: string) => {
+      const binary = globalThis.atob(value);
+      return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+    };
     const importedKey = await crypto.subtle.importKey(
       'raw',
-      keyData,
-      { name: 'HMAC', hash: { name: 'SHA-256' } },
+      decode(publicKey),
+      { name: 'Ed25519' },
       false,
-      ['sign', 'verify'],
+      ['verify'],
     );
-
-    const generatedSigBuffer = await crypto.subtle.sign('HMAC', importedKey, messageData);
-    const generatedSigArray = Array.from(new Uint8Array(generatedSigBuffer));
-    const generatedSigHex = generatedSigArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-
-    const a = generatedSigHex;
-    const b = signatureHex;
-    if (a.length !== b.length) {
-      return false;
-    }
-    let result = 0;
-    for (let i = 0; i < a.length; i++) {
-      result |= a.charCodeAt(i) ^ b.charCodeAt(i);
-    }
-    return result === 0;
+    return await crypto.subtle.verify(
+      { name: 'Ed25519' },
+      importedKey,
+      decode(signature.slice('ed25519:'.length)),
+      new TextEncoder().encode(policySet),
+    );
   } catch {
     return false;
   }

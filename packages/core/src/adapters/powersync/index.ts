@@ -15,6 +15,7 @@ export {
   useAttendanceForClassroom,
   useDrizzleQuery,
   useMoodLogsForUser,
+  usePolicyVersionInvalidation,
   usePowerSyncQuery,
   usePowerSyncStatus,
   useStudentsInClassroom,

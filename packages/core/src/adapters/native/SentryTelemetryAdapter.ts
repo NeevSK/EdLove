@@ -1,5 +1,6 @@
 import * as NativeSentry from '@sentry/react-native';
 import type { ITelemetry } from '@/logic/interfaces/telemetry.port';
+import { sanitizeTelemetryData } from '@/lib/monitoring/safeData';
 
 export class SentryTelemetryAdapter implements ITelemetry {
   init(options: { dsn: string; environment: string; release?: string }) {
@@ -8,11 +9,12 @@ export class SentryTelemetryAdapter implements ITelemetry {
       environment: options.environment,
       release: options.release,
       enableAutoSessionTracking: true,
+      sendDefaultPii: false,
     });
   }
 
   captureException(error: unknown, context?: Record<string, unknown>) {
-    NativeSentry.captureException(error, { extra: context });
+    NativeSentry.captureException(error, { extra: sanitizeTelemetryData(context) });
   }
 
   addBreadcrumb(breadcrumb: {
@@ -20,10 +22,13 @@ export class SentryTelemetryAdapter implements ITelemetry {
     category?: string;
     data?: Record<string, unknown>;
   }) {
-    NativeSentry.addBreadcrumb(breadcrumb);
+    NativeSentry.addBreadcrumb({
+      ...breadcrumb,
+      data: sanitizeTelemetryData(breadcrumb.data),
+    });
   }
 
   setUser(user: { id: string; email?: string; username?: string } | null) {
-    NativeSentry.setUser(user);
+    NativeSentry.setUser(user ? { id: user.id } : null);
   }
 }

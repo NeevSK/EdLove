@@ -24,11 +24,16 @@ class TelemetryManager implements ITelemetry {
     this.getAdapter().init(options);
   }
 
-  captureException(error: any, context?: any) {
+  captureException(error: unknown, context?: Record<string, unknown>) {
     this.getAdapter().captureException(error, context);
   }
 
-  addBreadcrumb(breadcrumb: { message: string; category?: string; data?: any; level?: string }) {
+  addBreadcrumb(breadcrumb: {
+    message: string;
+    category?: string;
+    data?: Record<string, unknown>;
+    level?: string;
+  }) {
     this.getAdapter().addBreadcrumb(breadcrumb);
   }
 

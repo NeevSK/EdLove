@@ -28,6 +28,7 @@ import { APIError } from '@/types/API';
 import { identityAPI } from '@/api/identity';
 import { impactRipplesAPI } from '@/api/impactRipples';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { tryPromise } from '@/utils/effect';
 
 // ────────────────────────────────────────────────────────────────────────────
 // TYPES
@@ -514,7 +515,7 @@ export const schoolForestAPI = {
     }
 
     Effect.runFork(
-      Effect.promise(() =>
+      tryPromise(() =>
         impactRipplesAPI.createRipple({
           recipientUserId,
           actorUserId: principalUserId,

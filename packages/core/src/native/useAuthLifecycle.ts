@@ -1,21 +1,21 @@
 import type { Session } from '@supabase/supabase-js';
 import { Effect } from 'effect';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform } from 'react-native';
+import { setActiveCapabilityToken } from '@/adapters/powersync/database';
 import { authAPI } from '@/api/auth';
 import { assertHighway } from '@/api/highways';
 import { identityAPI } from '@/api/identity';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
 import type { SchoolType } from '@/constants/SriLankanSchools';
-import { getSessionIdentityMode } from '@/logic/auth/identityState';
-import { identifyUser, initPostHog, trackEvent } from '@/lib/monitoring/posthog';
+import { identifyUser } from '@/lib/monitoring/posthog';
 import { clearSentryUser, initSentry, setSentryUser } from '@/lib/monitoring/sentry';
-import { setActiveCapabilityToken } from '@/adapters/powersync/database';
+import { getSessionIdentityMode } from '@/logic/auth/identityState';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useCedarDecisionStore } from '@/store/useCedarDecisionStore';
 import { useStore } from '@/store/useStore';
 import { APIError } from '@/types/API';
 import type { Bond } from '@/types/Identity';
+import { tryPromise } from '@/utils/effect';
 
 /**
  * useAuthLifecycle (Native)
@@ -81,13 +81,7 @@ export function useAuthLifecycle() {
           username: identity.display_name,
         });
 
-        identifyUser(identity.id, {
-          email: identity.email,
-          display_name: identity.display_name,
-          capacity: identity.activeBond?.capacity || null,
-          total_bonds: (identity.availableBonds || []).length,
-          school_id: identity.schoolId,
-        });
+        identifyUser(identity.id);
       }
     } catch (error) {
       console.warn('❌ Profile: Fetching encountered an error:', error);
@@ -101,14 +95,9 @@ export function useAuthLifecycle() {
   }, [fetchAndSetUserProfile]);
 
   useEffect(() => {
-    // 1. Initialize Monitoring
+    // 1. Initialize error monitoring. Product analytics is initialized by the
+    // application shell so there is only one provider/transport instance.
     initSentry();
-    Effect.runFork(
-      Effect.promise(() => initPostHog()).pipe(
-        Effect.tap(() => Effect.sync(() => trackEvent('app_initialized', { platform: Platform.OS }))),
-        Effect.catchAll((e) => Effect.logError('Monitoring: PostHog initialization failed', e)),
-      ),
-    );
 
     // 2. Initial Session Check
     const checkSession = async () => {
@@ -146,7 +135,7 @@ export function useAuthLifecycle() {
     };
 
     Effect.runFork(
-      Effect.promise(() => checkSession()).pipe(
+      tryPromise(() => checkSession()).pipe(
         Effect.catchAll((e) => Effect.logError('Auth: Critical session check failed', e)),
       ),
     );
@@ -226,13 +215,15 @@ export function useAuthLifecycle() {
             }
 
             Effect.runFork(
-              Effect.promise(() => refreshProfile()).pipe(
-                Effect.catchAll((e) => Effect.logError('Auth: Profile refresh failed after remote update', e)),
+              tryPromise(() => refreshProfile()).pipe(
+                Effect.catchAll((e) =>
+                  Effect.logError('Auth: Profile refresh failed after remote update', e),
+                ),
               ),
             );
           };
           Effect.runFork(
-            Effect.promise(() => handlePayload()).pipe(
+            tryPromise(() => handlePayload()).pipe(
               Effect.catchAll((e) => Effect.logError('Auth: handlePayload failed', e)),
             ),
           );
@@ -242,8 +233,10 @@ export function useAuthLifecycle() {
 
     return () => {
       Effect.runFork(
-        Effect.promise(() => __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.removeChannel(channel)).pipe(
-          Effect.catchAll((e) => Effect.logError('Auth: Failed to remove channel during cleanup', e)),
+        tryPromise(() => __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.removeChannel(channel)).pipe(
+          Effect.catchAll((e) =>
+            Effect.logError('Auth: Failed to remove channel during cleanup', e),
+          ),
         ),
       );
     };

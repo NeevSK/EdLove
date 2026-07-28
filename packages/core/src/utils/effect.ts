@@ -1,5 +1,18 @@
 import { Duration, Effect, pipe, Schedule } from 'effect';
+import { captureException } from '@/lib/monitoring/sentry';
 import { APIError } from '@/types/API';
+
+function normalizeError(error: unknown): Error {
+  return error instanceof Error ? error : new Error(String(error));
+}
+
+/**
+ * Shared Promise-to-Effect adapter for fallible I/O.
+ * Rejections stay in the typed error channel instead of becoming defects.
+ */
+export function tryPromise<T>(fn: () => PromiseLike<T>): Effect.Effect<T, Error, never> {
+  return Effect.tryPromise({ try: fn, catch: normalizeError });
+}
 
 /**
  * Default retry: exponential backoff starting at 200ms, max 3 attempts (4 total).
@@ -41,8 +54,14 @@ export function retryPolicy(maxRetries: number = 3) {
  */
 export function fireAndForget(fn: () => Promise<unknown>, label: string): void {
   Effect.runFork(
-    Effect.promise(fn).pipe(
-      Effect.catchAll((e) => Effect.logError(`[${label}] fire-and-forget failed`, e)),
+    Effect.tryPromise({ try: fn, catch: normalizeError }).pipe(
+      Effect.catchAll((e) =>
+        Effect.sync(() => {
+          captureException(e, { operation: label, boundary: 'fire-and-forget' });
+        }).pipe(
+          Effect.zipRight(Effect.logError(`[${label}] fire-and-forget failed`, e)),
+        ),
+      ),
       Effect.asVoid,
     ),
   );
@@ -63,7 +82,17 @@ export function runEffect<T, E extends { message: string }>(
   errorCode?: string,
 ): Promise<T> {
   return Effect.runPromise(
-    effect.pipe(Effect.mapError((e) => new APIError(e.message, errorCode ?? 'EFFECT_ERROR'))),
+    effect.pipe(
+      Effect.catchAll((e) =>
+        Effect.sync(() => {
+          captureException(e, { operation: errorCode ?? 'EFFECT_ERROR', boundary: 'effect' });
+        }).pipe(
+          Effect.zipRight(
+            Effect.fail(new APIError(e.message, errorCode ?? 'EFFECT_ERROR', e, true)),
+          ),
+        ),
+      ),
+    ),
   );
 }
 
@@ -76,14 +105,20 @@ export function runEffect<T, E extends { message: string }>(
  * ```
  */
 export function fromSupabase<T>(
-  fn: () => PromiseLike<{ data: T | null; error: any }>,
+  fn: () => PromiseLike<{ data: T | null; error: unknown }>,
   label?: string,
 ): Effect.Effect<T, Error, never> {
   return pipe(
     Effect.tryPromise({ try: fn, catch: (e) => new Error(String(e)) }),
     Effect.flatMap(({ data, error }) =>
       error
-        ? Effect.fail(new Error(error.message ?? String(error)))
+        ? Effect.fail(
+            new Error(
+              typeof error === 'object' && error !== null && 'message' in error
+                ? String(error.message)
+                : String(error),
+            ),
+          )
         : data !== null
           ? Effect.succeed(data)
           : Effect.fail(new Error(`${label ?? 'Supabase'} returned null`)),

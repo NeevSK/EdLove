@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { resolveBondScope } from '@/logic/permissions/bondScope';
 import {
   CITIZENSHIP,
   type FeatureRequirement,
@@ -21,14 +22,17 @@ export function useSanctuaryFeature(
   resourceId?: string,
 ): SanctuaryFeatureResult {
   const user = useAuthStore((s) => s.user);
+  const activeBond = useAuthStore((s) => s.activeBond);
   const citizenshipStr = user?.citizenship ?? 'THIRD_CLASS';
   const principalId = user?.id ?? null;
   const cedarSnapshotLoaded = useCedarDecisionStore((s) => s.snapshotLoaded);
   const getDecision = useCedarDecisionStore((s) => s.getDecision);
-  const { activeEntitlements, pricingTier, manifestLoaded } = useEntitlementStore();
+  const { activeEntitlements, grants, pricingTier, manifestLoaded, readiness } =
+    useEntitlementStore();
   const flags = useFeatureStore((s) => s.flags);
 
   return useMemo(() => {
+    const bondScope = resolveBondScope(activeBond);
     // Map string citizenship to numeric level
     const citizenship =
       citizenshipStr === 'WANDERER' || citizenshipStr === 'THIRD_CLASS'
@@ -49,12 +53,20 @@ export function useSanctuaryFeature(
 
     return sanctuaryFeature(
       {
+        userId: principalId,
+        activeBondId: activeBond?.id ?? null,
+        activeEntityId: bondScope.activeEntityId,
+        activeEntityType: bondScope.activeEntityType,
+        schoolId: bondScope.schoolId,
+        primaryCapacity: activeBond?.capacity ?? null,
         cedarSnapshotLoaded,
         entitlementManifestLoaded: manifestLoaded,
+        entitlementReadiness: readiness,
         citizenship,
         entitlement: {
           pricingTier: pricingTier as 'FREE' | 'PRO' | 'INSTITUTIONAL',
           activeEntitlements,
+          grants,
           expirationDate: null,
         },
         cedarDecision,
@@ -75,8 +87,11 @@ export function useSanctuaryFeature(
     getDecision,
     flags,
     principalId,
+    activeBond,
     activeEntitlements,
+    grants,
     pricingTier,
     manifestLoaded,
+    readiness,
   ]);
 }

@@ -1,5 +1,5 @@
 import { Data, Duration, Effect, pipe, Schedule } from 'effect';
-import { registerTokenResolver } from '@/api/contract';
+import { registerActiveBondIdResolver, registerTokenResolver } from '@/api/contract';
 import type { Identity } from '@/api/identity.generated';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
 import { storage } from '@/lib/storage';
@@ -7,6 +7,7 @@ import type { IIdentityPort } from '@/logic/ports/identity.port';
 import { APIError } from '@/types/API';
 import type { Bond, Capacity, Perspective } from '@/types/Identity';
 import type { User } from '@/types/User';
+import { tryPromise } from '@/utils/effect';
 
 // ─── Token Resolver (unchanged) ──────────────────────────────────
 
@@ -14,6 +15,19 @@ registerTokenResolver(async () => {
   try {
     const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getSession();
     return data?.session?.access_token ?? null;
+  } catch {
+    return null;
+  }
+});
+
+registerActiveBondIdResolver(async () => {
+  try {
+    const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getUser();
+    if (!data?.user?.id) return null;
+    const persisted = await storage.getStringAsync(`active_perspective_${data.user.id}`);
+    if (!persisted) return null;
+    const parsed = JSON.parse(persisted) as { activeBond?: { id?: string } };
+    return parsed.activeBond?.id ?? null;
   } catch {
     return null;
   }
@@ -53,9 +67,7 @@ function supabaseCall<T>(
 
 function runEffect<T>(effect: Effect.Effect<T, SupabaseQueryError, never>): Promise<T> {
   return Effect.runPromise(
-    effect.pipe(
-      Effect.catchAll((e) => Effect.fail(new APIError(e.message, 'SUPABASE_ERROR'))),
-    ),
+    effect.pipe(Effect.catchAll((e) => Effect.fail(new APIError(e.message, 'SUPABASE_ERROR')))),
   );
 }
 
@@ -94,17 +106,15 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   async linkIdentity(userId: string, provider: string, providerUserId: string): Promise<void> {
     await runEffect(
       supabaseCall(() =>
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-          .from('auth_identities')
-          .upsert(
-            {
-              user_id: userId,
-              provider,
-              provider_user_id: providerUserId,
-              updated_at: new Date().toISOString(),
-            },
-            { onConflict: 'provider,provider_user_id' },
-          ),
+        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('auth_identities').upsert(
+          {
+            user_id: userId,
+            provider,
+            provider_user_id: providerUserId,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'provider,provider_user_id' },
+        ),
       ),
     );
 
@@ -129,7 +139,10 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
     let internalId = this.cachedInternalId;
 
     if (!internalId) {
-      internalId = await this.resolveInternalId('__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__', authUid);
+      internalId = await this.resolveInternalId(
+        '__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__',
+        authUid,
+      );
       this.cachedAuthUid = authUid;
 
       if (!internalId) {
@@ -302,30 +315,10 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
       ).pipe(Effect.map((r: any) => r as { is_anonymous: boolean | null })),
     );
 
-    const isSupabaseAnonymous = profile?.is_anonymous ?? true;
-    const schoolId = context.schoolId || null;
-
-    let citizenship: 'WANDERER' | 'SECOND_CLASS' | 'FIRST_CLASS' = 'WANDERER';
-
-    if (!isSupabaseAnonymous) {
-      citizenship = 'SECOND_CLASS';
-
-      if (schoolId) {
-        const school = await runEffect(
-          supabaseCall(() =>
-            __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-              .from('schools')
-              .select('type')
-              .eq('id', schoolId)
-              .maybeSingle(),
-          ),
-        );
-
-        if (school && (school as any).type !== 'personal_workspace') {
-          citizenship = 'FIRST_CLASS';
-        }
-      }
-    }
+    const isSupabaseAnonymous = profile?.is_anonymous === true;
+    const citizenship: 'THIRD_CLASS' | 'SECOND_CLASS' = isSupabaseAnonymous
+      ? 'THIRD_CLASS'
+      : 'SECOND_CLASS';
 
     let username =
       typeof context.username === 'string' ? context.username.trim().toLowerCase() : null;
@@ -353,7 +346,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
         : full_name || 'Gurudevi User';
 
     let finalPersonalClassroomId: string | null = null;
-    if (citizenship === 'SECOND_CLASS' && !schoolId) {
+    {
       const isTeacherOrPrincipal = [
         'teacher',
         'principal',
@@ -388,7 +381,10 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
             .single(),
         ).pipe(
           Effect.catchAll((e) => {
-            console.error('[createInitialBond] Failed to initialize personal classroom record:', e.message);
+            console.error(
+              '[createInitialBond] Failed to initialize personal classroom record:',
+              e.message,
+            );
             return Effect.succeed(null);
           }),
         ),
@@ -410,7 +406,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
             last_name: context.lastName ?? null,
             username,
             identity_state: isSupabaseAnonymous ? 'anonymous' : 'identifying',
-            school_id: schoolId,
+            school_id: null,
             citizenship,
             capacity: orientation,
           })
@@ -418,33 +414,21 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
       ),
     );
 
-    const entity_type =
-      citizenship === 'FIRST_CLASS'
-        ? 'SCHOOL'
-        : citizenship === 'SECOND_CLASS'
-          ? 'PERSONAL_CLASSROOM'
-          : 'PLATFORM';
-    const entity_id =
-      citizenship === 'FIRST_CLASS'
-        ? schoolId
-        : citizenship === 'SECOND_CLASS'
-          ? finalPersonalClassroomId || 'PERSONAL_WORKSPACE'
-          : 'GLOBAL';
+    const entity_type = 'PERSONAL_CLASSROOM';
+    const entity_id = finalPersonalClassroomId || 'PERSONAL_WORKSPACE';
 
     await runEffect(
       supabaseCall(() =>
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-          .from('bonds')
-          .upsert(
-            {
-              user_id: userId,
-              entity_id,
-              entity_type,
-              capacity: orientation,
-              metadata: context.metadata || {},
-            },
-            { onConflict: 'user_id,entity_id,capacity' },
-          ),
+        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('bonds').upsert(
+          {
+            user_id: userId,
+            entity_id,
+            entity_type,
+            capacity: orientation,
+            metadata: context.metadata || {},
+          },
+          { onConflict: 'user_id,entity_id,capacity' },
+        ),
       ),
     );
 
@@ -535,12 +519,12 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
     await Effect.runPromise(
       Effect.gen(function* () {
-        const bonds = yield* Effect.promise(() => self.getBonds(userId)).pipe(
+        const bonds = yield* tryPromise(() => self.getBonds(userId)).pipe(
           Effect.catchAll(() => Effect.succeed<Bond[]>([])),
         );
 
         if (bonds.length === 0) {
-          const profile = yield* Effect.promise(() => self.getProfile(userId)).pipe(
+        const profile = yield* tryPromise(() => self.getProfile(userId)).pipe(
             Effect.catchAll(() => Effect.succeed(null)),
           );
 
@@ -559,28 +543,32 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
                 .single(),
             ).pipe(
               Effect.catchAll((e) => {
-                console.error('[completeOnboarding] Failed to create default personal classroom:', e.message);
+                console.error(
+                  '[completeOnboarding] Failed to create default personal classroom:',
+                  e.message,
+                );
                 return Effect.succeed(null);
               }),
             );
 
             if (pc) {
               yield* supabaseCall(() =>
-                __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-                  .from('bonds')
-                  .upsert(
-                    {
-                      user_id: userId,
-                      entity_id: (pc as any).id,
-                      entity_type: 'PERSONAL_CLASSROOM',
-                      capacity: capacity,
-                      metadata: {},
-                    },
-                    { onConflict: 'user_id,entity_id,capacity' },
-                  ),
+                __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('bonds').upsert(
+                  {
+                    user_id: userId,
+                    entity_id: (pc as any).id,
+                    entity_type: 'PERSONAL_CLASSROOM',
+                    capacity: capacity,
+                    metadata: {},
+                  },
+                  { onConflict: 'user_id,entity_id,capacity' },
+                ),
               ).pipe(
                 Effect.catchAll((e) => {
-                  console.error('[completeOnboarding] Failed to create default PERSONAL_CLASSROOM bond:', e.message);
+                  console.error(
+                    '[completeOnboarding] Failed to create default PERSONAL_CLASSROOM bond:',
+                    e.message,
+                  );
                   return Effect.void;
                 }),
               );

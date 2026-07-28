@@ -9,6 +9,12 @@ export { deviceTrustAPI } from '@/native/deviceTrust';
 export { FlowResolver } from '@/native/flows/FlowResolver';
 export { GuestDataManager } from '@/native/guestDataManager';
 export { GuestDataSync } from '@/native/guestDataSync';
+export {
+  clearLocalGuestIdentity,
+  getLocalGuestIdentity,
+  updateLocalGuestIdentity,
+} from '@/native/guestIdentity';
+export { getGuestScope, guestStorageKey, setGuestScope } from '@/native/guestScope';
 export { Runtime } from '@/native/runtime';
 export {
   nativeDeviceProvider,

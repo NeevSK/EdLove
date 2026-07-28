@@ -1,4 +1,10 @@
 import { useMemo } from 'react';
+import { Platform } from 'react-native';
+import { resolveBondScope } from '@/logic/permissions/bondScope';
+import {
+  type FeaturePresentation,
+  resolveFeaturePresentation,
+} from '@/logic/permissions/featurePresentation';
 import {
   CITIZENSHIP,
   type SanctuaryFeatureResult,
@@ -14,18 +20,21 @@ import type { DomainFeature } from '@/types/Workspace';
 export interface FeatureGatingResult {
   visible: boolean;
   locked: boolean;
-  reason?: 'citizenship' | 'entitlement' | 'authz' | 'feature' | 'not_initialized';
+  presentation: FeaturePresentation;
+  reason?: 'citizenship' | 'entitlement' | 'authz' | 'feature' | 'platform' | 'not_initialized';
 }
 
 export function useFeatureRegistry(
   registry: Record<string, DomainFeature>,
 ): Record<string, FeatureGatingResult> {
   const user = useAuthStore((s) => s.user);
+  const activeBond = useAuthStore((s) => s.activeBond);
   const citizenshipStr = user?.citizenship ?? 'THIRD_CLASS';
   const principalId = user?.id ?? null;
   const cedarSnapshotLoaded = useCedarDecisionStore((s) => s.snapshotLoaded);
   const getDecision = useCedarDecisionStore((s) => s.getDecision);
-  const { activeEntitlements, pricingTier, manifestLoaded } = useEntitlementStore();
+  const { activeEntitlements, grants, pricingTier, manifestLoaded, readiness } =
+    useEntitlementStore();
   const flags = useFeatureStore((s) => s.flags);
 
   return useMemo(() => {
@@ -35,6 +44,8 @@ export function useFeatureRegistry(
         : citizenshipStr === 'SECOND_CLASS'
           ? CITIZENSHIP.SECOND_CLASS
           : CITIZENSHIP.FIRST_CLASS;
+
+    const bondScope = resolveBondScope(activeBond);
 
     return Object.fromEntries(
       Object.entries(registry).map(([key, feature]) => {
@@ -49,12 +60,20 @@ export function useFeatureRegistry(
 
         const result = sanctuaryFeature(
           {
+            userId: principalId,
+            activeBondId: activeBond?.id ?? null,
+            activeEntityId: bondScope.activeEntityId,
+            activeEntityType: bondScope.activeEntityType,
+            schoolId: bondScope.schoolId,
+            primaryCapacity: activeBond?.capacity ?? null,
             cedarSnapshotLoaded,
             entitlementManifestLoaded: manifestLoaded,
+            entitlementReadiness: readiness,
             citizenship,
             entitlement: {
               pricingTier: pricingTier as 'FREE' | 'PRO' | 'INSTITUTIONAL',
               activeEntitlements,
+              grants,
               expirationDate: null,
             },
             cedarDecision,
@@ -64,8 +83,10 @@ export function useFeatureRegistry(
           },
           {
             citizenshipRequired: feature.citizenshipRequired ?? CITIZENSHIP.FIRST_CLASS,
+            platformSupported: Platform.OS === 'web' ? feature.webSupport : feature.mobileSupport,
             entitlementModule: feature.entitlementModule,
             entitlementTier: feature.entitlementTier,
+            entitlementScope: feature.entitlementScope,
             flagKey: feature.flagKey,
             lifecycleState: feature.state,
           },
@@ -74,6 +95,7 @@ export function useFeatureRegistry(
         const gatingResult: FeatureGatingResult = {
           visible: feature.state !== 'development' && feature.state !== 'deprecated',
           locked: !result.permitted,
+          presentation: resolveFeaturePresentation(result, feature.state),
           reason: result.permitted ? undefined : (result as any).reason,
         };
 
@@ -85,11 +107,14 @@ export function useFeatureRegistry(
     user,
     citizenshipStr,
     principalId,
+    activeBond,
     cedarSnapshotLoaded,
     getDecision,
     activeEntitlements,
+    grants,
     pricingTier,
     manifestLoaded,
+    readiness,
     flags,
   ]);
 }

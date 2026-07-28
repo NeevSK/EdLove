@@ -7,7 +7,14 @@
  *
  * CORE PURITY: No platform-specific imports (React Native/Browser/Node) here.
  */
+
+import { sanitizeTelemetryData } from '@/lib/monitoring/safeData';
 import type { IAnalyticsPort } from '@/logic/ports/analytics.port';
+import type {
+  ProductAnalyticsContext,
+  ProductAnalyticsEventName,
+  ProductAnalyticsEventProperties,
+} from '@/logic/ports/productAnalytics.port';
 
 export type IPostHog = IAnalyticsPort;
 
@@ -33,19 +40,35 @@ export const initPostHog = async () => {
   }
 };
 
-export const trackEvent = (event: string, properties?: any) => {
+/** @deprecated Use trackProductEvent for new product events. */
+export const trackEvent = (event: string, properties?: Record<string, unknown>) => {
+  const safeProperties = sanitizeTelemetryData(properties);
   if (_posthog) {
-    _posthog.capture(event, properties);
+    _posthog.capture(event, safeProperties);
   } else if (typeof __DEV__ !== 'undefined' && __DEV__) {
-    console.log('[PostHog Bridge] Event tracked (noop):', event, properties);
+    console.log('[PostHog Bridge] Event tracked (noop):', event, safeProperties);
   }
 };
 
-export const identifyUser = (userId: string, properties?: any) => {
+/** Typed product-event boundary; provider and authorization details stay out. */
+export const trackProductEvent = <TEvent extends ProductAnalyticsEventName>(
+  event: TEvent,
+  properties?: ProductAnalyticsEventProperties[TEvent],
+  context?: Partial<ProductAnalyticsContext>,
+) => {
+  trackEvent(event, {
+    ...context,
+    ...properties,
+    analytics_schema_version: 1,
+  });
+};
+
+export const identifyUser = (userId: string, properties?: Record<string, unknown>) => {
+  const safeProperties = sanitizeTelemetryData(properties);
   if (_posthog) {
-    _posthog.identify(userId, properties);
+    _posthog.identify(userId, safeProperties);
   } else if (typeof __DEV__ !== 'undefined' && __DEV__) {
-    console.log('[PostHog Bridge] User identified (noop):', userId, properties);
+    console.log('[PostHog Bridge] User identified (noop):', userId, safeProperties);
   }
 };
 
@@ -55,13 +78,14 @@ export const resetUser = () => {
   }
 };
 
-export const trackScreen = (screenName: string, properties?: any) => {
+export const trackScreen = (screenName: string, properties?: Record<string, unknown>) => {
+  const safeProperties = sanitizeTelemetryData(properties);
   if (_posthog?.screen) {
-    _posthog.screen(screenName, properties);
+    _posthog.screen(screenName, safeProperties);
   } else if (_posthog) {
     _posthog.capture('$screen_view', {
       screen_name: screenName,
-      ...properties,
+      ...safeProperties,
     });
   }
 };

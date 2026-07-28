@@ -1,4 +1,4 @@
-import { Effect, Fiber, Runtime } from 'effect';
+import { Effect, Fiber } from 'effect';
 import { useCallback, useEffect, useState } from 'react';
 
 export function useSovereignEffect<A, E>(
@@ -12,21 +12,23 @@ export function useSovereignEffect<A, E>(
   }>({ status: 'idle' });
 
   useEffect(() => {
+    let active = true;
     setResult({ status: 'running' });
 
     const program = Effect.gen(function* () {
       const value = yield* effect;
-      setResult({ status: 'success', data: value });
+      if (active) setResult({ status: 'success', data: value });
     }).pipe(
       Effect.catchAll((error) => {
-        setResult({ status: 'failure', error: error as E });
+        if (active) setResult({ status: 'failure', error: error as E });
         return Effect.void;
       }),
     );
 
-    const fiber = Runtime.runFork(Runtime.defaultRuntime)(program);
+    const fiber = Effect.runFork(program);
 
     return () => {
+      active = false;
       Effect.runFork(Fiber.interrupt(fiber));
     };
     // biome-ignore lint/correctness/useExhaustiveDependencies: deps is passed as argument
@@ -45,7 +47,7 @@ export function useSovereignCallback<Args extends Array<unknown>, A, E>(
     (...args: Args) => {
       setStatus('running');
 
-      return Runtime.runPromise(Runtime.defaultRuntime)(
+      return Effect.runPromise(
         effectFn(...args).pipe(
           Effect.tap(() => Effect.sync(() => setStatus('success'))),
           Effect.catchAll((e) => {

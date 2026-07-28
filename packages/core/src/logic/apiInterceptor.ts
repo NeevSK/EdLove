@@ -1,4 +1,6 @@
 import { useStore } from '@/store/useStore';
+import { captureException } from '@/lib/monitoring/sentry';
+import { APIError } from '@/types/API';
 
 /**
  * Global API Interceptor & Error Handler (Layer 1)
@@ -66,8 +68,14 @@ export function handleAPIError(error: any, silent = false) {
     console.log('\u2728 Friendly Message:', apiError.message);
   }
 
-  // TODO: Track with Sentry
-  // Sentry.captureException(error);
+  if (!(error instanceof APIError && error.reportedToTelemetry)) {
+    captureException(error, {
+      boundary: 'api-interceptor',
+      code: apiError.code,
+      status: apiError.status,
+      userMessage: apiError.message,
+    });
+  }
 
   if (!silent && apiError.message) {
     useStore.getState().showToast(apiError.message, 'error');

@@ -2,8 +2,14 @@ import { SovereignError } from '@/types/Errors';
 
 export class APIError extends SovereignError {
   public readonly code: string;
+  public readonly reportedToTelemetry: boolean;
 
-  constructor(message: string, code = 'API_ERROR', details?: unknown) {
+  constructor(
+    message: string,
+    code = 'API_ERROR',
+    details?: unknown,
+    reportedToTelemetry = false,
+  ) {
     const normalizedCode = code;
     super({
       title: message,
@@ -12,6 +18,7 @@ export class APIError extends SovereignError {
       status: 400,
     });
     this.code = normalizedCode;
+    this.reportedToTelemetry = reportedToTelemetry;
     this.name = 'APIError';
   }
 }

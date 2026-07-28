@@ -186,6 +186,9 @@ export { useMutationQueue } from '@/lib/sync/useMutationQueue';
 export type {
   AuthorizationDecision,
   AuthorizationRequest,
+  EntitlementGrant,
+  EntitlementScope,
+  EntitlementScopeContext,
   EntitlementSnapshot,
   IAnalyticsPort,
   IAuthorizationPort,

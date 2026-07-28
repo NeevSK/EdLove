@@ -1,9 +1,12 @@
 /**
  * Citizenship model — registration depth, not pricing.
  *
- * FIRST_CLASS  = 1  Highest access. In a school. Intended primary user.
- * SECOND_CLASS = 2  Signed up. Personal use. Not yet in a school.
- * THIRD_CLASS  = 3  Lowest access. Guest / anonymous session.
+ * FIRST_CLASS  = 1  Highest access. Bonded to a real school entity.
+ * SECOND_CLASS = 2  Authenticated personal-use registration.
+ * THIRD_CLASS  = 3  Lowest authenticated registration level.
+ *
+ * There is no guest citizenship. The persisted WANDERER value is a legacy
+ * alias normalized to THIRD_CLASS during context hydration/migration.
  *
  * Lower number = more access.
  * Never write the comparison inline — always call meetsCitizenship().

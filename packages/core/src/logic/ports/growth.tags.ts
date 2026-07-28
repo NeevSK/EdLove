@@ -36,8 +36,8 @@ export class GrowthPort extends Context.Tag('app/GrowthPort')<GrowthPort, IGrowt
  *    when the caller is already in Effect context
  *  - For simple reads, prefer `yield* GrowthPort` instead (lighter)
  *  - The class methods return Promise<T> — callers in Effect context
- *    should wrap with Effect.promise(() => gm.method()) (no typed errors
- *    for pass-through methods) or Effect.tryPromise (for typed errors)
+ *    should wrap with Effect.tryPromise({ try: () => gm.method(), catch })
+ *    so rejected Promises remain visible in the typed failure channel.
  */
 export class GrowthManagerTag extends Context.Tag('app/GrowthManager')<GrowthManagerTag, GrowthManager>() {}
 

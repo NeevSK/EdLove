@@ -55,13 +55,18 @@ export function isCedarWasmLoaded(): boolean {
  * the WASM is loaded at most once.
  */
 export function warmCedarWasm(): Promise<void> {
-  return getWasmEvaluator().then(() => {}, () => {});
+  return getWasmEvaluator().then(
+    () => {},
+    () => {},
+  );
 }
 
 const SHAPE1_PLACEHOLDER_ID = '__cedar_shape1_check__';
 
 export interface CedarUserAttrs {
   school_id: string;
+  active_entity_id?: string;
+  active_entity_type?: string;
   capacity: string;
   grade_id?: string;
   section_id?: string;
@@ -85,10 +90,7 @@ export interface Shape2Request extends Shape1Request {
  * Does this user's capacity permit this action on this resource type?
  * Uses a placeholder resource ID — no instance data needed.
  */
-export async function evaluateShape1(
-  policyString: string,
-  req: Shape1Request,
-): Promise<boolean> {
+export async function evaluateShape1(policyString: string, req: Shape1Request): Promise<boolean> {
   const evaluate = await getWasmEvaluator();
   const decision = await evaluate({
     policies: policyString,
@@ -115,10 +117,7 @@ export async function evaluateShape1(
  * Can this user perform this action on THIS specific resource?
  * Used for offline write checks and record-level gating.
  */
-export async function evaluateShape2(
-  policyString: string,
-  req: Shape2Request,
-): Promise<boolean> {
+export async function evaluateShape2(policyString: string, req: Shape2Request): Promise<boolean> {
   const evaluate = await getWasmEvaluator();
   const decision = await evaluate({
     policies: policyString,

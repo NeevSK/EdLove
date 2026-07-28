@@ -1,12 +1,21 @@
 import crypto from 'isomorphic-webcrypto';
 
+function decodeBase64(value: string): Uint8Array {
+  const binary = globalThis.atob(value);
+  return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+}
+
 /**
  * Verifies the cryptographic signature of the PowerSync synced PermissionSnapshot.
  * Shared across local evaluators and react permission stores.
  */
 export async function verifySnapshotSignature(snapshot: {
   userId: string;
-  schoolId: string;
+  activeBondId: string;
+  activeEntityId: string;
+  activeEntityType: string;
+  schoolId: string | null;
+  policyVersion: string;
   generatedAt: string;
   expiresAt: string;
   permissions: string;
@@ -19,45 +28,40 @@ export async function verifySnapshotSignature(snapshot: {
       generatedAt: snapshot.generatedAt,
       expiresAt: snapshot.expiresAt,
       userId: snapshot.userId,
+      activeBondId: snapshot.activeBondId,
+      activeEntityId: snapshot.activeEntityId,
+      activeEntityType: snapshot.activeEntityType,
       schoolId: snapshot.schoolId,
+      policyVersion: snapshot.policyVersion,
       permissions: JSON.parse(snapshot.permissions),
       temporalHints: snapshot.temporalHints ? JSON.parse(snapshot.temporalHints) : {},
     };
 
-    const secretKey =
-      process.env.EXPO_PUBLIC_HMAC_SECRET_KEY ||
-      process.env.NEXT_PUBLIC_HMAC_SECRET_KEY ||
-      'default-fallback-secret-for-development';
+    const publicKey =
+      process.env.EXPO_PUBLIC_SNAPSHOT_SIGNING_PUBLIC_KEY ||
+      process.env.NEXT_PUBLIC_SNAPSHOT_SIGNING_PUBLIC_KEY;
+    if (!publicKey || !snapshot.signature.startsWith('ed25519:')) return false;
 
-    // 2. Perform SubtleCrypto HMAC verification
+    // 2. Verify with a public key shipped in the client. The private key never
+    // leaves the server/operator environment.
     const enc = new TextEncoder();
-    const keyData = enc.encode(secretKey);
     const messageData = enc.encode(JSON.stringify(payload));
+    const signatureBytes = decodeBase64(snapshot.signature.slice('ed25519:'.length));
 
     const importedKey = await crypto.subtle.importKey(
       'raw',
-      keyData,
-      { name: 'HMAC', hash: { name: 'SHA-256' } },
+      decodeBase64(publicKey) as unknown as BufferSource,
+      { name: 'Ed25519' },
       false,
-      ['sign', 'verify'],
+      ['verify'],
     );
 
-    const generatedSigBuffer = await crypto.subtle.sign('HMAC', importedKey, messageData);
-
-    const generatedSigArray = Array.from(new Uint8Array(generatedSigBuffer));
-    const generatedSigHex = generatedSigArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-
-    // Constant-time signature comparison to prevent timing attacks
-    const a = generatedSigHex;
-    const b = snapshot.signature;
-    if (a.length !== b.length) {
-      return false;
-    }
-    let result = 0;
-    for (let i = 0; i < a.length; i++) {
-      result |= a.charCodeAt(i) ^ b.charCodeAt(i);
-    }
-    return result === 0;
+    return await crypto.subtle.verify(
+      { name: 'Ed25519' },
+      importedKey,
+      signatureBytes as unknown as BufferSource,
+      messageData,
+    );
   } catch (err) {
     console.error('[Signature] Signature verification system error:', err);
     return false;

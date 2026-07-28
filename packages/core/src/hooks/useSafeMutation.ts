@@ -12,6 +12,10 @@ class OfflineError {
   readonly _tag = 'OfflineError';
 }
 
+function normalizeMutationError(error: unknown): Error {
+  return error instanceof Error ? error : new Error(String(error));
+}
+
 interface SafeMutationOptions<TData, TVariables> {
   mutationKey?: string; // Unique key for queueing (e.g. 'createPost')
   scope?: string; // Feature scope (e.g. 'community')
@@ -52,12 +56,20 @@ export function useSafeMutation<TData, TVariables>(
 
       try {
         const result = await Effect.runPromise(
-          Effect.promise(() => networkManager.isConnected()).pipe(
+          Effect.tryPromise({
+            try: () => networkManager.isConnected(),
+            catch: normalizeMutationError,
+          }).pipe(
             Effect.filterOrFail(
               (isConnected) => isConnected,
               () => new OfflineError(),
             ),
-            Effect.flatMap(() => Effect.promise(() => mutationFn(variables))),
+            Effect.flatMap(() =>
+              Effect.tryPromise({
+                try: () => mutationFn(variables),
+                catch: normalizeMutationError,
+              }),
+            ),
             Effect.retry({
               schedule: Schedule.exponential(Duration.millis(1000)),
               times: options?.retryCount ?? 3,
