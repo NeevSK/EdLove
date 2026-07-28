@@ -28,12 +28,14 @@ import {
   syncContract,
   syncHandlers,
 } from '@repo/core/api/server';
+import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
+import { satisfiesEntitlementRequirement } from '@repo/core/logic/ports/entitlement.port';
 import {
   type FeatureFlagKey,
   resolveFeatureFlagValue,
 } from '@repo/core/logic/registry/featureLifecycleManifest';
 import { normalizeError } from '@repo/core/logic/utils/errorNormalizer';
-import { canUseZenStackDb, createZenStackDb } from '@repo/database';
+import { canUseZenStackDb, createZenStackDb, queryDatabaseRows } from '@repo/database/client';
 import { check as checkCedar } from '@repo/policies';
 import { apiReference } from '@scalar/hono-api-reference';
 import { bodyLimit } from 'hono/body-limit';
@@ -48,13 +50,25 @@ import { requestId } from 'hono/request-id';
 import { secureHeaders } from 'hono/secure-headers';
 import { timeout } from 'hono/timeout';
 import { endTime, startTime, timing } from 'hono/timing';
+import { z } from 'zod';
 import { aiRouter } from '../ai/routes';
+import { refreshPermissionSnapshot } from '../authorization/permissionSnapshot.service';
+import {
+  evaluateWithRust,
+  RustEvaluatorUnavailableError,
+} from '../authorization/rustEvaluator';
 import { verifySupabaseJwt } from '../jwt';
+import { getCurrentTraceId, otelMiddleware } from '../telemetry/otel';
 
 interface Env {
   Variables: {
     db: ReturnType<typeof createZenStackDb>;
     user: { id: string };
+    capacity: string | null;
+    activeBondId: string | null;
+    activeEntityId: string | null;
+    activeEntityType: string | null;
+    schoolId: string;
     requestId: string;
   };
 }
@@ -76,7 +90,10 @@ app.onError((err, c) => {
   }
   const requestId = c.get('requestId') || 'unknown';
   const sovereign = normalizeError(err, requestId);
-  console.error(`[${requestId}] UNCAUGHT:`, sovereign.details);
+  console.error(
+    `[${requestId}] [trace=${getCurrentTraceId() || 'unknown'}] UNCAUGHT:`,
+    sovereign.details,
+  );
   return c.json(sovereign.details, sovereign.details.status as any);
 });
 
@@ -202,6 +219,7 @@ app.use(
       'Authorization',
       'x-school-id',
       'x-capacity',
+      'x-active-bond-id',
       'x-grade-id',
       'x-section-id',
       'x-classroom-ids',
@@ -209,7 +227,10 @@ app.use(
       'x-device-trust',
       'x-network-zone',
       'x-idempotency-key',
+      'traceparent',
+      'tracestate',
     ],
+    exposeHeaders: ['x-request-id', 'x-trace-id'],
   }),
 );
 
@@ -304,6 +325,7 @@ app.use('*', logger());
 
 // Request ID (built-in — available via c.get('requestId'))
 app.use('*', requestId());
+app.use('/api/*', otelMiddleware());
 
 // --- 2. Sovereign Auth & ZenStack (ReBAC) Middleware ---
 app.use('/api/*', async (c, next) => {
@@ -356,14 +378,21 @@ async function getRequestSecurityContext(c: any) {
   const isAnonymousUser = user.id === 'anonymous';
 
   let school_id = '';
-  let capacity = 'teacher';
+  let capacity: string | null = null;
+  let activeBondId: string | null = null;
+  let activeEntityId: string | null = null;
+  let activeEntityType: string | null = null;
   let grade_id: string | undefined;
   let section_id: string | undefined;
   let classroom_ids: string[];
   let child_student_ids: string[];
 
   const clientHeaderSchoolId = c.req.header('x-school-id') || '';
-  const clientHeaderCapacity = c.req.header('x-capacity') || 'teacher';
+  const clientHeaderCapacity = c.req.header('x-capacity') || null;
+  const clientHeaderActiveBondId = c.req.header('x-active-bond-id') || null;
+  const isOnboardingBootstrapRoute =
+    c.req.path.includes('/identity/initial-bond') ||
+    c.req.path.includes('/identity/complete-onboarding');
   const clientHeaderGradeId = c.req.header('x-grade-id') || undefined;
   const clientHeaderSectionId = c.req.header('x-section-id') || undefined;
 
@@ -378,24 +407,34 @@ async function getRequestSecurityContext(c: any) {
   let hydratedFromDb = false;
   if (!isAnonymousUser && db) {
     try {
-      const activeBond = (await db.bond.findFirst({
-        where: { user_id: user.id },
-      })) as any;
-      if (activeBond) {
-        capacity = activeBond.capacity;
-        if (activeBond.entity_type === 'SCHOOL') {
-          school_id = activeBond.entity_id || '';
-        }
-        hydratedFromDb = true;
+      let activeBond: any;
+      if (clientHeaderActiveBondId) {
+        activeBond = await db.bond.findFirst({
+          where: { id: clientHeaderActiveBondId, user_id: user.id },
+        });
+      } else if (!isOnboardingBootstrapRoute) {
+        throw new Error('MissingActiveBondSelection');
       }
-    } catch (err) {
+      if (activeBond) {
+        const bondScope = resolveBondScope(activeBond);
+        activeBondId = bondScope.activeBondId;
+        activeEntityId = bondScope.activeEntityId;
+        activeEntityType = bondScope.activeEntityType;
+        capacity = activeBond.capacity;
+        school_id = bondScope.schoolId || '';
+        hydratedFromDb = true;
+      } else if (clientHeaderActiveBondId) {
+        throw new Error('MissingActiveCapacity');
+      }
+    } catch (err: any) {
+      if (err?.message === 'MissingActiveBondSelection') throw err;
       console.warn('Server failed to resolve active bond from DB:', err);
     }
   }
 
   if (!hydratedFromDb) {
     school_id = clientHeaderSchoolId;
-    capacity = isAnonymousUser ? 'wanderer' : clientHeaderCapacity;
+    capacity = null;
     grade_id = clientHeaderGradeId;
     section_id = clientHeaderSectionId;
     classroom_ids = clientHeaderClassroomIds;
@@ -413,6 +452,10 @@ async function getRequestSecurityContext(c: any) {
     child_student_ids = clientHeaderChildIds;
   }
 
+  if (!isAnonymousUser && !capacity && !isOnboardingBootstrapRoute) {
+    throw new Error('MissingActiveCapacity');
+  }
+
   const deviceTrust =
     c.req.header('x-device-trust') || c.req.header('x-device-status') || 'standard';
   const networkZone = c.req.header('x-network-zone') || 'trusted';
@@ -422,10 +465,12 @@ async function getRequestSecurityContext(c: any) {
     db,
     principal: {
       id: user.id,
-      type: capacity,
+      type: capacity ?? 'unknown',
       attributes: {
         school_id,
-        capacity,
+        active_entity_id: activeEntityId ?? '',
+        active_entity_type: activeEntityType ?? '',
+        capacity: capacity ?? '',
         grade_id,
         section_id,
         classroom_ids,
@@ -438,6 +483,9 @@ async function getRequestSecurityContext(c: any) {
     },
     school_id,
     capacity,
+    activeBondId,
+    activeEntityId,
+    activeEntityType,
   };
 }
 
@@ -450,8 +498,12 @@ function poa(route: SovereignRoute) {
     // Special bypass for resolveIdentity bootstrapping and anonymous capacity summary
     if (
       c.req.path.includes('/identity/resolveIdentity') ||
-      c.req.path.includes('/identity/classroom-capacity-summary/anonymous')
+      c.req.path.includes('/identity/classroom-capacity-summary/anonymous') ||
+      c.req.path.includes('/identity/initial-bond') ||
+      c.req.path.includes('/identity/complete-onboarding')
     ) {
+      // These routes establish the first personal bond and onboarding state;
+      // they cannot require the active-bond Cedar context they create.
       return await next();
     }
 
@@ -472,10 +524,35 @@ function poa(route: SovereignRoute) {
           ),
         });
       }
+      if (err.message === 'MissingActiveCapacity') {
+        throw new HTTPException(409, {
+          message: 'An active capacity is required before accessing the application.',
+        });
+      }
+      if (err.message === 'MissingActiveBondSelection') {
+        throw new HTTPException(409, {
+          message: 'Select an active sanctuary, school, classroom, or community before continuing.',
+        });
+      }
       throw new HTTPException(500, { message: 'Internal Server Error' });
     }
 
-    const { user, principal, context, school_id, capacity } = securityContext;
+    const {
+      user,
+      principal,
+      context,
+      school_id,
+      capacity,
+      activeBondId,
+      activeEntityId,
+      activeEntityType,
+    } = securityContext;
+    c.set('capacity', capacity);
+    c.set('activeBondId', activeBondId);
+    c.set('activeEntityId', activeEntityId);
+    c.set('activeEntityType', activeEntityType);
+    c.set('schoolId', school_id);
+
     const policy = route.metadata.policy;
     const cedarAction = policy.action;
     const resourceType = policy.subject;
@@ -535,30 +612,61 @@ function poa(route: SovereignRoute) {
       }
     }
 
-    startTime(c, 'cedar', 'Cedar Policy Evaluation');
-    const authResult = checkCedar({
-      principal,
-      action: cedarAction,
-      resource: {
-        id: resourceId,
-        type: resourceType,
-        attributes: {
-          ...(resourceType !== 'School' && { school_id }),
-          ...(bodyClassroomId && { classroom_id: bodyClassroomId }),
-          ...((resourceType === 'MoodLog' ||
-            resourceType === 'FireJournal' ||
-            resourceType === 'JoyMoments' ||
-            resourceType === 'GratitudeEntries' ||
-            resourceType === 'EnergyForecasts') && { user_id: user.id }),
-        },
-      },
-      context,
-    });
-    endTime(c, 'cedar');
+    const entitlementPromise = route.metadata.entitlement
+      ? resolveServerEntitlement(
+          c.get('db'),
+          user.id,
+          route.metadata.entitlement,
+          c.get('activeBondId'),
+          c.get('activeEntityId'),
+          c.get('activeEntityType'),
+        )
+      : Promise.resolve(true);
 
-    if (!authResult.permitted) {
+    const cedarPromise = async () => {
+      startTime(c, 'cedar', 'Cedar Policy Evaluation');
+      const request = {
+        principal,
+        action: cedarAction,
+        resource: {
+          id: resourceId,
+          type: resourceType,
+          attributes: {
+            ...(resourceType !== 'School' && { school_id }),
+            ...(bodyClassroomId && { classroom_id: bodyClassroomId }),
+            ...((resourceType === 'MoodLog' ||
+              resourceType === 'FireJournal' ||
+              resourceType === 'JoyMoments' ||
+              resourceType === 'GratitudeEntries' ||
+              resourceType === 'EnergyForecasts') && { user_id: user.id }),
+          },
+        },
+        context,
+      };
+      const result = process.env.SANCTUARY_AUTHZ_EVALUATOR === 'rust'
+        ? await evaluateWithRust(request, c.get('requestId'))
+        : checkCedar(request);
+      endTime(c, 'cedar');
+      return result;
+    };
+
+    let entitlementAllowed: boolean;
+    let authResult: Awaited<ReturnType<typeof checkCedar>>;
+    try {
+      [entitlementAllowed, authResult] = await Promise.all([entitlementPromise, cedarPromise()]);
+    } catch (error) {
+      if (error instanceof RustEvaluatorUnavailableError) {
+        throw new HTTPException(503, {
+          message: 'Authoritative authorization evaluator is unavailable.',
+        });
+      }
+      throw error;
+    }
+
+    if (!authResult.permitted || !entitlementAllowed) {
       throw new HTTPException(403, {
-        message: 'Access denied by authoritative Cedar policy engine (Double Gate Enforcement).',
+        message:
+          'Access denied by authoritative authorization and commercial access policies (Double Gate Enforcement).',
         res: new Response(
           JSON.stringify({
             error: 'Forbidden',
@@ -588,56 +696,149 @@ function poa(route: SovereignRoute) {
   });
 }
 
+async function resolveServerEntitlement(
+  db: ReturnType<typeof createZenStackDb> | null | undefined,
+  userId: string,
+  requirement: NonNullable<SovereignRoute['metadata']['entitlement']>,
+  activeBondId: string | null,
+  activeEntityId: string | null,
+  activeEntityType: string | null,
+): Promise<boolean> {
+  if (!db || userId === 'anonymous') return false;
+
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    select: { pricing_tier: true },
+  });
+  const currentTier = user?.pricing_tier;
+  if (currentTier !== 'FREE' && currentTier !== 'PRO' && currentTier !== 'INSTITUTIONAL') {
+    return false;
+  }
+
+  const entitlementScope = requirement.scope ?? 'individual';
+  let effectiveTier = entitlementScope === 'individual' ? currentTier : 'FREE';
+  let activeEntitlements: string[] = [];
+  if (entitlementScope !== 'individual') {
+    const rows = await queryDatabaseRows<{
+      tier: string;
+      modules: unknown;
+      scope_type: string;
+      bond_id: string | null;
+      entity_id: string | null;
+      entity_type: string | null;
+    }>(
+      `SELECT tier, modules, scope_type, bond_id
+       FROM public.user_entitlement_grants
+       WHERE user_id = $1
+         AND status = 'ACTIVE'
+         AND starts_at <= now()
+         AND (expires_at IS NULL OR expires_at > now())
+       AND ((scope_type = 'BOND' AND bond_id = $2)
+         OR (scope_type = 'ENTITY' AND entity_id = $3 AND entity_type = $4)
+         OR scope_type = 'ADD_ON')`,
+      [userId, activeBondId, activeEntityId, activeEntityType],
+    );
+    const scopedRows = rows.filter((row) => {
+      if (entitlementScope === 'active_bond')
+        return row.scope_type === 'BOND' && row.bond_id === activeBondId;
+      if (entitlementScope === 'active_entity') return row.scope_type === 'ENTITY';
+      return row.scope_type === 'ADD_ON';
+    });
+    for (const row of scopedRows) {
+      if (row.tier === 'INSTITUTIONAL' || (row.tier === 'PRO' && effectiveTier === 'FREE')) {
+        effectiveTier = row.tier as typeof currentTier;
+      }
+      if (Array.isArray(row.modules)) {
+        activeEntitlements.push(
+          ...row.modules.filter((module): module is string => typeof module === 'string'),
+        );
+      }
+    }
+  }
+  if (requirement.modulesAllOf?.length) {
+    try {
+      const rows = await queryDatabaseRows<{ features: unknown }>(
+        'SELECT features FROM public.pricing_manifest WHERE tier = $1 LIMIT 1',
+        [effectiveTier],
+      );
+      const features = rows[0]?.features;
+      if (Array.isArray(features)) {
+        activeEntitlements = features.filter(
+          (feature): feature is string => typeof feature === 'string',
+        );
+      } else if (typeof features === 'string') {
+        const parsed = JSON.parse(features) as unknown;
+        if (!Array.isArray(parsed)) return false;
+        activeEntitlements = parsed.filter(
+          (feature): feature is string => typeof feature === 'string',
+        );
+      } else {
+        return false;
+      }
+    } catch {
+      return false;
+    }
+  }
+
+  return satisfiesEntitlementRequirement(
+    {
+      pricingTier: effectiveTier,
+      activeEntitlements: [...new Set(activeEntitlements)],
+      expirationDate: null,
+    },
+    { ...requirement, scope: undefined },
+  );
+}
+
 import { featureFlags } from '@repo/core/logic/managers/featureFlag.factory';
 
 const routeFeatureFlagMap = {
-  '/api/sync': 'isPowerSyncEnabled',
-  '/api/ai': 'isAIAssistantEnabled',
+  '/powersync': 'isPowerSyncEnabled',
+  '/ai': 'isAIAssistantEnabled',
 } as const satisfies Record<string, FeatureFlagKey>;
 
-function featureFlagGate(route: SovereignRoute) {
+function featureFlagGateForKey(flagKey: FeatureFlagKey, routePath: string) {
   return factory.createMiddleware(async (c, next) => {
-    let flagKey: keyof typeof routeFeatureFlagMap | undefined;
-    for (const prefix of Object.keys(routeFeatureFlagMap)) {
-      if (route.path.startsWith(prefix) || c.req.path.startsWith(prefix)) {
-        flagKey = prefix as keyof typeof routeFeatureFlagMap;
-        break;
-      }
-    }
+    const user = c.get('user') || { id: 'anonymous' };
+    const schoolId = c.get('schoolId') || null;
+    const capacity = c.get('capacity') || null;
 
-    if (flagKey) {
-      const user = c.get('user') || { id: 'anonymous' };
-      const schoolId = c.req.header('x-school-id') || null;
-      const capacity = c.req.header('x-capacity') || null;
+    const userContext = {
+      userId: user.id === 'anonymous' ? null : user.id,
+      email: null,
+      schoolId,
+      primaryCapacity: capacity,
+      activeBond: capacity ? { capacity } : null,
+      isAnonymous: user.id === 'anonymous',
+    };
 
-      const userContext = {
-        userId: user.id === 'anonymous' ? null : user.id,
-        email: null,
-        schoolId: schoolId,
-        primaryCapacity: capacity,
-        activeBond: capacity ? { capacity } : null,
-        isAnonymous: user.id === 'anonymous',
-      };
+    const resolved = await featureFlags.resolveFlags(userContext as any);
+    const isEnabled = resolveFeatureFlagValue(resolved.flags, flagKey);
 
-      const resolved = await featureFlags.resolveFlags(userContext as any);
-      const isEnabled = resolveFeatureFlagValue(resolved.flags, routeFeatureFlagMap[flagKey]);
-
-      if (isEnabled === false) {
-        console.warn(
-          `[Feature Gate] Access denied: flag "${flagKey}" is disabled for route "${route.path}"`,
-        );
-        throw new HTTPException(503, {
-          message: 'This feature is currently disabled.',
-          res: new Response(
-            JSON.stringify({ error: 'FeatureDisabled', flag: routeFeatureFlagMap[flagKey] }),
-            { status: 503, headers: { 'Content-Type': 'application/json' } },
-          ),
-        });
-      }
+    if (isEnabled === false) {
+      console.warn(
+        `[Feature Gate] Access denied: flag "${flagKey}" is disabled for route "${routePath}"`,
+      );
+      throw new HTTPException(503, {
+        message: 'This feature is currently disabled.',
+        res: new Response(JSON.stringify({ error: 'FeatureDisabled', flag: flagKey }), {
+          status: 503,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      });
     }
 
     return await next();
   });
+}
+
+function featureFlagGate(route: SovereignRoute) {
+  const flagEntry = Object.entries(routeFeatureFlagMap).find(([prefix]) =>
+    route.path.startsWith(prefix),
+  );
+  return flagEntry
+    ? featureFlagGateForKey(flagEntry[1], route.path)
+    : factory.createMiddleware(async (_c, next) => next());
 }
 
 function registerRoute(apiApp: OpenAPIHono<any>, route: SovereignRoute, handler: any) {
@@ -645,6 +846,26 @@ function registerRoute(apiApp: OpenAPIHono<any>, route: SovereignRoute, handler:
   apiApp.use(route.path, featureFlagGate(route));
   apiApp.openapi(adaptToHono(route), handler);
 }
+
+const permissionSnapshotRoute: SovereignRoute = {
+  path: '/authorization/permission-snapshot',
+  method: 'get',
+  summary: 'Refresh the signed offline authorization snapshot for the active bond',
+  responses: {
+    200: { schema: z.any(), description: 'Signed permission snapshot' },
+  },
+  metadata: { policy: { action: 'read', subject: 'User' } },
+};
+
+const permissionSnapshotHandler = async (c: any) => {
+  const snapshot = await refreshPermissionSnapshot({
+    db: c.get('db'),
+    userId: c.get('user').id,
+    activeBondId: c.get('activeBondId'),
+    secret: getEnv('SNAPSHOT_SIGNING_PRIVATE_KEY'),
+  });
+  return c.json(snapshot, 200);
+};
 
 // Sovereign Routes (Vertical Slice: SELF)
 const selfApp = new OpenAPIHono();
@@ -769,6 +990,9 @@ app.route('/api', educationalApp);
 app.route('/api', gradingApp);
 app.route('/api', operationsApp);
 app.route('/api', identityApp);
+const authorizationApp = new OpenAPIHono();
+registerRoute(authorizationApp, permissionSnapshotRoute, permissionSnapshotHandler);
+app.route('/api', authorizationApp);
 app.route('/api', onboardingApp);
 app.route('/api', adminApp);
 app.route('/api', libraryApp);
@@ -777,6 +1001,14 @@ app.route('/api', libraryApp);
 const syncApp = new OpenAPIHono();
 registerRoute(syncApp, syncContract.uploadPowerSyncBatch, syncHandlers.uploadPowerSyncBatch);
 app.route('/api', syncApp);
+const aiPolicyRoute: SovereignRoute = {
+  path: '/api/ai/chat',
+  method: 'post',
+  responses: { 200: { schema: z.any(), description: 'AI response stream' } },
+  metadata: { policy: { action: 'use_ai', subject: 'AIAssistant' } },
+};
+app.use('/api/ai/*', poa(aiPolicyRoute));
+app.use('/api/ai/*', featureFlagGateForKey('isAIAssistantEnabled', '/api/ai'));
 app.route('/api/ai', aiRouter);
 
 // Public Payments Webhook (Bypasses Bearer Auth)

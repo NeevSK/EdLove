@@ -4,9 +4,11 @@
  * When AI_SDK=vercel, initializes Foglamp to instrument all Vercel AI SDK
  * streamText / generateText calls. No-op when AI_SDK=tanstack (default).
  */
-export {};
+import { initializeOtel } from './telemetry/otel';
 
-if (process.env.AI_SDK === 'vercel') {
+await initializeOtel();
+
+if (typeof process !== 'undefined' && process.env.AI_SDK === 'vercel') {
   const { registerTelemetry } = await import('ai');
   const { foglamp } = await import('foglamp');
   registerTelemetry(foglamp());

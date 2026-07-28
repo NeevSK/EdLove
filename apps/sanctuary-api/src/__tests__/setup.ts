@@ -56,7 +56,10 @@ function createMockDelegate(name: string): any {
           });
         }
 
-        if (prop === 'findMany') return async () => [];
+        if (prop === 'findMany') {
+          if (name === 'bond') return async () => (mockActiveBond ? [mockActiveBond] : []);
+          return async () => [];
+        }
         if (prop === 'findFirst') {
           if (name === 'bond') {
             return async () => mockActiveBond;
