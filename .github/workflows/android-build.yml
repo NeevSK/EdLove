@@ -380,6 +380,7 @@ jobs:
           path: /tmp/sentry-artifacts
 
       - name: 🚀 Sentry Sourcemap Upload
+        id: sentry-upload
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: intuitui-labs
@@ -435,4 +436,13 @@ jobs:
 
           if [ "$UPLOAD_OK" -ne 1 ]; then
             exit 1
+          fi
+
+      - name: ⚠️ Report non-blocking Sentry result
+        if: always()
+        run: |
+          if [ "${{ steps.sentry-upload.outcome }}" != "success" ]; then
+            echo "::warning::Sentry source-map upload failed or was skipped; Android build artifacts remain valid, but Sentry stack traces may be unmapped."
+          else
+            echo "Sentry source-map upload completed successfully."
           fi

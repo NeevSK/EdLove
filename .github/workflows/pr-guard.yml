@@ -35,6 +35,9 @@ jobs:
       - name: Run Linter
         run: pnpm lint
 
+      - name: Observability ownership boundaries
+        run: pnpm run check:observability-boundaries
+
       - name: Check Types
         env:
           NODE_OPTIONS: --max-old-space-size=8192

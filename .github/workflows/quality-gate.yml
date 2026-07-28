@@ -39,6 +39,9 @@ jobs:
       - name: ✨ Lint (Oxlint + ESLint)
         run: pnpm lint
 
+      - name: 🔭 Observability ownership boundaries
+        run: pnpm run check:observability-boundaries
+
       - name: 🩺 React Doctor
         run: pnpm run audit:react-doctor
 
@@ -49,6 +52,9 @@ jobs:
 
       - name: ♻️ Feature lifecycle contract
         run: pnpm run audit:feature-lifecycle
+
+      - name: 🔐 ZenStack and Cedar authorization parity
+        run: pnpm run audit:authorization-parity
 
       - name: 🧹 Feature lifecycle archival dry run
         run: pnpm run feature-lifecycle:archive

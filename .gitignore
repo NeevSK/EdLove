@@ -64,4 +64,6 @@ packages/library/lint_results.json
 # TypeScript Build Info
 *.tsbuildinfo
 
-
+# Rust test
+spike-rust-inline/
+native-capabilities/
