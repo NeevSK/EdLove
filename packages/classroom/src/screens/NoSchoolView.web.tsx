@@ -182,6 +182,7 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
         type: state.type,
         created_by: user.id,
       });
+      await onboardingAPI.createFounderSchoolBond(user.id, school.id);
       try {
         await communityAPI.createGroupWithOwner(
           {

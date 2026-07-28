@@ -82,12 +82,16 @@ It inventories every repo-tracked file in `packages/analytics`, records the pack
 | `src/utils/benchmarking.ts` | analytics benchmarking helper | public root API | shared | no UI issue found | keep |
 
 ## Direct Consumers Updated In This Pass
+- `apps/gurudevi-mobile/app/_layout.tsx`
+  - owns the single injected PostHog adapter and emits typed product events
 - `apps/gurudevi-mobile/src/providers/SanctuaryProvider.tsx`
-  - `AnalyticsProvider` now comes from `@repo/analytics/ui`
+  - no longer initializes a second PostHog provider
 - `packages/admin/src/screens/EnhancedAnalyticsDashboard.web.tsx`
   - UI components now come from `@repo/analytics/ui`
   - query hooks now come from `@repo/analytics/hooks`
 
 ## Notes
-- `apps/gurudevi-mobile/App.tsx` continues to use `initPostHog`, `trackEvent`, and `identifyUser` from the root package. That remains valid because these are runtime analytics utilities rather than UI exports.
+- The mobile shell uses `initPostHog` only for adapter initialization and uses
+  the typed core product-event boundary for product events. The legacy
+  arbitrary `trackEvent` helper remains only as a compatibility shim.
 - `multiTenantAnalyticsAPI` remains on the root package as a compatibility helper for admin until a fuller admin analytics boundary is designed.

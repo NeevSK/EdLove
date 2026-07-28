@@ -1,4 +1,5 @@
 import type { IAnalyticsPort } from '@repo/core';
+import { sanitizeTelemetryData } from '@repo/core/monitoring';
 import posthogWeb from 'posthog-js';
 import { PostHog as PostHogNode } from 'posthog-node';
 
@@ -43,12 +44,12 @@ export class PostHogAnalytics implements IAnalyticsPort {
     if (this.isDisabled || !this.isInitialized) return;
     try {
       if (this.isBrowser) {
-        this.instance.capture(event, properties);
+        this.instance.capture(event, sanitizeTelemetryData(properties));
       } else {
         this.instance.capture({
           distinctId: properties?.distinctId || 'server_system',
           event,
-          properties,
+          properties: sanitizeTelemetryData(properties),
         });
       }
     } catch (error) {
@@ -60,11 +61,11 @@ export class PostHogAnalytics implements IAnalyticsPort {
     if (this.isDisabled || !this.isInitialized) return;
     try {
       if (this.isBrowser) {
-        this.instance.identify(userId, properties);
+        this.instance.identify(userId, sanitizeTelemetryData(properties));
       } else {
         this.instance.identify({
           distinctId: userId,
-          properties,
+          properties: sanitizeTelemetryData(properties),
         });
       }
     } catch (error) {
@@ -79,7 +80,7 @@ export class PostHogAnalytics implements IAnalyticsPort {
         // In posthog-js, screen is commonly implemented via capture with specific event name
         this.instance.capture('$screen', {
           $screen_name: name,
-          ...properties,
+          ...sanitizeTelemetryData(properties),
         });
       } else {
         this.instance.capture({
@@ -87,7 +88,7 @@ export class PostHogAnalytics implements IAnalyticsPort {
           event: '$screen',
           properties: {
             $screen_name: name,
-            ...properties,
+            ...sanitizeTelemetryData(properties),
           },
         });
       }

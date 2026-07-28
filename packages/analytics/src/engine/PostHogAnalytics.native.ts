@@ -1,4 +1,5 @@
 import type { IAnalyticsPort } from '@repo/core';
+import { sanitizeTelemetryData } from '@repo/core/monitoring';
 import PostHog from 'posthog-react-native';
 
 interface UserProperties {
@@ -61,7 +62,7 @@ export class PostHogAnalytics implements IAnalyticsPort {
     }
 
     try {
-      this.posthog.capture(event, properties);
+      this.posthog.capture(event, sanitizeTelemetryData(properties));
     } catch (error) {
       console.error('Failed to track event:', error);
     }
@@ -83,7 +84,7 @@ export class PostHogAnalytics implements IAnalyticsPort {
     try {
       this.posthog.identify(userId);
       if (userProperties) {
-        this.posthog.register(userProperties);
+        this.posthog.register(sanitizeTelemetryData(userProperties));
       }
     } catch (error) {
       console.error('Failed to identify user:', error);
@@ -112,7 +113,7 @@ export class PostHogAnalytics implements IAnalyticsPort {
     }
 
     try {
-      this.posthog.screen(screenName, properties);
+      this.posthog.screen(screenName, sanitizeTelemetryData(properties));
     } catch (error) {
       console.error('Failed to track screen:', error);
     }

@@ -1,6 +1,6 @@
 import { api, communityAPI, identityAPI } from '@repo/core/api';
 import { useEntity } from '@repo/core/hooks';
-import { handleAPIError, useStore } from '@repo/core/logic';
+import { handleAPIError } from '@repo/core/logic';
 
 import { resolveQR, ScannerModal } from '@repo/scanner-kit';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
@@ -139,7 +139,6 @@ export default function CreateClassroomModal({
   initialData,
 }: CreateClassroomModalProps) {
   const router = useRouter();
-  const { user, setUser } = useStore();
   const { t } = useTranslation();
   const { accent } = useTheme();
 
@@ -354,16 +353,6 @@ export default function CreateClassroomModal({
         }
       }
 
-      // Sync school_id to Supabase profile and local store if a school context exists
-      // EXCEPTION: Personal classrooms (no schoolId in create mode) do not update the user's school association.
-      const targetSchoolId = result?.school_id || (mode === 'create' ? schoolId : undefined);
-      if (targetSchoolId && userId && (mode === 'create' || mode === 'join')) {
-        await identityAPI.updateProfile(userId, { school_id: targetSchoolId });
-        if (user) {
-          setUser({ ...user, school_id: targetSchoolId } as any);
-        }
-      }
-
       hapticSuccess();
       if (mode === 'create') {
         updateStep(3);
@@ -405,16 +394,6 @@ export default function CreateClassroomModal({
           const result = await api.classrooms.update(classroomId, {
             teacher_id: userId,
           });
-
-          // Sync school_id if joining via scan
-          if (result?.school_id) {
-            await identityAPI.updateProfile(userId, {
-              school_id: result.school_id,
-            });
-            if (user) {
-              setUser({ ...user, school_id: result.school_id } as any);
-            }
-          }
 
           onSuccess(result);
           handleClose();

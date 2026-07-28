@@ -24,7 +24,7 @@ export const AI_REGISTRY: Record<string, DomainFeature> = {
     state: 'beta',
     flagKey: 'isAIAssistantEnabled',
     lifecycle: AI_BETA_LIFECYCLE,
-    capabilityRequirement: { action: 'read', subject: 'AIAssistantScale' },
+    capabilityRequirement: { action: 'use_ai', subject: 'AIAssistant' },
     tabDomain: 'workspace',
     analyticsKey: 'workspace.ai_assistant',
   },
