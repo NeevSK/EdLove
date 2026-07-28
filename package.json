@@ -19,7 +19,7 @@
     "audit:mobile:doctor": "powershell -ExecutionPolicy Bypass -File scripts/audit-wrapper.ps1 -Cmd \"pnpm --filter gurudevi-mobile exec expo-doctor\" -Log \"reports/mobile_doctor_audit.txt\"",
     "audit:react-doctor": "node ./scripts/run-and-report.mjs --cmd \"npx react-doctor\" --name \"package_json-audit_react-doctor\"",
     "check-types": "node scripts/sovereign-audit.mjs --cmd \"pnpm turbo run check-types\" --log \"reports/check-types.txt\"",
-    "check-all": "node ./scripts/run-and-report.mjs --cmd \"pnpm run lint && pnpm run audit:react-doctor && pnpm run check-types && pnpm run audit:cycles && pnpm run audit:deprecations && pnpm run check:unused && pnpm run audit:security\" --name \"package_json-check-all\"",
+    "check-all": "node ./scripts/run-and-report.mjs --cmd \"pnpm run lint && pnpm run check:observability-boundaries && pnpm run audit:react-doctor && pnpm run check-types && pnpm run audit:cycles && pnpm run audit:deprecations && pnpm run check:unused && pnpm run audit:security\" --name \"package_json-check-all\"",
     "audit:security": "node ./scripts/run-and-report.mjs --cmd \"pnpm dlx snyk test --all-projects && pnpm dlx semgrep scan --config auto\" --name \"package_json-audit_security\"",
     "audit:cycles": "node ./scripts/run-and-report.mjs --cmd \"node scripts/refactor/sovereign-cycle-checker.mjs\" --name \"package_json-audit_cycles\"",
     "android": "node ./scripts/run-and-report.mjs --cmd \"pnpm exec expo run:android\" --name \"package_json-android\"",
@@ -39,6 +39,7 @@
     "check:unused": "node scripts/sovereign-audit.mjs --cmd \"pnpm exec depcruise packages apps --config .dependency-cruiser.cjs --output-type err\" --filter \"no-orphans\" --log \"reports/unused_code.txt\"",
     "check:architecture": "node scripts/sovereign-audit.mjs --cmd \"pnpm exec depcruise packages apps --config .dependency-cruiser.cjs --output-type err\" --log \"reports/architecture.txt\"",
     "check:deep-imports": "node scripts/check-deep-imports.mjs",
+    "check:observability-boundaries": "node scripts/check-observability-boundaries.mjs",
     "check:hygiene": "node ./scripts/run-and-report.mjs --cmd \"node ./scripts/check-hygiene.mjs\" --name \"package_json-check_hygiene\"",
     "check:self-boundaries": "node ./scripts/run-and-report.mjs --cmd \"node scripts/check-self-boundaries.mjs\" --name \"package_json-check_self-boundaries\"",
     "check:classroom-boundaries": "node ./scripts/run-and-report.mjs --cmd \"node scripts/check-classroom-boundaries.mjs\" --name \"package_json-check_classroom-boundaries\"",
@@ -53,6 +54,7 @@
     "audit:deprecations": "node ./scripts/run-and-report.mjs --cmd \"powershell -ExecutionPolicy Bypass -File scripts/audit-deprecations.ps1\" --name \"package_json-audit_deprecations\"",
     "audit:feature-lifecycle": "node scripts/audit-feature-flags.mjs --strict",
     "audit:feature-lifecycle:control-plane": "node scripts/audit-growthbook-features.mjs --strict",
+    "audit:authorization-parity": "node scripts/check-authorization-parity.mjs",
     "test:feature-lifecycle": "pnpm --filter @repo/core exec vitest run src/adapters/__tests__/growthbook.test.ts src/logic/permissions/__tests__/sanctuaryFeature.test.ts src/logic/registry/__tests__ src/store/__tests__/featureSlice.test.ts",
     "feature-lifecycle:archive": "node scripts/archive-growthbook-flags.mjs",
     "feature-lifecycle:schema-check": "node scripts/check-legacy-feature-flag-schema.mjs",
@@ -108,7 +110,7 @@
   },
   "packageManager": "pnpm@11.13.0",
   "engines": {
-    "node": "24.x"
+    "node": ">=22.23.0 <23"
   },
   "workspaces": [
     "apps/*",
