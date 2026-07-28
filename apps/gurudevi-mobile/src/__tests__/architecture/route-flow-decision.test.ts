@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { getAuthRouteTarget } from '@repo/core/logic/auth/bootstrapRoutes';
+import { describe, expect, it } from 'vitest';
 
 describe('route flow decision helper', () => {
   it('keeps public routes on welcome and sends others to welcome when unauthenticated', () => {
@@ -7,7 +7,7 @@ describe('route flow decision helper', () => {
       getAuthRouteTarget({
         pathname: '/profile',
         bootstrapReady: true,
-        sessionMode: 'guest',
+        sessionMode: 'unauthenticated',
         onboardingCompleted: false,
         hasSession: false,
       }),
@@ -17,7 +17,7 @@ describe('route flow decision helper', () => {
       getAuthRouteTarget({
         pathname: '/welcome',
         bootstrapReady: true,
-        sessionMode: 'guest',
+        sessionMode: 'unauthenticated',
         onboardingCompleted: false,
         hasSession: false,
       }),
@@ -43,6 +43,7 @@ describe('route flow decision helper', () => {
         bootstrapReady: true,
         sessionMode: 'authenticated',
         onboardingCompleted: true,
+        hasActiveCapacity: true,
         hasSession: true,
       }),
     ).toMatchObject({ decision: 'app', redirectTo: '/self' });

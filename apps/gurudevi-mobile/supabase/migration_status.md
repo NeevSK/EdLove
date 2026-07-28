@@ -1,11 +1,17 @@
 # Supabase Migration Status Tracker
 
-> **Last Updated:** 2026-02-11
+> **Last Updated:** 2026-07-26
 
 ## Purpose
 This file tracks which migration files have been applied to your Supabase database. Update this manually after running each migration until you set up Supabase CLI.
 
 ## Migration Status
+
+| `20260726000000_feature_access_snapshot_contract.sql` | ⏳ | - | Adds the server-owned `permission_snapshots` and `policy_version` tables bound to the authenticated user and active bond. Apply before enabling scoped offline snapshots. |
+| `20260726000001_entity_scoped_permission_snapshots.sql` | ⏳ | - | Makes school context optional because active bonds may represent personal, classroom, community, or group entities. |
+| `20260726000002_canonicalize_citizenship_default.sql` | ⏳ | - | Migrates legacy WANDERER values to THIRD_CLASS and changes the database default for authenticated users. |
+| `20260726000003_scoped_entitlement_grants.sql` | ⏳ | - | Adds bond/entity-scoped institutional grants without replacing individual FREE/PRO plans. |
+| `20260726000004_official_school_invite_claim.sql` | ⏳ | - | Makes official invite/founder bond creation and school-bond revocation the only citizenship-promotion path. |
 
 | Migration File | Applied | Date Applied | Notes |
 |----------------|---------|--------------|-------|
@@ -91,3 +97,14 @@ Once you've established the current state:
 1. Consider consolidating all foundation schemas into a single `00_baseline_schema.sql`
 2. Set up Supabase CLI for automatic migration tracking
 3. Integrate migrations into your CI/CD pipeline
+## 2026-07-26 lifecycle additions
+
+- `20260726000003_scoped_entitlement_grants.sql` is a reviewed, pending
+  migration artifact. It must be applied through the normal deployment
+  pipeline after the production database owner confirms the target.
+- The table separates individual `FREE`/`PRO` plans from school/institution
+  grants, which are evaluated only for the active verified bond/entity.
+- No PowerSync deployment or sync-rule mutation was performed in this change.
+- `20260726000004_official_school_invite_claim.sql` is also reviewed and
+  pending. It must be applied after the scoped-grants migration because school
+  claim transactions create institutional grants.

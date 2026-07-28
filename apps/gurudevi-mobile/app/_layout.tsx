@@ -11,12 +11,8 @@ import { registerAppCatalog } from '@/boot/registerAppCatalog';
 
 registerAppCatalog();
 
-import {
-  identifyUser,
-  initPostHog,
-  posthogAnalytics as initTracker,
-  trackEvent,
-} from '@repo/analytics';
+import { initPostHog, posthogAnalytics as initTracker } from '@repo/analytics';
+import { refreshPermissionSnapshotOnServer } from '@repo/core/api/authorization';
 import {
   accountPin,
   coreRuntime,
@@ -28,10 +24,19 @@ import {
   useStore,
 } from '@repo/core/logic';
 import { warmCedarWasm } from '@repo/core/logic/permissions/cedarClientEvaluator';
-import { clearSentryUser, initSentry, injectPostHog, setSentryUser } from '@repo/core/monitoring';
+import {
+  clearSentryUser,
+  identifyUser,
+  initSentry,
+  injectPostHog,
+  setSentryUser,
+  trackProductEvent,
+} from '@repo/core/monitoring';
 import { bootstrapPlatform, storage } from '@repo/core/native';
+import { usePolicyVersionInvalidation } from '@repo/core/powersync';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
+import { useFeatureStore } from '@repo/core/store/useFeatureStore';
 import { SyncManager } from '@repo/core/sync';
 import { useQRDeepLink } from '@repo/scanner-kit';
 import { AccountPinModal } from '@repo/ui/components';
@@ -102,19 +107,25 @@ function FullScreenFallback() {
 
 function BootstrapSideEffects() {
   const currentUser = useStore((state) => state.user);
+  const analyticsEnabled = useFeatureStore((state) => state.flags.isAnalyticsEnabled);
 
   useEffect(() => {
     initSentry();
 
     const posthogApiKey = process.env.EXPO_PUBLIC_POSTHOG_API_KEY;
     const posthogEnabled = process.env.EXPO_PUBLIC_POSTHOG_ENABLED !== 'false';
-    if (posthogApiKey && posthogEnabled) {
+    if (posthogApiKey && posthogEnabled && analyticsEnabled) {
       const posthogHost = process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com';
       void initPostHog(posthogApiKey, { host: posthogHost }).then(() => {
-        trackEvent('app_initialized', { platform: Platform.OS });
+        trackProductEvent('app_started', undefined, {
+          platform:
+            Platform.OS === 'ios' || Platform.OS === 'android' || Platform.OS === 'web'
+              ? Platform.OS
+              : 'unknown',
+        });
       });
     }
-  }, []);
+  }, [analyticsEnabled]);
 
   useEffect(() => {
     if (!currentUser?.id) {
@@ -128,14 +139,7 @@ function BootstrapSideEffects() {
       username: currentUser.display_name ?? undefined,
     });
 
-    identifyUser(currentUser.id, {
-      email: currentUser.email ?? undefined,
-      display_name: currentUser.display_name ?? undefined,
-      capacity:
-        (useStore.getState() as { activeBond?: { capacity?: string } }).activeBond?.capacity ??
-        undefined,
-      school_id: currentUser.school_id ?? undefined,
-    });
+    identifyUser(currentUser.id);
   }, [currentUser?.display_name, currentUser?.email, currentUser?.id, currentUser?.school_id]);
 
   useEffect(() => {
@@ -163,6 +167,11 @@ function AppContent() {
   const pathname = usePathname();
   const { session, loading, isProfileLoading } = useAuth();
   const onboardingCompleted = useStore((state) => state.onboardingCompleted);
+  const hasActiveCapacity = useStore((state) => Boolean(state.activeBond?.capacity));
+  const activeBond = useStore((state) => state.activeBond);
+  const activeBondScopeId = useStore((state) => state.activeBond?.id ?? null);
+  const clearCedarDecisions = useCedarDecisionStore((state) => state.clearDecisions);
+  usePolicyVersionInvalidation(clearCedarDecisions);
   const toast = useStore((state) => state.toast);
   const hideToast = useStore((state) => state.hideToast);
   const [fontsReady, setFontsReady] = useState(() => !coreRuntime.isRegistered());
@@ -180,6 +189,7 @@ function AppContent() {
     bootstrapReady,
     sessionMode,
     onboardingCompleted,
+    hasActiveCapacity,
     hasSession: !!session,
   });
 
@@ -334,11 +344,27 @@ function AppContent() {
     // Warm Cedar WASM singleton at boot per D4 Section 1
     warmCedarWasm();
 
-    if (session?.user?.id) {
-      void loadDecisions(session.user.id);
-      void loadEntitlements(session.user.id);
+    if (session?.user?.is_anonymous) {
+      // Anonymous guests have a Supabase auth identity for conversion and
+      // measurement, but no durable Cedar or commercial entitlement scope.
+      useEntitlementStore.getState().clearEntitlements();
+      useCedarDecisionStore.getState().clearDecisions();
+    } else if (session?.user?.id) {
+      void loadDecisions(session.user.id, activeBondScopeId);
+      void loadEntitlements(session.user.id, {
+        activeBondId: activeBondScopeId,
+        activeEntityId: activeBond?.entity_id ?? null,
+        activeEntityType: activeBond?.entity_type ?? null,
+      });
+      if (activeBondScopeId) {
+        // Refresh is best-effort for offline-first startup. The local Cedar
+        // evaluator continues using only a verified last-known-good snapshot.
+        void refreshPermissionSnapshotOnServer().catch((error) => {
+          console.warn('[authorization] snapshot refresh deferred:', error);
+        });
+      }
     }
-  }, [session?.user?.id, loadDecisions, loadEntitlements]);
+  }, [session?.user?.id, activeBond, activeBondScopeId, loadDecisions, loadEntitlements]);
 
   useQRDeepLink((payload: unknown) => {
     router.push({ pathname: '/qr', params: { payload: JSON.stringify(payload) } });
