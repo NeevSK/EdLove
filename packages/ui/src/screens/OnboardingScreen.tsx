@@ -20,15 +20,17 @@ import {
   Text,
   VStack,
 } from '@/gluestack';
-import { hapticError, hapticLight, hapticSuccess } from '@/utils/haptics';
+import {} from '@/screens/devOnboardingFastTrack';
+import {
+  getDevOnboardingTemplateLabel,
+  resolveOnboardingDevIntent,
+} from '@/screens/onboardingDevFlow';
 import {
   canProceedOnboardingStep,
   getOnboardingPhase,
   getOnboardingStepLabel,
 } from '@/screens/onboardingFlow';
-import {
-} from '@/screens/devOnboardingFastTrack';
-import { getDevOnboardingTemplateLabel, resolveOnboardingDevIntent } from '@/screens/onboardingDevFlow';
+import { hapticError, hapticLight, hapticSuccess } from '@/utils/haptics';
 import { safeBack } from '@/utils/navigation';
 
 // ──────────────────────────────────────────────────────────
@@ -873,7 +875,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
     hapticLight();
 
     // 🛡️ OFFLINE CHECK
-    if (!isOnline) {
+    if (!isOnline && !isAnonymous) {
       hapticError();
       dispatch({
         type: 'SET_ERROR',
@@ -896,10 +898,10 @@ const OnboardingScreen = memo(function OnboardingScreen({
           input: name,
         });
         if (devIntent.kind === 'menu') {
-            dispatch({ type: 'SET_PROCESSING', isProcessing: false });
-            dispatch({ type: 'SHOW_DEV_SANDBOX', visible: true });
-            return;
-          }
+          dispatch({ type: 'SET_PROCESSING', isProcessing: false });
+          dispatch({ type: 'SHOW_DEV_SANDBOX', visible: true });
+          return;
+        }
         if (devIntent.kind === 'template') {
           const template = devIntent.intent.template;
 
@@ -1083,19 +1085,22 @@ const OnboardingScreen = memo(function OnboardingScreen({
                   isAnonymous={isAnonymous}
                 />
               )}
-              {(currentPhase === 'mandatory' || currentPhase === 'optional' || currentPhase === 'complete') && currentTourScreen && (
-                <TourStep
-                  t={t}
-                  index={currentStep}
-                  screen={currentTourScreen}
-                  onBack={handleBack}
-                  onNext={() => {
-                    void handleNext();
-                  }}
-                  onSkip={handleSkipTour}
-                  isLoading={isProcessing}
-                />
-              )}
+              {(currentPhase === 'mandatory' ||
+                currentPhase === 'optional' ||
+                currentPhase === 'complete') &&
+                currentTourScreen && (
+                  <TourStep
+                    t={t}
+                    index={currentStep}
+                    screen={currentTourScreen}
+                    onBack={handleBack}
+                    onNext={() => {
+                      void handleNext();
+                    }}
+                    onSkip={handleSkipTour}
+                    isLoading={isProcessing}
+                  />
+                )}
             </>
           )}
         </VStack>

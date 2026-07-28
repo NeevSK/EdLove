@@ -195,7 +195,10 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
 
       const redirectUrl = getRedirectUrl();
       const session = await authAPI.getAuthSession().catch(() => null);
-      const isAnon = getSessionIdentityMode(session) === 'guest';
+      const isAnon = getSessionIdentityMode(session) === 'anonymous';
+      if (isAnon && session?.user) {
+        GuestDataSync.rememberGuestSession(session.user.id);
+      }
 
       // ── Native platform logic: use expo-auth-session ───
       try {
@@ -239,20 +242,17 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
           hapticSuccess();
           const internalId = await identityAPI.getMyInternalId();
 
-          // Apply pending school invite if any
+          // A pending invite is only a navigation hint. School membership and
+          // First Class promotion are established by the official claim RPC.
           if (internalId) {
             const pendingInvite = await storage.getStringAsync('pending_invite');
             if (pendingInvite) {
               try {
                 const invite = JSON.parse(pendingInvite);
                 if (invite.school_id) {
-                  await identityAPI.updateProfile(internalId, {
-                    school_id: invite.school_id,
-                  });
-                  storage.delete('pending_invite');
                   showToast({
-                    message: 'Welcome to your new school sanctuary!',
-                    type: 'success',
+                    message: 'Your official school invitation is ready to claim.',
+                    type: 'info',
                   });
                 }
               } catch (e) {
@@ -261,7 +261,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
             }
           }
 
-          const hasGuestData = await GuestDataSync.hasGuestData();
+          const hasGuestData = await GuestDataSync.hasGuestData(session?.user?.id);
           if (isAnon && hasGuestData && internalId) {
             dispatch({
               type: 'SET_FIELD',
@@ -314,9 +314,10 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
       if (isSignUp) {
         showToast({ message: 'Creating your identity...', type: 'info', duration: 2000 });
         const currentSession = await authAPI.getAuthSession().catch(() => null);
-        const isAnon = getSessionIdentityMode(currentSession) === 'guest';
+        const isAnon = getSessionIdentityMode(currentSession) === 'anonymous';
 
         if (isAnon && currentSession?.user) {
+          GuestDataSync.rememberGuestSession(currentSession.user.id);
           const existingName =
             (currentUser?.display_name && String(currentUser.display_name).trim()) ||
             'Sanctuary User';
@@ -331,7 +332,7 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
           });
 
           // Check for anonymous data to sync
-          const hasGuestData = await GuestDataSync.hasGuestData();
+          const hasGuestData = await GuestDataSync.hasGuestData(currentSession.user.id);
           if (hasGuestData && internalId) {
             dispatch({
               type: 'SET_FIELD',
@@ -363,13 +364,9 @@ const AuthScreen = memo(({ onSuccess, onBack, initialMode, Scanner }: AuthScreen
             try {
               const invite = JSON.parse(pendingInvite);
               if (invite.school_id) {
-                await identityAPI.updateProfile(internalId, {
-                  school_id: invite.school_id,
-                });
-                storage.delete('pending_invite');
                 showToast({
-                  message: 'Reconnected to your school sanctuary!',
-                  type: 'success',
+                  message: 'Your official school invitation is ready to claim.',
+                  type: 'info',
                 });
               }
             } catch (e) {

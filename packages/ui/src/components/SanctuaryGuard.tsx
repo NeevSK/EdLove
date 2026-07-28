@@ -1,10 +1,10 @@
-import React from 'react';
 import { useSanctuaryFeature } from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
 import type { FeatureRequirement } from '@repo/core/logic/permissions/sanctuaryFeature';
-import { SignupPrompt } from '@/components/prompts/SignupPrompt';
-import { SchoolJoinPrompt } from '@/components/prompts/SchoolJoinPrompt';
-import { UpgradePrompt } from '@/components/prompts/UpgradePrompt';
 import { CITIZENSHIP } from '@repo/core/logic/permissions/sanctuaryFeature';
+import React from 'react';
+import { SchoolJoinPrompt } from '@/components/prompts/SchoolJoinPrompt';
+import { SignupPrompt } from '@/components/prompts/SignupPrompt';
+import { UpgradePrompt } from '@/components/prompts/UpgradePrompt';
 
 interface SanctuaryGuardProps {
   action: string;
@@ -47,6 +47,7 @@ export function SanctuaryGuard({
       return <UpgradePrompt requiredTier={result.required} currentTier={result.current} />;
 
     case 'authz':
+    case 'platform':
     case 'feature':
     default:
       return null; // Wrong role or operational flag (disabled) -> invisible to user

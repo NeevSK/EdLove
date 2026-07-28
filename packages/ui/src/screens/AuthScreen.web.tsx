@@ -114,13 +114,9 @@ export const AuthScreenWeb = memo(
           const invite = JSON.parse(pendingInvite) as { school_id?: string };
           if (!invite.school_id) return;
 
-          await identityAPI.updateProfile(internalId, {
-            school_id: invite.school_id,
-          });
-          storage.delete('pending_invite');
           showToast({
-            message: successMessage,
-            type: 'success',
+            message: `${successMessage} Claim the official invitation to activate school access.`,
+            type: 'info',
           });
         } catch (error) {
           console.error('Failed to apply pending invite on web auth:', error);
@@ -160,7 +156,7 @@ export const AuthScreenWeb = memo(
       try {
         const redirectUrl = window.location.origin;
         const session = await authAPI.getAuthSession().catch(() => null);
-        const isAnonymousSession = getSessionIdentityMode(session) === 'guest';
+        const isAnonymousSession = getSessionIdentityMode(session) === 'anonymous';
 
         if (isAnonymousSession && session?.user) {
           await authAPI.linkOAuthIdentity('google', redirectUrl);
@@ -185,7 +181,7 @@ export const AuthScreenWeb = memo(
       try {
         const redirectUrl = window.location.origin;
         const session = await authAPI.getAuthSession().catch(() => null);
-        const isAnonymousSession = getSessionIdentityMode(session) === 'guest';
+        const isAnonymousSession = getSessionIdentityMode(session) === 'anonymous';
 
         if (isAnonymousSession && session?.user) {
           await authAPI.registerPasskey(redirectUrl, true);
