@@ -1,6 +1,6 @@
 import { useDomainRollout } from '@repo/core/hooks';
 import { ContentComposer } from '@repo/ui/components/ContentComposer';
-import { useComposerLogic } from '@/hooks/useComposerLogic';
+import { useComposerLogic } from '@community/hooks/useComposerLogic';
 
 interface CreatePostModalProps {
   isOpen: boolean;

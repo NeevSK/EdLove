@@ -2,7 +2,7 @@
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
 import { Text, View, type ViewProps } from 'react-native';
-import { Image } from '@/components/ui/image';
+import { Image } from '@repo/ui/components/ui/image';
 
 cssInterop(View, { className: 'style' });
 cssInterop(Text, { className: 'style' });

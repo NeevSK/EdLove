@@ -1,4 +1,4 @@
-import type { Task } from '@/types';
+import type { Task } from '@repo/core/types';
 
 export interface TeacherRepository {
   getTasks(teacherId: string): Promise<Task[]>;

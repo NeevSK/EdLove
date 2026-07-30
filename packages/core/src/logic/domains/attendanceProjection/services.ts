@@ -1,5 +1,5 @@
-import type { AttendanceReport, SchoolAttendancePulse } from '@/logic/schemas/attendance.schema';
-import type { AttendanceProjectionRepository } from '@/logic/domains/attendanceProjection/ports';
+import type { AttendanceReport, SchoolAttendancePulse } from '@repo/core/logic/schemas/attendance.schema';
+import type { AttendanceProjectionRepository } from '@repo/core/logic/domains/attendanceProjection/ports';
 
 export interface AttendanceProjectionServices {
   getSchoolAttendancePulse(

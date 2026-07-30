@@ -1,9 +1,9 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import en from '@/logic/i18n/locales/en.json';
+import en from '@repo/core/logic/i18n/locales/en.json';
 // Import translation files from local directory
-import si from '@/logic/i18n/locales/si.json';
-import ta from '@/logic/i18n/locales/ta.json';
+import si from '@repo/core/logic/i18n/locales/si.json';
+import ta from '@repo/core/logic/i18n/locales/ta.json';
 
 // i18n configuration for Core
 if (!i18n.isInitialized && !i18n.isInitializing) {

@@ -6,8 +6,8 @@
 export {
   default as FounderSelfView,
   default as AdminSelfView,
-} from '@/screens/self/FounderSelfView.web';
-export { default as GuardianSelfView } from '@/screens/self/GuardianSelfView.web';
-export { default as PrincipalSelfView } from '@/screens/self/PrincipalSelfView.web';
-export { default as StudentSelfView } from '@/screens/self/StudentSelfView.web';
-export { default as TeacherSelfView } from '@/screens/self/TeacherSelfView.web';
+} from '@self/screens/self/FounderSelfView.web';
+export { default as GuardianSelfView } from '@self/screens/self/GuardianSelfView.web';
+export { default as PrincipalSelfView } from '@self/screens/self/PrincipalSelfView.web';
+export { default as StudentSelfView } from '@self/screens/self/StudentSelfView.web';
+export { default as TeacherSelfView } from '@self/screens/self/TeacherSelfView.web';

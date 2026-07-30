@@ -1,6 +1,6 @@
 import { Duration, Effect, pipe, Schedule } from 'effect';
-import { captureException } from '@/lib/monitoring/sentry';
-import { APIError } from '@/types/API';
+import { captureException } from '@repo/core/lib/monitoring/sentry';
+import { APIError } from '@repo/core/types/API';
 
 function normalizeError(error: unknown): Error {
   return error instanceof Error ? error : new Error(String(error));

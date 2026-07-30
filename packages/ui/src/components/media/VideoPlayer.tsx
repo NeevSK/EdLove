@@ -3,10 +3,10 @@ import { Pause, Play, RotateCcw, RotateCw, X } from '@repo/ui/icons';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 import Animated, { FadeInUp } from 'react-native-reanimated';
-import { useTheme } from '@/hooks/useTheme';
-import { Box, HStack, Pressable, Text, VStack } from '@/primitives';
-import { formatTimeMs } from '@/utils/dateTimeUtils';
-import { SanctuaryButton } from '@/components/SanctuaryButton';
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { formatTimeMs } from '@repo/ui/utils/dateTimeUtils';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 
 export interface VideoPlayerProps {
   url: string;

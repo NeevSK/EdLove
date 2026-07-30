@@ -1,7 +1,7 @@
 import { useStore, useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { useCallback, useEffect, useState } from 'react';
-import { fetchInteractionCountForView } from '@/api/selfInsightsRepository';
+import { fetchInteractionCountForView } from '@self/api/selfInsightsRepository';
 
 const PROGRESS_TREE_CACHE_KEY = 'gurudevi-progtree-cache';
 

@@ -1,5 +1,6 @@
 import { gradingAPI, growthSignalsAPI, studentsAPI } from '@repo/core/api';
-import { type ClassroomGradingSettings, type StudentGrade, useStore } from '@repo/core/logic';
+import { type ClassroomGradingSettings, type StudentGrade } from '@repo/core/types';
+import { useStore } from '@repo/core/logic';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 

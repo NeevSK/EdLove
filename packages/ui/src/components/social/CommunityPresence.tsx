@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EaseView } from 'react-native-ease';
-import { Users, WifiOff } from '@/icons';
-import { Box, Heading, HStack, Icon, Spinner, Text, View, VStack } from '@/primitives';
+import { Users, WifiOff } from '@repo/ui/icons';
+import { Box, Heading, HStack, Icon, Spinner, Text, View, VStack } from '@repo/ui/primitives';
 
 // These props will be consumed by the UI from its own internal hook or props
 export interface CommunityPresenceProps {

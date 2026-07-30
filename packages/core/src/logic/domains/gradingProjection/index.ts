@@ -1,2 +1,2 @@
-export * from '@/logic/domains/gradingProjection/ports';
-export * from '@/logic/domains/gradingProjection/services';
+export * from '@repo/core/logic/domains/gradingProjection/ports';
+export * from '@repo/core/logic/domains/gradingProjection/services';

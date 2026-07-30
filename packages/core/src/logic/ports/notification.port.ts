@@ -1,4 +1,4 @@
-import type { AppNotification, NotificationStatus } from '@/types';
+import type { AppNotification, NotificationStatus } from '@repo/core/types';
 
 /**
  * INotificationPort: The Sovereign Notification Interface.

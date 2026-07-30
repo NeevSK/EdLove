@@ -1,6 +1,6 @@
 import type { LucideIcon } from '@repo/ui/icons';
-import { Box, Center, Heading, Text, VStack } from '@/gluestack';
-import { SanctuaryButton } from '@/components/SanctuaryButton';
+import { Box, Center, Heading, Text, VStack } from '@repo/ui/gluestack';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 
 interface EmptyStateProps {
   icon: LucideIcon;

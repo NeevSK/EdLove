@@ -14,10 +14,10 @@ import { Wind } from '@repo/ui/icons';
 import { Box } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
 import { useMemo } from 'react';
-import { StudentOnboardingView, TeacherOnboardingView } from '@/components';
-import { CLASSROOM_REGISTRY } from '@/constants/classroomRegistry';
-import StudentDashboard from '@/screens/StudentDashboard';
-import TeacherDashboard from '@/screens/TeacherDashboard';
+import { StudentOnboardingView, TeacherOnboardingView } from '@repo/classroom/components';
+import { CLASSROOM_REGISTRY } from '@repo/classroom/constants/classroomRegistry';
+import StudentDashboard from '@repo/classroom/screens/StudentDashboard';
+import TeacherDashboard from '@repo/classroom/screens/TeacherDashboard';
 
 type UseClassroomWorkspaceSurfacesArgs = {
   can: (action: string, subject: string, field?: string) => boolean;
@@ -213,16 +213,16 @@ export function useClassroomWorkspaceSurfaces({
         );
 
       surfaces.push({
-        ...teacherGate.feature,
-        title: teacherGate.feature.label,
-        subtitle: teacherGate.feature.description,
+        ...CLASSROOM_REGISTRY.teacher!,
+        title: CLASSROOM_REGISTRY.teacher!.label,
+        subtitle: CLASSROOM_REGISTRY.teacher!.description,
         summary:
           surfaceInsights?.teacher?.summary ??
           'Assignments, lessons, attendance, grading, and teacher-owned pedagogical signals.',
         temporalLabel: surfaceInsights?.teacher?.temporalLabel ?? 'Daily Work',
         metadata: surfaceInsights?.teacher?.metadata ?? ['Academic', 'Write owner'],
         content: teacherContent,
-      } as ClassroomWorkspaceSurface);
+      } as any as ClassroomWorkspaceSurface);
     }
 
     // --- Student Dashboard ---
@@ -255,16 +255,16 @@ export function useClassroomWorkspaceSurfaces({
         );
 
       surfaces.push({
-        ...studentGate.feature,
-        title: studentGate.feature.label,
-        subtitle: studentGate.feature.description,
+        ...CLASSROOM_REGISTRY.student!,
+        title: CLASSROOM_REGISTRY.student!.label,
+        subtitle: CLASSROOM_REGISTRY.student!.description,
         summary:
           surfaceInsights?.student?.summary ??
           'Student-facing classroom flow across lessons, assignments, notes, and longitudinal story.',
         temporalLabel: surfaceInsights?.student?.temporalLabel ?? 'Journey',
         metadata: surfaceInsights?.student?.metadata ?? ['Academic', 'Student-owned'],
         content: studentContent,
-      } as ClassroomWorkspaceSurface);
+      } as any as ClassroomWorkspaceSurface);
     }
 
     return surfaces;

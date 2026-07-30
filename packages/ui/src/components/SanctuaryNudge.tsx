@@ -2,10 +2,10 @@ import { BlurView } from 'expo-blur';
 import type React from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
-import { useThemedColors } from '@/hooks/useThemedColors';
-import { Text, View } from '@/primitives';
-import { Theme } from '@/theme/Theme';
-import { SanctuaryButton } from '@/components/SanctuaryButton';
+import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
+import { Text, View } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme/Theme';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 
 interface SanctuaryNudgeProps {
   title: string;

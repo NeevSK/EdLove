@@ -8,8 +8,8 @@ import {
   GuardianStudentOverviewSchema,
   GuardianVerificationDocumentSchema,
   StudentGuardianRelationshipSchema,
-} from '@/logic/schemas/guardian.schema';
-import type { SovereignContract } from '@/api/contract';
+} from '@repo/core/logic/schemas/guardian.schema';
+import type { SovereignContract } from '@repo/core/api/contract';
 
 const guardianAuthority = (action: 'create' | 'read' | 'update' | 'delete', subject: string) =>
   ({ policy: { action, subject } }) as const;

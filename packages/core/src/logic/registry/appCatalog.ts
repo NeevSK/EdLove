@@ -1,8 +1,8 @@
-import { type DomainEntry, DomainEntrySchema, type TabDomain } from '@/logic/registry/domainEntry';
+import { type DomainEntry, DomainEntrySchema, type TabDomain } from '@repo/core/logic/registry/domainEntry';
 import {
   FEATURE_FLAG_MANIFEST,
   validateFeatureFlagManifest,
-} from '@/logic/registry/featureLifecycleManifest';
+} from '@repo/core/logic/registry/featureLifecycleManifest';
 
 /**
  * AppCatalog — the single assembled registry of all domains.

@@ -4,18 +4,18 @@ export {
 } from '@repo/ui/components/media/AssetCreationPortal';
 export { UniversalPerspective } from '@repo/ui/components/visualization/UniversalPerspective';
 
-export * from '@/api';
-export * from '@/components';
-export * from '@/constants/libraryRegistry';
+export * from '@library/api';
+export * from '@library/components';
+export * from '@library/constants/libraryRegistry';
 export {
   getOrderedShelfDefs,
   SHELF_DEFS,
   type ShelfDefinition,
-} from '@/constants/shelf';
-export * from '@/hooks';
-export * from '@/screens';
-export * from '@/types';
-export { buildLibraryExternalLinkOptions } from '@/utils/externalLinks';
+} from '@library/constants/shelf';
+export * from '@library/hooks';
+export * from '@library/screens';
+export * from '@library/types';
+export { buildLibraryExternalLinkOptions } from '@library/utils/externalLinks';
 
 export const LIBRARY_UI_CATEGORIES_LOCAL = [
   { id: 'All', en: 'All' },
@@ -26,4 +26,4 @@ export const LIBRARY_UI_CATEGORIES_LOCAL = [
   { id: 'note', en: 'Personal Notes' },
 ];
 
-export { default } from '@/screens/LibraryScreen';
+export { default } from '@library/screens/LibraryScreen';

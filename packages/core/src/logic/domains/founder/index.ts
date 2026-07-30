@@ -1,2 +1,2 @@
-export * from '@/logic/domains/founder/ports';
-export * from '@/logic/domains/founder/services';
+export * from '@repo/core/logic/domains/founder/ports';
+export * from '@repo/core/logic/domains/founder/services';

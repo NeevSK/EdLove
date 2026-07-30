@@ -1,5 +1,5 @@
 import React from 'react';
-import PositiveInvitation from '@/components/PositiveInvitation';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { Plus } from '@repo/ui/icons';
 
 interface SchoolJoinPromptProps {

@@ -1,14 +1,14 @@
 import type { QueryClient } from '@tanstack/react-query';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
-import { getActiveAccountId, setActiveAccountId } from '@/lib/accountScope';
-import { DeviceTrustEngine } from '@/lib/security/deviceTrust';
-import { useMutationQueue } from '@/lib/sync/useMutationQueue';
-import type { UISlice } from '@/store/slices/ui.slice';
-import { DEFAULT_FEATURE_FLAGS } from '@/store/types/featureFlags';
-import { useAuthStore } from '@/store/useAuthStore';
-import { useFeatureStore } from '@/store/useFeatureStore';
-import { useTenantStore } from '@/store/useTenantStore';
-import { useUIStore } from '@/store/useUIStore';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { getActiveAccountId, setActiveAccountId } from '@repo/core/lib/accountScope';
+import { DeviceTrustEngine } from '@repo/core/lib/security/deviceTrust';
+import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import type { UISlice } from '@repo/core/store/slices/ui.slice';
+import { DEFAULT_FEATURE_FLAGS } from '@repo/core/store/types/featureFlags';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useFeatureStore } from '@repo/core/store/useFeatureStore';
+import { useTenantStore } from '@repo/core/store/useTenantStore';
+import { useUIStore } from '@repo/core/store/useUIStore';
 
 const authScopedDefaults = {
   userName: 'Gurudevi',

@@ -1,5 +1,5 @@
 import { api, identityAPI, MOCK_CLASSROOMS } from '@repo/core/api';
-import { useFeatureAccess } from '@repo/core/hooks';
+import { useIsGuest } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
@@ -21,7 +21,7 @@ import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import CreateClassroomModal from '@/components/CreateClassroomModal';
+import CreateClassroomModal from '@repo/classroom/components/CreateClassroomModal';
 
 interface ClassroomListProps {
   onClassroomPress?: (classroom: WorkspaceClassroom) => void;
@@ -54,7 +54,7 @@ export default function ClassroomList({
 }: ClassroomListProps) {
   const { can, context } = usePermissions();
   const hasRoleContext = context.bonds.length > 0;
-  const { isGuest } = useFeatureAccess();
+  const isGuest = useIsGuest();
 
   // Capability-based check for classroom creation
   const canCreateClassroom = can('create', 'Classroom');

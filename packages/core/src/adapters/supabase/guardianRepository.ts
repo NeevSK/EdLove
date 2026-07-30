@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { selectLatestPublishedSnapshots } from '@/lib/gradePublication';
-import { selectGuardianVisibleGrades } from '@/logic/domains/guardian/gradeVisibility';
-import type { GuardianRepository } from '@/logic/domains/guardian/ports';
+import { selectLatestPublishedSnapshots } from '@repo/core/lib/gradePublication';
+import { selectGuardianVisibleGrades } from '@repo/core/logic/domains/guardian/gradeVisibility';
+import type { GuardianRepository } from '@repo/core/logic/domains/guardian/ports';
 import {
   type GuardianIdentity,
   GuardianIdentitySchema,
@@ -13,8 +13,8 @@ import {
   type GuardianVerificationDocument,
   type StudentGuardianRelationship,
   StudentGuardianRelationshipSchema,
-} from '@/logic/schemas/guardian.schema';
-import { APIError } from '@/types/API';
+} from '@repo/core/logic/schemas/guardian.schema';
+import { APIError } from '@repo/core/types/API';
 
 interface AttendanceRow {
   id: string;

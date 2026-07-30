@@ -1,20 +1,20 @@
-import { assignmentsAPI } from '@/api/assignments';
-import { classroomGroupsAPI } from '@/api/classroomGroups';
-import { classroomNotesAPI } from '@/api/classroomNotes';
-import { classroomStudentsAPI } from '@/api/classroomStudents';
-import { communityAPI } from '@/api/community';
-import { founderAPI } from '@/api/founder';
-import { gradingAPI } from '@/api/grading';
-import { guardianAPI } from '@/api/guardian';
-import { identityAPI } from '@/api/identity';
-import { api } from '@/api/index';
-import { inventoryAPI } from '@/api/inventory';
-import { lessonMaterialsAPI } from '@/api/lessonMaterials';
-import { longitudinalAPI } from '@/api/longitudinal';
-import { principalWorkspaceAPI } from '@/api/principalWorkspace';
-import { profileAPI } from '@/api/profile';
-import { schoolAPI } from '@/api/school';
-import { teacherInsightsAPI } from '@/api/teacherInsights';
+import { assignmentsAPI } from '@repo/core/api/assignments';
+import { classroomGroupsAPI } from '@repo/core/api/classroomGroups';
+import { classroomNotesAPI } from '@repo/core/api/classroomNotes';
+import { classroomStudentsAPI } from '@repo/core/api/classroomStudents';
+import { communityAPI } from '@repo/core/api/community';
+import { founderAPI } from '@repo/core/api/founder';
+import { gradingAPI } from '@repo/core/api/grading';
+import { guardianAPI } from '@repo/core/api/guardian';
+import { identityAPI } from '@repo/core/api/identity';
+import { api } from '@repo/core/api/index';
+import { inventoryAPI } from '@repo/core/api/inventory';
+import { lessonMaterialsAPI } from '@repo/core/api/lessonMaterials';
+import { longitudinalAPI } from '@repo/core/api/longitudinal';
+import { principalWorkspaceAPI } from '@repo/core/api/principalWorkspace';
+import { profileAPI } from '@repo/core/api/profile';
+import { schoolAPI } from '@repo/core/api/school';
+import { teacherInsightsAPI } from '@repo/core/api/teacherInsights';
 
 const {
   growth: growthAPI,
@@ -28,20 +28,20 @@ const {
   attendance: attendanceAPI,
 } = api;
 
-import { communityContract } from '@/api/community.contract';
-import { assertContractCoverage } from '@/api/contractCoverage';
-import { educationalContract } from '@/api/educational.contract';
-import { founderContract } from '@/api/founder.contract';
-import { gradingContract } from '@/api/grading.contract';
-import { growthContract } from '@/api/growth.contract';
-import { guardianContract } from '@/api/guardian.contract';
-import { identityContract } from '@/api/identity.contract';
-import { longitudinalContract } from '@/api/longitudinal.contract';
-import { operationsContract } from '@/api/operations.contract';
-import { principalWorkspaceContract } from '@/api/principalWorkspace.contract';
-import { proContract } from '@/api/pro.contract';
-import { profileContract } from '@/api/profile.contract';
-import { teacherInsightsContract } from '@/api/teacherInsights.contract';
+import { communityContract } from '@repo/core/api/community.contract';
+import { assertContractCoverage } from '@repo/core/api/contractCoverage';
+import { educationalContract } from '@repo/core/api/educational.contract';
+import { founderContract } from '@repo/core/api/founder.contract';
+import { gradingContract } from '@repo/core/api/grading.contract';
+import { growthContract } from '@repo/core/api/growth.contract';
+import { guardianContract } from '@repo/core/api/guardian.contract';
+import { identityContract } from '@repo/core/api/identity.contract';
+import { longitudinalContract } from '@repo/core/api/longitudinal.contract';
+import { operationsContract } from '@repo/core/api/operations.contract';
+import { principalWorkspaceContract } from '@repo/core/api/principalWorkspace.contract';
+import { proContract } from '@repo/core/api/pro.contract';
+import { profileContract } from '@repo/core/api/profile.contract';
+import { teacherInsightsContract } from '@repo/core/api/teacherInsights.contract';
 
 const modules: Array<{
   name: string;

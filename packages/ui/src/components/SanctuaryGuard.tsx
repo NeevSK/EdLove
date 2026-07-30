@@ -2,9 +2,9 @@ import { useSanctuaryFeature } from '@repo/core/logic/permissions/hooks/useSanct
 import type { FeatureRequirement } from '@repo/core/logic/permissions/sanctuaryFeature';
 import { CITIZENSHIP } from '@repo/core/logic/permissions/sanctuaryFeature';
 import React from 'react';
-import { SchoolJoinPrompt } from '@/components/prompts/SchoolJoinPrompt';
-import { SignupPrompt } from '@/components/prompts/SignupPrompt';
-import { UpgradePrompt } from '@/components/prompts/UpgradePrompt';
+import { SchoolJoinPrompt } from '@repo/ui/components/prompts/SchoolJoinPrompt';
+import { SignupPrompt } from '@repo/ui/components/prompts/SignupPrompt';
+import { UpgradePrompt } from '@repo/ui/components/prompts/UpgradePrompt';
 
 interface SanctuaryGuardProps {
   action: string;

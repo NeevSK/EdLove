@@ -1,4 +1,4 @@
-import { SovereignError } from '@/types/Errors';
+import { SovereignError } from '@repo/core/types/Errors';
 
 export class APIError extends SovereignError {
   public readonly code: string;

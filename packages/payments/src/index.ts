@@ -1,10 +1,10 @@
-import { PayHereProvider } from '@/plugins/payhere';
-import { StripeProvider } from '@/plugins/stripe';
-import { payments } from '@/registry';
+import { PayHereProvider } from '@repo/payments/plugins/payhere';
+import { StripeProvider } from '@repo/payments/plugins/stripe';
+import { payments } from '@repo/payments/registry';
 
-export * from '@/registry';
-export * from '@/service';
-export * from '@/types';
+export * from '@repo/payments/registry';
+export * from '@repo/payments/service';
+export * from '@repo/payments/types';
 
 // Auto-register default providers
 payments.register(new PayHereProvider());

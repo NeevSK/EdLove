@@ -1,2 +1,2 @@
-export * from '@/ml/InsightGenerator';
-export * from '@/ml/Predictor';
+export * from '@repo/analytics/ml/InsightGenerator';
+export * from '@repo/analytics/ml/Predictor';

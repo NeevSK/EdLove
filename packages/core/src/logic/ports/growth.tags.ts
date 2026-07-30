@@ -1,7 +1,7 @@
 import { Context, Effect, Layer } from 'effect';
-import { SupabaseGrowthAdapter } from '@/adapters/supabase/growth.adapter';
-import type { IGrowthPort } from '@/logic/ports/growth.port';
-import { GrowthManager } from '@/logic/managers/GrowthManager';
+import { SupabaseGrowthAdapter } from '@repo/core/adapters/supabase/growth.adapter';
+import type { IGrowthPort } from '@repo/core/logic/ports/growth.port';
+import { GrowthManager } from '@repo/core/logic/managers/GrowthManager';
 
 /**
  * GrowthPort — Effect Context.Tag for the growth data port.

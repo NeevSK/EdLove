@@ -7,20 +7,20 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Kernel Imports from @repo/self (Breaking require cycle)
-import { BaseSelfView } from '@/components/BaseSelfView';
-import { EnergyBarChart } from '@/components/EnergyBarChart';
-import { ImpactRipplesCard } from '@/components/ImpactRipplesCard';
+import { BaseSelfView } from '@self/components/BaseSelfView';
+import { EnergyBarChart } from '@self/components/EnergyBarChart';
+import { ImpactRipplesCard } from '@self/components/ImpactRipplesCard';
 // Role Components
-import MoodLotus from '@/components/MoodLotus';
-import { MoodPickerCard } from '@/components/MoodPickerCard';
-import { PulseDashboard } from '@/components/PulseDashboard';
-import ResonancePatternCard from '@/components/ResonancePatternCard';
-import VoiceJournaling from '@/components/VoiceJournaling';
-import { WarmMirrorCard } from '@/components/WarmMirrorCard';
-import WelcomeModal from '@/components/WelcomeModal';
-import { useEnergyForecast } from '@/hooks/useEnergyForecast';
-import { useMoodLogs } from '@/hooks/useMoodLogs';
-import { useWellbeingEnrichment } from '@/hooks/useWellbeingEnrichment';
+import MoodLotus from '@self/components/MoodLotus';
+import { MoodPickerCard } from '@self/components/MoodPickerCard';
+import { PulseDashboard } from '@self/components/PulseDashboard';
+import ResonancePatternCard from '@self/components/ResonancePatternCard';
+import VoiceJournaling from '@self/components/VoiceJournaling';
+import { WarmMirrorCard } from '@self/components/WarmMirrorCard';
+import WelcomeModal from '@self/components/WelcomeModal';
+import { useEnergyForecast } from '@self/hooks/useEnergyForecast';
+import { useMoodLogs } from '@self/hooks/useMoodLogs';
+import { useWellbeingEnrichment } from '@self/hooks/useWellbeingEnrichment';
 
 export default function AdminSelfView() {
   const { t } = useTranslation();

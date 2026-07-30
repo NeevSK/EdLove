@@ -3,8 +3,8 @@ import {
   CommunityGroupSchema,
   CommunityPostSchema,
   GroupMemberSchema,
-} from '@/logic/schemas/community.schema';
-import type { SovereignContract } from '@/api/contract';
+} from '@repo/core/logic/schemas/community.schema';
+import type { SovereignContract } from '@repo/core/api/contract';
 
 const communityAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',

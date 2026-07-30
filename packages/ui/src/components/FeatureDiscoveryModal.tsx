@@ -1,6 +1,6 @@
 import { Info } from '@repo/ui/icons';
-import { Box, Heading, Text, VStack } from '@/gluestack';
-import SanctuaryModal from '@/components/SanctuaryModal';
+import { Box, Heading, Text, VStack } from '@repo/ui/gluestack';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 
 export interface FeatureDiscoveryModalProps {
   isOpen: boolean;

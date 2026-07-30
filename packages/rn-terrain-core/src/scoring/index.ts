@@ -1,6 +1,6 @@
-import type { ScoreBreakdown, VitalityCard } from '@/types';
-import { calculateRhythmStatus } from '@/scoring/rhythm';
-import { applyVendorPrior } from '@/scoring/vendor-priors';
+import type { ScoreBreakdown, VitalityCard } from '@rn-terrain/core/types';
+import { calculateRhythmStatus } from '@rn-terrain/core/scoring/rhythm';
+import { applyVendorPrior } from '@rn-terrain/core/scoring/vendor-priors';
 
 export function calculateVitalityScore(data: Partial<VitalityCard>): ScoreBreakdown {
   const maintenance = scoreMaintenanceHealth(data);

@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
-import type { UserRewardsSnapshot } from '@/logic/domains/profile/ports';
-import { usePermissions } from '@/logic/permissions/hooks/usePermissions';
-import { applyTemporalFilter } from '@/logic/utils/temporalUtils';
-import { useTemporalStore } from '@/store/useTemporalStore';
-import type { UserGrowthState } from '@/types/Growth';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import type { UserRewardsSnapshot } from '@repo/core/logic/domains/profile/ports';
+import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
+import { applyTemporalFilter } from '@repo/core/logic/utils/temporalUtils';
+import { useTemporalStore } from '@repo/core/store/useTemporalStore';
+import type { UserGrowthState } from '@repo/core/types/Growth';
 
 export interface JourneyEvent {
   id: string;

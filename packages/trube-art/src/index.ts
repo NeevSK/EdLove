@@ -1,19 +1,19 @@
-export * from '@/core/motif';
-export * from '@/core/ornament';
-export * from '@/core/presets';
-export * from '@/core/render-plan';
-export * from '@/core/scores';
-export * from '@/core/soul/SoulLibrary';
-export * from '@/core/stage';
-export * from '@/core/surface';
-export * from '@/core/types';
-export { CompatibilityRenderer } from '@/native/renderers/CompatibilityRenderer';
+export * from '@repo/trube-art/core/motif';
+export * from '@repo/trube-art/core/ornament';
+export * from '@repo/trube-art/core/presets';
+export * from '@repo/trube-art/core/render-plan';
+export * from '@repo/trube-art/core/scores';
+export * from '@repo/trube-art/core/soul/SoulLibrary';
+export * from '@repo/trube-art/core/stage';
+export * from '@repo/trube-art/core/surface';
+export * from '@repo/trube-art/core/types';
+export { CompatibilityRenderer } from '@repo/trube-art/native/renderers/CompatibilityRenderer';
 // Native Components
-export { TrubeCanvas } from '@/native/TrubeCanvas';
-export { TrubeMotif } from '@/native/TrubeMotif';
-export { TrubeOrnament } from '@/native/TrubeOrnament';
-export { TrubeStage } from '@/native/TrubeStage';
-export { TrubeView } from '@/native/TrubeView';
+export { TrubeCanvas } from '@repo/trube-art/native/TrubeCanvas';
+export { TrubeMotif } from '@repo/trube-art/native/TrubeMotif';
+export { TrubeOrnament } from '@repo/trube-art/native/TrubeOrnament';
+export { TrubeStage } from '@repo/trube-art/native/TrubeStage';
+export { TrubeView } from '@repo/trube-art/native/TrubeView';
 
 /**
  * Initializes the Tr\u00FCbe-Art library and pre-warms the soul layer.
@@ -25,4 +25,4 @@ export function initializeTrubeArt() {
   soulLibrary.prewarm();
 }
 
-export { default as TrubeLabScreen } from '@/screens/TrubeLabScreen';
+export { default as TrubeLabScreen } from '@repo/trube-art/screens/TrubeLabScreen';

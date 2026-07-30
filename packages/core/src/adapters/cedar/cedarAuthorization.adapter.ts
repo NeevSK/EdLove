@@ -1,14 +1,14 @@
-import { getDrizzleDB } from '@/adapters/powersync/database';
-import { cedarPolicies } from '@/adapters/powersync/schema';
-import { evaluateShape1, evaluateShape2 } from '@/logic/permissions/cedarClientEvaluator';
-import { getLocalResourceAttributes } from '@/logic/permissions/localEvaluator';
+import { getDrizzleDB } from '@repo/core/adapters/powersync/database';
+import { cedarPolicies } from '@repo/core/adapters/powersync/schema';
+import { evaluateShape1, evaluateShape2 } from '@repo/core/logic/permissions/cedarClientEvaluator';
+import { getLocalResourceAttributes } from '@repo/core/logic/permissions/localEvaluator';
 import type {
   AuthorizationDecision,
   AuthorizationRequest,
   CapabilityToken,
   IAuthorizationPort,
   TokenContext,
-} from '@/logic/ports/authz.port';
+} from '@repo/core/logic/ports/authz.port';
 
 const CAPABILITY_TOKEN_TTL_MS = 60_000; // 60 seconds
 

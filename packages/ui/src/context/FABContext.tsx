@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import type { ActionItem, TabType } from '@/types/fab';
+import type { ActionItem, TabType } from '@repo/ui/types/fab';
 
 export type { ActionItem, TabType };
 

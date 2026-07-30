@@ -1,6 +1,6 @@
 import type React from 'react';
-import { Text } from '@/gluestack';
-import { Pressable } from '@/primitives';
+import { Text } from '@repo/ui/gluestack';
+import { Pressable } from '@repo/ui/primitives';
 
 export interface SanctuaryChipProps {
   label: string;

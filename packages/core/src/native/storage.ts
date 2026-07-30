@@ -118,7 +118,7 @@ import { Platform } from 'react-native';
  *      Running `expo start --dev-client` against an OLD APK that predates
  *      MMKV being added will silently fall back to AsyncStorage.
  */
-import { Runtime } from '@/native/runtime';
+import { Runtime } from '@repo/core/native/runtime';
 
 let _storageInstance: StorageInterface | null = null;
 

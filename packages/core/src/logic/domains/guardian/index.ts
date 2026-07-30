@@ -1,3 +1,3 @@
-export * from '@/logic/domains/guardian/gradeVisibility';
-export * from '@/logic/domains/guardian/ports';
-export * from '@/logic/domains/guardian/services';
+export * from '@repo/core/logic/domains/guardian/gradeVisibility';
+export * from '@repo/core/logic/domains/guardian/ports';
+export * from '@repo/core/logic/domains/guardian/services';

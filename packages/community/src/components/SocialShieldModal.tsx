@@ -2,7 +2,7 @@ import { SocialShieldModal as UISocialShieldModal } from '@repo/ui/components/so
 import { useLotusToast } from '@repo/ui/hooks';
 import { hapticError, hapticSuccess } from '@repo/ui/utils';
 import { useCallback, useState } from 'react';
-import { type ReportTarget, useSocialShield } from '@/hooks/useSocialShield';
+import { type ReportTarget, useSocialShield } from '@community/hooks/useSocialShield';
 
 interface SocialShieldModalProps {
   isOpen: boolean;

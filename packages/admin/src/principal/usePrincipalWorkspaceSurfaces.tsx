@@ -1,15 +1,15 @@
 import { VStack } from '@repo/ui/primitives';
 import type React from 'react';
-import { usePrincipalWorkspaceShell } from '@/bridge/principalWorkspaceShell';
-import DashboardEcho from '@/components/principal/DashboardEcho';
-import InstitutionalCalendarSection from '@/components/principal/InstitutionalCalendarSection';
-import LeaveApprovalSection from '@/components/principal/LeaveApprovalSection';
-import MorningSituationalBrief from '@/components/principal/MorningSituationalBrief';
-import PrincipalObservationsSection from '@/components/principal/PrincipalObservationsSection';
-import PulseDashboard from '@/components/principal/PulseDashboard';
-import ResourceNeedsDashboard from '@/components/principal/ResourceNeedsDashboard';
-import TeacherCarousel from '@/components/principal/TeacherCarousel';
-import type { PrincipalWorkspaceView, PrincipalZoneId } from '@/principal/workspace';
+import { usePrincipalWorkspaceShell } from '@repo/admin/bridge/principalWorkspaceShell';
+import DashboardEcho from '@repo/admin/components/principal/DashboardEcho';
+import InstitutionalCalendarSection from '@repo/admin/components/principal/InstitutionalCalendarSection';
+import LeaveApprovalSection from '@repo/admin/components/principal/LeaveApprovalSection';
+import MorningSituationalBrief from '@repo/admin/components/principal/MorningSituationalBrief';
+import PrincipalObservationsSection from '@repo/admin/components/principal/PrincipalObservationsSection';
+import PulseDashboard from '@repo/admin/components/principal/PulseDashboard';
+import ResourceNeedsDashboard from '@repo/admin/components/principal/ResourceNeedsDashboard';
+import TeacherCarousel from '@repo/admin/components/principal/TeacherCarousel';
+import type { PrincipalWorkspaceView, PrincipalZoneId } from '@repo/admin/principal/workspace';
 
 type ZoneSurfaceArgs = {
   schoolId: string;

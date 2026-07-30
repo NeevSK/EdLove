@@ -1,16 +1,25 @@
 {
   "extends": "../../packages/typescript-config/base.json",
   "compilerOptions": {
-    "paths": {
-      "@/*": ["./src/*"]
-    },
+    "composite": true,
+    "emitDeclarationOnly": true,
     "outDir": "./dist",
     "rootDir": "./src",
     "jsx": "react-jsx",
+    "noImplicitAny": false,
     "paths": {
-      "@repo/library/*": ["./src/*"]
-    },
-    "noImplicitAny": false
+      "@/*": [
+        "./src/*"
+      ],
+      "@library/*": [
+        "./src/*"
+      ],
+      "@repo/library/*": [
+        "./src/*"
+      ]
+    }
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*"
+  ]
 }

@@ -1,9 +1,9 @@
 import { CircleAlert, CircleCheck, Info, X } from '@repo/ui/icons';
 import { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
-import { Pressable } from '@/primitives';
-import { Box } from '@/components/ui/box';
-import { Text } from '@/components/ui/text';
+import { Pressable } from '@repo/ui/primitives';
+import { Box } from '@repo/ui/components/ui/box';
+import { Text } from '@repo/ui/components/ui/text';
 
 export type ToastType = 'success' | 'error' | 'info';
 

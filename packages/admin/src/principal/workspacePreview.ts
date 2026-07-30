@@ -1,4 +1,4 @@
-import type { PrincipalWorkspaceSurfaceId } from '@/principal/workspace';
+import type { PrincipalWorkspaceSurfaceId } from '@repo/admin/principal/workspace';
 
 const PRINCIPAL_PREVIEW_SUMMARY: Record<PrincipalWorkspaceSurfaceId, string> = {
   setup_runway:

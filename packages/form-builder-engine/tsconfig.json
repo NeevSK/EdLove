@@ -6,10 +6,21 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "composite": true,
+    "emitDeclarationOnly": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@intuitui-labs/form-builder-engine/*": [
+        "./src/*"
+      ]
     }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

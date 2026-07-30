@@ -1,5 +1,5 @@
 import { Platform, Pressable, Text } from 'react-native';
-import { openExternalURL } from '@/utils/linking';
+import { openExternalURL } from '@repo/ui/utils/linking';
 
 /**
  * Link Component

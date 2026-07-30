@@ -1,6 +1,6 @@
 import { Trophy } from '@repo/ui/icons';
-import { Box, HStack, Text, VStack } from '@/gluestack';
-import { SanctuaryProgressBar } from '@/components/SanctuaryProgressBar';
+import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
+import { SanctuaryProgressBar } from '@repo/ui/components/SanctuaryProgressBar';
 
 export interface SanctuaryStatsItem {
   label: string;

@@ -1,4 +1,4 @@
-import type { ITelemetry } from '@/logic/interfaces/telemetry.port';
+import type { ITelemetry } from '@repo/core/logic/interfaces/telemetry.port';
 
 class TelemetryManager implements ITelemetry {
   private adapter: ITelemetry | null = null;

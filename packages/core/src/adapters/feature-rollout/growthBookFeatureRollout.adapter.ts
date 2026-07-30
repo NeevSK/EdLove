@@ -1,11 +1,11 @@
 import { GrowthBook, setPolyfills } from '@growthbook/growthbook';
-import { trackProductEvent } from '@/lib/monitoring/posthog';
-import { storage } from '@/lib/storage';
+import { trackProductEvent } from '@repo/core/lib/monitoring/posthog';
+import { storage } from '@repo/core/lib/storage';
 import type {
   FeatureRolloutSnapshot,
   IFeatureRolloutPort,
-} from '@/logic/ports/featureRollout.port';
-import type { UserContext } from '@/logic/schemas/user.schema';
+} from '@repo/core/logic/ports/featureRollout.port';
+import type { UserContext } from '@repo/core/logic/schemas/user.schema';
 
 // Apply the platform-agnostic storage polyfill for GrowthBook cache persistence
 setPolyfills({

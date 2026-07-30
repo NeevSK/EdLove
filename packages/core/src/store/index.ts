@@ -1,7 +1,7 @@
-export { resetScopedStores } from '@/store/resetScopedStores';
-export { useAuthStore } from '@/store/useAuthStore';
-export { useFeatureStore } from '@/store/useFeatureStore';
-export { type TotalState, useStore } from '@/store/useStore';
-export * from '@/store/useTemporalStore';
-export { useTenantStore } from '@/store/useTenantStore';
-export { useUIStore } from '@/store/useUIStore';
+export { resetScopedStores } from '@repo/core/store/resetScopedStores';
+export { useAuthStore } from '@repo/core/store/useAuthStore';
+export { useFeatureStore } from '@repo/core/store/useFeatureStore';
+export { type TotalState, useStore } from '@repo/core/store/useStore';
+export * from '@repo/core/store/useTemporalStore';
+export { useTenantStore } from '@repo/core/store/useTenantStore';
+export { useUIStore } from '@repo/core/store/useUIStore';

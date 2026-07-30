@@ -7,7 +7,7 @@ import type {
   PersonalCompass,
   SanctuaryManifesto,
   UserGrowthState,
-} from '@/types/Growth';
+} from '@repo/core/types/Growth';
 
 export interface IGrowthPort {
   /**

@@ -23,7 +23,7 @@ import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
 import * as Clipboard from 'expo-clipboard';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AddStudentModal } from '@/components/AddStudentModal';
+import { AddStudentModal } from '@repo/classroom/components/AddStudentModal';
 
 interface StudentListProps {
   classroomId: string;
@@ -79,7 +79,7 @@ export default function StudentList({
         data={students}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <StudentListItem
+          <StudentRow
             student={item}
             isDeleting={isDeleting === item.id}
             onRemove={handleRemoveStudent}
@@ -131,54 +131,59 @@ export default function StudentList({
       />
 
       {/* View QR Modal */}
-      <SanctuaryModal
-        isOpen={!!studentForQr}
-        onClose={() => setStudentForQr(null)}
-        title={t('classroom.students.inviteTitle') || 'Invite Student'}
-        footer={
-          <Button
-            onPress={() => setStudentForQr(null)}
-            className="bg-sanctuary-surface-tertiary w-full rounded-full h-12"
+      {(() => {
+        const q = studentForQr as any;
+        return (
+          <SanctuaryModal
+            isOpen={!!studentForQr}
+            onClose={() => setStudentForQr(null)}
+            title={t('classroom.students.inviteTitle') || 'Invite Student'}
+            footer={
+              <Button
+                onPress={() => setStudentForQr(null)}
+                className="bg-sanctuary-surface-tertiary w-full rounded-full h-12"
+              >
+                <ButtonText className="text-sanctuary-text">{t('common.close') || 'Close'}</ButtonText>
+              </Button>
+            }
           >
-            <ButtonText className="text-sanctuary-text">{t('common.close') || 'Close'}</ButtonText>
-          </Button>
-        }
-      >
-        <VStack className="gap-8 items-center py-4">
-          <Box className="p-6 bg-white rounded-[32px] shadow-sm border border-sanctuary-border/10">
-            <QRCodeGenerator
-              value={studentForQr?.invite_code || ''}
-              size={200}
-              color="black"
-              backgroundColor="white"
-            />
-          </Box>
-          <VStack className="gap-2 items-center">
-            <Heading className="text-lg text-sanctuary-text text-center font-bold">
-              {studentForQr?.full_name}
-            </Heading>
-            <Text className="text-sanctuary-text-tertiary text-xs uppercase font-bold tracking-widest">
-              {t('classroom.students.individualCode') || 'Individual Invite Code'}
-            </Text>
-            <Pressable
-              onPress={() => copyToClipboard(studentForQr?.invite_code || '')}
-              className="bg-sanctuary-surface-secondary px-6 py-3 rounded-2xl border border-sanctuary-border"
-            >
-              <Text className="text-sanctuarySaffron font-black text-2xl tracking-tighter">
-                {studentForQr?.invite_code}
-              </Text>
-            </Pressable>
-            <Text className="text-[10px] text-sanctuary-text-tertiary mt-2">
-              {t('common.tapToCopy') || 'Tap code to copy to clipboard'}
-            </Text>
-          </VStack>
-        </VStack>
-      </SanctuaryModal>
+            <VStack className="gap-8 items-center py-4">
+              <Box className="p-6 bg-white rounded-[32px] shadow-sm border border-sanctuary-border/10">
+                <QRCodeGenerator
+                  value={q?.invite_code || ''}
+                  size={200}
+                  color="black"
+                  backgroundColor="white"
+                />
+              </Box>
+              <VStack className="gap-2 items-center">
+                <Heading className="text-lg text-sanctuary-text text-center font-bold">
+                  {q?.full_name}
+                </Heading>
+                <Text className="text-sanctuary-text-tertiary text-xs uppercase font-bold tracking-widest">
+                  {t('classroom.students.individualCode') || 'Individual Invite Code'}
+                </Text>
+                <Pressable
+                  onPress={() => copyToClipboard(q?.invite_code || '')}
+                  className="bg-sanctuary-surface-secondary px-6 py-3 rounded-2xl border border-sanctuary-border"
+                >
+                  <Text className="text-sanctuarySaffron font-black text-2xl tracking-tighter">
+                    {q?.invite_code}
+                  </Text>
+                </Pressable>
+                <Text className="text-[10px] text-sanctuary-text-tertiary mt-2">
+                  {t('common.tapToCopy') || 'Tap code to copy to clipboard'}
+                </Text>
+              </VStack>
+            </VStack>
+          </SanctuaryModal>
+        );
+      })()}
     </VStack>
   );
 }
 
-const StudentListItem = React.memo(
+const StudentRow = React.memo(
   ({
     student,
     isDeleting,
@@ -188,12 +193,12 @@ const StudentListItem = React.memo(
     onAnalyze,
     t,
   }: {
-    student: Student;
+    student: any;
     isDeleting: boolean;
     onRemove: (id: string) => void;
-    onEdit: (student: Student) => void;
-    onShowQr: (student: Student) => void;
-    onAnalyze?: (student: Student) => void;
+    onEdit: (student: any) => void;
+    onShowQr: (student: any) => void;
+    onAnalyze?: (student: any) => void;
     t: any;
   }) => {
     return (

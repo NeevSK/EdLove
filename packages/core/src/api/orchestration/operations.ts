@@ -1,10 +1,10 @@
-import { attendanceAPI as rawAttendanceAPI } from '@/api/attendance';
-import { assertContractCoverage, defineContractCoverage } from '@/api/contractCoverage';
-import { inventoryAPI as rawInventoryAPI } from '@/api/inventory';
-import { operationsContract } from '@/api/operations.contract';
-import { schoolAPI as rawSchoolAPI } from '@/api/school';
-import { staffManagementAPI as _staffManagementAPI } from '@/api/staffManagement';
-import { createTemporalProxy } from '@/api/temporalProxy';
+import { attendanceAPI as rawAttendanceAPI } from '@repo/core/api/attendance';
+import { assertContractCoverage, defineContractCoverage } from '@repo/core/api/contractCoverage';
+import { inventoryAPI as rawInventoryAPI } from '@repo/core/api/inventory';
+import { operationsContract } from '@repo/core/api/operations.contract';
+import { schoolAPI as rawSchoolAPI } from '@repo/core/api/school';
+import { staffManagementAPI as _staffManagementAPI } from '@repo/core/api/staffManagement';
+import { createTemporalProxy } from '@repo/core/api/temporalProxy';
 
 export const staffManagementAPI = createTemporalProxy('staffManagement', _staffManagementAPI);
 

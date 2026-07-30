@@ -2,18 +2,28 @@
   "extends": "../../packages/typescript-config/base.json",
   "compilerOptions": {
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@repo/schema/*": [
+        "./src/*"
+      ]
     },
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "lib": ["ESNext"],
+    "lib": [
+      "ESNext"
+    ],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "composite": true
+    "composite": true,
+    "emitDeclarationOnly": true
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*"
+  ]
 }

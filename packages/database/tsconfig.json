@@ -1,21 +1,33 @@
 {
   "extends": "../../packages/typescript-config/base.json",
   "compilerOptions": {
-    "paths": {
-      "@/*": ["./src/*"]
-    },
+    "composite": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "lib": ["ESNext"],
+    "lib": [
+      "ESNext"
+    ],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "composite": true,
     "paths": {
-      "zenstack/*": ["./zenstack/*"]
-    },
-    "rootDir": "./src"
+      "@/*": [
+        "./src/*"
+      ],
+      "zenstack/*": [
+        "./zenstack/*"
+      ],
+      "@repo/database/*": [
+        "./src/*"
+      ]
+    }
   },
-  "include": ["src/**/*", "zenstack/**/*"]
+  "include": [
+    "src/**/*",
+    "zenstack/**/*"
+  ]
 }

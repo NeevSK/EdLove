@@ -3,9 +3,9 @@ import React from 'react';
 import type { LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native';
 import { View } from 'react-native';
 import { useDerivedValue } from 'react-native-reanimated';
-import type { TrubeMotifSpec } from '@/core/motif';
-import { resolveMotif } from '@/core/motif';
-import { useTrubeTime } from '@/core/soul/TimeLayer';
+import type { TrubeMotifSpec } from '@repo/trube-art/core/motif';
+import { resolveMotif } from '@repo/trube-art/core/motif';
+import { useTrubeTime } from '@repo/trube-art/core/soul/TimeLayer';
 
 export interface TrubeMotifProps {
   motif: TrubeMotifSpec;

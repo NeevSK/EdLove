@@ -8,7 +8,7 @@ import {
   PrincipalSelfView,
   StudentSelfView,
   TeacherSelfView,
-} from '@/screens/self';
+} from '@self/screens/self';
 
 /**
  * SelfScreenWeb declarative entry point for the user's sanctuary on Web.

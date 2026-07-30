@@ -1,8 +1,8 @@
 import type React from 'react';
 import { StyleSheet } from 'react-native';
-import { FlatList } from '@/primitives';
-import { Theme } from '@/theme/Theme';
-import { SanctuaryChip, type SanctuaryChipProps } from '@/components/SanctuaryChip';
+import { FlatList } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme/Theme';
+import { SanctuaryChip, type SanctuaryChipProps } from '@repo/ui/components/SanctuaryChip';
 
 export interface ChipItem {
   label: string;

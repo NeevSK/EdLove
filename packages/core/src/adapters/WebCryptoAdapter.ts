@@ -1,4 +1,4 @@
-import type { ICrypto } from '@/logic/interfaces/crypto.port';
+import type { ICrypto } from '@repo/core/logic/interfaces/crypto.port';
 
 function toUint8Array(buffer: ArrayBuffer): Uint8Array {
   return new Uint8Array(buffer);

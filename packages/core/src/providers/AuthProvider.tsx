@@ -1,7 +1,7 @@
 import type { Session } from '@supabase/supabase-js';
 import type React from 'react';
 import { createContext, type ReactNode, useContext } from 'react';
-import { useAuthLifecycle } from '@/hooks/useAuthLifecycle';
+import { useAuthLifecycle } from '@repo/core/hooks/useAuthLifecycle';
 
 interface AuthContextType {
   session: Session | null;

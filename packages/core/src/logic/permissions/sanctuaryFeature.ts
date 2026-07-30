@@ -1,19 +1,19 @@
 import {
   type FeatureAccessContext,
   isFeatureAccessContextReady,
-} from '@/logic/permissions/accessContext';
+} from '@repo/core/logic/permissions/accessContext';
 import {
   type EntitlementScope,
   type EntitlementSnapshot,
   meetsSubscriptionTier,
   resolveScopedEntitlement,
-} from '@/logic/ports/entitlement.port';
+} from '@repo/core/logic/ports/entitlement.port';
 import {
   CITIZENSHIP,
   type CitizenshipLevel,
   type CitizenshipName,
   meetsCitizenship,
-} from '@/logic/registry/citizenship';
+} from '@repo/core/logic/registry/citizenship';
 
 export { CITIZENSHIP, type CitizenshipLevel, type CitizenshipName, meetsCitizenship };
 

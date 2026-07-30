@@ -3,8 +3,8 @@ import {
   AttendanceReportSchema,
   AttendanceSchema,
   SchoolAttendancePulseSchema,
-} from '@/logic/schemas/attendance.schema';
-import type { SovereignContract } from '@/api/contract';
+} from '@repo/core/logic/schemas/attendance.schema';
+import type { SovereignContract } from '@repo/core/api/contract';
 
 const operationsAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',

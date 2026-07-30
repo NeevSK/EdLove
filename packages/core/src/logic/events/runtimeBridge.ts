@@ -4,7 +4,7 @@ import type {
   SchoolGradePublishedPayload,
   SyncMutationQueuedPayload,
   WellbeingMoodLoggedPayload,
-} from '@/logic/events/producers';
+} from '@repo/core/logic/events/producers';
 
 export interface WorkflowEventBridge {
   sendSchoolClassroomCreated?: (payload: SchoolClassroomCreatedPayload) => Promise<unknown>;

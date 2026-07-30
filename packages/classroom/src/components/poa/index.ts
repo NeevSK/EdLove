@@ -1,1 +1,1 @@
-export * from '@/components/poa/TeacherActions';
+export * from '@repo/classroom/components/poa/TeacherActions';

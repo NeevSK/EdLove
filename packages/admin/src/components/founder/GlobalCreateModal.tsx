@@ -34,7 +34,7 @@ import { useToast } from '@repo/ui/providers';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import React, { useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { createFounderClassroom, createFounderSchool } from '@/bridge/founderWorkspace';
+import { createFounderClassroom, createFounderSchool } from '@repo/admin/bridge/founderWorkspace';
 
 interface GlobalCreateModalProps {
   isOpen: boolean;

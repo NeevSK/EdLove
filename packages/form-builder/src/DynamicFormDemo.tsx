@@ -3,7 +3,7 @@ import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { Box, Text, VStack } from '@repo/ui/primitives';
 
 import { useState } from 'react';
-import NativeForm from '@/NativeForm';
+import NativeForm from '@repo/form-builder/NativeForm';
 
 /**
  * A demonstration of how to load a form dynamically from JSON.

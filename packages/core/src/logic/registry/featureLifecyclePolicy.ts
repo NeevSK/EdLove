@@ -1,4 +1,4 @@
-import type { FeatureFlagMetadata } from '@/logic/registry/featureLifecycleManifest';
+import type { FeatureFlagMetadata } from '@repo/core/logic/registry/featureLifecycleManifest';
 
 export type FeatureLifecycleAction =
   | {

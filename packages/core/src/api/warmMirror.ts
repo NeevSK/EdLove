@@ -2,10 +2,10 @@
  * Warm Mirror API — Competence through personal narrative.
  */
 
-import { checkLocalPermission } from '@/logic/permissions/localEvaluator';
-import { APIError } from '@/types/API';
-import { identityAPI } from '@/api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { checkLocalPermission } from '@repo/core/logic/permissions/localEvaluator';
+import { APIError } from '@repo/core/types/API';
+import { identityAPI } from '@repo/core/api/identity';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
 
 export interface WarmMirrorDataPoints {
   days_present: number;

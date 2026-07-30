@@ -1,4 +1,4 @@
-import type { ResourceType } from '@/types/Library';
+import type { ResourceType } from '@library/types/Library';
 
 export interface ShelfDefinition {
   id: string;

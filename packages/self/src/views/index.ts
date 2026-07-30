@@ -1,1 +1,1 @@
-export * from '@/views/sections';
+export * from '@self/views/sections';

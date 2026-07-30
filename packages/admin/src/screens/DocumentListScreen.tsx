@@ -17,7 +17,7 @@ import {
   type DocumentStatus,
   type DocumentWorkflow,
   documentWorkflowAPI,
-} from '@/document-workflow/api';
+} from '@repo/admin/document-workflow/api';
 
 interface DocumentListScreenProps {
   schoolId: string;

@@ -3,9 +3,9 @@
 // Centralized for platform-wide reuse
 // ============================================================================
 
-import type { Capacity } from '@/types/Authority';
-import type { Announcement } from '@/types/School'; // Announcements are in School.ts
-import type { User } from '@/types/User';
+import type { Capacity } from '@repo/core/types/Authority';
+import type { Announcement } from '@repo/core/types/School'; // Announcements are in School.ts
+import type { User } from '@repo/core/types/User';
 
 export interface AnnouncementWithAuthor extends Announcement {
   author_name?: string;

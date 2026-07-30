@@ -1,6 +1,6 @@
 import type React from 'react';
 import { useState } from 'react';
-import type { PrincipalWorkspaceView } from '@/principal/workspace';
+import type { PrincipalWorkspaceView } from '@repo/admin/principal/workspace';
 
 interface PrincipalWorkspaceRenderCtx {
   activeView: PrincipalWorkspaceView;

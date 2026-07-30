@@ -1,4 +1,4 @@
-import { type IDeviceIdentity, TrustLevel } from '@/logic/interfaces/deviceIdentity.port';
+import { type IDeviceIdentity, TrustLevel } from '@repo/core/logic/interfaces/deviceIdentity.port';
 
 /**
  * DeviceIdentityManager

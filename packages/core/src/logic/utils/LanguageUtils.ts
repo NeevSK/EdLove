@@ -1,5 +1,5 @@
-import i18n from '@/logic/i18n/config';
-import type { IStorage } from '@/logic/ports/storage';
+import i18n from '@repo/core/logic/i18n/config';
+import type { IStorage } from '@repo/core/logic/ports/storage';
 
 const LANGUAGE_STORAGE_KEY = 'gurudevi-user-language';
 

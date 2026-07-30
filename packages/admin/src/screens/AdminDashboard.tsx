@@ -7,9 +7,9 @@ import {
   AdminWorkspaceCanvas,
   useAdminWorkspaceCanvasSurfaces,
   useAdminWorkspaceLayout,
-} from '@/admin/useAdminWorkspaceCanvas';
-import { useAdminWorkspaceData } from '@/admin/useAdminWorkspaceData';
-import { resolveAdminWorkspaceView } from '@/admin/workspace';
+} from '@repo/admin/admin/useAdminWorkspaceCanvas';
+import { useAdminWorkspaceData } from '@repo/admin/admin/useAdminWorkspaceData';
+import { resolveAdminWorkspaceView } from '@repo/admin/admin/workspace';
 
 interface AdminDashboardProps {
   userId?: string | null;

@@ -1,9 +1,9 @@
-import { deviceTrustAPI } from '@/api/deviceTrust';
-import { trackProductEvent } from '@/lib/monitoring/posthog';
-import type { AuthSession, AuthUser, IAuthPort } from '@/logic/ports/auth.port';
-import type { IIdentityPort } from '@/logic/ports/identity.port';
-import type { Capacity } from '@/types';
-import { APIError } from '@/types/API';
+import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
+import { trackProductEvent } from '@repo/core/lib/monitoring/posthog';
+import type { AuthSession, AuthUser, IAuthPort } from '@repo/core/logic/ports/auth.port';
+import type { IIdentityPort } from '@repo/core/logic/ports/identity.port';
+import type { Capacity } from '@repo/core/types';
+import { APIError } from '@repo/core/types/API';
 
 export interface AuthManagerConfig {
   onSignOut?: () => Promise<void>;

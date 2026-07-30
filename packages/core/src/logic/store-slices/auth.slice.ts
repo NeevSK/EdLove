@@ -1,7 +1,7 @@
 import type { Session } from '@supabase/supabase-js';
 import type { StateCreator } from 'zustand';
-import type { User } from '@/types';
-import type { Bond, Perspective } from '@/types/Identity';
+import type { User } from '@repo/core/types';
+import type { Bond, Perspective } from '@repo/core/types/Identity';
 
 export interface AuthSlice {
   userName: string;

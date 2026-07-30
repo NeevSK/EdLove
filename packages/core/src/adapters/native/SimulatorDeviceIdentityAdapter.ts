@@ -1,6 +1,6 @@
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
-import type { IDeviceIdentity } from '@/logic/interfaces/deviceIdentity.port';
+import type { IDeviceIdentity } from '@repo/core/logic/interfaces/deviceIdentity.port';
 
 /**
  * SimulatorDeviceIdentityAdapter

@@ -1,6 +1,6 @@
-import { MotifLibrary } from '@/core/soul/MotifLibrary';
-import { OrnamentLibrary } from '@/core/soul/OrnamentLibrary';
-import { type TSLExpression, tsl } from '@/core/soul/tsl';
+import { MotifLibrary } from '@repo/trube-art/core/soul/MotifLibrary';
+import { OrnamentLibrary } from '@repo/trube-art/core/soul/OrnamentLibrary';
+import { type TSLExpression, tsl } from '@repo/trube-art/core/soul/tsl';
 
 export type MotifName = keyof typeof MotifLibrary;
 export type OrnamentName = keyof typeof OrnamentLibrary;

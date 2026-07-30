@@ -8,8 +8,8 @@ import {
   commitFeatureGateChanges,
   getAdminAuditEntries,
   stageFeatureGateChanges,
-} from '@/admin/adminControl';
-import { AdminRoomPanel, AdminRoomShell } from '@/screens/AdminRoomShell';
+} from '@repo/admin/admin/adminControl';
+import { AdminRoomPanel, AdminRoomShell } from '@repo/admin/screens/AdminRoomShell';
 
 export default function AdminFeatureRegistry() {
   const catalog = useMemo(() => getAllDomains(), []);

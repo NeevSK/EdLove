@@ -6,21 +6,21 @@ import { TemporalShield } from '@repo/ui/components/TemporalShield';
 
 import { Lightbulb, Sparkles } from '@repo/ui/icons';
 import { useTranslation } from 'react-i18next';
-import { BaseSelfView } from '@/components/BaseSelfView';
-import { ImpactRipplesCard } from '@/components/ImpactRipplesCard';
-import MoodLotus from '@/components/MoodLotus';
-import { MoodPickerCard } from '@/components/MoodPickerCard';
-import { PulseDashboard } from '@/components/PulseDashboard';
-import { ResonanceTimeline } from '@/components/ResonanceTimeline';
-import VoiceJournaling from '@/components/VoiceJournaling';
-import { WarmMirrorCard } from '@/components/WarmMirrorCard';
-import WelcomeModal from '@/components/WelcomeModal';
-import WisdomSeeds from '@/components/WisdomSeeds';
-import { useJournalEntries } from '@/hooks/useJournalEntries';
-import { useMoodLogs } from '@/hooks/useMoodLogs';
-import { useWellbeingEnrichment } from '@/hooks/useWellbeingEnrichment';
-import { useWisdom } from '@/hooks/useWisdom';
-import { MoodSection, PhilosophySection, VisionSection } from '@/views/sections';
+import { BaseSelfView } from '@self/components/BaseSelfView';
+import { ImpactRipplesCard } from '@self/components/ImpactRipplesCard';
+import MoodLotus from '@self/components/MoodLotus';
+import { MoodPickerCard } from '@self/components/MoodPickerCard';
+import { PulseDashboard } from '@self/components/PulseDashboard';
+import { ResonanceTimeline } from '@self/components/ResonanceTimeline';
+import VoiceJournaling from '@self/components/VoiceJournaling';
+import { WarmMirrorCard } from '@self/components/WarmMirrorCard';
+import WelcomeModal from '@self/components/WelcomeModal';
+import WisdomSeeds from '@self/components/WisdomSeeds';
+import { useJournalEntries } from '@self/hooks/useJournalEntries';
+import { useMoodLogs } from '@self/hooks/useMoodLogs';
+import { useWellbeingEnrichment } from '@self/hooks/useWellbeingEnrichment';
+import { useWisdom } from '@self/hooks/useWisdom';
+import { MoodSection, PhilosophySection, VisionSection } from '@self/views/sections';
 
 export default function FounderSelfView() {
   const { t } = useTranslation();

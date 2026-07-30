@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod';
-import { IdentityStateSchema } from '@/logic/schemas/identity.schema';
+import { IdentityStateSchema } from '@repo/core/logic/schemas/identity.schema';
 
 export const CapacitySchema = z.enum(['admin', 'founder', 'developer', 'teacher', 'student', 'principal', 'assistantPrincipal', 'gradeHead', 'sectionHead', 'parent', 'guardian', 'librarian', 'nurse', 'member']);
 

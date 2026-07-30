@@ -3,10 +3,10 @@ import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
 import { Pressable, View, type ViewProps } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
-import { Box } from '@/components/ui/box';
-import { Overlay } from '@/components/ui/overlay';
-import { Portal } from '@/components/ui/portal';
-import { Text } from '@/components/ui/text';
+import { Box } from '@repo/ui/components/ui/box';
+import { Overlay } from '@repo/ui/components/ui/overlay';
+import { Portal } from '@repo/ui/components/ui/portal';
+import { Text } from '@repo/ui/components/ui/text';
 
 cssInterop(View, { className: 'style' });
 cssInterop(Pressable, { className: 'style' });

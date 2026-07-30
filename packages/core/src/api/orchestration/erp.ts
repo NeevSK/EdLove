@@ -1,1 +1,1 @@
-export { accountingAPI, paymentsAPI } from '@/api/erp';
+export { accountingAPI, paymentsAPI } from '@repo/core/api/erp';

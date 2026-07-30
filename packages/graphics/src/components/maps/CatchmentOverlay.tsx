@@ -1,5 +1,5 @@
 import { Circle, Marker } from 'react-native-maps';
-import type { Point } from '@/algorithms/CatchmentAnalysis';
+import type { Point } from '@repo/graphics/algorithms/CatchmentAnalysis';
 
 interface CatchmentOverlayProps {
   center: Point;

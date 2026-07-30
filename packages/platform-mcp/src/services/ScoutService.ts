@@ -1,7 +1,7 @@
 import path from 'node:path';
-import { runCommand, runPowerShellScript } from '@/utils/execution.js';
-import { normalizeTarget } from '@/utils/pathUtils.js';
-import type { DocumentService, ReportData } from '@/services/DocumentService.js';
+import { runCommand, runPowerShellScript } from '@repo/platform-mcp/utils/execution.js';
+import { normalizeTarget } from '@repo/platform-mcp/utils/pathUtils.js';
+import type { DocumentService, ReportData } from '@repo/platform-mcp/services/DocumentService.js';
 
 /**
  * --- The Sovereign Scout: Orchestrated Intelligence ---

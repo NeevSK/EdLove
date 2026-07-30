@@ -9,8 +9,8 @@
  * Call `startNetworkBusAdapter()` once at bootstrap in `bootstrapPlatform()`.
  */
 import NetInfo from '@react-native-community/netinfo';
-import { sovereignBus } from '@/lib/sync/eventBus';
-import { useStore } from '@/store/useStore';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { useStore } from '@repo/core/store/useStore';
 
 let _unsubscribe: (() => void) | null = null;
 

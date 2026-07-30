@@ -1,6 +1,6 @@
-import { useStore } from '@/store/useStore';
-import { captureException } from '@/lib/monitoring/sentry';
-import { APIError } from '@/types/API';
+import { useStore } from '@repo/core/store/useStore';
+import { captureException } from '@repo/core/lib/monitoring/sentry';
+import { APIError } from '@repo/core/types/API';
 
 /**
  * Global API Interceptor & Error Handler (Layer 1)

@@ -1,8 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
-import type { Attendance as AttendanceRecord } from '@/logic/schemas/attendance.schema';
-import { AttendanceSchema } from '@/logic/schemas/attendance.schema';
-import { APIError } from '@/types/API';
+import type { Attendance as AttendanceRecord } from '@repo/core/logic/schemas/attendance.schema';
+import { AttendanceSchema } from '@repo/core/logic/schemas/attendance.schema';
+import { APIError } from '@repo/core/types/API';
 
 export const createAttendanceRepository = (supabase: SupabaseClient) => ({
   async getAttendanceByDate(classroomId: string, date: string) {

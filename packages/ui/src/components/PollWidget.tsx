@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { EaseView } from 'react-native-ease';
-import { useTheme } from '@/hooks/useTheme';
-import { Check, Clock, Lock } from '@/icons';
-import { Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '@/primitives';
-import { Theme } from '@/theme/Theme';
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { Check, Clock, Lock } from '@repo/ui/icons';
+import { Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme/Theme';
 
 export interface PollOption {
   id: string;

@@ -1,1 +1,1 @@
-export { AuthProvider, useAuth } from '@/providers/AuthProvider';
+export { AuthProvider, useAuth } from '@repo/core/providers/AuthProvider';

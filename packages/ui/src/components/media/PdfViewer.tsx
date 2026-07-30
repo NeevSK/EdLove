@@ -1,10 +1,10 @@
 import type { DownloadState } from '@repo/core/hooks';
 import { Bookmark, CircleX, Download, ExternalLink } from '@repo/ui/icons';
-import { useTheme } from '@/hooks/useTheme';
-import { Box, HStack, Text, VStack } from '@/primitives';
-import GlobalHeader from '@/components/GlobalHeader';
-import { SanctuaryButton } from '@/components/SanctuaryButton';
-import ScreenWrapper from '@/components/ScreenWrapper';
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 
 export interface PdfViewerProps {
   title: string;

@@ -1,7 +1,7 @@
 import { useTemporalStore } from '@repo/core/logic';
 import React from 'react';
 import { Animated, Dimensions, PanResponder } from 'react-native';
-import { Box, Text } from '@/gluestack';
+import { Box, Text } from '@repo/ui/gluestack';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const SCRUBBER_WIDTH = SCREEN_WIDTH * 0.8;

@@ -2,8 +2,8 @@ import {
   type BootstrapRoutePolicy,
   type BootstrapSessionState,
   getBootstrapSessionState,
-} from '@/logic/auth/bootstrapContract';
-import type { IdentityMode } from '@/logic/auth/identityState';
+} from '@repo/core/logic/auth/bootstrapContract';
+import type { IdentityMode } from '@repo/core/logic/auth/identityState';
 
 export type RouteDecision = 'booting' | 'public' | 'onboarding' | 'app';
 

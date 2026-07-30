@@ -1,9 +1,9 @@
-import { educational } from '@/logic/managers/factory';
+import { educational } from '@repo/core/logic/managers/factory';
 import type {
   StudentAssignment,
   StudentSubmissionSummary,
-} from '@/logic/schemas/classroom.schema';
-import type { Assignment } from '@/types';
+} from '@repo/core/logic/schemas/classroom.schema';
+import type { Assignment } from '@repo/core/types';
 
 export const assignmentsAPI = {
   /**

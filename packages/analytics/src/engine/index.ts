@@ -1,3 +1,3 @@
-export * from '@/engine/GPACalculator';
-export * from '@/engine/PerformanceAnalyzer';
-export * from '@/engine/PostHogAnalytics';
+export * from '@repo/analytics/engine/GPACalculator';
+export * from '@repo/analytics/engine/PerformanceAnalyzer';
+export * from '@repo/analytics/engine/PostHogAnalytics';

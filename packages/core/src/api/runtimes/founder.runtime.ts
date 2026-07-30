@@ -1,6 +1,6 @@
-import { createSupabaseFounderRepository } from '@/adapters/supabase/founderRepository';
-import { createFounderServices } from '@/logic/domains/founder/services';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { createSupabaseFounderRepository } from '@repo/core/adapters/supabase/founderRepository';
+import { createFounderServices } from '@repo/core/logic/domains/founder/services';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
 
 const founderRepository = createSupabaseFounderRepository(
   __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__,

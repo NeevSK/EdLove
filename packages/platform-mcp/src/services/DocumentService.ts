@@ -1,4 +1,4 @@
-import { ROOT_DIR } from '@/utils/constants.js';
+import { ROOT_DIR } from '@repo/platform-mcp/utils/constants.js';
 
 /**
  * --- The Sovereign Document Service ---

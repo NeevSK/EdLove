@@ -9,4 +9,4 @@ export type {
 export type {
   PerspectiveRenderer,
   PerspectiveViewProps,
-} from '@/types/PerspectiveRenderer';
+} from '@repo/graphics/types/PerspectiveRenderer';

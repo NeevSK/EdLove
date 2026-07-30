@@ -1,4 +1,4 @@
-import type { IStorage } from '@/logic/interfaces/storage.port';
+import type { IStorage } from '@repo/core/logic/interfaces/storage.port';
 
 /**
  * MemoryStorageAdapter - A fallback adapter for environments without persistent storage

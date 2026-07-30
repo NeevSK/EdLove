@@ -2,9 +2,9 @@ import { DrizzleAppSchema } from '@powersync/drizzle-driver';
 import { OPSqliteOpenFactory } from '@powersync/op-sqlite';
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
-import type { IDatabasePort } from '@/logic/ports/database.port';
-import { SupabasePowerSyncConnector } from '@/adapters/powersync/SupabasePowerSyncConnector';
-import { AppSchema } from '@/adapters/powersync/schema';
+import type { IDatabasePort } from '@repo/core/logic/ports/database.port';
+import { SupabasePowerSyncConnector } from '@repo/core/adapters/powersync/SupabasePowerSyncConnector';
+import { AppSchema } from '@repo/core/adapters/powersync/schema';
 
 const SQLCIPHER_KEY_STORAGE_KEY = 'gurudevi-sqlite-cipher-key';
 

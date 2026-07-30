@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { View } from '@/primitives';
+import { View } from '@repo/ui/primitives';
 
 /**
  * Portal Registry Context

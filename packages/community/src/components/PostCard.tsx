@@ -7,7 +7,7 @@ import { hapticError, hapticSuccess } from '@repo/ui/primitives';
 import { confirmAction, shareAction } from '@repo/ui/utils';
 
 import React from 'react';
-import { communityAPI } from '@/api/community';
+import { communityAPI } from '@community/api/community';
 
 const EMPTY_HANDLER = () => {};
 

@@ -9,8 +9,8 @@ import {
   ModalHeader,
   Text,
   VStack,
-} from '@/gluestack';
-import { Pressable } from '@/primitives';
+} from '@repo/ui/gluestack';
+import { Pressable } from '@repo/ui/primitives';
 
 const Heading = ({ children, className }: any) => (
   <Text className={`text-xl font-bold ${className || ''}`}>{children}</Text>

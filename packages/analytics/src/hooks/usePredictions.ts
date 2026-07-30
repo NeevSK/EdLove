@@ -1,1 +1,1 @@
-export { usePredictions } from '@/hooks/queries';
+export { usePredictions } from '@repo/analytics/hooks/queries';

@@ -1,5 +1,5 @@
-import { clamp, mix } from '@/core/color';
-import { getSurfacePreset } from '@/core/presets';
+import { clamp, mix } from '@repo/trube-art/core/color';
+import { getSurfacePreset } from '@repo/trube-art/core/presets';
 import type {
   ResolvedTrubeSurface,
   TrubeLightingMode,
@@ -7,7 +7,7 @@ import type {
   TrubeSurfaceName,
   TrubeSurfaceOptions,
   TrubeSurfaceSpec,
-} from '@/core/types';
+} from '@repo/trube-art/core/types';
 
 const COOL_LIGHT = '#7fc8de';
 const WARM_LIGHT = '#f0bc7e';

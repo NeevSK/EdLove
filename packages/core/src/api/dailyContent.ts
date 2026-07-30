@@ -1,7 +1,7 @@
-import { APIError } from '@/types/API';
-import { createSovereignClient, SOVEREIGN_API_URL } from '@/api/base';
-import type { DailyContent } from '@/api/dailyContent.contract';
-import { readLocalFirst } from '@/api/dataGateway';
+import { APIError } from '@repo/core/types/API';
+import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import type { DailyContent } from '@repo/core/api/dailyContent.contract';
+import { readLocalFirst } from '@repo/core/api/dataGateway';
 
 const client = createSovereignClient(SOVEREIGN_API_URL);
 

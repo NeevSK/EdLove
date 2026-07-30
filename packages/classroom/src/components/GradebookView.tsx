@@ -1,4 +1,4 @@
-import type { ClassroomGradingSettings } from '@repo/core/logic';
+import type { ClassroomGradingSettings } from '@repo/core/types';
 import {
   Box,
   Button,
@@ -14,9 +14,9 @@ import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useGradebook } from '@/hooks/useGradebook';
-import GradebookTable from '@/components/grading/GradebookTable';
-import GradingSettings from '@/components/grading/GradingSettings';
+import { useGradebook } from '@repo/classroom/hooks/useGradebook';
+import GradebookTable from '@repo/classroom/components/grading/GradebookTable';
+import GradingSettings from '@repo/classroom/components/grading/GradingSettings';
 
 interface GradebookViewProps {
   classroomId: string;

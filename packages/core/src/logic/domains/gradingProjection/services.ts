@@ -1,8 +1,8 @@
 import type {
   PublishedSchoolGradingCompletion,
   SchoolGradingCompletion,
-} from '@/logic/schemas/grading.schema';
-import type { GradingProjectionRepository } from '@/logic/domains/gradingProjection/ports';
+} from '@repo/core/logic/schemas/grading.schema';
+import type { GradingProjectionRepository } from '@repo/core/logic/domains/gradingProjection/ports';
 
 export interface GradingProjectionServices {
   getSchoolGradingCompletion(schoolId: string, viewDate: string): Promise<SchoolGradingCompletion>;

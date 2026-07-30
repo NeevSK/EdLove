@@ -1,8 +1,8 @@
 import { Platform } from 'react-native';
-import { useSanctuaryFeature } from '@/logic/permissions/hooks/useSanctuaryFeature';
-import type { SanctuaryFeatureResult } from '@/logic/permissions/sanctuaryFeature';
-import { getDomainEntry } from '@/logic/registry/appCatalog';
-import type { DomainEntry } from '@/logic/registry/domainEntry';
+import { useSanctuaryFeature } from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
+import type { SanctuaryFeatureResult } from '@repo/core/logic/permissions/sanctuaryFeature';
+import { getDomainEntry } from '@repo/core/logic/registry/appCatalog';
+import type { DomainEntry } from '@repo/core/logic/registry/domainEntry';
 
 export interface DomainFeatureResult {
   entry: DomainEntry;

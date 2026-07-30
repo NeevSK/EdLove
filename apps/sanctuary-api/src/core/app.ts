@@ -1,32 +1,7 @@
 import { swaggerUI } from '@hono/swagger-ui';
 import { OpenAPIHono } from '@hono/zod-openapi';
 import {
-  adaptToHono,
-  adminContract,
-  adminHandlers,
-  communityContract,
-  communityHandlers,
-  dailyContentContract,
-  dailyContentHandlers,
-  educationalContract,
-  educationalHandlers,
-  gradingContract,
-  gradingHandlers,
-  identityContract,
-  identityHandlers,
-  libraryContract,
-  libraryHandlers,
-  onboardingContract,
-  onboardingHandlers,
-  operationsContract,
-  operationsHandlers,
-  profileContract,
-  profileHandlers,
   type SovereignRoute,
-  selfContract,
-  selfHandlers,
-  syncContract,
-  syncHandlers,
 } from '@repo/core/api/server';
 import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
 import { satisfiesEntitlementRequirement } from '@repo/core/logic/ports/entitlement.port';
@@ -52,7 +27,6 @@ import { timeout } from 'hono/timeout';
 import { endTime, startTime, timing } from 'hono/timing';
 import { z } from 'zod';
 import { aiRouter } from '../ai/routes';
-import { refreshPermissionSnapshot } from '../authorization/permissionSnapshot.service';
 import {
   evaluateWithRust,
   RustEvaluatorUnavailableError,
@@ -245,11 +219,11 @@ app.use('/api/*', etag());
 app.use('/api/*', timing());
 
 // Cache-Control headers for read-heavy routes
-app.get('/api/library/*', async (c, next) => {
+app.use('/api/library/*', async (c, next) => {
   await next();
   c.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=600');
 });
-app.get('/api/daily-content/*', async (c, next) => {
+app.use('/api/daily-content/*', async (c, next) => {
   await next();
   c.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=600');
 });
@@ -413,7 +387,12 @@ async function getRequestSecurityContext(c: any) {
           where: { id: clientHeaderActiveBondId, user_id: user.id },
         });
       } else if (!isOnboardingBootstrapRoute) {
-        throw new Error('MissingActiveBondSelection');
+        activeBond = await db.bond.findFirst({
+          where: { user_id: user.id },
+        });
+        if (!activeBond) {
+          throw new Error('MissingActiveBondSelection');
+        }
       }
       if (activeBond) {
         const bondScope = resolveBondScope(activeBond);
@@ -434,7 +413,7 @@ async function getRequestSecurityContext(c: any) {
 
   if (!hydratedFromDb) {
     school_id = clientHeaderSchoolId;
-    capacity = null;
+    capacity = isAnonymousUser ? 'wanderer' : clientHeaderCapacity;
     grade_id = clientHeaderGradeId;
     section_id = clientHeaderSectionId;
     classroom_ids = clientHeaderClassroomIds;
@@ -782,7 +761,7 @@ async function resolveServerEntitlement(
 
   return satisfiesEntitlementRequirement(
     {
-      pricingTier: effectiveTier,
+      pricingTier: effectiveTier as any,
       activeEntitlements: [...new Set(activeEntitlements)],
       expirationDate: null,
     },
@@ -841,166 +820,132 @@ function featureFlagGate(route: SovereignRoute) {
     : factory.createMiddleware(async (_c, next) => next());
 }
 
-function registerRoute(apiApp: OpenAPIHono<any>, route: SovereignRoute, handler: any) {
-  apiApp.use(route.path, poa(route));
-  apiApp.use(route.path, featureFlagGate(route));
-  apiApp.openapi(adaptToHono(route), handler);
-}
+import { RPCHandler } from '@orpc/server/fetch';
+import { OpenAPIHandler } from '@orpc/openapi/fetch';
+import { buildORPCContextFromHono, router as orpcRouter } from './router';
 
-const permissionSnapshotRoute: SovereignRoute = {
-  path: '/authorization/permission-snapshot',
-  method: 'get',
-  summary: 'Refresh the signed offline authorization snapshot for the active bond',
-  responses: {
-    200: { schema: z.any(), description: 'Signed permission snapshot' },
+const rpcHandler = new RPCHandler(orpcRouter);
+const openapiHandler = new OpenAPIHandler(orpcRouter, {
+  filter: ({ contract }) => {
+    const policy = (contract['~orpc'].meta as any)?.policy;
+    return policy?.action === 'read' && ['Classroom', 'Material', 'Assignment', 'AssignmentSubmission', 'Group', 'Post', 'School'].includes(policy.subject);
   },
-  metadata: { policy: { action: 'read', subject: 'User' } },
-};
+});
 
-const permissionSnapshotHandler = async (c: any) => {
-  const snapshot = await refreshPermissionSnapshot({
-    db: c.get('db'),
-    userId: c.get('user').id,
-    activeBondId: c.get('activeBondId'),
-    secret: getEnv('SNAPSHOT_SIGNING_PRIVATE_KEY'),
-  });
-  return c.json(snapshot, 200);
-};
+app.all('/api/openapi/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await openapiHandler.handle(c.req.raw, { context, prefix: '/api/openapi' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
 
-// Sovereign Routes (Vertical Slice: SELF)
-const selfApp = new OpenAPIHono();
-registerRoute(selfApp, selfContract.logMood, selfHandlers.logMood);
-registerRoute(selfApp, selfContract.getMoodHistory, selfHandlers.getMoodHistory);
-registerRoute(selfApp, selfContract.burnJournal, selfHandlers.burnJournal);
-registerRoute(selfApp, selfContract.getJournalHistory, selfHandlers.getJournalHistory);
-registerRoute(selfApp, selfContract.getTodayMood, selfHandlers.getTodayMood);
-registerRoute(selfApp, selfContract.getPreferences, selfHandlers.getPreferences);
-registerRoute(selfApp, selfContract.updatePreferences, selfHandlers.updatePreferences);
+app.all('/api/self/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
 
-// Sovereign Routes (Vertical Slice: PROFILE)
-const profileApp = new OpenAPIHono();
-registerRoute(profileApp, profileContract.getUserProfile, profileHandlers.getUserProfile);
-registerRoute(profileApp, profileContract.updateProfile, profileHandlers.updateProfile);
-registerRoute(profileApp, profileContract.getJourneySnapshot, profileHandlers.getJourneySnapshot);
-registerRoute(profileApp, profileContract.getSchoolPulse, profileHandlers.getSchoolPulse);
+app.all('/api/profile/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
 
-// Sovereign Routes (Vertical Slice: COMMUNITY)
-const communityApp = new OpenAPIHono();
-registerRoute(communityApp, communityContract.getGroups, communityHandlers.getGroups);
-registerRoute(communityApp, communityContract.getGroup, communityHandlers.getGroup);
-registerRoute(communityApp, communityContract.createGroup, communityHandlers.createGroup);
-registerRoute(communityApp, communityContract.joinGroup, communityHandlers.joinGroup);
-registerRoute(communityApp, communityContract.getPosts, communityHandlers.getPosts);
-registerRoute(communityApp, communityContract.createPost, communityHandlers.createPost);
-registerRoute(communityApp, communityContract.toggleReaction, communityHandlers.toggleReaction);
+app.all('/api/identity/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
 
-// Sovereign Routes (Vertical Slice: DAILY CONTENT)
-const dailyContentApp = new OpenAPIHono();
-registerRoute(dailyContentApp, dailyContentContract.getToday, dailyContentHandlers.getToday);
-registerRoute(dailyContentApp, dailyContentContract.getForDate, dailyContentHandlers.getForDate);
-registerRoute(dailyContentApp, dailyContentContract.getRecent, dailyContentHandlers.getRecent);
+app.all('/api/onboarding/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
 
-// Sovereign Routes (Vertical Slice: EDUCATIONAL)
-const educationalApp = new OpenAPIHono();
-registerRoute(educationalApp, educationalContract.getByTeacher, educationalHandlers.getByTeacher);
-registerRoute(educationalApp, educationalContract.getById, educationalHandlers.getById);
-registerRoute(
-  educationalApp,
-  educationalContract.getClassroomResources,
-  educationalHandlers.getClassroomResources,
-);
-registerRoute(educationalApp, educationalContract.createLesson, educationalHandlers.createLesson);
+// Native oRPC community procedures are the sole community API surface.
+app.all('/api/community/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
 
-// Sovereign Routes (Vertical Slice: GRADING)
-const gradingApp = new OpenAPIHono();
-registerRoute(gradingApp, gradingContract.getReportCard, gradingHandlers.getReportCard);
-registerRoute(gradingApp, gradingContract.getClassroomGrades, gradingHandlers.getClassroomGrades);
-registerRoute(gradingApp, gradingContract.submitGrade, gradingHandlers.submitGrade);
-registerRoute(gradingApp, gradingContract.publishGrade, gradingHandlers.publishGrade);
-registerRoute(gradingApp, gradingContract.getGradingSettings, gradingHandlers.getGradingSettings);
+app.all('/api/messaging/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
 
-// Sovereign Routes (Vertical Slice: OPERATIONS)
-const operationsApp = new OpenAPIHono();
-registerRoute(operationsApp, operationsContract.getAttendance, operationsHandlers.getAttendance);
-registerRoute(
-  operationsApp,
-  operationsContract.recordAttendance,
-  operationsHandlers.recordAttendance,
-);
-registerRoute(
-  operationsApp,
-  operationsContract.batchRecordAttendance,
-  operationsHandlers.batchRecordAttendance,
-);
-registerRoute(
-  operationsApp,
-  operationsContract.getSchoolAttendancePulse,
-  operationsHandlers.getSchoolAttendancePulse,
-);
+app.all('/api/social/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
 
-// Sovereign Routes (Vertical Slice: IDENTITY)
-const identityApp = new OpenAPIHono();
-registerRoute(
-  identityApp,
-  identityContract.identifyActiveCitizen,
-  identityHandlers.resolveIdentity,
-);
-registerRoute(identityApp, identityContract.fetchUserProfile, identityHandlers.getProfile);
-registerRoute(
-  identityApp,
-  identityContract.resolveWorkspaceContext,
-  identityHandlers.getClassroomCapacitySummary,
-);
-registerRoute(identityApp, identityContract.modifyUserProfile, identityHandlers.updateProfile);
+app.all('/api/announcements/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
 
-// Sovereign Routes (Vertical Slice: ONBOARDING)
-const onboardingApp = new OpenAPIHono();
-registerRoute(
-  onboardingApp,
-  onboardingContract.createInitialBond,
-  onboardingHandlers.createInitialBond,
-);
-registerRoute(
-  onboardingApp,
-  onboardingContract.completeOnboarding,
-  onboardingHandlers.completeOnboarding,
-);
+app.all('/api/principalNotes/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
 
-// Sovereign Routes (Vertical Slice: ADMIN)
-const adminApp = new OpenAPIHono();
-registerRoute(adminApp, adminContract.getStaffPresence, adminHandlers.getStaffPresence);
-registerRoute(adminApp, adminContract.getTeacherCarousel, adminHandlers.getTeacherCarousel);
-registerRoute(adminApp, adminContract.submitLeave, adminHandlers.submitLeave);
-registerRoute(adminApp, adminContract.getSchool, adminHandlers.getSchool);
+app.all('/api/admin/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
 
-// Sovereign Routes (Vertical Slice: LIBRARY)
-const libraryApp = new OpenAPIHono();
-registerRoute(libraryApp, libraryContract.getResources, libraryHandlers.getResources);
-registerRoute(libraryApp, libraryContract.getResource, libraryHandlers.getResource);
-registerRoute(libraryApp, libraryContract.searchLibrary, libraryHandlers.searchLibrary);
-registerRoute(libraryApp, libraryContract.engage, libraryHandlers.engage);
-registerRoute(libraryApp, libraryContract.getCollections, libraryHandlers.getCollections);
-registerRoute(libraryApp, libraryContract.getCollection, libraryHandlers.getCollection);
+// Native oRPC routes (Vertical Slice: SYNC)
+app.all('/api/sync/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
 
-app.route('/api', selfApp);
-app.route('/api', profileApp);
-app.route('/api', communityApp);
-app.route('/api', dailyContentApp);
-app.route('/api', educationalApp);
-app.route('/api', gradingApp);
-app.route('/api', operationsApp);
-app.route('/api', identityApp);
-const authorizationApp = new OpenAPIHono();
-registerRoute(authorizationApp, permissionSnapshotRoute, permissionSnapshotHandler);
-app.route('/api', authorizationApp);
-app.route('/api', onboardingApp);
-app.route('/api', adminApp);
-app.route('/api', libraryApp);
+// Native oRPC routes (Vertical Slice: DAILY CONTENT)
+app.all('/api/dailyContent/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
 
-// Sovereign Routes (Vertical Slice: SYNC)
-const syncApp = new OpenAPIHono();
-registerRoute(syncApp, syncContract.uploadPowerSyncBatch, syncHandlers.uploadPowerSyncBatch);
-app.route('/api', syncApp);
+// Native oRPC routes (Vertical Slice: LIBRARY)
+app.all('/api/library/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
+
+// Native oRPC routes (Vertical Slice: OFFLINE AUTHORIZATION SNAPSHOT)
+app.all('/api/authorization/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
+
+// Native oRPC routes (Vertical Slice: EDUCATION)
+app.all('/api/educational/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
+
+// Native oRPC routes (Vertical Slice: GRADING)
+app.all('/api/grading/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
+
+app.all('/api/attendance/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
 const aiPolicyRoute: SovereignRoute = {
   path: '/api/ai/chat',
   method: 'post',

@@ -1,16 +1,30 @@
 {
   "extends": "../../packages/typescript-config/base.json",
   "compilerOptions": {
+    "composite": true,
+    "emitDeclarationOnly": true,
     "outDir": "dist",
     "rootDir": "src",
     "jsx": "react-native",
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "types": [
+      "node"
+    ],
     "paths": {
-      "@/*": ["./src/*"]
-    },
-    "types": ["node"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@repo/accounting/*": [
+        "./src/*"
+      ]
+    }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

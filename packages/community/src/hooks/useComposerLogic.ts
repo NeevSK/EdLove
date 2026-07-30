@@ -3,7 +3,7 @@ import { uploadToCloudinary } from '@repo/core/lib/cloudinary';
 import { composerReducer, initialComposerState, usePermissions } from '@repo/core/logic';
 import * as ImagePicker from 'expo-image-picker';
 import { useCallback, useReducer } from 'react';
-import { communityAPI } from '@/api/community';
+import { communityAPI } from '@community/api/community';
 
 interface PollData {
   options: { id: string; text: string }[];

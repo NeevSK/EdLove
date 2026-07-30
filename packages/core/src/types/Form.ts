@@ -1,4 +1,4 @@
-import type { ValidationResult } from '@/logic/utils/validators';
+import type { ValidationResult } from '@repo/core/logic/utils/validators';
 
 export type FieldType =
   | 'text'

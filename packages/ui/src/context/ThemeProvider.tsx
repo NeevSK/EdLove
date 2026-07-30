@@ -10,8 +10,8 @@ import {
   useState,
 } from 'react';
 import { useColorScheme } from 'react-native';
-import type { TemporalPhase, ThemeMode } from '@/context/types';
-import { getTemporalPhase, shouldUseDarkTheme } from '@/context/utils';
+import type { TemporalPhase, ThemeMode } from '@repo/ui/context/types';
+import { getTemporalPhase, shouldUseDarkTheme } from '@repo/ui/context/utils';
 
 interface ThemeContextValue {
   themeMode: ThemeMode;

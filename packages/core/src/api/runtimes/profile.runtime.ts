@@ -1,11 +1,11 @@
-import { createSupabaseProfileRepository } from '@/adapters/supabase/profileRepository';
+import { createSupabaseProfileRepository } from '@repo/core/adapters/supabase/profileRepository';
 import {
   createZenStackProfileRepository,
   isZenStackProfileRepositoryAvailable,
-} from '@/adapters/zenstack/profileRepository';
-import { createProfileServices } from '@/logic/domains/profile/services';
-import { media } from '@/logic/managers/factory';
-import { useStore } from '@/store/useStore';
+} from '@repo/core/adapters/zenstack/profileRepository';
+import { createProfileServices } from '@repo/core/logic/domains/profile/services';
+import { media } from '@repo/core/logic/managers/factory';
+import { useStore } from '@repo/core/store/useStore';
 
 const profileRepository = isZenStackProfileRepositoryAvailable()
   ? createZenStackProfileRepository(() => {

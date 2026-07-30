@@ -6,8 +6,8 @@ import { useCallback, useMemo, useState } from 'react';
 import {
   type ClimateSensingData,
   createClimateSensingSchema,
-} from '@/apps/resilience-sensing-schema';
-import NativeForm from '@/NativeForm';
+} from '@repo/form-builder/apps/resilience-sensing-schema';
+import NativeForm from '@repo/form-builder/NativeForm';
 
 interface ClimateSensingScreenProps {
   schoolId: string;

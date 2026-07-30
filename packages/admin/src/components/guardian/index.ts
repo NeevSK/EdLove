@@ -1,3 +1,3 @@
-export * from '@/components/guardian/GuardianEvents';
-export * from '@/components/guardian/GuardianNotifications';
-export * from '@/components/guardian/GuardianStudentsGrid';
+export * from '@repo/admin/components/guardian/GuardianEvents';
+export * from '@repo/admin/components/guardian/GuardianNotifications';
+export * from '@repo/admin/components/guardian/GuardianStudentsGrid';

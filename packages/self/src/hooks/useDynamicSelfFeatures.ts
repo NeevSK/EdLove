@@ -1,6 +1,6 @@
 ﻿import { useMemo } from 'react';
-import type { SelfViewFeature } from '@/components/BaseSelfView.types';
-import { useFeatureActivity } from '@/hooks/useFeatureActivity';
+import type { SelfViewFeature } from '@self/components/BaseSelfView.types';
+import { useFeatureActivity } from '@self/hooks/useFeatureActivity';
 
 /**
  * useDynamicSelfFeatures - The "Brain" of the Discovery Hub.

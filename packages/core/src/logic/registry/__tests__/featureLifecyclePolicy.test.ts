@@ -5,8 +5,8 @@ import {
   fallbackForFeatureFlagClass,
   resolveFeatureFlagClass,
   resolveFeatureFlagValue,
-} from '@/logic/registry/featureLifecycleManifest';
-import { validateFeatureLifecycleAction } from '@/logic/registry/featureLifecyclePolicy';
+} from '@repo/core/logic/registry/featureLifecycleManifest';
+import { validateFeatureLifecycleAction } from '@repo/core/logic/registry/featureLifecyclePolicy';
 
 const releaseMetadata: FeatureFlagMetadata = {
   owner: 'test',

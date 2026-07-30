@@ -1,6 +1,6 @@
 import { Skia, type SkRuntimeEffect } from '@shopify/react-native-skia';
-import { soulLibrary } from '@/core/soul/SoulLibrary';
-import type { ResolvedTrubeSurface } from '@/core/types';
+import { soulLibrary } from '@repo/trube-art/core/soul/SoulLibrary';
+import type { ResolvedTrubeSurface } from '@repo/trube-art/core/types';
 
 /**
  * SkiaDriver: Tier 3 rendering path (Last Resort).

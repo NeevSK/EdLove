@@ -1,1 +1,1 @@
-export * from '@/types/workspace';
+export * from '@repo/classroom/types/workspace';

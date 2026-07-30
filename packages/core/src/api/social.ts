@@ -1,7 +1,7 @@
-import { applyTemporalFilter } from '@/logic/utils/temporalUtils';
-import type { TemporalScale } from '@/store/useTemporalStore';
-import { identityAPI } from '@/api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { applyTemporalFilter } from '@repo/core/logic/utils/temporalUtils';
+import type { TemporalScale } from '@repo/core/store/useTemporalStore';
+import { identityAPI } from '@repo/core/api/identity';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
 
 /**
  * Social & Safety API

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { sacredMissionsAPI } from '@/api/sacredMissions';
+import { sacredMissionsAPI } from '@repo/core/api/sacredMissions';
 
 export const manifestoKeys = {
   all: ['manifestos'] as const,

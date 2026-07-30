@@ -1,3 +1,3 @@
-export { default as StudentClassroomDashboard } from '@/screens/StudentClassroomDashboard';
-export { default as StudentDashboard } from '@/screens/StudentDashboard';
-export { default as StudentProfileScreen } from '@/screens/StudentProfileScreen';
+export { default as StudentClassroomDashboard } from '@repo/classroom/screens/StudentClassroomDashboard';
+export { default as StudentDashboard } from '@repo/classroom/screens/StudentDashboard';
+export { default as StudentProfileScreen } from '@repo/classroom/screens/StudentProfileScreen';

@@ -1,5 +1,5 @@
 import { Effect } from 'effect';
-import { GROWTH_SIGNAL_MAP, type GrowthSignalType } from '@/api/growthSignals.generated';
+import { GROWTH_SIGNAL_MAP, type GrowthSignalType } from '@repo/core/api/growthSignals.generated';
 import type {
   BanyanStage,
   BhumiStage,
@@ -14,11 +14,11 @@ import type {
   PersonalCompass,
   RiverStage,
   UserGrowthState,
-} from '@/types/Growth';
-import type { IGrowthPort } from '@/logic/ports/growth.port';
-import { tryPromise } from '@/utils/effect';
+} from '@repo/core/types/Growth';
+import type { IGrowthPort } from '@repo/core/logic/ports/growth.port';
+import { tryPromise } from '@repo/core/utils/effect';
 
-export * from '@/types/Growth';
+export * from '@repo/core/types/Growth';
 
 const SIGNAL_TO_CHALLENGE_METRIC: Partial<Record<GrowthSignalType, any>> = {
   resource_read: 'library_resources_opened',

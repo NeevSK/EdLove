@@ -1,26 +1,26 @@
 // Core analytics exports - No UI dependencies to prevent circular dependencies
-export * from '@/engine/GPACalculator';
+export * from '@repo/analytics/engine/GPACalculator';
 // Export database client interface for dependency injection
-export type { DatabaseClient } from '@/engine/PerformanceAnalyzer';
-export * from '@/engine/PerformanceAnalyzer';
-export * from '@/engine/PostHogAnalytics';
-export type { DatabaseClient as PredictorDatabaseClient } from '@/ml/Predictor';
+export type { DatabaseClient } from '@repo/analytics/engine/PerformanceAnalyzer';
+export * from '@repo/analytics/engine/PerformanceAnalyzer';
+export * from '@repo/analytics/engine/PostHogAnalytics';
+export type { DatabaseClient as PredictorDatabaseClient } from '@repo/analytics/ml/Predictor';
 
 // Factory functions to create instances with database client
-import { type DatabaseClient, PerformanceAnalyzer } from '@/engine/PerformanceAnalyzer';
-import { posthogAnalytics } from '@/engine/PostHogAnalytics';
-import { Predictor as ML_Predictor } from '@/ml/Predictor';
+import { type DatabaseClient, PerformanceAnalyzer } from '@repo/analytics/engine/PerformanceAnalyzer';
+import { posthogAnalytics } from '@repo/analytics/engine/PostHogAnalytics';
+import { Predictor as ML_Predictor } from '@repo/analytics/ml/Predictor';
 export const createPerformanceAnalyzer = (db: DatabaseClient) => new PerformanceAnalyzer(db);
 export const createPredictor = (db: DatabaseClient) => new ML_Predictor(db);
-export type { ClassroomGradingSettings, StudentGrade } from '@repo/core/logic';
-export * from '@/ml/InsightGenerator';
+export type { ClassroomGradingSettings, StudentGrade } from '@repo/core/types';
+export * from '@repo/analytics/ml/InsightGenerator';
 // ML and prediction exports
-export * from '@/ml/Predictor';
+export * from '@repo/analytics/ml/Predictor';
 // Types and interfaces
-export * from '@/types';
+export * from '@repo/analytics/types';
 // Utility functions
-export * from '@/utils/analyticsHelpers';
-export * from '@/utils/benchmarking';
+export * from '@repo/analytics/utils/analyticsHelpers';
+export * from '@repo/analytics/utils/benchmarking';
 // PostHog Universal Helpers
 export { posthogAnalytics };
 export const initPostHog = async (

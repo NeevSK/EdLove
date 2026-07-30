@@ -14,7 +14,7 @@ import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives'
 
 import type { ComponentType, ReactNode } from 'react';
 import { useMemo } from 'react';
-import { ClassroomList } from '@/components';
+import { ClassroomList } from '@repo/classroom/components';
 
 export type StudentDashboardSurfaceId =
   | 'temporal-context'

@@ -4,7 +4,7 @@
  * This file serves as the public API for storage. It delegates to the
  * StorageManager which uses the Adapter pattern to maintain platform agnosticism.
  */
-export { storage } from '@/logic/managers/StorageManager';
+export { storage } from '@repo/core/logic/managers/StorageManager';
 
 export const StorageKeys = {
   USER_PREFERENCES: 'user_preferences',

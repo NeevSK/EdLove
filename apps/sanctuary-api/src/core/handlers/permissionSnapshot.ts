@@ -1,0 +1,22 @@
+import { implement, ORPCError } from '@orpc/server';
+import { permissionSnapshotContract } from '@repo/core/api/server';
+import { refreshPermissionSnapshot } from '../../authorization/permissionSnapshot.service';
+import type { ORPCContext } from '../orpc';
+import { doubleGateMiddleware } from '../orpcMiddleware';
+
+const impl = implement(permissionSnapshotContract).$context<ORPCContext>();
+
+export const permissionSnapshotRouter = impl.router({
+  refresh: impl.refresh.use(doubleGateMiddleware).handler(async ({ context }) => {
+    if (context.user.id === 'anonymous') {
+      throw new ORPCError('FORBIDDEN', { message: 'Authentication required' });
+    }
+    if (!context.db) throw new Error('Database context not initialized');
+    return refreshPermissionSnapshot({
+      db: context.db,
+      userId: context.user.id,
+      activeBondId: context.activeBondId ?? null,
+      secret: process.env.SNAPSHOT_SIGNING_PRIVATE_KEY,
+    });
+  }),
+});

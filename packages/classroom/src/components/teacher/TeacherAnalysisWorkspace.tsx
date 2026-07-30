@@ -87,7 +87,7 @@ export default function TeacherAnalysisWorkspace({
       }
     });
 
-    return students.map((student) => ({
+    return students.map((student: any) => ({
       ...student,
       observationCount: observationCountByStudent.get(student.id) || 0,
       concernCount: concernCountByStudent.get(student.id) || 0,

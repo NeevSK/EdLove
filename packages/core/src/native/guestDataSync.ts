@@ -1,8 +1,8 @@
-import { authAPI } from '@/api/auth';
-import { createSovereignClient, SOVEREIGN_API_URL } from '@/api/base';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
-import { GuestDataManager } from '@/native/guestDataManager';
-import { setGuestScope } from '@/native/guestScope';
+import { authAPI } from '@repo/core/api/auth';
+import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { GuestDataManager } from '@repo/core/native/guestDataManager';
+import { setGuestScope } from '@repo/core/native/guestScope';
 
 let pendingConversionGuestUserId: string | null = null;
 

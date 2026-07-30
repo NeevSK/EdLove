@@ -9,6 +9,8 @@ export default defineConfig({
   },
   resolve: {
     alias: [
+      { find: /^@\/generated\/orm\/(.+)$/, replacement: path.resolve(__dirname, '../../packages/schema/src/generated/orm/$1') },
+      { find: /^@\/(.+)$/, replacement: path.resolve(__dirname, '../../packages/core/src/$1') },
       { find: /^react-native$/, replacement: shimPath },
       { find: /^react-native\/.+$/, replacement: shimPath },
       { find: /^@sentry\/react-native$/, replacement: shimPath },
@@ -36,6 +38,8 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     alias: [
+      { find: /^@\/generated\/orm\/(.+)$/, replacement: path.resolve(__dirname, '../../packages/schema/src/generated/orm/$1') },
+      { find: /^@\/(.+)$/, replacement: path.resolve(__dirname, '../../packages/core/src/$1') },
       { find: /^react-native$/, replacement: shimPath },
       { find: /^react-native\/.+$/, replacement: shimPath },
       { find: /^@sentry\/react-native$/, replacement: shimPath },

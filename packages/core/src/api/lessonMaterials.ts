@@ -1,5 +1,5 @@
-import { educational } from '@/logic/managers/factory';
-import type { LessonMaterial } from '@/types';
+import { educational } from '@repo/core/logic/managers/factory';
+import type { LessonMaterial } from '@repo/core/types';
 
 /**
  * API methods for managing academic materials (PDFs, Links, Notes)

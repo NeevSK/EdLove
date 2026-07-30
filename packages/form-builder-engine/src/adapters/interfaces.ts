@@ -1,4 +1,4 @@
-import type { FormResponse, FormSchema } from '@/schema/FormSchema';
+import type { FormResponse, FormSchema } from '@intuitui-labs/form-builder-engine/schema/FormSchema';
 
 export interface FormStorage {
   save(form: FormSchema): Promise<void>;

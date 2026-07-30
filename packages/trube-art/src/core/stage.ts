@@ -1,4 +1,4 @@
-import type { TrubeStageLayer, TrubeStageSpec } from '@/core/types';
+import type { TrubeStageLayer, TrubeStageSpec } from '@repo/trube-art/core/types';
 
 export function stage(layers: TrubeStageLayer[], background?: string): TrubeStageSpec {
   return {

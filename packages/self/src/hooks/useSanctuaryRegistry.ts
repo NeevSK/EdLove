@@ -1,7 +1,7 @@
 import { useFeatureStore, usePermissions } from '@repo/core/logic';
 import { getDomainsByTab } from '@repo/core/logic/registry/appCatalog';
 import { useMemo } from 'react';
-import type { SelfDomain } from '@/constants/selfRegistry';
+import type { SelfDomain } from '@self/constants/selfRegistry';
 
 /**
  * Hook to resolve available Sanctuary domains based on user traits and bonds.

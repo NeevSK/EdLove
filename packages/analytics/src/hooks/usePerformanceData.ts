@@ -1,1 +1,1 @@
-export { useClassPerformanceData as usePerformanceData } from '@/hooks/queries';
+export { useClassPerformanceData as usePerformanceData } from '@repo/analytics/hooks/queries';

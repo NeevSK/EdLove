@@ -8,7 +8,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { Box, Center, Text, VStack } from '@/gluestack';
+import { Box, Center, Text, VStack } from '@repo/ui/gluestack';
 
 const { width } = Dimensions.get('window');
 

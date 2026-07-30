@@ -4,10 +4,10 @@
  * Handles multi-perspective analysis for students, focusing on finding potential.
  */
 
-import { APIError } from '@/types/API';
-import { identityAPI } from '@/api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
-import { teacherInsightsAPI } from '@/api/teacherInsights';
+import { APIError } from '@repo/core/types/API';
+import { identityAPI } from '@repo/core/api/identity';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { teacherInsightsAPI } from '@repo/core/api/teacherInsights';
 
 export interface StudentPotentialAnalysis {
   id: string;

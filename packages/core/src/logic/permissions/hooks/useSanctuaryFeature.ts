@@ -1,19 +1,19 @@
 import { useMemo } from 'react';
-import { resolveBondScope } from '@/logic/permissions/bondScope';
+import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
 import {
   CITIZENSHIP,
   type FeatureRequirement,
   type SanctuaryFeatureResult,
   sanctuaryFeature,
-} from '@/logic/permissions/sanctuaryFeature';
+} from '@repo/core/logic/permissions/sanctuaryFeature';
 import {
   resolveFeatureFlagClass,
   resolveFeatureFlagValue,
-} from '@/logic/registry/featureLifecycleManifest';
-import { useAuthStore } from '@/store/useAuthStore';
-import { useCedarDecisionStore } from '@/store/useCedarDecisionStore';
-import { useEntitlementStore } from '@/store/useEntitlementStore';
-import { useFeatureStore } from '@/store/useFeatureStore';
+} from '@repo/core/logic/registry/featureLifecycleManifest';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
+import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
+import { useFeatureStore } from '@repo/core/store/useFeatureStore';
 
 export function useSanctuaryFeature(
   action: string,

@@ -2,14 +2,14 @@ import { mediaInitialState, mediaReducer } from '@repo/core/logic';
 import { Pause, Play, RotateCcw, RotateCw, X } from '@repo/ui/icons';
 import type React from 'react';
 import { useCallback, useEffect, useReducer, useRef } from 'react';
-import { Box } from '@/components/ui/box';
-import { HStack } from '@/components/ui/hstack';
-import { Text } from '@/components/ui/text';
-import { VStack } from '@/components/ui/vstack';
-import { useTheme } from '@/hooks/useTheme';
-import { Pressable } from '@/primitives';
-import { formatTimeMs } from '@/utils/dateTimeUtils';
-import { SanctuaryButton } from '@/components/SanctuaryButton';
+import { Box } from '@repo/ui/components/ui/box';
+import { HStack } from '@repo/ui/components/ui/hstack';
+import { Text } from '@repo/ui/components/ui/text';
+import { VStack } from '@repo/ui/components/ui/vstack';
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { Pressable } from '@repo/ui/primitives';
+import { formatTimeMs } from '@repo/ui/utils/dateTimeUtils';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 
 export interface VideoPlayerProps {
   url: string;

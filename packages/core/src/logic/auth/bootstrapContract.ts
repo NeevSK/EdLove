@@ -1,4 +1,4 @@
-import type { IdentityMode } from '@/logic/auth/identityState';
+import type { IdentityMode } from '@repo/core/logic/auth/identityState';
 
 export type BootstrapSessionState =
   | 'booting'

@@ -1,20 +1,20 @@
 import type { Session } from '@supabase/supabase-js';
 import { Effect, Queue } from 'effect';
-import { deviceTrustAPI } from '@/api/deviceTrust';
-import { assertHighway } from '@/api/highways';
-import { identityAPI } from '@/api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
-import { accountPin } from '@/lib/accountPin';
-import { getActiveAccountId, setActiveAccountId } from '@/lib/accountScope';
-import { storage } from '@/lib/storage';
+import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
+import { assertHighway } from '@repo/core/api/highways';
+import { identityAPI } from '@repo/core/api/identity';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { accountPin } from '@repo/core/lib/accountPin';
+import { getActiveAccountId, setActiveAccountId } from '@repo/core/lib/accountScope';
+import { storage } from '@repo/core/lib/storage';
 import {
   clearLegacySupabaseSession,
   getStoredSessionForAccount,
   removeStoredSessionForAccount,
   setStoredSessionForAccount,
-} from '@/lib/supabaseAuthStorage';
-import { getSessionIdentityMode } from '@/logic/auth/identityState';
-import { rehydrateScopedStores, resetScopedStores } from '@/store/resetScopedStores';
+} from '@repo/core/lib/supabaseAuthStorage';
+import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
+import { rehydrateScopedStores, resetScopedStores } from '@repo/core/store/resetScopedStores';
 
 const ACCOUNTS_REGISTRY_KEY = 'gurudevi-device-accounts';
 const ACTIVE_ACCOUNT_KEY = 'gurudevi-active-account-id';

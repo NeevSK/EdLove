@@ -1,7 +1,7 @@
 import { communityAPI as coreCommunityAPI, identityAPI, supabase } from '@repo/core/api';
 import { applyTemporalFilter } from '@repo/core/logic';
 
-import type { Comment, CommunityGroup, GroupFilters, Post } from '@/types';
+import type { Comment, CommunityGroup, GroupFilters, Post } from '@community/types';
 
 /**
  * Community API

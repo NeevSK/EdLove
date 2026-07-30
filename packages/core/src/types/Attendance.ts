@@ -5,7 +5,7 @@ import type {
   AttendanceStatusSchema,
   AttendanceTrendPointSchema,
   StudentAttendanceSchema,
-} from '@/logic/schemas/attendance.schema';
+} from '@repo/core/logic/schemas/attendance.schema';
 
 /**
  * Attendance - Authoritative domain type.

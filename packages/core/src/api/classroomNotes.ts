@@ -1,8 +1,8 @@
-import { educational } from '@/logic/managers/factory';
-import type { ClassroomNoteLifecycleEvent } from '@/logic/schemas/classroom-note.schema';
-import { APIError } from '@/types/API';
-import type { ClassroomNote } from '@/types/ClassroomNote';
-import { identityAPI } from '@/api/identity';
+import { educational } from '@repo/core/logic/managers/factory';
+import type { ClassroomNoteLifecycleEvent } from '@repo/core/logic/schemas/classroom-note.schema';
+import { APIError } from '@repo/core/types/API';
+import type { ClassroomNote } from '@repo/core/types/ClassroomNote';
+import { identityAPI } from '@repo/core/api/identity';
 
 export const classroomNotesAPI = {
   /**

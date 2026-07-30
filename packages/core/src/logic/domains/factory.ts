@@ -1,27 +1,27 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Repositories
-import { createSupabaseAttendanceProjectionRepository } from '@/adapters/supabase/attendanceProjectionRepository';
-import { createSupabaseEducationalRepository } from '@/adapters/supabase/educational';
-import { createSupabaseClassroomNotesRepository } from '@/adapters/supabase/educational/classroomNotesRepository';
-import { createSupabaseFounderRepository } from '@/adapters/supabase/founderRepository';
-import { createSupabaseGradingProjectionRepository } from '@/adapters/supabase/gradingProjectionRepository';
-import { createSupabaseGuardianRepository } from '@/adapters/supabase/guardianRepository';
-import { createSupabasePrincipalWorkspaceRepository } from '@/adapters/supabase/principalWorkspaceRepository';
-import { createSupabaseTeacherInsightsRepository } from '@/adapters/supabase/teacherInsightsRepository';
-import { createSupabaseWorkspaceLayoutRepository } from '@/adapters/supabase/workspaceLayoutRepository';
+import { createSupabaseAttendanceProjectionRepository } from '@repo/core/adapters/supabase/attendanceProjectionRepository';
+import { createSupabaseEducationalRepository } from '@repo/core/adapters/supabase/educational';
+import { createSupabaseClassroomNotesRepository } from '@repo/core/adapters/supabase/educational/classroomNotesRepository';
+import { createSupabaseFounderRepository } from '@repo/core/adapters/supabase/founderRepository';
+import { createSupabaseGradingProjectionRepository } from '@repo/core/adapters/supabase/gradingProjectionRepository';
+import { createSupabaseGuardianRepository } from '@repo/core/adapters/supabase/guardianRepository';
+import { createSupabasePrincipalWorkspaceRepository } from '@repo/core/adapters/supabase/principalWorkspaceRepository';
+import { createSupabaseTeacherInsightsRepository } from '@repo/core/adapters/supabase/teacherInsightsRepository';
+import { createSupabaseWorkspaceLayoutRepository } from '@repo/core/adapters/supabase/workspaceLayoutRepository';
 // Services
-import { createAttendanceProjectionServices } from '@/logic/domains/attendanceProjection/services';
-import { createClassroomNotesServices } from '@/logic/domains/classroomNotes/services';
+import { createAttendanceProjectionServices } from '@repo/core/logic/domains/attendanceProjection/services';
+import { createClassroomNotesServices } from '@repo/core/logic/domains/classroomNotes/services';
 // Ports
-import type { EducationalSideEffects } from '@/logic/domains/educational/ports';
-import { createEducationalServices } from '@/logic/domains/educational/services';
-import { createFounderServices } from '@/logic/domains/founder/services';
-import { createGradingProjectionServices } from '@/logic/domains/gradingProjection/services';
-import { createGuardianServices } from '@/logic/domains/guardian/services';
-import { createPrincipalWorkspaceServices } from '@/logic/domains/principalWorkspace/services';
-import { createTeacherInsightsServices } from '@/logic/domains/teacherInsights/services';
-import { createWorkspaceLayoutServices } from '@/logic/domains/workspaceLayout/services';
+import type { EducationalSideEffects } from '@repo/core/logic/domains/educational/ports';
+import { createEducationalServices } from '@repo/core/logic/domains/educational/services';
+import { createFounderServices } from '@repo/core/logic/domains/founder/services';
+import { createGradingProjectionServices } from '@repo/core/logic/domains/gradingProjection/services';
+import { createGuardianServices } from '@repo/core/logic/domains/guardian/services';
+import { createPrincipalWorkspaceServices } from '@repo/core/logic/domains/principalWorkspace/services';
+import { createTeacherInsightsServices } from '@repo/core/logic/domains/teacherInsights/services';
+import { createWorkspaceLayoutServices } from '@repo/core/logic/domains/workspaceLayout/services';
 
 /**
  * The 'Alchemist' Domain Factory.

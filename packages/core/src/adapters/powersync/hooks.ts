@@ -14,8 +14,8 @@ import {
   getDrizzleDB,
   registerPolicyVersionHash,
   setActiveCapabilityToken,
-} from '@/adapters/powersync/database';
-import { useQuery, useStatus } from '@/adapters/powersync/powersync-react-shim';
+} from '@repo/core/adapters/powersync/database';
+import { useQuery, useStatus } from '@repo/core/adapters/powersync/powersync-react-shim';
 import {
   type Attendance,
   attendance,
@@ -29,7 +29,7 @@ import {
   type Student,
   schools,
   students,
-} from '@/adapters/powersync/schema';
+} from '@repo/core/adapters/powersync/schema';
 
 // ─── Generic Reactive Query Hooks ────────────────────────────────────────────
 

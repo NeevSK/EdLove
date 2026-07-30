@@ -1,4 +1,4 @@
-import { SafeZustandStorage } from '@/native/storageWrapper';
+import { SafeZustandStorage } from '@repo/core/native/storageWrapper';
 
 const GUEST_IDENTITY_PREFIX = 'gurudevi:guest-identity:';
 

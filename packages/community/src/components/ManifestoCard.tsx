@@ -3,7 +3,7 @@ import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
 import { Heart, ShieldCheck, Star, Target } from '@repo/ui/icons';
 import { Box, Heading, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import Animated, { LinearTransition } from 'react-native-reanimated';
-import type { SanctuaryManifesto } from '@/types';
+import type { SanctuaryManifesto } from '@community/types';
 
 interface ManifestoCardProps extends SanctuaryManifesto {
   onEndorse?: (id: string) => void;

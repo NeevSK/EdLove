@@ -1,1 +1,1 @@
-export { StudentAnalysisModal } from '@/components/modals/StudentAnalysisModal';
+export { StudentAnalysisModal } from '@library/components/modals/StudentAnalysisModal';

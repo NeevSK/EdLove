@@ -1,9 +1,9 @@
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@/api/base';
-import { assertHighway } from '@/api/highways';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
-import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@/native/guestIdentity';
-import { setGuestScope } from '@/native/guestScope';
-import { APIError } from '@/types/API';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { assertHighway } from '@repo/core/api/highways';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@repo/core/native/guestIdentity';
+import { setGuestScope } from '@repo/core/native/guestScope';
+import { APIError } from '@repo/core/types/API';
 
 /**
  * Simplified bond structure returned by the identity API

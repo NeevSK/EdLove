@@ -2,13 +2,14 @@
   "extends": "../../packages/typescript-config/base.json",
   "compilerOptions": {
     "paths": {
-      "@/*": ["./src/*"]
+      "@rn-terrain/cli/*": [
+        "./src/*"
+      ]
     },
     "outDir": "./dist",
-    "rootDir": "./src",
-    "paths": {
-      "@rn-terrain/cli/*": ["./src/*"]
-    }
+    "rootDir": "./src"
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*"
+  ]
 }

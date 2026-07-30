@@ -1,5 +1,5 @@
 export {
   ResponsiveWorkspaceCanvas as WorkspaceCanvas,
   ResponsiveWorkspaceCanvas as default,
-} from '@/components/workspace/ResponsiveWorkspaceCanvas';
-export type { WorkspaceCanvasProps } from '@/components/workspace/types';
+} from '@repo/ui/components/workspace/ResponsiveWorkspaceCanvas';
+export type { WorkspaceCanvasProps } from '@repo/ui/components/workspace/types';

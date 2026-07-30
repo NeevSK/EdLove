@@ -1,4 +1,4 @@
-import type { TeacherDashboardSurfaceId } from '@/workspace/useTeacherDashboardSurfaces';
+import type { TeacherDashboardSurfaceId } from '@repo/classroom/workspace/useTeacherDashboardSurfaces';
 
 const TEACHER_PREVIEW_SUMMARY: Record<TeacherDashboardSurfaceId, string> = {
   'temporal-context':

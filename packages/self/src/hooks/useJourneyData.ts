@@ -2,11 +2,11 @@
 import { usePermissions, useTemporalStore } from '@repo/core/logic';
 
 import { useMemo } from 'react';
-import { useDecisionJournal } from '@/hooks/useDecisionJournal';
-import { useEnergyForecast } from '@/hooks/useEnergyForecast';
-import { useJournalEntries } from '@/hooks/useJournalEntries';
-import { useMoodLogs } from '@/hooks/useMoodLogs';
-import { useWisdom } from '@/hooks/useWisdom';
+import { useDecisionJournal } from '@self/hooks/useDecisionJournal';
+import { useEnergyForecast } from '@self/hooks/useEnergyForecast';
+import { useJournalEntries } from '@self/hooks/useJournalEntries';
+import { useMoodLogs } from '@self/hooks/useMoodLogs';
+import { useWisdom } from '@self/hooks/useWisdom';
 
 export interface JourneyEvent {
   id: string;

@@ -1,4 +1,4 @@
-import type { Capacity } from '@/types/Authority';
+import type { Capacity } from '@repo/core/types/Authority';
 
 export type RequestStatus = 'pending' | 'approved' | 'rejected';
 

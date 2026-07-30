@@ -8,13 +8,13 @@
  * CORE PURITY: No platform-specific imports (React Native/Browser/Node) here.
  */
 
-import { sanitizeTelemetryData } from '@/lib/monitoring/safeData';
-import type { IAnalyticsPort } from '@/logic/ports/analytics.port';
+import { sanitizeTelemetryData } from '@repo/core/lib/monitoring/safeData';
+import type { IAnalyticsPort } from '@repo/core/logic/ports/analytics.port';
 import type {
   ProductAnalyticsContext,
   ProductAnalyticsEventName,
   ProductAnalyticsEventProperties,
-} from '@/logic/ports/productAnalytics.port';
+} from '@repo/core/logic/ports/productAnalytics.port';
 
 export type IPostHog = IAnalyticsPort;
 

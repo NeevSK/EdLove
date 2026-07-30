@@ -1,23 +1,23 @@
-import { APIError } from '@/types/API';
-import type { DeviceMetadata } from '@/types/runtime';
-import type { User } from '@/types/User';
+import { APIError } from './API';
+import type { DeviceMetadata } from './runtime';
+import type { User } from './User';
 
 export type {
   Actor,
   ActorRelationship,
   ActorType,
   ContactChannel,
-} from '@/types/Actor';
-export type { PaginatedResponse, PaginationParams } from '@/types/API';
-export type { Assignment } from '@/types/Assignment';
+} from './Actor';
+export type { PaginatedResponse, PaginationParams } from './API';
+export type { Assignment } from './Assignment';
 export type {
   AttendanceRecord,
   AttendanceStatus,
   StudentAttendance,
-} from '@/types/Attendance';
-export type { AuthorityTier, Capacity } from '@/types/Authority';
-export type { Classroom, ClassroomStudent, StudentAcademicRecord } from '@/types/Classroom';
-export type { ClassroomNote } from '@/types/ClassroomNote';
+} from './Attendance';
+export type { AuthorityTier, Capacity } from './Authority';
+export type { Classroom, ClassroomStudent, StudentAcademicRecord } from './Classroom';
+export type { ClassroomNote } from './ClassroomNote';
 export type {
   AnnouncementWithAuthor,
   Comment,
@@ -45,17 +45,17 @@ export type {
   ReportStatus,
   SanctuaryGroup,
   Urgency,
-} from '@/types/Community';
+} from './Community';
 export type {
   FieldDefinition,
   FormConfig,
   FormFieldConfig,
   FormResponse,
   FormTemplate,
-} from '@/types/Form';
-export type { ClassroomGradingSettings, StudentGrade } from '@/types/Grade';
-export type { StudentGroup } from '@/types/Group';
-export type { Bond, Perspective } from '@/types/Identity';
+} from './Form';
+export type { ClassroomGradingSettings, StudentGrade } from './Grade';
+export type { StudentGroup } from './Group';
+export type { Bond, Perspective } from './Identity';
 export type {
   FieldAnalytics,
   InstitutionalAsset,
@@ -65,10 +65,10 @@ export type {
   InventoryRequest,
   ResourceNeedSummary,
   ResourceOwnerContext,
-} from '@/types/Inventory';
-export type { Lesson } from '@/types/Lesson';
-export type { LessonMaterial } from '@/types/LessonMaterial';
-export type { MediaAsset, MediaProvider, MediaTransformations } from '@/types/Media';
+} from './Inventory';
+export type { Lesson } from './Lesson';
+export type { LessonMaterial } from './LessonMaterial';
+export type { MediaAsset, MediaProvider, MediaTransformations } from './Media';
 export type {
   ClassroomStackParamList,
   CommunityStackParamList,
@@ -78,18 +78,18 @@ export type {
   LibraryStackParamList,
   ProfileStackParamList,
   SelfStackParamList,
-} from '@/types/navigation';
+} from './navigation';
 export type {
   ClassroomJoinRequest,
   RequestStatus,
   SchoolJoinRequest,
-} from '@/types/Onboarding';
+} from './Onboarding';
 export type {
   CapabilityKey,
   CapabilityResource,
   PolicyDecision,
-} from '@/types/Policy';
-export type { PrincipalNote } from '@/types/PrincipalNote';
+} from './Policy';
+export type { PrincipalNote } from './PrincipalNote';
 export {
   type ClaimInvitePayload,
   type JoinClassPayload,
@@ -101,22 +101,22 @@ export {
   type ShareResourcePayload,
   type ThuthimalGiftPayload,
   type UserInvitePayload,
-} from '@/types/QRPayload';
+} from './QRPayload';
 export type {
   BaseResource,
   ClassroomResource,
   ResourceFormat,
   ResourceType,
-} from '@/types/Resource';
+} from './Resource';
 export type {
   CoreRuntimeEnvironment,
   DeviceMetadata,
   StorageProvider,
-} from '@/types/runtime';
+} from './runtime';
 export {
   BackgroundTaskResult,
   BackgroundTaskStatus,
-} from '@/types/runtime';
+} from './runtime';
 export type {
   AcademicCycle,
   Announcement,
@@ -126,26 +126,26 @@ export type {
   SchoolGrade,
   SchoolStats,
   Section,
-} from '@/types/School';
-export type { PrivacyLevel, SocialLink, SocialPlatform } from '@/types/Social';
-export type { StaffAttendance, StaffAttendanceStatus } from '@/types/StaffAttendance';
-export type { LeaveStatus, LeaveType, StaffLeave } from '@/types/StaffLeave';
-export type { BulkStudent, Student } from '@/types/Student';
-export type { Task } from '@/types/Task';
-export type { TeacherNote } from '@/types/TeacherNote';
+} from './School';
+export type { PrivacyLevel, SocialLink, SocialPlatform } from './Social';
+export type { StaffAttendance, StaffAttendanceStatus } from './StaffAttendance';
+export type { LeaveStatus, LeaveType, StaffLeave } from './StaffLeave';
+export type { BulkStudent, Student } from './Student';
+export type { Task } from './Task';
+export type { TeacherNote } from './TeacherNote';
 export type {
   LongitudinalRecord,
   TemporalBounds,
   TemporalPoint,
-} from '@/types/Temporal';
+} from './Temporal';
 export type {
   Membership,
   PlatformAccessContext,
   ScopeRef,
   ScopeType,
   TenantContext,
-} from '@/types/Tenancy';
-export type { ThuthimalGift } from '@/types/Thuthimal';
+} from './Tenancy';
+export type { ThuthimalGift } from './Thuthimal';
 export type {
   GraphLink,
   GraphNode,
@@ -155,12 +155,12 @@ export type {
   MappingTopologyZod,
   PerspectiveId,
   PulseMetricsZod,
-} from '@/types/topology';
-export type { AuthSession, LoginData, ProfileStats, SignUpData, User } from '@/types/User';
+} from './topology';
+export type { AuthSession, LoginData, ProfileStats, SignUpData, User } from './User';
 export type {
   PerspectiveRenderer,
   PerspectiveViewProps,
-} from '@/types/visualization';
+} from './visualization';
 export type {
   DomainFeature,
   ResolvedWorkspaceSurface,
@@ -175,12 +175,12 @@ export type {
   WorkspaceSwitcherTarget,
   WorkspaceSwitcherTargetId,
   WorkspaceZoneId,
-} from '@/types/Workspace';
+} from './Workspace';
 export { APIError };
 
 // Base types
 export type DeviceInfo = DeviceMetadata & { uniqueId: string };
 export type AppConfig = { env: string; apiHost: string };
 export type AppContext = { user?: User; schoolId?: string };
-export * from '@/types/Growth';
-export type { AppNotification, NotificationStatus } from '@/types/notifications';
+export * from './Growth';
+export type { AppNotification, NotificationStatus } from './notifications';

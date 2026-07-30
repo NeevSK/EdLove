@@ -14,11 +14,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { defaultOCRPipeline, type OCRPipeline } from '@/ocr/OCRPipeline';
-import { type ParsedStudent, parseStudents } from '@/ocr/parsers/StudentParser';
-import type { OCRProviderName } from '@/ocr/types';
+import { defaultOCRPipeline, type OCRPipeline } from '@scanner-kit/ocr/OCRPipeline';
+import { type ParsedStudent, parseStudents } from '@scanner-kit/ocr/parsers/StudentParser';
+import type { OCRProviderName } from '@scanner-kit/ocr/types';
 
-import type { ScannedStudent } from '@/types';
+import type { ScannedStudent } from '@scanner-kit/types';
 
 interface OCRScannerProps {
   onStudentsScanned: (students: ScannedStudent[]) => void;

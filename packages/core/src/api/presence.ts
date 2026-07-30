@@ -1,4 +1,4 @@
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
 
 export interface PresenceFallbackCountOptions {
   targetCapacities: string[];

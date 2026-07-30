@@ -1,6 +1,6 @@
-import type { IEventBusPort } from '@/logic/ports/eventBus.port';
-import type { Classroom, Student, StudentGrade, User } from '@/logic/schemas';
-import type { Attendance } from '@/logic/schemas/attendance.schema';
+import type { IEventBusPort } from '@repo/core/logic/ports/eventBus.port';
+import type { Classroom, Student, StudentGrade, User } from '@repo/core/logic/schemas';
+import type { Attendance } from '@repo/core/logic/schemas/attendance.schema';
 
 export interface WorkflowCorrelationMetadata {
   correlationId?: string;

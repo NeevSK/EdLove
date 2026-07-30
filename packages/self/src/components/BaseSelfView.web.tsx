@@ -5,10 +5,10 @@ import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
 import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
 import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { useEffect, useMemo, useState } from 'react';
-import type { BaseSelfViewProps, SelfViewFeature } from '@/components/BaseSelfView.types';
-import { FeatureErrorBoundary } from '@/components/FeatureErrorBoundary';
-import { FEATURE_DISCOVERY_DATA, FEATURE_EMOJIS } from '@/constants/selfRegistry';
-import { useFeatureActivity } from '@/hooks/useFeatureActivity';
+import type { BaseSelfViewProps, SelfViewFeature } from '@self/components/BaseSelfView.types';
+import { FeatureErrorBoundary } from '@self/components/FeatureErrorBoundary';
+import { FEATURE_DISCOVERY_DATA, FEATURE_EMOJIS } from '@self/constants/selfRegistry';
+import { useFeatureActivity } from '@self/hooks/useFeatureActivity';
 
 /**
  * BaseSelfView.web - Capability-Driven Sanctuary for Web.

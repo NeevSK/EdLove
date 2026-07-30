@@ -1,6 +1,6 @@
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
-import type { IGrowthPort } from '@/logic/ports/growth.port';
-import { APIError } from '@/types/API';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import type { IGrowthPort } from '@repo/core/logic/ports/growth.port';
+import { APIError } from '@repo/core/types/API';
 import type {
   Challenge,
   ChallengeMetric,
@@ -9,7 +9,7 @@ import type {
   PersonalCompass,
   SanctuaryManifesto,
   UserGrowthState,
-} from '@/types/Growth';
+} from '@repo/core/types/Growth';
 
 const WARM_MESSAGES: Record<string, { en: string; si: string; ta: string }> = {
   resource_saved: {

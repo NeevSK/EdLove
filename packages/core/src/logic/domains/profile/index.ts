@@ -1,3 +1,3 @@
-export * from '@/logic/domains/profile/onboarding';
-export * from '@/logic/domains/profile/ports';
-export * from '@/logic/domains/profile/services';
+export * from '@repo/core/logic/domains/profile/onboarding';
+export * from '@repo/core/logic/domains/profile/ports';
+export * from '@repo/core/logic/domains/profile/services';

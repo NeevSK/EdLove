@@ -19,7 +19,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { useState } from 'react';
-import { useFireJournal } from '@/hooks/useFireJournal';
+import { useFireJournal } from '@self/hooks/useFireJournal';
 
 interface FireJournalProps {
   userId?: string;

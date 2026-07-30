@@ -2,12 +2,20 @@
   "extends": "../../packages/typescript-config/base.json",
   "compilerOptions": {
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@repo/graphics/*": [
+        "./src/*"
+      ]
     },
     "outDir": "./dist",
     "jsx": "react-jsx",
     "rootDir": "./src",
-    "composite": true
+    "composite": true,
+    "emitDeclarationOnly": true
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*"
+  ]
 }

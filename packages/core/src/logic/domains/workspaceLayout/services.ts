@@ -2,8 +2,8 @@ import type {
   WorkspaceLayoutDelete,
   WorkspaceLayoutRecord,
   WorkspaceLayoutUpsert,
-} from '@/logic/schemas/workspace-layout.schema';
-import type { WorkspaceLayoutRepository } from '@/logic/domains/workspaceLayout/ports';
+} from '@repo/core/logic/schemas/workspace-layout.schema';
+import type { WorkspaceLayoutRepository } from '@repo/core/logic/domains/workspaceLayout/ports';
 
 export interface WorkspaceLayoutServices {
   getLayout(

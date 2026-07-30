@@ -40,7 +40,7 @@ import {
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { createFounderClassroom, createFounderSchool } from '@/bridge/founderWorkspace';
+import { createFounderClassroom, createFounderSchool } from '@repo/admin/bridge/founderWorkspace';
 
 interface GlobalCreateModalProps {
   isOpen: boolean;

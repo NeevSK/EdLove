@@ -1,5 +1,5 @@
-import { createCloudinaryAdapter } from '@/adapters/storage/cloudinary.adapter';
-import { MediaManager } from '@/logic/managers/MediaManager';
+import { createCloudinaryAdapter } from '@repo/core/adapters/storage/cloudinary.adapter';
+import { MediaManager } from '@repo/core/logic/managers/MediaManager';
 
 /**
  * media: The Global Sovereign Media Instance.

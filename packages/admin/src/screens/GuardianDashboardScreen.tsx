@@ -1,12 +1,12 @@
 import { Box, ScrollView, Text, VStack } from '@repo/ui/primitives';
 
 import type React from 'react';
-import { GuardianEvents } from '@/components/guardian/GuardianEvents';
-import { GuardianNotifications } from '@/components/guardian/GuardianNotifications';
-import { GuardianChildrenList } from '@/components/poa/GuardianChildrenList';
-import { GuardianHeader } from '@/components/poa/GuardianHeader';
-import type { StudentOverview } from '@/guardian';
-import { useGuardianWorkspaceData } from '@/guardian/useGuardianWorkspaceData';
+import { GuardianEvents } from '@repo/admin/components/guardian/GuardianEvents';
+import { GuardianNotifications } from '@repo/admin/components/guardian/GuardianNotifications';
+import { GuardianChildrenList } from '@repo/admin/components/poa/GuardianChildrenList';
+import { GuardianHeader } from '@repo/admin/components/poa/GuardianHeader';
+import type { StudentOverview } from '@repo/admin/guardian';
+import { useGuardianWorkspaceData } from '@repo/admin/guardian/useGuardianWorkspaceData';
 
 interface GuardianDashboardScreenProps {
   guardianId: string;

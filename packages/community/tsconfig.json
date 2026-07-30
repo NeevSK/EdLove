@@ -1,14 +1,23 @@
 {
   "extends": "../../packages/typescript-config/react-library.json",
   "compilerOptions": {
-    "paths": {
-      "@/*": ["./src/*"]
-    },
+    "composite": true,
+    "emitDeclarationOnly": true,
     "outDir": "./dist",
+    "rootDir": "./src",
     "paths": {
-      "@repo/community/*": ["./src/*"]
-    },
-    "rootDir": "./src"
+      "@/*": [
+        "./src/*"
+      ],
+      "@community/*": [
+        "./src/*"
+      ],
+      "@repo/community/*": [
+        "./src/*"
+      ]
+    }
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*"
+  ]
 }

@@ -3,8 +3,8 @@ import {
   LibraryCollectionSchema,
   LibraryResourceSchema,
   ResourceEngagementSchema,
-} from '@/logic/schemas/library.schema';
-import type { SovereignContract } from '@/api/contract';
+} from '@repo/core/logic/schemas/library.schema';
+import type { SovereignContract } from '@repo/core/api/contract';
 
 const libraryAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
   ({

@@ -12,7 +12,7 @@
 
 import { supabase } from '@repo/core/api';
 
-import type { OCRProvider, OCRRawResult } from '@/ocr/types';
+import type { OCRProvider, OCRRawResult } from '@scanner-kit/ocr/types';
 
 export class OpenAIVisionProvider implements OCRProvider {
   readonly name = 'openai_vision' as const;

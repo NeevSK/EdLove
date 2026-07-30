@@ -1,4 +1,4 @@
-import { useFeatureAccess } from '@repo/core/hooks';
+import { useIsGuest } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
@@ -21,8 +21,8 @@ import { useRouter } from 'expo-router';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFounderSchoolStats } from '@/bridge/founderWorkspace';
-import { CreateSchoolModal } from '@/components';
+import { useFounderSchoolStats } from '@repo/admin/bridge/founderWorkspace';
+import { CreateSchoolModal } from '@repo/admin/components';
 
 interface FounderSchoolDashboardProps {
   schoolId: string;
@@ -32,7 +32,7 @@ interface FounderSchoolDashboardProps {
 
 export default function FounderSchoolDashboard({ schoolId, userId }: FounderSchoolDashboardProps) {
   const { t } = useTranslation();
-  const { isGuest } = useFeatureAccess();
+  const isGuest = useIsGuest();
   const router = useRouter();
 
   const { school, stats, isLoading, refreshData } = useFounderSchoolStats(schoolId);

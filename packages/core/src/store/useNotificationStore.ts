@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { notification } from '@/logic/managers/factory';
-import type { AppNotification } from '@/types';
+import { notification } from '@repo/core/logic/managers/factory';
+import type { AppNotification } from '@repo/core/types';
 
 interface NotificationState {
   notifications: AppNotification[];

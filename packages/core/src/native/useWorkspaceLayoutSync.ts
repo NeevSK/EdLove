@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, useWindowDimensions } from 'react-native';
-import { workspaceLayoutAPI } from '@/api/workspaceLayout';
-import { SafeZustandStorage } from '@/lib/storageWrapper';
-import type { WorkspaceLayoutTarget } from '@/logic/schemas/workspace-layout.schema';
+import { workspaceLayoutAPI } from '@repo/core/api/workspaceLayout';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import type { WorkspaceLayoutTarget } from '@repo/core/logic/schemas/workspace-layout.schema';
 import {
   createDefaultWorkspaceLayout,
   normalizeWorkspaceLayout,
@@ -11,7 +11,7 @@ import {
   setWorkspaceSurfaceOrder,
   setWorkspaceSurfacePinned,
   setWorkspaceSurfaceZone,
-} from '@/logic/workspace/canvas';
+} from '@repo/core/logic/workspace/canvas';
 import {
   buildWorkspaceLayoutStorageKey,
   choosePreferredWorkspaceLayout,
@@ -20,13 +20,13 @@ import {
   toWorkspaceLayoutUpsert,
   type WorkspaceLayoutPlatformKind,
   type WorkspaceLayoutScreenClass,
-} from '@/logic/workspace/layoutSync';
+} from '@repo/core/logic/workspace/layoutSync';
 import type {
   ResolvedWorkspaceSurface,
   WorkspaceLayout,
   WorkspaceSurfaceDefinition,
   WorkspaceZoneId,
-} from '@/types';
+} from '@repo/core/types';
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 

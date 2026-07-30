@@ -1,5 +1,5 @@
-import type { SanctuaryFeatureResult } from '@/logic/permissions/sanctuaryFeature';
-import type { FeatureState } from '@/logic/registry/domainEntry';
+import type { SanctuaryFeatureResult } from '@repo/core/logic/permissions/sanctuaryFeature';
+import type { FeatureState } from '@repo/core/logic/registry/domainEntry';
 
 type FeatureDenial = Exclude<SanctuaryFeatureResult, { permitted: true }>;
 

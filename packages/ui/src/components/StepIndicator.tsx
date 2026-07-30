@@ -1,4 +1,4 @@
-import { Box, HStack, Text, VStack } from '@/gluestack';
+import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
 
 interface StepIndicatorProps {
   currentStep: number;

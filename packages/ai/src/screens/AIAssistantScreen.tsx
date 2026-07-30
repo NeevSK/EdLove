@@ -17,7 +17,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Animated, { FadeInUp, Layout } from 'react-native-reanimated';
-import { type Message, useAIAgent } from '@/hooks/useAIAgent';
+import { type Message, useAIAgent } from '@repo/ai/hooks/useAIAgent';
 
 export default function AIAssistantScreen() {
   const router = useRouter();

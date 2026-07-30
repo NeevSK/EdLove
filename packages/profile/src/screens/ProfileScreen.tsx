@@ -46,19 +46,19 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import LivingJourneyPanel from '@/components/LivingJourneyPanel';
-import ProfileListItem from '@/components/ProfileListItem';
+import LivingJourneyPanel from '@profile/components/LivingJourneyPanel';
+import ProfileListItem from '@profile/components/ProfileListItem';
 // Local Package Imports
-import ProfileSkeleton from '@/components/ProfileSkeleton';
-import ThuthimalBadge from '@/components/ThuthimalBadge';
-import { useProfile } from '@/hooks/useProfile';
-import { useProfileCompletion } from '@/hooks/useProfileCompletion';
+import ProfileSkeleton from '@profile/components/ProfileSkeleton';
+import ThuthimalBadge from '@profile/components/ThuthimalBadge';
+import { useProfile } from '@profile/hooks/useProfile';
+import { useProfileCompletion } from '@profile/hooks/useProfileCompletion';
 import {
   type ProfileNavigationCapabilities,
   toFullProfileParams,
   useProfileNavigation,
-} from '@/navigation';
-import type { UserProfile } from '@/types';
+} from '@profile/navigation';
+import type { UserProfile } from '@profile/types';
 
 // --- Internal Sub-Components ---
 

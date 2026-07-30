@@ -1,5 +1,5 @@
-import MuteHubScreen from '@/screens/MuteHubScreen';
-import PublicProfileScreenWeb from '@/screens/PublicProfileScreen.web';
-import ThuthimalClaimScreen from '@/screens/ThuthimalClaimScreen';
+import MuteHubScreen from '@profile/screens/MuteHubScreen';
+import PublicProfileScreenWeb from '@profile/screens/PublicProfileScreen.web';
+import ThuthimalClaimScreen from '@profile/screens/ThuthimalClaimScreen';
 
 export { MuteHubScreen, PublicProfileScreenWeb, ThuthimalClaimScreen };

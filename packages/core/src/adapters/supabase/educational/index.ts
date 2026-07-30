@@ -1,15 +1,15 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { EducationalRepository } from '@/logic/domains/educational/ports';
-import { createAssignmentRepository } from '@/adapters/supabase/educational/assignmentRepository';
-import { createAttendanceRepository } from '@/adapters/supabase/educational/attendanceRepository';
-import { createSupabaseClassroomNotesRepository } from '@/adapters/supabase/educational/classroomNotesRepository';
-import { createClassroomRepository } from '@/adapters/supabase/educational/classroomRepository';
-import { createEnrollmentRepository } from '@/adapters/supabase/educational/enrollmentRepository';
-import { createGradingRepository } from '@/adapters/supabase/educational/gradingRepository';
-import { createLessonRepository } from '@/adapters/supabase/educational/lessonRepository';
-import { createMaterialRepository } from '@/adapters/supabase/educational/materialRepository';
-import { createSchoolRepository } from '@/adapters/supabase/educational/schoolRepository';
-import { createStatsRepository } from '@/adapters/supabase/educational/statsRepository';
+import type { EducationalRepository } from '@repo/core/logic/domains/educational/ports';
+import { createAssignmentRepository } from '@repo/core/adapters/supabase/educational/assignmentRepository';
+import { createAttendanceRepository } from '@repo/core/adapters/supabase/educational/attendanceRepository';
+import { createSupabaseClassroomNotesRepository } from '@repo/core/adapters/supabase/educational/classroomNotesRepository';
+import { createClassroomRepository } from '@repo/core/adapters/supabase/educational/classroomRepository';
+import { createEnrollmentRepository } from '@repo/core/adapters/supabase/educational/enrollmentRepository';
+import { createGradingRepository } from '@repo/core/adapters/supabase/educational/gradingRepository';
+import { createLessonRepository } from '@repo/core/adapters/supabase/educational/lessonRepository';
+import { createMaterialRepository } from '@repo/core/adapters/supabase/educational/materialRepository';
+import { createSchoolRepository } from '@repo/core/adapters/supabase/educational/schoolRepository';
+import { createStatsRepository } from '@repo/core/adapters/supabase/educational/statsRepository';
 
 export const createSupabaseEducationalRepository = (
   supabase: SupabaseClient,

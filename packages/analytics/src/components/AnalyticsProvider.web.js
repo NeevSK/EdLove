@@ -1,12 +1,13 @@
+import { jsx as _jsx } from "react/jsx-runtime";
 import { useEffect } from 'react';
-import { jsx as _jsx } from 'react/jsx-runtime';
-import { ActivityPulseProvider } from '@/context/ActivityPulseContext';
 import { posthogAnalytics } from '@/engine/PostHogAnalytics.web';
-export function AnalyticsProvider({ children, apiKey, options }) {
-  useEffect(() => {
-    if (apiKey) {
-      posthogAnalytics.initialize(apiKey, options);
-    }
-  }, [apiKey, options]);
-  return _jsx(ActivityPulseProvider, { children: children });
+import { ActivityPulseProvider } from '@/context/ActivityPulseContext';
+export function AnalyticsProvider({ children, apiKey, enabled = true, options }) {
+    useEffect(() => {
+        const isPostHogEnabled = enabled && process.env.EXPO_PUBLIC_POSTHOG_ENABLED !== 'false';
+        if (apiKey && isPostHogEnabled) {
+            posthogAnalytics.initialize(apiKey, options);
+        }
+    }, [apiKey, enabled, options]);
+    return _jsx(ActivityPulseProvider, { children: children });
 }

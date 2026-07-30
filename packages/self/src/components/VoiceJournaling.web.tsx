@@ -32,7 +32,7 @@ import {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import { saveVoiceJournalRecord } from '@/api/selfFeatureRepository';
+import { saveVoiceJournalRecord } from '@self/api/selfFeatureRepository';
 
 interface VoiceJournalingProps {
   userId?: string;

@@ -3,7 +3,7 @@ import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Box, HStack, ScrollView, Text, VStack } from '@repo/ui/primitives';
 
 import { useEffect, useState } from 'react';
-import { type TeacherSentEcho, teacherFeedbackAPI } from '@/feedback';
+import { type TeacherSentEcho, teacherFeedbackAPI } from '@people/feedback';
 
 // —————————————————————————————————————————————————————————————————————————————
 // TYPES

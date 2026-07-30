@@ -8,11 +8,11 @@ import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primi
 import { useRouter } from 'expo-router';
 
 import React, { useCallback, useMemo } from 'react';
-import type { BaseSelfViewProps, SelfViewFeature } from '@/components/BaseSelfView.types';
-import { FeatureErrorBoundary } from '@/components/FeatureErrorBoundary';
-import { FEATURE_DISCOVERY_DATA, FEATURE_EMOJIS } from '@/constants/selfRegistry';
-import { useDynamicSelfFeatures } from '@/hooks/useDynamicSelfFeatures';
-import { useFeatureActivity } from '@/hooks/useFeatureActivity';
+import type { BaseSelfViewProps, SelfViewFeature } from '@self/components/BaseSelfView.types';
+import { FeatureErrorBoundary } from '@self/components/FeatureErrorBoundary';
+import { FEATURE_DISCOVERY_DATA, FEATURE_EMOJIS } from '@self/constants/selfRegistry';
+import { useDynamicSelfFeatures } from '@self/hooks/useDynamicSelfFeatures';
+import { useFeatureActivity } from '@self/hooks/useFeatureActivity';
 
 const TEMPORAL_SCALES = ['day', 'week', 'month', 'year'] as const;
 

@@ -1,4 +1,4 @@
-import { createSovereignClient, SOVEREIGN_API_URL } from '@/api/base';
+import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 
 const client = createSovereignClient(SOVEREIGN_API_URL);
 

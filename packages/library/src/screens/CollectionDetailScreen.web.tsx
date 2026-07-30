@@ -9,10 +9,10 @@ import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LibraryThumbnailCard } from '@/components/LibraryThumbnailCard';
-import { useCollection } from '@/hooks/useLibrary';
-import type { LibraryResource } from '@/types';
-import { buildLibraryExternalLinkOptions } from '@/utils/externalLinks';
+import { LibraryThumbnailCard } from '@library/components/LibraryThumbnailCard';
+import { useCollection } from '@library/hooks/useLibrary';
+import type { LibraryResource } from '@library/types';
+import { buildLibraryExternalLinkOptions } from '@library/utils/externalLinks';
 
 function LoadingState() {
   return (

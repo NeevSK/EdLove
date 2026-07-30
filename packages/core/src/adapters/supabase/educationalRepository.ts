@@ -1,1 +1,1 @@
-export * from '@/adapters/supabase/educational';
+export * from '@repo/core/adapters/supabase/educational';

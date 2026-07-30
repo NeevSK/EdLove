@@ -5,7 +5,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { useProfileNavigation } from '@/navigation';
+import { useProfileNavigation } from '@profile/navigation';
 
 let Paths: typeof import('expo-file-system').Paths | null = null;
 let File: typeof import('expo-file-system').File | null = null;

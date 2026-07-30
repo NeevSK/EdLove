@@ -27,8 +27,8 @@ import {
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFounderEcosystemStats } from '@/bridge/founderWorkspace';
-import { GlobalCreateModal } from '@/components';
+import { useFounderEcosystemStats } from '@repo/admin/bridge/founderWorkspace';
+import { GlobalCreateModal } from '@repo/admin/components';
 
 export default function FounderDashboard() {
   const { t } = useTranslation();

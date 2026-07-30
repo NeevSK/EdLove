@@ -1,10 +1,10 @@
 import { supabase } from '@repo/core/api';
 
 import { useQuery } from '@tanstack/react-query';
-import { PerformanceAnalyzer } from '@/engine/PerformanceAnalyzer';
-import { InsightGenerator } from '@/ml/InsightGenerator';
-import { Predictor } from '@/ml/Predictor';
-import type { PredictionRequest } from '@/types/AnalyticsTypes';
+import { PerformanceAnalyzer } from '@repo/analytics/engine/PerformanceAnalyzer';
+import { InsightGenerator } from '@repo/analytics/ml/InsightGenerator';
+import { Predictor } from '@repo/analytics/ml/Predictor';
+import type { PredictionRequest } from '@repo/analytics/types/AnalyticsTypes';
 
 const performanceAnalyzer = new PerformanceAnalyzer(supabase);
 export const predictor = new Predictor(supabase);

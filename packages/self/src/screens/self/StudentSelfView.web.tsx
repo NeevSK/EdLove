@@ -2,20 +2,20 @@ import { useBanyanGrowth, useJourneyHistory } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 import { useTranslation } from 'react-i18next';
 
-import { BaseSelfView } from '@/components/BaseSelfView';
-import DailyRhythm from '@/components/DailyRhythm';
-import FireJournal from '@/components/FireJournal';
-import JoyJar from '@/components/JoyJar';
-import MoodLotus from '@/components/MoodLotus';
-import SleepTracker from '@/components/SleepTracker';
-import TomorrowPrep from '@/components/TomorrowPrep';
-import VoiceJournaling from '@/components/VoiceJournaling';
-import WelcomeModal from '@/components/WelcomeModal';
-import WisdomSeeds from '@/components/WisdomSeeds';
-import { useJournalEntries } from '@/hooks/useJournalEntries';
-import { useMoodLogs } from '@/hooks/useMoodLogs';
-import { useSanctuaryRegistry } from '@/hooks/useSanctuaryRegistry';
-import { JournalSection, MoodSection, StudentPulse } from '@/views/sections';
+import { BaseSelfView } from '@self/components/BaseSelfView';
+import DailyRhythm from '@self/components/DailyRhythm';
+import FireJournal from '@self/components/FireJournal';
+import JoyJar from '@self/components/JoyJar';
+import MoodLotus from '@self/components/MoodLotus';
+import SleepTracker from '@self/components/SleepTracker';
+import TomorrowPrep from '@self/components/TomorrowPrep';
+import VoiceJournaling from '@self/components/VoiceJournaling';
+import WelcomeModal from '@self/components/WelcomeModal';
+import WisdomSeeds from '@self/components/WisdomSeeds';
+import { useJournalEntries } from '@self/hooks/useJournalEntries';
+import { useMoodLogs } from '@self/hooks/useMoodLogs';
+import { useSanctuaryRegistry } from '@self/hooks/useSanctuaryRegistry';
+import { JournalSection, MoodSection, StudentPulse } from '@self/views/sections';
 
 export default function StudentSelfView() {
   const { t } = useTranslation();

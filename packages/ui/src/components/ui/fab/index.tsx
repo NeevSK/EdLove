@@ -2,7 +2,7 @@
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
 import { Pressable, type ViewProps } from 'react-native';
-import { Text } from '@/components/ui/text';
+import { Text } from '@repo/ui/components/ui/text';
 
 cssInterop(Pressable, { className: 'style' });
 

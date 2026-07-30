@@ -17,10 +17,10 @@ import {
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import GradebookTable from '@/components/grading/GradebookTable';
-import GradeEntryForm from '@/components/grading/GradeEntryForm';
-import GradingSettings from '@/components/grading/GradingSettings';
-import { useGradebook } from '@/hooks/useGradebook';
+import GradebookTable from '@repo/classroom/components/grading/GradebookTable';
+import GradeEntryForm from '@repo/classroom/components/grading/GradeEntryForm';
+import GradingSettings from '@repo/classroom/components/grading/GradingSettings';
+import { useGradebook } from '@repo/classroom/hooks/useGradebook';
 
 interface GradebookScreenProps {
   classroomId: string;

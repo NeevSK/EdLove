@@ -37,9 +37,9 @@ import { cssInterop } from 'nativewind';
 import React, { useEffect, useMemo, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSharedValue, withSpring } from 'react-native-reanimated';
-import { libraryAPI } from '@/api/library';
-import { usePerspectiveLayout } from '@/hooks/usePerspectiveLayout';
-import type { KnowledgeNode, KnowledgeTopology } from '@/types/Library';
+import { libraryAPI } from '@library/api/library';
+import { usePerspectiveLayout } from '@library/hooks/usePerspectiveLayout';
+import type { KnowledgeNode, KnowledgeTopology } from '@library/types/Library';
 
 cssInterop(BlurView, { className: 'style' });
 type PerspectiveId = 'astro' | 'terra' | 'dharma' | 'vastu' | 'jyoti' | 'vatya';

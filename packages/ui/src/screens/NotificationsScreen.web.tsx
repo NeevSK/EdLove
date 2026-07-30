@@ -4,7 +4,7 @@ import { Bell, CircleCheck, Inbox, Info, Shield, Sparkles } from '@repo/ui/icons
 import { formatDistanceToNow } from 'date-fns';
 import React, { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { WebScreenHeader } from '@/components/WebScreenHeader.web';
+import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 
 // Local fallback since WebScreenShimmer doesn't exist
 const StackFallback = memo(({ variant }: { variant?: string }) => (

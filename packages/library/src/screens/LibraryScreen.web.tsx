@@ -33,13 +33,13 @@ import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { libraryAPI } from '@/api/library';
-import { CollectionPickerModal } from '@/components/CollectionPickerModal';
-import { LibraryThumbnailCard } from '@/components/LibraryThumbnailCard';
-import { ResourceList } from '@/components/ResourceList';
-import { LIBRARY_UI_CATEGORIES } from '@/constants/categories';
-import { getOrderedShelfDefs } from '@/constants/shelf';
-import { useLibrary } from '@/hooks/useLibrary';
+import { libraryAPI } from '@library/api/library';
+import { CollectionPickerModal } from '@library/components/CollectionPickerModal';
+import { LibraryThumbnailCard } from '@library/components/LibraryThumbnailCard';
+import { ResourceList } from '@library/components/ResourceList';
+import { LIBRARY_UI_CATEGORIES } from '@library/constants/categories';
+import { getOrderedShelfDefs } from '@library/constants/shelf';
+import { useLibrary } from '@library/hooks/useLibrary';
 import type {
   CreateResourceInput,
   KnowledgeTopology,
@@ -48,8 +48,8 @@ import type {
   LibraryResource,
   ResourceFilters,
   ResourceType,
-} from '@/types';
-import { buildLibraryExternalLinkOptions } from '@/utils/externalLinks';
+} from '@library/types';
+import { buildLibraryExternalLinkOptions } from '@library/utils/externalLinks';
 
 function StackFallback() {
   return (

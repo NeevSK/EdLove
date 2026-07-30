@@ -1,21 +1,21 @@
 import type { Session } from '@supabase/supabase-js';
 import { Effect } from 'effect';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { setActiveCapabilityToken } from '@/adapters/powersync/database';
-import { authAPI } from '@/api/auth';
-import { assertHighway } from '@/api/highways';
-import { identityAPI } from '@/api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
-import type { SchoolType } from '@/constants/SriLankanSchools';
-import { identifyUser } from '@/lib/monitoring/posthog';
-import { clearSentryUser, initSentry, setSentryUser } from '@/lib/monitoring/sentry';
-import { getSessionIdentityMode } from '@/logic/auth/identityState';
-import { useAuthStore } from '@/store/useAuthStore';
-import { useCedarDecisionStore } from '@/store/useCedarDecisionStore';
-import { useStore } from '@/store/useStore';
-import { APIError } from '@/types/API';
-import type { Bond } from '@/types/Identity';
-import { tryPromise } from '@/utils/effect';
+import { setActiveCapabilityToken } from '@repo/core/adapters/powersync/database';
+import { authAPI } from '@repo/core/api/auth';
+import { assertHighway } from '@repo/core/api/highways';
+import { identityAPI } from '@repo/core/api/identity';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import type { SchoolType } from '@repo/core/constants/SriLankanSchools';
+import { identifyUser } from '@repo/core/lib/monitoring/posthog';
+import { clearSentryUser, initSentry, setSentryUser } from '@repo/core/lib/monitoring/sentry';
+import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
+import { useStore } from '@repo/core/store/useStore';
+import { APIError } from '@repo/core/types/API';
+import type { Bond } from '@repo/core/types/Identity';
+import { tryPromise } from '@repo/core/utils/effect';
 
 /**
  * useAuthLifecycle (Native)

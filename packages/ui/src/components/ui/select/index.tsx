@@ -2,8 +2,8 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import { Pressable, type PressableProps, Text, View, type ViewProps } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
-import { Overlay } from '@/components/ui/overlay';
-import { Portal } from '@/components/ui/portal';
+import { Overlay } from '@repo/ui/components/ui/overlay';
+import { Portal } from '@repo/ui/components/ui/portal';
 
 cssInterop(View, { className: 'style' });
 cssInterop(Pressable, { className: 'style' });

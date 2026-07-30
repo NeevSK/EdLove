@@ -5,7 +5,7 @@ import { BellRing, Mail, Moon, Smartphone } from '@repo/ui/icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
-import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
+import { useNotificationPreferences } from '@repo/ui/hooks/useNotificationPreferences';
 import {
   Box,
   Button,
@@ -18,7 +18,7 @@ import {
   Switch,
   Text,
   VStack,
-} from '@/primitives';
+} from '@repo/ui/primitives';
 
 /**
  * NotificationSettingsPanel

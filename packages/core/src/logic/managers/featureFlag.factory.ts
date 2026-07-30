@@ -1,5 +1,5 @@
-import { GrowthBookFeatureRolloutAdapter } from '@/adapters/feature-rollout/growthBookFeatureRollout.adapter';
-import type { IFeatureRolloutPort } from '@/logic/ports/featureRollout.port';
+import { GrowthBookFeatureRolloutAdapter } from '@repo/core/adapters/feature-rollout/growthBookFeatureRollout.adapter';
+import type { IFeatureRolloutPort } from '@repo/core/logic/ports/featureRollout.port';
 
 /**
  * featureFlags: The Global Feature Flag Instance.

@@ -1,21 +1,21 @@
 import { useMemo } from 'react';
 import { Platform } from 'react-native';
-import { resolveBondScope } from '@/logic/permissions/bondScope';
+import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
 import {
   type FeaturePresentation,
   resolveFeaturePresentation,
-} from '@/logic/permissions/featurePresentation';
+} from '@repo/core/logic/permissions/featurePresentation';
 import {
   CITIZENSHIP,
   type SanctuaryFeatureResult,
   sanctuaryFeature,
-} from '@/logic/permissions/sanctuaryFeature';
-import { resolveFeatureFlagValue } from '@/logic/registry/featureLifecycleManifest';
-import { useAuthStore } from '@/store/useAuthStore';
-import { useCedarDecisionStore } from '@/store/useCedarDecisionStore';
-import { useEntitlementStore } from '@/store/useEntitlementStore';
-import { useFeatureStore } from '@/store/useFeatureStore';
-import type { DomainFeature } from '@/types/Workspace';
+} from '@repo/core/logic/permissions/sanctuaryFeature';
+import { resolveFeatureFlagValue } from '@repo/core/logic/registry/featureLifecycleManifest';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
+import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
+import { useFeatureStore } from '@repo/core/store/useFeatureStore';
+import type { DomainFeature } from '@repo/core/types/Workspace';
 
 export interface FeatureGatingResult {
   visible: boolean;

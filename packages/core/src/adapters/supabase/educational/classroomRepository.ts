@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Classroom } from '@/logic/schemas/classroom.schema';
-import { ClassroomSchema } from '@/logic/schemas/classroom.schema';
-import { APIError } from '@/types/API';
+import type { Classroom } from '@repo/core/logic/schemas/classroom.schema';
+import { ClassroomSchema } from '@repo/core/logic/schemas/classroom.schema';
+import { APIError } from '@repo/core/types/API';
 
 const withRange = <T>(query: T, params?: { limit?: number; offset?: number }) => {
   if (!params?.limit || !(query as any).limit) return query;

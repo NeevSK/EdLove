@@ -3,8 +3,8 @@ import {
   FireJournalEntrySchema,
   MoodLogSchema,
   UserPreferencesSchema,
-} from '@/logic/schemas/self.schema';
-import type { SovereignContract } from '@/api/contract';
+} from '@repo/core/logic/schemas/self.schema';
+import type { SovereignContract } from '@repo/core/api/contract';
 
 const wellbeingAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
   ({

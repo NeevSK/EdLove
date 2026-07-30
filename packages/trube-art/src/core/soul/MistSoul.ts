@@ -1,4 +1,4 @@
-import { tsl } from '@/core/soul/tsl';
+import { tsl } from '@repo/trube-art/core/soul/tsl';
 
 export const MIST_SOUL = (() => {
   const uv = tsl.env.uv();

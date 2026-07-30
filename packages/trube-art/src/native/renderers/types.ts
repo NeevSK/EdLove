@@ -1,4 +1,4 @@
-import type { ResolvedTrubeSurface, TrubeRenderPlan, TrubeStageSpec } from '@/core/types';
+import type { ResolvedTrubeSurface, TrubeRenderPlan, TrubeStageSpec } from '@repo/trube-art/core/types';
 
 export interface TrubeRendererProps {
   width: number;

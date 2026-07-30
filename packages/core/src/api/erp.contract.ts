@@ -1,11 +1,11 @@
 import { z } from 'zod';
-import { AccountSchema, FinancialTransactionSchema } from '@/logic/schemas/accounting.schema';
+import { AccountSchema, FinancialTransactionSchema } from '@repo/core/logic/schemas/accounting.schema';
 import {
   InvoiceSchema,
   PaymentIntentSchema,
   ReceiptSchema,
-} from '@/logic/schemas/payments.schema';
-import type { SovereignContract } from '@/api/contract';
+} from '@repo/core/logic/schemas/payments.schema';
+import type { SovereignContract } from '@repo/core/api/contract';
 
 const erpAuthority = (action: 'create' | 'read' | 'update' | 'delete', subject: string) =>
   ({ policy: { action, subject } }) as const;

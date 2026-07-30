@@ -2,12 +2,21 @@
   "extends": "../../packages/typescript-config/base.json",
   "compilerOptions": {
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@repo/trube-art/*": [
+        "./src/*"
+      ]
     },
     "outDir": "./dist",
     "rootDir": "./src",
     "jsx": "react-jsx",
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "include": ["src*"]
+  "include": [
+    "src*"
+  ]
 }

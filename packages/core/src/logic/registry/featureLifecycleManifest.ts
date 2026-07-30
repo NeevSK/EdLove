@@ -4,8 +4,8 @@ import {
   FeatureFlagClassSchema,
   type FeatureLifecycle,
   FeatureLifecycleSchema,
-} from '@/logic/registry/domainEntry';
-import { DEFAULT_FEATURE_FLAGS } from '@/store/types/featureFlags';
+} from '@repo/core/logic/registry/domainEntry';
+import { DEFAULT_FEATURE_FLAGS } from '@repo/core/store/types/featureFlags';
 
 export type FeatureFlagMetadata = Omit<FeatureLifecycle, 'flagClass'> & {
   class: FeatureFlagClass;

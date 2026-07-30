@@ -16,8 +16,8 @@ import {
   ScrollView,
   Text,
   VStack,
-} from '@/gluestack';
-import { useTheme } from '@/hooks/useTheme';
+} from '@repo/ui/gluestack';
+import { useTheme } from '@repo/ui/hooks/useTheme';
 
 export interface ResourceActionSheetProps {
   visible: boolean;

@@ -53,7 +53,7 @@
 
 import type { AuthorityTier } from '@repo/core/types';
 import { useMemo, useState } from 'react';
-import type { EnergyForecast, MoodLog } from '@/types';
+import type { EnergyForecast, MoodLog } from '@self/types';
 
 type OrientationSeeds = {
   depth_breadth: number;

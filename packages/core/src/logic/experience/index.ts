@@ -1,1 +1,1 @@
-export * from '@/logic/experience/mode';
+export * from '@repo/core/logic/experience/mode';

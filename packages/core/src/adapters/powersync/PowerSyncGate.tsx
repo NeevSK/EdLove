@@ -14,11 +14,11 @@
  * </PowerSyncGate>
  */
 import { type PropsWithChildren, useEffect, useRef } from 'react';
-import { disconnectPowerSync, getPowerSyncDB } from '@/adapters/powersync/database';
-import { PowerSyncContext } from '@/adapters/powersync/powersync-react-shim';
-import { SupabasePowerSyncConnector } from '@/adapters/powersync/SupabasePowerSyncConnector';
-import { sovereignBus } from '@/lib/sync/eventBus';
-import { useStore } from '@/store/useStore';
+import { disconnectPowerSync, getPowerSyncDB } from '@repo/core/adapters/powersync/database';
+import { PowerSyncContext } from '@repo/core/adapters/powersync/powersync-react-shim';
+import { SupabasePowerSyncConnector } from '@repo/core/adapters/powersync/SupabasePowerSyncConnector';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { useStore } from '@repo/core/store/useStore';
 
 interface PowerSyncGateProps extends PropsWithChildren {
   /** Override — if false, renders children without PowerSync context. */

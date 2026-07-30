@@ -1,4 +1,4 @@
-import type { IStorage } from '@/logic/interfaces/storage.port';
+import type { IStorage } from '@repo/core/logic/interfaces/storage.port';
 
 /**
  * High-performance MMKV adapter using NitroModules/JSI.

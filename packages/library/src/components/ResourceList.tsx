@@ -23,14 +23,14 @@ import {
 import { Theme } from '@repo/ui/theme';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import { libraryAPI } from '@/api/library';
-import type { LibraryResource } from '@/types';
-import { LibraryThumbnailCard } from '@/components/LibraryThumbnailCard';
+import { libraryAPI } from '@library/api/library';
+import type { LibraryResource } from '@library/types';
+import { LibraryThumbnailCard } from '@library/components/LibraryThumbnailCard';
 import {
   ResourceRow,
   resolveResourceDisplayType as resolveDisplayType,
   RESOURCE_TYPE_CONFIG as TYPE_CONFIG,
-} from '@/components/ResourceRow';
+} from '@library/components/ResourceRow';
 export interface ResourceListProps {
   resources: LibraryResource[];
   onOpenResource?: (resource: LibraryResource) => void;

@@ -1,6 +1,6 @@
 import { makeModelSchema } from '@repo/schema';
 import { z } from 'zod';
-import { StudentAttendancePulseSchema } from '@/logic/schemas/staff.schema';
+import { StudentAttendancePulseSchema } from '@repo/core/logic/schemas/staff.schema';
 
 export const AttendanceStatusSchema = z.enum(['present', 'absent', 'late']);
 

@@ -4,8 +4,8 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   fetchEnergyForecastsForView,
   saveEnergyForecastForDate,
-} from '@/api/selfInsightsRepository';
-import type { EnergyForecast } from '@/types';
+} from '@self/api/selfInsightsRepository';
+import type { EnergyForecast } from '@self/types';
 
 const ENERGY_CACHE_KEY = 'gurudevi-energy-cache';
 /**

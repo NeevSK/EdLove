@@ -1,6 +1,6 @@
-import { useStore } from '@/store/useStore';
-import { ErrorCategory, SovereignError } from '@/types/Errors';
-import type { CapabilityToken } from '@/logic/ports/authz.port';
+import { useStore } from '@repo/core/store/useStore';
+import { ErrorCategory, SovereignError } from '@repo/core/types/Errors';
+import type { CapabilityToken } from '@repo/core/logic/ports/authz.port';
 
 let _permissionValidator: ((params: any) => Promise<boolean>) | null = null;
 let _activeToken: CapabilityToken | null = null;

@@ -3,9 +3,9 @@ import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
 
 import { useState } from 'react';
-import { commitFeatureGateChanges, stageFeatureGateChanges } from '@/admin/adminControl';
-import { useAdminWorkspaceSnapshot } from '@/admin/adminRepository';
-import { AdminRoomPanel, AdminRoomShell } from '@/screens/AdminRoomShell';
+import { commitFeatureGateChanges, stageFeatureGateChanges } from '@repo/admin/admin/adminControl';
+import { useAdminWorkspaceSnapshot } from '@repo/admin/admin/adminRepository';
+import { AdminRoomPanel, AdminRoomShell } from '@repo/admin/screens/AdminRoomShell';
 
 export default function AdminReleaseControl() {
   const { snapshot: data } = useAdminWorkspaceSnapshot();

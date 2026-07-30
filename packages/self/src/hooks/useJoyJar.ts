@@ -1,8 +1,8 @@
 import { useStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import { useCallback, useEffect, useState } from 'react';
-import { createJoyMoment, fetchJoyMoments } from '@/api/selfFeatureRepository';
-import type { JoyMoment } from '@/types';
+import { createJoyMoment, fetchJoyMoments } from '@self/api/selfFeatureRepository';
+import type { JoyMoment } from '@self/types';
 
 const JOY_CACHE_KEY = 'gurudevi-joy-cache';
 /**

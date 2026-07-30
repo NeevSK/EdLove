@@ -8,16 +8,16 @@ export {
   setWorkspaceSurfacePinned,
   setWorkspaceSurfaceZone,
   WORKSPACE_CANVAS_ZONES,
-} from '@/logic/workspace/canvas';
+} from '@repo/core/logic/workspace/canvas';
 export {
   buildWorkspaceLayoutStorageKey,
   choosePreferredWorkspaceLayout,
   resolveWorkspaceLayoutTarget,
   toWorkspaceLayoutRecord,
   toWorkspaceLayoutUpsert,
-} from '@/logic/workspace/layoutSync';
+} from '@repo/core/logic/workspace/layoutSync';
 export {
   createWorkspaceRendererConfig,
   resolveWorkspaceRendererPlatform,
-} from '@/logic/workspace/renderer';
-export { resolveWorkspaceSwitcherTargets } from '@/logic/workspace/workspaceSwitcher';
+} from '@repo/core/logic/workspace/renderer';
+export { resolveWorkspaceSwitcherTargets } from '@repo/core/logic/workspace/workspaceSwitcher';

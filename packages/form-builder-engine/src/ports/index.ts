@@ -4,4 +4,4 @@ export type {
   FormStorage,
   FormSync,
   QRCodePort,
-} from '@/adapters/interfaces';
+} from '@intuitui-labs/form-builder-engine/adapters/interfaces';

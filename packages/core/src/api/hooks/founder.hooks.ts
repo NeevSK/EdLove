@@ -5,8 +5,8 @@ import {
   EcosystemStatsSchema,
   GlobalUserSchema,
   SentinelAuditLogSchema,
-} from '@/logic/schemas/founder.schema';
-import { founderAPI } from '@/api/founder';
+} from '@repo/core/logic/schemas/founder.schema';
+import { founderAPI } from '@repo/core/api/founder';
 
 /**
  * Hook for ecosystem-wide statistics.

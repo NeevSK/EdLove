@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { SafeZustandStorage } from '@/lib/storageWrapper';
-import { type AuthSlice, createAuthSlice } from '@/store/slices/auth.slice';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { type AuthSlice, createAuthSlice } from '@repo/core/store/slices/auth.slice';
 
 /**
  * useAuthStore: Sovereign store for authentication and user identity.

@@ -1,13 +1,13 @@
 import { Data, Duration, Effect, pipe, Schedule } from 'effect';
-import { registerActiveBondIdResolver, registerTokenResolver } from '@/api/contract';
-import type { Identity } from '@/api/identity.generated';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
-import { storage } from '@/lib/storage';
-import type { IIdentityPort } from '@/logic/ports/identity.port';
-import { APIError } from '@/types/API';
-import type { Bond, Capacity, Perspective } from '@/types/Identity';
-import type { User } from '@/types/User';
-import { tryPromise } from '@/utils/effect';
+import { registerActiveBondIdResolver, registerTokenResolver } from '@repo/core/api/contract';
+import type { Identity } from '@repo/core/api/identity.generated';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { storage } from '@repo/core/lib/storage';
+import type { IIdentityPort } from '@repo/core/logic/ports/identity.port';
+import { APIError } from '@repo/core/types/API';
+import type { Bond, Capacity, Perspective } from '@repo/core/types/Identity';
+import type { User } from '@repo/core/types/User';
+import { tryPromise } from '@repo/core/utils/effect';
 
 // ─── Token Resolver (unchanged) ──────────────────────────────────
 

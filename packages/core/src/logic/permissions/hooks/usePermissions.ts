@@ -1,18 +1,18 @@
 import { useCallback, useMemo } from 'react';
-import { resolveBondScope } from '@/logic/permissions/bondScope';
-import { CITIZENSHIP, sanctuaryFeature } from '@/logic/permissions/sanctuaryFeature';
-import { resolveScopedEntitlement } from '@/logic/ports/entitlement.port';
+import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
+import { CITIZENSHIP, sanctuaryFeature } from '@repo/core/logic/permissions/sanctuaryFeature';
+import { resolveScopedEntitlement } from '@repo/core/logic/ports/entitlement.port';
 import {
   resolveFeatureFlagClass,
   resolveFeatureFlagValue,
-} from '@/logic/registry/featureLifecycleManifest';
-import { type TenantKind, type UserContext, UserContextSchema } from '@/logic/schemas/user.schema';
-import { useAuthStore } from '@/store/useAuthStore';
-import { useCedarDecisionStore } from '@/store/useCedarDecisionStore';
-import { useEntitlementStore } from '@/store/useEntitlementStore';
-import { useFeatureStore } from '@/store/useFeatureStore';
-import { useTenantStore } from '@/store/useTenantStore';
-import type { Action, Subject } from '@/types/authorization';
+} from '@repo/core/logic/registry/featureLifecycleManifest';
+import { type TenantKind, type UserContext, UserContextSchema } from '@repo/core/logic/schemas/user.schema';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
+import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
+import { useFeatureStore } from '@repo/core/store/useFeatureStore';
+import { useTenantStore } from '@repo/core/store/useTenantStore';
+import type { Action, Subject } from '@repo/core/types/authorization';
 
 /**
  * @deprecated Use useSanctuaryFeature() for permission checks and

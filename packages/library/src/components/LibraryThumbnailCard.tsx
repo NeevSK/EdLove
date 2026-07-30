@@ -34,7 +34,7 @@ import { Theme } from '@repo/ui/theme';
 import type React from 'react';
 import { memo, useCallback } from 'react';
 
-import type { LibraryResource } from '@/types';
+import type { LibraryResource } from '@library/types';
 
 type ThumbnailType =
   | 'lesson'

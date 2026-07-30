@@ -11,9 +11,9 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { runOnJS } from 'react-native-worklets';
-import { Pressable } from '@/primitives';
-import { Box } from '@/components/ui/box';
-import { Text } from '@/components/ui/text';
+import { Pressable } from '@repo/ui/primitives';
+import { Box } from '@repo/ui/components/ui/box';
+import { Text } from '@repo/ui/components/ui/text';
 
 export type ToastType = 'success' | 'error' | 'info';
 

@@ -25,7 +25,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
-import { useWisdom } from '@/hooks/useWisdom';
+import { useWisdom } from '@self/hooks/useWisdom';
 
 interface WisdomSeedsProps {
   userId?: string;

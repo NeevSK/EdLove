@@ -1,3 +1,3 @@
-export * from '@/components-native/LivingCard';
-export * from '@/components-native/NoiseOverlay';
-export * from '@/components-native/TemporalGlass';
+export * from '@repo/ui/components-native/LivingCard';
+export * from '@repo/ui/components-native/NoiseOverlay';
+export * from '@repo/ui/components-native/TemporalGlass';

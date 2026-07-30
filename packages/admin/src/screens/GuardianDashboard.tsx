@@ -16,8 +16,8 @@ import {
   useGuardianWorkspaceCanvasSurfaces,
   useGuardianWorkspaceData,
   useGuardianWorkspaceLayout,
-} from '@/guardian';
-import { GuardianDashboardScreen } from '@/screens/GuardianDashboardScreen';
+} from '@repo/admin/guardian';
+import { GuardianDashboardScreen } from '@repo/admin/screens/GuardianDashboardScreen';
 
 type GuardianResolvedSurface = GuardianWorkspaceSurface & {
   surfaceId: GuardianWorkspaceSurfaceId;

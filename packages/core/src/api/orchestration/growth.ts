@@ -1,5 +1,5 @@
-export { growthSignalsAPI as growthAPI } from '@/api/growthSignals';
-export { impactRipplesAPI as ripplesAPI } from '@/api/impactRipples';
-export { sacredMissionsAPI as missionsAPI } from '@/api/sacredMissions';
-export { thuthimalAPI as proAPI } from '@/api/thuthimal';
-export { userGrowthStateAPI as growthStateAPI } from '@/api/userGrowthState';
+export { growthSignalsAPI as growthAPI } from '@repo/core/api/growthSignals';
+export { impactRipplesAPI as ripplesAPI } from '@repo/core/api/impactRipples';
+export { sacredMissionsAPI as missionsAPI } from '@repo/core/api/sacredMissions';
+export { thuthimalAPI as proAPI } from '@repo/core/api/thuthimal';
+export { userGrowthStateAPI as growthStateAPI } from '@repo/core/api/userGrowthState';

@@ -1,7 +1,7 @@
-import { useStore } from '@/store/useStore';
-import { APIError } from '@/types/API';
-import { SovereignError } from '@/types/Errors';
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@/api/base';
+import { useStore } from '@repo/core/store/useStore';
+import { APIError } from '@repo/core/types/API';
+import { SovereignError } from '@repo/core/types/Errors';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 
 /**
  * LESSONS & STUDENTS API (Sovereign RPC Proxy)
@@ -30,7 +30,7 @@ export const lessonsAPI = {
   },
 };
 
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ as supabase } from '@/api/supabase';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ as supabase } from '@repo/core/api/supabase';
 
 // ... (Students API remains on local manager for now until educational.contract is fully expanded)
 export const studentsAPI = {

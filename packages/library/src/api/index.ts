@@ -1,3 +1,3 @@
-export * from '@/api/database';
-export * from '@/api/library';
-export * from '@/api/sync';
+export * from '@library/api/database';
+export * from '@library/api/library';
+export * from '@library/api/sync';

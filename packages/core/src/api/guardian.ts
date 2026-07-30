@@ -7,9 +7,9 @@ import type {
   GuardianStudentOverview,
   GuardianVerificationDocument,
   StudentGuardianRelationship,
-} from '@/logic/schemas/guardian.schema';
-import { guardianContract } from '@/api/guardian.contract';
-import { guardianServices } from '@/api/runtimes/guardian.runtime';
+} from '@repo/core/logic/schemas/guardian.schema';
+import { guardianContract } from '@repo/core/api/guardian.contract';
+import { guardianServices } from '@repo/core/api/runtimes/guardian.runtime';
 
 export const guardianAPI = {
   /**

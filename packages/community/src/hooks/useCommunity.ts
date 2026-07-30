@@ -7,7 +7,7 @@ import {
 import { useStore, useTemporalStore } from '@repo/core/store';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
-import { communityAPI } from '@/api/community';
+import { communityAPI } from '@community/api/community';
 
 export const COMMUNITY_KEYS = {
   all: ['community'] as const,

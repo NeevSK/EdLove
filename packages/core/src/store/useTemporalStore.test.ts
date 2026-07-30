@@ -1,4 +1,4 @@
-import { useTemporalStore } from '@/store/useTemporalStore';
+import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 
 describe('useTemporalStore', () => {
   const today = new Date().toISOString().split('T')[0] || '';

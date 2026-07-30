@@ -4,7 +4,7 @@ import SandboxBanner from '@repo/ui/components/SandboxBanner';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 
-import type { PrincipalZoneId } from '@/principal/workspace';
+import type { PrincipalZoneId } from '@repo/admin/principal/workspace';
 
 function ZoneButton({
   id,

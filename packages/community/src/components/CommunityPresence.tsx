@@ -1,5 +1,5 @@
 import UICommunityPresence from '@repo/ui/components/social/CommunityPresence';
-import { useCommunityPresence } from '@/hooks/useCommunityPresence';
+import { useCommunityPresence } from '@community/hooks/useCommunityPresence';
 
 interface CommunityPresenceProps {
   compact?: boolean;

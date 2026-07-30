@@ -2,21 +2,39 @@
   "extends": "../../packages/typescript-config/base.json",
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-    "lib": ["es2020", "dom"],
+    "composite": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "lib": [
+      "es2020",
+      "dom"
+    ],
     "target": "es2020",
     "module": "esnext",
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
-    "noEmit": true,
     "strict": true,
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@scanner-kit/*": [
+        "./src/*"
+      ],
+      "@repo/scanner-kit/*": [
+        "./src/*"
+      ]
+    }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

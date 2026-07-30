@@ -1,5 +1,5 @@
-import type { Capacity } from '@/logic/schemas/capacity.schema';
-import type { TenantKind } from '@/types/Tenancy';
+import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
+import type { TenantKind } from '@repo/core/types/Tenancy';
 
 export interface School {
   id: string;

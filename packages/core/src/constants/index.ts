@@ -1,1 +1,1 @@
-export * from '@/constants/SriLankanSchools';
+export * from '@repo/core/constants/SriLankanSchools';

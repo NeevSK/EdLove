@@ -21,6 +21,7 @@ import {
   getSessionIdentityMode,
   pushNotification,
   useAuth,
+  useConsentStore,
   useStore,
 } from '@repo/core/logic';
 import { warmCedarWasm } from '@repo/core/logic/permissions/cedarClientEvaluator';
@@ -29,11 +30,12 @@ import {
   identifyUser,
   initSentry,
   injectPostHog,
+  optOutTelemetry,
   setSentryUser,
   trackProductEvent,
 } from '@repo/core/monitoring';
 import { bootstrapPlatform, storage } from '@repo/core/native';
-import { usePolicyVersionInvalidation } from '@repo/core/powersync';
+import { usePolicyVersionInvalidation, clearPowerSync } from '@repo/core/powersync';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';
@@ -70,6 +72,7 @@ import {
 } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { PWAInstallBanner } from '@/components/web/PWAInstallBanner';
+import PDPAConsentModal from '@/components/PDPAConsentModal';
 import { fontAssets } from '@/constants/Fonts';
 import { registerBackgroundSync } from '@/lib/backgroundSync';
 import {
@@ -108,8 +111,30 @@ function FullScreenFallback() {
 function BootstrapSideEffects() {
   const currentUser = useStore((state) => state.user);
   const analyticsEnabled = useFeatureStore((state) => state.flags.isAnalyticsEnabled);
+  const { hasDecidedConsent, analyticsConsentGranted } = useConsentStore();
 
   useEffect(() => {
+    // Revocation check: if consent has been decided, but it is false
+    if (hasDecidedConsent && !analyticsConsentGranted) {
+      optOutTelemetry();
+      clearSentryUser();
+      
+      // Perform database and cache cleanup under PDPA erasure requirement
+      void (async () => {
+        try {
+          await clearPowerSync();
+          storage.clearAll();
+        } catch (e) {
+          console.error('[PDPA Compliance] Failed to clear local data:', e);
+        }
+      })();
+      return;
+    }
+
+    if (!hasDecidedConsent || !analyticsConsentGranted) {
+      return;
+    }
+
     initSentry();
 
     const posthogApiKey = process.env.EXPO_PUBLIC_POSTHOG_API_KEY;
@@ -125,10 +150,11 @@ function BootstrapSideEffects() {
         });
       });
     }
-  }, [analyticsEnabled]);
+  }, [analyticsEnabled, hasDecidedConsent, analyticsConsentGranted]);
 
   useEffect(() => {
-    if (!currentUser?.id) {
+    // Only set Sentry user profile if consent is granted
+    if (!hasDecidedConsent || !analyticsConsentGranted || !currentUser?.id) {
       clearSentryUser();
       return;
     }
@@ -140,7 +166,8 @@ function BootstrapSideEffects() {
     });
 
     identifyUser(currentUser.id);
-  }, [currentUser?.display_name, currentUser?.email, currentUser?.id, currentUser?.school_id]);
+  }, [currentUser?.display_name, currentUser?.email, currentUser?.id, currentUser?.school_id, hasDecidedConsent, analyticsConsentGranted]);
+
 
   useEffect(() => {
     if (!currentUser?.id) return;
@@ -172,6 +199,7 @@ function AppContent() {
   const activeBondScopeId = useStore((state) => state.activeBond?.id ?? null);
   const clearCedarDecisions = useCedarDecisionStore((state) => state.clearDecisions);
   usePolicyVersionInvalidation(clearCedarDecisions);
+  const { hasDecidedConsent } = useConsentStore();
   const toast = useStore((state) => state.toast);
   const hideToast = useStore((state) => state.hideToast);
   const [fontsReady, setFontsReady] = useState(() => !coreRuntime.isRegistered());
@@ -462,6 +490,7 @@ function AppContent() {
                   </FeatureProvider>
                   <SyncManager dispatchQueuedMutation={dispatchQueuedMutationToSovereignBus} />
                   <NetworkStatusBanner />
+                  <PDPAConsentModal isOpen={!hasDecidedConsent} onClose={() => {}} />
                   {Platform.OS === 'web' && <PWAInstallBanner />}
                   {toast && (
                     <SanctuaryToast

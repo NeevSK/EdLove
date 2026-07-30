@@ -4,7 +4,7 @@
  * Standardized to Zero-Legacy: purged corrupted imports and migrated to Sanctuary V3 architecture.
  */
 
-import { useFeatureAccess } from '@repo/core/hooks';
+import { useIsGuest } from '@repo/core/hooks';
 
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
@@ -52,8 +52,8 @@ import { useToast } from '@repo/ui/providers';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown, FadeInRight, Layout } from 'react-native-reanimated';
-import { useTimetable } from '@/hooks/useTimetable';
-import type { Period } from '@/types';
+import { useTimetable } from '@self/hooks/useTimetable';
+import type { Period } from '@self/types';
 
 const DAYS = [
   { id: 1, label: 'M' },
@@ -65,7 +65,7 @@ const DAYS = [
 
 function DailyRhythmContent() {
   const { t } = useTranslation();
-  const { isGuest } = useFeatureAccess();
+  const isGuest = useIsGuest();
   const [activeDay, setActiveDay] = useState(() => {
     const d = new Date().getDay();
     return d === 0 || d === 6 ? 1 : d;

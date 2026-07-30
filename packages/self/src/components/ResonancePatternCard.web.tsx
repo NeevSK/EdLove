@@ -10,8 +10,8 @@ import { Activity, ArrowRight, Sparkles } from '@repo/ui/icons';
 import { AnimatedView, Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { useMemo } from 'react';
 import { FadeIn, SlideInRight } from 'react-native-reanimated';
-import { useOrientationInference } from '@/hooks/useOrientationInference';
-import type { EnergyForecast, MoodLog } from '@/types/Wellbeing';
+import { useOrientationInference } from '@self/hooks/useOrientationInference';
+import type { EnergyForecast, MoodLog } from '@self/types/Wellbeing';
 
 // —————————————————————————————————————————————————————————————————————————————
 // CONSTANTS

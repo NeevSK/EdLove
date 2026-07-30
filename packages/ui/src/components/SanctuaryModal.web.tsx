@@ -1,9 +1,9 @@
 import { X } from '@repo/ui/icons';
 import type React from 'react';
 import { Dimensions } from 'react-native';
-import { Box, HStack, Text, VStack } from '@/gluestack';
-import { Pressable } from '@/primitives';
-import { UniversalModal } from '@/components/UniversalModal';
+import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
+import { Pressable } from '@repo/ui/primitives';
+import { UniversalModal } from '@repo/ui/components/UniversalModal';
 
 export interface SanctuaryModalProps {
   isOpen: boolean;

@@ -1,5 +1,5 @@
-import { educational } from '@/logic/managers/factory';
-import type { ClassroomGroup as ClassroomGroupRecord } from '@/logic/schemas/classroom.schema';
+import { educational } from '@repo/core/logic/managers/factory';
+import type { ClassroomGroup as ClassroomGroupRecord } from '@repo/core/logic/schemas/classroom.schema';
 
 export type ClassroomGroup = ClassroomGroupRecord;
 

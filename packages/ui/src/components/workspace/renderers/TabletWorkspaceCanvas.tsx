@@ -1,10 +1,10 @@
 import type { WorkspaceRendererConfig } from '@repo/core/types';
 import { StyleSheet } from 'react-native';
-import { View } from '@/primitives';
-import { Theme } from '@/theme/Theme';
-import { CanvasZoneColumn } from '@/components/workspace/CanvasZoneColumn';
-import { useWorkspaceCanvasData, WorkspaceCanvasEmptyState, WorkspaceCanvasHero } from '@/components/workspace/shared';
-import type { WorkspaceCanvasProps } from '@/components/workspace/types';
+import { View } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme/Theme';
+import { CanvasZoneColumn } from '@repo/ui/components/workspace/CanvasZoneColumn';
+import { useWorkspaceCanvasData, WorkspaceCanvasEmptyState, WorkspaceCanvasHero } from '@repo/ui/components/workspace/shared';
+import type { WorkspaceCanvasProps } from '@repo/ui/components/workspace/types';
 
 export interface TabletWorkspaceCanvasProps<
   TSurfaceId extends string = string,

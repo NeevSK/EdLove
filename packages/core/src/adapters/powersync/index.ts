@@ -10,7 +10,7 @@ export {
   getDrizzleDB,
   getPowerSyncDB,
   injectNativePowerSyncDB,
-} from '@/adapters/powersync/database';
+} from '@repo/core/adapters/powersync/database';
 export {
   useAttendanceForClassroom,
   useDrizzleQuery,
@@ -19,14 +19,14 @@ export {
   usePowerSyncQuery,
   usePowerSyncStatus,
   useStudentsInClassroom,
-} from '@/adapters/powersync/hooks';
-export { PowerSyncGate } from '@/adapters/powersync/PowerSyncGate';
-export { SupabasePowerSyncConnector } from '@/adapters/powersync/SupabasePowerSyncConnector';
+} from '@repo/core/adapters/powersync/hooks';
+export { PowerSyncGate } from '@repo/core/adapters/powersync/PowerSyncGate';
+export { SupabasePowerSyncConnector } from '@repo/core/adapters/powersync/SupabasePowerSyncConnector';
 export type {
   Attendance,
   Classroom,
   MoodLog,
   School,
   Student,
-} from '@/adapters/powersync/schema';
-export { AppSchema } from '@/adapters/powersync/schema';
+} from '@repo/core/adapters/powersync/schema';
+export { AppSchema } from '@repo/core/adapters/powersync/schema';

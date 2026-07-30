@@ -1,5 +1,5 @@
-import { educational } from '@/logic/managers/factory';
-import type { AcademicCycle } from '@/types';
+import { educational } from '@repo/core/logic/managers/factory';
+import type { AcademicCycle } from '@repo/core/types';
 
 /**
  * Academic Cycles API

@@ -7,7 +7,7 @@ import {
   StudentGradeSchema,
   StudentSchema,
   UserSchema,
-} from '@/logic/schemas';
+} from '@repo/core/logic/schemas';
 
 const withWorkflowMetadata = <TSchema extends z.ZodObject<any>>(schema: TSchema) =>
   schema.extend({

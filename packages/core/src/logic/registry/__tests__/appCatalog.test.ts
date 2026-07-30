@@ -3,10 +3,10 @@ import {
   _resetCatalogForTesting,
   getAllDomains,
   registerDomains,
-} from '@/logic/registry/appCatalog';
-import { CITIZENSHIP } from '@/logic/registry/citizenship';
-import type { DomainEntry } from '@/logic/registry/domainEntry';
-import { validateFeatureFlagManifest } from '@/logic/registry/featureLifecycleManifest';
+} from '@repo/core/logic/registry/appCatalog';
+import { CITIZENSHIP } from '@repo/core/logic/registry/citizenship';
+import type { DomainEntry } from '@repo/core/logic/registry/domainEntry';
+import { validateFeatureFlagManifest } from '@repo/core/logic/registry/featureLifecycleManifest';
 
 const baseEntry: DomainEntry = {
   id: 'community.hearth',

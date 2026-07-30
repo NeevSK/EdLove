@@ -20,8 +20,8 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { useMemo, useState } from 'react';
 import Animated, { FadeIn, FadeInUp, Layout } from 'react-native-reanimated';
-import { MOOD_COLORS, MOOD_LABELS, MOOD_OPTIONS } from '@/constants/wellbeing';
-import type { MoodLog } from '@/types/Wellbeing';
+import { MOOD_COLORS, MOOD_LABELS, MOOD_OPTIONS } from '@self/constants/wellbeing';
+import type { MoodLog } from '@self/types/Wellbeing';
 
 interface MoodPickerCardProps {
   isOpen: boolean;

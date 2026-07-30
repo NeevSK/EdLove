@@ -1,5 +1,5 @@
 import type React from 'react';
-import { Center, Modal, Spinner } from '@/gluestack';
+import { Center, Modal, Spinner } from '@repo/ui/gluestack';
 
 interface LoadingOverlayProps {
   visible: boolean;

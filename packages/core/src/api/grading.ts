@@ -1,7 +1,7 @@
-import { calculateRanks, marksToGPA } from '@/lib/grading';
-import { APIError } from '@/types/API';
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@/api/base';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ as supabase } from '@/api/supabase';
+import { calculateRanks, marksToGPA } from '@repo/core/lib/grading';
+import { APIError } from '@repo/core/types/API';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ as supabase } from '@repo/core/api/supabase';
 
 /**
  * GRADING API (Sovereign RPC Proxy)

@@ -1,4 +1,4 @@
-import { clamp } from '@/core/color';
+import { clamp } from '@repo/trube-art/core/color';
 
 export const TRUBE_ORNAMENT_NAMES = ['filigree', 'constellation', 'vein'] as const;
 export type TrubeOrnamentName = (typeof TRUBE_ORNAMENT_NAMES)[number];

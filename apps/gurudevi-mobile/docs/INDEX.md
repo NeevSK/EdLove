@@ -52,6 +52,7 @@ These documents are the current authority for capability inventory, rollout, sta
 
 | Date | Document | Category | Status | Summary |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-07-28** | [Production Readiness, oRPC Migration & PDPA Compliance Analysis](./current_progress/2026-07-28-production-readiness-and-compliance-analysis.md) | Current Progress | `active` | Evaluation of gurudevi-mobile production gaps, a detailed oRPC backend/client migration pattern, and a PDPA user consent & local cache cleaning compliance strategy. |
 | **2026-07-17** | [React Native Gesture Handler v3 Evolution Analysis & Gurudevi Mobile Migration Plan](./current_progress/2026-07-17-rngh-v3-comprehensive-migration-plan.md) | Current Progress | `active` | Evolution analysis of RNGH v2.x and v3.0 releases with a step-by-step hooks API migration plan for the mobile project. |
 | **2026-07-17** | [Gluestack UI Evolution Analysis & Gurudevi Mobile Migration Plan](./current_progress/2026-07-17-gluestack-comprehensive-migration-plan.md) | Current Progress | `active` | Comparative analysis of Gluestack v2, v3, and v5 changelogs with a concrete cleanup plan for the mobile project. |
 | **2026-07-17** | [Gurudevi Quality Constellation Brainstorm & Plan](./current_progress/2026-07-17-gurudevi-quality-constellation-plan.md) | Current Progress | `active` | Brainstorm mapping the quality constellation tools, monorepo diseases, and structural boundaries. |

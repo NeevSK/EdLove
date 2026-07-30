@@ -1,4 +1,4 @@
-import { type TSLExpression, tsl } from '@/core/soul/tsl';
+import { type TSLExpression, tsl } from '@repo/trube-art/core/soul/tsl';
 
 export const MotifLibrary = {
   /**

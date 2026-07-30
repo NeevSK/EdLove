@@ -1,8 +1,8 @@
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
-import { trackProductEvent } from '@/lib/monitoring/posthog';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { trackProductEvent } from '@repo/core/lib/monitoring/posthog';
 // Note: We'll use dynamic imports or passing refs for communityAPI to avoid circular deps if necessary,
 // but for now let's assume core is the base.
-import type { Capacity, QRPayload } from '@/types';
+import type { Capacity, QRPayload } from '@repo/core/types';
 
 export type FlowOutcome = 'success' | 'error' | 'pending_auth' | 'redirect';
 

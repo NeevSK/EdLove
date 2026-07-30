@@ -1,4 +1,4 @@
-import { APIError } from '@/types/API';
+import { APIError } from '@repo/core/types/API';
 import type {
   GuardianDashboard,
   GuardianIdentity,
@@ -7,8 +7,8 @@ import type {
   GuardianProfileCreate,
   GuardianVerificationDocument,
   StudentGuardianRelationship,
-} from '@/logic/schemas/guardian.schema';
-import type { GuardianRepository } from '@/logic/domains/guardian/ports';
+} from '@repo/core/logic/schemas/guardian.schema';
+import type { GuardianRepository } from '@repo/core/logic/domains/guardian/ports';
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 const ATTENDANCE_WINDOW_DAYS = 30;

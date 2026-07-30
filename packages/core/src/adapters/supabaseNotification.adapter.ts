@@ -1,6 +1,6 @@
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
-import type { INotificationPort } from '@/logic/ports/notification.port';
-import type { AppNotification, NotificationStatus } from '@/types';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import type { INotificationPort } from '@repo/core/logic/ports/notification.port';
+import type { AppNotification, NotificationStatus } from '@repo/core/types';
 
 /**
  * SupabaseNotificationAdapter: Implementation of INotificationPort using Supabase.

@@ -1,7 +1,7 @@
 import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
 
 import { useRef } from 'react';
-import QRCodeGenerator from '@/QRCodeGenerator';
+import QRCodeGenerator from '@scanner-kit/QRCodeGenerator';
 
 const optionalImport = async <T = any>(moduleName: string): Promise<T | null> => {
   try {

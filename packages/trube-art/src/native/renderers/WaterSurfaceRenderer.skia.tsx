@@ -1,8 +1,8 @@
 import { Canvas, Rect, RuntimeShader } from '@shopify/react-native-skia';
 import { StyleSheet } from 'react-native';
-import { useTrubeTime } from '@/core/soul/TimeLayer';
-import { driverManager } from '@/native/DriverManager';
-import type { TrubeRendererProps } from '@/native/renderers/types';
+import { useTrubeTime } from '@repo/trube-art/core/soul/TimeLayer';
+import { driverManager } from '@repo/trube-art/native/DriverManager';
+import type { TrubeRendererProps } from '@repo/trube-art/native/renderers/types';
 
 export function WaterSurfaceRendererSkia({ width, height, surface, plan }: TrubeRendererProps) {
   const skiaDriver = driverManager.getSkiaDriver();

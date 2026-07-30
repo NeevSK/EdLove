@@ -2,54 +2,54 @@
 
 // ZENSTACK MODELS (Namespaced to avoid member collisions with Zod schemas)
 export * as ZenModels from '@repo/schema';
-export * from '@/api/history';
+export * from '@repo/core/api/history';
 export {
   type DeviceAccountRecord,
   useDeviceAccounts,
-} from '@/hooks/useDeviceAccounts';
-export { useDeviceSecurity } from '@/hooks/useDeviceSecurity';
-export { useManualSnapshot } from '@/hooks/useManualSnapshot';
+} from '@repo/core/hooks/useDeviceAccounts';
+export { useDeviceSecurity } from '@repo/core/hooks/useDeviceSecurity';
+export { useManualSnapshot } from '@repo/core/hooks/useManualSnapshot';
 // Logic Hooks & Utilities
-export { useNotifications } from '@/hooks/useNotifications';
-export { useTemporalHeatmap } from '@/hooks/useTemporalHeatmap';
-export { accountPin } from '@/lib/accountPin';
+export { useNotifications } from '@repo/core/hooks/useNotifications';
+export { useTemporalHeatmap } from '@repo/core/hooks/useTemporalHeatmap';
+export { accountPin } from '@repo/core/lib/accountPin';
 export {
   type InviteCodeData,
   incrementInviteCodeUsage,
   validateInviteCode,
-} from '@/lib/inviteCodes';
+} from '@repo/core/lib/inviteCodes';
 export {
   clearPendingGateAction,
   getPendingGateAction,
   type PendingGateAction,
   setPendingGateAction,
-} from '@/lib/pendingGateAction';
-export { StorageKeys, storage } from '@/lib/storage';
-export { useMutationQueue } from '@/lib/sync/useMutationQueue';
-export * from '@/logic/apiInterceptor';
+} from '@repo/core/lib/pendingGateAction';
+export { StorageKeys, storage } from '@repo/core/lib/storage';
+export { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+export * from '@repo/core/logic/apiInterceptor';
 export {
   getAuthRouteDecision,
   getAuthRouteTarget,
   isPublicBootstrapRoute,
-} from '@/logic/auth/bootstrapRoutes';
+} from '@repo/core/logic/auth/bootstrapRoutes';
 export {
   getSessionIdentityMode,
   isAnonymousIdentity,
   isAnonymousSession,
   isDemoSession,
   isSandboxSession,
-} from '@/logic/auth/identityState';
-export * from '@/logic/domains';
-export * from '@/logic/entities';
-export * from '@/logic/events/bus';
-export * from '@/logic/experience';
+} from '@repo/core/logic/auth/identityState';
+export * from '@repo/core/logic/domains';
+export * from '@repo/core/logic/entities';
+export * from '@repo/core/logic/events/bus';
+export * from '@repo/core/logic/experience';
 // Experience Logic (Moved from legacy context)
-export * from '@/logic/experience/ActivityPulseContext';
-export * from '@/logic/forms';
-export * from '@/logic/grading';
-export { default as i18n } from '@/logic/i18n/config';
-export { cryptoManager } from '@/logic/managers/CryptoManager';
-export { DeepLinkType } from '@/logic/managers/DeepLinkManager';
+export * from '@repo/core/logic/experience/ActivityPulseContext';
+export * from '@repo/core/logic/forms';
+export * from '@repo/core/logic/grading';
+export { default as i18n } from '@repo/core/logic/i18n/config';
+export { cryptoManager } from '@repo/core/logic/managers/CryptoManager';
+export { DeepLinkType } from '@repo/core/logic/managers/DeepLinkManager';
 export {
   auth,
   authz,
@@ -63,17 +63,17 @@ export {
   notification,
   profile,
   pushNotification,
-} from '@/logic/managers/factory';
-export * from '@/logic/mediaReducer';
-export * from '@/logic/permissions/hooks/usePermissions';
-export * from '@/logic/permissions/hooks/useSanctuaryFeature';
-export * from '@/logic/permissions/sanctuaryFeature';
-export type { IAnalyticsPort } from '@/logic/ports/analytics.port';
+} from '@repo/core/logic/managers/factory';
+export * from '@repo/core/logic/mediaReducer';
+export * from '@repo/core/logic/permissions/hooks/usePermissions';
+export * from '@repo/core/logic/permissions/hooks/useSanctuaryFeature';
+export * from '@repo/core/logic/permissions/sanctuaryFeature';
+export type { IAnalyticsPort } from '@repo/core/logic/ports/analytics.port';
 export type {
   AuthorizationDecision,
   AuthorizationRequest,
   IAuthorizationPort,
-} from '@/logic/ports/authz.port';
+} from '@repo/core/logic/ports/authz.port';
 export type {
   EntitlementGrant,
   EntitlementReadiness,
@@ -83,17 +83,17 @@ export type {
   EntitlementSnapshot,
   IEntitlementPort,
   SubscriptionTier,
-} from '@/logic/ports/entitlement.port';
+} from '@repo/core/logic/ports/entitlement.port';
 export {
   meetsSubscriptionTier,
   resolveScopedEntitlement,
   satisfiesEntitlementRequirement,
-} from '@/logic/ports/entitlement.port';
-export type { IEventBusPort } from '@/logic/ports/eventBus.port';
+} from '@repo/core/logic/ports/entitlement.port';
+export type { IEventBusPort } from '@repo/core/logic/ports/eventBus.port';
 export type {
   FeatureRolloutSnapshot,
   IFeatureRolloutPort,
-} from '@/logic/ports/featureRollout.port';
+} from '@repo/core/logic/ports/featureRollout.port';
 export {
   PRODUCT_ANALYTICS_EVENTS,
   type ProductAnalyticsContext,
@@ -102,26 +102,26 @@ export {
   type ProductAnalyticsEventName,
   type ProductAnalyticsEventProperties,
   type ProductAnalyticsScalar,
-} from '@/logic/ports/productAnalytics.port';
-export * from '@/logic/registry/appCatalog';
-export * from '@/logic/registry/citizenship';
-export * from '@/logic/registry/domainEntry';
-export * from '@/logic/registry/featureLifecycleManifest';
-export * from '@/logic/registry/featureLifecyclePolicy';
-export * from '@/logic/registry/useDomainFeature';
-export * from '@/logic/runtimeRegistry';
-export * from '@/logic/schemas';
-export * from '@/logic/store-slices';
-export * from '@/logic/utils';
-export * from '@/logic/workspace/index';
-export { useAuthLifecycle } from '@/native/useAuthLifecycle';
-export { useAuth } from '@/providers/AuthProvider';
-export { GlobalProvider } from '@/providers/GlobalProvider';
-export { useAuthStore } from '@/store/useAuthStore';
-export { useFeatureStore } from '@/store/useFeatureStore';
-export { type TotalState, useStore } from '@/store/useStore';
-export { type TemporalScale, useTemporalStore } from '@/store/useTemporalStore';
+} from '@repo/core/logic/ports/productAnalytics.port';
+export * from '@repo/core/logic/registry/appCatalog';
+export * from '@repo/core/logic/registry/citizenship';
+export * from '@repo/core/logic/registry/domainEntry';
+export * from '@repo/core/logic/registry/featureLifecycleManifest';
+export * from '@repo/core/logic/registry/featureLifecyclePolicy';
+export * from '@repo/core/logic/registry/useDomainFeature';
+export * from '@repo/core/logic/runtimeRegistry';
+export * from '@repo/core/logic/schemas';
+export * from '@repo/core/logic/store-slices';
+export * from '@repo/core/logic/utils';
+export * from '@repo/core/logic/workspace/index';
+export { useAuthLifecycle } from '@repo/core/native/useAuthLifecycle';
+export { useAuth } from '@repo/core/providers/AuthProvider';
+export { GlobalProvider } from '@repo/core/providers/GlobalProvider';
+export { useAuthStore } from '@repo/core/store/useAuthStore';
+export { useFeatureStore } from '@repo/core/store/useFeatureStore';
+export { type TotalState, useStore } from '@repo/core/store/useStore';
+export { type TemporalScale, useTemporalStore } from '@repo/core/store/useTemporalStore';
 // Types (Agnostic / logic-layer)
-export type { Bond } from '@/types';
-export type { APIError } from '@/types/API';
-export type { LessonMaterial } from '@/types/LessonMaterial';
+export type { Bond } from '@repo/core/types';
+export type { APIError } from '@repo/core/types/API';
+export type { LessonMaterial } from '@repo/core/types/LessonMaterial';

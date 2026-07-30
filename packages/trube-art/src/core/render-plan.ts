@@ -1,4 +1,4 @@
-import { resolveSurface } from '@/core/surface';
+import { resolveSurface } from '@repo/trube-art/core/surface';
 import type {
   TrubeEnvironment,
   TrubeQuality,
@@ -6,7 +6,7 @@ import type {
   TrubeResolvedQuality,
   TrubeSurfaceName,
   TrubeSurfaceSpec,
-} from '@/core/types';
+} from '@repo/trube-art/core/types';
 
 const QUALITY_PRESETS: Record<
   TrubeResolvedQuality,

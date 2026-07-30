@@ -1,4 +1,4 @@
-import type { Grade } from '@/logic/schemas/grading.schema';
+import type { Grade } from '@repo/core/logic/schemas/grading.schema';
 
 export const GRADE_PUBLISHED_ACTIONS = [
   'grade_published',

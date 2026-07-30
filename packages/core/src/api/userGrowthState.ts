@@ -1,5 +1,5 @@
-import { growth } from '@/logic';
-import type { UserGrowthState } from '@/types/Growth';
+import { growth } from '@repo/core/logic';
+import type { UserGrowthState } from '@repo/core/types/Growth';
 
 /**
  * userGrowthStateAPI (Legacy Proxy)

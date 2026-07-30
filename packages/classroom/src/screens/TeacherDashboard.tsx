@@ -24,15 +24,15 @@ import { Theme } from '@repo/ui/theme';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FadeInDown } from 'react-native-reanimated';
-import { CreateClassroomModal } from '@/components';
-import { TeacherWorkspaceShell } from '@/components/teacher/TeacherWorkspaceShell';
+import { CreateClassroomModal } from '@repo/classroom/components';
+import { TeacherWorkspaceShell } from '@repo/classroom/components/teacher/TeacherWorkspaceShell';
 import {
   type TeacherDashboardCapabilityKey,
   type TeacherDashboardSurface,
   type TeacherDashboardSurfaceId,
   useTeacherDashboardSurfaces,
-} from '@/workspace/useTeacherDashboardSurfaces';
-import { useTeacherWorkspaceShell } from '@/workspace/useTeacherWorkspaceShell';
+} from '@repo/classroom/workspace/useTeacherDashboardSurfaces';
+import { useTeacherWorkspaceShell } from '@repo/classroom/workspace/useTeacherWorkspaceShell';
 
 interface TeacherDashboardProps {
   onRefresh?: () => void;

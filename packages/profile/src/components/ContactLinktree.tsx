@@ -17,9 +17,9 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { useSocialLinks } from '@/hooks/useSocialLinks';
-import { AddSocialLinkModal } from '@/components/AddSocialLinkModal';
-import { InlineSocialLinkEditor } from '@/components/InlineSocialLinkEditor';
+import { useSocialLinks } from '@profile/hooks/useSocialLinks';
+import { AddSocialLinkModal } from '@profile/components/AddSocialLinkModal';
+import { InlineSocialLinkEditor } from '@profile/components/InlineSocialLinkEditor';
 
 interface ContactLinktreeProps {
   links: SocialLink[];

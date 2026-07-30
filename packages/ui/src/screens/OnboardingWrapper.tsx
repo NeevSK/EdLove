@@ -1,7 +1,7 @@
 import { useAuth } from '@repo/core/providers';
 import { useStore } from '@repo/core/store';
 import { useCallback } from 'react';
-import OnboardingScreen from '@/screens/OnboardingScreen';
+import OnboardingScreen from '@repo/ui/screens/OnboardingScreen';
 
 export function OnboardingWrapper() {
   const { session, refreshProfile } = useAuth();

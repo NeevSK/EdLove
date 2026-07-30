@@ -12,7 +12,7 @@
 
 import { supabase } from '@repo/core/api';
 
-import type { OCRProvider, OCRRawResult } from '@/ocr/types';
+import type { OCRProvider, OCRRawResult } from '@scanner-kit/ocr/types';
 
 export class GoogleVisionProvider implements OCRProvider {
   readonly name = 'google_vision' as const;

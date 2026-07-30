@@ -8,7 +8,7 @@ vi.mock('@sentry/browser', () => ({
 }));
 
 import * as BrowserSentry from '@sentry/browser';
-import { BrowserSentryTelemetryAdapter } from '@/adapters/web/SentryTelemetryAdapter';
+import { BrowserSentryTelemetryAdapter } from '@repo/core/adapters/web/SentryTelemetryAdapter';
 
 describe('BrowserSentryTelemetryAdapter', () => {
   beforeEach(() => vi.clearAllMocks());

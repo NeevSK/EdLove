@@ -10,10 +10,10 @@ import { supabase } from '@repo/core/api';
 
 import { useTemporalStore } from '@repo/core/store';
 import { router, useLocalSearchParams } from 'expo-router';
-import { communityAPI } from '@/api/community';
-import HeaderMoreMenu from '@/components/HeaderMoreMenu';
-import type { ChatMessage } from '@/types';
-import BaseChatScreen, { type SubscriptionConfig } from '@/screens/BaseChatScreen';
+import { communityAPI } from '@community/api/community';
+import HeaderMoreMenu from '@community/components/HeaderMoreMenu';
+import type { ChatMessage } from '@community/types';
+import BaseChatScreen, { type SubscriptionConfig } from '@community/screens/BaseChatScreen';
 
 export default function GroupChatScreen() {
   const params = useLocalSearchParams<{ conversationId?: string; groupName?: string }>();

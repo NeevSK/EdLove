@@ -7,7 +7,7 @@
  */
 import { Lightbulb } from '@repo/ui/icons';
 import { useState } from 'react';
-import { useWisdom } from '@/hooks/useWisdom';
+import { useWisdom } from '@self/hooks/useWisdom';
 
 interface WisdomSeedsProps {
   userId?: string;

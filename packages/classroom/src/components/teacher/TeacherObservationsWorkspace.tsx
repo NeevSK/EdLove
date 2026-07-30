@@ -194,7 +194,7 @@ export default function TeacherObservationsWorkspace({
                 <HStack className="items-center justify-between gap-6">
                   <VStack className="flex-1 gap-1">
                     <Text className="text-2xl text-phase-text-primary font-black tracking-tight">
-                      {students.find((student) => student.id === observation.student_id)
+                      {(students as any[]).find((student) => student.id === observation.student_id)
                         ?.full_name || 'Student observation'}
                     </Text>
                     <Text className="text-phase-text-tertiary text-[10px] font-black uppercase tracking-widest mt-1">
@@ -245,7 +245,7 @@ export default function TeacherObservationsWorkspace({
             </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <HStack className="gap-2.5 p-0.5">
-                {students.map((student) => {
+                {students.map((student: any) => {
                   const isActive = selectedStudentId === student.id;
                   return (
                     <Pressable key={student.id} onPress={() => setSelectedStudentId(student.id)}>

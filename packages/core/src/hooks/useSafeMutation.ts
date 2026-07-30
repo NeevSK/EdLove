@@ -1,12 +1,12 @@
 import { Duration, Effect, Schedule } from 'effect';
 import { useCallback, useState } from 'react';
 import { v7 as uuidv7 } from 'uuid';
-import { DeltaResonance } from '@/lib/sync/delta';
-import { generateIdempotencyKey } from '@/lib/sync/idempotency';
-import { useMutationAuditLog } from '@/lib/sync/MutationAuditLog';
-import { useMutationQueue } from '@/lib/sync/useMutationQueue';
-import { networkManager } from '@/logic/managers/NetworkManager';
-import { useStore } from '@/store/useStore';
+import { DeltaResonance } from '@repo/core/lib/sync/delta';
+import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
+import { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
+import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { useStore } from '@repo/core/store/useStore';
 
 class OfflineError {
   readonly _tag = 'OfflineError';

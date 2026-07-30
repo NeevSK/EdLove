@@ -1,14 +1,20 @@
 {
   "extends": "../../packages/typescript-config/base.json",
   "compilerOptions": {
-    "paths": {
-      "@/*": ["./src/*"]
-    },
+    "composite": true,
+    "emitDeclarationOnly": true,
     "outDir": "./dist",
     "rootDir": "./src",
     "paths": {
-      "@repo/ai/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@repo/ai/*": [
+        "./src/*"
+      ]
     }
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*"
+  ]
 }

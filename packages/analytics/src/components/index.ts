@@ -1,7 +1,7 @@
 // Analytics Components - UI dependent exports
 // This file isolates UI-dependent components from the root analytics entrypoint.
 
-export * from '@/components/AnalyticsChart';
-export * from '@/components/AnalyticsProvider';
-export * from '@/components/GPAInsights';
-export * from '@/components/PerformanceDashboard';
+export * from '@repo/analytics/components/AnalyticsChart';
+export * from '@repo/analytics/components/AnalyticsProvider';
+export * from '@repo/analytics/components/GPAInsights';
+export * from '@repo/analytics/components/PerformanceDashboard';

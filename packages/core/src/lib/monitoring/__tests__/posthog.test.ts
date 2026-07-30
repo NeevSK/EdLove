@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { injectPostHog, resetUser, trackProductEvent } from '@/lib/monitoring/posthog';
+import { injectPostHog, resetUser, trackProductEvent } from '@repo/core/lib/monitoring/posthog';
 
 describe('PostHog product analytics bridge', () => {
   afterEach(() => {

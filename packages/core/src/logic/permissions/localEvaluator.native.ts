@@ -1,11 +1,11 @@
 import { and, eq } from 'drizzle-orm';
-import { getDrizzleDB, registerPermissionValidator } from '@/adapters/powersync/database';
-import { cedarPolicies, permissionSnapshots, policyVersion } from '@/adapters/powersync/schema';
-import { evaluateShape2 } from '@/logic/permissions/cedarClientEvaluator';
-import { getLocalResourceAttributes } from '@/logic/permissions/localEvaluator';
-import { verifySnapshotSignature } from '@/logic/permissions/signature';
-import type { UserContext } from '@/logic/schemas/user.schema';
-import type { Action, Subject } from '@/types/authorization';
+import { getDrizzleDB, registerPermissionValidator } from '@repo/core/adapters/powersync/database';
+import { cedarPolicies, permissionSnapshots, policyVersion } from '@repo/core/adapters/powersync/schema';
+import { evaluateShape2 } from '@repo/core/logic/permissions/cedarClientEvaluator';
+import { getLocalResourceAttributes } from '@repo/core/logic/permissions/localEvaluator';
+import { verifySnapshotSignature } from '@repo/core/logic/permissions/signature';
+import type { UserContext } from '@repo/core/logic/schemas/user.schema';
+import type { Action, Subject } from '@repo/core/types/authorization';
 
 /**
  * checkLocalPermission (.native implementation)

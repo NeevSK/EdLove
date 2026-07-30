@@ -16,9 +16,9 @@
 
 import { and, eq } from 'drizzle-orm';
 import { create } from 'zustand';
-import { getDrizzleDB } from '@/adapters/powersync/database';
-import { permissionSnapshots, policyVersion } from '@/adapters/powersync/schema';
-import { verifySnapshotSignature } from '@/logic/permissions/signature';
+import { getDrizzleDB } from '@repo/core/adapters/powersync/database';
+import { permissionSnapshots, policyVersion } from '@repo/core/adapters/powersync/schema';
+import { verifySnapshotSignature } from '@repo/core/logic/permissions/signature';
 
 export type CedarDecision = 'allow' | 'deny' | 'no_decision';
 export type DecisionMap = Record<string, Record<string, CedarDecision>>;

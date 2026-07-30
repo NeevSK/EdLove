@@ -3,12 +3,12 @@ import type {
   AbstractPowerSyncDatabase,
   PowerSyncBackendConnector,
   PowerSyncCredentials,
-} from '@/adapters/powersync/powersync-shim';
-import { createSovereignClient, SOVEREIGN_API_URL } from '@/api/base';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
-import { sovereignBus } from '@/lib/sync/eventBus';
-import { getConsistentIdempotencyKey } from '@/utils/idempotency';
-import { tryPromise } from '@/utils/effect';
+} from '@repo/core/adapters/powersync/powersync-shim';
+import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { getConsistentIdempotencyKey } from '@repo/core/utils/idempotency';
+import { tryPromise } from '@repo/core/utils/effect';
 
 const POWERSYNC_URL = process.env.EXPO_PUBLIC_POWERSYNC_URL ?? '';
 

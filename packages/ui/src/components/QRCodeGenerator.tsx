@@ -15,7 +15,7 @@ import QRCode from 'qrcode';
 import { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import Svg, { Circle, G, Rect, Text as SvgText } from 'react-native-svg';
-import { Text, View } from '@/primitives';
+import { Text, View } from '@repo/ui/primitives';
 
 export interface QRCodeGeneratorProps {
   value: string;

@@ -3,7 +3,7 @@ import { Theme } from '@repo/ui/theme';
 import { useQuery } from '@tanstack/react-query';
 import type React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { SanctuaryCanvas } from '@/components/SanctuaryCanvas';
+import { SanctuaryCanvas } from '@repo/graphics/components/SanctuaryCanvas';
 
 // Define types locally to avoid analytics dependency
 interface TenantMetrics {

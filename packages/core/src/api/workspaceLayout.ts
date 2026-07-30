@@ -2,9 +2,9 @@ import type {
   WorkspaceLayoutDelete,
   WorkspaceLayoutRecord,
   WorkspaceLayoutUpsert,
-} from '@/logic/schemas/workspace-layout.schema';
-import { workspaceLayoutServices } from '@/api/runtimes/workspaceLayout.runtime';
-import { workspaceLayoutContract } from '@/api/workspaceLayout.contract';
+} from '@repo/core/logic/schemas/workspace-layout.schema';
+import { workspaceLayoutServices } from '@repo/core/api/runtimes/workspaceLayout.runtime';
+import { workspaceLayoutContract } from '@repo/core/api/workspaceLayout.contract';
 
 export const workspaceLayoutAPI = {
   /**

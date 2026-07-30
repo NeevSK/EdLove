@@ -1,13 +1,13 @@
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@/api/base';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
-import { trackProductEvent } from '@/lib/monitoring/posthog';
-import { community, educational, notification, profile } from '@/logic/managers/factory';
-import type { Capacity } from '@/logic/schemas/capacity.schema';
-import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@/native/guestIdentity';
-import { setGuestScope } from '@/native/guestScope';
-import { APIError } from '@/types/API';
-import type { Perspective } from '@/types/Identity';
-import type { ClassroomJoinRequest, RequestStatus, SchoolJoinRequest } from '@/types/Onboarding';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { trackProductEvent } from '@repo/core/lib/monitoring/posthog';
+import { community, educational, notification, profile } from '@repo/core/logic/managers/factory';
+import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
+import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@repo/core/native/guestIdentity';
+import { setGuestScope } from '@repo/core/native/guestScope';
+import { APIError } from '@repo/core/types/API';
+import type { Perspective } from '@repo/core/types/Identity';
+import type { ClassroomJoinRequest, RequestStatus, SchoolJoinRequest } from '@repo/core/types/Onboarding';
 
 const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 

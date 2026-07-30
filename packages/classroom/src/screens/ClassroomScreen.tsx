@@ -1,5 +1,5 @@
-import { useFeatureAccess } from '@repo/core/hooks';
-import { FeatureGuard, usePermissions, useStore } from '@repo/core/logic';
+import { useIsGuest } from '@repo/core/hooks';
+import { usePermissions, useStore } from '@repo/core/logic';
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
@@ -10,13 +10,13 @@ import { hapticLight } from '@repo/ui/utils/haptics';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ClaimInviteModal, ClassroomList, CreateClassroomModal } from '@/components';
-import CreateSchoolModal from '@/components/CreateSchoolModal';
-import { useClassroomRoleData } from '@/hooks';
-import { ClassroomWorkspaceCanvas } from '@/workspace/ClassroomWorkspaceCanvas';
-import { useClassroomWorkspaceInsights } from '@/workspace/useClassroomWorkspaceInsights';
-import { useClassroomWorkspaceLayout } from '@/workspace/useClassroomWorkspaceLayout';
-import { useClassroomWorkspaceSurfaces } from '@/workspace/useClassroomWorkspaceSurfaces';
+import { ClaimInviteModal, ClassroomList, CreateClassroomModal } from '@repo/classroom/components';
+import CreateSchoolModal from '@repo/classroom/components/CreateSchoolModal';
+import { useClassroomRoleData } from '@repo/classroom/hooks';
+import { ClassroomWorkspaceCanvas } from '@repo/classroom/workspace/ClassroomWorkspaceCanvas';
+import { useClassroomWorkspaceInsights } from '@repo/classroom/workspace/useClassroomWorkspaceInsights';
+import { useClassroomWorkspaceLayout } from '@repo/classroom/workspace/useClassroomWorkspaceLayout';
+import { useClassroomWorkspaceSurfaces } from '@repo/classroom/workspace/useClassroomWorkspaceSurfaces';
 
 export default function ClassroomScreen() {
   const { t } = useTranslation();
@@ -24,7 +24,7 @@ export default function ClassroomScreen() {
   const { can, context } = usePermissions();
   const canForWorkspace = (action: string, subject: string, _field?: string) =>
     can(action as Parameters<typeof can>[0], subject as Parameters<typeof can>[1]);
-  const { isGuest } = useFeatureAccess();
+  const isGuest = useIsGuest();
   const { schoolId: storeSchoolId, userId: storeUserId } = useStore((state) => ({
     schoolId: state.user?.school_id,
     userId: state.user?.id,
@@ -135,49 +135,47 @@ export default function ClassroomScreen() {
       );
     }
 
-    return (
-      <FeatureGuard
-        action="read"
-        subject="ClassroomList"
-        fallback={
-          <ScreenWrapper scroll={false} noTopInset={true}>
-            <Box className="flex-1 p-4 gap-6">
-              <GlobalHeader
-                title={t('classroom.welcome') || 'Welcome to Sanctuary'}
-                subtitle={undefined}
-              />
-              <PositiveInvitation
-                type="anonymous"
-                onAction={() => {
-                  hapticLight();
-                  router.push('/auth');
-                }}
-              />
-            </Box>
-          </ScreenWrapper>
-        }
-      >
+    if (!can('read', 'ClassroomList')) {
+      return (
         <ScreenWrapper scroll={false} noTopInset={true}>
           <Box className="flex-1 p-4 gap-6">
             <GlobalHeader
-              title={t('classroom.journeyTitle') || 'Learning Journey'}
-              subtitle={t('classroom.mySanctuary') || 'My Sanctuary'}
+              title={t('classroom.welcome') || 'Welcome to Sanctuary'}
+              subtitle={undefined}
             />
-            <ClassroomList
-              refreshTrigger={refreshTrigger}
-              onClassroomPress={(classroom) => {
-                router.push({
-                  pathname: '/workspace',
-                  params: {
-                    classroomId: classroom.id,
-                    classroomName: classroom.name,
-                  },
-                });
+            <PositiveInvitation
+              type="anonymous"
+              onAction={() => {
+                hapticLight();
+                router.push('/auth');
               }}
             />
           </Box>
         </ScreenWrapper>
-      </FeatureGuard>
+      );
+    }
+
+    return (
+      <ScreenWrapper scroll={false} noTopInset={true}>
+        <Box className="flex-1 p-4 gap-6">
+          <GlobalHeader
+            title={t('classroom.journeyTitle') || 'Learning Journey'}
+            subtitle={t('classroom.mySanctuary') || 'My Sanctuary'}
+          />
+          <ClassroomList
+            refreshTrigger={refreshTrigger}
+            onClassroomPress={(classroom) => {
+              router.push({
+                pathname: '/workspace',
+                params: {
+                  classroomId: classroom.id,
+                  classroomName: classroom.name,
+                },
+              });
+            }}
+          />
+        </Box>
+      </ScreenWrapper>
     );
   };
 

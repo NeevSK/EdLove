@@ -1,14 +1,14 @@
-import { marksToGPA } from '@/lib/grading';
-import type { EducationalRepository } from '@/logic/domains/educational/ports';
-import type { CommunityManager } from '@/logic/managers/CommunityManager';
-import type { GrowthManager } from '@/logic/managers/GrowthManager';
-import type { ProfileManager } from '@/logic/managers/ProfileManager';
-import type { INotificationPort } from '@/logic/ports/notification.port';
-import type { ISessionPort } from '@/logic/ports/session.port';
-import type { Assignment, Classroom, Lesson } from '@/logic/schemas/classroom.schema';
-import type { ClassroomGradingSettings } from '@/logic/schemas/grading.schema';
-import { APIError } from '@/types/API';
-import type { LessonMaterial } from '@/types/LessonMaterial';
+import { marksToGPA } from '@repo/core/lib/grading';
+import type { EducationalRepository } from '@repo/core/logic/domains/educational/ports';
+import type { CommunityManager } from '@repo/core/logic/managers/CommunityManager';
+import type { GrowthManager } from '@repo/core/logic/managers/GrowthManager';
+import type { ProfileManager } from '@repo/core/logic/managers/ProfileManager';
+import type { INotificationPort } from '@repo/core/logic/ports/notification.port';
+import type { ISessionPort } from '@repo/core/logic/ports/session.port';
+import type { Assignment, Classroom, Lesson } from '@repo/core/logic/schemas/classroom.schema';
+import type { ClassroomGradingSettings } from '@repo/core/logic/schemas/grading.schema';
+import { APIError } from '@repo/core/types/API';
+import type { LessonMaterial } from '@repo/core/types/LessonMaterial';
 
 /**
  * EducationalManager

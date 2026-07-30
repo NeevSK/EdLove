@@ -1,14 +1,14 @@
 import { eq } from 'drizzle-orm';
-import { getDrizzleDB } from '@/adapters/powersync/database';
-import { pricingManifest } from '@/adapters/powersync/schema';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@/api/supabase';
+import { getDrizzleDB } from '@repo/core/adapters/powersync/database';
+import { pricingManifest } from '@repo/core/adapters/powersync/schema';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
 import type {
   EntitlementGrant,
   EntitlementScopeContext,
   EntitlementSnapshot,
   IEntitlementPort,
   SubscriptionTier,
-} from '@/logic/ports/entitlement.port';
+} from '@repo/core/logic/ports/entitlement.port';
 
 async function getUserPricingTier(userId: string): Promise<string> {
   const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__

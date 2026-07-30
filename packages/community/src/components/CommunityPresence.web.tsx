@@ -6,7 +6,7 @@
  */
 
 import { Users, WifiOff } from '@repo/ui/icons';
-import { useCommunityPresence } from '@/hooks/useCommunityPresence';
+import { useCommunityPresence } from '@community/hooks/useCommunityPresence';
 
 interface CommunityPresenceProps {
   compact?: boolean;

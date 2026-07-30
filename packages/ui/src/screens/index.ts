@@ -1,11 +1,11 @@
 // Packages/UI Screens Index
-export { default as AppSettingsScreen } from '@/screens/AppSettingsScreen';
-export { default as AppSettingsScreenWeb } from '@/screens/AppSettingsScreen.web';
+export { default as AppSettingsScreen } from '@repo/ui/screens/AppSettingsScreen';
+export { default as AppSettingsScreenWeb } from '@repo/ui/screens/AppSettingsScreen.web';
 // Native Screens
-export { default as AuthScreen } from '@/screens/AuthScreen';
-export { default as ErrorMessageDemo } from '@/screens/ErrorMessageDemo';
-export { default as NotificationsScreen } from '@/screens/NotificationsScreen';
-export { default as OnboardingScreen } from '@/screens/OnboardingScreen';
-export { OnboardingWrapper } from '@/screens/OnboardingWrapper';
-export { default as WelcomeScreen } from '@/screens/WelcomeScreen';
-export { default as WorkspaceCanvasDemo } from '@/screens/WorkspaceCanvasDemo';
+export { default as AuthScreen } from '@repo/ui/screens/AuthScreen';
+export { default as ErrorMessageDemo } from '@repo/ui/screens/ErrorMessageDemo';
+export { default as NotificationsScreen } from '@repo/ui/screens/NotificationsScreen';
+export { default as OnboardingScreen } from '@repo/ui/screens/OnboardingScreen';
+export { OnboardingWrapper } from '@repo/ui/screens/OnboardingWrapper';
+export { default as WelcomeScreen } from '@repo/ui/screens/WelcomeScreen';
+export { default as WorkspaceCanvasDemo } from '@repo/ui/screens/WorkspaceCanvasDemo';

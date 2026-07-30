@@ -1,11 +1,11 @@
-import { educational } from '@/logic/managers/factory';
+import { educational } from '@repo/core/logic/managers/factory';
 import {
   SchoolGradeSchema,
   SchoolSchema,
   SchoolStatsSchema,
   SectionSchema,
-} from '@/logic/schemas/school.schema';
-import type { SchoolGrade as Grade, School, SchoolStats, Section } from '@/types';
+} from '@repo/core/logic/schemas/school.schema';
+import type { SchoolGrade as Grade, School, SchoolStats, Section } from '@repo/core/types';
 
 /**
  * API methods for Managing School Institutions.

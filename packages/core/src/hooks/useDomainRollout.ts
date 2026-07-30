@@ -1,6 +1,6 @@
-import { getDomainEntry } from '@/logic/registry/appCatalog';
-import { resolveFeatureFlagValue } from '@/logic/registry/featureLifecycleManifest';
-import { useFeatureStore } from '@/store/useFeatureStore';
+import { getDomainEntry } from '@repo/core/logic/registry/appCatalog';
+import { resolveFeatureFlagValue } from '@repo/core/logic/registry/featureLifecycleManifest';
+import { useFeatureStore } from '@repo/core/store/useFeatureStore';
 
 /** Resolve a domain rollout through the AppCatalog-owned flag mapping. */
 export function useDomainRollout(domainId: string): boolean {

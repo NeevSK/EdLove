@@ -4,8 +4,8 @@
  * Provides a platform-agnostic interface for exception reporting and breadcrumbs.
  * Delegates to TelemetryManager via the Adapter pattern.
  */
-import { telemetry } from '@/logic/managers/TelemetryManager';
-import { sanitizeTelemetryData } from '@/lib/monitoring/safeData';
+import { telemetry } from '@repo/core/logic/managers/TelemetryManager';
+import { sanitizeTelemetryData } from '@repo/core/lib/monitoring/safeData';
 
 export const initSentry = () => {
   const dsn = process.env.EXPO_PUBLIC_SENTRY_DSN;

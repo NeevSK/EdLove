@@ -6,7 +6,7 @@ import type {
   ClassroomWorkspaceCapabilityKey,
   ClassroomWorkspaceSurface,
   ClassroomWorkspaceSurfaceId,
-} from '@/types/workspace';
+} from '@repo/classroom/types/workspace';
 
 type ClassroomResolvedSurface = ClassroomWorkspaceSurface &
   ResolvedWorkspaceSurface<ClassroomWorkspaceSurfaceId, ClassroomWorkspaceCapabilityKey>;

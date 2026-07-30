@@ -17,8 +17,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { useTheme } from '@/hooks/useTheme';
-import { View } from '@/primitives';
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { View } from '@repo/ui/primitives';
 
 export function SanctuaryBackground() {
   'use no memo';

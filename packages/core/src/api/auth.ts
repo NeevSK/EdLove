@@ -1,4 +1,4 @@
-import { auth } from '@/logic/managers/factory';
+import { auth } from '@repo/core/logic/managers/factory';
 
 export const authAPI = {
   async getAuthSession() {

@@ -1,5 +1,5 @@
 import type { Capacity } from '@repo/core/types';
-import type { UserProfile } from '@/types';
+import type { UserProfile } from '@profile/types';
 
 export interface ProfileFieldConfig {
   key: keyof UserProfile;

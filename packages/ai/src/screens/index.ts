@@ -1,2 +1,2 @@
-export { default as AIAssistantScreen } from '@/screens/AIAssistantScreen';
-export { default as AIAssistantScreenWeb } from '@/screens/AIAssistantScreen.web';
+export { default as AIAssistantScreen } from '@repo/ai/screens/AIAssistantScreen';
+export { default as AIAssistantScreenWeb } from '@repo/ai/screens/AIAssistantScreen.web';

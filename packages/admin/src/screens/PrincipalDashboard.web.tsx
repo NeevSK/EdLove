@@ -5,7 +5,7 @@ import {
   type StaffPresenceSummary,
   type TeacherCarouselItem,
 } from '@repo/core/api';
-import { useFeatureAccess } from '@repo/core/hooks';
+import { useIsGuest } from '@repo/core/hooks';
 import {
   type PublishedSchoolGradingCompletion,
   type PulseMetricsZod,
@@ -34,19 +34,19 @@ import {
   useSchoolPulseQuery,
   useSchoolStatsQuery,
   useStaffResonance,
-} from '@/hooks/useDashboardHooks';
-import type { FeedbackEcho, GradeProgress } from '@/insights';
-import type { ResourceNeedSummary } from '@/inventory';
-import type { PrincipalObservation } from '@/observations';
-import type { PrincipalWorkspaceView } from '@/principal/workspace';
-import { resolvePrincipalWorkspaceView } from '@/principal/workspace';
-import { type StudentPrincipalPulse, staffOperationsAPI } from '@/staff';
-import { PrincipalWorkspaceContainer } from '@/screens/PrincipalWorkspaceContainer';
-import { CyclesDashboard } from '@/screens/principal/CyclesDashboard';
-import { HierarchyDashboard } from '@/screens/principal/HierarchyDashboard';
-import { InvitesDashboard } from '@/screens/principal/InvitesDashboard';
-import { LegacyDashboard } from '@/screens/principal/LegacyDashboard';
-import { LogbookDashboard } from '@/screens/principal/LogbookDashboard';
+} from '@repo/admin/hooks/useDashboardHooks';
+import type { FeedbackEcho, GradeProgress } from '@repo/admin/insights';
+import type { ResourceNeedSummary } from '@repo/admin/inventory';
+import type { PrincipalObservation } from '@repo/admin/observations';
+import type { PrincipalWorkspaceView } from '@repo/admin/principal/workspace';
+import { resolvePrincipalWorkspaceView } from '@repo/admin/principal/workspace';
+import { type StudentPrincipalPulse, staffOperationsAPI } from '@repo/admin/staff';
+import { PrincipalWorkspaceContainer } from '@repo/admin/screens/PrincipalWorkspaceContainer';
+import { CyclesDashboard } from '@repo/admin/screens/principal/CyclesDashboard';
+import { HierarchyDashboard } from '@repo/admin/screens/principal/HierarchyDashboard';
+import { InvitesDashboard } from '@repo/admin/screens/principal/InvitesDashboard';
+import { LegacyDashboard } from '@repo/admin/screens/principal/LegacyDashboard';
+import { LogbookDashboard } from '@repo/admin/screens/principal/LogbookDashboard';
 
 const DEMO_PRINCIPAL_SCHOOL_ID = 'mock-school';
 
@@ -170,7 +170,7 @@ export default function PrincipalDashboardWeb({
   LegacyDashboardComponent = LegacyDashboard,
 }: PrincipalDashboardWebProps) {
   const user = useAuthStore((state) => state.user) as User | null;
-  const { isGuest } = useFeatureAccess();
+  const isGuest = useIsGuest();
   const { can } = usePermissions();
   const viewDate = useTemporalStore((s) => s.viewDate);
   const isPastView = useTemporalStore((s) => s.isPastView);

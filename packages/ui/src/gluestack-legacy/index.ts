@@ -23,15 +23,15 @@ import {
 // ============================================================================
 // Layout Components - Local Primitives
 // ============================================================================
-import { Box } from '@/components-legacy/box';
-import { Button, ButtonText } from '@/components-legacy/button';
-import { Center } from '@/components-legacy/center';
-import { Divider, Heading, Spinner } from '@/components-legacy/divider';
-import { HStack } from '@/components-legacy/hstack';
-import { Image } from '@/components-legacy/image';
-import { Text } from '@/components-legacy/text';
-import { Pressable, ScrollView, View } from '@/components-legacy/view';
-import { VStack } from '@/components-legacy/vstack';
+import { Box } from '@repo/ui/components-legacy/box';
+import { Button, ButtonText } from '@repo/ui/components-legacy/button';
+import { Center } from '@repo/ui/components-legacy/center';
+import { Divider, Heading, Spinner } from '@repo/ui/components-legacy/divider';
+import { HStack } from '@repo/ui/components-legacy/hstack';
+import { Image } from '@repo/ui/components-legacy/image';
+import { Text } from '@repo/ui/components-legacy/text';
+import { Pressable, ScrollView, View } from '@repo/ui/components-legacy/view';
+import { VStack } from '@repo/ui/components-legacy/vstack';
 
 export {
   Box,
@@ -63,7 +63,7 @@ import {
   FormControlLabelText,
   type IFormControlProps,
   FormControl as LocalFormControl,
-} from '@/components-legacy/form-control';
+} from '@repo/ui/components-legacy/form-control';
 
 export const FormControl = LocalFormControl as React.ComponentType<IFormControlProps>;
 export {
@@ -76,7 +76,7 @@ export {
   FormControlLabelText,
 };
 
-import { Input, InputField, InputIcon, InputSlot } from '@/components-legacy/input';
+import { Input, InputField, InputIcon, InputSlot } from '@repo/ui/components-legacy/input';
 
 export { Input, InputField, InputIcon, InputSlot };
 

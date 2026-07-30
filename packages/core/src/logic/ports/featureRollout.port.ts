@@ -1,4 +1,4 @@
-import type { UserContext } from '@/logic/schemas/user.schema';
+import type { UserContext } from '@repo/core/logic/schemas/user.schema';
 
 export interface FeatureRolloutSnapshot {
   flags: Record<string, boolean | string>;

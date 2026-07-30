@@ -1,5 +1,5 @@
-export { useCommunity } from '@/hooks/useCommunity';
-export { useCommunityGroups } from '@/hooks/useCommunityGroups';
-export { useCommunityPresence } from '@/hooks/useCommunityPresence';
-export { useComposerLogic } from '@/hooks/useComposerLogic';
-export { useSocialShield } from '@/hooks/useSocialShield';
+export { useCommunity } from '@community/hooks/useCommunity';
+export { useCommunityGroups } from '@community/hooks/useCommunityGroups';
+export { useCommunityPresence } from '@community/hooks/useCommunityPresence';
+export { useComposerLogic } from '@community/hooks/useComposerLogic';
+export { useSocialShield } from '@community/hooks/useSocialShield';

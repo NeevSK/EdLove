@@ -1,4 +1,4 @@
-import type { WorkspaceSwitcherTarget, WorkspaceSwitcherTargetId } from '@/types/Workspace';
+import type { WorkspaceSwitcherTarget, WorkspaceSwitcherTargetId } from '@repo/core/types/Workspace';
 
 export function resolveWorkspaceSwitcherTargets({
   currentWorkspace = 'founder',

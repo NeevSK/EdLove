@@ -1,5 +1,5 @@
 import { api, MOCK_SCHOOL_STATS } from '@repo/core/api';
-import { useFeatureAccess } from '@repo/core/hooks';
+import { useIsGuest } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import type { School, SchoolStats } from '@repo/core/types';
@@ -19,7 +19,7 @@ export function useSchoolStats(schoolId: string) {
   const _isOnline = useStore((state) => state.isOnline);
   const { viewDate } = useTemporalStore();
   const isDemoMode = useStore((state) => state.isDemoMode);
-  const { isGuest } = useFeatureAccess();
+  const isGuest = useIsGuest();
   const [stats, setStats] = useState<SchoolStats | null>(null);
   const [school, setSchool] = useState<School | null>(null);
   const [isLoading, setIsLoading] = useState(true);

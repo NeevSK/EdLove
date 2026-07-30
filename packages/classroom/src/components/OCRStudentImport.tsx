@@ -25,7 +25,7 @@ import {
 import { useToast } from '@repo/ui/providers';
 
 import { useState } from 'react';
-import OCRScanner from '@/components/OCRScanner';
+import OCRScanner from '@repo/classroom/components/OCRScanner';
 
 interface OCRStudentImportProps {
   classroomId: string;

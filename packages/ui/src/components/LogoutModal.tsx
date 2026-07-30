@@ -1,7 +1,7 @@
 import { LogOut } from '@repo/ui/icons';
-import { Box, HStack, Text, VStack } from '@/gluestack';
-import { SanctuaryButton } from '@/components/SanctuaryButton';
-import SanctuaryModal from '@/components/SanctuaryModal';
+import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 
 interface LogoutModalProps {
   isOpen: boolean;
