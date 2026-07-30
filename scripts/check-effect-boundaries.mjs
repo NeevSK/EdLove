@@ -36,8 +36,21 @@ for (const file of sourceRoots.flatMap(filesIn)) {
   if (relative.includes('/__tests__/') || relative.includes('/__mocks__/')) continue;
 
   const content = fs.readFileSync(file, 'utf8');
-  if (/\bEffect\.promise\s*\(/.test(content)) {
+  const runtimeContent = content.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+  if (/\bEffect\.promise\s*\(/.test(runtimeContent)) {
     violations.push(`${relative}: use Effect.tryPromise instead of Effect.promise`);
+  }
+
+  if (relative.startsWith('apps/gurudevi-mobile/') && /from ['"]effect['"]/.test(runtimeContent)) {
+    violations.push(`${relative}: keep Effect imports inside packages/core, not mobile UI`);
+  }
+
+  if (
+    relative.startsWith('packages/core/src/logic/') &&
+    !relative.includes('/__tests__/') &&
+    /\bEffect\.runPromise\s*\(/.test(runtimeContent)
+  ) {
+    violations.push(`${relative}: expose an Effect workflow and run it at the Promise boundary`);
   }
 }
 

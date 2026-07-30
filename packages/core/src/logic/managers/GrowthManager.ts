@@ -1,5 +1,5 @@
-import { Effect } from 'effect';
 import { GROWTH_SIGNAL_MAP, type GrowthSignalType } from '@repo/core/api/growthSignals.generated';
+import type { IGrowthPort } from '@repo/core/logic/ports/growth.port';
 import type {
   BanyanStage,
   BhumiStage,
@@ -15,8 +15,13 @@ import type {
   RiverStage,
   UserGrowthState,
 } from '@repo/core/types/Growth';
-import type { IGrowthPort } from '@repo/core/logic/ports/growth.port';
-import { tryPromise } from '@repo/core/utils/effect';
+import {
+  fireAndForgetEffect,
+  reportBestEffort,
+  runEffect,
+  tryPromise,
+} from '@repo/core/utils/effect';
+import { Effect } from 'effect';
 
 export * from '@repo/core/types/Growth';
 
@@ -123,12 +128,7 @@ const WHISPERED_MOMENT_SPECS: WhisperedMomentSpec[] = [
 ];
 
 function fireAndForget<T>(fn: () => Promise<T>, label: string): Effect.Effect<void, never, never> {
-  return Effect.forkDaemon(
-    tryPromise(fn).pipe(
-      Effect.catchAll((e) => Effect.logError(`[GrowthManager] ${label} failed`, e)),
-      Effect.asVoid,
-    ),
-  ).pipe(Effect.asVoid);
+  return reportBestEffort(tryPromise(fn), `GrowthManager.${label}`);
 }
 
 export class GrowthManager {
@@ -139,58 +139,63 @@ export class GrowthManager {
     event_type: GrowthSignalType;
     event_metadata?: Record<string, unknown>;
   }): void {
-    Effect.runFork(
-      tryPromise(() => this.emitSignal(input)).pipe(
-        Effect.catchAll((e) => Effect.logError('[GrowthManager] emitSilent failed', e)),
-      ),
+    fireAndForgetEffect(
+      tryPromise(() => this.emitSignal(input)),
+      'GrowthManager.emitSilent',
     );
   }
 
-  async emitSignal(input: {
+  emitSignal$(input: {
     user_id: string;
     event_type: GrowthSignalType;
     event_metadata?: Record<string, unknown>;
-  }): Promise<void> {
+  }): Effect.Effect<void, never, never> {
     const { user_id: userId, event_type: signalType, event_metadata: metadata = {} } = input;
     const dimension = GROWTH_SIGNAL_MAP[signalType];
     const self = this;
 
-    await Effect.runPromise(
-      Effect.gen(function* () {
-        yield* Effect.tryPromise({
-          try: () => self.growthPort.recordEvent({ user_id: userId, dimension, event_type: signalType, event_metadata: metadata }),
-          catch: (e) => e,
-        }).pipe(
-          Effect.catchAll((e) => {
-            console.warn('[GrowthManager] Failed to record event', e);
-            return Effect.void;
+    return Effect.gen(function* () {
+      yield* Effect.tryPromise({
+        try: () =>
+          self.growthPort.recordEvent({
+            user_id: userId,
+            dimension,
+            event_type: signalType,
+            event_metadata: metadata,
           }),
-        );
+        catch: (e) => e,
+      }).pipe(
+        Effect.catchAll((e) => reportBestEffort(Effect.fail(e), 'GrowthManager.recordEvent')),
+      );
 
+      yield* fireAndForget(
+        () => self.growthPort.incrementDimension(userId, `${dimension}_signals`),
+        'incrementDimension',
+      );
+
+      yield* fireAndForget(
+        () => self.checkWhisperedMoments(userId, signalType),
+        'checkWhisperedMoments',
+      );
+
+      yield* fireAndForget(() => self.advancePaths(userId, signalType, metadata), 'advancePaths');
+
+      const metric = SIGNAL_TO_CHALLENGE_METRIC[signalType];
+      if (metric) {
         yield* fireAndForget(
-          () => self.growthPort.incrementDimension(userId, `${dimension}_signals`),
-          'incrementDimension',
+          () => self.recordChallengeContribution(userId, metric, metadata),
+          'recordChallengeContribution',
         );
+      }
+    });
+  }
 
-        yield* fireAndForget(
-          () => self.checkWhisperedMoments(userId, signalType),
-          'checkWhisperedMoments',
-        );
-
-        yield* fireAndForget(
-          () => self.advancePaths(userId, signalType, metadata),
-          'advancePaths',
-        );
-
-        const metric = SIGNAL_TO_CHALLENGE_METRIC[signalType];
-        if (metric) {
-          yield* fireAndForget(
-            () => self.recordChallengeContribution(userId, metric, metadata),
-            'recordChallengeContribution',
-          );
-        }
-      }),
-    );
+  emitSignal(input: {
+    user_id: string;
+    event_type: GrowthSignalType;
+    event_metadata?: Record<string, unknown>;
+  }): Promise<void> {
+    return runEffect(this.emitSignal$(input), 'GROWTH_SIGNAL_FAILED');
   }
 
   private async checkWhisperedMoments(userId: string, signalType: GrowthSignalType) {
@@ -320,16 +325,23 @@ export class GrowthManager {
           this.growthPort.recordCrystalDiscovery({
             user_id: userId,
             crystal_type:
-              (metadata.crystal_type as 'subject_crystal' | 'connection_crystal' | 'deep_crystal' | 'fractal_crystal') || (isFractal ? 'fractal_crystal' : 'subject_crystal'),
+              (metadata.crystal_type as
+                | 'subject_crystal'
+                | 'connection_crystal'
+                | 'deep_crystal'
+                | 'fractal_crystal') || (isFractal ? 'fractal_crystal' : 'subject_crystal'),
             subject_tags: (metadata.subject_tags as string[]) || [],
             crystal_name_en:
-              (metadata.name_en as string) || (isFractal ? 'Fractal Connection' : 'Knowledge Crystal'),
+              (metadata.name_en as string) ||
+              (isFractal ? 'Fractal Connection' : 'Knowledge Crystal'),
             crystal_description_en: (metadata.description_en as string) || null,
             is_fractal_moment: isFractal,
             source_entity_id: (metadata.source_entity_id as string) || null,
           }),
         ).pipe(
-          Effect.catchAll((e) => Effect.logError('[GrowthManager] recordCrystalDiscovery failed', e)),
+          Effect.catchAll((e) =>
+            Effect.logError('[GrowthManager] recordCrystalDiscovery failed', e),
+          ),
         ),
       );
 
@@ -437,57 +449,64 @@ export class GrowthManager {
     }
   }
 
-  private async recordChallengeContribution(
+  private recordChallengeContribution$(
     userId: string,
     metric: ChallengeMetric,
     metadata: Record<string, any>,
-  ) {
+  ): Effect.Effect<void, Error, never> {
     const schoolId = metadata.school_id as string;
     const classroomId = metadata.classroom_id as string;
 
     const self = this;
-    await Effect.runPromise(
-      Effect.gen(function* () {
-        const [challenges, compasses] = yield* Effect.all(
-          [
+    return Effect.gen(function* () {
+      const [challenges, compasses] = yield* Effect.all(
+        [
+          tryPromise(() =>
+            self.growthPort.getChallenges({ schoolId, classroomId, status: 'active' }),
+          ),
+          tryPromise(() => self.growthPort.getPersonalCompasses({ userId, status: 'active' })),
+        ],
+        { concurrency: 2 },
+      );
+
+      const updates: Array<Effect.Effect<void, Error>> = [];
+
+      for (const challenge of challenges) {
+        if (challenge.metric === metric) {
+          updates.push(
             tryPromise(() =>
-              self.growthPort.getChallenges({ schoolId, classroomId, status: 'active' }),
+              self.growthPort.updateChallenge(challenge.id, {
+                current_count: (challenge.current_count || 0) + 1,
+              }),
             ),
+          );
+        }
+      }
+
+      for (const compass of compasses) {
+        if (compass.metric === metric) {
+          updates.push(
             tryPromise(() =>
-              self.growthPort.getPersonalCompasses({ userId, status: 'active' }),
+              self.growthPort.updatePersonalCompass(compass.id, {
+                current_count: (compass.current_count || 0) + 1,
+              }),
             ),
-          ],
-          { concurrency: 2 },
-        );
-
-        const updates: Array<Effect.Effect<void, Error>> = [];
-
-        for (const challenge of challenges) {
-          if (challenge.metric === metric) {
-            updates.push(
-              tryPromise(() =>
-                self.growthPort.updateChallenge(challenge.id, {
-                  current_count: (challenge.current_count || 0) + 1,
-                }),
-              ),
-            );
-          }
+          );
         }
+      }
 
-        for (const compass of compasses) {
-          if (compass.metric === metric) {
-            updates.push(
-              tryPromise(() =>
-                self.growthPort.updatePersonalCompass(compass.id, {
-                  current_count: (compass.current_count || 0) + 1,
-                }),
-              ),
-            );
-          }
-        }
+      yield* Effect.all(updates, { concurrency: 'unbounded' });
+    });
+  }
 
-        yield* Effect.all(updates, { concurrency: 'unbounded' });
-      }),
+  private recordChallengeContribution(
+    userId: string,
+    metric: ChallengeMetric,
+    metadata: Record<string, any>,
+  ): Promise<void> {
+    return runEffect(
+      this.recordChallengeContribution$(userId, metric, metadata),
+      'GROWTH_CHALLENGE_CONTRIBUTION_FAILED',
     );
   }
 
@@ -527,18 +546,24 @@ export class GrowthManager {
     });
   }
 
-  async clearPersonalCompass(userId: string) {
-    const compasses = await this.getPersonalCompasses(userId);
-    await Effect.runPromise(
-      Effect.all(
-        compasses.map((compass) =>
-          tryPromise(() =>
-            this.growthPort.updatePersonalCompass(compass.id, { status: 'expired' }),
+  private clearPersonalCompass$(userId: string): Effect.Effect<void, Error, never> {
+    return Effect.gen(
+      function* (this: GrowthManager) {
+        const compasses = yield* tryPromise(() => this.getPersonalCompasses(userId));
+        yield* Effect.all(
+          compasses.map((compass) =>
+            tryPromise(() =>
+              this.growthPort.updatePersonalCompass(compass.id, { status: 'expired' }),
+            ),
           ),
-        ),
-        { concurrency: 'unbounded' },
-      ),
+          { concurrency: 'unbounded' },
+        );
+      }.bind(this),
     );
+  }
+
+  async clearPersonalCompass(userId: string) {
+    return runEffect(this.clearPersonalCompass$(userId), 'GROWTH_COMPASS_CLEAR_FAILED');
   }
 
   async recordCrystalDiscovery(discovery: Omit<CrystalDiscovery, 'id' | 'created_at'>) {

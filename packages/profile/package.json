@@ -81,11 +81,11 @@
     "@repo/scanner-kit": "workspace:*",
     "@repo/ui": "workspace:*",
     "@tanstack/react-query": "^5.101.0",
-    "expo-clipboard": "~56.0.4",
-    "expo-file-system": "~56.0.7",
-    "expo-image-manipulator": "~56.0.17",
-    "expo-image-picker": "~56.0.16",
-    "expo-router": "~56.2.9",
+    "expo-clipboard": "~57.0.1",
+    "expo-file-system": "~57.0.1",
+    "expo-image-manipulator": "~57.0.7",
+    "expo-image-picker": "~57.0.7",
+    "expo-router": "~57.0.9",
     "lucide-react-native": "^1.17.0",
     "react-i18next": "^17.0.8",
     "react-native-reanimated": "^4.4.1"
@@ -103,12 +103,12 @@
     "vitest": "^4.1.8"
   },
   "peerDependencies": {
+    "@react-native-async-storage/async-storage": "*",
     "@repo/ui": "*",
     "lucide-react-native": "*",
     "react": "*",
     "react-i18next": "*",
-    "react-native": "*",
-    "@react-native-async-storage/async-storage": "*"
+    "react-native": "*"
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",

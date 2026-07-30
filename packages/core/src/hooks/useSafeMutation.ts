@@ -1,20 +1,13 @@
-import { Duration, Effect, Schedule } from 'effect';
-import { useCallback, useState } from 'react';
-import { v7 as uuidv7 } from 'uuid';
 import { DeltaResonance } from '@repo/core/lib/sync/delta';
 import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
 import { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import { networkManager } from '@repo/core/logic/managers/NetworkManager';
 import { useStore } from '@repo/core/store/useStore';
-
-class OfflineError {
-  readonly _tag = 'OfflineError';
-}
-
-function normalizeMutationError(error: unknown): Error {
-  return error instanceof Error ? error : new Error(String(error));
-}
+import { executeMutation$, OfflineMutationError } from '@repo/core/utils/mutation';
+import { Effect } from 'effect';
+import { useCallback, useState } from 'react';
+import { v7 as uuidv7 } from 'uuid';
 
 interface SafeMutationOptions<TData, TVariables> {
   mutationKey?: string; // Unique key for queueing (e.g. 'createPost')
@@ -56,26 +49,11 @@ export function useSafeMutation<TData, TVariables>(
 
       try {
         const result = await Effect.runPromise(
-          Effect.tryPromise({
-            try: () => networkManager.isConnected(),
-            catch: normalizeMutationError,
-          }).pipe(
-            Effect.filterOrFail(
-              (isConnected) => isConnected,
-              () => new OfflineError(),
-            ),
-            Effect.flatMap(() =>
-              Effect.tryPromise({
-                try: () => mutationFn(variables),
-                catch: normalizeMutationError,
-              }),
-            ),
-            Effect.retry({
-              schedule: Schedule.exponential(Duration.millis(1000)),
-              times: options?.retryCount ?? 3,
-              while: (e) => !(e instanceof OfflineError),
-            }),
-          ),
+          executeMutation$({
+            isConnected: () => networkManager.isConnected(),
+            mutation: () => mutationFn(variables),
+            retryCount: options?.retryCount,
+          }),
         );
 
         if (options?.onSuccess) {
@@ -85,7 +63,7 @@ export function useSafeMutation<TData, TVariables>(
         return result;
       } catch (err: unknown) {
         const isOffline =
-          err instanceof OfflineError ||
+          err instanceof OfflineMutationError ||
           (err instanceof Error && err.message === 'Network request failed');
 
         if (isOffline) {

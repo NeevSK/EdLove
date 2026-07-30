@@ -46,7 +46,7 @@
     "@tanstack/ai-client": "^0.16.3",
     "@tanstack/ai-react": "^0.15.4",
     "@tanstack/react-query": "^5.101.0",
-    "expo-router": "~56.2.9",
+    "expo-router": "~57.0.9",
     "lucide-react-native": "^1.17.0",
     "react-i18next": "^17.0.8",
     "react-native-reanimated": "4.3.1"

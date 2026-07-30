@@ -1,4 +1,3 @@
-import { Duration, Effect, Schedule } from 'effect';
 import type {
   AbstractPowerSyncDatabase,
   PowerSyncBackendConnector,
@@ -7,8 +6,9 @@ import type {
 import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
 import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { runEffect, tryPromise } from '@repo/core/utils/effect';
 import { getConsistentIdempotencyKey } from '@repo/core/utils/idempotency';
-import { tryPromise } from '@repo/core/utils/effect';
+import { Duration, Effect, Schedule } from 'effect';
 
 const POWERSYNC_URL = process.env.EXPO_PUBLIC_POWERSYNC_URL ?? '';
 
@@ -33,12 +33,12 @@ function fetchSession$(): Effect.Effect<{ access_token: string }, PowerSyncUploa
 
 export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
   async fetchCredentials(): Promise<PowerSyncCredentials> {
-    const session = await Effect.runPromise(fetchSession$());
+    const session = await runEffect(fetchSession$(), 'POWERSYNC_CREDENTIALS_FAILED');
     return { endpoint: POWERSYNC_URL, token: session.access_token };
   }
 
   async uploadData(database: AbstractPowerSyncDatabase): Promise<void> {
-    await Effect.runPromise(
+    await runEffect(
       Effect.gen(function* () {
         const batch = yield* tryPromise(() => database.getCrudBatch(200));
         if (!batch || batch.crud.length === 0) return;
@@ -98,14 +98,13 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
         const tablesAffected = Array.from(new Set(batch.crud.map((c) => c.table)));
         sovereignBus.emit('powersync:sync_complete', { tablesAffected });
       }).pipe(
-        Effect.catchAll((e) =>
+        Effect.catchAll((error) =>
           Effect.sync(() => {
-            if (e instanceof PowerSyncUploadError) {
-              sovereignBus.emit('powersync:unavailable', { reason: 'service_down' });
-            }
-          }),
+            sovereignBus.emit('powersync:unavailable', { reason: 'service_down' });
+          }).pipe(Effect.zipRight(Effect.fail(error))),
         ),
       ),
+      'POWERSYNC_UPLOAD_FAILED',
     );
   }
 }

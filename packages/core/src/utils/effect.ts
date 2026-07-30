@@ -1,6 +1,6 @@
-import { Duration, Effect, pipe, Schedule } from 'effect';
 import { captureException } from '@repo/core/lib/monitoring/sentry';
 import { APIError } from '@repo/core/types/API';
+import { Duration, Effect, pipe, Schedule } from 'effect';
 
 function normalizeError(error: unknown): Error {
   return error instanceof Error ? error : new Error(String(error));
@@ -53,17 +53,27 @@ export function retryPolicy(maxRetries: number = 3) {
  * ```
  */
 export function fireAndForget(fn: () => Promise<unknown>, label: string): void {
-  Effect.runFork(
-    Effect.tryPromise({ try: fn, catch: normalizeError }).pipe(
-      Effect.catchAll((e) =>
-        Effect.sync(() => {
-          captureException(e, { operation: label, boundary: 'fire-and-forget' });
-        }).pipe(
-          Effect.zipRight(Effect.logError(`[${label}] fire-and-forget failed`, e)),
-        ),
-      ),
-      Effect.asVoid,
+  fireAndForgetEffect(tryPromise(fn), label);
+}
+
+export function fireAndForgetEffect<E>(
+  effect: Effect.Effect<unknown, E, never>,
+  label: string,
+): void {
+  Effect.runFork(reportBestEffort(effect, label));
+}
+
+export function reportBestEffort<E>(
+  effect: Effect.Effect<unknown, E, never>,
+  label: string,
+): Effect.Effect<void, never, never> {
+  return effect.pipe(
+    Effect.catchAll((error) =>
+      Effect.sync(() => {
+        captureException(error, { operation: label, boundary: 'fire-and-forget' });
+      }).pipe(Effect.zipRight(Effect.logError(`[${label}] fire-and-forget failed`, error))),
     ),
+    Effect.asVoid,
   );
 }
 

@@ -1,7 +1,6 @@
-import { Effect } from 'effect';
 import { guestStorageKey } from '@repo/core/native/guestScope';
 import { SafeZustandStorage } from '@repo/core/native/storageWrapper';
-import { tryPromise } from '@repo/core/utils/effect';
+import { Data, Effect } from 'effect';
 
 // Keys for MMKV storage
 const GUEST_TIMETABLE_KEY = () => guestStorageKey('timetable');
@@ -10,6 +9,12 @@ const GUEST_JOURNAL_ENTRIES_KEY = () => guestStorageKey('journal-entries');
 const GUEST_CLASSROOM_DATA_KEY = () => guestStorageKey('classroom-data');
 const GUEST_STUDENTS_KEY = () => guestStorageKey('students');
 
+export class GuestStorageError extends Data.TaggedError('GuestStorageError')<{
+  readonly operation: 'read' | 'write' | 'parse' | 'remove';
+  readonly key: string;
+  readonly cause: unknown;
+}> {}
+
 let localIdCounter = 0;
 const createLocalId = () => {
   localIdCounter += 1;
@@ -17,27 +22,27 @@ const createLocalId = () => {
   return `local-${Date.now()}-${suffix}`;
 };
 
-function readStorage$(key: string): Effect.Effect<string | null> {
-  return Effect.tryPromise(() => SafeZustandStorage.getItem(key) as Promise<string | null>).pipe(
-    Effect.catchAll((e) =>
-      Effect.sync(() => {
-        console.error(`[GuestDataManager] Failed to read ${key}:`, e);
-        return null;
-      }),
-    ),
-  );
+function readStorage$(key: string): Effect.Effect<string | null, GuestStorageError> {
+  return Effect.tryPromise({
+    try: () => SafeZustandStorage.getItem(key) as Promise<string | null>,
+    catch: (cause) => new GuestStorageError({ operation: 'read', key, cause }),
+  });
 }
 
-function writeStorage$(key: string, data: unknown): Effect.Effect<void> {
-  return tryPromise(async () => {
-    await SafeZustandStorage.setItem(key, JSON.stringify(data) ?? '');
-  }).pipe(
-    Effect.catchAll((e) =>
-      Effect.sync(() => {
-        console.error(`[GuestDataManager] Failed to write ${key}:`, e);
-      }),
-    ),
-  );
+function writeStorage$(key: string, data: unknown): Effect.Effect<void, GuestStorageError> {
+  return Effect.tryPromise({
+    try: async () => {
+      await SafeZustandStorage.setItem(key, JSON.stringify(data) ?? '');
+    },
+    catch: (cause) => new GuestStorageError({ operation: 'write', key, cause }),
+  });
+}
+
+function parseArray$<T>(data: string, key: string): Effect.Effect<T[], GuestStorageError> {
+  return Effect.try({
+    try: () => JSON.parse(data) as T[],
+    catch: (cause) => new GuestStorageError({ operation: 'parse', key, cause }),
+  });
 }
 
 export interface GuestTimetablePeriod {
@@ -83,10 +88,11 @@ export class GuestDataManager {
   static async getTimetable(dayOfWeek: number): Promise<GuestTimetablePeriod[]> {
     return Effect.runPromise(
       readStorage$(GUEST_TIMETABLE_KEY()).pipe(
-        Effect.map((data) => {
-          if (!data) return [];
-          const allPeriods: GuestTimetablePeriod[] = JSON.parse(data);
-          return allPeriods.filter((p) => p.day_of_week === dayOfWeek);
+        Effect.flatMap((data) => {
+          if (!data) return Effect.succeed([]);
+          return parseArray$<GuestTimetablePeriod>(data, GUEST_TIMETABLE_KEY()).pipe(
+            Effect.map((allPeriods) => allPeriods.filter((p) => p.day_of_week === dayOfWeek)),
+          );
         }),
         Effect.catchAll(() => Effect.succeed([])),
       ),
@@ -99,7 +105,9 @@ export class GuestDataManager {
     return Effect.runPromise(
       Effect.gen(function* () {
         const data = yield* readStorage$(GUEST_TIMETABLE_KEY());
-        const allPeriods: GuestTimetablePeriod[] = data ? JSON.parse(data) : [];
+        const allPeriods = data
+          ? yield* parseArray$<GuestTimetablePeriod>(data, GUEST_TIMETABLE_KEY())
+          : [];
 
         const newPeriod: GuestTimetablePeriod = {
           ...period,
@@ -129,7 +137,7 @@ export class GuestDataManager {
         const data = yield* readStorage$(GUEST_TIMETABLE_KEY());
         if (!data) return;
 
-        const allPeriods: GuestTimetablePeriod[] = JSON.parse(data);
+        const allPeriods = yield* parseArray$<GuestTimetablePeriod>(data, GUEST_TIMETABLE_KEY());
         const index = allPeriods.findIndex((p) => p.localId === localId);
 
         if (index !== -1) {
@@ -153,7 +161,7 @@ export class GuestDataManager {
         const data = yield* readStorage$(GUEST_TIMETABLE_KEY());
         if (!data) return;
 
-        const allPeriods: GuestTimetablePeriod[] = JSON.parse(data);
+        const allPeriods = yield* parseArray$<GuestTimetablePeriod>(data, GUEST_TIMETABLE_KEY());
         const filtered = allPeriods.filter((p) => p.localId !== localId);
         yield* writeStorage$(GUEST_TIMETABLE_KEY(), filtered);
       }).pipe(
@@ -172,7 +180,9 @@ export class GuestDataManager {
   static async getMoodLogs(): Promise<GuestMoodLog[]> {
     return Effect.runPromise(
       readStorage$(GUEST_MOOD_LOGS_KEY()).pipe(
-        Effect.map((data) => (data ? JSON.parse(data) : [])),
+        Effect.flatMap((data) =>
+          data ? parseArray$<GuestMoodLog>(data, GUEST_MOOD_LOGS_KEY()) : Effect.succeed([]),
+        ),
         Effect.catchAll(() => Effect.succeed([])),
       ),
     );
@@ -182,7 +192,7 @@ export class GuestDataManager {
     return Effect.runPromise(
       Effect.gen(function* () {
         const data = yield* readStorage$(GUEST_MOOD_LOGS_KEY());
-        const logs: GuestMoodLog[] = data ? JSON.parse(data) : [];
+        const logs = data ? yield* parseArray$<GuestMoodLog>(data, GUEST_MOOD_LOGS_KEY()) : [];
 
         const newLog: GuestMoodLog = {
           localId: createLocalId(),
@@ -210,7 +220,11 @@ export class GuestDataManager {
   static async getJournalEntries(): Promise<GuestJournalEntry[]> {
     return Effect.runPromise(
       readStorage$(GUEST_JOURNAL_ENTRIES_KEY()).pipe(
-        Effect.map((data) => (data ? JSON.parse(data) : [])),
+        Effect.flatMap((data) =>
+          data
+            ? parseArray$<GuestJournalEntry>(data, GUEST_JOURNAL_ENTRIES_KEY())
+            : Effect.succeed([]),
+        ),
         Effect.catchAll(() => Effect.succeed([])),
       ),
     );
@@ -220,7 +234,9 @@ export class GuestDataManager {
     return Effect.runPromise(
       Effect.gen(function* () {
         const data = yield* readStorage$(GUEST_JOURNAL_ENTRIES_KEY());
-        const entries: GuestJournalEntry[] = data ? JSON.parse(data) : [];
+        const entries = data
+          ? yield* parseArray$<GuestJournalEntry>(data, GUEST_JOURNAL_ENTRIES_KEY())
+          : [];
 
         const newEntry: GuestJournalEntry = {
           localId: createLocalId(),
@@ -247,7 +263,9 @@ export class GuestDataManager {
   static async getStudents(): Promise<GuestStudent[]> {
     return Effect.runPromise(
       readStorage$(GUEST_STUDENTS_KEY()).pipe(
-        Effect.map((data) => (data ? JSON.parse(data) : [])),
+        Effect.flatMap((data) =>
+          data ? parseArray$<GuestStudent>(data, GUEST_STUDENTS_KEY()) : Effect.succeed([]),
+        ),
         Effect.catchAll(() => Effect.succeed([])),
       ),
     );
@@ -257,7 +275,7 @@ export class GuestDataManager {
     return Effect.runPromise(
       Effect.gen(function* () {
         const data = yield* readStorage$(GUEST_STUDENTS_KEY());
-        const existing: GuestStudent[] = data ? JSON.parse(data) : [];
+        const existing = data ? yield* parseArray$<GuestStudent>(data, GUEST_STUDENTS_KEY()) : [];
 
         const newStudents = students.map((s) => ({ ...s, localId: createLocalId() }));
 

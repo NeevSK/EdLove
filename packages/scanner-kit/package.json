@@ -25,10 +25,10 @@
   "dependencies": {
     "@repo/core": "workspace:*",
     "@repo/ui": "workspace:*",
-    "expo-brightness": "~56.0.5",
-    "expo-keep-awake": "~56.0.3",
-    "expo-media-library": "~56.0.7",
-    "expo-router": "~56.2.9",
+    "expo-brightness": "~57.0.1",
+    "expo-keep-awake": "~57.0.1",
+    "expo-media-library": "~57.0.3",
+    "expo-router": "~57.0.9",
     "react-i18next": "^17.0.8"
   },
   "peerDependencies": {
