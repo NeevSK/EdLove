@@ -13,8 +13,8 @@ import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { communityAPI } from '@community/api/community';
-import type { DirectConversation } from '@community/types';
+import { communityAPI } from '@repo/community/api/community';
+import type { DirectConversation } from '@repo/community/types';
 
 export default function DirectMessagesListScreen() {
   const { t } = useTranslation();

@@ -6,13 +6,13 @@ import { QRCodeGenerator } from '@repo/scanner-kit';
 import { Briefcase, CircleCheck, FileText, Globe, GraduationCap, SquarePen } from '@repo/ui/icons';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AvatarDisplay } from '@profile/components/AvatarDisplay';
-import { ContactLinktree } from '@profile/components/ContactLinktree';
-import LivingJourneyPanel from '@profile/components/LivingJourneyPanel';
-import { useProfile } from '@profile/hooks/useProfile';
-import { useProfileCompletion } from '@profile/hooks/useProfileCompletion';
-import { useSocialLinks } from '@profile/hooks/useSocialLinks';
-import { toFullProfileParams, useProfileNavigation } from '@profile/navigation';
+import { AvatarDisplay } from '@repo/profile/components/AvatarDisplay';
+import { ContactLinktree } from '@repo/profile/components/ContactLinktree';
+import LivingJourneyPanel from '@repo/profile/components/LivingJourneyPanel';
+import { useProfile } from '@repo/profile/hooks/useProfile';
+import { useProfileCompletion } from '@repo/profile/hooks/useProfileCompletion';
+import { useSocialLinks } from '@repo/profile/hooks/useSocialLinks';
+import { toFullProfileParams, useProfileNavigation } from '@repo/profile/navigation';
 
 // Skeleton Component logic (mocked because it was used in corrupt code)
 const SkeletonCard = ({ height }: { height: number }) => (

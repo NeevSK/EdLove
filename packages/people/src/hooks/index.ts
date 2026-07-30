@@ -1,1 +1,1 @@
-export * from '@people/hooks/useStaffPresence';
+export * from '@repo/people/hooks/useStaffPresence';

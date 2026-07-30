@@ -52,8 +52,8 @@ import { useToast } from '@repo/ui/providers';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown, FadeInRight, Layout } from 'react-native-reanimated';
-import { useTimetable } from '@self/hooks/useTimetable';
-import type { Period } from '@self/types';
+import { useTimetable } from '@repo/self/hooks/useTimetable';
+import type { Period } from '@repo/self/types';
 
 const DAYS = [
   { id: 1, label: 'M' },

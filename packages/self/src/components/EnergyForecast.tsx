@@ -15,7 +15,7 @@ import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
-import { useEnergyForecast } from '@self/hooks/useEnergyForecast';
+import { useEnergyForecast } from '@repo/self/hooks/useEnergyForecast';
 
 interface EnergyForecastProps {
   userId?: string;

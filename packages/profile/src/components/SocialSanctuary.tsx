@@ -15,7 +15,7 @@ import * as Clipboard from 'expo-clipboard';
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Share } from 'react-native';
-import { useSocialLinks } from '@profile/hooks/useSocialLinks';
+import { useSocialLinks } from '@repo/profile/hooks/useSocialLinks';
 
 interface SocialSanctuaryProps {
   userId: string;

@@ -33,7 +33,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Keyboard, Modal, Platform, TouchableWithoutFeedback } from 'react-native';
-import type { UserProfile } from '@profile/types';
+import type { UserProfile } from '@repo/profile/types';
 
 interface EditProfileModalProps {
   visible: boolean;

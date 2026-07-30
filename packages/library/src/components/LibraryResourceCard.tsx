@@ -1,6 +1,6 @@
 import { SharedResourceCard } from '@repo/ui/components/media/ResourceCard';
 import type React from 'react';
-import type { ResourceType } from '@library/types';
+import type { ResourceType } from '@repo/library/types';
 
 interface LibraryResourceCardProps {
   title: string;

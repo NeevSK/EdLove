@@ -1,1 +1,1 @@
-﻿export * from '@self/types/Wellbeing';
+export * from '@repo/self/types/Wellbeing';

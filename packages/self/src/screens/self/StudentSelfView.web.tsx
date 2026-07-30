@@ -2,20 +2,20 @@ import { useBanyanGrowth, useJourneyHistory } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 import { useTranslation } from 'react-i18next';
 
-import { BaseSelfView } from '@self/components/BaseSelfView';
-import DailyRhythm from '@self/components/DailyRhythm';
-import FireJournal from '@self/components/FireJournal';
-import JoyJar from '@self/components/JoyJar';
-import MoodLotus from '@self/components/MoodLotus';
-import SleepTracker from '@self/components/SleepTracker';
-import TomorrowPrep from '@self/components/TomorrowPrep';
-import VoiceJournaling from '@self/components/VoiceJournaling';
-import WelcomeModal from '@self/components/WelcomeModal';
-import WisdomSeeds from '@self/components/WisdomSeeds';
-import { useJournalEntries } from '@self/hooks/useJournalEntries';
-import { useMoodLogs } from '@self/hooks/useMoodLogs';
-import { useSanctuaryRegistry } from '@self/hooks/useSanctuaryRegistry';
-import { JournalSection, MoodSection, StudentPulse } from '@self/views/sections';
+import { BaseSelfView } from '@repo/self/components/BaseSelfView';
+import DailyRhythm from '@repo/self/components/DailyRhythm';
+import FireJournal from '@repo/self/components/FireJournal';
+import JoyJar from '@repo/self/components/JoyJar';
+import MoodLotus from '@repo/self/components/MoodLotus';
+import SleepTracker from '@repo/self/components/SleepTracker';
+import TomorrowPrep from '@repo/self/components/TomorrowPrep';
+import VoiceJournaling from '@repo/self/components/VoiceJournaling';
+import WelcomeModal from '@repo/self/components/WelcomeModal';
+import WisdomSeeds from '@repo/self/components/WisdomSeeds';
+import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
+import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
+import { useSanctuaryRegistry } from '@repo/self/hooks/useSanctuaryRegistry';
+import { JournalSection, MoodSection, StudentPulse } from '@repo/self/views/sections';
 
 export default function StudentSelfView() {
   const { t } = useTranslation();

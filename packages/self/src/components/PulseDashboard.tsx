@@ -26,7 +26,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { dailyContentAPI } from '@self/api/dailyContent';
+import { dailyContentAPI } from '@repo/self/api/dailyContent';
 
 export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void }) {
   const { t } = useTranslation();

@@ -33,13 +33,13 @@ import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { libraryAPI } from '@library/api/library';
-import { CollectionPickerModal } from '@library/components/CollectionPickerModal';
-import { LibraryThumbnailCard } from '@library/components/LibraryThumbnailCard';
-import { ResourceList } from '@library/components/ResourceList';
-import { LIBRARY_UI_CATEGORIES } from '@library/constants/categories';
-import { getOrderedShelfDefs } from '@library/constants/shelf';
-import { useLibrary } from '@library/hooks/useLibrary';
+import { libraryAPI } from '@repo/library/api/library';
+import { CollectionPickerModal } from '@repo/library/components/CollectionPickerModal';
+import { LibraryThumbnailCard } from '@repo/library/components/LibraryThumbnailCard';
+import { ResourceList } from '@repo/library/components/ResourceList';
+import { LIBRARY_UI_CATEGORIES } from '@repo/library/constants/categories';
+import { getOrderedShelfDefs } from '@repo/library/constants/shelf';
+import { useLibrary } from '@repo/library/hooks/useLibrary';
 import type {
   CreateResourceInput,
   KnowledgeTopology,
@@ -48,8 +48,8 @@ import type {
   LibraryResource,
   ResourceFilters,
   ResourceType,
-} from '@library/types';
-import { buildLibraryExternalLinkOptions } from '@library/utils/externalLinks';
+} from '@repo/library/types';
+import { buildLibraryExternalLinkOptions } from '@repo/library/utils/externalLinks';
 
 function StackFallback() {
   return (

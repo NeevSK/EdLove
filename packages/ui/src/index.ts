@@ -21,3 +21,4 @@ export * from '@repo/ui/theme/Theme';
 export * from '@repo/ui/tokens';
 export * from '@repo/ui/utils';
 export { SanctuaryGuard } from '@repo/ui/components/SanctuaryGuard';
+export { SignupPrompt } from '@repo/ui/components/prompts/SignupPrompt';

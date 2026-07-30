@@ -82,12 +82,12 @@ export const reportingAPI = {
     endDate: string,
     classroomId?: string,
   ): Promise<AttendanceReport> {
-    const report = await attendanceAPI.getAttendanceReport(
+    const report = (await attendanceAPI.getAttendanceReport(
       schoolId,
       startDate,
       endDate,
       classroomId,
-    );
+    )) as { trend?: Array<Record<string, unknown>>; [key: string]: unknown };
     return {
       ...report,
       trend: (report.trend || []).map((p: any) => ({

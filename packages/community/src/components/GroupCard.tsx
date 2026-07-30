@@ -2,7 +2,7 @@ import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
 import { BookOpen, GraduationCap, Lock, Users } from '@repo/ui/icons';
 import { Box, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import React from 'react';
-import type { GroupType } from '@community/types';
+import type { GroupType } from '@repo/community/types';
 
 interface GroupCardProps {
   id: string;

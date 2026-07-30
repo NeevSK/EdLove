@@ -22,10 +22,23 @@
       ],
       "@intuitui-labs/lk-edu-geo/*": [
         "./src/*"
+      ],
+      "@repo/core": [
+        "../core/dist/index.d.ts"
+      ],
+      "@repo/core/*": [
+        "../core/dist/*"
+      ],
+      "@repo/ui": [
+        "../ui/dist/index.d.ts"
+      ],
+      "@repo/ui/*": [
+        "../ui/dist/*"
       ]
     }
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "src/**/*.json"
   ]
 }

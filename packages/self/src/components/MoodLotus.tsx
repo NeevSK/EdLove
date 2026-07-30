@@ -5,7 +5,7 @@ import type React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import BreathGuide from '@self/components/BreathGuide';
+import BreathGuide from '@repo/self/components/BreathGuide';
 
 /**
  * MOOD LOTUS COMPONENT

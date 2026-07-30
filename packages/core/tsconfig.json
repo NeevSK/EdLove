@@ -30,6 +30,12 @@
       ],
       "@repo/core/*": [
         "./src/*"
+      ],
+      "@repo/ui": [
+        "../ui/dist/index.d.ts"
+      ],
+      "@repo/ui/*": [
+        "../ui/dist/*"
       ]
     },
     "types": [

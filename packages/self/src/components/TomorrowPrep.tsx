@@ -22,8 +22,8 @@ import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTomorrowPrep } from '@self/hooks/useTomorrowPrep';
-import type { DailyPrepItem } from '@self/types';
+import { useTomorrowPrep } from '@repo/self/hooks/useTomorrowPrep';
+import type { DailyPrepItem } from '@repo/self/types';
 
 interface TomorrowPrepProps {
   userId?: string;

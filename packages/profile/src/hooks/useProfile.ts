@@ -3,8 +3,8 @@ import { useRewards } from '@repo/core/hooks';
 import { handleAPIError, useMutationQueue, useTemporalStore } from '@repo/core/logic';
 
 import { useCallback, useEffect, useReducer } from 'react';
-import { ProfileValidator } from '@profile/lib/validator';
-import type { UserProfile } from '@profile/types';
+import { ProfileValidator } from '@repo/profile/lib/validator';
+import type { UserProfile } from '@repo/profile/types';
 
 type ProfileState = {
   profile: UserProfile | null;

@@ -27,15 +27,15 @@ import { useQuery } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import type React from 'react';
 import { useCallback, useMemo, useState } from 'react';
-import { libraryAPI } from '@library/api/library';
-import { ResourceShareQRModal } from '@library/components/ResourceShareQRModal';
-import type { LibraryResource } from '@library/types';
-import { buildLibraryExternalLinkOptions } from '@library/utils/externalLinks';
+import { libraryAPI } from '@repo/library/api/library';
+import { ResourceShareQRModal } from '@repo/library/components/ResourceShareQRModal';
+import type { LibraryResource } from '@repo/library/types';
+import { buildLibraryExternalLinkOptions } from '@repo/library/utils/externalLinks';
 import {
   buildLibraryResourceShareUrl,
   buildResourceCompanionLinks,
   type ResourceCompanionLink,
-} from '@library/utils/resourceLinks';
+} from '@repo/library/utils/resourceLinks';
 
 function ActionButton({
   label,

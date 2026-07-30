@@ -23,6 +23,7 @@ export interface SelfViewDomain {
   id: string;
   title: string;
   accentColor: string;
+  energyVibe?: [string, string];
   features?: SelfViewFeature[];
   content?: React.ReactNode;
   historyContent?: React.ReactNode;

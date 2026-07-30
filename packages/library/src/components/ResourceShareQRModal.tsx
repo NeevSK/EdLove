@@ -1,5 +1,5 @@
 import { SharedShareModal } from '@repo/ui/components/media/AssetShareModal';
-import { buildLibraryResourceShareUrl } from '@library/utils/resourceLinks';
+import { buildLibraryResourceShareUrl } from '@repo/library/utils/resourceLinks';
 
 interface ResourceShareQRModalProps {
   visible: boolean;

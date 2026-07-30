@@ -1,7 +1,7 @@
 import { supabase } from '@repo/core/api';
 import { getTemporalRange } from '@repo/core/logic';
 
-import type { EnergyForecast } from '@self/types';
+import type { EnergyForecast } from '@repo/self/types';
 
 export interface PresenceFallbackCountOptions {
   targetRoles: string[];

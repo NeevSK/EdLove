@@ -10,7 +10,7 @@
  * Falls back to line-by-line text splitting when spatial data is absent.
  */
 
-import type { OCRBlock, OCRRawResult, OCRTable, OCRTableRow } from '@scanner-kit/ocr/types';
+import type { OCRBlock, OCRRawResult, OCRTable, OCRTableRow } from '@repo/scanner-kit/ocr/types';
 
 /** Maximum vertical distance (px) between two blocks to be in the same row */
 const ROW_PROXIMITY_PX = 15;

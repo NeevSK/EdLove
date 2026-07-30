@@ -14,7 +14,7 @@ export const BondSchema = z.object({
   id: z.uuid(),
   user_id: z.uuid(),
   entity_id: z.string(),
-  entity_type: z.enum(['PLATFORM', 'SCHOOL', 'CLASSROOM', 'COMMUNITY', 'PERSONAL', 'PERSONAL_CLASSROOM']),
+  entity_type: z.enum(['PLATFORM', 'SCHOOL', 'CLASSROOM', 'COMMUNITY', 'GROUP', 'PERSONAL', 'PERSONAL_CLASSROOM']),
   capacity: CapacitySchema,
   status: z.enum(['active', 'archived', 'pending']),
   metadata: z.record(z.string(), z.any()).optional(),

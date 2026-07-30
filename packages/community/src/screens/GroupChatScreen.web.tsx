@@ -20,8 +20,8 @@ import { getInitialsFromName } from '@repo/ui/utils/stringUtils';
 import { router, useLocalSearchParams } from 'expo-router';
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { communityAPI } from '@community/api/community';
-import HeaderMoreMenu from '@community/components/HeaderMoreMenu';
+import { communityAPI } from '@repo/community/api/community';
+import HeaderMoreMenu from '@repo/community/components/HeaderMoreMenu';
 
 interface ChatMessage {
   id: string;

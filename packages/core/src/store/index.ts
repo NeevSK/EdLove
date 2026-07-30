@@ -5,3 +5,4 @@ export { type TotalState, useStore } from '@repo/core/store/useStore';
 export * from '@repo/core/store/useTemporalStore';
 export { useTenantStore } from '@repo/core/store/useTenantStore';
 export { useUIStore } from '@repo/core/store/useUIStore';
+export { useConsentStore } from '@repo/core/store/useConsentStore';

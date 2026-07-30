@@ -48,14 +48,14 @@ import { useRouter } from 'expo-router';
 import React, { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FadeInDown } from 'react-native-reanimated';
-import { libraryAPI } from '@library/api/library';
-import { CollectionPickerModal } from '@library/components/CollectionPickerModal';
-import { LibraryThumbnailCard } from '@library/components/LibraryThumbnailCard';
-import { ResourceList } from '@library/components/ResourceList';
-import { getOrderedShelfDefs } from '@library/constants/shelf';
-import { useBookmarkedResources, useLibrary } from '@library/hooks/useLibrary';
-import type { LibraryResource } from '@library/types';
-import { buildLibraryExternalLinkOptions } from '@library/utils/externalLinks';
+import { libraryAPI } from '@repo/library/api/library';
+import { CollectionPickerModal } from '@repo/library/components/CollectionPickerModal';
+import { LibraryThumbnailCard } from '@repo/library/components/LibraryThumbnailCard';
+import { ResourceList } from '@repo/library/components/ResourceList';
+import { getOrderedShelfDefs } from '@repo/library/constants/shelf';
+import { useBookmarkedResources, useLibrary } from '@repo/library/hooks/useLibrary';
+import type { LibraryResource } from '@repo/library/types';
+import { buildLibraryExternalLinkOptions } from '@repo/library/utils/externalLinks';
 
 const LIBRARY_UI_CATEGORIES = [
   { id: 'All', en: 'All' },

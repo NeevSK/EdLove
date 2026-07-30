@@ -15,4 +15,4 @@ export {
   type ResourceLanguage,
   type ResourceType,
   type ResourceVisibility,
-} from '@library/types/Library';
+} from '@repo/library/types/Library';

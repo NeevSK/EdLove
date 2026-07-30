@@ -23,8 +23,8 @@ import {
 } from '@repo/ui/primitives';
 import { useEffect, useState } from 'react';
 import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
-import { useTomorrowPrep } from '@self/hooks/useTomorrowPrep';
-import type { DailyPrepItem } from '@self/types';
+import { useTomorrowPrep } from '@repo/self/hooks/useTomorrowPrep';
+import type { DailyPrepItem } from '@repo/self/types';
 
 interface TomorrowPrepProps {
   userId?: string;

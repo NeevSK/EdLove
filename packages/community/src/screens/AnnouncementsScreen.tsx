@@ -25,8 +25,8 @@ import {
 } from '@repo/ui/primitives';
 import { useCallback, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { communityAPI as community } from '@community/api/community';
-import type { AnnouncementWithAuthor } from '@community/types/Community';
+import { communityAPI as community } from '@repo/community/api/community';
+import type { AnnouncementWithAuthor } from '@repo/community/types/Community';
 
 interface AnnouncementsScreenProps {
   schoolId: string;

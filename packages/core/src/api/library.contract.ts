@@ -1,3 +1,6 @@
+Exit code: 0
+Wall time: 2.8 seconds
+Output:
 import { z } from 'zod';
 import {
   LibraryCollectionSchema,

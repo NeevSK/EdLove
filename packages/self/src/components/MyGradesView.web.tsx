@@ -3,7 +3,7 @@ import { Award, BookOpen, Clock } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { formatDistanceToNow } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { useStudentGrades } from '@self/hooks/useStudentGrades';
+import { useStudentGrades } from '@repo/self/hooks/useStudentGrades';
 
 interface MyGradesViewProps {
   userId?: string;

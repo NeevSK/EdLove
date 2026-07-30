@@ -7,9 +7,9 @@ import { Box, Button, Heading, HStack, Icon, Pressable, Text, VStack } from '@re
 import { hapticLight } from '@repo/ui/utils';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useReducer, useState } from 'react';
-import { communityAPI } from '@community/api/community';
-import type { CommunityGroup, GroupJoinPolicy, GroupJoinRequest, GroupMember } from '@community/types';
-import CreateGroupModal from '@community/components/CreateGroupModal';
+import { communityAPI } from '@repo/community/api/community';
+import type { CommunityGroup, GroupJoinPolicy, GroupJoinRequest, GroupMember } from '@repo/community/types';
+import CreateGroupModal from '@repo/community/components/CreateGroupModal';
 
 interface GroupMemberManagementProps {
   groupId: string;
@@ -350,11 +350,7 @@ export default function GroupMemberManagement({ groupId }: GroupMemberManagement
             const isOwner = member.capacity === 'owner';
             const isAdmin = member.capacity === 'admin';
             const isMe = member.user_id === userId;
-            const canManage = can('manage', {
-              __typename: 'GroupMember',
-              ...member,
-              memberId: member.user_id,
-            });
+            const canManage = can('manage', 'Group');
 
             return (
               <Pressable

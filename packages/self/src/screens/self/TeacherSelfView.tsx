@@ -7,33 +7,33 @@ import { Box, VStack } from '@repo/ui/primitives';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 // Kernel Imports from @repo/self (Breaking require cycle)
-import { BaseSelfView } from '@self/components/BaseSelfView';
-import DailyRhythm from '@self/components/DailyRhythm';
-import DecisionJournalSection from '@self/components/DecisionJournalSection';
-import { EnergyBarChart } from '@self/components/EnergyBarChart';
-import FireJournal from '@self/components/FireJournal';
-import GratitudeGlimmers from '@self/components/GratitudeGlimmers';
-import { ImpactRipplesCard } from '@self/components/ImpactRipplesCard';
-import JoyJar from '@self/components/JoyJar';
+import { BaseSelfView } from '@repo/self/components/BaseSelfView';
+import DailyRhythm from '@repo/self/components/DailyRhythm';
+import DecisionJournalSection from '@repo/self/components/DecisionJournalSection';
+import { EnergyBarChart } from '@repo/self/components/EnergyBarChart';
+import FireJournal from '@repo/self/components/FireJournal';
+import GratitudeGlimmers from '@repo/self/components/GratitudeGlimmers';
+import { ImpactRipplesCard } from '@repo/self/components/ImpactRipplesCard';
+import JoyJar from '@repo/self/components/JoyJar';
 
 // Legacy/Role Components
-import MoodLotus from '@self/components/MoodLotus';
-import { MoodPickerCard } from '@self/components/MoodPickerCard';
-import { PulseDashboard } from '@self/components/PulseDashboard';
-import RemindersManager from '@self/components/RemindersManager';
-import SleepTracker from '@self/components/SleepTracker';
-import TeachingHistoryTimeline from '@self/components/TeachingHistoryTimeline';
-import TomorrowPrep from '@self/components/TomorrowPrep';
-import VoiceJournaling from '@self/components/VoiceJournaling';
-import { WarmMirrorCard } from '@self/components/WarmMirrorCard';
-import WelcomeModal from '@self/components/WelcomeModal';
-import WindDownRitual from '@self/components/WindDownRitual';
-import WisdomSeeds from '@self/components/WisdomSeeds';
-import { useEnergyForecast } from '@self/hooks/useEnergyForecast';
-import { useJournalEntries } from '@self/hooks/useJournalEntries';
-import { useMoodLogs } from '@self/hooks/useMoodLogs';
-import { useWellbeingEnrichment } from '@self/hooks/useWellbeingEnrichment';
-import { JournalSection, MoodSection, TeacherPulse } from '@self/views/sections';
+import MoodLotus from '@repo/self/components/MoodLotus';
+import { MoodPickerCard } from '@repo/self/components/MoodPickerCard';
+import { PulseDashboard } from '@repo/self/components/PulseDashboard';
+import RemindersManager from '@repo/self/components/RemindersManager';
+import SleepTracker from '@repo/self/components/SleepTracker';
+import TeachingHistoryTimeline from '@repo/self/components/TeachingHistoryTimeline';
+import TomorrowPrep from '@repo/self/components/TomorrowPrep';
+import VoiceJournaling from '@repo/self/components/VoiceJournaling';
+import { WarmMirrorCard } from '@repo/self/components/WarmMirrorCard';
+import WelcomeModal from '@repo/self/components/WelcomeModal';
+import WindDownRitual from '@repo/self/components/WindDownRitual';
+import WisdomSeeds from '@repo/self/components/WisdomSeeds';
+import { useEnergyForecast } from '@repo/self/hooks/useEnergyForecast';
+import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
+import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
+import { useWellbeingEnrichment } from '@repo/self/hooks/useWellbeingEnrichment';
+import { JournalSection, MoodSection, TeacherPulse } from '@repo/self/views/sections';
 
 export default function TeacherSelfView() {
   const { t } = useTranslation();

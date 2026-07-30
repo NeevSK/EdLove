@@ -5,7 +5,7 @@ const mockAudit = vi.fn();
 
 vi.mock('@repo/core/api/deviceTrust', () => ({
   deviceTrustAPI: {
-    logAuditEvent: (...args) => mockAudit(...args),
+    logAuditEvent: (...args: unknown[]) => mockAudit(...args),
   },
 }));
 

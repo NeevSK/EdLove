@@ -5,7 +5,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { useProfileNavigation } from '@profile/navigation';
+import { useProfileNavigation } from '@repo/profile/navigation';
 
 let Paths: typeof import('expo-file-system').Paths | null = null;
 let File: typeof import('expo-file-system').File | null = null;
@@ -81,7 +81,7 @@ export function AvatarDisplay({
       if (File && cachePath) {
         const sourceFile = new File(manipulated.uri);
         const destFile = new File(cachePath);
-        await sourceFile.copy(destFile.uri);
+        await sourceFile.copy(destFile);
         setLocalCachePath(cachePath);
       }
 

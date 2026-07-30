@@ -25,7 +25,7 @@ import {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import { useCommunityPresence } from '@self/hooks/useCommunityPresence';
+import { useCommunityPresence } from '@repo/self/hooks/useCommunityPresence';
 
 interface CommunityPresenceProps {
   compact?: boolean;

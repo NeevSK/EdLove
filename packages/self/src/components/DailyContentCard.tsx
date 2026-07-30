@@ -10,8 +10,8 @@ import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/pr
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';
-import { dailyContentAPI } from '@self/api/dailyContent';
-import type { DailyContent } from '@self/types/Wellbeing';
+import { dailyContentAPI } from '@repo/self/api/dailyContent';
+import type { DailyContent } from '@repo/self/types/Wellbeing';
 
 interface DailyContentCardProps {
   type: 'motivation' | 'did_you_know';

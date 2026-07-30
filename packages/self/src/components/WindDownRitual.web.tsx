@@ -7,7 +7,7 @@
 
 import { CircleCheck } from '@repo/ui/icons';
 import { useState } from 'react';
-import { saveWindDownRitual } from '@self/api/selfFeatureRepository';
+import { saveWindDownRitual } from '@repo/self/api/selfFeatureRepository';
 
 interface WindDownRitualProps {
   userId?: string;

@@ -11,24 +11,6 @@
       "@repo/classroom/*": [
         "./src/*"
       ],
-      "@library/*": [
-        "../library/src/*"
-      ],
-      "@community/*": [
-        "../community/src/*"
-      ],
-      "@people/*": [
-        "../people/src/*"
-      ],
-      "@profile/*": [
-        "../profile/src/*"
-      ],
-      "@scanner-kit/*": [
-        "../scanner-kit/src/*"
-      ],
-      "@self/*": [
-        "../self/src/*"
-      ],
       "@repo/core": [
         "../core/dist/index.d.ts"
       ],
@@ -123,55 +105,5 @@
   },
   "include": [
     "src/**/*"
-  ],
-  "references": [
-    {
-      "path": "../core"
-    },
-    {
-      "path": "../ui"
-    },
-    {
-      "path": "../self"
-    },
-    {
-      "path": "../library"
-    },
-    {
-      "path": "../people"
-    },
-    {
-      "path": "../profile"
-    },
-    {
-      "path": "../scanner-kit"
-    },
-    {
-      "path": "../community"
-    },
-    {
-      "path": "../graphics"
-    },
-    {
-      "path": "../policies"
-    },
-    {
-      "path": "../schema"
-    },
-    {
-      "path": "../form-builder-engine"
-    },
-    {
-      "path": "../ai"
-    },
-    {
-      "path": "../admin"
-    },
-    {
-      "path": "../database"
-    },
-    {
-      "path": "../analytics"
-    }
   ]
 }

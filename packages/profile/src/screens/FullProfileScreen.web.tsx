@@ -12,15 +12,15 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
-import { AddSocialLinkModal } from '@profile/components/AddSocialLinkModal';
-import { AvatarDisplay } from '@profile/components/AvatarDisplay';
-import { ContactLinktree } from '@profile/components/ContactLinktree';
-import { EditableItem } from '@profile/components/EditableItem';
-import { GiveThuthimalModal } from '@profile/components/GiveThuthimalModal';
-import { useProfile } from '@profile/hooks/useProfile';
-import { useProfileCompletion } from '@profile/hooks/useProfileCompletion';
-import { useSocialLinks } from '@profile/hooks/useSocialLinks';
-import type { UserProfile } from '@profile/types';
+import { AddSocialLinkModal } from '@repo/profile/components/AddSocialLinkModal';
+import { AvatarDisplay } from '@repo/profile/components/AvatarDisplay';
+import { ContactLinktree } from '@repo/profile/components/ContactLinktree';
+import { EditableItem } from '@repo/profile/components/EditableItem';
+import { GiveThuthimalModal } from '@repo/profile/components/GiveThuthimalModal';
+import { useProfile } from '@repo/profile/hooks/useProfile';
+import { useProfileCompletion } from '@repo/profile/hooks/useProfileCompletion';
+import { useSocialLinks } from '@repo/profile/hooks/useSocialLinks';
+import type { UserProfile } from '@repo/profile/types';
 
 export default function FullProfileScreenWeb() {
   const params = useLocalSearchParams<{ id?: string; userId?: string; full_name?: string }>();

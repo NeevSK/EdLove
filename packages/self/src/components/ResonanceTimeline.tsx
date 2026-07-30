@@ -9,9 +9,9 @@ import { Box, Heading, ScrollView, Spinner, Text, VStack } from '@repo/ui/primit
 
 import type React from 'react';
 import Animated, { FadeIn } from 'react-native-reanimated';
-import { useJourneyData } from '@self/hooks/useJourneyData';
-import { GenesisNode } from '@self/components/GenesisNode';
-import { TimelineEvent } from '@self/components/TimelineEvent';
+import { useJourneyData } from '@repo/self/hooks/useJourneyData';
+import { GenesisNode } from '@repo/self/components/GenesisNode';
+import { TimelineEvent } from '@repo/self/components/TimelineEvent';
 
 export const ResonanceTimeline: React.FC = () => {
   const { journey, loading } = useJourneyData();

@@ -19,6 +19,7 @@ import type {
 export type IPostHog = IAnalyticsPort;
 
 let _posthog: IPostHog | null = null;
+let _telemetryOptedOut = false;
 
 /**
  * Injection point for platform-specific PostHog instance.
@@ -26,6 +27,11 @@ let _posthog: IPostHog | null = null;
  */
 export const injectPostHog = (instance: IPostHog) => {
   _posthog = instance;
+};
+
+export const optOutTelemetry = () => {
+  _telemetryOptedOut = true;
+  _posthog?.reset();
 };
 
 export const isPostHogInitialized = () => _posthog !== null;
@@ -43,7 +49,7 @@ export const initPostHog = async () => {
 /** @deprecated Use trackProductEvent for new product events. */
 export const trackEvent = (event: string, properties?: Record<string, unknown>) => {
   const safeProperties = sanitizeTelemetryData(properties);
-  if (_posthog) {
+  if (_posthog && !_telemetryOptedOut) {
     _posthog.capture(event, safeProperties);
   } else if (typeof __DEV__ !== 'undefined' && __DEV__) {
     console.log('[PostHog Bridge] Event tracked (noop):', event, safeProperties);
@@ -65,7 +71,7 @@ export const trackProductEvent = <TEvent extends ProductAnalyticsEventName>(
 
 export const identifyUser = (userId: string, properties?: Record<string, unknown>) => {
   const safeProperties = sanitizeTelemetryData(properties);
-  if (_posthog) {
+  if (_posthog && !_telemetryOptedOut) {
     _posthog.identify(userId, safeProperties);
   } else if (typeof __DEV__ !== 'undefined' && __DEV__) {
     console.log('[PostHog Bridge] User identified (noop):', userId, safeProperties);
@@ -80,7 +86,7 @@ export const resetUser = () => {
 
 export const trackScreen = (screenName: string, properties?: Record<string, unknown>) => {
   const safeProperties = sanitizeTelemetryData(properties);
-  if (_posthog?.screen) {
+  if (!_telemetryOptedOut && _posthog?.screen) {
     _posthog.screen(screenName, safeProperties);
   } else if (_posthog) {
     _posthog.capture('$screen_view', {

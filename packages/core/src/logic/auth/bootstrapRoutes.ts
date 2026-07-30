@@ -29,6 +29,7 @@ export function getAuthRouteTarget(params: {
   bootstrapReady: boolean;
   sessionMode: IdentityMode | null;
   onboardingCompleted: boolean;
+  hasActiveCapacity?: boolean;
   hasSession?: boolean;
 }): RouteTarget {
   const { pathname } = params;

@@ -26,8 +26,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
-import { communityAPI } from '@community/api/community';
-import SocialShieldModal from '@community/components/SocialShieldModal';
+import { communityAPI } from '@repo/community/api/community';
+import SocialShieldModal from '@repo/community/components/SocialShieldModal';
 
 interface PublicUser {
   id: string;
@@ -56,7 +56,7 @@ export default function UserPublicProfileScreen() {
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const userName = Array.isArray(params.userName) ? params.userName[0] : params.userName;
   const userId = userIdParam || id || '';
-  const { can } = usePermissions();
+  const { can, flags } = usePermissions();
   const isMessagingEnabled = useDomainRollout('messages');
   const currentUserId = useStore((state) => state.user?.id);
 

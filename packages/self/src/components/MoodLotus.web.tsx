@@ -23,7 +23,7 @@ import {
 } from '@repo/ui/primitives';
 import { useEffect, useRef, useState } from 'react';
 import { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
-import { useMoodLogs } from '@self/hooks/useMoodLogs';
+import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
 
 interface MoodLotusProps {
   userId?: string;

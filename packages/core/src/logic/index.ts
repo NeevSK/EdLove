@@ -13,6 +13,7 @@ export { useManualSnapshot } from '@repo/core/hooks/useManualSnapshot';
 export { useNotifications } from '@repo/core/hooks/useNotifications';
 export { useTemporalHeatmap } from '@repo/core/hooks/useTemporalHeatmap';
 export { accountPin } from '@repo/core/lib/accountPin';
+export { useConsentStore } from '@repo/core/store/useConsentStore';
 export {
   type InviteCodeData,
   incrementInviteCodeUsage,

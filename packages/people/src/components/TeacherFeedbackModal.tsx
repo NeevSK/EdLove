@@ -22,7 +22,7 @@ import {
 } from '@repo/ui/primitives';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { teacherFeedbackAPI } from '@people/feedback';
+import { teacherFeedbackAPI } from '@repo/people/feedback';
 
 interface TeacherFeedbackModalProps {
   isOpen: boolean;

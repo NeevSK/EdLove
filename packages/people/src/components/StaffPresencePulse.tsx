@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import type React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useStaffPresence } from '@people/hooks/useStaffPresence';
+import { useStaffPresence } from '@repo/people/hooks/useStaffPresence';
 
 interface StaffPresencePulseProps {
   userId: string;

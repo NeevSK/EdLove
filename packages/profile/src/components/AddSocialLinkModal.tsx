@@ -27,7 +27,7 @@ import type React from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, ScrollView } from 'react-native';
-import { useSocialLinks } from '@profile/hooks/useSocialLinks';
+import { useSocialLinks } from '@repo/profile/hooks/useSocialLinks';
 
 interface AddSocialLinkModalProps {
   visible: boolean;

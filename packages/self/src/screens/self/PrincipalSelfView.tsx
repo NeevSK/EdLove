@@ -7,27 +7,27 @@ import { Box, VStack } from '@repo/ui/primitives';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 // Kernel Imports from @repo/self (Breaking require cycle)
-import { BaseSelfView } from '@self/components/BaseSelfView';
-import DailyRhythm from '@self/components/DailyRhythm';
-import DecisionJournalSection from '@self/components/DecisionJournalSection';
-import { EnergyBarChart } from '@self/components/EnergyBarChart';
-import GovernanceHistoryTimeline from '@self/components/GovernanceHistoryTimeline';
-import { ImpactRipplesCard } from '@self/components/ImpactRipplesCard';
-import MoodLotus from '@self/components/MoodLotus';
-import { MoodPickerCard } from '@self/components/MoodPickerCard';
-import { PulseDashboard } from '@self/components/PulseDashboard';
-import ResonancePatternCard from '@self/components/ResonancePatternCard';
-import VoiceJournaling from '@self/components/VoiceJournaling';
-import { WarmMirrorCard } from '@self/components/WarmMirrorCard';
+import { BaseSelfView } from '@repo/self/components/BaseSelfView';
+import DailyRhythm from '@repo/self/components/DailyRhythm';
+import DecisionJournalSection from '@repo/self/components/DecisionJournalSection';
+import { EnergyBarChart } from '@repo/self/components/EnergyBarChart';
+import GovernanceHistoryTimeline from '@repo/self/components/GovernanceHistoryTimeline';
+import { ImpactRipplesCard } from '@repo/self/components/ImpactRipplesCard';
+import MoodLotus from '@repo/self/components/MoodLotus';
+import { MoodPickerCard } from '@repo/self/components/MoodPickerCard';
+import { PulseDashboard } from '@repo/self/components/PulseDashboard';
+import ResonancePatternCard from '@repo/self/components/ResonancePatternCard';
+import VoiceJournaling from '@repo/self/components/VoiceJournaling';
+import { WarmMirrorCard } from '@repo/self/components/WarmMirrorCard';
 // Role Components
-import WelcomeModal from '@self/components/WelcomeModal';
-import WisdomSeeds from '@self/components/WisdomSeeds';
-import { useDecisionJournal } from '@self/hooks/useDecisionJournal';
-import { useEnergyForecast } from '@self/hooks/useEnergyForecast';
-import { useJournalEntries } from '@self/hooks/useJournalEntries';
-import { useMoodLogs } from '@self/hooks/useMoodLogs';
-import { useWellbeingEnrichment } from '@self/hooks/useWellbeingEnrichment';
-import { DecisionSection, JournalSection, MoodSection, PrincipalPulse } from '@self/views/sections';
+import WelcomeModal from '@repo/self/components/WelcomeModal';
+import WisdomSeeds from '@repo/self/components/WisdomSeeds';
+import { useDecisionJournal } from '@repo/self/hooks/useDecisionJournal';
+import { useEnergyForecast } from '@repo/self/hooks/useEnergyForecast';
+import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
+import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
+import { useWellbeingEnrichment } from '@repo/self/hooks/useWellbeingEnrichment';
+import { DecisionSection, JournalSection, MoodSection, PrincipalPulse } from '@repo/self/views/sections';
 
 export default function PrincipalSelfView() {
   const { t } = useTranslation();

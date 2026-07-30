@@ -6,21 +6,21 @@ import { TemporalShield } from '@repo/ui/components/TemporalShield';
 
 import { Lightbulb, Sparkles } from '@repo/ui/icons';
 import { useTranslation } from 'react-i18next';
-import { BaseSelfView } from '@self/components/BaseSelfView';
-import { ImpactRipplesCard } from '@self/components/ImpactRipplesCard';
-import MoodLotus from '@self/components/MoodLotus';
-import { MoodPickerCard } from '@self/components/MoodPickerCard';
-import { PulseDashboard } from '@self/components/PulseDashboard';
-import { ResonanceTimeline } from '@self/components/ResonanceTimeline';
-import VoiceJournaling from '@self/components/VoiceJournaling';
-import { WarmMirrorCard } from '@self/components/WarmMirrorCard';
-import WelcomeModal from '@self/components/WelcomeModal';
-import WisdomSeeds from '@self/components/WisdomSeeds';
-import { useJournalEntries } from '@self/hooks/useJournalEntries';
-import { useMoodLogs } from '@self/hooks/useMoodLogs';
-import { useWellbeingEnrichment } from '@self/hooks/useWellbeingEnrichment';
-import { useWisdom } from '@self/hooks/useWisdom';
-import { MoodSection, PhilosophySection, VisionSection } from '@self/views/sections';
+import { BaseSelfView } from '@repo/self/components/BaseSelfView';
+import { ImpactRipplesCard } from '@repo/self/components/ImpactRipplesCard';
+import MoodLotus from '@repo/self/components/MoodLotus';
+import { MoodPickerCard } from '@repo/self/components/MoodPickerCard';
+import { PulseDashboard } from '@repo/self/components/PulseDashboard';
+import { ResonanceTimeline } from '@repo/self/components/ResonanceTimeline';
+import VoiceJournaling from '@repo/self/components/VoiceJournaling';
+import { WarmMirrorCard } from '@repo/self/components/WarmMirrorCard';
+import WelcomeModal from '@repo/self/components/WelcomeModal';
+import WisdomSeeds from '@repo/self/components/WisdomSeeds';
+import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
+import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
+import { useWellbeingEnrichment } from '@repo/self/hooks/useWellbeingEnrichment';
+import { useWisdom } from '@repo/self/hooks/useWisdom';
+import { MoodSection, PhilosophySection, VisionSection } from '@repo/self/views/sections';
 
 export default function FounderSelfView() {
   const { t } = useTranslation();

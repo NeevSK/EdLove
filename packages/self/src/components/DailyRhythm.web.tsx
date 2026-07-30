@@ -26,8 +26,8 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { useState } from 'react';
-import { useTimetable } from '@self/hooks/useTimetable';
-import type { Period } from '@self/types';
+import { useTimetable } from '@repo/self/hooks/useTimetable';
+import type { Period } from '@repo/self/types';
 
 const DAYS = [
   { id: 1, label: 'Mon' },

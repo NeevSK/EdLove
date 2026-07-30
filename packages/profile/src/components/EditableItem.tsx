@@ -2,7 +2,7 @@ import { Check, Pen, X } from '@repo/ui/icons';
 import { Box, HStack, Input, InputField, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useEffect, useState } from 'react';
-import { ProfileValidator } from '@profile/lib/validator';
+import { ProfileValidator } from '@repo/profile/lib/validator';
 
 interface EditableItemProps {
   icon: any;

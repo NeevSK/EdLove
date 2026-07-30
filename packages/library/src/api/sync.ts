@@ -1,6 +1,6 @@
 import { supabase } from '@repo/core/api';
 
-import { type KnowledgeNodeIndex, knowledgeDB } from '@library/api/database';
+import { type KnowledgeNodeIndex, knowledgeDB } from '@repo/library/api/database';
 
 const SYNC_KEY = 'library_index_sync';
 

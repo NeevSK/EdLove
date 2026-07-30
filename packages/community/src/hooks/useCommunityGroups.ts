@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import type { CommunityGroup } from '@community/types';
-import { useCommunity } from '@community/hooks/useCommunity';
+import type { CommunityGroup } from '@repo/community/types';
+import { useCommunity } from '@repo/community/hooks/useCommunity';
 
 export interface UseCommunityGroupsOptions {
   schoolId?: string;

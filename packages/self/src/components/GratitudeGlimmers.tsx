@@ -27,7 +27,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInRight, FadeInUp } from 'react-native-reanimated';
-import { useGratitude } from '@self/hooks/useGratitude';
+import { useGratitude } from '@repo/self/hooks/useGratitude';
 
 interface GratitudeGlimmersProps {
   userId?: string;

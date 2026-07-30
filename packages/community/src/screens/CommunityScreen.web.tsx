@@ -9,14 +9,14 @@ import { Bell, Compass, Info, Plus, Shield, Users } from '@repo/ui/icons';
 import { Box, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
-import { CommentSheet } from '@community/components/CommentSheet';
-import CommunityHearth from '@community/components/CommunityHearth';
-import CreateGroupModal from '@community/components/CreateGroupModal';
-import CreatePostModal from '@community/components/CreatePostModal';
-import { PostCard } from '@community/components/PostCard';
-import { useCommunity } from '@community/hooks/useCommunity';
-import { useCommunityGroups } from '@community/hooks/useCommunityGroups';
-import AnnouncementsScreen from '@community/screens/AnnouncementsScreen';
+import { CommentSheet } from '@repo/community/components/CommentSheet';
+import CommunityHearth from '@repo/community/components/CommunityHearth';
+import CreateGroupModal from '@repo/community/components/CreateGroupModal';
+import CreatePostModal from '@repo/community/components/CreatePostModal';
+import { PostCard } from '@repo/community/components/PostCard';
+import { useCommunity } from '@repo/community/hooks/useCommunity';
+import { useCommunityGroups } from '@repo/community/hooks/useCommunityGroups';
+import AnnouncementsScreen from '@repo/community/screens/AnnouncementsScreen';
 import {
   type CommunityWorkspaceMode,
   deriveCommunityPulse,
@@ -24,8 +24,8 @@ import {
   getCommunityModeOptions,
   getCommunityQuickPaths,
   mapCommunitySurfaceSlots,
-} from '@community/screens/communityWorkspace.shared';
-import type { CommunityPost, DirectConversation } from '@community/types';
+} from '@repo/community/screens/communityWorkspace.shared';
+import type { CommunityPost, DirectConversation } from '@repo/community/types';
 
 type CommunityState = {
   activeMode: CommunityWorkspaceMode;

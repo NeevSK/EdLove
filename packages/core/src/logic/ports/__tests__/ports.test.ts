@@ -105,6 +105,16 @@ describe('Hexagonal Ports Interfaces Compilation & Contract Verification', () =>
         }
         return { permitted: false, reason: 'DefaultDeny' };
       }),
+      issueCapabilityToken: vi.fn(async () => ({
+        tokenId: 'token-1',
+        principalId: 'teacher-1',
+        tenantId: 'school-1',
+        operationContext: 'generate_report_card',
+        deviceId: 'device-1',
+        issuedAt: 0,
+        expiresAt: 1,
+        policyVersionHash: 'test-policy',
+      })),
     };
 
     const request: AuthorizationRequest = {

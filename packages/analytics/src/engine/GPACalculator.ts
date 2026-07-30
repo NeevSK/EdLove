@@ -101,6 +101,7 @@ export class GPACalculator {
         marks: entry.marks ?? 0,
         grade: entry.letterGrade ?? '',
         gpa: entry.gpa,
+        graded_at: new Date(entry.gradedAt),
         created_at: new Date(entry.gradedAt),
         updated_at: new Date(entry.gradedAt),
         classroom_id: '', // Not in GradebookEntry, but required for POA type

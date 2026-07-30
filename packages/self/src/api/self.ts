@@ -6,7 +6,7 @@ import {
 } from '@repo/core/api';
 import { useStore } from '@repo/core/logic';
 import { APIError } from '@repo/core/types';
-import type { FireJournalEntry, MoodLog } from '@self/types';
+import type { FireJournalEntry, MoodLog } from '@repo/self/types';
 
 // Create the type-safe RPC client
 const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);

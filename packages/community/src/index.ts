@@ -1,29 +1,29 @@
 // API
-export * from '@community/api';
+export * from '@repo/community/api';
 
 // Components
-export * from '@community/components';
+export * from '@repo/community/components';
 // Constants
-export * from '@community/constants/communityRegistry';
+export * from '@repo/community/constants/communityRegistry';
 // Hooks
-export * from '@community/hooks';
+export * from '@repo/community/hooks';
 // Screens
-export { default as AnnouncementsScreen } from '@community/screens/AnnouncementsScreen';
+export { default as AnnouncementsScreen } from '@repo/community/screens/AnnouncementsScreen';
 export type {
   BaseChatScreenProps,
   SubscriptionConfig,
-} from '@community/screens/BaseChatScreen';
-export { default as BaseChatScreen } from '@community/screens/BaseChatScreen';
-export { default as CommunityScreen } from '@community/screens/CommunityScreen';
-export { default as CommunityScreenWeb } from '@community/screens/CommunityScreen.web';
-export { default as DirectMessageScreen } from '@community/screens/DirectMessageScreen';
-export { default as DirectMessagesListScreen } from '@community/screens/DirectMessagesListScreen';
-export { default as GroupChatScreen } from '@community/screens/GroupChatScreen';
-export { default as GroupDetailsScreen } from '@community/screens/GroupDetailsScreen';
-export { default as GroupDetailsScreenWeb } from '@community/screens/GroupDetailsScreen.web';
-export { default as GroupsScreen } from '@community/screens/GroupsScreen';
-export { default as InvitationWelcomeScreen } from '@community/screens/InvitationWelcomeScreen';
-export { default as InviteCodeEntry } from '@community/screens/InviteCodeEntry';
-export { default as UserPublicProfileScreen } from '@community/screens/UserPublicProfileScreen';
+} from '@repo/community/screens/BaseChatScreen';
+export { default as BaseChatScreen } from '@repo/community/screens/BaseChatScreen';
+export { default as CommunityScreen } from '@repo/community/screens/CommunityScreen';
+export { default as CommunityScreenWeb } from '@repo/community/screens/CommunityScreen.web';
+export { default as DirectMessageScreen } from '@repo/community/screens/DirectMessageScreen';
+export { default as DirectMessagesListScreen } from '@repo/community/screens/DirectMessagesListScreen';
+export { default as GroupChatScreen } from '@repo/community/screens/GroupChatScreen';
+export { default as GroupDetailsScreen } from '@repo/community/screens/GroupDetailsScreen';
+export { default as GroupDetailsScreenWeb } from '@repo/community/screens/GroupDetailsScreen.web';
+export { default as GroupsScreen } from '@repo/community/screens/GroupsScreen';
+export { default as InvitationWelcomeScreen } from '@repo/community/screens/InvitationWelcomeScreen';
+export { default as InviteCodeEntry } from '@repo/community/screens/InviteCodeEntry';
+export { default as UserPublicProfileScreen } from '@repo/community/screens/UserPublicProfileScreen';
 // Types
-export * from '@community/types';
+export * from '@repo/community/types';

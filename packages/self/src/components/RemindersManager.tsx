@@ -34,7 +34,7 @@ import {
   type ReminderRecord,
   deleteReminder as removeReminderRecord,
   updateReminder,
-} from '@self/api/selfFeatureRepository';
+} from '@repo/self/api/selfFeatureRepository';
 
 type Reminder = ReminderRecord;
 

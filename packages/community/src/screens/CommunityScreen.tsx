@@ -22,22 +22,22 @@ import { router } from 'expo-router';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { Platform } from 'react-native';
-import { CommentSheet } from '@community/components/CommentSheet';
-import CommunityHearth from '@community/components/CommunityHearth';
-import CreateGroupModal from '@community/components/CreateGroupModal';
-import CreatePostModal from '@community/components/CreatePostModal';
-import { PostCard } from '@community/components/PostCard';
-import SocialShieldModal from '@community/components/SocialShieldModal';
-import AnnouncementsScreen from '@community/screens/AnnouncementsScreen';
+import { CommentSheet } from '@repo/community/components/CommentSheet';
+import CommunityHearth from '@repo/community/components/CommunityHearth';
+import CreateGroupModal from '@repo/community/components/CreateGroupModal';
+import CreatePostModal from '@repo/community/components/CreatePostModal';
+import { PostCard } from '@repo/community/components/PostCard';
+import SocialShieldModal from '@repo/community/components/SocialShieldModal';
+import AnnouncementsScreen from '@repo/community/screens/AnnouncementsScreen';
 import {
   type CommunityWorkspaceMode,
   deriveCommunityPulse,
   getCommunityFilterOptions,
   getCommunityModeOptions,
   mapCommunitySurfaceSlots,
-} from '@community/screens/communityWorkspace.shared';
-import DirectMessagesListScreen from '@community/screens/DirectMessagesListScreen';
-import GroupsScreen from '@community/screens/GroupsScreen';
+} from '@repo/community/screens/communityWorkspace.shared';
+import DirectMessagesListScreen from '@repo/community/screens/DirectMessagesListScreen';
+import GroupsScreen from '@repo/community/screens/GroupsScreen';
 
 interface CommunityScreenState {
   activeMode: CommunityWorkspaceMode;

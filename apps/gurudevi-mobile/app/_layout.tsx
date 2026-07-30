@@ -35,7 +35,7 @@ import {
   trackProductEvent,
 } from '@repo/core/monitoring';
 import { bootstrapPlatform, storage } from '@repo/core/native';
-import { usePolicyVersionInvalidation, clearPowerSync } from '@repo/core/powersync';
+import { usePolicyVersionInvalidation, disconnectPowerSync as clearPowerSync } from '@repo/core/adapters/powersync';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';

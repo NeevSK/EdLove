@@ -19,8 +19,8 @@ import {
 } from '@repo/ui/primitives';
 import { useEffect, useState } from 'react';
 import Animated, { FadeIn, SlideInUp } from 'react-native-reanimated';
-import { ENERGY_COLORS } from '@self/constants/wellbeing';
-import { useEnergyForecast } from '@self/hooks/useEnergyForecast';
+import { ENERGY_COLORS } from '@repo/self/constants/wellbeing';
+import { useEnergyForecast } from '@repo/self/hooks/useEnergyForecast';
 
 interface EnergyForecastProps {
   userId?: string;

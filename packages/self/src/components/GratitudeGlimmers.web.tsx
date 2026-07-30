@@ -10,8 +10,8 @@
 import { Heart, Plus } from '@repo/ui/icons';
 import { formatDistanceToNow } from 'date-fns';
 import { useState } from 'react';
-import { useGratitude } from '@self/hooks/useGratitude';
-import type { GratitudeEntry } from '@self/types';
+import { useGratitude } from '@repo/self/hooks/useGratitude';
+import type { GratitudeEntry } from '@repo/self/types';
 
 interface GratitudeGlimmersProps {
   userId?: string;

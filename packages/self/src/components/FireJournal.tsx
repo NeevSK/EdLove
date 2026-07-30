@@ -34,7 +34,7 @@ import {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useFireJournal } from '@self/hooks/useFireJournal';
+import { useFireJournal } from '@repo/self/hooks/useFireJournal';
 
 interface FireJournalProps {
   userId?: string;

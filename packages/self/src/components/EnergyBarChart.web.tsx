@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EnergyBarChart.web.tsx
  *
  * Web override of the RN EnergyBarChart. The RN version uses hardcoded white
@@ -10,7 +10,7 @@
  *
  * Metro automatically resolves .web.tsx over .tsx on the web platform.
  */
-import { ENERGY_COLORS } from '@self/constants/wellbeing';
+import { ENERGY_COLORS } from '@repo/self/constants/wellbeing';
 
 interface EnergyBarChartProps {
   bars: Array<{

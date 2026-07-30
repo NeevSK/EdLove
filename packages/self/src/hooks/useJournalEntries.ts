@@ -3,9 +3,9 @@ import { useTemporalStore } from '@repo/core/logic';
 import { GuestDataManager } from '@repo/core/native';
 
 import { useCallback, useEffect, useState } from 'react';
-import { createJournalEntry, fetchJournalEntries } from '@self/api/selfFeatureRepository';
+import { createJournalEntry, fetchJournalEntries } from '@repo/self/api/selfFeatureRepository';
 
-import type { JournalEntry } from '@self/types';
+import type { JournalEntry } from '@repo/self/types';
 
 export const useJournalEntries = () => {
   const [entries, setEntries] = useState<JournalEntry[]>([]);

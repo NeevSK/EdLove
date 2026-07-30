@@ -1,7 +1,7 @@
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { Box, ScrollView, Text } from '@repo/ui/primitives';
 
-import TeacherAdminWidget from '@people/components/TeacherAdminWidget';
+import TeacherAdminWidget from '@repo/people/components/TeacherAdminWidget';
 
 interface TeacherAdminPortalModalProps {
   visible: boolean;
