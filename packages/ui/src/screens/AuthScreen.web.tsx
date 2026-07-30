@@ -1,26 +1,26 @@
 import { authAPI, identityAPI } from '@repo/core/api';
 import { handleAPIError } from '@repo/core/api/interceptor';
 import { useIdentity } from '@repo/core/hooks';
+import { getSessionIdentityMode, isAnonymousIdentity } from '@repo/core/logic';
 import { storage } from '@repo/core/storage';
 import type { Capacity, User } from '@repo/core/types';
 import { validateForm, validators } from '@repo/core/utils';
-import { getSessionIdentityMode, isAnonymousIdentity } from '@repo/core/logic';
-import { Key } from 'lucide-react-native';
+import { Key } from '@repo/ui/icons';
 import { memo, useCallback, useEffect, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BreathAnimation } from '../components/BreathAnimation';
-import { GatewayFooter } from '../components/GatewayFooter.web';
-import { GatewayHeader } from '../components/GatewayHeader.web';
-import { LivingGlow } from '../components/LivingGlow';
-import { SanctuaryBackground } from '../components/SanctuaryBackground';
-import { Box } from '../components/ui/box';
-import { Button, ButtonSpinner, ButtonText } from '../components/ui/button';
-import { HStack } from '../components/ui/hstack';
-import { Input, InputField } from '../components/ui/input';
-import { Heading, Text } from '../components/ui/text';
-import { VStack } from '../components/ui/vstack';
-import { useTheme } from '../hooks/useTheme';
-import { useSanctuaryToast } from '../providers/ToastProvider';
+import { BreathAnimation } from '@repo/ui/components/BreathAnimation';
+import { GatewayFooter } from '@repo/ui/components/GatewayFooter.web';
+import { GatewayHeader } from '@repo/ui/components/GatewayHeader.web';
+import { LivingGlow } from '@repo/ui/components/LivingGlow';
+import { SanctuaryBackground } from '@repo/ui/components/SanctuaryBackground';
+import { Box } from '@repo/ui/components/ui/box';
+import { Button, ButtonSpinner, ButtonText } from '@repo/ui/components/ui/button';
+import { HStack } from '@repo/ui/components/ui/hstack';
+import { Input, InputField } from '@repo/ui/components/ui/input';
+import { Heading, Text } from '@repo/ui/components/ui/text';
+import { VStack } from '@repo/ui/components/ui/vstack';
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 
 interface AuthScreenProps {
   onContinueAsGuest?: () => void;
@@ -114,13 +114,9 @@ export const AuthScreenWeb = memo(
           const invite = JSON.parse(pendingInvite) as { school_id?: string };
           if (!invite.school_id) return;
 
-          await identityAPI.updateProfile(internalId, {
-            school_id: invite.school_id,
-          });
-          storage.delete('pending_invite');
           showToast({
-            message: successMessage,
-            type: 'success',
+            message: `${successMessage} Claim the official invitation to activate school access.`,
+            type: 'info',
           });
         } catch (error) {
           console.error('Failed to apply pending invite on web auth:', error);
@@ -160,7 +156,7 @@ export const AuthScreenWeb = memo(
       try {
         const redirectUrl = window.location.origin;
         const session = await authAPI.getAuthSession().catch(() => null);
-        const isAnonymousSession = getSessionIdentityMode(session) === 'guest';
+        const isAnonymousSession = getSessionIdentityMode(session) === 'anonymous';
 
         if (isAnonymousSession && session?.user) {
           await authAPI.linkOAuthIdentity('google', redirectUrl);
@@ -185,7 +181,7 @@ export const AuthScreenWeb = memo(
       try {
         const redirectUrl = window.location.origin;
         const session = await authAPI.getAuthSession().catch(() => null);
-        const isAnonymousSession = getSessionIdentityMode(session) === 'guest';
+        const isAnonymousSession = getSessionIdentityMode(session) === 'anonymous';
 
         if (isAnonymousSession && session?.user) {
           await authAPI.registerPasskey(redirectUrl, true);

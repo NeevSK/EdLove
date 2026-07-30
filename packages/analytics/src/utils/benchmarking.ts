@@ -1,4 +1,4 @@
-import type { BenchmarkData } from '../types/AnalyticsTypes';
+import type { BenchmarkData } from '@repo/analytics/types/AnalyticsTypes';
 
 export const EDUCATION_BENCHMARKS: BenchmarkData[] = [
   {

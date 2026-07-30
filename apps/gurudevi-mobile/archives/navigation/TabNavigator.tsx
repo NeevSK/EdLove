@@ -21,7 +21,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { WorkforceShell } from '@repo/workforce';
-import { Hammer, Heart, Library, School, User, Users, X } from 'lucide-react-native';
+import { Hammer, Heart, Library, School, User, Users, X } from '@repo/ui/icons';
 import { lazy, Suspense, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

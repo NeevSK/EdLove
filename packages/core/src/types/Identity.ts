@@ -31,6 +31,7 @@ export interface Bond {
     | 'SCHOOL'
     | 'CLASSROOM'
     | 'COMMUNITY'
+    | 'GROUP'
     | 'PERSONAL'
     | 'PERSONAL_CLASSROOM';
   capacity: Capacity;

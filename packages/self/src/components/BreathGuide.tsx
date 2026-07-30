@@ -4,10 +4,9 @@
  * 1-minute breathing exercise with visual and haptic rhythm
  */
 
+import { Wind } from '@repo/ui/icons';
 import { Box, Button, ButtonText, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-
 import * as Haptics from 'expo-haptics';
-import { Wind } from 'lucide-react-native';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';

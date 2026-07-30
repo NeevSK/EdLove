@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # UI Abstraction Layer Architecture
 
 **Status**: APPROVED | **Date**: 2026-02-11 | **Author**: Senior Architecture Team

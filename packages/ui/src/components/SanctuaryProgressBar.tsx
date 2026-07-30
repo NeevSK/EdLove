@@ -1,14 +1,7 @@
-import { useEffect } from 'react';
 import { StyleSheet, type ViewStyle } from 'react-native';
-import Reanimated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated';
-import { Box, HStack, VStack } from '../gluestack';
-import { Text } from '../primitives';
+import { EaseView } from 'react-native-ease';
+import { Box, HStack, VStack } from '@repo/ui/gluestack';
+import { Text } from '@repo/ui/primitives';
 
 export interface SanctuaryProgressBarProps {
   percentage: number; // 0–100
@@ -27,43 +20,10 @@ export function SanctuaryProgressBar({
   compact = false,
   style,
 }: SanctuaryProgressBarProps) {
-  const fillWidth = useSharedValue(0);
-
-  useEffect(() => {
-    fillWidth.value = withTiming(Math.min(100, Math.max(0, percentage)), { duration: 600 });
-  }, [percentage, fillWidth]);
-
-  const fillStyle = useAnimatedStyle(() => ({
-    width: `${fillWidth.value}%`,
-  }));
-
-  // Reanimated glow pulse when complete
-  const glowOpacity = useSharedValue(0);
-  useEffect(() => {
-    if (isComplete) {
-      glowOpacity.value = withSequence(
-        withTiming(1, { duration: 400 }),
-        withRepeat(
-          withSequence(withTiming(0.3, { duration: 800 }), withTiming(1, { duration: 800 })),
-          3,
-          false,
-        ),
-        withTiming(0.6, { duration: 500 }),
-      );
-    } else {
-      glowOpacity.value = withTiming(0, { duration: 300 });
-    }
-  }, [isComplete, glowOpacity]);
-
-  const glowAnimStyle = useAnimatedStyle(() => ({
-    opacity: glowOpacity.value,
-  }));
-
   const barHeight = compact ? 4 : 8;
 
   return (
     <VStack className="py-2 gap-2" style={style}>
-      {/* Header row: label + percentage */}
       {showPercentage && (
         <HStack className="justify-between items-center mb-1">
           <Text className="text-[11px] font-semibold uppercase tracking-wider text-phase-text-secondary">
@@ -77,38 +37,38 @@ export function SanctuaryProgressBar({
         </HStack>
       )}
 
-      {/* Track */}
       <Box
         className="bg-phase-surface/30 rounded-full overflow-hidden"
         style={{ height: barHeight }}
       >
-        {/* Animated fill */}
-        <Reanimated.View
+        <EaseView
+          animate={{ scaleX: Math.min(100, Math.max(0, percentage)) / 100 }}
+          transition={{ type: 'timing', duration: 600 }}
+          transformOrigin={{ x: 0, y: 0.5 }}
           style={[
             StyleSheet.absoluteFill,
             {
-              backgroundColor: isComplete ? '#10B981' : '#F6BF8C', // phase-reward : phase-accent
+              backgroundColor: isComplete ? '#10B981' : '#F6BF8C',
               borderRadius: barHeight / 2,
             },
-            fillStyle,
           ]}
         />
-        {/* Reanimated glow overlay on completion */}
         {isComplete && (
-          <Reanimated.View
+          <EaseView
+            initialAnimate={{ opacity: 0.3 }}
+            animate={{ opacity: 0.7 }}
+            transition={{ type: 'timing', duration: 800, loop: 'reverse' }}
             style={[
               StyleSheet.absoluteFill,
               {
                 backgroundColor: 'rgba(16, 185, 129, 0.3)',
                 borderRadius: barHeight / 2,
               },
-              glowAnimStyle,
             ]}
           />
         )}
       </Box>
 
-      {/* Hint / complete text */}
       {!isComplete && nextHint ? (
         <Text className="text-[12px] text-phase-text-secondary" numberOfLines={1}>
           {nextHint}

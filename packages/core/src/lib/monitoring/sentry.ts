@@ -4,7 +4,8 @@
  * Provides a platform-agnostic interface for exception reporting and breadcrumbs.
  * Delegates to TelemetryManager via the Adapter pattern.
  */
-import { telemetry } from '../../logic/managers/TelemetryManager';
+import { telemetry } from '@repo/core/logic/managers/TelemetryManager';
+import { sanitizeTelemetryData } from '@repo/core/lib/monitoring/safeData';
 
 export const initSentry = () => {
   const dsn = process.env.EXPO_PUBLIC_SENTRY_DSN;
@@ -17,12 +18,16 @@ export const initSentry = () => {
   });
 };
 
-export const captureException = (error: any, context?: any) => {
-  telemetry.captureException(error, context);
+export const captureException = (error: unknown, context?: Record<string, unknown>) => {
+  telemetry.captureException(error, sanitizeTelemetryData(context));
 };
 
-export const logBreadcrumb = (message: string, category?: string, data?: any) => {
-  telemetry.addBreadcrumb({ message, category, data });
+export const logBreadcrumb = (
+  message: string,
+  category?: string,
+  data?: Record<string, unknown>,
+) => {
+  telemetry.addBreadcrumb({ message, category, data: sanitizeTelemetryData(data) });
 };
 
 export const setSentryUser = (user: {
@@ -32,8 +37,6 @@ export const setSentryUser = (user: {
 }) => {
   telemetry.setUser({
     id: user.id,
-    email: user.email ?? undefined,
-    username: user.username ?? undefined,
   });
 };
 

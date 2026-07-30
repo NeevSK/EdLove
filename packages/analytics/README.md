@@ -30,6 +30,13 @@ This package owns all analytics, grading calculations, and performance predictio
 - UI layouts specific to admin/classroom apps (provides components, not screens)
 - Authentication/authorization logic
 - Direct database operations (uses core APIs)
+- Product event vocabulary or access decisions; those are defined by the
+  Gurudevi core analytics contract and injected through `IAnalyticsPort`.
+
+PostHog is an adapter in this package. It is not the feature-rollout authority
+(GrowthBook), the authorization authority (Cedar), or the entitlement
+authority. Product analytics events must use the typed core product-event API;
+feature code must not import a PostHog SDK directly.
 
 ## Collaboration
 

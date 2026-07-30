@@ -1,8 +1,8 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import type React from 'react';
 import { createContext, useContext } from 'react';
 import { Text as RNText, type TextProps, type ViewProps } from 'react-native';
-import { View } from '../../primitives';
+import { View } from '@repo/ui/primitives';
 
 cssInterop(View, { className: 'style' });
 cssInterop(RNText, { className: 'style' });
@@ -81,3 +81,4 @@ export const FormControlHelperText = ({
 }: TextProps & { className?: string }) => (
   <RNText {...props} className={`mt-1 text-xs text-textSecondary ${className || ''}`} />
 );
+

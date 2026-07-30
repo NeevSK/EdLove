@@ -6,11 +6,63 @@ import type {
   IAnalyticsPort,
   IAuthorizationPort,
   IEntitlementPort,
-  IFeatureFlagPort,
 } from '../../index';
-import type { UserContext } from '../../schemas/user.schema';
+import { satisfiesEntitlementRequirement } from '../entitlement.port';
 
 describe('Hexagonal Ports Interfaces Compilation & Contract Verification', () => {
+  it('evaluates subscription tiers and add-on modules independently', () => {
+    const snapshot: EntitlementSnapshot = {
+      pricingTier: 'PRO',
+      activeEntitlements: ['attendance_management'],
+      expirationDate: null,
+    };
+
+    expect(
+      satisfiesEntitlementRequirement(snapshot, {
+        tierAtLeast: 'PRO',
+        modulesAllOf: ['attendance_management'],
+      }),
+    ).toBe(true);
+    expect(
+      satisfiesEntitlementRequirement(snapshot, {
+        tierAtLeast: 'INSTITUTIONAL',
+      }),
+    ).toBe(false);
+  });
+
+  it('keeps institutional grants scoped to the active bond', () => {
+    const snapshot: EntitlementSnapshot = {
+      pricingTier: 'FREE',
+      activeEntitlements: [],
+      expirationDate: null,
+      grants: [
+        {
+          id: 'school-grant',
+          scope: 'active_bond',
+          scopeId: 'bond-school-1',
+          tier: 'INSTITUTIONAL',
+          modules: ['attendance_management'],
+          expiresAt: null,
+          status: 'ACTIVE',
+        },
+      ],
+    };
+
+    expect(
+      satisfiesEntitlementRequirement(snapshot, {
+        scope: 'active_bond',
+        tierAtLeast: 'INSTITUTIONAL',
+        modulesAllOf: ['attendance_management'],
+      }),
+    ).toBe(true);
+    expect(
+      satisfiesEntitlementRequirement(snapshot, {
+        tierAtLeast: 'PRO',
+        modulesAllOf: ['attendance_management'],
+      }),
+    ).toBe(false);
+  });
+
   it('verifies IEntitlementPort contract behavior with mock implementation', async () => {
     const mockEntitlementPort: IEntitlementPort = {
       getEntitlements: vi.fn(async (userId: string): Promise<EntitlementSnapshot> => {
@@ -45,49 +97,6 @@ describe('Hexagonal Ports Interfaces Compilation & Contract Verification', () =>
     expect(mockEntitlementPort.getEntitlements).toHaveBeenCalledWith('user-1');
   });
 
-  it('verifies IFeatureFlagPort contract behavior with mock implementation', async () => {
-    const mockFeatureFlagPort: IFeatureFlagPort = {
-      resolveFlags: vi.fn(async (context: UserContext) => {
-        return {
-          flags: {
-            isAIAssistantEnabled: true,
-            modelName: 'claude-3-5-sonnet',
-          },
-          source: 'computed' as const,
-          refreshedAt: '2026-06-20T00:00:00Z',
-        };
-      }),
-      getFlags: vi.fn(async (context: UserContext) => {
-        return {
-          isAIAssistantEnabled: true,
-          modelName: 'claude-3-5-sonnet',
-        };
-      }),
-      subscribeToFlagChanges: vi.fn(
-        (
-          context: UserContext,
-          callback: (snapshot: { flags: Record<string, boolean | string> }) => void,
-        ) => {
-          callback({ flags: { isAIAssistantEnabled: true } });
-          return () => {};
-        },
-      ),
-      trackExposure: vi.fn((flagKey: string, value: boolean | string) => {}),
-    };
-
-    const dummyContext = {
-      userId: 'user-1',
-      isAnonymous: false,
-    } as unknown as UserContext;
-
-    const flags = await mockFeatureFlagPort.getFlags(dummyContext);
-    expect(flags.isAIAssistantEnabled).toBe(true);
-    expect(flags.modelName).toBe('claude-3-5-sonnet');
-
-    mockFeatureFlagPort.trackExposure('isAIAssistantEnabled', true);
-    expect(mockFeatureFlagPort.trackExposure).toHaveBeenCalledWith('isAIAssistantEnabled', true);
-  });
-
   it('verifies IAuthorizationPort contract behavior with mock implementation', async () => {
     const mockAuthzPort: IAuthorizationPort = {
       isAuthorized: vi.fn(async (request: AuthorizationRequest): Promise<AuthorizationDecision> => {
@@ -96,6 +105,16 @@ describe('Hexagonal Ports Interfaces Compilation & Contract Verification', () =>
         }
         return { permitted: false, reason: 'DefaultDeny' };
       }),
+      issueCapabilityToken: vi.fn(async () => ({
+        tokenId: 'token-1',
+        principalId: 'teacher-1',
+        tenantId: 'school-1',
+        operationContext: 'generate_report_card',
+        deviceId: 'device-1',
+        issuedAt: 0,
+        expiresAt: 1,
+        policyVersionHash: 'test-policy',
+      })),
     };
 
     const request: AuthorizationRequest = {

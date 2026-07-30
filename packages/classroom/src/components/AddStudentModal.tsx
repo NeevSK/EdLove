@@ -23,7 +23,7 @@ import { useToast } from '@repo/ui/providers';
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import OCRStudentImport from './OCRStudentImport';
+import OCRStudentImport from '@repo/classroom/components/OCRStudentImport';
 
 interface AddStudentModalProps {
   isOpen: boolean;
@@ -53,9 +53,10 @@ export const AddStudentModal = ({
 
   useEffect(() => {
     if (studentToEdit) {
-      setFullName(studentToEdit.full_name);
-      setRollNumber(studentToEdit.roll_number || '');
-      setNotes(studentToEdit.notes || '');
+      const s = studentToEdit as any;
+      setFullName(s.full_name);
+      setRollNumber(s.roll_number || '');
+      setNotes(s.notes || '');
     } else {
       setFullName('');
       setRollNumber('');

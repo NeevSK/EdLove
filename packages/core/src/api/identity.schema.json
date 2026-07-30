@@ -30,7 +30,7 @@
         "entity_id": { "type": "string" },
         "entity_type": {
           "type": "string",
-          "enum": ["PLATFORM", "SCHOOL", "CLASSROOM", "COMMUNITY", "PERSONAL", "PERSONAL_CLASSROOM"]
+          "enum": ["PLATFORM", "SCHOOL", "CLASSROOM", "COMMUNITY", "GROUP", "PERSONAL", "PERSONAL_CLASSROOM"]
         },
         "capacity": { "$ref": "#/definitions/Capacity" },
         "status": {

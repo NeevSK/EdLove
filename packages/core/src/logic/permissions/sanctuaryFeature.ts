@@ -1,46 +1,151 @@
-import type { UserContext } from '../schemas/user.schema';
-import type { FeatureFlags } from './feature-engine';
+import {
+  type FeatureAccessContext,
+  isFeatureAccessContextReady,
+} from '@repo/core/logic/permissions/accessContext';
+import {
+  type EntitlementScope,
+  type EntitlementSnapshot,
+  meetsSubscriptionTier,
+  resolveScopedEntitlement,
+} from '@repo/core/logic/ports/entitlement.port';
+import {
+  CITIZENSHIP,
+  type CitizenshipLevel,
+  type CitizenshipName,
+  meetsCitizenship,
+} from '@repo/core/logic/registry/citizenship';
 
-export type SanctuaryFeatureReason = 'not_initialized' | 'feature_disabled' | 'authz_denied';
+export { CITIZENSHIP, type CitizenshipLevel, type CitizenshipName, meetsCitizenship };
 
-export interface SanctuaryFeatureResult {
-  permitted: boolean;
-  reason?: SanctuaryFeatureReason;
-  featureKey?: keyof FeatureFlags | string;
+export type PricingTier = EntitlementSnapshot['pricingTier'];
+export type FlagType = 'operational' | 'release' | 'development' | 'beta' | 'experiment';
+export type FeatureLifecycleState = 'development' | 'beta' | 'live' | 'deprecated';
+
+/** Subscription tiers are ordered; higher tiers include lower-tier access. */
+export function meetsPricingTier(current: PricingTier, required: PricingTier): boolean {
+  return meetsSubscriptionTier(current, required);
 }
 
-export interface SanctuaryFeatureRequirement {
-  featureKey?: keyof FeatureFlags | string;
-}
+export type SanctuaryFeatureResult =
+  | { permitted: true; featureKey?: string }
+  | { permitted: false; reason: 'not_initialized'; featureKey?: string }
+  | {
+      permitted: false;
+      reason: 'citizenship';
+      required: CitizenshipLevel;
+      current: CitizenshipLevel;
+      featureKey?: string;
+    }
+  | {
+      permitted: false;
+      reason: 'entitlement';
+      required: PricingTier;
+      current: PricingTier;
+      scope?: EntitlementScope;
+      featureKey?: string;
+    }
+  | { permitted: false; reason: 'authz'; policy?: string; featureKey?: string }
+  | {
+      permitted: false;
+      reason: 'feature';
+      flagKey: string;
+      flagType: FlagType;
+      featureKey?: string;
+    }
+  | { permitted: false; reason: 'platform'; featureKey?: string };
 
-export interface SanctuaryFeatureContext {
-  context: UserContext;
-  flags: FeatureFlags;
-  permissionsMap: Record<string, Record<string, boolean>> | null;
-  initialized?: boolean;
+export type SanctuaryEvaluationContext = FeatureAccessContext;
+
+export interface FeatureRequirement {
+  citizenshipRequired: CitizenshipLevel;
+  platformSupported?: boolean;
+  entitlementModule?: string;
+  entitlementTier?: PricingTier;
+  entitlementScope?: EntitlementScope;
+  flagKey?: string;
+  lifecycleState?: FeatureLifecycleState;
 }
 
 export function sanctuaryFeature(
-  ctx: SanctuaryFeatureContext,
-  action: string,
-  subject: string,
-  requirement: SanctuaryFeatureRequirement = {},
+  ctx: SanctuaryEvaluationContext,
+  requirement: FeatureRequirement,
 ): SanctuaryFeatureResult {
-  if (ctx.initialized === false) {
-    return { permitted: false, reason: 'not_initialized', featureKey: requirement.featureKey };
+  if (!isFeatureAccessContextReady(ctx)) {
+    return { permitted: false, reason: 'not_initialized' };
   }
 
-  const featureKey = requirement.featureKey;
-  if (featureKey && !ctx.flags[featureKey as keyof FeatureFlags]) {
-    return { permitted: false, reason: 'feature_disabled', featureKey };
+  if (requirement.platformSupported === false) {
+    return { permitted: false, reason: 'platform' };
   }
 
-  if (ctx.permissionsMap) {
-    const isAllowed = ctx.permissionsMap[subject]?.[action];
-    if (isAllowed !== true) {
-      return { permitted: false, reason: 'authz_denied', featureKey };
-    }
+  // Gate 1 — citizenship
+  if (!meetsCitizenship(ctx.citizenship, requirement.citizenshipRequired)) {
+    return {
+      permitted: false,
+      reason: 'citizenship',
+      required: requirement.citizenshipRequired,
+      current: ctx.citizenship,
+    };
   }
 
-  return { permitted: true, featureKey };
+  // Gate 2 — Cedar. Cedar is the authoritative security boundary and must
+  // take precedence over commercial failure reasons for protected UI actions.
+  if (ctx.cedarDecision === 'deny' || ctx.cedarDecision === 'no_decision') {
+    return { permitted: false, reason: 'authz', policy: ctx.cedarPolicy };
+  }
+
+  // Gate 3 — entitlement. Entitlement controls commercial access; it never
+  // grants authorization and is evaluated only after Cedar permits the actor.
+  // A tier is the subscription level; a module is an independent add-on or
+  // capability entitlement. When both are declared, both must pass.
+  const entitlement = resolveScopedEntitlement(
+    ctx.entitlement,
+    requirement.entitlementScope ?? 'individual',
+  );
+  if (
+    requirement.entitlementTier &&
+    !meetsPricingTier(entitlement.pricingTier, requirement.entitlementTier)
+  ) {
+    return {
+      permitted: false,
+      reason: 'entitlement',
+      required: requirement.entitlementTier,
+      current: entitlement.pricingTier,
+      ...(requirement.entitlementScope ? { scope: requirement.entitlementScope } : {}),
+    };
+  }
+
+  if (
+    requirement.entitlementModule &&
+    !entitlement.activeEntitlements.includes(requirement.entitlementModule)
+  ) {
+    return {
+      permitted: false,
+      reason: 'entitlement',
+      required: requirement.entitlementTier ?? 'PRO',
+      current: entitlement.pricingTier,
+      ...(requirement.entitlementScope ? { scope: requirement.entitlementScope } : {}),
+    };
+  }
+
+  // Cross-cut — feature lifecycle and rollout
+  if (requirement.lifecycleState === 'development' || requirement.lifecycleState === 'deprecated') {
+    return {
+      permitted: false,
+      reason: 'feature',
+      flagKey: requirement.flagKey ?? 'lifecycle',
+      flagType: requirement.lifecycleState === 'development' ? 'development' : 'operational',
+    };
+  }
+
+  if (ctx.flagKey && !ctx.flagActive) {
+    return {
+      permitted: false,
+      reason: 'feature',
+      flagKey: ctx.flagKey,
+      flagType: ctx.flagType,
+    };
+  }
+
+  return { permitted: true };
 }

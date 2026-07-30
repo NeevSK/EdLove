@@ -6,8 +6,8 @@ import {
   deleteTomorrowPrepItem,
   fetchTomorrowPrepItems,
   updateTomorrowPrepItem,
-} from '../api/selfFeatureRepository';
-import type { DailyPrepItem } from '../types';
+} from '@repo/self/api/selfFeatureRepository';
+import type { DailyPrepItem } from '@repo/self/types';
 
 const PREP_CACHE_KEY = 'gurudevi-prep-cache';
 export function useTomorrowPrep(userId?: string) {

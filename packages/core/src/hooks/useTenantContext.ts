@@ -1,6 +1,6 @@
-import { usePermissions } from '../logic/permissions/hooks/usePermissions';
-import { useStore } from '../store/useStore';
-import type { TenantContext } from '../types';
+import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
+import { useStore } from '@repo/core/store/useStore';
+import type { TenantContext } from '@repo/core/types';
 
 export function useTenantContext(): TenantContext {
   const { context } = usePermissions();

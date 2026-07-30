@@ -4,7 +4,7 @@ import { useThemedColors } from '@repo/ui/hooks';
 import { Box, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
 
 import { Theme, typography } from '@repo/ui/theme';
-import { CircleAlert, BookOpen, Lightbulb, Package, Users, Wifi } from 'lucide-react-native';
+import { CircleAlert, BookOpen, Lightbulb, Package, Users, Wifi } from '@repo/ui/icons';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

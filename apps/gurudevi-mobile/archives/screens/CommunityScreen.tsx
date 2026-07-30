@@ -15,7 +15,7 @@ import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { useThemedColors } from '@repo/ui/hooks';
 import { Box, Heading, Text, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-import { Mail, PenTool } from 'lucide-react-native';
+import { Mail, PenTool } from '@repo/ui/icons';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView } from 'react-native';

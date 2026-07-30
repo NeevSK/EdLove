@@ -1,19 +1,17 @@
-import { createSupabaseRealtimeAdapter } from '../../adapters/realtime/supabase.adapter';
-import { createSupabaseAuditRepository } from '../../adapters/supabase/auditRepository';
-import { SupabaseGlobalConfigAdapter } from '../../adapters/supabase/globalConfig.adapter';
-import { createSupabaseTeacherInsightsRepository } from '../../adapters/supabase/teacherInsightsRepository';
-import { createSupabaseTeacherRepository } from '../../adapters/supabase/teacherRepository';
-import { SupabaseDeviceSecurityAdapter } from '../../adapters/supabaseDeviceSecurity.adapter';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../../api/supabase';
-import { AuditManager } from './AuditManager';
-import { auth } from './auth.factory';
-import { DeepLinkManager } from './DeepLinkManager';
-import { DeviceIdentityManager } from './DeviceIdentityManager';
-import { DeviceSecurityManager } from './DeviceSecurityManager';
-import { GlobalConfigManager } from './GlobalConfigManager';
-import { RealtimeManager } from './RealtimeManager';
-import { TeacherInsightsManager } from './TeacherInsightsManager';
-import { TeacherManager } from './TeacherManager';
+import { createSupabaseRealtimeAdapter } from '@repo/core/adapters/realtime/supabase.adapter';
+import { createSupabaseAuditRepository } from '@repo/core/adapters/supabase/auditRepository';
+import { createSupabaseTeacherInsightsRepository } from '@repo/core/adapters/supabase/teacherInsightsRepository';
+import { createSupabaseTeacherRepository } from '@repo/core/adapters/supabase/teacherRepository';
+import { SupabaseDeviceSecurityAdapter } from '@repo/core/adapters/supabaseDeviceSecurity.adapter';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { AuditManager } from '@repo/core/logic/managers/AuditManager';
+import { auth } from '@repo/core/logic/managers/auth.factory';
+import { DeepLinkManager } from '@repo/core/logic/managers/DeepLinkManager';
+import { DeviceIdentityManager } from '@repo/core/logic/managers/DeviceIdentityManager';
+import { DeviceSecurityManager } from '@repo/core/logic/managers/DeviceSecurityManager';
+import { RealtimeManager } from '@repo/core/logic/managers/RealtimeManager';
+import { TeacherInsightsManager } from '@repo/core/logic/managers/TeacherInsightsManager';
+import { TeacherManager } from '@repo/core/logic/managers/TeacherManager';
 
 /**
  * deepLink: The Global Sovereign DeepLink Instance.
@@ -52,11 +50,6 @@ export const teacher = new TeacherManager(
 export const teacherInsights = new TeacherInsightsManager(
   createSupabaseTeacherInsightsRepository(__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__),
 );
-
-/**
- * globalConfig: The Global Sovereign Config Instance.
- */
-export const globalConfig = new GlobalConfigManager(new SupabaseGlobalConfigAdapter());
 
 /**
  * deviceIdentity: The Global Sovereign DeviceIdentity Instance.

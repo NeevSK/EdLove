@@ -1,5 +1,5 @@
 import { usePermissions } from '@repo/core/logic';
-import { Briefcase, Crown, GraduationCap, ShieldAlert, User } from 'lucide-react-native';
+import { Briefcase, Crown, GraduationCap, ShieldAlert, User } from '@repo/ui/icons';
 import type React from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,10 +10,10 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { Box, Center, HStack, Pressable, Text, VStack } from '../gluestack';
-import { QRBuilder, QRCodeGenerator } from '../qr';
-import { hapticLight } from '../utils/haptics';
-import { UserAvatar } from './UserAvatar';
+import { Box, Center, HStack, Pressable, Text, VStack } from '@repo/ui/gluestack';
+import { QRBuilder, QRCodeGenerator } from '@repo/ui/qr';
+import { hapticLight } from '@repo/ui/utils/haptics';
+import { UserAvatar } from '@repo/ui/components/UserAvatar';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CARD_WIDTH = SCREEN_WIDTH - 48; // Standardized spacing

@@ -8,28 +8,28 @@ import { Box, VStack } from '@repo/ui/primitives';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 // Kernel Imports from @repo/self (Breaking require cycle)
-import { BaseSelfView } from '../../components/BaseSelfView';
-import { EnergyBarChart } from '../../components/EnergyBarChart';
-import { ImpactRipplesCard } from '../../components/ImpactRipplesCard';
+import { BaseSelfView } from '@repo/self/components/BaseSelfView';
+import { EnergyBarChart } from '@repo/self/components/EnergyBarChart';
+import { ImpactRipplesCard } from '@repo/self/components/ImpactRipplesCard';
 // Role Components
-import MoodLotus from '../../components/MoodLotus';
-import { MoodPickerCard } from '../../components/MoodPickerCard';
-import { PulseDashboard } from '../../components/PulseDashboard';
-import VoiceJournaling from '../../components/VoiceJournaling';
-import { WarmMirrorCard } from '../../components/WarmMirrorCard';
-import WelcomeModal from '../../components/WelcomeModal';
-import WisdomSeeds from '../../components/WisdomSeeds';
-import { useEnergyForecast } from '../../hooks/useEnergyForecast';
-import { useJournalEntries } from '../../hooks/useJournalEntries';
-import { useMoodLogs } from '../../hooks/useMoodLogs';
-import { useWellbeingEnrichment } from '../../hooks/useWellbeingEnrichment';
-import { useWisdom } from '../../hooks/useWisdom';
+import MoodLotus from '@repo/self/components/MoodLotus';
+import { MoodPickerCard } from '@repo/self/components/MoodPickerCard';
+import { PulseDashboard } from '@repo/self/components/PulseDashboard';
+import VoiceJournaling from '@repo/self/components/VoiceJournaling';
+import { WarmMirrorCard } from '@repo/self/components/WarmMirrorCard';
+import WelcomeModal from '@repo/self/components/WelcomeModal';
+import WisdomSeeds from '@repo/self/components/WisdomSeeds';
+import { useEnergyForecast } from '@repo/self/hooks/useEnergyForecast';
+import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
+import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
+import { useWellbeingEnrichment } from '@repo/self/hooks/useWellbeingEnrichment';
+import { useWisdom } from '@repo/self/hooks/useWisdom';
 import {
   JournalSection,
   MoodSection,
   PhilosophySection,
   VisionSection,
-} from '../../views/sections';
+} from '@repo/self/views/sections';
 
 export default function FounderSelfView() {
   const { t } = useTranslation();

@@ -1,1 +1,1 @@
-export * from './sections';
+export * from '@repo/self/views/sections';

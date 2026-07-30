@@ -1,5 +1,5 @@
-export * from './AnalyticsChart';
-export * from './AnalyticsProvider';
-export * from './GPAInsights';
-export * from './PerformanceDashboard';
+export * from '@repo/analytics/components/AnalyticsChart';
+export * from '@repo/analytics/components/AnalyticsProvider';
+export * from '@repo/analytics/components/GPAInsights';
+export * from '@repo/analytics/components/PerformanceDashboard';
 //# sourceMappingURL=index.d.ts.map

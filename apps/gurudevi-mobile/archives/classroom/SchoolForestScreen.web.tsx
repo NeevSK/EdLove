@@ -18,7 +18,7 @@ import { useStore } from '@repo/core/logic';
 
 import { SkeletonCard } from '@repo/ui/components';
 
-import { ArrowLeft, RefreshCw } from 'lucide-react-native';
+import { ArrowLeft, RefreshCw } from '@repo/ui/icons';
 import { useEffect, useState } from 'react';
 
 const WEATHER_EMOJI: Record<string, string> = {

@@ -1,8 +1,4 @@
 import type { SocialLink, SocialPlatform } from '@repo/core/types';
-import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
-
-import * as Clipboard from 'expo-clipboard';
 import {
   ExternalLink,
   Globe,
@@ -12,11 +8,14 @@ import {
   ShieldAlert,
   ShieldCheck,
   Phone as WhatsApp,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
+import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
+import * as Clipboard from 'expo-clipboard';
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Share } from 'react-native';
-import { useSocialLinks } from '../hooks/useSocialLinks';
+import { useSocialLinks } from '@repo/profile/hooks/useSocialLinks';
 
 interface SocialSanctuaryProps {
   userId: string;

@@ -1,4 +1,4 @@
-import type { ScopeRef } from './Tenancy';
+import type { ScopeRef } from '@repo/core/types/Tenancy';
 
 export type CapabilityKey =
   | 'platform.observe.all'

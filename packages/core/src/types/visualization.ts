@@ -1,5 +1,5 @@
 import type React from 'react';
-import type { GraphNode, KnowledgeTopology, LayoutResult, PerspectiveId } from './topology';
+import type { GraphNode, KnowledgeTopology, LayoutResult, PerspectiveId } from '@repo/core/types/topology';
 
 /**
  * PerspectiveViewProps - Props passed to every perspective renderer.

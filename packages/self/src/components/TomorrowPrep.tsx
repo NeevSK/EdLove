@@ -1,6 +1,7 @@
 import { useSafeMutation } from '@repo/core/hooks';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { Calendar, Check, Plus, Trash2 } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -19,12 +20,10 @@ import {
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
-
-import { Calendar, Check, Plus, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTomorrowPrep } from '../hooks/useTomorrowPrep';
-import type { DailyPrepItem } from '../types';
+import { useTomorrowPrep } from '@repo/self/hooks/useTomorrowPrep';
+import type { DailyPrepItem } from '@repo/self/types';
 
 interface TomorrowPrepProps {
   userId?: string;

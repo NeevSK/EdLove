@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
-import { type DeviceAccountRecord, deviceAccounts } from '../accounts/deviceAccounts';
+import { type DeviceAccountRecord, deviceAccounts } from '@repo/core/accounts/deviceAccounts';
 
 export type { DeviceAccountRecord };
 

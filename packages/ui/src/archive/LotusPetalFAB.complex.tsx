@@ -12,7 +12,7 @@
  */
 
 import * as Haptics from 'expo-haptics';
-import { SquarePen, Flower2, MessageCircle, Plus, Upload } from 'lucide-react-native';
+import { SquarePen, Flower2, MessageCircle, Plus, Upload } from '@repo/ui/icons';
 import type React from 'react';
 import { type FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, Image, PanResponder, StyleSheet } from 'react-native';
@@ -28,9 +28,9 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useAccessibility } from '../hooks/useAccessibility';
-import { Pressable, Text, View } from '../primitives';
-import { Theme } from '../theme/Theme';
+import { useAccessibility } from '@repo/ui/hooks/useAccessibility';
+import { Pressable, Text, View } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme/Theme';
 
 // ============================================================================
 // TYPES

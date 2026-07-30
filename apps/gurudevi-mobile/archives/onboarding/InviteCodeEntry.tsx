@@ -18,7 +18,7 @@ import {
 import { useToast } from '@repo/ui/providers';
 import { Theme } from '@repo/ui/theme';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-import { ArrowRight, CircleQuestionMark } from 'lucide-react-native';
+import { ArrowRight, CircleQuestionMark } from '@repo/ui/icons';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

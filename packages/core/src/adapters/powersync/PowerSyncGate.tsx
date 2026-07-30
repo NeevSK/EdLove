@@ -14,11 +14,11 @@
  * </PowerSyncGate>
  */
 import { type PropsWithChildren, useEffect, useRef } from 'react';
-import { sovereignBus } from '../../lib/sync/eventBus';
-import { useStore } from '../../store/useStore';
-import { disconnectPowerSync, getPowerSyncDB } from './database';
-import { PowerSyncContext } from './powersync-react-shim';
-import { SupabasePowerSyncConnector } from './SupabasePowerSyncConnector';
+import { disconnectPowerSync, getPowerSyncDB } from '@repo/core/adapters/powersync/database';
+import { PowerSyncContext } from '@repo/core/adapters/powersync/powersync-react-shim';
+import { SupabasePowerSyncConnector } from '@repo/core/adapters/powersync/SupabasePowerSyncConnector';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { useStore } from '@repo/core/store/useStore';
 
 interface PowerSyncGateProps extends PropsWithChildren {
   /** Override — if false, renders children without PowerSync context. */
@@ -27,7 +27,8 @@ interface PowerSyncGateProps extends PropsWithChildren {
 
 export function PowerSyncGate({ children, enabled = true }: PowerSyncGateProps) {
   const isPowerSyncEnabled = useStore((s) => s.flags.isPowerSyncEnabled);
-  const isActive = enabled && isPowerSyncEnabled;
+  const isAnonymous = useStore((s) => s.user?.is_anonymous === true);
+  const isActive = enabled && isPowerSyncEnabled && !isAnonymous;
 
   const connectorRef = useRef<SupabasePowerSyncConnector | null>(null);
   const db = isActive ? getPowerSyncDB() : null;

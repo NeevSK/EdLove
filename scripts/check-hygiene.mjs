@@ -40,6 +40,12 @@ spawnSync('pnpm', ['run', 'check:unused'], {
 // 3. Architecture Boundaries
 runAudit('Architecture Boundaries', 'check:architecture');
 
+// 3b. Deep Package Imports Boundary
+runAudit('Deep Package Imports', 'check:deep-imports');
+
+// 3c. Code Duplication Audit (jscpd)
+runAudit('Code Duplication', 'audit:duplication');
+
 // 4. Schema Drift Alignment
 runAudit('Schema Drift Alignment', 'check:schema-drift');
 

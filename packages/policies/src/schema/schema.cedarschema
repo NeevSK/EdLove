@@ -1,6 +1,8 @@
 entity User {
   id: String,
   school_id?: String,
+  active_entity_id?: String,
+  active_entity_type?: String,
   capacity?: String,
   grade_id?: String,
   section_id?: String,
@@ -137,18 +139,23 @@ entity EnergyForecasts {
   user_id?: String
 };
 
+entity AIAssistant {
+  id: String,
+  school_id?: String
+};
+
 type SecurityContext = {
   device_trust?: String,
   network_zone?: String
 };
 
-action "read", "create", "update", "delete" appliesTo {
-  principal: [User],
+action "read", "create", "update", "delete", "use_ai" appliesTo {
+    principal: [User],
   resource: [
     User, School, Classroom, AttendanceRecord, Grade, Assignment, Lesson, Material,
     StaffLeave, MoodLog, FireJournal, InventoryItem, Group, Post, Ledger,
     Guardian, SentinelAuditLog, JoyMoments, GratitudeEntries, EnergyForecasts,
-    PersonalClassroom
+    PersonalClassroom, AIAssistant
   ],
   context: SecurityContext
 };

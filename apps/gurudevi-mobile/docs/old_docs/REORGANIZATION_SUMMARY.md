@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # ðŸ“‹ Documentation Reorganization Summary
 ## February 8, 2026
 

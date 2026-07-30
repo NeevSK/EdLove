@@ -28,7 +28,7 @@ import { Theme } from '@repo/ui/theme';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
-import { Mail } from 'lucide-react-native';
+import { Mail } from '@repo/ui/icons';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, type TextInput } from 'react-native';

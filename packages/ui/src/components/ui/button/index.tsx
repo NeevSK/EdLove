@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React, { createContext, useContext, useMemo } from 'react';
 import {
   ActivityIndicator,
@@ -209,3 +209,4 @@ ButtonIcon.displayName = 'ButtonIcon';
 ButtonSpinner.displayName = 'ButtonSpinner';
 
 export { Button };
+

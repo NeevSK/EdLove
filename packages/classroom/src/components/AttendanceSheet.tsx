@@ -25,8 +25,9 @@ import { hapticLight } from '@repo/ui/utils/haptics';
 
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
-import { useAttendance } from '../hooks/useAttendance';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { useAttendance } from '@repo/classroom/hooks/useAttendance';
 
 // Status configuration with semantic mappings
 const STATUS_CONFIG = {
@@ -153,8 +154,13 @@ export default function AttendanceSheet({
             <Icon as={X} className="text-sacredWhite" size={24} />
           </Box>
         )}
-        onSwipeableRightOpen={() => handleUpdateStatus(item.id, 'present')}
-        onSwipeableLeftOpen={() => handleUpdateStatus(item.id, 'absent')}
+        onSwipeableOpen={(direction) => {
+          if (direction === 'right') {
+            handleUpdateStatus(item.id, 'present');
+          } else {
+            handleUpdateStatus(item.id, 'absent');
+          }
+        }}
       >
         <Pressable
           onPress={() => {}}

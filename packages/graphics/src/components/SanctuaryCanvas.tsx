@@ -1,4 +1,5 @@
-import { FeatureGuard } from '@repo/core/logic';
+import { CITIZENSHIP } from '@repo/core/logic/permissions/sanctuaryFeature';
+import { SanctuaryGuard } from '@repo/ui';
 import type React from 'react';
 import { Platform, View, type ViewStyle } from 'react-native';
 
@@ -29,7 +30,14 @@ export const SanctuaryCanvas: React.FC<SanctuaryCanvasProps> = ({
   const standardContent = render?.standard ? render.standard() : null;
 
   return (
-    <FeatureGuard feature="isGraphicsEngineEnabled">
+    <SanctuaryGuard
+      action="read"
+      subject="isGraphicsEngineEnabled"
+      requirement={{
+        citizenshipRequired: CITIZENSHIP.FIRST_CLASS,
+        flagKey: 'isGraphicsEngineEnabled',
+      }}
+    >
       {Platform.OS === 'web' ? (
         <View style={[{ width, height, overflow: 'hidden' }, style]}>
           {standardContent}
@@ -41,6 +49,6 @@ export const SanctuaryCanvas: React.FC<SanctuaryCanvasProps> = ({
           {children}
         </View>
       )}
-    </FeatureGuard>
+    </SanctuaryGuard>
   );
 };

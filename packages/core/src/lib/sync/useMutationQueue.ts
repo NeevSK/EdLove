@@ -1,9 +1,9 @@
 import { v7 as uuidv7 } from 'uuid';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { SafeZustandStorage } from '../../lib/storageWrapper';
-import { generateIdempotencyKey } from './idempotency';
-import type { MutationQueueState, QueuedMutation } from './types';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
+import type { MutationQueueState, QueuedMutation } from '@repo/core/lib/sync/types';
 
 /**
  * useMutationQueue

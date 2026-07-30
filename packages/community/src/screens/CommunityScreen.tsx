@@ -5,7 +5,7 @@ import {
   useManifestoHooks,
   usePostsInfiniteQuery,
 } from '@repo/core/api/hooks';
-import { useTracking } from '@repo/core/hooks';
+import { useDomainRollout, useTracking } from '@repo/core/hooks';
 import { setPendingGateAction, usePermissions } from '@repo/core/logic';
 import { useStore, useTemporalStore } from '@repo/core/store';
 import type { CommunityPost, DirectConversation, SanctuaryGroup } from '@repo/core/types';
@@ -22,22 +22,22 @@ import { router } from 'expo-router';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { Platform } from 'react-native';
-import { CommentSheet } from '../components/CommentSheet';
-import CommunityHearth from '../components/CommunityHearth';
-import CreateGroupModal from '../components/CreateGroupModal';
-import CreatePostModal from '../components/CreatePostModal';
-import { PostCard } from '../components/PostCard';
-import SocialShieldModal from '../components/SocialShieldModal';
-import AnnouncementsScreen from './AnnouncementsScreen';
+import { CommentSheet } from '@repo/community/components/CommentSheet';
+import CommunityHearth from '@repo/community/components/CommunityHearth';
+import CreateGroupModal from '@repo/community/components/CreateGroupModal';
+import CreatePostModal from '@repo/community/components/CreatePostModal';
+import { PostCard } from '@repo/community/components/PostCard';
+import SocialShieldModal from '@repo/community/components/SocialShieldModal';
+import AnnouncementsScreen from '@repo/community/screens/AnnouncementsScreen';
 import {
   type CommunityWorkspaceMode,
   deriveCommunityPulse,
   getCommunityFilterOptions,
   getCommunityModeOptions,
   mapCommunitySurfaceSlots,
-} from './communityWorkspace.shared';
-import DirectMessagesListScreen from './DirectMessagesListScreen';
-import GroupsScreen from './GroupsScreen';
+} from '@repo/community/screens/communityWorkspace.shared';
+import DirectMessagesListScreen from '@repo/community/screens/DirectMessagesListScreen';
+import GroupsScreen from '@repo/community/screens/GroupsScreen';
 
 interface CommunityScreenState {
   activeMode: CommunityWorkspaceMode;
@@ -160,6 +160,8 @@ export default function CommunityScreen() {
   const { can } = usePermissions();
   const { isPastView } = useTemporalStore();
   const { user, flags } = useStore();
+  const isCommunityEnabled = useDomainRollout('hearth');
+  const isMessagingRolloutEnabled = useDomainRollout('messages');
 
   const userId = user?.id ?? 'guest';
   const schoolId = user?.school_id ?? undefined;
@@ -171,8 +173,7 @@ export default function CommunityScreen() {
   const canCreateGroup = can('create', 'Group');
   const canReadAnnouncements = Boolean(schoolId) && can('read', 'Group');
 
-  const isMessagingEnabled = flags.isMessagingEnabled && canReadMessages;
-  const isCommunityEnabled = flags.isCommunityEnabled;
+  const isMessagingEnabled = isMessagingRolloutEnabled && canReadMessages;
 
   const [state, dispatch] = useReducer(communityScreenReducer, initialState);
 
@@ -215,11 +216,11 @@ export default function CommunityScreen() {
   );
   const modeChips = useMemo(
     () =>
-      getCommunityModeOptions(canReadAnnouncements, flags.isMessagingEnabled).map((mode) => ({
+      getCommunityModeOptions(canReadAnnouncements, isMessagingRolloutEnabled).map((mode) => ({
         label: mode.label,
         value: mode.key,
       })),
-    [canReadAnnouncements, flags.isMessagingEnabled],
+    [canReadAnnouncements, isMessagingRolloutEnabled],
   );
 
   const handleFabPress = useCallback(() => {

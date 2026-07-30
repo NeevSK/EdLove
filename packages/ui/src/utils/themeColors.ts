@@ -7,13 +7,13 @@
  * maintaining a second parallel theme system.
  */
 
-import type { TemporalPhase } from '../context/types';
+import type { TemporalPhase } from '@repo/ui/context/types';
 import {
   type ResolvedThemeTokens,
   resolveClassicTokens,
   resolvePhaseTokens,
   Theme,
-} from '../theme/Theme';
+} from '@repo/ui/theme/Theme';
 
 export interface ThemeColors {
   // Backgrounds

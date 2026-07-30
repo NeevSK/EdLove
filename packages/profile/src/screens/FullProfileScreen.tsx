@@ -7,6 +7,19 @@ import IdentityCard from '@repo/ui/components/IdentityCard';
 import { SanctuaryProgressBar } from '@repo/ui/components/SanctuaryProgressBar';
 import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 import {
+  AtSign,
+  BookOpen,
+  Briefcase,
+  FileText,
+  FingerprintPattern,
+  GraduationCap,
+  Heart,
+  Phone,
+  School,
+  SquarePen,
+  User as UserIcon,
+} from '@repo/ui/icons';
+import {
   Box,
   Button,
   ButtonText,
@@ -20,33 +33,19 @@ import {
 import { hapticSuccess } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { router, useLocalSearchParams } from 'expo-router';
-
-import {
-  AtSign,
-  BookOpen,
-  Briefcase,
-  FileText,
-  FingerprintPattern,
-  GraduationCap,
-  Heart,
-  Phone,
-  School,
-  SquarePen,
-  User as UserIcon,
-} from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, useWindowDimensions } from 'react-native';
 import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { AddSocialLinkModal } from '../components/AddSocialLinkModal';
-import { AvatarDisplay } from '../components/AvatarDisplay';
-import { ContactLinktree } from '../components/ContactLinktree';
-import { EditableItem } from '../components/EditableItem';
-import { GiveThuthimalModal } from '../components/GiveThuthimalModal';
-import { useProfile } from '../hooks/useProfile';
-import { useProfileCompletion } from '../hooks/useProfileCompletion';
-import { useSocialLinks } from '../hooks/useSocialLinks';
-import type { UserProfile } from '../types';
+import { AddSocialLinkModal } from '@repo/profile/components/AddSocialLinkModal';
+import { AvatarDisplay } from '@repo/profile/components/AvatarDisplay';
+import { ContactLinktree } from '@repo/profile/components/ContactLinktree';
+import { EditableItem } from '@repo/profile/components/EditableItem';
+import { GiveThuthimalModal } from '@repo/profile/components/GiveThuthimalModal';
+import { useProfile } from '@repo/profile/hooks/useProfile';
+import { useProfileCompletion } from '@repo/profile/hooks/useProfileCompletion';
+import { useSocialLinks } from '@repo/profile/hooks/useSocialLinks';
+import type { UserProfile } from '@repo/profile/types';
 
 const readParam = (value: string | string[] | undefined) =>
   Array.isArray(value) ? value[0] : value;

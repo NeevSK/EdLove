@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # Mission 01: Self (Wellbeing) - Implementation Summary
 
 ## âœ… Completed Tasks

@@ -9,7 +9,7 @@ import type {
   DocumentVersion,
   DocumentWorkflow,
   WorkflowTransition,
-} from './types';
+} from '@repo/admin/document-workflow/types';
 
 export class DocumentWorkflowEngine {
   private static instance: DocumentWorkflowEngine;

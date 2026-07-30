@@ -1,7 +1,5 @@
+import { useDomainRollout } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
-import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { hapticLight } from '@repo/ui/utils/haptics';
-
 import {
   ArrowRightLeft,
   Calendar,
@@ -9,7 +7,9 @@ import {
   DollarSign,
   FileText,
   SquareCheckBig,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
+import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
 import { useTranslation } from 'react-i18next';
 
 interface TeacherAdminWidgetProps {
@@ -18,7 +18,9 @@ interface TeacherAdminWidgetProps {
 
 export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps) {
   const { t } = useTranslation();
-  const { flags } = usePermissions();
+  const { can } = usePermissions();
+  const isStaffManagementEnabled = useDomainRollout('staff-management');
+  const isAccountingEnabled = useDomainRollout('accounting');
 
   const AdminAction = ({ icon: LucideIcon, label, variant = 'primary', onPress }: any) => {
     const colorClasses = {
@@ -56,37 +58,37 @@ export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps
       icon: Calendar,
       label: t('teacher.admin.myLeaves') || 'My Leaves',
       variant: 'warning',
-      visible: flags.isStaffManagementEnabled,
+      visible: isStaffManagementEnabled,
     },
     {
       icon: ArrowRightLeft,
       label: t('teacher.admin.substitutions') || 'Substitutions',
       variant: 'primary',
-      visible: flags.isStaffManagementEnabled,
+      visible: isStaffManagementEnabled,
     },
     {
       icon: FileText,
       label: t('teacher.admin.reportGen') || 'Student Reports',
       variant: 'success',
-      visible: flags.isStudentReportingEnabled,
+      visible: can('read', 'Report'),
     },
     {
       icon: ClipboardList,
       label: t('teacher.admin.templates') || 'Letter Templates',
       variant: 'error',
-      visible: flags.isTemplateManagementEnabled,
+      visible: can('read', 'ClassroomResource'),
     },
     {
       icon: DollarSign,
       label: t('teacher.admin.financials') || 'Financials',
       variant: 'success',
-      visible: flags.isAccountingEnabled,
+      visible: isAccountingEnabled,
     },
     {
       icon: SquareCheckBig,
       label: t('teacher.admin.approvals') || 'Approvals',
       variant: 'error',
-      visible: flags.isStaffManagementEnabled,
+      visible: isStaffManagementEnabled,
     },
   ].filter((action) => action.visible);
 

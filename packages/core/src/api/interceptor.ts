@@ -1,1 +1,1 @@
-export { handleAPIError, withErrorHandling } from '../logic/apiInterceptor';
+export { handleAPIError, withErrorHandling } from '@repo/core/logic/apiInterceptor';

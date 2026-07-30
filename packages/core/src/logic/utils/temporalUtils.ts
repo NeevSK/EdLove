@@ -15,7 +15,7 @@ import {
   type TemporalCapability,
   type TemporalScale,
   useTemporalStore,
-} from '../../store/useTemporalStore';
+} from '@repo/core/store/useTemporalStore';
 
 export interface TemporalRange {
   start: string; // ISO string

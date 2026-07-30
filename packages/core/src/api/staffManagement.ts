@@ -1,7 +1,7 @@
 import type { CalendarEvent } from '@repo/schema';
-import type { Capacity } from '../types';
-import { APIError } from '../types/API';
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
+import type { Capacity } from '@repo/core/types';
+import { APIError } from '@repo/core/types/API';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 
 /**
  * STAFF MANAGEMENT API (Sovereign RPC Proxy)

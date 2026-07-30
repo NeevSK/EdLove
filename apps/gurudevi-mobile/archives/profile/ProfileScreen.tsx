@@ -41,7 +41,7 @@ import {
   Trash2,
   UserPlus,
   X,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {

@@ -58,7 +58,7 @@ import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useResources } from '../hooks';
+import { useResources } from '@repo/classroom/hooks';
 
 export default function ContentLibrary() {
   const router = useRouter();

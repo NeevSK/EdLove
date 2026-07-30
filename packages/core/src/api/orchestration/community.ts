@@ -1,11 +1,11 @@
-import { announcementAPI } from '../announcements';
-import { circleAPI } from '../circles';
-import { communityAPI as rawCommunityAPI } from '../community';
-import { communityContract } from '../community.contract';
-import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
-import { messagingAPI } from '../messaging';
-import { socialAPI } from '../social';
-import { createTemporalProxy } from '../temporalProxy';
+import { announcementAPI } from '@repo/core/api/announcements';
+import { circleAPI } from '@repo/core/api/circles';
+import { communityAPI as rawCommunityAPI } from '@repo/core/api/community';
+import { communityContract } from '@repo/core/api/community.contract';
+import { assertContractCoverage, defineContractCoverage } from '@repo/core/api/contractCoverage';
+import { messagingAPI } from '@repo/core/api/messaging';
+import { socialAPI } from '@repo/core/api/social';
+import { createTemporalProxy } from '@repo/core/api/temporalProxy';
 
 const combinedRawAPI = {
   ...rawCommunityAPI,

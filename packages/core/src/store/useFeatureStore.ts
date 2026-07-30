@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { SafeZustandStorage } from '../lib/storageWrapper';
-import { createFeatureSlice, type FeatureSlice } from './slices/feature.slice';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { createFeatureSlice, type FeatureSlice } from '@repo/core/store/slices/feature.slice';
 
 /**
  * useFeatureStore - Sovereign domain store for Feature Flags.
@@ -17,8 +17,14 @@ export const useFeatureStore = create<FeatureSlice>()(
       name: 'gurudevi-feature-storage',
       storage: createJSONStorage(() => SafeZustandStorage),
 
-      // Only persist the resolved flags for instant launch, not the globalConfigs
-      partialize: (state) => ({ flags: state.flags }),
+      // Re-apply the persisted snapshot through the lifecycle freshness policy
+      // before it can influence a screen after a long offline period.
+      onRehydrateStorage: () => (state) => {
+        if (state?.snapshot) state.applySnapshot(state.snapshot);
+      },
+
+      // Persist the last resolved rollout snapshot for instant, offline startup.
+      partialize: (state) => ({ flags: state.flags, snapshot: state.snapshot }),
     },
   ),
 );

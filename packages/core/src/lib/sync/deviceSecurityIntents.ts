@@ -1,9 +1,9 @@
 import { v7 as uuidv7 } from 'uuid';
-import { useStore } from '../../store/useStore';
-import { generateIdempotencyKey } from './idempotency';
-import { useMutationAuditLog } from './MutationAuditLog';
-import type { QueuedMutation } from './types';
-import { useMutationQueue } from './useMutationQueue';
+import { useStore } from '@repo/core/store/useStore';
+import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
+import { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
+import type { QueuedMutation } from '@repo/core/lib/sync/types';
+import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 
 export const DEVICE_SECURITY_SCOPE = 'device_security';
 

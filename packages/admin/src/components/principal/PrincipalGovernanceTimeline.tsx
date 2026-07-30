@@ -1,5 +1,6 @@
 import { api, type PrincipalGovernanceEventZod } from '@repo/core/api';
 import { useTemporalStore } from '@repo/core/logic';
+import { Activity, Clock, FileText, History, Plus, ShieldCheck } from '@repo/ui/icons';
 import {
   Box,
   Heading,
@@ -13,8 +14,6 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
-
-import { Activity, Clock, FileText, History, Plus, ShieldCheck } from 'lucide-react-native';
 import { useEffect, useMemo, useReducer } from 'react';
 
 interface PrincipalGovernanceTimelineProps {

@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # Walkthrough: UI Abstraction Layer Implementation
 
 **Date**: 2026-02-11  

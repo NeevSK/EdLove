@@ -6,7 +6,7 @@ import { HeartPulse, TrendingUp, Users, Zap } from '@repo/ui/icons';
 import { Box, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
-import { useSchoolPulseQuery } from '../../hooks/useDashboardHooks';
+import { useSchoolPulseQuery } from '@repo/admin/hooks/useDashboardHooks';
 
 interface PulseDashboardProps {
   schoolId: string;

@@ -24,7 +24,7 @@ The foundation is already exceptional. Before identifying gaps, it's important t
 | **Cedar WASM Authorization** | Active (`@cedar-policy/cedar-wasm` v4+) | Route-level double-gate, DB-hydrated bond context |
 | **ZenStack v3 + Kysely** | Active | Request-scoped DB clients, RLS enforcement via bond |
 | **OpenAPI 3.1 Spec** | Auto-generated from contracts | Live at `/doc`, browsable via `/ui` and `/reference` |
-| **Feature Flags** | Dual-adapter (GrowthBook / Supabase) | Client-side. Factory pattern for swappable backends |
+| **Feature Flags** | GrowthBook snapshots + route middleware | GrowthBook is the rollout authority; API routes enforce mapped flags server-side |
 | **Error Type System** | `SovereignError` + `normalizeError` | Structured, sanitized, Zod/RLS-aware |
 | **Scalar + Swagger** | Both mounted | Modern dev DX at `/reference` |
 | **Contract Coverage Audit** | `audit-poa-runtime.ts` | Compile-time coverage checks across 20+ modules |
@@ -85,14 +85,9 @@ export type AppType = typeof app;
 
 ### P1 — High Priority
 
-#### 3.3 Feature Flags at the API Gateway Level
+#### 3.3 Feature Flags at the API Gateway Level — Implemented
 
-**Current**: Feature flags (`featureFlag.factory.ts`, GrowthBook/Supabase adapters) exist exclusively in the client-side core package. No API route evaluation occurs server-side.  
-**Problem**: A feature can be disabled on the client but the API endpoint still accepts and processes the request. This creates a security/billing surface gap.  
-**Direction**: 
-- Implement a **gateway-level feature flag middleware** using your existing `IFeatureRolloutPort` interface.
-- Mount it between the Cedar PEP and the Zod validation gate.
-- Routes that map to disabled features return `503 Service Unavailable` with a structured `{ error: "FeatureDisabled", flag: "..." }` response.
+The Sanctuary API now evaluates GrowthBook through `featureFlag.factory.ts` and applies the route map in `apps/sanctuary-api/src/core/app.ts` before route handlers. Disabled routes return `503 Service Unavailable` with a structured feature-disabled response. The remaining lifecycle work is control-plane archival, not gateway enforcement.
 
 ```
 Request → JWT Gate → Cedar PEP → [Feature Flag Gate] → Zod → Handler

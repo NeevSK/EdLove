@@ -16,8 +16,8 @@
  *   const result = await proPipeline.recognize(uri, { provider: 'google_vision' });
  */
 
-import { MLKitProvider } from './providers/MLKitProvider';
-import type { OCRProvider, OCRRawResult, OCRRecognizeOptions } from './types';
+import { MLKitProvider } from '@repo/scanner-kit/ocr/providers/MLKitProvider';
+import type { OCRProvider, OCRRawResult, OCRRecognizeOptions } from '@repo/scanner-kit/ocr/types';
 
 export class OCRPipeline {
   private registry = new Map<string, OCRProvider>();

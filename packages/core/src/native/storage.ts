@@ -118,7 +118,7 @@ import { Platform } from 'react-native';
  *      Running `expo start --dev-client` against an OLD APK that predates
  *      MMKV being added will silently fall back to AsyncStorage.
  */
-import { Runtime } from './runtime';
+import { Runtime } from '@repo/core/native/runtime';
 
 let _storageInstance: StorageInterface | null = null;
 
@@ -142,18 +142,18 @@ function createStorage(): StorageInterface {
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { MMKV } = require('react-native-mmkv');
-    const mmkv = new MMKV({ id: 'gurudevi-store' });
+    const { createMMKV } = require('react-native-mmkv');
+    const mmkv = createMMKV({ id: 'gurudevi-store' });
 
     // Probe: verify the native instance actually works before committing.
     const PROBE_KEY = '__mmkv_probe__';
     mmkv.set(PROBE_KEY, '1');
     const probeResult = mmkv.getString(PROBE_KEY);
-    mmkv.delete(PROBE_KEY);
+    mmkv.remove(PROBE_KEY);
 
     if (probeResult !== '1') throw new Error('MMKV probe read/write mismatch');
 
-    if (__DEV__) console.log('\uD83D\uDCE6 Storage: MMKV v4 (NitroModules) initialized \u2713');
+    if (__DEV__) console.log('📦 Storage: MMKV v4 (NitroModules) initialized ✓');
 
     // Wrap native MMKV instance to satisfy StorageInterface fully.
     return {
@@ -162,7 +162,7 @@ function createStorage(): StorageInterface {
       getStringAsync: async (key) => mmkv.getString(key),
       getNumber: (key) => mmkv.getNumber(key),
       getBoolean: (key) => mmkv.getBoolean(key),
-      delete: (key) => mmkv.delete(key),
+      delete: (key) => mmkv.remove(key),
       clearAll: () => mmkv.clearAll(),
       contains: (key) => mmkv.contains(key),
     };

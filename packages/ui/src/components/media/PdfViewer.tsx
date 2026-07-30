@@ -1,10 +1,10 @@
 import type { DownloadState } from '@repo/core/hooks';
-import { Bookmark, CircleX, Download, ExternalLink } from 'lucide-react-native';
-import { useTheme } from '../../hooks/useTheme';
-import { Box, HStack, Text, VStack } from '../../primitives';
-import GlobalHeader from '../GlobalHeader';
-import { SanctuaryButton } from '../SanctuaryButton';
-import ScreenWrapper from '../ScreenWrapper';
+import { Bookmark, CircleX, Download, ExternalLink } from '@repo/ui/icons';
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 
 export interface PdfViewerProps {
   title: string;

@@ -4,13 +4,13 @@ import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { VStack } from '@repo/ui/primitives';
 import { useTranslation } from 'react-i18next';
 
-import { BaseSelfView } from '../../components/BaseSelfView';
-import { resolveFeatureContent } from '../../components/FeatureRegistry';
-import WelcomeModal from '../../components/WelcomeModal';
-import { useJournalEntries } from '../../hooks/useJournalEntries';
-import { useMoodLogs } from '../../hooks/useMoodLogs';
-import { useSanctuaryRegistry } from '../../hooks/useSanctuaryRegistry';
-import { JournalSection, MoodSection, StudentPulse } from '../../views/sections';
+import { BaseSelfView } from '@repo/self/components/BaseSelfView';
+import { resolveFeatureContent } from '@repo/self/components/FeatureRegistry';
+import WelcomeModal from '@repo/self/components/WelcomeModal';
+import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
+import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
+import { useSanctuaryRegistry } from '@repo/self/hooks/useSanctuaryRegistry';
+import { JournalSection, MoodSection, StudentPulse } from '@repo/self/views/sections';
 
 /**
  * StudentSelfView - Refactored for 2026: Clean Injection Pattern.

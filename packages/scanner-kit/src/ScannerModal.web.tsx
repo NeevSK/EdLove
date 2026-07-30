@@ -144,10 +144,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5EDD6',
     borderRadius: 24,
     padding: 28,
-    shadowColor: 'rgba(107, 100, 128, 1)',
-    shadowOpacity: 0.22,
-    shadowRadius: 24,
-    shadowOffset: { width: 0, height: 8 },
+    boxShadow: '0 8px 24px rgba(107, 100, 128, 0.22)',
     gap: 20,
   },
   header: {
@@ -224,10 +221,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     paddingVertical: 16,
     alignItems: 'center',
-    shadowColor: 'rgba(107, 100, 128, 1)',
-    shadowOpacity: 0.18,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
+    boxShadow: '0 4px 12px rgba(107, 100, 128, 0.18)',
   },
   submitText: {
     fontSize: 16,

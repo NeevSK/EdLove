@@ -1,23 +1,28 @@
-import { usePermissions } from '@repo/core/logic';
+import { getAllDomains } from '@repo/core/logic/registry/appCatalog';
+import { useFeatureStore } from '@repo/core/store';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
-import { useRouter } from 'expo-router';
 
 import { useMemo, useState } from 'react';
 import {
   commitFeatureGateChanges,
   getAdminAuditEntries,
-  getAdminFeatureSnapshot,
   stageFeatureGateChanges,
-} from '../admin/adminControl';
-import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
+} from '@repo/admin/admin/adminControl';
+import { AdminRoomPanel, AdminRoomShell } from '@repo/admin/screens/AdminRoomShell';
 
 export default function AdminFeatureRegistry() {
-  const router = useRouter();
-  const { flags } = usePermissions();
-  const snapshot = useMemo(() => getAdminFeatureSnapshot(), []);
+  const catalog = useMemo(() => getAllDomains(), []);
+  const flags = useFeatureStore((state) => state.flags);
+  const rolloutSnapshot = useFeatureStore((state) => state.snapshot);
+  const snapshot = {
+    flags,
+    snapshot: rolloutSnapshot,
+    activeFlagCount: Object.values(flags).filter(Boolean).length,
+    maintenanceMode: flags.isUnderMaintenance,
+  };
   const [preview, setPreview] = useState(() =>
-    stageFeatureGateChanges([{ key: 'MAINTENANCE_MODE', value: false }], 'platform'),
+    stageFeatureGateChanges([{ key: 'isUnderMaintenance', value: false }], 'platform'),
   );
   const auditEntries = useMemo(() => getAdminAuditEntries(), []);
 
@@ -39,9 +44,46 @@ export default function AdminFeatureRegistry() {
           value: snapshot.maintenanceMode ? 'on' : 'off',
           hint: 'Global posture',
         },
+        {
+          label: 'Catalog capabilities',
+          value: catalog.length,
+          hint: 'Canonical AppCatalog inventory',
+        },
       ]}
     >
       <VStack className="gap-4">
+        <AdminRoomPanel
+          title="Capability inventory"
+          description="AppCatalog is the source of truth for what exists. GrowthBook rollout values only decide who receives a capability."
+        >
+          <VStack className="gap-2">
+            {catalog.map((entry) => (
+              <Box
+                key={entry.id}
+                className="rounded-2xl border border-starlightGray/15 bg-silk px-4 py-3"
+              >
+                <HStack className="items-center justify-between gap-3">
+                  <VStack className="min-w-0 flex-1">
+                    <Text className="text-[13px] font-bold text-phaseText-primary">
+                      {entry.label}
+                    </Text>
+                    <Text className="text-[11px] text-phaseText-secondary">
+                      {entry.id} · owner: {entry.lifecycle.owner}
+                    </Text>
+                  </VStack>
+                  <Text className="text-[11px] font-bold uppercase text-phaseText-secondary">
+                    {entry.state}
+                  </Text>
+                </HStack>
+                <Text className="mt-1 text-[11px] text-phaseText-secondary">
+                  {entry.flagKey ?? 'Catalog-only capability'} ·{' '}
+                  {entry.lifecycle.flagClass ?? 'no rollout class'}
+                </Text>
+              </Box>
+            ))}
+          </VStack>
+        </AdminRoomPanel>
+
         <AdminRoomPanel
           title="Live feature gates"
           description="These are the most important resolved flags for an admin operator."
@@ -67,6 +109,33 @@ export default function AdminFeatureRegistry() {
         </AdminRoomPanel>
 
         <AdminRoomPanel
+          title="Rollout freshness"
+          description="Stale snapshots retain only operational controls; temporary capabilities fail closed until GrowthBook refreshes."
+        >
+          <HStack className="flex-wrap gap-3">
+            <Box className="min-w-[47%] flex-1 rounded-2xl border border-starlightGray/15 bg-silk px-4 py-3">
+              <Text className="text-[11px] font-bold uppercase text-phaseText-secondary">
+                Source
+              </Text>
+              <Text className="mt-1 text-[13px] font-bold text-phaseText-primary">
+                {snapshot.snapshot?.source ?? 'computed'}
+              </Text>
+            </Box>
+            <Box className="min-w-[47%] flex-1 rounded-2xl border border-starlightGray/15 bg-silk px-4 py-3">
+              <Text className="text-[11px] font-bold uppercase text-phaseText-secondary">
+                Freshness
+              </Text>
+              <Text className="mt-1 text-[13px] font-bold text-phaseText-primary">
+                {snapshot.snapshot?.stale ? 'Stale — operational fallback' : 'Fresh'}
+              </Text>
+            </Box>
+          </HStack>
+          <Text className="mt-2 text-[11px] text-phaseText-secondary">
+            Last refreshed: {snapshot.snapshot?.refreshedAt ?? 'No GrowthBook snapshot yet'}
+          </Text>
+        </AdminRoomPanel>
+
+        <AdminRoomPanel
           title="Guarded mutation preview"
           description="Stage a change, inspect the preview, then commit deliberately."
         >
@@ -84,7 +153,10 @@ export default function AdminFeatureRegistry() {
               <Pressable
                 onPress={() =>
                   setPreview(
-                    stageFeatureGateChanges([{ key: 'MAINTENANCE_MODE', value: true }], 'platform'),
+                    stageFeatureGateChanges(
+                      [{ key: 'isUnderMaintenance', value: true }],
+                      'platform',
+                    ),
                   )
                 }
                 className="active:opacity-80"
@@ -99,7 +171,7 @@ export default function AdminFeatureRegistry() {
                 onPress={() =>
                   setPreview(
                     stageFeatureGateChanges(
-                      [{ key: 'MAINTENANCE_MODE', value: false }],
+                      [{ key: 'isUnderMaintenance', value: false }],
                       'platform',
                     ),
                   )
@@ -117,7 +189,7 @@ export default function AdminFeatureRegistry() {
                 className="active:opacity-80"
               >
                 <Box className="rounded-full bg-phase-primary px-4 py-2">
-                  <Text className="text-[12px] font-bold text-white">Commit preview</Text>
+                  <Text className="text-[12px] font-bold text-white">Queue GrowthBook change</Text>
                 </Box>
               </Pressable>
             </HStack>

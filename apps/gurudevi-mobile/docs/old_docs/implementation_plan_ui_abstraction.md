@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # Implementation Plan: UI Abstraction Layer
 
 **Objective**: Create `src/ui/index.ts` as single source of truth for UI components to solve TypeScript stack overflow and optimize bundle size.

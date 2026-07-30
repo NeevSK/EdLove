@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { api } from '../api';
-import type { Classroom, Student } from '../types';
+import { api } from '@repo/core/api';
+import type { Classroom, Student } from '@repo/core/types';
 
 /**
  * useTeacherClassroom: A sovereign hook for managing classroom data fetching and state.

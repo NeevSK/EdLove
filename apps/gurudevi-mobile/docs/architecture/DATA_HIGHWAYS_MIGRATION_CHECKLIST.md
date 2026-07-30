@@ -104,7 +104,7 @@ These are the places most likely to grow into replicated/offline data flows:
 - `packages/core/src/logic/permissions/localEvaluator.ts`
 - `packages/core/src/logic/permissions/localEvaluator.native.ts`
 - `apps/gurudevi-mobile/src/providers/PowerSyncProvider.tsx`
-- `apps/gurudevi-mobile/src/services/FeatureSyncManager.tsx`
+- `packages/ui/src/providers/FeatureProvider.tsx`
 - `packages/core/src/api/orchestration/operations.ts`
 - `packages/core/src/api/orchestration/identity.ts` if it starts serving replicated workspace context
 

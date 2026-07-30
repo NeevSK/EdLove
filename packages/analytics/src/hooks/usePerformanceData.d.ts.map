@@ -1,1 +1,1 @@
-{"version":3,"file":"usePerformanceData.d.ts","sourceRoot":"","sources":["usePerformanceData.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,uBAAuB,IAAI,kBAAkB,EAAE,MAAM,WAAW,CAAC"}
+{"version":3,"file":"usePerformanceData.d.ts","sourceRoot":"","sources":["usePerformanceData.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,uBAAuB,IAAI,kBAAkB,EAAE,MAAM,iBAAiB,CAAC"}

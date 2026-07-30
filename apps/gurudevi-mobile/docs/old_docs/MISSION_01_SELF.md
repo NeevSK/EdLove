@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # ðŸ§˜ MISSION 01: The Self (Wellbeing)
 
 **Role**: You are a React Native expert specializing in "Sanctuary UI" (Animations, Reanimated, Gluestack).

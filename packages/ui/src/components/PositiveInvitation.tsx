@@ -1,9 +1,9 @@
-import { LogIn, Plus, Sparkles } from 'lucide-react-native';
+import { LogIn, Plus, Sparkles } from '@repo/ui/icons';
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Center, Heading, Text, VStack } from '../gluestack';
-import { hapticLight } from '../utils/haptics';
-import { SanctuaryButton } from './SanctuaryButton';
+import { Box, Center, Heading, Text, VStack } from '@repo/ui/gluestack';
+import { hapticLight } from '@repo/ui/utils/haptics';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 
 interface PositiveInvitationProps {
   title?: string;

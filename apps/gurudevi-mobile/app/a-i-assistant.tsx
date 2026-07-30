@@ -1,8 +1,8 @@
 import { AIAssistantScreen } from '@repo/ai';
+import { Flower2 } from '@repo/ui/icons';
 import { Center, Spinner, Text, VStack } from '@repo/ui/primitives';
-import { Flower2 } from 'lucide-react-native';
 import { Suspense } from 'react';
-import { usePremiumStatus } from '../src/hooks/usePremiumStatus';
+import { usePremiumStatus } from '@/hooks/usePremiumStatus';
 
 function Fallback() {
   return (

@@ -1,6 +1,6 @@
-import { SupabaseCommunityRepository } from '../../adapters/supabase/communityRepository';
-import { CommunityManager } from './CommunityManager';
-import { growth } from './growth.factory';
+import { SupabaseCommunityRepository } from '@repo/core/adapters/supabase/communityRepository';
+import { CommunityManager } from '@repo/core/logic/managers/CommunityManager';
+import { growth } from '@repo/core/logic/managers/growth.factory';
 
 /**
  * community: The Global Sovereign Community Instance.

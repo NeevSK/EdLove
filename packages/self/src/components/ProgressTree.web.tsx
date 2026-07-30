@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ProgressTree.web.tsx
  *
  * Web override. The native version uses react-native-reanimated for a breathing
@@ -9,7 +9,7 @@
 import { useTemporalStore } from '@repo/core/logic';
 
 import { useEffect, useState } from 'react';
-import { fetchInteractionCountForView } from '../api/selfInsightsRepository';
+import { fetchInteractionCountForView } from '@repo/self/api/selfInsightsRepository';
 
 interface ProgressTreeProps {
   userId?: string;

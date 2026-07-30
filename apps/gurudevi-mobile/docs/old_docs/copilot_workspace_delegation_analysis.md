@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # GitHub Copilot Workspace Delegation Analysis
 
 **Date**: 2026-02-11  

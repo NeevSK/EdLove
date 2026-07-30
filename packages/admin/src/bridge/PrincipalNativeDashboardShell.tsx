@@ -1,10 +1,10 @@
-import { FeatureGuard } from '@repo/core/logic';
+import { useDomainFeature } from '@repo/core/logic';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import SandboxBanner from '@repo/ui/components/SandboxBanner';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 
-import type { PrincipalZoneId } from '../principal/workspace';
+import type { PrincipalZoneId } from '@repo/admin/principal/workspace';
 
 function ZoneButton({
   id,
@@ -75,7 +75,7 @@ export function PrincipalNativeDashboardShell({
   error,
   children,
 }: PrincipalNativeDashboardShellProps) {
-  // We use NativeWind for styling, so theme hook is removed as it's legacy.
+  const { result: workspaceShellFeature } = useDomainFeature('workspace-shell');
 
   return (
     <>
@@ -125,22 +125,17 @@ export function PrincipalNativeDashboardShell({
               <SkeletonCard height={220} />
               <SkeletonCard height={220} />
             </VStack>
+          ) : workspaceShellFeature.permitted ? (
+            children
           ) : (
-            <FeatureGuard
-              feature="isDevelopingWorkspace"
-              fallback={
-                <Box className="p-xl bg-phase-canvas rounded-3xl border border-dashed border-phase-border items-center justify-center min-h-[300px]">
-                  <Text className="text-phaseText-secondary font-bold text-center">
-                    Workspace is currently under development.
-                  </Text>
-                  <Text className="text-phaseText-muted text-[12px] mt-2 text-center">
-                    Stay tuned for updates on governance and institutional signals.
-                  </Text>
-                </Box>
-              }
-            >
-              {children}
-            </FeatureGuard>
+            <Box className="p-xl bg-phase-canvas rounded-3xl border border-dashed border-phase-border items-center justify-center min-h-[300px]">
+              <Text className="text-phaseText-secondary font-bold text-center">
+                Workspace is currently under development.
+              </Text>
+              <Text className="text-phaseText-muted text-[12px] mt-2 text-center">
+                Stay tuned for updates on governance and institutional signals.
+              </Text>
+            </Box>
           )}
         </VStack>
       </ScrollView>

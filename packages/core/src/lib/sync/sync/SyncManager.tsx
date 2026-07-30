@@ -1,12 +1,12 @@
 import { useCallback, useEffect } from 'react';
-import { useConflictStore } from '../../../store/useConflictStore';
-import { useStore } from '../../../store/useStore';
-import { classifyError } from '../errorClassifier';
-import { sovereignBus } from '../eventBus';
-import { useMutationAuditLog } from '../MutationAuditLog';
-import { MUTATION_REGISTRY } from '../registry';
-import type { QueuedMutation, QueuedMutationDispatchResult } from '../types';
-import { useMutationQueue } from '../useMutationQueue';
+import { useConflictStore } from '@repo/core/store/useConflictStore';
+import { useStore } from '@repo/core/store/useStore';
+import { classifyError } from '@repo/core/lib/sync/errorClassifier';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus';
+import { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
+import { MUTATION_REGISTRY } from '@repo/core/lib/sync/registry';
+import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/lib/sync/types';
+import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 
 /**
  * SyncManager

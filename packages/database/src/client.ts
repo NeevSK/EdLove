@@ -48,3 +48,27 @@ export const createZenStackDb = (user: AuthUser, databaseUrl?: string) => {
 export const canUseZenStackDb = (databaseUrl?: string) => {
   return Boolean(databaseUrl || process.env.DATABASE_URL);
 };
+
+/**
+ * Parameterized read port for tables that are intentionally outside the
+ * ZenStack domain model (for example PowerSync control-plane projections).
+ * Callers cannot interpolate values into the query string.
+ */
+export async function queryDatabaseRows<T>(
+  query: string,
+  parameters: readonly unknown[] = [],
+): Promise<T[]> {
+  const result = await getPool().query(query, parameters as unknown[]);
+  return result.rows as T[];
+}
+
+/**
+ * Parameterized command port for server-owned projections outside ZenStack.
+ * Values must remain parameters; callers cannot interpolate user input.
+ */
+export async function executeDatabaseCommand(
+  query: string,
+  parameters: readonly unknown[] = [],
+): Promise<void> {
+  await getPool().query(query, parameters as unknown[]);
+}

@@ -1,2 +1,2 @@
-export * from '../constants';
-export * from '../types';
+export * from '@repo/core/constants';
+export * from '@repo/core/types';

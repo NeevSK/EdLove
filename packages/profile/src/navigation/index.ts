@@ -1,2 +1,2 @@
-export * from './fullProfileParams';
-export * from './ProfileNavigationContext';
+export * from '@repo/profile/navigation/fullProfileParams';
+export * from '@repo/profile/navigation/ProfileNavigationContext';

@@ -5,5 +5,5 @@ export {
   usePredictions,
   useStudentPerformance,
   useStudentPerformanceData,
-} from './queries';
-export { usePerformanceData } from './usePerformanceData';
+} from '@repo/analytics/hooks/queries';
+export { usePerformanceData } from '@repo/analytics/hooks/usePerformanceData';

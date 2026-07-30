@@ -1,3 +1,5 @@
+> **Superseded** � kept for historical reference.
+> See active docs at docs/INDEX.md.
 # 🗣️ MISSION 06: Community & Onboarding
 
 **Role**: You are a React Native expert specializing in "Social UI & Auth Flows".

@@ -1,9 +1,9 @@
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { Award, BookOpen, Clock } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { formatDistanceToNow } from 'date-fns';
-import { Award, BookOpen, Clock } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { useStudentGrades } from '../hooks/useStudentGrades';
+import { useStudentGrades } from '@repo/self/hooks/useStudentGrades';
 
 interface MyGradesViewProps {
   userId?: string;

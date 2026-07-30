@@ -3,7 +3,7 @@ import { cryptoManager, usePermissions, useStore } from '@repo/core/logic';
 import { fetchServerSentEvents, useChat } from '@tanstack/ai-react';
 import type { MultimodalContent } from '@tanstack/ai-client';
 import { useCallback, useEffect, useState } from 'react';
-import { type CoordinationGap, TimetableScheduler } from '../api/agents';
+import { type CoordinationGap, TimetableScheduler } from '@repo/ai/api/agents';
 
 export interface Message {
   id: string;

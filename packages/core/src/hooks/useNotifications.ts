@@ -6,9 +6,9 @@
  */
 
 import { useEffect, useMemo } from 'react';
-import { useNotificationStore } from '../store/useNotificationStore';
+import { useNotificationStore } from '@repo/core/store/useNotificationStore';
 
-import type { AppNotification } from '../types';
+import type { AppNotification } from '@repo/core/types';
 
 // Types now provided by @repo/core/types
 

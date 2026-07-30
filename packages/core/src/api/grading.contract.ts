@@ -2,8 +2,8 @@ import { z } from 'zod';
 import {
   ClassroomGradingSettingsSchema,
   StudentGradeSchema,
-} from '../logic/schemas/grading.schema';
-import type { SovereignContract } from './contract';
+} from '@repo/core/logic/schemas/grading.schema';
+import type { SovereignContract } from '@repo/core/api/contract';
 
 const gradingAuthority = (
   action: 'manage' | 'create' | 'read' | 'update' | 'delete' | 'grade' | 'publish' | 'override',

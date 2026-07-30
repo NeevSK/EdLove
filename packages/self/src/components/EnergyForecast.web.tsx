@@ -6,6 +6,7 @@
 
 import { useTemporalStore } from '@repo/core/logic';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { Battery, CircleCheck } from '@repo/ui/icons';
 import {
   Box,
   Heading,
@@ -16,12 +17,10 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-
-import { Battery, CircleCheck } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import Animated, { FadeIn, SlideInUp } from 'react-native-reanimated';
-import { ENERGY_COLORS } from '../constants/wellbeing';
-import { useEnergyForecast } from '../hooks/useEnergyForecast';
+import { ENERGY_COLORS } from '@repo/self/constants/wellbeing';
+import { useEnergyForecast } from '@repo/self/hooks/useEnergyForecast';
 
 interface EnergyForecastProps {
   userId?: string;

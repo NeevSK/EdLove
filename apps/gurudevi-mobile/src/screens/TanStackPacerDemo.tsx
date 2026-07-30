@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useDebouncedValue, useThrottledInvalidate } from '../hooks/usePacer';
+import { useDebouncedValue, useThrottledInvalidate } from '@/hooks/usePacer';
 
 // Mock API function to simulate a network call
 const fetchMockSearchResults = async (query: string): Promise<string[]> => {

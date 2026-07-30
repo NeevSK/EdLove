@@ -33,7 +33,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
-import { communityAPI } from '../api/community';
+import { communityAPI } from '@repo/community/api/community';
 
 /**
  * UserPublicProfileScreen.web

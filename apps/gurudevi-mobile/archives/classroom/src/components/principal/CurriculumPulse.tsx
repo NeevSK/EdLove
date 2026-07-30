@@ -22,7 +22,7 @@ import {
 } from '@repo/ui/primitives';
 
 import { Theme } from '@repo/ui/theme';
-import { BookOpen, Clock, Zap } from 'lucide-react-native';
+import { BookOpen, Clock, Zap } from '@repo/ui/icons';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

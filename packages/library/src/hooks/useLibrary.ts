@@ -2,9 +2,9 @@ import { useTemporalStore } from '@repo/core/logic';
 
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
-import { libraryAPI } from '../api/library';
-import { knowledgeSync } from '../api/sync';
-import type { CollectionFilters, CreateResourceInput, ResourceFilters } from '../types';
+import { libraryAPI } from '@repo/library/api/library';
+import { knowledgeSync } from '@repo/library/api/sync';
+import type { CollectionFilters, CreateResourceInput, ResourceFilters } from '@repo/library/types';
 
 // Keys for React Query
 export const LIBRARY_KEYS = {

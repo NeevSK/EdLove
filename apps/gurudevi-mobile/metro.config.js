@@ -231,6 +231,7 @@ const WEB_SHIMS = {
   '@maplibre/maplibre-react-native': path.resolve(projectRoot, 'src/shims/maplibre-web.js'),
   '@intuitui-labs/lk-edu-geo': path.resolve(projectRoot, 'src/shims/lk-edu-geo-web.js'),
   'srilankan-postalcode-backend': path.resolve(projectRoot, 'src/shims/postalcode-backend-web.js'),
+  'react-native-ease': path.resolve(projectRoot, 'src/shims/ease-web.js'),
 };
 
 const UNIVERSAL_SHIMS = {
@@ -272,6 +273,20 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   // This allows .json and .wasm to use Metro's native loaders directly.
   if (moduleName.endsWith('.json') || moduleName.endsWith('.wasm')) {
     return (defaultResolveRequest || context.resolveRequest)(context, moduleName, platform);
+  }
+
+  // Workspace packages are mapped to their source roots below. That mapping
+  // intentionally bypasses package `exports`, so resolve conditional native
+  // adapters explicitly before delegating to Metro.
+  if (moduleName === '@repo/core/native/webPush') {
+    return {
+      filePath: path.resolve(
+        workspaceRoot,
+        'packages/core/src/native',
+        platform === 'web' ? 'webPush.web.ts' : 'webPush.native.ts',
+      ),
+      type: 'sourceFile',
+    };
   }
 
   if (moduleName === '@repo/workforce/WorkforceShell') {

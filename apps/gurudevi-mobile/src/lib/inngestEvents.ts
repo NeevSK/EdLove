@@ -10,7 +10,7 @@ import {
   type WellbeingMoodLoggedPayload,
 } from '@repo/core/logic';
 import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/sync';
-import { inngest } from './inngest';
+import { inngest } from '@/lib/inngest';
 
 const REMOTE_SYNC_MUTATIONS = new Set(['saveJournalEntry', 'saveDecision', 'updateAttendance']);
 

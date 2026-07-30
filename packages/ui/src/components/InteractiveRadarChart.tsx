@@ -2,8 +2,8 @@ import type React from 'react';
 import { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import Svg, { Circle, G, Line, Polygon, Text as SvgText } from 'react-native-svg';
-import { View } from '../primitives';
-import { Theme } from '../theme/Theme';
+import { View } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme/Theme';
 
 export interface RadarDimension {
   key: string;

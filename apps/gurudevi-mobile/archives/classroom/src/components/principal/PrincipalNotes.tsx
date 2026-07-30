@@ -31,7 +31,7 @@ import {
   Square,
   StickyNote,
   X,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,

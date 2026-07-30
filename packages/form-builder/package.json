@@ -20,7 +20,7 @@
   "scripts": {
     "lint": "node ../../scripts/run-and-report.mjs --cmd \"pnpm run lint:biome && pnpm run lint:eslint\" --name \"packages_form-builder-lint\"",
     "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --build --noEmit --checkers 4 --builders 4\" --name \"packages_form-builder-check-types\"",
-    "lint:biome": "node ../../scripts/run-and-report.mjs --cmd \"biome check .\" --name \"packages_form-builder-lint_biome\"",
+    "lint:biome": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs\" --name \"packages_form-builder-lint_biome\"",
     "lint:eslint": "node ../../scripts/run-and-report.mjs --cmd \"eslint .\" --name \"packages_form-builder-lint_eslint\"",
     "format": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs --write\" --name \"packages_form-builder-format\"",
     "check-cycles": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/refactor/sovereign-cycle-checker.mjs\" --name \"packages_form-builder-check-cycles\"",
@@ -33,7 +33,7 @@
     "@intuitui-labs/form-builder-engine": "workspace:*",
     "@repo/ui": "workspace:*",
     "@tanstack/react-form": "^0.20.0",
-    "expo-router": "~56.2.10",
+    "expo-router": "~57.0.9",
     "lucide-react": "^1.17.0",
     "lucide-react-native": "^1.17.0",
     "react-i18next": "^17.0.8"
@@ -50,13 +50,13 @@
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": "*",
-    "react-i18next": "*"
+    "react-i18next": "*",
+    "react-native": "*"
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
     "check-types": "pnpm exec tsc --build --noEmit --checkers 4 --builders 4",
-    "lint:biome": "biome check .",
+    "lint:biome": "node ../../scripts/scoped-biome.mjs",
     "lint:eslint": "eslint .",
     "format": "node ../../scripts/scoped-biome.mjs --write",
     "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",

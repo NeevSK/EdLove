@@ -1,5 +1,5 @@
 import type { Context } from 'hono';
-import { attendanceProjectionServices } from '../runtimes/attendanceProjection.runtime';
+import { attendanceProjectionServices } from '@repo/core/api/runtimes/attendanceProjection.runtime';
 
 /**
  * Operations Domain Handlers (Hono + ZenStack ReBAC)

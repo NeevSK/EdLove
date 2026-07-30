@@ -1,11 +1,44 @@
 {
   "extends": "../../packages/typescript-config/base.json",
   "compilerOptions": {
+    "composite": true,
+    "emitDeclarationOnly": true,
     "outDir": "./dist",
     "rootDir": "./src",
     "paths": {
-      "@repo/profile/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@repo/profile/*": [
+        "./src/*"
+      ],
+      "@repo/people": [
+        "../people/dist/index.d.ts"
+      ],
+      "@repo/people/*": [
+        "../people/dist/*"
+      ],
+      "@repo/scanner-kit": [
+        "../scanner-kit/dist/index.d.ts"
+      ],
+      "@repo/scanner-kit/*": [
+        "../scanner-kit/dist/*"
+      ],
+      "@repo/core": [
+        "../core/dist/index.d.ts"
+      ],
+      "@repo/core/*": [
+        "../core/dist/*"
+      ],
+      "@repo/ui": [
+        "../ui/dist/index.d.ts"
+      ],
+      "@repo/ui/*": [
+        "../ui/dist/*"
+      ]
     }
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*"
+  ]
 }

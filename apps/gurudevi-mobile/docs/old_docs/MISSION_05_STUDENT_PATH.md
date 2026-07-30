@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # ðŸŽ’ MISSION 05: The Student Path
 
 **Role**: You are a React Native expert specializing in "Mobile Learning UI".

@@ -1,9 +1,9 @@
-import { assertHighway } from '../api/highways';
-import { identityAPI } from '../api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-import type { Actions } from '../logic/permissions/abilities/base';
-import { checkLocalPermission } from '../logic/permissions/localEvaluator';
-import { APIError } from '../types/API';
+import { assertHighway } from '@repo/core/api/highways';
+import { identityAPI } from '@repo/core/api/identity';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import type { Action } from '@repo/core/types/authorization';
+import { checkLocalPermission } from '@repo/core/logic/permissions/localEvaluator';
+import { APIError } from '@repo/core/types/API';
 
 /**
  * requireAuth  Ensures the user is authenticated.
@@ -36,7 +36,7 @@ export async function requireClassroomAccess(classroomId: string, capability: st
   }
 
   const isAllowed = await checkLocalPermission({
-    action: capability as Actions,
+    action: capability as Action,
     resourceType: 'Classroom',
     resourceId: classroomId,
     userContext: {

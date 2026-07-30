@@ -1,48 +1,46 @@
+import { jsx as _jsx } from "react/jsx-runtime";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { jsx as _jsx } from 'react/jsx-runtime';
-
 const ActivityPulseContext = createContext(undefined);
 export const ActivityPulseProvider = ({ children }) => {
-  const [state, setState] = useState({
-    pulse: 0,
-    lastEventTime: Date.now(),
-    intensity: 0,
-  });
-  const decayRef = useRef(null);
-  const registerPulse = (strength = 0.2) => {
-    setState((prev) => ({
-      ...prev,
-      pulse: Math.min(1, prev.pulse + strength),
-      lastEventTime: Date.now(),
-      intensity: prev.intensity + strength,
-    }));
-  };
-  useEffect(() => {
-    // Decay function to make the pulse fade over time
-    const decay = () => {
-      setState((prev) => {
-        if (prev.pulse <= 0.01) return prev;
-        return {
-          ...prev,
-          pulse: prev.pulse * 0.95, // 5% decay per frame-ish
+    const [state, setState] = useState({
+        pulse: 0,
+        lastEventTime: Date.now(),
+        intensity: 0,
+    });
+    const decayRef = useRef(null);
+    const registerPulse = (strength = 0.2) => {
+        setState((prev) => ({
+            ...prev,
+            pulse: Math.min(1, prev.pulse + strength),
+            lastEventTime: Date.now(),
+            intensity: prev.intensity + strength,
+        }));
+    };
+    useEffect(() => {
+        // Decay function to make the pulse fade over time
+        const decay = () => {
+            setState((prev) => {
+                if (prev.pulse <= 0.01)
+                    return prev;
+                return {
+                    ...prev,
+                    pulse: prev.pulse * 0.95, // 5% decay per frame-ish
+                };
+            });
+            decayRef.current = requestAnimationFrame(decay);
         };
-      });
-      decayRef.current = requestAnimationFrame(decay);
-    };
-    decayRef.current = requestAnimationFrame(decay);
-    return () => {
-      if (decayRef.current) cancelAnimationFrame(decayRef.current);
-    };
-  }, []);
-  return _jsx(ActivityPulseContext.Provider, {
-    value: { state, registerPulse },
-    children: children,
-  });
+        decayRef.current = requestAnimationFrame(decay);
+        return () => {
+            if (decayRef.current)
+                cancelAnimationFrame(decayRef.current);
+        };
+    }, []);
+    return (_jsx(ActivityPulseContext.Provider, { value: { state, registerPulse }, children: children }));
 };
 export const useActivityPulse = () => {
-  const context = useContext(ActivityPulseContext);
-  if (!context) {
-    throw new Error('useActivityPulse must be used within an ActivityPulseProvider');
-  }
-  return context;
+    const context = useContext(ActivityPulseContext);
+    if (!context) {
+        throw new Error('useActivityPulse must be used within an ActivityPulseProvider');
+    }
+    return context;
 };

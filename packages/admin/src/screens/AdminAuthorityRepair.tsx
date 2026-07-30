@@ -4,9 +4,9 @@ import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
 
 import { useState } from 'react';
-import { commitGuardedRepair, stageGuardedRepair } from '../admin/adminControl';
-import { useAdminWorkspaceSnapshot } from '../admin/adminRepository';
-import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
+import { commitGuardedRepair, stageGuardedRepair } from '@repo/admin/admin/adminControl';
+import { useAdminWorkspaceSnapshot } from '@repo/admin/admin/adminRepository';
+import { AdminRoomPanel, AdminRoomShell } from '@repo/admin/screens/AdminRoomShell';
 
 export default function AdminAuthorityRepair() {
   const router = useRouter();

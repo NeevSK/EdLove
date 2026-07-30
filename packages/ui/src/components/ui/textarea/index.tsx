@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import { TextInput, type TextInputProps, View, type ViewProps } from 'react-native';
 
@@ -43,3 +43,4 @@ Textarea.displayName = 'Textarea';
 TextareaInput.displayName = 'TextareaInput';
 
 export { Textarea };
+

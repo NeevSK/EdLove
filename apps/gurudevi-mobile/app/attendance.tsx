@@ -1,1 +1,1 @@
-export { AttendanceScreen as default } from '../src/screens';
+export { AttendanceScreen as default } from '@/screens';

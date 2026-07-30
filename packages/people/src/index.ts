@@ -1,14 +1,14 @@
-import { peopleDirectoryAPI } from './directory';
-import { teacherFeedbackAPI } from './feedback';
-import { peopleMembershipsAPI } from './memberships';
-import { staffAPI } from './staff';
+import { peopleDirectoryAPI } from '@repo/people/directory';
+import { teacherFeedbackAPI } from '@repo/people/feedback';
+import { peopleMembershipsAPI } from '@repo/people/memberships';
+import { staffAPI } from '@repo/people/staff';
 
-export * from './components';
-export * from './directory';
-export * from './feedback';
-export * from './hooks';
-export * from './memberships';
-export * from './staff';
+export * from '@repo/people/components';
+export * from '@repo/people/directory';
+export * from '@repo/people/feedback';
+export * from '@repo/people/hooks';
+export * from '@repo/people/memberships';
+export * from '@repo/people/staff';
 
 export const peopleAPI = {
   directory: peopleDirectoryAPI,

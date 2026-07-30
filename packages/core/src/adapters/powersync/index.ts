@@ -10,22 +10,23 @@ export {
   getDrizzleDB,
   getPowerSyncDB,
   injectNativePowerSyncDB,
-} from './database';
+} from '@repo/core/adapters/powersync/database';
 export {
   useAttendanceForClassroom,
   useDrizzleQuery,
   useMoodLogsForUser,
+  usePolicyVersionInvalidation,
   usePowerSyncQuery,
   usePowerSyncStatus,
   useStudentsInClassroom,
-} from './hooks';
-export { PowerSyncGate } from './PowerSyncGate';
-export { SupabasePowerSyncConnector } from './SupabasePowerSyncConnector';
+} from '@repo/core/adapters/powersync/hooks';
+export { PowerSyncGate } from '@repo/core/adapters/powersync/PowerSyncGate';
+export { SupabasePowerSyncConnector } from '@repo/core/adapters/powersync/SupabasePowerSyncConnector';
 export type {
   Attendance,
   Classroom,
   MoodLog,
   School,
   Student,
-} from './schema';
-export { AppSchema } from './schema';
+} from '@repo/core/adapters/powersync/schema';
+export { AppSchema } from '@repo/core/adapters/powersync/schema';

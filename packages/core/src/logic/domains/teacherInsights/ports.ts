@@ -10,7 +10,7 @@ import type {
   TeacherStudentObservationZod,
   TeacherStudentPotentialUpsert,
   TeacherStudentPotentialZod,
-} from '../../schemas/teacher-insights.schema';
+} from '@repo/core/logic/schemas/teacher-insights.schema';
 
 export interface TeacherInsightsRepository {
   listPrivateNotes(

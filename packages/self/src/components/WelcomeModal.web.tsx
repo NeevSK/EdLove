@@ -4,6 +4,7 @@
  * Standardized to Zero-Legacy: purged raw HTML/inline styles and fixed syntax corruption in style objects.
  */
 
+import { ArrowRight } from '@repo/ui/icons';
 import {
   AnimatedView,
   Box,
@@ -15,8 +16,6 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-
-import { ArrowRight } from 'lucide-react-native';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SlideInUp } from 'react-native-reanimated';

@@ -1,10 +1,10 @@
 import { coreRuntime, QRBuilder } from '@repo/core/logic';
-import { Share2 } from 'lucide-react-native';
+import { Share2 } from '@repo/ui/icons';
 import { useCallback } from 'react';
-import { Box, Text, VStack } from '../../primitives';
-import QRCodeGenerator from '../QRCodeGenerator';
-import { SanctuaryButton } from '../SanctuaryButton';
-import SanctuaryModal from '../SanctuaryModal';
+import { Box, Text, VStack } from '@repo/ui/primitives';
+import QRCodeGenerator from '@repo/ui/components/QRCodeGenerator';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 
 export interface AssetShareModalProps {
   visible: boolean;

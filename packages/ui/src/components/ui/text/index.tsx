@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import { Text as RNText, type StyleProp, type TextProps, type TextStyle } from 'react-native';
 
@@ -50,3 +50,4 @@ export const Heading = React.forwardRef<
   );
 });
 Heading.displayName = 'Heading';
+

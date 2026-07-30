@@ -6,9 +6,9 @@ export type {
   DocumentTemplate,
   DocumentVersion,
   DocumentWorkflow,
-} from './types';
+} from '@repo/admin/document-workflow/types';
 
-import { documentWorkflowEngine } from './engine';
+import { documentWorkflowEngine } from '@repo/admin/document-workflow/engine';
 import type {
   ChangeRecord,
   DocumentCollaborator,
@@ -17,7 +17,7 @@ import type {
   DocumentTemplate,
   DocumentVersion,
   DocumentWorkflow,
-} from './types';
+} from '@repo/admin/document-workflow/types';
 export interface DocumentWorkflowAPI {
   // Lifecycle management
   createDraft(

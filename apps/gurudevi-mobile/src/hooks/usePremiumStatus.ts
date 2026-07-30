@@ -1,18 +1,21 @@
-import { usePermissions } from '@repo/core/logic';
+import { useDomainFeature } from '@repo/core/logic/registry/useDomainFeature';
 
 /**
  * usePremiumStatus
  * Convenience hook to check if the current user has active premium/PRO access.
  */
 export function usePremiumStatus() {
-  const { context } = usePermissions();
+  const { result } = useDomainFeature('ai-assistant');
 
-  const isPremium = context.pricing_tier === 'PRO' || context.pricing_tier === 'INSTITUTIONAL';
-  const isInstitutional = context.pricing_tier === 'INSTITUTIONAL';
+  // The registry/permission pipeline understands personal PRO and any
+  // currently active institutional grant. Do not infer access from the
+  // legacy global pricing_tier projection.
+  const isPremium = result.permitted;
+  const isInstitutional = result.permitted === false && result.reason === 'entitlement';
 
   return {
     isPremium,
     isInstitutional,
-    pricingTier: context.pricing_tier,
+    pricingTier: undefined,
   };
 }

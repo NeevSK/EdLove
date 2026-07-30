@@ -1,15 +1,15 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT_DIR } from '../utils/constants.js';
+import { ROOT_DIR } from '@repo/platform-mcp/utils/constants.js';
 import {
   executeSovereignTool,
   quoteShellArg,
   runCommand,
   runPowerShellScript,
   runShellCommand,
-} from '../utils/execution.js';
-import { normalizeTarget } from '../utils/pathUtils.js';
-import { IngestService } from './JinaService.js';
+} from '@repo/platform-mcp/utils/execution.js';
+import { normalizeTarget } from '@repo/platform-mcp/utils/pathUtils.js';
+import { IngestService } from '@repo/platform-mcp/services/JinaService.js';
 
 function toText(text: string, isError?: boolean) {
   return {

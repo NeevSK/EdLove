@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import type { View } from 'react-native';
 import { Svg } from 'react-native-svg';
@@ -63,3 +63,4 @@ export const Icon = React.forwardRef<View, IIconProps>(
 );
 
 Icon.displayName = 'Icon';
+

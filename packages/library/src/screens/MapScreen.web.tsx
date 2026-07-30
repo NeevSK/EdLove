@@ -15,6 +15,7 @@ import {
   VatyaView,
 } from '@repo/ui/components/visualization';
 import { useResponsive } from '@repo/ui/hooks';
+import { ChartColumn, FileCheck, Globe, Network, Orbit, Route, Wind, X } from '@repo/ui/icons';
 import {
   Box,
   HStack,
@@ -28,11 +29,10 @@ import {
 import { Theme } from '@repo/ui/theme';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
-import { ChartColumn, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
-import { libraryAPI } from '../api/library';
-import { usePerspectiveLayout } from '../hooks/usePerspectiveLayout';
-import type { KnowledgeNode, KnowledgeTopology } from '../types/Library';
+import { libraryAPI } from '@repo/library/api/library';
+import { usePerspectiveLayout } from '@repo/library/hooks/usePerspectiveLayout';
+import type { KnowledgeNode, KnowledgeTopology } from '@repo/library/types/Library';
 
 type PerspectiveId = 'astro' | 'terra' | 'dharma' | 'vastu' | 'jyoti' | 'vatya';
 interface Perspective {

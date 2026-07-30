@@ -1,13 +1,13 @@
-import { assignmentsAPI as rawAssignmentsAPI } from '../assignments';
-import { lessonsAPI as rawLessonsAPI, studentsAPI as rawStudentsAPI } from '../classroom';
-import { classroomGroupsAPI as rawClassroomGroupsAPI } from '../classroomGroups';
-import { classroomNotesAPI as rawClassroomNotesAPI } from '../classroomNotes';
-import { classroomStudentsAPI as rawClassroomStudentsAPI } from '../classroomStudents';
-import { classroomsAPI as rawClassroomsAPI } from '../classrooms';
-import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
-import { educationalContract } from '../educational.contract';
-import { lessonMaterialsAPI as rawLessonMaterialsAPI } from '../lessonMaterials';
-import { createTemporalProxy } from '../temporalProxy';
+import { assignmentsAPI as rawAssignmentsAPI } from '@repo/core/api/assignments';
+import { lessonsAPI as rawLessonsAPI, studentsAPI as rawStudentsAPI } from '@repo/core/api/classroom';
+import { classroomGroupsAPI as rawClassroomGroupsAPI } from '@repo/core/api/classroomGroups';
+import { classroomNotesAPI as rawClassroomNotesAPI } from '@repo/core/api/classroomNotes';
+import { classroomStudentsAPI as rawClassroomStudentsAPI } from '@repo/core/api/classroomStudents';
+import { classroomsAPI as rawClassroomsAPI } from '@repo/core/api/classrooms';
+import { assertContractCoverage, defineContractCoverage } from '@repo/core/api/contractCoverage';
+import { educationalContract } from '@repo/core/api/educational.contract';
+import { lessonMaterialsAPI as rawLessonMaterialsAPI } from '@repo/core/api/lessonMaterials';
+import { createTemporalProxy } from '@repo/core/api/temporalProxy';
 
 const _classroomsCoverage = assertContractCoverage(
   rawClassroomsAPI,

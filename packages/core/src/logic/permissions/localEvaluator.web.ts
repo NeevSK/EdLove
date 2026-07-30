@@ -1,5 +1,5 @@
-import type { UserContext } from '../schemas/user.schema';
-import type { Actions, SubjectType } from './abilities/base';
+import type { UserContext } from '@repo/core/logic/schemas/user.schema';
+import type { Action, Subject } from '@repo/core/types/authorization';
 
 export async function getLocalResourceAttributes(
   _resourceType: string,
@@ -10,14 +10,14 @@ export async function getLocalResourceAttributes(
 
 export async function verifyLocalPolicySignature(
   _policySet: string,
-  _signatureHex?: string,
+  _signature?: string,
 ): Promise<boolean> {
-  return true;
+  return false;
 }
 
 export async function checkLocalPermission(_params: {
-  action: Actions;
-  resourceType: SubjectType;
+  action: Action;
+  resourceType: Subject;
   resourceId: string;
   userContext: Partial<UserContext>;
 }): Promise<boolean> {

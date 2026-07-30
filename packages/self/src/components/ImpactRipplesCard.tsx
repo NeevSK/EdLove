@@ -5,9 +5,8 @@
  */
 
 import type { ImpactRipple } from '@repo/core/api';
+import { Droplet, Heart, Sparkles } from '@repo/ui/icons';
 import { AnimatedView, Box, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
-
-import { Droplet, Heart, Sparkles } from 'lucide-react-native';
 import { FadeInDown } from 'react-native-reanimated';
 
 interface ImpactRipplesCardProps {

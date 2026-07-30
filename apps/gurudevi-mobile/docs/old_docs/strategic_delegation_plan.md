@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # ðŸ“œ Gurudevi Strategic Delegation Plan
 ## For "Self" & "Classroom" Development
 

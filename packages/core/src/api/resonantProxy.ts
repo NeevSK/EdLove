@@ -1,4 +1,4 @@
-import { interceptApiCall } from './demoProvider';
+import { interceptApiCall } from '@repo/core/api/demoProvider';
 
 /**
  * createResonantProxy

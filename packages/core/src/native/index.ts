@@ -1,15 +1,21 @@
-export { authAPI } from '../api/auth';
-export { identityAPI } from '../api/identity';
+export { authAPI } from '@repo/core/api/auth';
+export { identityAPI } from '@repo/core/api/identity';
 export {
   __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__,
   __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ as supabase,
-} from '../api/supabase';
-export { bootstrapPlatform } from './bootstrap';
-export { deviceTrustAPI } from './deviceTrust';
-export { FlowResolver } from './flows/FlowResolver';
-export { GuestDataManager } from './guestDataManager';
-export { GuestDataSync } from './guestDataSync';
-export { Runtime } from './runtime';
+} from '@repo/core/api/supabase';
+export { bootstrapPlatform } from '@repo/core/native/bootstrap';
+export { deviceTrustAPI } from '@repo/core/native/deviceTrust';
+export { FlowResolver } from '@repo/core/native/flows/FlowResolver';
+export { GuestDataManager } from '@repo/core/native/guestDataManager';
+export { GuestDataSync } from '@repo/core/native/guestDataSync';
+export {
+  clearLocalGuestIdentity,
+  getLocalGuestIdentity,
+  updateLocalGuestIdentity,
+} from '@repo/core/native/guestIdentity';
+export { getGuestScope, guestStorageKey, setGuestScope } from '@repo/core/native/guestScope';
+export { Runtime } from '@repo/core/native/runtime';
 export {
   nativeDeviceProvider,
   nativeHapticsProvider,
@@ -20,8 +26,8 @@ export {
   nativeShareProvider,
   nativeStorageProvider,
   nativeUIProvider,
-} from './runtimeAdapter';
-export { StorageKeys, storage } from './storage';
-export { supabaseAuthStorage } from './supabaseAuthStorage';
-export { useAuthLifecycle } from './useAuthLifecycle';
-export { useWorkspaceLayoutSync } from './useWorkspaceLayoutSync';
+} from '@repo/core/native/runtimeAdapter';
+export { StorageKeys, storage } from '@repo/core/native/storage';
+export { supabaseAuthStorage } from '@repo/core/native/supabaseAuthStorage';
+export { useAuthLifecycle } from '@repo/core/native/useAuthLifecycle';
+export { useWorkspaceLayoutSync } from '@repo/core/native/useWorkspaceLayoutSync';

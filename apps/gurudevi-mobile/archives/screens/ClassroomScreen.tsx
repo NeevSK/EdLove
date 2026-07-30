@@ -14,7 +14,7 @@ import { SanctuaryNudge, SkeletonCard } from '@repo/ui/components';
 import { useThemedColors } from '@repo/ui/hooks';
 import { Box, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
-import { Wind } from 'lucide-react-native';
+import { Wind } from '@repo/ui/icons';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {

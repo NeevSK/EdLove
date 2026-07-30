@@ -1,3 +1,4 @@
+import { ChevronDown } from '@repo/ui/icons';
 import {
   Select,
   SelectBackdrop,
@@ -12,8 +13,6 @@ import {
   Text,
   View,
 } from '@repo/ui/primitives';
-
-import { ChevronDown } from 'lucide-react-native';
 
 interface FormSelectProps {
   label: string;

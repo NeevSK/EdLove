@@ -1,1 +1,1 @@
-export { default } from './AppSettingsScreen.shared';
+export { default } from '@repo/ui/screens/AppSettingsScreen.shared';

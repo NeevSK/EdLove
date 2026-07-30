@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { IStorage } from '../../logic/interfaces/storage.port';
+import type { IStorage } from '@repo/core/logic/interfaces/storage.port';
 
 /**
  * Robust AsyncStorage-based adapter with in-memory cache for synchronous access.

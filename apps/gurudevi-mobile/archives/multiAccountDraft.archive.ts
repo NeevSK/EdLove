@@ -102,9 +102,9 @@ function allocateStorageEngine(accountId: string, masterDEK: string) {
   const storeId = `gurudevi-tenant-${accountId}`;
 
   try {
-    const { MMKV } = require('react-native-mmkv');
+    const { createMMKV } = require('react-native-mmkv');
     if (!allocatedStores[storeId]) {
-      allocatedStores[storeId] = new MMKV({
+      allocatedStores[storeId] = createMMKV({
         id: storeId,
         encryptionKey: masterDEK,
       });

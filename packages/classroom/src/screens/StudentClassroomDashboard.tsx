@@ -1,5 +1,5 @@
 import { api } from '@repo/core/api';
-import type { Assignment } from '@repo/core/logic';
+import type { Assignment } from '@repo/core/types';
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
@@ -33,10 +33,10 @@ import {
   ClassroomHolisticInsights,
   ResourcesView,
   SubmissionModal,
-} from '../components';
-import ClassroomNotes from '../components/ClassroomNotes';
-import { useStudentClassroomWorkspaceData } from '../workspace/useStudentClassroomWorkspaceData';
-import LessonFeed from './LessonFeed';
+} from '@repo/classroom/components';
+import ClassroomNotes from '@repo/classroom/components/ClassroomNotes';
+import { useStudentClassroomWorkspaceData } from '@repo/classroom/workspace/useStudentClassroomWorkspaceData';
+import LessonFeed from '@repo/classroom/screens/LessonFeed';
 
 type FeatureId =
   | 'insights'

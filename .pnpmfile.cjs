@@ -48,6 +48,29 @@ module.exports = {
         }
       }
 
+      // Remap typescript peer dependency for ESLint and its plugins to use typescript6
+      const eslintTsPackages = [
+        '@typescript-eslint/typescript-estree',
+        '@typescript-eslint/parser',
+        '@typescript-eslint/eslint-plugin',
+        '@typescript-eslint/type-utils',
+        '@typescript-eslint/utils',
+        'typescript-eslint',
+        '@eslint-react/core',
+        '@eslint-react/eslint-plugin',
+        'eslint-import-resolver-typescript',
+        'eslint-plugin-deprecation'
+      ];
+      if (eslintTsPackages.includes(pkg.name)) {
+        if (pkg.peerDependencies && pkg.peerDependencies.typescript) {
+          delete pkg.peerDependencies.typescript;
+        }
+        if (!pkg.dependencies) {
+          pkg.dependencies = {};
+        }
+        pkg.dependencies.typescript = 'npm:@typescript/typescript6@^6.0.2';
+      }
+
       return pkg;
     },
   },

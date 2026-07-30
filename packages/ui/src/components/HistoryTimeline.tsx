@@ -2,7 +2,7 @@ import { type AuditLogEntry, historyAPI } from '@repo/core/logic';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { ActivityIndicator, ScrollView, Text, View } from '../primitives';
+import { ActivityIndicator, ScrollView, Text, View } from '@repo/ui/primitives';
 
 interface HistoryTimelineProps {
   tableName: string;

@@ -3,8 +3,8 @@ export {
   useBookmarkedResources,
   useCollection,
   useLibrary,
-} from './useLibrary';
-export { useMapPresence } from './useMapPresence';
-export { useMappingSync } from './useMappingSync';
-export { usePerspectiveLayout } from './usePerspectiveLayout';
-export { useTopologyPulse } from './useTopologyPulse';
+} from '@repo/library/hooks/useLibrary';
+export { useMapPresence } from '@repo/library/hooks/useMapPresence';
+export { useMappingSync } from '@repo/library/hooks/useMappingSync';
+export { usePerspectiveLayout } from '@repo/library/hooks/usePerspectiveLayout';
+export { useTopologyPulse } from '@repo/library/hooks/useTopologyPulse';

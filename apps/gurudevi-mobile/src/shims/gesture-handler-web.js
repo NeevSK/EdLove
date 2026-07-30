@@ -1,7 +1,7 @@
 /**
  * Self-Healing Web Shim for react-native-gesture-handler
  */
-import bridge from './universal-bridge';
+import bridge from '@/shims/universal-bridge';
 
 const GestureHandlerRootView = 'div';
 const PanGestureHandler = 'div';
@@ -13,6 +13,7 @@ const FlingGestureHandler = 'div';
 const RawButton = 'button';
 const BaseButton = 'button';
 const RectButton = 'button';
+const GestureDetector = ({ children }) => children;
 
 const Gesture = bridge('Gesture', {});
 
@@ -27,6 +28,7 @@ const gestureHandlerShim = bridge('react-native-gesture-handler', {
   RawButton,
   BaseButton,
   RectButton,
+  GestureDetector,
   Gesture,
   State: {
     UNDETERMINED: 0,
@@ -38,6 +40,14 @@ const gestureHandlerShim = bridge('react-native-gesture-handler', {
   },
 });
 
-export { BaseButton, Gesture, GestureHandlerRootView, PanGestureHandler, RawButton, RectButton };
+export {
+  BaseButton,
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+  PanGestureHandler,
+  RawButton,
+  RectButton,
+};
 
 export default gestureHandlerShim;

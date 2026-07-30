@@ -1,47 +1,86 @@
-/**
- * Web shim for react-native-mmkv
- */
-export class MMKV {
-  constructor(config) {
-    this.id = config?.id || 'default';
-  }
-  set(key, value) {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem(`${this.id}:${key}`, String(value));
-    }
-  }
-  getString(key) {
-    return typeof localStorage !== 'undefined'
-      ? localStorage.getItem(`${this.id}:${key}`) || undefined
-      : undefined;
-  }
-  getNumber(key) {
-    const val = this.getString(key);
-    return val ? Number(val) : undefined;
-  }
-  getBoolean(key) {
-    const val = this.getString(key);
-    return val === 'true' ? true : val === 'false' ? false : undefined;
-  }
-  delete(key) {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.removeItem(`${this.id}:${key}`);
-    }
-  }
-  clearAll() {
-    if (typeof localStorage !== 'undefined') {
-      Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith(`${this.id}:`)) {
-          localStorage.removeItem(key);
-        }
-      });
-    }
-  }
-  contains(key) {
-    return (
-      typeof localStorage !== 'undefined' && localStorage.getItem(`${this.id}:${key}`) !== null
-    );
-  }
+// Web shim for react-native-mmkv V4
+// This provides a Map-backed implementation for web builds
+import React from 'react';
+
+export function createMMKV(options = {}) {
+  const store = new Map();
+
+  return {
+    set: (key, value) => {
+      store.set(key, value);
+      return true;
+    },
+    getString: (key) => {
+      const value = store.get(key);
+      return typeof value === 'string' ? value : null;
+    },
+    getNumber: (key) => {
+      const value = store.get(key);
+      return typeof value === 'number' ? value : null;
+    },
+    getBoolean: (key) => {
+      const value = store.get(key);
+      return typeof value === 'boolean' ? value : false;
+    },
+    getBuffer: (key) => {
+      const value = store.get(key);
+      return value instanceof ArrayBuffer ? value : null;
+    },
+    contains: (key) => store.has(key),
+    delete: (key) => store.delete(key),
+    remove: (key) => store.delete(key),
+    getAllKeys: () => Array.from(store.keys()),
+    clearAll: () => store.clear(),
+    addOnValueChangedListener: () => ({ remove: () => {} }),
+    trim: () => {},
+    get byteSize() {
+      return 0;
+    },
+    checkContentChanged: () => false,
+  };
 }
 
-export default { MMKV };
+// V4 hooks — simplified web implementations
+export function useMMKVString(key, instance) {
+  const [value, setValue] = React.useState(() => instance?.getString(key) ?? null);
+  return [
+    value,
+    (v) => {
+      instance?.set(key, v);
+      setValue(v);
+    },
+  ];
+}
+
+export function useMMKVNumber(key, instance) {
+  const [value, setValue] = React.useState(() => instance?.getNumber(key) ?? null);
+  return [
+    value,
+    (v) => {
+      instance?.set(key, v);
+      setValue(v);
+    },
+  ];
+}
+
+export function useMMKVBoolean(key, instance) {
+  const [value, setValue] = React.useState(() => instance?.getBoolean(key) ?? false);
+  return [
+    value,
+    (v) => {
+      instance?.set(key, v);
+      setValue(v);
+    },
+  ];
+}
+
+export function useMMKVBuffer(key, instance) {
+  const [value, setValue] = React.useState(() => instance?.getBuffer(key) ?? null);
+  return [
+    value,
+    (v) => {
+      instance?.set(key, v);
+      setValue(v);
+    },
+  ];
+}

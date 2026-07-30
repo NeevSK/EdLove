@@ -1,6 +1,6 @@
 import { communityAPI } from '@repo/core/api';
 import { useManifestoHooks, useNotificationHooks } from '@repo/core/api/hooks';
-import { usePendingGateAction } from '@repo/core/hooks';
+import { useDomainRollout, usePendingGateAction } from '@repo/core/hooks';
 import { setPendingGateAction, usePermissions, useStore } from '@repo/core/logic';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
@@ -9,15 +9,14 @@ import { Bell, Compass, Info, Plus, Shield, Users } from '@repo/ui/icons';
 import { Box, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
-import { CommentSheet } from '../components/CommentSheet';
-import CommunityHearth from '../components/CommunityHearth';
-import CreateGroupModal from '../components/CreateGroupModal';
-import CreatePostModal from '../components/CreatePostModal';
-import { PostCard } from '../components/PostCard';
-import { useCommunity } from '../hooks/useCommunity';
-import { useCommunityGroups } from '../hooks/useCommunityGroups';
-import type { CommunityPost, DirectConversation } from '../types';
-import AnnouncementsScreen from './AnnouncementsScreen';
+import { CommentSheet } from '@repo/community/components/CommentSheet';
+import CommunityHearth from '@repo/community/components/CommunityHearth';
+import CreateGroupModal from '@repo/community/components/CreateGroupModal';
+import CreatePostModal from '@repo/community/components/CreatePostModal';
+import { PostCard } from '@repo/community/components/PostCard';
+import { useCommunity } from '@repo/community/hooks/useCommunity';
+import { useCommunityGroups } from '@repo/community/hooks/useCommunityGroups';
+import AnnouncementsScreen from '@repo/community/screens/AnnouncementsScreen';
 import {
   type CommunityWorkspaceMode,
   deriveCommunityPulse,
@@ -25,7 +24,8 @@ import {
   getCommunityModeOptions,
   getCommunityQuickPaths,
   mapCommunitySurfaceSlots,
-} from './communityWorkspace.shared';
+} from '@repo/community/screens/communityWorkspace.shared';
+import type { CommunityPost, DirectConversation } from '@repo/community/types';
 
 type CommunityState = {
   activeMode: CommunityWorkspaceMode;
@@ -112,7 +112,9 @@ const initialState: CommunityState = {
 export default function CommunityScreenWeb() {
   const { can } = usePermissions();
   const { user, flags } = useStore();
-  const { isCommunityEnabled, isMessagingEnabled, isSocialShieldEnabled } = flags;
+  const isCommunityEnabled = useDomainRollout('hearth');
+  const isMessagingRolloutEnabled = useDomainRollout('messages');
+  const { isSocialShieldEnabled } = flags;
   const pending = usePendingGateAction();
   const { unreadCount } = useNotificationHooks();
 
@@ -121,6 +123,7 @@ export default function CommunityScreenWeb() {
   const canReadFeed = can('read', 'CommunityFeed');
   const canReadGroups = can('read', 'CommunityGroups');
   const canReadMessages = can('read', 'DirectMessages');
+  const isMessagingEnabled = isMessagingRolloutEnabled && canReadMessages;
   const canCreatePost = can('create', 'Post');
   const canCreateGroup = can('create', 'Group');
   const canReadAnnouncements = Boolean(schoolId) && can('read', 'Group');

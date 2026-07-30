@@ -161,16 +161,14 @@ describe('PowerSync Offline Write Gating & Replication Loop', () => {
     expect(mockPowerSyncDb.getCrudBatch).toHaveBeenCalledWith(200);
     expect(mockUploadPost).toHaveBeenCalledWith(
       expect.objectContaining({
-        json: {
-          crud: [
-            {
-              id: 1,
-              op: 'PUT',
-              table: 'students',
-              opData: { id: 'student-999', name: 'John Doe' },
-            },
-          ],
-        },
+        json: [
+          {
+            id: 1,
+            op: 'PUT',
+            table: 'students',
+            opData: { id: 'student-999', name: 'John Doe' },
+          },
+        ],
       }),
       expect.objectContaining({
         headers: expect.objectContaining({

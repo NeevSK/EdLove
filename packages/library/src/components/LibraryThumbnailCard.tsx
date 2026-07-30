@@ -6,17 +6,6 @@
 
 import { coreRuntime } from '@repo/core/logic';
 import {
-  Box,
-  HStack,
-  ImageBackground,
-  Pressable,
-  Text,
-  useTheme,
-  VStack,
-} from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme';
-
-import {
   BadgeCheck,
   BookMarked,
   Bookmark,
@@ -31,11 +20,21 @@ import {
   StickyNote,
   ThumbsUp,
   Video,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
+import {
+  Box,
+  HStack,
+  ImageBackground,
+  Pressable,
+  Text,
+  useTheme,
+  VStack,
+} from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme';
 import type React from 'react';
 import { memo, useCallback } from 'react';
 
-import type { LibraryResource } from '../types';
+import type { LibraryResource } from '@repo/library/types';
 
 type ThumbnailType =
   | 'lesson'

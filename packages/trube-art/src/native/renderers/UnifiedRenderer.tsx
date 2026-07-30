@@ -1,26 +1,26 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { driverManager } from '../DriverManager';
-import { AuroraRendererSkia } from './AuroraRenderer.skia';
+import { driverManager } from '@repo/trube-art/native/DriverManager';
+import { AuroraRendererSkia } from '@repo/trube-art/native/renderers/AuroraRenderer.skia';
 // Tier 1: Vulkan/Native Renderers
-import { AuroraRendererVulkan } from './AuroraRenderer.vulkan';
-import { CompatibilityRenderer } from './CompatibilityRenderer';
-import { EveningSkyRendererSkia } from './EveningSkyRenderer.skia';
-import { EveningSkyRendererVulkan } from './EveningSkyRenderer.vulkan';
+import { AuroraRendererVulkan } from '@repo/trube-art/native/renderers/AuroraRenderer.vulkan';
+import { CompatibilityRenderer } from '@repo/trube-art/native/renderers/CompatibilityRenderer';
+import { EveningSkyRendererSkia } from '@repo/trube-art/native/renderers/EveningSkyRenderer.skia';
+import { EveningSkyRendererVulkan } from '@repo/trube-art/native/renderers/EveningSkyRenderer.vulkan';
 // Tier 2/3 / Failover: Skia Renderers
-import { MistRendererSkia } from './MistRenderer.skia';
-import { MistRendererVulkan } from './MistRenderer.vulkan';
-import { SilkRendererSkia } from './SilkRenderer.skia';
-import { SilkRendererVulkan } from './SilkRenderer.vulkan';
-import { SkymorphicRendererSkia } from './SkymorphicRenderer.skia';
-import { SkymorphicRendererVulkan } from './SkymorphicRenderer.vulkan';
-import type { TrubeRendererProps } from './types';
-import { WaterfallRendererSkia } from './WaterfallRenderer.skia';
-import { WaterfallRendererVulkan } from './WaterfallRenderer.vulkan';
-import { WaterSurfaceRendererSkia } from './WaterSurfaceRenderer.skia';
-import { WaterSurfaceRendererVulkan } from './WaterSurfaceRenderer.vulkan';
-import { YoungLeafRendererSkia } from './YoungLeafRenderer.skia';
-import { YoungLeafRendererVulkan } from './YoungLeafRenderer.vulkan';
+import { MistRendererSkia } from '@repo/trube-art/native/renderers/MistRenderer.skia';
+import { MistRendererVulkan } from '@repo/trube-art/native/renderers/MistRenderer.vulkan';
+import { SilkRendererSkia } from '@repo/trube-art/native/renderers/SilkRenderer.skia';
+import { SilkRendererVulkan } from '@repo/trube-art/native/renderers/SilkRenderer.vulkan';
+import { SkymorphicRendererSkia } from '@repo/trube-art/native/renderers/SkymorphicRenderer.skia';
+import { SkymorphicRendererVulkan } from '@repo/trube-art/native/renderers/SkymorphicRenderer.vulkan';
+import type { TrubeRendererProps } from '@repo/trube-art/native/renderers/types';
+import { WaterfallRendererSkia } from '@repo/trube-art/native/renderers/WaterfallRenderer.skia';
+import { WaterfallRendererVulkan } from '@repo/trube-art/native/renderers/WaterfallRenderer.vulkan';
+import { WaterSurfaceRendererSkia } from '@repo/trube-art/native/renderers/WaterSurfaceRenderer.skia';
+import { WaterSurfaceRendererVulkan } from '@repo/trube-art/native/renderers/WaterSurfaceRenderer.vulkan';
+import { YoungLeafRendererSkia } from '@repo/trube-art/native/renderers/YoungLeafRenderer.skia';
+import { YoungLeafRendererVulkan } from '@repo/trube-art/native/renderers/YoungLeafRenderer.vulkan';
 
 /**
  * UnifiedRenderer: The orchestration point for the Triple-Tier Rendering Hierarchy.

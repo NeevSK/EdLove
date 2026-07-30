@@ -1,7 +1,7 @@
-import { applyTemporalFilter } from '../logic/utils/temporalUtils';
-import type { TemporalScale } from '../store/useTemporalStore';
-import { identityAPI } from './identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
+import { applyTemporalFilter } from '@repo/core/logic/utils/temporalUtils';
+import type { TemporalScale } from '@repo/core/store/useTemporalStore';
+import { identityAPI } from '@repo/core/api/identity';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
 
 /**
  * Messaging API

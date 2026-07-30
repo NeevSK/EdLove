@@ -1,5 +1,5 @@
-import type { Capacity } from '../logic/schemas/capacity.schema';
-import type { TenantKind } from '../logic/schemas/user.schema';
+import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
+import type { TenantKind } from '@repo/core/logic/schemas/user.schema';
 
 export type { TenantKind };
 

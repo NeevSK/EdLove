@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { selectLatestTemporalRecordsAsOf } from '../../lib/temporalEvents';
-import type { PrincipalWorkspaceRepository } from '../../logic/domains/principalWorkspace/ports';
-import { CapacitySchema } from '../../logic/schemas/capacity.schema';
+import { selectLatestTemporalRecordsAsOf } from '@repo/core/lib/temporalEvents';
+import type { PrincipalWorkspaceRepository } from '@repo/core/logic/domains/principalWorkspace/ports';
+import { CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
 import {
   InviteCodeSchema,
   type InviteCodeZod,
@@ -15,9 +15,9 @@ import {
   PrincipalObservationFollowUpCreateSchema,
   PrincipalObservationSchema,
   type PrincipalObservationZod,
-} from '../../logic/schemas/principal-workspace.schema';
-import { getTemporalRange } from '../../logic/utils/temporalUtils';
-import { APIError } from '../../types/API';
+} from '@repo/core/logic/schemas/principal-workspace.schema';
+import { getTemporalRange } from '@repo/core/logic/utils/temporalUtils';
+import { APIError } from '@repo/core/types/API';
 
 const normalizeInviteCode = (row: Record<string, unknown>): InviteCodeZod =>
   InviteCodeSchema.parse({

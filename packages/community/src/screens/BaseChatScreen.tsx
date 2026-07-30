@@ -29,7 +29,7 @@ import { useCallback, useEffect, useOptimistic, useRef, useState, useTransition 
 import { useTranslation } from 'react-i18next';
 import { FlatList } from 'react-native';
 import { FadeInDown } from 'react-native-reanimated';
-import type { ChatMessage } from '../types';
+import type { ChatMessage } from '@repo/community/types';
 
 export interface SubscriptionConfig {
   /** Supabase table name to listen on (e.g. 'group_messages') */

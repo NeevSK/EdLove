@@ -6,7 +6,7 @@
  */
 
 import type { ReactNode } from 'react';
-import { useEnvironment } from '../context';
+import { useEnvironment } from '@repo/ui/context';
 
 interface EnvironmentGuardProps {
   children: ReactNode;

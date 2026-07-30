@@ -1,13 +1,8 @@
-import { SupabaseFeatureFlagAdapter } from '../../adapters/supabase/supabaseFeatureFlag.adapter';
-import { GrowthBookFeatureRolloutAdapter } from '../../adapters/feature-rollout/growthBookFeatureRollout.adapter';
-import type { IFeatureRolloutPort } from '../ports/featureRollout.port';
-
-const hasGrowthBookConfig =
-  !!(process.env.EXPO_PUBLIC_GROWTHBOOK_CLIENT_KEY || process.env.NEXT_PUBLIC_GROWTHBOOK_CLIENT_KEY);
+import { GrowthBookFeatureRolloutAdapter } from '@repo/core/adapters/feature-rollout/growthBookFeatureRollout.adapter';
+import type { IFeatureRolloutPort } from '@repo/core/logic/ports/featureRollout.port';
 
 /**
- * featureFlags: The Global Sovereign Feature Flag Instance.
+ * featureFlags: The Global Feature Flag Instance.
+ * Supabase adapter removed — GrowthBook is the only rollout backend.
  */
-export const featureFlags: IFeatureRolloutPort = hasGrowthBookConfig
-  ? new GrowthBookFeatureRolloutAdapter()
-  : new SupabaseFeatureFlagAdapter();
+export const featureFlags: IFeatureRolloutPort = new GrowthBookFeatureRolloutAdapter();

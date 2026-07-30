@@ -1,14 +1,14 @@
-import { motif } from './motif';
-import { ornament } from './ornament';
-import { stage } from './stage';
-import { surface } from './surface';
+import { motif } from '@repo/trube-art/core/motif';
+import { ornament } from '@repo/trube-art/core/ornament';
+import { stage } from '@repo/trube-art/core/stage';
+import { surface } from '@repo/trube-art/core/surface';
 import type {
   TrubeExperienceMode,
   TrubeScorePlacementZone,
   TrubeScoreReviewState,
   TrubeScoreTextDensity,
   TrubeStageSpec,
-} from './types';
+} from '@repo/trube-art/core/types';
 
 export const TRUBE_SCORE_NAMES = [
   'goethe-night-study',

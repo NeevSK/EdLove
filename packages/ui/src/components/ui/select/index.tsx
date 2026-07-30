@@ -1,9 +1,9 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import { Pressable, type PressableProps, Text, View, type ViewProps } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
-import { Overlay } from '../overlay';
-import { Portal } from '../portal';
+import { Overlay } from '@repo/ui/components/ui/overlay';
+import { Portal } from '@repo/ui/components/ui/portal';
 
 cssInterop(View, { className: 'style' });
 cssInterop(Pressable, { className: 'style' });
@@ -186,3 +186,4 @@ Select.displayName = 'Select';
 SelectTrigger.displayName = 'SelectTrigger';
 SelectInput.displayName = 'SelectInput';
 SelectItem.displayName = 'SelectItem';
+

@@ -1,13 +1,17 @@
 ---
 title: "Identity Contract Audit"
-status: "active"
+status: "superseded"
 created: 2026-06-26
 updated: 2026-06-26
 author: "Codex"
 tags: [identity, onboarding, auth, supabase, zod, mobile, web]
+superseded_by: ../architecture/2026-07-26-feature-access-local-server-architecture.md
 ---
 
 # Identity Contract Audit
+
+> Superseded on 2026-07-26. The current contract is the authenticated-user,
+> active-bond model in [Feature Access Architecture](../architecture/2026-07-26-feature-access-local-server-architecture.md).
 
 This note captures the current live identity rules after the guest-email drift cleanup.
 
@@ -36,4 +40,3 @@ This note captures the current live identity rules after the guest-email drift c
 ## Historical Docs
 
 The older identity migration notes describe the evolution of the model and are still useful for context, but they should be treated as historical guidance, not the runtime contract.
-

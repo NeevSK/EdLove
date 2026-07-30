@@ -1,15 +1,15 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
-import { useStore, useTemporalStore } from '../../store';
-import { useAuthStore } from '../../store/useAuthStore';
-import { APIError } from '../../types/API';
-import type { Post } from '../../types/Community';
-import { announcementAPI } from '../announcements';
-import { circleAPI } from '../circles';
-import { communityAPI } from '../community';
-import { growthSignalsAPI } from '../growthSignals';
-import { identityAPI } from '../identity';
-import { socialAPI } from '../social';
+import { useStore, useTemporalStore } from '@repo/core/store';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { APIError } from '@repo/core/types/API';
+import type { Post } from '@repo/core/types/Community';
+import { announcementAPI } from '@repo/core/api/announcements';
+import { circleAPI } from '@repo/core/api/circles';
+import { communityAPI } from '@repo/core/api/community';
+import { growthSignalsAPI } from '@repo/core/api/growthSignals';
+import { identityAPI } from '@repo/core/api/identity';
+import { socialAPI } from '@repo/core/api/social';
 
 /**
  * Community Query Key Factory

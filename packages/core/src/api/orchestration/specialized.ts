@@ -1,17 +1,17 @@
-import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
-import { founderAPI as rawFounderAPI } from '../founder';
-import { founderContract } from '../founder.contract';
-import { gradingAPI as rawGradingAPI } from '../grading';
-import { gradingContract } from '../grading.contract';
-import { guardianAPI as rawGuardianAPI } from '../guardian';
-import { guardianContract } from '../guardian.contract';
-import { longitudinalAPI as rawLongitudinalAPI } from '../longitudinal';
-import { longitudinalContract } from '../longitudinal.contract';
-import { principalWorkspaceAPI as rawPrincipalWorkspaceAPI } from '../principalWorkspace';
-import { principalWorkspaceContract } from '../principalWorkspace.contract';
-import { teacherInsightsAPI as rawTeacherInsightsAPI } from '../teacherInsights';
-import { teacherInsightsContract } from '../teacherInsights.contract';
-import { createTemporalProxy } from '../temporalProxy';
+import { assertContractCoverage, defineContractCoverage } from '@repo/core/api/contractCoverage';
+import { founderAPI as rawFounderAPI } from '@repo/core/api/founder';
+import { founderContract } from '@repo/core/api/founder.contract';
+import { gradingAPI as rawGradingAPI } from '@repo/core/api/grading';
+import { gradingContract } from '@repo/core/api/grading.contract';
+import { guardianAPI as rawGuardianAPI } from '@repo/core/api/guardian';
+import { guardianContract } from '@repo/core/api/guardian.contract';
+import { longitudinalAPI as rawLongitudinalAPI } from '@repo/core/api/longitudinal';
+import { longitudinalContract } from '@repo/core/api/longitudinal.contract';
+import { principalWorkspaceAPI as rawPrincipalWorkspaceAPI } from '@repo/core/api/principalWorkspace';
+import { principalWorkspaceContract } from '@repo/core/api/principalWorkspace.contract';
+import { teacherInsightsAPI as rawTeacherInsightsAPI } from '@repo/core/api/teacherInsights';
+import { teacherInsightsContract } from '@repo/core/api/teacherInsights.contract';
+import { createTemporalProxy } from '@repo/core/api/temporalProxy';
 
 const _gradingCoverage = assertContractCoverage(
   rawGradingAPI,

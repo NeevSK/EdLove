@@ -3,9 +3,9 @@ import React, { useCallback, useMemo } from 'react';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import Svg, { Circle, G, Line, Text as SvgText } from 'react-native-svg';
-import { useResponsive } from '../../hooks/useResponsive';
-import { useThemedColors } from '../../hooks/useThemedColors';
-import { Theme } from '../../theme/Theme';
+import { useResponsive } from '@repo/ui/hooks/useResponsive';
+import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
+import { Theme } from '@repo/ui/theme/Theme';
 
 const GraphLinkItem = React.memo(
   ({

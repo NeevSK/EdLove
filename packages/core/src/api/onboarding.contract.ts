@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { SovereignContract } from './contract';
+import type { SovereignContract } from '@repo/core/api/contract';
 
 const userIdentity = (action: 'update') =>
   ({

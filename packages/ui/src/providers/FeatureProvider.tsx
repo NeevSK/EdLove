@@ -1,4 +1,4 @@
-import { useFeatureStore, usePermissions } from '@repo/core/logic';
+import { featureFlags, useFeatureStore, usePermissions } from '@repo/core/logic';
 import type React from 'react';
 import { useEffect } from 'react';
 
@@ -19,9 +19,12 @@ export const FeatureProvider: React.FC<FeatureProviderProps> = ({ children }) =>
 
   // Trigger re-computation of flags whenever user context changes
   useEffect(() => {
-    if (context) {
-      recomputeFlags(context);
-    }
+    if (!context) return undefined;
+
+    recomputeFlags(context);
+    return featureFlags.subscribeToFlagChanges(context, (snapshot) => {
+      useFeatureStore.getState().applySnapshot(snapshot);
+    });
   }, [context, recomputeFlags]);
 
   return <>{children}</>;

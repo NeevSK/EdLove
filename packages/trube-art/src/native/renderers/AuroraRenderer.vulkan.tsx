@@ -1,6 +1,6 @@
-import { AURORA_SOUL } from '../../core/soul/AuroraSoul';
-import type { TrubeRendererProps } from '../renderers/types';
-import { NativeSubstrateRenderer } from './NativeSubstrateRenderer';
+import { AURORA_SOUL } from '@repo/trube-art/core/soul/AuroraSoul';
+import type { TrubeRendererProps } from '@repo/trube-art/native/renderers/types';
+import { NativeSubstrateRenderer } from '@repo/trube-art/native/renderers/NativeSubstrateRenderer';
 
 /**
  * AuroraRendererVulkan  Tier 1 path leveraging the NativeSubstrateRenderer base.

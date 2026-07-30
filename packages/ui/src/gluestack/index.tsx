@@ -7,29 +7,29 @@ import type React from 'react';
  * It provides a stable, hardened foundation using NativeWind v4 primitives.
  */
 
-export * from '../components/ui/avatar';
-export * from '../components/ui/badge';
+export * from '@repo/ui/components/ui/avatar';
+export * from '@repo/ui/components/ui/badge';
 // Core Layout
-export * from '../components/ui/box';
+export * from '@repo/ui/components/ui/box';
 // Core Form
-export * from '../components/ui/button';
-export * from '../components/ui/center';
-export * from '../components/ui/checkbox';
-export * from '../components/ui/divider';
-export * from '../components/ui/form-control';
-export * from '../components/ui/hstack';
-export * from '../components/ui/icon';
-export * from '../components/ui/input';
+export * from '@repo/ui/components/ui/button';
+export * from '@repo/ui/components/ui/center';
+export * from '@repo/ui/components/ui/checkbox';
+export * from '@repo/ui/components/ui/divider';
+export * from '@repo/ui/components/ui/form-control';
+export * from '@repo/ui/components/ui/hstack';
+export * from '@repo/ui/components/ui/icon';
+export * from '@repo/ui/components/ui/input';
 // Navigation
-export * from '../components/ui/link';
-export * from '../components/ui/pressable';
-export * from '../components/ui/progress';
-export * from '../components/ui/radio';
-export * from '../components/ui/select';
-export * from '../components/ui/slider';
-export * from '../components/ui/switch';
-export * from '../components/ui/text';
-export * from '../components/ui/textarea';
+export * from '@repo/ui/components/ui/link';
+export * from '@repo/ui/components/ui/pressable';
+export * from '@repo/ui/components/ui/progress';
+export * from '@repo/ui/components/ui/radio';
+export * from '@repo/ui/components/ui/select';
+export * from '@repo/ui/components/ui/slider';
+export * from '@repo/ui/components/ui/switch';
+export * from '@repo/ui/components/ui/text';
+export * from '@repo/ui/components/ui/textarea';
 export {
   AnimatedView,
   FlatList,
@@ -37,28 +37,28 @@ export {
   RefreshControl,
   ScrollView,
   View,
-} from '../components/ui/view';
-export * from '../components/ui/vstack';
+} from '@repo/ui/components/ui/view';
+export * from '@repo/ui/components/ui/vstack';
 
 // Layers & Overlays
-import { PortalProvider } from '../components/ui/portal';
+import { PortalProvider } from '@repo/ui/components/ui/portal';
 
-export * from '../components/ui/actionsheet';
-export * from '../components/ui/fab';
-export * from '../components/ui/image';
-export * from '../components/ui/image-background';
-export * from '../components/ui/linear-gradient';
-export * from '../components/ui/modal';
-export * from '../components/ui/overlay';
-export * from '../components/ui/portal';
+export * from '@repo/ui/components/ui/actionsheet';
+export * from '@repo/ui/components/ui/fab';
+export * from '@repo/ui/components/ui/image';
+export * from '@repo/ui/components/ui/image-background';
+export * from '@repo/ui/components/ui/linear-gradient';
+export * from '@repo/ui/components/ui/modal';
+export * from '@repo/ui/components/ui/overlay';
+export * from '@repo/ui/components/ui/portal';
 export {
   Spinner,
   Spinner as ActivityIndicator,
-} from '../components/ui/spinner';
-export * from '../components/ui/toast';
+} from '@repo/ui/components/ui/spinner';
+export * from '@repo/ui/components/ui/toast';
 
 // Hooks
-export { useSanctuaryToast as useToast } from '../providers/ToastProvider';
+export { useSanctuaryToast as useToast } from '@repo/ui/providers/ToastProvider';
 
 // Provider
 export const GluestackUIProvider = ({

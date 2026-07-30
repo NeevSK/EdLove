@@ -9,11 +9,11 @@ import type { Capacity } from '@repo/core/types';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWindowDimensions } from 'react-native';
-import { GatewayFooter } from '../components/GatewayFooter.web';
-import { GatewayHeader } from '../components/GatewayHeader.web';
-import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
+import { GatewayFooter } from '@repo/ui/components/GatewayFooter.web';
+import { GatewayHeader } from '@repo/ui/components/GatewayHeader.web';
+import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { isAnonymousIdentity } from '@repo/core/logic';
-import { getDevOnboardingTemplateLabel, resolveOnboardingDevIntent } from './onboardingDevFlow';
+import { getDevOnboardingTemplateLabel, resolveOnboardingDevIntent } from '@repo/ui/screens/onboardingDevFlow';
 
 // ──────────────────────────────────────────────────────────
 // CONSTANTS

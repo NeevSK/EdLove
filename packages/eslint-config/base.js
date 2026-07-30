@@ -1,6 +1,7 @@
 import js from '@eslint/js';
 import pluginImport from 'eslint-plugin-import-x';
 import eslintPluginOxlint from 'eslint-plugin-oxlint';
+import pluginSonarjs from 'eslint-plugin-sonarjs';
 import turboPlugin from 'eslint-plugin-turbo';
 import tseslint from 'typescript-eslint';
 
@@ -26,11 +27,13 @@ export const config = [
   {
     plugins: {
       turbo: turboPlugin,
+      sonarjs: pluginSonarjs,
     },
     rules: {
       'turbo/no-undeclared-env-vars': 'warn',
       'no-unused-vars': 'off',
       'import-x/no-cycle': ['error', { maxDepth: 5 }],
+      'sonarjs/cognitive-complexity': ['error', 15],
     },
   },
   {

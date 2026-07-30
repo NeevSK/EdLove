@@ -7,7 +7,7 @@ import type {
   RelationshipType,
   StudentGuardianRelationship,
   VerificationDocument,
-} from './types';
+} from '@repo/admin/guardian/types';
 
 export interface GuardianAPI {
   // Identity management

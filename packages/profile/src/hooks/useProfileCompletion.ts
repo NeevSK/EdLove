@@ -2,9 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { handleAPIError } from '@repo/core/logic';
 import type { Capacity } from '@repo/core/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { PROFILE_SECTIONS } from '../config/profileSections';
-import { isFieldFilled } from '../lib/isFieldFilled';
-import type { UserProfile } from '../types';
+import { PROFILE_SECTIONS } from '@repo/profile/config/profileSections';
+import { isFieldFilled } from '@repo/profile/lib/isFieldFilled';
+import type { UserProfile } from '@repo/profile/types';
 
 const CELEBRATION_KEY = '@gurudevi/profile_completed_celebrated';
 

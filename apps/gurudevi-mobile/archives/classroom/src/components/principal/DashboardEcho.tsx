@@ -27,7 +27,7 @@ import {
   Heart,
   MessageSquare,
   Send,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

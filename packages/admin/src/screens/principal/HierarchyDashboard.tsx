@@ -20,7 +20,7 @@ import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
 import type React from 'react';
 import { useCallback, useEffect, useReducer } from 'react';
-import { type SchoolSectionRow, sectionsAPI } from '../../sections';
+import { type SchoolSectionRow, sectionsAPI } from '@repo/admin/sections';
 
 interface HierarchyDashboardProps {
   schoolId: string;

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { SafeZustandStorage } from '../lib/storageWrapper';
-import { sovereignBus } from '../lib/sync/eventBus';
+import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
+import { sovereignBus } from '@repo/core/lib/sync/eventBus';
 
 export interface DataConflict {
   id: string; // Mutation ID — links back to QueuedMutation

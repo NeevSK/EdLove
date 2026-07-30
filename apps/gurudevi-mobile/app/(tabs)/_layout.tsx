@@ -3,9 +3,9 @@ import { usePermissions, useStore } from '@repo/core/logic';
 import { BreathGuide } from '@repo/self';
 import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { Bell, Heart, Library, School, Settings, User, Users, X } from '@repo/ui/icons';
 import { Box, Modal, ModalContent, Pressable, Text } from '@repo/ui/primitives';
 import { router, Tabs, usePathname } from 'expo-router';
-import { Bell, Heart, Library, School, Settings, User, Users, X } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 export default function TabsLayout() {

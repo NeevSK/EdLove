@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useState } from 'react';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-import { usePermissions } from '../logic/permissions/hooks/usePermissions';
-import { useTemporalStore } from '../store/useTemporalStore';
-import { useTracking } from './useTracking';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
+import { useTemporalStore } from '@repo/core/store/useTemporalStore';
+import { useTracking } from '@repo/core/hooks/useTracking';
 
 export interface SnapshotMoment {
   id: string;

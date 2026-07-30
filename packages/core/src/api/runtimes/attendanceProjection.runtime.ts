@@ -1,6 +1,6 @@
-import { createSupabaseAttendanceProjectionRepository } from '../../adapters/supabase/attendanceProjectionRepository';
-import { createAttendanceProjectionServices } from '../../logic/domains/attendanceProjection/services';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../supabase';
+import { createSupabaseAttendanceProjectionRepository } from '@repo/core/adapters/supabase/attendanceProjectionRepository';
+import { createAttendanceProjectionServices } from '@repo/core/logic/domains/attendanceProjection/services';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
 
 const attendanceProjectionRepository = createSupabaseAttendanceProjectionRepository(
   __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__,

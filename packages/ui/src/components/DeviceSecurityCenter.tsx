@@ -2,12 +2,12 @@ import { useAuthStore, useDeviceSecurity } from '@repo/core/logic';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useMemo, useOptimistic, useReducer, useTransition } from 'react';
 import { Platform, StyleSheet } from 'react-native';
-import { Box, Button, ButtonText, Heading, HStack, Spinner, Text, VStack } from '../gluestack';
-import { Activity, Clock3, History, Key, Laptop, Lock, Smartphone, Tablet, Trash2 } from '../icons';
-import { useSanctuaryToast } from '../providers/ToastProvider';
-import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
-import DeviceAccountManager from './DeviceAccountManager';
-import SanctuaryModal from './SanctuaryModal';
+import { Box, Button, ButtonText, Heading, HStack, Spinner, Text, VStack } from '@repo/ui/gluestack';
+import { Activity, Clock3, History, Key, Laptop, Lock, Smartphone, Tablet, Trash2 } from '@repo/ui/icons';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import DeviceAccountManager from '@repo/ui/components/DeviceAccountManager';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 
 // ── Types & Reducer ──────────────────────────────────────────────────────────
 

@@ -14,9 +14,6 @@ import { UniversalPerspective } from '@repo/ui/components/visualization';
 import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { useResponsive } from '@repo/ui/hooks';
-import { Box } from '@repo/ui/primitives';
-import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
-import { useRouter } from 'expo-router';
 import {
   Bookmark,
   Clock,
@@ -30,16 +27,19 @@ import {
   Play,
   Plus,
   Search,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
+import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { libraryAPI } from '../api/library';
-import { CollectionPickerModal } from '../components/CollectionPickerModal';
-import { LibraryThumbnailCard } from '../components/LibraryThumbnailCard';
-import { ResourceList } from '../components/ResourceList';
-import { LIBRARY_UI_CATEGORIES } from '../constants/categories';
-import { getOrderedShelfDefs } from '../constants/shelf';
-import { useLibrary } from '../hooks/useLibrary';
+import { libraryAPI } from '@repo/library/api/library';
+import { CollectionPickerModal } from '@repo/library/components/CollectionPickerModal';
+import { LibraryThumbnailCard } from '@repo/library/components/LibraryThumbnailCard';
+import { ResourceList } from '@repo/library/components/ResourceList';
+import { LIBRARY_UI_CATEGORIES } from '@repo/library/constants/categories';
+import { getOrderedShelfDefs } from '@repo/library/constants/shelf';
+import { useLibrary } from '@repo/library/hooks/useLibrary';
 import type {
   CreateResourceInput,
   KnowledgeTopology,
@@ -48,8 +48,8 @@ import type {
   LibraryResource,
   ResourceFilters,
   ResourceType,
-} from '../types';
-import { buildLibraryExternalLinkOptions } from '../utils/externalLinks';
+} from '@repo/library/types';
+import { buildLibraryExternalLinkOptions } from '@repo/library/utils/externalLinks';
 
 function StackFallback() {
   return (

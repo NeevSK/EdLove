@@ -9,14 +9,14 @@ import {
   Sparkles,
   TrendingUp,
   Zap,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
 import type React from 'react';
 import { useMemo } from 'react';
-import { Box, HStack, Icon, Text, VStack } from '../gluestack';
-import { Pressable } from '../primitives';
-import { ResonantHeatmap } from './ResonantHeatmap';
-import { SanctuaryCard } from './SanctuaryCard';
-import { SanctuaryChip } from './SanctuaryChip';
+import { Box, HStack, Icon, Text, VStack } from '@repo/ui/gluestack';
+import { Pressable } from '@repo/ui/primitives';
+import { ResonantHeatmap } from '@repo/ui/components/ResonantHeatmap';
+import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
+import { SanctuaryChip } from '@repo/ui/components/SanctuaryChip';
 
 export interface JourneyEvent {
   id: string;
@@ -35,7 +35,7 @@ interface JourneyHistoryCardProps {
   className?: string;
 }
 
-const getEventIcon = (type: string): LucideIcon => {
+const getEventIcon = (type: string): any => {
   switch (type) {
     case 'mood':
       return Sparkles;

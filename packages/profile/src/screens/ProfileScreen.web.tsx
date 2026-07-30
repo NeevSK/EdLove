@@ -1,25 +1,18 @@
 import { usePermissions, useStore } from '@repo/core/logic';
+import { SignupPrompt } from '@repo/ui';
 
 import { StaffPresencePulse } from '@repo/people';
 import { QRCodeGenerator } from '@repo/scanner-kit';
-import CitizenGate from '@repo/ui/components/CitizenGate';
-import {
-  Briefcase,
-  CircleCheck,
-  FileText,
-  Globe,
-  GraduationCap,
-  SquarePen,
-} from 'lucide-react-native';
+import { Briefcase, CircleCheck, FileText, Globe, GraduationCap, SquarePen } from '@repo/ui/icons';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AvatarDisplay } from '../components/AvatarDisplay';
-import { ContactLinktree } from '../components/ContactLinktree';
-import LivingJourneyPanel from '../components/LivingJourneyPanel';
-import { useProfile } from '../hooks/useProfile';
-import { useProfileCompletion } from '../hooks/useProfileCompletion';
-import { useSocialLinks } from '../hooks/useSocialLinks';
-import { toFullProfileParams, useProfileNavigation } from '../navigation';
+import { AvatarDisplay } from '@repo/profile/components/AvatarDisplay';
+import { ContactLinktree } from '@repo/profile/components/ContactLinktree';
+import LivingJourneyPanel from '@repo/profile/components/LivingJourneyPanel';
+import { useProfile } from '@repo/profile/hooks/useProfile';
+import { useProfileCompletion } from '@repo/profile/hooks/useProfileCompletion';
+import { useSocialLinks } from '@repo/profile/hooks/useSocialLinks';
+import { toFullProfileParams, useProfileNavigation } from '@repo/profile/navigation';
 
 // Skeleton Component logic (mocked because it was used in corrupt code)
 const SkeletonCard = ({ height }: { height: number }) => (
@@ -433,11 +426,7 @@ export default function ProfileScreenWeb({
 
                 {isOwnProfile && context.isAnonymous && (
                   <div style={{ marginTop: '12px' }}>
-                    <CitizenGate
-                      context="profile"
-                      title="Upgrade to edit your profile"
-                      description="Create an account to save your identity across devices and unlock citizen features."
-                      actionLabel="Create account"
+                    <SignupPrompt
                       onAction={() => navigation.openAuth?.()}
                     />
                   </div>

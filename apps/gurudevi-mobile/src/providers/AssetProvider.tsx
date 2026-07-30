@@ -1,7 +1,7 @@
 import * as Font from 'expo-font';
 import type React from 'react';
 import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
-import { fontAssets } from '../constants/Fonts';
+import { fontAssets } from '@/constants/Fonts';
 
 interface AssetContextType {
   fontsLoaded: boolean;

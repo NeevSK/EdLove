@@ -1,3 +1,4 @@
+/* eslint-disable react/react-compiler */
 /**
  * SanctuaryBackground
  *
@@ -10,55 +11,62 @@
  * Phase transitions: 2s crossfade between palettes.
  */
 
+'use no memo';
+
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { useTheme } from '../hooks/useTheme';
-import { View } from '../primitives';
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { View } from '@repo/ui/primitives';
 
 export function SanctuaryBackground() {
+  'use no memo';
   const { gradientNodes, animationsEnabled } = useTheme();
 
   // Two gradient layers for crossfade transition
   const fadeValue = useSharedValue(0);
-  const prevNodes = useRef<[string, string, string]>(gradientNodes);
-  const currentNodes = useRef<[string, string, string]>(gradientNodes);
+  
+  // Store gradient colors in state to comply with React Compiler immutability rules
+  const [colors, setColors] = useState({
+    prev: gradientNodes,
+    current: gradientNodes,
+  });
 
   useEffect(() => {
     if (!animationsEnabled) {
-      // Static - just update immediately
-      prevNodes.current = gradientNodes;
-      currentNodes.current = gradientNodes;
+      setColors({ prev: gradientNodes, current: gradientNodes });
       fadeValue.value = 1;
       return;
     }
 
     // Crossfade: prev layer stays, new layer fades in over 2s
-    prevNodes.current = currentNodes.current;
-    currentNodes.current = gradientNodes;
+    setColors((prevColors) => ({
+      prev: prevColors.current,
+      current: gradientNodes,
+    }));
 
     fadeValue.value = 0;
     fadeValue.value = withTiming(1, { duration: 2000 });
-  }, [fadeValue, gradientNodes, animationsEnabled]); // Re-run when phase OR theme mode changes.
+  }, [gradientNodes, animationsEnabled, fadeValue]); // Re-run when phase OR theme mode changes.
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: fadeValue.value,
   }));
 
   return (
-    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+    <View style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}>
       {/* Layer 0: Previous phase (fades out) */}
       <LinearGradient
-        colors={prevNodes.current}
+        colors={colors.prev}
         start={{ x: 0.1, y: 0 }}
         end={{ x: 0.9, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
       {/* Layer 1: Current phase (fades in) */}
-      <Reanimated.View pointerEvents="none" style={[StyleSheet.absoluteFill, animatedStyle]}>
+      <Reanimated.View style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }, animatedStyle]}>
         <LinearGradient
-          colors={currentNodes.current}
+          colors={colors.current}
           start={{ x: 0.2, y: 0 }}
           end={{ x: 0.8, y: 1 }}
           style={StyleSheet.absoluteFill}

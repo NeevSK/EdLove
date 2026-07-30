@@ -1,8 +1,8 @@
 import { DrizzleAppSchema } from '@powersync/drizzle-driver';
 import { WASQLiteOpenFactory, WASQLiteVFS } from '@powersync/web';
-import type { IDatabasePort } from '../../logic/ports/database.port';
-import { SupabasePowerSyncConnector } from './SupabasePowerSyncConnector';
-import { AppSchema } from './schema';
+import type { IDatabasePort } from '@repo/core/logic/ports/database.port';
+import { SupabasePowerSyncConnector } from '@repo/core/adapters/powersync/SupabasePowerSyncConnector';
+import { AppSchema } from '@repo/core/adapters/powersync/schema';
 
 export class WASQLiteAdapter implements IDatabasePort {
   constructor(private readonly accountId: string) {}

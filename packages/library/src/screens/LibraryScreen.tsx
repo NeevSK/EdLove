@@ -3,8 +3,8 @@
  */
 
 import { identityAPI } from '@repo/core/api';
-import { useTracking } from '@repo/core/hooks';
-import { coreRuntime, FeatureGuard, useStore, useTemporalStore } from '@repo/core/logic';
+import { useDomainRollout, useTracking } from '@repo/core/hooks';
+import { coreRuntime, usePermissions, useStore, useTemporalStore } from '@repo/core/logic';
 import { CollectionCard } from '@repo/ui/components/CollectionCard';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { HorizontalChipRow } from '@repo/ui/components/HorizontalChipRow';
@@ -19,6 +19,16 @@ import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { SmartShelf } from '@repo/ui/components/SmartShelf';
 import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
+import {
+  FileText,
+  Layers,
+  LayoutGrid,
+  Library,
+  List,
+  Map as MapIcon,
+  Play,
+  Plus,
+} from '@repo/ui/icons';
 import {
   AnimatedView,
   Box,
@@ -35,27 +45,17 @@ import {
 import { Theme } from '@repo/ui/theme';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { useRouter } from 'expo-router';
-import {
-  FileText,
-  Layers,
-  LayoutGrid,
-  Library,
-  List,
-  Map as MapIcon,
-  Play,
-  Plus,
-} from 'lucide-react-native';
 import React, { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FadeInDown } from 'react-native-reanimated';
-import { libraryAPI } from '../api/library';
-import { CollectionPickerModal } from '../components/CollectionPickerModal';
-import { LibraryThumbnailCard } from '../components/LibraryThumbnailCard';
-import { ResourceList } from '../components/ResourceList';
-import { getOrderedShelfDefs } from '../constants/shelf';
-import { useBookmarkedResources, useLibrary } from '../hooks/useLibrary';
-import type { LibraryResource } from '../types';
-import { buildLibraryExternalLinkOptions } from '../utils/externalLinks';
+import { libraryAPI } from '@repo/library/api/library';
+import { CollectionPickerModal } from '@repo/library/components/CollectionPickerModal';
+import { LibraryThumbnailCard } from '@repo/library/components/LibraryThumbnailCard';
+import { ResourceList } from '@repo/library/components/ResourceList';
+import { getOrderedShelfDefs } from '@repo/library/constants/shelf';
+import { useBookmarkedResources, useLibrary } from '@repo/library/hooks/useLibrary';
+import type { LibraryResource } from '@repo/library/types';
+import { buildLibraryExternalLinkOptions } from '@repo/library/utils/externalLinks';
 
 const LIBRARY_UI_CATEGORIES = [
   { id: 'All', en: 'All' },
@@ -152,6 +152,8 @@ CuratorInvitation.displayName = 'CuratorInvitation';
 export default function LibraryScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { can } = usePermissions();
+  const isLibraryManagementEnabled = useDomainRollout('archive');
 
   // --- 1. STATE MACHINE (Mechanism) ---
   interface LibraryState {
@@ -835,15 +837,9 @@ export default function LibraryScreen() {
         case 'MAP_INVITATION':
           return <MapInvitation onPress={handleNavigateToMap} />;
         case 'CURATOR_INVITATION_GUARD':
-          return (
-            <FeatureGuard
-              feature="isLibraryManagementEnabled"
-              action="manage"
-              subject="LibraryCuratorDashboard"
-            >
-              <CuratorInvitation onPress={handleNavigateToCuratorReview} />
-            </FeatureGuard>
-          );
+          return isLibraryManagementEnabled && can('manage', 'LibraryCuratorDashboard') ? (
+            <CuratorInvitation onPress={handleNavigateToCuratorReview} />
+          ) : null;
         case 'CONTINUE_LEARNING':
           return (
             <SmartShelf title="▶ Continue Learning">
@@ -909,6 +905,8 @@ export default function LibraryScreen() {
       handleLongPressResource,
       handleOpenCollectionDetail,
       renderShelf,
+      isLibraryManagementEnabled,
+      can,
     ],
   );
 
@@ -968,21 +966,19 @@ export default function LibraryScreen() {
         </VStack>
       ) : (
         <Box className="flex-1">
-          {!isSearchMode && (
-            <FeatureGuard feature="isLibraryManagementEnabled" action="create" subject="Library">
-              <HStack className="px-md py-3 gap-3">
-                <Pressable
-                  onPress={handleOpenCollectionModal}
-                  accessibilityRole="button"
-                  accessibilityLabel="Create Collection"
-                  accessibilityHint="Opens a form to create a new resource collection"
-                  className="flex-row items-center gap-2 px-4 py-2.5 rounded-2xl bg-phase-interactive/10 border border-phase-interactive/50"
-                >
-                  <Icon as={Library} size={14} color={theme.accent.action} />
-                  <Text className="text-[13px] font-bold text-phaseText-primary">+ Collection</Text>
-                </Pressable>
-              </HStack>
-            </FeatureGuard>
+          {!isSearchMode && isLibraryManagementEnabled && can('create', 'Library') && (
+            <HStack className="px-md py-3 gap-3">
+              <Pressable
+                onPress={handleOpenCollectionModal}
+                accessibilityRole="button"
+                accessibilityLabel="Create Collection"
+                accessibilityHint="Opens a form to create a new resource collection"
+                className="flex-row items-center gap-2 px-4 py-2.5 rounded-2xl bg-phase-interactive/10 border border-phase-interactive/50"
+              >
+                <Icon as={Library} size={14} color={theme.accent.action} />
+                <Text className="text-[13px] font-bold text-phaseText-primary">+ Collection</Text>
+              </Pressable>
+            </HStack>
           )}
 
           <Box className="flex-1 bg-phase-surface">

@@ -1,63 +1,82 @@
 import type { StateCreator } from 'zustand';
-import { type FeatureFlags, resolveFeatureFlags } from '../../logic/permissions/feature-engine';
-import { readFeatureRolloutCache } from '../../logic/permissions/feature-rollout-cache';
-import type { UserContext } from '../../logic/schemas/user.schema';
+import { featureFlags } from '@repo/core/logic/managers/featureFlag.factory';
+import type { FeatureRolloutSnapshot } from '@repo/core/logic/ports/featureRollout.port';
+import { FEATURE_FLAG_MANIFEST } from '@repo/core/logic/registry/featureLifecycleManifest';
+import type { UserContext } from '@repo/core/logic/schemas/user.schema';
+import { DEFAULT_FEATURE_FLAGS, type FeatureFlags } from '@repo/core/store/types/featureFlags';
 
-/**
- * FeatureSlice - FAANG-level state management for feature flags.
- *
- * Separates Global Configuration from User-specific Resolution.
- */
 export interface FeatureSlice {
   flags: FeatureFlags;
-  globalConfigs: Record<string, string | boolean>;
+  snapshot: FeatureRolloutSnapshot | null;
 
-  /** Update the global kill-switches / remote config */
-  setGlobalConfigs: (configs: Record<string, string | boolean>) => void;
+  applySnapshot: (snapshot: FeatureRolloutSnapshot) => void;
 
-  /** Trigger a re-computation of all flags based on current user context and global config */
   recomputeFlags: (context: UserContext) => void;
 }
 
-export const createFeatureSlice: StateCreator<FeatureSlice> = (set, get) => ({
-  // Default values before any context is resolved
-  flags:
-    (readFeatureRolloutCache()?.flags as FeatureFlags | undefined) ??
-    resolveFeatureFlags({
-      userId: null,
-      email: null,
-      // Sovereign ReBAC fields — required by UserContext schema
-      bonds: [],
-      primaryCapacity: null,
-      activeBond: null,
-      capacity: null,
-      traits: [],
-      schoolId: null,
-      pricing_tier: 'FREE',
-      tenancyName: null,
-      tenancy: null,
-      tenantKind: 'customer',
-      tier: 'free',
-      citizenship: 'WANDERER',
-      isAnonymous: true,
-      hasGlobalAccess: false,
-      isPersonal: false,
-      features: [],
-      flags: {},
-      sectionId: null,
-      gradeId: null,
-      classroomId: null,
+/** Maximum time a persisted rollout snapshot can influence temporary flags. */
+export const FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+
+export function normalizeFeatureRolloutSnapshot(
+  snapshot: FeatureRolloutSnapshot,
+  now = Date.now(),
+): FeatureRolloutSnapshot {
+  const refreshedAt = Date.parse(snapshot.refreshedAt);
+  const stale =
+    !Number.isFinite(refreshedAt) || now - refreshedAt > FEATURE_ROLLOUT_SNAPSHOT_MAX_AGE_MS;
+
+  if (!stale) return { ...snapshot, stale: false };
+
+  const flags = Object.fromEntries(
+    Object.entries(snapshot.flags).filter(([key]) => {
+      const metadata = FEATURE_FLAG_MANIFEST[key as keyof typeof FEATURE_FLAG_MANIFEST];
+      return metadata?.class === 'operational';
     }),
+  );
 
-  globalConfigs: {},
+  return { ...snapshot, flags, stale: true };
+}
 
-  setGlobalConfigs: (configs) => {
-    set({ globalConfigs: configs });
-    // Note: recomputeFlags should be called manually after this to update flags
-  },
+function toBoolean(value: boolean | string): boolean {
+  if (typeof value === 'boolean') return value;
+  return value === 'true';
+}
 
-  recomputeFlags: (context) => {
-    const newFlags = resolveFeatureFlags(context, get().globalConfigs);
-    set({ flags: newFlags });
-  },
-});
+function applyFeatureFlags(
+  base: FeatureFlags,
+  overrides: Record<string, boolean | string>,
+): FeatureFlags {
+  const result = { ...base };
+  for (const [key, value] of Object.entries(overrides)) {
+    if (key in result) {
+      (result as Record<string, unknown>)[key] = toBoolean(value);
+    }
+  }
+  return result;
+}
+
+export const createFeatureSlice: StateCreator<FeatureSlice> = (set) => {
+  const applySnapshot = (snapshot: FeatureRolloutSnapshot) => {
+    const normalizedSnapshot = normalizeFeatureRolloutSnapshot(snapshot);
+    set({
+      snapshot: normalizedSnapshot,
+      flags: applyFeatureFlags(DEFAULT_FEATURE_FLAGS, normalizedSnapshot.flags),
+    });
+  };
+
+  return {
+    flags: { ...DEFAULT_FEATURE_FLAGS },
+    snapshot: null,
+    applySnapshot,
+    recomputeFlags: (context) => {
+      featureFlags
+        .resolveFlags(context)
+        .then((snapshot) => {
+          applySnapshot(snapshot);
+        })
+        .catch((err) => {
+          console.warn('[FeatureSlice] resolveFlags failed, keeping defaults:', err);
+        });
+    },
+  };
+};

@@ -9,8 +9,8 @@ import {
   fetchMoodHistoryForView,
   moodToScore,
   scoreToMood,
-} from '../api/wellbeingRepository';
-import type { MoodLog } from '../types';
+} from '@repo/self/api/wellbeingRepository';
+import type { MoodLog } from '@repo/self/types';
 
 const MOOD_CACHE_KEY = 'gurudevi-mood-cache';
 /**

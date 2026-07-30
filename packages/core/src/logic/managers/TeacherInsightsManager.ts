@@ -1,4 +1,4 @@
-import type { TeacherInsightsRepository } from '../domains/teacherInsights/ports';
+import type { TeacherInsightsRepository } from '@repo/core/logic/domains/teacherInsights/ports';
 import type {
   TeacherInsightPromotion,
   TeacherInsightShareUpdate,
@@ -7,7 +7,7 @@ import type {
   TeacherPrivateNoteZod,
   TeacherStudentObservationCreate,
   TeacherStudentPotentialUpsert,
-} from '../schemas/teacher-insights.schema';
+} from '@repo/core/logic/schemas/teacher-insights.schema';
 
 /**
  * TeacherInsightsManager

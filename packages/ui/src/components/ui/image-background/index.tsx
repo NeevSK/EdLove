@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import { type ImageBackgroundProps, ImageBackground as RNImageBackground } from 'react-native';
 
@@ -11,3 +11,4 @@ export const ImageBackground = React.forwardRef<any, ImageBackgroundProps & { cl
 );
 
 ImageBackground.displayName = 'ImageBackground';
+

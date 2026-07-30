@@ -1,12 +1,12 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { AttendanceProjectionRepository } from '../../logic/domains/attendanceProjection/ports';
+import type { AttendanceProjectionRepository } from '@repo/core/logic/domains/attendanceProjection/ports';
 import {
   type AttendanceReport,
   AttendanceReportSchema,
   type AttendanceTrendPoint,
   type SchoolAttendancePulse,
   SchoolAttendancePulseSchema,
-} from '../../logic/schemas/attendance.schema';
+} from '@repo/core/logic/schemas/attendance.schema';
 
 function formatLocalDateISO(date: Date): string {
   const year = date.getFullYear();

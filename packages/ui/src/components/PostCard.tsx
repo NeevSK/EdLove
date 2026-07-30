@@ -1,6 +1,6 @@
 import { formatDistanceToNow } from 'date-fns';
 import React from 'react';
-import { useTheme } from '../hooks/useTheme';
+import { useTheme } from '@repo/ui/hooks/useTheme';
 import {
   BookOpen,
   CircleCheck,
@@ -17,7 +17,7 @@ import {
   UserX,
   Video,
   X as XIcon,
-} from '../icons';
+} from '@repo/ui/icons';
 import {
   Avatar,
   AvatarFallbackText,
@@ -29,11 +29,11 @@ import {
   Pressable,
   Text,
   VStack,
-} from '../primitives';
-import { Theme } from '../theme/Theme';
-import { LivingGlow } from './LivingGlow';
-import { type PollData, PollWidget } from './PollWidget';
-import { SanctuaryCard } from './SanctuaryCard';
+} from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme/Theme';
+import { LivingGlow } from '@repo/ui/components/LivingGlow';
+import { type PollData, PollWidget } from '@repo/ui/components/PollWidget';
+import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
 
 export interface Author {
   id: string;

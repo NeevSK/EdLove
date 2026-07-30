@@ -11,7 +11,7 @@ import { SanctuaryButton } from '@repo/ui/components';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-import { CircleAlert, Calendar, CalendarCheck, Users } from 'lucide-react-native';
+import { CircleAlert, Calendar, CalendarCheck, Users } from '@repo/ui/icons';
 import { ScrollView, StyleSheet } from 'react-native';
 export default function SectionHeadDashboard({
   schoolId,

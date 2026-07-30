@@ -1,1 +1,1 @@
-export { GradebookScreen as default } from '../src/screens';
+export { GradebookScreen as default } from '@/screens';

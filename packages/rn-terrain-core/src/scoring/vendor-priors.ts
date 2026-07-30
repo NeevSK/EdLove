@@ -1,4 +1,4 @@
-import type { RadarStatus, TopologyLayer } from '../types';
+import type { RadarStatus, TopologyLayer } from '@rn-terrain/core/types';
 
 export interface VendorPrior {
   vendor: string;

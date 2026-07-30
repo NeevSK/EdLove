@@ -1,9 +1,7 @@
 import { api, type StudentObservation } from '@repo/core/api';
-import {
-  type StudentGrade,
-  type StudentLongitudinalEvent,
-  useTemporalStore,
-} from '@repo/core/logic';
+import { useTemporalStore } from '@repo/core/logic';
+import type { StudentLongitudinalEvent } from '@repo/core';
+import type { StudentGrade } from '@repo/core/types';
 import type { AttendanceRecord } from '@repo/core/types';
 
 import { Card } from '@repo/ui/components/SanctuaryCard';
@@ -124,12 +122,13 @@ export default function StudentProfileScreen() {
     studyNoteEvents: timeline.filter((event) => event.entity_type === 'study_note').length,
   };
 
-  const formatTimelineTitle = (event: StudentLongitudinalEvent) => {
+  const formatTimelineTitle = (event: StudentLongitudinalEvent): string => {
+    const snap = event.snapshot as any;
     switch (event.entity_type) {
       case 'attendance':
-        return `Attendance ${event.snapshot?.status ?? event.operation}`;
+        return `Attendance ${snap?.status ?? event.operation}`;
       case 'grade':
-        return `Grade ${event.snapshot?.grade ?? event.snapshot?.marks ?? ''}`.trim();
+        return `Grade ${snap?.grade ?? snap?.marks ?? ''}`.trim();
       case 'observation':
         return 'Observation recorded';
       case 'enrollment':
@@ -137,28 +136,29 @@ export default function StudentProfileScreen() {
       case 'guardian_relationship':
         return 'Guardian relationship update';
       case 'submission':
-        return `Submission ${event.snapshot?.assignment_id ? 'recorded' : event.operation}`;
+        return `Submission ${snap?.assignment_id ? 'recorded' : event.operation}`;
       case 'study_note':
         return 'Study note updated';
       default:
-        return event.entity_type;
+        return (event.entity_type as string) || '';
     }
   };
 
-  const formatTimelineMeta = (event: StudentLongitudinalEvent) => {
+  const formatTimelineMeta = (event: StudentLongitudinalEvent): any => {
+    const snap = event.snapshot as any;
     switch (event.entity_type) {
       case 'attendance':
-        return event.snapshot?.date ?? event.occurred_at;
+        return snap?.date ?? event.occurred_at;
       case 'grade':
-        return event.snapshot?.published_at ?? event.snapshot?.updated_at ?? event.occurred_at;
+        return snap?.published_at ?? snap?.updated_at ?? event.occurred_at;
       case 'observation':
-        return event.snapshot?.observation_type ?? event.occurred_at;
+        return snap?.observation_type ?? event.occurred_at;
       case 'enrollment':
-        return event.snapshot?.classroom_id ?? event.occurred_at;
+        return snap?.classroom_id ?? event.occurred_at;
       case 'submission':
-        return event.snapshot?.submitted_at ?? event.occurred_at;
+        return snap?.submitted_at ?? event.occurred_at;
       case 'study_note':
-        return event.snapshot?.updated_at ?? event.snapshot?.created_at ?? event.occurred_at;
+        return snap?.updated_at ?? snap?.created_at ?? event.occurred_at;
       default:
         return event.occurred_at;
     }
@@ -183,7 +183,7 @@ export default function StudentProfileScreen() {
               {latestGrade?.grade ? latestGrade.grade : 'N/A'}
             </Heading>
             <Text className="text-[10px] text-phase-text-secondary">
-              {t('student.currentGrade') || 'Current Grade'}
+              {(t('student.currentGrade') as any) || 'Current Grade'}
             </Text>
           </VStack>
         </Card>
@@ -194,7 +194,7 @@ export default function StudentProfileScreen() {
             <Icon as={Clock3} size={20} color={Theme.colors.gurudeviBlue} />
             <Heading className="text-xl text-phase-text-primary">{snapshotRecords.length}</Heading>
             <Text className="text-[10px] text-phase-text-secondary">
-              {t('student.snapshotRecords') || 'As-of Records'}
+              {(t('student.snapshotRecords') as any) || 'As-of Records'}
             </Text>
           </VStack>
         </Card>
@@ -203,16 +203,16 @@ export default function StudentProfileScreen() {
             <Icon as={ShieldCheck} size={20} color={Theme.colors.sageGreen} />
             <Heading className="text-xl text-phase-text-primary">{timeline.length}</Heading>
             <Text className="text-[10px] text-phase-text-secondary">
-              {t('student.timelineEvents') || 'Timeline Events'}
+              {(t('student.timelineEvents') as any) || 'Timeline Events'}
             </Text>
           </VStack>
         </Card>
       </HStack>
       <VStack className="gap-sm">
         <Heading size="sm" className="text-phase-text-primary">
-          {t('student.recentActivity') || 'Recent Activity'}
+          {(t('student.recentActivity') as any) || 'Recent Activity'}
         </Heading>
-        {latestTimelineEvents.map((event) => (
+        {latestTimelineEvents.map((event: any) => (
           <Box
             key={event.id}
             className="p-md rounded-comfortable border-l-[4px] bg-phase-surface-secondary"
@@ -277,7 +277,7 @@ export default function StudentProfileScreen() {
           {t('student.noTimeline') || 'No timeline data available for this student yet.'}
         </Text>
       ) : (
-        timeline.map((event) => (
+        timeline.map((event: any) => (
           <Box key={event.id} className="p-md rounded-comfortable bg-phase-surface-secondary">
             <HStack className="justify-between items-center mb-1.5">
               <Text className="font-bold capitalize text-phase-text-primary">

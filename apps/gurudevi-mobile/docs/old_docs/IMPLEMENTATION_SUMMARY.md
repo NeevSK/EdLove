@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # Implementation Summary: Comprehensive UX Improvements
 
 ## Overview

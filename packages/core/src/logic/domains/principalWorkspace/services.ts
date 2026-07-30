@@ -6,8 +6,8 @@ import type {
   PrincipalObservationCreate,
   PrincipalObservationFollowUpCreate,
   PrincipalObservationZod,
-} from '../../schemas/principal-workspace.schema';
-import type { PrincipalWorkspaceRepository } from './ports';
+} from '@repo/core/logic/schemas/principal-workspace.schema';
+import type { PrincipalWorkspaceRepository } from '@repo/core/logic/domains/principalWorkspace/ports';
 
 export interface PrincipalWorkspaceServices {
   listInviteCodes(schoolId: string): Promise<InviteCodeZod[]>;

@@ -1,15 +1,18 @@
+import { Effect } from 'effect';
 import {
   CommunityGroupSchema,
   GroupMemberSchema,
   GroupMessageSchema,
-} from '../logic/schemas/community.schema';
-import { applyTemporalFilter } from '../logic/utils/temporalUtils';
-import type { TemporalScale } from '../store/useTemporalStore';
-import type { Group } from '../types';
-import { growthSignalsAPI } from './growthSignals';
-import { identityAPI } from './identity';
-import { impactRipplesAPI } from './impactRipples';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
+} from '@repo/core/logic/schemas/community.schema';
+import { applyTemporalFilter } from '@repo/core/logic/utils/temporalUtils';
+import type { TemporalScale } from '@repo/core/store/useTemporalStore';
+import type { Group } from '@repo/core/types';
+import { APIError } from '@repo/core/types/API';
+import { growthSignalsAPI } from '@repo/core/api/growthSignals';
+import { identityAPI } from '@repo/core/api/identity';
+import { impactRipplesAPI } from '@repo/core/api/impactRipples';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { tryPromise } from '@repo/core/utils/effect';
 
 /**
  * Circles API (formerly Groups)
@@ -123,15 +126,17 @@ export const circleAPI = {
     });
 
     if (group?.creator_id && group.creator_id !== userId) {
-      void impactRipplesAPI
-        .createRipple({
-          recipientUserId: group.creator_id,
-          actorUserId: userId,
-          rippleType: 'circle_joined',
-          sourceEntityType: 'circle',
-          sourceEntityId: groupId,
-        })
-        .catch(() => {});
+      Effect.runFork(
+        tryPromise(() =>
+          impactRipplesAPI.createRipple({
+            recipientUserId: group.creator_id,
+            actorUserId: userId,
+            rippleType: 'circle_joined',
+            sourceEntityType: 'circle',
+            sourceEntityId: groupId,
+          }),
+        ).pipe(Effect.catchAll((e) => Effect.logError('[circles] createRipple failed', e))),
+      );
     }
 
     return GroupMemberSchema.parse(data);
@@ -187,7 +192,7 @@ export const circleAPI = {
    */
   async sendGroupMessage(groupId: string, content: string) {
     const identity = await identityAPI.identifyActiveCitizen();
-    if (!identity) throw new Error('Not authenticated');
+    if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
     const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('group_messages')

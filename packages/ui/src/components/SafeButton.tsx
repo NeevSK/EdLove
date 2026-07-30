@@ -1,6 +1,6 @@
 import type React from 'react';
-import { useSafeAction } from '../hooks/useSafeAction';
-import { Button, type IButtonProps } from './ui/button';
+import { useSafeAction } from '@repo/ui/hooks/useSafeAction';
+import { Button, type IButtonProps } from '@repo/ui/components/ui/button';
 
 export interface ISafeButtonProps extends Omit<IButtonProps, 'onPress'> {
   /**

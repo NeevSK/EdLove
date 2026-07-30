@@ -1,28 +1,28 @@
-﻿import { useJourneyHistory } from '@repo/core/hooks';
+import { useJourneyHistory } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 
 import { JourneyHistoryCard } from '@repo/ui/components/JourneyHistoryCard';
 import { TemporalProvider } from '@repo/ui/components/TemporalProvider';
 import { TemporalShield } from '@repo/ui/components/TemporalShield';
 import { useTranslation } from 'react-i18next';
-import { BaseSelfView } from '../../components/BaseSelfView';
-import DailyRhythm from '../../components/DailyRhythm';
-import FireJournal from '../../components/FireJournal';
-import GratitudeGlimmers from '../../components/GratitudeGlimmers';
-import { ImpactRipplesCard } from '../../components/ImpactRipplesCard';
-import JoyJar from '../../components/JoyJar';
-import MoodLotus from '../../components/MoodLotus';
-import RemindersManager from '../../components/RemindersManager';
-import { ResonanceTimeline } from '../../components/ResonanceTimeline';
-import SleepTracker from '../../components/SleepTracker';
-import TomorrowPrep from '../../components/TomorrowPrep';
-import VoiceJournaling from '../../components/VoiceJournaling';
-import { WarmMirrorCard } from '../../components/WarmMirrorCard';
-import WisdomSeeds from '../../components/WisdomSeeds';
-import { useJournalEntries } from '../../hooks/useJournalEntries';
-import { useMoodLogs } from '../../hooks/useMoodLogs';
-import { useWellbeingEnrichment } from '../../hooks/useWellbeingEnrichment';
-import { JournalSection, MoodSection } from '../../views/sections';
+import { BaseSelfView } from '@repo/self/components/BaseSelfView';
+import DailyRhythm from '@repo/self/components/DailyRhythm';
+import FireJournal from '@repo/self/components/FireJournal';
+import GratitudeGlimmers from '@repo/self/components/GratitudeGlimmers';
+import { ImpactRipplesCard } from '@repo/self/components/ImpactRipplesCard';
+import JoyJar from '@repo/self/components/JoyJar';
+import MoodLotus from '@repo/self/components/MoodLotus';
+import RemindersManager from '@repo/self/components/RemindersManager';
+import { ResonanceTimeline } from '@repo/self/components/ResonanceTimeline';
+import SleepTracker from '@repo/self/components/SleepTracker';
+import TomorrowPrep from '@repo/self/components/TomorrowPrep';
+import VoiceJournaling from '@repo/self/components/VoiceJournaling';
+import { WarmMirrorCard } from '@repo/self/components/WarmMirrorCard';
+import WisdomSeeds from '@repo/self/components/WisdomSeeds';
+import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
+import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
+import { useWellbeingEnrichment } from '@repo/self/hooks/useWellbeingEnrichment';
+import { JournalSection, MoodSection } from '@repo/self/views/sections';
 
 export default function GuardianSelfView() {
   const { t } = useTranslation();

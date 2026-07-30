@@ -6,11 +6,11 @@ import type {
   PrincipalObservationCreate,
   PrincipalObservationFollowUpCreate,
   PrincipalObservationZod,
-} from '../logic/schemas/principal-workspace.schema';
-import { principalWorkspaceContract } from './principalWorkspace.contract';
-import { principalWorkspaceServices } from './runtimes/principalWorkspace.runtime';
+} from '@repo/core/logic/schemas/principal-workspace.schema';
+import { principalWorkspaceContract } from '@repo/core/api/principalWorkspace.contract';
+import { principalWorkspaceServices } from '@repo/core/api/runtimes/principalWorkspace.runtime';
 
-export type { PrincipalGovernanceEventZod } from '../logic/schemas/principal-workspace.schema';
+export type { PrincipalGovernanceEventZod } from '@repo/core/logic/schemas/principal-workspace.schema';
 
 export const principalWorkspaceAPI = {
   /**

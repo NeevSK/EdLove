@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # ðŸ“¦ Mission Delegation Packet - COMPLETION SUMMARY
 
 **Generated**: 2026-02-04  

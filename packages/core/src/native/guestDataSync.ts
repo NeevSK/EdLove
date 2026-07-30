@@ -1,7 +1,10 @@
-import { authAPI } from '../api/auth';
-import { createSovereignClient, SOVEREIGN_API_URL } from '../api/base';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-import { GuestDataManager } from './guestDataManager';
+import { authAPI } from '@repo/core/api/auth';
+import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { GuestDataManager } from '@repo/core/native/guestDataManager';
+import { setGuestScope } from '@repo/core/native/guestScope';
+
+let pendingConversionGuestUserId: string | null = null;
 
 export interface SyncProgress {
   total: number;
@@ -22,6 +25,10 @@ export type SyncProgressCallback = (progress: SyncProgress) => void;
  * RPC payload to Sanctuary API, maintaining absolute double-gate middleware compliance.
  */
 export class GuestDataSync {
+  static rememberGuestSession(userId: string): void {
+    pendingConversionGuestUserId = userId;
+    setGuestScope(userId);
+  }
   /**
    * Syncs all guest data to Supabase for the authenticated user
    * @param userId The authenticated user's ID from Supabase
@@ -50,6 +57,7 @@ export class GuestDataSync {
     };
 
     try {
+      if (pendingConversionGuestUserId) setGuestScope(pendingConversionGuestUserId);
       // Check if user is still anonymous
       const isAnon = await authAPI.isAnonymous();
       if (isAnon) {
@@ -211,6 +219,8 @@ export class GuestDataSync {
       // Clear guest data after successful sync
       if (errors.length === 0) {
         await GuestDataManager.clearAllGuestData();
+        pendingConversionGuestUserId = null;
+        setGuestScope(null);
       }
 
       return {
@@ -231,7 +241,10 @@ export class GuestDataSync {
   /**
    * Checks if there's guest data available to sync
    */
-  static async hasGuestData(): Promise<boolean> {
+  static async hasGuestData(sourceGuestUserId?: string): Promise<boolean> {
+    if (sourceGuestUserId) {
+      GuestDataSync.rememberGuestSession(sourceGuestUserId);
+    }
     const summary = await GuestDataManager.getDataSummary();
     return (
       summary.timetablePeriods > 0 ||

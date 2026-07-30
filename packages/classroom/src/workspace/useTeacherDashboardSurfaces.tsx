@@ -19,7 +19,7 @@ import { Theme } from '@repo/ui/theme';
 
 import type { ComponentType, ReactNode } from 'react';
 import { useMemo } from 'react';
-import { ClassroomList } from '../components';
+import { ClassroomList } from '@repo/classroom/components';
 
 export type TeacherDashboardSurfaceId =
   | 'temporal-context'

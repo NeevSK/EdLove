@@ -50,14 +50,14 @@ import {
   InventoryView,
   ResourcesView,
   StudentList,
-} from '../components';
-import ClassroomNotes from '../components/ClassroomNotes';
-import TeacherAnalysisWorkspace from '../components/teacher/TeacherAnalysisWorkspace';
-import TeacherAssignmentsWorkspace from '../components/teacher/TeacherAssignmentsWorkspace';
-import TeacherGroupsModal from '../components/teacher/TeacherGroupsModal';
-import TeacherObservationsWorkspace from '../components/teacher/TeacherObservationsWorkspace';
-import { useTeacherClassroomWorkspaceData } from '../workspace/useTeacherClassroomWorkspaceData';
-import LessonFeed from './LessonFeed';
+} from '@repo/classroom/components';
+import ClassroomNotes from '@repo/classroom/components/ClassroomNotes';
+import TeacherAnalysisWorkspace from '@repo/classroom/components/teacher/TeacherAnalysisWorkspace';
+import TeacherAssignmentsWorkspace from '@repo/classroom/components/teacher/TeacherAssignmentsWorkspace';
+import TeacherGroupsModal from '@repo/classroom/components/teacher/TeacherGroupsModal';
+import TeacherObservationsWorkspace from '@repo/classroom/components/teacher/TeacherObservationsWorkspace';
+import { useTeacherClassroomWorkspaceData } from '@repo/classroom/workspace/useTeacherClassroomWorkspaceData';
+import LessonFeed from '@repo/classroom/screens/LessonFeed';
 
 type FeatureId =
   | 'insights'
@@ -443,10 +443,7 @@ export default function TeacherClassroomDashboardWeb() {
             style={{
               backgroundColor: Theme.colors.silk,
               borderColor: Theme.colors.linen,
-              shadowColor: Theme.colors.shadowAmbient,
-              shadowOffset: { width: 0, height: 10 },
-              shadowOpacity: 1,
-              shadowRadius: 20,
+              boxShadow: `0 10px 20px ${Theme.colors.shadowAmbient}`,
             }}
           >
             <VStack className="gap-lg">
@@ -527,10 +524,7 @@ export default function TeacherClassroomDashboardWeb() {
               style={{
                 backgroundColor: Theme.colors.silk,
                 borderColor: Theme.colors.linen,
-                shadowColor: Theme.colors.shadowAmbient,
-                shadowOffset: { width: 0, height: 8 },
-                shadowOpacity: 1,
-                shadowRadius: 18,
+                boxShadow: `0 8px 18px ${Theme.colors.shadowAmbient}`,
               }}
             >
               <Box className="p-md border-b" style={{ borderBottomColor: colors.border }}>

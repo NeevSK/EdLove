@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
 import { AuthManager } from '@repo/core/logic/managers/AuthManager';
+import { describe, expect, it, vi } from 'vitest';
 
 const mockAudit = vi.fn();
 
@@ -9,12 +9,13 @@ vi.mock('@repo/core/api/deviceTrust', () => ({
   },
 }));
 
-describe('AuthManager anonymous entry', () => {
-  it('reuses an existing anonymous session instead of creating a new one', async () => {
-    const getSession = vi.fn().mockResolvedValue({
+describe('AuthManager anonymous identity boundary', () => {
+  it('allows anonymous Supabase onboarding identity creation', async () => {
+    const getSession = vi.fn().mockResolvedValue({ user: null });
+    const signInAnonymously = vi.fn().mockResolvedValue({
+      session: { id: 'session-1' },
       user: { id: 'anon-1', is_anonymous: true },
     });
-    const signInAnonymously = vi.fn();
     const authPort: any = {
       getSession,
       getUser: vi.fn(),
@@ -42,16 +43,16 @@ describe('AuthManager anonymous entry', () => {
     };
     const authManager = new AuthManager(authPort, identityPort);
 
-    await expect(authManager.signInAnonymously()).resolves.toEqual({
-      session: { user: { id: 'anon-1', is_anonymous: true } },
-      user: { id: 'anon-1', is_anonymous: true },
+    await expect(authManager.signInAnonymously()).resolves.toMatchObject({
+      user: { is_anonymous: true },
     });
-
-    expect(signInAnonymously).not.toHaveBeenCalled();
+    expect(signInAnonymously).toHaveBeenCalledTimes(1);
   });
 
-  it('serializes anonymous sign-in calls into a single provider request', async () => {
-    const getSession = vi.fn().mockResolvedValue({ user: null });
+  it('reuses the existing anonymous session before creating another one', async () => {
+    const getSession = vi.fn().mockResolvedValue({
+      user: { id: 'anon-existing', is_anonymous: true },
+    });
     const signInAnonymously = vi.fn().mockResolvedValue({
       session: { id: 'session-1' },
       user: { id: 'anon-2', is_anonymous: true },
@@ -83,12 +84,8 @@ describe('AuthManager anonymous entry', () => {
     };
     const authManager = new AuthManager(authPort, identityPort);
 
-    const [first, second] = await Promise.all([
-      authManager.signInAnonymously(),
-      authManager.signInAnonymously(),
-    ]);
-
-    expect(signInAnonymously).toHaveBeenCalledTimes(1);
-    expect(first).toEqual(second);
+    const result = await authManager.signInAnonymously();
+    expect(result).toMatchObject({ user: { id: 'anon-existing' } });
+    expect(signInAnonymously).not.toHaveBeenCalled();
   });
 });

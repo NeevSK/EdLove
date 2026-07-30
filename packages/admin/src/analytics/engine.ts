@@ -17,7 +17,7 @@ import type {
   TenantComparison,
   TenantMetrics,
   Trend,
-} from './types';
+} from '@repo/admin/analytics/types';
 export class MultiTenantAnalyticsEngine {
   private static instance: MultiTenantAnalyticsEngine;
   static getInstance(): MultiTenantAnalyticsEngine {

@@ -1,8 +1,8 @@
-import type { IdentityMode } from './identityState';
+import type { IdentityMode } from '@repo/core/logic/auth/identityState';
 
 export type BootstrapSessionState =
   | 'booting'
-  | 'guest'
+  | 'public'
   | 'authenticated'
   | 'onboarding-needed'
   | 'ready';
@@ -28,12 +28,19 @@ export function getBootstrapSessionState(params: {
   bootstrapReady: boolean;
   sessionMode: IdentityMode | null;
   onboardingCompleted: boolean;
+  hasActiveCapacity?: boolean;
   hasSession?: boolean;
 }): BootstrapSessionState {
-  const { bootstrapReady, sessionMode, onboardingCompleted, hasSession } = params;
+  const {
+    bootstrapReady,
+    sessionMode,
+    onboardingCompleted,
+    hasActiveCapacity = true,
+    hasSession,
+  } = params;
 
   if (!bootstrapReady) return 'booting';
-  if (!hasSession || sessionMode === 'guest') return 'guest';
-  if (!onboardingCompleted) return 'onboarding-needed';
+  if (!hasSession || sessionMode === 'unauthenticated') return 'public';
+  if (!onboardingCompleted || !hasActiveCapacity) return 'onboarding-needed';
   return 'ready';
 }

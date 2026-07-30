@@ -1,8 +1,8 @@
-import {
+﻿import {
   LinearGradient as ExpoLinearGradient,
   type LinearGradientProps,
 } from 'expo-linear-gradient';
-import { cssInterop } from 'nativewind';
+import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 
 cssInterop(ExpoLinearGradient, { className: 'style' });
@@ -14,3 +14,4 @@ export const LinearGradient = React.forwardRef<any, LinearGradientProps & { clas
 );
 
 LinearGradient.displayName = 'LinearGradient';
+

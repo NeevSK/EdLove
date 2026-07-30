@@ -1,5 +1,5 @@
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-import { coreRuntime } from '../logic/runtimeRegistry';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
 
 export const AppCryptoEngine = {
   /**

@@ -1,5 +1,5 @@
 import { identityAPI } from '@repo/core/api';
-import { useFeatureAccess } from '@repo/core/hooks';
+import { useIsGuest } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 import { FlowResolver } from '@repo/core/native';
 import { resolveQR } from '@repo/scanner-kit';
@@ -21,7 +21,7 @@ type WorkspaceClassroom = {
 export function useTeacherWorkspaceShell(_onRefresh?: () => void) {
   const router = useRouter();
   const { isDemoMode } = useStore();
-  const { isGuest } = useFeatureAccess();
+  const isGuest = useIsGuest();
   const { showToast } = useSanctuaryToast();
   const { isPastView } = useTemporalStore();
 

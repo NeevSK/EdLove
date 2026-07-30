@@ -5,7 +5,7 @@
  */
 import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
-import { Coffee, Moon, Sparkles, Sun, X, Zap } from 'lucide-react-native';
+import { Coffee, Moon, Sparkles, Sun, X, Zap } from '@repo/ui/icons';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dimensions, Modal } from 'react-native';

@@ -1,12 +1,12 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import type { PressableProps, TextInput, TextInputProps, View, ViewProps } from 'react-native';
 import {
   Pressable,
   TextInput as PrimitiveTextInput,
   View as PrimitiveView,
-} from '../../primitives';
-import { useFormControl } from '../form-control';
+} from '@repo/ui/primitives';
+import { useFormControl } from '@repo/ui/components-legacy/form-control';
 
 cssInterop(PrimitiveView, { className: 'style' });
 cssInterop(PrimitiveTextInput, { className: 'style' });
@@ -68,3 +68,4 @@ export const InputIcon = ({ as: Icon, className, color, size, ...props }: any) =
   if (!Icon) return null;
   return <Icon {...props} size={size || 20} color={color || '#6B7280'} className={className} />;
 };
+

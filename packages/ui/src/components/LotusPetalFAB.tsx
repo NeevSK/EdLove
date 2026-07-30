@@ -1,4 +1,4 @@
-import { Wind } from 'lucide-react-native';
+import { Wind } from '@repo/ui/icons';
 import type React from 'react';
 import { type FC, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Animated, {
@@ -11,19 +11,19 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useFAB } from '../context/FABContext';
-import { Box, HStack, Pressable, Text, VStack } from '../gluestack';
-import { useAccessibility } from '../hooks/useAccessibility';
-import { Dimensions, PanResponder, Platform } from '../primitives';
-import { hapticLight } from '../utils/haptics';
-import { useBottomTabPadding } from './ScreenWrapper';
-import { UniversalModal } from './UniversalModal';
+import { useFAB } from '@repo/ui/context/FABContext';
+import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/gluestack';
+import { useAccessibility } from '@repo/ui/hooks/useAccessibility';
+import { Dimensions, PanResponder, Platform } from '@repo/ui/primitives';
+import { hapticLight } from '@repo/ui/utils/haptics';
+import { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
+import { UniversalModal } from '@repo/ui/components/UniversalModal';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
-import type { ActionItem, TabType } from '../types/fab';
+import type { ActionItem, TabType } from '@repo/ui/types/fab';
 
 interface LotusPetalFABProps {
   currentTab?: TabType;

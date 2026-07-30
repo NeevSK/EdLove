@@ -22,8 +22,8 @@ import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { useMemo } from 'react';
-import type { AdminWorkspaceData } from './useAdminWorkspaceData';
-import { type AdminCapabilityId, getAdminCapabilityMeta } from './workspace';
+import type { AdminWorkspaceData } from '@repo/admin/admin/useAdminWorkspaceData';
+import { type AdminCapabilityId, getAdminCapabilityMeta } from '@repo/admin/admin/workspace';
 
 export type AdminWorkspaceSurfaceId =
   | 'operator_brief'
@@ -194,14 +194,6 @@ export function useAdminWorkspaceCanvasSurfaces({
 }: {
   data: AdminWorkspaceData;
   featureFlags: {
-    isInventoryEnabled: boolean;
-    isStaffManagementEnabled: boolean;
-    isTemplateManagementEnabled: boolean;
-    isAIAssistantEnabled: boolean;
-    isDevelopingWorkspace: boolean;
-    isDevelopingAI: boolean;
-    isDevelopingAnalyticsDashboard: boolean;
-    isDevelopingFormBuilder: boolean;
     isUnderMaintenance: boolean;
   };
   onOpenIncidentQueue: () => void;

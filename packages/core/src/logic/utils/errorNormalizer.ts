@@ -1,5 +1,5 @@
 import { ZodError } from 'zod';
-import { ErrorCategory, SovereignError } from '../../types/Errors';
+import { ErrorCategory, SovereignError } from '@repo/core/types/Errors';
 
 /**
  * normalizeError: The Sovereign Sanitizer

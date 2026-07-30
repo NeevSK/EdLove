@@ -21,7 +21,7 @@ import {
   User,
   Users,
   X,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StackFallback } from '../../src/components/web/WebScreenShimmer';

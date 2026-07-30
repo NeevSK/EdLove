@@ -1,7 +1,7 @@
-import RNSlider, { type SliderProps as RNSliderProps } from '@react-native-community/slider';
-import { cssInterop } from 'nativewind';
+﻿import RNSlider, { type SliderProps as RNSliderProps } from '@react-native-community/slider';
+import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
-import { useTheme } from '../../../hooks/useTheme';
+import { useTheme } from '@repo/ui/hooks/useTheme';
 
 /**
  * Slider Component
@@ -40,3 +40,4 @@ export const Slider = React.forwardRef<any, ISliderProps>(
 Slider.displayName = 'Slider';
 
 export { Slider as default };
+

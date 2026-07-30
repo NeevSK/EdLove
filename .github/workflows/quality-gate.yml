@@ -4,6 +4,8 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'
 
 jobs:
   quality-check:
@@ -15,7 +17,7 @@ jobs:
       - name: 🏗 Setup pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 11.9.0
+          version: 11.13.0
 
       - name: 🏗 Setup Node
         uses: actions/setup-node@v4
@@ -26,6 +28,9 @@ jobs:
       - name: 📦 Install dependencies
         run: pnpm install --frozen-lockfile --fetch-timeout 100000
 
+      - name: 🔍 Check Icon Bridge Contract
+        run: pnpm check:icons
+
       - name: 🔍 Verify Module Resolution (Critical CSS)
         run: |
           cd apps/gurudevi-mobile
@@ -34,6 +39,9 @@ jobs:
       - name: ✨ Lint (Oxlint + ESLint)
         run: pnpm lint
 
+      - name: 🔭 Observability ownership boundaries
+        run: pnpm run check:observability-boundaries
+
       - name: 🩺 React Doctor
         run: pnpm run audit:react-doctor
 
@@ -41,6 +49,32 @@ jobs:
         env:
           NODE_OPTIONS: --max-old-space-size=8192
         run: pnpm check-types
+
+      - name: ♻️ Feature lifecycle contract
+        run: pnpm run audit:feature-lifecycle
+
+      - name: 🔐 ZenStack and Cedar authorization parity
+        run: pnpm run audit:authorization-parity
+
+      - name: 🧹 Feature lifecycle archival dry run
+        run: pnpm run feature-lifecycle:archive
+
+      - name: 🧪 Feature lifecycle focused tests
+        run: pnpm run test:feature-lifecycle
+
+      - name: 🌱 GrowthBook control-plane inventory
+        if: ${{ secrets.GROWTHBOOK_FEATURES_ENDPOINT != '' || secrets.GROWTHBOOK_API_KEY != '' }}
+        env:
+          GROWTHBOOK_FEATURES_ENDPOINT: ${{ secrets.GROWTHBOOK_FEATURES_ENDPOINT }}
+          GROWTHBOOK_API_KEY: ${{ secrets.GROWTHBOOK_API_KEY }}
+          GROWTHBOOK_FEATURE_SCOPE_PREFIX: ${{ vars.GROWTHBOOK_FEATURE_SCOPE_PREFIX }}
+        run: pnpm run audit:feature-lifecycle:control-plane
+
+      - name: 🗄️ Legacy feature schema evidence
+        if: ${{ secrets.FEATURE_LIFECYCLE_DB_URL != '' }}
+        env:
+          FEATURE_LIFECYCLE_DB_URL: ${{ secrets.FEATURE_LIFECYCLE_DB_URL }}
+        run: pnpm run feature-lifecycle:schema-check -- --execute
 
       - name: 🌐 i18n policy checks
         run: pnpm run i18n:check

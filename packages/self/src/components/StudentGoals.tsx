@@ -7,6 +7,7 @@
 import { useSafeMutation } from '@repo/core/hooks';
 
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { ChevronRight, Flame, Goal, Minus, Plus, Sparkles, Target, Trophy } from '@repo/ui/icons';
 import {
   AnimatedView,
   Box,
@@ -22,21 +23,10 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-
-import {
-  ChevronRight,
-  Flame,
-  Goal,
-  Minus,
-  Plus,
-  Sparkles,
-  Target,
-  Trophy,
-} from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FadeInRight, FadeInUp, Layout } from 'react-native-reanimated';
-import { useStudentGoals } from '../hooks/useStudentGoals';
+import { useStudentGoals } from '@repo/self/hooks/useStudentGoals';
 
 interface StudentGoalsProps {
   userId: string;

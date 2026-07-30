@@ -1,8 +1,6 @@
-import { describe, expect, it } from 'vitest';
-import {
-  getBootstrapSessionState,
-} from '@repo/core/logic/auth/bootstrapContract';
+import { getBootstrapSessionState } from '@repo/core/logic/auth/bootstrapContract';
 import { getAuthRouteTarget } from '@repo/core/logic/auth/bootstrapRoutes';
+import { describe, expect, it } from 'vitest';
 
 describe('bootstrap contract', () => {
   it('classifies the session bootstrap state', () => {
@@ -18,11 +16,11 @@ describe('bootstrap contract', () => {
     expect(
       getBootstrapSessionState({
         bootstrapReady: true,
-        sessionMode: 'guest',
+        sessionMode: 'unauthenticated',
         onboardingCompleted: false,
         hasSession: false,
       }),
-    ).toBe('guest');
+    ).toBe('public');
 
     expect(
       getBootstrapSessionState({
@@ -38,6 +36,7 @@ describe('bootstrap contract', () => {
         bootstrapReady: true,
         sessionMode: 'authenticated',
         onboardingCompleted: true,
+        hasActiveCapacity: true,
         hasSession: true,
       }),
     ).toBe('ready');
@@ -49,6 +48,7 @@ describe('bootstrap contract', () => {
       bootstrapReady: true,
       sessionMode: 'authenticated',
       onboardingCompleted: false,
+      hasActiveCapacity: false,
       hasSession: true,
     });
 
@@ -58,12 +58,25 @@ describe('bootstrap contract', () => {
     const logout = getAuthRouteTarget({
       pathname: '/self',
       bootstrapReady: true,
-      sessionMode: 'guest',
+      sessionMode: 'unauthenticated',
       onboardingCompleted: false,
       hasSession: false,
     });
 
-    expect(logout.policy.state).toBe('guest');
+    expect(logout.policy.state).toBe('public');
     expect(logout.redirectTo).toBe('/welcome');
+  });
+
+  it('routes an onboarded user without an active capacity back to capacity onboarding', () => {
+    const target = getAuthRouteTarget({
+      pathname: '/self',
+      bootstrapReady: true,
+      sessionMode: 'authenticated',
+      onboardingCompleted: true,
+      hasActiveCapacity: false,
+      hasSession: true,
+    });
+
+    expect(target).toMatchObject({ decision: 'onboarding', redirectTo: '/onboarding' });
   });
 });

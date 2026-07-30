@@ -1,12 +1,12 @@
-﻿import { useBanyanGrowth, useNaturePaths } from '@repo/core/hooks';
+import { useBanyanGrowth, useNaturePaths } from '@repo/core/hooks';
 import { usePermissions, useTemporalStore } from '@repo/core/logic';
 
 import { useMemo } from 'react';
-import { useDecisionJournal } from './useDecisionJournal';
-import { useEnergyForecast } from './useEnergyForecast';
-import { useJournalEntries } from './useJournalEntries';
-import { useMoodLogs } from './useMoodLogs';
-import { useWisdom } from './useWisdom';
+import { useDecisionJournal } from '@repo/self/hooks/useDecisionJournal';
+import { useEnergyForecast } from '@repo/self/hooks/useEnergyForecast';
+import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
+import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
+import { useWisdom } from '@repo/self/hooks/useWisdom';
 
 export interface JourneyEvent {
   id: string;

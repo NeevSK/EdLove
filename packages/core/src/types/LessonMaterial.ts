@@ -1,4 +1,4 @@
-import type { ResourceType } from './Resource';
+import type { ResourceType } from '@repo/core/types/Resource';
 
 /**
  * Lesson Material

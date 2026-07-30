@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # ðŸŽ‰ PR SUMMARY - CRITICAL ALPHA BLOCKERS RESOLVED
 
 **Branch**: `feat/environment-engine-foundation`

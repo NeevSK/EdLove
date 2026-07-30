@@ -1,6 +1,6 @@
-import type { LucideIcon } from 'lucide-react-native';
-import { Box, HStack, Text, VStack } from '../gluestack';
-import { SanctuaryCard } from './SanctuaryCard';
+import type { LucideIcon } from '@repo/ui/icons';
+import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
+import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
 
 interface DailyResonanceCardProps {
   title: string;

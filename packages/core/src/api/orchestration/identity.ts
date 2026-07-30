@@ -1,8 +1,8 @@
-import { assertContractCoverage, defineContractCoverage } from '../contractCoverage';
-import { identityAPI as rawIdentityAPI } from '../identity';
-import { identityContract } from '../identity.contract';
-import { profileAPI as rawProfileAPI } from '../profile';
-import { profileContract } from '../profile.contract';
+import { assertContractCoverage, defineContractCoverage } from '@repo/core/api/contractCoverage';
+import { identityAPI as rawIdentityAPI } from '@repo/core/api/identity';
+import { identityContract } from '@repo/core/api/identity.contract';
+import { profileAPI as rawProfileAPI } from '@repo/core/api/profile';
+import { profileContract } from '@repo/core/api/profile.contract';
 
 const _identityCoverage = assertContractCoverage(
   rawIdentityAPI,

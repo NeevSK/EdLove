@@ -43,7 +43,7 @@ const LotusFallback = (props) => {
 /**
  * The Intelligent Proxy
  * This is the "Brain" of the shim. It intercepts ALL property access on the module.
- * If you import { Heart } or { UserIcon } from 'lucide-react-native',
+ * If you import { Heart } or { UserIcon } from '@repo/ui/icons',
  * this proxy automatically resolves them.
  */
 const IconProxy = new Proxy(LotusFallback, {

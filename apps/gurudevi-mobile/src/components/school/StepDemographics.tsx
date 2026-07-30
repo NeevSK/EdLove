@@ -1,5 +1,6 @@
 import { RELIGIOUS_AFFILIATIONS, STUDENT_TYPES } from '@repo/core/constants';
 import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
+import { Users } from '@repo/ui/icons';
 import {
   FormControl,
   FormControlLabel,
@@ -9,8 +10,6 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-
-import { Users } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 interface StepDemographicsProps {

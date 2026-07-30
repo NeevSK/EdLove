@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import {
   type FlatListProps,
@@ -89,3 +89,4 @@ export const KeyboardAvoidingView = React.forwardRef<
   <RNKeyboardAvoidingView {...props} ref={ref} className={className} />
 ));
 KeyboardAvoidingView.displayName = 'KeyboardAvoidingView';
+

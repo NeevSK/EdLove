@@ -11,7 +11,7 @@
  */
 
 import { Skia, type SkRuntimeEffect } from '@shopify/react-native-skia';
-import { getSKSLSurface, getSKSLSurfaceNames } from './sksl-shaders';
+import { getSKSLSurface, getSKSLSurfaceNames } from '@repo/trube-art/core/soul/sksl-shaders';
 
 // \u2500\u2500 WGSL: Shared noise library (prepended to every surface shader) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 

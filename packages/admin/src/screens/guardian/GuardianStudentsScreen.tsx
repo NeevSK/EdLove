@@ -3,8 +3,8 @@ import { Box, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
 
-import { useGuardianWorkspaceData } from '../../guardian';
-import { GuardianRoomShell } from './GuardianRoomShell';
+import { useGuardianWorkspaceData } from '@repo/admin/guardian';
+import { GuardianRoomShell } from '@repo/admin/screens/guardian/GuardianRoomShell';
 
 export default function GuardianStudentsScreen() {
   const router = useRouter();

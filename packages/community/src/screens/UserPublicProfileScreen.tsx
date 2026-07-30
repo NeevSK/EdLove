@@ -1,4 +1,5 @@
 import { supabase } from '@repo/core/api';
+import { useDomainRollout } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 
 import { useStore } from '@repo/core/store';
@@ -25,8 +26,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
-import { communityAPI } from '../api/community';
-import SocialShieldModal from '../components/SocialShieldModal';
+import { communityAPI } from '@repo/community/api/community';
+import SocialShieldModal from '@repo/community/components/SocialShieldModal';
 
 interface PublicUser {
   id: string;
@@ -56,6 +57,7 @@ export default function UserPublicProfileScreen() {
   const userName = Array.isArray(params.userName) ? params.userName[0] : params.userName;
   const userId = userIdParam || id || '';
   const { can, flags } = usePermissions();
+  const isMessagingEnabled = useDomainRollout('messages');
   const currentUserId = useStore((state) => state.user?.id);
 
   const [user, setUser] = useState<PublicUser | null>(null);
@@ -147,7 +149,7 @@ export default function UserPublicProfileScreen() {
       !!user &&
       !!currentUserId &&
       currentUserId !== userId &&
-      flags.isMessagingEnabled &&
+      isMessagingEnabled &&
       can('create', 'DirectConversation'),
     onPress: handleMessagePress,
     icon: <Icon as={Send} size="md" className="text-white" />,
@@ -217,7 +219,7 @@ export default function UserPublicProfileScreen() {
 
                 {user && currentUserId && currentUserId !== userId && (
                   <VStack className="w-full mt-4 gap-3">
-                    {flags.isMessagingEnabled && can('create', 'DirectConversation') && (
+                    {isMessagingEnabled && can('create', 'DirectConversation') && (
                       <SanctuaryButton
                         action="primary"
                         onPress={handleMessagePress}

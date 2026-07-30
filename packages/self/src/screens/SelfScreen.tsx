@@ -1,5 +1,5 @@
 import { useTracking } from '@repo/core/hooks';
-import { FeatureGuard, usePermissions } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
 
 import { useEffect } from 'react';
 import {
@@ -9,7 +9,7 @@ import {
   PrincipalSelfView,
   StudentSelfView,
   TeacherSelfView,
-} from './self';
+} from '@repo/self/screens/self';
 
 /**
  * SelfScreen  declarative entry point for the user's sanctuary.
@@ -23,37 +23,31 @@ export default function SelfScreen() {
     void discoverFeature('section_self');
   }, [discoverFeature]);
 
-  return (
-    <FeatureGuard feature="isSelfWorkspaceEnabled">
-      {(() => {
-        const role = context.capacity;
+  const role = context.capacity;
 
-        if (can('manage', 'FounderDashboard')) {
-          return <FounderSelfView />;
-        }
+  if (can('manage', 'FounderDashboard')) {
+    return <FounderSelfView />;
+  }
 
-        if (can('manage', 'AdminDashboard')) {
-          return <AdminSelfView />;
-        }
+  if (can('manage', 'AdminDashboard')) {
+    return <AdminSelfView />;
+  }
 
-        if (can('manage', 'PrincipalDashboard')) {
-          return <PrincipalSelfView />;
-        }
+  if (can('manage', 'PrincipalDashboard')) {
+    return <PrincipalSelfView />;
+  }
 
-        if (can('manage', 'TeacherDashboard') || role === 'teacher') {
-          return <TeacherSelfView />;
-        }
+  if (can('manage', 'TeacherDashboard') || role === 'teacher') {
+    return <TeacherSelfView />;
+  }
 
-        if (role === 'guardian' || role === 'parent') {
-          return <GuardianSelfView />;
-        }
+  if (role === 'guardian' || role === 'parent') {
+    return <GuardianSelfView />;
+  }
 
-        if (can('manage', 'StudentDashboard') || role === 'student') {
-          return <StudentSelfView />;
-        }
+  if (can('manage', 'StudentDashboard') || role === 'student') {
+    return <StudentSelfView />;
+  }
 
-        return <StudentSelfView />;
-      })()}
-    </FeatureGuard>
-  );
+  return <StudentSelfView />;
 }

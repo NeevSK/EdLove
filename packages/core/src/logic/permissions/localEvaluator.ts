@@ -1,36 +1,17 @@
-/* eslint-disable import-x/no-unresolved */
 import { eq } from 'drizzle-orm';
-import { getDrizzleDB, registerPermissionValidator } from '../../adapters/powersync/database';
-import { cedarPolicies, classrooms, schools } from '../../adapters/powersync/schema';
-import { deviceTrustAPI } from '../../api/deviceTrust';
-import { DeviceTrustEngine } from '../../lib/security/deviceTrust';
-import { isAnonymousIdentity } from '../auth/identityState';
-import type { UserContext } from '../schemas/user.schema';
-import type { Actions, SubjectType } from './abilities/base';
+import { getDrizzleDB, registerPermissionValidator } from '@repo/core/adapters/powersync/database';
+import { cedarPolicies, classrooms, schools } from '@repo/core/adapters/powersync/schema';
+import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
+import { DeviceTrustEngine } from '@repo/core/lib/security/deviceTrust';
+import { isAnonymousIdentity } from '@repo/core/logic/auth/identityState';
+import { evaluateShape2 } from '@repo/core/logic/permissions/cedarClientEvaluator';
+import type { UserContext } from '@repo/core/logic/schemas/user.schema';
+import type { Action, Subject } from '@repo/core/types/authorization';
 
-// Context definition for Cedar dynamic validation
-export interface CedarEvaluationContext {
-  device: {
-    is_trusted: boolean;
-    trust_status: 'new' | 'trusted' | 'stale' | 'restricted' | 'standard';
-  };
-}
-
-/**
- * Singleton Cache for compiled policies.
- * Prevents mobile CPU compilation overhead by lazy-caching the policy string
- * and only invalidating the cache when the sync table content changes.
- */
-let cachedPolicyString = '';
-let _cachedPolicySize = 0;
-let _isCacheValid = false;
-
-// Max allowable local policy size (e.g. 100KB) to prevent Hermes/Android WASM memory crashes.
 const MAX_LOCAL_POLICY_SIZE_BYTES = 100 * 1024;
 
 /**
  * Retrieves dynamic attributes for a resource directly from the local SQLite/PowerSync cache.
- * This supports evaluating permissions on records created or modified while completely offline!
  */
 export async function getLocalResourceAttributes(
   resourceType: string,
@@ -72,71 +53,14 @@ export async function getLocalResourceAttributes(
   }
 }
 
-import crypto from 'isomorphic-webcrypto';
-
-/**
- * Validates the cryptographic signature of local policies to defend against local root database tampering.
- * If a rooted device injects local policies, we detect signature mismatch and fail-safe.
- */
-export async function verifyLocalPolicySignature(
-  policySet: string,
-  signatureHex?: string,
-): Promise<boolean> {
-  if (!signatureHex) {
-    // If no signature column exists or was provided, we check for presence in high-security scopes
-    return true;
-  }
-  try {
-    const secretKey =
-      process.env.EXPO_PUBLIC_HMAC_SECRET_KEY ||
-      process.env.NEXT_PUBLIC_HMAC_SECRET_KEY ||
-      'default-fallback-secret-for-development';
-
-    const enc = new TextEncoder();
-    const keyData = enc.encode(secretKey);
-    const messageData = enc.encode(policySet);
-
-    const importedKey = await crypto.subtle.importKey(
-      'raw',
-      keyData,
-      { name: 'HMAC', hash: { name: 'SHA-256' } },
-      false,
-      ['sign', 'verify'],
-    );
-
-    const generatedSigBuffer = await crypto.subtle.sign('HMAC', importedKey, messageData);
-    const generatedSigArray = Array.from(new Uint8Array(generatedSigBuffer));
-    const generatedSigHex = generatedSigArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-
-    // Constant-time signature comparison to prevent timing attacks
-    const a = generatedSigHex;
-    const b = signatureHex;
-    if (a.length !== b.length) {
-      return false;
-    }
-    let result = 0;
-    for (let i = 0; i < a.length; i++) {
-      result |= a.charCodeAt(i) ^ b.charCodeAt(i);
-    }
-    return result === 0;
-  } catch {
-    return false;
-  }
-}
-
 /**
  * checkLocalPermission
  *
  * The authoritative entrypoint for offline-first local permission checks.
- * Combines:
- * 1. Pre-existing DeviceTrust status (DeviceTrustEngine / deviceTrustAPI)
- * 2. Replicated Cedar DSL Policies from the local sqlite `cedar_policies` table
- * 3. Dynamic attributes from local SQLite database (supporting offline-created entities)
- * 4. Resilient fallback to the synchronous CASL Ability engine is REMOVED to ensure strict default-deny.
  */
 export async function checkLocalPermission(params: {
-  action: Actions;
-  resourceType: SubjectType;
+  action: Action;
+  resourceType: Subject;
   resourceId: string;
   userContext: Partial<UserContext>;
 }): Promise<boolean> {
@@ -170,81 +94,45 @@ export async function checkLocalPermission(params: {
       return false; // Fail-secure
     }
 
-    if (rawPolicyString !== cachedPolicyString) {
-      // Policies modified or synched newly -> invalidate and compile cache
-      cachedPolicyString = rawPolicyString;
-      _cachedPolicySize = policySizeBytes;
-      _isCacheValid = true;
-
-      // Perform security signature verification
-      const isSignatureValid = await verifyLocalPolicySignature(rawPolicyString);
-      if (!isSignatureValid) {
-        console.error(
-          '[LocalEvaluator] CRYPTOGRAPHIC TAMPER DETECTED: Policy signatures do not match! Failing safe.',
-        );
-        return false; // Fail-secure on cryptographic mismatch
-      }
-    }
-
-    // 4. Fetch target resource dynamic attributes (handles offline-created items)
     const resourceAttributes = await getLocalResourceAttributes(
       params.resourceType as string,
       params.resourceId,
     );
-    const classroomId = params.userContext.classroomId || legacyContext.classroom_id || null;
+    const classroomId =
+      params.userContext.classroomId || (legacyContext.classroom_id as string | undefined) || null;
     const isAnonymous = isAnonymousIdentity({
       email: params.userContext.email ?? (legacyContext.email as string | null | undefined),
       is_anonymous: legacyContext.is_anonymous as boolean | null | undefined,
       identity_state: legacyContext.identity_state as string | null | undefined,
     });
 
-    // 5. Build dynamic request context
-    const contextPayload: CedarEvaluationContext = {
-      device: {
-        is_trusted: isTrusted,
-        trust_status: trustStatus,
-      },
-    };
-
-    // 6. Execute local Cedar WASM validation dynamically if available
+    // Use singleton WASM evaluator (ADR-005) via cedarClientEvaluator
     try {
-      // @ts-expect-error - Dynamic Cedar WASM web entrypoint load for browser/React-Native compatibility
-      const { evaluate } = await import('@cedar-policy/cedar-wasm/web');
-
-      const decision = await evaluate({
-        policies: cachedPolicyString,
-        schema: '',
-        request: {
-          principal: {
-            type: 'User',
-            id: params.userContext.userId || legacyContext.user_id || '',
+      const permitted = await evaluateShape2(rawPolicyString, {
+        user: {
+          id: params.userContext.userId || (legacyContext.user_id as string) || '',
+          attrs: {
+            school_id:
+              params.userContext.schoolId || (legacyContext.school_id as string | undefined) || '',
+            active_entity_id:
+              params.userContext.activeEntityId ||
+              (legacyContext.active_entity_id as string | undefined) ||
+              '',
+            active_entity_type:
+              params.userContext.activeEntityType ||
+              (legacyContext.active_entity_type as string | undefined) ||
+              '',
+            capacity: isAnonymous ? 'member' : params.userContext.capacity || '',
+            classroom_ids: classroomId ? [classroomId] : [],
           },
-          action: { type: 'Action', id: params.action },
-          resource: { type: params.resourceType as string, id: params.resourceId },
-          context: contextPayload as unknown,
         },
-        entities: [
-          {
-            uid: { type: 'User', id: params.userContext.userId || legacyContext.user_id || '' },
-            attrs: {
-              school_id:
-                params.userContext.schoolId ||
-                (legacyContext.school_id as string | undefined) ||
-                '',
-              capacity: isAnonymous ? 'member' : params.userContext.capacity || '',
-              classroom_ids: classroomId ? [classroomId] : [],
-            },
-            parents: [],
-          },
-          {
-            uid: { type: params.resourceType as string, id: params.resourceId },
-            attrs: resourceAttributes,
-            parents: [],
-          },
-        ],
+        action: params.action,
+        resourceType: params.resourceType as string,
+        resourceId: params.resourceId,
+        resourceAttrs: resourceAttributes,
       });
 
-      return decision.decision === 'Allow';
+      return permitted;
     } catch (wasmError) {
       console.error(
         '[LocalEvaluator] WASM Engine failed or not loaded. Denying access by default.',

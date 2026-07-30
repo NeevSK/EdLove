@@ -1,4 +1,4 @@
-import type { ICrypto } from '../interfaces/crypto.port';
+import type { ICrypto } from '@repo/core/logic/interfaces/crypto.port';
 
 class CryptoManager implements ICrypto {
   private adapter: ICrypto | null = null;

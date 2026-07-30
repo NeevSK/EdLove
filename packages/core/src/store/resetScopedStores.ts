@@ -1,14 +1,14 @@
 import type { QueryClient } from '@tanstack/react-query';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-import { getActiveAccountId, setActiveAccountId } from '../lib/accountScope';
-import { DeviceTrustEngine } from '../lib/security/deviceTrust';
-import { useMutationQueue } from '../lib/sync/useMutationQueue';
-import { resolveFeatureFlags } from '../logic/permissions/feature-engine';
-import type { UISlice } from './slices/ui.slice';
-import { useAuthStore } from './useAuthStore';
-import { useFeatureStore } from './useFeatureStore';
-import { useTenantStore } from './useTenantStore';
-import { useUIStore } from './useUIStore';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { getActiveAccountId, setActiveAccountId } from '@repo/core/lib/accountScope';
+import { DeviceTrustEngine } from '@repo/core/lib/security/deviceTrust';
+import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import type { UISlice } from '@repo/core/store/slices/ui.slice';
+import { DEFAULT_FEATURE_FLAGS } from '@repo/core/store/types/featureFlags';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useFeatureStore } from '@repo/core/store/useFeatureStore';
+import { useTenantStore } from '@repo/core/store/useTenantStore';
+import { useUIStore } from '@repo/core/store/useUIStore';
 
 const authScopedDefaults = {
   userName: 'Gurudevi',
@@ -45,30 +45,7 @@ const uiScopedDefaults: Partial<UISlice> = {
   isBreathingOpen: false,
 };
 
-const featureScopedDefaults = resolveFeatureFlags({
-  userId: null,
-  email: null,
-  bonds: [],
-  primaryCapacity: null,
-  activeBond: null,
-  capacity: null,
-  traits: [],
-  schoolId: null,
-  pricing_tier: 'FREE',
-  tenancyName: null,
-  tenancy: null,
-  tenantKind: 'customer',
-  tier: 'free',
-  citizenship: 'WANDERER',
-  isAnonymous: true,
-  hasGlobalAccess: false,
-  isPersonal: false,
-  features: [],
-  flags: {},
-  sectionId: null,
-  gradeId: null,
-  classroomId: null,
-});
+const featureScopedDefaults = { ...DEFAULT_FEATURE_FLAGS };
 
 /**
  * THE SACRED WASH
@@ -86,13 +63,10 @@ export async function globalLogoutAndPurge(queryClient?: QueryClient) {
 
     // 2. Cryptographic Partition Wipe
     try {
-      const mmkvModule: any = await import('react-native-mmkv');
-      const MMKV = mmkvModule.MMKV;
-      if (MMKV) {
-        const storeId = `gurudevi-tenant-${currentAccountId}`;
-        const store = new MMKV({ id: storeId });
-        store.clearAll();
-      }
+      const { createMMKV } = await import('react-native-mmkv');
+      const storeId = `gurudevi-tenant-${currentAccountId}`;
+      const store = createMMKV({ id: storeId });
+      store.clearAll();
     } catch {
       // AsyncStorage Fallback Wipe
     }
@@ -118,7 +92,7 @@ export const resetScopedStores = () => {
   useFeatureStore.setState((state) => ({
     ...state,
     flags: featureScopedDefaults,
-    globalConfigs: {},
+    snapshot: null,
   }));
   useMutationQueue.setState({
     queue: [],

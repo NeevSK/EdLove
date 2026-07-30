@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
-import { getActiveAccountId, scopeStorageKey } from '../lib/accountScope';
+import { getActiveAccountId, scopeStorageKey } from '@repo/core/lib/accountScope';
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 

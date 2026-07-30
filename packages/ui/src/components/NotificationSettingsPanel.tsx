@@ -1,9 +1,24 @@
-import { BellRing, Mail, Moon, Smartphone } from 'lucide-react-native';
+import { SupabasePushNotificationAdapter } from '@repo/core/adapters/supabasePushNotification.adapter';
+import { storage, useStore } from '@repo/core/logic';
+import { getWebPushPermission, registerWebPushSubscription } from '@repo/core/native/webPush';
+import { BellRing, Mail, Moon, Smartphone } from '@repo/ui/icons';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
-import { useNotificationPreferences } from '../hooks/useNotificationPreferences';
-import { Box, Divider, Heading, HStack, Icon, Spinner, Switch, Text, VStack } from '../primitives';
+import { useNotificationPreferences } from '@repo/ui/hooks/useNotificationPreferences';
+import {
+  Box,
+  Button,
+  ButtonText,
+  Divider,
+  Heading,
+  HStack,
+  Icon,
+  Spinner,
+  Switch,
+  Text,
+  VStack,
+} from '@repo/ui/primitives';
 
 /**
  * NotificationSettingsPanel
@@ -13,7 +28,50 @@ import { Box, Divider, Heading, HStack, Icon, Spinner, Switch, Text, VStack } fr
  */
 export const NotificationSettingsPanel = () => {
   const { t } = useTranslation();
+  const userId = useStore((state) => state.user?.id);
   const { preferences, loading, toggleChannel, toggleCategory } = useNotificationPreferences();
+  const [browserPushState, setBrowserPushState] = React.useState<
+    'idle' | 'registering' | 'enabled' | 'denied' | 'unavailable' | 'error'
+  >(() => {
+    if (Platform.OS !== 'web') return 'unavailable';
+    const permission = getWebPushPermission();
+    return permission === 'granted' ? 'enabled' : permission === 'denied' ? 'denied' : 'idle';
+  });
+
+  const enableBrowserPush = async () => {
+    if (!userId || Platform.OS !== 'web') return;
+
+    const vapidPublicKey = process.env.EXPO_PUBLIC_WEB_PUSH_VAPID_PUBLIC_KEY;
+    if (!vapidPublicKey) {
+      setBrowserPushState('unavailable');
+      return;
+    }
+
+    setBrowserPushState('registering');
+    try {
+      const subscription = await registerWebPushSubscription(vapidPublicKey);
+      if (!subscription) {
+        setBrowserPushState(getWebPushPermission() === 'denied' ? 'denied' : 'unavailable');
+        return;
+      }
+
+      const deviceId =
+        storage.getString('device_id') ||
+        `web_${globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)}`;
+      if (!storage.contains('device_id')) storage.set('device_id', deviceId);
+
+      await new SupabasePushNotificationAdapter().registerPushToken(
+        userId,
+        JSON.stringify(subscription),
+        deviceId,
+        'web',
+      );
+      setBrowserPushState('enabled');
+    } catch (error) {
+      console.error('[NotificationSettingsPanel] Browser push registration failed:', error);
+      setBrowserPushState('error');
+    }
+  };
 
   if (loading) {
     return (
@@ -122,6 +180,53 @@ export const NotificationSettingsPanel = () => {
           </VStack>
         </Box>
       </VStack>
+
+      {Platform.OS === 'web' && (
+        <VStack space="md">
+          <Heading
+            size="xs"
+            className="text-phase-text-secondary uppercase tracking-widest font-bold px-1"
+          >
+            Browser delivery
+          </Heading>
+          <Box className="bg-phase-canvas rounded-3xl border border-phase-surface p-6">
+            <HStack className="justify-between items-center gap-4">
+              <VStack space="xs" className="flex-1">
+                <Text className="text-phase-text-primary font-bold">
+                  Enable browser notifications
+                </Text>
+                <Text size="xs" className="text-phase-text-secondary">
+                  Allow Gurudevi to notify this browser even when the tab is not open.
+                </Text>
+                {browserPushState === 'denied' && (
+                  <Text size="xs" className="text-phase-danger">
+                    Notifications are blocked in this browser. Allow them in site settings first.
+                  </Text>
+                )}
+                {browserPushState === 'unavailable' && (
+                  <Text size="xs" className="text-phase-text-secondary">
+                    Browser push is not configured or supported in this environment.
+                  </Text>
+                )}
+                {browserPushState === 'error' && (
+                  <Text size="xs" className="text-phase-danger">
+                    Registration failed. Please try again after checking your connection.
+                  </Text>
+                )}
+              </VStack>
+              <Button
+                size="sm"
+                variant="outline"
+                isDisabled={browserPushState === 'registering' || browserPushState === 'enabled'}
+                isLoading={browserPushState === 'registering'}
+                onPress={() => void enableBrowserPush()}
+              >
+                <ButtonText>{browserPushState === 'enabled' ? 'Enabled' : 'Enable'}</ButtonText>
+              </Button>
+            </HStack>
+          </Box>
+        </VStack>
+      )}
 
       {/* Category Gating */}
       <VStack space="md">

@@ -7,12 +7,12 @@ import 'react-native-worklets';
 import 'react-native-get-random-values';
 import '@repo/ui/global.css';
 
-import {
-  identifyUser,
-  initPostHog,
-  posthogAnalytics as initTracker,
-  trackEvent,
-} from '@repo/analytics';
+import { registerAppCatalog } from '@/boot/registerAppCatalog';
+
+registerAppCatalog();
+
+import { initPostHog, posthogAnalytics as initTracker } from '@repo/analytics';
+import { refreshPermissionSnapshotOnServer } from '@repo/core/api/authorization';
 import {
   accountPin,
   coreRuntime,
@@ -21,11 +21,24 @@ import {
   getSessionIdentityMode,
   pushNotification,
   useAuth,
+  useConsentStore,
   useStore,
 } from '@repo/core/logic';
-import { clearSentryUser, initSentry, injectPostHog, setSentryUser } from '@repo/core/monitoring';
+import { warmCedarWasm } from '@repo/core/logic/permissions/cedarClientEvaluator';
+import {
+  clearSentryUser,
+  identifyUser,
+  initSentry,
+  injectPostHog,
+  optOutTelemetry,
+  setSentryUser,
+  trackProductEvent,
+} from '@repo/core/monitoring';
 import { bootstrapPlatform, storage } from '@repo/core/native';
-import { usePermissionStore } from '@repo/core/store/usePermissionStore';
+import { usePolicyVersionInvalidation, disconnectPowerSync as clearPowerSync } from '@repo/core/adapters/powersync';
+import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
+import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
+import { useFeatureStore } from '@repo/core/store/useFeatureStore';
 import { SyncManager } from '@repo/core/sync';
 import { useQRDeepLink } from '@repo/scanner-kit';
 import { AccountPinModal } from '@repo/ui/components';
@@ -36,8 +49,10 @@ import SanctuaryToast from '@repo/ui/components/SanctuaryToast';
 import { EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';
 import { FABProvider } from '@repo/ui/context/FABContext';
 import { GluestackUIProvider } from '@repo/ui/gluestack';
+import { Shield } from '@repo/ui/icons';
 import { Box, Center, Spinner } from '@repo/ui/primitives';
 import { ToastProvider } from '@repo/ui/providers';
+import { FeatureProvider } from '@repo/ui/providers/FeatureProvider';
 import { sanctuarySaffron } from '@repo/ui/theme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as LocalAuthentication from 'expo-local-authentication';
@@ -45,7 +60,6 @@ import { usePathname, useRouter } from 'expo-router';
 import { Stack } from 'expo-router/stack';
 import * as ScreenCapture from 'expo-screen-capture';
 import * as SplashScreen from 'expo-splash-screen';
-import { Shield } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import {
   AppState,
@@ -57,14 +71,15 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { PWAInstallBanner } from '../src/components/web/PWAInstallBanner';
-import { fontAssets } from '../src/constants/Fonts';
-import { registerBackgroundSync } from '../src/lib/backgroundSync';
+import { PWAInstallBanner } from '@/components/web/PWAInstallBanner';
+import PDPAConsentModal from '@/components/PDPAConsentModal';
+import { fontAssets } from '@/constants/Fonts';
+import { registerBackgroundSync } from '@/lib/backgroundSync';
 import {
   dispatchQueuedMutationToSovereignBus,
   installMobileWorkflowEventBridge,
-} from '../src/lib/inngestEvents';
-import { LanguageUtils } from '../src/utils/LanguageUtils';
+} from '@/lib/inngestEvents';
+import { LanguageUtils } from '@/utils/LanguageUtils';
 
 void SplashScreen.preventAutoHideAsync().catch(() => {
   // Native splash is best-effort; the in-app fallback covers slow boots.
@@ -80,6 +95,11 @@ if (
 
 const queryClient = new QueryClient();
 
+// Inject the platform analytics adapter before any auth/bootstrap effects run.
+// This prevents the core bridge from observing an uninitialized PostHog instance
+// during the first render cycle.
+injectPostHog(initTracker);
+
 function FullScreenFallback() {
   return (
     <Center className="flex-1 bg-obsidian">
@@ -90,23 +110,51 @@ function FullScreenFallback() {
 
 function BootstrapSideEffects() {
   const currentUser = useStore((state) => state.user);
+  const analyticsEnabled = useFeatureStore((state) => state.flags.isAnalyticsEnabled);
+  const { hasDecidedConsent, analyticsConsentGranted } = useConsentStore();
 
   useEffect(() => {
-    injectPostHog(initTracker);
+    // Revocation check: if consent has been decided, but it is false
+    if (hasDecidedConsent && !analyticsConsentGranted) {
+      optOutTelemetry();
+      clearSentryUser();
+      
+      // Perform database and cache cleanup under PDPA erasure requirement
+      void (async () => {
+        try {
+          await clearPowerSync();
+          storage.clearAll();
+        } catch (e) {
+          console.error('[PDPA Compliance] Failed to clear local data:', e);
+        }
+      })();
+      return;
+    }
+
+    if (!hasDecidedConsent || !analyticsConsentGranted) {
+      return;
+    }
+
     initSentry();
 
     const posthogApiKey = process.env.EXPO_PUBLIC_POSTHOG_API_KEY;
     const posthogEnabled = process.env.EXPO_PUBLIC_POSTHOG_ENABLED !== 'false';
-    if (posthogApiKey && posthogEnabled) {
+    if (posthogApiKey && posthogEnabled && analyticsEnabled) {
       const posthogHost = process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com';
       void initPostHog(posthogApiKey, { host: posthogHost }).then(() => {
-        trackEvent('app_initialized', { platform: Platform.OS });
+        trackProductEvent('app_started', undefined, {
+          platform:
+            Platform.OS === 'ios' || Platform.OS === 'android' || Platform.OS === 'web'
+              ? Platform.OS
+              : 'unknown',
+        });
       });
     }
-  }, []);
+  }, [analyticsEnabled, hasDecidedConsent, analyticsConsentGranted]);
 
   useEffect(() => {
-    if (!currentUser?.id) {
+    // Only set Sentry user profile if consent is granted
+    if (!hasDecidedConsent || !analyticsConsentGranted || !currentUser?.id) {
       clearSentryUser();
       return;
     }
@@ -117,15 +165,9 @@ function BootstrapSideEffects() {
       username: currentUser.display_name ?? undefined,
     });
 
-    identifyUser(currentUser.id, {
-      email: currentUser.email ?? undefined,
-      display_name: currentUser.display_name ?? undefined,
-      capacity:
-        (useStore.getState() as { activeBond?: { capacity?: string } }).activeBond?.capacity ??
-        undefined,
-      school_id: currentUser.school_id ?? undefined,
-    });
-  }, [currentUser?.display_name, currentUser?.email, currentUser?.id, currentUser?.school_id]);
+    identifyUser(currentUser.id);
+  }, [currentUser?.display_name, currentUser?.email, currentUser?.id, currentUser?.school_id, hasDecidedConsent, analyticsConsentGranted]);
+
 
   useEffect(() => {
     if (!currentUser?.id) return;
@@ -152,6 +194,12 @@ function AppContent() {
   const pathname = usePathname();
   const { session, loading, isProfileLoading } = useAuth();
   const onboardingCompleted = useStore((state) => state.onboardingCompleted);
+  const hasActiveCapacity = useStore((state) => Boolean(state.activeBond?.capacity));
+  const activeBond = useStore((state) => state.activeBond);
+  const activeBondScopeId = useStore((state) => state.activeBond?.id ?? null);
+  const clearCedarDecisions = useCedarDecisionStore((state) => state.clearDecisions);
+  usePolicyVersionInvalidation(clearCedarDecisions);
+  const { hasDecidedConsent } = useConsentStore();
   const toast = useStore((state) => state.toast);
   const hideToast = useStore((state) => state.hideToast);
   const [fontsReady, setFontsReady] = useState(() => !coreRuntime.isRegistered());
@@ -169,6 +217,7 @@ function AppContent() {
     bootstrapReady,
     sessionMode,
     onboardingCompleted,
+    hasActiveCapacity,
     hasSession: !!session,
   });
 
@@ -304,14 +353,7 @@ function AppContent() {
     if (routeTarget.redirectTo && pathname !== routeTarget.redirectTo) {
       router.replace(routeTarget.redirectTo);
     }
-  }, [
-    bootstrapReady,
-    pathname,
-    routeTarget.redirectTo,
-    router,
-    session,
-    onboardingCompleted,
-  ]);
+  }, [bootstrapReady, pathname, routeTarget.redirectTo, router, session, onboardingCompleted]);
 
   useEffect(() => {
     if (!bootstrapReady) return;
@@ -321,15 +363,36 @@ function AppContent() {
     });
   }, [bootstrapReady]);
 
-  const loadPermissions = usePermissionStore((state) => state.loadPermissions);
+  const loadDecisions = useCedarDecisionStore((state) => state.loadDecisions);
+  const loadEntitlements = useEntitlementStore((state) => state.loadEntitlements);
 
   useEffect(() => {
     if (!coreRuntime.isRegistered()) return;
 
-    if (session?.user?.id) {
-      void loadPermissions(session.user.id);
+    // Warm Cedar WASM singleton at boot per D4 Section 1
+    warmCedarWasm();
+
+    if (session?.user?.is_anonymous) {
+      // Anonymous guests have a Supabase auth identity for conversion and
+      // measurement, but no durable Cedar or commercial entitlement scope.
+      useEntitlementStore.getState().clearEntitlements();
+      useCedarDecisionStore.getState().clearDecisions();
+    } else if (session?.user?.id) {
+      void loadDecisions(session.user.id, activeBondScopeId);
+      void loadEntitlements(session.user.id, {
+        activeBondId: activeBondScopeId,
+        activeEntityId: activeBond?.entity_id ?? null,
+        activeEntityType: activeBond?.entity_type ?? null,
+      });
+      if (activeBondScopeId) {
+        // Refresh is best-effort for offline-first startup. The local Cedar
+        // evaluator continues using only a verified last-known-good snapshot.
+        void refreshPermissionSnapshotOnServer().catch((error) => {
+          console.warn('[authorization] snapshot refresh deferred:', error);
+        });
+      }
     }
-  }, [session?.user?.id, loadPermissions]);
+  }, [session?.user?.id, activeBond, activeBondScopeId, loadDecisions, loadEntitlements]);
 
   useQRDeepLink((payload: unknown) => {
     router.push({ pathname: '/qr', params: { payload: JSON.stringify(payload) } });
@@ -413,18 +476,21 @@ function AppContent() {
               <ExternalLinkProvider>
                 <SafeAreaProvider>
                   <BootstrapSideEffects />
-                  <Stack screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="index" options={{ title: 'Welcome' }} />
-                    <Stack.Screen name="welcome" options={{ title: 'Welcome' }} />
-                    <Stack.Screen name="auth" options={{ title: 'Sign In' }} />
-                    <Stack.Screen name="onboarding" options={{ title: 'Getting Started' }} />
-                    <Stack.Screen name="invitation-welcome" options={{ presentation: 'modal' }} />
-                    <Stack.Screen name="qr" options={{ title: 'QR Scan' }} />
-                    <Stack.Screen name="thuthimal-claim" options={{ title: 'Thuthimal Badge' }} />
-                    <Stack.Screen name="public-form/[slug]" options={{ title: 'Form' }} />
-                  </Stack>
+                  <FeatureProvider>
+                    <Stack screenOptions={{ headerShown: false }}>
+                      <Stack.Screen name="index" options={{ title: 'Welcome' }} />
+                      <Stack.Screen name="welcome" options={{ title: 'Welcome' }} />
+                      <Stack.Screen name="auth" options={{ title: 'Sign In' }} />
+                      <Stack.Screen name="onboarding" options={{ title: 'Getting Started' }} />
+                      <Stack.Screen name="invitation-welcome" options={{ presentation: 'modal' }} />
+                      <Stack.Screen name="qr" options={{ title: 'QR Scan' }} />
+                      <Stack.Screen name="thuthimal-claim" options={{ title: 'Thuthimal Badge' }} />
+                      <Stack.Screen name="public-form/[slug]" options={{ title: 'Form' }} />
+                    </Stack>
+                  </FeatureProvider>
                   <SyncManager dispatchQueuedMutation={dispatchQueuedMutationToSovereignBus} />
                   <NetworkStatusBanner />
+                  <PDPAConsentModal isOpen={!hasDecidedConsent} onClose={() => {}} />
                   {Platform.OS === 'web' && <PWAInstallBanner />}
                   {toast && (
                     <SanctuaryToast

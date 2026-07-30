@@ -1,4 +1,4 @@
-import { communityAPI, identityAPI } from '@repo/core/api';
+import { communityAPI, identityAPI, onboardingAPI } from '@repo/core/api';
 import {
   RELIGIOUS_AFFILIATIONS,
   SRI_LANKAN_DISTRICTS,
@@ -135,7 +135,7 @@ export default function CreateSchoolModal({
         school = await create(payload);
 
         if (userId) {
-          await identityAPI.updateProfile(userId, { school_id: school.id });
+          await onboardingAPI.createFounderSchoolBond(userId, school.id);
         }
         if (user) {
           setUser({ ...user, school_id: school.id } as any);

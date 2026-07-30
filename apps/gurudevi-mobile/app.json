@@ -144,7 +144,9 @@
       "react-native-enriched-markdown",
       "react-native-nano-icons",
       "@sentry/react-native",
-      "expo-background-task"
+      "expo-background-task",
+      "expo-status-bar",
+      "@react-native-vector-icons/lucide"
     ],
     "owner": "neevsk",
     "runtimeVersion": {

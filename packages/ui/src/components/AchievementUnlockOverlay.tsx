@@ -1,4 +1,4 @@
-import { Trophy } from 'lucide-react-native';
+import { Trophy } from '@repo/ui/icons';
 import { useCallback, useEffect } from 'react';
 import { Dimensions } from 'react-native';
 import Animated, {
@@ -8,7 +8,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { Box, Center, Text, VStack } from '../gluestack';
+import { Box, Center, Text, VStack } from '@repo/ui/gluestack';
 
 const { width } = Dimensions.get('window');
 

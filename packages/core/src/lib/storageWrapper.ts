@@ -1,5 +1,5 @@
 import type { StateStorage } from 'zustand/middleware';
-import { storage } from './storage';
+import { storage } from '@repo/core/lib/storage';
 
 /**
  * A architecture-compliant storage wrapper for Zustand.

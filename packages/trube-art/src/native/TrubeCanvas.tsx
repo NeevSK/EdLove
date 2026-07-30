@@ -1,17 +1,17 @@
 import React from 'react';
 import type { LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native';
 import { StyleSheet, View } from 'react-native';
-import { createRenderPlan } from '../core/render-plan';
-import type { TrubeScoreName } from '../core/scores';
-import { resolveSurface } from '../core/surface';
+import { createRenderPlan } from '@repo/trube-art/core/render-plan';
+import type { TrubeScoreName } from '@repo/trube-art/core/scores';
+import { resolveSurface } from '@repo/trube-art/core/surface';
 import type {
   TrubeEnvironment,
   TrubeQuality,
   TrubeSurfaceName,
   TrubeSurfaceSpec,
-} from '../core/types';
-import { UnifiedRenderer } from './renderers/UnifiedRenderer';
-import { useTrubeEnvironment } from './TrubeProvider';
+} from '@repo/trube-art/core/types';
+import { UnifiedRenderer } from '@repo/trube-art/native/renderers/UnifiedRenderer';
+import { useTrubeEnvironment } from '@repo/trube-art/native/TrubeProvider';
 
 export interface TrubeCanvasProps {
   score?: TrubeScoreName;

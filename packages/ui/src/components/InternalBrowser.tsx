@@ -1,10 +1,10 @@
+import { ChevronLeft, ChevronRight, ExternalLink, RotateCcw, Share2, X } from '@repo/ui/icons';
 import * as WebBrowser from 'expo-web-browser';
-import { ChevronLeft, ChevronRight, ExternalLink, RotateCcw, Share2, X } from 'lucide-react-native';
 import type React from 'react';
 import { useCallback, useReducer, useRef } from 'react';
 import { Linking, Share, StyleSheet } from 'react-native';
 import { WebView, type WebViewNavigation } from 'react-native-webview';
-import { ActivityIndicator, Pressable, Text, useTheme, View } from '../primitives';
+import { ActivityIndicator, Pressable, Text, useTheme, View } from '@repo/ui/primitives';
 
 export interface InternalBrowserProps {
   url: string;

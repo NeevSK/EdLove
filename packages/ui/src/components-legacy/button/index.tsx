@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import {
   ScrollView as BaseScrollView,
@@ -53,3 +53,4 @@ Button.displayName = 'Button';
 ButtonText.displayName = 'ButtonText';
 
 export { Button, ButtonText };
+

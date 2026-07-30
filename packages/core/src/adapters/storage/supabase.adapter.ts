@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { IFileStoragePort } from '../../logic/ports/storage.port';
+import type { IFileStoragePort } from '@repo/core/logic/ports/storage.port';
 
 /**
  * SupabaseStorageAdapter

@@ -1,10 +1,11 @@
 import { appendAdminWorkspaceSurfaces } from '@repo/admin';
 import { useFeatureRegistry } from '@repo/core/hooks/useFeatureRegistry';
-import { FeatureGuard } from '@repo/core/logic';
+import {} from '@repo/core/logic';
 import type {
   ClassroomWorkspaceSurface,
   ClassroomWorkspaceSurfaceId,
 } from '@repo/core/types/Workspace';
+import { SanctuaryGuard } from '@repo/ui';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SanctuaryNudge } from '@repo/ui/components/SanctuaryNudge';
 import SandboxBanner from '@repo/ui/components/SandboxBanner';
@@ -13,10 +14,10 @@ import { Wind } from '@repo/ui/icons';
 import { Box } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
 import { useMemo } from 'react';
-import { StudentOnboardingView, TeacherOnboardingView } from '../components';
-import { CLASSROOM_REGISTRY } from '../constants/classroomRegistry';
-import StudentDashboard from '../screens/StudentDashboard';
-import TeacherDashboard from '../screens/TeacherDashboard';
+import { StudentOnboardingView, TeacherOnboardingView } from '@repo/classroom/components';
+import { CLASSROOM_REGISTRY } from '@repo/classroom/constants/classroomRegistry';
+import StudentDashboard from '@repo/classroom/screens/StudentDashboard';
+import TeacherDashboard from '@repo/classroom/screens/TeacherDashboard';
 
 type UseClassroomWorkspaceSurfacesArgs = {
   can: (action: string, subject: string, field?: string) => boolean;
@@ -80,12 +81,7 @@ export function useClassroomWorkspaceSurfaces({
   const router = useRouter();
   const citizenshipLevel = CITIZENSHIP_MAP[citizenship] ?? 0;
 
-  const classroomGated = useFeatureRegistry(CLASSROOM_REGISTRY, {
-    citizenship: citizenshipLevel,
-    isPro,
-    capabilities: userCapabilities,
-    can,
-  });
+  const classroomGated = useFeatureRegistry(CLASSROOM_REGISTRY);
   const renderNudge = () => {
     if (classroomData && !classroomData.profileCompleted && !isGuest) {
       return (
@@ -101,7 +97,11 @@ export function useClassroomWorkspaceSurfaces({
 
     return (
       <>
-        <FeatureGuard action="read" subject="TeacherPulse">
+        <SanctuaryGuard
+          action="read"
+          subject="TeacherPulse"
+          requirement={{ citizenshipRequired: 3 }}
+        >
           <SanctuaryNudge
             title={t('classroom.nudges.breathing.title') || 'Feeling Overwhelmed?'}
             description={
@@ -112,8 +112,12 @@ export function useClassroomWorkspaceSurfaces({
             onAction={() => setBreathingOpen(true)}
             icon={Wind}
           />
-        </FeatureGuard>
-        <FeatureGuard action="read" subject="PrincipalPulse">
+        </SanctuaryGuard>
+        <SanctuaryGuard
+          action="read"
+          subject="PrincipalPulse"
+          requirement={{ citizenshipRequired: 3 }}
+        >
           <SanctuaryNudge
             title={t('principal.nudges.breathing.title') || 'Leadership Clarity'}
             description={
@@ -124,8 +128,12 @@ export function useClassroomWorkspaceSurfaces({
             onAction={() => setBreathingOpen(true)}
             icon={Wind}
           />
-        </FeatureGuard>
-        <FeatureGuard action="read" subject="FounderPulse">
+        </SanctuaryGuard>
+        <SanctuaryGuard
+          action="read"
+          subject="FounderPulse"
+          requirement={{ citizenshipRequired: 3 }}
+        >
           <SanctuaryNudge
             title={t('founder.nudges.breathing.title') || 'Visionary Pulse'}
             description={
@@ -136,8 +144,12 @@ export function useClassroomWorkspaceSurfaces({
             onAction={() => setBreathingOpen(true)}
             icon={Wind}
           />
-        </FeatureGuard>
-        <FeatureGuard action="read" subject="StudentPulse">
+        </SanctuaryGuard>
+        <SanctuaryGuard
+          action="read"
+          subject="StudentPulse"
+          requirement={{ citizenshipRequired: 3 }}
+        >
           <SanctuaryNudge
             title={t('student.nudges.breathing.title') || 'Learning Fuel'}
             description={
@@ -148,7 +160,7 @@ export function useClassroomWorkspaceSurfaces({
             onAction={() => setBreathingOpen(true)}
             icon={Wind}
           />
-        </FeatureGuard>
+        </SanctuaryGuard>
       </>
     );
   };
@@ -175,7 +187,7 @@ export function useClassroomWorkspaceSurfaces({
     });
 
     // --- Teacher Dashboard ---
-    const teacherGate = classroomGated.teacher_dashboard;
+    const teacherGate = classroomGated.teacher;
     if (teacherGate?.visible) {
       const teacherContent =
         classroomData.realClassCount === 0 && !isDemoModeTriggered ? (
@@ -201,20 +213,20 @@ export function useClassroomWorkspaceSurfaces({
         );
 
       surfaces.push({
-        ...teacherGate.feature,
-        title: teacherGate.feature.label,
-        subtitle: teacherGate.feature.description,
+        ...CLASSROOM_REGISTRY.teacher!,
+        title: CLASSROOM_REGISTRY.teacher!.label,
+        subtitle: CLASSROOM_REGISTRY.teacher!.description,
         summary:
           surfaceInsights?.teacher?.summary ??
           'Assignments, lessons, attendance, grading, and teacher-owned pedagogical signals.',
         temporalLabel: surfaceInsights?.teacher?.temporalLabel ?? 'Daily Work',
         metadata: surfaceInsights?.teacher?.metadata ?? ['Academic', 'Write owner'],
         content: teacherContent,
-      } as ClassroomWorkspaceSurface);
+      } as any as ClassroomWorkspaceSurface);
     }
 
     // --- Student Dashboard ---
-    const studentGate = classroomGated.student_dashboard;
+    const studentGate = classroomGated.student;
     if (studentGate?.visible) {
       const studentContent =
         classroomData.realClassCount === 0 && !isDemoModeTriggered ? (
@@ -243,16 +255,16 @@ export function useClassroomWorkspaceSurfaces({
         );
 
       surfaces.push({
-        ...studentGate.feature,
-        title: studentGate.feature.label,
-        subtitle: studentGate.feature.description,
+        ...CLASSROOM_REGISTRY.student!,
+        title: CLASSROOM_REGISTRY.student!.label,
+        subtitle: CLASSROOM_REGISTRY.student!.description,
         summary:
           surfaceInsights?.student?.summary ??
           'Student-facing classroom flow across lessons, assignments, notes, and longitudinal story.',
         temporalLabel: surfaceInsights?.student?.temporalLabel ?? 'Journey',
         metadata: surfaceInsights?.student?.metadata ?? ['Academic', 'Student-owned'],
         content: studentContent,
-      } as ClassroomWorkspaceSurface);
+      } as any as ClassroomWorkspaceSurface);
     }
 
     return surfaces;
@@ -273,8 +285,8 @@ export function useClassroomWorkspaceSurfaces({
     surfaceInsights,
     isPro,
     userCapabilities,
-    classroomGated.student_dashboard,
-    classroomGated.teacher_dashboard,
+    classroomGated.student,
+    classroomGated.teacher,
     citizenship,
   ]);
 }

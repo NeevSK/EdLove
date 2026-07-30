@@ -1,8 +1,8 @@
 import { Box, Text, VStack } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
-import { useAdminWorkspaceSnapshot } from '../admin/adminRepository';
-import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
+import { useAdminWorkspaceSnapshot } from '@repo/admin/admin/adminRepository';
+import { AdminRoomPanel, AdminRoomShell } from '@repo/admin/screens/AdminRoomShell';
 
 export default function AdminJobControl() {
   const router = useRouter();

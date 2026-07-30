@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # ðŸ“Š MISSION 03: Grading System
 
 **Role**: You are a React Native(expo) expert specializing in "Data Visualization & Forms".

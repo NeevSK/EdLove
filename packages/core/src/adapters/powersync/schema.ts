@@ -1,3 +1,38 @@
+// ─── Pricing Manifest (Entitlement Source of Truth) ───────────────────────────
+export const pricingManifest = sqliteTable(
+  'pricing_manifest',
+  {
+    id: text('id').primaryKey(),
+    tier: text('tier').notNull(), // 'FREE' | 'PRO' | 'INSTITUTIONAL'
+    features: text('features').notNull(), // JSON array of entitlement keys
+    updatedAt: text('updated_at').notNull(),
+  },
+  (table) => [index('pricing_manifest_tier_idx').on(table.tier)],
+);
+
+export const userEntitlementGrants = sqliteTable(
+  'user_entitlement_grants',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    bondId: text('bond_id'),
+    entityId: text('entity_id'),
+    entityType: text('entity_type'),
+    scopeType: text('scope_type').notNull(),
+    tier: text('tier').notNull(),
+    modules: text('modules').notNull(),
+    source: text('source').notNull(),
+    status: text('status').notNull(),
+    startsAt: text('starts_at').notNull(),
+    expiresAt: text('expires_at'),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (table) => [
+    index('user_entitlement_grants_user_scope_idx').on(table.userId, table.scopeType),
+    index('user_entitlement_grants_user_bond_idx').on(table.userId, table.bondId),
+  ],
+);
+
 /**
  * PowerSync Schema — Client-Side Drizzle SQLite Table Definitions (May 2026)
  *
@@ -122,17 +157,27 @@ export const cedarPolicies = sqliteTable(
 export const permissionSnapshots = sqliteTable(
   'permission_snapshots',
   {
-    id: text('id').primaryKey(), // user-school compound id
     userId: text('user_id').notNull(),
-    schoolId: text('school_id').notNull(),
+    activeBondId: text('active_bond_id').notNull(),
+    activeEntityId: text('active_entity_id').notNull(),
+    activeEntityType: text('active_entity_type').notNull(),
+    schoolId: text('school_id'),
+    policyVersion: text('policy_version').notNull(),
     generatedAt: text('generated_at').notNull(),
     expiresAt: text('expires_at').notNull(),
     permissions: text('permissions').notNull(), // Serialized JSON: Record<Resource, Record<Action, boolean>>
     temporalHints: text('temporal_hints'), // Optional temporal lease details/hints (JSON string or null)
-    signature: text('signature').notNull(), // HMAC SHA-256 Server Cryptographic Signature
+    signature: text('signature').notNull(), // Ed25519 server signature
   },
   (table) => [index('permission_snapshots_user_idx').on(table.userId)],
 );
+
+// ─── Policy Version (Token Invalidation Key, ADR-006) ──────────────────────────
+export const policyVersion = sqliteTable('policy_version', {
+  id: text('id').primaryKey(),
+  hash: text('hash').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
 
 // ─── Form Templates ───────────────────────────────────────────────────────────
 export const formTemplates = sqliteTable(
@@ -177,8 +222,11 @@ export const AppSchema = {
   schools,
   cedarPolicies,
   permissionSnapshots,
+  policyVersion,
   formTemplates,
   formResponses,
+  pricingManifest,
+  userEntitlementGrants,
 };
 
 // ─── Relational TypeScript Types ──────────────────────────────────────────────
@@ -208,3 +256,12 @@ export type InsertDrizzleFormResponse = typeof formResponses.$inferInsert;
 
 export type PermissionSnapshot = typeof permissionSnapshots.$inferSelect;
 export type InsertPermissionSnapshot = typeof permissionSnapshots.$inferInsert;
+
+export type PricingManifest = typeof pricingManifest.$inferSelect;
+export type InsertPricingManifest = typeof pricingManifest.$inferInsert;
+
+export type UserEntitlementGrant = typeof userEntitlementGrants.$inferSelect;
+export type InsertUserEntitlementGrant = typeof userEntitlementGrants.$inferInsert;
+
+export type PolicyVersion = typeof policyVersion.$inferSelect;
+export type InsertPolicyVersion = typeof policyVersion.$inferInsert;

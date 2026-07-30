@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { supabaseAuthStorage } from '../lib/authStorage';
+import { supabaseAuthStorage } from '@repo/core/lib/authStorage';
 
 // Configuration from environment variables
 let supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;

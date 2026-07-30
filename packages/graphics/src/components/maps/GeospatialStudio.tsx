@@ -1,7 +1,7 @@
 import type React from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
-import { useGeoData } from '../../hooks/useGeoData';
-import { GeographicPerspective } from './GeographicPerspective';
+import { useGeoData } from '@repo/graphics/hooks/useGeoData';
+import { GeographicPerspective } from '@repo/graphics/components/maps/GeographicPerspective';
 
 interface GeospatialStudioProps {
   datasetId: string;

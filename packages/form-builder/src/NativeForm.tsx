@@ -3,6 +3,7 @@ import type {
   FormState,
   MultiStepFormManager,
 } from '@intuitui-labs/form-builder-engine/core';
+import { Info } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -20,8 +21,6 @@ import {
   TextareaInput,
   VStack,
 } from '@repo/ui/primitives';
-
-import { Info } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 
 interface NativeFormProps<T extends Record<string, any>> {

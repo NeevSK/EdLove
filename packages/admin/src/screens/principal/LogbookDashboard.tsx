@@ -22,7 +22,7 @@ import { formatDistanceToNow } from 'date-fns';
 
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import { observationsAPI, type PrincipalObservation } from '../../observations';
+import { observationsAPI, type PrincipalObservation } from '@repo/admin/observations';
 
 interface LogbookDashboardProps {
   userId: string;

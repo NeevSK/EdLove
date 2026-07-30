@@ -36,7 +36,7 @@ model User {
   profile_completed Boolean? @default(false)
   is_anonymous Boolean @default(false)
   capacity String?
-  citizenship String @default("WANDERER") // WANDERER, SECOND_CLASS, FIRST_CLASS
+  citizenship String @default("THIRD_CLASS") // THIRD_CLASS, SECOND_CLASS, FIRST_CLASS; WANDERER is a legacy alias
   pricing_tier String @default("FREE") // FREE, PRO, INSTITUTIONAL
   is_thuthimal Boolean? @default(false)
   thuthimal_gifter String?
@@ -97,10 +97,10 @@ model User {
   longitudinal_events StudentLongitudinalEvent[] @relation("StudentEvents")
   audit_logs SentinelAuditLog[] @relation("AuditLogs")
   bonds      Bond[]
+  entitlement_grants UserEntitlementGrant[]
 
-  // SOVEREIGNTY: Wanderers can manage their local-only profile
-  @@allow('all', auth() == null && is_anonymous == true)
-  
+  // Anonymous Supabase users are valid onboarding principals. They use the
+  // same authenticated subject policy surface; no guest-only policy exists.
   // Only the user themselves or a platform admin can update profile details in the cloud
   @@allow('all', auth() != null && auth().id == id)
   @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
@@ -133,6 +133,37 @@ model Bond {
   @@allow('create', auth() != null && user_id == auth().id)
   
   @@map("bonds")
+}
+
+/**
+ * Commercial or institutional access granted to one user in one scope.
+ * `users.pricing_tier` remains a compatibility projection for the individual
+ * plan only; it is not the authority for school/institution access.
+ */
+model UserEntitlementGrant {
+  id          String   @id @default(uuid())
+  user_id     String
+  bond_id     String?
+  entity_id   String?
+  entity_type String?
+  scope_type  String   // INDIVIDUAL, BOND, ENTITY, ADD_ON
+  tier        String   // FREE, PRO, INSTITUTIONAL
+  modules     String[]
+  source      String
+  status      String   @default("ACTIVE") // ACTIVE, SUSPENDED, REVOKED
+  starts_at   DateTime @default(now())
+  expires_at  DateTime?
+  metadata    Json?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  user        User     @relation(fields: [user_id], references: [id])
+
+  @@allow('read', auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('all', auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@index([user_id, scope_type, status])
+  @@index([user_id, bond_id, status])
+  @@map("user_entitlement_grants")
 }
 
 model UserSocialLink {

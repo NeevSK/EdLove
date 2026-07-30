@@ -6,4 +6,5 @@ export type {
   FormResponse,
   FormSchema,
   FormSettings,
-} from '../schema/FormSchema';
+  ValidatorRule,
+} from '@intuitui-labs/form-builder-engine/schema/FormSchema';

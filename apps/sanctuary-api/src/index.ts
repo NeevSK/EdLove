@@ -1,4 +1,5 @@
 import './load-env';
+import './telemetry';
 import { app } from './core/app';
 
 console.log('DATABASE_URL loaded:', process.env.DATABASE_URL ? 'YES' : 'NO');

@@ -37,7 +37,7 @@ import {
 import { useToast } from '@repo/ui/providers';
 import { Theme } from '@repo/ui/theme';
 import * as Clipboard from 'expo-clipboard';
-import { Copy, QrCode } from 'lucide-react-native';
+import { Copy, QrCode } from '@repo/ui/icons';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

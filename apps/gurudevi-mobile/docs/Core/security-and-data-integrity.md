@@ -37,24 +37,29 @@ To protect the data privacy of students and teachers, we reject automatic vertic
 Offline-first client databases (SQLite/PowerSync) on native devices are vulnerable to local storage tampering (e.g., on rooted Android/iOS devices). We mitigate this with local cryptographic checks:
 
 ### A. Snapshot Signature Verification
-Before applying permissions synced from the server, we verify their authenticity using **SubtleCrypto HMAC SHA-256** signatures via the `isomorphic-webcrypto` library.
+Before applying permissions synced from the server, we verify their authenticity using **SubtleCrypto Ed25519** signatures via the `isomorphic-webcrypto` library. The private signing key remains server-only; the client receives only the public key.
 * **Payload Reconstruction**: The client reconstructs the JSON payload (generatedAt, expiresAt, userId, schoolId, permissions payload) matching the exact key-order signed by the server.
 * **Signature Verification**:
   ```typescript
   const messageData = enc.encode(JSON.stringify(payload));
   const importedKey = await crypto.subtle.importKey(
     'raw',
-    keyData,
-    { name: 'HMAC', hash: { name: 'SHA-256' } },
+    publicKeyBytes,
+    { name: 'Ed25519' },
     false,
-    ['sign', 'verify']
+    ['verify']
   );
-  const generatedSigBuffer = await crypto.subtle.sign('HMAC', importedKey, messageData);
+  const valid = await crypto.subtle.verify(
+    { name: 'Ed25519' },
+    importedKey,
+    signatureBytes,
+    messageData,
+  );
   ```
   If the generated hex signature does not match `snapshot.signature`, the client denies session bootstrap.
 
 ### B. Policy Set Signature Verification
-* **`verifyLocalPolicySignature(policySet, signatureHex)`**: Validates the signature of the compiled Cedar policies stored in the SQLite `cedar_policies` table. If local database tampering modifies a policy entry to grant permissions, the signature check fails and disables evaluation.
+* **`verifyLocalPolicySignature(policySet, signature)`**: Validates the Ed25519 signature of the compiled Cedar policies stored in the SQLite `cedar_policies` table. If local database tampering modifies a policy entry to grant permissions, the signature check fails and disables evaluation.
 
 ---
 

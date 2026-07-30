@@ -25,7 +25,7 @@ import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useResources } from '../hooks/useResources';
+import { useResources } from '@repo/classroom/hooks/useResources';
 
 interface ResourcesViewProps {
   classroomId: string;

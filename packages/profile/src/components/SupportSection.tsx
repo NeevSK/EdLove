@@ -1,14 +1,6 @@
+import { ChevronRight, Info, LifeBuoy, MessageCircle, Star, TriangleAlert } from '@repo/ui/icons';
 import { Box, Heading, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { openExternalURL } from '@repo/ui/utils';
-
-import {
-  ChevronRight,
-  Info,
-  LifeBuoy,
-  MessageCircle,
-  Star,
-  TriangleAlert,
-} from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 /**

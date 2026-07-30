@@ -1,7 +1,7 @@
 import type React from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { EXTERNAL_URLS } from '../utils';
+import { EXTERNAL_URLS } from '@repo/ui/utils';
 
 export const GatewayFooter: React.FC = () => {
   const { t } = useTranslation();

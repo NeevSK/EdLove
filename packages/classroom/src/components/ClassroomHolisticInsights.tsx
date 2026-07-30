@@ -1,5 +1,5 @@
 import { api, type StudentObservation } from '@repo/core/api';
-import type { StudentGrade } from '@repo/core/logic';
+import type { StudentGrade } from '@repo/core/types';
 import type { AttendanceRecord } from '@repo/core/types';
 
 import { Card } from '@repo/ui/components/SanctuaryCard';

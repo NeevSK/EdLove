@@ -10,10 +10,10 @@ import { supabase } from '@repo/core/api';
 import { useStore, useTemporalStore } from '@repo/core/store';
 import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
-import { communityAPI } from '../api/community';
-import HeaderMoreMenu from '../components/HeaderMoreMenu';
-import type { ChatMessage } from '../types';
-import BaseChatScreen, { type SubscriptionConfig } from './BaseChatScreen';
+import { communityAPI } from '@repo/community/api/community';
+import HeaderMoreMenu from '@repo/community/components/HeaderMoreMenu';
+import type { ChatMessage } from '@repo/community/types';
+import BaseChatScreen, { type SubscriptionConfig } from '@repo/community/screens/BaseChatScreen';
 
 export default function DirectMessageScreen() {
   const params = useLocalSearchParams<{ conversationId?: string; userName?: string }>();

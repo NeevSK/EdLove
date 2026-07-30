@@ -1,7 +1,7 @@
-import { createSupabaseEducationalRepository } from '../../adapters/supabase/educationalRepository';
-import { createEducationalServices } from '../../logic/domains/educational/services';
-import { useStore } from '../../store/useStore';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../supabase';
+import { createSupabaseEducationalRepository } from '@repo/core/adapters/supabase/educationalRepository';
+import { createEducationalServices } from '@repo/core/logic/domains/educational/services';
+import { useStore } from '@repo/core/store/useStore';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
 
 const educationalRepository = createSupabaseEducationalRepository(
   __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__,

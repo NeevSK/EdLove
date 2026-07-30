@@ -18,7 +18,7 @@ import {
   Sparkles,
   Sun,
   Trash2,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

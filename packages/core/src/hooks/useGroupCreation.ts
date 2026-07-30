@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { storage } from '../lib/storage';
+import { storage } from '@repo/core/lib/storage';
 
 const PERSISTENCE_KEY = 'GURUDEVI_GROUP_CREATION_STATE';
 

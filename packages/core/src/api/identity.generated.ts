@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod';
-import { IdentityStateSchema } from '../logic/schemas/identity.schema';
+import { IdentityStateSchema } from '@repo/core/logic/schemas/identity.schema';
 
 export const CapacitySchema = z.enum(['admin', 'founder', 'developer', 'teacher', 'student', 'principal', 'assistantPrincipal', 'gradeHead', 'sectionHead', 'parent', 'guardian', 'librarian', 'nurse', 'member']);
 
@@ -14,7 +14,7 @@ export const BondSchema = z.object({
   id: z.uuid(),
   user_id: z.uuid(),
   entity_id: z.string(),
-  entity_type: z.enum(['PLATFORM', 'SCHOOL', 'CLASSROOM', 'COMMUNITY', 'PERSONAL', 'PERSONAL_CLASSROOM']),
+  entity_type: z.enum(['PLATFORM', 'SCHOOL', 'CLASSROOM', 'COMMUNITY', 'GROUP', 'PERSONAL', 'PERSONAL_CLASSROOM']),
   capacity: CapacitySchema,
   status: z.enum(['active', 'archived', 'pending']),
   metadata: z.record(z.string(), z.any()).optional(),

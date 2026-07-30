@@ -28,7 +28,7 @@ import {
   Key,
   Search,
   Users,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
 import type React from 'react';
 import { useCallback, useState } from 'react';
 

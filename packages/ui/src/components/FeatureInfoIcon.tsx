@@ -1,7 +1,7 @@
-import { Info } from 'lucide-react-native';
+import { Info } from '@repo/ui/icons';
 import { useState } from 'react';
-import { Pressable } from '../primitives';
-import FeatureDiscoveryModal from './FeatureDiscoveryModal';
+import { Pressable } from '@repo/ui/primitives';
+import FeatureDiscoveryModal from '@repo/ui/components/FeatureDiscoveryModal';
 
 export interface FeatureInfoIconProps {
   title: string;

@@ -4,6 +4,7 @@ import { handleAPIError } from '@repo/core/logic';
 import type { School } from '@repo/core/types';
 
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { ChevronDown, LayoutGrid, School as SchoolIcon, Users } from '@repo/ui/icons';
 import {
   Actionsheet,
   ActionsheetBackdrop,
@@ -31,10 +32,9 @@ import {
 } from '@repo/ui/primitives';
 import { useToast } from '@repo/ui/providers';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-import { ChevronDown, LayoutGrid, School as SchoolIcon, Users } from 'lucide-react-native';
 import React, { useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { createFounderClassroom, createFounderSchool } from '../../bridge/founderWorkspace';
+import { createFounderClassroom, createFounderSchool } from '@repo/admin/bridge/founderWorkspace';
 
 interface GlobalCreateModalProps {
   isOpen: boolean;

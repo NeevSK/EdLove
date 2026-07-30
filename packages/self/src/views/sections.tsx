@@ -5,7 +5,6 @@
  */
 
 import { usePermissions } from '@repo/core/logic';
-import { Box, HStack, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
 import {
   BookOpen,
   Brain,
@@ -16,7 +15,8 @@ import {
   Target,
   User,
   Zap,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
+import { Box, HStack, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
 import type React from 'react';
 
 type JournalEntry = {

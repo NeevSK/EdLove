@@ -10,9 +10,8 @@ import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Clock, FileText, Lock, Shield, ShieldCheck } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
-
-import { Clock, FileText, Lock, Shield, ShieldCheck } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 

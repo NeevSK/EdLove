@@ -56,12 +56,44 @@ export class DbBillingAdapter implements BillingPort {
 
     // 2. Fetch User Pricing Tier
     let pricingTier = 'FREE';
+    let hasScopedAiGrant = false;
     if (this.db) {
       try {
         const userRecord = await this.db.user.findUnique({
           where: { id: userId },
         });
         pricingTier = userRecord?.pricing_tier ?? 'FREE';
+        if (options?.schoolId) {
+          const schoolBonds = await this.db.bond.findMany({
+            where: { user_id: userId, entity_id: options.schoolId, entity_type: 'SCHOOL' },
+            select: { id: true },
+          });
+          const grants = await this.db.userEntitlementGrant.findMany({
+            where: {
+              user_id: userId,
+              status: 'ACTIVE',
+              OR: [
+                { entity_id: options.schoolId, scope_type: 'ENTITY' },
+                {
+                  bond_id: { in: schoolBonds.map((bond: { id: string }) => bond.id) },
+                  scope_type: 'BOND',
+                },
+              ],
+            },
+            select: { modules: true, expires_at: true, starts_at: true },
+          });
+          hasScopedAiGrant = grants.some(
+            (grant: { modules: unknown[]; starts_at: Date; expires_at: Date | null }) => {
+              const now = Date.now();
+              return (
+                grant.starts_at.getTime() <= now &&
+                (!grant.expires_at || grant.expires_at.getTime() > now) &&
+                Array.isArray(grant.modules) &&
+                grant.modules.includes('ai_chat')
+              );
+            },
+          );
+        }
       } catch (err) {
         console.warn('[DbBillingAdapter] Failed to fetch user tier:', err);
       }
@@ -89,7 +121,7 @@ export class DbBillingAdapter implements BillingPort {
 
     // 4. Resolve Platform keys
     const preferred = options?.preferredProvider || 'openai';
-    const isPremium = pricingTier === 'PRO' || pricingTier === 'INSTITUTIONAL';
+    const isPremium = pricingTier === 'PRO' || pricingTier === 'INSTITUTIONAL' || hasScopedAiGrant;
 
     if (isPremium) {
       if (preferred === 'anthropic' && process.env.ANTHROPIC_API_KEY) {

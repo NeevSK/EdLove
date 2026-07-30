@@ -1,4 +1,4 @@
-import type { PaymentIntent, PaymentProvider, PaymentStatus } from '../types';
+import type { PaymentIntent, PaymentProvider, PaymentStatus } from '@repo/payments/types';
 
 export class PayHereProvider implements PaymentProvider {
   id = 'payhere';

@@ -1,8 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
-import type { Material as LessonMaterial } from '../../../logic/schemas/material.schema';
-import { MaterialSchema } from '../../../logic/schemas/material.schema';
-import { APIError } from '../../../types/API';
+import type { Material as LessonMaterial } from '@repo/core/logic/schemas/material.schema';
+import { MaterialSchema } from '@repo/core/logic/schemas/material.schema';
+import { APIError } from '@repo/core/types/API';
 
 export const createMaterialRepository = (supabase: SupabaseClient) => ({
   async getMaterials(classroomId: string) {

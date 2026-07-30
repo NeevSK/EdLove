@@ -6,8 +6,8 @@ import type {
 } from '@intuitui-labs/form-builder-engine/ports';
 import type { FormResponse, FormSchema } from '@intuitui-labs/form-builder-engine/schema';
 import { eq } from 'drizzle-orm';
-import { getDrizzleDB } from './database';
-import { formResponses, formTemplates } from './schema';
+import { getDrizzleDB } from '@repo/core/adapters/powersync/database';
+import { formResponses, formTemplates } from '@repo/core/adapters/powersync/schema';
 
 /**
  * PowerSyncFormsAdapter

@@ -1,3 +1,16 @@
+---
+title: "Legacy Supabase Feature Flag Rollout"
+status: "superseded"
+created: 2026-04-22
+updated: 2026-07-26
+author: "Naveen"
+tags: [feature-flags, supabase, legacy, superseded]
+superseded_by: "../architecture/feature-lifecycle-management.md"
+---
+
+> **Superseded** by GrowthBook rollout engine and the feature lifecycle-management SSOT.
+> Kept for historical reference.
+
 # Guidance: Feature Flag Rollout (Remote Config)
 
 This document outlines the systematic move from a static `feature-engine.ts` to a dynamic, Supabase-backed remote configuration system.

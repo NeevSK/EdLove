@@ -1,6 +1,6 @@
-import type { Comment, PollStatus, Post } from '../../types';
-import type { ICommunityRepository, PostFilters } from '../domains/community/ports';
-import type { GrowthManager } from './GrowthManager';
+import type { Comment, PollStatus, Post } from '@repo/core/types';
+import type { ICommunityRepository, PostFilters } from '@repo/core/logic/domains/community/ports';
+import type { GrowthManager } from '@repo/core/logic/managers/GrowthManager';
 
 /**
  * CommunityManager

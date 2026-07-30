@@ -17,9 +17,17 @@ export const POAMetadataSchema = z.object({
       'resolve',
       'publish',
       'override',
+      'use_ai',
     ]),
     subject: z.string(),
   }),
+  entitlement: z
+    .object({
+      tierAtLeast: z.enum(['FREE', 'PRO', 'INSTITUTIONAL']).optional(),
+      modulesAllOf: z.array(z.string().min(1)).optional(),
+      scope: z.enum(['individual', 'active_bond', 'active_entity', 'add_on']).optional(),
+    })
+    .optional(),
 });
 
 export type POAMetadata = z.infer<typeof POAMetadataSchema>;
@@ -91,6 +99,7 @@ export function adaptToHono(route: SovereignRoute) {
 }
 
 let tokenResolver: (() => Promise<string | null>) | null = null;
+let activeBondIdResolver: (() => Promise<string | null>) | null = null;
 
 /**
  * registerTokenResolver
@@ -99,6 +108,14 @@ let tokenResolver: (() => Promise<string | null>) | null = null;
  */
 export function registerTokenResolver(resolver: () => Promise<string | null>) {
   tokenResolver = resolver;
+}
+
+/**
+ * Registers the current active-bond resolver without coupling the shared API
+ * client to Zustand, Supabase, or React Native storage.
+ */
+export function registerActiveBondIdResolver(resolver: () => Promise<string | null>) {
+  activeBondIdResolver = resolver;
 }
 
 /**
@@ -122,6 +139,15 @@ export function createSovereignClient<T extends import('hono').Hono<any, any, an
       const headers = new Headers(requestInit?.headers);
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
+      }
+
+      if (activeBondIdResolver) {
+        try {
+          const activeBondId = await activeBondIdResolver();
+          if (activeBondId) headers.set('X-Active-Bond-Id', activeBondId);
+        } catch (err) {
+          console.warn('[Sovereign Client] Failed to retrieve active bond context:', err);
+        }
       }
 
       return fetch(input, {

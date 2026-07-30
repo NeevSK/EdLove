@@ -15,10 +15,10 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Step Components
-import StepBasicInfo from '../components/school/StepBasicInfo';
-import StepDemographics from '../components/school/StepDemographics';
-import StepHierarchy from '../components/school/StepHierarchy';
-import StepLocation from '../components/school/StepLocation';
+import StepBasicInfo from '@repo/admin/components/school/StepBasicInfo';
+import StepDemographics from '@repo/admin/components/school/StepDemographics';
+import StepHierarchy from '@repo/admin/components/school/StepHierarchy';
+import StepLocation from '@repo/admin/components/school/StepLocation';
 
 const TOTAL_STEPS = 4;
 const STEP_LABELS = [

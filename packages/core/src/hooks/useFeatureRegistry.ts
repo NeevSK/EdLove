@@ -1,62 +1,120 @@
 import { useMemo } from 'react';
-import type { DomainFeature } from '../types/Workspace';
-
-/**
- * useFeatureRegistry - The "Bouncer" for UI visibility and gating.
- *
- * This hook takes a domain-specific registry and filters/enhances it based on
- * the current user's citizenship and capabilities.
- */
+import { Platform } from 'react-native';
+import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
+import {
+  type FeaturePresentation,
+  resolveFeaturePresentation,
+} from '@repo/core/logic/permissions/featurePresentation';
+import {
+  CITIZENSHIP,
+  type SanctuaryFeatureResult,
+  sanctuaryFeature,
+} from '@repo/core/logic/permissions/sanctuaryFeature';
+import { resolveFeatureFlagValue } from '@repo/core/logic/registry/featureLifecycleManifest';
+import { useAuthStore } from '@repo/core/store/useAuthStore';
+import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
+import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
+import { useFeatureStore } from '@repo/core/store/useFeatureStore';
+import type { DomainFeature } from '@repo/core/types/Workspace';
 
 export interface FeatureGatingResult {
   visible: boolean;
   locked: boolean;
-  reason?: 'citizenship' | 'capability' | 'pro';
-  feature: DomainFeature;
+  presentation: FeaturePresentation;
+  reason?: 'citizenship' | 'entitlement' | 'authz' | 'feature' | 'platform' | 'not_initialized';
 }
 
 export function useFeatureRegistry(
   registry: Record<string, DomainFeature>,
-  userContext: {
-    citizenship: number; // 0, 1, 2
-    isPro: boolean;
-    capabilities: string[]; // CASL/ReBAC keys
-    can?: (action: string, subject: string) => boolean; // Optional dynamic Cedar alignment
-  },
-) {
-  const gatedFeatures = useMemo(() => {
-    return Object.entries(registry).reduce(
-      (acc, [key, feature]) => {
-        const hasCitizenship = userContext.citizenship >= feature.citizenshipRequired;
+): Record<string, FeatureGatingResult> {
+  const user = useAuthStore((s) => s.user);
+  const activeBond = useAuthStore((s) => s.activeBond);
+  const citizenshipStr = user?.citizenship ?? 'THIRD_CLASS';
+  const principalId = user?.id ?? null;
+  const cedarSnapshotLoaded = useCedarDecisionStore((s) => s.snapshotLoaded);
+  const getDecision = useCedarDecisionStore((s) => s.getDecision);
+  const { activeEntitlements, grants, pricingTier, manifestLoaded, readiness } =
+    useEntitlementStore();
+  const flags = useFeatureStore((s) => s.flags);
 
-        // Evaluate dynamic capability via Cedar/CASL context if provided, fallback to capabilities array
-        const hasCapability = userContext.can
-          ? userContext.can('read', feature.capabilityKey)
-          : userContext.capabilities.includes(feature.capabilityKey);
+  return useMemo(() => {
+    const citizenship =
+      citizenshipStr === 'WANDERER' || citizenshipStr === 'THIRD_CLASS'
+        ? CITIZENSHIP.THIRD_CLASS
+        : citizenshipStr === 'SECOND_CLASS'
+          ? CITIZENSHIP.SECOND_CLASS
+          : CITIZENSHIP.FIRST_CLASS;
 
-        const isProLocked = Boolean(feature.isPro) && !userContext.isPro;
+    const bondScope = resolveBondScope(activeBond);
 
-        // A feature is "Visible but Locked" if it's pro or requires citizenship elevation.
-        // This encourages the "Upgrade" path without hiding the feature.
-        const visible = true; // Most features are visible to show potential
-        const locked = !hasCitizenship || !hasCapability || isProLocked;
+    return Object.fromEntries(
+      Object.entries(registry).map(([key, feature]) => {
+        const action = feature.capabilityRequirement.action;
+        const subject = feature.capabilityRequirement.subject;
 
-        let reason: FeatureGatingResult['reason'];
-        if (!hasCitizenship) reason = 'citizenship';
-        else if (isProLocked) reason = 'pro';
-        else if (!hasCapability) reason = 'capability';
+        const cedarDecision = principalId ? getDecision(subject, action) : 'no_decision';
 
-        acc[key] = {
-          visible,
-          locked,
-          reason,
-          feature,
+        const flagKey = feature.flagKey ?? `${subject}.${action}`;
+        const flagActive = resolveFeatureFlagValue(flags, flagKey);
+        const flagType = feature.lifecycle.flagClass ?? 'operational';
+
+        const result = sanctuaryFeature(
+          {
+            userId: principalId,
+            activeBondId: activeBond?.id ?? null,
+            activeEntityId: bondScope.activeEntityId,
+            activeEntityType: bondScope.activeEntityType,
+            schoolId: bondScope.schoolId,
+            primaryCapacity: activeBond?.capacity ?? null,
+            cedarSnapshotLoaded,
+            entitlementManifestLoaded: manifestLoaded,
+            entitlementReadiness: readiness,
+            citizenship,
+            entitlement: {
+              pricingTier: pricingTier as 'FREE' | 'PRO' | 'INSTITUTIONAL',
+              activeEntitlements,
+              grants,
+              expirationDate: null,
+            },
+            cedarDecision,
+            flagActive,
+            flagKey,
+            flagType,
+          },
+          {
+            citizenshipRequired: feature.citizenshipRequired ?? CITIZENSHIP.FIRST_CLASS,
+            platformSupported: Platform.OS === 'web' ? feature.webSupport : feature.mobileSupport,
+            entitlementModule: feature.entitlementModule,
+            entitlementTier: feature.entitlementTier,
+            entitlementScope: feature.entitlementScope,
+            flagKey: feature.flagKey,
+            lifecycleState: feature.state,
+          },
+        );
+
+        const gatingResult: FeatureGatingResult = {
+          visible: feature.state !== 'development' && feature.state !== 'deprecated',
+          locked: !result.permitted,
+          presentation: resolveFeaturePresentation(result, feature.state),
+          reason: result.permitted ? undefined : (result as any).reason,
         };
-        return acc;
-      },
-      {} as Record<string, FeatureGatingResult>,
-    );
-  }, [registry, userContext]);
 
-  return gatedFeatures;
+        return [key, gatingResult];
+      }),
+    );
+  }, [
+    registry,
+    user,
+    citizenshipStr,
+    principalId,
+    activeBond,
+    cedarSnapshotLoaded,
+    getDecision,
+    activeEntitlements,
+    grants,
+    pricingTier,
+    manifestLoaded,
+    readiness,
+    flags,
+  ]);
 }

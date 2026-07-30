@@ -1,1 +1,1 @@
-export * from './staff';
+export * from '@repo/admin/api/staff';

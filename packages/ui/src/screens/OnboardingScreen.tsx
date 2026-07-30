@@ -5,8 +5,8 @@ import type { Capacity } from '@repo/core/types';
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ProgressIndicator } from '../components/ProgressIndicator';
-import ScreenWrapper from '../components/ScreenWrapper';
+import { ProgressIndicator } from '@repo/ui/components/ProgressIndicator';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import {
   Box,
   Button,
@@ -19,17 +19,19 @@ import {
   Pressable,
   Text,
   VStack,
-} from '../gluestack';
-import { hapticError, hapticLight, hapticSuccess } from '../utils/haptics';
+} from '@repo/ui/gluestack';
+import {} from '@repo/ui/screens/devOnboardingFastTrack';
+import {
+  getDevOnboardingTemplateLabel,
+  resolveOnboardingDevIntent,
+} from '@repo/ui/screens/onboardingDevFlow';
 import {
   canProceedOnboardingStep,
   getOnboardingPhase,
   getOnboardingStepLabel,
-} from './onboardingFlow';
-import {
-} from './devOnboardingFastTrack';
-import { getDevOnboardingTemplateLabel, resolveOnboardingDevIntent } from './onboardingDevFlow';
-import { safeBack } from '../utils/navigation';
+} from '@repo/ui/screens/onboardingFlow';
+import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import { safeBack } from '@repo/ui/utils/navigation';
 
 // ──────────────────────────────────────────────────────────
 // CONSTANTS
@@ -873,7 +875,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
     hapticLight();
 
     // 🛡️ OFFLINE CHECK
-    if (!isOnline) {
+    if (!isOnline && !isAnonymous) {
       hapticError();
       dispatch({
         type: 'SET_ERROR',
@@ -896,10 +898,10 @@ const OnboardingScreen = memo(function OnboardingScreen({
           input: name,
         });
         if (devIntent.kind === 'menu') {
-            dispatch({ type: 'SET_PROCESSING', isProcessing: false });
-            dispatch({ type: 'SHOW_DEV_SANDBOX', visible: true });
-            return;
-          }
+          dispatch({ type: 'SET_PROCESSING', isProcessing: false });
+          dispatch({ type: 'SHOW_DEV_SANDBOX', visible: true });
+          return;
+        }
         if (devIntent.kind === 'template') {
           const template = devIntent.intent.template;
 
@@ -1083,19 +1085,22 @@ const OnboardingScreen = memo(function OnboardingScreen({
                   isAnonymous={isAnonymous}
                 />
               )}
-              {(currentPhase === 'mandatory' || currentPhase === 'optional' || currentPhase === 'complete') && currentTourScreen && (
-                <TourStep
-                  t={t}
-                  index={currentStep}
-                  screen={currentTourScreen}
-                  onBack={handleBack}
-                  onNext={() => {
-                    void handleNext();
-                  }}
-                  onSkip={handleSkipTour}
-                  isLoading={isProcessing}
-                />
-              )}
+              {(currentPhase === 'mandatory' ||
+                currentPhase === 'optional' ||
+                currentPhase === 'complete') &&
+                currentTourScreen && (
+                  <TourStep
+                    t={t}
+                    index={currentStep}
+                    screen={currentTourScreen}
+                    onBack={handleBack}
+                    onNext={() => {
+                      void handleNext();
+                    }}
+                    onSkip={handleSkipTour}
+                    isLoading={isProcessing}
+                  />
+                )}
             </>
           )}
         </VStack>

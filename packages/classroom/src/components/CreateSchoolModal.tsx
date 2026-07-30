@@ -1,4 +1,4 @@
-import { api, communityAPI, identityAPI } from '@repo/core/api';
+import { api, communityAPI, identityAPI, onboardingAPI } from '@repo/core/api';
 
 import { CircleCheck, MessageSquare, School } from '@repo/ui/icons';
 import {
@@ -105,6 +105,7 @@ export default function CreateSchoolModal({
           type,
           created_by: userId,
         });
+        await onboardingAPI.createFounderSchoolBond(userId, updatedSchool.id);
 
         let communityGroupId: string | undefined;
 

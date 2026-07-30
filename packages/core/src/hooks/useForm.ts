@@ -19,7 +19,7 @@ export function useForm<T extends Record<string, any>>(manager: FormManager<T>):
     // Force sync when manager dependency changes
     setState(manager.getState());
 
-    const unsubscribe = manager.subscribe((newState) => {
+    const unsubscribe = manager.subscribe((newState: FormState<T>) => {
       // Use functional update to ensure we always have the latest state reference
       setState(() => ({ ...newState }));
     });

@@ -3,9 +3,9 @@ import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 
 import type React from 'react';
 import { useEffect, useState } from 'react';
-import { HierarchyBuilder, InviteManager } from '../components';
-import type { PrincipalWorkspaceView } from '../principal/workspace';
-import { PrincipalWorkspaceContainer } from './PrincipalWorkspaceContainer';
+import { HierarchyBuilder, InviteManager } from '@repo/admin/components';
+import type { PrincipalWorkspaceView } from '@repo/admin/principal/workspace';
+import { PrincipalWorkspaceContainer } from '@repo/admin/screens/PrincipalWorkspaceContainer';
 
 export interface PrincipalNativeWorkspaceRenderCtx {
   activeView: PrincipalWorkspaceView;

@@ -4,8 +4,8 @@ import type {
   DeviceSecurityEvent,
   DeviceSecuritySession,
   DeviceTrustSummary,
-} from '../api/deviceTrust';
-import { deviceSecurity } from '../logic/managers/factory';
+} from '@repo/core/api/deviceTrust';
+import { deviceSecurity } from '@repo/core/logic/managers/factory';
 
 interface DeviceSecurityState {
   devices: DeviceTrustSummary[];

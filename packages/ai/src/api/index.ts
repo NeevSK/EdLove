@@ -1,1 +1,1 @@
-export * from './agents';
+export * from '@repo/ai/api/agents';

@@ -24,9 +24,9 @@ import type {
   ShareOptions,
   ShareProvider,
   UIProvider,
-} from '../types/runtime';
-import { BackgroundTaskResult, BackgroundTaskStatus } from '../types/runtime';
-import { storage } from './storage';
+} from '@repo/core/types/runtime';
+import { BackgroundTaskResult, BackgroundTaskStatus } from '@repo/core/types/runtime';
+import { storage } from '@repo/core/native/storage';
 
 export const nativeStorageProvider = {
   async getItem(key: string) {
@@ -188,6 +188,7 @@ export const nativeNotificationProvider: any = {
   getBadgeCountAsync: () => Notifications.getBadgeCountAsync(),
 
   addPushTokenListener: (callback: (token: string) => void) => {
+    if (Platform.OS === 'web') return () => undefined;
     const subscription = Notifications.addPushTokenListener((token: any) => callback(token.data));
     return () => subscription.remove();
   },

@@ -1,7 +1,7 @@
 import type React from 'react';
 import { StyleSheet } from 'react-native';
-import { useTheme } from '../hooks/useTheme';
-import { ScrollView, View } from '../primitives';
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { ScrollView, View } from '@repo/ui/primitives';
 
 interface ScreenWrapperProps {
   children: React.ReactNode;

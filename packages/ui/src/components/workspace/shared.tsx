@@ -3,14 +3,14 @@ import {
   resolveWorkspaceSurfaceLayout,
 } from '@repo/core/logic';
 import type { WorkspaceRendererConfig } from '@repo/core/types';
-import { LayoutGrid, Pin } from 'lucide-react-native';
+import { LayoutGrid, Pin } from '@repo/ui/icons';
 import { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { Text } from '../../gluestack';
-import { useThemedColors } from '../../hooks/useThemedColors';
-import { View } from '../../primitives';
-import { Theme } from '../../theme/Theme';
-import type { WorkspaceCanvasProps } from './types';
+import { Text } from '@repo/ui/gluestack';
+import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
+import { View } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme/Theme';
+import type { WorkspaceCanvasProps } from '@repo/ui/components/workspace/types';
 
 export function useWorkspaceCanvasData<
   TSurfaceId extends string = string,

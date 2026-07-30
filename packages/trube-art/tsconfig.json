@@ -1,10 +1,34 @@
 {
   "extends": "../../packages/typescript-config/base.json",
   "compilerOptions": {
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@repo/trube-art/*": [
+        "./src/*"
+      ],
+      "@repo/core": [
+        "../core/dist/index.d.ts"
+      ],
+      "@repo/core/*": [
+        "../core/dist/*"
+      ],
+      "@repo/ui": [
+        "../ui/dist/index.d.ts"
+      ],
+      "@repo/ui/*": [
+        "../ui/dist/*"
+      ]
+    },
     "outDir": "./dist",
     "rootDir": "./src",
     "jsx": "react-jsx",
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "include": ["src*"]
+  "include": [
+    "src*"
+  ]
 }

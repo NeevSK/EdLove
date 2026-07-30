@@ -22,23 +22,23 @@ import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives'
 
 import type React from 'react';
 import { useMemo } from 'react';
-import DashboardEcho from '../components/principal/DashboardEcho';
-import InstitutionalCalendarSection from '../components/principal/InstitutionalCalendarSection';
-import LeaveApprovalSection from '../components/principal/LeaveApprovalSection';
-import ManagementStation from '../components/principal/ManagementStation';
-import MorningSituationalBrief from '../components/principal/MorningSituationalBrief';
-import PrincipalGovernanceTimeline from '../components/principal/PrincipalGovernanceTimeline';
-import PrincipalObservationsSection from '../components/principal/PrincipalObservationsSection';
-import PulseDashboard from '../components/principal/PulseDashboard';
-import ResourceNeedsDashboard from '../components/principal/ResourceNeedsDashboard';
-import TeacherCarousel from '../components/principal/TeacherCarousel';
+import DashboardEcho from '@repo/admin/components/principal/DashboardEcho';
+import InstitutionalCalendarSection from '@repo/admin/components/principal/InstitutionalCalendarSection';
+import LeaveApprovalSection from '@repo/admin/components/principal/LeaveApprovalSection';
+import ManagementStation from '@repo/admin/components/principal/ManagementStation';
+import MorningSituationalBrief from '@repo/admin/components/principal/MorningSituationalBrief';
+import PrincipalGovernanceTimeline from '@repo/admin/components/principal/PrincipalGovernanceTimeline';
+import PrincipalObservationsSection from '@repo/admin/components/principal/PrincipalObservationsSection';
+import PulseDashboard from '@repo/admin/components/principal/PulseDashboard';
+import ResourceNeedsDashboard from '@repo/admin/components/principal/ResourceNeedsDashboard';
+import TeacherCarousel from '@repo/admin/components/principal/TeacherCarousel';
 import {
   getPrincipalCapabilityMeta,
   type PrincipalCapabilityId,
   type PrincipalWorkspaceSurfaceId,
   type PrincipalWorkspaceView,
-} from './workspace';
-import { getPrincipalPreviewSummary } from './workspacePreview';
+} from '@repo/admin/principal/workspace';
+import { getPrincipalPreviewSummary } from '@repo/admin/principal/workspacePreview';
 
 export type PrincipalWorkspaceSurface = WorkspaceSurfaceDefinition<
   PrincipalWorkspaceSurfaceId,

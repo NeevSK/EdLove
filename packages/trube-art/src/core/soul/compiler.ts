@@ -1,4 +1,4 @@
-import type { TSLExpression } from './tsl';
+import type { TSLExpression } from '@repo/trube-art/core/soul/tsl';
 
 export const CORE_SKS_L_FUNCTIONS = `
 float hash(vec2 p) {

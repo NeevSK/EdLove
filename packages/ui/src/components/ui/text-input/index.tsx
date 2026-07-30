@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import { TextInput as RNTextInput, type TextInputProps } from 'react-native';
 
@@ -15,3 +15,4 @@ const TextInput = React.forwardRef<any, ITextInputProps>(({ className, ...props 
 TextInput.displayName = 'TextInput';
 
 export { TextInput };
+

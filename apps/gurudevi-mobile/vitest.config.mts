@@ -34,7 +34,6 @@ export default defineConfig({
         external: [
           'react-native-mmkv',
           'expo',
-          'expo-modules-core',
           'expo-constants',
           'expo-device',
           'expo-haptics',

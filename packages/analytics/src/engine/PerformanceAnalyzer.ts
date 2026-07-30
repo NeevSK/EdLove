@@ -1,5 +1,5 @@
-import type { ClassAnalytics, StudentPerformanceMetrics } from '../types/AnalyticsTypes';
-import { GPACalculator } from './GPACalculator';
+import type { ClassAnalytics, StudentPerformanceMetrics } from '@repo/analytics/types/AnalyticsTypes';
+import { GPACalculator } from '@repo/analytics/engine/GPACalculator';
 
 export interface DatabaseClient {
   from: (table: string) => any;

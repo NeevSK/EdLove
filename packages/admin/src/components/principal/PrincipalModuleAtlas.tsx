@@ -14,7 +14,7 @@ import {
   PRINCIPAL_CAPABILITY_REGISTRY,
   type PrincipalCapabilityId,
   type PrincipalCapabilityMeta,
-} from '../../principal/workspace';
+} from '@repo/admin/principal/workspace';
 
 interface PrincipalModuleAtlasProps {
   capabilityIds?: PrincipalCapabilityId[];

@@ -3,8 +3,8 @@ import {
   LongitudinalEntityTypeSchema,
   StudentLongitudinalSnapshotSchema,
   StudentLongitudinalTimelineSchema,
-} from '../logic/schemas/temporal.schema';
-import type { SovereignContract } from './contract';
+} from '@repo/core/logic/schemas/temporal.schema';
+import type { SovereignContract } from '@repo/core/api/contract';
 
 const longitudinalAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',

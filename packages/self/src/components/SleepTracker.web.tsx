@@ -8,7 +8,7 @@
 import { useTemporalStore } from '@repo/core/logic';
 
 import { useEffect, useState } from 'react';
-import { useSleepTracker } from '../hooks/useSleepTracker';
+import { useSleepTracker } from '@repo/self/hooks/useSleepTracker';
 
 interface SleepTrackerProps {
   userId?: string;

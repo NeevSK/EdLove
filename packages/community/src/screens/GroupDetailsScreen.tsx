@@ -39,13 +39,13 @@ import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FadeInDown } from 'react-native-reanimated';
-import { communityAPI } from '../api/community';
-import { CommentSheet } from '../components/CommentSheet';
-import GroupMemberManagement from '../components/GroupMemberManagement';
-import { PinnedResourcesShelf } from '../components/PinnedResourcesShelf';
-import PostCard from '../components/PostCard';
-import SocialShieldModal from '../components/SocialShieldModal';
-import { useCommunity } from '../hooks/useCommunity';
+import { communityAPI } from '@repo/community/api/community';
+import { CommentSheet } from '@repo/community/components/CommentSheet';
+import GroupMemberManagement from '@repo/community/components/GroupMemberManagement';
+import { PinnedResourcesShelf } from '@repo/community/components/PinnedResourcesShelf';
+import PostCard from '@repo/community/components/PostCard';
+import SocialShieldModal from '@repo/community/components/SocialShieldModal';
+import { useCommunity } from '@repo/community/hooks/useCommunity';
 
 export default function GroupDetailsScreen() {
   const { groupId: groupIdParam } = useLocalSearchParams<{ groupId?: string }>();

@@ -1,3 +1,8 @@
+export {
+  AUTHORIZATION_ACTIONS,
+  AUTHORIZATION_RESOURCES,
+  BOND_ENTITY_TYPES,
+} from './authorizationRegistry';
 export { check } from './engine/evaluator';
 export type { AuthRequest, AuthResponse } from './engine/types';
 export { generateSnapshot } from './snapshot/generator';

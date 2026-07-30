@@ -1,3 +1,3 @@
-export { FormLikert } from './FormLikert';
-export { FormSelect } from './FormSelect';
-export { FormSlider } from './FormSlider';
+export { FormLikert } from '@repo/form-builder/components/FormLikert';
+export { FormSelect } from '@repo/form-builder/components/FormSelect';
+export { FormSlider } from '@repo/form-builder/components/FormSlider';

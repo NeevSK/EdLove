@@ -1,10 +1,11 @@
 import { GrowthBook, setPolyfills } from '@growthbook/growthbook';
-import { storage } from '../../lib/storage';
+import { trackProductEvent } from '@repo/core/lib/monitoring/posthog';
+import { storage } from '@repo/core/lib/storage';
 import type {
   FeatureRolloutSnapshot,
   IFeatureRolloutPort,
-} from '../../logic/ports/featureRollout.port';
-import type { UserContext } from '../../logic/schemas/user.schema';
+} from '@repo/core/logic/ports/featureRollout.port';
+import type { UserContext } from '@repo/core/logic/schemas/user.schema';
 
 // Apply the platform-agnostic storage polyfill for GrowthBook cache persistence
 setPolyfills({
@@ -16,6 +17,9 @@ setPolyfills({
 
 export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
   private growthbook: GrowthBook;
+  private readonly initialization: Promise<void>;
+  private snapshotSource: FeatureRolloutSnapshot['source'] = 'computed';
+  private currentContext: UserContext | null = null;
 
   constructor(apiHost?: string, clientKey?: string) {
     this.growthbook = new GrowthBook({
@@ -34,11 +38,25 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
       },
     });
 
-    // Auto load cached features from storage polyfill on initialization
-    void this.growthbook.loadFeatures({ autoRefresh: true }).catch(() => {});
+    // Resolve the initial payload before evaluating flags. GrowthBook may use a
+    // last-known-good cache when offline and can stream later updates.
+    this.initialization = this.growthbook
+      .init({ streaming: true })
+      .then((result) => {
+        this.snapshotSource =
+          result.source === 'cache' ? 'cache' : result.source === 'network' ? 'remote' : 'computed';
+      })
+      .catch(() => {
+        // The local persisted snapshot remains the safe fallback when the
+        // control plane is unavailable.
+        this.snapshotSource = 'computed';
+      });
   }
 
   async resolveFlags(context: UserContext): Promise<FeatureRolloutSnapshot> {
+    await this.initialization;
+    this.currentContext = context;
+
     // Map UserContext to GrowthBook attributes
     const attributes = {
       id: context.userId || undefined,
@@ -49,6 +67,9 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
       primaryCapacity: context.primaryCapacity,
       activeBond: context.activeBond,
       bonds: context.bonds,
+      school_type: context.schoolType,
+      effective_entitlement_scope: context.effective_entitlement_scope,
+      effective_entitlement_tier: context.effective_entitlement_tier,
       isAnonymous: context.isAnonymous,
       hasGlobalAccess: context.hasGlobalAccess,
     };
@@ -64,7 +85,7 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
 
     return {
       flags,
-      source: 'computed',
+      source: this.snapshotSource,
       refreshedAt: new Date().toISOString(),
     };
   }
@@ -85,6 +106,25 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
   }
 
   trackExposure(flagKey: string, value: boolean | string): void {
-    console.debug(`[GrowthBook Exposure] ${flagKey} = ${value}`);
+    trackProductEvent(
+      'feature_exposed',
+      {
+        feature_id: flagKey,
+        flag_value: value,
+      },
+      {
+        identity_mode: this.currentContext?.isAnonymous ? 'anonymous' : 'authenticated',
+        citizenship: this.currentContext?.citizenship,
+        onboarding_completed: Boolean(this.currentContext?.onboarding_completed),
+        active_capacity: this.currentContext?.activeBond?.capacity ?? null,
+        active_entity_type: this.currentContext?.activeEntityType ?? null,
+        school_type: this.currentContext?.schoolType ?? null,
+        personal_pricing_tier: this.currentContext?.pricing_tier === 'PRO' ? 'PRO' : 'FREE',
+        effective_entitlement_scope:
+          this.currentContext?.effective_entitlement_scope ?? 'individual',
+        effective_entitlement_tier: this.currentContext?.effective_entitlement_tier ?? 'FREE',
+        analytics_schema_version: 1,
+      },
+    );
   }
 }

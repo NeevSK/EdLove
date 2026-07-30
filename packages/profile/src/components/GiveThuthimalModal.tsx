@@ -1,6 +1,7 @@
 import { thuthimalAPI } from '@repo/core/api';
 
 import { useLotusToast } from '@repo/ui/hooks';
+import { X } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -15,8 +16,6 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
-
-import { X } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import { Modal } from 'react-native';
 

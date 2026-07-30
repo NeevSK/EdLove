@@ -1,3 +1,4 @@
+import { useDomainRollout } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, Text, VStack } from '@repo/ui/primitives';
@@ -6,9 +7,9 @@ import {
   AdminWorkspaceCanvas,
   useAdminWorkspaceCanvasSurfaces,
   useAdminWorkspaceLayout,
-} from '../admin/useAdminWorkspaceCanvas';
-import { useAdminWorkspaceData } from '../admin/useAdminWorkspaceData';
-import { resolveAdminWorkspaceView } from '../admin/workspace';
+} from '@repo/admin/admin/useAdminWorkspaceCanvas';
+import { useAdminWorkspaceData } from '@repo/admin/admin/useAdminWorkspaceData';
+import { resolveAdminWorkspaceView } from '@repo/admin/admin/workspace';
 
 interface AdminDashboardProps {
   userId?: string | null;
@@ -17,6 +18,7 @@ interface AdminDashboardProps {
 export default function AdminDashboard({ userId }: AdminDashboardProps) {
   const router = useRouter();
   const { context, flags } = usePermissions();
+  const isStaffManagementEnabled = useDomainRollout('staff-management');
   const currentUserId = useStore((state) => state.user?.id ?? null);
   const resolvedUserId = userId ?? currentUserId;
   const data = useAdminWorkspaceData();
@@ -24,14 +26,6 @@ export default function AdminDashboard({ userId }: AdminDashboardProps) {
   const surfaces = useAdminWorkspaceCanvasSurfaces({
     data,
     featureFlags: {
-      isInventoryEnabled: flags.isInventoryEnabled,
-      isStaffManagementEnabled: flags.isStaffManagementEnabled,
-      isTemplateManagementEnabled: flags.isTemplateManagementEnabled,
-      isAIAssistantEnabled: flags.isAIAssistantEnabled,
-      isDevelopingWorkspace: flags.isDevelopingWorkspace,
-      isDevelopingAI: flags.isDevelopingAI,
-      isDevelopingAnalyticsDashboard: flags.isDevelopingAnalyticsDashboard,
-      isDevelopingFormBuilder: flags.isDevelopingFormBuilder,
       isUnderMaintenance: flags.isUnderMaintenance,
     },
     onOpenIncidentQueue: () => router.push('/workspace'),

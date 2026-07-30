@@ -1,5 +1,6 @@
 import { growthSignalsAPI } from '@repo/core/api';
-import { type ClassroomGradingSettings, useStore } from '@repo/core/logic';
+import { type ClassroomGradingSettings } from '@repo/core/types';
+import { useStore } from '@repo/core/logic';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { Award, Check, ChevronLeft, Settings2, SquarePen, TrendingUp, Users } from '@repo/ui/icons';
 import {
@@ -29,8 +30,8 @@ import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import type React from 'react';
 import { useState } from 'react';
-import type { SortOption } from '../hooks/useGradebook';
-import { useGradebook } from '../hooks/useGradebook';
+import type { SortOption } from '@repo/classroom/hooks/useGradebook';
+import { useGradebook } from '@repo/classroom/hooks/useGradebook';
 
 // -- Helpers --------------------------------------------------
 
@@ -188,7 +189,7 @@ function SettingsModal({
           <VStack>
             <SectionLabel>Grading Mode</SectionLabel>
             <HStack className="gap-2">
-              {(['marks', 'grade', 'both'] as const).map((mode) => {
+              {(['marks', 'gpa', 'both'] as const).map((mode) => {
                 const isActive = gradingMode === mode;
                 return (
                   <Pressable
@@ -199,7 +200,7 @@ function SettingsModal({
                     <Text
                       className={`text-xs font-bold ${isActive ? 'text-phase-interactive' : 'text-phaseText-primary'}`}
                     >
-                      {mode === 'marks' ? 'Marks' : mode === 'grade' ? 'GPA' : 'Both'}
+                      {mode === 'marks' ? 'Marks' : mode === 'gpa' ? 'GPA' : 'Both'}
                     </Text>
                   </Pressable>
                 );

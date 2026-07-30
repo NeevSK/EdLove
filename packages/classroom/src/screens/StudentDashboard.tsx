@@ -1,4 +1,4 @@
-import { useFeatureAccess } from '@repo/core/hooks';
+import { useIsGuest } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
 
@@ -11,8 +11,8 @@ import { hapticLight } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FadeInDown } from 'react-native-reanimated';
-import { useStudentDashboardSurfaces } from '../workspace/useStudentDashboardSurfaces';
-import { useStudentWorkspaceData } from '../workspace/useStudentWorkspaceData';
+import { useStudentDashboardSurfaces } from '@repo/classroom/workspace/useStudentDashboardSurfaces';
+import { useStudentWorkspaceData } from '@repo/classroom/workspace/useStudentWorkspaceData';
 
 interface StudentDashboardProps {
   onRefresh?: () => void;
@@ -25,7 +25,7 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
   const { t } = useTranslation();
   const router = useRouter();
   const showToast = useStore((state: any) => state.showToast);
-  const { isGuest } = useFeatureAccess();
+  const isGuest = useIsGuest();
   const { isPastView } = useTemporalStore();
   const _colors = useThemedColors();
   const { isDemoExperience, stats } = useStudentWorkspaceData(forceDemo);

@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import {
   type FlatListProps,
@@ -43,3 +43,4 @@ export const SectionList = React.forwardRef<
 
 FlatList.displayName = 'FlatList';
 SectionList.displayName = 'SectionList';
+

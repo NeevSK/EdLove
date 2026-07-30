@@ -29,7 +29,7 @@ import {
   Phone,
   School,
   User as UserIcon,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dimensions, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';

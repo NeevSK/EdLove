@@ -7,11 +7,11 @@
  * Metro resolves this over JoyJar.tsx on the web platform.
  */
 
+import { Plus, Sparkles } from '@repo/ui/icons';
 import { formatDistanceToNow } from 'date-fns';
-import { Plus, Sparkles } from 'lucide-react-native';
 import { useState } from 'react';
-import { useJoyJar } from '../hooks/useJoyJar';
-import type { JoyMoment } from '../types';
+import { useJoyJar } from '@repo/self/hooks/useJoyJar';
+import type { JoyMoment } from '@repo/self/types';
 
 interface JoyJarProps {
   userId?: string;

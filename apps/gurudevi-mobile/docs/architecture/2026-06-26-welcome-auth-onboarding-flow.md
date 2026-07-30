@@ -1,14 +1,19 @@
 ---
 title: "Welcome, Auth, Guest, and Onboarding Flow"
-status: "active"
+status: "superseded"
 created: 2026-06-26
 updated: 2026-06-26
 author: "Naween"
 scribe: "Antigravity"
 tags: [architecture, navigation, auth, onboarding, guest]
+superseded_by: ./2026-07-26-feature-access-local-server-architecture.md
 ---
 
 # Welcome, Auth, Guest, and Onboarding Flow
+
+> Superseded on 2026-07-26. Public welcome/authentication routes remain, but
+> anonymous guest sessions are not an application identity. Use the current
+> active-bond and capacity-onboarding contract instead.
 
 This document is the canonical user-flow reference for the public entry path in `gurudevi-mobile`.
 

@@ -11,6 +11,7 @@ import { BreathAnimation } from '@repo/ui/components/BreathAnimation';
 import { DailyResonanceCard } from '@repo/ui/components/DailyResonanceCard';
 import { GlassCard } from '@repo/ui/components/GlassCard';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { BookOpen, Calendar, ChevronRight, CircleCheck, Clock, Sparkles } from '@repo/ui/icons';
 import {
   Box,
   Heading,
@@ -23,18 +24,9 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
-
-import {
-  BookOpen,
-  Calendar,
-  ChevronRight,
-  CircleCheck,
-  Clock,
-  Sparkles,
-} from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { dailyContentAPI } from '../api/dailyContent';
+import { dailyContentAPI } from '@repo/self/api/dailyContent';
 
 export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void }) {
   const { t } = useTranslation();

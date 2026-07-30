@@ -1,4 +1,5 @@
-import * as FileSystem from 'expo-file-system';
+import { Paths, File } from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
@@ -13,6 +14,8 @@ interface UseMediaDownloaderOptions {
 
 /**
  * useMediaDownloader - Handles local caching and native handoff for remote resources.
+ * Uses modern expo-file-system API (SDK 54+) for file operations, legacy API for downloads
+ * (modern API doesn't yet support progress callbacks in the same way).
  */
 export function useMediaDownloader({ resourceId, url, mimeType }: UseMediaDownloaderOptions) {
   const [downloadState, setDownloadState] = useState<DownloadState>('idle');
@@ -22,18 +25,15 @@ export function useMediaDownloader({ resourceId, url, mimeType }: UseMediaDownlo
 
   const extension = mimeType === 'application/pdf' ? 'pdf' : url.split('.').pop() || 'tmp';
   const fileName = `gurudevi_${resourceId}.${extension}`;
-  const fileSystem = FileSystem as typeof FileSystem & {
-    cacheDirectory?: string;
-    documentDirectory?: string;
-  };
-  const baseDirectory = fileSystem.cacheDirectory ?? fileSystem.documentDirectory ?? '';
-  const localPath = `${baseDirectory}${fileName}`;
+  const localPath = `${Paths.cache}${fileName}`;
 
   const checkCached = useCallback(async () => {
     if (Platform.OS === 'web') return;
     try {
-      const info = await FileSystem.getInfoAsync(localPath);
-      if (info.exists) {
+      // Using modern API - check if file exists via File class
+      const { File } = await import('expo-file-system');
+      const file = new File(localPath);
+      if (file.exists) {
         setLocalUri(localPath);
         setDownloadState('ready');
       }
@@ -66,6 +66,7 @@ export function useMediaDownloader({ resourceId, url, mimeType }: UseMediaDownlo
     setErrorMsg(null);
 
     try {
+      // Using legacy API for download (modern API doesn't support progress callbacks yet)
       const downloadResumable = FileSystem.createDownloadResumable(
         url,
         localPath,

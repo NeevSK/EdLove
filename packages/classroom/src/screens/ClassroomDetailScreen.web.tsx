@@ -1,4 +1,4 @@
 export {
   default,
   default as ClassroomDetailScreenWeb,
-} from './TeacherClassroomDashboard.web';
+} from '@repo/classroom/screens/TeacherClassroomDashboard.web';

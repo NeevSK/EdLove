@@ -10,8 +10,8 @@ import {
   TeacherStudentObservationSchema,
   TeacherStudentPotentialSchema,
   TeacherStudentPotentialUpsertSchema,
-} from '../logic/schemas/teacher-insights.schema';
-import type { SovereignContract } from './contract';
+} from '@repo/core/logic/schemas/teacher-insights.schema';
+import type { SovereignContract } from '@repo/core/api/contract';
 
 const teacherInsightAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',

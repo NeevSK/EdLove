@@ -4,5 +4,5 @@ export interface LlmPort {
     history: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
     apiKey: string,
     model: string,
-  ): Promise<any>;
+  ): Promise<ReadableStream>;
 }

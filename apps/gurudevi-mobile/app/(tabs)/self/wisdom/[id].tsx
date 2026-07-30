@@ -1,9 +1,9 @@
 import { usePermissions, useStore } from '@repo/core/logic';
 import { useWisdom } from '@repo/self';
+import { ChevronLeft, Leaf } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ChevronLeft, Leaf } from 'lucide-react-native';
 import { useMemo } from 'react';
 
 export default function WisdomDetailRoute() {

@@ -1,12 +1,12 @@
-import type { Classroom } from '../../schemas/classroom.schema';
-import type { CommunityGroup } from '../../schemas/community.schema';
+import type { Classroom } from '@repo/core/logic/schemas/classroom.schema';
+import type { CommunityGroup } from '@repo/core/logic/schemas/community.schema';
 import type {
   EcosystemPulse,
   EcosystemStats,
   GlobalUser,
   SentinelAuditLog,
-} from '../../schemas/founder.schema';
-import type { SchoolZod } from '../../schemas/school.schema';
+} from '@repo/core/logic/schemas/founder.schema';
+import type { SchoolZod } from '@repo/core/logic/schemas/school.schema';
 
 export interface FounderRepository {
   getEcosystemStats(): Promise<EcosystemStats>;

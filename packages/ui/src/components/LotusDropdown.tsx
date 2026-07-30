@@ -1,4 +1,4 @@
-import { ChevronDown, CircleAlert } from 'lucide-react-native';
+import { ChevronDown, CircleAlert } from '@repo/ui/icons';
 import { useState } from 'react';
 import {
   Actionsheet,
@@ -10,8 +10,8 @@ import {
   HStack,
   Text,
   VStack,
-} from '../gluestack';
-import { Pressable } from '../primitives';
+} from '@repo/ui/gluestack';
+import { Pressable } from '@repo/ui/primitives';
 
 interface LotusDropdownProps {
   label?: string;

@@ -1,9 +1,18 @@
 import { profileAPI as rawProfileAPI } from '@repo/core/api/profile';
-import { profile, useStore } from '@repo/core/logic';
+import { useStore } from '@repo/core/store/useStore';
 import type { TotalState } from '@repo/core/store';
 
-import { profileAPI } from '@repo/profile/api';
+import { profileAPI } from '@repo/core/api/profile';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
+const profileMocks = vi.hoisted(() => ({
+  upsertSocialLink: vi.fn(),
+  updateProfile: vi.fn(),
+}));
+
+vi.mock('@repo/core/logic/managers/factory', () => ({
+  profile: profileMocks,
+}));
 
 // Mock checkLocalPermission to bypass dynamic WASM/database sync in headless testing
 vi.mock('@repo/core/logic/permissions/localEvaluator', () => ({
@@ -42,8 +51,6 @@ describe('profile POA enforcement', () => {
       schoolType: null,
     } as unknown as TotalState);
 
-    const socialSpy = vi.spyOn(profile, 'upsertSocialLink');
-
     await expect(
       profileAPI.upsertSocialLink(USER_ID, {
         platform: 'website',
@@ -54,7 +61,7 @@ describe('profile POA enforcement', () => {
       }),
     ).rejects.toThrow('Forbidden');
 
-    expect(socialSpy).not.toHaveBeenCalled();
+    expect(profileMocks.upsertSocialLink).not.toHaveBeenCalled();
   });
 
   it('allows an authenticated teacher to update their profile through the service boundary', async () => {

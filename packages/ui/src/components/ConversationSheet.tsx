@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
-import { Actionsheet } from '../gluestack';
-import { ChevronDown, EyeOff, Lock, Send, Shield, ThumbsUp, Trash2 } from '../icons';
+import { Actionsheet } from '@repo/ui/gluestack';
+import { ChevronDown, EyeOff, Lock, Send, Shield, ThumbsUp, Trash2 } from '@repo/ui/icons';
 import {
   Box,
   FlatList,
@@ -14,8 +14,8 @@ import {
   Spinner,
   Text,
   VStack,
-} from '../primitives';
-import { formatTimestamp, getInitialsFromName } from '../utils';
+} from '@repo/ui/primitives';
+import { formatTimestamp, getInitialsFromName } from '@repo/ui/utils';
 
 export interface CommentAuthor {
   id: string;

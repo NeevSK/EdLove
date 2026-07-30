@@ -1,5 +1,5 @@
-import type { CapabilityKey } from './Policy';
-import type { ScopeRef } from './Tenancy';
+import type { CapabilityKey } from '@repo/core/types/Policy';
+import type { ScopeRef } from '@repo/core/types/Tenancy';
 
 export type ActorType =
   | 'user'

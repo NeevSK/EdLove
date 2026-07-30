@@ -1,15 +1,8 @@
 import type React from 'react';
-import { useEffect } from 'react';
+import { useMemo } from 'react';
 import type { ViewProps } from 'react-native';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated';
-import { Box } from '../gluestack';
+import { EaseView } from 'react-native-ease';
+import { Box } from '@repo/ui/gluestack';
 
 interface LivingGlowProps extends ViewProps {
   children?: React.ReactNode;
@@ -20,12 +13,6 @@ interface LivingGlowProps extends ViewProps {
   className?: string;
 }
 
-/**
- * LivingGlow - Pulses with "Restorative Energy"
- *
- * Philosophy: Focal points in the Sanctuary should not be static.
- * They should have a "Breath-like" pulse that signifies life.
- */
 export function LivingGlow({
   children,
   active = true,
@@ -36,34 +23,48 @@ export function LivingGlow({
   className,
   ...props
 }: LivingGlowProps) {
-  const opacity = useSharedValue(0.4);
+  const animateProps = useMemo(
+    () => ({
+      shadowOpacity: active ? 0.8 : 0,
+      elevation: active ? 5 : 0,
+    }),
+    [active],
+  );
 
-  useEffect(() => {
-    if (active) {
-      opacity.value = withRepeat(
-        withSequence(
-          withTiming(0.8, { duration, easing: Easing.inOut(Easing.ease) }),
-          withTiming(0.4, { duration, easing: Easing.inOut(Easing.ease) }),
-        ),
-        -1,
-        true,
-      );
-    } else {
-      opacity.value = 0;
-    }
-  }, [active, duration, opacity]);
+  const initialAnimateProps = useMemo(
+    () => ({
+      shadowOpacity: active ? 0.4 : 0,
+      elevation: active ? 5 : 0,
+    }),
+    [active],
+  );
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    shadowColor: glowColor || (active ? '#FFC107' : 'transparent'), // Fallback to saffron if active
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: opacity.value,
-    shadowRadius: size ? size / 4 : 10,
-    elevation: active ? 5 : 0,
-    ...(size ? { width: size, height: size } : {}),
-  }));
+  const transitionProps = useMemo(
+    () =>
+      active
+        ? { type: 'timing' as const, duration, easing: 'easeInOut' as const, loop: 'reverse' as const }
+        : { type: 'timing' as const, duration: 200 },
+    [active, duration],
+  );
 
   return (
-    <Animated.View style={[animatedStyle, style]} className={className} {...props}>
+    <EaseView
+      key={active ? 'active' : 'inactive'}
+      initialAnimate={initialAnimateProps}
+      animate={animateProps}
+      transition={transitionProps}
+      style={[
+        {
+          shadowColor: glowColor || (active ? '#FFC107' : 'transparent'),
+          shadowOffset: { width: 0, height: 0 },
+          shadowRadius: size ? size / 4 : 10,
+          ...(size ? { width: size, height: size } : {}),
+        },
+        style,
+      ]}
+      className={className}
+      {...props}
+    >
       {children ||
         (size ? (
           <Box
@@ -75,6 +76,6 @@ export function LivingGlow({
             }}
           />
         ) : null)}
-    </Animated.View>
+    </EaseView>
   );
 }

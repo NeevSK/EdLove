@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import { Text as RNText, type TextProps } from 'react-native';
 
@@ -36,3 +36,4 @@ const Text = React.forwardRef<RNText, ITextProps>(
 Text.displayName = 'Text';
 
 export { Text };
+

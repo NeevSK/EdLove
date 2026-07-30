@@ -1,6 +1,6 @@
-import { KnowledgeTopologySchema } from '../logic/schemas/dashboard.schema';
-import type { KnowledgeTopology } from '../types/topology';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
+import { KnowledgeTopologySchema } from '@repo/core/logic/schemas/dashboard.schema';
+import type { KnowledgeTopology } from '@repo/core/types/topology';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
 
 export interface MappingTopology extends KnowledgeTopology {
   id: string;

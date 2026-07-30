@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # LotusPetalFAB: Comprehensive Analysis & Improvements
 
 ## Current Implementation Analysis

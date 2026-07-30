@@ -8,7 +8,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { api, growthSignalsAPI } from '@repo/core/api';
 import { type StudentAttendance, useStore } from '@repo/core/logic';
 
-import { Check, ChevronLeft, Clock, Save, X } from 'lucide-react-native';
+import { Check, ChevronLeft, Clock, Save, X } from '@repo/ui/icons';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 

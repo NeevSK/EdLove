@@ -1,8 +1,7 @@
 import type { PrivacyLevel, SocialLink, SocialPlatform } from '@repo/core/types';
+import { Check, Globe, Link, Lock, MessagesSquare, Trash2, Users, X } from '@repo/ui/icons';
 import { Box, HStack, Icon, Input, InputField, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
-
-import { Check, Globe, Link, Lock, MessagesSquare, Trash2, Users, X } from 'lucide-react-native';
 import { useState } from 'react';
 
 interface InlineSocialLinkEditorProps {

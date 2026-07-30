@@ -1,8 +1,9 @@
-import { deviceTrustAPI } from '../../api/deviceTrust';
-import type { Capacity } from '../../types';
-import { APIError } from '../../types/API';
-import type { AuthSession, AuthUser, IAuthPort } from '../ports/auth.port';
-import type { IIdentityPort } from '../ports/identity.port';
+import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
+import { trackProductEvent } from '@repo/core/lib/monitoring/posthog';
+import type { AuthSession, AuthUser, IAuthPort } from '@repo/core/logic/ports/auth.port';
+import type { IIdentityPort } from '@repo/core/logic/ports/identity.port';
+import type { Capacity } from '@repo/core/types';
+import { APIError } from '@repo/core/types/API';
 
 export interface AuthManagerConfig {
   onSignOut?: () => Promise<void>;
@@ -12,7 +13,10 @@ export interface AuthManagerConfig {
 }
 
 export class AuthManager {
-  private anonymousSignInPromise: Promise<any> | null = null;
+  private anonymousSignInPromise: Promise<{
+    user: AuthUser | null;
+    session: AuthSession | null;
+  }> | null = null;
 
   constructor(
     private authPort: IAuthPort,
@@ -184,28 +188,25 @@ export class AuthManager {
     return result;
   }
 
+  /**
+   * Anonymous Supabase sessions are valid onboarding identities. They use the
+   * normal policy surface after onboarding and do not receive guest-specific
+   * Cedar policies.
+   */
   async signInAnonymously() {
-    const currentSession = await this.authPort.getSession().catch(() => null);
-    const currentUser = currentSession?.user;
-
-    if (currentUser?.is_anonymous) {
-      return { session: currentSession, user: currentUser };
+    const currentSession = await this.authPort.getSession();
+    if (currentSession?.user?.is_anonymous) {
+      return { session: currentSession, user: currentSession.user as AuthUser };
     }
-
-    if (!this.anonymousSignInPromise) {
-      this.anonymousSignInPromise = this.authPort
-        .signInAnonymously({
-          data: {
-            is_anonymous: true,
-            citizenship: 'WANDERER',
-          },
-        })
-        .finally(() => {
-          this.anonymousSignInPromise = null;
-        });
+    if (this.anonymousSignInPromise) return this.anonymousSignInPromise;
+    this.anonymousSignInPromise = this.authPort.signInAnonymously();
+    try {
+      const result = await this.anonymousSignInPromise;
+      trackProductEvent('guest_started');
+      return result;
+    } finally {
+      this.anonymousSignInPromise = null;
     }
-
-    return await this.anonymousSignInPromise;
   }
 
   async linkAnonymousToEmail(
@@ -258,6 +259,8 @@ export class AuthManager {
       },
       internalId,
     );
+
+    trackProductEvent('account_converted');
 
     return { user };
   }

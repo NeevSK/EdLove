@@ -1,1 +1,1 @@
-export * from './composer.reducer';
+export * from '@repo/core/logic/domains/social/composer.reducer';

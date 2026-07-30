@@ -1,5 +1,5 @@
-import { storage } from '../lib/storage';
-import { handleAPIError } from '../logic/apiInterceptor';
+import { storage } from '@repo/core/lib/storage';
+import { handleAPIError } from '@repo/core/logic/apiInterceptor';
 
 /**
  * Resilience Configuration

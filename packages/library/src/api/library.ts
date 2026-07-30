@@ -21,8 +21,8 @@ import type {
   LibraryCollection,
   LibraryResource,
   ResourceFilters,
-} from '../types';
-import { knowledgeDB } from './database';
+} from '@repo/library/types';
+import { knowledgeDB } from '@repo/library/api/database';
 
 // ============================================================================
 // HELPERS

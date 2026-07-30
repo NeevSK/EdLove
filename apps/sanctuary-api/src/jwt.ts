@@ -1,3 +1,5 @@
+import { fetchWithTrace } from './telemetry/otel';
+
 export interface VerifiedJwtPayload {
   sub: string;
   email?: string;
@@ -136,7 +138,7 @@ async function getPublicKeyFromJwks(
           const jwksUrl = `${supabaseUrl}/auth/v1/.well-known/jwks.json`;
 
           console.log(`[JWT] 🌐 Fetching JWKS from authoritative gateway (Coalesced): ${jwksUrl}`);
-          const response = await fetch(jwksUrl, {
+          const response = await fetchWithTrace(jwksUrl, {
             signal: AbortSignal.timeout(4000),
           });
           if (!response.ok) {

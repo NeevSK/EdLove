@@ -1,11 +1,10 @@
+import { BookOpen } from '@repo/ui/icons';
 import { FlashList, type FlashListProps } from '@shopify/flash-list';
-import { BookOpen } from 'lucide-react-native';
 import React, { useCallback } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
-import { useThemedColors } from '../hooks/useThemedColors';
-import { RefreshControl } from '../primitives';
-import { Theme } from '../theme/Theme';
-import EmptyState from './EmptyState';
+import { RefreshControl } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme/Theme';
+import EmptyState from '@repo/ui/components/EmptyState';
 
 export interface SanctuaryFlashListProps<T> extends Omit<FlashListProps<T>, 'refreshControl'> {
   /** Estimated size of a single list item (Optional in v2, Auto-calculated) */
@@ -47,8 +46,6 @@ export function SanctuaryFlashList<T>({
   ListEmptyComponent,
   ...props
 }: SanctuaryFlashListProps<T>) {
-  const _colors = useThemedColors();
-
   const renderEmpty = useCallback(() => {
     if (emptyComponent) return emptyComponent;
 
@@ -60,7 +57,7 @@ export function SanctuaryFlashList<T>({
 
     return (
       <EmptyState
-        icon={BookOpen}
+        icon={BookOpen as any}
         title="Silence in the Sanctuary"
         description="Your first discovery is waiting to be found here."
       />
@@ -83,7 +80,7 @@ export function SanctuaryFlashList<T>({
             tintColor={refreshColor || Theme.colors.sanctuarySaffron}
             colors={[refreshColor || Theme.colors.sanctuarySaffron]}
           />
-        ) : undefined
+        ) : null
       }
     />
   );

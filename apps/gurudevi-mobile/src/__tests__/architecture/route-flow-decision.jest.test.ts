@@ -6,7 +6,7 @@ describe('route flow decisions', () => {
       getAuthRouteTarget({
         pathname: '/self',
         bootstrapReady: true,
-        sessionMode: 'guest',
+        sessionMode: 'unauthenticated',
         onboardingCompleted: false,
         hasSession: false,
       }),

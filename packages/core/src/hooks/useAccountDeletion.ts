@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { authAPI } from '../api/auth';
+import { authAPI } from '@repo/core/api/auth';
 
 /**
  * Hook for managing the account deletion workflow.

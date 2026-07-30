@@ -2,7 +2,7 @@ import { api } from '@repo/core/api';
 import type { AttendanceStatus, StudentAttendance } from '@repo/core/logic';
 import { Box, Spinner, Text } from '@repo/ui/primitives';
 import { useCallback, useEffect, useState } from 'react';
-import AttendanceSheet from './AttendanceSheet';
+import AttendanceSheet from '@repo/classroom/components/AttendanceSheet';
 
 interface AttendanceViewProps {
   classroomId: string;

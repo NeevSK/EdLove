@@ -1,4 +1,4 @@
-import type { ResourceOwnerContext } from '../types';
+import type { ResourceOwnerContext } from '@repo/core/types';
 
 export const RESOURCE_OWNER_CONTEXT = {
   CLASSROOM: 'classroom',

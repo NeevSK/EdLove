@@ -1,8 +1,8 @@
 import type { ResourceType } from '@repo/core/types';
-import { File, FileText, Heart, Info, Link, Map, Plus, Video } from 'lucide-react-native';
-import { Box, HStack, Text, VStack } from '../../primitives';
-import { SanctuaryButton } from '../SanctuaryButton';
-import { SanctuaryCard } from '../SanctuaryCard';
+import { File, FileText, Heart, Info, Link, Map, Plus, Video } from '@repo/ui/icons';
+import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
 
 interface ResourceCardProps {
   title: string;

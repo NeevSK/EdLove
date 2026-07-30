@@ -19,7 +19,7 @@ import {
   TrendingUp,
   Users,
   X,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
 import { useState } from 'react';
 
 // ─────────────────────────────────────────────────────────────────────────────

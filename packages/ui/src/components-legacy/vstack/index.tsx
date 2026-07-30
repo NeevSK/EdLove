@@ -1,7 +1,7 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import type { View, ViewProps } from 'react-native';
-import { View as PrimitiveView } from '../../primitives';
+import { View as PrimitiveView } from '@repo/ui/primitives';
 
 const StyledView = PrimitiveView;
 
@@ -37,3 +37,4 @@ const VStack = React.forwardRef<View, IVStackProps>(
 VStack.displayName = 'VStack';
 
 export { VStack };
+

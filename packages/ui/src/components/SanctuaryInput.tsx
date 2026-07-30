@@ -1,6 +1,6 @@
-import { CircleAlert } from 'lucide-react-native';
+import { CircleAlert } from '@repo/ui/icons';
 import type React from 'react';
-import { Theme } from '../theme/Theme';
+import { Theme } from '@repo/ui/theme/Theme';
 import {
   FormControl,
   FormControlError,
@@ -15,7 +15,7 @@ import {
   InputSlot,
   Text,
   useFormControlContext,
-} from './ui';
+} from '@repo/ui/components/ui';
 
 interface SanctuaryInputProps {
   label?: string;

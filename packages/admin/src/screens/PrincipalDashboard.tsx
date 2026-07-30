@@ -1,4 +1,4 @@
-import { useFeatureAccess } from '@repo/core/hooks';
+import { useIsGuest } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 import type { TotalState } from '@repo/core/store';
 import { QRBuilder } from '@repo/scanner-kit';
@@ -13,13 +13,13 @@ import { useRouter } from 'expo-router';
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PrincipalNativeDashboardShell } from '../bridge/PrincipalNativeDashboardShell';
-import { CreateSchoolModal, PrincipalNotes } from '../components';
-import { useSchoolStats } from '../hooks/useSchoolStats';
-import { usePrincipalWorkspaceSurfaces } from '../principal/usePrincipalWorkspaceSurfaces';
-import type { PrincipalWorkspaceView, PrincipalZoneId } from '../principal/workspace';
-import AcademicCycleManager from './AcademicCycleManager';
-import { PrincipalNativeWorkspace } from './PrincipalNativeWorkspace';
+import { PrincipalNativeDashboardShell } from '@repo/admin/bridge/PrincipalNativeDashboardShell';
+import { CreateSchoolModal, PrincipalNotes } from '@repo/admin/components';
+import { useSchoolStats } from '@repo/admin/hooks/useSchoolStats';
+import { usePrincipalWorkspaceSurfaces } from '@repo/admin/principal/usePrincipalWorkspaceSurfaces';
+import type { PrincipalWorkspaceView, PrincipalZoneId } from '@repo/admin/principal/workspace';
+import AcademicCycleManager from '@repo/admin/screens/AcademicCycleManager';
+import { PrincipalNativeWorkspace } from '@repo/admin/screens/PrincipalNativeWorkspace';
 
 interface PrincipalDashboardProps {
   schoolId: string;
@@ -36,7 +36,7 @@ export default function PrincipalDashboard({
 }: PrincipalDashboardProps) {
   const { t } = useTranslation();
   const router = useRouter();
-  const { isGuest } = useFeatureAccess();
+  const isGuest = useIsGuest();
   const { can } = usePermissions();
   const isDemoMode = useStore((state: TotalState) => state.isDemoMode);
   const setBreathingOpen = useStore((state: TotalState) => state.setBreathingOpen);

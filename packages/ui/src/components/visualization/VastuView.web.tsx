@@ -1,8 +1,8 @@
 import type { PerspectiveViewProps } from '@repo/core/types';
 import type React from 'react';
-import { useTheme } from '../../hooks/useTheme';
-import { useThemedColors } from '../../hooks/useThemedColors';
-import { Box } from '../../primitives';
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
+import { Box } from '@repo/ui/primitives';
 
 /**
  * VastuView.web - Web-sovereign structural view.

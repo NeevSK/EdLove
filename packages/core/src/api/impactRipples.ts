@@ -1,5 +1,5 @@
-import { growth } from '../logic';
-import type { CreateRippleInput, ImpactRipple } from '../types/Growth';
+import { growth } from '@repo/core/logic';
+import type { CreateRippleInput, ImpactRipple } from '@repo/core/types/Growth';
 
 /**
  * impactRipplesAPI (Legacy Proxy)

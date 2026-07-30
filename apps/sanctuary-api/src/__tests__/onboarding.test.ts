@@ -1,20 +1,20 @@
 import './setup';
 import { describe, expect, it, beforeEach } from 'vitest';
 import { app } from '../core/app.js';
+import { createTestORPCClient } from './orpc-client';
 import {
   setMockActiveBond,
   setMockUserData,
   setMockZenStackDbAvailable,
 } from './setup';
 
-describe('Sanctuary API: Onboarding Endpoints', () => {
+describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
   const userId = '123e4567-e89b-12d3-a456-426614174000';
 
   // JWT bypass token: UUID format triggers integration test bypass in verifySupabaseJwt
   const userToken = '123e4567-e89b-12d3-a456-426614174000';
   const authenticatedHeaders = {
     Authorization: `Bearer ${userToken}`,
-    'Content-Type': 'application/json',
   };
 
   const validInitialBondPayload = {
@@ -28,9 +28,7 @@ describe('Sanctuary API: Onboarding Endpoints', () => {
     },
   };
 
-  const validCompleteOnboardingPayload = {
-    userId,
-  };
+  const validCompleteOnboardingPayload = {};
 
   const defaultMockUser = {
     id: userId,
@@ -47,18 +45,11 @@ describe('Sanctuary API: Onboarding Endpoints', () => {
     setMockUserData(null);
   });
 
-  describe('POST /api/identity/initial-bond', () => {
+  describe('POST /api/onboarding/createInitialBond', () => {
     it('should return 200 for a valid onboarding request', async () => {
       setMockUserData(defaultMockUser);
 
-      const res = await app.request('/api/identity/initial-bond', {
-        method: 'POST',
-        headers: authenticatedHeaders,
-        body: JSON.stringify(validInitialBondPayload),
-      });
-
-      expect(res.status).toBe(200);
-      const body = await res.json();
+      const body = await createTestORPCClient(authenticatedHeaders).onboarding.createInitialBond(validInitialBondPayload);
       expect(body.success).toBe(true);
     });
 
@@ -71,21 +62,14 @@ describe('Sanctuary API: Onboarding Endpoints', () => {
         entity_id: 'GLOBAL',
       });
 
-      const res = await app.request('/api/identity/initial-bond', {
-        method: 'POST',
-        headers: authenticatedHeaders,
-        body: JSON.stringify(validInitialBondPayload),
-      });
-
-      expect(res.status).toBe(200);
-      const body = await res.json();
+      const body = await createTestORPCClient(authenticatedHeaders).onboarding.createInitialBond(validInitialBondPayload);
       expect(body.success).toBe(true);
     });
 
     it('should return 400 for invalid request body', async () => {
       setMockUserData(defaultMockUser);
 
-      const res = await app.request('/api/identity/initial-bond', {
+      const res = await app.request('/api/onboarding/createInitialBond', {
         method: 'POST',
         headers: authenticatedHeaders,
         body: JSON.stringify({ orientation: '' }),
@@ -95,19 +79,12 @@ describe('Sanctuary API: Onboarding Endpoints', () => {
     });
   });
 
-  describe('POST /api/identity/complete-onboarding', () => {
+  describe('POST /api/onboarding/completeOnboarding', () => {
     it('should return 200 and complete onboarding when bonds exist', async () => {
       setMockUserData(defaultMockUser);
       setMockActiveBond({ capacity: 'teacher', entity_type: 'PLATFORM', entity_id: 'GLOBAL' });
 
-      const res = await app.request('/api/identity/complete-onboarding', {
-        method: 'POST',
-        headers: authenticatedHeaders,
-        body: JSON.stringify(validCompleteOnboardingPayload),
-      });
-
-      expect(res.status).toBe(200);
-      const body = await res.json();
+      const body = await createTestORPCClient(authenticatedHeaders).onboarding.completeOnboarding(validCompleteOnboardingPayload);
       expect(body.success).toBe(true);
     });
 
@@ -115,14 +92,7 @@ describe('Sanctuary API: Onboarding Endpoints', () => {
       setMockUserData({ ...defaultMockUser, capacity: 'teacher' });
       setMockActiveBond(null);
 
-      const res = await app.request('/api/identity/complete-onboarding', {
-        method: 'POST',
-        headers: authenticatedHeaders,
-        body: JSON.stringify(validCompleteOnboardingPayload),
-      });
-
-      expect(res.status).toBe(200);
-      const body = await res.json();
+      const body = await createTestORPCClient(authenticatedHeaders).onboarding.completeOnboarding(validCompleteOnboardingPayload);
       expect(body.success).toBe(true);
     });
 
@@ -130,23 +100,50 @@ describe('Sanctuary API: Onboarding Endpoints', () => {
       setMockUserData({ ...defaultMockUser, capacity: null });
       setMockActiveBond(null);
 
-      const res = await app.request('/api/identity/complete-onboarding', {
+      const res = await app.request('/api/onboarding/completeOnboarding', {
         method: 'POST',
         headers: authenticatedHeaders,
-        body: JSON.stringify(validCompleteOnboardingPayload),
+      body: JSON.stringify({ userId: 42 }),
       });
 
       expect(res.status).toBe(400);
     });
 
     it('should return 400 for invalid request body', async () => {
-      const res = await app.request('/api/identity/complete-onboarding', {
+      const res = await app.request('/api/onboarding/completeOnboarding', {
         method: 'POST',
         headers: authenticatedHeaders,
         body: JSON.stringify({}),
       });
 
       expect(res.status).toBe(400);
+    });
+  });
+
+  describe('POST /api/onboarding/createFounderSchoolBond', () => {
+    it('creates a principal bond without accepting a caller-supplied user ID', async () => {
+      setMockUserData({ ...defaultMockUser, capacity: 'principal' });
+      setMockActiveBond({ capacity: 'principal', entity_type: 'PLATFORM', entity_id: 'GLOBAL' });
+
+      const body = await createTestORPCClient(authenticatedHeaders).onboarding.createFounderSchoolBond({
+        schoolId: '923e4567-e89b-12d3-a456-426614174000',
+      });
+
+      expect(body.success).toBe(true);
+      expect(body.bondId).toBe('b23e4567-e89b-12d3-a456-426614174000');
+    });
+  });
+
+  describe('POST /api/onboarding/revokeSchoolBond', () => {
+    it('revokes the authenticated user school bond', async () => {
+      setMockUserData({ ...defaultMockUser, capacity: 'principal' });
+      setMockActiveBond({ id: 'b23e4567-e89b-12d3-a456-426614174000', capacity: 'principal', entity_type: 'SCHOOL', entity_id: '923e4567-e89b-12d3-a456-426614174000' });
+
+      const body = await createTestORPCClient(authenticatedHeaders).onboarding.revokeSchoolBond({
+        schoolId: '923e4567-e89b-12d3-a456-426614174000',
+      });
+
+      expect(body.success).toBe(true);
     });
   });
 });

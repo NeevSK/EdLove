@@ -1,2 +1,2 @@
-export * from './externalLinks';
-export * from './resourceLinks';
+export * from '@repo/library/utils/externalLinks';
+export * from '@repo/library/utils/resourceLinks';

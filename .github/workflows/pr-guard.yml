@@ -18,7 +18,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 11.9.0
+          version: 11.13.0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -29,8 +29,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --fetch-timeout 100000
 
+      - name: Check Icon Bridge Contract
+        run: pnpm check:icons
+
       - name: Run Linter
         run: pnpm lint
+
+      - name: Observability ownership boundaries
+        run: pnpm run check:observability-boundaries
 
       - name: Check Types
         env:

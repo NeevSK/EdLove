@@ -4,24 +4,23 @@ import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useThemedColors } from '@repo/ui/hooks';
+import { AtSign, SquarePen, User as UserIcon } from '@repo/ui/icons';
 import { Box, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { router, useLocalSearchParams } from 'expo-router';
-
-import { AtSign, SquarePen, User as UserIcon } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
-import { AddSocialLinkModal } from '../components/AddSocialLinkModal';
-import { AvatarDisplay } from '../components/AvatarDisplay';
-import { ContactLinktree } from '../components/ContactLinktree';
-import { EditableItem } from '../components/EditableItem';
-import { GiveThuthimalModal } from '../components/GiveThuthimalModal';
-import { useProfile } from '../hooks/useProfile';
-import { useProfileCompletion } from '../hooks/useProfileCompletion';
-import { useSocialLinks } from '../hooks/useSocialLinks';
-import type { UserProfile } from '../types';
+import { AddSocialLinkModal } from '@repo/profile/components/AddSocialLinkModal';
+import { AvatarDisplay } from '@repo/profile/components/AvatarDisplay';
+import { ContactLinktree } from '@repo/profile/components/ContactLinktree';
+import { EditableItem } from '@repo/profile/components/EditableItem';
+import { GiveThuthimalModal } from '@repo/profile/components/GiveThuthimalModal';
+import { useProfile } from '@repo/profile/hooks/useProfile';
+import { useProfileCompletion } from '@repo/profile/hooks/useProfileCompletion';
+import { useSocialLinks } from '@repo/profile/hooks/useSocialLinks';
+import type { UserProfile } from '@repo/profile/types';
 
 export default function FullProfileScreenWeb() {
   const params = useLocalSearchParams<{ id?: string; userId?: string; full_name?: string }>();

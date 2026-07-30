@@ -1,39 +1,51 @@
+import { defineFeatureLifecycle } from '@repo/core/logic/registry/domainEntry';
 import type { DomainFeature } from '@repo/core/types';
+
+const REGISTRY_LIFECYCLE = defineFeatureLifecycle({
+  owner: 'community',
+  createdAt: '2026-07-26',
+  reviewAt: '2026-09-30',
+  permanentJustification: 'Stable catalog capability governed by the AppCatalog owner.',
+});
 
 export const COMMUNITY_REGISTRY: Record<string, DomainFeature> = {
   hearth: {
     id: 'hearth',
     surfaceId: 'hearth',
-    workspaceId: 'community-sanctuary',
-    capabilityKey: 'CommunityFeed',
     ownerPackage: 'community',
     defaultZone: 'work',
     defaultOrder: 50,
     label: 'The Hearth',
     description: 'The central gathering place for community updates',
-    citizenshipRequired: 0, // Wanderers can see public hearths
+    citizenshipRequired: 3, // Wanderers/Third Class can see public hearths
     mobileSupport: true,
     webSupport: true,
+    state: 'live',
+    lifecycle: REGISTRY_LIFECYCLE,
+    capabilityRequirement: { action: 'read', subject: 'CommunityFeed' },
+    tabDomain: 'community',
+    analyticsKey: 'community.hearth',
   },
   circles: {
     id: 'circles',
     surfaceId: 'joined-circles',
-    workspaceId: 'community-sanctuary',
-    capabilityKey: 'CommunityGroups',
     ownerPackage: 'community',
     defaultZone: 'today',
     defaultOrder: 20,
     label: 'Circles of Trust',
     description: 'Private groups and interest-based circles',
-    citizenshipRequired: 1, // 2nd Class (Cloud storage required for social)
+    citizenshipRequired: 1, // requires identity binding
     mobileSupport: true,
     webSupport: true,
+    state: 'live',
+    lifecycle: REGISTRY_LIFECYCLE,
+    capabilityRequirement: { action: 'read', subject: 'CommunityGroups' },
+    tabDomain: 'community',
+    analyticsKey: 'community.circles',
   },
   messages: {
     id: 'messages',
     surfaceId: 'context-messages',
-    workspaceId: 'community-sanctuary',
-    capabilityKey: 'DirectMessages',
     ownerPackage: 'community',
     defaultZone: 'outlook',
     defaultOrder: 120,
@@ -42,19 +54,29 @@ export const COMMUNITY_REGISTRY: Record<string, DomainFeature> = {
     citizenshipRequired: 1, // Requires identity binding
     mobileSupport: true,
     webSupport: true,
+    state: 'live',
+    lifecycle: REGISTRY_LIFECYCLE,
+    capabilityRequirement: { action: 'read', subject: 'DirectMessages' },
+    tabDomain: 'community',
+    analyticsKey: 'community.messages',
   },
-  trust_network: {
+  trust: {
     id: 'trust',
     surfaceId: 'trust',
-    workspaceId: 'community-sanctuary',
-    capabilityKey: 'TrustNetwork',
     ownerPackage: 'community',
     defaultZone: 'today',
     defaultOrder: 30,
     label: 'Trust Network',
     description: 'Reputation and vouching system',
-    citizenshipRequired: 2, // 1st Class (Institutional/Vouched only)
-    isPro: true,
+    citizenshipRequired: 2, // 2nd Class
+    entitlementTier: 'PRO',
+    entitlementModule: 'trust_network',
+    mobileSupport: false,
     webSupport: true,
+    state: 'live',
+    lifecycle: REGISTRY_LIFECYCLE,
+    capabilityRequirement: { action: 'read', subject: 'TrustNetwork' },
+    tabDomain: 'community',
+    analyticsKey: 'community.trust_network',
   },
 };

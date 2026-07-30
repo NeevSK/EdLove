@@ -1,6 +1,4 @@
 import { accountPin, cryptoManager, storage, useStore } from '@repo/core/logic';
-import * as LocalAuthentication from 'expo-local-authentication';
-import * as ScreenCapture from 'expo-screen-capture';
 import {
   Check,
   ChevronRight,
@@ -13,26 +11,28 @@ import {
   Smartphone,
   Sparkles,
   Zap,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
+import * as LocalAuthentication from 'expo-local-authentication';
+import * as ScreenCapture from 'expo-screen-capture';
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, TextInput, TouchableOpacity } from 'react-native';
-import AccountPinModal from '../components/AccountPinModal';
-import DeviceSecurityCenter from '../components/DeviceSecurityCenter';
-import { NotificationSettingsPanel } from '../components/NotificationSettingsPanel';
-import { Box } from '../components/ui/box';
-import { Button, ButtonText } from '../components/ui/button';
-import { HStack } from '../components/ui/hstack';
-import { Pressable } from '../components/ui/pressable';
-import { ScrollView } from '../components/ui/scroll-view';
-import { Switch } from '../components/ui/switch';
-import { Heading, Text } from '../components/ui/text';
-import { VStack } from '../components/ui/vstack';
-import { useEnvironment } from '../context';
-import { useTheme } from '../hooks/useTheme';
-import { useSanctuaryToast } from '../providers/ToastProvider';
-import { hapticLight, hapticSuccess } from '../utils/haptics';
+import AccountPinModal from '@repo/ui/components/AccountPinModal';
+import DeviceSecurityCenter from '@repo/ui/components/DeviceSecurityCenter';
+import { NotificationSettingsPanel } from '@repo/ui/components/NotificationSettingsPanel';
+import { Box } from '@repo/ui/components/ui/box';
+import { Button, ButtonText } from '@repo/ui/components/ui/button';
+import { HStack } from '@repo/ui/components/ui/hstack';
+import { Pressable } from '@repo/ui/components/ui/pressable';
+import { ScrollView } from '@repo/ui/components/ui/scroll-view';
+import { Switch } from '@repo/ui/components/ui/switch';
+import { Heading, Text } from '@repo/ui/components/ui/text';
+import { VStack } from '@repo/ui/components/ui/vstack';
+import { useEnvironment } from '@repo/ui/context';
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 
 interface SettingsOptionProps {
   icon: React.ReactNode;
@@ -551,6 +551,7 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
   }, [navigation, user]);
 
   const handleTrubeLab = useCallback(() => navigation.navigate('TrubeLab'), [navigation]);
+  const handleIconLab = useCallback(() => navigation.navigate('icon-lab'), [navigation]);
 
   const handleContactSupport = useCallback(async () => {
     hapticLight();
@@ -1089,6 +1090,20 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
           accessibilityLabel="Open Trube Lab"
           accessibilityHint="Experiment with living surface compositions and lighting."
         />
+        {__DEV__ && (
+          <SettingsOption
+            icon={
+              <Box className="text-phase-secondary">
+                <Sparkles size={24} />
+              </Box>
+            }
+            title="Iconography Lab"
+            description="Compare Lucide, Phosphor, and native Lucide rendering."
+            onPress={handleIconLab}
+            accessibilityLabel="Open Iconography Lab"
+            accessibilityHint="Compare icon systems across mobile and web."
+          />
+        )}
         <SettingsOption
           icon={
             <Box className="text-phase-secondary">

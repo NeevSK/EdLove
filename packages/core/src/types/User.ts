@@ -1,6 +1,6 @@
-import type { Bond } from './Identity';
-import type { SocialLink } from './Social';
-import type { TenantKind } from './Tenancy';
+import type { Bond } from '@repo/core/types/Identity';
+import type { SocialLink } from '@repo/core/types/Social';
+import type { TenantKind } from '@repo/core/types/Tenancy';
 
 export interface ProfileStats {
   classes_taught?: number;

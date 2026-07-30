@@ -1,16 +1,19 @@
-import { CircleAlert, CircleCheck, Info, X } from 'lucide-react-native';
+/* eslint-disable react/react-compiler */
+'use no memo';
+
+import { CircleAlert, CircleCheck, Info, X } from '@repo/ui/icons';
 import { useCallback, useEffect } from 'react';
 import { Platform } from 'react-native';
 import Animated, {
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { Pressable } from '../primitives';
-import { Box } from './ui/box';
-import { Text } from './ui/text';
+import { runOnJS } from 'react-native-worklets';
+import { Pressable } from '@repo/ui/primitives';
+import { Box } from '@repo/ui/components/ui/box';
+import { Text } from '@repo/ui/components/ui/text';
 
 export type ToastType = 'success' | 'error' | 'info';
 
@@ -32,6 +35,7 @@ export default function SanctuaryToast({
   onHide,
   duration = 3000,
 }: SanctuaryToastProps) {
+  'use no memo';
   const translateY = useSharedValue(-HIDDEN_Y_OFFSET);
   const opacity = useSharedValue(0);
 
@@ -43,6 +47,8 @@ export default function SanctuaryToast({
         return { icon: CircleAlert, color: '#EF4444' }; // phase-danger
       case 'info':
         return { icon: Info, color: '#F6BF8C' }; // phase-accent
+      default:
+        return { icon: Info, color: '#F6BF8C' };
     }
   };
 

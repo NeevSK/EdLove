@@ -5,12 +5,12 @@
 
 import { identity, useStore } from '@repo/core/logic';
 import { type ReactNode, useCallback, useMemo } from 'react';
-import { FidelityProvider, useFidelity } from './FidelityProvider';
-import { LanguageProvider, useLanguage } from './LanguageProvider';
+import { FidelityProvider, useFidelity } from '@repo/ui/context/FidelityProvider';
+import { LanguageProvider, useLanguage } from '@repo/ui/context/LanguageProvider';
 // Atomic Providers
-import { RealityProvider, useReality } from './RealityProvider';
-import { ThemeProvider, useThemeContext } from './ThemeProvider';
-import type { EnvironmentContextValue } from './types';
+import { RealityProvider, useReality } from '@repo/ui/context/RealityProvider';
+import { ThemeProvider, useThemeContext } from '@repo/ui/context/ThemeProvider';
+import type { EnvironmentContextValue } from '@repo/ui/context/types';
 
 /**
  * Environment Provider Component
@@ -105,19 +105,19 @@ export function useEnvironment(): EnvironmentContextValue {
 export {
   FidelityProvider,
   useFidelity,
-} from './FidelityProvider';
+} from '@repo/ui/context/FidelityProvider';
 export {
   LanguageProvider,
   useLanguage,
-} from './LanguageProvider';
+} from '@repo/ui/context/LanguageProvider';
 // Re-export utility functions and atomic hooks
 export {
   RealityProvider,
   useReality,
-} from './RealityProvider';
+} from '@repo/ui/context/RealityProvider';
 export {
   ThemeProvider,
   useThemeContext,
-} from './ThemeProvider';
+} from '@repo/ui/context/ThemeProvider';
 
-export { getTemporalPhase, shouldUseDarkTheme } from './utils';
+export { getTemporalPhase, shouldUseDarkTheme } from '@repo/ui/context/utils';

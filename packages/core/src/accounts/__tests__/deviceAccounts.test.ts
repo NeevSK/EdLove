@@ -81,6 +81,11 @@ describe('deviceAccounts', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     setActiveAccountId(null);
+    mockLogAuditEvent.mockResolvedValue(undefined);
+    mockSyncCurrentAccountDevice.mockResolvedValue(null);
+    mockTouchCurrentDevice.mockResolvedValue(null);
+    mockUpsertCurrentSecuritySession.mockResolvedValue(undefined);
+    mockRevokeMyInstallSecuritySessions.mockResolvedValue(undefined);
   });
 
   it('captures the active account and stores scoped session tokens', async () => {
@@ -98,8 +103,10 @@ describe('deviceAccounts', () => {
     expect(record?.accountId).toBe('account-1');
     expect(mockSet).toHaveBeenCalled();
     expect(mockSyncCurrentAccountDevice).toHaveBeenCalledWith('account-1');
-    expect(mockUpsertCurrentSecuritySession).toHaveBeenCalledWith(
-      expect.objectContaining({ accountId: 'account-1', authStrength: 'session' }),
+    await vi.waitFor(() =>
+      expect(mockUpsertCurrentSecuritySession).toHaveBeenCalledWith(
+        expect.objectContaining({ accountId: 'account-1', authStrength: 'session' }),
+      ),
     );
   });
 

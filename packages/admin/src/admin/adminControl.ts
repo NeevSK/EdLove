@@ -1,9 +1,20 @@
-import { useFeatureStore } from '@repo/core/logic';
+import {
+  FEATURE_FLAG_MANIFEST,
+  type FeatureFlagKey,
+} from '@repo/core/logic/registry/featureLifecycleManifest';
+import {
+  type FeatureLifecycleAction,
+  validateFeatureLifecycleAction,
+} from '@repo/core/logic/registry/featureLifecyclePolicy';
 import { type MutationOutcome, useMutationAuditLog } from '@repo/core/sync';
 
-export interface AdminFeatureGateChange {
+export interface AdminMutationChange {
   key: string;
   value: string | boolean;
+}
+
+export interface AdminFeatureGateChange extends AdminMutationChange {
+  key: FeatureFlagKey;
 }
 
 export interface GuardedRepairPlan {
@@ -18,7 +29,7 @@ export interface AdminMutationPreview {
   id: string;
   title: string;
   summary: string;
-  changes: AdminFeatureGateChange[];
+  changes: AdminMutationChange[];
   affectedScope: string;
   reversible: boolean;
   createdAt: string;
@@ -43,7 +54,7 @@ function logAdminMutation(
   name: string,
   scope: string,
   status: MutationOutcome,
-  _summary: string,
+  summary: string,
   lastError?: string,
 ) {
   const id = makeId('admin-mutation');
@@ -55,26 +66,31 @@ function logAdminMutation(
     status,
     attempts: status === 'retrying' ? 1 : 0,
     queuedAt: Date.now(),
+    summary,
     lastError,
   });
 
   return id;
 }
 
-export function getAdminFeatureSnapshot() {
-  const { flags, globalConfigs } = useFeatureStore.getState();
-  return {
-    flags,
-    globalConfigs,
-    activeFlagCount: Object.values(flags).filter(Boolean).length,
-    maintenanceMode: flags.isUnderMaintenance,
-  };
+function assertFeatureGateChanges(
+  changes: AdminMutationChange[],
+): asserts changes is AdminFeatureGateChange[] {
+  const unknownKeys = changes.filter(
+    (change) => !FEATURE_FLAG_MANIFEST[change.key as keyof typeof FEATURE_FLAG_MANIFEST],
+  );
+  if (unknownKeys.length > 0) {
+    throw new Error(
+      `Feature lifecycle: unknown GrowthBook key(s): ${unknownKeys.map((change) => change.key).join(', ')}`,
+    );
+  }
 }
 
 export function stageFeatureGateChanges(
   changes: AdminFeatureGateChange[],
   affectedScope = 'platform',
 ): AdminMutationPreview {
+  assertFeatureGateChanges(changes);
   logAdminMutation(
     'stage-feature-gate-changes',
     affectedScope,
@@ -85,7 +101,7 @@ export function stageFeatureGateChanges(
     id: makeId('feature-preview'),
     title: 'Feature gate change preview',
     summary:
-      'Stage global config updates without mutating live operator state until the preview is approved.',
+      'Stage GrowthBook rollout updates without mutating live operator state until they are approved in the control plane.',
     changes,
     affectedScope,
     reversible: true,
@@ -93,28 +109,45 @@ export function stageFeatureGateChanges(
   };
 }
 
-export function commitFeatureGateChanges(changes: AdminFeatureGateChange[]) {
-  const current = useFeatureStore.getState().globalConfigs;
-  const next = changes.reduce<Record<string, string | boolean>>(
-    (acc, change) => {
-      acc[change.key] = change.value;
-      return acc;
-    },
-    { ...current },
-  );
-
-  useFeatureStore.getState().setGlobalConfigs(next);
+export function commitFeatureGateChanges(changes: AdminMutationChange[]) {
+  assertFeatureGateChanges(changes);
   logAdminMutation(
     'commit-feature-gate-changes',
     'platform',
-    'success',
-    `Applied ${changes.length} feature gate change(s).`,
+    'queued',
+    `Queued ${changes.length} feature gate change(s) for the GrowthBook control plane.`,
   );
 
   return {
-    applied: true,
-    appliedAt: new Date().toISOString(),
+    applied: false,
+    requiresGrowthBookControlPlane: true,
+    queuedAt: new Date().toISOString(),
     changedKeys: changes.map((change) => change.key),
+  };
+}
+
+export function queueFeatureLifecycleAction(action: FeatureLifecycleAction) {
+  const metadata = FEATURE_FLAG_MANIFEST[action.key as keyof typeof FEATURE_FLAG_MANIFEST];
+  if (!metadata) {
+    throw new Error(`Feature lifecycle: unknown manifest key "${action.key}".`);
+  }
+
+  validateFeatureLifecycleAction(metadata, action);
+  const auditId = logAdminMutation(
+    `feature-lifecycle-${action.kind}`,
+    action.key,
+    'queued',
+    action.kind === 'archive-growthbook-flag'
+      ? `Queued archival of ${action.key} for the GrowthBook control plane. Reason: ${action.reason}`
+      : `Queued operational retention for ${action.key}. Justification: ${action.permanentJustification}`,
+  );
+
+  return {
+    applied: false,
+    requiresGrowthBookControlPlane: true,
+    auditId,
+    queuedAt: new Date().toISOString(),
+    action,
   };
 }
 
@@ -162,7 +195,10 @@ export function getAdminAuditEntries(): AdminAuditEntry[] {
       name: entry.name,
       scope: entry.scope,
       status: entry.status,
-      summary: entry.lastError ?? `Queued at ${new Date(entry.queuedAt).toLocaleString()}`,
+      summary:
+        entry.lastError ??
+        entry.summary ??
+        `Queued at ${new Date(entry.queuedAt).toLocaleString()}`,
       createdAt: new Date(entry.queuedAt).toISOString(),
       updatedAt: new Date(entry.updatedAt).toISOString(),
       lastError: entry.lastError,

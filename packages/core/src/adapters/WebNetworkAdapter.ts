@@ -1,4 +1,4 @@
-import type { INetwork } from '../logic/interfaces/network.port';
+import type { INetwork } from '@repo/core/logic/interfaces/network.port';
 
 /**
  * WebNetworkAdapter

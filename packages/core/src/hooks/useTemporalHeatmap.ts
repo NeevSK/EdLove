@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '../api/supabase';
-import { usePermissions } from '../logic/permissions/hooks/usePermissions';
-import { getTemporalRange } from '../logic/utils/temporalUtils';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
+import { getTemporalRange } from '@repo/core/logic/utils/temporalUtils';
 
 export interface HeatmapData {
   date: string;

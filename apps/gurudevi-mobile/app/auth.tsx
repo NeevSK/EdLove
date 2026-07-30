@@ -3,7 +3,7 @@ import { identityAPI } from '@repo/core/api';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
 import { Suspense, useCallback } from 'react';
-import AuthScreen from '../src/screens/AuthScreen';
+import AuthScreen from '@/screens/AuthScreen';
 
 function Fallback() {
   return (

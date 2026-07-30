@@ -1,7 +1,15 @@
-# ADR-002: Sovereignty Grants Pattern
+﻿# ADR-002: Sovereignty Grants Pattern
 
 ## Status
-Accepted
+**Superseded by ADR-013 and GrowthBook rollout engine**
+
+This ADR was conceived when the permission system used CASL with sovereignty grants stored in relational tables (`student_record_access_grants`). The architecture has since migrated to Cedar policy evaluation (ADR-003, ADR-004, ADR-005, ADR-013) with GrowthBook as the feature rollout engine (D5 — `2026-06-20-docs-source-of-truth-and-feature-rollout-boundaries.md`).
+
+**What this means today:**
+- Sovereignty constraints are now expressed as Cedar policies, not relational grants.
+- Feature rollout is managed by GrowthBook (`IFeatureRolloutPort` / `GrowthBookFeatureRolloutAdapter`), not by feature-flag tables in the app schema.
+- The principle ("no surveillance by default") still holds — it's enforced by Cedar's deny-by-default semantics.
+- The relational grants pattern described here should not be used for new features.
 
 ## Context
 In a multi-tenant school system, institutional hierarchy (School -> Zone -> Province) shouldn't imply automatic data access. Child data sovereignty is paramount.

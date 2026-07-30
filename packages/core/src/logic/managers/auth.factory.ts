@@ -1,7 +1,7 @@
-import { SupabaseAuthAdapter } from '../../adapters/supabase/auth.adapter';
-import { storage } from '../../lib/storage';
-import { AuthManager } from './AuthManager';
-import { identity } from './identity.factory';
+import { SupabaseAuthAdapter } from '@repo/core/adapters/supabase/auth.adapter';
+import { storage } from '@repo/core/lib/storage';
+import { AuthManager } from '@repo/core/logic/managers/AuthManager';
+import { identity } from '@repo/core/logic/managers/identity.factory';
 
 /**
  * auth: The Global Sovereign Auth Instance.

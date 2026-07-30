@@ -1,4 +1,4 @@
-import { ChevronRight, Folder, Lock, X } from 'lucide-react-native';
+import { ChevronRight, Folder, Lock, X } from '@repo/ui/icons';
 import type React from 'react';
 import {
   Box,
@@ -13,7 +13,7 @@ import {
   Pressable,
   Text,
   VStack,
-} from '../../gluestack';
+} from '@repo/ui/gluestack';
 
 export interface PickerItem {
   id: string;

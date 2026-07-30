@@ -77,13 +77,11 @@ export interface WorkspaceRendererConfig {
   maxColumns?: number;
 }
 
-export interface DomainFeature extends WorkspaceSurfaceDefinition {
-  id: string;
-  label: string;
-  description?: string;
+import type { DomainEntry } from '@repo/core/logic/registry/domainEntry';
+
+export interface DomainFeature extends DomainEntry {
   icon?: string;
-  citizenshipRequired: number; // 0 (Wanderer), 1 (2nd Class), 2 (1st Class)
-  isPro?: boolean;
+  defaultZone?: string;
 }
 
 export interface ResolvedWorkspaceSurface<

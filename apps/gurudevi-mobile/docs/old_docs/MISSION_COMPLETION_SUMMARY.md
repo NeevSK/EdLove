@@ -1,3 +1,5 @@
+> **Superseded** — kept for historical reference.
+> See active docs at docs/INDEX.md.
 # ðŸŽ‰ DELEGATION PACKET - MISSION COMPLETE
 
 **Date**: February 4, 2026  

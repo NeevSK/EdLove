@@ -9,7 +9,6 @@ const createInitialBondSchema = z.object({
     firstName: z.string().trim().min(1).optional(),
     lastName: z.string().trim().min(1).optional(),
     username: z.string().trim().min(1).optional(),
-    schoolId: z.string().uuid().nullable().optional(),
     metadata: z.record(z.string(), z.unknown()).optional(),
   }),
 });
@@ -35,22 +34,12 @@ export const onboardingHandlers = {
       const profile = await db.user.findUnique({ where: { id: userId } });
       if (!profile) return c.json({ message: 'User not found' }, 404);
 
-      const isSupabaseAnonymous = profile.is_anonymous ?? true;
-      const schoolId = context.schoolId || null;
-
-      let citizenship: 'WANDERER' | 'SECOND_CLASS' | 'FIRST_CLASS' = 'WANDERER';
-      if (!isSupabaseAnonymous) {
-        citizenship = 'SECOND_CLASS';
-        if (schoolId) {
-          const school = await db.school.findUnique({
-            where: { id: schoolId },
-            select: { type: true },
-          });
-          if (school && school.type !== 'personal_workspace') {
-            citizenship = 'FIRST_CLASS';
-          }
-        }
-      }
+      const isSupabaseAnonymous = profile.is_anonymous === true;
+      // Citizenship is registration/verification state. School membership is
+      // a separate bond relationship and is added after personal onboarding.
+      const citizenship: 'THIRD_CLASS' | 'SECOND_CLASS' = isSupabaseAnonymous
+        ? 'THIRD_CLASS'
+        : 'SECOND_CLASS';
 
       let username =
         typeof context.username === 'string' ? context.username.trim().toLowerCase() : null;
@@ -78,7 +67,7 @@ export const onboardingHandlers = {
           : full_name || 'Gurudevi User';
 
       let finalPersonalClassroomId: string | null = null;
-      if (citizenship === 'SECOND_CLASS' && !schoolId) {
+      {
         const isTeacherOrPrincipal = [
           'teacher',
           'principal',
@@ -119,7 +108,10 @@ export const onboardingHandlers = {
             });
             finalPersonalClassroomId = newPC.id;
           } catch (pcErr) {
-            console.error('[createInitialBond] Failed to initialize personal classroom record:', pcErr);
+            console.error(
+              '[createInitialBond] Failed to initialize personal classroom record:',
+              pcErr,
+            );
           }
         }
       }
@@ -132,25 +124,15 @@ export const onboardingHandlers = {
           first_name: context.firstName ?? null,
           last_name: context.lastName ?? null,
           username,
-          identity_state: isSupabaseAnonymous ? 'anonymous' : 'onboarded',
-          school_id: schoolId,
+          identity_state: isSupabaseAnonymous ? 'anonymous' : 'identifying',
+          school_id: null,
           citizenship,
           capacity: orientation,
         },
       });
 
-      const entity_type =
-        citizenship === 'FIRST_CLASS'
-          ? 'SCHOOL'
-          : citizenship === 'SECOND_CLASS'
-            ? 'PERSONAL_CLASSROOM'
-            : 'PLATFORM';
-      const entity_id =
-        citizenship === 'FIRST_CLASS'
-          ? schoolId
-          : citizenship === 'SECOND_CLASS'
-            ? finalPersonalClassroomId || 'PERSONAL_WORKSPACE'
-            : 'GLOBAL';
+      const entity_type = 'PERSONAL_CLASSROOM';
+      const entity_id = finalPersonalClassroomId || 'PERSONAL_WORKSPACE';
 
       const existingBond = await db.bond.findFirst({
         where: { user_id: userId, entity_id, capacity: orientation },

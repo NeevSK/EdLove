@@ -1,7 +1,7 @@
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box } from '@repo/ui/primitives';
 import { useTranslation } from 'react-i18next';
-import { FormBuilder } from '../FormBuilder';
+import { FormBuilder } from '@repo/form-builder/FormBuilder';
 
 export default function FormBuilderScreenWeb() {
   const { t } = useTranslation();

@@ -1,4 +1,4 @@
-import { cssInterop } from 'nativewind';
+﻿import { cssInterop } from 'react-native-css-interop';
 import React, { createContext, useContext, useMemo } from 'react';
 import { View, type ViewProps } from 'react-native';
 
@@ -76,3 +76,4 @@ Progress.displayName = 'Progress';
 ProgressFilledTrack.displayName = 'ProgressFilledTrack';
 
 export { Progress as default };
+

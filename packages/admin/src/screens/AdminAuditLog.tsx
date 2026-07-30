@@ -1,8 +1,8 @@
 import { Box, Text, VStack } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
-import { getAdminAuditEntries } from '../admin/adminControl';
-import { AdminRoomPanel, AdminRoomShell } from './AdminRoomShell';
+import { getAdminAuditEntries } from '@repo/admin/admin/adminControl';
+import { AdminRoomPanel, AdminRoomShell } from '@repo/admin/screens/AdminRoomShell';
 
 export default function AdminAuditLog() {
   const router = useRouter();

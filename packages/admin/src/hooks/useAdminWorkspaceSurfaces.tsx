@@ -1,11 +1,11 @@
 import { useFeatureRegistry } from '@repo/core/hooks/useFeatureRegistry';
 import type { ClassroomWorkspaceSurface, PrincipalInsight } from '@repo/core/types/Workspace';
 import { useRouter } from 'expo-router';
-import { PrincipalOnboardingView } from '../components';
-import { ADMIN_REGISTRY } from '../constants/adminRegistry';
-import GradeHeadDashboard from '../screens/GradeHeadDashboard';
-import PrincipalDashboard from '../screens/PrincipalDashboard';
-import SectionHeadDashboard from '../screens/SectionHeadDashboard';
+import { PrincipalOnboardingView } from '@repo/admin/components';
+import { ADMIN_REGISTRY } from '@repo/admin/constants/adminRegistry';
+import GradeHeadDashboard from '@repo/admin/screens/GradeHeadDashboard';
+import PrincipalDashboard from '@repo/admin/screens/PrincipalDashboard';
+import SectionHeadDashboard from '@repo/admin/screens/SectionHeadDashboard';
 
 export function appendAdminWorkspaceSurfaces(
   surfaces: ClassroomWorkspaceSurface[],
@@ -43,16 +43,12 @@ export function appendAdminWorkspaceSurfaces(
   const citizenshipLevel =
     citizenship === 'FIRST_CLASS' ? 2 : citizenship === 'SECOND_CLASS' ? 1 : 0;
 
-  const adminGated = useFeatureRegistry(ADMIN_REGISTRY, {
-    citizenship: citizenshipLevel,
-    isPro,
-    capabilities: userCapabilities,
-    can,
-  });
+  const adminGated = useFeatureRegistry(ADMIN_REGISTRY);
 
   // --- Principal Dashboard ---
-  const principalGate = adminGated.principal_dashboard;
+  const principalGate = adminGated.principal;
   if (principalGate?.visible) {
+    const principalFeature = ADMIN_REGISTRY.principal!;
     const principalContent =
       !schoolIdToUse && !isDemoModeTriggered ? (
         <PrincipalOnboardingView
@@ -70,47 +66,49 @@ export function appendAdminWorkspaceSurfaces(
       );
 
     surfaces.push({
-      ...principalGate.feature,
-      title: principalGate.feature.label,
-      subtitle: principalGate.feature.description,
+      ...principalFeature,
+      title: principalFeature.label,
+      subtitle: principalFeature.description,
       summary:
         surfaceInsights?.principal?.summary ??
         'Institutional pulse, observations, approvals, and published academic oversight.',
       temporalLabel: surfaceInsights?.principal?.temporalLabel ?? 'Official',
       metadata: surfaceInsights?.principal?.metadata ?? ['Admin-owned', 'Governance'],
       content: principalContent,
-    } as ClassroomWorkspaceSurface);
+    } as unknown as ClassroomWorkspaceSurface);
   }
 
   // --- Section Head Dashboard ---
-  const sectionHeadGate = adminGated.section_head;
+  const sectionHeadGate = adminGated['section-head'];
   if (sectionHeadGate?.visible) {
+    const sectionHeadFeature = ADMIN_REGISTRY['section-head']!;
     surfaces.push({
-      ...sectionHeadGate.feature,
-      title: sectionHeadGate.feature.label,
-      subtitle: sectionHeadGate.feature.description,
+      ...sectionHeadFeature,
+      title: sectionHeadFeature.label,
+      subtitle: sectionHeadFeature.description,
       summary: 'Mixed teaching and coordination capability within the classroom holon.',
       temporalLabel: 'Work',
       metadata: ['Academic', 'Mixed-role'],
       content: (
         <SectionHeadDashboard schoolId={schoolIdToUse || undefined} userId={classroomData.userId} />
       ),
-    } as ClassroomWorkspaceSurface);
+    } as unknown as ClassroomWorkspaceSurface);
   }
 
   // --- Grade Head Dashboard ---
-  const gradeHeadGate = adminGated.grade_head;
+  const gradeHeadGate = adminGated['grade-head'];
   if (gradeHeadGate?.visible) {
+    const gradeHeadFeature = ADMIN_REGISTRY['grade-head']!;
     surfaces.push({
-      ...gradeHeadGate.feature,
-      title: gradeHeadGate.feature.label,
-      subtitle: gradeHeadGate.feature.description,
+      ...gradeHeadFeature,
+      title: gradeHeadFeature.label,
+      subtitle: gradeHeadFeature.description,
       summary: 'Cross-class coordination for grade-wide rhythms, issues, and academic flow.',
       temporalLabel: 'Work',
       metadata: ['Academic', 'Mixed-role'],
       content: (
         <GradeHeadDashboard schoolId={schoolIdToUse || undefined} userId={classroomData.userId} />
       ),
-    } as ClassroomWorkspaceSurface);
+    } as unknown as ClassroomWorkspaceSurface);
   }
 }

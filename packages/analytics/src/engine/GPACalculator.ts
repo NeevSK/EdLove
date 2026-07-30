@@ -1,11 +1,11 @@
-import type { StudentGrade } from '@repo/core/logic';
-import type { GPACalculationOptions, GradingScale } from '../types/AnalyticsTypes';
+import type { StudentGrade } from '@repo/core/types';
+import type { GPACalculationOptions, GradingScale } from '@repo/analytics/types/AnalyticsTypes';
 import {
   type GradebookEntry,
   SIMPLIFIED_GRADING_SCALE,
   STANDARD_GRADING_SCALE,
   WEIGHTED_GRADING_SCALE,
-} from '../types/GradingTypes';
+} from '@repo/analytics/types/GradingTypes';
 
 export class GPACalculator {
   private scale: GradingScale;
@@ -101,6 +101,7 @@ export class GPACalculator {
         marks: entry.marks ?? 0,
         grade: entry.letterGrade ?? '',
         gpa: entry.gpa,
+        graded_at: new Date(entry.gradedAt),
         created_at: new Date(entry.gradedAt),
         updated_at: new Date(entry.gradedAt),
         classroom_id: '', // Not in GradebookEntry, but required for POA type

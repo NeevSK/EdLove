@@ -1,6 +1,6 @@
-import { useStore } from '../store/useStore';
-import { isDemo } from './demo';
-import * as MOCK from './mockData';
+import { useStore } from '@repo/core/store/useStore';
+import { isDemo } from '@repo/core/api/demo';
+import * as MOCK from '@repo/core/api/mockData';
 
 /**
  * Registry of mock data getters.

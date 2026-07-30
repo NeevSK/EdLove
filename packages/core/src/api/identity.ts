@@ -1,6 +1,9 @@
-import { APIError } from '../types/API';
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from './base';
-import { assertHighway } from './highways';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { assertHighway } from '@repo/core/api/highways';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@repo/core/native/guestIdentity';
+import { setGuestScope } from '@repo/core/native/guestScope';
+import { APIError } from '@repo/core/types/API';
 
 /**
  * Simplified bond structure returned by the identity API
@@ -21,10 +24,10 @@ export interface SimplifiedBond {
 
 export interface ActiveCitizen {
   id: string;
-  email: string;
+  email: string | null;
   display_name: string;
   availableBonds: SimplifiedBond[];
-  activeBond?: SimplifiedBond;
+  activeBond?: SimplifiedBond | null;
   onboarding_completed?: boolean;
   schoolId?: string;
 }
@@ -38,6 +41,13 @@ export const identityAPI = {
    */
   async identifyActiveCitizen(): Promise<ActiveCitizen | null> {
     assertHighway('identity_bootstrap', 'direct-api');
+    const { data: sessionData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getSession();
+    if (sessionData.session?.user?.is_anonymous) {
+      setGuestScope(sessionData.session.user.id);
+      const local = await getLocalGuestIdentity(sessionData.session.user.id);
+      return local;
+    }
+    setGuestScope(null);
     if (!inFlightIdentityRequest) {
       inFlightIdentityRequest = (async () => {
         const res = await (client.api as any).identity.resolveIdentity.$get();
@@ -80,6 +90,14 @@ export const identityAPI = {
    */
   async modifyUserProfile(id: string, updates: Record<string, unknown>) {
     assertHighway('profile_core', 'direct-api');
+    const { data: sessionData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getSession();
+    if (sessionData.session?.user?.is_anonymous && sessionData.session.user.id === id) {
+      return updateLocalGuestIdentity(id, {
+        ...(updates.display_name !== undefined && {
+          display_name: String(updates.display_name ?? ''),
+        }),
+      });
+    }
     const res = await (client.api as any).identity.profile[':id'].$patch({
       param: { id },
       json: updates,

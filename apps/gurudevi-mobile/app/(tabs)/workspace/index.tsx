@@ -1,11 +1,11 @@
-import { usePermissionStore } from '@repo/core';
+import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { usePermissions } from '@repo/core/logic';
 import { Center, Spinner } from '@repo/ui/primitives';
 import { Redirect } from 'expo-router';
 
 export default function WorkspaceDispatcher() {
   const { context } = usePermissions();
-  const loading = usePermissionStore((state: any) => state.isLoading);
+  const loading = useCedarDecisionStore((state: any) => state.isLoading);
 
   if (loading) {
     return (

@@ -8,7 +8,7 @@ import { hapticSuccess } from '@repo/ui/utils/haptics';
 import { useLocalSearchParams } from 'expo-router';
 
 import { useCallback, useEffect, useState } from 'react';
-import AttendanceSheet from '../components/AttendanceSheet';
+import AttendanceSheet from '@repo/classroom/components/AttendanceSheet';
 
 export default function AttendanceScreen() {
   const { classroomId = '' } = useLocalSearchParams<{ classroomId?: string }>();

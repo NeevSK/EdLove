@@ -1,10 +1,10 @@
-import { z } from 'zod';
+import type { SovereignContract } from '@repo/core/api/contract';
 import {
   LibraryCollectionSchema,
   LibraryResourceSchema,
   ResourceEngagementSchema,
-} from '../logic/schemas/library.schema';
-import type { SovereignContract } from './contract';
+} from '@repo/core/logic/schemas/library.schema';
+import { z } from 'zod';
 
 const libraryAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
   ({

@@ -6,6 +6,7 @@
 import { usePermissions, useTemporalStore } from '@repo/core/logic';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
+import { CircleCheck, Flame, Mic } from '@repo/ui/icons';
 import {
   AnimatedView,
   Box,
@@ -21,8 +22,6 @@ import {
 } from '@repo/ui/primitives';
 import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
-
-import { CircleCheck, Flame, Mic } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -35,7 +34,7 @@ import {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useFireJournal } from '../hooks/useFireJournal';
+import { useFireJournal } from '@repo/self/hooks/useFireJournal';
 
 interface FireJournalProps {
   userId?: string;

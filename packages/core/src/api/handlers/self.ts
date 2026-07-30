@@ -1,5 +1,5 @@
 import type { Context } from 'hono';
-import { MoodLogSchema, UserPreferencesSchema } from '../../logic/schemas/self.schema';
+import { MoodLogSchema, UserPreferencesSchema } from '@repo/core/logic/schemas/self.schema';
 
 /**
  * Self Domain Handlers (Hono + ZenStack ReBAC)

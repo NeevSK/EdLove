@@ -18,12 +18,12 @@ import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprot
 import * as dotenv from 'dotenv';
 
 // --- Service Imports: The Modular Sovereignty ---
-import { AuditService } from './services/AuditService.js';
-import { DiscoveryService } from './services/DiscoveryService.js';
-import { DocumentService } from './services/DocumentService.js';
-import { HelpService } from './services/HelpService.js';
-import { MaintenanceService } from './services/MaintenanceService.js';
-import { ScoutService } from './services/ScoutService.js';
+import { AuditService } from '@repo/platform-mcp/services/AuditService.js';
+import { DiscoveryService } from '@repo/platform-mcp/services/DiscoveryService.js';
+import { DocumentService } from '@repo/platform-mcp/services/DocumentService.js';
+import { HelpService } from '@repo/platform-mcp/services/HelpService.js';
+import { MaintenanceService } from '@repo/platform-mcp/services/MaintenanceService.js';
+import { ScoutService } from '@repo/platform-mcp/services/ScoutService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -236,6 +236,19 @@ class PolymathPlatformServer {
             'dist',
             'index.js',
           ),
+        ],
+      },
+      {
+        name: 'jscpd',
+        envKey: 'EXPO_TOKEN',
+        alwaysRun: true,
+        command: 'node',
+        args: [
+          // jscpd is a root devDependency — resolve from monorepo root
+          path.join(__dirname, '..', '..', '..', 'node_modules', 'jscpd', 'run-jscpd.js'),
+          '--mcp',
+          '--directory',
+          'apps/gurudevi-mobile',
         ],
       },
       {
@@ -708,7 +721,8 @@ class PolymathPlatformServer {
         },
         {
           name: 'detect_stale_feature_flags',
-          description: 'Identifies feature flags that are statically true and can be removed.',
+          description:
+            'Audits feature and catalog lifecycle contracts, reporting unused, fully launched, overdue, orphaned, and retired-key violations.',
           inputSchema: { type: 'object', properties: {} },
         },
         {
@@ -915,6 +929,7 @@ class PolymathPlatformServer {
                   'deprecations',
                   'memory_sinks',
                   'cognitive_load',
+                  'taze',
                 ],
               },
               params: {
@@ -1121,6 +1136,8 @@ class PolymathPlatformServer {
               return this.audit.handleAuditA11y(params);
             case 'dependency_health':
               return this.maintenance.handleAuditDependencyHealth();
+            case 'taze':
+              return this.maintenance.handleTazeAudit(params);
             case 'i18n':
               return this.audit.handleAuditI18n();
             case 'colors':

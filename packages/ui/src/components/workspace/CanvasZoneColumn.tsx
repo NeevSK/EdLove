@@ -2,12 +2,12 @@ import type { WorkspaceZoneLayoutGroup } from '@repo/core/logic/workspace/canvas
 import type { ResolvedWorkspaceSurface } from '@repo/core/types';
 import type React from 'react';
 import { type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
-import { Text } from '../../gluestack';
-import { useThemedColors } from '../../hooks/useThemedColors';
-import { View } from '../../primitives';
-import { Theme } from '../../theme/Theme';
-import { CanvasSurfaceCard } from './CanvasSurfaceCard';
-import { DraggableCanvasSurface } from './DraggableCanvasSurface';
+import { Text } from '@repo/ui/gluestack';
+import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
+import { View } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme/Theme';
+import { CanvasSurfaceCard } from '@repo/ui/components/workspace/CanvasSurfaceCard';
+import { DraggableCanvasSurface } from '@repo/ui/components/workspace/DraggableCanvasSurface';
 
 export interface CanvasZoneColumnProps<
   TSurfaceId extends string = string,

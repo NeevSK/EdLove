@@ -1,3 +1,5 @@
+/* eslint-disable */
+/* oxlint-disable */
 import '@testing-library/jest-dom';
 import 'react-native-gesture-handler/jestSetup';
 
@@ -27,22 +29,64 @@ jest.mock('expo-constants', () => {
 });
 
 // Mock react-native-mmkv
+// V4 auto-mock — minimal factory to ensure createMMKV is available
 jest.mock('react-native-mmkv', () => {
+  const actual = jest.requireActual('react-native-mmkv');
   return {
-    MMKV: jest.fn().mockImplementation(() => ({
-      set: jest.fn(),
-      getString: jest.fn().mockReturnValue(undefined),
-      getNumber: jest.fn().mockReturnValue(undefined),
-      getBoolean: jest.fn().mockReturnValue(undefined),
-      delete: jest.fn(),
-      clearAll: jest.fn(),
-      contains: jest.fn().mockReturnValue(false),
-    })),
+    ...actual,
+    createMMKV: jest.fn((options = {}) => {
+      const store = new Map();
+      return {
+        set: jest.fn((k, v) => store.set(k, v)),
+        getString: jest.fn((k) => store.get(k) ?? null),
+        getNumber: jest.fn((k) => store.get(k) ?? null),
+        getBoolean: jest.fn((k) => store.get(k) ?? false),
+        getBuffer: jest.fn((k) => store.get(k) ?? null),
+        contains: jest.fn((k) => store.has(k)),
+        delete: jest.fn((k) => store.delete(k)),
+        remove: jest.fn((k) => store.delete(k)),
+        getAllKeys: jest.fn(() => Array.from(store.keys())),
+        clearAll: jest.fn(() => store.clear()),
+        addOnValueChangedListener: jest.fn(() => ({ remove: jest.fn() })),
+        trim: jest.fn(),
+        byteSize: 0,
+        checkContentChanged: jest.fn(() => false),
+      };
+    }),
+    useMMKVString: jest.fn(),
+    useMMKVNumber: jest.fn(),
+    useMMKVBoolean: jest.fn(),
+    useMMKVBuffer: jest.fn(),
   };
 });
 
 // Mock react-native-nitro-modules (peer dep of react-native-mmkv v4)
-jest.mock('react-native-nitro-modules', () => ({}));
+jest.mock('react-native-nitro-modules', () => {
+  return {
+    NitroModules: {
+      createHybridObject: jest.fn((name) => {
+        if (name === 'TrubeGPUDriver') {
+          return {
+            prewarmSurface: jest.fn(() => true),
+            prewarmSurfaceAsync: jest.fn(() => Promise.resolve(true)),
+            recordFrame: jest.fn(),
+            onFrame: jest.fn(),
+            addPrimitive: jest.fn(),
+            entropyTime: 0,
+            isEngineReady: jest.fn(() => true),
+            isSurfaceReady: jest.fn(() => true),
+            isReady: true,
+            frameCount: 0,
+            lastPrewarmMs: 0,
+            lastFrameMs: 0,
+            activeSurfaces: 0,
+          };
+        }
+        return {};
+      }),
+    },
+  };
+});
 
 // Mock expo-font
 jest.mock('expo-font', () => ({

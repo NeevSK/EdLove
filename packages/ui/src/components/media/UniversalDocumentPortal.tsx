@@ -1,9 +1,9 @@
 import type { DownloadState } from '@repo/core/hooks';
-import { CircleAlert, Download, ExternalLink, FileText, Info, Sparkles } from 'lucide-react-native';
-import { Box, HStack, Text, useTheme, VStack } from '../../primitives';
-import GlobalHeader from '../GlobalHeader';
-import { SanctuaryButton } from '../SanctuaryButton';
-import ScreenWrapper from '../ScreenWrapper';
+import { CircleAlert, Download, ExternalLink, FileText, Info, Sparkles } from '@repo/ui/icons';
+import { Box, HStack, Text, useTheme, VStack } from '@repo/ui/primitives';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 
 export interface UniversalDocumentPortalProps {
   title: string;

@@ -5,8 +5,8 @@ import {
   createStudentGoal,
   fetchStudentGoalsForView,
   updateStudentGoal,
-} from '../api/selfFeatureRepository';
-import type { Goal } from '../types';
+} from '@repo/self/api/selfFeatureRepository';
+import type { Goal } from '@repo/self/types';
 
 const GOALS_CACHE_KEY = 'gurudevi-student-goals-cache';
 export function useStudentGoals(userId?: string) {

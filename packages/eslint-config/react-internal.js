@@ -6,6 +6,7 @@ import pluginRnxKit from '@rnx-kit/eslint-plugin';
 import pluginJsxA11y from 'eslint-plugin-jsx-a11y';
 import pluginReactHooks from 'eslint-plugin-react-hooks';
 import pluginReactNative from 'eslint-plugin-react-native';
+import sonarjs from 'eslint-plugin-sonarjs';
 import globals from 'globals';
 import { config as baseConfig } from './base.js';
 import maxUseStateRule from './rules/max-use-state.js';
@@ -62,6 +63,14 @@ export const config = [
       'local/max-use-state': ['error', { max: 3 }],
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
+      'no-restricted-imports': [
+        'error',
+        {
+          name: 'lucide-react-native',
+          message:
+            'Import icons from @repo/ui/icons instead of directly from lucide-react-native. See 2026-07-16-icon-bridge-contract.md.',
+        },
+      ],
       'no-restricted-syntax': [
         'error',
         {
@@ -87,6 +96,20 @@ export const config = [
             'Date.now() is non-deterministic during hydration. Use a stable timestamp prop or wrap in useEffect.',
         },
       ],
+    },
+  },
+  // --- Sonar: Cognitive Complexity & Code Smell Sentinel ---
+  // Threshold 15: permissive enough for React hooks/JSX patterns,
+  // strict enough to catch God Functions before they propagate.
+  {
+    plugins: { sonarjs },
+    rules: {
+      'sonarjs/cognitive-complexity': ['error', 15],
+      'sonarjs/no-duplicate-string': ['warn', { threshold: 5 }],
+      'sonarjs/no-identical-functions': 'error',
+      'sonarjs/no-collapsible-if': 'warn',
+      'sonarjs/no-redundant-boolean': 'error',
+      'sonarjs/prefer-immediate-return': 'warn',
     },
   },
 ];

@@ -1,4 +1,29 @@
+import { Effect } from 'effect';
 import type { Context } from 'hono';
+
+class SyncTableError {
+  readonly _tag = 'SyncTableError';
+  constructor(readonly table: string) {}
+  get message() {
+    return `Unsupported sync table: ${this.table}`;
+  }
+}
+
+class SyncDelegateError {
+  readonly _tag = 'SyncDelegateError';
+  constructor(readonly modelKey: string) {}
+  get message() {
+    return `Model delegate "${this.modelKey}" not found in transaction context`;
+  }
+}
+
+class SyncOperationError {
+  readonly _tag = 'SyncOperationError';
+  constructor(readonly op: string) {}
+  get message() {
+    return `Unsupported operations mode: ${this.op}`;
+  }
+}
 
 const tableToModelMap: Record<string, string> = {
   users: 'user',
@@ -104,82 +129,73 @@ export const syncHandlers = {
 
     console.log(`[Sync] Processing transactional upload batch of ${crud.length} mutations.`);
 
-    try {
-      // Execute all operations in a single database transaction for atomic consistency
-      await db.$transaction(async (tx: any) => {
-        for (const item of crud) {
-          const { id, op, table, opData } = item;
-          const modelKey = tableToModelMap[table] || tableToModelMap[table.toLowerCase()];
+    const outcome = await Effect.runPromise(
+      Effect.tryPromise(async () => {
+        await db.$transaction(async (tx: any) => {
+          for (const item of crud) {
+            const { id, op, table, opData } = item;
+            const modelKey = tableToModelMap[table] || tableToModelMap[table.toLowerCase()];
 
-          if (!modelKey) {
-            console.warn(`[Sync] No active Prisma model mapping for table: "${table}"`);
-            throw new Error(`Unsupported sync table: ${table}`);
+            if (!modelKey) {
+              console.warn(`[Sync] No active Prisma model mapping for table: "${table}"`);
+              throw new SyncTableError(table);
+            }
+
+            const delegate = tx[modelKey];
+            if (!delegate) {
+              throw new SyncDelegateError(modelKey);
+            }
+
+            switch (op) {
+              case 'PUT':
+                await delegate.upsert({
+                  where: { id },
+                  create: { ...opData, id },
+                  update: opData ?? {},
+                });
+                break;
+
+              case 'PATCH':
+                await delegate.update({ where: { id }, data: opData ?? {} });
+                break;
+
+              case 'DELETE':
+                await delegate.delete({ where: { id } });
+                break;
+
+              default:
+                throw new SyncOperationError(op);
+            }
           }
-
-          const delegate = tx[modelKey];
-          if (!delegate) {
-            throw new Error(`Model delegate "${modelKey}" not found in transaction context`);
-          }
-
-          console.log(`[Sync] Executing ${op} on "${modelKey}" ID: ${id}`);
-
-          switch (op) {
-            case 'PUT':
-              // Perform atomic upsert
-              await delegate.upsert({
-                where: { id },
-                create: { ...opData, id },
-                update: opData ?? {},
-              });
-              break;
-
-            case 'PATCH':
-              // Perform atomic update
-              await delegate.update({
-                where: { id },
-                data: opData ?? {},
-              });
-              break;
-
-            case 'DELETE':
-              // Perform atomic delete
-              await delegate.delete({
-                where: { id },
-              });
-              break;
-
-            default:
-              throw new Error(`Unsupported operations mode: ${op}`);
-          }
-        }
-      });
-
-      console.log(`[Sync] Successfully synchronized ${crud.length} mutations to platform ledger.`);
-
-      if (idempotencyKey) {
-        idempotencyCache.set(idempotencyKey, {
-          success: true,
-          processedCount: crud.length,
-          timestamp: Date.now(),
         });
-      }
 
-      return c.json(
-        {
-          success: true,
-          processedCount: crud.length,
-        },
-        200,
-      );
-    } catch (err: any) {
-      console.error('[Sync] Transaction processing failed, batch aborted:', err);
-      return c.json(
-        {
-          error: 'Transaction Aborted',
-          message: err.message || String(err),
-        },
-        400,
-      );
+        if (idempotencyKey) {
+          idempotencyCache.set(idempotencyKey, {
+            success: true,
+            processedCount: crud.length,
+            timestamp: Date.now(),
+          });
+        }
+
+        return { success: true, processedCount: crud.length };
+      }).pipe(
+        Effect.catchAll((e) => {
+          const err = e as Error | SyncTableError | SyncDelegateError | SyncOperationError;
+          const message =
+            err instanceof SyncTableError ||
+            err instanceof SyncDelegateError ||
+            err instanceof SyncOperationError
+              ? err.message
+              : err?.message || 'Transaction Aborted';
+          console.error('[Sync] Transaction processing failed, batch aborted:', err);
+          return Effect.succeed({ error: 'Transaction Aborted', message });
+        }),
+      ),
+    );
+
+    if ('error' in outcome) {
+      return c.json(outcome, 400);
     }
+    return c.json(outcome, 200);
   },
 };

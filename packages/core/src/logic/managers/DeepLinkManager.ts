@@ -1,4 +1,4 @@
-import type { AuthManager } from './AuthManager';
+import type { AuthManager } from '@repo/core/logic/managers/AuthManager';
 
 /**
  * DeepLinkType

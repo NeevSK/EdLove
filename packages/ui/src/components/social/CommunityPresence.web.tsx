@@ -3,7 +3,7 @@
  * Web override for social presence shell.
  */
 
-import { Users, WifiOff } from '../../icons';
+import { Users, WifiOff } from '@repo/ui/icons';
 
 export interface CommunityPresenceWebProps {
   compact?: boolean;

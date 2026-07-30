@@ -1,11 +1,13 @@
+import { DeltaResonance } from '@repo/core/lib/sync/delta';
+import { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
+import { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
+import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { useStore } from '@repo/core/store/useStore';
+import { executeMutation$, OfflineMutationError } from '@repo/core/utils/mutation';
+import { Effect } from 'effect';
 import { useCallback, useState } from 'react';
 import { v7 as uuidv7 } from 'uuid';
-import { DeltaResonance } from '../lib/sync/delta';
-import { generateIdempotencyKey } from '../lib/sync/idempotency';
-import { useMutationAuditLog } from '../lib/sync/MutationAuditLog';
-import { useMutationQueue } from '../lib/sync/useMutationQueue';
-import { networkManager } from '../logic/managers/NetworkManager';
-import { useStore } from '../store/useStore';
 
 interface SafeMutationOptions<TData, TVariables> {
   mutationKey?: string; // Unique key for queueing (e.g. 'createPost')
@@ -41,34 +43,18 @@ export function useSafeMutation<TData, TVariables>(
       setIsLoading(true);
       setError(null);
 
-      // 1. Optimistic Update
       if (options?.onMutate) {
         options.onMutate(variables);
       }
 
-      const executeRequest = async (attempt: number): Promise<TData> => {
-        try {
-          // Check connectivity
-          const isConnected = await networkManager.isConnected();
-          if (!isConnected) {
-            throw new Error('OFFLINE_QUEUE');
-          }
-
-          return await mutationFn(variables);
-        } catch (err: unknown) {
-          if (err instanceof Error && err.message === 'OFFLINE_QUEUE') throw err;
-
-          if (attempt < (options?.retryCount || 3)) {
-            const delay = 2 ** attempt * 1000;
-            await new Promise((resolve) => setTimeout(resolve, delay));
-            return executeRequest(attempt + 1);
-          }
-          throw err;
-        }
-      };
-
       try {
-        const result = await executeRequest(0);
+        const result = await Effect.runPromise(
+          executeMutation$({
+            isConnected: () => networkManager.isConnected(),
+            mutation: () => mutationFn(variables),
+            retryCount: options?.retryCount,
+          }),
+        );
 
         if (options?.onSuccess) {
           options.onSuccess(result, variables);
@@ -76,19 +62,19 @@ export function useSafeMutation<TData, TVariables>(
 
         return result;
       } catch (err: unknown) {
-        // Queue for later if network issue or offline signal
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        if (errorMessage === 'OFFLINE_QUEUE' || errorMessage === 'Network request failed') {
+        const isOffline =
+          err instanceof OfflineMutationError ||
+          (err instanceof Error && err.message === 'Network request failed');
+
+        if (isOffline) {
           if (options?.mutationKey) {
-            const mutationId = uuidv7(); // Upgraded to v7 for better DB locality
+            const mutationId = uuidv7();
             const scope = options.scope || 'general';
             const name = options.mutationKey;
 
-            // Fetch studentId from store for better salting
             const studentId = useStore.getState().user?.id;
             const idempotencyKey = await generateIdempotencyKey(scope, name, variables, studentId);
 
-            // 1. Audit Entry (Temporal Birth)
             logAudit({
               id: mutationId,
               idempotencyKey,
@@ -99,7 +85,6 @@ export function useSafeMutation<TData, TVariables>(
               queuedAt: Date.now(),
             });
 
-            // 2. Queue for Persistence (with Delta-Resonance check)
             let finalVariables = variables;
             let finalType = options.mutationType || 'CREATE';
 
@@ -130,6 +115,7 @@ export function useSafeMutation<TData, TVariables>(
           }
         }
 
+        const errorMessage = err instanceof Error ? err.message : String(err);
         setError(err instanceof Error ? err : new Error(errorMessage));
         if (options?.onError) options.onError(err, variables);
         else showToast(errorMessage || 'Action failed', 'error');

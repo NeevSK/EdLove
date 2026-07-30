@@ -1,5 +1,4 @@
-import { api, identityAPI } from '@repo/core/api';
-import { useStore } from '@repo/core/logic';
+import { api } from '@repo/core/api';
 
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { CircleCheck, QrCode } from '@repo/ui/icons';
@@ -32,30 +31,12 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
   const [inviteCode, setInviteCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [successData, setSuccessData] = useState<any>(null);
-  const { user, setUser } = useStore();
 
   const handleClaim = async () => {
     if (!inviteCode.trim()) return;
     try {
       setLoading(true);
       const result = await api.classroomStudents.claimStudent(inviteCode.trim());
-
-      // Sync school_id if the classroom belongs to a school
-      if (result?.classroom_id) {
-        const classroom = await api.classrooms.getById(result.classroom_id);
-
-        if (classroom?.school_id) {
-          const userId = await identityAPI.getMyInternalId();
-          if (userId) {
-            await identityAPI.updateProfile(userId, {
-              school_id: classroom.school_id,
-            });
-            if (user) {
-              setUser({ ...user, school_id: classroom.school_id } as any);
-            }
-          }
-        }
-      }
 
       setSuccessData(result);
       hapticSuccess();

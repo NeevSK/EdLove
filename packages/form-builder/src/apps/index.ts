@@ -1,1 +1,1 @@
-export * from './resilience-sensing-schema';
+export * from '@repo/form-builder/apps/resilience-sensing-schema';

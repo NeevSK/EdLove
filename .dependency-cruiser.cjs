@@ -25,6 +25,8 @@ module.exports = {
         pathNot: '^apps/$1/',
       },
     },
+
+
     {
       name: 'no-orphans',
       severity: 'warn',
@@ -108,6 +110,42 @@ module.exports = {
       },
     },
     {
+      name: 'no-cross-domain-feature-imports',
+      severity: 'error',
+      comment:
+        'Domain packages must not import from other domain packages. Cross-domain workflows must go through the event bus (ADR-004).',
+      from: { path: '^packages/(classroom|people|self|admin|community|profile|workforce|library)/src/' },
+      to: {
+        path: '^packages/(classroom|people|self|admin|community|profile|workforce|library)/',
+        pathNot: '^packages/$1/',
+      },
+    },
+    {
+      name: 'domain-not-to-payments',
+      severity: 'error',
+      comment: 'Domain packages must never directly import payments or accounting. Use IEntitlementPort through core.',
+      from: { path: '^packages/(classroom|people|self|admin|community|profile|workforce|library)/src/' },
+      to: {
+        path: '^packages/(payments|accounting)/',
+      },
+    },
+    {
+      name: 'no-store-imports-outside-core',
+      severity: 'error',
+      comment: 'Zustand stores are internal to @repo/core. Apps and other packages must import through @repo/core/logic or @repo/core/store.',
+      from: {
+        path: '^(apps/|packages/(?!core|types-shim)/)',
+        pathNot: ['\\.test\\.ts$', '\\.d\\.ts$'],
+      },
+      to: {
+        path: '^packages/core/src/store/',
+        pathNot: [
+          '^packages/core/src/store/index\\.ts$',
+          '^packages/core/src/store/types/',
+        ],
+      },
+    },
+    {
       name: 'L0-L1-subpath-only',
       severity: 'warn',
       comment:
@@ -142,6 +180,50 @@ module.exports = {
       },
       to: {
         path: '^packages/database/',
+      },
+    },
+    {
+      name: 'mobile-screens-not-to-app',
+      severity: 'error',
+      comment: 'Mobile screens, components, hooks, and lib must never import from the app/ routing layer.',
+      from: {
+        path: '^apps/gurudevi-mobile/src/',
+      },
+      to: {
+        path: '^apps/gurudevi-mobile/app/',
+      },
+    },
+    {
+      name: 'mobile-components-not-to-screens',
+      severity: 'error',
+      comment: 'Mobile components, hooks, utils, and libraries must never import from screens.',
+      from: {
+        path: '^apps/gurudevi-mobile/src/(components|ui|hooks|lib|utils|providers|services)/',
+      },
+      to: {
+        path: '^apps/gurudevi-mobile/src/screens/',
+      },
+    },
+    {
+      name: 'mobile-hooks-not-to-ui',
+      severity: 'error',
+      comment: 'Mobile business logic hooks, services, and libraries must never import UI components or screens.',
+      from: {
+        path: '^apps/gurudevi-mobile/src/(hooks|lib|services|utils)/',
+      },
+      to: {
+        path: '^apps/gurudevi-mobile/src/(components|ui|screens)/',
+      },
+    },
+    {
+      name: 'mobile-utils-isolation',
+      severity: 'error',
+      comment: 'Mobile pure utilities must remain leaf nodes and not import from screens, hooks, or providers.',
+      from: {
+        path: '^apps/gurudevi-mobile/src/utils/',
+      },
+      to: {
+        path: '^apps/gurudevi-mobile/src/(screens|components|ui|hooks|providers|services)/',
       },
     },
   ],

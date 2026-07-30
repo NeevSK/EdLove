@@ -1,2 +1,2 @@
-export * from './AnalyticsTypes';
-export * from './GradingTypes';
+export * from '@repo/analytics/types/AnalyticsTypes';
+export * from '@repo/analytics/types/GradingTypes';

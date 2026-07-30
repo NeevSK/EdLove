@@ -1,15 +1,7 @@
-import { Flower } from 'lucide-react-native';
-import { useEffect } from 'react';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated';
-import { Center, Text, VStack } from '../gluestack';
-import { ActivityIndicator } from '../primitives';
+import { Flower } from '@repo/ui/icons';
+import { EaseView } from 'react-native-ease';
+import { Center, Text, VStack } from '@repo/ui/gluestack';
+import { ActivityIndicator } from '@repo/ui/primitives';
 
 interface LotusLoaderProps {
   size?: 'sm' | 'md' | 'lg';
@@ -28,51 +20,21 @@ export default function LotusLoader({
   text = 'Loading...',
   fullscreen = false,
 }: LotusLoaderProps) {
-  const scale = useSharedValue(1);
-  const opacity = useSharedValue(0.6);
-  const rotation = useSharedValue(0);
-
-  useEffect(() => {
-    // Breathing animation
-    scale.value = withRepeat(
-      withSequence(
-        withTiming(1.2, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
-        withTiming(1.0, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
-      ),
-      -1,
-      true,
-    );
-
-    // Glow pulse
-    opacity.value = withRepeat(
-      withSequence(withTiming(1, { duration: 1500 }), withTiming(0.6, { duration: 1500 })),
-      -1,
-      true,
-    );
-
-    // Gentle rotation
-    rotation.value = withRepeat(
-      withTiming(360, { duration: 12000, easing: Easing.linear }),
-      -1,
-      false,
-    );
-  }, [
-    // Breathing animation
-    scale, // Gentle rotation
-    rotation, // Glow pulse
-    opacity,
-  ]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }, { rotate: `${rotation.value}deg` }] as any,
-    opacity: opacity.value,
-  }));
-
   const content = (
     <VStack space="md" className="items-center justify-center">
-      <Animated.View style={animatedStyle}>
-        <Flower size={SIZES[size]} className="text-phase-accent" strokeWidth={1.5} />
-      </Animated.View>
+      <EaseView
+        initialAnimate={{ scale: 1, opacity: 0.6 }}
+        animate={{ scale: 1.2, opacity: 1 }}
+        transition={{ type: 'timing', duration: 1500, easing: 'easeInOut', loop: 'reverse' }}
+      >
+        <EaseView
+          initialAnimate={{ rotate: 0 }}
+          animate={{ rotate: 360 }}
+          transition={{ type: 'timing', duration: 12000, easing: 'linear', loop: 'repeat' }}
+        >
+          <Flower size={SIZES[size]} className="text-phase-accent" strokeWidth={1.5} />
+        </EaseView>
+      </EaseView>
       <ActivityIndicator size="large" className="text-phase-text-secondary" />
       {text && <Text className="text-phase-text-secondary text-sm tracking-[1px]">{text}</Text>}
     </VStack>

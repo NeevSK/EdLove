@@ -1,5 +1,4 @@
-import { AnalyticsProvider } from '@repo/analytics/ui';
-import { useAuth, usePermissions } from '@repo/core/logic';
+import { useAuth } from '@repo/core/logic';
 import { useAuthStore } from '@repo/core/store';
 import { SyncManager } from '@repo/core/sync';
 import { SanctuaryGlobalStyles } from '@repo/ui/components/SanctuaryGlobalStyles';
@@ -12,10 +11,10 @@ import { ToastProvider } from '@repo/ui/providers';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { dispatchQueuedMutationToSovereignBus } from '@/lib/inngestEvents';
+import { useAssets } from '@/providers/AssetProvider';
+import { DeepLinkProvider } from '@/providers/DeepLinkProvider';
 import { config } from '../../gluestack-ui.config';
-import { dispatchQueuedMutationToSovereignBus } from '../lib/inngestEvents';
-import { useAssets } from './AssetProvider';
-import { DeepLinkProvider } from './DeepLinkProvider';
 
 const queryClient = new QueryClient();
 
@@ -53,8 +52,6 @@ interface SanctuaryProviderProps {
 }
 
 export function SanctuaryProvider({ children }: SanctuaryProviderProps) {
-  const { flags } = usePermissions();
-
   return (
     <QueryClientProvider client={queryClient}>
       <EnvironmentProvider>
@@ -65,16 +62,8 @@ export function SanctuaryProvider({ children }: SanctuaryProviderProps) {
               <DeepLinkProvider>
                 <ToastProvider>
                   <ExternalLinkProvider>
-                    <AnalyticsProvider
-                      apiKey={process.env.EXPO_PUBLIC_POSTHOG_API_KEY}
-                      enabled={flags?.isAnalyticsEnabled}
-                      options={{
-                        host: process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
-                      }}
-                    >
-                      <Box className="flex-1">{children}</Box>
-                      <SyncManager dispatchQueuedMutation={dispatchQueuedMutationToSovereignBus} />
-                    </AnalyticsProvider>
+                    <Box className="flex-1">{children}</Box>
+                    <SyncManager dispatchQueuedMutation={dispatchQueuedMutationToSovereignBus} />
                   </ExternalLinkProvider>
                 </ToastProvider>
               </DeepLinkProvider>

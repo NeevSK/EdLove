@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { identityAPI } from '../api/identity';
-import { rewardsAPI } from '../api/rewards';
-import { useTemporalStore } from '../store/useTemporalStore';
+import { identityAPI } from '@repo/core/api/identity';
+import { rewardsAPI } from '@repo/core/api/rewards';
+import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 
 /**
  * Hook for managing user rewards, points, and milestones.

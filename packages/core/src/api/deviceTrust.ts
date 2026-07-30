@@ -3,13 +3,13 @@ import {
   DEVICE_SECURITY_MUTATIONS,
   isOfflineLikeError,
   queueDeviceSecurityIntent,
-} from '../lib/sync/deviceSecurityIntents';
-import { networkManager } from '../logic/managers/NetworkManager';
-import { coreRuntime } from '../logic/runtimeRegistry';
-import { APIError } from '../types/API';
-import { assertHighway } from './highways';
-import { identityAPI } from './identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from './supabase';
+} from '@repo/core/lib/sync/deviceSecurityIntents';
+import { networkManager } from '@repo/core/logic/managers/NetworkManager';
+import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
+import { APIError } from '@repo/core/types/API';
+import { assertHighway } from '@repo/core/api/highways';
+import { identityAPI } from '@repo/core/api/identity';
+import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
 
 const DEVICE_INSTALL_ID_KEY = 'gurudevi-device-install-id';
 const SERVER_DEVICE_ID_KEY = 'gurudevi-server-device-id';

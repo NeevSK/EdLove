@@ -62,3 +62,6 @@ assets/*
 # PowerSync web assets
 public/@powersync/
 
+# temporary check files
+.tmp/
+

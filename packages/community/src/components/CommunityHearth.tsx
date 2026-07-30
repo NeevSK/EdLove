@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, useWindowDimensions } from 'react-native';
 
-import type { CommunityPost as Post, SanctuaryManifesto } from '../types/Community';
+import type { CommunityPost as Post, SanctuaryManifesto } from '@repo/community/types/Community';
 
 interface CommunityHearthProps {
   manifestos?: SanctuaryManifesto[];

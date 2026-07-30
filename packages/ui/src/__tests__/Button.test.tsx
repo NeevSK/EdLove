@@ -1,5 +1,5 @@
+import { LogIn } from '@repo/ui/icons';
 import { fireEvent, render } from '@testing-library/react-native';
-import { LogIn } from 'lucide-react-native';
 import { Button, ButtonIcon, ButtonText } from '../components/ui/button';
 
 describe('Button Component (Robustness)', () => {

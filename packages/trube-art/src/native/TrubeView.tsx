@@ -7,8 +7,8 @@ import type {
   TrubeQuality,
   TrubeSurfaceName,
   TrubeSurfaceSpec,
-} from '../core/types';
-import { TrubeCanvas } from './TrubeCanvas';
+} from '@repo/trube-art/core/types';
+import { TrubeCanvas } from '@repo/trube-art/native/TrubeCanvas';
 
 export interface TrubeViewProps {
   surface: TrubeSurfaceSpec | TrubeSurfaceName;

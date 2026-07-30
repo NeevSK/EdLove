@@ -1,5 +1,5 @@
 import type React from 'react';
-import { Button, ButtonIcon, ButtonSpinner, ButtonText } from './ui/button';
+import { Button, ButtonIcon, ButtonSpinner, ButtonText } from '@repo/ui/components/ui/button';
 
 interface SanctuaryButtonProps {
   onPress?: () => void;

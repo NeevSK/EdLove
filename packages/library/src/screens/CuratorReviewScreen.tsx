@@ -1,8 +1,10 @@
 import { supabase } from '@repo/core/api';
+import { useDomainRollout } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Check, RefreshCw, Trash2, X } from '@repo/ui/icons';
 import {
   Box,
   HStack,
@@ -15,8 +17,6 @@ import {
 } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { router } from 'expo-router';
-
-import { Check, RefreshCw, Trash2, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
 
 // --- Types & State Machine (Pillar 2: Reducer Pattern) ---
@@ -66,14 +66,14 @@ const initialState: CuratorState = {
  * 2026 Sovereign Refactor: Zero-Legacy State & Memory Engineering.
  */
 export default function CuratorReviewScreen() {
-  const { can, flags } = usePermissions();
+  const { can } = usePermissions();
+  const isLibraryEnabled = useDomainRollout('archive');
   const theme = useTheme();
   const showToast = useStore((state) => state.showToast);
 
   const [state, dispatch] = useReducer(curatorReducer, initialState);
 
   // --- Permissions Stability ---
-  const isLibraryEnabled = flags.isLibraryManagementEnabled;
   const canManage = can('manage', 'LibraryCuratorDashboard');
 
   // --- Action Logic (Pillar 2: Stabilized Callbacks) ---

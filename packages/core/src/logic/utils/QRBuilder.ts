@@ -8,7 +8,7 @@
  *   QRBuilder.thuthimal(token, gifterName)    → 'https://platform.gurudevi.edlove.org/qr...?'
  */
 
-import type { QRPayload } from '../../types/QRPayload';
+import type { QRPayload } from '@repo/core/types/QRPayload';
 
 const SCHEME = 'https://platform.gurudevi.edlove.org/qr';
 

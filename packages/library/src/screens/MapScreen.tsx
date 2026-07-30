@@ -1,4 +1,5 @@
-import { FeatureGuard, useStore } from '@repo/core/logic';
+import { useStore } from '@repo/core/logic';
+import { SanctuaryGuard } from '@repo/ui';
 import {
   CaptureEngine,
   getAvailablePerspectives as getEnginePerspectives,
@@ -16,6 +17,7 @@ import {
 } from '@repo/ui/components/visualization';
 import { useReality } from '@repo/ui/context';
 import { useResponsive } from '@repo/ui/hooks';
+import { ChartColumn, FileCheck, Globe, Network, Orbit, Route, Wind, X } from '@repo/ui/icons';
 import {
   Box,
   HStack,
@@ -31,14 +33,13 @@ import { Theme } from '@repo/ui/theme';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
-import { ChartColumn, FileCheck, Globe, Network, Orbit, Route, Wind, X } from 'lucide-react-native';
 import { cssInterop } from 'nativewind';
 import React, { useEffect, useMemo, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSharedValue, withSpring } from 'react-native-reanimated';
-import { libraryAPI } from '../api/library';
-import { usePerspectiveLayout } from '../hooks/usePerspectiveLayout';
-import type { KnowledgeNode, KnowledgeTopology } from '../types/Library';
+import { libraryAPI } from '@repo/library/api/library';
+import { usePerspectiveLayout } from '@repo/library/hooks/usePerspectiveLayout';
+import type { KnowledgeNode, KnowledgeTopology } from '@repo/library/types/Library';
 
 cssInterop(BlurView, { className: 'style' });
 type PerspectiveId = 'astro' | 'terra' | 'dharma' | 'vastu' | 'jyoti' | 'vatya';
@@ -237,7 +238,11 @@ export default function MapScreen() {
         showBack
         onBack={() => safeBack('/library')}
         rightAction={
-          <FeatureGuard feature="isProMember">
+          <SanctuaryGuard
+            action="export"
+            subject="LibraryMap"
+            requirement={{ citizenshipRequired: 2, entitlementTier: 'PRO' }}
+          >
             <Pressable
               onPress={() => {
                 void handleExport();
@@ -249,12 +254,12 @@ export default function MapScreen() {
                 opacity: isExporting || pressed ? 0.5 : 1,
               })}
             >
-              <SanctuaryIcon as={FileCheck} size={18} color={accentColor} className="mr-2" />
-              <Text className="text-xs font-bold" style={{ color: accentColor }}>
-                {isExporting ? '...' : 'EXPORT'}
+              <FileCheck size={20} className="text-phase-accent mr-2" />
+              <Text className="text-sm font-semibold text-phase-accent">
+                {isExporting ? 'Exporting...' : 'Export Map'}
               </Text>
             </Pressable>
-          </FeatureGuard>
+          </SanctuaryGuard>
         }
       />
 

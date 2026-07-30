@@ -1,9 +1,9 @@
-import { CircleAlert, CircleCheck, Info, X } from 'lucide-react-native/icons';
+import { CircleAlert, CircleCheck, Info, X } from '@repo/ui/icons';
 import { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
-import { Pressable } from '../primitives';
-import { Box } from './ui/box';
-import { Text } from './ui/text';
+import { Pressable } from '@repo/ui/primitives';
+import { Box } from '@repo/ui/components/ui/box';
+import { Text } from '@repo/ui/components/ui/text';
 
 export type ToastType = 'success' | 'error' | 'info';
 
@@ -54,7 +54,6 @@ export default function SanctuaryToast({
 
   return (
     <View
-      pointerEvents="box-none"
       style={{
         position: 'absolute',
         top: 24,
@@ -62,6 +61,7 @@ export default function SanctuaryToast({
         right: 20,
         alignItems: 'center',
         zIndex: 999999,
+        pointerEvents: 'box-none',
       }}
     >
       <Box

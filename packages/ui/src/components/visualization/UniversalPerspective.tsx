@@ -1,14 +1,14 @@
 import type { PerspectiveViewProps } from '@repo/core/types';
 import type React from 'react';
 import { useState } from 'react';
-import { useTheme } from '../../hooks/useTheme';
-import { Box, HStack, Pressable, Text } from '../../primitives';
-import { AstroView } from './AstroView';
-import { DharmaView } from './DharmaView';
-import { JyotiView } from './JyotiView';
-import { TerraView } from './TerraView';
-import { VastuView } from './VastuView';
-import { VatyaView } from './VatyaView';
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
+import { AstroView } from '@repo/ui/components/visualization/AstroView';
+import { DharmaView } from '@repo/ui/components/visualization/DharmaView';
+import { JyotiView } from '@repo/ui/components/visualization/JyotiView';
+import { TerraView } from '@repo/ui/components/visualization/TerraView';
+import { VastuView } from '@repo/ui/components/visualization/VastuView';
+import { VatyaView } from '@repo/ui/components/visualization/VatyaView';
 
 type PerspectiveType = 'Astro' | 'Dharma' | 'Terra' | 'Vastu' | 'Vatya' | 'Jyoti';
 
