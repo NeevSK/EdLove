@@ -31,10 +31,7 @@
               "pathPrefix": "/callback"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         },
         {
           "action": "VIEW",
@@ -45,10 +42,7 @@
               "host": "qr"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         },
         {
           "action": "VIEW",
@@ -65,10 +59,7 @@
               "pathPrefix": "/p"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ]
     },
@@ -93,6 +84,7 @@
     },
     "plugins": [
       "expo-font",
+      "./plugins/withMavenRepos",
       "./plugins/withAndroidCruncherDisabled",
       "./plugins/withGradleProperties",
       "expo-localization",
@@ -125,7 +117,14 @@
           "enableGooglePay": false
         }
       ],
-      "expo-build-properties",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": ["https://packages.expo.dev/maven"]
+          }
+        }
+      ],
       "expo-mail-composer",
       [
         "expo-splash-screen",

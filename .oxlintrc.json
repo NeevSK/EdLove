@@ -55,10 +55,14 @@
         "**/*.config.js",
         "**/*.config.cjs",
         "scripts/**/*.js",
-        "scripts/**/*.cjs"
+        "scripts/**/*.cjs",
+        "**/plugins/**/*.js"
       ],
       "rules": {
-        "unicorn/prefer-module": "off"
+        "unicorn/prefer-module": "off",
+        "import/no-commonjs": "off",
+        "typescript/no-require-imports": "off",
+        "import/unambiguous": "off"
       }
     }
   ],
@@ -79,6 +83,7 @@
     "scripts",
     "eslint.config.js",
     "**/archives/**",
-    "**/archive/**"
+    "**/archive/**",
+    "**/plugins/**"
   ]
 }

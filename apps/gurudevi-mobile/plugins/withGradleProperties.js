@@ -3,78 +3,85 @@ const {
   withAppBuildGradle,
   createRunOncePlugin,
 } = require('@expo/config-plugins');
+const { ensureAndroidBlockSnippets, replaceIfFound } = require('./lib/buildGradleBlock');
+
+/**
+ * Combined plugin that addresses three concerns:
+ *
+ * 1. gradle.properties — memory limits, parallel=false, architecture selection
+ * 2. app/build.gradle — lintVital disabled for release stability
+ * 3. app/build.gradle — bridgeless mode forced on (safety net)
+ *
+ * All android{} block mutations use the shared `buildGradleBlock` helper
+ * for idempotency and ordering.  gradle.properties mutations use the
+ * built-in `withGradleProperties` mod.
+ *
+ * ARCHITECTURE SELECTION:
+ * Default: `arm64-v8a` (fastest build, matches committed CI intent).
+ * Override: set `GRADLE_ABI` env var (e.g. `x86_64` for emulators, or
+ * `x86_64,arm64-v8a` for multi-ABI).  This is documented in
+ * `docs/Learning/EXPO_BUILD_RUNBOOK.md`.
+ */
 
 const withCustomGradleProperties = (config) => {
-  // 1. Set safe memory limits and optimize build speed for CI
-  // - Heap: 3GB (leaves ~4GB for system + Node + C++ compiler)
-  // - Metaspace: 512MB
-  // - Parallel: False (reduces peak memory usage)
-  // - Architectures: arm64-v8a only (saves 75% compilation time on CI)
-  return withGradleProperties(config, (config) => {
-    const jvmArgs = '-Xmx3072m -XX:MaxMetaspaceSize=512m';
+  return withGradleProperties(config, (cfg) => {
+    const arch = process.env.GRADLE_ABI || 'arm64-v8a';
 
     const updateProperty = (key, value) => {
-      const prop = config.modResults.find((p) => p.type === 'property' && p.key === key);
+      const prop = cfg.modResults.find((p) => p.type === 'property' && p.key === key);
       if (prop) {
         prop.value = value;
       } else {
-        config.modResults.push({ type: 'property', key, value });
+        cfg.modResults.push({ type: 'property', key, value });
       }
     };
 
-    updateProperty('org.gradle.jvmargs', jvmArgs);
+    updateProperty('org.gradle.jvmargs', '-Xmx3072m -XX:MaxMetaspaceSize=512m');
     updateProperty('org.gradle.parallel', 'false');
-    updateProperty('reactNativeArchitectures', 'arm64-v8a');
+    updateProperty('reactNativeArchitectures', arch);
 
-    return config;
+    return cfg;
   });
 };
 
 const withLintOptionsDisabled = (config) => {
-  // 2. Disable the memory-intensive 'lintVital' check during release builds
-  // This is where the last build crashed.
-  return withAppBuildGradle(config, (config) => {
-    if (config.modResults.language === 'groovy') {
-      const lintOptions = `
-    lintOptions {
-        checkReleaseBuilds false
-        abortOnError false
+  return withAppBuildGradle(config, (cfg) => {
+    if (cfg.modResults.language === 'groovy') {
+      cfg.modResults.contents = ensureAndroidBlockSnippets(cfg.modResults.contents, [
+        {
+          breadcrumb: 'lintOptions',
+          code: [
+            '    lintOptions {',
+            '        checkReleaseBuilds false',
+            '        abortOnError false',
+            '    }',
+          ].join('\n'),
+        },
+      ]);
     }
-`;
-      // Check if lintOptions already exists to avoid duplication
-      if (!config.modResults.contents.includes('lintOptions')) {
-        config.modResults.contents = config.modResults.contents.replace(
-          /android\s*\{/,
-          `android {${lintOptions}`,
-        );
-      }
-    }
-    return config;
+    return cfg;
   });
 };
 
 const withBridgelessEnabled = (config) => {
-  // 3. Ensure Bridgeless Mode is ENABLED (Default in RN 0.83+).
-  // We are fixing JSI issues proactively by refactoring JS code,
-  // NOT by disabling the modern architecture.
-  return withAppBuildGradle(config, (config) => {
-    if (config.modResults.language === 'groovy') {
-      // Remove any legacy 'bridgeless = false' if we added it before.
-      // RN 0.83.2 defaults to true, so we just ensure we don't force it to false.
-      if (config.modResults.contents.includes('bridgeless = false')) {
-        config.modResults.contents = config.modResults.contents.replace(
-          /bridgeless = false/g,
-          'bridgeless = true',
-        );
-      }
+  return withAppBuildGradle(config, (cfg) => {
+    if (cfg.modResults.language === 'groovy') {
+      cfg.modResults.contents = replaceIfFound(
+        cfg.modResults.contents,
+        'bridgeless = false',
+        'bridgeless = true',
+      );
     }
-    return config;
+    return cfg;
   });
 };
 
-const withCombinedFixes = (config) => {
-  // Chain all fixes: memory limits, lint skipping, AND ensuring bridgeless is enabled.
-  return withBridgelessEnabled(withCustomGradleProperties(withLintOptionsDisabled(config)));
+const withCombinedGradleFixes = (config) => {
+  return withBridgelessEnabled(withLintOptionsDisabled(withCustomGradleProperties(config)));
 };
 
-module.exports = createRunOncePlugin(withCombinedFixes, 'withCustomGradleProperties', '1.0.0');
+module.exports = createRunOncePlugin(
+  withCombinedGradleFixes,
+  'withCustomGradleProperties',
+  '1.0.0',
+);
