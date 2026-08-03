@@ -121,7 +121,13 @@
         "expo-build-properties",
         {
           "android": {
+<<<<<<< HEAD
             "extraMavenRepos": ["https://packages.expo.dev/maven"]
+=======
+            "extraMavenRepos": [
+              "https://packages.expo.dev/maven"
+            ]
+>>>>>>> 538d53679997e0b94dbf0a6887dcfbfd14940a40
           }
         }
       ],

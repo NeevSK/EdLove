@@ -2,7 +2,7 @@ import { execSync, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { ROOT_DIR } from '@repo/platform-mcp/utils/constants.js';
+import { ROOT_DIR } from './constants.js';
 
 interface ExecutionResult {
   tool: string;

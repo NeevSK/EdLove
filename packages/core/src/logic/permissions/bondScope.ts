@@ -1,4 +1,4 @@
-import { BOND_ENTITY_TYPES } from '@repo/policies';
+import { BOND_ENTITY_TYPES } from '@repo/policies/authorizationRegistry';
 
 /** PERSONAL_CLASSROOM remains persisted compatibility data while the product
  * language treats it as the user's personal sanctuary perspective. */

@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT_DIR } from '@repo/platform-mcp/utils/constants.js';
+import { ROOT_DIR } from '../utils/constants.js';
 
 /**
  * --- Standardized Knowledge Layer ---

@@ -1,10 +1,10 @@
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
-import { ROOT_DIR } from '@repo/platform-mcp/utils/constants.js';
-import { executeSovereignTool, runCommand, runPowerShellScript } from '@repo/platform-mcp/utils/execution.js';
-import { findSurgicalReport, normalizeTarget, readReport } from '@repo/platform-mcp/utils/pathUtils.js';
-import type { AnalysisIssue, DocumentService } from '@repo/platform-mcp/services/DocumentService.js';
+import { ROOT_DIR } from '../utils/constants.js';
+import { executeSovereignTool, runCommand, runPowerShellScript } from '../utils/execution.js';
+import { findSurgicalReport, normalizeTarget, readReport } from '../utils/pathUtils.js';
+import type { AnalysisIssue, DocumentService } from './DocumentService.js';
 
 function toText(text: string, isError?: boolean) {
   return {

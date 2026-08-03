@@ -37,6 +37,7 @@ This index acts as a reference for the Model Context Protocol (MCP) server imple
 | Document | Description |
 |---|---|
 | [architecture/agentic-architecture-2026.md](architecture/agentic-architecture-2026.md) | Architectural spec for autonomous agent execution framework in 2026 |
+| [architecture/mcp-v2-specification.md](architecture/mcp-v2-specification.md) | Architectural specification of MCP TypeScript SDK V2 capabilities and breaking changes |
 | [architecture/runbyte-integration.md](architecture/runbyte-integration.md) | Integration specification of Runbyte tools within the MCP context |
 
 ---
@@ -47,6 +48,7 @@ This index acts as a reference for the Model Context Protocol (MCP) server imple
 |---|---|
 | [current_progress/2026-05-01-god-mode-plan.md](current_progress/2026-05-01-god-mode-plan.md) | Execution roadmap for God Mode tools and capabilities |
 | [current_progress/2026-04-29-tooling-2026.md](current_progress/2026-04-29-tooling-2026.md) | Project plan for upgrading agentic tools in 2026 |
+| [current_progress/mcp-v2-migration-plan.md](current_progress/mcp-v2-migration-plan.md) | Step-by-step upgrade strategy and tool expansion plan for MCP V2 |
 | [current_progress/mistake-ledger.md](current_progress/mistake-ledger.md) | Ledger tracking errors, failures, lessons learned, and corrections |
 
 ---
