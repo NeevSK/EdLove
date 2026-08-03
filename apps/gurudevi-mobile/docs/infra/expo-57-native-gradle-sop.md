@@ -23,8 +23,8 @@ tags: [infra, android, gradle, expo, build]
 | React Native | 0.86 | `react-native: ~0.86.0` |
 | React | 19.2.3 | `react: 19.2.3` |
 | TypeScript | 7.0.2 | Intentionally ahead of Expo recommended |
-| Node | 22.23.0 | Required by eas.json + engines |
-| Gradle | 8.x | Managed by RN gradle plugin |
+| pnpm | 11.18.0 | Latest stable (root `packageManager`) |
+| Node | 22.23.0 | `.nvmrc`; required by eas.json + engines |
 | Kotlin | managed | Set by Expo version catalog |
 | Android compileSdk | managed | Set by Expo version catalog |
 | Android minSdk | 24 | Set by Expo version catalog |
