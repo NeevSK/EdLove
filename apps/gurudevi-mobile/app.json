@@ -125,7 +125,16 @@
           "enableGooglePay": false
         }
       ],
-      "expo-build-properties",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": [
+              "https://packages.expo.dev/maven"
+            ]
+          }
+        }
+      ],
       "expo-mail-composer",
       [
         "expo-splash-screen",
