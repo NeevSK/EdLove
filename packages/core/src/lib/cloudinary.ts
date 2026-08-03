@@ -37,11 +37,15 @@ export async function uploadToCloudinary(
   const match = /\.(\w+)$/.exec(filename);
   const type = match ? `${resourceType}/${match[1]}` : resourceType;
 
-  formData.append('file', {
-    uri: fileUri,
-    name: filename,
-    type: type,
-  } as any);
+  if (fileUri.startsWith('data:') || fileUri.startsWith('http://') || fileUri.startsWith('https://')) {
+    formData.append('file', fileUri);
+  } else {
+    formData.append('file', {
+      uri: fileUri,
+      name: filename,
+      type: type,
+    } as any);
+  }
 
   formData.append('upload_preset', uploadPreset);
 
@@ -51,9 +55,6 @@ export async function uploadToCloudinary(
       {
         method: 'POST',
         body: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
       },
     );
 

@@ -57,9 +57,11 @@ import type {
 import { buildLibraryExternalLinkOptions } from '../utils/externalLinks';
 
 function StackFallback() {
+  const { t } = useTranslation();
+
   return (
     <div className="sanctuary-card" style={{ padding: '32px', textAlign: 'center' }}>
-      Loading the sanctuary...
+      {t('library.loadingSanctuary', 'Loading the sanctuary...')}
     </div>
   );
 }
@@ -554,16 +556,16 @@ export default function LibraryScreenWeb() {
           }
           return next;
         });
-        showToast('Could not save bookmark. Please try again.', 'error');
+        showToast(t('library.bookmarkFailed', 'Could not save bookmark. Please try again.'), 'error');
       }
     },
-    [isPastView, user, showToast],
+    [isPastView, user, showToast, t],
   );
 
   const canCreate = can('create', 'LibraryResource');
   const handleAddResourcePress = useCallback(() => {
     if (isPastView) {
-      showToast('Past view is read-only. Return to today to contribute.', 'info');
+      showToast(t('library.pastReadonly', 'Past view is read-only. Return to today to contribute.'), 'info');
       return;
     }
     if (!canCreate) {
@@ -575,7 +577,7 @@ export default function LibraryScreenWeb() {
       return;
     }
     dispatch({ type: 'SET_MODAL', name: 'assetCreation', isOpen: true });
-  }, [canCreate, isPastView, router, showToast]);
+  }, [canCreate, isPastView, router, showToast, t]);
 
   const fabConfig = useMemo(
     () => ({
@@ -589,13 +591,29 @@ export default function LibraryScreenWeb() {
 
   useRegisterFAB(fabConfig);
 
+  const getTopFilterLabel = useCallback(
+    (id: string) => {
+      if (id === 'All') return t('library.filter.allResources', 'All Resources');
+      if (id === 'trending') return t('library.filter.trending', 'Trending');
+      if (id === 'bookmarks') return t('library.filter.bookmarks', 'Bookmarks');
+      if (id === 'activity') return t('library.filter.activity', 'Activity');
+      return id;
+    },
+    [t],
+  );
+
+  const getCategoryLabel = useCallback(
+    (id: string, fallback: string) => t('library.category.' + id, fallback),
+    [t],
+  );
+
   return (
     <div className="sanctuary-screen">
       <div className="sanctuary-container">
         <WebScreenHeader
-          title="The Sanctuary"
-          note="Gurudevi Knowledge Hub"
-          timeText="Curated Wisdom"
+          title={t('library.web.title', 'The Sanctuary')}
+          note={t('library.web.note', 'Gurudevi Knowledge Hub')}
+          timeText={t('library.web.timeText', 'Curated Wisdom')}
           actions={
             <div
               style={{
@@ -625,7 +643,8 @@ export default function LibraryScreenWeb() {
                   }
                   disabled={isPastView}
                 >
-                  <Library size={15} />+ Collection
+                  <Library size={15} />
+                  {t('library.newCollection', '+ Collection')}
                 </button>
               )}
               {canContribute && (
@@ -644,7 +663,7 @@ export default function LibraryScreenWeb() {
                   disabled={isPastView}
                 >
                   <Plus size={15} />
-                  {t('library.contributeResource') || 'Contribute Resource'}
+                  {t('library.contributeResource', 'Contribute Resource')}
                 </button>
               )}
               <button
@@ -661,7 +680,7 @@ export default function LibraryScreenWeb() {
                 onClick={() => router.push('/library/map')}
               >
                 <MapIcon size={15} />
-                Knowledge Map
+                {t('library.knowledgeMap', 'Knowledge Map')}
               </button>
             </div>
           }
@@ -690,7 +709,7 @@ export default function LibraryScreenWeb() {
               <input
                 className="search-input"
                 style={{ padding: '8px 0' }}
-                placeholder={t('library.searchPlaceholder') || 'Explore the sanctuary...'}
+                placeholder={t('library.searchPlaceholder', 'Explore the sanctuary...')}
                 value={searchQuery}
                 onChange={(e) => dispatch({ type: 'SET_SEARCH', query: e.target.value })}
               />
@@ -707,7 +726,7 @@ export default function LibraryScreenWeb() {
                     padding: '0 4px',
                     lineHeight: 1,
                   }}
-                  aria-label="Clear search"
+                  aria-label={t('library.clearSearch', 'Clear search')}
                 >
                   &#10005;
                 </button>
@@ -765,8 +784,8 @@ export default function LibraryScreenWeb() {
                   display: 'flex',
                   alignItems: 'center',
                 }}
-                aria-label="Shelf view"
-                title="Shelf view"
+                aria-label={t('library.viewMode.shelf', 'Shelf view')}
+                title={t('library.viewMode.shelf', 'Shelf view')}
               >
                 <Layers size={16} />
               </button>
@@ -782,8 +801,8 @@ export default function LibraryScreenWeb() {
                   display: 'flex',
                   alignItems: 'center',
                 }}
-                aria-label="Grid view"
-                title="Grid view"
+                aria-label={t('library.viewMode.grid', 'Grid view')}
+                title={t('library.viewMode.grid', 'Grid view')}
               >
                 <LayoutGrid size={16} />
               </button>
@@ -799,8 +818,8 @@ export default function LibraryScreenWeb() {
                   display: 'flex',
                   alignItems: 'center',
                 }}
-                aria-label="List view"
-                title="List view"
+                aria-label={t('library.viewMode.list', 'List view')}
+                title={t('library.viewMode.list', 'List view')}
               >
                 <List size={16} />
               </button>
@@ -816,8 +835,8 @@ export default function LibraryScreenWeb() {
                   display: 'flex',
                   alignItems: 'center',
                 }}
-                aria-label="Map view"
-                title="Map view"
+                aria-label={t('library.viewMode.map', 'Map view')}
+                title={t('library.viewMode.map', 'Map view')}
               >
                 <MapIcon size={16} />
               </button>
@@ -857,7 +876,7 @@ export default function LibraryScreenWeb() {
                   }}
                 >
                   <Icon size={14} />
-                  {id === 'All' ? 'All Resources' : id.charAt(0).toUpperCase() + id.slice(1)}
+                  {getTopFilterLabel(id)}
                 </button>
               );
             })}
@@ -876,7 +895,7 @@ export default function LibraryScreenWeb() {
                 onClick={() => dispatch({ type: 'SET_CATEGORY', id: cat.id })}
                 style={{ whiteSpace: 'nowrap' }}
               >
-                {cat.en}
+                {getCategoryLabel(cat.id, cat.en)}
               </button>
             ))}
           </div>
@@ -922,14 +941,14 @@ export default function LibraryScreenWeb() {
                         query: debouncedSearchQuery,
                       })
                     : t('library.showingCurated', {
-                        category: selectedCategoryId,
+                        category: getCategoryLabel(selectedCategoryId, selectedCategoryId),
                       })}
                 </div>
 
                 {viewMode === 'shelf' && (
                   <>
                     {categories.length > 0 && (
-                      <SmartShelf title="Matching Categories">
+                      <SmartShelf title={t('library.shelfTitle.matchingCategories', 'Matching Categories')}>
                         <SanctuaryFlashList
                           data={categories}
                           horizontal
@@ -942,7 +961,7 @@ export default function LibraryScreenWeb() {
                               <LibraryThumbnailCard
                                 title={col.name}
                                 type="collection"
-                                subject={col.subjects?.[0] || 'Curated'}
+                                subject={col.subjects?.[0] || t('library.curatedCollection', 'Curated')}
                                 onPress={() =>
                                   router.push({
                                     pathname: '/library/collections/[id]',
@@ -960,7 +979,7 @@ export default function LibraryScreenWeb() {
                     )}
 
                     {collections.length > 0 && (
-                      <SmartShelf title="Matching Collections">
+                      <SmartShelf title={t('library.shelfTitle.matchingCollections', 'Matching Collections')}>
                         <SanctuaryFlashList
                           data={collections}
                           horizontal
@@ -973,7 +992,7 @@ export default function LibraryScreenWeb() {
                               <LibraryThumbnailCard
                                 title={col.name}
                                 type="collection"
-                                subject={col.subjects?.[0] || 'Curated'}
+                                subject={col.subjects?.[0] || t('library.curatedCollection', 'Curated')}
                                 onPress={() =>
                                   router.push({
                                     pathname: '/library/collections/[id]',
@@ -993,7 +1012,7 @@ export default function LibraryScreenWeb() {
                       const shelfItems = resources.filter((res) => shelf.types.includes(res.type));
                       if (shelfItems.length === 0) return null;
                       return (
-                        <SmartShelf key={`search-shelf-${shelf.id}`} title={shelf.label}>
+                        <SmartShelf key={`search-shelf-${shelf.id}`} title={t('library.shelf.' + shelf.id, shelf.label)}>
                           <SanctuaryFlashList
                             data={shelfItems}
                             horizontal
@@ -1018,7 +1037,7 @@ export default function LibraryScreenWeb() {
                     })}
 
                     {diverseFindings.length > 0 && (
-                      <SmartShelf title="Diverse Findings">
+                      <SmartShelf title={t('library.shelfTitle.diverseFindings', 'Diverse Findings')}>
                         <SanctuaryFlashList
                           data={diverseFindings}
                           horizontal
@@ -1117,7 +1136,7 @@ export default function LibraryScreenWeb() {
                 </div>
 
                 {categories.length > 0 && (
-                  <SmartShelf title="Featured Categories">
+                  <SmartShelf title={t('library.shelfTitle.featuredCategories', 'Featured Categories')}>
                     <SanctuaryFlashList
                       data={categories}
                       horizontal
@@ -1133,6 +1152,7 @@ export default function LibraryScreenWeb() {
                               col.is_virtual ? t('library.dynamic') : t('library.collection')
                             }
                             resourceCount={col.used_by_count ?? col.resource_ids?.length ?? 0}
+                            thumbnailUrl={col.thumbnail_url}
                             onClick={() =>
                               router.push({
                                 pathname: '/library/collections/[id]',
@@ -1150,7 +1170,7 @@ export default function LibraryScreenWeb() {
                 )}
 
                 {collections.length > 0 && (
-                  <SmartShelf title="Featured Collections">
+                  <SmartShelf title={t('library.shelfTitle.featuredCollections', 'Featured Collections')}>
                     <SanctuaryFlashList
                       data={collections}
                       horizontal
@@ -1168,6 +1188,7 @@ export default function LibraryScreenWeb() {
                                 col.is_virtual ? t('library.dynamic') : t('library.collection')
                               }
                               resourceCount={col.used_by_count ?? col.resource_ids?.length ?? 0}
+                              thumbnailUrl={col.thumbnail_url}
                               visibility={col.visibility}
                               isOwner={isOwner}
                               onClick={() =>
@@ -1205,7 +1226,7 @@ export default function LibraryScreenWeb() {
                   const shelfItems = resources.filter((res) => shelf.types.includes(res.type));
                   if (shelfItems.length === 0) return null;
                   return (
-                    <SmartShelf key={`default-shelf-${shelf.id}`} title={shelf.label}>
+                    <SmartShelf key={`default-shelf-${shelf.id}`} title={t('library.shelf.' + shelf.id, shelf.label)}>
                       <SanctuaryFlashList
                         data={shelfItems}
                         horizontal
@@ -1274,14 +1295,14 @@ export default function LibraryScreenWeb() {
               },
               creatorId: user.id,
             });
-            showToast('Collection created!', 'success');
+            showToast(t('library.collectionCreated', 'Collection created!'), 'success');
             dispatch({
               type: 'SET_MODAL',
               name: 'collectionCreation',
               isOpen: false,
             });
           } catch (_err) {
-            showToast('Failed to create collection', 'error');
+            showToast(t('library.collectionCreateFailed', 'Failed to create collection'), 'error');
           }
         }}
       />
@@ -1512,6 +1533,7 @@ function CollectionPreviewCard({
   title,
   typeLabel,
   resourceCount,
+  thumbnailUrl,
   onClick,
   visibility,
   isOwner = false,
@@ -1522,6 +1544,7 @@ function CollectionPreviewCard({
   title: string;
   typeLabel: string;
   resourceCount: number;
+  thumbnailUrl?: string;
   onClick: () => void;
   visibility?: ResourceVisibility;
   isOwner?: boolean;
@@ -1529,23 +1552,27 @@ function CollectionPreviewCard({
   onDelete?: () => void;
   onEdit?: () => void;
 }) {
+  const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const visConfig: Record<string, { icon: any; color: string; label: string }> = {
-    private:  { icon: Lock,  color: '#e88c30', label: 'Private' },
-    personal: { icon: Lock,  color: '#e88c30', label: 'Private' },
-    shared:   { icon: Users, color: '#6798d6', label: 'Shared'  },
-    public:   { icon: Globe, color: '#34a853', label: 'Public'  },
-    class:    { icon: Users, color: '#6798d6', label: 'Class'   },
-    school:   { icon: Users, color: '#6798d6', label: 'School'  },
-    grade:    { icon: Users, color: '#6798d6', label: 'Grade'   },
+    private:  { icon: Lock,  color: '#e88c30', label: t('library.visibility.private', 'Private') },
+    personal: { icon: Lock,  color: '#e88c30', label: t('library.visibility.private', 'Private') },
+    shared:   { icon: Users, color: '#6798d6', label: t('library.visibility.shared', 'Shared')  },
+    public:   { icon: Globe, color: '#34a853', label: t('library.visibility.public', 'Public')  },
+    class:    { icon: Users, color: '#6798d6', label: t('library.visibility.class', 'Class')   },
+    school:   { icon: Users, color: '#6798d6', label: t('library.visibility.school', 'School')  },
+    grade:    { icon: Users, color: '#6798d6', label: t('library.visibility.grade', 'Grade')   },
   };
   const vc = visibility ? (visConfig[visibility] ?? visConfig.public) : null;
+  const cardBackground = thumbnailUrl
+    ? `linear-gradient(180deg, rgba(18,20,24,0.12), rgba(18,20,24,0.78)), url(${thumbnailUrl}) center/cover no-repeat`
+    : 'linear-gradient(160deg, rgba(221,155,40,0.14) 0%, rgba(103,152,214,0.12) 52%, rgba(255,255,255,0.92) 100%)';
 
   const visOptions: { value: ResourceVisibility; label: string; icon: any; color: string }[] = [
-    { value: 'private', label: 'Private', icon: Lock,  color: '#e88c30' },
-    { value: 'shared',  label: 'Shared',  icon: Users, color: '#6798d6' },
-    { value: 'public',  label: 'Public',  icon: Globe, color: '#34a853' },
+    { value: 'private', label: t('library.visibility.private', 'Private'), icon: Lock,  color: '#e88c30' },
+    { value: 'shared',  label: t('library.visibility.shared', 'Shared'),  icon: Users, color: '#6798d6' },
+    { value: 'public',  label: t('library.visibility.public', 'Public'),  icon: Globe, color: '#34a853' },
   ];
 
   return (
@@ -1565,8 +1592,7 @@ function CollectionPreviewCard({
           border: isOwner && vc && vc.color !== '#34a853'
             ? `1px solid ${vc.color}55`
             : '1px solid var(--border)',
-          background:
-            'linear-gradient(160deg, rgba(221,155,40,0.14) 0%, rgba(103,152,214,0.12) 52%, rgba(255,255,255,0.92) 100%)',
+          background: cardBackground,
           textAlign: 'left',
           cursor: 'pointer',
         }}
@@ -1576,7 +1602,7 @@ function CollectionPreviewCard({
           <div
             style={{
               fontSize: '11px',
-              color: 'var(--action)',
+              color: thumbnailUrl ? 'rgba(255,255,255,0.84)' : 'var(--action)',
               fontWeight: '800',
               letterSpacing: '0.05em',
               textTransform: 'uppercase',
@@ -1608,7 +1634,7 @@ function CollectionPreviewCard({
           style={{
             fontWeight: '700',
             fontSize: '20px',
-            color: 'var(--ink)',
+            color: thumbnailUrl ? '#fff' : 'var(--ink)',
             lineHeight: 1.15,
           }}
         >
@@ -1621,13 +1647,13 @@ function CollectionPreviewCard({
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            color: 'var(--ink-ghost)',
+            color: thumbnailUrl ? 'rgba(255,255,255,0.76)' : 'var(--ink-ghost)',
             fontSize: '13px',
             fontWeight: '600',
           }}
         >
-          <span>{resourceCount} resources</span>
-          <span style={{ color: 'var(--action)' }}>Open →</span>
+          <span>{t('library.resourcesCount', { count: resourceCount, defaultValue: '{{count}} resources' })}</span>
+          <span style={{ color: thumbnailUrl ? '#fff' : 'var(--action)' }}>{t('library.actions.open', 'Open')}</span>
         </div>
       </button>
 
@@ -1685,14 +1711,14 @@ function CollectionPreviewCard({
                   color: 'var(--ink)',
                 }}
               >
-                <Edit2 size={14} color="var(--ink)" /> Edit
+                <Edit2 size={14} color="var(--ink)" /> {t('library.actions.edit', 'Edit')}
               </button>
 
               {/* Divider */}
               <div style={{ height: '1px', background: 'rgba(0,0,0,0.06)', margin: '4px 0' }} />
 
               {/* Visibility options */}
-              <div style={{ padding: '4px 10px 2px', fontSize: '10px', fontWeight: 800, color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Visibility</div>
+              <div style={{ padding: '4px 10px 2px', fontSize: '10px', fontWeight: 800, color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('library.visibility.label', 'Visibility')}</div>
               {visOptions.map((opt) => {
                 const isActive = visibility === opt.value;
                 const Ic = opt.icon;
@@ -1742,7 +1768,7 @@ function CollectionPreviewCard({
                   color: '#dc3c3c',
                 }}
               >
-                <Trash2 size={14} color="#dc3c3c" /> Delete
+                <Trash2 size={14} color="#dc3c3c" /> {t('library.actions.delete', 'Delete')}
               </button>
             </div>
           )}

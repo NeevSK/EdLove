@@ -20,8 +20,8 @@ export const socialAPI = {
     options: { viewDate?: string; viewScale?: TemporalScale } = {},
   ) {
     let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-      .from('community_posts')
-      .select('likes_count, comments_count, shares_count')
+      .from('community_posts_with_counts')
+      .select('reaction_count, comment_count')
       .eq('author_id', userId);
 
     if (options.viewDate) {
@@ -38,9 +38,9 @@ export const socialAPI = {
 
     return (data || []).reduce(
       (acc, curr: any) => ({
-        likes: acc.likes + (curr.likes_count || 0),
-        comments: acc.comments + (curr.comments_count || 0),
-        shares: acc.shares + (curr.shares_count || 0),
+        likes: acc.likes + (curr.reaction_count || 0),
+        comments: acc.comments + (curr.comment_count || 0),
+        shares: acc.shares,
       }),
       { likes: 0, comments: 0, shares: 0 },
     );

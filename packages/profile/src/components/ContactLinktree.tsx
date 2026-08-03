@@ -101,6 +101,8 @@ export function ContactLinktree({
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingLink, setEditingLink] = useState<SocialLink | undefined>();
   const { deleteLink, addLink, updateLink } = useSocialLinks(userId || '');
+  const safeUserName = userName?.trim() || t('profile.unnamedUser', 'Gurudevi User');
+  const userInitial = safeUserName.charAt(0).toUpperCase();
   const [inlineAdding, setInlineAdding] = useState(false);
   const [inlineEditingId, setInlineEditingId] = useState<string | null>(null);
 
@@ -126,8 +128,8 @@ export function ContactLinktree({
       if (webUrl) {
         openExternalURL(webUrl, {
           title: config.label,
-          sourceLabel: 'Profile',
-          sourceBadge: 'Public contact link',
+          sourceLabel: t('profile.contact.sourceLabel', 'Profile'),
+          sourceBadge: t('profile.contact.sourceBadge', 'Public contact link'),
           trustLevel: 'external',
         });
       } else {
@@ -139,23 +141,23 @@ export function ContactLinktree({
     try {
       await openExternalURL(uri, {
         title: config.label,
-        sourceLabel: 'Profile',
-        sourceBadge: 'Public contact link',
+        sourceLabel: t('profile.contact.sourceLabel', 'Profile'),
+        sourceBadge: t('profile.contact.sourceBadge', 'Public contact link'),
         trustLevel: uri.startsWith('http') ? 'external' : undefined,
       });
     } catch {
       if (uri.startsWith('whatsapp://')) {
         await openExternalURL(`https://wa.me/${value.replace(/\D/g, '')}`, {
           title: config.label,
-          sourceLabel: 'Profile',
-          sourceBadge: 'Public contact link',
+          sourceLabel: t('profile.contact.sourceLabel', 'Profile'),
+          sourceBadge: t('profile.contact.sourceBadge', 'Public contact link'),
           trustLevel: 'external',
         });
       } else if (!uri.startsWith('http')) {
         console.warn('Unhandled URI scheme:', uri);
       }
     }
-  }, []);
+  }, [t]);
 
   const handleLinkOptions = useCallback(async (provider: string, value: string) => {
     const config = PROVIDER_CONFIG[provider];
@@ -172,18 +174,24 @@ export function ContactLinktree({
 
     await showExternalLinkOptions(webUrl, {
       title: config.label,
-      sourceLabel: 'Profile',
-      sourceBadge: 'Public contact link',
+      sourceLabel: t('profile.contact.sourceLabel', 'Profile'),
+      sourceBadge: t('profile.contact.sourceBadge', 'Public contact link'),
       trustLevel: 'external',
     });
-  }, []);
+  }, [t]);
 
   const handleCopyProfileLink = useCallback(async () => {
     const url =
       typeof window !== 'undefined' ? window.location.href : `https://app.gurudevi.edlove.org`;
     if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.share) {
       try {
-        await navigator.share({ title: `${userName} on Gurudevi`, url });
+        await navigator.share({
+          title: t('profile.contact.shareTitle', {
+            name: safeUserName,
+            defaultValue: '{{name}} on Gurudevi',
+          }),
+          url,
+        });
         return; // Share succeeded  no clipboard needed
       } catch {
         // User cancelled or Share unavailable  fall through to clipboard
@@ -193,7 +201,7 @@ export function ContactLinktree({
     await Clipboard.setStringAsync(url).catch(() => {
       /* non-fatal */
     });
-  }, [userName]);
+  }, [safeUserName, t]);
 
   const handleEditLink = (link: SocialLink) => {
     hapticLight();
@@ -226,10 +234,10 @@ export function ContactLinktree({
       <VStack space="xs" className="items-center mb-10">
         <LivingGlow size={72} glowColor="#F6BF8C">
           <Box className="w-[72px] h-[72px] rounded-full bg-phase-canvas items-center justify-center border-2 border-phase-interactive">
-            <Text className="text-2xl font-bold text-phase-text-primary">{userName.charAt(0)}</Text>
+            <Text className="text-2xl font-bold text-phase-text-primary">{userInitial}</Text>
           </Box>
         </LivingGlow>
-        <Text className="text-xl font-bold text-phase-text-primary mt-4">{userName}</Text>
+        <Text className="text-xl font-bold text-phase-text-primary mt-4">{safeUserName}</Text>
         {bio && (
           <Text className="text-sm text-phase-text-secondary text-center px-10 mt-1">{bio}</Text>
         )}
@@ -245,7 +253,9 @@ export function ContactLinktree({
               <HStack space="xs" className="items-center">
                 <Link size={14} color="#4A90E2" />
                 <ButtonText className="text-phase-text-primary text-xs">
-                  {Platform.OS === 'web' ? 'Share Profile' : 'Copy Link'}
+                  {Platform.OS === 'web'
+                    ? t('profile.contact.shareProfile', 'Share Profile')
+                    : t('profile.contact.copyLink', 'Copy Link')}
                 </ButtonText>
               </HStack>
             </Button>
@@ -266,7 +276,9 @@ export function ContactLinktree({
                 <ButtonText
                   className={`${isEditing ? 'text-white' : 'text-phase-text-primary'} text-xs`}
                 >
-                  {isEditing ? 'Done' : 'Edit Hub'}
+                  {isEditing
+                    ? t('profile.contact.done', 'Done')
+                    : t('profile.contact.editHub', 'Edit Hub')}
                 </ButtonText>
               </HStack>
             </Button>
@@ -380,7 +392,7 @@ export function ContactLinktree({
                 <HStack space="sm" className="items-center">
                   <Plus size={20} color="#4A90E2" />
                   <Text className="font-bold text-phase-interactive text-base">
-                    Add Social Link
+                    {t('profile.contact.addSocialLink', 'Add Social Link')}
                   </Text>
                 </HStack>
               </Pressable>

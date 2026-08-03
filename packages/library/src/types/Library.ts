@@ -171,6 +171,7 @@ export interface CreateResourceInput {
 export interface CreateCollectionInput {
   name: string;
   description: string;
+  thumbnail_url?: string;
   visibility: ResourceVisibility;
   resource_ids: string[];
   subject: string; // Kept for compat
