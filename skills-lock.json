@@ -1,17 +1,167 @@
 {
   "version": 1,
   "skills": {
+    "analytics-explore": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/analytics-explore/SKILL.md",
+      "computedHash": "7b73264b64b7fa1cbc687ec7d465d0488fb2f78a9313cbe4c2ed4fefbc06f820"
+    },
     "caveman": {
       "source": "JuliusBrussee/caveman",
       "sourceType": "github",
       "skillPath": ".claude/skills/caveman",
       "computedHash": "pending"
     },
+    "experiment-analyze": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/experiment-analyze/SKILL.md",
+      "computedHash": "918847f3008a284a60f625f2364ebf027c689b98b1d1ed30530ae74009fd1249"
+    },
+    "experiment-brainstorm": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/experiment-brainstorm/SKILL.md",
+      "computedHash": "a9304cf27ace1ea48e8153d63c11df49a6f7ef04b1490f3c5f5fcb40866d2456"
+    },
+    "experiment-design": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/experiment-design/SKILL.md",
+      "computedHash": "da33939b28d3d74b3a865f7279f0e3006a70699892996f1cc26c618638ea6336"
+    },
+    "experiment-launch": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/experiment-launch/SKILL.md",
+      "computedHash": "7e23e98c742e9582f153a1e56b60fc4de7d6337c29dab59db731a491078081ec"
+    },
+    "experiment-stop": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/experiment-stop/SKILL.md",
+      "computedHash": "9b1ce30ce2cd1a15a4d8623ecd81c7fbebb1665ba479760275731391d1155950"
+    },
+    "flag-cleanup": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/flag-cleanup/SKILL.md",
+      "computedHash": "bf3d3e0709d29084d4d65add0300282b893431fcaf3a3e52e6c51e9255ed4c93"
+    },
+    "flag-create": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/flag-create/SKILL.md",
+      "computedHash": "c47e2a301ee723328a97f9b2043eeb6460ea98e28780a054f12ef5ec4fc3be5c"
+    },
+    "flag-default-value": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/flag-default-value/SKILL.md",
+      "computedHash": "aac947a0ed0682a772110d8768efae4c68ee22473bbfec2bd50e22b798f4864b"
+    },
+    "flag-experiment": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/flag-experiment/SKILL.md",
+      "computedHash": "5993953a7a2e9aba0e1110cd532aa6d56fda202c88e934ab51492184532f60f2"
+    },
+    "flag-graph": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/flag-graph/SKILL.md",
+      "computedHash": "874b155aed7f4a9fc85c0b38a3f5c6e166da74e6ecbd088377db3d496a24bd08"
+    },
+    "flag-metadata": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/flag-metadata/SKILL.md",
+      "computedHash": "79c560fe1d96a26b2f0a1e821f67fda3cbffe228c99f7c2afe412b07217a8bd9"
+    },
+    "flag-monitoring": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/flag-monitoring/SKILL.md",
+      "computedHash": "77b6f9c0f8ac8a990e4adf24ce8cd1ff85437afbabf77ec4c4c5634ec3a94de4"
+    },
+    "flag-prerequisites": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/flag-prerequisites/SKILL.md",
+      "computedHash": "aed1e58cb5cb5243825f4cdcdea06e70c951d5dd043e67bd0438132c2a33e56e"
+    },
+    "flag-publish": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/flag-publish/SKILL.md",
+      "computedHash": "e967e1d73067ba40ca7f345f1bdaeb9d2eb047084a86bec2fb14ee85669722df"
+    },
+    "flag-ramp": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/flag-ramp/SKILL.md",
+      "computedHash": "29b6faf97a4c562ca9aef496ec07571a95546467bfb26989c8fc2f024cb84ef2"
+    },
+    "flag-review": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/flag-review/SKILL.md",
+      "computedHash": "1d174e7920b09970c63ff72e149500332dc5313a65861e3e1b13c8728e0e8df7"
+    },
+    "flag-revisions": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/flag-revisions/SKILL.md",
+      "computedHash": "5389308e6ab136c5d5134085643a08ccfde219281b7b60c165770ea568949b45"
+    },
+    "flag-rules": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/flag-rules/SKILL.md",
+      "computedHash": "4628f473a4e98b88c943d4764cca4ec611aa1032b8ffbf6ccd794e94de318a5d"
+    },
+    "flag-schedule": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/flag-schedule/SKILL.md",
+      "computedHash": "ddda535f6f2c0dd7bd0e5704234b811d5e09324294368e1330b17118bfc11dc3"
+    },
+    "flag-search": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/flag-search/SKILL.md",
+      "computedHash": "a62539e73ed5e9a827140718f2183cf2e1c13ca4afaf91affd4330759941f61a"
+    },
+    "flag-targeting": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/flag-targeting/SKILL.md",
+      "computedHash": "9c41eeadbcaaca6381416bf4b2bebb4627416472f89758257981e1124df030c8"
+    },
+    "flag-toggle": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/flag-toggle/SKILL.md",
+      "computedHash": "e6234341de5260e2226ff4ba2f16a7d51b197ea4f97662a59e442b50907e2466"
+    },
+    "gb-setup": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/gb-setup/SKILL.md",
+      "computedHash": "0819a923103b5c68269daae3d61adc37caa8a89d1481612484b878210ad55fdb"
+    },
     "grill-me": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": ".claude/skills/grill-me",
       "computedHash": "pending"
+    },
+    "metric-search": {
+      "source": "growthbook/skills",
+      "sourceType": "github",
+      "skillPath": "skills/metric-search/SKILL.md",
+      "computedHash": "a9dbe1d237ab2456d4075cef20c732d3dd57c841f10b68acf86da48710c131ed"
     },
     "ponytail": {
       "source": "DietrichGebert/ponytail",
