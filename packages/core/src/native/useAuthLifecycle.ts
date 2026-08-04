@@ -107,7 +107,7 @@ export function useAuthLifecycle() {
         setAuthSession(initialSession);
 
         const sessionMode = getSessionIdentityMode(initialSession);
-        if (sessionMode === 'authenticated' || sessionMode === 'guest') {
+        if (sessionMode === 'authenticated' || sessionMode === 'anonymous') {
           await fetchAndSetUserProfile();
         } else if (initialSession?.user) {
           setUser(null);
@@ -151,7 +151,7 @@ export function useAuthLifecycle() {
         setAuthSessionResolved(true);
 
         const currentMode = getSessionIdentityMode(currentSession);
-        if (currentMode === 'authenticated' || currentMode === 'guest') {
+        if (currentMode === 'authenticated' || currentMode === 'anonymous') {
           await fetchAndSetUserProfile();
         } else if (currentSession?.user) {
           setUser(null);

@@ -25,7 +25,7 @@ describe('bootstrap contract', () => {
     expect(
       getBootstrapSessionState({
         bootstrapReady: true,
-        sessionMode: 'guest',
+        sessionMode: 'anonymous',
         onboardingCompleted: false,
         hasSession: true,
       }),
@@ -67,7 +67,7 @@ describe('bootstrap contract', () => {
     const guestOnboarding = getAuthRouteTarget({
       pathname: '/self',
       bootstrapReady: true,
-      sessionMode: 'guest',
+      sessionMode: 'anonymous',
       onboardingCompleted: false,
       hasSession: true,
     });

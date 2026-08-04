@@ -276,7 +276,7 @@ export default function WebTabsLayout() {
       />
 
       {isBreathingOpen && (
-        <View
+        <Box
           style={{
             position: 'absolute',
             inset: 0,
@@ -335,7 +335,7 @@ export default function WebTabsLayout() {
               <BreathGuide onComplete={() => setBreathingOpen(false)} />
             </Box>
           </Box>
-        </View>
+        </Box>
       )}
     </Box>
   );
