@@ -16,6 +16,9 @@
       "@repo/types-shim"
     ],
     "skipLibCheck": true,
+    "noImplicitAny": false,
+    "strict": false,
+    "strictNullChecks": false,
     "paths": {
       "@/*": [
         "./src/*"

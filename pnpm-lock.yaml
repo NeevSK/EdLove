@@ -1141,13 +1141,13 @@ importers:
         version: 4.0.17(zod@4.3.6)
       '@hono/node-server':
         specifier: ^2.0.6
-        version: 2.0.6(hono@4.12.27)
+        version: 2.0.6(hono@4.13.0)
       '@hono/swagger-ui':
         specifier: ^0.6.1
-        version: 0.6.1(hono@4.12.27)
+        version: 0.6.1(hono@4.13.0)
       '@hono/zod-openapi':
         specifier: ^1.4.0
-        version: 1.4.0(hono@4.12.27)(zod@4.3.6)
+        version: 1.4.0(hono@4.13.0)(zod@4.3.6)
       '@opentelemetry/api':
         specifier: 1.9.1
         version: 1.9.1
@@ -1172,6 +1172,9 @@ importers:
       '@orpc/client':
         specifier: '*'
         version: 1.14.12(@opentelemetry/api@1.9.1)
+      '@orpc/contract':
+        specifier: '*'
+        version: 1.14.12(@opentelemetry/api@1.9.1)
       '@orpc/openapi':
         specifier: 1.14.12
         version: 1.14.12(@opentelemetry/api@1.9.1)(crossws@0.3.5)(ws@8.20.0)
@@ -1189,7 +1192,7 @@ importers:
         version: link:../../packages/policies
       '@scalar/hono-api-reference':
         specifier: ^0.11.5
-        version: 0.11.5(hono@4.12.27)
+        version: 0.11.5(hono@4.13.0)
       '@tanstack/ai':
         specifier: ^0.6.0
         version: 0.6.3
@@ -1212,8 +1215,8 @@ importers:
         specifier: ^0.7.1
         version: 0.7.1(ai@7.0.34(zod@4.3.6))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       hono:
-        specifier: ^4.12.27
-        version: 4.12.27
+        specifier: ^4.12.33
+        version: 4.13.0
       zod:
         specifier: 4.3.6
         version: 4.3.6
@@ -1885,7 +1888,7 @@ importers:
         version: 8.20.0
       '@zenstackhq/cli':
         specifier: 3.8.0
-        version: 3.8.0(better-sqlite3@12.9.0)(h3@1.15.11)(hono@4.12.27)(kysely@0.28.16)(pg@8.21.0)(supports-color@10.2.2)(typescript@7.0.1-rc)
+        version: 3.8.0(better-sqlite3@12.9.0)(h3@1.15.11)(hono@4.13.0)(kysely@0.28.16)(pg@8.21.0)(supports-color@10.2.2)(typescript@7.0.1-rc)
       '@zenstackhq/language':
         specifier: 3.8.0
         version: 3.8.0
@@ -2750,7 +2753,7 @@ importers:
         version: link:../typescript-config
       '@zenstackhq/cli':
         specifier: 3.8.0
-        version: 3.8.0(better-sqlite3@12.9.0)(h3@1.15.11)(hono@4.12.27)(kysely@0.28.16)(pg@8.21.0)(supports-color@10.2.2)(typescript@7.0.1-rc)
+        version: 3.8.0(better-sqlite3@12.9.0)(h3@1.15.11)(hono@4.13.0)(kysely@0.28.16)(pg@8.21.0)(supports-color@10.2.2)(typescript@7.0.1-rc)
       '@zenstackhq/language':
         specifier: 3.8.0
         version: 3.8.0
@@ -14976,6 +14979,10 @@ packages:
     resolution: {integrity: sha512-1yrb/+w6HWQJrUCLkJ2IF5jNIPvvFkblV5RNOYl6bV+OA6p9GLcMpHFFGTosSvHvcAUibuUukRqhlYI4z32C7Q==}
     engines: {node: '>=16.9.0'}
 
+  hono@4.13.0:
+    resolution: {integrity: sha512-jhunvfHWxd7J5EFfSgH4xsYJzSe/lfqbUCxiyyeaQasUsXeEHXtzVid+7EOGByc5JnFa23SSFL3Y2RV/z1T+eQ==}
+    engines: {node: '>=16.9.0'}
+
   hookable@6.1.1:
     resolution: {integrity: sha512-U9LYDy1CwhMCnprUfeAZWZGByVbhd54hwepegYTK7Pi5NvqEj63ifz5z+xukznehT7i6NIZRu89Ay1AZmRsLEQ==}
 
@@ -24127,17 +24134,17 @@ snapshots:
       protobufjs: 7.5.4
       yargs: 17.7.2
 
-  '@hono/node-server@1.19.14(hono@4.12.27)':
+  '@hono/node-server@1.19.14(hono@4.13.0)':
     dependencies:
-      hono: 4.12.27
+      hono: 4.13.0
 
-  '@hono/node-server@2.0.6(hono@4.12.27)':
+  '@hono/node-server@2.0.6(hono@4.13.0)':
     dependencies:
-      hono: 4.12.27
+      hono: 4.13.0
 
-  '@hono/swagger-ui@0.6.1(hono@4.12.27)':
+  '@hono/swagger-ui@0.6.1(hono@4.13.0)':
     dependencies:
-      hono: 4.12.27
+      hono: 4.13.0
 
   '@hono/zod-openapi@1.4.0(hono@4.12.27)(zod@4.3.6)':
     dependencies:
@@ -24147,9 +24154,22 @@ snapshots:
       openapi3-ts: 4.5.0
       zod: 4.3.6
 
+  '@hono/zod-openapi@1.4.0(hono@4.13.0)(zod@4.3.6)':
+    dependencies:
+      '@asteasolutions/zod-to-openapi': 8.5.0(zod@4.3.6)
+      '@hono/zod-validator': 0.8.0(hono@4.13.0)(zod@4.3.6)
+      hono: 4.13.0
+      openapi3-ts: 4.5.0
+      zod: 4.3.6
+
   '@hono/zod-validator@0.8.0(hono@4.12.27)(zod@4.3.6)':
     dependencies:
       hono: 4.12.27
+      zod: 4.3.6
+
+  '@hono/zod-validator@0.8.0(hono@4.13.0)(zod@4.3.6)':
+    dependencies:
+      hono: 4.13.0
       zod: 4.3.6
 
   '@huggingface/jinja@0.5.8':
@@ -24985,7 +25005,7 @@ snapshots:
 
   '@modelcontextprotocol/sdk@1.29.0(supports-color@10.2.2)(zod@4.3.6)':
     dependencies:
-      '@hono/node-server': 1.19.14(hono@4.12.27)
+      '@hono/node-server': 1.19.14(hono@4.13.0)
       ajv: 8.18.0
       ajv-formats: 3.0.1(ajv@8.18.0)
       content-type: 1.0.5
@@ -24995,7 +25015,7 @@ snapshots:
       eventsource-parser: 3.1.0
       express: 5.2.1(supports-color@10.2.2)
       express-rate-limit: 8.3.2(express@5.2.1(supports-color@10.2.2))
-      hono: 4.12.27
+      hono: 4.13.0
       jose: 6.2.3
       json-schema-typed: 8.0.2
       pkce-challenge: 5.0.1
@@ -28296,10 +28316,10 @@ snapshots:
 
   '@scalar/helpers@0.8.2': {}
 
-  '@scalar/hono-api-reference@0.11.5(hono@4.12.27)':
+  '@scalar/hono-api-reference@0.11.5(hono@4.13.0)':
     dependencies:
       '@scalar/client-side-rendering': 0.2.5
-      hono: 4.12.27
+      hono: 4.13.0
 
   '@scalar/schemas@0.6.0':
     dependencies:
@@ -30574,50 +30594,6 @@ snapshots:
 
   '@xmldom/xmldom@0.9.10': {}
 
-  '@zenstackhq/cli@3.8.0(better-sqlite3@12.9.0)(h3@1.15.11)(hono@4.12.27)(kysely@0.28.16)(pg@8.21.0)(supports-color@10.2.2)(typescript@7.0.1-rc)':
-    dependencies:
-      '@zenstackhq/common-helpers': 3.8.0
-      '@zenstackhq/language': 3.8.0
-      '@zenstackhq/orm': 3.8.0(better-sqlite3@12.9.0)(pg@8.21.0)(zod@4.3.6)
-      '@zenstackhq/plugin-policy': 3.8.0(better-sqlite3@12.9.0)(kysely@0.28.16)(pg@8.21.0)(zod@4.3.6)
-      '@zenstackhq/schema': 3.8.0
-      '@zenstackhq/sdk': 3.8.0
-      '@zenstackhq/server': 3.8.0(better-sqlite3@12.9.0)(express@5.2.1(supports-color@10.2.2))(h3@1.15.11)(hono@4.12.27)(pg@8.21.0)(zod@4.3.6)
-      chokidar: 5.0.0
-      colors: 1.4.0
-      commander: 8.3.0
-      cors: 2.8.6
-      dotenv: 17.4.2
-      execa: 9.6.1
-      express: 5.2.1(supports-color@10.2.2)
-      jiti: 2.7.0
-      langium: 4.2.4
-      mixpanel: 0.18.1(supports-color@10.2.2)
-      ora: 5.4.1
-      package-manager-detector: 1.6.0
-      prisma: 6.19.3(typescript@7.0.1-rc)
-      semver: 7.8.5
-      terminal-link: 5.0.0
-      ts-pattern: 5.9.0
-      zod: 4.3.6
-    optionalDependencies:
-      better-sqlite3: 12.9.0
-      pg: 8.21.0
-    transitivePeerDependencies:
-      - '@sveltejs/kit'
-      - elysia
-      - fastify
-      - fastify-plugin
-      - h3
-      - hono
-      - kysely
-      - magicast
-      - next
-      - nuxt
-      - sql.js
-      - supports-color
-      - typescript
-
   '@zenstackhq/cli@3.8.0(better-sqlite3@12.9.0)(h3@1.15.11)(hono@4.12.27)(kysely@0.28.16)(pg@8.21.0)(supports-color@10.2.2)(typescript@7.0.2)':
     dependencies:
       '@zenstackhq/common-helpers': 3.8.0
@@ -30640,6 +30616,50 @@ snapshots:
       ora: 5.4.1
       package-manager-detector: 1.6.0
       prisma: 6.19.3(typescript@7.0.2)
+      semver: 7.8.5
+      terminal-link: 5.0.0
+      ts-pattern: 5.9.0
+      zod: 4.3.6
+    optionalDependencies:
+      better-sqlite3: 12.9.0
+      pg: 8.21.0
+    transitivePeerDependencies:
+      - '@sveltejs/kit'
+      - elysia
+      - fastify
+      - fastify-plugin
+      - h3
+      - hono
+      - kysely
+      - magicast
+      - next
+      - nuxt
+      - sql.js
+      - supports-color
+      - typescript
+
+  '@zenstackhq/cli@3.8.0(better-sqlite3@12.9.0)(h3@1.15.11)(hono@4.13.0)(kysely@0.28.16)(pg@8.21.0)(supports-color@10.2.2)(typescript@7.0.1-rc)':
+    dependencies:
+      '@zenstackhq/common-helpers': 3.8.0
+      '@zenstackhq/language': 3.8.0
+      '@zenstackhq/orm': 3.8.0(better-sqlite3@12.9.0)(pg@8.21.0)(zod@4.3.6)
+      '@zenstackhq/plugin-policy': 3.8.0(better-sqlite3@12.9.0)(kysely@0.28.16)(pg@8.21.0)(zod@4.3.6)
+      '@zenstackhq/schema': 3.8.0
+      '@zenstackhq/sdk': 3.8.0
+      '@zenstackhq/server': 3.8.0(better-sqlite3@12.9.0)(express@5.2.1(supports-color@10.2.2))(h3@1.15.11)(hono@4.13.0)(pg@8.21.0)(zod@4.3.6)
+      chokidar: 5.0.0
+      colors: 1.4.0
+      commander: 8.3.0
+      cors: 2.8.6
+      dotenv: 17.4.2
+      execa: 9.6.1
+      express: 5.2.1(supports-color@10.2.2)
+      jiti: 2.7.0
+      langium: 4.2.4
+      mixpanel: 0.18.1(supports-color@10.2.2)
+      ora: 5.4.1
+      package-manager-detector: 1.6.0
+      prisma: 6.19.3(typescript@7.0.1-rc)
       semver: 7.8.5
       terminal-link: 5.0.0
       ts-pattern: 5.9.0
@@ -30735,6 +30755,28 @@ snapshots:
       express: 5.2.1(supports-color@10.2.2)
       h3: 1.15.11
       hono: 4.12.27
+    transitivePeerDependencies:
+      - better-sqlite3
+      - mysql2
+      - pg
+      - sql.js
+
+  '@zenstackhq/server@3.8.0(better-sqlite3@12.9.0)(express@5.2.1(supports-color@10.2.2))(h3@1.15.11)(hono@4.13.0)(pg@8.21.0)(zod@4.3.6)':
+    dependencies:
+      '@zenstackhq/common-helpers': 3.8.0
+      '@zenstackhq/orm': 3.8.0(better-sqlite3@12.9.0)(pg@8.21.0)(zod@4.3.6)
+      decimal.js: 10.6.0
+      openapi-types: 12.1.3
+      superjson: 2.2.6
+      ts-japi: 1.12.3
+      ts-pattern: 5.9.0
+      url-pattern: 1.0.3
+      zod: 4.3.6
+      zod-validation-error: 5.0.0(zod@4.3.6)
+    optionalDependencies:
+      express: 5.2.1(supports-color@10.2.2)
+      h3: 1.15.11
+      hono: 4.13.0
     transitivePeerDependencies:
       - better-sqlite3
       - mysql2
@@ -35568,6 +35610,8 @@ snapshots:
       react-is: 16.13.1
 
   hono@4.12.27: {}
+
+  hono@4.13.0: {}
 
   hookable@6.1.1: {}
 

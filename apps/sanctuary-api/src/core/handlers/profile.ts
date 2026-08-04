@@ -1,4 +1,4 @@
-import { implement } from '@orpc/server';
+import { implement } from '../orpc';
 import { profileContract } from '@repo/core/api/server';
 import { type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';

@@ -1,4 +1,5 @@
-import { implement, ORPCError } from '@orpc/server';
+import { implement } from '../orpc';
+import { ORPCError } from '@orpc/server';
 import { libraryContract } from '@repo/core/api/server';
 import type { ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
@@ -121,7 +122,7 @@ export const libraryRouter = impl.router({
         grades: input.grades,
         creator_id: context.user.id,
         ...(input.resource_ids.length > 0
-          ? { nodes: { connect: input.resource_ids.map((id) => ({ id })) } }
+          ? { nodes: { connect: input.resource_ids.map((id: string) => ({ id })) } }
           : {}),
       },
       include: {

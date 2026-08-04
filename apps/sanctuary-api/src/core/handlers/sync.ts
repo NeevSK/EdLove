@@ -1,4 +1,5 @@
-import { implement, ORPCError } from '@orpc/server';
+import { implement } from '../orpc';
+import { ORPCError } from '@orpc/server';
 import { syncContract } from '@repo/core/api/server';
 import { applyPowerSyncBatch } from '@repo/core/api/server';
 import type { ORPCContext } from '../orpc';

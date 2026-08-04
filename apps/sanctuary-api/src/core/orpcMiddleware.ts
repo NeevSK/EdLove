@@ -32,6 +32,10 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
           ? (typeof procedureInput.id === 'string' && procedureInput.id) ||
             (typeof procedureInput.assignmentId === 'string' && procedureInput.assignmentId) ||
             context.schoolId || 'school_institutional'
+        : resourceType === 'Classroom'
+          ? (typeof procedureInput.classroomId === 'string' && procedureInput.classroomId) ||
+            (typeof procedureInput.id === 'string' && procedureInput.id) ||
+            context.schoolId || 'school_institutional'
         : (typeof procedureInput.id === 'string' && procedureInput.id) ||
           (typeof procedureInput.classroomId === 'string' && procedureInput.classroomId) ||
           (typeof procedureInput.studentId === 'string' && procedureInput.studentId) ||
@@ -47,6 +51,7 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
     'JoyMoments',
     'GratitudeEntries',
     'EnergyForecasts',
+    'Wellbeing',
   ]).has(resourceType);
   const request = {
     principal: context.principal,

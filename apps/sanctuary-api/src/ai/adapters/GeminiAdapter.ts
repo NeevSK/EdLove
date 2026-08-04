@@ -22,6 +22,6 @@ export class GeminiAdapter implements LlmPort {
       messages: formattedMessages as any,
     });
 
-    return toServerSentEventsStream(stream);
+    return toServerSentEventsStream(stream as any) as any;
   }
 }

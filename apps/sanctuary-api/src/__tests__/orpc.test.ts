@@ -44,8 +44,10 @@ describe('Sanctuary API: oRPC endpoints (Self & Profile)', () => {
 
     it('should successfully log a new mood log entry', async () => {
       const moodPayload = {
+        user_id: userId,
+        mood_score: 5,
         mood: 'joy',
-        notes: 'Feeling great!',
+        note: 'Feeling great!',
       };
 
       const body = await createTestORPCClient(authenticatedHeaders).self.logMood(moodPayload);

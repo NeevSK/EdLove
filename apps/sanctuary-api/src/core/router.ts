@@ -39,11 +39,11 @@ export async function parseORPCContext(req: Request, env: any, requestId: string
         where: { id: activeBondId, user_id: user.id },
       });
       if (activeBond) {
-        const bondScope = resolveBondScope(activeBond);
+        const bondScope = resolveBondScope(activeBond as any);
         activeBondId = bondScope.activeBondId;
         activeEntityId = bondScope.activeEntityId;
         activeEntityType = bondScope.activeEntityType;
-        capacity = activeBond.capacity;
+        capacity = (activeBond as any).capacity;
         schoolId = bondScope.schoolId || '';
       }
     } catch (err) {

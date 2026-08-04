@@ -1,4 +1,5 @@
-import { implement, ORPCError } from '@orpc/server';
+import { implement } from '../orpc';
+import { ORPCError } from '@orpc/server';
 import { attendanceORPCContract } from '@repo/core/api/attendance.orpc.contract';
 import type { ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
@@ -24,7 +25,7 @@ export const attendanceRouter = impl.router({
   batchRecord: impl.batchRecord.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     try {
       return await (context.db as any).$transaction(async (tx: any) => Promise.all(
-        input.map(async (item) => mapAttendance(await tx.attendanceRecord.upsert({
+        input.map(async (item: any) => mapAttendance(await tx.attendanceRecord.upsert({
           where: { student_id_classroom_id_date: { student_id: item.studentId, classroom_id: item.classroomId, date: item.date } },
           update: { status: item.status },
           create: { student_id: item.studentId, classroom_id: item.classroomId, status: item.status, date: item.date },

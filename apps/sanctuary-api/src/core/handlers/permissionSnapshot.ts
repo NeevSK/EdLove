@@ -1,4 +1,5 @@
-import { implement, ORPCError } from '@orpc/server';
+import { implement } from '../orpc';
+import { ORPCError } from '@orpc/server';
 import { permissionSnapshotContract } from '@repo/core/api/server';
 import { refreshPermissionSnapshot } from '../../authorization/permissionSnapshot.service';
 import type { ORPCContext } from '../orpc';

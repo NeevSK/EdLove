@@ -1,4 +1,5 @@
-import { implement, ORPCError } from '@orpc/server';
+import { implement } from '../orpc';
+import { ORPCError } from '@orpc/server';
 import { educationalORPCContract } from '@repo/core/api/educational.orpc.contract';
 import type { ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';

@@ -1,4 +1,4 @@
-import { implement } from '@orpc/server';
+import { implement } from '../orpc';
 import { messagingORPCContract } from '@repo/core/api/messaging.orpc.contract';
 import type { ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';

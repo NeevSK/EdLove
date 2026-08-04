@@ -28,7 +28,7 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
     },
   };
 
-  const validCompleteOnboardingPayload = {};
+  const validCompleteOnboardingPayload = { userId };
 
   const defaultMockUser = {
     id: userId,

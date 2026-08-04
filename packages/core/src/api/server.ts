@@ -29,3 +29,8 @@ export { operationsContract } from '@repo/core/api/operations.contract';
 export { profileContract } from '@repo/core/api/profile.contract';
 export { selfContract } from '@repo/core/api/self.contract';
 export { syncContract } from '@repo/core/api/sync.contract';
+export { principalNotesORPCContract } from './principalNotes.orpc.contract';
+export { permissionSnapshotContract } from './permissionSnapshot.contract';
+export { applyPowerSyncBatch } from '@repo/core/api/handlers/sync';
+
+

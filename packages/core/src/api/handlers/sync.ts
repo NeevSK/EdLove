@@ -91,6 +91,84 @@ if (typeof globalThis !== 'undefined' && !(globalThis as any).__idempotencyClean
   }, 5 * 60 * 1000);
 }
 
+export async function applyPowerSyncBatch(db: any, crud: any[], idempotencyKey?: string | null) {
+  if (idempotencyKey && idempotencyCache.has(idempotencyKey)) {
+    console.log(`[Sync] Duplicate batch detected via idempotency key: "${idempotencyKey}". Returning cached response.`);
+    const cached = idempotencyCache.get(idempotencyKey)!;
+    return {
+      success: cached.success,
+      processedCount: cached.processedCount,
+      idempotent: true,
+    };
+  }
+
+  if (!Array.isArray(crud)) {
+    throw new Error('Invalid payload: crud must be an array');
+  }
+
+  console.log(`[Sync] Processing transactional upload batch of ${crud.length} mutations.`);
+
+  try {
+    await db.$transaction(async (tx: any) => {
+      for (const item of crud) {
+        const { id, op, table, opData } = item;
+        const modelKey = tableToModelMap[table] || tableToModelMap[table.toLowerCase()];
+
+        if (!modelKey) {
+          console.warn(`[Sync] No active Prisma model mapping for table: "${table}"`);
+          throw new SyncTableError(table);
+        }
+
+        const delegate = tx[modelKey];
+        if (!delegate) {
+          throw new SyncDelegateError(modelKey);
+        }
+
+        switch (op) {
+          case 'PUT':
+            await delegate.upsert({
+              where: { id },
+              create: { ...opData, id },
+              update: opData ?? {},
+            });
+            break;
+
+          case 'PATCH':
+            await delegate.update({ where: { id }, data: opData ?? {} });
+            break;
+
+          case 'DELETE':
+            await delegate.delete({ where: { id } });
+            break;
+
+          default:
+            throw new SyncOperationError(op);
+        }
+      }
+    });
+
+    if (idempotencyKey) {
+      idempotencyCache.set(idempotencyKey, {
+        success: true,
+        processedCount: crud.length,
+        timestamp: Date.now(),
+      });
+    }
+
+    return { success: true, processedCount: crud.length };
+  } catch (e) {
+    const err = e as Error | SyncTableError | SyncDelegateError | SyncOperationError;
+    const message =
+      err instanceof SyncTableError ||
+      err instanceof SyncDelegateError ||
+      err instanceof SyncOperationError
+        ? err.message
+        : err?.message || 'Transaction Aborted';
+    console.error('[Sync] Transaction processing failed, batch aborted:', err);
+    throw new Error(message);
+  }
+}
+
 /**
  * Sync Domain Handlers
  *
@@ -109,93 +187,12 @@ export const syncHandlers = {
     }
 
     const idempotencyKey = c.req.header('X-Idempotency-Key');
-    if (idempotencyKey && idempotencyCache.has(idempotencyKey)) {
-      console.log(`[Sync] Duplicate batch detected via idempotency key: "${idempotencyKey}". Returning cached response.`);
-      const cached = idempotencyCache.get(idempotencyKey)!;
-      return c.json(
-        {
-          success: cached.success,
-          processedCount: cached.processedCount,
-          idempotent: true,
-        },
-        200,
-      );
+    try {
+      const { crud } = await c.req.json();
+      const outcome = await applyPowerSyncBatch(db, crud, idempotencyKey);
+      return c.json(outcome, 200);
+    } catch (err: any) {
+      return c.json({ error: 'Transaction Aborted', message: err.message }, 400);
     }
-
-    const { crud } = await c.req.json();
-    if (!Array.isArray(crud)) {
-      return c.json({ error: 'Invalid payload: crud must be an array' }, 400);
-    }
-
-    console.log(`[Sync] Processing transactional upload batch of ${crud.length} mutations.`);
-
-    const outcome = await Effect.runPromise(
-      Effect.tryPromise(async () => {
-        await db.$transaction(async (tx: any) => {
-          for (const item of crud) {
-            const { id, op, table, opData } = item;
-            const modelKey = tableToModelMap[table] || tableToModelMap[table.toLowerCase()];
-
-            if (!modelKey) {
-              console.warn(`[Sync] No active Prisma model mapping for table: "${table}"`);
-              throw new SyncTableError(table);
-            }
-
-            const delegate = tx[modelKey];
-            if (!delegate) {
-              throw new SyncDelegateError(modelKey);
-            }
-
-            switch (op) {
-              case 'PUT':
-                await delegate.upsert({
-                  where: { id },
-                  create: { ...opData, id },
-                  update: opData ?? {},
-                });
-                break;
-
-              case 'PATCH':
-                await delegate.update({ where: { id }, data: opData ?? {} });
-                break;
-
-              case 'DELETE':
-                await delegate.delete({ where: { id } });
-                break;
-
-              default:
-                throw new SyncOperationError(op);
-            }
-          }
-        });
-
-        if (idempotencyKey) {
-          idempotencyCache.set(idempotencyKey, {
-            success: true,
-            processedCount: crud.length,
-            timestamp: Date.now(),
-          });
-        }
-
-        return { success: true, processedCount: crud.length };
-      }).pipe(
-        Effect.catchAll((e) => {
-          const err = e as Error | SyncTableError | SyncDelegateError | SyncOperationError;
-          const message =
-            err instanceof SyncTableError ||
-            err instanceof SyncDelegateError ||
-            err instanceof SyncOperationError
-              ? err.message
-              : err?.message || 'Transaction Aborted';
-          console.error('[Sync] Transaction processing failed, batch aborted:', err);
-          return Effect.succeed({ error: 'Transaction Aborted', message });
-        }),
-      ),
-    );
-
-    if ('error' in outcome) {
-      return c.json(outcome, 400);
-    }
-    return c.json(outcome, 200);
   },
 };
