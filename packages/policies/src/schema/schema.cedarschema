@@ -144,6 +144,48 @@ entity AIAssistant {
   school_id?: String
 };
 
+entity ClassroomNote {
+  id: String,
+  school_id?: String,
+  classroom_id?: String,
+  author_id?: String
+};
+
+entity Library {
+  id: String,
+  school_id?: String,
+  creator_id?: String
+};
+
+entity Wellbeing {
+  id: String,
+  school_id?: String,
+  user_id?: String
+};
+
+entity Staff {
+  id: String,
+  school_id?: String
+};
+
+entity DailyContent {
+  id: String,
+  school_id?: String
+};
+
+entity Calendar {
+  id: String,
+  school_id?: String
+};
+
+entity AssignmentSubmission {
+  id: String,
+  school_id?: String,
+  assignment_id?: String,
+  student_id?: String,
+  classroom_id?: String
+};
+
 type SecurityContext = {
   device_trust?: String,
   network_zone?: String
@@ -155,7 +197,8 @@ action "read", "create", "update", "delete", "use_ai" appliesTo {
     User, School, Classroom, AttendanceRecord, Grade, Assignment, Lesson, Material,
     StaffLeave, MoodLog, FireJournal, InventoryItem, Group, Post, Ledger,
     Guardian, SentinelAuditLog, JoyMoments, GratitudeEntries, EnergyForecasts,
-    PersonalClassroom, AIAssistant
+    PersonalClassroom, AIAssistant, ClassroomNote, Library, Wellbeing, Staff, DailyContent,
+    AssignmentSubmission, Calendar
   ],
   context: SecurityContext
 };

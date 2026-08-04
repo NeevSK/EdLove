@@ -22,17 +22,59 @@ permit(
   resource.student_id == principal.id
 };
 
-// 3. Read Lessons and Materials for own classroom only (known leak fix)
+// 3. Read Lessons, Materials, ClassroomNotes, and Assignments for own classroom only (known leak fix)
 permit(
   principal,
   action == Action::"read",
   resource
 ) when {
   principal.capacity == "student" &&
-  (resource is Lesson || resource is Material) &&
+  (resource is Lesson || resource is Material || resource is ClassroomNote || resource is Assignment) &&
   resource has classroom_id &&
   principal has classroom_ids &&
   principal.classroom_ids.contains(resource.classroom_id)
+};
+
+// 3b. Read Library resources generally permitted
+permit(
+  principal,
+  action == Action::"read",
+  resource
+) when {
+  principal.capacity == "student" &&
+  resource is Library
+};
+
+// 3c. Read DailyContent generally permitted
+permit(
+  principal,
+  action == Action::"read",
+  resource
+) when {
+  principal.capacity == "student" &&
+  resource is DailyContent
+};
+
+// 3e. Read Assignment generally permitted for own school
+permit(
+  principal,
+  action == Action::"read",
+  resource
+) when {
+  principal.capacity == "student" &&
+  resource is Assignment &&
+  resource.school_id == principal.school_id
+};
+
+// 3d. Community permissions: Full CRUD on Group and Post in their school
+permit(
+  principal,
+  action,
+  resource
+) when {
+  principal.capacity == "student" &&
+  (resource is Group || resource is Post) &&
+  resource.school_id == principal.school_id
 };
 
 // 4. Full CRUD on own MoodLog, FireJournal, JoyMoments, GratitudeEntries, EnergyForecasts
@@ -43,20 +85,28 @@ permit(
 ) when {
   principal.capacity == "student" &&
   (
-    resource is MoodLog ||
-    resource is FireJournal ||
-    resource is JoyMoments ||
-    resource is GratitudeEntries ||
-    resource is EnergyForecasts
-  ) &&
-  resource has user_id &&
-  resource.user_id == principal.id
+    (
+      resource is MoodLog ||
+      resource is FireJournal ||
+      resource is JoyMoments ||
+      resource is GratitudeEntries ||
+      resource is EnergyForecasts ||
+      resource is Wellbeing
+    ) &&
+    resource has user_id &&
+    resource.user_id == principal.id
+  ) ||
+  (
+    resource is AssignmentSubmission &&
+    resource has student_id &&
+    resource.student_id == principal.id
+  )
 };
 
-// 5. Read/Update own User preferences / personal details
+// 5. Read/Update/Delete own User preferences / personal details (social links deletion etc)
 permit(
   principal,
-  action in [Action::"read", Action::"update"],
+  action in [Action::"read", Action::"update", Action::"delete"],
   resource
 ) when {
   principal.capacity == "student" &&
