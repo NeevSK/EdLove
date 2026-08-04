@@ -34,10 +34,19 @@ implemented.
 
 1. Configure a protected GrowthBook management key and complete scoped feature
    inventory access in CI/operator environments.
+   **Partially complete (2026-08-04):** the management key is configured in
+   `~/.config/growthbook/.env` for operator use. CI secret wiring is still
+   outstanding. **Security action:** rotate the admin secret exposed in a session
+   transcript and prefer a scoped PAT (see the [rollout record](./2026-08-04-growthbook-cloud-rollout.md)).
 2. Run the read-only control-plane inventory audit against the production
    GrowthBook project and resolve any remote/local drift.
+   **Complete (2026-08-04):** `audit-growthbook-features.mjs --strict` reports
+   zero drift — 12/12 manifest keys match the 12 created flags
+   (project `prj_2CcG1JXUJwNGKwwGJEb8s8`). Note: the v1 features endpoint
+   paginates at 10, so the audit endpoint must include `?limit=100`.
 3. Verify the archive endpoint against the actual GrowthBook deployment and
    perform one approved dry run, followed by one controlled archival operation.
+   **Open:** no archive dry run against the real deployment yet.
 4. Record operator identity, reason, timestamp, affected key, and result in the
    lifecycle history.
 

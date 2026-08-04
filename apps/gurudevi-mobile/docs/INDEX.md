@@ -2,7 +2,7 @@
 title: "Gurudevi Mobile Documentation Vault Index"
 status: "active"
 created: 2026-06-10
-updated: 2026-07-28
+updated: 2026-08-04
 author: "Naveen"
 scribe: "Antigravity"
 tags: [index, portal]
@@ -29,6 +29,8 @@ These documents are the current authority for capability inventory, rollout, sta
 9. [Identity, App, Device, and Account Lifecycle](./architecture/identity-app-device-lifecycle.md) — authoritative app/user/device topology, guest conversion, onboarding, citizenship, institutional joining, and entitlement boundaries.
 10. [Feature Lifecycle Future Work](./architecture/feature-lifecycle-future-work.md) — remaining production control-plane, legacy-schema, and governance work.
 11. [Capability Policy Composition Guide](./architecture/capability-policy-composition-guide.md) — how capacity, school type, citizenship, entitlement, platform, and rollout criteria are assigned to the correct authority.
+12. [GrowthBook Cloud Rollout Record](./architecture/2026-08-04-growthbook-cloud-rollout.md) — live control-plane state: 12 flags created, SDK wiring verification, audit result, client key, follow-ups.
+13. [GrowthBook Key Naming (ADR-012)](./decisions/012-growthbook-key-naming-ssot.md) — canonical `gurudevi.<domain>.<feature>` key convention, SSOT manifest, and rollout plan.
 
 ## Platform-wide native capability work
 
@@ -52,6 +54,7 @@ These documents are the current authority for capability inventory, rollout, sta
 
 | Date | Document | Category | Status | Summary |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-08-04** | [GrowthBook Cloud Rollout Record](./architecture/2026-08-04-growthbook-cloud-rollout.md) | Architecture / Feature Flags | `active` | Created the 12 `gurudevi.*` flags in the live project (production + dev, all disabled), verified the SDK wiring against the GrowthBook quickstart, wired `sdk-...` client key, and confirmed zero control-plane drift via the strict audit. |
 | **2026-07-28** | [Production Readiness, oRPC Migration & PDPA Compliance Analysis](./current_progress/2026-07-28-production-readiness-and-compliance-analysis.md) | Current Progress | `active` | Evaluation of gurudevi-mobile production gaps, a detailed oRPC backend/client migration pattern, and a PDPA user consent & local cache cleaning compliance strategy. |
 | **2026-07-17** | [React Native Gesture Handler v3 Evolution Analysis & Gurudevi Mobile Migration Plan](./current_progress/2026-07-17-rngh-v3-comprehensive-migration-plan.md) | Current Progress | `active` | Evolution analysis of RNGH v2.x and v3.0 releases with a step-by-step hooks API migration plan for the mobile project. |
 | **2026-07-17** | [Gluestack UI Evolution Analysis & Gurudevi Mobile Migration Plan](./current_progress/2026-07-17-gluestack-comprehensive-migration-plan.md) | Current Progress | `active` | Comparative analysis of Gluestack v2, v3, and v5 changelogs with a concrete cleanup plan for the mobile project. |

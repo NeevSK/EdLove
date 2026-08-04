@@ -2,14 +2,14 @@
 title: "Gurudevi Feature Lifecycle Management"
 status: "active"
 created: 2026-07-26
-updated: 2026-07-26
+updated: 2026-08-04
 author: "Codex"
 tags: [feature-management, app-catalog, growthbook, lifecycle, governance]
 ---
 
 # Gurudevi Feature Lifecycle Management
 
-This is the source-of-truth guide for managing product capabilities and their rollout controls. The dated audit and implementation proposal contains the evidence and migration details: [2026-07-26 feature lifecycle audit and plan](./2026-07-26-feature-flag-lifecycle-audit-and-plan.md).
+This is the source-of-truth guide for managing product capabilities and their rollout controls. The dated audit and implementation proposal contains the evidence and migration details: [2026-07-26 feature lifecycle audit and plan](./2026-07-26-feature-flag-lifecycle-audit-and-plan.md). The live GrowthBook control-plane state (flags, environments, SDK wiring, client key) is recorded in the [2026-08-04 cloud rollout record](./2026-08-04-growthbook-cloud-rollout.md).
 
 For day-to-day implementation, use the [new capability and feature flag checklist](./NEW_FEATURE_CHECKLIST.md). Gate precedence and entitlement context ownership are defined in [ADR-005](../decisions/005-feature-gate-order-and-context-ownership.md).
 
@@ -72,6 +72,22 @@ The admin feature registry observes that same store reactively and exposes snaps
 - **Operational kill switch:** permanent only when disabling a live capability is a legitimate safety or reliability action.
 
 Configuration, authorization, and entitlement data are not feature flags.
+
+## GrowthBook key naming
+
+The manifest (`FEATURE_FLAG_MANIFEST`) is the single source of truth that maps
+each app flag key to its canonical GrowthBook key (ADR-012). GrowthBook keys
+follow the convention `gurudevi.<domain>.<feature>` — lowercase, dot-separated,
+kebab-case — where `<domain>` matches the owning package registry (`admin`,
+`ai`, `workforce`, `form-builder`, `core`) and lifecycle state stays in the
+manifest, not in the key.
+
+The rollout adapter evaluates by `growthbookKey` but emits snapshots keyed by
+app flag keys, so slices, registries, and permission gates never see the remote
+naming scheme. Boot-time manifest validation enforces the key format and
+uniqueness. Control-plane scripts (`audit-growthbook-features.mjs`,
+`archive-growthbook-flags.mjs`) compare remote feature keys against the
+manifest's `growthbookKey` values, never a hard-coded list.
 
 ## End-of-life policy
 

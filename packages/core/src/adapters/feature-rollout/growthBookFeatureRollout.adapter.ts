@@ -5,6 +5,7 @@ import type {
   FeatureRolloutSnapshot,
   IFeatureRolloutPort,
 } from '@repo/core/logic/ports/featureRollout.port';
+import { FEATURE_FLAG_MANIFEST } from '@repo/core/logic/registry/featureLifecycleManifest';
 import type { UserContext } from '@repo/core/logic/schemas/user.schema';
 
 // Apply the platform-agnostic storage polyfill for GrowthBook cache persistence
@@ -77,10 +78,13 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
     await this.growthbook.setAttributes(attributes);
 
     const flags: Record<string, boolean | string> = {};
-    const features = this.growthbook.getFeatures();
 
-    for (const key of Object.keys(features)) {
-      flags[key] = this.growthbook.evalFeature(key).value;
+    // The manifest is the SSOT for the GrowthBook key mapping (ADR-012). The
+    // snapshot is keyed by app flag keys so slices, registries, and permission
+    // gates never see the remote naming scheme.
+    for (const [appKey, metadata] of Object.entries(FEATURE_FLAG_MANIFEST)) {
+      const value = this.growthbook.evalFeature(metadata.growthbookKey).value;
+      if (value !== undefined) flags[appKey] = value;
     }
 
     return {

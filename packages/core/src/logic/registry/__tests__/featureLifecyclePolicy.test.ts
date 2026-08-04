@@ -1,12 +1,14 @@
-import { describe, expect, it } from 'vitest';
 import {
   type FeatureFlagMetadata,
   FeatureFlagMetadataSchema,
   fallbackForFeatureFlagClass,
+  GROWTHBOOK_KEY_BY_FLAG,
   resolveFeatureFlagClass,
   resolveFeatureFlagValue,
+  resolveGrowthBookKey,
 } from '@repo/core/logic/registry/featureLifecycleManifest';
 import { validateFeatureLifecycleAction } from '@repo/core/logic/registry/featureLifecyclePolicy';
+import { describe, expect, it } from 'vitest';
 
 const releaseMetadata: FeatureFlagMetadata = {
   owner: 'test',
@@ -16,6 +18,7 @@ const releaseMetadata: FeatureFlagMetadata = {
   intendedAudience: 'Test cohort.',
   safeDefault: true,
   cleanupNote: 'Remove after test.',
+  growthbookKey: 'test.release',
   createdAt: '2026-07-26',
   reviewAt: '2026-09-30',
   removalTarget: '2026-09-30',
@@ -29,6 +32,7 @@ const operationalMetadata: FeatureFlagMetadata = {
   intendedAudience: 'All clients.',
   safeDefault: true,
   cleanupNote: 'Review at test lifecycle review.',
+  growthbookKey: 'test.operational',
   createdAt: '2026-07-26',
   reviewAt: '2026-09-30',
   permanentJustification: 'Emergency safety control.',
@@ -56,6 +60,16 @@ describe('feature lifecycle policy', () => {
     expect(resolveFeatureFlagClass('isAIAssistantEnabled')).toBe('beta');
     expect(resolveFeatureFlagClass('isUnderMaintenance')).toBe('operational');
     expect(resolveFeatureFlagClass('unknown.flag')).toBe('operational');
+  });
+
+  it('resolves canonical GrowthBook keys for manifest flags', () => {
+    expect(resolveGrowthBookKey('isInventoryEnabled')).toBe('gurudevi.admin.inventory');
+    expect(resolveGrowthBookKey('isPowerSyncEnabled')).toBe('gurudevi.core.power-sync');
+    expect(resolveGrowthBookKey('isDevelopingFormBuilder')).toBe(
+      'gurudevi.form-builder.development',
+    );
+    expect(resolveGrowthBookKey('unknown.flag')).toBeUndefined();
+    expect(GROWTHBOOK_KEY_BY_FLAG['gurudevi.core.analytics']).toBe('isAnalyticsEnabled');
   });
 
   it('rejects contradictory class and disposition metadata', () => {

@@ -22,7 +22,22 @@ function manifestKeys() {
   const content = fs.readFileSync(manifestPath, 'utf8');
   const body = content.match(/export const FEATURE_FLAG_MANIFEST[^=]*=\s*{([\s\S]*?)}\s*as const/);
   if (!body) throw new Error('FEATURE_FLAG_MANIFEST not found.');
-  return [...body[1].matchAll(/^\s*(\w+):/gm)].map(([, key]) => key);
+
+  const entries = [...body[1].matchAll(/^\s*(\w+):\s*\{([\s\S]*?)},?\s*$/gm)].map(
+    ([, appKey, block]) => ({
+      appKey,
+      growthbookKey: block.match(/growthbookKey:\s*'([^']+)'/)?.[1],
+    }),
+  );
+
+  const missing = entries.filter((entry) => !entry.growthbookKey);
+  if (missing.length > 0) {
+    throw new Error(
+      `Manifest entries missing growthbookKey: ${missing.map(({ appKey }) => appKey).join(', ')}`,
+    );
+  }
+
+  return entries;
 }
 
 export function validateEndpoint(value) {
@@ -101,7 +116,8 @@ async function run() {
   const archivedRemoteKeys = remoteFeatures
     .filter(({ archived }) => archived)
     .map(({ key }) => key);
-  const localKeys = manifestKeys();
+  const local = manifestKeys();
+  const localKeys = local.map(({ growthbookKey }) => growthbookKey);
   const localSet = new Set(localKeys);
   const remoteSet = new Set(activeRemoteKeys);
   const orphanedRemoteKeys = activeRemoteKeys.filter((key) => !localSet.has(key)).sort();
@@ -117,6 +133,10 @@ async function run() {
         localManifestCount: localKeys.length,
         orphanedRemoteKeys,
         missingRemoteKeys,
+        manifestGrowthbookKeys: local.map(({ appKey, growthbookKey }) => ({
+          appKey,
+          growthbookKey,
+        })),
       },
       null,
       2,

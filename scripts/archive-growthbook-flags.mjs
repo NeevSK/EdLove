@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -18,6 +19,22 @@ const timeoutMs = Number.parseInt(process.env.GROWTHBOOK_API_TIMEOUT_MS || '1000
 function fail(message) {
   console.error(`GrowthBook archival refused: ${message}`);
   process.exitCode = 1;
+}
+
+function manifestGrowthbookKeyMap() {
+  const content = fs.readFileSync(
+    path.join(rootDir, 'packages/core/src/logic/registry/featureLifecycleManifest.ts'),
+    'utf8',
+  );
+  const body = content.match(/export const FEATURE_FLAG_MANIFEST[^=]*=\s*{([\s\S]*?)}\s*as const/);
+  if (!body) throw new Error('FEATURE_FLAG_MANIFEST not found.');
+
+  const map = new Map();
+  for (const match of body[1].matchAll(/^\s*(\w+):\s*\{([\s\S]*?)},?\s*$/gm)) {
+    const growthbookKey = match[2].match(/growthbookKey:\s*'([^']+)'/)?.[1];
+    if (growthbookKey) map.set(match[1], growthbookKey);
+  }
+  return map;
 }
 
 function loadAudit() {
@@ -93,6 +110,7 @@ async function archiveKey(key) {
 
 try {
   const audit = loadAudit();
+  const growthbookKeyMap = manifestGrowthbookKeyMap();
   const requestedKeys = keys.length > 0 ? keys : audit.fullyLaunchedCandidates;
 
   if (requestedKeys.length === 0) {
@@ -143,7 +161,9 @@ try {
 
   if (!apply) {
     console.log(`Dry run: ${requestedKeys.length} GrowthBook flag(s) are eligible:`);
-    requestedKeys.forEach((key) => console.log(`  - ${key}`));
+    requestedKeys.forEach((key) =>
+      console.log(`  - ${key} (GrowthBook: ${growthbookKeyMap.get(key) ?? key})`),
+    );
     console.log(
       'Use --apply --reason="..." with server-side GrowthBook credentials to mutate the control plane.',
     );
@@ -153,8 +173,9 @@ try {
   verifyControlPlane();
 
   for (const key of requestedKeys) {
-    await archiveKey(key);
-    console.log(`Archived GrowthBook flag: ${key} (${reason})`);
+    const remoteKey = growthbookKeyMap.get(key) ?? key;
+    await archiveKey(remoteKey);
+    console.log(`Archived GrowthBook flag: ${remoteKey} (${reason})`);
   }
 } catch (error) {
   fail(error instanceof Error ? error.message : String(error));

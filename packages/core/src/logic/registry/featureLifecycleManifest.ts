@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import {
   type FeatureFlagClass,
   FeatureFlagClassSchema,
@@ -6,6 +5,7 @@ import {
   FeatureLifecycleSchema,
 } from '@repo/core/logic/registry/domainEntry';
 import { DEFAULT_FEATURE_FLAGS } from '@repo/core/store/types/featureFlags';
+import { z } from 'zod';
 
 export type FeatureFlagMetadata = Omit<FeatureLifecycle, 'flagClass'> & {
   class: FeatureFlagClass;
@@ -14,6 +14,8 @@ export type FeatureFlagMetadata = Omit<FeatureLifecycle, 'flagClass'> & {
   intendedAudience: string;
   safeDefault: boolean;
   cleanupNote: string;
+  /** Canonical GrowthBook key: `gurudevi.<domain>.<feature>`. See ADR-012. */
+  growthbookKey: string;
   legacy?: boolean;
 };
 
@@ -24,6 +26,12 @@ export const FeatureFlagMetadataSchema = FeatureLifecycleSchema.extend({
   intendedAudience: z.string().min(1),
   safeDefault: z.boolean(),
   cleanupNote: z.string().min(1),
+  growthbookKey: z
+    .string()
+    .regex(
+      /^[a-z0-9]+(-[a-z0-9]+)*(\.[a-z0-9]+(-[a-z0-9]+)*)*$/,
+      'growthbookKey must be namespaced kebab-case, e.g. gurudevi.<domain>.<feature>.',
+    ),
   legacy: z.boolean().optional(),
 }).superRefine((metadata, context) => {
   const isOperational = metadata.class === 'operational';
@@ -54,7 +62,10 @@ export const FeatureFlagMetadataSchema = FeatureLifecycleSchema.extend({
   }
 });
 
-const legacyRelease = (owner: string, purpose: string): FeatureFlagMetadata => ({
+const legacyRelease = (
+  owner: string,
+  purpose: string,
+): Omit<FeatureFlagMetadata, 'growthbookKey'> => ({
   owner,
   class: 'release',
   disposition: 'retire-after-migration',
@@ -69,7 +80,10 @@ const legacyRelease = (owner: string, purpose: string): FeatureFlagMetadata => (
   legacy: true,
 });
 
-const legacyBeta = (owner: string, purpose: string): FeatureFlagMetadata => ({
+const legacyBeta = (
+  owner: string,
+  purpose: string,
+): Omit<FeatureFlagMetadata, 'growthbookKey'> => ({
   owner,
   class: 'beta',
   disposition: 'retire-after-migration',
@@ -88,7 +102,7 @@ const permanentOperational = (
   permanentJustification: string,
   purpose: string,
   safeDefault: boolean,
-): FeatureFlagMetadata => ({
+): Omit<FeatureFlagMetadata, 'growthbookKey'> => ({
   owner,
   class: 'operational',
   disposition: 'retain-operational',
@@ -108,46 +122,79 @@ const permanentOperational = (
  * the legacy helpers once the current keys have been migrated.
  */
 export const FEATURE_FLAG_MANIFEST = {
-  isInventoryEnabled: legacyBeta('admin', 'Controlled release of inventory operations.'),
-  isAccountingEnabled: legacyBeta('admin', 'Controlled release of accounting operations.'),
-  isAIAssistantEnabled: legacyBeta('ai', 'Controlled release of the AI assistant.'),
-  isGuardianWorkspaceEnabled: legacyBeta('admin', 'Controlled release of the guardian workspace.'),
-  isDevelopingWorkspace: legacyBeta('admin', 'Controlled development workspace access.'),
-  isDevelopingWorkforce: legacyBeta('workforce', 'Controlled release of workforce operations.'),
-  isDevelopingFormBuilder: legacyBeta(
-    'form-builder',
-    'Controlled release of form builder capabilities.',
-  ),
-  isGraphicsEngineEnabled: permanentOperational(
-    'graphics',
-    'Retain an emergency fallback for disabling the accelerated rendering engine while preserving standard rendering.',
-    'Emergency control for the accelerated graphics engine.',
-    true,
-  ),
-  isAnalyticsEnabled: permanentOperational(
-    'platform-core',
-    'Disable analytics collection during an incident or privacy response.',
-    'Emergency control for analytics collection.',
-    true,
-  ),
-  isSocialShieldEnabled: permanentOperational(
-    'community',
-    'Retain an emergency safety control for social surfaces.',
-    'Emergency safety control for social interactions.',
-    true,
-  ),
-  isUnderMaintenance: permanentOperational(
-    'platform-core',
-    'Emergency platform-wide availability control.',
-    'Platform-wide maintenance availability control.',
-    false,
-  ),
-  isPowerSyncEnabled: permanentOperational(
-    'platform-core',
-    'Emergency control for the synchronization subsystem.',
-    'Emergency control for offline synchronization.',
-    false,
-  ),
+  isInventoryEnabled: {
+    ...legacyBeta('admin', 'Controlled release of inventory operations.'),
+    growthbookKey: 'gurudevi.admin.inventory',
+  },
+  isAccountingEnabled: {
+    ...legacyBeta('admin', 'Controlled release of accounting operations.'),
+    growthbookKey: 'gurudevi.admin.accounting',
+  },
+  isAIAssistantEnabled: {
+    ...legacyBeta('ai', 'Controlled release of the AI assistant.'),
+    growthbookKey: 'gurudevi.ai.assistant',
+  },
+  isGuardianWorkspaceEnabled: {
+    ...legacyBeta('admin', 'Controlled release of the guardian workspace.'),
+    growthbookKey: 'gurudevi.admin.guardian-workspace',
+  },
+  isDevelopingWorkspace: {
+    ...legacyBeta('admin', 'Controlled development workspace access.'),
+    growthbookKey: 'gurudevi.admin.workspace-development',
+  },
+  isDevelopingWorkforce: {
+    ...legacyBeta('workforce', 'Controlled release of workforce operations.'),
+    growthbookKey: 'gurudevi.workforce.development',
+  },
+  isDevelopingFormBuilder: {
+    ...legacyBeta('form-builder', 'Controlled release of form builder capabilities.'),
+    growthbookKey: 'gurudevi.form-builder.development',
+  },
+  isGraphicsEngineEnabled: {
+    ...permanentOperational(
+      'graphics',
+      'Retain an emergency fallback for disabling the accelerated rendering engine while preserving standard rendering.',
+      'Emergency control for the accelerated graphics engine.',
+      true,
+    ),
+    growthbookKey: 'gurudevi.core.graphics-engine',
+  },
+  isAnalyticsEnabled: {
+    ...permanentOperational(
+      'platform-core',
+      'Disable analytics collection during an incident or privacy response.',
+      'Emergency control for analytics collection.',
+      true,
+    ),
+    growthbookKey: 'gurudevi.core.analytics',
+  },
+  isSocialShieldEnabled: {
+    ...permanentOperational(
+      'community',
+      'Retain an emergency safety control for social surfaces.',
+      'Emergency safety control for social interactions.',
+      true,
+    ),
+    growthbookKey: 'gurudevi.core.social-shield',
+  },
+  isUnderMaintenance: {
+    ...permanentOperational(
+      'platform-core',
+      'Emergency platform-wide availability control.',
+      'Platform-wide maintenance availability control.',
+      false,
+    ),
+    growthbookKey: 'gurudevi.core.maintenance',
+  },
+  isPowerSyncEnabled: {
+    ...permanentOperational(
+      'platform-core',
+      'Emergency control for the synchronization subsystem.',
+      'Emergency control for offline synchronization.',
+      false,
+    ),
+    growthbookKey: 'gurudevi.core.power-sync',
+  },
 } as const satisfies Record<string, FeatureFlagMetadata>;
 
 export type FeatureFlagKey = keyof typeof FEATURE_FLAG_MANIFEST;
@@ -163,7 +210,29 @@ export function validateFeatureFlagManifest(): void {
       );
     }
   });
+
+  const growthbookKeys = Object.values(FEATURE_FLAG_MANIFEST).map(
+    ({ growthbookKey }) => growthbookKey,
+  );
+  const duplicateGrowthbookKeys = growthbookKeys.filter(
+    (key, index) => growthbookKeys.indexOf(key) !== index,
+  );
+  if (duplicateGrowthbookKeys.length > 0) {
+    throw new Error(
+      `Feature lifecycle: duplicate GrowthBook keys: ${[...new Set(duplicateGrowthbookKeys)].join(', ')}.`,
+    );
+  }
 }
+
+/** Resolve the canonical GrowthBook key for an app flag key. */
+export function resolveGrowthBookKey(key: string): string | undefined {
+  return FEATURE_FLAG_MANIFEST[key as keyof typeof FEATURE_FLAG_MANIFEST]?.growthbookKey;
+}
+
+/** Reverse map: canonical GrowthBook key → app flag key. */
+export const GROWTHBOOK_KEY_BY_FLAG = Object.fromEntries(
+  Object.entries(FEATURE_FLAG_MANIFEST).map(([key, metadata]) => [metadata.growthbookKey, key]),
+) as Record<string, FeatureFlagKey>;
 
 /** Retired keys are append-only and must never be reused. */
 export const RETIRED_FEATURE_FLAG_HISTORY = [

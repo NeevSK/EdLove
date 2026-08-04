@@ -65,7 +65,9 @@ function extractObjectKeys(content, objectName) {
     new RegExp(`export const ${objectName}[^=]*=\\s*{([\\s\\S]*?)}\\s*as const`),
   );
   if (!match) throw new Error(`${objectName} object not found.`);
-  return [...match[1].matchAll(/^\s*(\w+)\s*:/gm)].map(([, key]) => key);
+  // Top-level object keys only: manifest flag keys are indented 2 spaces, while
+  // nested metadata properties (owner, growthbookKey, ...) are indented 4.
+  return [...match[1].matchAll(/^ {2}(\w+)\s*:/gm)].map(([, key]) => key);
 }
 
 function unique(values) {
@@ -97,8 +99,9 @@ function countReferences(files, key) {
 
 function manifestHelperForKey(content, key) {
   return (
-    content.match(new RegExp(`${key}:\\s*(legacyRelease|legacyBeta|permanentOperational)`))?.[1] ??
-    null
+    content.match(
+      new RegExp(`${key}:\\s*\\{\\s*\\.\\.\\.(legacyRelease|legacyBeta|permanentOperational)`),
+    )?.[1] ?? null
   );
 }
 
@@ -226,7 +229,8 @@ function audit() {
   const unused = featureKeys.filter((key) => codeReferences.get(key) === 0);
   const fullyLaunchedCandidates = defaultsTrue.filter(
     (key) =>
-      (codeReferences.get(key) ?? 0) > 0 && manifestContent.includes(`${key}: legacyRelease`),
+      (codeReferences.get(key) ?? 0) > 0 &&
+      new RegExp(`${key}:\\s*\\{\\s*\\.\\.\\.legacyRelease\\b`).test(manifestContent),
   );
   const permanentOperationalControls = featureKeys.filter(
     (key) => manifestHelperForKey(manifestContent, key) === 'permanentOperational',
