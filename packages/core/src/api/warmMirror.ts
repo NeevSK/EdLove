@@ -64,10 +64,10 @@ export const warmMirrorAPI = {
     const ripples_received = ripplesCount ?? 0;
 
     const { data: gradingData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-      .from('grades')
+      .from('student_grades')
       .select('feedback')
-      .eq('user_id', userId)
-      .gte('graded_at', periodStart)
+      .eq('student_id', userId)
+      .gte('created_at', periodStart)
       .not('feedback', 'is', null);
     const assignments_with_feedback = (gradingData ?? []).filter(
       (g) => (g.feedback?.length ?? 0) > 20,
@@ -75,13 +75,13 @@ export const warmMirrorAPI = {
 
     const { data: reachRipples } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
       .from('impact_ripples')
-      .select('source_entity_id')
+      .select('entity_id')
       .eq('recipient_user_id', userId)
       .eq('delivered', true)
       .in('ripple_type', ['resource_saved', 'resource_read', 'lesson_accessed'])
       .gte('delivered_at', periodStart);
     const resources_that_reached_others = new Set(
-      (reachRipples ?? []).map((r) => r.source_entity_id).filter(Boolean),
+      (reachRipples ?? []).map((r) => r.entity_id).filter(Boolean),
     ).size;
 
     const { count: postsCount } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__

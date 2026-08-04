@@ -182,5 +182,14 @@
         "./packages/workforce/src/*"
       ]
     }
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "**/node_modules",
+    "dist",
+    "**/dist",
+    "apps/gurudevi-mobile/archives",
+    "**/*.mjs",
+    "**/*.cjs"
+  ]
 }

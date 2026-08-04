@@ -99,8 +99,8 @@ const rawLibraryAPI = {
   async getResources(filters: ResourceFilters = {}): Promise<LibraryResource[]> {
     let query = supabase.from('nodes').select(`
                 *,
-                creator: users!nodes_creator_id_fkey(full_name),
-                verified_by_user: users!nodes_verified_by_fkey(full_name)
+                creator: users!library_items_uploader_id_fkey(full_name),
+                verified_by_user: users!library_resources_verified_by_fkey(full_name)
       `);
     // Apply filters
     if (filters.type) query = query.eq('type', filters.type);
@@ -186,6 +186,8 @@ const rawLibraryAPI = {
     if (filters.offset)
       query = query.range(filters.offset, filters.offset + (filters.limit || 10) - 1);
     const { data, error } = await query;
+    console.log("--> API fetched nodes count:", data?.length, "Error:", error);
+
     if (error) {
       throw new APIError('Failed to fetch resources', error.code, error);
     }
@@ -194,6 +196,31 @@ const rawLibraryAPI = {
       creator_name: resource.creator?.full_name || resource.creator_name || 'System',
       verified_by_name: resource.verified_by_user?.full_name,
     }));
+  },
+  async getResourcesCount(): Promise<number> {
+    const { count, error } = await supabase
+      .from('nodes')
+      .select('*', { count: 'exact', head: true });
+    if (error) {
+      console.error('Failed to fetch total resources count:', error);
+      return 0;
+    }
+    return count || 0;
+  },
+  async getCollectionsCount(): Promise<number> {
+    const { count: explicitCount } = await supabase
+      .from('collections')
+      .select('*', { count: 'exact', head: true });
+
+    const [{ data: subjects }, { data: topics }] = await Promise.all([
+      supabase.rpc('get_node_subjects_count'),
+      supabase.rpc('get_node_topics_count'),
+    ]);
+
+    const subjectsCount = subjects?.length || 0;
+    const topicsCount = topics?.length || 0;
+
+    return (explicitCount || 0) + subjectsCount + topicsCount;
   },
   /**
    * Search resources locally using SQLite FTS5 index.
@@ -224,8 +251,8 @@ const rawLibraryAPI = {
         .from('nodes')
         .select(`
                     *,
-                    creator: users!nodes_creator_id_fkey(full_name),
-                    verified_by_user: users!nodes_verified_by_fkey(full_name)
+                    creator: users!library_items_uploader_id_fkey(full_name),
+                    verified_by_user: users!library_resources_verified_by_fkey(full_name)
                 `)
         .in('id', ids);
       if (error) throw error;
@@ -282,8 +309,8 @@ const rawLibraryAPI = {
       .from('nodes')
       .select(`
                 *,
-                creator: users!nodes_creator_id_fkey(full_name),
-                verified_by_user: users!nodes_verified_by_fkey(full_name)
+                creator: users!library_items_uploader_id_fkey(full_name),
+                verified_by_user: users!library_resources_verified_by_fkey(full_name)
       `)
       .eq('id', id)
       .single();
@@ -321,11 +348,31 @@ const rawLibraryAPI = {
     creatorId: string,
     creatorRole: string,
   ): Promise<LibraryResource> {
+    // Normalize input fields to match exact DB column types:
+    //  - `language` in DB is TEXT[] but the TypeScript input type uses a single string
+    //  - `subjects` in DB is TEXT[] — the input has both `subject` (string) and `subjects` (array)
+    //  - Strip any key that is not a valid column (e.g. bare `subject`)
+    const { subject, language, subjects, languages, ...restInput } = input;
+    const dbLanguage: string[] = languages && languages.length > 0
+      ? languages
+      : Array.isArray(language)
+        ? (language as string[])
+        : language
+          ? [language as string]
+          : ['en'];
+    const dbSubjects: string[] = subjects && subjects.length > 0
+      ? subjects
+      : subject
+        ? [subject]
+        : [];
+
     const { data, error } = await supabase
       .from('nodes')
       .insert([
         {
-          ...input,
+          ...restInput,
+          language: dbLanguage,
+          subjects: dbSubjects,
           creator_id: creatorId,
           creator_role: creatorRole,
           is_community: true, // User-contributed content
@@ -336,14 +383,23 @@ const rawLibraryAPI = {
           verified: VERIFIED_LIBRARY_CAPACITIES.has(toLibraryBondCapacity(creatorRole)), // Auto-verify for trusted capacities
         },
       ])
-      .select(`
-      *,
-      creator: users(full_name)
-        `)
+      .select('id')   // Only fetch id; avoids SELECT RLS visibility gate blocking the creator's own new row
       .single();
+
     if (error) {
       throw new APIError('Failed to create resource', error.code, error);
     }
+
+    // Re-fetch the full row separately — the SELECT policy allows creators to read their
+    // own rows via `creator_id = auth.uid()`, even for non-public / non-verified resources.
+    const { data: fullData } = await supabase
+      .from('nodes')
+      .select('*, creator: users(full_name)')
+      .eq('id', data.id)
+      .maybeSingle();
+
+    const resourceData = fullData ?? { id: data.id, creator: null, creator_name: null };
+
     // Trigger Growth Signals (Whispered Moment & Nourishing dimension)
     growthSignalsAPI.emitSilent({
       user_id: creatorId,
@@ -356,13 +412,16 @@ const rawLibraryAPI = {
     // Direct Rewards: Add 50 points for contribution
     try {
       const { rewardsAPI } = await import('@repo/core/api');
-      void rewardsAPI.addPoints(creatorId, 50).catch(() => {});
+      void rewardsAPI.addPoints(creatorId, 50).catch(() => { });
     } catch (e) {
       console.warn('Rewards API not available for points', e);
     }
     return {
-      ...data,
-      creator_name: data.creator?.full_name || data.creator_name || 'System',
+      ...resourceData,
+      creator_name:
+        (fullData as typeof fullData & { creator?: { full_name?: string } | null })?.creator?.full_name
+        ?? (resourceData as { creator_name?: string | null }).creator_name
+        ?? 'System',
     };
   },
   /**
@@ -375,8 +434,8 @@ const rawLibraryAPI = {
       .eq('id', id)
       .select(`
         *,
-        creator: users!nodes_creator_id_fkey(full_name),
-          verified_by_user: users!nodes_verified_by_fkey(full_name)
+        creator: users!library_items_uploader_id_fkey(full_name),
+        verified_by_user: users!library_resources_verified_by_fkey(full_name)
             `)
       .single();
     if (error) {
@@ -547,7 +606,7 @@ const rawLibraryAPI = {
             sourceEntityType: 'resource',
             sourceEntityId: resourceId,
           })
-          .catch(() => {});
+          .catch(() => { });
       }
     }
   },
@@ -564,8 +623,8 @@ const rawLibraryAPI = {
       .eq('id', resourceId)
       .select(`
             *,
-            creator: users!nodes_creator_id_fkey(full_name),
-              verified_by_user: users!nodes_verified_by_fkey(full_name)
+            creator: users!library_items_uploader_id_fkey(full_name),
+            verified_by_user: users!library_resources_verified_by_fkey(full_name)
                 `)
       .single();
     if (error) {
@@ -589,7 +648,7 @@ const rawLibraryAPI = {
       .select(`
 resource: nodes!resource_engagements_resource_id_fkey(
           *,
-  creator: users!nodes_creator_id_fkey(full_name)
+  creator: users!library_items_uploader_id_fkey(full_name)
 )
   `)
       .eq('user_id', userId)
@@ -628,12 +687,15 @@ resource: nodes!resource_engagements_resource_id_fkey(
    */
   async getCollections(filters: CollectionFilters = {}): Promise<LibraryCollection[]> {
     const asOf = getTemporalAsOf(filters.viewDate);
+    let explicitCollections: LibraryCollection[] = [];
+
     // 1. Fetch explicit collections from the DB
-    let query = supabase.from('collections').select(`
-                *,
-                creator: users!resource_collections_creator_id_fkey(full_name),
-                collection_nodes(node_id)
-            `);
+    if (!filters.only_virtual) {
+      let query = supabase.from('collections').select(`
+                  *,
+                  creator: users!resource_collections_creator_id_fkey(full_name),
+                  collection_nodes(node_id)
+              `);
     // RLS alignment: For guests/unauthenticated users, allow public OR verified collections
     const userId = await identityAPI.getMyInternalId();
     if (!userId) {
@@ -646,7 +708,9 @@ resource: nodes!resource_engagements_resource_id_fkey(
       // For now, simpler OR for visibility logic
       if (!filters.creator_id) {
         query = query.or(
-          `visibility.in.(public,shared),verified.eq.true,and(creator_id.eq.${userId},visibility.eq.personal)`,
+          // Public/shared collections visible to everyone
+          // Plus ALL collections where the logged-in user is the creator (any visibility)
+          `visibility.in.(public,shared),creator_id.eq.${userId}`,
         );
       }
     }
@@ -673,7 +737,7 @@ resource: nodes!resource_engagements_resource_id_fkey(
     if (error)
       throw new APIError(`Failed to fetch collections: ${error.message}`, error.code, error);
     // Map explicit collections with their resources
-    const explicitCollections = await Promise.all(
+    explicitCollections = await Promise.all(
       (explicitData || []).map(async (col: any) => {
         let nodeIds = (col.collection_nodes || []).map((cn: any) => cn.node_id);
         if (asOf) {
@@ -709,15 +773,17 @@ resource: nodes!resource_engagements_resource_id_fkey(
           creator_name: col.creator?.full_name || 'System',
           resources,
           resource_ids: nodeIds,
+          used_by_count: nodeIds.length,
         };
       }),
     );
-    const activeExplicit = explicitCollections.filter((col) => col.resource_ids?.length > 0);
+    }
+    const activeExplicit = explicitCollections;
     // 2. Synthesize Virtual Collections from Subjects & Topics (Dynamic)
     // We only synthesize virtuals if we are not specifically looking for a single user's private collections
     let subjectVirtuals: LibraryCollection[] = [];
     let topicVirtuals: LibraryCollection[] = [];
-    if (!filters.creator_id || filters.visibility === 'public') {
+    if (!filters.exclude_virtual && (!filters.creator_id || filters.visibility === 'public')) {
       const [{ data: subjectsData }, { data: topicsData }] = await Promise.all([
         supabase.rpc('get_node_subjects_count'),
         supabase.rpc('get_node_topics_count'),
@@ -832,31 +898,26 @@ resource: nodes!resource_engagements_resource_id_fkey(
     const isUUID =
       userId &&
       /^[0-9a-f]{8}-[0-9a-f]{4}-[12345][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userId);
+
+    // Step 1: Fetch the collection row + creator name (no fragile FK-hint joins on collection_nodes)
     let query = supabase
       .from('collections')
-      .select(`
-                *,
-                creator: users!resource_collections_creator_id_fkey(full_name),
-                collection_nodes!library_collection_items_collection_id_fkey(
-                    nodes!library_collection_items_item_id_fkey(*)
-                )
-            `)
+      .select('*, creator:users(full_name)')
       .eq('id', id);
     // For anonymous users or guests with local IDs, only fetch public/verified collections
     if (!isUUID) {
       query = query.or('is_public.eq.true,verified.eq.true');
     }
-    const { data, error } = await query.single();
+    const { data, error } = await query.maybeSingle();
     if (error) throw new APIError('Failed to fetch collection', error.code, error);
-    // Combine resources from junction table and array fallback
+    if (!data) throw new APIError('Collection not found', 'NOT_FOUND', null);
+
+    // Step 2: Handle temporal membership (past view)
     let membershipNodeIds: string[] = [];
     if (asOf) {
       const { data: membershipData, error: membershipError } = await supabase.rpc(
         'get_collection_membership_as_of',
-        {
-          p_collection_id: id,
-          p_as_of: asOf,
-        },
+        { p_collection_id: id, p_as_of: asOf },
       );
       if (membershipError) {
         throw new APIError(
@@ -867,18 +928,29 @@ resource: nodes!resource_engagements_resource_id_fkey(
       }
       membershipNodeIds = (membershipData || []).map((entry: any) => entry.node_id);
     }
-    let resources: LibraryResource[] = asOf
-      ? []
-      : (data.collection_nodes || []).map((cn: any) => ({
-          ...cn.nodes,
-          creator_name: cn.nodes?.creator_name || 'System', // Use denormalized name from node
-        }));
-    const fallbackNodeIds = membershipNodeIds.length > 0 ? membershipNodeIds : data.resource_ids;
-    if (resources.length === 0 && fallbackNodeIds?.length > 0) {
-      const { data: resData } = await supabase.from('nodes').select('*').in('id', fallbackNodeIds);
+
+    // Step 3: Fetch resources — try collection_nodes junction table first, fall back to resource_ids array
+    let resources: LibraryResource[] = [];
+    if (!asOf) {
+      const { data: cnData } = await supabase
+        .from('collection_nodes')
+        .select('node_id')
+        .eq('collection_id', id);
+      const junctionNodeIds = (cnData || []).map((r: any) => r.node_id).filter(Boolean);
+      const nodeIds = junctionNodeIds.length > 0 ? junctionNodeIds : (data.resource_ids || []);
+      if (nodeIds.length > 0) {
+        const { data: resData } = await supabase.from('nodes').select('*').in('id', nodeIds);
+        resources = resData || [];
+      }
+    } else if (membershipNodeIds.length > 0) {
+      const { data: resData } = await supabase.from('nodes').select('*').in('id', membershipNodeIds);
+      resources = resData || [];
+    } else if (data.resource_ids?.length > 0) {
+      const { data: resData } = await supabase.from('nodes').select('*').in('id', data.resource_ids);
       resources = resData || [];
     }
-    // Check for endorsements
+
+    // Step 4: Check for endorsements
     let has_endorsed = false;
     if (userId) {
       const { data: endData } = await supabase
@@ -891,9 +963,10 @@ resource: nodes!resource_engagements_resource_id_fkey(
     }
     return {
       ...data,
-      creator_name: data.creator?.full_name || data.creator_name || 'System',
+      creator_name: (data.creator as any)?.full_name || data.creator_name || 'System',
       resources,
       resource_ids: resources.map((r) => r.id),
+      used_by_count: resources.length,
       has_endorsed,
     };
   },
@@ -1200,6 +1273,8 @@ const libraryCoverage = assertContractCoverage(
       getCollectionById: 'getCollection',
     },
     internalMethods: [
+      'getResourcesCount',
+      'getCollectionsCount',
       'searchMapUniverse',
       'searchResourcesLocal',
       'createResource',

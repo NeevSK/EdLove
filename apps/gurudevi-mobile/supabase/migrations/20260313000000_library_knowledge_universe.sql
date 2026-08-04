@@ -159,6 +159,7 @@ CREATE TABLE IF NOT EXISTS public.collections (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name            TEXT NOT NULL,
     description     TEXT,
+    thumbnail_url   TEXT,
     creator_id      UUID REFERENCES public.users(id) ON DELETE SET NULL,
     subject         TEXT,
     subjects        TEXT[]    NOT NULL DEFAULT '{}',

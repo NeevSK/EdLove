@@ -49,7 +49,10 @@ export const usePermissions = () => {
 
     const rawContext: UserContext = {
       userId: user?.id || null,
-      email: user?.email || null,
+      email:
+        user?.email && !user.email.startsWith('anonymous@') && user.email.includes('.')
+          ? user.email
+          : null,
 
       bonds: availableBonds as UserContext['bonds'],
       primaryCapacity: availableBonds[0]?.capacity || null,
@@ -79,7 +82,10 @@ export const usePermissions = () => {
       },
       tenantKind: 'customer' as TenantKind,
       isAnonymous: !user,
-      hasGlobalAccess: activeBond?.capacity === 'founder' || activeBond?.capacity === 'admin',
+      hasGlobalAccess:
+        activeBond?.capacity === 'founder' ||
+        activeBond?.capacity === 'admin' ||
+        activeBond?.capacity === 'developer',
       isPersonal,
       sectionId: null,
       gradeId: null,

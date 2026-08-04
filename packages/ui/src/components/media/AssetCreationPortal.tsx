@@ -3,9 +3,9 @@ import { HStack, Input, InputField, VStack } from '@repo/ui/primitives';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 
-// ──────────────────────────────────────────────────────────
+// ------------------------------------------------------------
 // ASSET CREATION MODAL
-// ──────────────────────────────────────────────────────────
+// ------------------------------------------------------------
 
 interface AssetFormState {
   title: string;
@@ -111,19 +111,21 @@ export function AssetCreationModal({
   );
 }
 
-// ──────────────────────────────────────────────────────────
+// ------------------------------------------------------------
 // COLLECTION CREATION MODAL
-// ──────────────────────────────────────────────────────────
+// ------------------------------------------------------------
 
 interface CollectionState {
   name: string;
   description: string;
+  thumbnailUrl: string;
   loading: boolean;
 }
 
 type CollectionAction =
   | { type: 'SET_NAME'; name: string }
   | { type: 'SET_DESCRIPTION'; description: string }
+  | { type: 'SET_THUMBNAIL_URL'; thumbnailUrl: string }
   | { type: 'SET_LOADING'; loading: boolean }
   | { type: 'RESET' };
 
@@ -133,10 +135,12 @@ function collectionReducer(state: CollectionState, action: CollectionAction): Co
       return { ...state, name: action.name };
     case 'SET_DESCRIPTION':
       return { ...state, description: action.description };
+    case 'SET_THUMBNAIL_URL':
+      return { ...state, thumbnailUrl: action.thumbnailUrl };
     case 'SET_LOADING':
       return { ...state, loading: action.loading };
     case 'RESET':
-      return { name: '', description: '', loading: false };
+      return { name: '', description: '', thumbnailUrl: '', loading: false };
     default:
       return state;
   }
@@ -153,16 +157,17 @@ export function CollectionCreationModal({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { name: string; description: string }) => Promise<void>;
+  onSubmit: (data: { name: string; description: string; thumbnail_url?: string }) => Promise<void>;
   title?: string;
 }) {
   const [state, dispatch] = useReducer(collectionReducer, {
     name: '',
     description: '',
+    thumbnailUrl: '',
     loading: false,
   });
 
-  const { name, description, loading } = state;
+  const { name, description, thumbnailUrl, loading } = state;
 
   const handleSetName = useCallback((val: string) => dispatch({ type: 'SET_NAME', name: val }), []);
   const handleSetDescription = useCallback(
@@ -170,17 +175,26 @@ export function CollectionCreationModal({
     [],
   );
 
+  const handleSetThumbnailUrl = useCallback(
+    (val: string) => dispatch({ type: 'SET_THUMBNAIL_URL', thumbnailUrl: val }),
+    [],
+  );
+
   const handleComplete = useCallback(async () => {
     if (!name.trim()) return;
     dispatch({ type: 'SET_LOADING', loading: true });
     try {
-      await onSubmit({ name, description });
+      await onSubmit({
+        name,
+        description,
+        thumbnail_url: thumbnailUrl.trim() || undefined,
+      });
       dispatch({ type: 'RESET' });
       onClose();
     } finally {
       dispatch({ type: 'SET_LOADING', loading: false });
     }
-  }, [name, description, onSubmit, onClose]);
+  }, [name, description, thumbnailUrl, onSubmit, onClose]);
 
   return (
     <SanctuaryModal isOpen={isOpen} onClose={onClose} title={title}>
@@ -194,6 +208,14 @@ export function CollectionCreationModal({
             value={description}
             onChangeText={handleSetDescription}
             multiline
+          />
+        </Input>
+        <Input className="h-14">
+          <InputField
+            placeholder="Thumbnail image URL"
+            value={thumbnailUrl}
+            onChangeText={handleSetThumbnailUrl}
+            autoCapitalize="none"
           />
         </Input>
         <HStack className="justify-end gap-3 pt-4">

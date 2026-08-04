@@ -1,0 +1,1 @@
+{"version":"7.0.1-rc","root":["./src/db.ts","./src/index.ts","./src/queries.ts","./src/sync-daily.ts","./src/scoring/index.ts","./src/scoring/rhythm.ts","./src/scoring/vendor-priors.ts","./src/scoring/weights.ts","./src/types/index.ts"]}

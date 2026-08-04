@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { growth } from '@repo/core/logic';
 import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
-import type { CrystalTier, RiverStage } from '@repo/core/types/Growth';
+import { useGrowthStore } from '@repo/core/store/useGrowthStore';
 
 /**
  * useNaturePaths
@@ -11,12 +11,12 @@ import type { CrystalTier, RiverStage } from '@repo/core/types/Growth';
 export const useNaturePaths = () => {
   const { context } = usePermissions();
   const userId = context.userId;
-  const [paths, setPaths] = useState<{
-    river_stage: RiverStage;
-    crystal_tier: CrystalTier;
-    crystals_found_count: number;
-    fractal_moments_count: number;
-  } | null>(null);
+
+  const riverStage = useGrowthStore((state) => state.river_stage);
+  const crystalTier = useGrowthStore((state) => state.crystal_tier);
+  const crystalsFoundCount = useGrowthStore((state) => state.crystals_found_count);
+  const fractalMomentsCount = useGrowthStore((state) => state.fractal_moments_count);
+
   const [isLoading, setIsLoading] = useState(true);
 
   const refreshPaths = useCallback(async () => {
@@ -25,7 +25,7 @@ export const useNaturePaths = () => {
     try {
       const state = await growth.getGrowthState(userId);
       if (state) {
-        setPaths({
+        useGrowthStore.getState().setGrowthState({
           river_stage: state.river_stage,
           crystal_tier: state.crystal_tier,
           crystals_found_count: state.crystals_found_count,
@@ -44,6 +44,15 @@ export const useNaturePaths = () => {
       console.error('NaturePaths: Failed to load on mount', e);
     });
   }, [refreshPaths]);
+
+  const paths = useMemo(() => {
+    return {
+      river_stage: riverStage,
+      crystal_tier: crystalTier,
+      crystals_found_count: crystalsFoundCount,
+      fractal_moments_count: fractalMomentsCount,
+    };
+  }, [riverStage, crystalTier, crystalsFoundCount, fractalMomentsCount]);
 
   return useMemo(
     () => ({

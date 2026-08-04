@@ -17,7 +17,9 @@ export const profileHandlers = {
       select: {
         id: true,
         full_name: true,
+        display_name: true,
         username: true,
+        phone: true,
         avatar_url: true,
         bio: true,
         citizenship: true,
@@ -41,11 +43,17 @@ export const profileHandlers = {
     const db = c.get('db');
     const { id } = c.req.param();
     const body = await c.req.json();
+    const updates = { ...body };
+    if (typeof updates.display_name === 'string') {
+      const trimmedDisplayName = updates.display_name.trim();
+      updates.display_name = trimmedDisplayName;
+      updates.full_name = trimmedDisplayName;
+    }
 
     // ZenStack v3.6.4 will throw an error if the user tries to update someone else's profile
     const updated = await db.user.update({
       where: { id },
-      data: body,
+      data: updates,
     });
 
     return c.json(updated, 200);

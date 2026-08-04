@@ -39,7 +39,7 @@ if (extraArgs.length > 0) {
 if (noReport) {
   console.log(`>>> Running command directly (no report): ${cmd}`);
   const shell = process.platform === 'win32' ? 'powershell.exe' : '/bin/sh';
-  const shellArgs = process.platform === 'win32' ? ['-NoProfile', '-Command', cmd] : ['-c', cmd];
+  const shellArgs = process.platform === 'win32' ? ['-ExecutionPolicy', 'Bypass', '-NoProfile', '-Command', cmd] : ['-c', cmd];
   
   const child = spawn(shell, shellArgs, {
     cwd,
@@ -70,7 +70,7 @@ if (noReport) {
   let exitCode = 0;
 
   const shell = process.platform === 'win32' ? 'powershell.exe' : '/bin/sh';
-  const shellArgs = process.platform === 'win32' ? ['-NoProfile', '-Command', `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; ${cmd}`] : ['-c', cmd];
+  const shellArgs = process.platform === 'win32' ? ['-ExecutionPolicy', 'Bypass', '-NoProfile', '-Command', `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; ${cmd}`] : ['-c', cmd];
 
   const child = spawn(shell, shellArgs, {
     cwd,

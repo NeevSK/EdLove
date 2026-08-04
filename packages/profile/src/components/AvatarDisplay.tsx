@@ -58,8 +58,10 @@ export function AvatarDisplay({
   }, [userId]);
 
   const handlePickAndUpload = useCallback(async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') return;
+    if (Platform.OS !== 'web') {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') return;
+    }
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -92,6 +94,32 @@ export function AvatarDisplay({
       setUploading(false);
     }
   }, [userId, onAvatarSelected]);
+
+  const handleWebFileSelected = useCallback(
+    async (event: any) => {
+      const file = event?.target?.files?.[0];
+      if (!file || !file.type?.startsWith?.('image/')) return;
+
+      setUploading(true);
+      try {
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result));
+          reader.onerror = () => reject(reader.error || new Error('Failed to read image file'));
+          reader.readAsDataURL(file);
+        });
+
+        setLocalCachePath(dataUrl);
+        await onAvatarSelected?.(dataUrl);
+      } catch (error) {
+        console.warn('[AvatarDisplay] Web avatar selection failed:', error);
+      } finally {
+        setUploading(false);
+        if (event?.target) event.target.value = '';
+      }
+    },
+    [onAvatarSelected],
+  );
 
   const handlePeek = useCallback(() => {
     if (!peekable || !userId) return;
@@ -132,6 +160,22 @@ export function AvatarDisplay({
       style={[containerStyle, style]}
       onPress={handlePickAndUpload}
     >
+      {Platform.OS === 'web' && (
+        <input
+          aria-label="Upload profile image"
+          type="file"
+          accept="image/*"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            opacity: 0,
+            cursor: 'pointer',
+            zIndex: 10,
+          }}
+          onClick={(event) => event.stopPropagation()}
+          onChange={handleWebFileSelected}
+        />
+      )}
       {content}
       {uploading ? (
         <Box className="absolute inset-0 bg-black/40 items-center justify-center">

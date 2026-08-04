@@ -46,7 +46,9 @@ async function runCommandsSequentially() {
     const code = await new Promise((resolve) => {
       const shell = process.platform === 'win32' ? 'powershell.exe' : '/bin/sh';
       const shellArgs =
-        process.platform === 'win32' ? ['-Command', subCommand] : ['-c', subCommand];
+        process.platform === 'win32'
+          ? ['-ExecutionPolicy', 'Bypass', '-Command', subCommand]
+          : ['-c', subCommand];
 
       const child = spawn(shell, shellArgs, {
         env,

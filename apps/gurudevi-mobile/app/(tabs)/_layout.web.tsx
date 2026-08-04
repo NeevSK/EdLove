@@ -12,7 +12,7 @@ import { resolveResponsiveShellMode } from '@/lib/responsiveShell';
 
 type NavItem = {
   href: string;
-  icon: LucideIcon;
+  icon: any;
   label: string;
   group?: 'primary' | 'utility';
   badge?: number;
@@ -275,9 +275,32 @@ export default function WebTabsLayout() {
         onHide={() => setShowCelebration(false)}
       />
 
-      <Modal isOpen={isBreathingOpen} onClose={() => setBreathingOpen(false)}>
-        <ModalContent className="bg-phase-canvas">
-          <Box style={{ padding: 16, gap: 12 }}>
+      {isBreathingOpen && (
+        <View
+          style={{
+            position: 'absolute',
+            inset: 0,
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9999,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(0,0,0,0.6)',
+          }}
+        >
+          <Box
+            style={{
+              width: '100%',
+              maxWidth: 500,
+              borderRadius: 24,
+              backgroundColor: '#FAF7ED',
+              overflow: 'hidden',
+              padding: 16,
+              gap: 12,
+            }}
+          >
             <Box
               style={{
                 flexDirection: 'row',
@@ -312,8 +335,8 @@ export default function WebTabsLayout() {
               <BreathGuide onComplete={() => setBreathingOpen(false)} />
             </Box>
           </Box>
-        </ModalContent>
-      </Modal>
+        </View>
+      )}
     </Box>
   );
 }

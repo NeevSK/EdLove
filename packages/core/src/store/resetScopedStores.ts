@@ -9,6 +9,7 @@ import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';
 import { useTenantStore } from '@repo/core/store/useTenantStore';
 import { useUIStore } from '@repo/core/store/useUIStore';
+import { useGrowthStore } from '@repo/core/store/useGrowthStore';
 
 const authScopedDefaults = {
   userName: 'Gurudevi',
@@ -89,6 +90,7 @@ export const resetScopedStores = () => {
   useAuthStore.setState(authScopedDefaults);
   useTenantStore.setState(tenantScopedDefaults);
   useUIStore.setState(uiScopedDefaults);
+  useGrowthStore.getState().resetGrowthState();
   useFeatureStore.setState((state) => ({
     ...state,
     flags: featureScopedDefaults,
@@ -106,6 +108,7 @@ export const rehydrateScopedStores = async () => {
     useAuthStore.persist?.rehydrate?.(),
     useTenantStore.persist?.rehydrate?.(),
     useUIStore.persist?.rehydrate?.(),
+    useGrowthStore.persist?.rehydrate?.(),
     useFeatureStore.persist?.rehydrate?.(),
     useMutationQueue.persist?.rehydrate?.(),
   ]);

@@ -20,6 +20,16 @@ import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supaba
  * Use `impact_ripples` for warm human connection signals.
  * Use `WarmMirrorDataPoints` aggregation for the weekly personal narrative.
  */
+function isAbortError(error: any): boolean {
+  return !!(
+    error &&
+    (error.message?.includes('AbortError') ||
+      error.message?.includes('Lock broken') ||
+      error.details?.includes('AbortError') ||
+      error.details?.includes('Lock broken'))
+  );
+}
+
 export const rewardsAPI = {
   /**
    * Fetches reward data for a specific user.
@@ -33,6 +43,10 @@ export const rewardsAPI = {
       .maybeSingle();
 
     if (error) {
+      if (isAbortError(error)) {
+        console.warn('[Rewards API] Suppressing abort/lock-steal error during fetch:', error.message);
+        return null;
+      }
       console.error('Error fetching rewards:', error);
       throw error;
     }
@@ -50,6 +64,10 @@ export const rewardsAPI = {
       .maybeSingle();
 
     if (error) {
+      if (isAbortError(error)) {
+        console.warn('[Rewards API] Suppressing abort/lock-steal error during history fetch:', error.message);
+        return null;
+      }
       console.error('Error fetching historical rewards:', error);
       throw error;
     }
@@ -65,6 +83,10 @@ export const rewardsAPI = {
       .limit(limit);
 
     if (error) {
+      if (isAbortError(error)) {
+        console.warn('[Rewards API] Suppressing abort/lock-steal error during history list:', error.message);
+        return [];
+      }
       console.error('Error fetching rewards history:', error);
       throw error;
     }
@@ -86,6 +108,10 @@ export const rewardsAPI = {
       .order('recorded_at', { ascending: false });
 
     if (error) {
+      if (isAbortError(error)) {
+        console.warn('[Rewards API] Suppressing abort/lock-steal error during range history list:', error.message);
+        return [];
+      }
       console.error('Error fetching rewards range history:', error);
       throw error;
     }
@@ -112,6 +138,10 @@ export const rewardsAPI = {
       .single();
 
     if (error) {
+      if (isAbortError(error)) {
+        console.warn('[Rewards API] Suppressing abort/lock-steal error during initialization:', error.message);
+        return null;
+      }
       console.error('Error initializing rewards:', error);
       throw error;
     }

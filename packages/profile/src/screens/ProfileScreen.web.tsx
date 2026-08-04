@@ -91,6 +91,13 @@ export default function ProfileScreenWeb({
       ? `https://platform.gurudevi.edlove.org/p/${profile.id}`
       : '';
 
+  const profileDisplayName =
+    profile?.display_name?.trim() ||
+    profile?.username?.trim() ||
+    user?.display_name?.trim() ||
+    user?.email?.split('@')[0] ||
+    t('profile.unnamedUser', 'Gurudevi User');
+
   const isStaff = can('read', 'TeacherPulse') || can('read', 'PrincipalPulse');
   const subjectsTaught = Array.isArray(profile?.subjects_taught)
     ? profile.subjects_taught
@@ -183,7 +190,7 @@ export default function ProfileScreenWeb({
                 <AvatarDisplay
                   userId={profile.id}
                   avatarUrl={profile.avatar_url}
-                  fullName={profile.display_name}
+                  fullName={profileDisplayName}
                   size={88}
                   editable={isOwnProfile}
                   onAvatarSelected={async (localUri: string) => {
@@ -215,7 +222,7 @@ export default function ProfileScreenWeb({
                       color: 'var(--ink)',
                     }}
                   >
-                    {profile.display_name}
+                    {profileDisplayName}
                   </h1>
                   {profile.is_thuthimal && (
                     <span
@@ -278,7 +285,7 @@ export default function ProfileScreenWeb({
                           color: 'var(--ink-ghost)',
                         }}
                       >
-                        Profile Completion
+                        {t('profile.profileCompletion', 'Profile Completion')}
                       </span>
                       <span
                         style={{
@@ -378,7 +385,7 @@ export default function ProfileScreenWeb({
                       }}
                       onClick={() => navigation.openFullProfile(toFullProfileParams(profile))}
                     >
-                      Full Profile
+                      {t('profile.fullProfile', 'Full Profile')}
                     </button>
                     <button
                       type="button"
@@ -390,7 +397,7 @@ export default function ProfileScreenWeb({
                       }}
                       onClick={() => navigation.openSettings?.()}
                     >
-                      Settings
+                      {t('profile.settings', 'Settings')}
                     </button>
                     <button
                       type="button"
@@ -402,7 +409,7 @@ export default function ProfileScreenWeb({
                       }}
                       onClick={() => navigation.openPrivacyLedger?.()}
                     >
-                      Privacy Ledger
+                      {t('profile.privacyLedgerTitle', 'Privacy Ledger')}
                     </button>
                     <button
                       type="button"
@@ -419,7 +426,7 @@ export default function ProfileScreenWeb({
                         })
                       }
                     >
-                      Public Preview
+                      {t('profile.publicPreview', 'Public Preview')}
                     </button>
                   </div>
                 )}
@@ -461,7 +468,7 @@ export default function ProfileScreenWeb({
                   <QRCodeGenerator
                     value={profilePublicUrl}
                     size={104}
-                    label={profile.display_name}
+                    label={profileDisplayName}
                   />
                 </div>
                 <p
@@ -474,7 +481,7 @@ export default function ProfileScreenWeb({
                     lineHeight: 1.4,
                   }}
                 >
-                  Scan to view profile
+                  {t('profile.scanToViewProfile', 'Scan to view profile')}
                 </p>
                 <button
                   type="button"
@@ -499,7 +506,7 @@ export default function ProfileScreenWeb({
                       .catch(() => {});
                   }}
                 >
-                  {copiedLink ? 'Copied!' : 'Copy link'}
+                  {copiedLink ? t('profile.copied', 'Copied!') : t('profile.copyLink', 'Copy link')}
                 </button>
               </div>
             )}
@@ -523,7 +530,9 @@ export default function ProfileScreenWeb({
                 marginBottom: '24px',
               }}
             >
-              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>Edit Profile</h3>
+              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>
+                {t('profile.editProfile', 'Edit Profile')}
+              </h3>
               <button
                 type="button"
                 onClick={cancelEdit}
@@ -559,7 +568,7 @@ export default function ProfileScreenWeb({
                     marginBottom: '6px',
                   }}
                 >
-                  Display Name
+                  {t('profile.displayName', 'Display Name')}
                 </label>
                 <input
                   id="edit-display-name"
@@ -594,7 +603,7 @@ export default function ProfileScreenWeb({
                     marginBottom: '6px',
                   }}
                 >
-                  Handle / Username
+                  {t('profile.handleUsername', 'Handle / Username')}
                 </label>
                 <input
                   id="edit-username"
@@ -624,7 +633,7 @@ export default function ProfileScreenWeb({
                       marginTop: '4px',
                     }}
                   >
-                    Anonymous users cannot have handles.
+                    {t('profile.anonymousHandleDisabled', 'Anonymous users cannot have handles.')}
                   </p>
                 )}
               </div>
@@ -641,7 +650,7 @@ export default function ProfileScreenWeb({
                     marginBottom: '6px',
                   }}
                 >
-                  Phone
+                  {t('profile.phone', 'Phone')}
                 </label>
                 <input
                   id="edit-phone"
@@ -675,7 +684,7 @@ export default function ProfileScreenWeb({
                   marginBottom: '6px',
                 }}
               >
-                Bio
+                {t('profile.bio', 'Bio')}
               </label>
               <textarea
                 id="edit-bio"
@@ -705,10 +714,10 @@ export default function ProfileScreenWeb({
                 disabled={isSaving}
                 style={{ minWidth: '100px' }}
               >
-                {isSaving ? 'Saving...' : 'Save Changes'}
+                {isSaving ? t('profile.saving', 'Saving...') : t('profile.saveChanges', 'Save Changes')}
               </button>
               <button type="button" className="secondary-button" onClick={cancelEdit}>
-                Cancel
+                {t('profile.cancel', 'Cancel')}
               </button>
             </div>
           </div>
@@ -784,7 +793,7 @@ export default function ProfileScreenWeb({
                         letterSpacing: '0.8px',
                       }}
                     >
-                      Professional Credentials
+                      {t('profile.professionalCredentials', 'Professional Credentials')}
                     </h3>
                   </div>
                   <div
@@ -805,7 +814,7 @@ export default function ProfileScreenWeb({
                             marginBottom: '8px',
                           }}
                         >
-                          Subjects Taught
+                          {t('profile.subjectsTaught', 'Subjects Taught')}
                         </div>
                         <div
                           style={{
@@ -843,7 +852,7 @@ export default function ProfileScreenWeb({
                             marginBottom: '8px',
                           }}
                         >
-                          Qualifications
+                          {t('profile.qualifications', 'Qualifications')}
                         </div>
                         <div
                           style={{
@@ -881,7 +890,10 @@ export default function ProfileScreenWeb({
                           fontWeight: '600',
                         }}
                       >
-                        {profile.experience_years} years of teaching experience
+                        {t('profile.teachingExperienceYears', {
+                          count: profile.experience_years,
+                          defaultValue: '{{count}} years of teaching experience',
+                        })}
                       </div>
                     )}
                   </div>
@@ -910,13 +922,13 @@ export default function ProfileScreenWeb({
                       letterSpacing: '0.8px',
                     }}
                   >
-                    Social Sanctuary
+                    {t('profile.socialSanctuary', 'Social Sanctuary')}
                   </h3>
                 </div>
               </div>
               <ContactLinktree
                 links={socialLinks || []}
-                userName={profile.display_name}
+                userName={profileDisplayName}
                 userId={profile.id}
                 isOwnProfile={isOwnProfile}
                 editable={isOwnProfile}

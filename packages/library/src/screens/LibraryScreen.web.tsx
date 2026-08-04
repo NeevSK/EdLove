@@ -9,7 +9,6 @@ import {
 import { ResourceActionSheet } from '@repo/ui/components/media/ResourceActionSheet';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import { SmartShelf } from '@repo/ui/components/SmartShelf';
-import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
 import { UniversalPerspective } from '@repo/ui/components/visualization';
 import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
@@ -17,17 +16,21 @@ import { useResponsive } from '@repo/ui/hooks';
 import {
   Bookmark,
   Clock,
+  Edit2,
   Flame,
   Globe,
   Layers,
   LayoutGrid,
   Library,
   List,
+  Lock,
   Map as MapIcon,
+  MoreVertical,
   Play,
   Plus,
-  Search,
-} from '@repo/ui/icons';
+  Trash2,
+  Users,
+} from 'lucide-react-native';
 import { Box } from '@repo/ui/primitives';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { useRouter } from 'expo-router';
@@ -48,15 +51,57 @@ import type {
   LibraryResource,
   ResourceFilters,
   ResourceType,
+  ResourceVisibility,
 } from '@repo/library/types';
 import { buildLibraryExternalLinkOptions } from '@repo/library/utils/externalLinks';
 
 function StackFallback() {
+  const { t } = useTranslation();
+
   return (
     <div className="sanctuary-card" style={{ padding: '32px', textAlign: 'center' }}>
-      Loading the sanctuary...
+      {t('library.loadingSanctuary', 'Loading the sanctuary...')}
     </div>
   );
+}
+
+function getLibraryCreateErrorMessage(err: unknown): string {
+  const apiError = err as {
+    message?: unknown;
+    code?: unknown;
+    details?: { devDetails?: { code?: unknown; message?: unknown; hint?: unknown } } | undefined;
+  } | null;
+  const nestedError = apiError?.details?.devDetails;
+  const rawMessage =
+    typeof nestedError?.message === 'string'
+      ? nestedError.message
+      : err instanceof Error
+        ? err.message
+        : typeof apiError?.message === 'string'
+          ? apiError.message
+          : typeof err === 'string'
+            ? err
+            : '';
+  const code =
+    typeof nestedError?.code === 'string'
+      ? nestedError.code
+      : apiError && typeof apiError.code === 'string'
+        ? apiError.code
+        : ''
+  const hint = typeof nestedError?.hint === 'string' ? nestedError.hint : '';
+  const signal = `${code} ${rawMessage} ${hint}`.toLowerCase();
+
+  if (
+    code === '42501' ||
+    signal.includes('row-level security') ||
+    signal.includes('permission denied') ||
+    signal.includes('violates row-level security policy') ||
+    signal.includes('failed to create resource')
+  ) {
+    return 'Your account is hitting the library onboarding or RLS gate. The DB is rejecting the insert, so the next step is to apply the onboarding migration and re-test.';
+  }
+
+  return rawMessage || 'Failed to add resource';
 }
 
 export default function LibraryScreenWeb() {
@@ -240,13 +285,29 @@ export default function LibraryScreenWeb() {
 
   const {
     resources: rawResources,
-    loading,
+    isLoadingResources,
+    isFetchingNextResources,
+    hasNextResources,
     fetchNextResources,
     fetchResources,
-    hasNextResources,
-    isFetchingNextResources,
+    categories: rawCategories,
+    isLoadingCategories,
     collections: rawCollections,
+    isLoadingCollections,
+    totalResourcesCount,
+    totalCollectionsCount,
+    createResource,
+    isCreatingResource,
+    endorseResource,
+    bookmarkResource,
+    isBookmarking,
+    addToCollection,
+    updateCollection,
+    deleteCollection,
+    createCollection,
     syncLibrary,
+    loading,
+    error: libraryError,
   } = useLibrary(libraryFilters as ResourceFilters, libraryFilters as ResourceFilters);
 
   // Sync Library on mount (Parity)
@@ -258,8 +319,6 @@ export default function LibraryScreenWeb() {
   }, [syncLibrary]);
 
   // Public Collection Fallback (Parity)
-  const viewDate = useTemporalStore((state) => state.viewDate);
-  const viewScale = useTemporalStore((state) => state.viewScale);
   const isFetchingPublicRef = useRef(false);
 
   useEffect(() => {
@@ -277,8 +336,6 @@ export default function LibraryScreenWeb() {
         .getCollections({
           limit: 10,
           visibility: 'public',
-          viewDate,
-          viewScale,
         })
         .then((cols: any) => {
           dispatch({ type: 'SET_PUBLIC_COLLECTIONS', collections: cols });
@@ -298,11 +355,10 @@ export default function LibraryScreenWeb() {
     rawCollections.length,
     publicCollections.length,
     fallbackAttempted,
-    viewDate,
-    viewScale,
   ]);
 
   const resources = useMemo(() => rawResources, [rawResources]);
+  const categories = useMemo(() => rawCategories, [rawCategories]);
   const collections = useMemo(
     () => (rawCollections.length > 0 ? rawCollections : publicCollections),
     [rawCollections, publicCollections],
@@ -499,16 +555,16 @@ export default function LibraryScreenWeb() {
           }
           return next;
         });
-        showToast('Could not save bookmark. Please try again.', 'error');
+        showToast(t('library.bookmarkFailed', 'Could not save bookmark. Please try again.'), 'error');
       }
     },
-    [isPastView, user, showToast],
+    [isPastView, user, showToast, t],
   );
 
   const canCreate = can('create', 'LibraryResource');
   const handleAddResourcePress = useCallback(() => {
     if (isPastView) {
-      showToast('Past view is read-only. Return to today to contribute.', 'info');
+      showToast(t('library.pastReadonly', 'Past view is read-only. Return to today to contribute.'), 'info');
       return;
     }
     if (!canCreate) {
@@ -520,7 +576,7 @@ export default function LibraryScreenWeb() {
       return;
     }
     dispatch({ type: 'SET_MODAL', name: 'assetCreation', isOpen: true });
-  }, [canCreate, isPastView, router, showToast]);
+  }, [canCreate, isPastView, router, showToast, t]);
 
   const fabConfig = useMemo(
     () => ({
@@ -534,13 +590,29 @@ export default function LibraryScreenWeb() {
 
   useRegisterFAB(fabConfig);
 
+  const getTopFilterLabel = useCallback(
+    (id: string) => {
+      if (id === 'All') return t('library.filter.allResources', 'All Resources');
+      if (id === 'trending') return t('library.filter.trending', 'Trending');
+      if (id === 'bookmarks') return t('library.filter.bookmarks', 'Bookmarks');
+      if (id === 'activity') return t('library.filter.activity', 'Activity');
+      return id;
+    },
+    [t],
+  );
+
+  const getCategoryLabel = useCallback(
+    (id: string, fallback: string) => t('library.category.' + id, fallback),
+    [t],
+  );
+
   return (
     <div className="sanctuary-screen">
       <div className="sanctuary-container">
         <WebScreenHeader
-          title="The Sanctuary"
-          note="Gurudevi Knowledge Hub"
-          timeText="Curated Wisdom"
+          title={t('library.web.title', 'The Sanctuary')}
+          note={t('library.web.note', 'Gurudevi Knowledge Hub')}
+          timeText={t('library.web.timeText', 'Curated Wisdom')}
           actions={
             <div
               style={{
@@ -570,7 +642,8 @@ export default function LibraryScreenWeb() {
                   }
                   disabled={isPastView}
                 >
-                  <Library size={15} />+ Collection
+                  <Library size={15} />
+                  {t('library.newCollection', '+ Collection')}
                 </button>
               )}
               {canContribute && (
@@ -589,7 +662,7 @@ export default function LibraryScreenWeb() {
                   disabled={isPastView}
                 >
                   <Plus size={15} />
-                  {t('library.contributeResource') || 'Contribute Resource'}
+                  {t('library.contributeResource', 'Contribute Resource')}
                 </button>
               )}
               <button
@@ -606,14 +679,12 @@ export default function LibraryScreenWeb() {
                 onClick={() => router.push('/library/map')}
               >
                 <MapIcon size={15} />
-                Knowledge Map
+                {t('library.knowledgeMap', 'Knowledge Map')}
               </button>
             </div>
           }
         />
-        <div style={{ marginBottom: '20px' }}>
-          <TemporalNavigator />
-        </div>
+        {/* No temporal filter in library tab */}
 
         {/* 2. FILTERS & SEARCH */}
         <div
@@ -637,7 +708,7 @@ export default function LibraryScreenWeb() {
               <input
                 className="search-input"
                 style={{ padding: '8px 0' }}
-                placeholder={t('library.searchPlaceholder') || 'Explore the sanctuary...'}
+                placeholder={t('library.searchPlaceholder', 'Explore the sanctuary...')}
                 value={searchQuery}
                 onChange={(e) => dispatch({ type: 'SET_SEARCH', query: e.target.value })}
               />
@@ -654,7 +725,7 @@ export default function LibraryScreenWeb() {
                     padding: '0 4px',
                     lineHeight: 1,
                   }}
-                  aria-label="Clear search"
+                  aria-label={t('library.clearSearch', 'Clear search')}
                 >
                   &#10005;
                 </button>
@@ -712,8 +783,8 @@ export default function LibraryScreenWeb() {
                   display: 'flex',
                   alignItems: 'center',
                 }}
-                aria-label="Shelf view"
-                title="Shelf view"
+                aria-label={t('library.viewMode.shelf', 'Shelf view')}
+                title={t('library.viewMode.shelf', 'Shelf view')}
               >
                 <Layers size={16} />
               </button>
@@ -729,8 +800,8 @@ export default function LibraryScreenWeb() {
                   display: 'flex',
                   alignItems: 'center',
                 }}
-                aria-label="Grid view"
-                title="Grid view"
+                aria-label={t('library.viewMode.grid', 'Grid view')}
+                title={t('library.viewMode.grid', 'Grid view')}
               >
                 <LayoutGrid size={16} />
               </button>
@@ -746,8 +817,8 @@ export default function LibraryScreenWeb() {
                   display: 'flex',
                   alignItems: 'center',
                 }}
-                aria-label="List view"
-                title="List view"
+                aria-label={t('library.viewMode.list', 'List view')}
+                title={t('library.viewMode.list', 'List view')}
               >
                 <List size={16} />
               </button>
@@ -763,8 +834,8 @@ export default function LibraryScreenWeb() {
                   display: 'flex',
                   alignItems: 'center',
                 }}
-                aria-label="Map view"
-                title="Map view"
+                aria-label={t('library.viewMode.map', 'Map view')}
+                title={t('library.viewMode.map', 'Map view')}
               >
                 <MapIcon size={16} />
               </button>
@@ -804,7 +875,7 @@ export default function LibraryScreenWeb() {
                   }}
                 >
                   <Icon size={14} />
-                  {id === 'All' ? 'All Resources' : id.charAt(0).toUpperCase() + id.slice(1)}
+                  {getTopFilterLabel(id)}
                 </button>
               );
             })}
@@ -823,7 +894,7 @@ export default function LibraryScreenWeb() {
                 onClick={() => dispatch({ type: 'SET_CATEGORY', id: cat.id })}
                 style={{ whiteSpace: 'nowrap' }}
               >
-                {cat.en}
+                {getCategoryLabel(cat.id, cat.en)}
               </button>
             ))}
           </div>
@@ -869,14 +940,45 @@ export default function LibraryScreenWeb() {
                         query: debouncedSearchQuery,
                       })
                     : t('library.showingCurated', {
-                        category: selectedCategoryId,
+                        category: getCategoryLabel(selectedCategoryId, selectedCategoryId),
                       })}
                 </div>
 
                 {viewMode === 'shelf' && (
                   <>
+                    {categories.length > 0 && (
+                      <SmartShelf title={t('library.shelfTitle.matchingCategories', 'Matching Categories')}>
+                        <SanctuaryFlashList
+                          data={categories}
+                          horizontal
+                          showsHorizontalScrollIndicator={false}
+                          keyExtractor={(col: LibraryCollection) => `search-cat-${col.id}`}
+                          estimatedItemSize={320}
+                          contentContainerStyle={{ paddingBottom: 16 }}
+                          renderItem={({ item: col }: { item: LibraryCollection }) => (
+                            <Box className="mr-5 w-[320px]">
+                              <LibraryThumbnailCard
+                                title={col.name}
+                                type="collection"
+                                subject={col.subjects?.[0] || t('library.curatedCollection', 'Curated')}
+                                onPress={() =>
+                                  router.push({
+                                    pathname: '/library/collections/[id]',
+                                    params: {
+                                      id: col.id,
+                                      title: col.name,
+                                    },
+                                  })
+                                }
+                              />
+                            </Box>
+                          )}
+                        />
+                      </SmartShelf>
+                    )}
+
                     {collections.length > 0 && (
-                      <SmartShelf title="Matching Collections">
+                      <SmartShelf title={t('library.shelfTitle.matchingCollections', 'Matching Collections')}>
                         <SanctuaryFlashList
                           data={collections}
                           horizontal
@@ -889,7 +991,7 @@ export default function LibraryScreenWeb() {
                               <LibraryThumbnailCard
                                 title={col.name}
                                 type="collection"
-                                subject={col.subjects?.[0] || 'Curated'}
+                                subject={col.subjects?.[0] || t('library.curatedCollection', 'Curated')}
                                 onPress={() =>
                                   router.push({
                                     pathname: '/library/collections/[id]',
@@ -909,7 +1011,7 @@ export default function LibraryScreenWeb() {
                       const shelfItems = resources.filter((res) => shelf.types.includes(res.type));
                       if (shelfItems.length === 0) return null;
                       return (
-                        <SmartShelf key={`search-shelf-${shelf.id}`} title={shelf.label}>
+                        <SmartShelf key={`search-shelf-${shelf.id}`} title={t('library.shelf.' + shelf.id, shelf.label)}>
                           <SanctuaryFlashList
                             data={shelfItems}
                             horizontal
@@ -934,7 +1036,7 @@ export default function LibraryScreenWeb() {
                     })}
 
                     {diverseFindings.length > 0 && (
-                      <SmartShelf title="Diverse Findings">
+                      <SmartShelf title={t('library.shelfTitle.diverseFindings', 'Diverse Findings')}>
                         <SanctuaryFlashList
                           data={diverseFindings}
                           horizontal
@@ -998,8 +1100,8 @@ export default function LibraryScreenWeb() {
                 }}
               >
                 <SanctuaryPulse
-                  resourceCount={resources.length}
-                  collectionCount={collections.length}
+                  resourceCount={totalResourcesCount}
+                  collectionCount={totalCollectionsCount}
                   bookmarkCount={bookmarkedIds.size}
                 />
 
@@ -1032,13 +1134,13 @@ export default function LibraryScreenWeb() {
                   )}
                 </div>
 
-                {collections.length > 0 && (
-                  <SmartShelf title="Featured Collections">
+                {categories.length > 0 && (
+                  <SmartShelf title={t('library.shelfTitle.featuredCategories', 'Featured Categories')}>
                     <SanctuaryFlashList
-                      data={collections}
+                      data={categories}
                       horizontal
                       showsHorizontalScrollIndicator={false}
-                      keyExtractor={(col: LibraryCollection) => col.id}
+                      keyExtractor={(col: LibraryCollection) => `feat-cat-${col.id}`}
                       estimatedItemSize={320}
                       contentContainerStyle={{ paddingBottom: 16 }}
                       renderItem={({ item: col }: { item: LibraryCollection }) => (
@@ -1049,6 +1151,7 @@ export default function LibraryScreenWeb() {
                               col.is_virtual ? t('library.dynamic') : t('library.collection')
                             }
                             resourceCount={col.used_by_count ?? col.resource_ids?.length ?? 0}
+                            thumbnailUrl={col.thumbnail_url}
                             onClick={() =>
                               router.push({
                                 pathname: '/library/collections/[id]',
@@ -1065,11 +1168,64 @@ export default function LibraryScreenWeb() {
                   </SmartShelf>
                 )}
 
+                {collections.length > 0 && (
+                  <SmartShelf title={t('library.shelfTitle.featuredCollections', 'Featured Collections')}>
+                    <SanctuaryFlashList
+                      data={collections}
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      keyExtractor={(col: LibraryCollection) => `feat-col-${col.id}`}
+                      estimatedItemSize={320}
+                      contentContainerStyle={{ paddingBottom: 16 }}
+                      renderItem={({ item: col }: { item: LibraryCollection }) => {
+                        const isOwner = !!user?.id && col.creator_id === user.id;
+                        return (
+                          <Box className="mr-5">
+                            <CollectionPreviewCard
+                              title={col.name}
+                              typeLabel={
+                                col.is_virtual ? t('library.dynamic') : t('library.collection')
+                              }
+                              resourceCount={col.used_by_count ?? col.resource_ids?.length ?? 0}
+                              thumbnailUrl={col.thumbnail_url}
+                              visibility={col.visibility}
+                              isOwner={isOwner}
+                              onClick={() =>
+                                router.push({
+                                  pathname: '/library/collections/[id]',
+                                  params: {
+                                    id: col.id,
+                                    title: col.name,
+                                  },
+                                })
+                              }
+                              onChangeVisibility={(v) =>
+                                updateCollection({ id: col.id, updates: { visibility: v } as any })
+                              }
+                              onDelete={() => {
+                                if (window.confirm(`Delete "${col.name}"? This cannot be undone.`)) {
+                                  deleteCollection(col.id);
+                                }
+                              }}
+                              onEdit={() =>
+                                router.push({
+                                  pathname: '/library/collections/[id]',
+                                  params: { id: col.id, title: col.name },
+                                })
+                              }
+                            />
+                          </Box>
+                        );
+                      }}
+                    />
+                  </SmartShelf>
+                )}
+
                 {orderedShelfDefs.map((shelf) => {
                   const shelfItems = resources.filter((res) => shelf.types.includes(res.type));
                   if (shelfItems.length === 0) return null;
                   return (
-                    <SmartShelf key={`default-shelf-${shelf.id}`} title={shelf.label}>
+                    <SmartShelf key={`default-shelf-${shelf.id}`} title={t('library.shelf.' + shelf.id, shelf.label)}>
                       <SanctuaryFlashList
                         data={shelfItems}
                         horizontal
@@ -1128,25 +1284,24 @@ export default function LibraryScreenWeb() {
         onSubmit={async (data) => {
           if (!user?.id) return;
           try {
-            await libraryAPI.createCollection(
-              {
+            await createCollection({
+              input: {
                 ...data,
                 resource_ids: [],
-                subject: data.name, // fallback subject
+                subject: data.name,
                 grades: [],
                 visibility: 'school',
               },
-              user.id,
-            );
-            showToast('Collection created!', 'success');
-            await fetchResources();
+              creatorId: user.id,
+            });
+            showToast(t('library.collectionCreated', 'Collection created!'), 'success');
             dispatch({
               type: 'SET_MODAL',
               name: 'collectionCreation',
               isOpen: false,
             });
           } catch (_err) {
-            showToast('Failed to create collection', 'error');
+            showToast(t('library.collectionCreateFailed', 'Failed to create collection'), 'error');
           }
         }}
       />
@@ -1174,17 +1329,26 @@ export default function LibraryScreenWeb() {
                       ? 'document'
                       : 'document',
                 url: data.url,
+                // DB column is `subjects TEXT[]` — send as array
                 subject: data.tags?.[0] ?? 'General',
-                topics: data.tags,
+                subjects: data.tags && data.tags.length > 0 ? data.tags : ['General'],
+                topics: data.tags ?? [],
                 grades: [],
                 difficulty: 'intermediate',
+                // DB column is `language TEXT[]` — must be an array
                 language: 'english',
+                languages: ['english'],
                 visibility: 'school',
               };
+              const creatorRole =
+                user.capacity ??
+                (user as User & { authority?: string; role?: string }).authority ??
+                (user as User & { authority?: string; role?: string }).role ??
+                'student';
               const created = await libraryAPI.createResource(
                 input,
                 user.id,
-                (user as User & { authority?: string }).authority || 'student',
+                creatorRole,
               );
               supabase.functions
                 .invoke('library-etl', {
@@ -1199,7 +1363,8 @@ export default function LibraryScreenWeb() {
               showToast('Resource contributed! It will be reviewed before publishing.', 'success');
               void fetchResources();
             } catch (err: unknown) {
-              showToast((err as Error).message ?? 'Failed to add resource', 'error');
+              console.error('[LibraryScreen] resource create failed:', err);
+              showToast(getLibraryCreateErrorMessage(err), 'error');
             }
           })();
         }}
@@ -1244,7 +1409,7 @@ function SanctuaryPulse({
       accent: 'rgba(221,155,40,0.14)',
     },
     {
-      label: 'Collections',
+      label: 'Categories',
       value: collectionCount,
       accent: 'rgba(103,152,214,0.14)',
     },
@@ -1367,68 +1532,248 @@ function CollectionPreviewCard({
   title,
   typeLabel,
   resourceCount,
+  thumbnailUrl,
   onClick,
+  visibility,
+  isOwner = false,
+  onChangeVisibility,
+  onDelete,
+  onEdit,
 }: {
   title: string;
   typeLabel: string;
   resourceCount: number;
+  thumbnailUrl?: string;
   onClick: () => void;
+  visibility?: ResourceVisibility;
+  isOwner?: boolean;
+  onChangeVisibility?: (v: ResourceVisibility) => void;
+  onDelete?: () => void;
+  onEdit?: () => void;
 }) {
+  const { t } = useTranslation();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const visConfig: Record<string, { icon: any; color: string; label: string }> = {
+    private:  { icon: Lock,  color: '#e88c30', label: t('library.visibility.private', 'Private') },
+    personal: { icon: Lock,  color: '#e88c30', label: t('library.visibility.private', 'Private') },
+    shared:   { icon: Users, color: '#6798d6', label: t('library.visibility.shared', 'Shared')  },
+    public:   { icon: Globe, color: '#34a853', label: t('library.visibility.public', 'Public')  },
+    class:    { icon: Users, color: '#6798d6', label: t('library.visibility.class', 'Class')   },
+    school:   { icon: Users, color: '#6798d6', label: t('library.visibility.school', 'School')  },
+    grade:    { icon: Users, color: '#6798d6', label: t('library.visibility.grade', 'Grade')   },
+  };
+  const vc = visibility ? (visConfig[visibility] ?? visConfig.public) : null;
+  const cardBackground = thumbnailUrl
+    ? `linear-gradient(180deg, rgba(18,20,24,0.12), rgba(18,20,24,0.78)), url(${thumbnailUrl}) center/cover no-repeat`
+    : 'linear-gradient(160deg, rgba(221,155,40,0.14) 0%, rgba(103,152,214,0.12) 52%, rgba(255,255,255,0.92) 100%)';
+
+  const visOptions: { value: ResourceVisibility; label: string; icon: any; color: string }[] = [
+    { value: 'private', label: t('library.visibility.private', 'Private'), icon: Lock,  color: '#e88c30' },
+    { value: 'shared',  label: t('library.visibility.shared', 'Shared'),  icon: Users, color: '#6798d6' },
+    { value: 'public',  label: t('library.visibility.public', 'Public'),  icon: Globe, color: '#34a853' },
+  ];
+
   return (
-    <button
-      type="button"
-      className="sanctuary-card"
-      onClick={onClick}
-      style={{
-        width: '264px',
-        minHeight: '184px',
-        padding: '18px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        borderRadius: '20px',
-        border: '1px solid var(--border)',
-        background:
-          'linear-gradient(160deg, rgba(221,155,40,0.14) 0%, rgba(103,152,214,0.12) 52%, rgba(255,255,255,0.92) 100%)',
-        textAlign: 'left',
-        cursor: 'pointer',
-      }}
-    >
-      <div
+    <div style={{ position: 'relative' }}>
+      <button
+        type="button"
+        className="sanctuary-card"
+        onClick={onClick}
         style={{
-          fontSize: '11px',
-          color: 'var(--action)',
-          fontWeight: '800',
-          letterSpacing: '0.05em',
-          textTransform: 'uppercase',
-        }}
-      >
-        {typeLabel}
-      </div>
-      <div
-        style={{
-          fontWeight: '700',
-          fontSize: '20px',
-          color: 'var(--ink)',
-          lineHeight: 1.15,
-        }}
-      >
-        {title}
-      </div>
-      <div
-        style={{
+          width: '264px',
+          minHeight: '184px',
+          padding: '18px',
           display: 'flex',
+          flexDirection: 'column',
           justifyContent: 'space-between',
-          alignItems: 'center',
-          color: 'var(--ink-ghost)',
-          fontSize: '13px',
-          fontWeight: '600',
+          borderRadius: '20px',
+          border: isOwner && vc && vc.color !== '#34a853'
+            ? `1px solid ${vc.color}55`
+            : '1px solid var(--border)',
+          background: cardBackground,
+          textAlign: 'left',
+          cursor: 'pointer',
         }}
       >
-        <span>{resourceCount} resources</span>
-        <span style={{ color: 'var(--action)' }}>Open</span>
-      </div>
-    </button>
+        {/* Type label row */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div
+            style={{
+              fontSize: '11px',
+              color: thumbnailUrl ? 'rgba(255,255,255,0.84)' : 'var(--action)',
+              fontWeight: '800',
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+            }}
+          >
+            {typeLabel}
+          </div>
+          {/* Visibility badge */}
+          {vc && isOwner && (
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '3px 8px',
+                borderRadius: '999px',
+                background: `${vc.color}18`,
+                border: `1px solid ${vc.color}40`,
+              }}
+            >
+              <vc.icon size={11} color={vc.color} />
+              <span style={{ fontSize: '11px', fontWeight: 800, color: vc.color }}>{vc.label}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Title */}
+        <div
+          style={{
+            fontWeight: '700',
+            fontSize: '20px',
+            color: thumbnailUrl ? '#fff' : 'var(--ink)',
+            lineHeight: 1.15,
+          }}
+        >
+          {title}
+        </div>
+
+        {/* Footer */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            color: thumbnailUrl ? 'rgba(255,255,255,0.76)' : 'var(--ink-ghost)',
+            fontSize: '13px',
+            fontWeight: '600',
+          }}
+        >
+          <span>{t('library.resourcesCount', { count: resourceCount, defaultValue: '{{count}} resources' })}</span>
+          <span style={{ color: thumbnailUrl ? '#fff' : 'var(--action)' }}>{t('library.actions.open', 'Open')}</span>
+        </div>
+      </button>
+
+      {/* ⋯ owner menu button */}
+      {isOwner && (
+        <div style={{ position: 'absolute', top: '12px', right: '12px' }}>
+          <button
+            onClick={(e) => { e.stopPropagation(); setMenuOpen((v) => !v); }}
+            style={{
+              background: 'rgba(0,0,0,0.08)',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '5px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <MoreVertical size={15} color="var(--ink)" />
+          </button>
+
+          {/* Dropdown menu */}
+          {menuOpen && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '100%',
+                right: 0,
+                marginTop: '4px',
+                background: 'var(--surface)',
+                border: '1px solid rgba(0,0,0,0.12)',
+                borderRadius: '14px',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.14)',
+                minWidth: '200px',
+                padding: '8px',
+                zIndex: 100,
+              }}
+            >
+              {/* Edit */}
+              <button
+                onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onEdit?.(); }}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '9px 10px',
+                  background: 'none',
+                  border: 'none',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  color: 'var(--ink)',
+                }}
+              >
+                <Edit2 size={14} color="var(--ink)" /> {t('library.actions.edit', 'Edit')}
+              </button>
+
+              {/* Divider */}
+              <div style={{ height: '1px', background: 'rgba(0,0,0,0.06)', margin: '4px 0' }} />
+
+              {/* Visibility options */}
+              <div style={{ padding: '4px 10px 2px', fontSize: '10px', fontWeight: 800, color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{t('library.visibility.label', 'Visibility')}</div>
+              {visOptions.map((opt) => {
+                const isActive = visibility === opt.value;
+                const Ic = opt.icon;
+                return (
+                  <button
+                    key={opt.value}
+                    onClick={(e) => { e.stopPropagation(); setMenuOpen(false); if (!isActive) onChangeVisibility?.(opt.value); }}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '8px 10px',
+                      background: isActive ? `${opt.color}14` : 'none',
+                      border: 'none',
+                      borderRadius: '10px',
+                      cursor: isActive ? 'default' : 'pointer',
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      color: isActive ? opt.color : 'var(--ink)',
+                    }}
+                  >
+                    <Ic size={13} color={isActive ? opt.color : 'var(--ink-ghost)'} />
+                    {opt.label}{isActive ? ' ✓' : ''}
+                  </button>
+                );
+              })}
+
+              {/* Divider */}
+              <div style={{ height: '1px', background: 'rgba(0,0,0,0.06)', margin: '4px 0' }} />
+
+              {/* Delete */}
+              <button
+                onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onDelete?.(); }}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '9px 10px',
+                  background: 'rgba(220,60,60,0.08)',
+                  border: 'none',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  color: '#dc3c3c',
+                }}
+              >
+                <Trash2 size={14} color="#dc3c3c" /> {t('library.actions.delete', 'Delete')}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 

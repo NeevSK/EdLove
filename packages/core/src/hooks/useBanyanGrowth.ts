@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { growth } from '@repo/core/logic';
 import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
-import type { BanyanStage } from '@repo/core/types/Growth';
+import { useGrowthStore } from '@repo/core/store/useGrowthStore';
 
 /**
  * useBanyanGrowth
@@ -11,11 +11,11 @@ import type { BanyanStage } from '@repo/core/types/Growth';
 export function useBanyanGrowth() {
   const { context } = usePermissions();
   const userId = context.userId || null;
-  const [banyan, setBanyan] = useState<{
-    banyan_stage: BanyanStage;
-    peer_mentored_count: number;
-    circles_facilitated_count: number;
-  } | null>(null);
+  
+  const banyanStage = useGrowthStore((state) => state.banyan_stage);
+  const peerMentoredCount = useGrowthStore((state) => state.peer_mentored_count);
+  const circlesFacilitatedCount = useGrowthStore((state) => state.circles_facilitated_count);
+  
   const [isLoading, setIsLoading] = useState(true);
 
   const refreshBanyan = useCallback(async () => {
@@ -24,7 +24,7 @@ export function useBanyanGrowth() {
     try {
       const state = await growth.getGrowthState(userId);
       if (state) {
-        setBanyan({
+        useGrowthStore.getState().setGrowthState({
           banyan_stage: state.banyan_stage,
           peer_mentored_count: state.peer_mentored_count,
           circles_facilitated_count: state.circles_facilitated_count,
@@ -42,6 +42,14 @@ export function useBanyanGrowth() {
       console.error('Banyan: Failed to refresh on mount', e);
     });
   }, [refreshBanyan]);
+
+  const banyan = useMemo(() => {
+    return {
+      banyan_stage: banyanStage,
+      peer_mentored_count: peerMentoredCount,
+      circles_facilitated_count: circlesFacilitatedCount,
+    };
+  }, [banyanStage, peerMentoredCount, circlesFacilitatedCount]);
 
   return useMemo(
     () => ({

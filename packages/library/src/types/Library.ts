@@ -134,6 +134,8 @@ export interface CollectionFilters {
   offset?: number;
   viewDate?: string;
   viewScale?: TemporalScale;
+  only_virtual?: boolean;
+  exclude_virtual?: boolean;
 }
 export interface CreateResourceInput {
   title: string;
@@ -169,6 +171,7 @@ export interface CreateResourceInput {
 export interface CreateCollectionInput {
   name: string;
   description: string;
+  thumbnail_url?: string;
   visibility: ResourceVisibility;
   resource_ids: string[];
   subject: string; // Kept for compat

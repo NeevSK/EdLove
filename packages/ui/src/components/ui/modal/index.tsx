@@ -1,7 +1,7 @@
 ﻿import { cssInterop } from 'react-native-css-interop';
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
-import { View, type ViewProps } from 'react-native';
+import { Platform, View, type ViewProps } from 'react-native';
 import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
 import { Box } from '@repo/ui/components/ui/box';
 import { Overlay } from '@repo/ui/components/ui/overlay';
@@ -39,6 +39,9 @@ export const Modal = ({
   children: React.ReactNode;
 } & ViewProps) => {
   const contextValue = useMemo(() => ({ onClose }), [onClose]);
+  const enteringAnimation =
+    Platform.OS === 'web' ? undefined : ZoomIn.duration(300).springify().damping(20);
+  const exitingAnimation = Platform.OS === 'web' ? undefined : ZoomOut.duration(200);
 
   if (!isOpen) return null;
 
@@ -53,8 +56,8 @@ export const Modal = ({
           {...props}
         >
           <Animated.View
-            entering={ZoomIn.duration(300).springify().damping(20)}
-            exiting={ZoomOut.duration(200)}
+            entering={enteringAnimation}
+            exiting={exitingAnimation}
             className="w-full max-w-[500px]"
             accessibilityRole="alert"
             accessibilityViewIsModal={true}

@@ -1,23 +1,98 @@
-import { useTemporalStore } from '@repo/core/logic';
+
 
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
+import { supabase } from '@repo/core/api';
 import { libraryAPI } from '@repo/library/api/library';
 import { knowledgeSync } from '@repo/library/api/sync';
-import type { CollectionFilters, CreateResourceInput, ResourceFilters } from '@repo/library/types';
+import type { CollectionFilters, CreateCollectionInput, CreateResourceInput, LibraryCollection, ResourceFilters } from '@repo/library/types';
 
 // Keys for React Query
 export const LIBRARY_KEYS = {
   all: ['library'] as const,
+  // Prefix-only keys (no filters appended) — use these for invalidation so React Query
+  // matches ALL queries for that entity regardless of which filters were used.
+  resourcesAll: () => [...LIBRARY_KEYS.all, 'resources'] as const,
+  collectionsAll: () => [...LIBRARY_KEYS.all, 'collections'] as const,
+  // Full keys with filters — use these as queryKey in useQuery/useInfiniteQuery.
   resources: (filters: ResourceFilters = {}) =>
-    [...LIBRARY_KEYS.all, 'resources', filters] as const,
+    [...LIBRARY_KEYS.resourcesAll(), filters] as const,
   collections: (filters: CollectionFilters = {}) =>
-    [...LIBRARY_KEYS.all, 'collections', filters] as const,
+    [...LIBRARY_KEYS.collectionsAll(), filters] as const,
   collection: (id: string) => [...LIBRARY_KEYS.all, 'collection', id] as const,
   resource: (id: string) => [...LIBRARY_KEYS.all, 'resource', id] as const,
-  bookmarked: (userId: string, viewDate?: string, viewScale?: string) =>
-    [...LIBRARY_KEYS.all, 'bookmarked', userId, viewDate || 'now', viewScale || 'day'] as const,
+  bookmarked: (userId: string) =>
+    [...LIBRARY_KEYS.all, 'bookmarked', userId] as const,
   sync: () => [...LIBRARY_KEYS.all, 'sync'] as const,
+};
+
+/**
+ * Custom hook to listen to Supabase Realtime changes on library tables (collections, nodes, collection_nodes)
+ * and automatically invalidate React Query caches to keep all screens up-to-date in real-time.
+ */
+export const useLibraryRealtime = () => {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    // 1. Listen for changes in collections (inserts, updates, deletes)
+    const collectionsChannel = supabase
+      .channel('library-collections-realtime-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'collections' },
+        (payload: any) => {
+          void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
+          void queryClient.invalidateQueries({ queryKey: [...LIBRARY_KEYS.all, 'collections-count'] });
+
+          const id = payload.new?.id || payload.old?.id;
+          if (id) {
+            void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(id) });
+          }
+        }
+      )
+      .subscribe();
+
+    // 2. Listen for changes in collection_nodes (resource added/removed from collection)
+    const collectionNodesChannel = supabase
+      .channel('library-collection-nodes-realtime-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'collection_nodes' },
+        (payload: any) => {
+          void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
+
+          const collectionId = payload.new?.collection_id || payload.old?.collection_id;
+          if (collectionId) {
+            void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(collectionId) });
+          }
+        }
+      )
+      .subscribe();
+
+    // 3. Listen for changes in nodes (resources created, updated, deleted)
+    const nodesChannel = supabase
+      .channel('library-nodes-realtime-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'nodes' },
+        (payload: any) => {
+          void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resourcesAll() });
+          void queryClient.invalidateQueries({ queryKey: [...LIBRARY_KEYS.all, 'resources-count'] });
+
+          const id = payload.new?.id || payload.old?.id;
+          if (id) {
+            void queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resource(id) });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(collectionsChannel);
+      void supabase.removeChannel(collectionNodesChannel);
+      void supabase.removeChannel(nodesChannel);
+    };
+  }, [queryClient]);
 };
 
 export const useLibrary = (
@@ -25,16 +100,26 @@ export const useLibrary = (
   collectionFilters: CollectionFilters = {},
 ) => {
   const queryClient = useQueryClient();
-  const viewDate = useTemporalStore((state) => state.viewDate);
-  const viewScale = useTemporalStore((state) => state.viewScale);
+  useLibraryRealtime(); // Enable automatic Supabase Realtime synchronization
+
   const temporalResourceFilters = useMemo(
-    () => ({ ...resourceFilters, viewDate, viewScale }),
-    [resourceFilters, viewDate, viewScale],
+    () => ({ ...resourceFilters }),
+    [resourceFilters],
   );
   const temporalCollectionFilters = useMemo(
-    () => ({ ...collectionFilters, viewDate, viewScale }),
-    [collectionFilters, viewDate, viewScale],
+    () => ({ ...collectionFilters }),
+    [collectionFilters],
   );
+
+  const { data: totalResourcesCount } = useQuery({
+    queryKey: [...LIBRARY_KEYS.all, 'resources-count'],
+    queryFn: () => libraryAPI.getResourcesCount(),
+  });
+
+  const { data: totalCollectionsCount } = useQuery({
+    queryKey: [...LIBRARY_KEYS.all, 'collections-count'],
+    queryFn: () => libraryAPI.getCollectionsCount(),
+  });
 
   // Fetch Resources with Infinite Scroll
   const resourcesInfiniteQuery = useInfiniteQuery({
@@ -63,13 +148,30 @@ export const useLibrary = (
     },
   });
 
-  // Fetch Collections with Infinite Scroll
-  const collectionsInfiniteQuery = useInfiniteQuery({
-    queryKey: LIBRARY_KEYS.collections(temporalCollectionFilters),
+  // Fetch Categories (Virtual Dynamic Collections based on subjects/topics) with Infinite Scroll
+  const categoriesInfiniteQuery = useInfiniteQuery({
+    queryKey: [...LIBRARY_KEYS.collections(temporalCollectionFilters), 'only_virtual'],
     queryFn: async ({ pageParam = 0 }) => {
-      // Apply search filter to collections as well
       return libraryAPI.getCollections({
         ...temporalCollectionFilters,
+        only_virtual: true,
+        limit: 10,
+        offset: pageParam,
+      });
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === 10 ? allPages.length * 10 : undefined;
+    },
+  });
+
+  // Fetch Collections (Explicit Database physical rows) with Infinite Scroll
+  const collectionsInfiniteQuery = useInfiniteQuery({
+    queryKey: [...LIBRARY_KEYS.collections(temporalCollectionFilters), 'exclude_virtual'],
+    queryFn: async ({ pageParam = 0 }) => {
+      return libraryAPI.getCollections({
+        ...temporalCollectionFilters,
+        exclude_virtual: true,
         limit: 10,
         offset: pageParam,
       });
@@ -94,7 +196,7 @@ export const useLibrary = (
       return libraryAPI.createResource(input, creatorId, creatorRole);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resources() });
+      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resourcesAll() });
     },
   });
 
@@ -104,7 +206,7 @@ export const useLibrary = (
       return libraryAPI.endorseResource(resourceId, userId);
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resources() });
+      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resourcesAll() });
       queryClient.invalidateQueries({
         queryKey: LIBRARY_KEYS.resource(variables.resourceId),
       });
@@ -117,7 +219,7 @@ export const useLibrary = (
       return libraryAPI.bookmarkResource(resourceId, userId);
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resources() });
+      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resourcesAll() });
       queryClient.invalidateQueries({
         queryKey: LIBRARY_KEYS.bookmarked(variables.userId),
       });
@@ -139,7 +241,7 @@ export const useLibrary = (
       return libraryAPI.addToCollection(collectionId, resourceId);
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collections() });
+      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
       queryClient.invalidateQueries({
         queryKey: LIBRARY_KEYS.collection(variables.collectionId),
       });
@@ -149,15 +251,83 @@ export const useLibrary = (
     },
   });
 
+  // Remove from Collection Mutation
+  const removeFromCollectionMutation = useMutation({
+    mutationFn: async ({
+      collectionId,
+      resourceId,
+    }: {
+      collectionId: string;
+      resourceId: string;
+    }) => {
+      return libraryAPI.removeFromCollection(collectionId, resourceId);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
+      queryClient.invalidateQueries({
+        queryKey: LIBRARY_KEYS.collection(variables.collectionId),
+      });
+    },
+  });
+
+  // Create Collection Mutation
+  const createCollectionMutation = useMutation({
+    mutationFn: async ({
+      input,
+      creatorId,
+    }: {
+      input: CreateCollectionInput;
+      creatorId: string;
+    }) => {
+      return libraryAPI.createCollection(input, creatorId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
+      queryClient.invalidateQueries({ queryKey: [...LIBRARY_KEYS.all, 'collections-count'] });
+    },
+  });
+
+  // Update Collection Mutation
+  const updateCollectionMutation = useMutation({
+    mutationFn: async ({
+      id,
+      updates,
+    }: {
+      id: string;
+      updates: Partial<LibraryCollection>;
+    }) => {
+      return libraryAPI.updateCollection(id, updates);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
+      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(variables.id) });
+    },
+  });
+
+  // Delete Collection Mutation
+  const deleteCollectionMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return libraryAPI.deleteCollection(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
+      queryClient.invalidateQueries({ queryKey: [...LIBRARY_KEYS.all, 'collections-count'] });
+    },
+  });
+
   const syncLibrary = useCallback(async () => {
     await knowledgeSync.performSync();
     // Use queryClient directly to invalidate instead of causing a dependency on the query object itself
-    queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resources() });
+    queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.resourcesAll() });
   }, [queryClient]);
 
   const resources = useMemo(
     () => resourcesInfiniteQuery.data?.pages.flat() || [],
     [resourcesInfiniteQuery.data],
+  );
+  const categories = useMemo(
+    () => categoriesInfiniteQuery.data?.pages.flat() || [],
+    [categoriesInfiniteQuery.data],
   );
   const collections = useMemo(
     () => collectionsInfiniteQuery.data?.pages.flat() || [],
@@ -171,6 +341,13 @@ export const useLibrary = (
     hasNextResources: resourcesInfiniteQuery.hasNextPage,
     fetchNextResources: resourcesInfiniteQuery.fetchNextPage,
     fetchResources: resourcesInfiniteQuery.refetch,
+
+    categories,
+    isLoadingCategories: categoriesInfiniteQuery.isLoading,
+    isFetchingNextCategories: categoriesInfiniteQuery.isFetchingNextPage,
+    hasNextCategories: categoriesInfiniteQuery.hasNextPage,
+    fetchNextCategories: categoriesInfiniteQuery.fetchNextPage,
+    fetchCategories: categoriesInfiniteQuery.refetch,
 
     collections,
     isLoadingCollections: collectionsInfiniteQuery.isLoading,
@@ -188,21 +365,42 @@ export const useLibrary = (
     addToCollection: addToCollectionMutation.mutateAsync,
     isAddingToCollection: addToCollectionMutation.isPending,
 
+    removeFromCollection: removeFromCollectionMutation.mutateAsync,
+    isRemovingFromCollection: removeFromCollectionMutation.isPending,
+
+    createCollection: createCollectionMutation.mutateAsync,
+    isCreatingCollection: createCollectionMutation.isPending,
+
+    updateCollection: updateCollectionMutation.mutateAsync,
+    isUpdatingCollection: updateCollectionMutation.isPending,
+
+    deleteCollection: deleteCollectionMutation.mutateAsync,
+    isDeletingCollection: deleteCollectionMutation.isPending,
+
     syncLibrary,
 
-    loading: resourcesInfiniteQuery.isLoading || collectionsInfiniteQuery.isLoading,
+    totalResourcesCount: totalResourcesCount ?? 0,
+    totalCollectionsCount: totalCollectionsCount ?? 0,
+
+    loading:
+      resourcesInfiniteQuery.isLoading ||
+      categoriesInfiniteQuery.isLoading ||
+      collectionsInfiniteQuery.isLoading,
     error:
-      resourcesInfiniteQuery.error || collectionsInfiniteQuery.error
-        ? ((resourcesInfiniteQuery.error || collectionsInfiniteQuery.error) as Error).message
+      resourcesInfiniteQuery.error ||
+      categoriesInfiniteQuery.error ||
+      collectionsInfiniteQuery.error
+        ? ((resourcesInfiniteQuery.error ||
+            categoriesInfiniteQuery.error ||
+            collectionsInfiniteQuery.error) as Error).message
         : null,
   };
 };
 export const useCollection = (id: string, userId?: string) => {
-  const viewDate = useTemporalStore((state) => state.viewDate);
-  const viewScale = useTemporalStore((state) => state.viewScale);
+  useLibraryRealtime(); // Enable real-time updates on collection detail view
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: [...LIBRARY_KEYS.collection(id), viewDate, viewScale],
-    queryFn: () => libraryAPI.getCollectionById(id, userId, { viewDate, viewScale }),
+    queryKey: LIBRARY_KEYS.collection(id),
+    queryFn: () => libraryAPI.getCollectionById(id, userId),
     enabled: !!id,
   });
 
@@ -215,13 +413,11 @@ export const useCollection = (id: string, userId?: string) => {
 };
 
 export const useBookmarkedResources = (userId?: string) => {
-  const viewDate = useTemporalStore((state) => state.viewDate);
-  const viewScale = useTemporalStore((state) => state.viewScale);
   const { data, isLoading, error, refetch } = useInfiniteQuery({
-    queryKey: LIBRARY_KEYS.bookmarked(userId || '', viewDate, viewScale),
+    queryKey: LIBRARY_KEYS.bookmarked(userId || ''),
     queryFn: () =>
       userId
-        ? libraryAPI.getBookmarkedResources(userId, { viewDate, viewScale })
+        ? libraryAPI.getBookmarkedResources(userId)
         : Promise.resolve([]),
     enabled: !!userId,
     initialPageParam: 0,

@@ -645,6 +645,7 @@ model LibraryCollection {
   id             String   @id @default(uuid())
   name           String
   description    String?
+  thumbnail_url  String?
   creator_id     String
   visibility     String   @default("public")
   subjects       String[]
