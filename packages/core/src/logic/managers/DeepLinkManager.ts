@@ -76,6 +76,7 @@ export class DeepLinkManager {
   private async handleAuthCallback(params: Record<string, string>): Promise<DeepLinkResult> {
     const access_token = params.access_token;
     const refresh_token = params.refresh_token;
+    const authCode = params.code;
 
     if (access_token && refresh_token) {
       try {
@@ -92,6 +93,27 @@ export class DeepLinkManager {
           params,
           isHandled: false,
           message: 'Failed to establish session',
+        };
+      }
+    }
+
+    // Magic-link / PKCE code exchange — Supabase emails a `code` query param
+    // that must be exchanged server-side for an access/refresh token pair.
+    if (authCode) {
+      try {
+        await this.authManager.exchangeCodeForSession(authCode);
+        return {
+          type: DeepLinkType.AUTH_CALLBACK,
+          params,
+          isHandled: true,
+        };
+      } catch (error) {
+        console.error('[DeepLinkManager] Magic-link code exchange failed:', error);
+        return {
+          type: DeepLinkType.AUTH_CALLBACK,
+          params,
+          isHandled: false,
+          message: 'Failed to exchange magic-link code',
         };
       }
     }

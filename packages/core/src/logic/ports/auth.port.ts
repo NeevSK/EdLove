@@ -41,6 +41,41 @@ export interface IAuthPort {
     skipBrowserRedirect?: boolean;
   }): Promise<{ url: string | null }>;
 
+  /**
+   * Native Google Sign-In (One Tap / Credential Manager / iOS Google SDK).
+   * Exchanges an idToken (minted by the native Google SDK) for a Supabase session.
+   * Used when there is no existing session to link against.
+   */
+  signInWithGoogleIdToken(params: {
+    idToken: string;
+    accessToken?: string | null;
+  }): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
+
+  /**
+   * Native Google Sign-In (One Tap / Credential Manager / iOS Google SDK).
+   * Links the Google identity to the *current* session (used to preserve an
+   * anonymous guest identity when a guest signs in with Google).
+   */
+  linkGoogleIdentity(params: {
+    idToken: string;
+    accessToken?: string | null;
+  }): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
+
+  /**
+   * Sends a Supabase magic-link email. The link deep-redirects back into the app
+   * where the returned `code` is exchanged via `exchangeCodeForSession`.
+   */
+  signInWithMagicLink(
+    email: string,
+  ): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
+
+  /**
+   * Exchanges a PKCE `code` (from a magic-link deep link) for a session.
+   */
+  exchangeCodeForSession(
+    code: string,
+  ): Promise<{ user: AuthUser | null; session: AuthSession | null }>;
+
   signInWithPasskey(params?: {
     redirectTo?: string;
     skipBrowserRedirect?: boolean;

@@ -17,6 +17,22 @@ export const authAPI = {
     return auth.signInWithOAuth(provider, redirectTo, skipBrowserRedirect);
   },
 
+  async signInWithGoogleIdToken(idToken: string, accessToken?: string | null) {
+    return auth.signInWithGoogleIdToken(idToken, accessToken);
+  },
+
+  async linkGoogleIdentity(idToken: string, accessToken?: string | null) {
+    return auth.linkGoogleIdentity(idToken, accessToken);
+  },
+
+  async signInWithMagicLink(email: string) {
+    return auth.signInWithMagicLink(email);
+  },
+
+  async exchangeCodeForSession(code: string) {
+    return auth.exchangeCodeForSession(code);
+  },
+
   async linkOAuthIdentity(provider: 'google', redirectTo?: string, skipBrowserRedirect = false) {
     // Note: linkOAuthIdentity might need to be added to AuthManager if we want full delegation
     // For now delegating to auth manager if it had it, or using port.

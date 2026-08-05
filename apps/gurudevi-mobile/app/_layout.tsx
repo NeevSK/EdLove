@@ -7,11 +7,11 @@ import 'react-native-worklets';
 import 'react-native-get-random-values';
 import '@repo/ui/global.css';
 
-import { registerAppCatalog } from '@/boot/registerAppCatalog';
-
-registerAppCatalog();
-
 import { initPostHog, posthogAnalytics as initTracker } from '@repo/analytics';
+import {
+  disconnectPowerSync as clearPowerSync,
+  usePolicyVersionInvalidation,
+} from '@repo/core/adapters/powersync';
 import { refreshPermissionSnapshotOnServer } from '@repo/core/api/authorization';
 import {
   accountPin,
@@ -35,7 +35,6 @@ import {
   trackProductEvent,
 } from '@repo/core/monitoring';
 import { bootstrapPlatform, storage } from '@repo/core/native';
-import { usePolicyVersionInvalidation, disconnectPowerSync as clearPowerSync } from '@repo/core/adapters/powersync';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';
@@ -71,15 +70,19 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { PWAInstallBanner } from '@/components/web/PWAInstallBanner';
+import { registerAppCatalog } from '@/boot/registerAppCatalog';
 import PDPAConsentModal from '@/components/PDPAConsentModal';
+import { PWAInstallBanner } from '@/components/web/PWAInstallBanner';
 import { fontAssets } from '@/constants/Fonts';
 import { registerBackgroundSync } from '@/lib/backgroundSync';
+import { configureGoogleOneTap } from '@/lib/googleSignIn';
 import {
   dispatchQueuedMutationToSovereignBus,
   installMobileWorkflowEventBridge,
 } from '@/lib/inngestEvents';
 import { LanguageUtils } from '@/utils/LanguageUtils';
+
+registerAppCatalog();
 
 void SplashScreen.preventAutoHideAsync().catch(() => {
   // Native splash is best-effort; the in-app fallback covers slow boots.
@@ -100,6 +103,10 @@ const queryClient = new QueryClient();
 // during the first render cycle.
 injectPostHog(initTracker);
 
+// Configure native Google One-Tap / Credential Manager before any sign-in
+// attempt. No-op on web and when the client IDs are unset.
+configureGoogleOneTap();
+
 function FullScreenFallback() {
   return (
     <Center className="flex-1 bg-obsidian">
@@ -118,7 +125,7 @@ function BootstrapSideEffects() {
     if (hasDecidedConsent && !analyticsConsentGranted) {
       optOutTelemetry();
       clearSentryUser();
-      
+
       // Perform database and cache cleanup under PDPA erasure requirement
       void (async () => {
         try {
@@ -166,8 +173,14 @@ function BootstrapSideEffects() {
     });
 
     identifyUser(currentUser.id);
-  }, [currentUser?.display_name, currentUser?.email, currentUser?.id, currentUser?.school_id, hasDecidedConsent, analyticsConsentGranted]);
-
+  }, [
+    currentUser?.display_name,
+    currentUser?.email,
+    currentUser?.id,
+    currentUser?.school_id,
+    hasDecidedConsent,
+    analyticsConsentGranted,
+  ]);
 
   useEffect(() => {
     if (!currentUser?.id) return;
@@ -244,7 +257,7 @@ function AppContent() {
       }
     };
     void checkUserPin();
-  }, [session?.user?.id]);
+  }, [session?.user?.id, setHasPinCode]);
 
   const userId = session?.user?.id;
   const handlePinUnlockSubmit = async (values: any) => {
@@ -303,7 +316,7 @@ function AppContent() {
     return () => {
       appStateSub.remove();
     };
-  }, [authenticateBiometrics]);
+  }, [authenticateBiometrics, setIsUnlocked]);
 
   useEffect(() => {
     if (!coreRuntime.isRegistered()) {
@@ -370,7 +383,7 @@ function AppContent() {
     if (!coreRuntime.isRegistered()) return;
 
     // Warm Cedar WASM singleton at boot per D4 Section 1
-    warmCedarWasm();
+    void warmCedarWasm();
 
     if (session?.user?.is_anonymous) {
       // Anonymous guests have a Supabase auth identity for conversion and
@@ -392,7 +405,14 @@ function AppContent() {
         });
       }
     }
-  }, [session?.user?.id, activeBond, activeBondScopeId, loadDecisions, loadEntitlements]);
+  }, [
+    session?.user?.id,
+    session?.user?.is_anonymous,
+    activeBond,
+    activeBondScopeId,
+    loadDecisions,
+    loadEntitlements,
+  ]);
 
   useQRDeepLink((payload: unknown) => {
     router.push({ pathname: '/qr', params: { payload: JSON.stringify(payload) } });

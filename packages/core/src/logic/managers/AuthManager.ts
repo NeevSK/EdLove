@@ -90,6 +90,62 @@ export class AuthManager {
     return result;
   }
 
+  async signInWithGoogleIdToken(idToken: string, accessToken?: string | null) {
+    const result = await this.authPort.signInWithGoogleIdToken({ idToken, accessToken });
+    await this.recordAuthMethodUsage(
+      'AUTH_SIGN_IN_GOOGLE_NATIVE',
+      {
+        method: 'google_native',
+        outcome: 'success',
+        hasSession: !!result.session,
+      },
+      result.user?.id,
+    );
+    return result;
+  }
+
+  async linkGoogleIdentity(idToken: string, accessToken?: string | null) {
+    const result = await this.authPort.linkGoogleIdentity({ idToken, accessToken });
+    await this.recordAuthMethodUsage(
+      'AUTH_LINK_GOOGLE_NATIVE',
+      {
+        method: 'google_native',
+        outcome: 'success',
+        hasSession: !!result.session,
+      },
+      result.user?.id,
+    );
+    return result;
+  }
+
+  async signInWithMagicLink(email: string) {
+    const result = await this.authPort.signInWithMagicLink(email);
+    await this.recordAuthMethodUsage(
+      'AUTH_SIGN_IN_MAGIC_LINK',
+      {
+        method: 'magic_link',
+        outcome: 'initiated',
+        hasSession: !!result.session,
+      },
+      result.user?.id ?? null,
+    );
+    return result;
+  }
+
+  async exchangeCodeForSession(code: string) {
+    const result = await this.authPort.exchangeCodeForSession(code);
+    await this.recordAuthMethodUsage(
+      'AUTH_MAGIC_LINK_EXCHANGE',
+      {
+        method: 'magic_link',
+        outcome: 'success',
+        hasSession: !!result.session,
+      },
+      result.user?.id,
+    );
+    return result;
+  }
+
   async signInWithPasskey(redirectTo?: string, skipBrowserRedirect = false) {
     const result = await this.authPort.signInWithPasskey({ redirectTo, skipBrowserRedirect });
     await this.recordAuthMethodUsage('AUTH_SIGN_IN_PASSKEY_STARTED', {

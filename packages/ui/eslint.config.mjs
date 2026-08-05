@@ -1,4 +1,5 @@
 import { config } from '@repo/eslint-config/react-internal';
+import path from 'node:path';
 
 /** @type {import("eslint").Linter.Config[]} */
 export default [
@@ -14,7 +15,7 @@ export default [
       }
     }
   },
-  {
+   {
     rules: {
       'no-restricted-imports': [
         'error',
@@ -49,6 +50,20 @@ export default [
           ],
         },
       ],
+    },
+  },
+   {
+    settings: {
+      'import/resolver': {
+        typescript: {
+          project: import.meta.dirname,
+        },
+      },
+      'import-x/resolver': {
+        typescript: {
+          project: import.meta.dirname,
+        },
+      },
     },
   },
 ];

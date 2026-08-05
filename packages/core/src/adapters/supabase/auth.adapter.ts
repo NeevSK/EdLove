@@ -1,6 +1,12 @@
 import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
-import type { AuthMfaFactor, AuthSession, AuthUser, IAuthPort } from '@repo/core/logic/ports/auth.port';
+import type {
+  AuthMfaFactor,
+  AuthSession,
+  AuthUser,
+  IAuthPort,
+} from '@repo/core/logic/ports/auth.port';
 import { APIError } from '@repo/core/types/API';
+import { Platform } from 'react-native';
 
 export class SupabaseAuthAdapter implements IAuthPort {
   private get client() {
@@ -57,6 +63,50 @@ export class SupabaseAuthAdapter implements IAuthPort {
     });
     if (error) throw new APIError('Failed to link OAuth identity', error.code, error);
     return data as any;
+  }
+
+  async signInWithGoogleIdToken(params: { idToken: string; accessToken?: string | null }) {
+    const { data, error } = await this.client.auth.signInWithIdToken({
+      provider: 'google',
+      token: params.idToken,
+      access_token: params.accessToken ?? undefined,
+    });
+    if (error) throw new APIError('Failed to sign in with Google id token', error.code, error);
+    return { user: data.user as any, session: data.session as any };
+  }
+
+  async linkGoogleIdentity(params: { idToken: string; accessToken?: string | null }) {
+    const { data, error } = await this.client.auth.linkIdentity({
+      provider: 'google',
+      token: params.idToken,
+      access_token: params.accessToken ?? undefined,
+    });
+    if (error) throw new APIError('Failed to link Google identity', error.code, error);
+    return { user: data.user as any, session: data.session as any };
+  }
+
+  async signInWithMagicLink(email: string) {
+    const redirectTo = this.magicLinkRedirectUri();
+    const { data, error } = await this.client.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: redirectTo },
+    });
+    if (error) throw new APIError('Failed to send magic link', error.code, error);
+    return { user: data.user as any, session: data.session as any };
+  }
+
+  private magicLinkRedirectUri(): string {
+    if (Platform.OS === 'web') {
+      return typeof window !== 'undefined' ? window.location.origin : '';
+    }
+    return 'gurudevi://auth/callback';
+  }
+
+  async exchangeCodeForSession(code: string) {
+    const { data, error } = await this.client.auth.exchangeCodeForSession(code);
+    if (error)
+      throw new APIError('Failed to exchange magic-link code for session', error.code, error);
+    return { user: data.user as any, session: data.session as any };
   }
 
   async signInWithPasskey(params?: { redirectTo?: string; skipBrowserRedirect?: boolean }) {

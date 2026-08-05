@@ -80,7 +80,8 @@
     "extra": {
       "eas": {
         "projectId": "1701dfb9-c59e-45c6-a391-58c061a0b8ce"
-      }
+      },
+      "googleIosUrlScheme": "com.googleusercontent.apps.YOUR_IOS_CLIENT_ID"
     },
     "plugins": [
       "expo-font",
@@ -145,7 +146,13 @@
       "@sentry/react-native",
       "expo-background-task",
       "expo-status-bar",
-      "@react-native-vector-icons/lucide"
+      "@react-native-vector-icons/lucide",
+      [
+        "react-native-nitro-google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.YOUR_IOS_CLIENT_ID"
+        }
+      ]
     ],
     "owner": "neevsk",
     "runtimeVersion": {

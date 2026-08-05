@@ -1,5 +1,6 @@
 import { config as reactInternalConfig } from '@repo/eslint-config/react-internal';
 import expoConfig from 'eslint-config-expo/flat.js';
+import path from 'node:path';
 import globals from 'globals';
 
 /** @type {import("eslint").Linter.Config[]} */
@@ -19,7 +20,7 @@ export default [
     }
     return cfg;
   }),
-  {
+   {
     ignores: [
       '*.config.js',
       '.expo/**',
@@ -46,6 +47,20 @@ export default [
       'App.tsx',
       'src/shims/**',
     ],
+  },
+   {
+    settings: {
+      'import/resolver': {
+        typescript: {
+          project: import.meta.dirname,
+        },
+      },
+      'import-x/resolver': {
+        typescript: {
+          project: import.meta.dirname,
+        },
+      },
+    },
   },
   {
     languageOptions: {
