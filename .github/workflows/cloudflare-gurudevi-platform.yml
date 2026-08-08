@@ -1,0 +1,72 @@
+name: Gurudevi Platform — Cloudflare Pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Cloudflare Pages deployment target'
+        required: true
+        default: preview
+        type: choice
+        options:
+          - preview
+          - production
+
+concurrency:
+  group: cloudflare-gurudevi-platform-${{ github.event.inputs.environment || 'preview' }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    name: Build and deploy Expo web to Cloudflare Pages
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'preview' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.18.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --fetch-timeout 100000
+
+      - name: Build Expo web export
+        working-directory: apps/gurudevi-mobile
+        env:
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          EXPO_PUBLIC_POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+          EXPO_PUBLIC_POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
+          EXPO_PUBLIC_POSTHOG_ENABLED: ${{ vars.POSTHOG_ENABLED || 'true' }}
+          EXPO_PUBLIC_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          EXPO_PUBLIC_INNGEST_EVENT_KEY: ${{ secrets.INNGEST_EVENT_KEY }}
+          EXPO_PUBLIC_POWERSYNC_URL: ${{ secrets.POWERSYNC_URL }}
+          EXPO_PUBLIC_GURUDEVI_MARKETING_URL: https://gurudevi.edlove.org
+          EXPO_PUBLIC_GURUDEVI_APP_URL: https://platform.gurudevi.edlove.org
+          NODE_ENV: production
+          NODE_OPTIONS: --max-old-space-size=8192
+        run: pnpm build:web
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: >-
+            pages deploy apps/gurudevi-mobile/dist
+            --project-name gurudevi-platform
+            --branch ${{ github.event.inputs.environment == 'production' && 'main' || 'preview' }}
+            --commit-dirty=true

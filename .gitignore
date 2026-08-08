@@ -46,6 +46,7 @@ yarn-error.log*
 .idea/
 .claude/*
 !.claude/skills/
+.devin/
 ## Generated audit artifacts
 audit-results.json
 report_final.json
@@ -67,3 +68,5 @@ packages/library/lint_results.json
 # Rust test
 spike-rust-inline/
 native-capabilities/
+
+*.zip

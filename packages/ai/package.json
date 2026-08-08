@@ -29,8 +29,8 @@
   },
   "scripts": {
     "lint": "node ../../scripts/run-and-report.mjs --cmd \"pnpm run lint:biome && pnpm run lint:eslint\" --name \"packages_ai-lint\"",
-    "typecheck": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --build --noEmit --checkers 4 --builders 4\" --name \"packages_ai-typecheck\"",
-    "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --build --noEmit --checkers 4 --builders 4\" --name \"packages_ai-check-types\"",
+    "typecheck": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --build --noEmit\" --name \"packages_ai-typecheck\"",
+    "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --build --noEmit\" --name \"packages_ai-check-types\"",
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"packages_ai-clean\"",
     "lint:biome": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs\" --name \"packages_ai-lint_biome\"",
     "lint:eslint": "node ../../scripts/run-and-report.mjs --cmd \"eslint .\" --name \"packages_ai-lint_eslint\"",
@@ -43,8 +43,9 @@
   "dependencies": {
     "@repo/core": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@tanstack/ai-client": "^0.16.3",
-    "@tanstack/ai-react": "^0.15.4",
+    "@tanstack/ai": "^0.43.0",
+    "@tanstack/ai-client": "^0.23.0",
+    "@tanstack/ai-react": "^0.19.0",
     "@tanstack/react-query": "^5.101.0",
     "expo-router": "~57.0.9",
     "lucide-react-native": "^1.17.0",
@@ -70,8 +71,8 @@
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
-    "typecheck": "pnpm exec tsc --build --noEmit --checkers 4 --builders 4",
-    "check-types": "pnpm exec tsc --build --noEmit --checkers 4 --builders 4",
+    "typecheck": "pnpm exec tsc --build --noEmit",
+    "check-types": "pnpm exec tsc --build --noEmit",
     "clean": "rm -rf .turbo node_modules dist",
     "lint:biome": "node ../../scripts/scoped-biome.mjs",
     "lint:eslint": "eslint .",

@@ -1,6 +1,7 @@
 /* eslint-disable */
 /* oxlint-disable */
 import '@testing-library/jest-dom';
+import '@testing-library/jest-native';
 import 'react-native-gesture-handler/jestSetup';
 
 // \u2500\u2500 Environment variables required by supabase.ts \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500

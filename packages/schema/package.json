@@ -20,7 +20,7 @@
   },
   "scripts": {
     "generate": "node ../../scripts/run-and-report.mjs --cmd \"zenstack generate --schema schema.zmodel -o src/generated/orm\" --name \"packages_schema-generate\"",
-    "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --build --noEmit --checkers 4 --builders 4\" --name \"packages_schema-check-types\"",
+    "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --build --noEmit\" --name \"packages_schema-check-types\"",
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules src/generated\" --name \"packages_schema-clean\""
   },
   "dependencies": {
@@ -39,7 +39,7 @@
   },
   "_originalScripts": {
     "generate": "zenstack generate --schema schema.zmodel -o src/generated/orm",
-    "check-types": "pnpm exec tsc --build --noEmit --checkers 4 --builders 4",
+    "check-types": "pnpm exec tsc --build --noEmit",
     "clean": "rm -rf .turbo node_modules src/generated"
   }
 }

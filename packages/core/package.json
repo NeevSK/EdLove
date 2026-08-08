@@ -92,9 +92,9 @@
       "default": "./src/hooks/index.ts"
     },
     "./hooks/*": {
-      "types": "./src/hooks/*.ts",
-      "import": "./src/hooks/*.ts",
-      "default": "./src/hooks/*.ts"
+      "types": "./src/hooks/*",
+      "import": "./src/hooks/*",
+      "default": "./src/hooks/*"
     },
     "./providers": {
       "types": "./src/providers/index.ts",
@@ -254,7 +254,7 @@
     "lint:eslint": "node ../../scripts/run-and-report.mjs --cmd \"node --max-old-space-size=4096 node_modules/eslint/bin/eslint.js .\" --name \"packages_core-lint_eslint\"",
     "format": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs --write\" --name \"packages_core-format\"",
     "check-cycles": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/refactor/sovereign-cycle-checker.mjs\" --name \"packages_core-check-cycles\"",
-    "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --build --noEmit --checkers 4 --builders 4\" --name \"packages_core-check-types\"",
+    "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --build --noEmit\" --name \"packages_core-check-types\"",
     "test:logic": "node ../../scripts/run-and-report.mjs --cmd \"vitest run src/logic\" --name \"packages_core-test_logic\"",
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"packages_core-clean\"",
     "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_core-test\"",
@@ -349,7 +349,7 @@
     "lint:eslint": "node --max-old-space-size=4096 node_modules/eslint/bin/eslint.js .",
     "format": "node ../../scripts/scoped-biome.mjs --write",
     "check-cycles": "node ../../scripts/refactor/sovereign-cycle-checker.mjs",
-    "check-types": "pnpm exec tsc --build --noEmit --checkers 4 --builders 4",
+    "check-types": "pnpm exec tsc --build --noEmit",
     "test:logic": "vitest run src/logic",
     "clean": "rm -rf .turbo node_modules dist",
     "test": "vitest run",

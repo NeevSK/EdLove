@@ -18,7 +18,7 @@
   },
   "scripts": {
     "lint": "node ../../scripts/run-and-report.mjs --cmd \"pnpm run lint:biome && pnpm run lint:eslint\" --name \"packages_payments-lint\"",
-    "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --build --noEmit --checkers 4 --builders 4\" --name \"packages_payments-check-types\"",
+    "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --build --noEmit\" --name \"packages_payments-check-types\"",
     "lint:biome": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs\" --name \"packages_payments-lint_biome\"",
     "lint:eslint": "node ../../scripts/run-and-report.mjs --cmd \"eslint .\" --name \"packages_payments-lint_eslint\"",
     "format": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs --write\" --name \"packages_payments-format\"",
@@ -44,7 +44,7 @@
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",
-    "check-types": "pnpm exec tsc --build --noEmit --checkers 4 --builders 4",
+    "check-types": "pnpm exec tsc --build --noEmit",
     "lint:biome": "node ../../scripts/scoped-biome.mjs",
     "lint:eslint": "eslint .",
     "format": "node ../../scripts/scoped-biome.mjs --write",

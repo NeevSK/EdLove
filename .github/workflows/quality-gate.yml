@@ -87,3 +87,22 @@ jobs:
 
       - name: 🔒 Security Scan
         run: pnpm run audit:security
+
+      - name: 🔍 Accessibility Assertions
+        run: pnpm test -- --testNamePattern="accessibility|a11y|toBeAccessible|toHaveLabel|toHaveRole" --passWithNoTests
+
+      - name: 📦 Bundle Analysis
+        run: pnpm run audit:bundle
+
+      - name: 📱 Maestro E2E (Mobile)
+        if: ${{ secrets.MAESTRO_KEY != '' }}
+        run: |
+          curl -Ls https://get.maestro.mobile/install.sh | bash
+          export PATH="$PATH:$HOME/.maestro/bin"
+          maestro test apps/gurudevi-mobile/maestro/flows/
+
+      - name: 🎨 Contrast Validation (WCAG AA)
+        run: pnpm run audit:contrast
+
+      - name: 📏 Font Scaling Test (200%)
+        run: pnpm run audit:font-scaling
