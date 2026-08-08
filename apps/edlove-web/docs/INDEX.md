@@ -56,6 +56,8 @@ This index acts as a reference for the design documents, philosophy, technical a
 
 ## 📚 Domains & Research subdirectories
 
+* [Gurudevi and EdLove Content Ownership](decisions/2026-08-08-gurudevi-edlove-content-ownership-and-publishing.md)
+
 ### Subdomain holons
 * [Domain I: Core Foundations](domain-1/04_Domain_I.md)
 * [Domain II: Education Systems](domain-2/05_Domain_II.md)

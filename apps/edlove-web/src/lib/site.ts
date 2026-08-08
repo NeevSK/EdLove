@@ -28,6 +28,11 @@ export function absoluteUrl(pathname: string) {
   return new URL(pathname, SITE_URL).toString();
 }
 
+export function canonicalUrl(pathname: string) {
+  const normalizedPath = pathname === '/' ? '/' : `/${pathname.replace(/^\/+|\/+$/g, '')}`;
+  return absoluteUrl(normalizedPath);
+}
+
 export function defaultOgImage(pathname = '/') {
-  return absoluteUrl(pathname === '/' ? '/favicon.svg' : '/favicon.svg');
+  return absoluteUrl('/og-image.svg');
 }
