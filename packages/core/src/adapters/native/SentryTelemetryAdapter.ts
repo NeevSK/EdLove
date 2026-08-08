@@ -1,15 +1,23 @@
-import * as NativeSentry from '@sentry/react-native';
-import type { ITelemetry } from '@repo/core/logic/interfaces/telemetry.port';
 import { sanitizeTelemetryData } from '@repo/core/lib/monitoring/safeData';
+import type { ITelemetry } from '@repo/core/logic/interfaces/telemetry.port';
+import * as NativeSentry from '@sentry/react-native';
 
 export class SentryTelemetryAdapter implements ITelemetry {
-  init(options: { dsn: string; environment: string; release?: string }) {
+  init(options: {
+    dsn: string;
+    environment: string;
+    release?: string;
+    tracesSampleRate?: number;
+    profilesSampleRate?: number;
+  }) {
     NativeSentry.init({
       dsn: options.dsn,
       environment: options.environment,
       release: options.release,
       enableAutoSessionTracking: true,
       sendDefaultPii: false,
+      tracesSampleRate: options.tracesSampleRate ?? 0.1,
+      profilesSampleRate: options.profilesSampleRate ?? 0.1,
     });
   }
 

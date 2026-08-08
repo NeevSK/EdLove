@@ -20,7 +20,14 @@ class TelemetryManager implements ITelemetry {
     return this.adapter;
   }
 
-  init(options: { dsn: string; environment: string; release?: string }) {
+  init(options: {
+    dsn: string;
+    environment: string;
+    release?: string;
+    tracesSampleRate?: number;
+    profilesSampleRate?: number;
+    enableTracing?: boolean;
+  }) {
     this.getAdapter().init(options);
   }
 

@@ -3,7 +3,14 @@
  * Defines the contract for error reporting and usage analytics.
  */
 export interface ITelemetry {
-  init: (options: { dsn: string; environment: string; release?: string }) => void;
+  init: (options: {
+    dsn: string;
+    environment: string;
+    release?: string;
+    tracesSampleRate?: number;
+    profilesSampleRate?: number;
+    enableTracing?: boolean;
+  }) => void;
   captureException: (error: unknown, context?: Record<string, unknown>) => void;
   addBreadcrumb: (breadcrumb: {
     message: string;

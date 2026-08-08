@@ -1,16 +1,24 @@
-import * as BrowserSentry from '@sentry/browser';
-import type { ITelemetry } from '@repo/core/logic/interfaces/telemetry.port';
 import { sanitizeTelemetryData } from '@repo/core/lib/monitoring/safeData';
+import type { ITelemetry } from '@repo/core/logic/interfaces/telemetry.port';
+import * as BrowserSentry from '@sentry/browser';
 
 type SentryLevel = 'fatal' | 'error' | 'warning' | 'log' | 'info' | 'debug';
 
 export class BrowserSentryTelemetryAdapter implements ITelemetry {
-  init(options: { dsn: string; environment: string; release?: string }) {
+  init(options: {
+    dsn: string;
+    environment: string;
+    release?: string;
+    tracesSampleRate?: number;
+    profilesSampleRate?: number;
+  }) {
     BrowserSentry.init({
       dsn: options.dsn,
       environment: options.environment,
       release: options.release,
       sendDefaultPii: false,
+      tracesSampleRate: options.tracesSampleRate ?? 0.1,
+      profilesSampleRate: options.profilesSampleRate ?? 0.1,
     });
   }
 
