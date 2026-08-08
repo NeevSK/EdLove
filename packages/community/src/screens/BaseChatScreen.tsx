@@ -9,27 +9,36 @@
 import { supabase } from '@repo/core/api';
 import { useSafeMutation } from '@repo/core/hooks';
 import { useStore } from '@repo/core/store';
+import { ChatComposer } from '@repo/ui/components/ChatComposer';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { SanctuaryLegendList } from '@repo/ui/components/SanctuaryLegendList';
+import { ChatProvider } from '@repo/ui/context/ChatContext';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
-import { MessageSquare, Send } from '@repo/ui/icons';
+import { MessageSquare } from '@repo/ui/icons';
 import {
   AnimatedView,
   Box,
   HStack,
   Icon,
-  InputField,
   Pressable,
   Spinner,
   Text,
   VStack,
 } from '@repo/ui/primitives';
 import type React from 'react';
-import { useCallback, useEffect, useOptimistic, useRef, useState, useTransition } from 'react';
+import { useEffect, useOptimistic, useState, useTransition } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { FadeInDown } from 'react-native-reanimated';
 import type { ChatMessage } from '@repo/community/types';
+
+let optimisticId = 0;
+
+const styles = StyleSheet.create({
+  listCentered: { paddingVertical: 20, flexGrow: 1, justifyContent: 'center' },
+  listStart: { paddingVertical: 20, flexGrow: 1, justifyContent: 'flex-start' },
+});
 
 export interface SubscriptionConfig {
   /** Supabase table name to listen on (e.g. 'group_messages') */
@@ -75,7 +84,6 @@ export default function BaseChatScreen({
   const [loading, setLoading] = useState(true);
   const [draft, setDraft] = useState('');
   const [isPending, startTransition] = useTransition();
-  const listRef = useRef<FlatList>(null);
 
   const [optimisticMessages, addOptimisticMessage] = useOptimistic(
     messages,
@@ -96,21 +104,21 @@ export default function BaseChatScreen({
     },
   );
 
-  // Initial load
-  const load = useCallback(async () => {
-    try {
-      const data = await fetchMessages();
-      setMessages(data);
-    } catch (err) {
-      console.error('[BaseChatScreen] fetch error', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchMessages]);
-
+  // Initial load — a local async function declared inside the effect is the
+  // sanctioned fetch-then-setState pattern for this repo's set-state-in-effect rule.
   useEffect(() => {
-    load();
-  }, [load]);
+    async function load() {
+      try {
+        const data = await fetchMessages();
+        setMessages(data);
+      } catch (err) {
+        console.error('[BaseChatScreen] fetch error', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    void load();
+  }, [fetchMessages]);
 
   // Real-time subscription
   useEffect(() => {
@@ -124,29 +132,26 @@ export default function BaseChatScreen({
           table: subscription.table,
           filter: subscription.filter,
         },
-        async (payload) => {
-          const msg = await subscription.fetchById(payload.new.id);
-          if (!msg) return;
-          setMessages((prev) => {
-            if (prev.some((m) => m.id === msg.id)) return prev;
-            return [...prev, msg];
-          });
-          setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 150);
+        (payload) => {
+          void subscription.fetchById(payload.new.id)
+            .then((msg) => {
+              if (!msg) return;
+              setMessages((prev) => {
+                if (prev.some((m) => m.id === msg.id)) return prev;
+                return [...prev, msg];
+              });
+            })
+            .catch((err: unknown) => {
+              console.error('[BaseChatScreen] realtime fetch error', err);
+            });
         },
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      void supabase.removeChannel(channel);
     };
   }, [channelKey, subscription]);
-
-  // Scroll to bottom on first load
-  useEffect(() => {
-    if (!loading && optimisticMessages.length > 0) {
-      setTimeout(() => listRef.current?.scrollToEnd({ animated: false }), 100);
-    }
-  }, [loading, optimisticMessages.length]);
 
   // Send
   const handleSend = async () => {
@@ -156,7 +161,7 @@ export default function BaseChatScreen({
 
     startTransition(async () => {
       const optimistic: ChatMessage = {
-        id: `opt-${Date.now()}`,
+        id: `opt-${++optimisticId}`,
         author_id: user.id,
         content,
         created_at: new Date(),
@@ -167,7 +172,6 @@ export default function BaseChatScreen({
       };
 
       addOptimisticMessage(optimistic);
-      setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 150);
 
       try {
         await sendMessage(content);
@@ -196,6 +200,7 @@ export default function BaseChatScreen({
               className="bg-phase-surface rounded-full shadow-sm"
               accessibilityRole="button"
               accessibilityLabel={`View profile of ${authorName}`}
+              accessibilityHint="Opens this member's profile"
             >
               <UserAvatar avatarUrl={item.author?.avatar_url} fullName={authorName} size={32} />
             </Pressable>
@@ -231,91 +236,68 @@ export default function BaseChatScreen({
     <ScreenWrapper scroll={false} noTopInset={true} className="bg-phase-canvas">
       <GlobalHeader title={title} subtitle={subtitle} showBack rightAction={headerRight} />
 
-      <Box className="flex-1">
-        {loading ? (
-          <Box className="flex-1 items-center justify-center">
-            <Spinner />
-            <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-widest mt-4">
-              Tuning Frequencies...
-            </Text>
-          </Box>
-        ) : (
-          <FlatList
-            ref={listRef}
-            data={optimisticMessages}
-            keyExtractor={(item) => item.id}
-            renderItem={renderMessage}
-            contentContainerStyle={{
-              paddingVertical: 20,
-              flexGrow: 1,
-              justifyContent: messages.length === 0 ? 'center' : 'flex-start',
-            }}
-            showsVerticalScrollIndicator={false}
-            ListEmptyComponent={
-              <AnimatedView entering={FadeInDown.duration(800).springify()}>
-                <Box className="items-center px-10">
-                  <Box className="w-16 h-16 rounded-full bg-ink/5 items-center justify-center mb-4">
-                    <Icon as={MessageSquare} size="lg" className="text-ink/20" />
-                  </Box>
-                  <Text className="text-center text-ink/40 text-sm font-medium leading-relaxed">
-                    {t('chat.empty')}
-                  </Text>
-                </Box>
-              </AnimatedView>
-            }
-          />
-        )}
-
-        {/* Compose bar */}
-        <Box className="bg-phase-surface border-t border-border px-4 py-4 shadow-sm">
-          {isReadOnly ? (
-            <Box className="py-2 items-center bg-ink/5 rounded-xl border border-dashed border-border">
-              <Text className="text-ink/40 text-[11px] font-medium italic">
-                {t('chat.historicalView')}
-              </Text>
-            </Box>
-          ) : isBlocked ? (
-            <Box className="py-2 items-center bg-red-500/5 rounded-xl border border-dashed border-red-500/20">
-              <Text className="text-red-500/60 text-[11px] font-medium italic">
-                {blockedMessage || 'You cannot send messages to this sanctuary.'}
+      <ChatProvider>
+        <Box className="flex-1">
+          {loading ? (
+            <Box className="flex-1 items-center justify-center">
+              <Spinner />
+              <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-widest mt-4">
+                Tuning Frequencies...
               </Text>
             </Box>
           ) : (
-            <HStack className="gap-3 items-end">
-              <Box className="flex-1 bg-phase-canvas border border-border rounded-[20px] px-1 py-1">
-                <InputField
-                  value={draft}
-                  onChangeText={setDraft}
-                  placeholder={t('chat.placeholder') as string}
-                  placeholderTextColor="rgba(var(--ink), 0.2)"
-                  multiline
-                  className="min-h-[44px] max-h-[140px] px-4 py-2.5 text-base text-ink font-medium"
-                  returnKeyType="default"
-                />
-              </Box>
-              <Pressable
-                onPress={handleSend}
-                disabled={!draft.trim() || isPending}
-                accessibilityRole="button"
-                accessibilityLabel="Send message"
-                className={`w-12 h-12 rounded-full items-center justify-center shadow-lg transition-all ${
-                  draft.trim() ? 'bg-phase-interactive active:scale-95' : 'bg-ink/5'
-                }`}
-              >
-                {isPending ? (
-                  <Spinner />
-                ) : (
-                  <Icon
-                    as={Send}
-                    size="sm"
-                    className={draft.trim() ? 'text-white' : 'text-ink/20'}
-                  />
-                )}
-              </Pressable>
-            </HStack>
+            <SanctuaryLegendList
+              keyboardLiftBehavior="always"
+              initialScrollAtEnd
+              maintainScrollAtEnd
+              data={optimisticMessages}
+              keyExtractor={(item) => item.id}
+              renderItem={renderMessage}
+               contentContainerStyle={
+                 messages.length === 0 ? styles.listCentered : styles.listStart
+               }
+              showsVerticalScrollIndicator={false}
+              ListEmptyComponent={
+                <AnimatedView entering={FadeInDown.duration(800).springify()}>
+                  <Box className="items-center px-10">
+                    <Box className="w-16 h-16 rounded-full bg-ink/5 items-center justify-center mb-4">
+                      <Icon as={MessageSquare} size="lg" className="text-ink/20" />
+                    </Box>
+                    <Text className="text-center text-ink/40 text-sm font-medium leading-relaxed">
+                      {t('chat.empty')}
+                    </Text>
+                  </Box>
+                </AnimatedView>
+              }
+            />
           )}
+
+          {/* Compose bar */}
+          <Box className="bg-phase-surface border-t border-border px-4 py-4 shadow-sm">
+            {isReadOnly ? (
+              <Box className="py-2 items-center bg-ink/5 rounded-xl border border-dashed border-border">
+                <Text className="text-ink/40 text-[11px] font-medium italic">
+                  {t('chat.historicalView')}
+                </Text>
+              </Box>
+            ) : isBlocked ? (
+              <Box className="py-2 items-center bg-red-500/5 rounded-xl border border-dashed border-red-500/20">
+                <Text className="text-red-500/60 text-[11px] font-medium italic">
+                  {blockedMessage || 'You cannot send messages to this sanctuary.'}
+                </Text>
+              </Box>
+            ) : (
+              <ChatComposer
+                value={draft}
+                onChangeText={setDraft}
+                onSend={() => void handleSend()}
+                isSending={isPending}
+                placeholder={t('chat.placeholder')}
+              />
+            )}
+          </Box>
         </Box>
-      </Box>
+      </ChatProvider>
     </ScreenWrapper>
   );
 }
