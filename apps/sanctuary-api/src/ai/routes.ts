@@ -1,16 +1,21 @@
+import { type StreamChunk, toHttpResponse } from '@tanstack/ai';
 import type { ContextVariableMap } from 'hono';
 import { Hono } from 'hono';
 import { AnthropicAdapter } from './adapters/AnthropicAdapter';
+import { DbAiPersistenceAdapter } from './adapters/DbAiPersistenceAdapter';
 import { DbBillingAdapter } from './adapters/DbBillingAdapter';
 import { DeepSeekAdapter } from './adapters/DeepSeekAdapter';
 import { GeminiAdapter } from './adapters/GeminiAdapter';
 import { OpenAiAdapter } from './adapters/OpenAiAdapter';
+import { OpenRouterAdapter } from './adapters/OpenRouterAdapter';
 import { VercelAnthropicAdapter } from './adapters/VercelAnthropicAdapter';
 import { VercelDeepSeekAdapter } from './adapters/VercelDeepSeekAdapter';
 import { VercelGeminiAdapter } from './adapters/VercelGeminiAdapter';
 import { VercelOpenAiAdapter } from './adapters/VercelOpenAiAdapter';
+import { VercelOpenRouterAdapter } from './adapters/VercelOpenRouterAdapter';
 import { Orchestrator } from './domain/Orchestrator';
 import { rateLimit } from './middleware/rateLimit';
+import { type AiPersistencePort, type AiPrivacyMode } from './ports/AiPersistencePort';
 
 type AiEnv = {
   Variables: {
@@ -19,6 +24,55 @@ type AiEnv = {
     requestId: string;
   } & ContextVariableMap;
 };
+
+type WireMessage = {
+  role?: string;
+  content?: string | Array<{ type?: string; content?: string }> | null;
+};
+
+interface RequestContext {
+  role?: string;
+  schoolName?: string;
+  activeGaps?: Array<{
+    type: string;
+    title: string;
+    priority: 'low' | 'medium' | 'high';
+    suggestedAction: string;
+  }>;
+  orientationSeeds?: {
+    depth_breadth: number;
+    reflect_act: number;
+    solo_social: number;
+    steady_surge: number;
+  } | null;
+  moonPhase?: string;
+  byokKey?: string;
+  billingMode?: 'baseline' | 'byok' | 'purchased';
+  schoolId?: string;
+  privacyMode?: AiPrivacyMode;
+}
+
+/** Extract the user/assistant transcript from AG-UI wire messages. */
+function wireToHistory(messages: WireMessage[]): Array<{
+  role: 'user' | 'assistant';
+  content: string;
+}> {
+  return messages
+    .filter((m) => m?.role === 'user' || m?.role === 'assistant')
+    .map((m) => {
+      let content = '';
+      if (typeof m.content === 'string') {
+        content = m.content;
+      } else if (Array.isArray(m.content)) {
+        content = m.content
+          .filter((p) => p?.type === 'text')
+          .map((p) => p.content ?? '')
+          .join('');
+      }
+      return { role: m.role as 'user' | 'assistant', content };
+    })
+    .filter((m) => m.content.length > 0);
+}
 
 export const aiRouter = new Hono<AiEnv>();
 
@@ -32,9 +86,17 @@ aiRouter.post('/chat', rateLimit, async (c) => {
 
   try {
     const body = await c.req.json();
-    const { message, history = [], context = {} } = body;
+    // AG-UI RunAgentInput: messages at top level, app state in forwardedProps/data.
+    const messages: WireMessage[] = body.messages ?? body.state?.messages ?? [];
+    const forwardedProps: Record<string, any> = body.forwardedProps ?? body.data ?? {};
+    const context: RequestContext = forwardedProps.context ?? body.context ?? {};
 
-    if (!message) {
+    if (messages.length === 0) {
+      return c.json({ error: 'Message is required' }, 400);
+    }
+
+    const history = wireToHistory(messages);
+    if (history.length === 0) {
       return c.json({ error: 'Message is required' }, 400);
     }
 
@@ -43,6 +105,8 @@ aiRouter.post('/chat', rateLimit, async (c) => {
 
     // 2. Setup Ports & Core Domain Orchestrator with Dynamic Factory Injection
     const billingAdapter = new DbBillingAdapter(db);
+    const persistenceAdapter: AiPersistencePort = new DbAiPersistenceAdapter(db);
+    const privacyMode: AiPrivacyMode = context.privacyMode ?? 'saved';
     const orchestrator = new Orchestrator(billingAdapter, (provider) => {
       if (useVercelSdk) {
         switch (provider) {
@@ -52,6 +116,8 @@ aiRouter.post('/chat', rateLimit, async (c) => {
             return new VercelAnthropicAdapter();
           case 'deepseek':
             return new VercelDeepSeekAdapter();
+          case 'openrouter':
+            return new VercelOpenRouterAdapter();
           default:
             return new VercelOpenAiAdapter();
         }
@@ -63,6 +129,8 @@ aiRouter.post('/chat', rateLimit, async (c) => {
           return new AnthropicAdapter();
         case 'deepseek':
           return new DeepSeekAdapter();
+        case 'openrouter':
+          return new OpenRouterAdapter();
         default:
           return new OpenAiAdapter();
       }
@@ -80,33 +148,78 @@ aiRouter.post('/chat', rateLimit, async (c) => {
 
     const start = Date.now();
 
-    // 4. Process chat and generate SSE stream
-    const originalBody = await orchestrator.processChat(user.id, message, history, context);
+    // 4. Process chat — the last user message is the current turn
+    const lastUser = [...history].reverse().find((m) => m.role === 'user');
+    const rawStream = await orchestrator.processChat(
+      user.id,
+      lastUser?.content ?? '',
+      history,
+      context,
+    );
 
-    // 5. Intercept stream using TransformStream to record audit log on completion
-    let chunkCount = 0;
-    const transformStream = new TransformStream({
-      transform(chunk, controller) {
-        chunkCount++;
-        controller.enqueue(chunk);
-      },
-      flush() {
-        const durationMs = Date.now() - start;
-        const tokensUsed = chunkCount * 4;
+    // 5. Wrap the chunk stream to record the audit log on completion
+    let textChunkCount = 0;
+    let tokensUsed = 0;
+    let assistantText = '';
+    async function* auditStream(source: AsyncIterable<StreamChunk>): AsyncIterable<StreamChunk> {
+      for await (const chunk of source) {
+        if (chunk.type === 'TEXT_MESSAGE_CONTENT') {
+          textChunkCount++;
+          const part = chunk.content as { text?: string } | undefined;
+          if (part?.text) assistantText += part.text;
+        }
+        if (chunk.type === 'RUN_FINISHED' && chunk.usage) {
+          tokensUsed = chunk.usage.totalTokens ?? 0;
+        }
+        yield chunk;
+      }
+      const durationMs = Date.now() - start;
+
+      // 5a. Persist the exchange (user turn + assistant reply) when not incognito
+      if (privacyMode !== 'incognito') {
+        const threadId = body.threadId ?? body.runId ?? 'anon';
+        if (lastUser?.content) {
+          await persistenceAdapter
+            .persistMessage({
+              userId: user.id,
+              threadId,
+              role: 'user',
+              content: lastUser.content,
+              privacyMode,
+              createdAt: new Date(start),
+            })
+            .catch((persistErr: unknown) =>
+              console.error('[aiRouter] Persist user message failed:', persistErr),
+            );
+        }
+        if (assistantText) {
+          await persistenceAdapter
+            .persistMessage({
+              userId: user.id,
+              threadId,
+              role: 'assistant',
+              content: assistantText,
+              privacyMode,
+              createdAt: new Date(),
+            })
+            .catch((persistErr: unknown) =>
+              console.error('[aiRouter] Persist assistant message failed:', persistErr),
+            );
+        }
+      }
+
+      // 5b. Usage logging — skipped for incognito so no billing trace is recorded
+      if (privacyMode !== 'incognito') {
+        const loggedTokens = tokensUsed || textChunkCount * 4;
         billingAdapter
-          .logUsage(user.id, billingInfo?.model || 'gpt-4o-mini', tokensUsed, durationMs)
-          .catch((logErr) => console.error('[aiRouter] Logging failed:', logErr));
-      },
-    });
+          .logUsage(user.id, billingInfo?.model || 'gpt-4o-mini', loggedTokens, durationMs)
+          .catch((logErr: unknown) => console.error('[aiRouter] Logging failed:', logErr));
+      }
+    }
 
-    const transformedBody = originalBody.pipeThrough(transformStream);
-
-    return new Response(transformedBody, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        Connection: 'keep-alive',
-      },
+    // 6. Encode chunks as newline-delimited JSON
+    return toHttpResponse(auditStream(rawStream), {
+      headers: { 'Cache-Control': 'no-cache' },
     });
   } catch (err: any) {
     console.error('[aiRouter] error:', err);

@@ -12,15 +12,14 @@
  *  - Responsive two-column layout on wide screens
  */
 
+import { useAIAgent } from '@repo/ai/hooks/useAIAgent';
 import { usePermissions, useStore } from '@repo/core/logic';
 import { formatTimestamp } from '@repo/ui/utils/dateTimeUtils';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAIAgent } from '@repo/ai/hooks/useAIAgent';
 
 export default function AIAssistantScreen() {
   const router = useRouter();
@@ -29,8 +28,16 @@ export default function AIAssistantScreen() {
   const { context } = usePermissions();
   const { user } = useStore();
   const userId = context.userId;
-  const { messages, isThinking, sendMessage, activeGaps, refreshStatus, clearHistory } =
-    useAIAgent();
+  const {
+    messages,
+    isThinking,
+    sendMessage,
+    activeGaps,
+    refreshStatus,
+    clearHistory,
+    privacyMode,
+    setPrivacyMode,
+  } = useAIAgent();
 
   const initialMessageProcessed = useRef(false);
 
@@ -291,6 +298,33 @@ export default function AIAssistantScreen() {
           >
             {context.activeBond?.capacity ?? context.primaryCapacity ?? 'member'}
           </div>
+          <button
+            type="button"
+            onClick={() => {
+              const modes: ('saved' | 'temporary' | 'incognito')[] = [
+                'saved',
+                'temporary',
+                'incognito',
+              ];
+              const nextMode = modes[(modes.indexOf(privacyMode) + 1) % modes.length]!;
+              void setPrivacyMode(nextMode);
+            }}
+            title="Privacy mode: saved | temporary | incognito"
+            style={{
+              fontSize: '11px',
+              fontWeight: '700',
+              color: privacyMode === 'incognito' ? '#FF5C5C' : 'var(--ink-ghost)',
+              background: 'var(--background-alt)',
+              padding: '4px 10px',
+              borderRadius: '20px',
+              border: `1px solid ${privacyMode === 'incognito' ? 'rgba(255,92,92,0.4)' : 'var(--border-light)'}`,
+              cursor: 'pointer',
+              fontFamily: 'var(--font-body)',
+              letterSpacing: '0.5px',
+            }}
+          >
+            {privacyMode === 'incognito' ? 'INCOG' : privacyMode.toUpperCase()}
+          </button>
         </div>
 
         {/* Messages */}

@@ -1,3 +1,4 @@
+import { type AiProvider } from '../ports/BillingPort';
 import { type BillingPort } from '../ports/BillingPort';
 import { type LlmPort } from '../ports/LlmPort';
 
@@ -27,7 +28,7 @@ interface RequestContext {
 export class Orchestrator {
   constructor(
     private billingPort: BillingPort,
-    private getLlmAdapter: (provider: 'openai' | 'gemini' | 'anthropic' | 'deepseek') => LlmPort,
+    private getLlmAdapter: (provider: AiProvider) => LlmPort,
   ) {}
 
   async processChat(
@@ -68,7 +69,7 @@ export class Orchestrator {
       // Only execute fallback chain for platform-seeded tiers to prevent cost leakage on user keys
       if (billing.mode !== 'byok') {
         const fallbacks: Array<{
-          provider: 'openai' | 'gemini' | 'anthropic';
+          provider: AiProvider;
           key?: string;
           model: string;
         }> = [
@@ -79,6 +80,11 @@ export class Orchestrator {
             model: 'claude-3-5-sonnet-20241022',
           },
           { provider: 'gemini', key: process.env.GEMINI_API_KEY, model: 'gemini-1.5-pro' },
+          {
+            provider: 'openrouter',
+            key: process.env.OPENROUTER_API_KEY,
+            model: process.env.OPENROUTER_MODEL || 'openrouter/auto',
+          },
         ];
 
         for (const fallback of fallbacks) {

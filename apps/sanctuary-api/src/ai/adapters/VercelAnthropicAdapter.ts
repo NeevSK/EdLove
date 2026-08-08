@@ -1,5 +1,4 @@
 import { createAnthropic } from '@ai-sdk/anthropic';
-import { toServerSentEventsStream } from '@tanstack/ai';
 import { streamText } from 'ai';
 import { type LlmPort } from '../ports/LlmPort';
 import { vercelStreamToTanStackChunks } from './vercel-stream-utils';
@@ -10,7 +9,7 @@ export class VercelAnthropicAdapter implements LlmPort {
     history: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
     apiKey: string,
     model: string,
-  ): Promise<ReadableStream> {
+  ) {
     const provider = createAnthropic({ apiKey });
 
     const result = streamText({
@@ -22,7 +21,6 @@ export class VercelAnthropicAdapter implements LlmPort {
       })),
     });
 
-    const tanStackChunks = vercelStreamToTanStackChunks(result.fullStream, model);
-    return toServerSentEventsStream(tanStackChunks);
+    return vercelStreamToTanStackChunks(result.fullStream, model);
   }
 }

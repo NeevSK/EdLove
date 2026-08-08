@@ -1,5 +1,5 @@
-import { chat, toServerSentEventsStream } from '@tanstack/ai';
-import { openaiText } from '@tanstack/ai-openai';
+import { chat, type StreamChunk } from '@tanstack/ai';
+import { createOpenaiChat } from '@tanstack/ai-openai';
 import { type LlmPort } from '../ports/LlmPort';
 
 export class OpenAiAdapter implements LlmPort {
@@ -8,20 +8,16 @@ export class OpenAiAdapter implements LlmPort {
     history: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
     apiKey: string,
     model: string,
-  ): Promise<ReadableStream> {
-    const formattedMessages: Array<Record<string, string>> = [
-      { role: 'system', content: systemPrompt },
-      ...history.map((m) => ({
-        role: m.role,
-        content: m.content,
-      })),
-    ];
-
-    const stream = chat({
-      adapter: openaiText(model as any, { apiKey } as any),
-      messages: formattedMessages as any,
-    });
-
-    return toServerSentEventsStream(stream as any) as any;
+  ): Promise<AsyncIterable<StreamChunk>> {
+    return chat({
+      adapter: createOpenaiChat(model as any, apiKey),
+      systemPrompts: [systemPrompt],
+      messages: history
+        .filter((m) => m.role !== 'system')
+        .map((m) => ({
+          role: m.role as 'user' | 'assistant',
+          content: m.content,
+        })),
+    }) as unknown as AsyncIterable<StreamChunk>;
   }
 }

@@ -1,4 +1,4 @@
-import { type StreamChunk } from '@tanstack/ai';
+import { EventType, type StreamChunk } from '@tanstack/ai';
 
 function generateId(): string {
   return crypto.randomUUID();
@@ -18,24 +18,43 @@ export async function* vercelStreamToTanStackChunks(
   model: string,
 ): AsyncIterable<StreamChunk> {
   const runId = generateId();
+  const threadId = generateId();
   const now = () => Date.now();
   let messageId: string | undefined;
 
-  yield { type: 'RUN_STARTED', runId, model, timestamp: now() };
+  yield {
+    type: EventType.RUN_STARTED,
+    threadId,
+    runId,
+    model,
+    timestamp: now(),
+  };
 
   for await (const event of stream) {
     switch (event.type) {
       case 'text-delta': {
         if (!messageId) {
           messageId = generateId();
-          yield { type: 'TEXT_MESSAGE_START', messageId, role: 'assistant', model, timestamp: now() };
+          yield {
+            type: EventType.TEXT_MESSAGE_START,
+            messageId,
+            role: 'assistant',
+            model,
+            timestamp: now(),
+          };
         }
-        yield { type: 'TEXT_MESSAGE_CONTENT', messageId, delta: event.text ?? '', model, timestamp: now() };
+        yield {
+          type: EventType.TEXT_MESSAGE_CONTENT,
+          messageId,
+          delta: event.text ?? '',
+          model,
+          timestamp: now(),
+        };
         break;
       }
       case 'finish': {
         if (messageId) {
-          yield { type: 'TEXT_MESSAGE_END', messageId, model, timestamp: now() };
+          yield { type: EventType.TEXT_MESSAGE_END, messageId, model, timestamp: now() };
         }
         const u = event.totalUsage;
         const usage = u
@@ -46,7 +65,8 @@ export async function* vercelStreamToTanStackChunks(
             }
           : undefined;
         yield {
-          type: 'RUN_FINISHED',
+          type: EventType.RUN_FINISHED,
+          threadId,
           runId,
           finishReason: (event.finishReason ?? null) as any,
           usage,
@@ -62,7 +82,13 @@ export async function* vercelStreamToTanStackChunks(
             : typeof event.error === 'object' && event.error && 'message' in (event.error as any)
               ? (event.error as any).message
               : 'Unknown error';
-        yield { type: 'RUN_ERROR', runId, error: { message: errMsg }, model, timestamp: now() };
+        yield {
+          type: EventType.RUN_ERROR,
+          runId,
+          message: errMsg,
+          model,
+          timestamp: now(),
+        };
         break;
       }
     }

@@ -1,9 +1,9 @@
-import { authAPI, identityAPI, moonPhaseAPI, supabase } from '@repo/core/api';
-import { cryptoManager, usePermissions, useStore } from '@repo/core/logic';
-import { fetchServerSentEvents, useChat } from '@tanstack/ai-react';
-import type { MultimodalContent } from '@tanstack/ai-client';
-import { useCallback, useEffect, useState } from 'react';
 import { type CoordinationGap, TimetableScheduler } from '@repo/ai/api/agents';
+import { authAPI, identityAPI, moonPhaseAPI, SOVEREIGN_API_URL, supabase } from '@repo/core/api';
+import { cryptoManager, usePermissions, useStore } from '@repo/core/logic';
+import type { MultimodalContent } from '@tanstack/ai-client';
+import { useChat, xhrHttpStream } from '@tanstack/ai-react';
+import { useCallback, useEffect, useState } from 'react';
 
 export interface Message {
   id: string;
@@ -27,6 +27,7 @@ export function useAIAgent() {
     'baseline',
   );
   const [byokKey, setByokKeyState] = useState<string>('');
+  const [privacyMode, setPrivacyModeState] = useState<'saved' | 'temporary' | 'incognito'>('saved');
   const [authToken, setAuthToken] = useState<string | null>(null);
 
   // Load configuration from local secure storage on mount
@@ -40,6 +41,14 @@ export function useAIAgent() {
         const storedKey = await cryptoManager.getItemAsync('ai_byok_key');
         if (storedKey) {
           setByokKeyState(storedKey);
+        }
+        const storedPrivacy = await cryptoManager.getItemAsync('ai_privacy_mode');
+        if (
+          storedPrivacy === 'saved' ||
+          storedPrivacy === 'temporary' ||
+          storedPrivacy === 'incognito'
+        ) {
+          setPrivacyModeState(storedPrivacy);
         }
       } catch (err) {
         console.warn('Failed to load AI secure store config:', err);
@@ -66,6 +75,15 @@ export function useAIAgent() {
     }
   }, []);
 
+  const setPrivacyMode = useCallback(async (mode: 'saved' | 'temporary' | 'incognito') => {
+    setPrivacyModeState(mode);
+    try {
+      await cryptoManager.setItemAsync('ai_privacy_mode', mode);
+    } catch (err) {
+      console.warn('Failed to persist privacy mode:', err);
+    }
+  }, []);
+
   const [activeGaps, setActiveGaps] = useState<CoordinationGap[]>([]);
   const [lastTimetableDraft, setLastTimetableDraft] = useState<any>(null);
   const [isRefreshingGaps, setIsRefreshingGaps] = useState(false);
@@ -89,37 +107,42 @@ export function useAIAgent() {
     /* non-fatal */
   }
 
-  const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+  // Public API origin when configured, otherwise localhost for local development.
+  const apiBaseUrl = SOVEREIGN_API_URL;
 
-  // TanStack AI useChat hook integration
-  const connection = fetchServerSentEvents(
-    `${apiBaseUrl}/api/ai/chat`,
-    () => ({
-      headers: authToken
-        ? {
-            Authorization: `Bearer ${authToken}`,
-          }
-        : undefined,
-      body: {
-        context: {
-          role: userRole ?? 'teacher',
-          schoolName: user?.school_id ? 'Gurudevi School' : undefined, // fallback or resolved school name
-          activeGaps: activeGaps.map((g) => ({
-            type: g.type,
-            title: g.title,
-            priority: g.priority,
-            suggestedAction: g.suggestedAction,
-          })),
-          orientationSeeds: user?.orientation_seeds ?? null,
-          moonPhase,
-          billingMode,
-          byokKey: byokKey || undefined,
-        },
+  // TanStack AI useChat hook integration (XHR-based NDJSON streaming)
+  const connection = xhrHttpStream(`${apiBaseUrl}/api/ai/chat`, () => ({
+    headers: authToken
+      ? {
+          Authorization: `Bearer ${authToken}`,
+        }
+      : undefined,
+    body: {
+      context: {
+        role: userRole ?? 'teacher',
+        schoolName: user?.school_id ? 'Gurudevi School' : undefined, // fallback or resolved school name
+        activeGaps: activeGaps.map((g) => ({
+          type: g.type,
+          title: g.title,
+          priority: g.priority,
+          suggestedAction: g.suggestedAction,
+        })),
+        orientationSeeds: user?.orientation_seeds ?? null,
+        moonPhase,
+        billingMode,
+        byokKey: byokKey || undefined,
+        privacyMode,
       },
-    })
-  );
+    },
+  }));
 
-  const { messages: rawMessages, sendMessage, clear, status, error } = useChat({
+  const {
+    messages: rawMessages,
+    sendMessage,
+    clear,
+    status,
+    error,
+  } = useChat({
     connection,
   });
 
@@ -286,6 +309,8 @@ export function useAIAgent() {
     setBillingMode,
     byokKey,
     setByokKey,
+    privacyMode,
+    setPrivacyMode,
     error,
   };
 }

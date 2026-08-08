@@ -1,3 +1,5 @@
+export type AiProvider = 'openai' | 'gemini' | 'anthropic' | 'deepseek' | 'openrouter';
+
 export interface BillingPort {
   resolveBilling(
     userId: string,
@@ -5,11 +7,11 @@ export interface BillingPort {
     options?: {
       byokKeyInput?: string;
       schoolId?: string;
-      preferredProvider?: 'openai' | 'gemini' | 'anthropic' | 'deepseek';
+      preferredProvider?: AiProvider;
     },
   ): Promise<{
     mode: 'baseline' | 'byok' | 'purchased';
-    provider: 'openai' | 'gemini' | 'anthropic' | 'deepseek';
+    provider: AiProvider;
     apiKey: string;
     model: string;
   }>;

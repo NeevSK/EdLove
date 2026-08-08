@@ -1,6 +1,8 @@
 import { type BillingPort } from '../ports/BillingPort';
 import { decryptKey } from '../utils/crypto';
 
+const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || 'openrouter/auto';
+
 export class DbBillingAdapter implements BillingPort {
   constructor(private db: any) {}
 
@@ -10,11 +12,11 @@ export class DbBillingAdapter implements BillingPort {
     options?: {
       byokKeyInput?: string;
       schoolId?: string;
-      preferredProvider?: 'openai' | 'gemini' | 'anthropic' | 'deepseek';
+      preferredProvider?: 'openai' | 'gemini' | 'anthropic' | 'deepseek' | 'openrouter';
     },
   ): Promise<{
     mode: 'baseline' | 'byok' | 'purchased';
-    provider: 'openai' | 'gemini' | 'anthropic' | 'deepseek';
+    provider: 'openai' | 'gemini' | 'anthropic' | 'deepseek' | 'openrouter';
     apiKey: string;
     model: string;
   }> {
@@ -32,7 +34,7 @@ export class DbBillingAdapter implements BillingPort {
       }
 
       // Infer provider from key prefix or fallback to preferredProvider
-      let provider: 'openai' | 'gemini' | 'anthropic' | 'deepseek' =
+      let provider: 'openai' | 'gemini' | 'anthropic' | 'deepseek' | 'openrouter' =
         options.preferredProvider || 'openai';
       let model = 'gpt-4o';
 
@@ -42,6 +44,9 @@ export class DbBillingAdapter implements BillingPort {
       } else if (key.startsWith('AIzaSy')) {
         provider = 'gemini';
         model = 'gemini-1.5-pro';
+      } else if (key.startsWith('sk-or-v1-')) {
+        provider = 'openrouter';
+        model = OPENROUTER_MODEL;
       } else if (provider === 'deepseek') {
         model = 'deepseek-chat';
       }
@@ -148,6 +153,14 @@ export class DbBillingAdapter implements BillingPort {
           model: 'deepseek-chat',
         };
       }
+      if (preferred === 'openrouter' && process.env.OPENROUTER_API_KEY) {
+        return {
+          mode: 'purchased',
+          provider: 'openrouter',
+          apiKey: process.env.OPENROUTER_API_KEY,
+          model: OPENROUTER_MODEL,
+        };
+      }
       return {
         mode: 'purchased',
         provider: 'openai',
@@ -156,11 +169,29 @@ export class DbBillingAdapter implements BillingPort {
       };
     }
 
-    // Default: Baseline model (gpt-4o-mini)
+    // Default: Baseline model (gpt-4o-mini). If no OpenAI key is configured but
+    // OpenRouter is, route the baseline tier through OpenRouter so the platform
+    // stays runnable with a single provider key.
+    if (process.env.OPENAI_API_KEY) {
+      return {
+        mode: 'baseline',
+        provider: 'openai',
+        apiKey: process.env.OPENAI_API_KEY,
+        model: 'gpt-4o-mini',
+      };
+    }
+    if (process.env.OPENROUTER_API_KEY) {
+      return {
+        mode: 'baseline',
+        provider: 'openrouter',
+        apiKey: process.env.OPENROUTER_API_KEY,
+        model: OPENROUTER_MODEL,
+      };
+    }
     return {
       mode: 'baseline',
       provider: 'openai',
-      apiKey: process.env.OPENAI_API_KEY || '',
+      apiKey: '',
       model: 'gpt-4o-mini',
     };
   }

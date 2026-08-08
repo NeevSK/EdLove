@@ -1,33 +1,45 @@
+import { type Message, useAIAgent } from '@repo/ai/hooks/useAIAgent';
 import { useDomainFeature, useStore } from '@repo/core/logic';
+import { ChatComposer } from '@repo/ui/components/ChatComposer';
+import { MessageBubble } from '@repo/ui/components/MessageBubble';
+import { SanctuaryLegendList } from '@repo/ui/components/SanctuaryLegendList';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { ChevronLeft, Send, Sparkles } from '@repo/ui/icons';
+import { ChatProvider, useChatScrollToIndex } from '@repo/ui/context/ChatContext';
+import { ChevronLeft, Sparkles } from '@repo/ui/icons';
 import { Box, HStack, Text, useTheme, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-} from 'react-native';
-import Animated, { FadeInUp, Layout } from 'react-native-reanimated';
-import { type Message, useAIAgent } from '@repo/ai/hooks/useAIAgent';
+import { useEffect } from 'react';
+import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
+import Animated, {
+  FadeInUp,
+  Layout,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 
 export default function AIAssistantScreen() {
   const router = useRouter();
-  const { gradientNodes, accent, glass, text, isDark } = useTheme();
+  const { gradientNodes, glass, text } = useTheme();
   const { t } = useTranslation();
   const { result: aiFeature } = useDomainFeature('ai-assistant');
-  const { messages, input, setInput, handleSubmit, isThinking, billingMode, setBillingMode } =
-    useAIAgent();
+  const {
+    messages,
+    input,
+    setInput,
+    handleSubmit,
+    isThinking,
+    billingMode,
+    setBillingMode,
+    privacyMode,
+    setPrivacyMode,
+  } = useAIAgent();
   const userRole = useStore((state) => state.activeBond?.capacity ?? null);
-  const flatListRef = useRef<FlatList>(null);
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -35,37 +47,15 @@ export default function AIAssistantScreen() {
     handleSubmit();
   };
 
-  useEffect(() => {
-    if (messages.length > 0) {
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
-    }
-  }, [messages]);
-
-  const renderMessage = ({ item }: { item: any }) => {
+  const renderMessage = ({ item }: { item: Message }) => {
     const isUser = item.role === 'user';
     return (
-      <Animated.View
-        entering={FadeInUp.springify().damping(15)}
-        layout={Layout.springify()}
-        style={[
-          styles.messageBubble,
-          isUser ? styles.userBubble : styles.assistantBubble,
-          {
-            backgroundColor: isUser
-              ? accent.action
-              : isDark
-                ? 'rgba(255,255,255,0.08)'
-                : 'rgba(0,0,0,0.05)',
-          },
-        ]}
-      >
-        <Text
-          className={`${isUser ? 'text-phaseText-onAccent' : 'text-phaseText-primary'} text-base`}
-        >
-          {item.content}
-        </Text>
+      <Animated.View entering={FadeInUp.springify().damping(15)} layout={Layout.springify()}>
+        <MessageBubble
+          content={item.content}
+          variant={isUser ? 'user' : 'assistant'}
+          maxWidthClassName="max-w-[85%]"
+        />
       </Animated.View>
     );
   };
@@ -74,130 +64,174 @@ export default function AIAssistantScreen() {
 
   return (
     <ScreenWrapper backgroundColor={gradientNodes[0]}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.container}
-      >
-        {/* Header */}
-        <HStack style={[styles.header, { borderBottomColor: glass.surface.border }]}>
-          <TouchableOpacity
-            accessibilityRole="button"
-            onPress={() => safeBack('/self')}
-            style={[styles.backButton, { backgroundColor: glass.surface.bg }]}
-          >
-            <ChevronLeft color={text.primary} size={24} />
-          </TouchableOpacity>
-          <VStack style={{ flex: 1 }}>
-            <HStack className="justify-between items-center w-full">
-              <HStack className="gap-xs items-center">
-                <Sparkles color="#B8A9E0" size={18} />
-                <Text className="font-bold text-lg text-phaseText-primary">
-                  {t('aiAssistant.title')}
-                </Text>
-              </HStack>
-
-              {/* Billing Mode Selector Pill */}
-              <TouchableOpacity
-                onPress={() => {
-                  const modes: ('baseline' | 'byok' | 'purchased')[] = [
-                    'baseline',
-                    'byok',
-                    'purchased',
-                  ];
-                  const nextMode = modes[(modes.indexOf(billingMode) + 1) % modes.length]!;
-                  setBillingMode(nextMode);
-                }}
-                style={{
-                  backgroundColor: glass.surface.bg,
-                  paddingHorizontal: 8,
-                  paddingVertical: 4,
-                  borderRadius: 12,
-                  borderWidth: 1,
-                  borderColor: glass.surface.border,
-                }}
-              >
-                <Text style={{ fontSize: 10, color: text.primary, fontWeight: 'bold' }}>
-                  {billingMode.toUpperCase()}
-                </Text>
-              </TouchableOpacity>
-            </HStack>
-            <Text className="text-phaseText-secondary text-xs">{t('aiAssistant.subtitle')}</Text>
-          </VStack>
-        </HStack>
-
-        {/* Chat Area */}
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          renderItem={renderMessage}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContent}
-          ListFooterComponent={
-            isThinking ? (
-              <Box className="p-md opacity-60">
-                <Text className="text-phaseText-secondary italic text-sm">
-                  {t('aiAssistant.thinking')}
-                </Text>
-              </Box>
-            ) : null
-          }
-        />
-
-        {/* Input Area */}
-        <Box style={styles.inputContainer}>
-          {!userRole ? (
-            <VStack className="gap-xs items-center p-md">
-              <Text className="text-phaseText-secondary text-sm text-center">
-                {t('aiAssistant.loginPrompt')}
-              </Text>
-              <TouchableOpacity accessibilityRole="button" onPress={() => router.push('/welcome')}>
-                <Text className="text-phase-accent font-bold text-sm">
-                  {t('aiAssistant.continueLogin')}
-                </Text>
-              </TouchableOpacity>
-            </VStack>
-          ) : (
-            <HStack
-              style={[
-                styles.inputWrapper,
-                {
-                  backgroundColor: glass.surface.bg,
-                  borderColor: glass.surface.border,
-                  borderWidth: 1,
-                },
-              ]}
-              space="sm"
+      <ChatProvider>
+        <Box style={styles.container}>
+          <AIThinkingAnchor isThinking={isThinking} messages={messages} />
+          {/* Header */}
+          <HStack style={[styles.header, { borderBottomColor: glass.surface.border }]}>
+            <TouchableOpacity
+              accessibilityRole="button"
+              onPress={() => safeBack('/self')}
+              style={[styles.backButton, { backgroundColor: glass.surface.bg }]}
             >
-              <TextInput
-                accessibilityLabel="Text input field"
-                style={[styles.input, { color: text.primary }]}
-                placeholder={t('aiAssistant.placeholder')}
-                placeholderTextColor={text.secondary}
+              <ChevronLeft color={text.primary} size={24} />
+            </TouchableOpacity>
+            <VStack style={{ flex: 1 }}>
+              <HStack className="justify-between items-center w-full">
+                <HStack className="gap-xs items-center">
+                  <Sparkles color="#B8A9E0" size={18} />
+                  <Text className="font-bold text-lg text-phaseText-primary">
+                    {t('aiAssistant.title')}
+                  </Text>
+                </HStack>
+
+                {/* Billing Mode Selector Pill */}
+                <HStack className="gap-xs">
+                  <TouchableOpacity
+                    accessibilityRole="button"
+                    onPress={() => {
+                      const modes: ('baseline' | 'byok' | 'purchased')[] = [
+                        'baseline',
+                        'byok',
+                        'purchased',
+                      ];
+                      const nextMode = modes[(modes.indexOf(billingMode) + 1) % modes.length]!;
+                      void setBillingMode(nextMode);
+                    }}
+                    style={{
+                      backgroundColor: glass.surface.bg,
+                      paddingHorizontal: 8,
+                      paddingVertical: 4,
+                      borderRadius: 12,
+                      borderWidth: 1,
+                      borderColor: glass.surface.border,
+                    }}
+                  >
+                    <Text style={{ fontSize: 10, color: text.primary, fontWeight: 'bold' }}>
+                      {billingMode.toUpperCase()}
+                    </Text>
+                  </TouchableOpacity>
+
+                  {/* Privacy Mode Selector Pill */}
+                  <TouchableOpacity
+                    accessibilityRole="button"
+                    onPress={() => {
+                      const modes: ('saved' | 'temporary' | 'incognito')[] = [
+                        'saved',
+                        'temporary',
+                        'incognito',
+                      ];
+                      const nextMode = modes[(modes.indexOf(privacyMode) + 1) % modes.length]!;
+                      void setPrivacyMode(nextMode);
+                    }}
+                    style={{
+                      backgroundColor: glass.surface.bg,
+                      paddingHorizontal: 8,
+                      paddingVertical: 4,
+                      borderRadius: 12,
+                      borderWidth: 1,
+                      borderColor: privacyMode === 'incognito' ? '#FF5C5C' : glass.surface.border,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 10,
+                        color: privacyMode === 'incognito' ? '#FF5C5C' : text.primary,
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      {privacyMode === 'incognito' ? 'INCOG' : privacyMode.toUpperCase()}
+                    </Text>
+                  </TouchableOpacity>
+                </HStack>
+              </HStack>
+              <Text className="text-phaseText-secondary text-xs">{t('aiAssistant.subtitle')}</Text>
+            </VStack>
+          </HStack>
+
+          {/* Chat Area */}
+          <SanctuaryLegendList
+            keyboardLiftBehavior="whenAtEnd"
+            initialScrollAtEnd
+            maintainScrollAtEnd
+            data={messages}
+            renderItem={renderMessage}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.listContent}
+            ListFooterComponent={isThinking ? <ThinkingShimmer /> : null}
+          />
+
+          {/* Input Area */}
+          <Box style={styles.inputContainer}>
+            {!userRole ? (
+              <VStack className="gap-xs items-center p-md">
+                <Text className="text-phaseText-secondary text-sm text-center">
+                  {t('aiAssistant.loginPrompt')}
+                </Text>
+                <TouchableOpacity
+                  accessibilityRole="button"
+                  onPress={() => router.push('/welcome')}
+                >
+                  <Text className="text-phase-accent font-bold text-sm">
+                    {t('aiAssistant.continueLogin')}
+                  </Text>
+                </TouchableOpacity>
+              </VStack>
+            ) : (
+              <ChatComposer
                 value={input}
                 onChangeText={setInput}
-                multiline
-                maxLength={500}
+                onSend={handleSend}
+                isSending={isThinking}
+                placeholder={t('aiAssistant.placeholder')}
               />
-              <TouchableOpacity
-                accessibilityRole="button"
-                onPress={handleSend}
-                disabled={!input.trim()}
-                style={[
-                  styles.sendButton,
-                  {
-                    backgroundColor: accent.action,
-                    opacity: input.trim() ? 1 : 0.5,
-                  },
-                ]}
-              >
-                <Send color={gradientNodes[0]} size={20} />
-              </TouchableOpacity>
-            </HStack>
-          )}
+            )}
+          </Box>
         </Box>
-      </KeyboardAvoidingView>
+      </ChatProvider>
     </ScreenWrapper>
   );
+}
+
+function ThinkingShimmer() {
+  const { t } = useTranslation();
+  const opacity = useSharedValue(0.3);
+  const shimmerStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
+  useEffect(() => {
+    opacity.value = withRepeat(withTiming(1, { duration: 700 }), -1, true);
+    return () => {
+      opacity.value = 0.3;
+    };
+  }, [opacity]);
+  return (
+    <HStack className="items-center gap-xs self-start px-5 py-2">
+      <Animated.View style={shimmerStyle}>
+        <HStack className="gap-1">
+          {[0, 1, 2].map((i) => (
+            <Box key={i} className="w-2 h-2 rounded-full bg-ink/30" />
+          ))}
+        </HStack>
+      </Animated.View>
+      <Text className="text-phaseText-secondary italic text-sm">{t('aiAssistant.thinking')}</Text>
+    </HStack>
+  );
+}
+
+function AIThinkingAnchor({
+  isThinking,
+  messages,
+}: {
+  isThinking: boolean;
+  messages: Message[];
+}) {
+  const scrollToIndex = useChatScrollToIndex();
+  const messageCount = messages.length;
+  useEffect(() => {
+    if (isThinking && messageCount > 0) {
+      scrollToIndex(messageCount - 1);
+    }
+  }, [isThinking, messageCount, scrollToIndex]);
+  return null;
 }
 
 const styles = StyleSheet.create({
@@ -219,47 +253,10 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: Theme.spacing.lg,
-    paddingBottom: 40,
-  },
-  messageBubble: {
-    padding: Theme.spacing.md,
-    borderRadius: 18,
-    marginBottom: Theme.spacing.md,
-    maxWidth: '85%',
-    ...Theme.shadows.sm,
-  },
-  userBubble: {
-    alignSelf: 'flex-end',
-    borderBottomRightRadius: 4,
-  },
-  assistantBubble: {
-    alignSelf: 'flex-start',
-    borderBottomLeftRadius: 4,
   },
   inputContainer: {
     padding: Theme.spacing.md,
     paddingBottom: Platform.OS === 'ios' ? 40 : Theme.spacing.md,
     backgroundColor: 'transparent',
-  },
-  inputWrapper: {
-    borderRadius: 24,
-    paddingHorizontal: Theme.spacing.md,
-    paddingVertical: 8,
-    alignItems: 'flex-end',
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    maxHeight: 120,
-    paddingTop: 8,
-    paddingBottom: 8,
-  },
-  sendButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 2,
   },
 });
