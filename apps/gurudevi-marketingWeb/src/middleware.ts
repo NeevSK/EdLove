@@ -1,5 +1,18 @@
 import { defineMiddleware } from 'astro:middleware';
 
+function addSecurityHeaders(response: Response): Response {
+  const headers = new Headers(response.headers);
+  headers.set('X-Content-Type-Options', 'nosniff');
+  headers.set('X-Frame-Options', 'DENY');
+  headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 export const onRequest = defineMiddleware(async (context, next) => {
   const url = new URL(context.request.url);
 
@@ -36,16 +49,16 @@ export const onRequest = defineMiddleware(async (context, next) => {
       const responseHeaders = new Headers(response.headers);
       responseHeaders.set('Access-Control-Allow-Origin', '*');
 
-      return new Response(response.body, {
+      return addSecurityHeaders(new Response(response.body, {
         status: response.status,
         statusText: response.statusText,
         headers: responseHeaders,
-      });
+      }));
     } catch (error) {
       console.error('PostHog Proxy Error:', error);
       return new Response('PostHog Proxy Error', { status: 502 });
     }
   }
 
-  return next();
+  return addSecurityHeaders(await next());
 });

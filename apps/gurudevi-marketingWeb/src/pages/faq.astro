@@ -1,4 +1,5 @@
 ---
+import { CONTACT_EMAILS } from '../lib/site';
 ---
 
 <Layout title="FAQ & Support">
@@ -11,11 +12,11 @@
 				<p class="text-xl text-mud-brown">Answers to common questions about joining the Gurudevi ecology.</p>
 			</div>
 
-			<div class="space-y-8">
+			<div id="community-boundaries" class="space-y-8">
 				{[
 					{
 						q: "How can my school join Gurudevi?",
-						a: "During our Alpha phase, we are onboarding schools through an invite-only transition. If you are a Principal or School Head, please reach out to us at institutional@gurudevi.lk to request an invitation code."
+						a: `During our Alpha phase, we are onboarding schools through an invite-only transition. If you are a Principal or School Head, please reach out to us at ${CONTACT_EMAILS.institutional} to request an invitation code.`
 					},
 					{
 						q: "Is teacher data visible to the Principal?",
@@ -31,7 +32,7 @@
 					},
 					{
 						q: "Is there a desktop version?",
-						a: "Yes — the Gurudevi web platform is available at platform.gurudevi.edlove.org. This website is the official home and informational hub (About, FAQ, Privacy), while the full sanctuary experience lives in the app and the platform."
+						a: "Yes — the Gurudevi web platform is being prepared as the connected product experience. This website is the public home and informational hub, while the platform will give teachers a Classroom workspace, school leaders a School workspace, and students a Learning Studio."
 					}
 				].map((item) => (
 					<div class="p-8 bg-white rounded-3xl border border-mud-brown/10 shadow-sm space-y-4">
@@ -44,7 +45,7 @@
 			<section class="bg-void-indigo text-sacred-white p-12 rounded-[3rem] text-center space-y-8">
 				<h2 class="text-3xl font-bold">Still have questions?</h2>
 				<p class="opacity-80">We are here to help you navigate the topology of your school's needs.</p>
-				<a href="mailto:support@gurudevi.lk" class="inline-block px-10 py-4 bg-sanctuary-saffron text-white rounded-full font-bold hover:bg-peacock-blue transition-all">
+				<a href={`mailto:${CONTACT_EMAILS.support}`} class="inline-block px-10 py-4 bg-sanctuary-saffron text-white rounded-full font-bold hover:bg-peacock-blue transition-all">
 					Contact Support
 				</a>
 			</section>

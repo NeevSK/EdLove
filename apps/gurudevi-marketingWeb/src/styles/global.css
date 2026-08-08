@@ -33,8 +33,6 @@
 }
 
 @layer base {
-  @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap");
-
   body {
     background-color: var(--color-cream-silence);
     color: var(--color-charcoal-truth);
@@ -50,6 +48,32 @@
   [lang="ta"] {
     font-family: var(--font-tamil);
     line-height: 1.7;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-peacock-blue);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  @media (max-width: 767px) {
+    button,
+    [role="button"],
+    input,
+    select,
+    textarea {
+      min-height: 44px;
+    }
   }
 }
 

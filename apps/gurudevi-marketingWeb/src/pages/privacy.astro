@@ -1,39 +1,44 @@
 ---
+import { CONTACT_EMAILS } from '../lib/site';
 ---
 
-<Layout title="Privacy Policy">
-	<Header />
-	
-	<main class="flex-grow py-24 px-8">
-		<article class="max-w-4xl mx-auto space-y-12">
-			<h1 class="text-4xl font-bold text-charcoal-truth">Privacy Policy</h1>
-			<p class="text-mud-brown text-lg">
-				Last Updated: February 12, 2026
-			</p>
-			
-			<section class="space-y-6 text-mud-brown leading-relaxed">
-				<h2 class="text-2xl font-bold text-peacock-blue">1. Our Commitment</h2>
-				<p>
-					Gurudevi is built on the foundation of care and trust. We do not engage in surveillance or data exploitation. Our platform is designed to protect the "inner ecology" of every user.
-				</p>
-				
-				<h2 class="text-2xl font-bold text-peacock-blue">2. Data Collection</h2>
-				<p>
-					We only collect data necessary for the operation of the education ecology, such as attendance and classroom resources. Personal reflections and journals remain private to the user unless explicitly shared.
-				</p>
-				
-				<h2 class="text-2xl font-bold text-peacock-blue">3. Boundaries</h2>
-				<p>
-					Role-based views ensure that higher-level administrators see patterns and institutional health indicators, not the private lives or individual struggles of teachers or students.
-				</p>
+<Layout title="Privacy Policy" description="Gurudevi's first-draft Privacy Policy for the education ecology support system.">
+  <Header />
+  <main class="flex-grow px-6 py-20 md:px-8">
+    <article class="prose prose-lg mx-auto max-w-4xl prose-headings:text-charcoal-truth prose-p:text-mud-brown prose-a:text-sanctuary-saffron">
+      <p class="not-prose text-sm font-semibold uppercase tracking-[0.18em] text-sanctuary-saffron">Trust and boundaries</p>
+      <h1>Privacy Policy</h1>
+      <p><strong>First draft — last updated 8 August 2026.</strong> This page is a practical public draft for review. It is not legal advice and will be reviewed for the final operating entity, jurisdictions, school agreements, and applicable Sri Lankan requirements before production launch.</p>
 
-				<h2 class="text-2xl font-bold text-peacock-blue">4. Account deletion</h2>
-				<p>
-					You can request account deletion at any time. See <a href="/delete-account" class="text-sanctuary-saffron font-bold hover:text-peacock-blue transition-colors">Delete Account</a> for the steps.
-				</p>
-			</section>
-		</article>
-	</main>
-	
-	<Footer />
+      <h2>1. Who this is for</h2>
+      <p>Gurudevi is an education ecology support system for teachers, students, principals, administrators, schools, and communities in Sri Lanka. Teachers are a first-class design beneficiary, but no role is treated as merely a data source.</p>
+
+      <h2>2. Information we may handle</h2>
+      <ul>
+        <li>Account details such as name, email, role, school, language, and sign-in identifiers.</li>
+        <li>Workspace information that a user or institution chooses to create, such as resources, plans, reflections, messages, and learning activity.</li>
+        <li>Technical information needed for security and reliability, such as device, browser, logs, approximate region, and error reports.</li>
+        <li>Optional analytics events only when the visitor gives consent.</li>
+      </ul>
+
+      <h2>3. How we use information</h2>
+      <p>We use information to provide and secure the service, support learning and teaching workflows, respond to requests, improve usability, prevent abuse, meet legal obligations, and communicate important service changes. We do not sell personal information or build surveillance profiles.</p>
+
+      <h2>4. Role boundaries and sharing</h2>
+      <p>Access should follow the user’s role, context, and permissions. School-level summaries must not become a shortcut to private reflections or personal struggles. We share information with service providers only when needed to operate the service, with institutions where their agreement and permissions require it, or when law and safety obligations require it.</p>
+
+      <h2>5. Children and school communities</h2>
+      <p>School use may involve students and shared devices. Institutions and guardians remain responsible for appropriate consent and supervision where required. The product should collect the minimum information needed, provide age-appropriate experiences, and avoid unnecessary public exposure of student information.</p>
+
+      <h2>6. Retention and deletion</h2>
+      <p>We retain information only for as long as needed for the stated purpose, safety, dispute resolution, or legal obligations. You can request deletion or correction through <a href="/delete-account">the account deletion page</a>. Some records may need limited retention for security or compliance.</p>
+
+      <h2>7. Cookies and analytics</h2>
+      <p>Essential storage may remember basic site preferences. Optional analytics is disabled until you choose “Allow analytics” in the consent notice. You can withdraw that choice by clearing site storage or contacting us. This draft does not promise that every future vendor or integration will use the same data practices; those will be documented before activation.</p>
+
+      <h2>8. Contact and changes</h2>
+      <p>For privacy questions or requests, email <a href={`mailto:${CONTACT_EMAILS.support}`}>{CONTACT_EMAILS.support}</a>. We will publish material changes on this page with a new update date.</p>
+    </article>
+  </main>
+  <Footer />
 </Layout>

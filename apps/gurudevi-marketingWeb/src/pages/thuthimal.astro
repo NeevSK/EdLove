@@ -1,4 +1,5 @@
 ---
+import { CONTACT_EMAILS } from '../lib/site';
 ---
 
 <Layout title="Thuthimal (තුතිමල්)">
@@ -48,7 +49,7 @@
 				<p class="text-mud-brown max-w-xl mx-auto">
 					During our Alpha phase, we are processing Thuthimal gifts manually to ensure every "flower" reaches its intended sanctuary.
 				</p>
-				<a href="mailto:gratitude@gurudevi.lk" class="inline-block px-12 py-5 bg-sanctuary-saffron text-sacred-white rounded-full font-bold text-xl shadow-2xl hover:bg-peacock-blue transition-all transform hover:scale-105">
+				<a href={`mailto:${CONTACT_EMAILS.gratitude}`} class="inline-block px-12 py-5 bg-sanctuary-saffron text-sacred-white rounded-full font-bold text-xl shadow-2xl hover:bg-peacock-blue transition-all transform hover:scale-105">
 					Sponsor a Teacher
 				</a>
 			</section>

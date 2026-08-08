@@ -1,11 +1,13 @@
 ---
+import { WEB_LINKS } from '../lib/site';
+
 const _machineReadableData = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
   name: 'Gurudevi',
   applicationCategory: 'EducationalApplication',
   operatingSystem: 'Web',
-  url: 'https://platform.gurudevi.edlove.org',
+  url: WEB_LINKS.app,
   description:
     'An Education Ecology Support System designed to mend the teaching-learning impedance match.',
   offers: {
@@ -16,7 +18,7 @@ const _machineReadableData = {
   potentialAction: {
     '@type': 'ControlAction',
     name: 'Enter Platform',
-    target: 'https://platform.gurudevi.edlove.org',
+    target: WEB_LINKS.app,
   },
 };
 ---
@@ -36,10 +38,10 @@ const _machineReadableData = {
 						A Sanctuary for <span class="text-peacock-blue">Teachers</span>
 					</h1>
 					<p class="text-xl text-mud-brown leading-relaxed max-w-xl">
-						Gurudevi is a polycentric support system designed to mend the teaching-learning impedance match. We believe education is a living ecology that thrives on care, not surveillance.
+						Gurudevi is an education ecology support system for Sri Lanka: a connected sanctuary for teachers, students, and the people who hold a school together.
 					</p>
 					<div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-						<a href="https://platform.gurudevi.edlove.org" class="px-8 py-4 bg-void-indigo text-sacred-white rounded-full font-bold shadow-xl hover:bg-peacock-blue transition-all text-center">
+						<a href={WEB_LINKS.app} target="_blank" rel="noopener noreferrer" class="px-8 py-4 bg-void-indigo text-sacred-white rounded-full font-bold shadow-xl hover:bg-peacock-blue transition-all text-center">
 							Enter the Platform
 						</a>
 						<a href="/thuthimal" class="px-8 py-4 border-2 border-sanctuary-saffron text-sanctuary-saffron rounded-full font-bold hover:bg-sanctuary-saffron/5 transition-all text-center">
@@ -96,7 +98,7 @@ const _machineReadableData = {
 				<div class="grid grid-cols-1 md:grid-cols-5 gap-6">
 					{[
 						{ name: 'Self', desc: 'The Inner Ecology', color: 'bg-teal-water' },
-						{ name: 'Classroom', desc: 'Operational Ecology', color: 'bg-peacock-blue' },
+						{ name: 'Workspace', desc: 'Classroom, School & Learning Studio', color: 'bg-peacock-blue' },
 						{ name: 'Library', desc: 'Knowledge Ecology', color: 'bg-sage-green' },
 						{ name: 'Community', desc: 'Relational Ecology', color: 'bg-sanctuary-saffron' },
 						{ name: 'Profile', desc: 'Identity & Boundaries', color: 'bg-mud-brown' }
@@ -141,13 +143,13 @@ const _machineReadableData = {
 			<div class="max-w-3xl mx-auto space-y-10 relative z-10">
 				<h2 class="text-5xl font-bold">Join the Education Ecology</h2>
 				<p class="text-xl opacity-80 leading-relaxed">
-					Whether you are a teacher looking for sanctuary or an administrator aiming to support your staff, Gurudevi is ready to welcome you.
+					Teachers remain at the heart of Gurudevi. The wider ecology matters too: students, school leaders, families, and communities all need room to participate with dignity.
 				</p>
 				
 				<div class="flex flex-col sm:flex-row justify-center items-center space-y-6 sm:space-y-0 sm:space-x-8">
 					<div class="space-y-4">
 						<p class="text-sm uppercase tracking-widest text-temple-gold font-bold">Web Platform</p>
-						<a href="https://platform.gurudevi.edlove.org" class="px-10 py-4 bg-sacred-white text-peacock-blue rounded-full font-bold hover:bg-peacock-blue hover:text-white transition-all block">
+						<a href={WEB_LINKS.app} target="_blank" rel="noopener noreferrer" class="px-10 py-4 bg-sacred-white text-peacock-blue rounded-full font-bold hover:bg-peacock-blue hover:text-white transition-all block">
 							Open Web App
 						</a>
 					</div>
@@ -178,7 +180,7 @@ const _machineReadableData = {
 		<h2>Agentic Orientation Summary</h2>
 		<p>
 			This is the marketing and orientation site for Gurudevi, an Education Ecology Support System.
-			The core platform is a web application located at https://platform.gurudevi.edlove.org.
+			The core platform is a web application located at {WEB_LINKS.app}.
 			The system architecture is "Sovereign" and "Polycentric", focusing on teacher sanctuary and educational impedance matching.
 			Current statistics are initialized to zero for the seed phase.
 			All applications in the edlove.org domain share a root-domain context.
@@ -187,7 +189,7 @@ const _machineReadableData = {
 			<ul>
 				<li><a href="/llms.txt">LLM Orientation File</a></li>
 				<li><a href="/knowledge.json">Knowledge Index</a></li>
-				<li><a href="https://platform.gurudevi.edlove.org">Production Web Platform</a></li>
+				<li><a href={WEB_LINKS.app}>Production Web Platform</a></li>
 			</ul>
 		</nav>
 	</section>

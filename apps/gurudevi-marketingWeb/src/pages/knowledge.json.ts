@@ -44,6 +44,13 @@ const entries = [
     url: absoluteUrl('/delete-account'),
   },
   {
+    id: 'terms',
+    title: 'Terms of Use',
+    subtitle: 'First-draft service boundaries and responsibilities',
+    category: 'policy',
+    url: absoluteUrl('/terms'),
+  },
+  {
     id: 'sensing',
     title: 'Sensing',
     subtitle: 'School climate sensing and resonance pulse flow',

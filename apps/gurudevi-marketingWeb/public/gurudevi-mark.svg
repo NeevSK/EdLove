@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Gurudevi lotus mark</title>
+  <desc id="desc">Three orange lotus petals forming the Gurudevi mark.</desc>
+  <rect width="1200" height="1200" fill="#fff" fill-opacity="0"/>
+  <g fill="#f58a16">
+    <path d="M600 170c-112 112-172 247-172 385 0 90 37 167 110 229 44-45 62-102 62-171V170Z"/>
+    <path d="M151 615c112-35 253-41 365 23 82 47 132 117 145 213-83 35-169 25-250-22-107-62-184-138-260-214Z"/>
+    <path d="M1049 615c-112-35-253-41-365 23-82 47-132 117-145 213 83 35 169 25 250-22 107-62 184-138 260-214Z"/>
+  </g>
+  <path fill="#fff" d="M600 612c-56 0-108 18-145 54 29 104 83 161 145 207 62-46 116-103 145-207-37-36-89-54-145-54Z"/>
+</svg>

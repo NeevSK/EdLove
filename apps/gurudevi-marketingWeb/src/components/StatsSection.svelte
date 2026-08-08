@@ -1,5 +1,7 @@
 <script lang="ts">
-const _statDefs = [
+import { MARKETING_STATS } from '../lib/site';
+
+const statDefs = [
   {
     key: 'teachers_count' as const,
     label: 'Teachers',
@@ -22,14 +24,14 @@ const _statDefs = [
   },
 ];
 
-const _stats = {
-  teachers_count: 0,
-  students_count: 0,
-  schools_count: 0,
-  lessons_shared_count: 0,
+const stats = {
+  teachers_count: MARKETING_STATS.teachers,
+  students_count: MARKETING_STATS.students,
+  schools_count: MARKETING_STATS.schools,
+  lessons_shared_count: MARKETING_STATS.lessonsShared,
 };
 
-function _formatCount(value: number): string {
+function formatCount(value: number): string {
   return new Intl.NumberFormat('en-US').format(value);
 }
 </script>
@@ -52,3 +54,7 @@ function _formatCount(value: number): string {
     </div>
   {/each}
 </div>
+
+<p class="mt-8 text-center text-sm text-mud-brown/70" aria-live="polite">
+  Coming soon — Gurudevi is preparing its first public learning community.
+</p>

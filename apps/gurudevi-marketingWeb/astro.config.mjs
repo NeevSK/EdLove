@@ -16,6 +16,10 @@ export default defineConfig({
     resolve: {
       mainFields: ['browser', 'module', 'main'],
       alias: {
+        '@': fileURLToPath(new URL('../../packages/ui/src', import.meta.url)),
+        '@cedar-policy/cedar-wasm/web': fileURLToPath(
+          new URL('./src/shims/cedar-web.ts', import.meta.url),
+        ),
         'react-native/Libraries/Utilities/codegenNativeComponent': fileURLToPath(
           new URL('../../packages/ui/src/shims/native-web-stub.ts', import.meta.url),
         ),

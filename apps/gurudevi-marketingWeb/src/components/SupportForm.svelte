@@ -1,9 +1,10 @@
 <script lang="ts">
 import { type FormConfig, FormManager } from '@repo/core/forms/form-manager';
 import { validators } from '@repo/core/utils/validators';
+import { CONTACT_EMAILS } from '../lib/site';
 
 const formAction = import.meta.env.PUBLIC_SUPPORT_FORM_ACTION as string | undefined;
-const SUPPORT_EMAIL = 'support@gurudevi.lk';
+const SUPPORT_EMAIL = CONTACT_EMAILS.support;
 
 const config: FormConfig<{
   issueType: 'support' | 'bug' | 'feature' | 'feedback';

@@ -1,4 +1,5 @@
 ---
+import { CONTACT_EMAILS } from '../lib/site';
 ---
 
 <Layout title="Support & Feedback">
@@ -22,7 +23,7 @@
           If you are a Principal or School Head and want to onboard your school, email us and we’ll guide the transition.
         </p>
         <a
-          href="mailto:institutional@gurudevi.lk?subject=Gurudevi%20Institutional%20Onboarding"
+          href={`mailto:${CONTACT_EMAILS.institutional}?subject=Gurudevi%20Institutional%20Onboarding`}
           class="inline-block px-8 py-3 bg-sanctuary-saffron text-white rounded-full font-bold hover:bg-peacock-blue transition-all"
         >
           Email Institutional Support
