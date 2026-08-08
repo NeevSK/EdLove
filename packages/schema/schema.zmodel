@@ -68,6 +68,7 @@ model User {
   grades_given Grade[] @relation("GradedBy")
   reactions CommunityReaction[]
   messages  GroupMessage[]
+  ai_messages AiMessage[]
   mood_logs MoodLog[]
   journal_entries FireJournalEntry[]
   preferences UserPreferences?
@@ -420,6 +421,27 @@ model GroupMessage {
   @@allow('create', group.members?[user_id == auth().id])
 
   @@map("group_messages")
+}
+
+model AiMessage {
+  id           String    @id @default(uuid())
+  thread_id    String
+  user_id      String
+  role         String // 'user' | 'assistant'
+  content      String
+  privacy_mode String    @default("saved") // saved | temporary | incognito
+  expires_at   DateTime?
+  created_at   DateTime  @default(now())
+
+  user         User      @relation(fields: [user_id], references: [id])
+
+  // Owners can manage their own AI message history
+  @@allow('read', auth() != null && user_id == auth().id)
+  @@allow('create', auth() != null && user_id == auth().id)
+  @@allow('update', auth() != null && user_id == auth().id)
+  @@allow('delete', auth() != null && user_id == auth().id)
+
+  @@map("ai_messages")
 }
 
 model CommunityReaction {

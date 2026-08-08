@@ -21,6 +21,7 @@ export type Group = $ModelResult<$Schema, "Group">;
 export type GroupMember = $ModelResult<$Schema, "GroupMember">;
 export type Post = $ModelResult<$Schema, "Post">;
 export type GroupMessage = $ModelResult<$Schema, "GroupMessage">;
+export type AiMessage = $ModelResult<$Schema, "AiMessage">;
 export type CommunityReaction = $ModelResult<$Schema, "CommunityReaction">;
 export type Lesson = $ModelResult<$Schema, "Lesson">;
 export type Material = $ModelResult<$Schema, "Material">;

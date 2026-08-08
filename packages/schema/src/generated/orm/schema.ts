@@ -287,6 +287,12 @@ export class SchemaType implements SchemaDef {
                     array: true,
                     relation: { opposite: "author" }
                 },
+                ai_messages: {
+                    name: "ai_messages",
+                    type: "AiMessage",
+                    array: true,
+                    relation: { opposite: "user" }
+                },
                 mood_logs: {
                     name: "mood_logs",
                     type: "MoodLog",
@@ -1554,6 +1560,71 @@ export class SchemaType implements SchemaDef {
                 id: { type: "String" }
             }
         },
+        AiMessage: {
+            name: "AiMessage",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                thread_id: {
+                    name: "thread_id",
+                    type: "String"
+                },
+                user_id: {
+                    name: "user_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "user"
+                    ] as readonly string[]
+                },
+                role: {
+                    name: "role",
+                    type: "String"
+                },
+                content: {
+                    name: "content",
+                    type: "String"
+                },
+                privacy_mode: {
+                    name: "privacy_mode",
+                    type: "String",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("saved") }] }] as readonly AttributeApplication[],
+                    default: "saved" as FieldDefault
+                },
+                expires_at: {
+                    name: "expires_at",
+                    type: "DateTime",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                user: {
+                    name: "user",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "ai_messages", fields: ["user_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("create") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("update") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("delete") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("ai_messages") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" }
+            }
+        },
         CommunityReaction: {
             name: "CommunityReaction",
             fields: {
@@ -2408,6 +2479,11 @@ export class SchemaType implements SchemaDef {
                 },
                 description: {
                     name: "description",
+                    type: "String",
+                    optional: true
+                },
+                thumbnail_url: {
+                    name: "thumbnail_url",
                     type: "String",
                     optional: true
                 },
