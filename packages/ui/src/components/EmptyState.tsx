@@ -1,6 +1,7 @@
 import type { LucideIcon } from '@repo/ui/icons';
 import { Box, Center, Heading, Text, VStack } from '@repo/ui/gluestack';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import Animated, { FadeIn, FadeInUp, ZoomIn } from 'react-native-reanimated';
 
 interface EmptyStateProps {
   icon: LucideIcon;
@@ -21,27 +22,41 @@ export default function EmptyState({
 }: EmptyStateProps) {
   return (
     <Center style={{ minHeight }} className="p-8">
-      <VStack space="md" className="items-center max-w-[300px]">
-        <Box className="p-6 bg-phase-surface border border-phase-surface rounded-full mb-2">
-          <Icon size={48} className="text-phase-accent" strokeWidth={1.5} />
-        </Box>
+      <Animated.View
+        entering={FadeInUp.duration(600).springify()}
+        style={{ width: '100%' }}
+      >
+        <VStack space="md" className="items-center max-w-[300px]">
+          <Animated.View
+            entering={ZoomIn.duration(400).delay(100)}
+            className="p-6 bg-phase-surface border border-phase-surface rounded-full mb-2"
+          >
+            <Icon size={48} className="text-phase-accent" strokeWidth={1.5} />
+          </Animated.View>
 
-        <Heading size="xl" className="text-center text-phase-text-primary">
-          {title}
-        </Heading>
+          <Animated.View entering={FadeInUp.duration(500).delay(200)}>
+            <Heading size="xl" className="text-center text-phase-text-primary">
+              {title}
+            </Heading>
+          </Animated.View>
 
-        <Text className="text-center text-phase-text-secondary text-base leading-6">
-          {description}
-        </Text>
+          <Animated.View entering={FadeInUp.duration(500).delay(300)}>
+            <Text className="text-center text-phase-text-secondary text-base leading-6">
+              {description}
+            </Text>
+          </Animated.View>
 
-        {actionLabel && onAction && (
-          <Box className="mt-4">
-            <SanctuaryButton onPress={onAction} size="md" variant="outline">
-              {actionLabel}
-            </SanctuaryButton>
-          </Box>
-        )}
-      </VStack>
+          {actionLabel && onAction && (
+            <Animated.View entering={FadeInUp.duration(500).delay(400)}>
+              <Box className="mt-4">
+                <SanctuaryButton onPress={onAction} size="md" variant="outline">
+                  {actionLabel}
+                </SanctuaryButton>
+              </Box>
+            </Animated.View>
+          )}
+        </VStack>
+      </Animated.View>
     </Center>
   );
 }

@@ -1,0 +1,15 @@
+appId: org.edlove.gurudevi
+---
+- launchApp
+- assertVisible: "Welcome"
+- tapOn: "Get Started"
+- assertVisible: "Create your workspace"
+- tapOn: "Sign In"
+- assertVisible: "Sign In"
+- tapOn: "Create Account"
+- assertVisible: "Sign Up"
+- typeText: "test@example.com"
+- tapOn: "Continue"
+- assertVisible: "Onboarding"
+- tapOn: "Complete"
+- assertVisible: "Self"

@@ -1,4 +1,4 @@
-import { SIMPLIFIED_GRADING_SCALE, STANDARD_GRADING_SCALE, WEIGHTED_GRADING_SCALE, } from '@/types/GradingTypes';
+import { SIMPLIFIED_GRADING_SCALE, STANDARD_GRADING_SCALE, WEIGHTED_GRADING_SCALE, } from '../types/GradingTypes.js';
 export class GPACalculator {
     scale;
     constructor(options = {}) {

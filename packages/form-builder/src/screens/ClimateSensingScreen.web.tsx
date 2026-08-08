@@ -20,6 +20,7 @@ import {
   createClimateSensingSchema,
 } from '@repo/form-builder/apps/resilience-sensing-schema';
 import NativeForm from '@repo/form-builder/NativeForm';
+import { GURUDEVI_WEB } from '@repo/ui/utils';
 
 interface ClimateSensingWebProps {
   initialSchoolId?: string;
@@ -185,7 +186,7 @@ export const ClimateSensingScreenWeb = ({
   if (isFinished && selectedSchool) {
     const shareUrl =
       services?.getPublicSchoolUrl?.(selectedSchool.id) ??
-      `https://gurudevi.edlove.org/sensing/${selectedSchool.id}`;
+      `${GURUDEVI_WEB}/sensing/${selectedSchool.id}`;
 
     return (
       <div className="min-h-screen bg-slate-50 px-6 py-12 selection:bg-teal-100">
@@ -209,7 +210,7 @@ export const ClimateSensingScreenWeb = ({
               type="button"
               className="group flex items-center justify-center gap-3 rounded-2xl bg-teal-700 px-6 py-4 text-base font-bold text-white transition-all hover:bg-teal-800 hover:shadow-lg active:scale-[0.98]"
               onClick={() =>
-                window.open('https://gurudevi.edlove.org/map', '_blank', 'noopener,noreferrer')
+                window.open(`${GURUDEVI_WEB}/map`, '_blank', 'noopener,noreferrer')
               }
             >
               <MapIcon size={20} />

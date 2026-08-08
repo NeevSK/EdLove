@@ -26,11 +26,18 @@ export const Fonts = {
     bold: 'BalooThambi2-Bold',
   },
 
-  // English/Latin fonts (System default)
+  // English/Latin fonts — Inter (body) + Poppins (headings)
   english: {
-    regular: 'System',
-    medium: 'System',
-    bold: 'System',
+    regular: 'Inter-Regular',
+    medium: 'Inter-Medium',
+    bold: 'Inter-Bold',
+  },
+
+  // Heading font (Poppins)
+  heading: {
+    regular: 'Poppins-Regular',
+    medium: 'Poppins-Medium',
+    bold: 'Poppins-Bold',
   },
 } as const;
 
@@ -68,4 +75,6 @@ export const fontAssets = {
   'BalooThambi2-Regular': require('@/assets/fonts/static/BalooThambi2-Regular.ttf'),
   'BalooThambi2-Medium': require('@/assets/fonts/static/BalooThambi2-Medium.ttf'),
   'BalooThambi2-Bold': require('@/assets/fonts/static/BalooThambi2-Bold.ttf'),
+
+  // Inter (English body) and Poppins (Headings) — add font files to assets/fonts/static/ to enable
 };

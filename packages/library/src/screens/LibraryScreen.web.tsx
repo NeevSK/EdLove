@@ -30,6 +30,7 @@ import {
   Plus,
   Trash2,
   Users,
+  Search,
 } from 'lucide-react-native';
 import { Box } from '@repo/ui/primitives';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';

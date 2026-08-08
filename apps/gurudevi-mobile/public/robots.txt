@@ -1,5 +1,5 @@
 # Gurudevi — robots.txt
-# https://platform.gurudevi.edlove.org
+# Gurudevi active product platform: authenticated education ecology workspace
 
 User-agent: *
 Allow: /
@@ -8,6 +8,7 @@ Allow: /
 Disallow: /auth/callback
 Disallow: /qr
 Disallow: /thuthimal
+Disallow: /app/profile
 
 # AI Agents Welcome
 User-agent: GPTBot

@@ -6,7 +6,7 @@ import { RefreshControl } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 import EmptyState from '@repo/ui/components/EmptyState';
 
-export interface SanctuaryFlashListProps<T> extends Omit<FlashListProps<T>, 'refreshControl'> {
+export interface SanctuaryFlashListProps<T> extends Omit<FlashListProps<T>, 'refreshControl' | 'masonry'> {
   /** Estimated size of a single list item (Optional in v2, Auto-calculated) */
   estimatedItemSize?: number;
   /** Whether the list is currently refreshing */
@@ -19,6 +19,10 @@ export interface SanctuaryFlashListProps<T> extends Omit<FlashListProps<T>, 'ref
   refreshColor?: string;
   /** Style for the content container */
   contentContainerStyle?: StyleProp<ViewStyle>;
+  /** Enable masonry grid layout */
+  masonry?: boolean;
+  /** Number of columns in masonry mode */
+  numColumns?: number;
 }
 
 /**
@@ -44,6 +48,8 @@ export function SanctuaryFlashList<T>({
   refreshColor,
   contentContainerStyle,
   ListEmptyComponent,
+  masonry,
+  numColumns = 2,
   ...props
 }: SanctuaryFlashListProps<T>) {
   const renderEmpty = useCallback(() => {
@@ -82,6 +88,8 @@ export function SanctuaryFlashList<T>({
           />
         ) : null
       }
+      masonry={masonry}
+      numColumns={masonry ? numColumns : undefined}
     />
   );
 }

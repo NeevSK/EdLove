@@ -148,11 +148,11 @@ function VisibilityBadge({ visibility }: { visibility: ResourceVisibility }) {
   const config = {
     private: { icon: Lock, label: 'Private', color: '#e88c30', bg: 'rgba(232,140,48,0.12)' },
     personal: { icon: Lock, label: 'Private', color: '#e88c30', bg: 'rgba(232,140,48,0.12)' },
-    shared: { icon: Users, label: 'Shared', color: '#6798d6', bg: 'rgba(103,152,214,0.12)' },
+    shared: { icon: LucideUsers, label: 'Shared', color: '#6798d6', bg: 'rgba(103,152,214,0.12)' },
     public: { icon: Globe, label: 'Public', color: '#34a853', bg: 'rgba(52,168,83,0.12)' },
-    class: { icon: Users, label: 'Class', color: '#6798d6', bg: 'rgba(103,152,214,0.12)' },
-    grade: { icon: Users, label: 'Grade', color: '#6798d6', bg: 'rgba(103,152,214,0.12)' },
-    school: { icon: Users, label: 'School', color: '#6798d6', bg: 'rgba(103,152,214,0.12)' },
+    class: { icon: LucideUsers, label: 'Class', color: '#6798d6', bg: 'rgba(103,152,214,0.12)' },
+    grade: { icon: LucideUsers, label: 'Grade', color: '#6798d6', bg: 'rgba(103,152,214,0.12)' },
+    school: { icon: LucideUsers, label: 'School', color: '#6798d6', bg: 'rgba(103,152,214,0.12)' },
   };
   const c = config[visibility] ?? config.private;
   const Icon = c.icon;
@@ -195,7 +195,7 @@ function OwnerPanel({
   const vis = collection.visibility;
   const visOptions: { value: ResourceVisibility; label: string; icon: any; color: string }[] = [
     { value: 'private', label: 'Private', icon: Lock, color: '#e88c30' },
-    { value: 'shared', label: 'Shared', icon: Users, color: '#6798d6' },
+    { value: 'shared', label: 'Shared', icon: LucideUsers, color: '#6798d6' },
     { value: 'public', label: 'Public', icon: Globe, color: '#34a853' },
   ];
 

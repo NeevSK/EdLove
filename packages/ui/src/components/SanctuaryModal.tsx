@@ -1,5 +1,6 @@
 import { X } from '@repo/ui/icons';
 import type React from 'react';
+import { Platform, Modal as RNModal } from 'react-native';
 import {
   HStack,
   Modal,
@@ -37,6 +38,8 @@ export interface SanctuaryModalProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'full';
   /** Custom class name for modal content */
   className?: string;
+  /** Whether to trap accessibility focus within the modal (default: true) */
+  trapFocus?: boolean;
 }
 
 /**
@@ -55,10 +58,30 @@ export default function SanctuaryModal({
   footer,
   showCloseButton = true,
   className = '',
+  trapFocus = true,
 }: SanctuaryModalProps) {
+  const modalProps = {
+    // Accessibility props - pass through to underlying Modal
+    ...(trapFocus && {
+      accessibilityViewIsModal: true,
+      accessibilityElementsHidden: !isOpen,
+    }),
+    // Native Modal specific props
+    supportedOrientations: ['portrait', 'landscape-left', 'landscape-right', 'portrait-upside-down'] as const,
+    presentationStyle: 'pageSheet' as const,
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalContent className={`bg-phase-elevated border-phase-surface shadow-2xl ${className}`}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      {...modalProps}
+    >
+      <ModalContent
+        className={`bg-phase-elevated border-phase-surface shadow-2xl ${className}`}
+        accessibilityRole="dialog"
+        accessibilityLabel={title}
+      >
         <ModalHeader className="border-b-0">
           <HStack className="items-center flex-1 gap-3">
             {icon && icon}
@@ -76,6 +99,7 @@ export default function SanctuaryModal({
               className="p-2 active:opacity-60"
               accessibilityRole="button"
               accessibilityLabel="Close modal"
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
               <X size={20} className="text-phase-text-primary" />
             </Pressable>

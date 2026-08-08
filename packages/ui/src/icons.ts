@@ -1,1 +1,1 @@
-export * from '@repo/ui/icons.native';
+export * from './icons.native';

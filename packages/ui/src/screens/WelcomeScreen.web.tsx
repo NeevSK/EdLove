@@ -52,7 +52,7 @@ const STATS = [
 
 const PILLARS = [
   { name: 'Self', emoji: '❤️', color: Theme.colors.sanctuarySaffron },
-  { name: 'Classroom', emoji: '🏫', color: Theme.colors.sageGreen },
+      { name: 'Workspace', emoji: '🏫', color: Theme.colors.sageGreen },
   {
     name: 'Community',
     emoji: '🤝',
@@ -189,7 +189,17 @@ const RightPanel = memo(
     const handlePrivacyPress = useCallback((e: { stopPropagation: () => void }) => {
       e.stopPropagation();
       void openExternalURL(EXTERNAL_URLS.privacy, {
-        title: 'Privacy Pact',
+        title: 'Privacy Policy',
+        sourceLabel: 'Welcome',
+        sourceBadge: 'External policy',
+        trustLevel: 'verified',
+      });
+    }, []);
+
+    const handleTermsPress = useCallback((e: { stopPropagation: () => void }) => {
+      e.stopPropagation();
+      void openExternalURL(EXTERNAL_URLS.terms, {
+        title: 'Terms of Use',
         sourceLabel: 'Welcome',
         sourceBadge: 'External policy',
         trustLevel: 'verified',
@@ -265,7 +275,7 @@ const RightPanel = memo(
             onPress={onToggleTerms}
             accessibilityRole="checkbox"
             accessibilityState={{ checked: acceptedTerms }}
-            accessibilityLabel="Accept Terms and Privacy Pact"
+            accessibilityLabel="Accept Terms of Use and Privacy Policy"
             accessibilityHint="Toggle acceptance of terms and privacy policy to enable exploration"
             style={styles.termsRow}
           >
@@ -285,7 +295,7 @@ const RightPanel = memo(
               <Pressable
                 onPress={handlePrivacyPress}
                 accessibilityRole="link"
-                accessibilityLabel="Read Privacy Pact"
+                accessibilityLabel="Read Privacy Policy"
                 accessibilityHint="Opens the privacy policy in a new window"
               >
                 <Text
@@ -296,7 +306,13 @@ const RightPanel = memo(
                     fontSize: 13,
                   }}
                 >
-                  Privacy Pact
+                  Privacy Policy
+                </Text>
+              </Pressable>
+              {' '}and{' '}
+              <Pressable onPress={handleTermsPress} accessibilityRole="link" accessibilityLabel="Read Terms of Use">
+                <Text style={{ color: accent.action, fontWeight: '600', textDecorationLine: 'underline', fontSize: 13 }}>
+                  Terms of Use
                 </Text>
               </Pressable>
             </Text>

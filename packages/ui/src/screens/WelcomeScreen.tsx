@@ -91,7 +91,7 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
     showToast({
       message:
         t('auth.acceptTermsRequired') ||
-        'Please accept the Terms and Privacy Pact to continue in the sanctuary',
+        'Please accept the Terms of Use and Privacy Policy to continue in the sanctuary',
       type: 'error',
     });
   }, [showToast, t]);
@@ -155,7 +155,7 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
   const pillars = useMemo<Pillar[]>(
     () => [
       { label: 'Self', tone: accent.action },
-      { label: 'Classroom', tone: Theme.colors.gurudeviBlue },
+      { label: 'Workspace', tone: Theme.colors.gurudeviBlue },
       { label: 'Community', tone: Theme.colors.gurudeviViolet },
       { label: 'Library', tone: Theme.colors.sageGreen },
     ],
@@ -270,7 +270,11 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
                       {t('welcome.acceptTerms')}
                     </Text>
                     <Link href={EXTERNAL_URLS.privacy} isExternal>
-                      <LinkText className="text-sm">{t('welcome.privacyPactLink')}</LinkText>
+                      <LinkText className="text-sm">Privacy Policy</LinkText>
+                    </Link>
+                    <Text className="text-sm text-phase-text-secondary">and</Text>
+                    <Link href={EXTERNAL_URLS.terms} isExternal>
+                      <LinkText className="text-sm">Terms of Use</LinkText>
                     </Link>
                   </HStack>
                 </HStack>

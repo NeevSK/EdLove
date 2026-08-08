@@ -6,6 +6,8 @@ import Animated, {
   withRepeat,
   withSequence,
   withTiming,
+  interpolate,
+  Extrapolation,
 } from 'react-native-reanimated';
 
 interface SkeletonProps {
@@ -14,8 +16,8 @@ interface SkeletonProps {
   borderRadius?: number;
   className?: string;
   style?: any;
-  /** Optional: Show a subtle blooming flower icon in the center */
   withFlower?: boolean;
+  shimmer?: boolean;
 }
 
 const SkeletonLoader: React.FC<SkeletonProps> = ({
@@ -25,10 +27,12 @@ const SkeletonLoader: React.FC<SkeletonProps> = ({
   className = '',
   style,
   withFlower = false,
+  shimmer = false,
 }) => {
   const opacity = useSharedValue(0.4);
   const scale = useSharedValue(1);
   const containerScale = useSharedValue(1);
+  const shimmerOffset = useSharedValue(-1);
 
   useEffect(() => {
     opacity.value = withRepeat(
@@ -37,7 +41,6 @@ const SkeletonLoader: React.FC<SkeletonProps> = ({
       true,
     );
 
-    // Living Sanctuary: Subtle breathing for the whole container
     containerScale.value = withRepeat(
       withSequence(withTiming(1.005, { duration: 2000 }), withTiming(1, { duration: 2000 })),
       -1,
@@ -51,11 +54,27 @@ const SkeletonLoader: React.FC<SkeletonProps> = ({
         true,
       );
     }
-  }, [opacity, scale, containerScale, withFlower]);
+
+    if (shimmer) {
+      shimmerOffset.value = withRepeat(
+        withSequence(
+          withTiming(1, { duration: 1200 }),
+          withTiming(-1, { duration: 1200 }),
+        ),
+        -1,
+        true,
+      );
+    }
+  }, [opacity, scale, containerScale, withFlower, shimmer]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
     transform: [{ scale: containerScale.value }],
+  }));
+
+  const shimmerStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: interpolate(shimmerOffset.value, [-1, 1], [-200, 200]) }],
+    opacity: 0.3,
   }));
 
   const flowerStyle = useAnimatedStyle(() => ({
@@ -77,6 +96,12 @@ const SkeletonLoader: React.FC<SkeletonProps> = ({
         style,
       ]}
     >
+      {shimmer && (
+        <Animated.View
+          className="absolute inset-0 bg-white/20 rounded"
+          style={shimmerStyle}
+        />
+      )}
       {withFlower && (
         <Animated.Text style={[{ fontSize: 24, textAlign: 'center' }, flowerStyle]}>
           🌸
@@ -91,11 +116,13 @@ export const SkeletonCard = ({
   width = '100%',
   className = '',
   style,
+  shimmer = true,
 }: {
   height?: number;
   width?: number | string;
   className?: string;
   style?: any;
+  shimmer?: boolean;
 }) => (
   <SkeletonLoader
     width={width}
@@ -104,15 +131,18 @@ export const SkeletonCard = ({
     className={`mb-4 max-w-[800px] ${className}`}
     style={style}
     withFlower
+    shimmer={shimmer}
   />
 );
 
 export const SkeletonAvatar = ({
   size = 50,
   className = '',
+  shimmer = true,
 }: {
   size?: number;
   className?: string;
+  shimmer?: boolean;
 }) => (
   <SkeletonLoader
     width={size}
@@ -120,6 +150,7 @@ export const SkeletonAvatar = ({
     borderRadius={size / 2}
     className={className}
     withFlower
+    shimmer={shimmer}
   />
 );
 
@@ -127,10 +158,12 @@ export const SkeletonTextLine = ({
   width = '100%',
   mb = 8,
   className = '',
+  shimmer = true,
 }: {
   width?: string | number;
   mb?: number;
   className?: string;
+  shimmer?: boolean;
 }) => (
   <SkeletonLoader
     width={width}
@@ -138,6 +171,7 @@ export const SkeletonTextLine = ({
     borderRadius={4}
     className={className}
     style={{ marginBottom: mb }}
+    shimmer={shimmer}
   />
 );
 

@@ -1,0 +1,17 @@
+appId: org.edlove.gurudevi
+---
+- launchApp
+- assertVisible: "Self"
+- tapOn: "Workspace"
+- assertVisible: "Workspace"
+- tapOn: "Classroom"
+- assertVisible: "Classroom"
+- tapOn: "Back"
+- tapOn: "Profile"
+- assertVisible: "Profile"
+- tapOn: "Back"
+- tapOn: "Library"
+- assertVisible: "Library"
+- tapOn: "Back"
+- tapOn: "Community"
+- assertVisible: "Community"

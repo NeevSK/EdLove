@@ -1,3 +1,4 @@
+export * from '@repo/ui/context/ChatContext';
 export * from '@repo/ui/context/CircadianProvider';
 export * from '@repo/ui/context/EnvironmentContext';
 export * from '@repo/ui/context/ExternalLinkContext';

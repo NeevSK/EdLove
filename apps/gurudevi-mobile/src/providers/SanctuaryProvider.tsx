@@ -7,9 +7,11 @@ import { FABProvider } from '@repo/ui/context/FABContext';
 import { GluestackUIProvider } from '@repo/ui/gluestack';
 import { Box, Center, Spinner } from '@repo/ui/primitives';
 import { ToastProvider } from '@repo/ui/providers';
+import { AppLifecycle } from '@repo/core/hooks/useAppLifecycle';
+import * as Sentry from '@sentry/react-native';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import type React from 'react';
+import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { dispatchQueuedMutationToSovereignBus } from '@/lib/inngestEvents';
 import { useAssets } from '@/providers/AssetProvider';
@@ -52,6 +54,41 @@ interface SanctuaryProviderProps {
 }
 
 export function SanctuaryProvider({ children }: SanctuaryProviderProps) {
+  // Initialize AppState listener and unhandled rejection handler on mount
+  React.useEffect(() => {
+    // ─── Unhandled Promise Rejection Handler ──────────────────────────────
+    const handleUnhandledRejection = (reason: any) => {
+      console.error('[UnhandledRejection]', reason);
+      // In production, send to Sentry
+      if (typeof Sentry !== 'undefined') {
+        Sentry.captureException(reason);
+      }
+    };
+
+    if (typeof process !== 'undefined' && process.on) {
+      process.on('unhandledRejection', handleUnhandledRejection);
+    }
+
+    // ─── AppState Listener ────────────────────────────────────────────────
+    const appStateCleanup = AppLifecycle.onAppStateChange((status) => {
+      if (status === 'active') {
+        // App came to foreground - trigger sync
+        console.log('[AppLifecycle] App became active - foreground sync');
+        // Could trigger foreground sync here
+      } else if (status === 'background') {
+        console.log('[AppLifecycle] App went to background - persisting state');
+        // Persist critical state before background
+      }
+    });
+
+    return () => {
+      if (typeof process !== 'undefined' && process.off) {
+        process.off('unhandledRejection', handleUnhandledRejection);
+      }
+      appStateCleanup();
+    };
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <EnvironmentProvider>

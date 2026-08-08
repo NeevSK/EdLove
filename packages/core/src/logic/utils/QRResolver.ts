@@ -13,6 +13,7 @@
 
 import type { QRAction, QRPayload } from '@repo/core/types/QRPayload';
 import { QR_VERSION } from '@repo/core/types/QRPayload';
+import { GURUDEVI_QR_URL } from '@repo/core/config/publicUrls';
 
 export type QRResolveResult =
   | { ok: true; payload: QRPayload }
@@ -66,7 +67,7 @@ export function resolveQR(raw: string): QRResolveResult {
   // â”€â”€ Canonical: gurudevi://qr or https://platform.gurudevi.edlove.org/qr â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (
     trimmed.startsWith('gurudevi://qr') ||
-    trimmed.startsWith('https://platform.gurudevi.edlove.org/qr')
+    trimmed.startsWith(GURUDEVI_QR_URL)
   ) {
     try {
       const queryStart = trimmed.indexOf('?');

@@ -9,8 +9,9 @@
  */
 
 import type { QRPayload } from '@repo/core/types/QRPayload';
+import { GURUDEVI_QR_URL } from '@repo/core/config/publicUrls';
 
-const SCHEME = 'https://platform.gurudevi.edlove.org/qr';
+const SCHEME = GURUDEVI_QR_URL;
 
 /** Serialize any QRPayload to a canonical URL string */
 export function buildQRString(payload: QRPayload): string {

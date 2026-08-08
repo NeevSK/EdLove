@@ -13,6 +13,7 @@ import { useProfile } from '@repo/profile/hooks/useProfile';
 import { useProfileCompletion } from '@repo/profile/hooks/useProfileCompletion';
 import { useSocialLinks } from '@repo/profile/hooks/useSocialLinks';
 import { toFullProfileParams, useProfileNavigation } from '@repo/profile/navigation';
+import { GURUDEVI_APP } from '@repo/ui/utils';
 
 // Skeleton Component logic (mocked because it was used in corrupt code)
 const SkeletonCard = ({ height }: { height: number }) => (
@@ -86,9 +87,9 @@ export default function ProfileScreenWeb({
   };
 
   const profilePublicUrl = profile?.username
-    ? `https://platform.gurudevi.edlove.org/p/${profile.username}`
+    ? `${GURUDEVI_APP}/p/${profile.username}`
     : profile?.id
-      ? `https://platform.gurudevi.edlove.org/p/${profile.id}`
+      ? `${GURUDEVI_APP}/p/${profile.id}`
       : '';
 
   const profileDisplayName =

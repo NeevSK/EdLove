@@ -22,7 +22,7 @@ describe('WelcomeScreen', () => {
     mockSignInAnonymously.mockResolvedValue({ session: {}, user: { is_anonymous: true } });
     const onGuest = jest.fn();
     const { getByText } = await render(<WelcomeScreen onGuest={onGuest} />);
-    
+
     expect(getByText('Gurudevi')).toBeTruthy();
     fireEvent.press(getByText('welcome.exploreAsGuest'));
 

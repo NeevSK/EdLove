@@ -1,0 +1,13 @@
+appId: org.edlove.gurudevi
+---
+- launchApp
+- tapOn: "Profile"
+- assertVisible: "Profile"
+- tapOn: "Settings"
+- assertVisible: "Settings"
+- tapOn: "Back"
+- tapOn: "Privacy"
+- assertVisible: "Privacy"
+- tapOn: "Back"
+- tapOn: "Notifications"
+- assertVisible: "Notifications"

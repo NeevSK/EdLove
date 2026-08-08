@@ -1,6 +1,8 @@
-import type React from 'react';
-import { StyleSheet } from 'react-native';
-import { FlatList, View } from '@repo/ui/primitives';
+import React from 'react';
+import { Dimensions } from 'react-native';
+import Animated, { withTiming } from 'react-native-reanimated';
+// @ts-expect-error - Module has no type declarations
+import Carousel from 'react-native-reanimated-carousel';
 import { Theme } from '@repo/ui/theme/Theme';
 
 export interface SanctuaryCarouselProps<T> {
@@ -11,11 +13,17 @@ export interface SanctuaryCarouselProps<T> {
   gap?: number;
   /** Padding on leading and trailing edges */
   paddingHorizontal?: number;
+  /** Number of visible items in the viewport */
+  visibleCount?: number;
+  /** Enable parallax shrink effect on inactive items */
+  parallax?: boolean;
 }
 
+const { width: screenWidth } = Dimensions.get('window');
+
 /**
- * SanctuaryCarousel - generic horizontal card scroller backed by FlatList.
- * Use as a DRY alternative to ad-hoc horizontal ScrollViews containing card lists.
+ * SanctuaryCarousel - Netflix-style horizontal card scroller with parallax.
+ * Backed by react-native-reanimated-carousel for 60fps animations.
  */
 export function SanctuaryCarousel<T>({
   data,
@@ -23,25 +31,44 @@ export function SanctuaryCarousel<T>({
   keyExtractor,
   gap = Theme.spacing.md,
   paddingHorizontal = Theme.spacing.lg,
+  visibleCount = 4,
+  parallax = true,
 }: SanctuaryCarouselProps<T>) {
+  const itemWidth = (screenWidth - paddingHorizontal * 2 - gap * (visibleCount - 1)) / visibleCount;
+
   return (
-    <FlatList
-      horizontal
+    <Carousel
       data={data}
-      keyExtractor={(item, index) => keyExtractor(item, index)}
-      renderItem={({ item, index }) => (
-        <View style={{ marginRight: index < data.length - 1 ? gap : 0 }}>
-          {renderItem(item, index)}
-        </View>
+      renderItem={({ item, index }: { item: T; index: number }) => (
+        <React.Fragment key={keyExtractor(item, index)}>
+          <Animated.View style={{ width: itemWidth, marginRight: index < data.length - 1 ? gap : 0 }}>
+            {renderItem(item, index)}
+          </Animated.View>
+        </React.Fragment>
       )}
+      keyExtractor={keyExtractor}
+      itemWidth={itemWidth}
+      sliderWidth={screenWidth}
+      horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={[styles.container, { paddingHorizontal }]}
+      contentContainerStyle={{ paddingHorizontal }}
+      loop={false}
+      autoPlay={false}
+      snapEnabled
+      layout={{
+        type: 'horizontal-stack',
+        visibleCount,
+        spacing: gap,
+        scaleStep: 0.04,
+      }}
+      itemAnimation={
+        parallax
+          ? ({ progress }: { progress: number }) => ({
+              opacity: withTiming(1 - Math.abs(progress) * 0.3),
+              transform: [{ scale: withTiming(1 - Math.abs(progress) * 0.08) }],
+            })
+          : undefined
+      }
     />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingVertical: Theme.spacing.sm,
-  },
-});

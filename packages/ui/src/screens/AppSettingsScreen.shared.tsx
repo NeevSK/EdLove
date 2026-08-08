@@ -33,6 +33,7 @@ import { useEnvironment } from '@repo/ui/context';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import { GURUDEVI_SUPPORT_EMAIL } from '@repo/ui/utils';
 
 interface SettingsOptionProps {
   icon: React.ReactNode;
@@ -561,12 +562,12 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
       const isAvailable = await MailComposer.isAvailableAsync();
       if (isAvailable) {
         await MailComposer.composeAsync({
-          recipients: ['support@gurudevi.org'],
+          recipients: [GURUDEVI_SUPPORT_EMAIL],
           subject: 'Gurudevi App Feedback / Support Request',
           body: bodyText,
         });
       } else {
-        const url = `mailto:support@gurudevi.org?subject=${encodeURIComponent(
+        const url = `mailto:${GURUDEVI_SUPPORT_EMAIL}?subject=${encodeURIComponent(
           'Gurudevi App Feedback / Support Request',
         )}&body=${encodeURIComponent(bodyText)}`;
 
@@ -583,7 +584,7 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
     } catch (err) {
       console.warn('[AppSettingsScreen] MailComposer error:', err);
       try {
-        const url = `mailto:support@gurudevi.org?subject=${encodeURIComponent(
+        const url = `mailto:${GURUDEVI_SUPPORT_EMAIL}?subject=${encodeURIComponent(
           'Gurudevi App Feedback / Support Request',
         )}&body=${encodeURIComponent(bodyText)}`;
 

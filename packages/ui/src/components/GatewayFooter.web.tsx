@@ -53,7 +53,7 @@ export const GatewayFooter: React.FC = () => {
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          Privacy Pact
+          Privacy Policy
         </a>
         <a
           href={EXTERNAL_URLS.terms}
@@ -69,7 +69,7 @@ export const GatewayFooter: React.FC = () => {
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          Terms of Service
+          Terms of Use
         </a>
         <a
           href={EXTERNAL_URLS.guidelines}

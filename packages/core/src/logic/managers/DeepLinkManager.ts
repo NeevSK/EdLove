@@ -1,4 +1,5 @@
 import type { AuthManager } from '@repo/core/logic/managers/AuthManager';
+import { GURUDEVI_PLATFORM_URL } from '@repo/core/config/publicUrls';
 
 /**
  * DeepLinkType
@@ -130,7 +131,10 @@ export class DeepLinkManager {
    * Returns the deep link prefixes for the platform.
    */
   getPrefixes() {
-    return ['gurudevi://', 'https://platform.gurudevi.edlove.org', 'http://localhost:4000'];
+    const localUrl =
+      (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_LOCAL_WEB_URL) ||
+      'http://localhost:4000';
+    return ['gurudevi://', GURUDEVI_PLATFORM_URL, localUrl];
   }
 
   /**

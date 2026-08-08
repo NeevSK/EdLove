@@ -31,6 +31,16 @@ export const withRepeat = (animation: any, numberOfReps?: number, reverse?: bool
   return animation;
 };
 
+export const interpolate = (value: number, inputRange: number[], outputRange: number[]) => {
+  if (inputRange.length < 2 || outputRange.length < 2) return outputRange[0] ?? value;
+  const start = inputRange[0]!;
+  const end = inputRange[inputRange.length - 1]!;
+  const outputStart = outputRange[0]!;
+  const outputEnd = outputRange[outputRange.length - 1]!;
+  const progress = end === start ? 0 : (value - start) / (end - start);
+  return outputStart + progress * (outputEnd - outputStart);
+};
+
 export const cancelAnimation = (sharedValue: any) => {};
 
 export const Easing = {
@@ -91,11 +101,15 @@ export const Layout = {};
 // 2. expo-modules-core stub
 // ==========================================
 export class EventEmitter {
-  addListener() { return { remove: () => {} }; }
+  addListener() {
+    return { remove: () => {} };
+  }
   removeListener() {}
   removeAllListeners() {}
   emit() {}
-  listenerCount() { return 0; }
+  listenerCount() {
+    return 0;
+  }
 }
 
 export class NativeModule {}
@@ -132,7 +146,11 @@ export enum PermissionStatus {
   GRANTED = 'granted',
   UNDETERMINED = 'undetermined',
 }
-export const createPermissionHook = (options: any) => () => [null, () => Promise.resolve(null), () => Promise.resolve(null)];
+export const createPermissionHook = (options: any) => () => [
+  null,
+  () => Promise.resolve(null),
+  () => Promise.resolve(null),
+];
 
 // ==========================================
 // 3. react-native-screens stub
@@ -181,6 +199,7 @@ export const NativeComponentRegistry = {
   get: () => null,
   register: (name: string, callback: any) => callback,
 };
+export const get = () => null;
 export const ViewConfigIgnore = {};
 export const AppContainer = Animated.View;
 export const ReactFabric = {};

@@ -170,6 +170,9 @@ These documents are the current authority for capability inventory, rollout, sta
 *   [Vercel Deployment](./infra/vercel-deployment.md) - Vercel hosting specs.
 *   [Vercel Limits and Cloudflare R2](./infra/vercel-limits-and-r2.md) - Storage options.
 *   [Cloudflare Deployment](./infra/cloudflare-deployment.md) - Cloudflare hosting rules.
+*   [Gurudevi Web Ecosystem Revamp Plan](./current_progress/2026-08-08-gurudevi-web-ecosystem-revamp-plan.md) - Marketing, publishing, and hosting workstream.
+*   [Gurudevi Production Gaps and Phased Web Hardening Plan](./current_progress/2026-08-08-gurudevi-production-gaps-and-phased-hardening-plan.md) - Dated gap audit and phased production-readiness workstream.
+*   [Gurudevi Web Hosting Topology](./decisions/2026-08-08-gurudevi-web-hosting-topology.md) - Root, subdomain, and `/app` deployment decision study.
 *   [Hosting Guide](./infra/hosting-guide.md) - General topology specs.
 
 ### 🛡️ Security, ReBAC & Audits

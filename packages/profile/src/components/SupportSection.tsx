@@ -1,6 +1,6 @@
 import { ChevronRight, Info, LifeBuoy, MessageCircle, Star, TriangleAlert } from '@repo/ui/icons';
 import { Box, Heading, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { openExternalURL } from '@repo/ui/utils';
+import { GURUDEVI_SUPPORT_EMAIL, openExternalURL } from '@repo/ui/utils';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -12,7 +12,7 @@ export default function SupportSection() {
   const { t } = useTranslation();
 
   const handleSupport = () => {
-    openExternalURL('mailto:support@gurudevi.org', {
+    openExternalURL(`mailto:${GURUDEVI_SUPPORT_EMAIL}`, {
       title: 'Support',
       sourceLabel: 'Profile',
       sourceBadge: 'Support contact',

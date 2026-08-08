@@ -1165,6 +1165,8 @@ export default function LibraryScreen() {
                   showsVerticalScrollIndicator={false}
                   refreshing={refreshing}
                   onRefresh={onRefresh}
+                  masonry
+                  numColumns={2}
                 />
               </Box>
             ) : (

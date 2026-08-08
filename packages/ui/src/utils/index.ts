@@ -10,3 +10,4 @@ export * from '@repo/ui/utils/shareAction';
 export * from '@repo/ui/utils/stringUtils';
 export * from '@repo/ui/utils/themeColors';
 export * from '@repo/ui/utils/urls';
+export * from '@repo/ui/utils/urls';

@@ -1,6 +1,8 @@
 import type { LibraryResource } from '@repo/library/types';
 
-const LIBRARY_SHARE_BASE_URL = 'https://platform.gurudevi.edlove.org/p/library/resource';
+import { GURUDEVI_APP } from '@repo/ui/utils';
+
+const LIBRARY_SHARE_BASE_URL = `${GURUDEVI_APP}/p/library/resource`;
 
 export interface ResourceCompanionLink {
   id: string;

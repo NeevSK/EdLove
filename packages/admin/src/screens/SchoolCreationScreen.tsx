@@ -2,6 +2,7 @@ import { communityAPI } from '@repo/community';
 import { schoolAPI } from '@repo/core/api';
 import { useSchoolCreation } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
+import { KeyboardAwareForm } from '@repo/core/hooks/useKeyboard';
 
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
@@ -210,12 +211,14 @@ export default function SchoolCreationScreen() {
 
       <StepIndicator currentStep={state.step} totalSteps={TOTAL_STEPS} stepLabels={STEP_LABELS} />
 
-      <ScrollView
-        className="bg-phase-canvas"
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
-      >
-        <Box className="p-4">{renderStep()}</Box>
-      </ScrollView>
+      <KeyboardAwareForm>
+        <ScrollView
+          className="bg-phase-canvas"
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
+        >
+          <Box className="p-4">{renderStep()}</Box>
+        </ScrollView>
+      </KeyboardAwareForm>
 
       {/* Footer Navigation */}
       <Box className="absolute bottom-0 left-0 right-0 bg-phase-surface border-t border-phase-border p-5 pb-10">

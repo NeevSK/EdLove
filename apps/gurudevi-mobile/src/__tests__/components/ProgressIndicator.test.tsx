@@ -8,6 +8,7 @@ describe('ProgressIndicator Component', () => {
     const { getAllByTestId } = await render(<ProgressIndicator currentStep={0} totalSteps={8} />);
     const dots = getAllByTestId(/progress-dot-/);
     expect(dots).toHaveLength(8);
+    dots.forEach((dot) => expect(dot).toBeTruthy());
   });
 
   it('displays step count text', async () => {

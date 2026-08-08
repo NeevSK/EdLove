@@ -1,10 +1,27 @@
-/**
- * Unified application external links configuration.
- * Centralizing these URLs prevents hardcoding and guarantees that changes propagate universally across all web and mobile views.
- */
+/** Public, non-secret destinations shared by Gurudevi app surfaces. */
+function configuredUrl(name: string, fallback: string): string {
+  const value = (typeof process !== 'undefined' && process.env?.[name]) || fallback;
+  const parsed = new URL(value);
+  if (parsed.protocol !== 'https:') throw new Error(`${name} must use https://`);
+  return parsed.toString().replace(/\/$/, '');
+}
+
+export const GURUDEVI_WEB = configuredUrl(
+  'EXPO_PUBLIC_GURUDEVI_MARKETING_URL',
+  'https://gurudevi.edlove.org',
+);
+export const GURUDEVI_APP = configuredUrl(
+  'EXPO_PUBLIC_GURUDEVI_APP_URL',
+  'https://platform.gurudevi.edlove.org',
+);
+export const GURUDEVI_SUPPORT_EMAIL =
+  (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_GURUDEVI_SUPPORT_EMAIL) ||
+  'support@gurudevi.lk';
+
 export const EXTERNAL_URLS = {
-  privacy: 'https://gurudevi.edlove.org/privacy',
-  terms: 'https://gurudevi.edlove.org/terms',
-  guidelines: 'https://gurudevi.edlove.org/guidelines',
-  support: 'https://gurudevi.edlove.org/support',
+  privacy: `${GURUDEVI_WEB}/privacy`,
+  terms: `${GURUDEVI_WEB}/terms`,
+  guidelines: `${GURUDEVI_WEB}/faq#community-boundaries`,
+  support: `${GURUDEVI_WEB}/support`,
+  deleteAccount: `${GURUDEVI_WEB}/delete-account`,
 } as const;

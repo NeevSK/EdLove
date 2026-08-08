@@ -293,6 +293,51 @@ class PolymathPlatformServer {
           '@growthbook/mcp',
         ],
       },
+      {
+        name: 'context7',
+        envKey: 'CONTEXT7_API_KEY',
+        command: 'node',
+        args: [
+          path.join(__dirname, '..', '..', '..', 'scripts', 'mcp-proxy.mjs'),
+          'npx',
+          '-y',
+          '@upstash/context7-mcp',
+        ],
+      },
+      {
+        name: 'firecrawl',
+        envKey: 'FIRECRAWL_API_KEY',
+        command: 'node',
+        args: [
+          path.join(__dirname, '..', '..', '..', 'scripts', 'mcp-proxy.mjs'),
+          'npx',
+          '-y',
+          '@mendable/firecrawl-mcp-server',
+        ],
+      },
+      {
+        name: 'reactnative-solutions',
+        envKey: 'NONE', // No API key required
+        alwaysRun: true,
+        command: 'node',
+        args: [
+          path.join(__dirname, '..', '..', '..', 'scripts', 'mcp-proxy.mjs'),
+          'node',
+          path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
+          'https://reactnative.solutions/api/mcp',
+        ],
+      },
+      {
+        name: 'cloudflare',
+        envKey: 'CLOUDFLARE_API_TOKEN',
+        command: 'node',
+        args: [
+          path.join(__dirname, '..', '..', '..', 'scripts', 'mcp-proxy.mjs'),
+          'node',
+          path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
+          'https://mcp.cloudflare.com/mcp',
+        ],
+      },
     ];
 
     for (const serverConf of servers) {
@@ -345,9 +390,16 @@ class PolymathPlatformServer {
           cleanEnv[serverConf.envKey] = token;
         }
 
+        // Special handling for Context7 to pass API key via command line
+        let finalArgs = serverConf.args;
+        if (serverConf.name === 'context7' && token) {
+          finalArgs = [...serverConf.args, '--api-key', token];
+        }
+        // Firecrawl uses environment variable for API key (already set in cleanEnv)
+
         const transport = new StdioClientTransport({
           command: serverConf.command,
-          args: serverConf.args,
+          args: finalArgs,
           env: cleanEnv,
         });
 
@@ -368,6 +420,36 @@ class PolymathPlatformServer {
         console.error(
           `[Gateway] Successfully bonded downstream server: ${serverConf.name} exposing ${toolsList.length} tools`,
         );
+
+        // Register downstream tools with the gateway server
+        for (const tool of toolsList) {
+          const toolName = `${serverConf.name}_${tool.name}`;
+          this.server.registerTool(toolName, {
+            description: `[${serverConf.name}] ${tool.description || ''}`,
+            inputSchema: z.object({}).passthrough() // Accept any input structure
+          }, async (args: any) => {
+            try {
+              const downstreamClient = this.downstreamClients.get(serverConf.name);
+              if (!downstreamClient) {
+                throw new Error(`Downstream client ${serverConf.name} not available`);
+              }
+              
+              const result = await downstreamClient.client.callTool({
+                name: tool.name,
+                arguments: args
+              });
+              
+              return result;
+            } catch (error: any) {
+              return {
+                content: [{ type: 'text', text: `Error calling ${toolName}: ${error.message}` }],
+                isError: true,
+              };
+            }
+          });
+        }
+        
+        console.error(`[Gateway] Registered ${toolsList.length} tools from ${serverConf.name} as gateway tools`);
       } catch (err: any) {
         console.error(
           `[Gateway] Failed to bind downstream server ${serverConf.name}:`,

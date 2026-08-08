@@ -44,7 +44,7 @@ Nothing else makes permission decisions.
 Citizenship describes registration depth — how far into the system a user has committed. It is not pricing. It is not role. It is independent of both.
 
 ```
-Level 1 — WANDERER
+Level 1 — 
   Supabase anonymous session.
   Guest access. Can read public content.
   Cannot write, cannot join structures, cannot have a bond.
