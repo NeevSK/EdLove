@@ -34,7 +34,13 @@ export interface SovereignEventMap {
   'network:offline': { timestamp: number };
 
   // Background Task
-  'background:pulse': { itemsDrained: number };
+  'background:pulse': {
+    itemsDrained: number;
+    itemsFailed: number;
+    queueLength: number;
+    deadLetterLength: number;
+  };
+  'foreground:sync': { itemsDrained: number; itemsFailed: number; queueLength: number };
 
   // Auth / Session
   'auth:session_expired': Record<string, never>;
