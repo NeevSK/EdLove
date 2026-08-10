@@ -214,6 +214,8 @@ The offline write flow: write attempt → offline detected → insert to local Z
 
 ### ADR-009 — Three hexagonal ports, short-circuit order: entitlement → Cedar → feature flag
 
+> **SUPERSEDED (2026-07-26).** The evaluation order in this ADR (entitlement → Cedar → feature flag) was superseded by [Gurudevi Mobile ADR-005 — Feature Gate Order and Context Ownership](../../apps/gurudevi-mobile/docs/decisions/005-feature-gate-order-and-context-ownership.md). Cedar is now evaluated *before* entitlement: Cedar is the authoritative security boundary, entitlement never grants authorization, and the client must not surface commercial denial information ahead of authorization. The three-port separation, the server-sourced pricing-manifest rule, and the offline-behaviour consequences in this ADR remain valid.
+
 **Context**
 
 Three orthogonal control planes answer different questions about whether an action is permitted: entitlement (has the tenant paid?), Cedar authZ (does this principal have structural permission?), feature flags (is this code path active for this cohort?). Without explicit coordination these checks scatter through the codebase, creating split-brain authorization bugs.

@@ -1,3 +1,23 @@
+---
+title: "Gurudevi — Sanctuary Permission System: Agent Execution Guide"
+status: "superseded"
+created: 2026-06-01
+updated: 2026-08-11
+author: "Naveen"
+tags: [gurudevi, historical, execution-guide]
+superseded_by: "../../../apps/gurudevi-mobile/docs/architecture/feature-lifecycle-management.md"
+---
+
+> **SUPERSEDED — REFACTOR COMPLETE (August 2026).** The permission refactor this guide describes is
+> shipped: `sanctuaryFeature()` (gate order **citizenship → Cedar → entitlement → lifecycle/flag**),
+> `useSanctuaryFeature`, `SanctuaryGuard`, and the CASL shim is deleted. Note: this guide's gate order
+> (entitlement before Cedar) is outdated — Cedar evaluates before entitlement per
+> [ADR-005](../../../apps/gurudevi-mobile/docs/decisions/005-feature-gate-order-and-context-ownership.md).
+> For the current model see
+> [feature-lifecycle-management](../../../apps/gurudevi-mobile/docs/architecture/feature-lifecycle-management.md)
+> and the [permission refactor review report](../../architecture/2026-07-24-permission-refactor-review-report.md).
+> Do not execute this guide.
+
 # Gurudevi — Sanctuary Permission System: Agent Execution Guide
 > Draft 1 — June 2026
 > Execute this when permission system refactor is prioritized.

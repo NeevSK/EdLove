@@ -81,3 +81,14 @@ To prevent massive bundles and cycle traps, we use a **Hybrid Export Strategy**.
     - If a lower layer imports from a higher layer: **Move** the code to the lower layer.
     - If a cycle exists: **Abstract** the shared logic into a new file and move it to a lower layer.
 4. **Enforce**: Once fixed, the rule in `.dependency-cruiser.cjs` ensures the issue never returns.
+## Supabase request boundary
+
+Request-shaped client operations must go through the canonical Hono/API contract
+or an explicit port and adapter. Direct Supabase access is allowlisted only for
+the adapter layer and the Supabase client module itself. Realtime subscriptions
+and the PowerSync bridge are persistent-connection exceptions, not general request
+paths.
+
+Run `pnpm run check:supabase-boundaries` when adding or migrating a data path. The
+checker is intentionally strict and currently reports existing debt; each finding
+must be migrated or explicitly reviewed before the allowlist is reduced.

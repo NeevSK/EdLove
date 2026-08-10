@@ -16,6 +16,12 @@ Welcome to the documentation vault for `gurudevi-mobile`. This file serves as th
 
 ## Feature lifecycle authority — read first
 
+## Schema and database authority
+
+1. [Idealist Builder's Engineering Handbook](./architecture/idealist-builders-engineering-handbook.md) — personal and team mental model for translating human vision into dependable software.
+2. [Schema and Database Trust and Performance Guide](./architecture/schema-db-trust-and-performance.md) — reusable rules for ZModel, Zod, PostgreSQL, RLS/RPC, migrations, idempotency, indexes, and verification.
+3. [Database Parity and Schema Inventory Governance](./database-parity-inventory-governance.md) — object ownership and parity evidence rules.
+
 These documents are the current authority for capability inventory, rollout, stale-flag governance, and retirement. Older Supabase/RPC feature-flag documents remain historical and must not be used as implementation guidance.
 
 1. [Feature Lifecycle Management](./architecture/feature-lifecycle-management.md) — continuously maintained source of truth.

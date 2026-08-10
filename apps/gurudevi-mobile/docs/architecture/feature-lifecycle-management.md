@@ -13,6 +13,8 @@ This is the source-of-truth guide for managing product capabilities and their ro
 
 For day-to-day implementation, use the [new capability and feature flag checklist](./NEW_FEATURE_CHECKLIST.md). Gate precedence and entitlement context ownership are defined in [ADR-005](../decisions/005-feature-gate-order-and-context-ownership.md).
 
+> **Related root docs:** the human-oriented mental model lives in [Gurudevi — Your Guide](../../../../docs/Core/gurudevi-sanctuary-your-guide.md), and the local-first data/event-sourcing principles in [Local-First Architecture Principles](../../../../docs/Core/local-first-architecture-principles.md).
+
 ## Core rule
 
 The AppCatalog answers **what exists**. GrowthBook answers **who receives it now**. Cedar answers **who is authorized**. Entitlements answer **who has commercial access**.

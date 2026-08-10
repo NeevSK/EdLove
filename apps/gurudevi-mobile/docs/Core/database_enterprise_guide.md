@@ -27,8 +27,17 @@ We do not use a "God Table." A user is a multifaceted entity whose attributes de
 If Table A references Table B, Table B **must not** reference Table A. 
 - **Solution:** Use a Profile or a Junction table to break the loop.
 
-### Rule #4: The Feature Matrix
-Never hardcode "Pro" checks like `if (user.is_pro)`. Use the Tier system:
+### Rule #4: The Feature Matrix (legacy guidance — do not use for new code)
+
+This historical guide describes the old `tiers`/`tier_features` matrix. Those
+tables still exist for compatibility, but they are not the current runtime
+authority. New code must use `pricing_manifest` for the public tier/module
+catalog, `user_entitlement_grants` for scoped commercial eligibility, and the
+authorization pipeline for action/data access. Never hardcode "Pro" checks like
+`if (user.is_pro)`.
+
+The old query is retained only as historical context:
+
 ```sql
 -- Reality: We check the Tier Feature Matrix
 SELECT count(*) > 0 

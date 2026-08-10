@@ -1,3 +1,21 @@
+---
+title: "Gurudevi — Unified Domain Registry & Citizenship Refactor: Agent Execution Guide"
+status: "superseded"
+created: 2026-06-01
+updated: 2026-08-11
+author: "Naveen"
+tags: [gurudevi, historical, execution-guide]
+superseded_by: "../../../apps/gurudevi-mobile/docs/architecture/feature-lifecycle-management.md"
+---
+
+> **SUPERSEDED — REFACTOR COMPLETE (August 2026).** The registry/citizenship refactor this guide
+> describes is shipped. WANDERER is gone (normalized to THIRD_CLASS), `CitizenshipLevel` /
+> `meetsCitizenship` live in `packages/core/src/logic/registry/citizenship.ts`, and the AppCatalog /
+> `useDomainFeature` pipeline is live. For the current model see
+> [feature-lifecycle-management](../../../apps/gurudevi-mobile/docs/architecture/feature-lifecycle-management.md)
+> and the [permission refactor review report](../../architecture/2026-07-24-permission-refactor-review-report.md).
+> Do not execute this guide.
+
 # Gurudevi — Unified Domain Registry & Citizenship Refactor: Agent Execution Guide
 > Draft 1 — June 2026
 > Read before starting:

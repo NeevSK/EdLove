@@ -12,7 +12,9 @@ superseded_by: "../apps/gurudevi-mobile/docs/architecture/identity-app-device-li
 
 > Superseded on 2026-07-26 by [Identity, App, Device, and Account Lifecycle](../apps/gurudevi-mobile/docs/architecture/identity-app-device-lifecycle.md).
 > This document remains as historical design context. Its `WANDERER` gate,
-> anonymous no-bond rule, and old citizenship ordering are not current policy.
+> anonymous no-bond rule, old citizenship ordering, and gate order
+> (entitlement before Cedar) are not current policy. The current gate order is
+> Cedar → entitlement per [ADR-005](../../apps/gurudevi-mobile/docs/decisions/005-feature-gate-order-and-context-ownership.md).
 > Draft 1 — June 2026
 > Companion to: gurudevi-architecture-draft-1.md, gurudevi-data-state-lifecycle.md
 > This document covers the intended design of the permission system — the three gates, Cedar as unified authz, flag taxonomy, and intersection with the data/state lifecycle.

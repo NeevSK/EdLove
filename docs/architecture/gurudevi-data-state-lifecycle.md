@@ -167,7 +167,9 @@ How a teacher posts to a circle when online.
 ```
 User writes a post and taps Send
 │
-├─ 1. Hexagonal check (entitlement → Cedar → feature flag) — same as Zone A
+├─ 1. Hexagonal check (Cedar → entitlement → feature flag) — same as Zone A
+│     Cedar is the authoritative security boundary and evaluates before
+│     entitlement; entitlement never grants authorization (ADR-005)
 │     Cedar context includes: scope of target circle (tenant | global)
 │     if global circle: Cedar policy path for cross-tenant resource
 │

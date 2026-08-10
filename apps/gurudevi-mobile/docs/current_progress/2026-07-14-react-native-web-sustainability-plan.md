@@ -1,6 +1,6 @@
 ---
 title: "React Native Web Sustainability and Gurudevi Web Capability Plan"
-status: "active"
+status: "active-with-powersync-follow-up"
 created: 2026-07-14
 updated: 2026-07-14
 author: "Naveen"
@@ -18,7 +18,9 @@ The current evidence is mixed: the project has active contributors and new issue
 
 ## Implementation status
 
-The repository implementation is complete. No additional application code is required for the current Web Push scope; the remaining steps are deployment/runtime configuration.
+The Web Push source path is substantially implemented, but the broader
+PowerSync web/offline path is not complete. Web Push and offline replication
+must be tracked as separate capabilities.
 
 ### Completed in this branch
 
@@ -53,7 +55,9 @@ Production configuration for the push path:
 - Deploy `apps/gurudevi-mobile/supabase/functions/send-push`.
 - Serve the web app over HTTPS; browser Push API and Notifications require a secure context.
 
-Once these values are configured, the current code path is complete. No further source changes are required for Web Push delivery.
+Once these values are configured, Web Push still requires a staging delivery
+test. PowerSync has a separate completeness audit in
+`2026-08-11-powersync-completeness-audit.md`.
 
 ## Future direction (not required for current delivery)
 

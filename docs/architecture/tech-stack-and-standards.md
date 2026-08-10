@@ -58,6 +58,13 @@ Add the URL to the `allowedOrigins` array in the CORS middleware config in `apps
 - No V2-style `plugin zod` codegen — Zod schemas generated at runtime from ORM metadata
 - `@repo/core` uses Zod directly for API contract validation (ts-rest + `@hono/zod-openapi`)
 
+### Valibot (Edge Functions & Serverless)
+
+- **Purpose**: Used in bundle-size and start-time critical environments like Supabase Edge Functions or Cloudflare Workers.
+- **Why**: Standard Zod is heavy and non-tree-shakable. Valibot uses a modular, functional API design that tree-shakes to under 1KB for simple schemas.
+- **Interoperability**: Both Zod and Valibot conform to the **Standard Schema** interface specification, preventing library/framework integration conflicts.
+- **SOP**: Never write manual runtime type guards (`typeof x === 'string' && ...`) for complex payloads. Use Zod in main workspace packages and Valibot in edge functions.
+
 ### Package Split
 
 ```
@@ -66,3 +73,4 @@ Add the URL to the `allowedOrigins` array in the CORS middleware config in `apps
 ```
 
 See [zenstack-schema-architecture.md](zenstack-schema-architecture.md) for full details.
+

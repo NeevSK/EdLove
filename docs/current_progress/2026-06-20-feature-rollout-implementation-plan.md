@@ -16,12 +16,12 @@ Implement a clean feature-rollout system that aligns with the sanctuary architec
 
 This plan is grounded in:
 
-- [docs/2026-06-20-docs-source-of-truth-and-feature-rollout-boundaries.md](/C:/Users/Naween/projects/polymath-platform/docs/decisions/2026-06-20-docs-source-of-truth-and-feature-rollout-boundaries.md)
-- [docs/2026-06-19-sanctuary-authorization-final-architecture.md](/C:/Users/Naween/projects/polymath-platform/docs/2026-06-19-sanctuary-authorization-final-architecture.md)
-- [docs/2026-06-19-sqlite-drizzle-powersync-mechanics-guide.md](/C:/Users/Naween/projects/polymath-platform/docs/2026-06-19-sqlite-drizzle-powersync-mechanics-guide.md)
-- [docs/gurudevi-sanctuary-permission-architecture.md](/C:/Users/Naween/projects/polymath-platform/docs/gurudevi-sanctuary-permission-architecture.md)
-- [docs/gurudevi-data-state-lifecycle.md](/C:/Users/Naween/projects/polymath-platform/docs/gurudevi-data-state-lifecycle.md)
-- [docs/gurudevi-sanctuary-agent-execution-guide.md](/C:/Users/Naween/projects/polymath-platform/docs/gurudevi-sanctuary-agent-execution-guide.md)
+- [decisions/2026-06-20-docs-source-of-truth-and-feature-rollout-boundaries.md](../decisions/2026-06-20-docs-source-of-truth-and-feature-rollout-boundaries.md)
+- [architecture/2026-06-19-sanctuary-authorization-final-architecture.md](../architecture/2026-06-19-sanctuary-authorization-final-architecture.md)
+- [architecture/2026-06-19-sqlite-drizzle-powersync-mechanics-guide.md](../architecture/2026-06-19-sqlite-drizzle-powersync-mechanics-guide.md)
+- [architecture/gurudevi-sanctuary-permission-architecture.md](../architecture/gurudevi-sanctuary-permission-architecture.md) (superseded)
+- [architecture/gurudevi-data-state-lifecycle.md](../architecture/gurudevi-data-state-lifecycle.md)
+- [old_docs/gurudevi-sanctuary-agent-execution-guide.md](old_docs/gurudevi-sanctuary-agent-execution-guide.md) (archived)
 
 ---
 

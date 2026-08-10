@@ -34,7 +34,7 @@ Both use `action: 'update'` because Cedar policy only permits non-admin users `r
 1. **Auth guard** — Returns 401 if no user or user is `'anonymous'`
 2. **Body validation** — Zod schema: `{ orientation: string, context: { displayName, fullName?, firstName?, lastName?, username?, schoolId?, metadata? } }`
 3. **Profile lookup** — `db.user.findUnique` (returns 404 if missing)
-4. **Citizenship computation** — `is_anonymous` → `WANDERER`, authenticated → `SECOND_CLASS`, authenticated + school → `FIRST_CLASS`
+4. **Citizenship computation** — `is_anonymous` → `THIRD_CLASS`, authenticated → `SECOND_CLASS`, authenticated + school → `FIRST_CLASS`
 5. **Personal classroom creation** — Idempotent: checks `findFirst` before `create` (only for `SECOND_CLASS` without schoolId)
 6. **User update** — Sets display_name, full_name, capacity, citizenship, identity_state, etc.
 7. **Bond upsert** — `findFirst` then `update` or `create` based on entity_id, entity_type, capacity

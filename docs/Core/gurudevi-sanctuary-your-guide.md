@@ -1,15 +1,24 @@
+---
+title: "Gurudevi — Your Guide"
+status: "active"
+created: 2026-06-01
+updated: 2026-08-11
+author: "Naveen"
+tags: [gurudevi, permissions, mental-model]
+---
+
 # Gurudevi — Your Guide
-> June 2026 — updated with citizenship rename and registry model
+> August 2026 — updated gate order (Cedar before entitlement) and current state
 > Not for agents. For you — what to hold, what to watch, what to question.
 
 ---
 
 ## The Shape to Hold
 
-Three gates. One function. One guard. One registry.
+One function. One guard. One registry. Four gates.
 
 ```
-citizenship → entitlement → Cedar → feature flag
+citizenship → Cedar → entitlement → feature flag
 ```
 
 That order is the architecture. If you ever see permission logic
@@ -17,6 +26,10 @@ that doesn't fit this sequence — something checking pricing inside
 Cedar, something checking role inside feature flags, something
 checking citizenship inside the entitlement port — that's drift.
 Name it immediately.
+
+Cedar is the authoritative security boundary. It evaluates **before**
+entitlement so a Cedar denial never leaks commercial failure reasons,
+and entitlement never grants authorization. (ADR-005)
 
 The four axes are independent. A feature can be:
 - beta: true AND require PRO entitlement
@@ -34,7 +47,8 @@ ask: which axis does this belong to?
 FIRST_CLASS  = 1   Highest access. In a school. Intended primary user.
 SECOND_CLASS = 2   Signed up. Personal use. Not yet in a school.
 THIRD_CLASS  = 3   Lowest access. Guest / anonymous session.
-                   (was WANDERER — fully renamed, WANDERER is gone)
+                   (was WANDERER — renamed; WANDERER only survives as a
+                    legacy alias normalized to THIRD_CLASS at read time)
 ```
 
 Lower number = more access.
@@ -60,10 +74,11 @@ The citizenship → prompt mapping for UI:
 - SECOND_CLASS failing → "Join a school" (SchoolJoinPrompt)
 - Never show an upgrade/pricing prompt for citizenship failure.
 
-ZenStack schema.zmodel is the SSOT for the citizenship enum.
-WANDERER must be renamed to THIRD_CLASS there.
-ZenStack generates Supabase migrations from zmodel.
-Do not write a manual migration for this.
+ZenStack schema.zmodel is the SSOT for citizenship values:
+`THIRD_CLASS` (default), `SECOND_CLASS`, `FIRST_CLASS`; `WANDERER`
+survives only as a legacy data alias. New data and code must use
+`THIRD_CLASS`. Do not write a manual migration for this — ZenStack
+generates Supabase migrations from zmodel.
 
 ---
 
@@ -75,24 +90,22 @@ assembles them all at boot. Nothing evaluates access inline —
 everything goes through useDomainFeature(id).
 
 ```
-selfRegistry.ts        → self tab domains
-classroomRegistry.ts   → workspace tab domains
-communityRegistry.ts   → community tab domains
-libraryRegistry.ts     → library tab domains
-adminRegistry.ts       → admin/principal domains
-
-AppCatalog             → assembled once at boot
-useDomainFeature(id)   → reads entry + evaluates through gates
+appCatalog.ts         → assembled once at boot, sources the tab registries
+domainEntry.ts        → DomainEntry type (requirements, not logic)
+citizenship.ts        → CitizenshipLevel + meetsCitizenship (only comparison)
+featureLifecycleManifest.ts → feature lifecycle + flag resolution
+featureLifecyclePolicy.ts   → lifecycle state transitions
+useDomainFeature(id)  → reads entry + evaluates through gates
 useFeatureRegistry(tab)→ all domains for a tab, gated
-SanctuaryGuard         → renders based on result
+SanctuaryGuard        → renders based on result
 ```
 
 The registry declares requirements. The gates evaluate them.
 Never put gate logic inside a registry file.
 
 When you add a new domain:
-1. Add its entry to the relevant registry file
-2. Add it to registerAppCatalog.ts
+1. Add its entry to the relevant registry source
+2. Add it to the AppCatalog (registerAppCatalog.ts at boot)
 3. Done — everything else picks it up automatically
 
 ---
@@ -111,47 +124,44 @@ One entry point for all permission questions in the UI.
 
 ---
 
-## Honest State of the Codebase — June 2026
+## Honest State of the Codebase — August 2026
 
-The docs describe the target. The old code is still running.
-Nothing has been papered over but nothing has been replaced yet.
+The refactor is shipped. The gates, registry, and hooks below are
+live code — not design docs.
 
 ```
-DESIGNED — docs exist, not yet implemented:
-  sanctuaryFeature.ts
-  useSanctuaryFeature.ts
-  SanctuaryGuard.tsx
-  citizenship.ts
-  domainEntry.ts
-  appCatalog.ts
-  useDomainFeature.ts
-  registerAppCatalog.ts
-
-PARTIALLY DONE:
-  PowerSyncProvider.tsx     singleton fixed, web factory added
-  database.ts               singleton leak fixed
-  package.json              @powersync/web added, postinstall added
-
-OLD ERA — still exists, runs fine, will be replaced:
-  feature-registry.schema.ts
-  permissionsMap in usePermissionStore
-  CASL Actions/SubjectType in abilities/base.ts
-  isPro in feature-engine.ts
-  FeatureGuard (hybrid)
-  CapabilityGuard
-  CitizenGate
-  useFeatureRegistry (old internal logic)
-  useSanctuaryRegistry (old logic)
-  selfRegistry.ts (old shape, wrong numbering)
-  classroomRegistry.ts (old shape)
-  communityRegistry.ts (old shape)
-  WANDERER in codebase and zmodel
+SHIPPED — implemented, tested, live:
+  citizenship.ts               → CitizenshipLevel + meetsCitizenship
+  domainEntry.ts               → DomainEntry type
+  appCatalog.ts                → AppCatalog assembly
+  featureLifecycleManifest.ts  → lifecycle + flag resolution
+  featureLifecyclePolicy.ts    → lifecycle transitions
+  useDomainFeature.ts          → registry + gate evaluation hook
+  sanctuaryFeature.ts          → pure gate evaluator (no React)
+  useSanctuaryFeature.ts       → hook, reads Zustand + Cedar snapshot
+  SanctuaryGuard.tsx           → packages/ui/src/components/
+  registerAppCatalog.ts        → apps/gurudevi-mobile/src/boot/
+  useFeatureRegistry.ts        → modernized, delegates to sanctuaryFeature
 ```
 
-Risk: any agent reading the codebase without the docs will
-see the old code and assume it is the intended design.
-Always give agents the execution guides before they touch
-permissions or registry. Never let them work from code alone.
+```
+DELETED — old era, removed:
+  abilities/base.ts            → CASL shim
+  FeatureGuard / CapabilityGuard / CitizenGate
+  feature-engine.ts            → isPro era
+  useSanctuaryRegistry / selfRegistry old shapes
+  per-tab registries (self/classroom/community/library/admin)
+    → consolidated into AppCatalog at boot
+```
+
+WANDERER survives in ~16 code spots as a legacy alias that maps to
+THIRD_CLASS at read time (schema comment, hook mappers). It is not
+a first-class value. New code and new data must use THIRD_CLASS.
+
+Risk: an agent reading the codebase without the docs may still find
+a stray WANDERER alias or an old hook and mistake it for intended
+design. The guides in docs/Core are current; the execution guides
+are archived in docs/current_progress/old_docs/ as historical.
 
 ---
 
@@ -164,9 +174,12 @@ isPro or isProMember anywhere:
   { isPro: true }  RED FLAG
   resolveFeatureFlags({ pricing_tier: 'PRO' })  RED FLAG
 
-WANDERER anywhere:
-  CitizenshipLevel.WANDERER  RED FLAG
-  citizenship === 'WANDERER'  RED FLAG
+WANDERER as a first-class value:
+  citizenship === 'WANDERER'  RED FLAG (legacy alias only — normalize to THIRD_CLASS)
+  CitizenLevel.WANDERER       RED FLAG (type does not exist)
+
+New code introducing WANDERER:
+  addCitizenship('WANDERER')  RED FLAG (new data must be THIRD_CLASS)
 
 Raw citizenship numbers:
   citizenshipRequired: 1  RED FLAG (use CITIZENSHIP.FIRST_CLASS)
@@ -209,31 +222,27 @@ Per-resource Cedar evaluation in UI — capability tokens handle write path.
 
 ## The Document Set
 
-gurudevi-architecture-draft-1.md
-  12 ADRs + solution spec. The why behind every decision.
+Current living docs:
 
-gurudevi-data-state-lifecycle.md
-  How data moves. Tool ownership map. Trigger map. Decision rule.
+- apps/gurudevi-mobile/docs/architecture/feature-lifecycle-management.md
+  The living authority for feature lifecycle + gates. Read first.
+- apps/gurudevi-mobile/docs/architecture/identity-app-device-lifecycle.md
+  Identity / citizenship / device / account lifecycle.
+- apps/gurudevi-mobile/docs/decisions/005-feature-gate-order-and-context-ownership.md
+  The gate order: citizenship → Cedar → entitlement → lifecycle/flag.
+- docs/architecture/gurudevi-data-state-lifecycle.md
+  How data moves. Tool ownership map. Trigger map. (See correction note.)
+- docs/architecture/2026-07-24-permission-refactor-review-report.md
+  Review of the shipped refactor.
 
-gurudevi-sanctuary-permission-architecture.md
-  Three-gate permission system. SanctuaryFeature. Port interfaces.
+Historical (superseded / archived, do not use as authority):
 
-gurudevi-powersync-web-plan.md
-  Web integration. Platform factory. VFS matrix. Known risks.
+- docs/architecture/gurudevi-sanctuary-permission-architecture.md (superseded)
+- docs/architecture/gurudevi-architecture-draft-1.md (June draft; ADR-009 superseded)
+- docs/current_progress/old_docs/gurudevi-sanctuary-agent-execution-guide.md (archived)
+- docs/current_progress/old_docs/gurudevi-registry-agent-execution-guide.md (archived)
 
-gurudevi-registry-architecture.md
-  Unified domain registry. DomainEntry. AppCatalog. Citizenship model.
-
-gurudevi-sanctuary-agent-execution-guide.md
-  Permission refactor steps for agent.
-  Give with: permission architecture + lifecycle docs.
-
-gurudevi-registry-agent-execution-guide.md
-  Registry + citizenship refactor steps for agent.
-  Give with: registry architecture + permission architecture.
-
-gurudevi-sanctuary-your-guide.md  (this file)
-  Your mental model. Warning signs. Deferred decisions.
+Your guide: this file.
 
 ---
 

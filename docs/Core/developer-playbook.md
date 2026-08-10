@@ -2,7 +2,7 @@
 title: "The Architect's Playbook"
 status: "active"
 created: 2026-04-08
-updated: 2026-05-06
+updated: 2026-08-11
 author: "Naween"
 tags: [reorganized]
 ---
@@ -106,10 +106,11 @@ Imagine we rename `IdentityCard` to `UserCard`. If that component is used in 400
 ## 📊 Orchestration & Reporting
 
 All audit results are captured into the `reports/` folder:
-- [biome_audit.txt](file:///c:/Users/Naween/projects/polymath-platform/reports/biome_audit.txt)
-- [check-types.txt](file:///c:/Users/Naween/projects/polymath-platform/reports/check-types.txt)
+- [biome_audit.txt](../reports/biome_audit.txt)
+- [check-types.txt](../reports/check-types.txt)
+- [circular_deps.txt](../reports/circular_deps.txt)
 
 > [!TIP]
 > **For AI Agents**: Always check the `reports/` folder first to understand the current "Health delta" of the workspace before suggesting changes. 
 > 
-> You MUST follow the [Sovereign AI Agent Quality Protocol](file:///c:/Users/Naween/projects/polymath-platform/.agents/workflows/sovereign-quality-gate.md) which mandates the use of MCP audit tools before any submission.
+> You MUST follow the [Sovereign AI Agent Quality Protocol](../.agents/workflows/sovereign-quality-gate.md) which mandates the use of MCP audit tools before any submission.
