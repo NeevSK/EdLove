@@ -1,5 +1,5 @@
 import { lessonsAPI } from '@repo/core/api/classroom';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ as supabase } from '@repo/core/api/supabase';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { selfContract } from '@repo/core/api/self.contract';
 import { useStore } from '@repo/core/store/useStore';
 import type { TotalState } from '@repo/core/store';

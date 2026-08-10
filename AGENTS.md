@@ -119,6 +119,13 @@ To update any of these: discuss with the user first, verify compatibility with E
 - Lock files (`pnpm-lock.yaml`) MUST be committed.
 - Feature branches merge forward: feature → main-dev → main. No rebase on long-lived branches.
 
+## Stack Map (REQUIRED after dependency changes)
+
+- **After adding/removing any workspace package or dependency:** run `pnpm run stack-map:bootstrap` (drafts an entry), review it in `docs/RN Terrain/landscape/stack-map-annotations.yaml`, then run `pnpm run stack-map` to regenerate the docs.
+- `docs/RN Terrain/landscape/stack-map.md` + `catalog/` are **generated** — never hand-edit them; edit the annotations YAML instead.
+- The annotations YAML carries: layer (core/ui/domain/tooling/app), summary, overlap verdicts, floating verdicts, upgrade notes.
+- **External deps (npm/SDK/CLI):** `pnpm run stack-map:deps` regenerates `docs/RN Terrain/landscape/dependency-catalog.md` from `dependency-annotations.yaml`. Sacred pins live there — never bump them without user approval.
+
 ---
 
 ## Reference Docs
@@ -127,3 +134,124 @@ To update any of these: discuss with the user first, verify compatibility with E
 - `apps/gurudevi-mobile/docs/infra/expo-57-native-gradle-sop.md` — gradle state, plugin table, decision log
 - `apps/gurudevi-mobile/app.json` — single source of truth for native config
 - `apps/gurudevi-mobile/plugins/` — custom config plugins
+
+---
+
+## Branded Components Usage Guide
+
+The `@repo/ui` package now includes branded components that replace generic system defaults with brand-consistent UI elements. These components use the same motion tokens, colors, and brand geometry throughout the app.
+
+### Motion System
+
+Import motion tokens from `@repo/ui`:
+```typescript
+import { duration, easing, scale, color } from '@repo/ui';
+```
+
+- `duration`: Predefined animation durations (micro, transition, breathe, meaningful, ceremony)
+- `easing`: Easing functions (standard, decelerate, accelerate)
+- `scale`: Scale tokens (enter, rest, breatheMin, breatheMax)
+- `color`: Brand and neutral color palettes
+
+### New Branded Components
+
+#### BrandPulse
+Replaces `ActivityIndicator` / `Spinner` for all loading states. Uses the brand mark with a breathing animation.
+
+```typescript
+import { BrandPulse } from '@repo/ui';
+
+// Default size
+<BrandPulse />
+
+// Custom size and color
+<BrandPulse size={28} tintColor="#D4843A" />
+```
+
+#### ErrorState
+For error/offline states. Uses the brand mark in muted amber (caution color), static (no breathing - the absence of the loop signals "paused").
+
+```typescript
+import { BrandedErrorState } from '@repo/ui';
+
+<BrandedErrorState
+  title="Connection lost"
+  message="Please check your internet connection and try again"
+>
+  <Button onPress={retry}>Try again</Button>
+</BrandedErrorState>
+```
+
+#### Success Components
+Two tiers of success feedback - use deliberately:
+
+- `SuccessCheck`: For trivial actions (field saved, item checked). Fast, generic checkmark.
+- `SuccessGlow`: For meaningful milestones (first connection, session booked). Branded heart with motes.
+
+```typescript
+import { SuccessCheck, SuccessGlow } from '@repo/ui';
+
+// Trivial success
+<SuccessCheck size={22} />
+
+// Meaningful success
+<SuccessGlow size={64} />
+```
+
+#### BrandedEmptyState
+For empty states. Uses the brand mark as an outline (not filled), signifying "hasn't bloomed yet."
+
+```typescript
+import { BrandedEmptyState } from '@repo/ui';
+
+<BrandedEmptyState
+  title="No items yet"
+  message="Create your first item to get started"
+  subtle={false} // Set to true for subtle breathing animation
+>
+  <Button onPress={create}>Create item</Button>
+</BrandedEmptyState>
+```
+
+#### Skeleton Components
+For loading placeholders. Uses the same responsive grid system as real content.
+
+```typescript
+import { ShimmerBlock, BrandedSkeletonCard, BrandedSkeletonList } from '@repo/ui';
+
+// Custom shimmer block
+<ShimmerBlock width="70%" height={12} />
+
+// Skeleton card (thumbnail + lines)
+<BrandedSkeletonCard />
+
+// Skeleton list with responsive grid
+<BrandedSkeletonList count={6} />
+```
+
+### Layout Helpers
+
+Import layout utilities from `@repo/ui`:
+```typescript
+import { useBreakpoint, useResponsiveGrid } from '@repo/ui';
+```
+
+- `useBreakpoint()`: Returns current breakpoint ('phone' | 'tablet' | 'desktop')
+- `useResponsiveGrid()`: Returns grid configuration (columns, maxWidth) for responsive layouts
+
+### Screen Transitions
+
+For Expo Router screen transitions:
+
+```typescript
+import { softCrossfadeScale, sharedTransitionTiming } from '@repo/ui';
+
+// Use in Stack.Screen options
+<Stack.Screen name="example" options={softCrossfadeScale} />
+```
+
+### Backward Compatibility
+
+- The original `EmptyState` component is preserved with its original API (including `icon` and `description` props)
+- New branded components are exported with `Branded` prefix to avoid conflicts
+- Use the branded versions for new development, original versions remain for existing code

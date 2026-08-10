@@ -4,12 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node ../../scripts/run-and-report.mjs --cmd \"tsx watch src/entry-node.ts\" --name \"apps_sanctuary-api-dev\"",
-    "dev:bun": "node ../../scripts/run-and-report.mjs --cmd \"bun --watch src/index.ts\" --name \"apps_sanctuary-api-dev_bun\"",
+    "dev": "doppler run -- node ../../scripts/run-and-report.mjs --cmd \"tsx watch src/entry-node.ts\" --name \"apps_sanctuary-api-dev\"",
+    "dev:bun": "doppler run -- node ../../scripts/run-and-report.mjs --cmd \"bun --watch src/index.ts\" --name \"apps_sanctuary-api-dev_bun\"",
     "dev:rust": "cargo run --manifest-path ../../native-capabilities/Cargo.toml -p gurudevi-authorization-evaluator",
-    "build": "node ../../scripts/run-and-report.mjs --cmd \"tsup src/index.ts src/entry-node.ts --format esm --clean\" --name \"apps_sanctuary-api-build\"",
-    "start": "node ../../scripts/run-and-report.mjs --cmd \"node dist/entry-node.js\" --name \"apps_sanctuary-api-start\"",
-    "start:bun": "node ../../scripts/run-and-report.mjs --cmd \"bun src/index.ts\" --name \"apps_sanctuary-api-start_bun\"",
+    "dev:no-doppler": "node ../../scripts/run-and-report.mjs --cmd \"tsx watch src/entry-node.ts\" --name \"apps_sanctuary-api-dev\"",
+    "build": "doppler run -- node ../../scripts/run-and-report.mjs --cmd \"tsup src/index.ts src/entry-node.ts --format esm --clean\" --name \"apps_sanctuary-api-build\"",
+    "start": "doppler run -- node ../../scripts/run-and-report.mjs --cmd \"node dist/entry-node.js\" --name \"apps_sanctuary-api-start\"",
+    "start:bun": "doppler run -- node ../../scripts/run-and-report.mjs --cmd \"bun src/index.ts\" --name \"apps_sanctuary-api-start_bun\"",
+    "start:no-doppler": "node ../../scripts/run-and-report.mjs --cmd \"node dist/entry-node.js\" --name \"apps_sanctuary-api-start\"",
     "lint": "node ../../scripts/run-and-report.mjs --cmd \"biome check src\" --name \"apps_sanctuary-api-lint\"",
     "format": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs --write\" --name \"apps_sanctuary-api-format\"",
     "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"apps_sanctuary-api-test\"",
@@ -45,7 +47,7 @@
     "dotenv": "^17.4.2",
     "foglamp": "^0.7.1",
     "hono": "^4.12.33",
-    "zod": "^4.4.3"
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.16",

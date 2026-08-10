@@ -53,6 +53,10 @@ report_final.json
 report-*.json
 eslint-report.json
 
+# Database drift snapshots and reports
+**/reports/db-drift/
+
+
 
 # Geo Archive Artifacts
 .geo_archive/

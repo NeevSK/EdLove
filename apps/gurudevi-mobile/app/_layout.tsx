@@ -7,7 +7,7 @@ import 'react-native-worklets';
 import 'react-native-get-random-values';
 import '@repo/ui/global.css';
 
-import { initPostHog, posthogAnalytics as initTracker } from '@repo/analytics';
+import { initPostHog, posthogAnalytics as initTracker } from '@repo/analytics/telemetry';
 import {
   disconnectPowerSync as clearPowerSync,
   usePolicyVersionInvalidation,
@@ -50,6 +50,7 @@ import { FABProvider } from '@repo/ui/context/FABContext';
 import { GluestackUIProvider } from '@repo/ui/gluestack';
 import { Shield } from '@repo/ui/icons';
 import { Box, Center, Spinner } from '@repo/ui/primitives';
+import { BrandPulse } from '@repo/ui';
 import { ToastProvider } from '@repo/ui/providers';
 import { FeatureProvider } from '@repo/ui/providers/FeatureProvider';
 import { sanctuarySaffron } from '@repo/ui/theme';
@@ -110,7 +111,7 @@ configureGoogleOneTap();
 function FullScreenFallback() {
   return (
     <Center className="flex-1 bg-obsidian">
-      <Spinner color={sanctuarySaffron} />
+      <BrandPulse size={28} tintColor="#D4843A" />
     </Center>
   );
 }

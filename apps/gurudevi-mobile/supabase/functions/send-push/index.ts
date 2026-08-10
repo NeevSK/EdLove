@@ -8,6 +8,7 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import webpush from 'npm:web-push@3.6.7';
+import { object, string, optional, record, any, boolean, safeParse, type InferOutput } from 'https://esm.sh/valibot@0.36.0';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -23,24 +24,16 @@ if (vapidPublicKey && vapidPrivateKey && vapidContact) {
   webpush.setVapidDetails(vapidContact, vapidPublicKey, vapidPrivateKey);
 }
 
-type NotificationRequest = {
-  user_id: string;
-  title: string;
-  body: string;
-  category?: string;
-  critical?: boolean;
-  data?: Record<string, unknown>;
-};
+const NotificationRequestSchema = object({
+  user_id: string(),
+  title: string(),
+  body: string(),
+  category: optional(string()),
+  critical: optional(boolean()),
+  data: optional(record(string(), any())),
+});
 
-function isRequest(value: unknown): value is NotificationRequest {
-  if (!value || typeof value !== 'object') return false;
-  const candidate = value as Record<string, unknown>;
-  return (
-    typeof candidate.user_id === 'string' &&
-    typeof candidate.title === 'string' &&
-    typeof candidate.body === 'string'
-  );
-}
+type NotificationRequest = InferOutput<typeof NotificationRequestSchema>;
 
 async function sendWeb(subscriptionJson: string, payload: NotificationRequest) {
   if (!vapidPublicKey || !vapidPrivateKey || !vapidContact) {
@@ -78,20 +71,26 @@ Deno.serve(async (request) => {
     return new Response('Unauthorized', { status: 401 });
   }
 
-  let payload: unknown;
+  let rawPayload: unknown;
   try {
-    payload = await request.json();
+    rawPayload = await request.json();
   } catch {
     return new Response('Invalid JSON', { status: 400 });
   }
 
-  if (!isRequest(payload)) return new Response('Invalid notification payload', { status: 400 });
+  const result = safeParse(NotificationRequestSchema, rawPayload);
+  if (!result.success) {
+    return new Response('Invalid notification payload', { status: 400 });
+  }
+  const payload = result.output;
 
   const { data: preferences, error: preferencesError } = await supabase
     .from('user_preferences')
     .select('notification_settings')
     .eq('user_id', payload.user_id)
     .maybeSingle();
+
+
   if (preferencesError) return new Response('Preference lookup failed', { status: 500 });
 
   const settings = preferences?.notification_settings as {
@@ -121,7 +120,11 @@ Deno.serve(async (request) => {
       } catch (error) {
         const status = error instanceof webpush.WebPushError ? error.statusCode : undefined;
         if (status === 404 || status === 410) {
-          await supabase.from('user_push_tokens').delete().eq('device_id', registration.device_id);
+          await supabase
+            .from('user_push_tokens')
+            .delete()
+            .eq('user_id', payload.user_id)
+            .eq('device_id', registration.device_id);
         }
         return { deviceId: registration.device_id, delivered: false };
       }

@@ -1,4 +1,4 @@
-import { initPostHog, trackEvent } from '@repo/analytics';
+import { initPostHog, trackEvent } from '@repo/analytics/telemetry';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 type WorkerAuditInput = {
