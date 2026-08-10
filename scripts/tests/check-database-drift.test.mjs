@@ -49,9 +49,27 @@ model Post {
   }
 });
 
+test('parseZModelAst honors mapped database column names', async () => {
+  const fs = await import('node:fs');
+  const tempFile = `${process.cwd()}/scripts/tests/.tmp-mapped-schema.zmodel`;
+  fs.writeFileSync(
+    tempFile,
+    `datasource db { provider = "postgresql" url = env("DATABASE_URL") }\nmodel Grade { id String @id number Int @map("grade_number") }`,
+    'utf8',
+  );
+
+  try {
+    const parsed = await parseZModelAst(tempFile);
+    assert.equal(parsed.success, true);
+    assert.equal(parsed.models.Grade.fields.number.dbName, 'grade_number');
+  } finally {
+    fs.rmSync(tempFile, { force: true });
+  }
+});
+
 test('classifyDrift detects missing tables, extra tables, and lockout', () => {
   const models = {
-    users: { name: 'User', fields: { id: { isOptional: false } } },
+    users: { name: 'User', fields: { id: { dbName: 'id', isOptional: false } } },
     posts: { name: 'Post', fields: { id: { isOptional: false }, title: { isOptional: false } } },
   };
   const dbSchema = {
@@ -73,6 +91,37 @@ test('classifyDrift detects missing tables, extra tables, and lockout', () => {
   assert.ok(result.policyDrifts.some((d) => d.type === 'RLS_LOCKOUT'));
 });
 
+test('classifyDrift treats @map database names as modeled columns', () => {
+  const result = classifyDrift(
+    { grades: { name: 'Grade', fields: { number: { dbName: 'grade_number', isOptional: false } } } },
+    { grades: { grade_number: { isNullable: false } } },
+    [{ tablename: 'grades', rowsecurity: false }],
+    {},
+    [],
+  );
+  assert.equal(result.stats.COLUMN_MISSING_IN_DB, 0);
+  assert.equal(result.stats.EXTRA_COLUMN_IN_DB, 0);
+});
+
+test('classifyDrift distinguishes unmodeled views from unmodeled tables', () => {
+  const result = classifyDrift(
+    {},
+    {
+      active_classrooms: { classroom_id: { isNullable: false } },
+      legacy_records: { id: { isNullable: false } },
+    },
+    [
+      { tablename: 'active_classrooms', relkind: 'v', rowsecurity: false },
+      { tablename: 'legacy_records', relkind: 'r', rowsecurity: false },
+    ],
+    {},
+    [],
+  );
+  assert.equal(result.stats.EXTRA_VIEW_IN_DB, 1);
+  assert.equal(result.stats.EXTRA_TABLE_IN_DB, 1);
+  assert.equal(result.structuralDrifts.find((d) => d.table === 'active_classrooms').severity, 'low');
+});
+
 test('renderDriftReport includes provenance and snapshot links', () => {
   const report = renderDriftReport({
     today: '2026-06-27',
@@ -84,9 +133,10 @@ test('renderDriftReport includes provenance and snapshot links', () => {
       totalChecks: 10,
       passedChecks: 9,
     },
-    stats: {
+      stats: {
       TABLE_MISSING: 1,
       EXTRA_TABLE_IN_DB: 0,
+      EXTRA_VIEW_IN_DB: 0,
       COLUMN_MISSING_IN_DB: 0,
       EXTRA_COLUMN_IN_DB: 0,
       NULLABILITY_MISMATCH: 0,

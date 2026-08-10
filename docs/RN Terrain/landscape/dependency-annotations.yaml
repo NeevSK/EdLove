@@ -1,0 +1,521 @@
+# Dependency Catalog annotations — curated.
+# Docs are generated: pnpm run stack-map:deps
+# Fields: category (override heuristic), purpose, notes, sacred (pinned version string)
+
+metadata:
+  updated: 2026-08-09
+
+global_tools:
+  node:
+    category: runtime
+    purpose: "JS runtime for the whole monorepo"
+    notes: "mise-managed 24.15.0; engines pin >=22.23 <23."
+  pnpm:
+    category: runtime
+    purpose: "Workspace package manager (v11)"
+    notes: "mise-managed; preinstall guard enforces pnpm; lockfile committed."
+  bun:
+    category: runtime
+    purpose: "Script runner / bundle experiments"
+    notes: "mise-managed 1.3.14; not the primary toolchain."
+  dagger:
+    category: ci
+    purpose: "CI/CD pipelines (dagger.ts SDK)"
+    notes: "Node SDK is npm (@dagger.io/dagger); dagger CLI installed separately."
+  eas-cli:
+    category: mobile
+    purpose: "EAS build/submit for the mobile app (.easrc)"
+    notes: "Expo application services CLI."
+  expo-cli:
+    category: mobile
+    purpose: "expo prebuild / start / doctor workflows"
+    notes: "NEVER run `expo install --fix` in this repo (see AGENTS.md)."
+  gradle:
+    category: mobile
+    purpose: "Android builds (AGP, Kotlin)"
+    notes: "android/ is generated — edit only via app.json config plugins."
+  xcode:
+    category: mobile
+    purpose: "iOS builds / cocoapods"
+    notes: "ios/ is generated — edit only via app.json config plugins."
+  rust:
+    category: native
+    purpose: "Inline native module spike (spike-rust-inline)"
+    notes: "Experimental path for new-arch native code."
+  promptfoo:
+    category: eval
+    purpose: "LLM evaluation suites (promptfooconfig.yaml)"
+    notes: "Run via npx/pnpm dlx."
+
+dependency_entries:
+  react:
+    category: native
+    purpose: "UI runtime — pinned 19.2.3 via workspace override"
+    notes: "Do not bump independently of React Native 0.86."
+  react-native:
+    category: native
+    purpose: "Mobile platform runtime (~0.86.0, new arch)"
+    notes: "Sacred platform — upgrades gated on Expo SDK 57 compatibility."
+  expo:
+    category: native
+    purpose: "Expo SDK 57 framework"
+    notes: "Never `expo install --fix`; use expo-doctor for diagnostics."
+  react-native-reanimated:
+    category: animation
+    purpose: "Animation engine (v4, new arch)"
+    sacred: "4.5.0"
+  react-native-worklets:
+    category: animation
+    purpose: "Worklet thread runtime required by Reanimated 4"
+    sacred: "0.11.1"
+  react-native-gesture-handler:
+    category: ui-kit
+    purpose: "Gesture system (v3, new arch)"
+    sacred: "3.0.2"
+  react-native-mmkv:
+    category: storage
+    purpose: "High-performance key-value store (Nitro v4)"
+    sacred: "4.3.2"
+  react-native-nitro-modules:
+    category: native
+    purpose: "Nitro module bridge (new arch native modules)"
+    sacred: "0.36.1"
+  "@shopify/react-native-skia":
+    category: graphics
+    purpose: "GPU graphics engine for RN (new arch)"
+    sacred: "2.6.5"
+  typescript:
+    category: tooling
+    purpose: "Compiler — sacred 7.0.2 (latest stable)"
+    sacred: "7.0.2"
+  "@supabase/supabase-js":
+    category: data-sync
+    purpose: "Postgres/Realtime client"
+    notes: "10 consumers — consolidate access through @repo/database."
+  "@supabase/postgrest-js":
+    category: data-sync
+    purpose: "PostgREST query layer (supabase-js companion)"
+  "@supabase/mcp-server-supabase":
+    category: mcp
+    purpose: "Supabase MCP server for agents"
+  "@zenstackhq/orm":
+    category: orm-db
+    purpose: "ZenStack ORM runtime (V3)"
+  "@zenstackhq/zod":
+    category: orm-db
+    purpose: "ZenStack → zod schemas"
+  "@zenstackhq/schema":
+    category: orm-db
+    purpose: "ZModel schema language runtime"
+  drizzle-orm:
+    category: orm-db
+    purpose: "Typed SQL ORM (used beside ZenStack — dual-access risk)"
+    notes: "watch: keep write paths in one ORM family."
+  kysely:
+    category: orm-db
+    purpose: "Type-safe SQL query builder"
+  pg:
+    category: orm-db
+    purpose: "Postgres driver"
+  zod:
+    category: validation
+    purpose: "Schema validation — pinned 4.3.6 workspace-wide"
+  "@powersync/react":
+    category: data-sync
+    purpose: "PowerSync React bindings"
+  "@powersync/react-native":
+    category: data-sync
+    purpose: "PowerSync RN bindings (offline sync)"
+  "@powersync/web":
+    category: data-sync
+    purpose: "PowerSync web client"
+  "@powersync/op-sqlite":
+    category: data-sync
+    purpose: "PowerSync SQLite adapter"
+  "@powersync/drizzle-driver":
+    category: data-sync
+    purpose: "PowerSync → drizzle driver"
+  "@journeyapps/wa-sqlite":
+    category: data-sync
+    purpose: "WebAssembly SQLite (web fallback)"
+  "@op-engineering/op-sqlite":
+    category: data-sync
+    purpose: "Native SQLite module for RN"
+  "@tanstack/react-query":
+    category: state
+    purpose: "Server-state/data-fetching core (12 consumers)"
+  "@tanstack/query-core":
+    category: state
+    purpose: "Framework-agnostic query core"
+  zustand:
+    category: state
+    purpose: "Client-side store"
+  xstate:
+    category: state
+    purpose: "State machines (flows)"
+  "@tanstack/ai":
+    category: ai
+    purpose: "TanStack AI core (agents/streams)"
+  "@tanstack/ai-client":
+    category: ai
+    purpose: "TanStack AI client"
+  "@tanstack/ai-react":
+    category: ai
+    purpose: "TanStack AI React hooks"
+  "@tanstack/ai-anthropic":
+    category: ai
+    purpose: "TanStack AI Anthropic adapter"
+  "@tanstack/ai-gemini":
+    category: ai
+    purpose: "TanStack AI Gemini adapter"
+  "@tanstack/ai-openai":
+    category: ai
+    purpose: "TanStack AI OpenAI adapter"
+  "@ai-sdk/anthropic":
+    category: ai
+    purpose: "AI SDK Anthropic provider"
+  "@ai-sdk/google":
+    category: ai
+    purpose: "AI SDK Google provider"
+  "@ai-sdk/openai":
+    category: ai
+    purpose: "AI SDK OpenAI provider"
+  hono:
+    category: api
+    purpose: "Web framework for sanctuary-api"
+  "@hono/node-server":
+    category: api
+    purpose: "Node server adapter for Hono"
+  "@hono/zod-openapi":
+    category: api
+    purpose: "OpenAPI generation from zod routes"
+  "@hono/swagger-ui":
+    category: api
+    purpose: "Swagger UI middleware"
+  "@orpc/server":
+    category: api
+    purpose: "oRPC server (typed RPC over Hono)"
+  "@orpc/client":
+    category: api
+    purpose: "oRPC client"
+  "@orpc/contract":
+    category: api
+    purpose: "oRPC shared contracts"
+  "@orpc/openapi":
+    category: api
+    purpose: "oRPC → OpenAPI"
+  "@scalar/hono-api-reference":
+    category: api
+    purpose: "Scalar API reference UI for Hono"
+  "@ts-rest/core":
+    category: api
+    purpose: "Type-safe REST contracts"
+  "@cedar-policy/cedar-wasm":
+    category: auth
+    purpose: "Cedar authorization decision engine (permissions as data)"
+  "@growthbook/growthbook":
+    category: flags
+    purpose: "Feature flags & experiments client"
+  "@stripe/stripe-react-native":
+    category: payments
+    purpose: "Stripe payments in the mobile app"
+  "@sentry/react-native":
+    category: observability
+    purpose: "Crash/error monitoring (mobile)"
+  "@sentry/cli":
+    category: observability
+    purpose: "Sentry upload/debug CLI"
+  "@sentry/browser":
+    category: observability
+    purpose: "Crash/error monitoring (web)"
+  posthog-js:
+    category: observability
+    purpose: "Product analytics (web)"
+  posthog-react-native:
+    category: observability
+    purpose: "Product analytics (mobile)"
+  pino:
+    category: observability
+    purpose: "Structured logging"
+  "@opentelemetry/api":
+    category: observability
+    purpose: "Tracing API"
+  "@opentelemetry/sdk-trace-base":
+    category: observability
+    purpose: "OTel tracing SDK"
+  "@opentelemetry/exporter-trace-otlp-http":
+    category: observability
+    purpose: "OTLP HTTP trace exporter"
+  inngest:
+    category: workflows
+    purpose: "Background jobs/durable workflows"
+  react-i18next:
+    category: i18n
+    purpose: "i18n React bindings (12 consumers)"
+  i18next:
+    category: i18n
+    purpose: "i18n core"
+  date-fns:
+    category: utility
+    purpose: "Date utilities"
+  uuid:
+    category: utility
+    purpose: "UUID generation"
+  semver:
+    category: utility
+    purpose: "Version comparison (rn-terrain, tooling)"
+  dotenv:
+    category: utility
+    purpose: "Env file loading (tools)"
+  "@expo-google-fonts/inter":
+    category: media
+    purpose: "Inter font package"
+  "@expo-google-fonts/poppins":
+    category: media
+    purpose: "Poppins font package"
+  "@react-native-ml-kit/text-recognition":
+    category: scanning
+    purpose: "OCR text recognition"
+  "@react-native-ml-kit/barcode-scanning":
+    category: scanning
+    purpose: "Barcode/QR scanning"
+  qrcode:
+    category: scanning
+    purpose: "QR code generation"
+  jsqr:
+    category: scanning
+    purpose: "QR decoding (JS)"
+  nativewind:
+    category: styling
+    purpose: "Tailwind for React Native"
+  react-native-css-interop:
+    category: styling
+    purpose: "CSS→RN bridge powering NativeWind"
+  "@react-native-async-storage/async-storage":
+    category: storage
+    purpose: "Async key-value storage"
+  expo-secure-store:
+    category: crypto
+    purpose: "Secure keychain storage"
+  "@react-navigation/core":
+    category: navigation
+    purpose: "Navigation core primitives"
+  "@react-navigation/routers":
+    category: navigation
+    purpose: "Navigation routers"
+  expo-router:
+    category: navigation
+    purpose: "File-based routing for the mobile app"
+  react-native-screens:
+    category: navigation
+    purpose: "Native screen containers"
+  react-native-safe-area-context:
+    category: navigation
+    purpose: "Safe area handling"
+  lucide-react-native:
+    category: icons
+    purpose: "Icon set (13 consumers — re-export via @repo/ui)"
+  lucide-react:
+    category: icons
+    purpose: "Icon set (web)"
+  phosphor-react-native:
+    category: icons
+    purpose: "Phosphor icons (mobile)"
+  "@shopify/flash-list":
+    category: ui-kit
+    purpose: "High-performance lists"
+  "@swmansion/react-native-bottom-sheet":
+    category: ui-kit
+    purpose: "Native bottom sheets"
+  gluestack-ui:
+    category: ui-kit
+    purpose: "Headless UI kit"
+  react-native-keyboard-controller:
+    category: ui-kit
+    purpose: "Keyboard-aware layout"
+  "@legendapp/list":
+    category: ui-kit
+    purpose: "Perf lists alternative"
+  react-native-maps:
+    category: maps
+    purpose: "Native maps"
+  "@maplibre/maplibre-react-native":
+    category: maps
+    purpose: "MapLibre RN maps"
+  "@nishansanjuka/srilanka_geographics":
+    category: maps
+    purpose: "Sri Lanka geo dataset (used by lk-edu-geo)"
+  d3:
+    category: graphics
+    purpose: "Data visualization primitives (web)"
+  d3-force:
+    category: graphics
+    purpose: "Force layouts (graphs)"
+  d3-hierarchy:
+    category: graphics
+    purpose: "Hierarchical layouts"
+  three:
+    category: graphics
+    purpose: "3D rendering (web)"
+  typegpu:
+    category: graphics
+    purpose: "GPU compute for web"
+  gsap:
+    category: graphics
+    purpose: "Web animation library"
+  culori:
+    category: graphics
+    purpose: "Color math (contrast tooling)"
+  apca-w3:
+    category: graphics
+    purpose: "APCA contrast algorithm"
+  effect:
+    category: utility
+    purpose: "Typed functional runtime"
+  react-native-blur:
+    category: ui-kit
+    purpose: "Blur views"
+  expo-gl:
+    category: graphics
+    purpose: "WebGL for Expo"
+  react-native-svg:
+    category: graphics
+    purpose: "SVG rendering"
+  "@rnx-kit/eslint-plugin":
+    category: lint
+    purpose: "RN metro/eslint rules"
+  eslint-plugin-react-compiler:
+    category: lint
+    purpose: "React Compiler lint rules"
+  eslint-plugin-react-native-a11y:
+    category: lint
+    purpose: "Accessibility lint rules"
+  oxlint:
+    category: lint
+    purpose: "Rust linter (fast lane)"
+  "@biomejs/biome":
+    category: lint
+    purpose: "Formatter + linter"
+  prettier:
+    category: lint
+    purpose: "Code formatter (legacy lane)"
+  knip:
+    category: tooling
+    purpose: "Unused code/dep detection"
+  syncpack:
+    category: tooling
+    purpose: "Dependency version alignment"
+  dependency-cruiser:
+    category: tooling
+    purpose: "Architecture/cycle enforcement"
+  "@changesets/cli":
+    category: tooling
+    purpose: "Versioning & changelogs"
+  turbo:
+    category: build
+    purpose: "Monorepo task runner"
+  vite:
+    category: build
+    purpose: "Web dev server/build"
+  "@vitejs/plugin-react":
+    category: build
+    purpose: "React plugin for Vite"
+  "@tailwindcss/vite":
+    category: build
+    purpose: "Tailwind v4 Vite plugin"
+  astro:
+    category: build
+    purpose: "Site framework (4 site apps)"
+  "@astrojs/sitemap":
+    category: build
+    purpose: "Astro sitemap integration"
+  "@astrojs/svelte":
+    category: build
+    purpose: "Astro Svelte islands"
+  svelte:
+    category: build
+    purpose: "Island framework for Astro sites"
+  "@modelcontextprotocol/sdk":
+    category: mcp
+    purpose: "MCP protocol SDK (rn-terrain-mcp)"
+  mcp-remote:
+    category: mcp
+    purpose: "Remote MCP client bridge"
+  vitest:
+    category: testing
+    purpose: "Unit test runner"
+  jest:
+    category: testing
+    purpose: "Legacy test runner (jest-expo)"
+  jest-expo:
+    category: testing
+    purpose: "Jest preset for Expo"
+  "@testing-library/react-native":
+    category: testing
+    purpose: "RN component testing"
+  "@testing-library/react":
+    category: testing
+    purpose: "React component testing"
+  "@testing-library/jest-dom":
+    category: testing
+    purpose: "jest-dom matchers"
+  "@playwright/test":
+    category: testing
+    purpose: "E2E browser tests"
+  reassure:
+    category: testing
+    purpose: "RN perf regression tests"
+  jest-cucumber:
+    category: testing
+    purpose: "BDD feature tests"
+  size-limit:
+    category: tooling
+    purpose: "Bundle size budgets"
+  "@size-limit/preset-small-lib":
+    category: tooling
+    purpose: "Size-limit preset"
+  promptfoo:
+    category: eval
+    purpose: "LLM eval suites (also global tool)"
+  gitleaks:
+    category: tooling
+    purpose: "Secret scanning"
+  husky:
+    category: tooling
+    purpose: "Git hooks"
+  lint-staged:
+    category: tooling
+    purpose: "Staged-file linting"
+  commitlint:
+    category: tooling
+    purpose: "Commit message conventions"
+  "@commitlint/config-conventional":
+    category: tooling
+    purpose: "Conventional commits rules"
+  jscpd:
+    category: tooling
+    purpose: "Copy/paste detection"
+  madge:
+    category: tooling
+    purpose: "Module dependency graph"
+  supabase:
+    category: tooling
+    purpose: "Supabase CLI (local dev, migrations)"
+  "@dagger.io/dagger":
+    category: tooling
+    purpose: "Dagger SDK (CI pipelines)"
+  "@types/react":
+    category: types
+    purpose: "React type definitions"
+  "@types/react-native":
+    category: types
+    purpose: "RN type shim (via @repo/types-shim)"
+  "@types/node":
+    category: types
+    purpose: "Node type definitions"
+  "@types/semver":
+    category: types
+    purpose: "semver types"
+  "@types/vscode":
+    category: types
+    purpose: "VS Code extension types (rn-terrain-vscode)"

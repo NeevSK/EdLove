@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 
 import {
   classifyDrift,
@@ -20,11 +20,15 @@ const DEFAULT_OUT_DIR = path.join(APP_DIR, 'reports', 'db-drift');
 const IGNORE_MANIFEST_PATH = path.join(ROOT, '.driftignore.ast.json');
 
 const args = process.argv.slice(2);
-const options = { outDir: DEFAULT_OUT_DIR, dryRun: false, noWrite: false };
+const options = { outDir: DEFAULT_OUT_DIR, dryRun: false, noWrite: false, failOnDrift: false };
 for (let i = 0; i < args.length; i += 1) {
   const arg = args[i];
-  if (arg === '--dry-run') options.dryRun = true;
+  if (arg === '--dry-run') {
+    options.dryRun = true;
+    options.noWrite = true;
+  }
   else if (arg === '--no-write') options.noWrite = true;
+  else if (arg === '--fail-on-drift') options.failOnDrift = true;
   else if (arg === '--out-dir' && args[i + 1]) {
     options.outDir = path.resolve(ROOT, args[i + 1]);
     i += 1;
@@ -35,13 +39,49 @@ function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
+const TEXT_EXTENSIONS = new Set(['.js', '.jsx', '.mjs', '.cjs', '.ts', '.tsx', '.sql', '.zmodel', '.json']);
+const SKIPPED_DIRS = new Set([
+  'node_modules', '.git', 'reports', 'dist', 'build', '.expo', 'coverage',
+  '.vercel', '.astro', 'archives', 'public', 'old', 'old_docs', 'generated', 'data',
+]);
+
+function collectTextFiles(root, files = []) {
+  if (!fs.existsSync(root)) return files;
+  for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
+    if (entry.isDirectory() && SKIPPED_DIRS.has(entry.name)) continue;
+    const fullPath = path.join(root, entry.name);
+    if (entry.isDirectory()) {
+      if (fullPath.includes(`${path.sep}src${path.sep}generated`)) continue;
+      collectTextFiles(fullPath, files);
+    } else if (TEXT_EXTENSIONS.has(path.extname(entry.name).toLowerCase())) {
+      files.push(fullPath);
+    }
+  }
+  return files;
+}
+
+function collectUsage(objectName, files) {
+  const escapedName = objectName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const pattern = new RegExp(`\\b${escapedName}\\b`, 'g');
+  let count = 0;
+  const references = [];
+  for (const file of files) {
+    const matches = fs.readFileSync(file, 'utf8').match(pattern);
+    if (!matches) continue;
+    count += matches.length;
+    if (references.length < 8) references.push(path.relative(ROOT, file).replaceAll('\\', '/'));
+  }
+  return { count, references };
+}
+
 function readSupabaseQuery(sql) {
   const tempFile = path.join(APP_DIR, '.temp_query.sql');
   fs.writeFileSync(tempFile, sql, 'utf8');
   try {
-    const output = execSync('npx supabase db query --linked -o json -f .temp_query.sql', {
+    const output = execFileSync('npx.cmd', ['supabase', 'db', 'query', '--linked', '-o', 'json', '-f', tempFile], {
       cwd: APP_DIR,
       encoding: 'utf8',
+      shell: process.platform === 'win32',
       stdio: ['ignore', 'pipe', 'pipe'],
     }).trim();
     if (!output) return [];
@@ -60,7 +100,7 @@ if (!fs.existsSync(ZMODEL_PATH)) {
   process.exit(1);
 }
 
-ensureDir(options.outDir);
+if (!options.noWrite) ensureDir(options.outDir);
 
 const parsed = await parseZModelAst(ZMODEL_PATH);
 if (!parsed.success) {
@@ -96,10 +136,12 @@ try {
     ORDER BY tablename, policyname;
   `);
   dbTablesRows = readSupabaseQuery(`
-    SELECT tablename, rowsecurity
-    FROM pg_tables
-    WHERE schemaname = 'public'
-    ORDER BY tablename;
+    SELECT c.relname AS tablename, c.relkind, c.relrowsecurity AS rowsecurity
+    FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'public'
+      AND c.relkind IN ('r', 'p', 'v', 'm', 'f')
+    ORDER BY c.relname;
   `);
 } catch (error) {
   console.error('Failed to query Supabase.');
@@ -128,6 +170,64 @@ const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
 const snapshotPath = path.join(options.outDir, `${timestamp}-database-snapshot.json`);
 const summaryPath = path.join(options.outDir, `${timestamp}-database-drift-summary.json`);
 const reportPath = path.join(options.outDir, `${today}-database-drift-scorecard.md`);
+const inventoryPath = path.join(options.outDir, 'database-inventory.json');
+const inventoryReportPath = path.join(options.outDir, 'database-inventory.md');
+
+const relationKindLabels = {
+  r: 'table',
+  p: 'partitioned-table',
+  v: 'view',
+  m: 'materialized-view',
+  f: 'foreign-table',
+};
+
+const codeFiles = [
+  ...collectTextFiles(path.join(ROOT, 'apps')),
+  ...collectTextFiles(path.join(ROOT, 'packages')),
+].filter((file) => {
+  const extension = path.extname(file).toLowerCase();
+  const normalized = file.replaceAll('\\', '/');
+  return ['.js', '.jsx', '.mjs', '.cjs', '.ts', '.tsx'].includes(extension)
+    && !normalized.includes('/supabase/migrations/')
+    && !normalized.includes('/i18n/locales/')
+    && !path.basename(file).startsWith('package.')
+    && !path.basename(file).includes('.config.');
+});
+const migrationFiles = collectTextFiles(path.join(APP_DIR, 'supabase', 'migrations'));
+
+const inventory = Object.keys(dbSchema)
+  .sort()
+  .map((tableName) => {
+    const relation = dbTablesRows.find((row) => row.tablename === tableName);
+    const modeled = Boolean(parsed.models[tableName]);
+    const ignored = summary.ignoredTables.includes(tableName);
+    const relationKind = relationKindLabels[relation?.relkind] ?? 'unknown';
+    let classification = 'needs-review';
+    if (modeled) classification = 'modeled';
+    else if (ignored) classification = 'platform-managed';
+    else if (relationKind === 'view' || relationKind === 'materialized-view') classification = 'derived-view';
+    else if (relationKind === 'foreign-table') classification = 'foreign-table';
+
+    return {
+      object: tableName,
+      relationKind,
+      modeled,
+      classification,
+      reviewState: modeled || ignored ? 'accepted' : 'needs-review',
+      owner: modeled ? 'Gurudevi schema' : null,
+      reason: modeled ? 'Described by packages/schema/schema.zmodel' : null,
+      policyCount: (dbPolicies[tableName] || []).length,
+      rlsEnabled: Boolean(relation?.rowsecurity),
+      columns: Object.keys(dbSchema[tableName]),
+      codeUsage: collectUsage(tableName, codeFiles),
+      migrationUsage: collectUsage(tableName, migrationFiles),
+    };
+  });
+
+const inventoryCounts = inventory.reduce((counts, item) => {
+  counts[item.classification] = (counts[item.classification] || 0) + 1;
+  return counts;
+}, {});
 
 const snapshot = {
   generatedAt: new Date().toISOString(),
@@ -150,6 +250,7 @@ const snapshot = {
     modeled: Boolean(parsed.models[tableName]),
     policyCount: (dbPolicies[tableName] || []).length,
     rlsEnabled: Boolean(dbTablesRows.find((row) => row.tablename === tableName)?.rowsecurity),
+    relationKind: dbTablesRows.find((row) => row.tablename === tableName)?.relkind ?? null,
   })),
   ignoreWarnings: ignoreManifest.warnings,
 };
@@ -157,6 +258,30 @@ const snapshot = {
 if (!options.noWrite) {
   fs.writeFileSync(snapshotPath, JSON.stringify(snapshot, null, 2) + '\n', 'utf8');
   fs.writeFileSync(summaryPath, JSON.stringify({ ...summary, ignoreWarnings: ignoreManifest.warnings }, null, 2) + '\n', 'utf8');
+  fs.writeFileSync(
+    inventoryPath,
+    JSON.stringify({
+      generatedAt: new Date().toISOString(),
+      source: 'linked Supabase database via CLI',
+      model: 'packages/schema/schema.zmodel',
+      reviewRule: 'Every unmodeled non-system object remains needs-review until explicitly classified.',
+      counts: inventoryCounts,
+      objects: inventory,
+    }, null, 2) + '\n',
+    'utf8',
+  );
+  const inventoryRows = inventory
+    .filter((item) => item.reviewState === 'needs-review')
+    .map((item) => `| ${item.object} | ${item.relationKind} | ${item.classification} | ${item.codeUsage.count} | ${item.migrationUsage.count} | ${item.policyCount} | ${item.rlsEnabled ? 'yes' : 'no'} | pending |`)
+    .join('\n');
+  fs.writeFileSync(
+    inventoryReportPath,
+    `# Database Object Inventory\n\nGenerated: ${new Date().toISOString()}\n\n` +
+      `This is a review queue, not an ignore list. Unmodeled objects remain pending until an owner and reason are recorded.\n\n` +
+      `## Counts\n\n${Object.entries(inventoryCounts).map(([key, value]) => `- ${key}: ${value}`).join('\n')}\n\n` +
+      `## Pending objects\n\n| Object | Kind | Classification | Code refs | Migration refs | Policies | RLS | Owner/reason |\n| --- | --- | --- | ---: | ---: | ---: | --- | --- |\n${inventoryRows || '| None | — | — | — | — | — | — | — |'}\n`,
+    'utf8',
+  );
   fs.writeFileSync(
     reportPath,
     renderDriftReport({
@@ -182,3 +307,9 @@ console.log(`Score: ${summary.score}/100`);
 console.log(`Snapshot: ${snapshotPath}`);
 console.log(`Summary: ${summaryPath}`);
 console.log(`Report: ${reportPath}`);
+console.log(`Inventory: ${inventoryPath}`);
+console.log(`Inventory review queue: ${inventoryReportPath}`);
+
+if (options.failOnDrift && (summary.structuralDrifts.length > 0 || summary.policyDrifts.length > 0)) {
+  process.exitCode = 1;
+}

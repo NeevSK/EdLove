@@ -32,8 +32,15 @@ export async function parseZModelAst(schemaFile) {
       for (const field of decl.fields) {
         if (!isDataField(field)) continue;
         if (isRelationField(field)) continue;
+        const mapAttr = field.attributes?.find(
+          (attr) => attr.decl?.$refText === '@map',
+        );
+        const mappedName = mapAttr?.args?.[0]?.value?.value;
+        const typeName = String(field.type?.type ?? field.type?.$refText ?? 'Unknown');
         fields[field.name] = {
-          type: field.type?.$type ?? 'Unknown',
+          dbName: typeof mappedName === 'string' ? mappedName : field.name,
+          type: typeName,
+          isArray: Boolean(field.type?.array),
           isOptional: Boolean(field.type?.optional),
         };
       }
@@ -159,6 +166,7 @@ export function classifyDrift(models, dbSchema, dbTablesRows, dbPolicies, ignore
   const stats = {
     TABLE_MISSING: 0,
     EXTRA_TABLE_IN_DB: 0,
+    EXTRA_VIEW_IN_DB: 0,
     COLUMN_MISSING_IN_DB: 0,
     EXTRA_COLUMN_IN_DB: 0,
     NULLABILITY_MISMATCH: 0,
@@ -172,7 +180,7 @@ export function classifyDrift(models, dbSchema, dbTablesRows, dbPolicies, ignore
 
   for (const [tableName, zmodel] of Object.entries(models)) {
     const dbTable = dbSchema[tableName];
-    const tableRow = dbTablesRows.find((row) => row.tablename === tableName);
+    const tableRow = dbTablesRows.find((row) => (row.tablename ?? row.object_name) === tableName);
     const policyCount = (dbPolicies[tableName] || []).length;
     const rlsEnabled = Boolean(tableRow?.rowsecurity);
 
@@ -196,17 +204,18 @@ export function classifyDrift(models, dbSchema, dbTablesRows, dbPolicies, ignore
 
     for (const [fieldName, field] of Object.entries(zmodel.fields)) {
       totalChecks += 1;
-      const dbField = dbTable[fieldName];
+      const dbName = field.dbName ?? fieldName;
+      const dbField = dbTable[dbName];
       if (!dbField) {
         structuralDrifts.push({
           table: tableName,
           type: 'COLUMN_MISSING_IN_DB',
           severity: 'high',
           confidence: 'high',
-          message: `Column "${fieldName}" is declared in ZModel but missing in "${tableName}".`,
+          message: `Column "${dbName}" (ZModel field "${fieldName}") is declared in ZModel but missing in "${tableName}".`,
         });
         stats.COLUMN_MISSING_IN_DB += 1;
-        tableInfo.issues.push(`missing_column:${fieldName}`);
+        tableInfo.issues.push(`missing_column:${dbName}`);
         continue;
       }
       passedChecks += 1;
@@ -218,10 +227,10 @@ export function classifyDrift(models, dbSchema, dbTablesRows, dbPolicies, ignore
           type: 'NULLABILITY_MISMATCH',
           severity: 'medium',
           confidence: 'high',
-          message: `Column "${fieldName}" on "${tableName}" differs in nullability: ZModel optional=${field.isOptional}, DB nullable=${dbField.isNullable}.`,
+          message: `Column "${dbName}" (ZModel field "${fieldName}") on "${tableName}" differs in nullability: ZModel optional=${field.isOptional}, DB nullable=${dbField.isNullable}.`,
         });
         stats.NULLABILITY_MISMATCH += 1;
-        tableInfo.issues.push(`nullability:${fieldName}`);
+        tableInfo.issues.push(`nullability:${dbName}`);
         continue;
       }
       passedChecks += 1;
@@ -229,7 +238,10 @@ export function classifyDrift(models, dbSchema, dbTablesRows, dbPolicies, ignore
 
     for (const columnName of Object.keys(dbTable)) {
       totalChecks += 1;
-      if (!zmodel.fields[columnName]) {
+      const modeledField = Object.values(zmodel.fields).find(
+        (field) => (field.dbName ?? '') === columnName,
+      );
+      if (!zmodel.fields[columnName] && !modeledField) {
         structuralDrifts.push({
           table: tableName,
           type: 'EXTRA_COLUMN_IN_DB',
@@ -269,14 +281,19 @@ export function classifyDrift(models, dbSchema, dbTablesRows, dbPolicies, ignore
       continue;
     }
     totalChecks += 1;
+    const relationRow = dbTablesRows.find((row) => (row.tablename ?? row.object_name) === tableName);
+    const relationKind = relationRow?.relkind;
+    const isView = relationKind === 'v' || relationKind === 'm';
     structuralDrifts.push({
       table: tableName,
-      type: 'EXTRA_TABLE_IN_DB',
-      severity: 'critical',
+      type: isView ? 'EXTRA_VIEW_IN_DB' : 'EXTRA_TABLE_IN_DB',
+      severity: isView ? 'low' : 'critical',
       confidence: 'high',
-      message: `Table "${tableName}" exists in the remote database but is not modeled in ZModel.`,
+      message: isView
+        ? `View "${tableName}" exists in the remote database but is not modeled in ZModel.`
+        : `Table "${tableName}" exists in the remote database but is not modeled in ZModel.`,
     });
-    stats.EXTRA_TABLE_IN_DB += 1;
+    stats[isView ? 'EXTRA_VIEW_IN_DB' : 'EXTRA_TABLE_IN_DB'] += 1;
   }
 
   const score = totalChecks === 0 ? 100 : Math.max(0, Math.round((passedChecks / totalChecks) * 100));
@@ -366,6 +383,7 @@ tags: [architecture, database, score, audit]
 | :--- | :---: |
 | TABLE_MISSING | ${stats.TABLE_MISSING} |
 | EXTRA_TABLE_IN_DB | ${stats.EXTRA_TABLE_IN_DB} |
+| EXTRA_VIEW_IN_DB | ${stats.EXTRA_VIEW_IN_DB ?? 0} |
 | COLUMN_MISSING_IN_DB | ${stats.COLUMN_MISSING_IN_DB} |
 | EXTRA_COLUMN_IN_DB | ${stats.EXTRA_COLUMN_IN_DB} |
 | NULLABILITY_MISMATCH | ${stats.NULLABILITY_MISMATCH} |
