@@ -20,14 +20,14 @@ export const createGradingRepository = (supabase: SupabaseClient) => ({
     created_at: string;
     updated_at: string;
   }) {
-    const { data, error } = await supabase.from('grades').upsert(input).select().single();
+    const { data, error } = await supabase.from('student_grades').upsert(input).select().single();
     if (error) throw new APIError('Failed to submit grade', error.code, error);
     return StudentGradeSchema.parse(data) as Grade;
   },
 
   async getGradeById(gradeId: string) {
     const { data, error } = await supabase
-      .from('grades')
+      .from('student_grades')
       .select('*')
       .eq('id', gradeId)
       .maybeSingle();
@@ -46,7 +46,7 @@ export const createGradingRepository = (supabase: SupabaseClient) => ({
     },
   ) {
     const { data, error } = await supabase
-      .from('grades')
+      .from('student_grades')
       .update(updates)
       .eq('id', gradeId)
       .select()
@@ -57,7 +57,7 @@ export const createGradingRepository = (supabase: SupabaseClient) => ({
 
   async getGradesByStudent(studentId: string) {
     const { data, error } = await supabase
-      .from('grades')
+      .from('student_grades')
       .select('*')
       .eq('student_id', studentId)
       .order('created_at', { ascending: false });
@@ -67,7 +67,7 @@ export const createGradingRepository = (supabase: SupabaseClient) => ({
 
   async getGradesByClassroom(classroomId: string) {
     const { data, error } = await supabase
-      .from('grades')
+      .from('student_grades')
       .select('*')
       .eq('classroom_id', classroomId)
       .order('marks', { ascending: false });
@@ -99,7 +99,7 @@ export const createGradingRepository = (supabase: SupabaseClient) => ({
   },
 
   async deleteGrade(gradeId: string) {
-    const { error } = await supabase.from('grades').delete().eq('id', gradeId);
+    const { error } = await supabase.from('student_grades').delete().eq('id', gradeId);
     if (error) throw new APIError('Failed to delete grade', error.code, error);
   },
 });

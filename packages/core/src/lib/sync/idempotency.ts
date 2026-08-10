@@ -1,5 +1,7 @@
 import crypto from 'isomorphic-webcrypto';
 
+export type IdempotencyPayload = Record<string, unknown> | unknown[] | string | number | boolean | null;
+
 /**
  * generateIdempotencyKey
  *
@@ -28,6 +30,23 @@ export async function generateIdempotencyKey(
   // Convert buffer to hex string
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Produces the canonical deterministic key for a retryable batch. Objects are
+ * recursively key-sorted so equivalent payloads produce the same key.
+ */
+export async function getConsistentIdempotencyKey(
+  payload: IdempotencyPayload,
+  namespace?: string,
+): Promise<string> {
+  const stablePayload = sortObject(payload);
+  const input = `${namespace ?? 'default'}:${JSON.stringify(stablePayload)}`;
+  const data = new TextEncoder().encode(input);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('');
 }
 
 /**

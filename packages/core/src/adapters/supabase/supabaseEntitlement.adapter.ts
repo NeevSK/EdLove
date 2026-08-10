@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { getDrizzleDB } from '@repo/core/adapters/powersync/database';
 import { pricingManifest } from '@repo/core/adapters/powersync/schema';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import type {
   EntitlementGrant,
   EntitlementScopeContext,
@@ -11,7 +11,7 @@ import type {
 } from '@repo/core/logic/ports/entitlement.port';
 
 async function getUserPricingTier(userId: string): Promise<string> {
-  const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+  const { data, error } = await supabaseClient
     .from('users')
     .select('pricing_tier')
     .eq('id', userId)
@@ -109,7 +109,7 @@ export class SupabaseEntitlementAdapter implements IEntitlementPort {
     scope: EntitlementScopeContext = {},
   ): Promise<EntitlementSnapshot> {
     const userTier = normalizeTier(await getUserPricingTier(userId));
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('user_entitlement_grants')
       .select(
         'id, bond_id, entity_id, entity_type, scope_type, tier, modules, status, starts_at, expires_at',

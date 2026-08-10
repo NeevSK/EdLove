@@ -4,7 +4,7 @@ import { useTemporalStore } from '../../store/useTemporalStore';
 import { gradingAPI } from '../orchestration/specialized';
 
 vi.mock('../supabase', () => ({
-  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__: {
+  supabaseClient: {
     from: vi.fn(() => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({

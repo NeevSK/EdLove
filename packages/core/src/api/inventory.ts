@@ -7,7 +7,7 @@ import { InventoryItemSchema } from '@repo/core/logic/schemas/inventory_item.sch
 import type { InventoryItem } from '@repo/core/types';
 import { APIError } from '@repo/core/types/API';
 import { operationsContract } from '@repo/core/api/operations.contract';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 /**
  * API methods for Managing Classroom Inventory.
@@ -19,7 +19,7 @@ export const inventoryAPI = {
    * @policy read Inventory
    */
   async getAll(classroomId: string): Promise<InventoryItem[]> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('classroom_inventory')
       .select('*')
       .eq('classroom_id', classroomId)
@@ -37,7 +37,7 @@ export const inventoryAPI = {
    * @policy update Inventory
    */
   async update(id: string, updates: Partial<InventoryItem>): Promise<InventoryItem> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('classroom_inventory')
       .update(updates)
       .eq('id', id)
@@ -56,7 +56,7 @@ export const inventoryAPI = {
    * @policy read Inventory
    */
   async getSchoolResourceNeeds(schoolId: string): Promise<any[]> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('resource_needs')
       .select('*')
       .eq('school_id', schoolId)
@@ -73,7 +73,7 @@ export const inventoryAPI = {
    * @policy create Inventory
    */
   async createRequest(vars: { item_id: string; quantity: number; notes?: string }): Promise<any> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('inventory_requests')
       .insert({
         item_id: vars.item_id,
@@ -96,7 +96,7 @@ export const inventoryAPI = {
    * @policy read Inventory
    */
   async getSchoolRequests(schoolId: string): Promise<any[]> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('inventory_requests')
       .select(`
                 *,

@@ -1,6 +1,6 @@
 import { APIError } from '@repo/core/types/API';
 import { identityAPI } from '@repo/core/api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 export interface StudentEcho {
   id: string;
@@ -30,7 +30,7 @@ export const echoAPI = {
     const identity = await identityAPI.identifyActiveCitizen();
     if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('classroom_echo_feedback')
       .insert([
         {
@@ -53,7 +53,7 @@ export const echoAPI = {
     const identity = await identityAPI.identifyActiveCitizen();
     if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('classroom_echo_feedback')
       .select('*')
       .eq('student_id', identity.id)
@@ -71,7 +71,7 @@ export const echoAPI = {
     if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
     // Check if teacher for this classroom (simplified check for now)
-    const { data: classData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data: classData } = await supabaseClient
       .from('classrooms')
       .select('teacher_id')
       .eq('id', classroomId)
@@ -79,7 +79,7 @@ export const echoAPI = {
 
     const isTeacher = classData?.teacher_id === identity.id;
 
-    let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    let query = supabaseClient
       .from('classroom_echo_feedback')
       .select(`
                 *,
@@ -109,7 +109,7 @@ export const echoAPI = {
    * Fetch echoes for a teacher (feedback from their students).
    */
   async getTeacherEchoes(classroomId: string): Promise<StudentEcho[]> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('classroom_echo_feedback')
       .select(`
                 *,
@@ -136,7 +136,7 @@ export const echoAPI = {
     const identity = await identityAPI.identifyActiveCitizen();
     if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('classroom_echo_feedback')
       .update({
         teacher_response: response,
@@ -156,7 +156,7 @@ export const echoAPI = {
    * Mark an echo as read without responding.
    */
   async markAsRead(echoId: string): Promise<void> {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { error } = await supabaseClient
       .from('classroom_echo_feedback')
       .update({ is_read: true })
       .eq('id', echoId);

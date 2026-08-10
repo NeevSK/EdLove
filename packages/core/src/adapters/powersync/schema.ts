@@ -33,6 +33,31 @@ export const userEntitlementGrants = sqliteTable(
   ],
 );
 
+// ─── User Preferences ────────────────────────────────────────────────────────
+// Arrays and JSON are serialized by PowerSync into SQLite text columns.
+export const userPreferences = sqliteTable(
+  'user_preferences',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    favoriteFeatures: text('favorite_features').notNull(),
+    hiddenFeatures: text('hidden_features').notNull(),
+    morningCheckTime: text('morning_check_time'),
+    afternoonCheckTime: text('afternoon_check_time'),
+    eveningWindDownTime: text('evening_wind_down_time'),
+    enableContextualPrompts: integer('enable_contextual_prompts', { mode: 'boolean' })
+      .notNull()
+      .default(true),
+    enableUsageTracking: integer('enable_usage_tracking', { mode: 'boolean' })
+      .notNull()
+      .default(true),
+    notificationSettings: text('notification_settings'),
+    updatedAt: text('updated_at').notNull(),
+    createdAt: text('created_at').notNull(),
+  },
+  (table) => [index('user_preferences_user_idx').on(table.userId)],
+);
+
 /**
  * PowerSync Schema — Client-Side Drizzle SQLite Table Definitions (May 2026)
  *
@@ -47,6 +72,76 @@ export const userEntitlementGrants = sqliteTable(
  * @see https://docs.powersync.com/usage/use-case-examples/drizzle
  */
 import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+
+// ─── Offline identity bonds ──────────────────────────────────────────────────
+// Bonds are the local read projection of ReBAC context. They are refreshed by
+// the server and never become an offline authority for privileged mutations.
+export const bonds = sqliteTable(
+  'bonds',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    entityId: text('entity_id').notNull(),
+    entityType: text('entity_type').notNull(),
+    capacity: text('capacity').notNull(),
+    metadata: text('metadata'),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+  },
+  (table) => [
+    index('bonds_user_idx').on(table.userId),
+    index('bonds_entity_idx').on(table.entityId, table.entityType),
+  ],
+);
+
+// ─── Offline classroom membership ────────────────────────────────────────────
+// Supports teacher-created shadow students and later account claiming.
+export const classroomStudents = sqliteTable(
+  'classroom_students',
+  {
+    id: text('id').primaryKey(),
+    classroomId: text('classroom_id').notNull(),
+    studentId: text('student_id'),
+    fullName: text('full_name'),
+    inviteCode: text('invite_code'),
+    rollNumber: integer('roll_number'),
+    enrolledAt: text('enrolled_at').notNull(),
+    claimedAt: text('claimed_at'),
+    status: text('status').notNull(),
+    joinedAt: text('joined_at').notNull(),
+    notes: text('notes'),
+  },
+  (table) => [
+    index('classroom_students_classroom_status_idx').on(table.classroomId, table.status),
+    index('classroom_students_student_status_idx').on(table.studentId, table.status),
+  ],
+);
+
+// ─── Offline institutional membership ───────────────────────────────────────
+export const schoolMemberships = sqliteTable(
+  'school_memberships',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    schoolId: text('school_id').notNull(),
+    role: text('role').notNull(),
+    status: text('status').notNull(),
+    startDate: text('start_date'),
+    endDate: text('end_date'),
+    isPrimary: integer('is_primary', { mode: 'boolean' }),
+    deletedAt: text('deleted_at'),
+    createdAt: text('created_at'),
+    updatedAt: text('updated_at'),
+    deletedBy: text('deleted_by'),
+    deletionReason: text('deletion_reason'),
+    joinedAt: text('joined_at'),
+    leftAt: text('left_at'),
+  },
+  (table) => [
+    index('school_memberships_user_idx').on(table.userId),
+    index('school_memberships_school_status_idx').on(table.schoolId, table.status),
+  ],
+);
 
 // ─── Attendance ───────────────────────────────────────────────────────────────
 export const attendance = sqliteTable(
@@ -215,6 +310,9 @@ export const formResponses = sqliteTable(
 
 // ─── Shared Database Schema Object ────────────────────────────────────────────
 export const AppSchema = {
+  bonds,
+  classroomStudents,
+  schoolMemberships,
   attendance,
   students,
   classrooms,
@@ -227,11 +325,21 @@ export const AppSchema = {
   formResponses,
   pricingManifest,
   userEntitlementGrants,
+  userPreferences,
 };
 
 // ─── Relational TypeScript Types ──────────────────────────────────────────────
 export type Attendance = typeof attendance.$inferSelect;
 export type InsertAttendance = typeof attendance.$inferInsert;
+
+export type Bond = typeof bonds.$inferSelect;
+export type InsertBond = typeof bonds.$inferInsert;
+
+export type ClassroomStudent = typeof classroomStudents.$inferSelect;
+export type InsertClassroomStudent = typeof classroomStudents.$inferInsert;
+
+export type SchoolMembership = typeof schoolMemberships.$inferSelect;
+export type InsertSchoolMembership = typeof schoolMemberships.$inferInsert;
 
 export type Student = typeof students.$inferSelect;
 export type InsertStudent = typeof students.$inferInsert;
@@ -262,6 +370,9 @@ export type InsertPricingManifest = typeof pricingManifest.$inferInsert;
 
 export type UserEntitlementGrant = typeof userEntitlementGrants.$inferSelect;
 export type InsertUserEntitlementGrant = typeof userEntitlementGrants.$inferInsert;
+
+export type UserPreference = typeof userPreferences.$inferSelect;
+export type InsertUserPreference = typeof userPreferences.$inferInsert;
 
 export type PolicyVersion = typeof policyVersion.$inferSelect;
 export type InsertPolicyVersion = typeof policyVersion.$inferInsert;

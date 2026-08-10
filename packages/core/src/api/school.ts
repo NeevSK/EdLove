@@ -4,8 +4,9 @@ import {
   SchoolSchema,
   SchoolStatsSchema,
   SectionSchema,
+  EduSchoolSchema,
 } from '@repo/core/logic/schemas/school.schema';
-import type { SchoolGrade as Grade, School, SchoolStats, Section } from '@repo/core/types';
+import type { EduSchool, SchoolGrade as Grade, School, SchoolStats, Section } from '@repo/core/types';
 
 /**
  * API methods for Managing School Institutions.
@@ -60,6 +61,12 @@ export const schoolAPI = {
   async searchSchools(query: string): Promise<School[]> {
     const data = await educational.institutions.search(query);
     return (data || []).map((s) => SchoolSchema.parse(s)) as unknown as School[];
+  },
+
+  /** Search canonical registry facts without creating a tenant school. */
+  async searchCanonicalSchools(query: string, limit = 20): Promise<EduSchool[]> {
+    const data = await educational.institutions.searchCanonical(query, limit);
+    return (data || []).map((school) => EduSchoolSchema.parse(school)) as EduSchool[];
   },
 
   /**
@@ -123,7 +130,7 @@ export const schoolAPI = {
   /**
    * Generate a new invite code for a school
    */
-  async generateInviteCode(schoolId: string, capacity: string, createdBy: string): Promise<any> {
-    return educational.institutions.generateInviteCode(schoolId, capacity, createdBy);
+  async generateInviteCode(schoolId: string, capacity: string, createdBy: string, idempotencyKey?: string): Promise<any> {
+    return educational.institutions.generateInviteCode(schoolId, capacity, createdBy, idempotencyKey);
   },
 };

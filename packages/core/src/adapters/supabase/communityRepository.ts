@@ -1,4 +1,4 @@
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import type { ICommunityRepository, PostFilters } from '@repo/core/logic/domains/community/ports';
 import { CommunityPostSchema } from '@repo/core/logic/schemas/community.schema';
 import { applyTemporalFilter } from '@repo/core/logic/utils/temporalUtils';
@@ -7,7 +7,7 @@ import { APIError } from '@repo/core/types/API';
 
 export class SupabaseCommunityRepository implements ICommunityRepository {
   private get client() {
-    return __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__;
+    return supabaseClient;
   }
 
   async getPosts(filters: PostFilters): Promise<Post[]> {

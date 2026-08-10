@@ -4,10 +4,10 @@ import type {
   PowerSyncCredentials,
 } from '@repo/core/adapters/powersync/powersync-shim';
 import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { sovereignBus } from '@repo/core/lib/sync/eventBus';
 import { runEffect, tryPromise } from '@repo/core/utils/effect';
-import { getConsistentIdempotencyKey } from '@repo/core/utils/idempotency';
+import { getConsistentIdempotencyKey } from '@repo/core/lib/sync/idempotency';
 import { Duration, Effect, Schedule } from 'effect';
 
 const POWERSYNC_URL = process.env.EXPO_PUBLIC_POWERSYNC_URL ?? '';
@@ -20,13 +20,13 @@ class PowerSyncUploadError {
   ) {}
 }
 
-function fetchSession$(): Effect.Effect<{ access_token: string }, PowerSyncUploadError> {
-  return tryPromise(() => __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getSession()).pipe(
+function fetchSession$(): Effect.Effect<{ access_token: string; user_id: string }, PowerSyncUploadError> {
+  return tryPromise(() => supabaseClient.auth.getSession()).pipe(
     Effect.mapError((error) => new PowerSyncUploadError(0, error.message)),
     Effect.flatMap(({ data: { session }, error }) =>
-      error || !session || session.user?.is_anonymous
-        ? Effect.fail(new PowerSyncUploadError(0, 'no_session'))
-        : Effect.succeed(session),
+      error || !session || !session.user || session.user.is_anonymous
+      ? Effect.fail(new PowerSyncUploadError(0, 'no_session'))
+        : Effect.succeed({ access_token: session.access_token, user_id: session.user.id }),
     ),
   );
 }
@@ -48,14 +48,19 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
         );
 
         const client = createSovereignClient(SOVEREIGN_API_URL);
-        const idempotencyKey = yield* tryPromise(() => getConsistentIdempotencyKey(batch.crud));
+        const idempotencyKey = yield* tryPromise(() =>
+          getConsistentIdempotencyKey(batch.crud, `powersync:${session.user_id}`),
+        );
 
-        const body = batch.crud.map((c) => ({
-          id: c.id,
-          op: c.op,
-          table: c.table,
-          opData: c.opData,
-        }));
+        const body = {
+          crud: batch.crud.map((c) => ({
+            id: c.id,
+            op: c.op,
+            table: c.table,
+            opData: c.opData,
+          })),
+          idempotencyKey,
+        };
 
         yield* tryPromise(() =>
           (client.api as any).powersync.upload.$post(

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import type { UserRewardsSnapshot } from '@repo/core/logic/domains/profile/ports';
 import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
 import { applyTemporalFilter } from '@repo/core/logic/utils/temporalUtils';
@@ -40,7 +40,7 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
     queryFn: async () => {
       if (!userId) return [];
 
-      let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      let query = supabaseClient
         .from('mood_logs')
         .select('*')
         .eq('user_id', userId);
@@ -71,7 +71,7 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
     queryKey: ['journey_history_journal', userId, viewDate, viewScale],
     queryFn: async () => {
       if (!userId) return [];
-      let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      let query = supabaseClient
         .from('journal_entries')
         .select('*')
         .eq('user_id', userId);
@@ -102,7 +102,7 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
     queryFn: async () => {
       if (!userId) return [];
 
-      let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      let query = supabaseClient
         .from('user_growth_state_versions')
         .select('id, operation, recorded_at, snapshot')
         .eq('user_id', userId);
@@ -148,7 +148,7 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
     queryFn: async () => {
       if (!userId) return [];
 
-      let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      let query = supabaseClient
         .from('user_rewards_versions')
         .select('id, operation, recorded_at, snapshot')
         .eq('user_id', userId);
@@ -181,7 +181,7 @@ export function useJourneyHistory(_section?: string, _feature?: string) {
     queryFn: async () => {
       if (!userId) return [];
 
-      let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      let query = supabaseClient
         .from('whispered_moments')
         .select('id, moment_key, moment_name_en, moment_name_si, awarded_at')
         .eq('user_id', userId);

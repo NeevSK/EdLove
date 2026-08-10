@@ -1,7 +1,7 @@
 import { Data, Duration, Effect, pipe, Schedule } from 'effect';
 import { registerActiveBondIdResolver, registerTokenResolver } from '@repo/core/api/contract';
 import type { Identity } from '@repo/core/api/identity.generated';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { storage } from '@repo/core/lib/storage';
 import type { IIdentityPort } from '@repo/core/logic/ports/identity.port';
 import { APIError } from '@repo/core/types/API';
@@ -13,7 +13,7 @@ import { tryPromise } from '@repo/core/utils/effect';
 
 registerTokenResolver(async () => {
   try {
-    const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getSession();
+    const { data } = await supabaseClient.auth.getSession();
     return data?.session?.access_token ?? null;
   } catch {
     return null;
@@ -22,7 +22,7 @@ registerTokenResolver(async () => {
 
 registerActiveBondIdResolver(async () => {
   try {
-    const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getUser();
+    const { data } = await supabaseClient.auth.getUser();
     if (!data?.user?.id) return null;
     const persisted = await storage.getStringAsync(`active_perspective_${data.user.id}`);
     if (!persisted) return null;
@@ -79,13 +79,13 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   private cachedAuthUid: string | null = null;
 
   async resolveInternalId(provider: string, providerUserId: string): Promise<string | null> {
-    if (provider === '__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__' && this.cachedInternalId) {
+    if (provider === 'supabaseClient' && this.cachedInternalId) {
       return this.cachedInternalId;
     }
 
     const result = await runEffect(
       supabaseCall(() =>
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        supabaseClient
           .from('auth_identities')
           .select('user_id')
           .eq('provider', provider)
@@ -96,7 +96,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
     const resolvedId = (result as { user_id?: string } | null)?.user_id ?? null;
 
-    if (provider === '__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__' && resolvedId) {
+    if (provider === 'supabaseClient' && resolvedId) {
       this.cachedInternalId = resolvedId;
     }
 
@@ -106,7 +106,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   async linkIdentity(userId: string, provider: string, providerUserId: string): Promise<void> {
     await runEffect(
       supabaseCall(() =>
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('auth_identities').upsert(
+        supabaseClient.from('auth_identities').upsert(
           {
             user_id: userId,
             provider,
@@ -118,13 +118,13 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
       ),
     );
 
-    if (provider === '__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__') {
+    if (provider === 'supabaseClient') {
       this.cachedInternalId = userId;
     }
   }
 
   async identifyActiveCitizen(): Promise<Identity | null> {
-    const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getUser();
+    const { data } = await supabaseClient.auth.getUser();
     const user = data?.user;
     if (!user) {
       this.cachedInternalId = null;
@@ -140,7 +140,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
     if (!internalId) {
       internalId = await this.resolveInternalId(
-        '__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__',
+        'supabaseClient',
         authUid,
       );
       this.cachedAuthUid = authUid;
@@ -148,7 +148,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
       if (!internalId) {
         const legacyResult = await runEffect(
           supabaseCall(() =>
-            __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+            supabaseClient
               .from('users')
               .select('id')
               .eq('id', authUid)
@@ -158,10 +158,10 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
         if (legacyResult._tag === 'Some') {
           const legacyId = (legacyResult.value as any).id;
-          await this.linkIdentity(legacyId, '__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__', authUid);
+          await this.linkIdentity(legacyId, 'supabaseClient', authUid);
           internalId = legacyId;
         } else {
-          await this.linkIdentity(authUid, '__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__', authUid);
+          await this.linkIdentity(authUid, 'supabaseClient', authUid);
           internalId = authUid;
         }
       }
@@ -187,7 +187,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   async getProfile(userId: string): Promise<User> {
     return runEffect(
       supabaseCall(() =>
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        supabaseClient
           .from('users')
           .select('*')
           .eq('id', userId)
@@ -199,7 +199,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   async getBonds(userId: string): Promise<Bond[]> {
     const result = await Effect.runPromise(
       supabaseCall(() =>
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        supabaseClient
           .from('bonds')
           .select('*')
           .eq('user_id', userId)
@@ -243,13 +243,13 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   async getActivePerspective(): Promise<Perspective | null> {
     if (this.activePerspective) return this.activePerspective;
 
-    const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getUser();
+    const { data } = await supabaseClient.auth.getUser();
     if (!data?.user) return null;
 
     let userId = this.cachedInternalId;
     if (!userId) {
       const authUid = data.user.id;
-      userId = await this.resolveInternalId('__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__', authUid);
+      userId = await this.resolveInternalId('supabaseClient', authUid);
       if (!userId) userId = authUid;
     }
 
@@ -307,7 +307,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
     const profile = await runEffect(
       supabaseCall(() =>
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        supabaseClient
           .from('users')
           .select('is_anonymous')
           .eq('id', userId)
@@ -370,7 +370,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
       const pcResult = await Effect.runPromise(
         supabaseCall(() =>
-          __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+          supabaseClient
             .from('personal_classrooms')
             .insert({
               name: classroomName,
@@ -397,7 +397,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
     await runEffect(
       supabaseCall(() =>
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        supabaseClient
           .from('users')
           .update({
             display_name,
@@ -419,7 +419,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
     await runEffect(
       supabaseCall(() =>
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('bonds').upsert(
+        supabaseClient.from('bonds').upsert(
           {
             user_id: userId,
             entity_id,
@@ -459,7 +459,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
     await runEffect(
       supabaseCall(() =>
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        supabaseClient
           .from('users')
           .update(normalizedUpdates)
           .eq('id', userId),
@@ -470,7 +470,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   async blockUser(blockerId: string, blockedId: string): Promise<void> {
     await runEffect(
       supabaseCall(() =>
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        supabaseClient
           .from('user_blocks')
           .insert([{ blocker_id: blockerId, blocked_id: blockedId }]),
       ),
@@ -480,7 +480,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   async unblockUser(blockerId: string, blockedId: string): Promise<void> {
     await runEffect(
       supabaseCall(() =>
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        supabaseClient
           .from('user_blocks')
           .delete()
           .eq('blocker_id', blockerId)
@@ -492,7 +492,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
   async completeProfile(userId: string, data: any): Promise<void> {
     await runEffect(
       supabaseCall(() =>
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        supabaseClient
           .from('users')
           .update({
             display_name:
@@ -532,7 +532,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
             const capacity = (profile as any).capacity || 'teacher';
 
             const pc = yield* supabaseCall(() =>
-              __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+              supabaseClient
                 .from('personal_classrooms')
                 .insert({
                   name: `${(profile as any).display_name || 'Sanctuary'}'s Workspace`,
@@ -553,7 +553,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
             if (pc) {
               yield* supabaseCall(() =>
-                __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('bonds').upsert(
+                supabaseClient.from('bonds').upsert(
                   {
                     user_id: userId,
                     entity_id: (pc as any).id,
@@ -585,7 +585,7 @@ export class SupabaseIdentityAdapter implements IIdentityPort {
 
     await runEffect(
       supabaseCall(() =>
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        supabaseClient
           .from('users')
           .update({
             onboarding_completed: true,

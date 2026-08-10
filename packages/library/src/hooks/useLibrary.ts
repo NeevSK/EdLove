@@ -2,7 +2,7 @@
 
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo } from 'react';
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { libraryAPI } from '@repo/library/api/library';
 import { knowledgeSync } from '@repo/library/api/sync';
 import type { CollectionFilters, CreateCollectionInput, CreateResourceInput, LibraryCollection, ResourceFilters } from '@repo/library/types';

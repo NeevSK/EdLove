@@ -79,6 +79,11 @@ export function createSecureDrizzleProxy(db: any): any {
     get(target, prop, receiver) {
       const originalValue = Reflect.get(target, prop, receiver);
 
+      // Forward read-only operations directly (no security checks needed)
+      if (prop === 'select' || prop === 'query') {
+        return typeof originalValue === 'function' ? originalValue.bind(target) : originalValue;
+      }
+
       if (prop === 'insert' || prop === 'update' || prop === 'delete') {
         return (tableObj: any) => {
           const tableName = tableObj?._?.name || tableObj?.name || 'unknown_table';

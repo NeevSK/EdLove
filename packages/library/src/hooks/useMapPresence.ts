@@ -1,4 +1,4 @@
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { useCallback, useEffect, useRef, useState } from 'react';

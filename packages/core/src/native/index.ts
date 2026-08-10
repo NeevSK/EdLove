@@ -1,9 +1,9 @@
 export { authAPI } from '@repo/core/api/auth';
 export { identityAPI } from '@repo/core/api/identity';
 export {
-  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__,
-  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ as supabase,
-} from '@repo/core/api/supabase';
+  supabaseClient,
+  supabaseClient as supabase,
+} from '@repo/core/adapters/supabaseClient';
 export { bootstrapPlatform } from '@repo/core/native/bootstrap';
 export { deviceTrustAPI } from '@repo/core/native/deviceTrust';
 export { FlowResolver } from '@repo/core/native/flows/FlowResolver';

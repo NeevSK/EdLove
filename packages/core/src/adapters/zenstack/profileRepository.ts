@@ -1,5 +1,5 @@
 import type { User as ZenStackUser } from '@repo/schema';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import type {
   CommunityProfile,
   ProfileHistoryEntry,
@@ -114,7 +114,7 @@ export const createZenStackProfileRepository = (
       );
     },
     async getUserProfileAsOf(userId, asOf) {
-      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      const { data, error } = await supabaseClient
         .from('user_profile_versions')
         .select('snapshot')
         .eq('user_id', userId)
@@ -127,7 +127,7 @@ export const createZenStackProfileRepository = (
       return normalizeUser(data.snapshot as any);
     },
     async getUserProfileHistory(userId, limit = 20) {
-      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      const { data, error } = await supabaseClient
         .from('user_profile_versions')
         .select('id, operation, recorded_at, recorded_by, snapshot')
         .eq('user_id', userId)
@@ -145,7 +145,7 @@ export const createZenStackProfileRepository = (
 
       if (asOf) {
         const { data: rewardsVersion, error: rewardsError } =
-          await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+          await supabaseClient
             .from('user_rewards_versions')
             .select('snapshot')
             .eq('user_id', userId)
@@ -161,7 +161,7 @@ export const createZenStackProfileRepository = (
           );
 
         const { data: growthVersion, error: growthError } =
-          await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+          await supabaseClient
             .from('user_growth_state_versions')
             .select('snapshot')
             .eq('user_id', userId)
@@ -176,7 +176,7 @@ export const createZenStackProfileRepository = (
             growthError,
           );
 
-        let whisperedQuery = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        let whisperedQuery = supabaseClient
           .from('whispered_moments')
           .select('moment_key, moment_name_en, moment_name_si, awarded_at')
           .eq('user_id', userId);
@@ -214,17 +214,17 @@ export const createZenStackProfileRepository = (
         { data: growth, error: growthError },
         { data: whisperedRows, error: whisperedError },
       ] = await Promise.all([
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        supabaseClient
           .from('user_rewards')
           .select('*')
           .eq('user_id', userId)
           .maybeSingle(),
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        supabaseClient
           .from('user_growth_state')
           .select('*')
           .eq('user_id', userId)
           .maybeSingle(),
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        supabaseClient
           .from('whispered_moments')
           .select('moment_key, moment_name_en, moment_name_si, awarded_at')
           .eq('user_id', userId)
@@ -262,7 +262,7 @@ export const createZenStackProfileRepository = (
         { data: growthRows, error: growthError },
         { data: momentRows, error: momentError },
       ] = await Promise.all([
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        supabaseClient
           .from('user_rewards_versions')
           .select('id, operation, recorded_at, snapshot')
           .eq('user_id', userId)
@@ -270,7 +270,7 @@ export const createZenStackProfileRepository = (
           .lte('recorded_at', end)
           .order('recorded_at', { ascending: false })
           .limit(limit),
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        supabaseClient
           .from('user_growth_state_versions')
           .select('id, operation, recorded_at, snapshot')
           .eq('user_id', userId)
@@ -278,7 +278,7 @@ export const createZenStackProfileRepository = (
           .lte('recorded_at', end)
           .order('recorded_at', { ascending: false })
           .limit(limit),
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        supabaseClient
           .from('whispered_moments')
           .select('id, moment_key, moment_name_en, moment_name_si, awarded_at')
           .eq('user_id', userId)
@@ -410,7 +410,7 @@ export const createZenStackProfileRepository = (
       );
     },
     async getUserPreferences(userId) {
-      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      const { data, error } = await supabaseClient
         .from('user_preferences')
         .select('*')
         .eq('user_id', userId)
@@ -420,7 +420,7 @@ export const createZenStackProfileRepository = (
       return (data as UserPreferences | null) ?? null;
     },
     async updateUserPreferences(userId, updates) {
-      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      const { data, error } = await supabaseClient
         .from('user_preferences')
         .update(updates)
         .eq('user_id', userId)
@@ -446,7 +446,7 @@ export const createZenStackProfileRepository = (
       return (group as CommunityProfile | null) ?? null;
     },
     async getCommunityProfileAsOf(communityId, asOf) {
-      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      const { data, error } = await supabaseClient
         .from('community_profile_versions')
         .select('snapshot')
         .eq('community_id', communityId)
@@ -459,7 +459,7 @@ export const createZenStackProfileRepository = (
       return (data?.snapshot as CommunityProfile | undefined) ?? null;
     },
     async getCommunityProfileHistory(communityId, limit = 20) {
-      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      const { data, error } = await supabaseClient
         .from('community_profile_versions')
         .select('id, operation, recorded_at, recorded_by, snapshot')
         .eq('community_id', communityId)

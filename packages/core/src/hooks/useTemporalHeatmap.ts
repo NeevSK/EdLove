@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
 import { getTemporalRange } from '@repo/core/logic/utils/temporalUtils';
 
@@ -27,13 +27,13 @@ export function useTemporalHeatmap(year: number) {
       const range = getTemporalRange(`${year}-01-01`, 'year');
 
       const [moodRes, journalRes] = await Promise.all([
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        supabaseClient
           .from('mood_logs')
           .select('created_at')
           .eq('user_id', userId)
           .gte('created_at', range.start)
           .lte('created_at', range.end),
-        __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        supabaseClient
           .from('journal_entries')
           .select('created_at')
           .eq('user_id', userId)

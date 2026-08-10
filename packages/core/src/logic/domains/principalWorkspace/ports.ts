@@ -14,6 +14,7 @@ export interface PrincipalWorkspaceRepository {
     schoolId: string,
     capacity: PrincipalInviteRole,
     createdBy: string,
+    idempotencyKey?: string,
   ): Promise<InviteCodeZod>;
   listObservationsByDate(
     principalId: string,

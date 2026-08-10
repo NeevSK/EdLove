@@ -3,7 +3,7 @@ import { Effect, Queue } from 'effect';
 import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
 import { assertHighway } from '@repo/core/api/highways';
 import { identityAPI } from '@repo/core/api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { accountPin } from '@repo/core/lib/accountPin';
 import { getActiveAccountId, setActiveAccountId } from '@repo/core/lib/accountScope';
 import { storage } from '@repo/core/lib/storage';
@@ -226,7 +226,7 @@ export const deviceAccounts = {
     resetScopedStores();
     await rehydrateScopedStores();
 
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.setSession({
+    const { error } = await supabaseClient.auth.setSession({
       access_token: storedSession.access_token,
       refresh_token: storedSession.refresh_token,
     });
@@ -298,14 +298,14 @@ export const deviceAccounts = {
     await setActiveAccount(null);
     resetScopedStores();
     await rehydrateScopedStores();
-    await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.signOut({ scope: 'local' });
+    await supabaseClient.auth.signOut({ scope: 'local' });
     return nextAccounts;
   },
 
   async signOutCurrentAccount() {
     const activeAccountId = getActiveAccountId();
     if (!activeAccountId) {
-      await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.signOut({ scope: 'local' });
+      await supabaseClient.auth.signOut({ scope: 'local' });
       resetScopedStores();
       await rehydrateScopedStores();
       return [];
@@ -355,6 +355,6 @@ export const deviceAccounts = {
     await setActiveAccount(null);
     resetScopedStores();
     await rehydrateScopedStores();
-    await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.signOut({ scope: 'local' });
+    await supabaseClient.auth.signOut({ scope: 'local' });
   },
 };

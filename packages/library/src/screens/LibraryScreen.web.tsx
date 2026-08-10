@@ -1,4 +1,5 @@
-import { growthSignalsAPI, impactRipplesAPI, supabase } from '@repo/core/api';
+import { growthSignalsAPI, impactRipplesAPI } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { usePendingGateAction } from '@repo/core/hooks';
 import { setPendingGateAction, usePermissions, useStore, useTemporalStore } from '@repo/core/logic';
 import type { User } from '@repo/core/types';

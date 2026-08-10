@@ -1,8 +1,9 @@
 import type { Context } from 'hono';
+import { BondSchema } from '@repo/core/logic/schemas/identity.schema';
 
 const mapToIdentityPayload = (user: any) => {
   const dbBonds = user.bonds || [];
-  const availableBonds = dbBonds.map((b: any) => ({
+  const availableBonds = dbBonds.map((b: any) => BondSchema.parse({
     id: b.id,
     user_id: b.user_id,
     entity_id: b.entity_id,
@@ -10,6 +11,8 @@ const mapToIdentityPayload = (user: any) => {
     capacity: b.capacity,
     status: b.status || 'active',
     metadata: b.metadata || {},
+    created_at: b.created_at,
+    updated_at: b.updated_at,
   }));
 
   const activeBond =

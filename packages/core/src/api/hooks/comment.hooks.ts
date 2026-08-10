@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { communityAPI } from '@repo/core/api/community';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 export const commentKeys = {
   all: ['community', 'comments'] as const,
@@ -27,7 +27,7 @@ export function useCommentHooks(postId: string | null) {
   useEffect(() => {
     if (!postId) return;
 
-    const channel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const channel = supabaseClient
       .channel(`comments-${postId}`)
       .on(
         'postgres_changes',
@@ -46,7 +46,7 @@ export function useCommentHooks(postId: string | null) {
       .subscribe();
 
     return () => {
-      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.removeChannel(channel).catch((e) => {
+      supabaseClient.removeChannel(channel).catch((e) => {
         console.error('Failed to remove channel during cleanup', e);
       });
     };

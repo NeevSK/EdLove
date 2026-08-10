@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { authAPI } from '@repo/core/api/auth';
 import { assertHighway } from '@repo/core/api/highways';
 import { identityAPI } from '@repo/core/api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import type { SchoolType } from '@repo/core/constants/SriLankanSchools';
 import { identifyUser } from '@repo/core/lib/monitoring/posthog';
 import { clearSentryUser, initSentry, setSentryUser } from '@repo/core/lib/monitoring/sentry';
@@ -71,7 +71,7 @@ export function useAuthLifecycle() {
 
         const schoolId = identity.schoolId || null;
         if (schoolId) {
-          const { data: schoolData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+          const { data: schoolData } = await supabaseClient
             .from('schools')
             .select('type')
             .eq('id', schoolId)
@@ -137,7 +137,7 @@ export function useAuthLifecycle() {
             error.message?.includes('Refresh Token') ||
             (error as { status?: number }).status === 400
           ) {
-            await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.signOut({ scope: 'local' });
+            await supabaseClient.auth.signOut({ scope: 'local' });
             setSession(null);
             setAuthSession(null);
           }
@@ -155,7 +155,7 @@ export function useAuthLifecycle() {
     // 3. Auth State Change Listener
     const {
       data: { subscription },
-    } = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.onAuthStateChange(
+    } = supabaseClient.auth.onAuthStateChange(
       async (event, currentSession) => {
         setSession(currentSession);
         setAuthSession(currentSession);
@@ -202,7 +202,7 @@ export function useAuthLifecycle() {
   useEffect(() => {
     if (!currentUser?.id) return;
 
-    const channel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const channel = supabaseClient
       .channel(`user-profile-sync-${currentUser.id}`)
       .on(
         'postgres_changes',
@@ -221,7 +221,7 @@ export function useAuthLifecycle() {
       .subscribe();
 
     return () => {
-      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.removeChannel(channel).catch((e) => {
+      supabaseClient.removeChannel(channel).catch((e) => {
         console.error('Auth: Failed to remove channel during cleanup', e);
       });
     };

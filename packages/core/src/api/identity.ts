@@ -1,6 +1,6 @@
 import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 import { assertHighway } from '@repo/core/api/highways';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@repo/core/native/guestIdentity';
 import { setGuestScope } from '@repo/core/native/guestScope';
 import { APIError } from '@repo/core/types/API';
@@ -41,7 +41,7 @@ export const identityAPI = {
    */
   async identifyActiveCitizen(): Promise<ActiveCitizen | null> {
     assertHighway('identity_bootstrap', 'direct-api');
-    const { data: sessionData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getSession();
+    const { data: sessionData } = await supabaseClient.auth.getSession();
     if (sessionData.session?.user?.is_anonymous) {
       setGuestScope(sessionData.session.user.id);
       const local = await getLocalGuestIdentity(sessionData.session.user.id);
@@ -90,7 +90,7 @@ export const identityAPI = {
    */
   async modifyUserProfile(id: string, updates: Record<string, unknown>) {
     assertHighway('profile_core', 'direct-api');
-    const { data: sessionData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getSession();
+    const { data: sessionData } = await supabaseClient.auth.getSession();
     if (sessionData.session?.user?.is_anonymous && sessionData.session.user.id === id) {
       return updateLocalGuestIdentity(id, {
         ...(updates.display_name !== undefined && {

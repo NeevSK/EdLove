@@ -1,10 +1,10 @@
 import { createSupabaseEducationalRepository } from '@repo/core/adapters/supabase/educationalRepository';
 import { createEducationalServices } from '@repo/core/logic/domains/educational/services';
 import { useStore } from '@repo/core/store/useStore';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 const educationalRepository = createSupabaseEducationalRepository(
-  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__,
+  supabaseClient,
 );
 
 const sideEffects = {

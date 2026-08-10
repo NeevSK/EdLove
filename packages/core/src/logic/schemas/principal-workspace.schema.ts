@@ -3,11 +3,11 @@ import { CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
 
 export const PrincipalInviteRoleSchema = z.enum([
   'teacher',
-  'principal',
   'student',
-  'gradeHead',
-  'sectionHead',
-  'assistantPrincipal',
+  'principal',
+  'grade_head',
+  'section_head',
+  'assistant_principal',
 ]);
 export const PrincipalGovernanceEventTypeSchema = z.enum([
   'create',

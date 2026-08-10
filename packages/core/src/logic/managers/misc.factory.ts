@@ -3,7 +3,7 @@ import { createSupabaseAuditRepository } from '@repo/core/adapters/supabase/audi
 import { createSupabaseTeacherInsightsRepository } from '@repo/core/adapters/supabase/teacherInsightsRepository';
 import { createSupabaseTeacherRepository } from '@repo/core/adapters/supabase/teacherRepository';
 import { SupabaseDeviceSecurityAdapter } from '@repo/core/adapters/supabaseDeviceSecurity.adapter';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { AuditManager } from '@repo/core/logic/managers/AuditManager';
 import { auth } from '@repo/core/logic/managers/auth.factory';
 import { DeepLinkManager } from '@repo/core/logic/managers/DeepLinkManager';
@@ -27,28 +27,28 @@ export const deviceSecurity = new DeviceSecurityManager(new SupabaseDeviceSecuri
  * realtime: The Global Sovereign Realtime Instance.
  */
 export const realtime = new RealtimeManager(
-  createSupabaseRealtimeAdapter(__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__),
+  createSupabaseRealtimeAdapter(supabaseClient),
 );
 
 /**
  * audit: The Global Sovereign Audit Instance.
  */
 export const audit = new AuditManager(
-  createSupabaseAuditRepository(__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__),
+  createSupabaseAuditRepository(supabaseClient),
 );
 
 /**
  * teacher: The Global Sovereign Teacher Instance.
  */
 export const teacher = new TeacherManager(
-  createSupabaseTeacherRepository(__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__),
+  createSupabaseTeacherRepository(supabaseClient),
 );
 
 /**
  * teacherInsights: The Global Sovereign Teacher Insights Instance.
  */
 export const teacherInsights = new TeacherInsightsManager(
-  createSupabaseTeacherInsightsRepository(__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__),
+  createSupabaseTeacherInsightsRepository(supabaseClient),
 );
 
 /**

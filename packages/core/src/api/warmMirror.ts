@@ -5,7 +5,7 @@
 import { checkLocalPermission } from '@repo/core/logic/permissions/localEvaluator';
 import { APIError } from '@repo/core/types/API';
 import { identityAPI } from '@repo/core/api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 export interface WarmMirrorDataPoints {
   days_present: number;
@@ -38,7 +38,7 @@ export const warmMirrorAPI = {
     const now = Date.now();
     const periodStart = since ?? new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-    const { data: growthEvents } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data: growthEvents } = await supabaseClient
       .from('growth_events')
       .select('created_at')
       .eq('user_id', userId)
@@ -47,7 +47,7 @@ export const warmMirrorAPI = {
     const distinctDays = new Set((growthEvents ?? []).map((e) => e.created_at.slice(0, 10)));
     const days_present = distinctDays.size;
 
-    const { count: quietCount } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { count: quietCount } = await supabaseClient
       .from('growth_events')
       .select('id', { count: 'exact', head: true })
       .eq('user_id', userId)
@@ -55,7 +55,7 @@ export const warmMirrorAPI = {
       .in('event_type', ['mood_checkin', 'breathing_exercise_complete', 'fire_journal_entry']);
     const quiet_moments = quietCount ?? 0;
 
-    const { count: ripplesCount } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { count: ripplesCount } = await supabaseClient
       .from('impact_ripples')
       .select('id', { count: 'exact', head: true })
       .eq('recipient_user_id', userId)
@@ -63,7 +63,7 @@ export const warmMirrorAPI = {
       .gte('delivered_at', periodStart);
     const ripples_received = ripplesCount ?? 0;
 
-    const { data: gradingData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data: gradingData } = await supabaseClient
       .from('student_grades')
       .select('feedback')
       .eq('student_id', userId)
@@ -73,7 +73,7 @@ export const warmMirrorAPI = {
       (g) => (g.feedback?.length ?? 0) > 20,
     ).length;
 
-    const { data: reachRipples } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data: reachRipples } = await supabaseClient
       .from('impact_ripples')
       .select('entity_id')
       .eq('recipient_user_id', userId)
@@ -84,7 +84,7 @@ export const warmMirrorAPI = {
       (reachRipples ?? []).map((r) => r.entity_id).filter(Boolean),
     ).size;
 
-    const { count: postsCount } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { count: postsCount } = await supabaseClient
       .from('impact_ripples')
       .select('id', { count: 'exact', head: true })
       .eq('recipient_user_id', userId)
@@ -93,7 +93,7 @@ export const warmMirrorAPI = {
       .gte('delivered_at', periodStart);
     const posts_that_sparked = postsCount ?? 0;
 
-    const { data: growthState } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data: growthState } = await supabaseClient
       .from('user_growth_state')
       .select('created_at')
       .eq('user_id', userId)

@@ -119,6 +119,7 @@ export {
 } from './runtime';
 export type {
   AcademicCycle,
+  EduSchool,
   Announcement,
   Grade as SchoolGradeAlias,
   InviteCode,

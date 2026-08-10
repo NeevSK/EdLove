@@ -30,7 +30,7 @@ export const lessonsAPI = {
   },
 };
 
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ as supabase } from '@repo/core/api/supabase';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 
 // ... (Students API remains on local manager for now until educational.contract is fully expanded)
 export const studentsAPI = {

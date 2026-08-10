@@ -1,29 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { PowerSyncDatabase as PowerSyncDatabaseType } from '@repo/core/adapters/powersync/powersync-shim';
 import { AppSchema } from '@repo/core/adapters/powersync/schema';
+import { createSecureDrizzleProxy } from './secureDrizzleProxy';
 
 type QueryLike = {
   findFirst: (_args?: any) => Promise<null>;
 };
 
-type ChainLike = Promise<never[]> & {
-  where: () => ChainLike;
-  orderBy: () => ChainLike;
-  limit: () => Promise<never[]>;
-  values: () => ChainLike;
-  onConflictDoUpdate: () => ChainLike;
-  execute: () => Promise<never[]>;
-};
-
-function createChainLike(): ChainLike {
+function createChainLike(): any {
   const result: any = Promise.resolve([]);
-  result.where = () => result;
-  result.orderBy = () => result;
-  result.limit = () => Promise.resolve([]);
-  result.values = () => result;
-  result.onConflictDoUpdate = () => result;
-  result.execute = () => Promise.resolve([]);
-  return result;
+  const chainProxy = new Proxy(result, {
+    get(target, prop) {
+      if (prop === 'then') {
+        return (onfulfilled?: any, onrejected?: any) => {
+          return Promise.resolve([]).then(onfulfilled, onrejected);
+        };
+      }
+      if (prop === 'execute') {
+        return async () => [];
+      }
+      return () => chainProxy;
+    },
+  });
+  return chainProxy;
 }
 
 function createWebPowerSyncDatabase(): PowerSyncDatabaseType {
@@ -64,6 +63,7 @@ function createWebPowerSyncDatabase(): PowerSyncDatabaseType {
 }
 
 let _instance: PowerSyncDatabaseType | null = null;
+let _drizzleInstance: any = null;
 
 export function getPowerSyncDB(): PowerSyncDatabaseType {
   if (!_instance) {
@@ -73,13 +73,18 @@ export function getPowerSyncDB(): PowerSyncDatabaseType {
 }
 
 export function getDrizzleDB(): any {
-  return getPowerSyncDB();
+  if (!_drizzleInstance) {
+    _drizzleInstance = getPowerSyncDB();
+  }
+  return _drizzleInstance;
 }
 
-export function injectNativePowerSyncDB(_nativeDb: any, _nativeDrizzleDb: any): void {
-  // Web never injects native JSI instances.
+export function injectNativePowerSyncDB(nativeDb: any, nativeDrizzleDb: any): void {
+  _instance = nativeDb;
+  _drizzleInstance = createSecureDrizzleProxy(nativeDrizzleDb);
 }
 
 export async function disconnectPowerSync(): Promise<void> {
   _instance = null;
+  _drizzleInstance = null;
 }

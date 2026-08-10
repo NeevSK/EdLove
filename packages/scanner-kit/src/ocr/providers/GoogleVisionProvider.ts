@@ -10,7 +10,7 @@
  * Strengths: superior printed text, multi-language detection, high throughput.
  */
 
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 
 import type { OCRProvider, OCRRawResult } from '@repo/scanner-kit/ocr/types';
 

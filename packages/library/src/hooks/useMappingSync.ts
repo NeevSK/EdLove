@@ -1,4 +1,5 @@
-import { type MappingTopology, mappingAPI, supabase } from '@repo/core/api';
+import { type MappingTopology, mappingAPI } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 
 import { useEffect, useState } from 'react';
 

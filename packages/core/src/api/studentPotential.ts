@@ -6,7 +6,7 @@
 
 import { APIError } from '@repo/core/types/API';
 import { identityAPI } from '@repo/core/api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { teacherInsightsAPI } from '@repo/core/api/teacherInsights';
 
 export interface StudentPotentialAnalysis {
@@ -56,7 +56,7 @@ export const studentPotentialAPI = {
    * Get all analyses for a student across all classrooms
    */
   async getAllForStudent(studentId: string): Promise<StudentPotentialAnalysis[]> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('student_potential_analysis')
       .select(`
                 *,
@@ -90,7 +90,7 @@ export const studentPotentialAPI = {
     analysis: Partial<StudentPotentialAnalysis>,
   ): Promise<string> {
     try {
-      const response = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.functions.invoke(
+      const response = await supabaseClient.functions.invoke(
         'ai-assistant',
         {
           body: {

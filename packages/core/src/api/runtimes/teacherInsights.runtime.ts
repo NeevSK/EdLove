@@ -1,9 +1,9 @@
 import { createSupabaseTeacherInsightsRepository } from '@repo/core/adapters/supabase/teacherInsightsRepository';
 import { createTeacherInsightsServices } from '@repo/core/logic/domains/teacherInsights/services';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 const teacherInsightsRepository = createSupabaseTeacherInsightsRepository(
-  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__,
+  supabaseClient,
 );
 
 export const teacherInsightsServices = createTeacherInsightsServices(teacherInsightsRepository);

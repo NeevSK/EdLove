@@ -20,11 +20,16 @@ vi.mock('../../store/useStore', () => ({
 
 // Mock Supabase Auth Session
 const mockGetSession = vi.fn().mockResolvedValue({
-  data: { session: { access_token: 'mock-session-jwt' } },
+  data: {
+    session: {
+      access_token: 'mock-session-jwt',
+      user: { id: 'user-123', is_anonymous: false },
+    },
+  },
   error: null,
 });
 vi.mock('../../api/supabase', () => ({
-  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__: {
+  supabaseClient: {
     auth: {
       getSession: () => mockGetSession(),
     },
@@ -161,14 +166,17 @@ describe('PowerSync Offline Write Gating & Replication Loop', () => {
     expect(mockPowerSyncDb.getCrudBatch).toHaveBeenCalledWith(200);
     expect(mockUploadPost).toHaveBeenCalledWith(
       expect.objectContaining({
-        json: [
-          {
-            id: 1,
-            op: 'PUT',
-            table: 'students',
-            opData: { id: 'student-999', name: 'John Doe' },
-          },
-        ],
+        json: expect.objectContaining({
+          crud: [
+            {
+              id: 1,
+              op: 'PUT',
+              table: 'students',
+              opData: { id: 'student-999', name: 'John Doe' },
+            },
+          ],
+          idempotencyKey: expect.any(String),
+        }),
       }),
       expect.objectContaining({
         headers: expect.objectContaining({

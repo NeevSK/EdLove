@@ -20,6 +20,28 @@ export interface School {
   created_at?: Date;
 }
 
+/** Canonical public registry fact; not a tenant, membership, or bond. */
+export interface EduSchool {
+  id: string;
+  census_no: string;
+  name: string;
+  gender?: string | null;
+  category?: string | null;
+  type_code?: string | null;
+  province_id?: string | null;
+  district_id?: string | null;
+  gn_division_id?: string | null;
+  postal_unit_id?: string | null;
+  zone_id?: string | null;
+  division_id?: string | null;
+  status?: string | null;
+  religion?: string | null;
+  website?: string | null;
+  socio_economic_tier?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
 export interface Section {
   id: string;
   school_id: string;

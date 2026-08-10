@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 export interface StudentGoal {
   id: string;
@@ -23,7 +23,7 @@ export const useStudentGoals = (userId?: string) => {
     const fetchGoals = async () => {
       setIsLoading(true);
       try {
-        const { data } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        const { data } = await supabaseClient
           .from('student_goals')
           .select('*')
           .eq('user_id', userId)

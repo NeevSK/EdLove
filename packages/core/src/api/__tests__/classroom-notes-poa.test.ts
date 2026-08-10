@@ -1,5 +1,5 @@
 vi.mock('../supabase', () => ({
-  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__: {
+  supabaseClient: {
     from: vi.fn(() => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({

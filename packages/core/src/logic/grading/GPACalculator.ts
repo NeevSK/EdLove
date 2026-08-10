@@ -102,6 +102,7 @@ export class GPACalculator {
         marks: entry.marks ?? 0,
         grade: entry.letterGrade ?? '',
         gpa: entry.gpa,
+        graded_at: entry.gradedAt,
         created_at: entry.gradedAt,
         updated_at: entry.gradedAt,
         publication_state: 'published',

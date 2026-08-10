@@ -1,4 +1,4 @@
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { generateRandomString } from '@repo/core/utils/random';
 
 /**
@@ -44,13 +44,13 @@ export async function validateInviteCode(code: string): Promise<{
     }
 
     // Query database
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('invite_codes')
       .select(`
         id,
         school_id,
         code,
-        capacity,
+        role,
         is_active,
         uses_count,
         max_uses,
@@ -82,6 +82,7 @@ export async function validateInviteCode(code: string): Promise<{
       valid: true,
       data: {
         ...data,
+        capacity: (data as any).role,
         school_name: (data.schools as any)?.name,
         school_type: (data.schools as any)?.type,
       },
@@ -101,7 +102,7 @@ export async function validateInviteCode(code: string): Promise<{
 export async function incrementInviteCodeUsage(code: string): Promise<void> {
   try {
     // Fetch current count
-    const { data: currentData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data: currentData } = await supabaseClient
       .from('invite_codes')
       .select('uses_count')
       .eq('code', code.toUpperCase())
@@ -109,7 +110,7 @@ export async function incrementInviteCodeUsage(code: string): Promise<void> {
 
     if (currentData) {
       // Increment and update
-      const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      const { error } = await supabaseClient
         .from('invite_codes')
         .update({ uses_count: currentData.uses_count + 1 })
         .eq('code', code.toUpperCase());
@@ -139,17 +140,17 @@ export async function generateInviteCodesForSchool(
     const teacherCode = generateInviteCode('teacher');
     const studentCode = generateInviteCode('student');
 
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('invite_codes').insert([
+    const { error } = await supabaseClient.from('invite_codes').insert([
       {
         school_id: schoolId,
         code: teacherCode,
-        capacity: 'teacher',
+        role: 'teacher',
         created_by: createdBy,
       },
       {
         school_id: schoolId,
         code: studentCode,
-        capacity: 'student',
+        role: 'student',
         created_by: createdBy,
       },
     ]);

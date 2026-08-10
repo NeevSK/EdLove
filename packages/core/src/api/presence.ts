@@ -1,4 +1,4 @@
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 export interface PresenceFallbackCountOptions {
   targetCapacities: string[];
@@ -21,7 +21,7 @@ export async function fetchPresenceFallbackCount(
 ): Promise<number> {
   const now = Date.now();
   const fiveMinutesAgo = new Date(now - (options.windowMs ?? 5 * 60 * 1000)).toISOString();
-  let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+  let query = supabaseClient
     .from('users')
     .select('id', { count: 'exact', head: true })
     .gte('last_seen_at', fiveMinutesAgo);
@@ -39,7 +39,7 @@ export async function fetchPresenceFallbackCount(
 }
 
 export async function markUserPresenceSeen(userId: string): Promise<void> {
-  const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+  const { error } = await supabaseClient
     .from('users')
     .update({ last_seen_at: new Date().toISOString() })
     .eq('id', userId);
@@ -48,10 +48,10 @@ export async function markUserPresenceSeen(userId: string): Promise<void> {
 }
 
 export function startPresenceSession(options: PresenceSessionOptions): () => void {
-  const selfChannel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.channel(
+  const selfChannel = supabaseClient.channel(
     `presence:self:${options.userCapacity}`,
   );
-  const watcherChannel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.channel(options.channelName);
+  const watcherChannel = supabaseClient.channel(options.channelName);
 
   selfChannel.subscribe((status) => {
     if (status !== 'SUBSCRIBED') return;
@@ -88,10 +88,10 @@ export function startPresenceSession(options: PresenceSessionOptions): () => voi
     });
 
   return () => {
-    __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.removeChannel(selfChannel).catch((e) => {
+    supabaseClient.removeChannel(selfChannel).catch((e) => {
       console.error('Presence: Failed to remove self channel', e);
     });
-    __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.removeChannel(watcherChannel).catch((e) => {
+    supabaseClient.removeChannel(watcherChannel).catch((e) => {
       console.error('Presence: Failed to remove watcher channel', e);
     });
   };

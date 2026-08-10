@@ -1,4 +1,4 @@
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 /**
  * API for tracking feature usage and exploration to drive gamification.
@@ -13,7 +13,7 @@ export const trackingAPI = {
     interactionType: string = 'exploration',
   ) {
     // Find if already logged
-    const { data: existing } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data: existing } = await supabaseClient
       .from('feature_usage_log')
       .select('id')
       .eq('user_id', userId)
@@ -22,7 +22,7 @@ export const trackingAPI = {
 
     if (existing) return existing;
 
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('feature_usage_log')
       .insert([
         {
@@ -45,7 +45,7 @@ export const trackingAPI = {
    * Fetches all unique features explored by the user.
    */
   async getExploredFeatures(userId: string) {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('feature_usage_log')
       .select('feature_name')
       .eq('user_id', userId);

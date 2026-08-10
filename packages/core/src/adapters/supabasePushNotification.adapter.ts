@@ -1,4 +1,4 @@
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import type { IPushNotificationPort } from '@repo/core/logic/ports/pushNotification.port';
 import { APIError } from '@repo/core/types/API';
 
@@ -12,7 +12,7 @@ export class SupabasePushNotificationAdapter implements IPushNotificationPort {
     deviceId: string,
     platform: string,
   ): Promise<void> {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { error } = await supabaseClient
       .from('user_push_tokens')
       .upsert(
         {
@@ -23,7 +23,7 @@ export class SupabasePushNotificationAdapter implements IPushNotificationPort {
           last_seen_at: new Date().toISOString(),
         },
         {
-          onConflict: 'device_id',
+          onConflict: 'user_id,device_id',
         },
       );
 
@@ -33,9 +33,10 @@ export class SupabasePushNotificationAdapter implements IPushNotificationPort {
   }
 
   async unregisterPushToken(_userId: string, deviceId: string): Promise<void> {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { error } = await supabaseClient
       .from('user_push_tokens')
       .delete()
+      .eq('user_id', _userId)
       .eq('device_id', deviceId);
 
     if (error) {

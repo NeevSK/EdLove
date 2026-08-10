@@ -1,5 +1,5 @@
 import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { trackProductEvent } from '@repo/core/lib/monitoring/posthog';
 import { community, educational, notification, profile } from '@repo/core/logic/managers/factory';
 import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
@@ -27,7 +27,7 @@ export const onboardingAPI = {
 
   async createInitialBond(orientation: Capacity, context: Record<string, any>): Promise<void> {
     trackProductEvent('onboarding_started');
-    const { data: sessionData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getSession();
+    const { data: sessionData } = await supabaseClient.auth.getSession();
     const guestUser = sessionData.session?.user;
     if (guestUser?.is_anonymous) {
       setGuestScope(guestUser.id);
@@ -57,7 +57,7 @@ export const onboardingAPI = {
   },
 
   async completeOnboarding(userId: string): Promise<void> {
-    const { data: sessionData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getSession();
+    const { data: sessionData } = await supabaseClient.auth.getSession();
     if (sessionData.session?.user?.is_anonymous && sessionData.session.user.id === userId) {
       setGuestScope(userId);
       const local = await getLocalGuestIdentity(userId);
@@ -83,7 +83,7 @@ export const onboardingAPI = {
 
   /** Creates the founder's verified school bond after an official school is created. */
   async createFounderSchoolBond(userId: string, schoolId: string): Promise<string> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+    const { data, error } = await supabaseClient.rpc(
       'create_school_founder_bond',
       { p_school_id: schoolId, p_user_id: userId },
     );
@@ -98,7 +98,7 @@ export const onboardingAPI = {
   },
 
   async revokeSchoolBond(userId: string, schoolId: string): Promise<void> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+    const { data, error } = await supabaseClient.rpc(
       'revoke_school_bond',
       { p_school_id: schoolId, p_user_id: userId },
     );

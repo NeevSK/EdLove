@@ -1,13 +1,5 @@
-import {
-  assertContractCoverage,
-  createTemporalProxy,
-  defineContractCoverage,
-  growthSignalsAPI,
-  identityAPI,
-  impactRipplesAPI,
-  libraryContract,
-  supabase,
-} from '@repo/core/api';
+import { assertContractCoverage, createTemporalProxy, defineContractCoverage, growthSignalsAPI, identityAPI, impactRipplesAPI, libraryContract } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { applyTemporalFilter } from '@repo/core/logic';
 
 import { APIError } from '@repo/core/types';

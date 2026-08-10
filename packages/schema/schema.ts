@@ -101,7 +101,6 @@ export class SchemaType implements SchemaDef {
                 is_anonymous: {
                     name: "is_anonymous",
                     type: "Boolean",
-                    optional: true,
                     attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(false) }] }] as readonly AttributeApplication[],
                     default: false as FieldDefault
                 },
@@ -113,8 +112,8 @@ export class SchemaType implements SchemaDef {
                 citizenship: {
                     name: "citizenship",
                     type: "String",
-                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("WANDERER") }] }] as readonly AttributeApplication[],
-                    default: "WANDERER" as FieldDefault
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("THIRD_CLASS") }] }] as readonly AttributeApplication[],
+                    default: "THIRD_CLASS" as FieldDefault
                 },
                 pricing_tier: {
                     name: "pricing_tier",
@@ -193,6 +192,31 @@ export class SchemaType implements SchemaDef {
                     updatedAt: true,
                     attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
                 },
+                last_seen_at: {
+                    name: "last_seen_at",
+                    type: "DateTime",
+                    optional: true
+                },
+                escrowed_recovery_key: {
+                    name: "escrowed_recovery_key",
+                    type: "String",
+                    optional: true
+                },
+                deleted_at: {
+                    name: "deleted_at",
+                    type: "DateTime",
+                    optional: true
+                },
+                deleted_by: {
+                    name: "deleted_by",
+                    type: "String",
+                    optional: true
+                },
+                deletion_reason: {
+                    name: "deletion_reason",
+                    type: "String",
+                    optional: true
+                },
                 posts: {
                     name: "posts",
                     type: "Post",
@@ -232,6 +256,13 @@ export class SchemaType implements SchemaDef {
                     attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("StudentEnrollments") }] }] as readonly AttributeApplication[],
                     relation: { opposite: "student", name: "StudentEnrollments" }
                 },
+                assignment_submissions: {
+                    name: "assignment_submissions",
+                    type: "AssignmentSubmission",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("StudentSubmissions") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "student", name: "StudentSubmissions" }
+                },
                 student_grades: {
                     name: "student_grades",
                     type: "Grade",
@@ -258,6 +289,12 @@ export class SchemaType implements SchemaDef {
                     array: true,
                     relation: { opposite: "author" }
                 },
+                ai_messages: {
+                    name: "ai_messages",
+                    type: "AiMessage",
+                    array: true,
+                    relation: { opposite: "user" }
+                },
                 mood_logs: {
                     name: "mood_logs",
                     type: "MoodLog",
@@ -279,6 +316,12 @@ export class SchemaType implements SchemaDef {
                 personal_classrooms: {
                     name: "personal_classrooms",
                     type: "PersonalClassroom",
+                    array: true,
+                    relation: { opposite: "user" }
+                },
+                notifications: {
+                    name: "notifications",
+                    type: "Notification",
                     array: true,
                     relation: { opposite: "user" }
                 },
@@ -340,18 +383,19 @@ export class SchemaType implements SchemaDef {
                     array: true,
                     relation: { opposite: "user" }
                 },
-                guardian: {
-                    name: "guardian",
-                    type: "Guardian",
-                    optional: true,
-                    relation: { opposite: "user" }
-                },
                 student_guardian_links: {
                     name: "student_guardian_links",
                     type: "StudentGuardianRelationship",
                     array: true,
                     attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("StudentGuardians") }] }] as readonly AttributeApplication[],
                     relation: { opposite: "student", name: "StudentGuardians" }
+                },
+                student_guardian_links_as_guardian: {
+                    name: "student_guardian_links_as_guardian",
+                    type: "StudentGuardianRelationship",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("GuardianStudents") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "guardian", name: "GuardianStudents" }
                 },
                 invoices: {
                     name: "invoices",
@@ -384,10 +428,35 @@ export class SchemaType implements SchemaDef {
                     type: "Bond",
                     array: true,
                     relation: { opposite: "user" }
+                },
+                entitlement_grants: {
+                    name: "entitlement_grants",
+                    type: "UserEntitlementGrant",
+                    array: true,
+                    relation: { opposite: "user" }
+                },
+                created_invite_codes: {
+                    name: "created_invite_codes",
+                    type: "InviteCode",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("InviteCodeCreator") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "creator", name: "InviteCodeCreator" }
+                },
+                classroom_join_requests: {
+                    name: "classroom_join_requests",
+                    type: "ClassroomJoinRequest",
+                    array: true,
+                    relation: { opposite: "user" }
+                },
+                classroom_legacy_records: {
+                    name: "classroom_legacy_records",
+                    type: "ClassroomLegacyRecord",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("LegacyTeacherRecords") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "teacher", name: "LegacyTeacherRecords" }
                 }
             },
             attributes: [
-                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "==", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.field("is_anonymous"), "==", ExpressionUtils.literal(true))) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("id"))) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.literal(true) }] },
@@ -458,6 +527,108 @@ export class SchemaType implements SchemaDef {
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("create") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))) }] },
                 { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("bonds") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" }
+            }
+        },
+        UserEntitlementGrant: {
+            name: "UserEntitlementGrant",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                user_id: {
+                    name: "user_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "user"
+                    ] as readonly string[]
+                },
+                bond_id: {
+                    name: "bond_id",
+                    type: "String",
+                    optional: true
+                },
+                entity_id: {
+                    name: "entity_id",
+                    type: "String",
+                    optional: true
+                },
+                entity_type: {
+                    name: "entity_type",
+                    type: "String",
+                    optional: true
+                },
+                scope_type: {
+                    name: "scope_type",
+                    type: "String"
+                },
+                tier: {
+                    name: "tier",
+                    type: "String"
+                },
+                modules: {
+                    name: "modules",
+                    type: "String",
+                    array: true
+                },
+                source: {
+                    name: "source",
+                    type: "String"
+                },
+                status: {
+                    name: "status",
+                    type: "String",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("ACTIVE") }] }] as readonly AttributeApplication[],
+                    default: "ACTIVE" as FieldDefault
+                },
+                starts_at: {
+                    name: "starts_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                expires_at: {
+                    name: "expires_at",
+                    type: "DateTime",
+                    optional: true
+                },
+                metadata: {
+                    name: "metadata",
+                    type: "Json",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                user: {
+                    name: "user",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "entitlement_grants", fields: ["user_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("user_id")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM")))) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id"), ExpressionUtils.field("scope_type"), ExpressionUtils.field("status")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id"), ExpressionUtils.field("bond_id"), ExpressionUtils.field("status")]) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("user_entitlement_grants") }] }
             ] as readonly AttributeApplication[],
             idFields: ["id"],
             uniqueFields: {
@@ -596,11 +767,6 @@ export class SchemaType implements SchemaDef {
                     type: "String",
                     optional: true
                 },
-                syllabus_version: {
-                    name: "syllabus_version",
-                    type: "String",
-                    optional: true
-                },
                 is_archived: {
                     name: "is_archived",
                     type: "Boolean",
@@ -609,8 +775,7 @@ export class SchemaType implements SchemaDef {
                 },
                 academic_year: {
                     name: "academic_year",
-                    type: "String",
-                    optional: true
+                    type: "String"
                 },
                 created_at: {
                     name: "created_at",
@@ -623,6 +788,26 @@ export class SchemaType implements SchemaDef {
                     type: "DateTime",
                     updatedAt: true,
                     attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                created_by: {
+                    name: "created_by",
+                    type: "String",
+                    optional: true
+                },
+                deleted_at: {
+                    name: "deleted_at",
+                    type: "DateTime",
+                    optional: true
+                },
+                deleted_by: {
+                    name: "deleted_by",
+                    type: "String",
+                    optional: true
+                },
+                deletion_reason: {
+                    name: "deletion_reason",
+                    type: "String",
+                    optional: true
                 },
                 school: {
                     name: "school",
@@ -689,6 +874,18 @@ export class SchemaType implements SchemaDef {
                 notes: {
                     name: "notes",
                     type: "ClassroomNote",
+                    array: true,
+                    relation: { opposite: "classroom" }
+                },
+                join_requests: {
+                    name: "join_requests",
+                    type: "ClassroomJoinRequest",
+                    array: true,
+                    relation: { opposite: "classroom" }
+                },
+                legacy_records: {
+                    name: "legacy_records",
+                    type: "ClassroomLegacyRecord",
                     array: true,
                     relation: { opposite: "classroom" }
                 }
@@ -778,9 +975,38 @@ export class SchemaType implements SchemaDef {
                 student_id: {
                     name: "student_id",
                     type: "String",
+                    optional: true,
                     foreignKeyFor: [
                         "student"
                     ] as readonly string[]
+                },
+                full_name: {
+                    name: "full_name",
+                    type: "String",
+                    optional: true
+                },
+                invite_code: {
+                    name: "invite_code",
+                    type: "String",
+                    unique: true,
+                    optional: true,
+                    attributes: [{ name: "@unique" }] as readonly AttributeApplication[]
+                },
+                roll_number: {
+                    name: "roll_number",
+                    type: "Int",
+                    optional: true
+                },
+                enrolled_at: {
+                    name: "enrolled_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                claimed_at: {
+                    name: "claimed_at",
+                    type: "DateTime",
+                    optional: true
                 },
                 status: {
                     name: "status",
@@ -794,6 +1020,11 @@ export class SchemaType implements SchemaDef {
                     attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
                     default: ExpressionUtils.call("now") as FieldDefault
                 },
+                notes: {
+                    name: "notes",
+                    type: "String",
+                    optional: true
+                },
                 classroom: {
                     name: "classroom",
                     type: "Classroom",
@@ -803,12 +1034,15 @@ export class SchemaType implements SchemaDef {
                 student: {
                     name: "student",
                     type: "User",
+                    optional: true,
                     attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("StudentEnrollments") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("student_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
                     relation: { opposite: "student_enrollments", name: "StudentEnrollments", fields: ["student_id"], references: ["id"] }
                 }
             },
             attributes: [
                 { name: "@@unique", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("classroom_id"), ExpressionUtils.field("student_id")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("student_id"), ExpressionUtils.field("status")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("classroom_id"), ExpressionUtils.field("status")]) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.field("student_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
                 { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("classroom_students") }] }
@@ -816,6 +1050,7 @@ export class SchemaType implements SchemaDef {
             idFields: ["id"],
             uniqueFields: {
                 id: { type: "String" },
+                invite_code: { type: "String" },
                 classroom_id_student_id: { classroom_id: { type: "String" }, student_id: { type: "String" } }
             }
         },
@@ -884,12 +1119,19 @@ export class SchemaType implements SchemaDef {
                     type: "Grade",
                     array: true,
                     relation: { opposite: "assignment" }
+                },
+                submissions: {
+                    name: "submissions",
+                    type: "AssignmentSubmission",
+                    array: true,
+                    relation: { opposite: "assignment" }
                 }
             },
             attributes: [
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["is_archived"]), "==", ExpressionUtils.literal(false)))) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
-                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("assignments") }] }
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("assignments") }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("classroom_id"), ExpressionUtils.field("due_date")]) }] }
             ] as readonly AttributeApplication[],
             idFields: ["id"],
             uniqueFields: {
@@ -973,6 +1215,23 @@ export class SchemaType implements SchemaDef {
                     type: "String",
                     optional: true
                 },
+                graded_at: {
+                    name: "graded_at",
+                    type: "DateTime",
+                    optional: true
+                },
+                deleted_at: {
+                    name: "deleted_at",
+                    type: "DateTime",
+                    optional: true
+                },
+                idempotency_key: {
+                    name: "idempotency_key",
+                    type: "String",
+                    unique: true,
+                    optional: true,
+                    attributes: [{ name: "@unique" }] as readonly AttributeApplication[]
+                },
                 created_at: {
                     name: "created_at",
                     type: "DateTime",
@@ -1014,11 +1273,360 @@ export class SchemaType implements SchemaDef {
             attributes: [
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("student_id")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("graded_by"))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("graded_by")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("entity_id"), "==", ExpressionUtils.member(ExpressionUtils._this(), ["classroom", "school_id"])), "&&", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("principal")), "||", ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("section_head"))), "||", ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("grade_head")))))) }] },
-                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("student_grades") }] }
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("student_grades") }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("student_id"), ExpressionUtils.field("created_at")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("classroom_id"), ExpressionUtils.field("student_id")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("assignment_id")]) }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                idempotency_key: { type: "String" }
+            }
+        },
+        ClassroomJoinRequest: {
+            name: "ClassroomJoinRequest",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                user_id: {
+                    name: "user_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "user"
+                    ] as readonly string[]
+                },
+                classroom_id: {
+                    name: "classroom_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "classroom"
+                    ] as readonly string[]
+                },
+                role: {
+                    name: "role",
+                    type: "String"
+                },
+                subject_label: {
+                    name: "subject_label",
+                    type: "String",
+                    optional: true
+                },
+                status: {
+                    name: "status",
+                    type: "String",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("pending") }] }] as readonly AttributeApplication[],
+                    default: "pending" as FieldDefault
+                },
+                message: {
+                    name: "message",
+                    type: "String",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                user: {
+                    name: "user",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }, { name: "onDelete", value: ExpressionUtils.literal("Cascade") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "classroom_join_requests", fields: ["user_id"], references: ["id"], onDelete: "Cascade" }
+                },
+                classroom: {
+                    name: "classroom",
+                    type: "Classroom",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("classroom_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }, { name: "onDelete", value: ExpressionUtils.literal("Cascade") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "join_requests", fields: ["classroom_id"], references: ["id"], onDelete: "Cascade" }
+                }
+            },
+            attributes: [
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("classroom_id"), ExpressionUtils.field("status")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id"), ExpressionUtils.field("status")]) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("create") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("update") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("classroom_join_requests") }] }
             ] as readonly AttributeApplication[],
             idFields: ["id"],
             uniqueFields: {
                 id: { type: "String" }
+            }
+        },
+        ClassroomLegacyRecord: {
+            name: "ClassroomLegacyRecord",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                classroom_id: {
+                    name: "classroom_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "classroom"
+                    ] as readonly string[]
+                },
+                academic_year: {
+                    name: "academic_year",
+                    type: "String"
+                },
+                teacher_id: {
+                    name: "teacher_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "teacher"
+                    ] as readonly string[]
+                },
+                student_count: {
+                    name: "student_count",
+                    type: "Int",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(0) }] }] as readonly AttributeApplication[],
+                    default: 0 as FieldDefault
+                },
+                avg_performance: {
+                    name: "avg_performance",
+                    type: "Float",
+                    optional: true
+                },
+                top_achievements: {
+                    name: "top_achievements",
+                    type: "String",
+                    array: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                classroom: {
+                    name: "classroom",
+                    type: "Classroom",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("classroom_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }, { name: "onDelete", value: ExpressionUtils.literal("Cascade") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "legacy_records", fields: ["classroom_id"], references: ["id"], onDelete: "Cascade" }
+                },
+                teacher: {
+                    name: "teacher",
+                    type: "User",
+                    optional: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("LegacyTeacherRecords") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("teacher_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "classroom_legacy_records", name: "LegacyTeacherRecords", fields: ["teacher_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("teacher_id"), ExpressionUtils.field("academic_year")]) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.field("entity_id"), "==", ExpressionUtils.member(ExpressionUtils._this(), ["classroom", "school_id"])))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("classroom_legacy_records") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" }
+            }
+        },
+        AssignmentSubmission: {
+            name: "AssignmentSubmission",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                assignment_id: {
+                    name: "assignment_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "assignment"
+                    ] as readonly string[]
+                },
+                student_id: {
+                    name: "student_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "student"
+                    ] as readonly string[]
+                },
+                content: {
+                    name: "content",
+                    type: "String",
+                    optional: true
+                },
+                photo_url: {
+                    name: "photo_url",
+                    type: "String",
+                    optional: true
+                },
+                submitted_at: {
+                    name: "submitted_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                grade: {
+                    name: "grade",
+                    type: "Int",
+                    optional: true
+                },
+                feedback: {
+                    name: "feedback",
+                    type: "String",
+                    optional: true
+                },
+                graded_at: {
+                    name: "graded_at",
+                    type: "DateTime",
+                    optional: true
+                },
+                idempotency_key: {
+                    name: "idempotency_key",
+                    type: "String",
+                    unique: true,
+                    optional: true,
+                    attributes: [{ name: "@unique" }] as readonly AttributeApplication[]
+                },
+                assignment: {
+                    name: "assignment",
+                    type: "Assignment",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("assignment_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "submissions", fields: ["assignment_id"], references: ["id"] }
+                },
+                student: {
+                    name: "student",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("StudentSubmissions") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("student_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "assignment_submissions", name: "StudentSubmissions", fields: ["student_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@unique", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("assignment_id"), ExpressionUtils.field("student_id")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("student_id"), ExpressionUtils.field("submitted_at")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("assignment_id"), ExpressionUtils.field("submitted_at")]) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("student_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("assignment"), ["classroom", "teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("create") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.field("student_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("update") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("assignment"), ["classroom", "teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("submissions") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                idempotency_key: { type: "String" },
+                assignment_id_student_id: { assignment_id: { type: "String" }, student_id: { type: "String" } }
+            }
+        },
+        Notification: {
+            name: "Notification",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                user_id: {
+                    name: "user_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "user"
+                    ] as readonly string[]
+                },
+                type: {
+                    name: "type",
+                    type: "String"
+                },
+                title: {
+                    name: "title",
+                    type: "String"
+                },
+                body: {
+                    name: "body",
+                    type: "String",
+                    optional: true
+                },
+                metadata: {
+                    name: "metadata",
+                    type: "Json",
+                    optional: true
+                },
+                read_at: {
+                    name: "read_at",
+                    type: "DateTime",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                is_read: {
+                    name: "is_read",
+                    type: "Boolean",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(false) }] }] as readonly AttributeApplication[],
+                    default: false as FieldDefault
+                },
+                reference_id: {
+                    name: "reference_id",
+                    type: "String",
+                    optional: true
+                },
+                reference_type: {
+                    name: "reference_type",
+                    type: "String",
+                    optional: true
+                },
+                idempotency_key: {
+                    name: "idempotency_key",
+                    type: "String",
+                    unique: true,
+                    optional: true,
+                    attributes: [{ name: "@unique" }] as readonly AttributeApplication[]
+                },
+                user: {
+                    name: "user",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "notifications", fields: ["user_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id"), ExpressionUtils.field("created_at")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id"), ExpressionUtils.field("is_read")]) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("create") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("update") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("delete") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("notifications") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                idempotency_key: { type: "String" }
             }
         },
         ClassroomGradingSettings: {
@@ -1084,36 +1692,33 @@ export class SchemaType implements SchemaDef {
                 school_id: {
                     name: "school_id",
                     type: "String",
-                    optional: true,
                     foreignKeyFor: [
                         "school"
                     ] as readonly string[]
                 },
-                creator_id: {
-                    name: "creator_id",
-                    type: "String"
-                },
-                type: {
-                    name: "type",
+                created_by: {
+                    name: "created_by",
                     type: "String",
+                    optional: true
+                },
+                group_type: {
+                    name: "group_type",
+                    type: "String",
+                    optional: true,
                     attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("general") }] }] as readonly AttributeApplication[],
                     default: "general" as FieldDefault
-                },
-                visibility: {
-                    name: "visibility",
-                    type: "String",
-                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("public") }] }] as readonly AttributeApplication[],
-                    default: "public" as FieldDefault
                 },
                 join_policy: {
                     name: "join_policy",
                     type: "String",
+                    optional: true,
                     attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("open") }] }] as readonly AttributeApplication[],
                     default: "open" as FieldDefault
                 },
                 is_public: {
                     name: "is_public",
                     type: "Boolean",
+                    optional: true,
                     attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(true) }] }] as readonly AttributeApplication[],
                     default: true as FieldDefault
                 },
@@ -1123,11 +1728,27 @@ export class SchemaType implements SchemaDef {
                     attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
                     default: ExpressionUtils.call("now") as FieldDefault
                 },
-                updated_at: {
-                    name: "updated_at",
-                    type: "DateTime",
-                    updatedAt: true,
-                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                classroom_id: {
+                    name: "classroom_id",
+                    type: "String",
+                    optional: true
+                },
+                image_url: {
+                    name: "image_url",
+                    type: "String",
+                    optional: true
+                },
+                member_count: {
+                    name: "member_count",
+                    type: "Int",
+                    optional: true,
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(0) }] }] as readonly AttributeApplication[],
+                    default: 0 as FieldDefault
+                },
+                handle: {
+                    name: "handle",
+                    type: "String",
+                    optional: true
                 },
                 members: {
                     name: "members",
@@ -1150,16 +1771,16 @@ export class SchemaType implements SchemaDef {
                 school: {
                     name: "school",
                     type: "School",
-                    optional: true,
                     attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
                     relation: { opposite: "groups", fields: ["school_id"], references: ["id"] }
                 }
             },
             attributes: [
-                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.field("is_public"), "||", ExpressionUtils.binary(ExpressionUtils.field("visibility"), "==", ExpressionUtils.literal("public"))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.field("is_public"), "==", ExpressionUtils.literal(true)) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.field("members"), "?", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))) }] },
-                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("creator_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
-                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("community_groups") }] }
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("created_by"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("community_groups") }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id"), ExpressionUtils.field("created_at")]) }] }
             ] as readonly AttributeApplication[],
             idFields: ["id"],
             uniqueFields: {
@@ -1217,9 +1838,10 @@ export class SchemaType implements SchemaDef {
             },
             attributes: [
                 { name: "@@unique", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id"), ExpressionUtils.field("group_id")]) }] },
-                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("group"), ["is_public"]), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("group"), ["members"]), "?", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])))) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("group_id"), ExpressionUtils.field("status")]) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("group"), ["is_public"]), "==", ExpressionUtils.literal(true)), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("group"), ["members"]), "?", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])))) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))) }] },
-                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("group"), ["creator_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("group"), ["created_by"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
                 { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("community_group_members") }] }
             ] as readonly AttributeApplication[],
             idFields: ["id"],
@@ -1264,18 +1886,14 @@ export class SchemaType implements SchemaDef {
                 post_type: {
                     name: "post_type",
                     type: "String",
+                    optional: true,
                     attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("discussion") }] }] as readonly AttributeApplication[],
                     default: "discussion" as FieldDefault
                 },
-                visibility: {
-                    name: "visibility",
+                author_role: {
+                    name: "author_role",
                     type: "String",
-                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("school") }] }] as readonly AttributeApplication[],
-                    default: "school" as FieldDefault
-                },
-                author_tier: {
-                    name: "author_tier",
-                    type: "String"
+                    optional: true
                 },
                 media_url: {
                     name: "media_url",
@@ -1285,6 +1903,11 @@ export class SchemaType implements SchemaDef {
                 media_type: {
                     name: "media_type",
                     type: "String",
+                    optional: true
+                },
+                poll_data: {
+                    name: "poll_data",
+                    type: "Json",
                     optional: true
                 },
                 created_at: {
@@ -1298,6 +1921,11 @@ export class SchemaType implements SchemaDef {
                     type: "DateTime",
                     updatedAt: true,
                     attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                deleted_at: {
+                    name: "deleted_at",
+                    type: "DateTime",
+                    optional: true
                 },
                 group: {
                     name: "group",
@@ -1320,8 +1948,10 @@ export class SchemaType implements SchemaDef {
             },
             attributes: [
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.field("author_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))) }] },
-                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("group"), ["is_public"]), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("group"), ["members"]), "?", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])))) }] },
-                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("community_posts") }] }
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("group"), ["is_public"]), "==", ExpressionUtils.literal(true)), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("group"), ["members"]), "?", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])))) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("community_posts") }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("group_id"), ExpressionUtils.field("created_at")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("author_id"), ExpressionUtils.field("created_at")]) }] }
             ] as readonly AttributeApplication[],
             idFields: ["id"],
             uniqueFields: {
@@ -1378,7 +2008,73 @@ export class SchemaType implements SchemaDef {
             attributes: [
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("group"), ["members"]), "?", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("create") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("group"), ["members"]), "?", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))) }] },
-                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("group_messages") }] }
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("group_messages") }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("group_id"), ExpressionUtils.field("created_at")]) }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" }
+            }
+        },
+        AiMessage: {
+            name: "AiMessage",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                thread_id: {
+                    name: "thread_id",
+                    type: "String"
+                },
+                user_id: {
+                    name: "user_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "user"
+                    ] as readonly string[]
+                },
+                role: {
+                    name: "role",
+                    type: "String"
+                },
+                content: {
+                    name: "content",
+                    type: "String"
+                },
+                privacy_mode: {
+                    name: "privacy_mode",
+                    type: "String",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("saved") }] }] as readonly AttributeApplication[],
+                    default: "saved" as FieldDefault
+                },
+                expires_at: {
+                    name: "expires_at",
+                    type: "DateTime",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                user: {
+                    name: "user",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "ai_messages", fields: ["user_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("create") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("update") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("delete") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]))) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("ai_messages") }] }
             ] as readonly AttributeApplication[],
             idFields: ["id"],
             uniqueFields: {
@@ -1415,6 +2111,11 @@ export class SchemaType implements SchemaDef {
                     attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("\u2764\uFE0F") }] }] as readonly AttributeApplication[],
                     default: "\u2764\uFE0F" as FieldDefault
                 },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    optional: true
+                },
                 post: {
                     name: "post",
                     type: "Post",
@@ -1430,6 +2131,7 @@ export class SchemaType implements SchemaDef {
             },
             attributes: [
                 { name: "@@unique", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("post_id"), ExpressionUtils.field("user_id")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id"), ExpressionUtils.field("created_at")]) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("post"), ["group", "is_public"]), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("post"), ["group", "members"]), "?", ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])))) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.field("user_id"), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])) }] },
                 { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("community_reactions") }] }
@@ -1505,7 +2207,8 @@ export class SchemaType implements SchemaDef {
             attributes: [
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["is_archived"]), "==", ExpressionUtils.literal(false)))) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
-                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("lessons") }] }
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("lessons") }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("classroom_id"), ExpressionUtils.field("order_index")]) }] }
             ] as readonly AttributeApplication[],
             idFields: ["id"],
             uniqueFields: {
@@ -1590,7 +2293,9 @@ export class SchemaType implements SchemaDef {
             attributes: [
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["is_archived"]), "==", ExpressionUtils.literal(false)))) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
-                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("lesson_materials") }] }
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("lesson_materials") }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("lesson_id")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("classroom_id"), ExpressionUtils.field("created_at")]) }] }
             ] as readonly AttributeApplication[],
             idFields: ["id"],
             uniqueFields: {
@@ -1600,16 +2305,10 @@ export class SchemaType implements SchemaDef {
         AttendanceRecord: {
             name: "AttendanceRecord",
             fields: {
-                id: {
-                    name: "id",
-                    type: "String",
-                    id: true,
-                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
-                    default: ExpressionUtils.call("uuid") as FieldDefault
-                },
                 classroom_id: {
                     name: "classroom_id",
                     type: "String",
+                    id: true,
                     foreignKeyFor: [
                         "classroom"
                     ] as readonly string[]
@@ -1617,6 +2316,7 @@ export class SchemaType implements SchemaDef {
                 student_id: {
                     name: "student_id",
                     type: "String",
+                    id: true,
                     foreignKeyFor: [
                         "student"
                     ] as readonly string[]
@@ -1628,30 +2328,9 @@ export class SchemaType implements SchemaDef {
                 date: {
                     name: "date",
                     type: "DateTime",
+                    id: true,
                     attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
                     default: ExpressionUtils.call("now") as FieldDefault
-                },
-                created_at: {
-                    name: "created_at",
-                    type: "DateTime",
-                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
-                    default: ExpressionUtils.call("now") as FieldDefault
-                },
-                updated_at: {
-                    name: "updated_at",
-                    type: "DateTime",
-                    updatedAt: true,
-                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
-                },
-                occurred_at: {
-                    name: "occurred_at",
-                    type: "DateTime",
-                    optional: true
-                },
-                academic_cycle_id: {
-                    name: "academic_cycle_id",
-                    type: "String",
-                    optional: true
                 },
                 classroom: {
                     name: "classroom",
@@ -1669,11 +2348,14 @@ export class SchemaType implements SchemaDef {
             attributes: [
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("student_id"))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("entity_id"), "==", ExpressionUtils.member(ExpressionUtils._this(), ["classroom", "school_id"])), "&&", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("principal")), "||", ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("section_head"))))))) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("entity_id"), "==", ExpressionUtils.member(ExpressionUtils._this(), ["classroom", "school_id"])), "&&", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("principal")), "||", ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("section_head"))))))) }] },
+                { name: "@@id", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("classroom_id"), ExpressionUtils.field("student_id"), ExpressionUtils.field("date")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("classroom_id"), ExpressionUtils.field("date")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("student_id"), ExpressionUtils.field("date")]) }] },
                 { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("attendance") }] }
             ] as readonly AttributeApplication[],
-            idFields: ["id"],
+            idFields: ["classroom_id", "student_id", "date"],
             uniqueFields: {
-                id: { type: "String" }
+                classroom_id_student_id_date: { classroom_id: { type: "String" }, student_id: { type: "String" }, date: { type: "DateTime" } }
             }
         },
         School: {
@@ -1697,81 +2379,74 @@ export class SchemaType implements SchemaDef {
                     optional: true,
                     attributes: [{ name: "@unique" }] as readonly AttributeApplication[]
                 },
-                status: {
-                    name: "status",
-                    type: "String",
-                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("pending") }] }] as readonly AttributeApplication[],
-                    default: "pending" as FieldDefault
-                },
                 created_at: {
                     name: "created_at",
                     type: "DateTime",
                     attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
                     default: ExpressionUtils.call("now") as FieldDefault
                 },
-                updated_at: {
-                    name: "updated_at",
-                    type: "DateTime",
-                    updatedAt: true,
-                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
-                },
-                type: {
-                    name: "type",
+                created_by: {
+                    name: "created_by",
                     type: "String",
                     optional: true
                 },
                 tenant_kind: {
                     name: "tenant_kind",
                     type: "String",
-                    optional: true
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("customer") }] }] as readonly AttributeApplication[],
+                    default: "customer" as FieldDefault
                 },
-                official_type: {
-                    name: "official_type",
+                type: {
+                    name: "type",
                     type: "String",
                     optional: true
                 },
-                province_id: {
-                    name: "province_id",
+                is_sample: {
+                    name: "is_sample",
+                    type: "Boolean",
+                    optional: true,
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(false) }] }] as readonly AttributeApplication[],
+                    default: false as FieldDefault
+                },
+                census_id: {
+                    name: "census_id",
                     type: "String",
                     optional: true
                 },
-                district_id: {
-                    name: "district_id",
-                    type: "String",
+                custom_branding: {
+                    name: "custom_branding",
+                    type: "Json",
                     optional: true
                 },
-                city: {
-                    name: "city",
-                    type: "String",
+                last_census_sync: {
+                    name: "last_census_sync",
+                    type: "DateTime",
                     optional: true
                 },
-                address: {
-                    name: "address",
+                sync_status: {
+                    name: "sync_status",
                     type: "String",
-                    optional: true
-                },
-                student_type: {
-                    name: "student_type",
-                    type: "String",
-                    optional: true
-                },
-                religious_affiliation: {
-                    name: "religious_affiliation",
-                    type: "String",
-                    optional: true
-                },
-                student_count: {
-                    name: "student_count",
-                    type: "Int",
-                    optional: true
-                },
-                created_by: {
-                    name: "created_by",
-                    type: "String",
-                    optional: true
+                    optional: true,
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("synced") }] }] as readonly AttributeApplication[],
+                    default: "synced" as FieldDefault
                 },
                 avatar_url: {
                     name: "avatar_url",
+                    type: "String",
+                    optional: true
+                },
+                deleted_at: {
+                    name: "deleted_at",
+                    type: "DateTime",
+                    optional: true
+                },
+                deleted_by: {
+                    name: "deleted_by",
+                    type: "String",
+                    optional: true
+                },
+                deletion_reason: {
+                    name: "deletion_reason",
                     type: "String",
                     optional: true
                 },
@@ -1799,6 +2474,18 @@ export class SchemaType implements SchemaDef {
                     array: true,
                     relation: { opposite: "school" }
                 },
+                invite_codes: {
+                    name: "invite_codes",
+                    type: "InviteCode",
+                    array: true,
+                    relation: { opposite: "school" }
+                },
+                inventory_items: {
+                    name: "inventory_items",
+                    type: "InventoryItem",
+                    array: true,
+                    relation: { opposite: "school" }
+                },
                 staff_leaves: {
                     name: "staff_leaves",
                     type: "StaffLeave",
@@ -1808,12 +2495,6 @@ export class SchemaType implements SchemaDef {
                 calendar_events: {
                     name: "calendar_events",
                     type: "CalendarEvent",
-                    array: true,
-                    relation: { opposite: "school" }
-                },
-                guardians: {
-                    name: "guardians",
-                    type: "Guardian",
                     array: true,
                     relation: { opposite: "school" }
                 }
@@ -1830,6 +2511,99 @@ export class SchemaType implements SchemaDef {
                 handle: { type: "String" }
             }
         },
+        InviteCode: {
+            name: "InviteCode",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                school_id: {
+                    name: "school_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "school"
+                    ] as readonly string[]
+                },
+                code: {
+                    name: "code",
+                    type: "String",
+                    unique: true,
+                    attributes: [{ name: "@unique" }] as readonly AttributeApplication[]
+                },
+                role: {
+                    name: "role",
+                    type: "String"
+                },
+                max_uses: {
+                    name: "max_uses",
+                    type: "Int",
+                    optional: true
+                },
+                uses_count: {
+                    name: "uses_count",
+                    type: "Int",
+                    optional: true,
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(0) }] }] as readonly AttributeApplication[],
+                    default: 0 as FieldDefault
+                },
+                invitation_text: {
+                    name: "invitation_text",
+                    type: "String",
+                    optional: true
+                },
+                metadata: {
+                    name: "metadata",
+                    type: "Json",
+                    optional: true
+                },
+                created_by: {
+                    name: "created_by",
+                    type: "String",
+                    optional: true,
+                    foreignKeyFor: [
+                        "creator"
+                    ] as readonly string[]
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                is_active: {
+                    name: "is_active",
+                    type: "Boolean",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(true) }] }] as readonly AttributeApplication[],
+                    default: true as FieldDefault
+                },
+                school: {
+                    name: "school",
+                    type: "School",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }, { name: "onDelete", value: ExpressionUtils.literal("Cascade") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "invite_codes", fields: ["school_id"], references: ["id"], onDelete: "Cascade" }
+                },
+                creator: {
+                    name: "creator",
+                    type: "User",
+                    optional: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("InviteCodeCreator") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("created_by")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "created_invite_codes", name: "InviteCodeCreator", fields: ["created_by"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.field("is_active"), "==", ExpressionUtils.literal(true)) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("invite_codes") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                code: { type: "String" }
+            }
+        },
         InventoryItem: {
             name: "InventoryItem",
             fields: {
@@ -1840,9 +2614,17 @@ export class SchemaType implements SchemaDef {
                     attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
                     default: ExpressionUtils.call("uuid") as FieldDefault
                 },
+                school_id: {
+                    name: "school_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "school"
+                    ] as readonly string[]
+                },
                 classroom_id: {
                     name: "classroom_id",
                     type: "String",
+                    optional: true,
                     foreignKeyFor: [
                         "classroom"
                     ] as readonly string[]
@@ -1861,11 +2643,26 @@ export class SchemaType implements SchemaDef {
                     attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(0) }] }] as readonly AttributeApplication[],
                     default: 0 as FieldDefault
                 },
+                unit: {
+                    name: "unit",
+                    type: "String",
+                    optional: true
+                },
                 condition: {
                     name: "condition",
                     type: "String",
                     attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("good") }] }] as readonly AttributeApplication[],
                     default: "good" as FieldDefault
+                },
+                location: {
+                    name: "location",
+                    type: "String",
+                    optional: true
+                },
+                last_audit_at: {
+                    name: "last_audit_at",
+                    type: "DateTime",
+                    optional: true
                 },
                 created_at: {
                     name: "created_at",
@@ -1879,16 +2676,43 @@ export class SchemaType implements SchemaDef {
                     updatedAt: true,
                     attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
                 },
+                local_sync_id: {
+                    name: "local_sync_id",
+                    type: "String",
+                    optional: true
+                },
+                is_pending_sync: {
+                    name: "is_pending_sync",
+                    type: "Boolean",
+                    optional: true
+                },
+                valid_from: {
+                    name: "valid_from",
+                    type: "DateTime",
+                    optional: true
+                },
+                valid_to: {
+                    name: "valid_to",
+                    type: "DateTime",
+                    optional: true
+                },
+                school: {
+                    name: "school",
+                    type: "School",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }, { name: "onDelete", value: ExpressionUtils.literal("Cascade") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "inventory_items", fields: ["school_id"], references: ["id"], onDelete: "Cascade" }
+                },
                 classroom: {
                     name: "classroom",
                     type: "Classroom",
+                    optional: true,
                     attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("classroom_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
                     relation: { opposite: "inventory", fields: ["classroom_id"], references: ["id"] }
                 }
             },
             attributes: [
-                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null())) }] },
-                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.field("classroom"), ["teacher_id"]), "==", ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"])), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.field("entity_id"), "==", ExpressionUtils.member(ExpressionUtils._this(), ["school_id"]))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM")))))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("entity_id"), "==", ExpressionUtils.member(ExpressionUtils._this(), ["school_id"])), "&&", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("principal")), "||", ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("teacher"))))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM")))))) }] },
                 { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("inventory_items") }] }
             ] as readonly AttributeApplication[],
             idFields: ["id"],
@@ -1941,6 +2765,7 @@ export class SchemaType implements SchemaDef {
                 }
             },
             attributes: [
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id"), ExpressionUtils.field("created_at")]) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("user_id")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM")))))) }] },
                 { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("mood_logs") }] }
             ] as readonly AttributeApplication[],
@@ -1990,6 +2815,7 @@ export class SchemaType implements SchemaDef {
                 }
             },
             attributes: [
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id"), ExpressionUtils.field("created_at")]) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("user_id")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM")))))) }] },
                 { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("fire_journal") }] }
             ] as readonly AttributeApplication[],
@@ -2158,11 +2984,27 @@ export class SchemaType implements SchemaDef {
                 },
                 creator_id: {
                     name: "creator_id",
-                    type: "String"
+                    type: "String",
+                    optional: true
                 },
                 creator_role: {
                     name: "creator_role",
                     type: "String"
+                },
+                school_id: {
+                    name: "school_id",
+                    type: "String",
+                    optional: true
+                },
+                thumbnail_url: {
+                    name: "thumbnail_url",
+                    type: "String",
+                    optional: true
+                },
+                creator_name: {
+                    name: "creator_name",
+                    type: "String",
+                    optional: true
                 },
                 verified: {
                     name: "verified",
@@ -2170,11 +3012,31 @@ export class SchemaType implements SchemaDef {
                     attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(false) }] }] as readonly AttributeApplication[],
                     default: false as FieldDefault
                 },
+                verified_by: {
+                    name: "verified_by",
+                    type: "String",
+                    optional: true
+                },
+                curriculum_aligned: {
+                    name: "curriculum_aligned",
+                    type: "Boolean",
+                    optional: true
+                },
+                copyright_notice: {
+                    name: "copyright_notice",
+                    type: "String",
+                    optional: true
+                },
                 is_community: {
                     name: "is_community",
                     type: "Boolean",
                     attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(false) }] }] as readonly AttributeApplication[],
                     default: false as FieldDefault
+                },
+                tags: {
+                    name: "tags",
+                    type: "String",
+                    array: true
                 },
                 views: {
                     name: "views",
@@ -2199,6 +3061,101 @@ export class SchemaType implements SchemaDef {
                     type: "Int",
                     attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(0) }] }] as readonly AttributeApplication[],
                     default: 0 as FieldDefault
+                },
+                is_geographic: {
+                    name: "is_geographic",
+                    type: "Boolean",
+                    optional: true
+                },
+                latitude: {
+                    name: "latitude",
+                    type: "Float",
+                    optional: true
+                },
+                longitude: {
+                    name: "longitude",
+                    type: "Float",
+                    optional: true
+                },
+                map_x: {
+                    name: "map_x",
+                    type: "Float",
+                    optional: true
+                },
+                map_y: {
+                    name: "map_y",
+                    type: "Float",
+                    optional: true
+                },
+                parent_node_id: {
+                    name: "parent_node_id",
+                    type: "String",
+                    optional: true
+                },
+                island_id: {
+                    name: "island_id",
+                    type: "String",
+                    optional: true
+                },
+                link_status: {
+                    name: "link_status",
+                    type: "String",
+                    optional: true
+                },
+                last_checked_at: {
+                    name: "last_checked_at",
+                    type: "DateTime",
+                    optional: true
+                },
+                fail_count: {
+                    name: "fail_count",
+                    type: "Int",
+                    optional: true
+                },
+                title_si: {
+                    name: "title_si",
+                    type: "String",
+                    optional: true
+                },
+                title_ta: {
+                    name: "title_ta",
+                    type: "String",
+                    optional: true
+                },
+                title_en: {
+                    name: "title_en",
+                    type: "String",
+                    optional: true
+                },
+                description_si: {
+                    name: "description_si",
+                    type: "String",
+                    optional: true
+                },
+                description_ta: {
+                    name: "description_ta",
+                    type: "String",
+                    optional: true
+                },
+                description_en: {
+                    name: "description_en",
+                    type: "String",
+                    optional: true
+                },
+                license: {
+                    name: "license",
+                    type: "String",
+                    optional: true
+                },
+                is_ministry_official: {
+                    name: "is_ministry_official",
+                    type: "Boolean",
+                    optional: true
+                },
+                media: {
+                    name: "media",
+                    type: "Json",
+                    optional: true
                 },
                 created_at: {
                     name: "created_at",
@@ -2255,9 +3212,15 @@ export class SchemaType implements SchemaDef {
                     type: "String",
                     optional: true
                 },
+                thumbnail_url: {
+                    name: "thumbnail_url",
+                    type: "String",
+                    optional: true
+                },
                 creator_id: {
                     name: "creator_id",
-                    type: "String"
+                    type: "String",
+                    optional: true
                 },
                 visibility: {
                     name: "visibility",
@@ -2279,6 +3242,77 @@ export class SchemaType implements SchemaDef {
                     name: "grades",
                     type: "Int",
                     array: true
+                },
+                is_public: {
+                    name: "is_public",
+                    type: "Boolean",
+                    optional: true
+                },
+                icon_emoji: {
+                    name: "icon_emoji",
+                    type: "String",
+                    optional: true
+                },
+                metadata: {
+                    name: "metadata",
+                    type: "Json",
+                    optional: true
+                },
+                verified: {
+                    name: "verified",
+                    type: "Boolean",
+                    optional: true
+                },
+                type: {
+                    name: "type",
+                    type: "String",
+                    optional: true
+                },
+                subject: {
+                    name: "subject",
+                    type: "String",
+                    optional: true
+                },
+                resource_ids: {
+                    name: "resource_ids",
+                    type: "String",
+                    array: true
+                },
+                sequence_order: {
+                    name: "sequence_order",
+                    type: "Int",
+                    array: true
+                },
+                is_official: {
+                    name: "is_official",
+                    type: "Boolean"
+                },
+                forks: {
+                    name: "forks",
+                    type: "Int"
+                },
+                used_by_count: {
+                    name: "used_by_count",
+                    type: "Int"
+                },
+                endorsements: {
+                    name: "endorsements",
+                    type: "Int"
+                },
+                estimated_duration: {
+                    name: "estimated_duration",
+                    type: "String",
+                    optional: true
+                },
+                school_id: {
+                    name: "school_id",
+                    type: "String",
+                    optional: true
+                },
+                original_collection_id: {
+                    name: "original_collection_id",
+                    type: "String",
+                    optional: true
                 },
                 created_at: {
                     name: "created_at",
@@ -2638,7 +3672,9 @@ export class SchemaType implements SchemaDef {
             attributes: [
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("user_id")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("create") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("user_id")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
-                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("growth_events") }] }
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("growth_events") }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id"), ExpressionUtils.field("created_at")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id"), ExpressionUtils.field("dimension"), ExpressionUtils.field("created_at")]) }] }
             ] as readonly AttributeApplication[],
             idFields: ["id"],
             uniqueFields: {
@@ -2981,6 +4017,31 @@ export class SchemaType implements SchemaDef {
                     name: "name",
                     type: "String"
                 },
+                name_si: {
+                    name: "name_si",
+                    type: "String",
+                    optional: true
+                },
+                name_ta: {
+                    name: "name_ta",
+                    type: "String",
+                    optional: true
+                },
+                grade_range: {
+                    name: "grade_range",
+                    type: "String",
+                    optional: true
+                },
+                section_head_id: {
+                    name: "section_head_id",
+                    type: "String",
+                    optional: true
+                },
+                deleted_at: {
+                    name: "deleted_at",
+                    type: "DateTime",
+                    optional: true
+                },
                 created_at: {
                     name: "created_at",
                     type: "DateTime",
@@ -3033,9 +4094,25 @@ export class SchemaType implements SchemaDef {
                         "section"
                     ] as readonly string[]
                 },
+                school_id: {
+                    name: "school_id",
+                    type: "String",
+                    optional: true
+                },
+                grade_head_id: {
+                    name: "grade_head_id",
+                    type: "String",
+                    optional: true
+                },
                 number: {
                     name: "number",
-                    type: "Int"
+                    type: "Int",
+                    attributes: [{ name: "@map", args: [{ name: "name", value: ExpressionUtils.literal("grade_number") }] }] as readonly AttributeApplication[]
+                },
+                deleted_at: {
+                    name: "deleted_at",
+                    type: "DateTime",
+                    optional: true
                 },
                 created_at: {
                     name: "created_at",
@@ -3220,100 +4297,6 @@ export class SchemaType implements SchemaDef {
                 id: { type: "String" }
             }
         },
-        Guardian: {
-            name: "Guardian",
-            fields: {
-                id: {
-                    name: "id",
-                    type: "String",
-                    id: true,
-                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
-                    default: ExpressionUtils.call("uuid") as FieldDefault
-                },
-                user_id: {
-                    name: "user_id",
-                    type: "String",
-                    unique: true,
-                    optional: true,
-                    attributes: [{ name: "@unique" }] as readonly AttributeApplication[],
-                    foreignKeyFor: [
-                        "user"
-                    ] as readonly string[]
-                },
-                relationship_type: {
-                    name: "relationship_type",
-                    type: "String"
-                },
-                contact_info: {
-                    name: "contact_info",
-                    type: "Json"
-                },
-                verification_status: {
-                    name: "verification_status",
-                    type: "String",
-                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("pending") }] }] as readonly AttributeApplication[],
-                    default: "pending" as FieldDefault
-                },
-                custody_info: {
-                    name: "custody_info",
-                    type: "Json",
-                    optional: true
-                },
-                emergency_contact: {
-                    name: "emergency_contact",
-                    type: "Json",
-                    optional: true
-                },
-                created_at: {
-                    name: "created_at",
-                    type: "DateTime",
-                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
-                    default: ExpressionUtils.call("now") as FieldDefault
-                },
-                updated_at: {
-                    name: "updated_at",
-                    type: "DateTime",
-                    updatedAt: true,
-                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
-                },
-                school_id: {
-                    name: "school_id",
-                    type: "String",
-                    foreignKeyFor: [
-                        "school"
-                    ] as readonly string[]
-                },
-                user: {
-                    name: "user",
-                    type: "User",
-                    optional: true,
-                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
-                    relation: { opposite: "guardian", fields: ["user_id"], references: ["id"] }
-                },
-                school: {
-                    name: "school",
-                    type: "School",
-                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
-                    relation: { opposite: "guardians", fields: ["school_id"], references: ["id"] }
-                },
-                students: {
-                    name: "students",
-                    type: "StudentGuardianRelationship",
-                    array: true,
-                    relation: { opposite: "guardian" }
-                }
-            },
-            attributes: [
-                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("user_id")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM")))))) }] },
-                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()) }] },
-                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("guardians") }] }
-            ] as readonly AttributeApplication[],
-            idFields: ["id"],
-            uniqueFields: {
-                id: { type: "String" },
-                user_id: { type: "String" }
-            }
-        },
         StudentGuardianRelationship: {
             name: "StudentGuardianRelationship",
             fields: {
@@ -3342,50 +4325,11 @@ export class SchemaType implements SchemaDef {
                     name: "relationship_type",
                     type: "String"
                 },
-                permissions: {
-                    name: "permissions",
-                    type: "Json",
-                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("[]") }] }] as readonly AttributeApplication[],
-                    default: "[]" as FieldDefault
-                },
-                custody_level: {
-                    name: "custody_level",
-                    type: "String",
-                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("full") }] }] as readonly AttributeApplication[],
-                    default: "full" as FieldDefault
-                },
-                effective_date: {
-                    name: "effective_date",
-                    type: "DateTime",
-                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
-                    default: ExpressionUtils.call("now") as FieldDefault
-                },
-                termination_date: {
-                    name: "termination_date",
-                    type: "DateTime",
-                    optional: true
-                },
-                is_active: {
-                    name: "is_active",
-                    type: "Boolean",
-                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(true) }] }] as readonly AttributeApplication[],
-                    default: true as FieldDefault
-                },
                 created_at: {
                     name: "created_at",
                     type: "DateTime",
                     attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
                     default: ExpressionUtils.call("now") as FieldDefault
-                },
-                updated_at: {
-                    name: "updated_at",
-                    type: "DateTime",
-                    updatedAt: true,
-                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
-                },
-                school_id: {
-                    name: "school_id",
-                    type: "String"
                 },
                 student: {
                     name: "student",
@@ -3395,14 +4339,14 @@ export class SchemaType implements SchemaDef {
                 },
                 guardian: {
                     name: "guardian",
-                    type: "Guardian",
-                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("guardian_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
-                    relation: { opposite: "students", fields: ["guardian_id"], references: ["id"] }
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("GuardianStudents") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("guardian_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "student_guardian_links_as_guardian", name: "GuardianStudents", fields: ["guardian_id"], references: ["id"] }
                 }
             },
             attributes: [
                 { name: "@@unique", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("student_id"), ExpressionUtils.field("guardian_id")]) }] },
-                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("student_id")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.member(ExpressionUtils.field("guardian"), ["user_id"]))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("student_id")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("guardian_id"))), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM"))))) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM")))) }] },
                 { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("student_guardian_relationships") }] }
             ] as readonly AttributeApplication[],
@@ -4042,6 +4986,21 @@ export class SchemaType implements SchemaDef {
                         "student"
                     ] as readonly string[]
                 },
+                school_id: {
+                    name: "school_id",
+                    type: "String",
+                    optional: true
+                },
+                grade_id: {
+                    name: "grade_id",
+                    type: "String",
+                    optional: true
+                },
+                classroom_id: {
+                    name: "classroom_id",
+                    type: "String",
+                    optional: true
+                },
                 entity_type: {
                     name: "entity_type",
                     type: "String"
@@ -4054,9 +5013,24 @@ export class SchemaType implements SchemaDef {
                     name: "operation",
                     type: "String"
                 },
+                snapshot: {
+                    name: "snapshot",
+                    type: "Json",
+                    optional: true
+                },
                 metadata: {
                     name: "metadata",
                     type: "Json",
+                    optional: true
+                },
+                source_table: {
+                    name: "source_table",
+                    type: "String",
+                    optional: true
+                },
+                recorded_by: {
+                    name: "recorded_by",
+                    type: "String",
                     optional: true
                 },
                 occurred_at: {
@@ -4070,6 +5044,11 @@ export class SchemaType implements SchemaDef {
                     type: "DateTime",
                     attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
                     default: ExpressionUtils.call("now") as FieldDefault
+                },
+                effective_from: {
+                    name: "effective_from",
+                    type: "DateTime",
+                    optional: true
                 },
                 effective_to: {
                     name: "effective_to",
@@ -4096,6 +5075,8 @@ export class SchemaType implements SchemaDef {
                 }
             },
             attributes: [
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("student_id"), ExpressionUtils.field("occurred_at")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("classroom_id"), ExpressionUtils.field("occurred_at")]) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM")))) }] },
                 { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("student_id")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("teacher")))) }] },
                 { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("student_longitudinal_events") }] }
@@ -4237,6 +5218,43 @@ export class SchemaType implements SchemaDef {
             uniqueFields: {
                 id: { type: "String" },
                 key: { type: "String" }
+            }
+        },
+        PricingManifest: {
+            name: "PricingManifest",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                tier: {
+                    name: "tier",
+                    type: "String",
+                    unique: true,
+                    attributes: [{ name: "@unique" }] as readonly AttributeApplication[]
+                },
+                features: {
+                    name: "features",
+                    type: "Json"
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                }
+            },
+            attributes: [
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.literal(true) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("pricing_manifest") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                tier: { type: "String" }
             }
         },
         SchoolRegistry: {

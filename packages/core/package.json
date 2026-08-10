@@ -324,8 +324,8 @@
     "@supabase/postgrest-js": "2.102.1",
     "@supabase/supabase-js": "2.102.1",
     "@tanstack/react-query": "^5.101.0",
-    "@zenstackhq/server": "^3.8.0",
-    "@zenstackhq/zod": "^3.8.0",
+    "@zenstackhq/server": "^3.8.3",
+    "@zenstackhq/zod": "3.8.3",
     "date-fns": "^4.4.0",
     "drizzle-orm": "^0.45.2",
     "effect": "^3.22.0",
@@ -341,7 +341,7 @@
     "pino": "^10.3.1",
     "react-i18next": "^17.0.8",
     "uuid": "^14.0.1",
-    "zod": "4.3.6"
+    "zod": "4.4.3"
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",

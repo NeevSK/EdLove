@@ -1,4 +1,4 @@
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import type { Membership, ScopeRef } from '@repo/core/types';
 
 interface BondSeed {

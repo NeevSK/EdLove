@@ -16,6 +16,7 @@ export const syncContract = {
     path: '/powersync/upload',
     request: {
       body: z.object({
+        idempotencyKey: z.string().min(1),
         crud: z.array(
           z.object({
             id: z.string(),
@@ -31,6 +32,7 @@ export const syncContract = {
         schema: z.object({
           success: z.boolean(),
           processedCount: z.number(),
+          idempotent: z.boolean().optional(),
         }),
         description: 'PowerSync batch uploaded and processed successfully',
       },

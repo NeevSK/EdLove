@@ -9,7 +9,7 @@ import { AccountSchema, FinancialTransactionSchema } from '@repo/core/logic/sche
 import { InvoiceSchema, PaymentIntentSchema } from '@repo/core/logic/schemas/payments.schema';
 import { APIError } from '@repo/core/types/API';
 import { erpContract } from '@repo/core/api/erp.contract';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 export const accountingAPI = {
   /**
@@ -17,7 +17,7 @@ export const accountingAPI = {
    * @policy read Accounting
    */
   async getAccounts(): Promise<z.infer<typeof AccountSchema>[]> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('accounting_accounts')
       .select('*')
       .order('code', { ascending: true });
@@ -37,7 +37,7 @@ export const accountingAPI = {
     tx: Omit<z.infer<typeof FinancialTransactionSchema>, 'id'>,
   ): Promise<z.infer<typeof FinancialTransactionSchema>> {
     // In a real implementation, this would be a complex RPC call to handle double-entry
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+    const { data, error } = await supabaseClient.rpc(
       'record_financial_transaction',
       {
         tx_data: tx,
@@ -63,7 +63,7 @@ export const paymentsAPI = {
     provider: string;
     metadata?: any;
   }): Promise<z.infer<typeof PaymentIntentSchema>> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.functions.invoke(
+    const { data, error } = await supabaseClient.functions.invoke(
       'create-payment-intent',
       {
         body: vars,
@@ -82,7 +82,7 @@ export const paymentsAPI = {
    * @policy read Payments
    */
   async getInvoices(customerId?: string): Promise<z.infer<typeof InvoiceSchema>[]> {
-    let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('billing_invoices').select('*');
+    let query = supabaseClient.from('billing_invoices').select('*');
     if (customerId) query = query.eq('customer_id', customerId);
 
     const { data, error } = await query.order('created_at', {

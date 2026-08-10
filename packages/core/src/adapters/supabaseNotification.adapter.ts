@@ -1,4 +1,4 @@
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import type { INotificationPort } from '@repo/core/logic/ports/notification.port';
 import type { AppNotification, NotificationStatus } from '@repo/core/types';
 
@@ -7,7 +7,7 @@ import type { AppNotification, NotificationStatus } from '@repo/core/types';
  */
 export class SupabaseNotificationAdapter implements INotificationPort {
   async getNotifications(userId: string, limit: number = 20): Promise<AppNotification[]> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('notifications')
       .select('id, type, title, body, is_read, reference_id, reference_type, created_at')
       .eq('user_id', userId)
@@ -25,7 +25,7 @@ export class SupabaseNotificationAdapter implements INotificationPort {
     message: string,
     metadata: any = {},
   ): Promise<void> {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { error } = await supabaseClient
       .from('notifications')
       .insert([{ user_id: userId, type, title, body: message, metadata }]);
 
@@ -33,7 +33,7 @@ export class SupabaseNotificationAdapter implements INotificationPort {
   }
 
   async getUnreadCount(userId: string): Promise<number> {
-    const { count, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { count, error } = await supabaseClient
       .from('notifications')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
@@ -44,7 +44,7 @@ export class SupabaseNotificationAdapter implements INotificationPort {
   }
 
   async markAsRead(userId: string, notificationId: string): Promise<void> {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { error } = await supabaseClient
       .from('notifications')
       .update({ is_read: true })
       .eq('id', notificationId)
@@ -54,7 +54,7 @@ export class SupabaseNotificationAdapter implements INotificationPort {
   }
 
   async markAllRead(userId: string): Promise<void> {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { error } = await supabaseClient
       .from('notifications')
       .update({ is_read: true })
       .eq('user_id', userId)
@@ -69,7 +69,7 @@ export class SupabaseNotificationAdapter implements INotificationPort {
     onUpdate: (notification: AppNotification) => void,
     onStatusChange: (status: NotificationStatus) => void,
   ): () => void {
-    const channel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const channel = supabaseClient
       .channel(`notifications:global:${userId}`)
       .on(
         'postgres_changes',
@@ -98,7 +98,7 @@ export class SupabaseNotificationAdapter implements INotificationPort {
       });
 
     return () => {
-      __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.removeChannel(channel).catch(() => {});
+      supabaseClient.removeChannel(channel).catch(() => {});
     };
   }
 }

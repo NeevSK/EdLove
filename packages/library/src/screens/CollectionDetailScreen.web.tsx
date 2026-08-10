@@ -16,7 +16,7 @@ import { libraryAPI } from '@repo/library/api/library';
 import { useQueryClient } from '@tanstack/react-query';
 import type { LibraryCollection, LibraryResource, ResourceVisibility } from '@repo/library/types';
 import { buildLibraryExternalLinkOptions } from '@repo/library/utils/externalLinks';
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import {
   ArrowLeft as LucideArrowLeft,
   Edit2,

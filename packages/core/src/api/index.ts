@@ -30,7 +30,6 @@ import { schoolForestAPI } from '@repo/core/api/schoolForest';
 import { socialAPI } from '@repo/core/api/social';
 import { studentObservationsAPI } from '@repo/core/api/studentObservations';
 import { studentPotentialAPI } from '@repo/core/api/studentPotential';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
 import { tasksAPI } from '@repo/core/api/teacher';
 import { trackingAPI } from '@repo/core/api/tracking';
 import { warmMirrorAPI } from '@repo/core/api/warmMirror';
@@ -141,8 +140,6 @@ export * from '@repo/core/api/warmMirror';
 export * from '@repo/core/api/workspaceLayout.contract';
 
 export {
-  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__,
-  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ as supabase,
   academicCyclesAPI,
   assignmentsAPI,
   attendanceAPI,
@@ -187,7 +184,6 @@ export const api: Record<string, any> = {
   auth: authAPI,
   circles: circleAPI,
   identity: identityAPI,
-  supabase: __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__,
   tasks: tasksAPI,
   notes: classroomNotesAPI,
   lessons: lessonsAPI,

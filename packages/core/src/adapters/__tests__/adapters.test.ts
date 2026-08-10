@@ -30,7 +30,7 @@ vi.mock('../../store/useFeatureStore', () => ({
 
 // Mock Supabase client
 vi.mock('../../api/supabase', () => ({
-  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__: {
+  supabaseClient: {
     from: (table: string) => {
       if (table === 'users') {
         return {

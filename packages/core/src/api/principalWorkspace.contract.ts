@@ -52,6 +52,7 @@ export const principalWorkspaceContract = {
       body: z.object({
         capacity: PrincipalInviteRoleSchema,
         createdBy: z.string().min(1),
+        idempotencyKey: z.string().min(1).max(200).optional(),
       }),
     },
     responses: {

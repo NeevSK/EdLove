@@ -31,6 +31,13 @@ const rawMockDb = {
   update: vi.fn().mockReturnValue(mockBuilder),
   delete: vi.fn().mockReturnValue(mockBuilder),
   transaction: vi.fn((cb: any) => cb(rawMockDb)),
+  select: vi.fn().mockReturnValue(mockBuilder),
+  query: {
+    classrooms: { findFirst: vi.fn() },
+    schools: { findFirst: vi.fn() },
+    permissionSnapshots: { findFirst: vi.fn() },
+    policyVersion: { findFirst: vi.fn() },
+  },
 };
 
 vi.mock('@powersync/drizzle-driver', () => ({
@@ -146,5 +153,16 @@ describe('createSecureDrizzleProxy', () => {
     // Test the promise `.then` interface (e.g. await db.insert(...))
     const result = await secureDb.insert(tableObj);
     expect(result).toBe('driver_success');
+  });
+
+  it('forwards select operations without security checks', () => {
+    const tableObj = { _: { name: 'students' } };
+    secureDb.select(tableObj);
+    expect(rawMockDb.select).toHaveBeenCalledWith(tableObj);
+  });
+
+  it('forwards query operations without security checks', () => {
+    secureDb.query.classrooms.findFirst();
+    expect(rawMockDb.query.classrooms.findFirst).toHaveBeenCalled();
   });
 });

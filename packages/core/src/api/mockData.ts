@@ -76,6 +76,7 @@ export const MOCK_STUDENTS: Student[] = [
     classroom_id: 'mock-c1',
     status: 'active',
     student_id: 'm-s1',
+    enrolled_at: new Date(),
     joined_at: new Date(),
   },
   {
@@ -84,6 +85,7 @@ export const MOCK_STUDENTS: Student[] = [
     classroom_id: 'mock-c1',
     status: 'active',
     student_id: 'm-s2',
+    enrolled_at: new Date(),
     joined_at: new Date(),
   },
   {
@@ -92,6 +94,7 @@ export const MOCK_STUDENTS: Student[] = [
     classroom_id: 'mock-c2',
     status: 'active',
     student_id: 'm-s3',
+    enrolled_at: new Date(),
     joined_at: new Date(),
   },
   {
@@ -100,6 +103,7 @@ export const MOCK_STUDENTS: Student[] = [
     classroom_id: 'mock-c3',
     status: 'active',
     student_id: 'm-s4',
+    enrolled_at: new Date(),
     joined_at: new Date(),
   },
   {
@@ -108,6 +112,7 @@ export const MOCK_STUDENTS: Student[] = [
     classroom_id: 'mock-c1',
     status: 'active',
     student_id: 'm-s5',
+    enrolled_at: new Date(),
     joined_at: new Date(),
   },
 ];

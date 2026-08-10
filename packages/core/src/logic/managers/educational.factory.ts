@@ -1,5 +1,5 @@
 import { createSupabaseEducationalRepository } from '@repo/core/adapters/supabase/educational';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { community } from '@repo/core/logic/managers/community.factory';
 import { EducationalManager } from '@repo/core/logic/managers/EducationalManager';
 import { growth } from '@repo/core/logic/managers/growth.factory';
@@ -11,7 +11,7 @@ import { profile } from '@repo/core/logic/managers/profile.factory';
  * educational: The Global Sovereign Educational Instance.
  */
 export const educational = new EducationalManager(
-  createSupabaseEducationalRepository(__INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__),
+  createSupabaseEducationalRepository(supabaseClient),
   identity, // session
 
   growth,

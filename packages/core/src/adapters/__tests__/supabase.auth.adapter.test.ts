@@ -25,7 +25,7 @@ const mockAuth = vi.hoisted(() => ({
 }));
 
 vi.mock('../../api/supabase', () => ({
-  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__: {
+  supabaseClient: {
     auth: mockAuth,
     rpc: vi.fn(),
   },

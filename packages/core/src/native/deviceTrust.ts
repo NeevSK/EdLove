@@ -1,6 +1,6 @@
 import { v7 as uuidv7 } from 'uuid';
 import { type ActiveCitizen, identityAPI } from '@repo/core/api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
 import { APIError } from '@repo/core/types/API';
 
@@ -81,7 +81,7 @@ function unwrapRpcRow<T>(data: T[] | T | null): T | null {
 }
 
 async function rpcSingle<T>(fn: string, params: Record<string, unknown>) {
-  const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(fn, params);
+  const { data, error } = await supabaseClient.rpc(fn, params);
 
   if (error) {
     throw new APIError(`Failed to call ${fn}`, error.code, error);
@@ -196,7 +196,7 @@ export const deviceTrustAPI = {
     const deviceId =
       (await getStoredServerDeviceId()) ?? (await this.ensureDeviceRegistered()).deviceId;
 
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+    const { data, error } = await supabaseClient.rpc(
       'log_my_device_audit',
       {
         p_action: action,

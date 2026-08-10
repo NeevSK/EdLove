@@ -1,4 +1,4 @@
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import type {
   AuthMfaFactor,
   AuthSession,
@@ -10,7 +10,7 @@ import { Platform } from 'react-native';
 
 export class SupabaseAuthAdapter implements IAuthPort {
   private get client() {
-    return __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__;
+    return supabaseClient;
   }
 
   async getSession(): Promise<AuthSession | null> {

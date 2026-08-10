@@ -1,6 +1,6 @@
 import { authAPI } from '@repo/core/api/auth';
 import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { GuestDataManager } from '@repo/core/native/guestDataManager';
 import { setGuestScope } from '@repo/core/native/guestScope';
 
@@ -182,7 +182,7 @@ export class GuestDataSync {
         const {
           data: { session },
           error: sessionError,
-        } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.getSession();
+        } = await supabaseClient.auth.getSession();
 
         if (sessionError || !session) {
           throw new Error('No active authenticated session. Cannot migrate guest data.');

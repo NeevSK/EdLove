@@ -239,13 +239,15 @@ export class EducationalManager {
     getById: (id: string) => this.repo.getSchool(id),
     update: (id: string, updates: any) => this.repo.updateSchool(id, updates),
     search: (query: string) => this.repo.searchSchools(query),
+    searchCanonical: (query: string, limit?: number) =>
+      this.repo.searchCanonicalSchools(query, limit),
     getSections: (schoolId: string) => this.repo.getSections(schoolId),
     getGrades: (sectionId: string) => this.repo.getGrades(sectionId),
     createSection: (schoolId: string, name: string) => this.repo.createSection(schoolId, name),
     createGrade: (sectionId: string, number: number) => this.repo.createGrade(sectionId, number),
     getInviteCodes: (schoolId: string) => this.repo.getInviteCodes(schoolId),
-    generateInviteCode: (schoolId: string, capacity: string, createdBy: string) =>
-      this.repo.generateInviteCode(schoolId, capacity, createdBy),
+    generateInviteCode: (schoolId: string, capacity: string, createdBy: string, idempotencyKey?: string) =>
+      this.repo.generateInviteCode(schoolId, capacity, createdBy, idempotencyKey),
 
     // Academic Cycles
     getAcademicCycles: (schoolId: string) => this.repo.getAcademicCycles(schoolId),
@@ -257,14 +259,17 @@ export class EducationalManager {
     requestJoin: (userId: string, schoolId: string, capacity: string) =>
       this.repo.requestSchoolJoin(userId, schoolId, capacity),
     handleRequest: async (requestId: string, status: string) => {
-      const result = await this.repo.updateSchoolJoinRequest(requestId, status);
+      const reviewerId = await this.session.getUserId();
+      const result =
+        status === 'approved'
+          ? await this.repo.approveSchoolJoinRequest(requestId, reviewerId || '')
+          : await this.repo.updateSchoolJoinRequest(requestId, status);
 
       if (status === 'approved' && result) {
-        // Approval notification is retained, but school membership must be
-        // completed through the official invite-claim transaction. A profile
-        // school_id write is never sufficient to create an institutional bond.
+        // Membership, bond, entitlement, and the request status are committed
+        // atomically by the approval RPC before this notification is emitted.
         await this.notification.createNotification(
-          result.user_id,
+          result.user_id || '',
           'join_request_approved',
           'School Joined',
           'Your request to join the school has been approved.',

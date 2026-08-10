@@ -1,7 +1,7 @@
 import { applyTemporalFilter } from '@repo/core/logic/utils/temporalUtils';
 import type { TemporalScale } from '@repo/core/store/useTemporalStore';
 import { identityAPI } from '@repo/core/api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 /**
  * Social & Safety API
@@ -19,7 +19,7 @@ export const socialAPI = {
     userId: string,
     options: { viewDate?: string; viewScale?: TemporalScale } = {},
   ) {
-    let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    let query = supabaseClient
       .from('community_posts_with_counts')
       .select('reaction_count, comment_count')
       .eq('author_id', userId);
@@ -57,7 +57,7 @@ export const socialAPI = {
     const myId = identity?.id;
     if (!myId) return [];
 
-    let query = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    let query = supabaseClient
       .from('notifications')
       .select('*')
       .eq('user_id', myId);
@@ -86,7 +86,7 @@ export const socialAPI = {
     const myId = identity?.id;
     if (!myId) return 0;
 
-    const { count, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { count, error } = await supabaseClient
       .from('notifications')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', myId)
@@ -100,7 +100,7 @@ export const socialAPI = {
    * @policy update User
    */
   async markNotificationRead(notificationId: string) {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { error } = await supabaseClient
       .from('notifications')
       .update({ is_read: true, read_at: new Date().toISOString() })
       .eq('id', notificationId);
@@ -115,7 +115,7 @@ export const socialAPI = {
     const myId = identity?.id;
     if (!myId) return;
 
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { error } = await supabaseClient
       .from('notifications')
       .update({ is_read: true, read_at: new Date().toISOString() })
       .eq('user_id', myId)
@@ -133,7 +133,7 @@ export const socialAPI = {
     const myId = identity?.id;
     if (!myId) throw new Error('Authentication required');
 
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('user_blocks').insert([
+    const { error } = await supabaseClient.from('user_blocks').insert([
       {
         blocker_id: myId,
         blocked_id: targetUserId,
@@ -151,7 +151,7 @@ export const socialAPI = {
     const myId = identity?.id;
     if (!myId) throw new Error('Authentication required');
 
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { error } = await supabaseClient
       .from('user_blocks')
       .delete()
       .eq('blocker_id', myId)
@@ -168,7 +168,7 @@ export const socialAPI = {
     const myId = identity?.id;
     if (!myId) return false;
 
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('user_blocks')
       .select('blocker_id')
       .or(
@@ -188,7 +188,7 @@ export const socialAPI = {
     const myId = identity?.id;
     if (!myId) return [];
 
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('user_blocks')
       .select(`
                 blocked_id, 
@@ -218,7 +218,7 @@ export const socialAPI = {
     },
     reporterId: string,
   ) {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('community_reports')
       .insert([
         {

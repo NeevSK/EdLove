@@ -23,7 +23,7 @@ const normalizeInviteCode = (row: Record<string, unknown>): InviteCodeZod =>
   InviteCodeSchema.parse({
     code: row.code,
     school_id: row.school_id,
-    capacity: CapacitySchema.parse((row.capacity ?? 'teacher') as string),
+    capacity: CapacitySchema.parse((row.role ?? row.capacity ?? 'teacher') as string),
     created_by: row.created_by,
     used: Boolean(row.used ?? !row.is_active) || Number(row.uses_count ?? 0) > 0,
     created_at: row.created_at,
@@ -80,7 +80,7 @@ export const createSupabasePrincipalWorkspaceRepository = (
       const { data, error } = await supabase
         .from('invite_codes')
         .select(
-          'code, school_id, capacity, created_by, used, is_active, uses_count, created_at, expires_at',
+          'code, school_id, role, created_by, is_active, uses_count, created_at',
         )
         .eq('school_id', schoolId)
         .order('created_at', { ascending: false });
@@ -89,24 +89,13 @@ export const createSupabasePrincipalWorkspaceRepository = (
       return (data ?? []).map((row) => normalizeInviteCode(row as Record<string, unknown>));
     },
 
-    async generateInviteCode(schoolId, capacity, createdBy) {
-      const code = `GURU-${Math.random().toString(36).substring(2, 8).toUpperCase().padEnd(6, '0')}-${capacity === 'teacher' ? 'TEACH' : 'ADMIN'}`;
-      const payload = {
-        school_id: schoolId,
-        code,
-        capacity,
-        created_by: createdBy,
-        used: false,
-        is_active: true,
-      };
-
-      const { data, error } = await supabase
-        .from('invite_codes')
-        .insert(payload)
-        .select(
-          'code, school_id, capacity, created_by, used, is_active, uses_count, created_at, expires_at',
-        )
-        .single();
+    async generateInviteCode(schoolId, capacity, createdBy, idempotencyKey) {
+      const { data, error } = await supabase.rpc('create_school_invite_code', {
+        p_school_id: schoolId,
+        p_role: capacity,
+        p_created_by: createdBy,
+        p_idempotency_key: idempotencyKey ?? null,
+      });
 
       if (error) throw new APIError('Failed to generate invite code', error.code, error);
       const normalized = normalizeInviteCode(data as Record<string, unknown>);

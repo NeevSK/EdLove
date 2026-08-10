@@ -1,5 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { APIError } from '@repo/core/types/API';
+import {
+  SchoolJoinApprovalSchema,
+  SchoolRegistryClaimApprovalSchema,
+} from '@repo/core/logic/schemas/identity.schema';
 
 export const createSchoolRepository = (supabase: SupabaseClient) => ({
   async createSchool(data: {
@@ -41,6 +45,24 @@ export const createSchoolRepository = (supabase: SupabaseClient) => ({
     return data;
   },
 
+  async approveSchoolRegistryClaim(claimId: string, reviewerId: string) {
+    const { data, error } = await supabase.rpc('approve_school_registry_claim', {
+      p_claim_id: claimId,
+      p_reviewer_id: reviewerId,
+    });
+    if (error) throw new APIError('Failed to approve school registry claim', error.code, error);
+    return SchoolRegistryClaimApprovalSchema.parse(data);
+  },
+
+  async approveSchoolJoinRequest(requestId: string, reviewerId: string) {
+    const { data, error } = await supabase.rpc('approve_school_join_request', {
+      p_request_id: requestId,
+      p_reviewer_id: reviewerId,
+    });
+    if (error) throw new APIError('Failed to approve school join request', error.code, error);
+    return SchoolJoinApprovalSchema.parse(data);
+  },
+
   async updateSchool(id: string, updates: any) {
     const { data, error } = await supabase
       .from('schools')
@@ -59,6 +81,24 @@ export const createSchoolRepository = (supabase: SupabaseClient) => ({
       .ilike('name', `%${query}%`)
       .limit(10);
     if (error) throw new APIError('Failed to search schools', error.code, error);
+    return data || [];
+  },
+
+  async searchCanonicalSchools(query: string, limit = 20) {
+    const boundedLimit = Math.max(1, Math.min(limit, 50));
+    const normalizedQuery = query.trim();
+    let request = supabase
+      .from('edu_schools')
+      .select(
+        'id, census_no, name, gender, category, type_code, province_id, district_id, gn_division_id, postal_unit_id, zone_id, division_id, status, religion, website, socio_economic_tier, created_at, updated_at',
+      )
+      .order('name', { ascending: true })
+      .limit(boundedLimit);
+
+    if (normalizedQuery) request = request.ilike('name', `%${normalizedQuery}%`);
+
+    const { data, error } = await request;
+    if (error) throw new APIError('Failed to search canonical schools', error.code, error);
     return data || [];
   },
 
@@ -93,9 +133,18 @@ export const createSchoolRepository = (supabase: SupabaseClient) => ({
   },
 
   async createGrade(sectionId: string, number: number) {
+    const { data: section, error: sectionError } = await supabase
+      .from('sections')
+      .select('school_id')
+      .eq('id', sectionId)
+      .single();
+    if (sectionError || !section?.school_id) {
+      throw new APIError('Failed to resolve section school', sectionError?.code ?? 'SECTION_SCHOOL_NOT_FOUND', sectionError);
+    }
+
     const { data, error } = await supabase
       .from('grades')
-      .insert([{ section_id: sectionId, number }])
+      .insert([{ section_id: sectionId, school_id: section.school_id, number }])
       .select()
       .single();
     if (error) throw new APIError('Failed to create grade', error.code, error);
@@ -105,28 +154,24 @@ export const createSchoolRepository = (supabase: SupabaseClient) => ({
   async getInviteCodes(schoolId: string) {
     const { data, error } = await supabase
       .from('invite_codes')
-      .select('*')
+      .select('code, school_id, role, created_by, is_active, uses_count, max_uses, created_at')
       .eq('school_id', schoolId)
       .order('created_at', { ascending: false });
     if (error) throw new APIError('Failed to fetch invite codes', error.code, error);
-    return data || [];
+    return (data || []).map((row) => ({
+      ...row,
+      capacity: row.role,
+      used: !row.is_active || Number(row.uses_count ?? 0) > 0,
+    }));
   },
 
-  async generateInviteCode(schoolId: string, capacity: string, createdBy: string) {
-    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-    const { data, error } = await supabase
-      .from('invite_codes')
-      .insert([
-        {
-          school_id: schoolId,
-          capacity,
-          code,
-          created_by: createdBy,
-          used: false,
-        },
-      ])
-      .select()
-      .single();
+  async generateInviteCode(schoolId: string, capacity: string, createdBy: string, idempotencyKey?: string) {
+    const { data, error } = await supabase.rpc('create_school_invite_code', {
+      p_school_id: schoolId,
+      p_role: capacity,
+      p_created_by: createdBy,
+      p_idempotency_key: idempotencyKey ?? null,
+    });
     if (error) throw new APIError('Failed to generate invite code', error.code, error);
     return data;
   },

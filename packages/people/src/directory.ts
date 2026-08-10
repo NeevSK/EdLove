@@ -1,4 +1,4 @@
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import type { Capacity, User } from '@repo/core/types';
 export interface PeopleDirectoryEntry extends User {
   schoolCapacity: Capacity | null;

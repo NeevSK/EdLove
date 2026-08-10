@@ -14,7 +14,7 @@ import { APIError } from '@repo/core/types/API';
 import type { PrincipalNote } from '@repo/core/types/PrincipalNote';
 
 import { identityAPI } from '@repo/core/api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 export const principalNotesAPI = {
   /**
@@ -26,7 +26,7 @@ export const principalNotesAPI = {
     const identity = await identityAPI.identifyActiveCitizen();
     if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('principal_notes')
       .select(`
                 *,
@@ -50,7 +50,7 @@ export const principalNotesAPI = {
     const identity = await identityAPI.identifyActiveCitizen();
     if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('principal_notes')
       .select('*')
       .eq('school_id', schoolId)
@@ -77,7 +77,7 @@ export const principalNotesAPI = {
     const identity = await identityAPI.identifyActiveCitizen();
     if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('principal_notes')
       .insert([
         {
@@ -102,7 +102,7 @@ export const principalNotesAPI = {
     id: string,
     updates: Partial<Pick<PrincipalNote, 'content' | 'is_pinned' | 'is_done'>>,
   ): Promise<PrincipalNote> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('principal_notes')
       .update({ ...updates, updated_at: new Date().toISOString() })
       .eq('id', id)
@@ -117,7 +117,7 @@ export const principalNotesAPI = {
    * Delete a note. Only the author can delete (enforced by RLS).
    */
   async delete(id: string): Promise<void> {
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { error } = await supabaseClient
       .from('principal_notes')
       .delete()
       .eq('id', id);

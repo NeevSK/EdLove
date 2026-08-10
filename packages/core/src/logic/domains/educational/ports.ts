@@ -190,12 +190,13 @@ export interface EducationalRepository {
   getSchool(id: string): Promise<any>;
   updateSchool(id: string, updates: any): Promise<any>;
   searchSchools(query: string): Promise<any[]>;
+  searchCanonicalSchools(query: string, limit?: number): Promise<any[]>;
   getSections(schoolId: string): Promise<any[]>;
   getGrades(sectionId: string): Promise<any[]>;
   createSection(schoolId: string, name: string): Promise<any>;
   createGrade(sectionId: string, number: number): Promise<any>;
   getInviteCodes(schoolId: string): Promise<any[]>;
-  generateInviteCode(schoolId: string, capacity: string, createdBy: string): Promise<any>;
+  generateInviteCode(schoolId: string, capacity: string, createdBy: string, idempotencyKey?: string): Promise<any>;
 
   // Academic Cycles
   getAcademicCycles(schoolId: string): Promise<any[]>;
@@ -215,6 +216,7 @@ export interface EducationalRepository {
   // Join Requests
   requestSchoolJoin(userId: string, schoolId: string, capacity: string): Promise<any>;
   updateSchoolJoinRequest(requestId: string, status: string): Promise<any>;
+  approveSchoolJoinRequest(requestId: string, reviewerId: string): Promise<any>;
   requestClassroomJoin(
     userId: string,
     classroomId: string,

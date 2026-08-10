@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { usePermissions } from '@repo/core/logic/permissions/hooks/usePermissions';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 import { useTracking } from '@repo/core/hooks/useTracking';
@@ -37,7 +37,7 @@ export function useManualSnapshot() {
       try {
         // In a real implementation, we would aggregate current state of all features here.
         // For now, we capture the core temporal context and label.
-        const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+        const { data, error } = await supabaseClient
           .from('snapshot_moments')
           .insert([
             {

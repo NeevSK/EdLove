@@ -1,4 +1,4 @@
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { useDomainRollout } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';

@@ -7,6 +7,7 @@ import {
   ClassroomStudentSchema,
 } from '@repo/core/logic/schemas/classroom.schema';
 import { StudentSchema } from '@repo/core/logic/schemas/student.schema';
+import { SchoolJoinRequestSchema } from '@repo/core/logic/schemas/identity.schema';
 import { APIError } from '@repo/core/types/API';
 
 export const createEnrollmentRepository = (supabase: SupabaseClient) => ({
@@ -279,11 +280,11 @@ export const createEnrollmentRepository = (supabase: SupabaseClient) => ({
   async requestSchoolJoin(userId: string, schoolId: string, capacity: string) {
     const { data, error } = await supabase
       .from('school_join_requests')
-      .insert([{ user_id: userId, school_id: schoolId, capacity, status: 'pending' }])
+      .insert([{ user_id: userId, school_id: schoolId, role: capacity, status: 'pending' }])
       .select()
       .single();
     if (error) throw new APIError('Failed to request school join', error.code, error);
-    return data;
+    return SchoolJoinRequestSchema.parse(data);
   },
 
   async updateSchoolJoinRequest(requestId: string, status: string) {
@@ -294,7 +295,7 @@ export const createEnrollmentRepository = (supabase: SupabaseClient) => ({
       .select()
       .single();
     if (error) throw new APIError('Failed to update school join request', error.code, error);
-    return data;
+    return SchoolJoinRequestSchema.parse(data);
   },
 
   async requestClassroomJoin(
@@ -309,7 +310,7 @@ export const createEnrollmentRepository = (supabase: SupabaseClient) => ({
         {
           user_id: userId,
           classroom_id: classroomId,
-          capacity,
+          role: capacity,
           subject_label: subjectLabel,
           status: 'pending',
         },

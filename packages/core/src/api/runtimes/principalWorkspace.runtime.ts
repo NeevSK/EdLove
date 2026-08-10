@@ -1,9 +1,9 @@
 import { createSupabasePrincipalWorkspaceRepository } from '@repo/core/adapters/supabase/principalWorkspaceRepository';
 import { createPrincipalWorkspaceServices } from '@repo/core/logic/domains/principalWorkspace/services';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 const principalWorkspaceRepository = createSupabasePrincipalWorkspaceRepository(
-  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__,
+  supabaseClient,
 );
 
 export const principalWorkspaceServices = createPrincipalWorkspaceServices(

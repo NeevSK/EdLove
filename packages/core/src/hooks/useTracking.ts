@@ -25,7 +25,10 @@ export function useTracking() {
       active_capacity: context.activeBond?.capacity ?? null,
       active_entity_type: context.activeEntityType ?? null,
       school_type: context.schoolType ?? null,
-      personal_pricing_tier: context.pricing_tier === 'PRO' ? ('PRO' as const) : ('FREE' as const),
+      personal_pricing_tier:
+        context.pricing_tier === 'PRO' || context.pricing_tier === 'INSTITUTIONAL'
+          ? context.pricing_tier
+          : ('FREE' as const),
       effective_entitlement_scope: context.effective_entitlement_scope ?? 'individual',
       effective_entitlement_tier: context.effective_entitlement_tier ?? 'FREE',
       analytics_schema_version: 1 as const,

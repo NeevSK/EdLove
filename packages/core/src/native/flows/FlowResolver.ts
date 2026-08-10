@@ -1,4 +1,5 @@
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { identityAPI } from '@repo/core/api/identity';
 import { trackProductEvent } from '@repo/core/lib/monitoring/posthog';
 // Note: We'll use dynamic imports or passing refs for communityAPI to avoid circular deps if necessary,
 // but for now let's assume core is the base.
@@ -97,7 +98,7 @@ export class FlowResolver {
     // Resolve handle if present
     if (handle?.startsWith('@')) {
       const h = handle.slice(1);
-      const { data: school } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      const { data: school } = await supabaseClient
         .from('schools')
         .select('id, community_group_id')
         .eq('handle', h)
@@ -125,7 +126,7 @@ export class FlowResolver {
     let finalClassroomId = classroomId;
     if (handle?.startsWith('@')) {
       const h = handle.slice(1);
-      const { data: cls } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      const { data: cls } = await supabaseClient
         .from('classrooms')
         .select('id')
         .eq('handle', h)
@@ -133,18 +134,15 @@ export class FlowResolver {
       if (cls) finalClassroomId = cls.id;
     }
 
-    // Look up the user's capacity so we can route correctly
-    const { data: userData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
-      .from('users')
-      .select('capacity')
-      .eq('id', userId)
-      .single();
-
-    const capacity = userData?.capacity ?? 'student';
+    // `users.capacity` is a legacy profile projection. Routing must use the
+    // verified active bond returned by the identity highway; otherwise a
+    // stale profile value could grant the teacher/staff branch of this flow.
+    const identity = await identityAPI.identifyActiveCitizen();
+    const capacity = identity?.activeBond?.capacity ?? 'student';
 
     if (capacity === 'student') {
       // Students join via the classroom_students membership table
-      const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      const { error } = await supabaseClient
         .from('classroom_students')
         .upsert(
           { classroom_id: finalClassroomId, student_id: userId },
@@ -153,7 +151,7 @@ export class FlowResolver {
       if (error) throw error;
     } else {
       // Teachers/staff: only claim teacher_id if the classroom has no teacher yet.
-      const { data: classroom, error: fetchError } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      const { data: classroom, error: fetchError } = await supabaseClient
         .from('classrooms')
         .select('teacher_id')
         .eq('id', finalClassroomId)
@@ -164,7 +162,7 @@ export class FlowResolver {
       if (!classroom?.teacher_id) {
         // Unclaimed classroom  claim atomically, only if still null
         const { data: claimed, error: updateError } =
-          await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+          await supabaseClient
             .from('classrooms')
             .update({ teacher_id: userId })
             .eq('id', finalClassroomId)
@@ -198,7 +196,7 @@ export class FlowResolver {
     let finalGroupId = groupId;
     if (handle?.startsWith('@')) {
       const h = handle.slice(1);
-      const { data: group } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      const { data: group } = await supabaseClient
         .from('community_groups')
         .select('id')
         .eq('handle', h)
@@ -206,7 +204,7 @@ export class FlowResolver {
       if (group) finalGroupId = group.id;
     }
 
-    const { error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('group_members').upsert({
+    const { error } = await supabaseClient.from('group_members').upsert({
       group_id: finalGroupId,
       user_id: userId,
       status: 'active',
@@ -233,7 +231,7 @@ export class FlowResolver {
       }
 
       // Atomic RPC call
-      const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+      const { data, error } = await supabaseClient.rpc(
         'claim_invite_code',
         {
           p_invite_code: inviteCode,

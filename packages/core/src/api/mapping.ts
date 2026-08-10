@@ -1,6 +1,6 @@
 import { KnowledgeTopologySchema } from '@repo/core/logic/schemas/dashboard.schema';
 import type { KnowledgeTopology } from '@repo/core/types/topology';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 export interface MappingTopology extends KnowledgeTopology {
   id: string;
@@ -17,7 +17,7 @@ export const mappingAPI = {
    * Fetch a topology by ID (subject to RLS)
    */
   async getById(id: string): Promise<MappingTopology | null> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('mapping_topologies')
       .select('*')
       .eq('id', id)
@@ -42,7 +42,7 @@ export const mappingAPI = {
    * Fetch the "School Pulse" for a principal or authorized staff
    */
   async getSchoolPulse(schoolId: string, viewDate?: string): Promise<KnowledgeTopology | null> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+    const { data, error } = await supabaseClient.rpc(
       'get_school_mapping_pulse',
       {
         p_school_id: schoolId,
@@ -67,7 +67,7 @@ export const mappingAPI = {
    * Create or update a topology
    */
   async upsert(topology: Partial<MappingTopology>): Promise<MappingTopology> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('mapping_topologies')
       .upsert(topology)
       .select()
@@ -81,7 +81,7 @@ export const mappingAPI = {
    * Generate a signed share link for a topology
    */
   async createShareLink(id: string, expiresDays: number = 7): Promise<string> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+    const { data, error } = await supabaseClient.rpc(
       'generate_mapping_share_token',
       {
         p_topology_id: id,

@@ -30,7 +30,7 @@ export interface ProductAnalyticsContext {
   active_capacity?: string | null;
   active_entity_type?: string | null;
   school_type?: string | null;
-  personal_pricing_tier?: 'FREE' | 'PRO' | null;
+  personal_pricing_tier?: 'FREE' | 'PRO' | 'INSTITUTIONAL' | null;
   effective_entitlement_scope?: ProductAnalyticsEntitlementScope | null;
   effective_entitlement_tier?: 'FREE' | 'PRO' | 'INSTITUTIONAL' | null;
   app_version?: string;

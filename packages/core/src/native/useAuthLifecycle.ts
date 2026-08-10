@@ -5,7 +5,7 @@ import { setActiveCapabilityToken } from '@repo/core/adapters/powersync/database
 import { authAPI } from '@repo/core/api/auth';
 import { assertHighway } from '@repo/core/api/highways';
 import { identityAPI } from '@repo/core/api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import type { SchoolType } from '@repo/core/constants/SriLankanSchools';
 import { identifyUser } from '@repo/core/lib/monitoring/posthog';
 import { clearSentryUser, initSentry, setSentryUser } from '@repo/core/lib/monitoring/sentry';
@@ -61,7 +61,7 @@ export function useAuthLifecycle() {
         }
 
         if (identity.schoolId) {
-          const { data: schoolData } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+          const { data: schoolData } = await supabaseClient
             .from('schools')
             .select('type')
             .eq('id', identity.schoolId)
@@ -124,7 +124,7 @@ export function useAuthLifecycle() {
             error.message?.includes('Refresh Token') ||
             (error as { status?: number }).status === 400
           ) {
-            await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.signOut({ scope: 'local' });
+            await supabaseClient.auth.signOut({ scope: 'local' });
             setSession(null);
             setAuthSession(null);
           }
@@ -144,7 +144,7 @@ export function useAuthLifecycle() {
     // 3. Auth State Change Listener
     const {
       data: { subscription },
-    } = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.onAuthStateChange(
+    } = supabaseClient.auth.onAuthStateChange(
       async (event, currentSession) => {
         setSession(currentSession);
         setAuthSession(currentSession);
@@ -191,7 +191,7 @@ export function useAuthLifecycle() {
   useEffect(() => {
     if (!currentUser?.id) return;
 
-    const channel = __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const channel = supabaseClient
       .channel(`user-profile-sync-${currentUser.id}`)
       .on(
         'postgres_changes',
@@ -210,7 +210,7 @@ export function useAuthLifecycle() {
 
             if (capacityChanged) {
               try {
-                await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.auth.refreshSession();
+                await supabaseClient.auth.refreshSession();
               } catch (e) {
                 console.error('Auth: JWT refresh failed after capacity change', e);
               }
@@ -235,7 +235,7 @@ export function useAuthLifecycle() {
 
     return () => {
       Effect.runFork(
-        tryPromise(() => __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.removeChannel(channel)).pipe(
+        tryPromise(() => supabaseClient.removeChannel(channel)).pipe(
           Effect.catchAll((e) =>
             Effect.logError('Auth: Failed to remove channel during cleanup', e),
           ),

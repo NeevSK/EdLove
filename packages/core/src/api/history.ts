@@ -5,7 +5,7 @@
  */
 
 import { APIError } from '@repo/core/types/API';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 export interface AuditLogEntry {
   id: string;
@@ -67,7 +67,7 @@ export const historyAPI = {
    * Get the history for a specific record in a table.
    */
   async getForRecord(tableName: string, recordId: string): Promise<AuditLogEntry[]> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('audit_logs') // Assuming we create a view or use the audit schema directly
       .select(`
                 *,
@@ -93,7 +93,7 @@ export const historyAPI = {
     entityType: CommunityHistoryEntityType,
     entityId: string,
   ): Promise<VersionHistoryEntry[]> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('community_entity_versions')
       .select(`
                 *,
@@ -123,7 +123,7 @@ export const historyAPI = {
     entityType: LibraryHistoryEntityType,
     entityId: string,
   ): Promise<VersionHistoryEntry[]> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('library_entity_versions')
       .select(`
                 *,
@@ -152,7 +152,7 @@ export const historyAPI = {
   async getCollectionMembershipTimeline(
     collectionId: string,
   ): Promise<CollectionMembershipEvent[]> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('collection_node_events')
       .select(`
                 *,
@@ -181,7 +181,7 @@ export const historyAPI = {
     collectionId: string,
     asOf: string,
   ): Promise<CollectionMembershipAsOfEntry[]> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.rpc(
+    const { data, error } = await supabaseClient.rpc(
       'get_collection_membership_as_of',
       {
         p_collection_id: collectionId,

@@ -125,9 +125,9 @@ export const libraryHandlers = {
     const collection = await db.libraryCollection.findUnique({
       where: { id },
       include: {
-        nodes: {
+        collection_nodes: {
           include: {
-            resource: true,
+            node: true,
           },
         },
       },

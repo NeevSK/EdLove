@@ -1,4 +1,4 @@
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import type { StaffAttendance, StaffLeave } from '@repo/core/types';
 
 import { APIError } from '@repo/core/types';

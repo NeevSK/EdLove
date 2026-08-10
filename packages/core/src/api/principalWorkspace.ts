@@ -34,8 +34,9 @@ export const principalWorkspaceAPI = {
     schoolId: string,
     capacity: PrincipalInviteRole,
     createdBy: string,
+    idempotencyKey?: string,
   ): Promise<InviteCodeZod> {
-    return principalWorkspaceServices.generateInviteCode(schoolId, capacity, createdBy);
+    return principalWorkspaceServices.generateInviteCode(schoolId, capacity, createdBy, idempotencyKey);
   },
 
   /**

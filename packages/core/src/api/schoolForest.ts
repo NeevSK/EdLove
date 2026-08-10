@@ -27,7 +27,7 @@ import { checkLocalPermission } from '@repo/core/logic/permissions/localEvaluato
 import { APIError } from '@repo/core/types/API';
 import { identityAPI } from '@repo/core/api/identity';
 import { impactRipplesAPI } from '@repo/core/api/impactRipples';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { tryPromise } from '@repo/core/utils/effect';
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -251,7 +251,7 @@ export const schoolForestAPI = {
     const now = new Date();
 
     // Fetch pre-computed forest state
-    const { data: forestRows } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data: forestRows } = await supabaseClient
       .from('school_forest_state')
       .select('*')
       .eq('school_id', schoolId);
@@ -295,7 +295,7 @@ export const schoolForestAPI = {
     const fourteenDaysAgo = new Date(now.getTime() - 14 * 86400000).toISOString();
 
     // Get all teachers in this school
-    const { data: teachers } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data: teachers } = await supabaseClient
       .from('users')
       .select('id')
       .eq('school_id', schoolId)
@@ -314,14 +314,14 @@ export const schoolForestAPI = {
     const teacherIds: string[] = teachers.map((t: { id: string }) => t.id);
 
     // Batch query: growth events for ALL teachers in one request (avoids N+1)
-    const { data: allSignals } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data: allSignals } = await supabaseClient
       .from('growth_events')
       .select('user_id, dimension, created_at')
       .in('user_id', teacherIds)
       .gte('created_at', fourteenDaysAgo);
 
     // Batch query: growth state for ALL teachers in one request (avoids N+1)
-    const { data: allGrowthStates } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data: allGrowthStates } = await supabaseClient
       .from('user_growth_state')
       .select('user_id, created_at, blooming_signals')
       .in('user_id', teacherIds);
@@ -403,7 +403,7 @@ export const schoolForestAPI = {
     const now = new Date();
     const sevenDaysAgo = new Date(now.getTime() - 7 * 86400000).toISOString();
 
-    const { data: teachers } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data: teachers } = await supabaseClient
       .from('users')
       .select('id')
       .eq('school_id', schoolId)
@@ -423,7 +423,7 @@ export const schoolForestAPI = {
 
     // Fetch growth signals for all teachers in this school via user_id join
     const teacherIds: string[] = (teachers ?? []).map((t: { id: string }) => t.id);
-    const { data: signalsByTeacher } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data: signalsByTeacher } = await supabaseClient
       .from('growth_events')
       .select('user_id, dimension')
       .in('user_id', teacherIds)
@@ -496,7 +496,7 @@ export const schoolForestAPI = {
     const messages = GIFT_MESSAGES[giftType];
 
     try {
-      await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__.from('gratitude_gifts').insert({
+      await supabaseClient.from('gratitude_gifts').insert({
         sender_user_id: principalUserId,
         recipient_user_id: recipientUserId,
         school_id: schoolId ?? null,
@@ -546,7 +546,7 @@ export const schoolForestAPI = {
         throw new APIError('Unauthorized to view others gifts', 'FORBIDDEN');
       }
     }
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('gratitude_gifts')
       .select('*')
       .eq('recipient_user_id', recipientUserId)
@@ -565,7 +565,7 @@ export const schoolForestAPI = {
    */
   async markGiftDelivered(giftId: string): Promise<void> {
     try {
-      await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+      await supabaseClient
         .from('gratitude_gifts')
         .update({ delivered: true, delivered_at: new Date().toISOString() })
         .eq('id', giftId);

@@ -15,6 +15,7 @@ export interface PrincipalWorkspaceServices {
     schoolId: string,
     capacity: PrincipalInviteRole,
     createdBy: string,
+    idempotencyKey?: string,
   ): Promise<InviteCodeZod>;
   listObservationsByDate(
     principalId: string,
@@ -43,8 +44,8 @@ export const createPrincipalWorkspaceServices = (
   repository: PrincipalWorkspaceRepository,
 ): PrincipalWorkspaceServices => ({
   listInviteCodes: (schoolId) => repository.listInviteCodes(schoolId),
-  generateInviteCode: (schoolId, capacity, createdBy) =>
-    repository.generateInviteCode(schoolId, capacity, createdBy),
+  generateInviteCode: (schoolId, capacity, createdBy, idempotencyKey) =>
+    repository.generateInviteCode(schoolId, capacity, createdBy, idempotencyKey),
   listObservationsByDate: (principalId, viewDate, limit = 10) =>
     repository.listObservationsByDate(principalId, viewDate, limit),
   listRecentObservations: (principalId, limit = 5) =>

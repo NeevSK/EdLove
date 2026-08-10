@@ -1,4 +1,4 @@
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { cryptoManager } from '@repo/core/logic/managers/CryptoManager';
 
 export const AppCryptoEngine = {
@@ -35,7 +35,7 @@ export const AppCryptoEngine = {
     // In a real flow, this is encrypted with a server-side public key
     // to ensure Supabase operators cannot read it.
     const encryptedEscrow = this.wrapMasterDEK(masterDEK, `cloud_key_${accountId}`);
-    await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    await supabaseClient
       .from('users')
       .update({ escrowed_recovery_key: encryptedEscrow })
       .eq('id', accountId);
@@ -45,7 +45,7 @@ export const AppCryptoEngine = {
    * Cloud Escrow Fetch (Path B)
    */
   async fetchCloudRecoveryKey(accountId: string): Promise<string> {
-    const { data, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+    const { data, error } = await supabaseClient
       .from('users')
       .select('escrowed_recovery_key')
       .eq('id', accountId)

@@ -1,5 +1,5 @@
 import { Ledger } from '@repo/accounting';
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 
 import type { PaymentStatus } from '@repo/payments/types';
 

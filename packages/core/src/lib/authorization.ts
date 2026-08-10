@@ -1,6 +1,6 @@
 import { assertHighway } from '@repo/core/api/highways';
 import { identityAPI } from '@repo/core/api/identity';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import type { Action } from '@repo/core/types/authorization';
 import { checkLocalPermission } from '@repo/core/logic/permissions/localEvaluator';
 import { APIError } from '@repo/core/types/API';
@@ -25,7 +25,7 @@ export async function requireClassroomAccess(classroomId: string, capability: st
   const userId = await requireAuth();
 
   // Fetch classroom context for POA check
-  const { data: classroom, error } = await __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__
+  const { data: classroom, error } = await supabaseClient
     .from('classrooms')
     .select('teacher_id, school_id')
     .eq('id', classroomId)

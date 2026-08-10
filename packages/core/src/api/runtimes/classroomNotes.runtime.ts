@@ -1,9 +1,9 @@
 import { createSupabaseClassroomNotesRepository } from '@repo/core/adapters/supabase/educational/classroomNotesRepository';
 import { createClassroomNotesServices } from '@repo/core/logic/domains/classroomNotes/services';
-import { __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__ } from '@repo/core/api/supabase';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
 const classroomNotesRepository = createSupabaseClassroomNotesRepository(
-  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__,
+  supabaseClient,
 );
 
 export const classroomNotesServices = createClassroomNotesServices(classroomNotesRepository);

@@ -123,7 +123,11 @@ export class GrowthBookFeatureRolloutAdapter implements IFeatureRolloutPort {
         active_capacity: this.currentContext?.activeBond?.capacity ?? null,
         active_entity_type: this.currentContext?.activeEntityType ?? null,
         school_type: this.currentContext?.schoolType ?? null,
-        personal_pricing_tier: this.currentContext?.pricing_tier === 'PRO' ? 'PRO' : 'FREE',
+        personal_pricing_tier:
+          this.currentContext?.pricing_tier === 'PRO' ||
+          this.currentContext?.pricing_tier === 'INSTITUTIONAL'
+            ? this.currentContext.pricing_tier
+            : 'FREE',
         effective_entitlement_scope:
           this.currentContext?.effective_entitlement_scope ?? 'individual',
         effective_entitlement_tier: this.currentContext?.effective_entitlement_tier ?? 'FREE',

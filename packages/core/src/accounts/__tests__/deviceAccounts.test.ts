@@ -48,7 +48,7 @@ vi.mock('../../api/identity', () => ({
 }));
 
 vi.mock('../../api/supabase', () => ({
-  __INTERNAL_SUPABASE_DO_NOT_USE_DIRECTLY__: {
+  supabaseClient: {
     auth: {
       setSession: (...args: unknown[]) => mockSetSession(...args),
       signOut: (...args: unknown[]) => mockSignOut(...args),
