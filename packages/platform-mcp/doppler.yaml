@@ -1,0 +1,5 @@
+# Doppler Configuration for Platform MCP
+# This file configures the Doppler project and config for the Platform MCP package
+setup:
+  - project: gurudevi-mobile
+    config: dev

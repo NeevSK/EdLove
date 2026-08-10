@@ -1,0 +1,5 @@
+# Doppler Configuration for Polymath Platform Monorepo
+# This file configures the default Doppler project and config for the entire workspace
+setup:
+  - project: gurudevi-mobile
+    config: dev

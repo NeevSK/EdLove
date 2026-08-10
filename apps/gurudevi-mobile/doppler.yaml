@@ -1,0 +1,5 @@
+# Doppler Configuration for Gurudevi Mobile
+# This file configures the Doppler project and config for the Gurudevi Mobile app
+setup:
+  - project: gurudevi-mobile
+    config: dev

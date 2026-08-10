@@ -1,0 +1,5 @@
+# Doppler Configuration for Gurudevi Marketing Web
+# This file configures the Doppler project and config for the Gurudevi Marketing Web app
+setup:
+  - project: gurudevi-mobile
+    config: dev

@@ -1,0 +1,5 @@
+# Doppler Configuration for Sanctuary API
+# This file configures the Doppler project and config for the Sanctuary API
+setup:
+  - project: gurudevi-mobile
+    config: dev
