@@ -1,4 +1,5 @@
-import { growthSignalsAPI, supabase } from '@repo/core/api';
+import { growthSignalsAPI } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { handleAPIError } from '@repo/core/logic';
 import type { StaffAttendance, StaffLeave } from '@repo/core/types';
 

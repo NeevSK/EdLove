@@ -1,4 +1,4 @@
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import type { GraphNode } from '@repo/core/types';
 
 import { type ForceLayoutOptions, forceLayout } from '@repo/graphics/layouts';

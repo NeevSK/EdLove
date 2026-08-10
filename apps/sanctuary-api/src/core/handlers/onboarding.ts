@@ -185,33 +185,4 @@ export const onboardingRouter = impl.router({
     return { success: true };
   }),
 
-  createFounderSchoolBond: impl.createFounderSchoolBond.handler(async ({ input, context }) => {
-    if (!context.db) throw new Error('Database context not initialized');
-    const db = context.db as any;
-    const school = await db.school.findUnique({ where: { id: input.schoolId } });
-    if (!school || school.created_by !== context.user.id) throw new Error('Only the school creator may establish its founder bond');
-    const existing = await db.bond.findFirst({ where: { user_id: context.user.id, entity_id: input.schoolId, entity_type: 'SCHOOL', capacity: 'principal' } });
-    if (existing) return { success: true, bondId: existing.id };
-    const bond = await db.$transaction(async (tx: any) => {
-      const created = await tx.bond.create({ data: { user_id: context.user.id, entity_id: input.schoolId, entity_type: 'SCHOOL', capacity: 'principal', metadata: { source: 'official_school_creation' } } });
-      await tx.user.update({ where: { id: context.user.id }, data: { citizenship: 'FIRST_CLASS', school_id: input.schoolId } });
-      await tx.userEntitlementGrant.create({ data: { user_id: context.user.id, bond_id: created.id, scope_type: 'BOND', tier: 'INSTITUTIONAL', modules: ['school_workspace'], source: 'official_school_creation' } });
-      return created;
-    });
-    return { success: true, bondId: bond.id };
-  }),
-
-  revokeSchoolBond: impl.revokeSchoolBond.handler(async ({ input, context }) => {
-    if (!context.db) throw new Error('Database context not initialized');
-    const db = context.db as any;
-    const bond = await db.bond.findFirst({ where: { user_id: context.user.id, entity_id: input.schoolId, entity_type: 'SCHOOL' } });
-    if (!bond) return { success: true };
-    await db.$transaction(async (tx: any) => {
-      await tx.userEntitlementGrant.deleteMany({ where: { bond_id: bond.id } });
-      await tx.bond.delete({ where: { id: bond.id } });
-      const remaining = await tx.bond.findFirst({ where: { user_id: context.user.id, entity_type: 'SCHOOL' }, orderBy: { created_at: 'asc' } });
-      await tx.user.update({ where: { id: context.user.id }, data: { school_id: remaining?.entity_id ?? null, citizenship: remaining ? 'FIRST_CLASS' : 'SECOND_CLASS' } });
-    });
-    return { success: true };
-  }),
 });

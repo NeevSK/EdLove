@@ -1,4 +1,5 @@
-import { inventoryAPI, supabase } from '@repo/core/api';
+import { inventoryAPI } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import type { InstitutionalAsset, InventoryRequest, ResourceNeedSummary } from '@repo/core/types';
 
 function isMissingTable(error: unknown): boolean {

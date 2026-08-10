@@ -4,7 +4,7 @@
  * Supports bidirectional loop: principal can mark feedback read and reply inline.
  */
 
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { useStore } from '@repo/core/logic';
 
 import {

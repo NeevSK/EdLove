@@ -1,4 +1,4 @@
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 
 export const governanceAPI = {
   async getCommunityHQGroupId(schoolId: string): Promise<string | null> {

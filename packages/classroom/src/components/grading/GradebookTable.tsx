@@ -9,7 +9,7 @@ import {
   calculateRanks,
   marksToGPA,
   type StudentGrade,
-} from '@repo/analytics';
+} from '@repo/analytics/stats';
 import { Box, FlatList, HStack, Text, VStack } from '@repo/ui/primitives';
 
 import React, { useCallback, useMemo } from 'react';

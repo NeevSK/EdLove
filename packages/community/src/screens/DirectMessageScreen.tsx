@@ -5,7 +5,7 @@
  * Wires up DM-specific data sources (fetch, send, realtime subscription).
  */
 
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 
 import { useStore, useTemporalStore } from '@repo/core/store';
 import { router, useLocalSearchParams } from 'expo-router';

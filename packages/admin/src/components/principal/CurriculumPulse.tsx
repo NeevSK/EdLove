@@ -1,4 +1,4 @@
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 
 import { BookOpen, Clock, Zap } from '@repo/ui/icons';
 import {

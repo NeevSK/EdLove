@@ -1,4 +1,5 @@
-import { identityAPI, supabase } from '@repo/core/api';
+import { identityAPI } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';

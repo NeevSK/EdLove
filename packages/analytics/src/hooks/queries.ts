@@ -1,4 +1,4 @@
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 
 import { useQuery } from '@tanstack/react-query';
 import { PerformanceAnalyzer } from '@repo/analytics/engine/PerformanceAnalyzer';

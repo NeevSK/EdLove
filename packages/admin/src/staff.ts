@@ -1,12 +1,5 @@
-import {
-  attendanceAPI,
-  type StaffLeaveDTO,
-  type StaffPresenceSummary,
-  type StudentAttendancePulse,
-  staffManagementAPI,
-  supabase,
-  type TeacherCarouselItem,
-} from '@repo/core/api';
+import { attendanceAPI, type StaffLeaveDTO, type StaffPresenceSummary, type StudentAttendancePulse, staffManagementAPI, type TeacherCarouselItem } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 
 export type { StaffLeaveDTO, StaffPresenceSummary, StudentAttendancePulse, TeacherCarouselItem };
 

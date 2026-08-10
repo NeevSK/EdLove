@@ -1,4 +1,5 @@
-import { identityAPI, supabase } from '@repo/core/api';
+import { identityAPI } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { usePermissions } from '@repo/core/logic';
 
 import { useLotusToast } from '@repo/ui/hooks';

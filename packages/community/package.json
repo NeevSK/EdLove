@@ -1,8 +1,10 @@
 {
   "name": "@repo/community",
   "version": "1.0.0",
+  "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./src/index.ts",
@@ -20,6 +22,7 @@
       "default": "./src/feed.ts"
     },
     "./screens/CommunityScreen": {
+      "types": "./src/screens/CommunityScreen.tsx",
       "import": "./src/screens/CommunityScreen.tsx",
       "browser": "./src/screens/CommunityScreen.web.tsx",
       "react-native": "./src/screens/CommunityScreen.tsx",
@@ -31,6 +34,7 @@
       "default": "./src/screens/CommunityScreen.web.tsx"
     },
     "./screens/UserPublicProfileScreen": {
+      "types": "./src/screens/UserPublicProfileScreen.tsx",
       "import": "./src/screens/UserPublicProfileScreen.tsx",
       "browser": "./src/screens/UserPublicProfileScreen.web.tsx",
       "react-native": "./src/screens/UserPublicProfileScreen.tsx",
@@ -42,6 +46,7 @@
       "default": "./src/screens/UserPublicProfileScreen.web.tsx"
     },
     "./screens/GroupDetailsScreen": {
+      "types": "./src/screens/GroupDetailsScreen.tsx",
       "import": "./src/screens/GroupDetailsScreen.tsx",
       "browser": "./src/screens/GroupDetailsScreen.web.tsx",
       "react-native": "./src/screens/GroupDetailsScreen.tsx",
@@ -53,6 +58,7 @@
       "default": "./src/screens/GroupDetailsScreen.web.tsx"
     },
     "./screens/GroupChatScreen": {
+      "types": "./src/screens/GroupChatScreen.tsx",
       "import": "./src/screens/GroupChatScreen.tsx",
       "browser": "./src/screens/GroupChatScreen.web.tsx",
       "react-native": "./src/screens/GroupChatScreen.tsx",
@@ -69,6 +75,7 @@
       "default": "./src/screens/DirectMessagesListScreen.tsx"
     },
     "./screens/DirectMessageScreen": {
+      "types": "./src/screens/DirectMessageScreen.tsx",
       "import": "./src/screens/DirectMessageScreen.tsx",
       "browser": "./src/screens/DirectMessageScreen.web.tsx",
       "react-native": "./src/screens/DirectMessageScreen.tsx",
@@ -105,9 +112,9 @@
       "default": "./src/screens/InviteCodeEntry.tsx"
     },
     "./*": {
-      "types": "./src/*.ts",
-      "import": "./src/*.js",
-      "default": "./src/*.js"
+      "types": "./src/*",
+      "import": "./src/*",
+      "default": "./src/*"
     },
     "./package.json": "./package.json"
   },

@@ -1,4 +1,4 @@
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { useSocialShieldHooks } from '@repo/core/api/hooks';
 
 import { useStore } from '@repo/core/store';

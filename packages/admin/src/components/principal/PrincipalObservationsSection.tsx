@@ -6,7 +6,7 @@
  *  - Inline new-observation form
  */
 
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { Plus } from '@repo/ui/icons';
 import {
   Box,

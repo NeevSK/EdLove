@@ -1,4 +1,4 @@
-import { marksToGPA } from '@repo/analytics';
+import { marksToGPA } from '@repo/analytics/stats';
 import { ProgressRing } from '@repo/graphics/charts';
 import { Card } from '@repo/ui/components/SanctuaryCard';
 import {

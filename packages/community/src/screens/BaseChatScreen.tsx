@@ -6,7 +6,7 @@
  * Refactored for Sanctuary V3.
  */
 
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { useSafeMutation } from '@repo/core/hooks';
 import { useStore } from '@repo/core/store';
 import { ChatComposer } from '@repo/ui/components/ChatComposer';

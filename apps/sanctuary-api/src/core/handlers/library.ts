@@ -27,7 +27,9 @@ const mapCollection = (row: any) => ({
   subjects: Array.isArray(row.subjects) ? row.subjects.map(String) : [], topics: Array.isArray(row.topics) ? row.topics.map(String) : [],
   grades: Array.isArray(row.grades) ? row.grades.map(Number) : [], created_at: iso(row.created_at), updated_at: iso(row.updated_at),
   creator_name: row.creator?.full_name ?? null, creator_avatar_url: row.creator?.avatar_url ?? null,
-  ...(Array.isArray(row.nodes) ? { nodes: row.nodes.map((node: any) => mapResource(node)) } : {}),
+  ...(Array.isArray(row.collection_nodes)
+    ? { nodes: row.collection_nodes.map((membership: any) => mapResource(membership.node)) }
+    : Array.isArray(row.nodes) ? { nodes: row.nodes.map((node: any) => mapResource(node.node ?? node.resource ?? node)) } : {}),
 });
 
 export const libraryRouter = impl.router({
@@ -122,12 +124,12 @@ export const libraryRouter = impl.router({
         grades: input.grades,
         creator_id: context.user.id,
         ...(input.resource_ids.length > 0
-          ? { nodes: { connect: input.resource_ids.map((id: string) => ({ id })) } }
+          ? { collection_nodes: { create: input.resource_ids.map((node_id: string, position: number) => ({ node_id, position, added_by: context.user.id })) } }
           : {}),
       },
       include: {
         creator: { select: { full_name: true, avatar_url: true } },
-        nodes: { include: { creator: { select: { full_name: true, avatar_url: true } } } },
+        collection_nodes: { include: { node: { include: { creator: { select: { full_name: true, avatar_url: true } } } } } },
       },
     });
     return mapCollection(row);
@@ -135,9 +137,8 @@ export const libraryRouter = impl.router({
   addToCollection: impl.addToCollection.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     if (!context.db) throw new Error('Database context not initialized');
     const db = context.db as any;
-    await db.libraryCollection.update({
-      where: { id: input.collection_id },
-      data: { nodes: { connect: { id: input.resource_id } } },
+    await db.collectionNode.create({
+      data: { collection_id: input.collection_id, node_id: input.resource_id, added_by: context.user.id },
     });
     return { success: true };
   }),
@@ -150,7 +151,7 @@ export const libraryRouter = impl.router({
   getCollection: impl.getCollection.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     if (!context.db) throw new Error('Database context not initialized');
     const db = context.db as any;
-    const row = await db.libraryCollection.findUnique({ where: { id: input.id }, include: { creator: { select: { full_name: true, avatar_url: true } }, nodes: { include: { resource: true } } } });
+    const row = await db.libraryCollection.findUnique({ where: { id: input.id }, include: { creator: { select: { full_name: true, avatar_url: true } }, collection_nodes: { include: { node: true } } } });
     if (!row) throw new ORPCError('NOT_FOUND', { message: 'Collection not found' });
     return mapCollection(row);
   }),

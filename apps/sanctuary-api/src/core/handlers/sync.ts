@@ -21,7 +21,7 @@ export const syncRouter = impl.router({
     return applyPowerSyncBatch(
       context.db,
       input.crud,
-      input.idempotencyKey ?? input.batchId,
+      input.idempotencyKey,
     );
   }),
 });

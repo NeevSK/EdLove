@@ -11,7 +11,7 @@
  *  - Supabase postgres_changes subscription for instant messages
  */
 
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 
 import { formatTimestamp } from '@repo/ui/utils/dateTimeUtils';

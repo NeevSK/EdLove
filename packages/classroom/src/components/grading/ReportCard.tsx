@@ -4,7 +4,7 @@
  * Displays a student's report card with all their grades.
  */
 
-import { marksToGPA, type StudentGrade } from '@repo/analytics';
+import { marksToGPA, type StudentGrade } from '@repo/analytics/stats';
 import { Box, Heading, HStack, ScrollView, Text, VStack } from '@repo/ui/primitives';
 
 import { useMemo } from 'react';

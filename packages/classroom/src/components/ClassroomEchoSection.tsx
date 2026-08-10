@@ -1,4 +1,5 @@
-import { echoAPI, supabase } from '@repo/core/api';
+import { echoAPI } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { useStore } from '@repo/core/logic';
 
 import { EyeOff, Inbox, User } from '@repo/ui/icons';

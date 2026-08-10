@@ -13,6 +13,11 @@ name: Development
 # [required] Deployment region, e.g. us. Cannot be changed after initial deployment.
 region: jp
 
+# Keep the sync contract in source control. It must not fall back to a broad
+# or placeholder publication.
+sync_config:
+  path: sync-config.yaml
+
 ## -------------------------------------------------------------------------
 ## Replication (required): database connections for sync
 ## Note: only a single connection is currently supported.

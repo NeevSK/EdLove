@@ -120,30 +120,4 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
     });
   });
 
-  describe('POST /api/onboarding/createFounderSchoolBond', () => {
-    it('creates a principal bond without accepting a caller-supplied user ID', async () => {
-      setMockUserData({ ...defaultMockUser, capacity: 'principal' });
-      setMockActiveBond({ capacity: 'principal', entity_type: 'PLATFORM', entity_id: 'GLOBAL' });
-
-      const body = await createTestORPCClient(authenticatedHeaders).onboarding.createFounderSchoolBond({
-        schoolId: '923e4567-e89b-12d3-a456-426614174000',
-      });
-
-      expect(body.success).toBe(true);
-      expect(body.bondId).toBe('b23e4567-e89b-12d3-a456-426614174000');
-    });
-  });
-
-  describe('POST /api/onboarding/revokeSchoolBond', () => {
-    it('revokes the authenticated user school bond', async () => {
-      setMockUserData({ ...defaultMockUser, capacity: 'principal' });
-      setMockActiveBond({ id: 'b23e4567-e89b-12d3-a456-426614174000', capacity: 'principal', entity_type: 'SCHOOL', entity_id: '923e4567-e89b-12d3-a456-426614174000' });
-
-      const body = await createTestORPCClient(authenticatedHeaders).onboarding.revokeSchoolBond({
-        schoolId: '923e4567-e89b-12d3-a456-426614174000',
-      });
-
-      expect(body.success).toBe(true);
-    });
-  });
 });

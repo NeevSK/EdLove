@@ -4,7 +4,7 @@
  * Form for teachers to enter student grades.
  */
 
-import { marksToGPA } from '@repo/analytics';
+import { marksToGPA } from '@repo/analytics/stats';
 import {
   Box,
   Button,
