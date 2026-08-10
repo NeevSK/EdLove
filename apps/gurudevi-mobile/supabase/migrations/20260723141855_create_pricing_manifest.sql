@@ -4,7 +4,7 @@
 
 CREATE TABLE IF NOT EXISTS public.pricing_manifest (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  tier TEXT NOT NULL CHECK (tier IN ('FREE', 'PRO', 'INSTITUTIONAL')),
+  tier TEXT NOT NULL UNIQUE CHECK (tier IN ('FREE', 'PRO', 'INSTITUTIONAL')),
   features JSONB NOT NULL DEFAULT '[]'::jsonb,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

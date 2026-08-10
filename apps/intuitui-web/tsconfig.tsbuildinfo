@@ -1,1 +1,0 @@
-{"version":"7.0.1-rc","root":["./.astro/types.d.ts","./vitest.config.ts","./src/env.d.ts","./src/lib/site.ts","./src/pages/knowledge.json.ts","./src/pages/llms.txt.ts","./src/pages/robots.txt.ts"]}

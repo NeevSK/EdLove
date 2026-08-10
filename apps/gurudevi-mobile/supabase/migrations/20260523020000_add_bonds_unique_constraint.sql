@@ -9,6 +9,7 @@ BEGIN;
 
 -- Add a unique constraint to public.bonds
 ALTER TABLE public.bonds
+  DROP CONSTRAINT IF EXISTS bonds_user_entity_capacity_unique,
   ADD CONSTRAINT bonds_user_entity_capacity_unique UNIQUE (user_id, entity_id, capacity);
 
 COMMIT;

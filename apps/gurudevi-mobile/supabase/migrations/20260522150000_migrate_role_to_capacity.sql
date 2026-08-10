@@ -9,13 +9,62 @@
 
 BEGIN;
 
--- 1. RENAME COLUMN
-ALTER TABLE public.users 
-  RENAME COLUMN role TO capacity;
+-- 1. DROP DEPENDENT TRIGGER BEFORE COLUMN ALTERATIONS
+DROP TRIGGER IF EXISTS tr_user_profile_sync_after ON public.users;
+
+-- Update trigger function to use capacity instead of role
+CREATE OR REPLACE FUNCTION public.handle_user_profile_sync_after() 
+RETURNS trigger AS $$
+BEGIN
+    INSERT INTO public.user_growth_state (user_id) VALUES (NEW.id) ON CONFLICT (user_id) DO NOTHING;
+    INSERT INTO public.user_preferences (user_id) VALUES (NEW.id) ON CONFLICT (user_id) DO NOTHING;
+    INSERT INTO public.user_social_state (user_id) VALUES (NEW.id) ON CONFLICT (user_id) DO NOTHING;
+
+    IF (NEW.capacity = 'teacher') THEN
+        INSERT INTO public.teacher_profiles (user_id) VALUES (NEW.id) ON CONFLICT (user_id) DO NOTHING;
+    ELSIF (NEW.capacity = 'principal') THEN
+        INSERT INTO public.principal_profiles (user_id) VALUES (NEW.id) ON CONFLICT (user_id) DO NOTHING;
+    ELSIF (NEW.capacity = 'student') THEN
+        INSERT INTO public.student_profiles (user_id) VALUES (NEW.id) ON CONFLICT (user_id) DO NOTHING;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+-- CONDITIONAL RENAME OR CLEANUP OF ROLE/CAPACITY
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 
+    FROM information_schema.columns 
+    WHERE table_name = 'users' 
+      AND table_schema = 'public'
+      AND column_name = 'capacity'
+  ) THEN
+    ALTER TABLE public.users RENAME COLUMN role TO capacity;
+  ELSE
+    IF EXISTS (
+      SELECT 1 
+      FROM information_schema.columns 
+      WHERE table_name = 'users' 
+        AND table_schema = 'public'
+        AND column_name = 'role'
+    ) THEN
+      ALTER TABLE public.users DROP COLUMN role;
+    END IF;
+  END IF;
+END $$;
+
+-- RECREATE TRIGGER TARGETING CAPACITY
+CREATE TRIGGER tr_user_profile_sync_after 
+    AFTER INSERT OR UPDATE OF capacity ON public.users 
+    FOR EACH ROW EXECUTE FUNCTION public.handle_user_profile_sync_after();
 
 -- 2. UPDATE CHECK CONSTRAINT
 ALTER TABLE public.users
-  DROP CONSTRAINT IF EXISTS users_role_check;
+  DROP CONSTRAINT IF EXISTS users_role_check,
+  DROP CONSTRAINT IF EXISTS users_capacity_check;
 
 ALTER TABLE public.users
   ADD CONSTRAINT users_capacity_check CHECK (
