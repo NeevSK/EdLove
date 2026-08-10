@@ -1,6 +1,7 @@
 import { usePermissions, useTemporalStore } from '@repo/core/logic';
 import FeatureInfoIcon from '@repo/ui/components/FeatureInfoIcon';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { DerivedHistoryView } from '@repo/ui/components/DerivedHistoryView';
 import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
 import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
 import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
@@ -108,7 +109,18 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
       ? (feature.historyContent ?? <HistoryScaffold feature={feature} viewScale={viewScale} />)
       : feature.content;
 
-    return <FeatureErrorBoundary featureName={feature.label}>{content}</FeatureErrorBoundary>;
+    return (
+      <>
+        {feature.temporalView ? (
+          <DerivedHistoryView
+            mode={isHistoryMode ? 'history' : 'now'}
+            onModeChange={(mode) => setViewMode(mode === 'history' ? 'timeline' : 'spotlight')}
+            {...feature.temporalView}
+          />
+        ) : null}
+        <FeatureErrorBoundary featureName={feature.label}>{content}</FeatureErrorBoundary>
+      </>
+    );
   };
 
   return (

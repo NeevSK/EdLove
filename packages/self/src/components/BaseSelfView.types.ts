@@ -1,4 +1,8 @@
 import type { TemporalScale } from '@repo/core/store';
+import type {
+  DerivedHistoryEntry,
+  DerivedHistoryPoint,
+} from '@repo/ui/components/DerivedHistoryView';
 import type React from 'react';
 
 export interface SelfViewFeature {
@@ -10,6 +14,13 @@ export interface SelfViewFeature {
   category?: string;
   summary?: string;
   historySummary?: string;
+  temporalView?: {
+    summary?: string;
+    points?: DerivedHistoryPoint[];
+    entries?: DerivedHistoryEntry[];
+    reinforcement?: React.ReactNode;
+    emptyHistoryLabel?: string;
+  };
   supportedScales?: TemporalScale[];
   domainColor?: string;
   domainId?: string;

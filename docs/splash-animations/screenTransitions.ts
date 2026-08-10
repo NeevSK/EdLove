@@ -1,0 +1,57 @@
+/**
+ * screenTransitions.ts — the default "everyday nav" transition.
+ *
+ * This is Layer 1 in the motion plan: the thing felt hundreds of times a
+ * session, so it stays fast (duration.transition, ~240ms) and never slides
+ * or bounces — a soft crossfade with a slight scale-in, same decelerating
+ * curve as the splash, just compressed in time.
+ *
+ * Built on react-native-screen-transitions (the Bounds API is reserved for
+ * the rarer "shared element" moments — see sharedTransition below — this
+ * export is the plain default every other screen should use).
+ *
+ * Usage (per-screen, in Expo Router):
+ *   export const unstable_settings = { ... }
+ *   <Stack.Screen name="..." options={softCrossfadeScale} />
+ */
+import { Easing, interpolate } from 'react-native-reanimated';
+import { duration, easingPoints, scale as scaleTokens } from './motion';
+
+const timingConfig = (ms: number) => ({
+  duration: ms,
+  easing: Easing.bezier(...easingPoints.decelerate),
+});
+
+export const softCrossfadeScale = {
+  transitionSpec: {
+    open: { animation: 'timing' as const, config: timingConfig(duration.transition) },
+    close: { animation: 'timing' as const, config: timingConfig(duration.transition) },
+  },
+  screenStyleInterpolator: ({ progress }: { progress: number }) => {
+    'worklet';
+    return {
+      contentStyle: {
+        opacity: interpolate(progress, [0, 1, 2], [0, 1, 0]),
+        transform: [
+          {
+            scale: interpolate(
+              progress,
+              [0, 1, 2],
+              [scaleTokens.enter, scaleTokens.rest, scaleTokens.enter]
+            ),
+          },
+        ],
+      },
+    };
+  },
+};
+
+/**
+ * For the rarer moments that deserve a real shared-element feel (tapping a
+ * card into its detail view, a profile into its full page) — same easing
+ * language, but the longer `shared` duration and driven by the library's
+ * Bounds API instead of a plain crossfade. Wire actual bounds per usage;
+ * this just centralizes the timing/easing so it stays consistent with
+ * everything else rather than being tuned ad hoc per screen.
+ */
+export const sharedTransitionTiming = timingConfig(duration.shared);

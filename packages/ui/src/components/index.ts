@@ -2,7 +2,17 @@ export { default as AccountPinModal } from '@repo/ui/components/AccountPinModal'
 export { default as AchievementUnlockOverlay } from '@repo/ui/components/AchievementUnlockOverlay';
 export { AdaptiveLayout } from '@repo/ui/components/AdaptiveLayout';
 export * from '@repo/ui/components/BreathAnimation';
+export { BrandPulse } from '@repo/ui/components/BrandPulse';
 export { default as BreathingLoader } from '@repo/ui/components/BreathingLoader';
+// Motion system exports
+export * from '@repo/ui/components/motion';
+export * from '@repo/ui/components/layout';
+export * from '@repo/ui/components/screenTransitions';
+// New branded state components (renamed to avoid conflicts with existing components)
+export { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+export { SuccessCheck, SuccessGlow } from '@repo/ui/components/Success';
+export { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+export { ShimmerBlock, SkeletonCard as BrandedSkeletonCard, SkeletonList as BrandedSkeletonList } from '@repo/ui/components/Skeleton';
 export type { ChatComposerProps } from '@repo/ui/components/ChatComposer';
 export { ChatComposer } from '@repo/ui/components/ChatComposer';
 export type { CollectionCardProps } from '@repo/ui/components/CollectionCard';
@@ -15,6 +25,7 @@ export * from '@repo/ui/components/DailyResonanceCard';
 export { default as DeleteAccountModal } from '@repo/ui/components/DeleteAccountModal';
 export { default as DeviceAccountManager } from '@repo/ui/components/DeviceAccountManager';
 export { default as EmptyState } from '@repo/ui/components/EmptyState';
+export { ErrorState } from '@repo/ui/components/ErrorState';
 export type { EntityModalProps } from '@repo/ui/components/EntityModal';
 export { default as EntityModal } from '@repo/ui/components/EntityModal';
 export type { EntityViewProps } from '@repo/ui/components/EntityView';
@@ -122,6 +133,13 @@ export * from '@repo/ui/components/SmartShelf';
 export { default as StepIndicator } from '@repo/ui/components/StepIndicator';
 export * from '@repo/ui/components/social';
 export { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
+export type {
+  DerivedHistoryEntry,
+  DerivedHistoryMode,
+  DerivedHistoryPoint,
+  DerivedHistoryViewProps,
+} from '@repo/ui/components/DerivedHistoryView';
+export { DerivedHistoryView } from '@repo/ui/components/DerivedHistoryView';
 export { TemporalProvider, useTemporalAesthetics } from '@repo/ui/components/TemporalProvider';
 export { TemporalShield } from '@repo/ui/components/TemporalShield';
 export type { UniversalModalProps } from '@repo/ui/components/UniversalModal';

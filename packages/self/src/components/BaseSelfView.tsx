@@ -3,6 +3,7 @@ import FeatureInfoIcon from '@repo/ui/components/FeatureInfoIcon';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import { DerivedHistoryView } from '@repo/ui/components/DerivedHistoryView';
 import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
 import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
@@ -202,7 +203,18 @@ export function BaseSelfView({
       ? (feature.historyContent ?? <HistoryScaffold feature={feature} viewScale={viewScale} />)
       : feature.content;
 
-    return <FeatureErrorBoundary featureName={feature.label}>{content}</FeatureErrorBoundary>;
+    return (
+      <>
+        {feature.temporalView ? (
+          <DerivedHistoryView
+            mode={isHistoryMode ? 'history' : 'now'}
+            onModeChange={(mode) => setViewMode(mode === 'history' ? 'timeline' : 'spotlight')}
+            {...feature.temporalView}
+          />
+        ) : null}
+        <FeatureErrorBoundary featureName={feature.label}>{content}</FeatureErrorBoundary>
+      </>
+    );
   };
 
   return (

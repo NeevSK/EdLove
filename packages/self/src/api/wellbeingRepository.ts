@@ -1,5 +1,5 @@
 import { moodLogs } from '@repo/core/adapters/powersync/schema';
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { applyTemporalFilter, getTemporalRange } from '@repo/core/logic';
 import { getDrizzleDB } from '@repo/core/powersync';
 import { desc, eq } from 'drizzle-orm';

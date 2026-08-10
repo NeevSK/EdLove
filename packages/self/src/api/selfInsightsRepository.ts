@@ -1,4 +1,4 @@
-import { supabase } from '@repo/core/api';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { getTemporalRange } from '@repo/core/logic';
 
 import type { EnergyForecast } from '@repo/self/types';

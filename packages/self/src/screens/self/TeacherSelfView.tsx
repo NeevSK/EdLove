@@ -2,6 +2,10 @@ import { useBanyanGrowth, useJourneyHistory } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import type {
+  DerivedHistoryEntry,
+  DerivedHistoryPoint,
+} from '@repo/ui/components/DerivedHistoryView';
 import { Box, VStack } from '@repo/ui/primitives';
 
 import { useState } from 'react';
@@ -61,6 +65,23 @@ export default function TeacherSelfView() {
   const { events: journeyEvents, holisticView, isLoading: journeyLoading } = useJourneyHistory();
   const { banyan, isLoading: banyanLoading } = useBanyanGrowth();
 
+  const moodHistoryPoints: DerivedHistoryPoint[] = moodHistory
+    .slice(0, 7)
+    .reverse()
+    .map((log) => ({
+      id: log.id,
+      label: new Date(log.created_at).toLocaleDateString(undefined, { weekday: 'short' }),
+      value: log.mood_score * 20,
+      detail: log.mood,
+    }));
+  const moodHistoryEntries: DerivedHistoryEntry[] = moodHistory.slice(0, 10).map((log) => ({
+    id: log.id,
+    title: log.mood ? `${log.mood} mood` : 'Mood check-in',
+    timestamp: new Date(log.created_at).toLocaleDateString(),
+    description: log.note,
+    kind: 'reflection',
+  }));
+
   const holisticSection = (
     <VStack space="lg" style={{ padding: 20 }}>
       <JournalSection entries={journalEntries} loading={loadingJournals} />
@@ -106,6 +127,12 @@ export default function TeacherSelfView() {
                 label: 'Mood Lotus',
                 content: <MoodLotus userId={userId ?? undefined} />,
                 historyContent: <MoodSection logs={moodHistory} loading={loadingMoods} />,
+                temporalView: {
+                  summary: latestMood?.mood ? `Latest: ${latestMood.mood}` : 'Mood history',
+                  points: moodHistoryPoints,
+                  entries: moodHistoryEntries,
+                  emptyHistoryLabel: 'Log a mood to begin your personal history.',
+                },
               },
               {
                 id: 'wisdom',
