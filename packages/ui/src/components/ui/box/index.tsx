@@ -1,8 +1,9 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import { type StyleProp, View, type ViewProps, type ViewStyle } from 'react-native';
+import { styled } from 'nativewind';
 
-cssInterop(View, { className: 'style' });
+// Standard primitive: use the NativeWind v5 adapter directly.
+const StyledView = styled(View);
 
 export interface IBoxProps extends ViewProps {
   className?: string;
@@ -12,17 +13,13 @@ export interface IBoxProps extends ViewProps {
 }
 
 const Box = React.forwardRef<View, IBoxProps>(
-  ({ className, sx, style, children, ...props }, ref) => {
-    const StyledView = View as any;
-    return (
-      <StyledView {...props} ref={ref} className={className} style={[sx, style]}>
-        {children}
-      </StyledView>
-    );
-  },
+  ({ className, sx, style, children, ...props }, ref) => (
+    <StyledView {...props} ref={ref} className={className} style={[sx, style]}>
+      {children}
+    </StyledView>
+  ),
 );
 
 Box.displayName = 'Box';
 
 export { Box };
-

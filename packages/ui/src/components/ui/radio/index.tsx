@@ -1,11 +1,9 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
-import { Pressable, Text, View, type ViewProps } from 'react-native';
-
-cssInterop(View, { className: 'style' });
-cssInterop(Pressable, { className: 'style' });
-cssInterop(Text, { className: 'style' });
+import { type ViewProps } from 'react-native';
+import { Pressable } from '@repo/ui/components/ui/pressable';
+import { Text } from '@repo/ui/components/ui/text';
+import { View } from '@repo/ui/components/ui/view';
 
 /**
  * Radio Component

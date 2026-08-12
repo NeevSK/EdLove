@@ -1,16 +1,13 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
-import { Pressable, type ViewProps } from 'react-native';
+import { type ViewProps } from 'react-native';
+import { Pressable } from '@repo/ui/components/ui/pressable';
 import { Text } from '@repo/ui/components/ui/text';
-
-cssInterop(Pressable, { className: 'style' });
 
 /**
  * Fab (Floating Action Button)
  *
- * A high-impact interaction primitive.
- * Enforces architectural boundaries for overlays and semantic labeling.
+ * A high-impact, hardened interaction primitive.
  */
 
 type FabPlacement = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
@@ -20,12 +17,6 @@ interface FabContextType {
 }
 
 const FabContext = createContext<FabContextType | undefined>(undefined);
-
-function _useFab() {
-  const context = useContext(FabContext);
-  if (!context) throw new Error('useFab must be used within a Fab component');
-  return context;
-}
 
 export const Fab = ({
   children,
@@ -49,7 +40,6 @@ export const Fab = ({
   };
 
   const sizeStyles = size === 'lg' ? 'p-6' : 'p-4';
-
   const contextValue = useMemo(() => ({ size }), [size]);
 
   return (
@@ -90,4 +80,3 @@ FabLabel.displayName = 'FabLabel';
 FabIcon.displayName = 'FabIcon';
 
 export { Fab as default };
-

@@ -1,8 +1,8 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import React, { createContext, useContext, useMemo } from 'react';
 import { View, type ViewProps } from 'react-native';
+import { styled } from 'nativewind';
 
-cssInterop(View, { className: 'style' });
+const StyledView = styled(View);
 
 /**
  * Progress Component
@@ -43,7 +43,7 @@ export const Progress = React.forwardRef<View, IProgressProps>(
 
     return (
       <ProgressContext.Provider value={contextValue}>
-        <View
+        <StyledView
           {...props}
           ref={ref}
           accessibilityRole="progressbar"
@@ -51,7 +51,7 @@ export const Progress = React.forwardRef<View, IProgressProps>(
           className={`bg-phase-interactive/10 rounded-full overflow-hidden w-full ${heightMap[size] || heightMap.md} ${className || ''}`}
         >
           {children}
-        </View>
+        </StyledView>
       </ProgressContext.Provider>
     );
   },
@@ -62,7 +62,7 @@ export const ProgressFilledTrack = React.forwardRef<View, ViewProps & { classNam
     const { value } = useProgress();
 
     return (
-      <View
+      <StyledView
         {...props}
         ref={ref}
         style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
@@ -76,4 +76,3 @@ Progress.displayName = 'Progress';
 ProgressFilledTrack.displayName = 'ProgressFilledTrack';
 
 export { Progress as default };
-

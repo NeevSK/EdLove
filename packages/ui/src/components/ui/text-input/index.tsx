@@ -1,18 +1,17 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import { TextInput as RNTextInput, type TextInputProps } from 'react-native';
+import { styled } from 'react-native-css';
 
-cssInterop(RNTextInput, { className: 'style' });
+const StyledTextInput = styled(RNTextInput as React.ComponentType<any>);
 
 export interface ITextInputProps extends TextInputProps {
   className?: string;
 }
 
 const TextInput = React.forwardRef<any, ITextInputProps>(({ className, ...props }, ref) => (
-  <RNTextInput {...props} ref={ref} {...({ className } as any)} />
+  <StyledTextInput {...props} ref={ref} className={className} />
 ));
 
 TextInput.displayName = 'TextInput';
 
 export { TextInput };
-

@@ -1,12 +1,15 @@
 ---
 title: "Gluestack UI v5 and Styling Subsystem Migration Report"
-status: "active"
+status: "superseded"
 created: 2026-07-14
-updated: 2026-07-14
+updated: 2026-08-11
 author: "Naveen"
 scribe: "Antigravity"
 tags: [mobile, gluestack, ui, styling, migration]
+superseded_by: "./2026-08-11-gluestack-v5-stack-audit.md"
 ---
+
+> Superseded by [Gluestack UI v5 and NativeWind v5 Stack Audit](./2026-08-11-gluestack-v5-stack-audit.md), which reconciles this historical report with the current source tree and upstream v5 guidance.
 
 # Gluestack UI v5 and Styling Subsystem Migration Report
 

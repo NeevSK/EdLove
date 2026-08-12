@@ -1,5 +1,5 @@
 const { getSentryExpoConfig } = require('@sentry/react-native/metro');
-const { withNativeWind } = require('nativewind/metro');
+const { withNativewind } = require('nativewind/metro');
 const path = require('node:path');
 const fs = require('node:fs');
 
@@ -358,7 +358,4 @@ config.resolver.sourceExts = [...config.resolver.sourceExts, 'mjs', 'cjs'];
 // 10. Main Field Priority
 config.resolver.resolverMainFields = ['react-native', 'browser', 'main'];
 
-module.exports = withNativeWind(config, {
-  input: '../../packages/ui/src/global.css',
-  configPath: path.resolve(__dirname, 'tailwind.config.js'),
-});
+module.exports = withNativewind(config);

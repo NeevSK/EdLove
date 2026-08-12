@@ -54,6 +54,10 @@ jobs:
     needs: prep
     runs-on: ubuntu-latest
     continue-on-error: true
+    env:
+      DOPPLER_PROJECT: gurudevi-mobile
+      DOPPLER_CONFIG: ${{ github.event.inputs.profile == 'production' && 'prd' || github.event.inputs.profile == 'preview' && 'stg' || 'dev' }}
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
     outputs:
       sourcemaps_available: ${{ steps.check.outputs.sourcemaps_available }}
     steps:
@@ -75,13 +79,20 @@ jobs:
       - name: 🏗 Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 11.18.0
+          version: 11.21.0
 
       - name: 🏗 Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
+
+      - name: 🔐 Load Doppler build environment
+        uses: ./.github/actions/load-doppler-env
+        with:
+          project: ${{ env.DOPPLER_PROJECT }}
+          config: ${{ env.DOPPLER_CONFIG }}
+          token: ${{ env.DOPPLER_TOKEN }}
 
       - name: 📦 Install dependencies
         run: pnpm install --frozen-lockfile --fetch-timeout 100000
@@ -105,40 +116,11 @@ jobs:
           echo "=== /tmp contents ==="
           ls -la /tmp/ || true
 
-      - name: 🔍 Debug — Sentry auth token presence
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        run: |
-          if [ -z "$SENTRY_AUTH_TOKEN" ]; then
-            echo "❌ SENTRY_AUTH_TOKEN is NOT set."
-          else
-            TOKEN_LEN=${#SENTRY_AUTH_TOKEN}
-            TOKEN_PREVIEW="${SENTRY_AUTH_TOKEN:0:4}...${SENTRY_AUTH_TOKEN: -4}"
-            echo "✅ SENTRY_AUTH_TOKEN is set (length: $TOKEN_LEN, preview: $TOKEN_PREVIEW)"
-          fi
-
-      - name: 🔍 Debug — sentry-cli version and auth check
-        continue-on-error: true
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: intuitui-labs
-          SENTRY_PROJECT: gurudevi-mobile
-        run: |
-          cd apps/gurudevi-mobile
-          pnpm exec sentry-cli --version || echo "❌ sentry-cli not found"
-
       - name: 📦 Pre-bundle with Metro
         id: metro
         continue-on-error: true
         env:
           EXPO_NO_DOCTOR: 1
-          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
-          EXPO_PUBLIC_POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
-          EXPO_PUBLIC_POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
-          EXPO_PUBLIC_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          EXPO_PUBLIC_INNGEST_EVENT_KEY: ${{ secrets.INNGEST_EVENT_KEY }}
-          EXPO_PUBLIC_POWERSYNC_URL: ${{ secrets.POWERSYNC_URL }}
           NODE_ENV: production
           NODE_OPTIONS: --max-old-space-size=8192
         run: |
@@ -187,6 +169,10 @@ jobs:
     needs: [prep, prebundle]
     runs-on: ubuntu-latest
     if: always()
+    env:
+      DOPPLER_PROJECT: gurudevi-mobile
+      DOPPLER_CONFIG: ${{ github.event.inputs.profile == 'production' && 'prd' || github.event.inputs.profile == 'preview' && 'stg' || 'dev' }}
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
     strategy:
       matrix:
         type: ${{ fromJson(needs.prep.outputs.matrix) }}
@@ -209,13 +195,20 @@ jobs:
       - name: 🏗 Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 11.18.0
+          version: 11.21.0
 
       - name: 🏗 Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
+
+      - name: 🔐 Load Doppler build environment
+        uses: ./.github/actions/load-doppler-env
+        with:
+          project: ${{ env.DOPPLER_PROJECT }}
+          config: ${{ env.DOPPLER_CONFIG }}
+          token: ${{ env.DOPPLER_TOKEN }}
 
       - name: 🏗 Setup JDK 17
         uses: actions/setup-java@v4
@@ -230,7 +223,6 @@ jobs:
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
 
       - name: 🏗 Setup Gradle Cache
         uses: actions/cache@v4
@@ -243,7 +235,17 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: 📦 Install dependencies
-        run: pnpm install --fetch-timeout 100000
+        run: pnpm install --frozen-lockfile --fetch-timeout 100000
+
+      - name: 🔍 Validate Expo native dependency graph
+        working-directory: apps/gurudevi-mobile
+        run: pnpm run audit:expo-native-graph
+
+      - name: 🎨 Validate NativeWind v5 style stack
+        working-directory: apps/gurudevi-mobile
+        run: |
+          pnpm run audit:style-stack
+          pnpm run audit:css-interop
 
       - name: 🔍 Debug — prebundle job outcome
         run: |
@@ -272,14 +274,9 @@ jobs:
       - name: 🚀 Build App
         env:
           EXPO_NO_DOCTOR: 1
-          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
-          EXPO_PUBLIC_POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
-          EXPO_PUBLIC_POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
-          EXPO_PUBLIC_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          EXPO_PUBLIC_INNGEST_EVENT_KEY: ${{ secrets.INNGEST_EVENT_KEY }}
-          EXPO_PUBLIC_POWERSYNC_URL: ${{ secrets.POWERSYNC_URL }}
           NODE_OPTIONS: --max-old-space-size=8192
+          GRADLE_MAX_HEAP: 5120m
+          GRADLE_MAX_METASPACE: 768m
         run: |
           set -eo pipefail
           pnpm config set side-effects-cache false
@@ -349,6 +346,10 @@ jobs:
     needs: [prep, prebundle, build]
     runs-on: ubuntu-latest
     continue-on-error: true
+    env:
+      DOPPLER_PROJECT: gurudevi-mobile
+      DOPPLER_CONFIG: ${{ github.event.inputs.profile == 'production' && 'prd' || github.event.inputs.profile == 'preview' && 'stg' || 'dev' }}
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
     if: |
       needs.build.result == 'success' &&
       needs.prebundle.outputs.sourcemaps_available == 'true' &&
@@ -363,7 +364,7 @@ jobs:
       - name: 🏗 Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 11.18.0
+          version: 11.21.0
 
       - name: 🏗 Setup Node
         uses: actions/setup-node@v4
@@ -371,8 +372,15 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
 
+      - name: 🔐 Load Doppler build environment
+        uses: ./.github/actions/load-doppler-env
+        with:
+          project: ${{ env.DOPPLER_PROJECT }}
+          config: ${{ env.DOPPLER_CONFIG }}
+          token: ${{ env.DOPPLER_TOKEN }}
+
       - name: 📦 Install dependencies
-        run: pnpm install --fetch-timeout 100000
+        run: pnpm install --frozen-lockfile --fetch-timeout 100000
 
       - name: 📥 Download Sentry artifacts
         uses: actions/download-artifact@v4
@@ -383,7 +391,6 @@ jobs:
       - name: 🚀 Sentry Sourcemap Upload
         id: sentry-upload
         env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: intuitui-labs
           SENTRY_PROJECT: gurudevi-mobile
         run: |

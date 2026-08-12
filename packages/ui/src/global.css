@@ -1,1 +1,9 @@
-@import "tailwindcss";
+/* NativeWind v5/Tailwind v4 only consumes a JavaScript config when it is
+ * explicitly referenced. This preserves the existing phase token contract
+ * while the design system transitions to CSS-first theme declarations. */
+@config "../../../apps/gurudevi-mobile/tailwind.config.js";
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css";
+@import "nativewind/theme";

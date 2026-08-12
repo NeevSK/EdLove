@@ -39,7 +39,7 @@ This app has **6 custom config plugins** that inject native configuration during
 
 | Plugin | Target file | Purpose |
 |---|---|---|
-| `plugins/withMavenRepos.js` | `android/build.gradle` (root) | Adds `packages.expo.dev/maven` to `buildscript.repositories` |
+| `plugins/withMavenRepos.js` | Optional custom Maven repository hook | Use only for a verified custom artifact repository |
 | `plugins/withAndroidCruncherDisabled.js` | `android/app/build.gradle` | Disables AAPT PNG crunching |
 | `plugins/withGradleProperties.js` | `android/gradle.properties` + `android/app/build.gradle` | JVM memory, parallel=false, arch, lint ignore, bridgeless |
 | `plugins/withSentryGradleDisabled.js` | `android/app/build.gradle` | Comments out sentry.gradle apply |
@@ -68,10 +68,12 @@ Plugins execute in array order. For gradle plugins, this matters:
 
 ### Maven repo injection (two mechanisms)
 
-The Expo Maven repo (`https://packages.expo.dev/maven`) is injected via **two** paths:
+Custom Maven repositories are injected via **two** paths when a verified custom repository is required:
 
-1. **`buildscript.repositories`** — via `plugins/withMavenRepos.js` (text injection into root `android/build.gradle`). Covers Gradle classpath/plugin resolution.
-2. **`allprojects.repositories`** — via `expo-build-properties` `android.extraMavenRepos` (flows through `gradle.properties` → expo autolinking plugin). Covers native library resolution.
+1. **`buildscript.repositories`** — via the optional custom repository plugin. Covers Gradle classpath/plugin resolution.
+2. **`allprojects.repositories`** — via `expo-build-properties` `android.extraMavenRepos`. Covers native library resolution.
+
+The former `https://packages.expo.dev/maven` entry is intentionally disabled because it returned HTML instead of Maven XML. Standard Expo SDK dependencies resolve through Google/Maven Central; add a custom URL only after validating its POM responses.
 
 Both survive `prebuild --clean` because they're declared in `app.json`/`plugins/`.
 
@@ -104,6 +106,19 @@ pnpm --filter gurudevi-mobile build:preview
 # Production build (AAB, Play Store)
 pnpm --filter gurudevi-mobile build:prod
 ```
+
+### Native migration validation in CI
+
+For Expo/NativeWind/Gluestack dependency or styling-engine changes, use the repository workflow after pushing the intended commit. It runs the Expo native-graph, NativeWind style-stack, and legacy-interop gates before the long Android build:
+
+```bash
+gh workflow run android-build.yml --repo NeevSK/Gurudevi \
+  -f profile=development -f build_method=local -f build_type=apk
+gh run list --repo NeevSK/Gurudevi --workflow android-build.yml --limit 5
+gh run view <run-id> --repo NeevSK/Gurudevi --log-failed
+```
+
+Do not treat a successful web export or TypeScript build as native proof. The native gate requires Gradle completion and a device/emulator startup check.
 
 ### Manual prebuild (rarely needed)
 

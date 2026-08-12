@@ -1,13 +1,13 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
-import { Platform, View, type ViewProps } from 'react-native';
-import Animated, { ZoomIn, ZoomOut } from 'react-native-reanimated';
+import { Platform, type ViewProps } from 'react-native';
+import { ZoomIn, ZoomOut } from 'react-native-reanimated';
 import { Box } from '@repo/ui/components/ui/box';
 import { Overlay } from '@repo/ui/components/ui/overlay';
 import { Portal } from '@repo/ui/components/ui/portal';
+import { View } from '@repo/ui/components/ui/view';
+import { AnimatedView } from '@repo/ui/components/ui/view';
 
-cssInterop(View, { className: 'style' });
 
 /**
  * Modal Component
@@ -55,7 +55,7 @@ export const Modal = ({
           style={{ zIndex: 1001 }}
           {...props}
         >
-          <Animated.View
+          <AnimatedView
             entering={enteringAnimation}
             exiting={exitingAnimation}
             className="w-full max-w-[500px]"
@@ -66,7 +66,7 @@ export const Modal = ({
             <Box className="bg-phase-elevated rounded-3xl overflow-hidden shadow-2xl border border-phase-interactive/10">
               {children}
             </Box>
-          </Animated.View>
+          </AnimatedView>
         </View>
       </Portal>
     </ModalContext.Provider>

@@ -1,9 +1,7 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
-import { TextInput, type TextInputProps, View, type ViewProps } from 'react-native';
-
-cssInterop(View, { className: 'style' });
-cssInterop(TextInput, { className: 'style' });
+import { type TextInputProps, type ViewProps } from 'react-native';
+import { TextInput } from '@repo/ui/components/ui/text-input';
+import { View } from '@repo/ui/components/ui/view';
 
 export interface ITextareaProps extends ViewProps {
   className?: string;
@@ -12,21 +10,19 @@ export interface ITextareaProps extends ViewProps {
   isReadOnly?: boolean;
 }
 
-const Textarea = React.forwardRef<View, ITextareaProps>(
-  ({ className, isDisabled, isInvalid, isReadOnly, children, ...props }, ref) => {
-    return (
-      <View
-        {...props}
-        ref={ref}
-        className={`w-full border rounded-xl bg-phase-canvas border-phase-interactive/10 ${isInvalid ? 'border-phase-danger' : ''} ${isDisabled ? 'opacity-40' : ''} ${className || ''}`}
-      >
-        {children}
-      </View>
-    );
-  },
+const Textarea = React.forwardRef<any, ITextareaProps>(
+  ({ className, isDisabled, isInvalid, isReadOnly, children, ...props }, ref) => (
+    <View
+      {...props}
+      ref={ref}
+      className={`w-full border rounded-xl bg-phase-canvas border-phase-interactive/10 ${isInvalid ? 'border-phase-danger' : ''} ${isDisabled ? 'opacity-40' : ''} ${className || ''}`}
+    >
+      {children}
+    </View>
+  ),
 );
 
-export const TextareaInput = React.forwardRef<TextInput, TextInputProps & { className?: string }>(
+export const TextareaInput = React.forwardRef<any, TextInputProps & { className?: string }>(
   ({ className, ...props }, ref) => (
     <TextInput
       {...props}
@@ -43,4 +39,3 @@ Textarea.displayName = 'Textarea';
 TextareaInput.displayName = 'TextareaInput';
 
 export { Textarea };
-

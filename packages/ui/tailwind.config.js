@@ -20,6 +20,13 @@ module.exports = {
           accent: 'var(--phase-accent)',
           reward: 'var(--phase-reward)',
           danger: 'var(--phase-danger)',
+          text: {
+            primary: 'var(--phase-text-primary)',
+            secondary: 'var(--phase-text-secondary)',
+            inverse: 'var(--phase-text-inverse)',
+            onAccent: 'var(--phase-text-on-accent)',
+            onSurface: 'var(--phase-text-on-surface)',
+          },
         },
         phaseText: {
           primary: 'var(--phase-text-primary)',

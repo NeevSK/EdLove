@@ -1,12 +1,11 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import { type ImageProps, Image as RNImage } from 'react-native';
+import { styled } from 'nativewind';
 
-cssInterop(RNImage, { className: 'style' });
+const StyledImage = styled(RNImage as React.ComponentType<any>);
 
 export const Image = React.forwardRef<RNImage, ImageProps & { className?: string }>(
-  ({ className, ...props }, ref) => <RNImage {...props} ref={ref} {...({ className } as any)} />,
+  ({ className, ...props }, ref) => <StyledImage {...props} ref={ref} className={className} />,
 );
 
 Image.displayName = 'Image';
-

@@ -12,7 +12,6 @@ module.exports = (api) => {
           reactCompiler: true,
         },
       ],
-      'nativewind/babel',
     ],
     plugins: [
       require('react-native-worklets/plugin'),

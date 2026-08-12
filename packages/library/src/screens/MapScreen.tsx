@@ -33,7 +33,7 @@ import { Theme } from '@repo/ui/theme';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
-import { cssInterop } from 'nativewind';
+import { styled } from 'nativewind';
 import React, { useEffect, useMemo, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSharedValue, withSpring } from 'react-native-reanimated';
@@ -41,7 +41,7 @@ import { libraryAPI } from '@repo/library/api/library';
 import { usePerspectiveLayout } from '@repo/library/hooks/usePerspectiveLayout';
 import type { KnowledgeNode, KnowledgeTopology } from '@repo/library/types/Library';
 
-cssInterop(BlurView, { className: 'style' });
+const StyledBlurView = styled(BlurView as React.ComponentType<any>);
 type PerspectiveId = 'astro' | 'terra' | 'dharma' | 'vastu' | 'jyoti' | 'vatya';
 interface Perspective {
   id: PerspectiveId;
@@ -265,7 +265,7 @@ export default function MapScreen() {
 
       <Box className="p-3 bg-phase-surface">
         <Box className="rounded-[20px] overflow-hidden border border-phase-border">
-          <BlurView intensity={30} tint="dark" className="flex-row bg-phase-surface/80">
+          <StyledBlurView intensity={30} tint="dark" className="flex-row bg-phase-surface/80">
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -300,7 +300,7 @@ export default function MapScreen() {
                 );
               })}
             </ScrollView>
-          </BlurView>
+          </StyledBlurView>
         </Box>
       </Box>
 
@@ -310,7 +310,7 @@ export default function MapScreen() {
 
           {selectedNode && (
             <Box className="absolute bottom-10 left-5 right-5 rounded-[32px] overflow-hidden border border-white/10 shadow-2xl">
-              <BlurView intensity={25} tint="dark" className="p-5 bg-black/40">
+              <StyledBlurView intensity={25} tint="dark" className="p-5 bg-black/40">
                 <VStack className="gap-3">
                   <HStack className="justify-between items-center">
                     <VStack className="flex-1 mr-4">
@@ -351,7 +351,7 @@ export default function MapScreen() {
                     </Text>
                   </Pressable>
                 </VStack>
-              </BlurView>
+              </StyledBlurView>
             </Box>
           )}
         </Box>

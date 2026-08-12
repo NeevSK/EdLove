@@ -1,3 +1,12 @@
+---
+title: "Gurudevi UI Development Guide"
+status: "active"
+created: 2026-08-03
+updated: 2026-08-12
+author: "Naveen"
+tags: [mobile, ui, nativewind, gluestack, architecture]
+---
+
 # Gurudevi UI Development Guide
 ## Screen Architecture, Data Flow, Caching, Performance, Quality
 ### For React Native / Expo Developers
@@ -40,8 +49,8 @@ Now code.
 
 ### The Technology Stack
 To avoid using legacy components or packages, abide strictly by this setup:
-*   **Styling**: **NativeWind v4** (Tailwind CSS utilities). No legacy Gluestack components.
-*   **Core UI**: Primitives imported directly from `@repo/ui/primitives` (zero-legacy layout/interaction containers).
+*   **Styling**: **NativeWind v5.0.0-preview.4** with Tailwind CSS 4.3.0 behind the `@repo/ui/gluestack` facade. The legacy `cssInterop` tree is frozen and not a product import path.
+*   **Core UI**: Gurudevi-owned primitives imported through the stable `@repo/ui/gluestack` facade (zero-legacy layout/interaction containers).
 *   **Navigation**: **Expo Router** (file-based navigation).
 *   **Data & Caching**: **React Query v5** (`@tanstack/react-query`) for server queries/mutations.
 *   **Offline / Sync**: **PowerSync** and local **SQLite** (via OP-SQLite).
@@ -55,7 +64,7 @@ To avoid using legacy components or packages, abide strictly by this setup:
 
 ```tsx
 // ✅ CORRECT
-import { Box, HStack, Text, Button } from '@repo/ui/primitives';
+import { Box, HStack, Text, Button } from '@repo/ui/gluestack';
 
 // ❌ INCORRECT
 import { View, Text } from 'react-native';

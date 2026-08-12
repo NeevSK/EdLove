@@ -1,11 +1,9 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import type React from 'react';
-import { createContext, useContext, useMemo } from 'react';
-import { View, type ViewProps } from 'react-native';
+import { createContext, useMemo } from 'react';
+import { type ViewProps } from 'react-native';
 import { Box } from '@repo/ui/components/ui/box';
 import { Text } from '@repo/ui/components/ui/text';
 
-cssInterop(View, { className: 'style' });
 
 /**
  * Toast Component
@@ -22,12 +20,6 @@ interface ToastContextType {
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
-
-function _useToastContext() {
-  const context = useContext(ToastContext);
-  if (!context) throw new Error('useToastContext must be used within a Toast');
-  return context;
-}
 
 export const Toast = ({
   children,

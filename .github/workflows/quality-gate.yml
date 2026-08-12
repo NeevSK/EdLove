@@ -10,6 +10,10 @@ on:
 jobs:
   quality-check:
     runs-on: ubuntu-latest
+    env:
+      DOPPLER_PROJECT: gurudevi-mobile
+      DOPPLER_CONFIG: dev
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
     steps:
       - name: 🏗 Checkout
         uses: actions/checkout@v4
@@ -17,7 +21,7 @@ jobs:
       - name: 🏗 Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 11.18.0
+          version: 11.21.0
 
       - name: 🏗 Setup Node
         uses: actions/setup-node@v4
@@ -28,6 +32,23 @@ jobs:
       - name: 📦 Install dependencies
         run: pnpm install --frozen-lockfile --fetch-timeout 100000
 
+      - name: 🧭 Platform production-readiness contract
+        run: pnpm check:platform-readiness
+
+      - name: 🏛️ Sanctuary API tests
+        run: pnpm --filter @repo/sanctuary-api test
+
+      - name: 🌐 Gurudevi marketing web build
+        run: pnpm --filter apps-gurudevi-marketing-web build
+
+      - name: 🔐 Load optional audit environment from Doppler
+        if: ${{ secrets.DOPPLER_TOKEN != '' }}
+        uses: ./.github/actions/load-doppler-env
+        with:
+          project: ${{ env.DOPPLER_PROJECT }}
+          config: ${{ env.DOPPLER_CONFIG }}
+          token: ${{ env.DOPPLER_TOKEN }}
+
       - name: 🔍 Check Icon Bridge Contract
         run: pnpm check:icons
 
@@ -35,6 +56,12 @@ jobs:
         run: |
           cd apps/gurudevi-mobile
           node -e "try { require.resolve('@repo/ui/global.css'); console.log('✅ @repo/ui/global.css is resolvable'); } catch(e) { console.error('❌ @repo/ui/global.css NOT found'); process.exit(1); }"
+
+      - name: 🎨 Validate NativeWind v5 style stack
+        working-directory: apps/gurudevi-mobile
+        run: |
+          pnpm run audit:style-stack
+          pnpm run audit:css-interop
 
       - name: ✨ Lint (Oxlint + ESLint)
         run: pnpm lint
@@ -63,17 +90,13 @@ jobs:
         run: pnpm run test:feature-lifecycle
 
       - name: 🌱 GrowthBook control-plane inventory
-        if: ${{ secrets.GROWTHBOOK_FEATURES_ENDPOINT != '' || secrets.GROWTHBOOK_API_KEY != '' }}
+        if: ${{ secrets.DOPPLER_TOKEN != '' }}
         env:
-          GROWTHBOOK_FEATURES_ENDPOINT: ${{ secrets.GROWTHBOOK_FEATURES_ENDPOINT }}
-          GROWTHBOOK_API_KEY: ${{ secrets.GROWTHBOOK_API_KEY }}
           GROWTHBOOK_FEATURE_SCOPE_PREFIX: ${{ vars.GROWTHBOOK_FEATURE_SCOPE_PREFIX }}
         run: pnpm run audit:feature-lifecycle:control-plane
 
       - name: 🗄️ Legacy feature schema evidence
-        if: ${{ secrets.FEATURE_LIFECYCLE_DB_URL != '' }}
-        env:
-          FEATURE_LIFECYCLE_DB_URL: ${{ secrets.FEATURE_LIFECYCLE_DB_URL }}
+        if: ${{ secrets.DOPPLER_TOKEN != '' }}
         run: pnpm run feature-lifecycle:schema-check -- --execute
 
       - name: 🌐 i18n policy checks
@@ -95,8 +118,12 @@ jobs:
         run: pnpm run audit:bundle
 
       - name: 📱 Maestro E2E (Mobile)
-        if: ${{ secrets.MAESTRO_KEY != '' }}
+        if: ${{ secrets.DOPPLER_TOKEN != '' }}
         run: |
+          if [ -z "${MAESTRO_KEY:-}" ]; then
+            echo "MAESTRO_KEY is not configured in Doppler; skipping Maestro."
+            exit 0
+          fi
           curl -Ls https://get.maestro.mobile/install.sh | bash
           export PATH="$PATH:$HOME/.maestro/bin"
           maestro test apps/gurudevi-mobile/maestro/flows/

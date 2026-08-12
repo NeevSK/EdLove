@@ -66,6 +66,9 @@ function getImportStatements(source: string): string[] {
 }
 
 function hasDirectSupabaseImport(importLine: string): boolean {
+  if (/from\s+['"]@repo\/core\/adapters\/supabaseClient['"]/.test(importLine)) {
+    return false;
+  }
   return (
     /from\s+['"]@supabase\/supabase-js['"]/.test(importLine) ||
     (/from\s+['"]@repo\/core['"]/.test(importLine) && /\bsupabase\b/.test(importLine)) ||

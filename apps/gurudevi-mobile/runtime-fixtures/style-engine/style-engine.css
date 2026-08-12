@@ -1,0 +1,15 @@
+@import '@repo/ui/global.css';
+
+/* NativeWind v5/Tailwind v4 does not infer sources from the production app
+ * when Metro is rooted at this fixture. Keep the fixture's source graph
+ * explicit so the browser can validate actual emitted utilities. */
+@source '../../../../packages/ui/src';
+@source '.';
+  @source inline("flex-1 bg-phase-canvas p-4 bg-phase-surface text-phaseText-primary text-xl mt-4 bg-phase-interactive p-3 text-phaseText-primary p-2");
+
+:root {
+  --phase-canvas: rgb(11 18 32);
+  --phase-surface: rgb(31 41 55);
+  --phase-interactive: rgb(14 165 233);
+  --phase-text-primary: rgb(248 250 252);
+}

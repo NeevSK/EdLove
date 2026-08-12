@@ -1,23 +1,22 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import { Text as RNText, type StyleProp, type TextProps, type TextStyle } from 'react-native';
+import { styled } from 'nativewind';
 
-cssInterop(RNText, { className: 'style' });
+// Standard primitive: use the NativeWind v5 adapter directly. The wrappers
+// preserve Gurudevi's size/default-token API at the facade boundary.
+const StyledText = styled(RNText);
 
 export const Text = React.forwardRef<
   RNText,
   TextProps & { className?: string; size?: string; sx?: StyleProp<TextStyle> }
->(({ className, size, sx, style, ...props }, ref) => {
-  const Component = RNText as any;
-  return (
-    <Component
-      {...props}
-      ref={ref}
-      className={`text-phase-text-primary ${size ? `text-${size}` : 'text-base'} ${className || ''}`}
-      style={[sx, style]}
-    />
-  );
-});
+>(({ className, size, sx, style, ...props }, ref) => (
+  <StyledText
+    {...props}
+    ref={ref}
+    className={`text-phase-text-primary ${size ? `text-${size}` : 'text-base'} ${className || ''}`}
+    style={[sx, style]}
+  />
+));
 Text.displayName = 'Text';
 
 export const Heading = React.forwardRef<
@@ -39,9 +38,9 @@ export const Heading = React.forwardRef<
     '4xl': 'text-4xl',
     '5xl': 'text-5xl',
   };
-  const Component = RNText as any;
+
   return (
-    <Component
+    <StyledText
       {...props}
       ref={ref}
       className={`font-bold text-phase-text-primary ${sizeMap[size]} ${className || ''}`}
@@ -50,4 +49,3 @@ export const Heading = React.forwardRef<
   );
 });
 Heading.displayName = 'Heading';
-

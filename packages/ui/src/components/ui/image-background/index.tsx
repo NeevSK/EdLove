@@ -1,14 +1,14 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import { type ImageBackgroundProps, ImageBackground as RNImageBackground } from 'react-native';
+import { styled } from 'nativewind';
 
-cssInterop(RNImageBackground, { className: 'style' });
+const StyledImageBackground = styled(RNImageBackground as React.ComponentType<any>);
 
-export const ImageBackground = React.forwardRef<any, ImageBackgroundProps & { className?: string }>(
-  ({ className, ...props }, ref) => (
-    <RNImageBackground {...props} ref={ref} {...({ className } as any)} />
-  ),
-);
+export const ImageBackground = React.forwardRef<
+  RNImageBackground,
+  ImageBackgroundProps & { className?: string }
+>(({ className, ...props }, ref) => (
+  <StyledImageBackground {...props} ref={ref} className={className} />
+));
 
 ImageBackground.displayName = 'ImageBackground';
-

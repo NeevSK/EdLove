@@ -86,7 +86,7 @@
     },
     "plugins": [
       "expo-font",
-      "./plugins/withMavenRepos",
+      "./plugins/withNdkVersion",
       "./plugins/withAndroidCruncherDisabled",
       "./plugins/withGradleProperties",
       "expo-localization",
@@ -123,7 +123,7 @@
         "expo-build-properties",
         {
           "android": {
-            "extraMavenRepos": ["https://packages.expo.dev/maven"]
+            "extraMavenRepos": []
           }
         }
       ],

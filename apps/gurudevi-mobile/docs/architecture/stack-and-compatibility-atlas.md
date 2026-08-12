@@ -1,4 +1,16 @@
+---
+title: "Gurudevi Mobile Stack and Compatibility Atlas"
+status: "superseded"
+created: 2026-04-17
+updated: 2026-08-12
+author: "Naveen"
+tags: [mobile, architecture, compatibility, historical]
+superseded_by: "../infra/2026-08-11-gluestack-v5-stack-audit.md"
+---
+
 # Gurudevi Mobile Stack And Compatibility Atlas
+
+> Historical snapshot retained for chronology. Use the linked Gluestack/NativeWind audit and generated RN Terrain stack map for current dependency and styling-engine state.
 
 _Scope: the mobile app at `apps/gurudevi-mobile` plus its transitive workspace closure, with an adjacent note on the Astro web apps because they share `@repo/ui` and `@repo/core`._
 

@@ -1,8 +1,8 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import { View, type ViewProps } from 'react-native';
+import { styled } from 'nativewind';
 
-cssInterop(View, { className: 'style' });
+const StyledView = styled(View);
 
 interface IDividerProps extends ViewProps {
   className?: string;
@@ -13,7 +13,7 @@ export const Divider = React.forwardRef<View, IDividerProps>(
   ({ className, orientation = 'horizontal', ...props }, ref) => {
     const orientationClasses = orientation === 'horizontal' ? 'w-full h-[1px]' : 'h-full w-[1px]';
     return (
-      <View
+      <StyledView
         {...props}
         ref={ref}
         className={`${orientationClasses} bg-phase-surface ${className || ''}`}
@@ -23,4 +23,3 @@ export const Divider = React.forwardRef<View, IDividerProps>(
 );
 
 Divider.displayName = 'Divider';
-

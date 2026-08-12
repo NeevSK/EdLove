@@ -1,4 +1,3 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import {
   type FlatListProps,
@@ -6,12 +5,13 @@ import {
   SectionList as RNSectionList,
   type SectionListProps,
 } from 'react-native';
+import { styled } from 'react-native-css';
 
-cssInterop(RNFlatList, {
+const StyledFlatList = styled(RNFlatList as React.ComponentType<any>, {
   className: 'style',
   contentContainerClassName: 'contentContainerStyle',
 });
-cssInterop(RNSectionList, {
+const StyledSectionList = styled(RNSectionList as React.ComponentType<any>, {
   className: 'style',
   contentContainerClassName: 'contentContainerStyle',
 });
@@ -23,7 +23,12 @@ export const FlatList = React.forwardRef<
     contentContainerClassName?: string;
   }
 >(({ className, contentContainerClassName, ...props }, ref) => (
-  <RNFlatList {...(props as any)} ref={ref} className={className} />
+  <StyledFlatList
+    {...(props as any)}
+    ref={ref}
+    className={className}
+    contentContainerClassName={contentContainerClassName}
+  />
 ));
 
 export const SectionList = React.forwardRef<
@@ -33,14 +38,13 @@ export const SectionList = React.forwardRef<
     contentContainerClassName?: string;
   }
 >(({ className, contentContainerClassName, ...props }, ref) => (
-  <RNSectionList
+  <StyledSectionList
     {...(props as any)}
     ref={ref}
     className={className}
-    contentContainerStyle={props.contentContainerStyle}
+    contentContainerClassName={contentContainerClassName}
   />
 ));
 
 FlatList.displayName = 'FlatList';
 SectionList.displayName = 'SectionList';
-

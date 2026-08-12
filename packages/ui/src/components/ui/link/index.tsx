@@ -14,7 +14,7 @@ export const Link = ({ children, href, onPress, className, isExternal = true, ..
     }
 
     if (href && isExternal) {
-      openExternalURL(href);
+      void openExternalURL(href);
     }
   };
 

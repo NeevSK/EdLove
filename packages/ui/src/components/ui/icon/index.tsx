@@ -1,10 +1,11 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import type { View } from 'react-native';
-import { Svg } from 'react-native-svg';
+import { useCssElement } from 'react-native-css';
 
-// We ensure SVG components work with NativeWind v4
-cssInterop(Svg, { className: 'style' });
+const iconMapping = { className: 'style' } as const;
+
+const DynamicIcon = ({ component: Component, ...props }: { component: React.ComponentType<any> } & Record<string, any>) =>
+  useCssElement(Component, props, iconMapping);
 
 export interface IIconProps {
   as?: React.ElementType;
@@ -25,27 +26,24 @@ const sizeMap: Record<string, number> = {
 };
 
 /**
- * Sovereign Icon Primitive (Hardened v4)
+ * Sovereign Icon Primitive.
  *
- * An elegant wrapper for Lucide and custom SVG icons.
- * Features:
- * - NativeWind v4 class support
- * - Semantic sizing (xs -> xl)
- * - Accessibility defaults (aria-hidden)
- * - Type-safe 'as' prop
+ * The dynamic SVG component is wrapped once per `as` component. This keeps
+ * NativeWind v5 styling local to the actual SVG implementation without
+ * globally mutating the react-native-svg base component.
  */
 export const Icon = React.forwardRef<View, IIconProps>(
   (
     { as: As, size = 'md', className, color, fill = 'none', strokeWidth = 2, style, ...props },
     ref,
   ) => {
-    if (!As) return null;
-
     const iconSize = typeof size === 'number' ? size : sizeMap[size] || 20;
-    const Component = As as any;
+    const Component = As as React.ComponentType<any> | undefined;
+    if (!Component) return null;
 
     return (
-      <Component
+      <DynamicIcon
+        component={Component}
         {...props}
         ref={ref}
         size={iconSize}
@@ -54,7 +52,6 @@ export const Icon = React.forwardRef<View, IIconProps>(
         strokeWidth={strokeWidth}
         className={className}
         style={style}
-        // Modern Accessibility
         aria-hidden="true"
         focusable={false}
       />
@@ -63,4 +60,3 @@ export const Icon = React.forwardRef<View, IIconProps>(
 );
 
 Icon.displayName = 'Icon';
-

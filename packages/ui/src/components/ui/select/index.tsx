@@ -1,13 +1,12 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import React, { createContext, useContext, useMemo, useState } from 'react';
-import { Pressable, type PressableProps, Text, View, type ViewProps } from 'react-native';
+import { type PressableProps, type ViewProps } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { Overlay } from '@repo/ui/components/ui/overlay';
 import { Portal } from '@repo/ui/components/ui/portal';
+import { Pressable } from '@repo/ui/components/ui/pressable';
+import { Text } from '@repo/ui/components/ui/text';
+import { View } from '@repo/ui/components/ui/view';
 
-cssInterop(View, { className: 'style' });
-cssInterop(Pressable, { className: 'style' });
-cssInterop(Text, { className: 'style' });
 
 // --- Context ---
 interface SelectContextType {
@@ -63,7 +62,10 @@ export const Select = ({
   );
 };
 
-export const SelectTrigger = React.forwardRef<View, PressableProps & { className?: string }>(
+export const SelectTrigger = React.forwardRef<
+  React.ElementRef<typeof Pressable>,
+  PressableProps & { className?: string }
+>(
   ({ children, className, ...props }, ref) => {
     const { setIsOpen, isDisabled, isOpen } = useSelect();
 

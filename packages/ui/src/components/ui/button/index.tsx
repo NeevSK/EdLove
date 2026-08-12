@@ -1,20 +1,17 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import React, { createContext, useContext, useMemo } from 'react';
 import {
-  ActivityIndicator,
-  Pressable,
   type PressableProps,
   type StyleProp,
-  Text,
+  Text as RNText,
   type TextProps,
   View,
   type ViewStyle,
 } from 'react-native';
+import { Pressable } from '@repo/ui/components/ui/pressable';
+import { Spinner } from '@repo/ui/components/ui/spinner';
+import { Text } from '@repo/ui/components/ui/text';
+import { View as StyledView } from '@repo/ui/components/ui/view';
 
-cssInterop(Pressable, { className: 'style' });
-cssInterop(Text, { className: 'style' });
-
-// --- Context ---
 interface ButtonContextType {
   variant?: 'solid' | 'outline' | 'ghost';
   action?: 'primary' | 'secondary' | 'positive' | 'negative' | 'default';
@@ -29,8 +26,6 @@ function useButton() {
   if (!context) throw new Error('useButton must be used within a Button component');
   return context;
 }
-
-// --- Components ---
 
 export interface IButtonProps extends PressableProps {
   className?: string;
@@ -60,12 +55,7 @@ const Button = React.forwardRef<View, IButtonProps>(
     ref,
   ) => {
     const contextValue = useMemo(
-      () => ({
-        variant,
-        action,
-        size,
-        isDisabled: isDisabled || isLoading,
-      }),
+      () => ({ variant, action, size, isDisabled: isDisabled || isLoading }),
       [variant, action, size, isDisabled, isLoading],
     );
 
@@ -92,16 +82,10 @@ const Button = React.forwardRef<View, IButtonProps>(
         default: 'bg-transparent active:bg-phase-surface/10',
       },
     };
-
-    const sizes = {
-      sm: 'px-3 h-9',
-      md: 'px-4 h-12',
-      lg: 'px-6 h-14',
-    };
-
+    const sizes = { sm: 'px-3 h-9', md: 'px-4 h-12', lg: 'px-6 h-14' };
     const baseStyle = 'flex-row items-center justify-center rounded-xl transition-all duration-200';
-    const variantStyle = (variants[variant] as any)?.[action] || variants.solid.primary;
-    const sizeStyle = sizes[size] || sizes.md;
+    const variantStyle = variants[variant][action];
+    const sizeStyle = sizes[size];
 
     return (
       <ButtonContext.Provider value={contextValue}>
@@ -111,18 +95,11 @@ const Button = React.forwardRef<View, IButtonProps>(
           disabled={isDisabled || isLoading}
           onPress={onPress}
           accessibilityRole="button"
-          accessibilityState={{
-            disabled: !!(isDisabled || isLoading),
-            busy: !!isLoading,
-          }}
+          accessibilityState={{ disabled: !!(isDisabled || isLoading), busy: !!isLoading }}
           className={`${baseStyle} ${variantStyle} ${sizeStyle} ${isDisabled || isLoading ? 'opacity-40' : ''} ${className || ''}`}
           style={typeof style === 'function' ? (state) => [sx, style(state)] : [sx, style]}
         >
-          {isLoading ? (
-            <ButtonSpinner color={variant === 'solid' ? '#FFFFFF' : undefined} />
-          ) : (
-            children
-          )}
+          {isLoading ? <ButtonSpinner color={variant === 'solid' ? '#FFFFFF' : undefined} /> : children}
         </Pressable>
       </ButtonContext.Provider>
     );
@@ -131,39 +108,23 @@ const Button = React.forwardRef<View, IButtonProps>(
 
 Button.displayName = 'Button';
 
-export const ButtonText = React.forwardRef<Text, TextProps & { className?: string }>(
+export const ButtonText = React.forwardRef<RNText, TextProps & { className?: string }>(
   ({ className, children, ...props }, ref) => {
     const { variant, action } = useButton();
-
     const textColors = {
       solid: 'text-white',
       outline: {
-        primary: 'text-phase-accent',
-        secondary: 'text-phase-interactive',
-        positive: 'text-phase-reward',
-        negative: 'text-phase-danger',
-        default: 'text-phase-text-primary',
+        primary: 'text-phase-accent', secondary: 'text-phase-interactive', positive: 'text-phase-reward',
+        negative: 'text-phase-danger', default: 'text-phase-text-primary',
       },
       ghost: {
-        primary: 'text-phase-accent',
-        secondary: 'text-phase-interactive',
-        positive: 'text-phase-reward',
-        negative: 'text-phase-danger',
-        default: 'text-phase-text-primary',
+        primary: 'text-phase-accent', secondary: 'text-phase-interactive', positive: 'text-phase-reward',
+        negative: 'text-phase-danger', default: 'text-phase-text-primary',
       },
     };
-
-    const colorStyle =
-      variant === 'solid'
-        ? textColors.solid
-        : (textColors[variant!] as any)?.[action!] || 'text-phase-text-primary';
-
+    const colorStyle = variant === 'solid' ? textColors.solid : textColors[variant!][action!];
     return (
-      <Text
-        {...props}
-        ref={ref}
-        className={`font-bold text-center tracking-tight ${colorStyle} ${className || ''}`}
-      >
+      <Text {...props} ref={ref} className={`font-bold text-center tracking-tight ${colorStyle} ${className || ''}`}>
         {children}
       </Text>
     );
@@ -171,37 +132,20 @@ export const ButtonText = React.forwardRef<Text, TextProps & { className?: strin
 );
 
 export const ButtonIcon = ({ as: Icon, className, size, ...props }: any) => {
-  const { variant, action, size: buttonSize } = useButton();
+  const { variant, size: buttonSize } = useButton();
   if (!Icon) return null;
-
-  const _iconColors = {
-    solid: '#FFFFFF',
-    outline: {
-      primary: 'var(--phase-accent)',
-      secondary: 'var(--phase-interactive)',
-      positive: 'var(--phase-reward)',
-      negative: 'var(--phase-danger)',
-      default: 'var(--phase-text-secondary)',
-    },
-  };
-
   const defaultSize = buttonSize === 'sm' ? 16 : buttonSize === 'lg' ? 22 : 18;
-
   return (
-    <View className="mx-1" testID={props.testID}>
-      <Icon
-        {...props}
-        size={size || defaultSize}
-        className={`${variant === 'solid' ? 'text-white' : ''} ${className || ''}`}
-      />
-    </View>
+    <StyledView className="mx-1" testID={props.testID}>
+      <Icon {...props} size={size || defaultSize} className={`${variant === 'solid' ? 'text-white' : ''} ${className || ''}`} />
+    </StyledView>
   );
 };
 
 export const ButtonSpinner = ({ className, color }: any) => {
   const { action } = useButton();
   const defaultColor = action === 'primary' ? '#FFFFFF' : '#8B8599';
-  return <ActivityIndicator color={color || defaultColor} className={className} />;
+  return <Spinner color={color || defaultColor} className={className} />;
 };
 
 ButtonText.displayName = 'ButtonText';
@@ -209,4 +153,3 @@ ButtonIcon.displayName = 'ButtonIcon';
 ButtonSpinner.displayName = 'ButtonSpinner';
 
 export { Button };
-

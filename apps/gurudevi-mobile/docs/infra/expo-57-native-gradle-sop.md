@@ -23,8 +23,8 @@ tags: [infra, android, gradle, expo, build]
 | React Native | 0.86 | `react-native: ~0.86.0` |
 | React | 19.2.3 | `react: 19.2.3` |
 | TypeScript | 7.0.2 | Intentionally ahead of Expo recommended |
-| pnpm | 11.18.0 | Latest stable (root `packageManager`) |
-| Node | 22.23.0 | `.nvmrc`; required by eas.json + engines |
+| pnpm | 11.21.0 | Workspace-pinned package manager |
+| Node | 22.23.2 | `.nvmrc`; required by eas.json + engines |
 | Kotlin | managed | Set by Expo version catalog |
 | Android compileSdk | managed | Set by Expo version catalog |
 | Android minSdk | 24 | Set by Expo version catalog |
@@ -166,12 +166,34 @@ These are whitelisted in `package.json` under:
 
 ### Android build workflow (`.github/workflows/android-build.yml`)
 
-- **pnpm**: 11.13.1
-- **Node**: from `.nvmrc` (22.23.0)
+- **pnpm**: 11.21.0
+- **Node**: from `.nvmrc` (22.23.2)
 - **actions/cache**: v4 (Gradle cache)
 - **Shell**: `set -eo pipefail` (fail-fast on errors)
 - **JVM**: 3GB heap (matches gradle.properties)
 - **Architectures**: arm64-v8a only (fast CI)
+- **Pre-build gates**: `audit:expo-native-graph`, `audit:style-stack`, and `audit:css-interop` run after the frozen install and before EAS/Gradle.
+
+### Dispatching the native validation
+
+After the intended changes have been committed and pushed, dispatch the workflow from the repository root:
+
+```bash
+gh workflow run android-build.yml \
+  --repo NeevSK/Gurudevi \
+  -f profile=development \
+  -f build_method=local \
+  -f build_type=apk
+```
+
+Follow the run and inspect the gate plus build result:
+
+```bash
+gh run list --repo NeevSK/Gurudevi --workflow android-build.yml --limit 5
+gh run view <run-id> --repo NeevSK/Gurudevi --log-failed
+```
+
+The local audits are necessary but insufficient: a successful native validation requires the three fast gates, Gradle completion, and installation/startup on a development device or emulator.
 
 ### EAS build profiles (`eas.json`)
 

@@ -1,17 +1,16 @@
-﻿import {
+import {
   LinearGradient as ExpoLinearGradient,
   type LinearGradientProps,
 } from 'expo-linear-gradient';
-import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
+import { styled } from 'react-native-css';
 
-cssInterop(ExpoLinearGradient, { className: 'style' });
+const StyledLinearGradient = styled(ExpoLinearGradient as React.ComponentType<any>);
 
 export const LinearGradient = React.forwardRef<any, LinearGradientProps & { className?: string }>(
   ({ className, ...props }, ref) => (
-    <ExpoLinearGradient {...props} ref={ref} {...({ className } as any)} />
+    <StyledLinearGradient {...props} ref={ref} className={className} />
   ),
 );
 
 LinearGradient.displayName = 'LinearGradient';
-

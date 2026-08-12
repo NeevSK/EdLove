@@ -1,5 +1,5 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
+import type { ComponentType } from 'react';
 import {
   type FlatListProps,
   type KeyboardAvoidingViewProps,
@@ -15,23 +15,22 @@ import {
   type ViewProps,
 } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { styled } from 'nativewind';
 
-cssInterop(RNView, { className: 'style' });
-cssInterop(RNScrollView, {
-  className: 'style',
+const StyledView = styled(RNView);
+const StyledScrollView = styled(RNScrollView as ComponentType<any>, {
   contentContainerClassName: 'contentContainerStyle',
 });
-cssInterop(RNPressable, { className: 'style' });
-cssInterop(RNFlatList, {
-  className: 'style',
+const StyledPressable = styled(RNPressable as ComponentType<any>);
+const StyledFlatList = styled(RNFlatList as ComponentType<any>, {
   contentContainerClassName: 'contentContainerStyle',
 });
-cssInterop(RNRefreshControl, { className: 'style' });
-cssInterop(RNKeyboardAvoidingView, { className: 'style' });
-cssInterop(Animated.View, { className: 'style' });
+const StyledRefreshControl = styled(RNRefreshControl);
+const StyledKeyboardAvoidingView = styled(RNKeyboardAvoidingView);
+const StyledAnimatedView = styled(Animated.View as ComponentType<any>);
 
 export const View = React.forwardRef<RNView, ViewProps & { className?: string }>(
-  ({ className, ...props }, ref) => <RNView {...props} ref={ref} className={className} />,
+  ({ className, ...props }, ref) => <StyledView {...props} ref={ref} className={className} />,
 );
 View.displayName = 'View';
 
@@ -39,7 +38,7 @@ export const ScrollView = React.forwardRef<
   RNScrollView,
   ScrollViewProps & { className?: string; contentContainerClassName?: string }
 >(({ className, contentContainerClassName, ...props }, ref) => (
-  <RNScrollView
+  <StyledScrollView
     {...props}
     ref={ref}
     className={className}
@@ -49,7 +48,7 @@ export const ScrollView = React.forwardRef<
 ScrollView.displayName = 'ScrollView';
 
 export const Pressable = React.forwardRef<RNView, PressableProps & { className?: string }>(
-  ({ className, ...props }, ref) => <RNPressable {...props} ref={ref} className={className} />,
+  ({ className, ...props }, ref) => <StyledPressable {...props} ref={ref} className={className} />,
 );
 Pressable.displayName = 'Pressable';
 
@@ -60,7 +59,7 @@ export const FlatList = React.forwardRef<
     contentContainerClassName?: string;
   }
 >(({ className, contentContainerClassName, ...props }, ref) => (
-  <RNFlatList
+  <StyledFlatList
     {...props}
     ref={ref}
     className={className}
@@ -74,19 +73,17 @@ export const RefreshControl = React.forwardRef<
   RNRefreshControl,
   RefreshControlProps & { className?: string }
 >(({ className, ...props }, ref) => (
-  <RNRefreshControl {...props} ref={ref} className={className} />
+  <StyledRefreshControl {...props} ref={ref} className={className} />
 ));
 RefreshControl.displayName = 'RefreshControl';
 
-// Redefine AnimatedView to ensure TypeScript knows about the className prop (via cssInterop)
-// and handles Reanimated's special entering/exiting/layout props.
-export const AnimatedView = Animated.View;
+// Keep the public animated primitive while routing className through the v5 adapter.
+export const AnimatedView: React.ComponentType<any> = StyledAnimatedView;
 
 export const KeyboardAvoidingView = React.forwardRef<
   RNKeyboardAvoidingView,
   KeyboardAvoidingViewProps & { className?: string }
 >(({ className, ...props }, ref) => (
-  <RNKeyboardAvoidingView {...props} ref={ref} className={className} />
+  <StyledKeyboardAvoidingView {...props} ref={ref} className={className} />
 ));
 KeyboardAvoidingView.displayName = 'KeyboardAvoidingView';
-

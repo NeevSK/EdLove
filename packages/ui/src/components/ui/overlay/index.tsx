@@ -29,6 +29,7 @@ export const Overlay = React.forwardRef<View, any>(({ className, isOpen, ...prop
         {...props}
         ref={ref}
         accessibilityLabel="backdrop"
+        accessibilityHint="Double tap to dismiss"
         className={`flex-1 bg-ink/60 ${className || ''}`}
       />
     </Animated.View>

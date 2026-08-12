@@ -1,15 +1,13 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import type React from 'react';
 import { createContext, useContext, useMemo } from 'react';
-import { Pressable, View, type ViewProps } from 'react-native';
+import { type ViewProps } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { Box } from '@repo/ui/components/ui/box';
 import { Overlay } from '@repo/ui/components/ui/overlay';
 import { Portal } from '@repo/ui/components/ui/portal';
+import { Pressable } from '@repo/ui/components/ui/pressable';
 import { Text } from '@repo/ui/components/ui/text';
-
-cssInterop(View, { className: 'style' });
-cssInterop(Pressable, { className: 'style' });
+import { View } from '@repo/ui/components/ui/view';
 
 /**
  * Actionsheet Component

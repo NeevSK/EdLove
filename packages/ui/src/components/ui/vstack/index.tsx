@@ -1,5 +1,8 @@
 import React from 'react';
 import { type StyleProp, View, type ViewProps, type ViewStyle } from 'react-native';
+import { styled } from 'nativewind';
+
+const StyledView = styled(View);
 
 export interface IVStackProps extends ViewProps {
   className?: string;
@@ -20,16 +23,15 @@ const spaceMap: Record<string, string> = {
 export const VStack = React.forwardRef<View, IVStackProps>(
   ({ className, space, reversed, sx, style, children, ...props }, ref) => {
     const gapClass = space ? spaceMap[space] || `gap-${space}` : '';
-    const Component = View as any;
     return (
-      <Component
+      <StyledView
         {...props}
         ref={ref}
         className={`flex-col ${reversed ? 'flex-col-reverse' : ''} ${gapClass} ${className || ''}`}
         style={[sx, style]}
       >
         {children}
-      </Component>
+      </StyledView>
     );
   },
 );

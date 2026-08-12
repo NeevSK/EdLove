@@ -1,0 +1,7 @@
+{
+  "expo": {
+    "name": "Gurudevi Style Engine Runtime Fixture",
+    "slug": "gurudevi-style-engine-runtime-fixture",
+    "web": { "bundler": "metro" }
+  }
+}

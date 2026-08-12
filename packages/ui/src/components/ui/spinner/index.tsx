@@ -1,20 +1,19 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import React from 'react';
 import { ActivityIndicator, type ActivityIndicatorProps } from 'react-native';
+import { styled } from 'nativewind';
 
-cssInterop(ActivityIndicator, { className: 'style' });
+const StyledActivityIndicator = styled(ActivityIndicator as React.ComponentType<any>);
 
 export const Spinner = React.forwardRef<
   ActivityIndicator,
   ActivityIndicatorProps & { className?: string }
 >(({ className, color, ...props }, ref) => (
-  <ActivityIndicator
+  <StyledActivityIndicator
     {...props}
     ref={ref}
     className={`text-phase-accent ${className || ''}`}
-    color={color} // Keep native color support if explicitly passed
+    color={color}
   />
 ));
 
 Spinner.displayName = 'Spinner';
-

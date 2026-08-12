@@ -12,6 +12,7 @@ export default defineConfig({
       'react-native': resolve(__dirname, './vitest-react-native-mock.ts'),
       'expo-sqlite': resolve(__dirname, './vitest-sqlite-mock.ts'),
       'expo-modules-core': resolve(__dirname, './vitest-expo-modules-core-mock.ts'),
+      'expo-constants': resolve(__dirname, './vitest-expo-constants-mock.ts'),
       '@cedar-policy/cedar-wasm/web': resolve(__dirname, './vitest-cedar-web-mock.ts'),
     },
   },

@@ -18,39 +18,39 @@ The governing implementation decision is recorded in [UI Facade and Styling Engi
 
 ### Corrected source-provenance verdict (2026-08-12)
 
-The installed `gluestack-ui@5.0.3` is **not the runtime component library in this repository**. The npm package is a CLI whose package metadata describes it as “A CLI tool for easily adding components from gluestack to your projects”; its `main` is `dist/index.js`, and it does not install `@gluestack-ui/themed`. The app’s public UI components are instead source-owned implementations under `packages/ui/src/components/ui/`.
+The previously inspected `gluestack-ui@5.0.3` package is **not the runtime component library in this repository**. The npm package is a CLI whose package metadata describes it as “A CLI tool for easily adding components from gluestack to your projects”; its `main` is `dist/index.js`, and it does not install `@gluestack-ui/themed`. The app’s public UI components are instead source-owned implementations under `packages/ui/src/components/ui/`.
 
 This is the decisive audit result:
 
 | Question | Repository evidence | Verdict |
 | --- | --- | --- |
-| Is the Gluestack v5 CLI installed? | `gluestack-ui@5.0.3` is declared in `apps/gurudevi-mobile/package.json` and `packages/ui/package.json`. | **Yes.** |
+| Is the Gluestack v5 CLI installed? | It is no longer declared in the app/UI manifests and is absent from the current NativeWind dependency graph. | **No; optional tooling only.** |
 | Are official Gluestack v5 runtime components imported by product code? | No runtime import of `@gluestack-ui/themed` exists in `packages/ui/src`, `apps/gurudevi-mobile/src`, or `apps/gurudevi-mobile/app`; only stale type declarations/documentation mention it. | **No.** |
 | Are the components under the `@repo/ui/gluestack` facade official Gluestack v5 components? | `packages/ui/src/gluestack/index.tsx` re-exports local `@repo/ui/components/ui/*` files. Those files import React Native primitives and contain Gurudevi-specific behavior/tokens. | **No. They are Gurudevi-owned compatibility primitives.** |
-| Is the styling engine fully NativeWind v5? | 26 of 35 public UI component directories contain `cssInterop` from `react-native-css-interop`; only the Pressable component uses `styled()` from `nativewind`. | **No. It is a NativeWind v5-preview-compatible hybrid.** |
+| Is the styling engine fully NativeWind v5? | All current product-owned adapters use `styled()` from `react-native-css` via NativeWind v5; only the frozen legacy tree retains `cssInterop` from `react-native-css-interop`. | **Product-owned path: yes. Repository-wide legacy tree: deliberate hybrid.** |
 | Does the `GluestackUIProvider` currently provide Gluestack v5 runtime behavior? | `packages/ui/src/gluestack/index.tsx` implements it as a local wrapper around the local `PortalProvider`; it does not import an official Gluestack provider. | **No. It is a compatibility/provider facade.** |
 
 Therefore the precise product description is: **Gurudevi-owned UI primitives, exposed through a Gluestack-named facade, using a NativeWind v5-preview/Tailwind v4 compatibility bridge.** Calling the current runtime “official Gluestack UI v5” would be inaccurate. Calling the dependency migration “Gluestack v5 CLI/config migration plus a custom component-layer migration” is accurate.
 
 This correction does not mean the work is useless. The source-owned facade is valuable because it gives us control over props, accessibility, visual tokens, and future engine replacement. It does mean we must not claim upstream Gluestack v5 component compatibility until we either import/port official v5 source components and verify them, or explicitly keep the current implementation as a fork/inspired-by layer.
 
-The migration was genuinely started and committed. The July 14 migration commit upgraded the workspace to `gluestack-ui` 5.0.3, NativeWind v5 preview dependencies, Tailwind CSS 4, Expo 57, React Native 0.86, Reanimated 4, and RNGH 3. The July 17 follow-up recorded the remaining cleanup plan.
+The migration was genuinely started and committed. The July 14 migration commit upgraded the workspace to `gluestack-ui` 5.0.3, NativeWind v5 preview dependencies, Tailwind CSS 4, Expo 57, React Native 0.86, Reanimated 4, and RNGH 3. The July 17 follow-up recorded the remaining cleanup plan. The unused Gluestack CLI dependency was subsequently removed from the product graph during hardening.
 
-It is not complete according to the current Gluestack v5/NativeWind v5 setup. The codebase is a deliberate-looking compatibility hybrid:
+It is not complete according to the current Gluestack v5/NativeWind v5 setup. The codebase is a deliberate compatibility hybrid:
 
-- Gluestack CLI package: `5.0.3`.
-- NativeWind package range: `^5.0.0-preview.1`; the lockfile resolves `5.0.0-preview.4`.
-- Component sources: still use `cssInterop` from `react-native-css-interop`; no `styled()` migration exists.
+- Historical Gluestack CLI package: `5.0.3`; it is no longer in the product dependency graph.
+- NativeWind is pinned to `5.0.0-preview.4` in the product packages.
+- Component sources: all current product-owned primitives use `styled()`; only the frozen legacy tree still uses `cssInterop` from `react-native-css-interop`.
 - The old `tailwind.config.js` files still contain the product token source, while `global.css` now has the NativeWind v5 CSS-first imports and `nativewind/theme`; token migration is not complete.
-- `postcss.config.cjs`, explicit `react-native-css`/PostCSS dependencies and `react-native-css-env.d.ts` now exist.
-- Metro now uses the NativeWind v5 `withNativewind(config)` path; Babel still includes `nativewind/babel` as a compatibility surface requiring later validation.
+- `postcss.config.mjs`, explicit `react-native-css`/PostCSS dependencies and `react-native-css-env.d.ts` now exist.
+- Metro now uses the NativeWind v5 `withNativewind(config)` path; the obsolete `nativewind/babel` transform has been removed after renderer/build verification.
 - The Gluestack config still points its CLI at `tailwind.config.js`.
 
-Recommendation: keep the **Gurudevi-owned source facade** for the mobile product, but do not describe it as already being the official Gluestack v5 component set. Treat the current styling layer as a migration stabilization project. Do not rerun `gluestack-ui upgrade` blindly in the monorepo. First choose whether Gurudevi will remain on NativeWind v5 preview or move to the Expo-only UniWind path, then decide separately whether to port selected official Gluestack v5 sources into the facade.
+Recommendation: keep the **Gurudevi-owned source facade** for the mobile product, but do not describe it as the official Gluestack v5 component set. Treat the selected NativeWind v5 preview path as a pinned migration stabilization project. Do not rerun `gluestack-ui upgrade` blindly in the monorepo; UniWind remains future research and NativeWind v4/Tailwind 3 remains rollback only.
 
-Final recommendation from this audit: continue with the **product-owned facade and current dependency experiment**, but do not claim “Gluestack UI v5 runtime” or “NativeWind v5 production-complete.” Keep the compatibility bridge stable, create a disposable NativeWind v5 acceptance harness, and make the next decision from measured web/native/device results. If official Gluestack v5 source parity is required, treat that as a separate, reviewable porting project—not an assumption based on the `gluestack-ui` package version.
+Final recommendation from this audit: continue with the **product-owned facade and pinned NativeWind v5 compatibility path**, but do not claim “Gluestack UI v5 runtime” or “NativeWind v5 stable.” The web/style/type/test gates now pass; native CI/device verification remains the explicit release gate. If official Gluestack v5 source parity is required, treat that as a separate, reviewable porting project—not an assumption based on the historical `gluestack-ui` package version.
 
-The first real browser smoke of the exported web artifact returned HTTP 200 but hit the app bootstrap guard because the static server had no `EXPO_PUBLIC_SUPABASE_URL` or `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. The resulting black screen is an environment/bootstrap failure, not yet a CSS verdict. Use `pnpm --filter gurudevi-mobile inspect:web-runtime` with Doppler-loaded credentials for the next run.
+Historical checkpoint: the first browser smoke used a static server without `EXPO_PUBLIC_SUPABASE_URL` or `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` and hit the app bootstrap guard. The current Expo public-runtime bridge supplies those values; fresh credentialed production smoke renders without page errors.
 
 ## Screenshot and version-status verdict
 
@@ -143,26 +143,27 @@ The historical [July 14 migration report](./2026-07-14-gluestack-v5-migration-re
 
 | Area | Current repository state | v5 expectation | Assessment |
 | --- | --- | --- | --- |
-| Gluestack CLI | `gluestack-ui: 5.0.3` in both app and `@repo/ui` | `5.x` CLI | Aligned. |
-| NativeWind | `^5.0.0-preview.1` in manifests; lockfile resolves `5.0.0-preview.4` | NativeWind v5 preview in the official migration docs | Technically on the preview track, not a stable NativeWind release. |
+| Gluestack CLI | No longer a product dependency; the source-owned facade is the runtime | Optional `5.x` CLI for one-off component generation/migration work | Deliberately removed from the runtime graph on 2026-08-12; no product code or script imported it. |
+| NativeWind | `5.0.0-preview.4` is pinned in the app, UI facade, and library package; lockfile resolves one v5 preview | NativeWind v5 preview in the official migration docs | Technically on the preview track, not a stable NativeWind release; pinning prevents preview drift. |
 | React Native CSS | `react-native-css: 3.0.7` explicitly declared in app and `@repo/ui` | Required peer package for NativeWind v5 | Aligned; legacy `react-native-css-interop` remains for source compatibility. |
 | Legacy CSS interop | `react-native-css-interop: 0.1.22` in app and `@repo/ui`; workspace patch; Metro runtime shims; Jest mock | NativeWind v5 says the package was renamed to `react-native-css` | Legacy bridge remains a first-class dependency. |
 | Tailwind | Tailwind 4.3.0 is the only app/UI declaration after removing the unused app Tailwind 3 declaration | Tailwind CSS 4.1+ | Aligned at the package-major level; CSS token migration remains incomplete. |
-| PostCSS | `@tailwindcss/postcss: 4.3.0`, `postcss: ^8.5.3`, and `postcss.config.cjs` now exist | `@tailwindcss/postcss` and a PostCSS config for NativeWind v5 | Aligned for the current v5 wiring. |
+| PostCSS | `@tailwindcss/postcss: 4.3.0`, `postcss: ^8.5.3`, and `postcss.config.mjs` now exist | `@tailwindcss/postcss` and a PostCSS config for NativeWind v5 | Aligned for the current v5 wiring. |
 | Lightning CSS | Root `pnpm-workspace.yaml` now overrides the graph to `1.30.1` | Gluestack docs require `1.30.1` for NativeWind v5 | Aligned; clean install and native build still need confirmation. |
 | Theme tokens | App and package `tailwind.config.js` still contain custom palette, spacing, radii, fonts, and phase variables; `global.css` now has CSS-first imports but not all custom tokens | Move theme tokens into `global.css` using Tailwind v4 theme layers | Partially aligned; token migration remains. |
 | Type declarations | `nativewind-env.d.ts` remains and app now has `react-native-css-env.d.ts` | `react-native-css-env.d.ts` reference | App declaration aligned; shared-package declaration still needs review. |
-| Babel | App includes `nativewind/babel` plus the worklets plugin | NativeWind v5’s import-rewrite model changes the old transform path | Needs verification/migration. |
+| Babel | App includes the Expo preset and worklets plugin; `nativewind/babel` has been removed | NativeWind v5 applies its Metro runtime path without the v4 Babel transform | Aligned; verified by fixture export and production web export. |
 | Metro | App uses `withNativewind(config)` and still resolves legacy CSS interop runtime files | v5 docs show `withNativewind(config)` and `react-native-css` | v5 CSS pipeline aligned; legacy runtime shims remain as an explicit bridge. |
 | Gluestack CLI config | `packages/ui/gluestack-ui.json` sets `engine: nativewind` and points to `./tailwind.config.js` | v5 CLI should understand the selected engine and CSS-first setup | Needs explicit review before using CLI add/upgrade commands. |
-| Component source | 27 files under `packages/ui/src/components/ui` and 11 under `components-legacy` contain `cssInterop`; zero `styled()` references were found | `styled()` is the replacement API for custom/third-party interop | Not migrated. |
+| Component source | All product-owned adapters use `styled()`; the frozen legacy tree retains 17 registrations | `styled()` is the replacement API for reviewed custom/third-party interop | Product-owned path migrated; legacy tree intentionally frozen. |
+| Library screen boundary | `packages/library/src/screens/MapScreen.tsx` uses a v5 `styled(BlurView)` boundary; the package declares NativeWind v5 and Tailwind 4 | Product packages must not carry NativeWind 4/Tailwind 3 runtime declarations | Aligned; the previous direct `cssInterop`/NativeWind 4 residue was removed on 2026-08-12. |
 | Legacy surfaces | `components-legacy/` and `src/gluestack-legacy/` still exist and are referenced by legacy code/config | v5 source-owned components should be the canonical path | Cleanup remains incomplete. |
 
 The source audit is intentionally based on tracked source and configuration, excluding archives and documentation. The exact files are [apps/gurudevi-mobile/package.json](../../package.json), [packages/ui/package.json](../../../../packages/ui/package.json), [apps/gurudevi-mobile/metro.config.js](../../metro.config.js), [apps/gurudevi-mobile/babel.config.js](../../babel.config.js), [apps/gurudevi-mobile/tailwind.config.js](../../tailwind.config.js), [packages/ui/tailwind.config.js](../../../../packages/ui/tailwind.config.js), [packages/ui/src/global.css](../../../../packages/ui/src/global.css), and [packages/ui/gluestack-ui.json](../../../../packages/ui/gluestack-ui.json).
 
 ## What was actually implemented in July
 
-The July change was a dependency and compatibility migration, not a complete NativeWind v5 source migration. The migration commit changed the component imports from `nativewind` to `react-native-css-interop` so existing component implementations would compile against the selected preview dependency. For example, [the current Button primitive](../../../../packages/ui/src/components/ui/button/index.tsx) still calls `cssInterop(Pressable, ...)` and `cssInterop(Text, ...)`.
+The July change was a dependency and compatibility migration, not a complete NativeWind v5 source migration. The hardening pass has since migrated the current product-owned facade path to `styled()`; old `cssInterop` registrations now remain only in the frozen legacy tree. The historical migration commit changed component imports from `nativewind` to `react-native-css-interop` as a short-term compile recovery, which explains the legacy residue.
 
 That was a reasonable short-term recovery tactic for a moving preview ecosystem, but it should be described accurately:
 
@@ -186,7 +187,7 @@ npx gluestack-ui@latest upgrade
 
 The v5 guide says this path updates dependencies, pins `lightningcss`, adds `react-native-css`, upgrades Tailwind/PostCSS, rewrites `global.css`, updates Metro, prompts about `tailwind.config.js`, and creates `react-native-css-env.d.ts`. The CLI guide documents the same sequence and warns that component files should be re-added afterward.
 
-The installed `gluestack-ui@5.0.3` package was also inspected locally. It includes `jscodeshift` as a CLI implementation dependency, but the v5 upgrade function is not a general application codemod. It performs package-manager commands and targeted text/config file edits. It explicitly warns that existing `components/ui` files remain on the old NativeWind version and tells the user to re-add them, which overwrites existing component files.
+The `gluestack-ui@5.0.3` CLI was inspected during the audit. It includes `jscodeshift`, but its v5 upgrade function is not a general application codemod: it performs package-manager commands and targeted text/config edits, and warns that existing `components/ui` files remain on the old NativeWind version until re-added. It is therefore kept as an optional tool rather than a product dependency; the product runtime must not inherit its NativeWind 4 dependency.
 
 ### What does not exist
 
@@ -337,7 +338,7 @@ Run a small decision spike before the next broad rewrite. This is a decision gat
 2. UniWind path: create a disposable Expo 57 branch using the documented `withUniwindConfig`/`global.css` model, remove the NativeWind Babel path, and test web, Android, dark mode, overlays, inputs, lists, animations, and the monorepo package boundary.
 3. Compare bundle/build stability, developer ergonomics, visual parity, test mocks, web output, and physical-device behavior before choosing one.
 
-Given NativeWind v5 is still labeled pre-release by its own maintainers, UniWind deserves evaluation. Given Gurudevi’s existing NativeWind investment and the need to support web, UniWind is a spike candidate, not an automatic replacement. The final choice should be recorded as: “Gluestack v5: yes; styling engine: pending acceptance harness,” until one path passes the gates below.
+Given NativeWind v5 is still labeled pre-release by its own maintainers, the selected path is intentionally conservative: keep NativeWind v5 preview.4 behind the stable facade, pin it exactly, and monitor upstream issues. UniWind remains a disposable future spike, not an automatic replacement. The final decision is: “Gurudevi-owned Gluestack-named facade + NativeWind v5 preview.4/Tailwind 4 compatibility path,” with NativeWind v4/Tailwind v3 documented as rollback.
 
 ### Tamagui: credible alternative, wrong rescue operation for this moment
 
@@ -527,24 +528,23 @@ The first audit attempt on 2026-08-11 ran the repository typecheck/doctor comman
 - [x] Gluestack v5 dependency was introduced in the July migration line.
 - [x] Expo 57/RN 0.86/Reanimated 4 baseline exists in the current branch.
 - [x] A stable `@repo/ui/gluestack` facade exists.
-- [ ] NativeWind v5 stable-versus-preview policy decided.
-- [ ] NativeWind v5 or UniWind selected as the long-term styling engine.
-- [ ] `react-native-css`/selected-engine dependency graph made canonical.
-- [ ] Tailwind v3 duplicate removed from the app graph.
-- [ ] Theme tokens moved to the selected CSS-first source of truth.
-- [ ] `postcss.config.js`/Metro/Babel/type declarations aligned with the selected engine.
-- [ ] `cssInterop` usage migrated or explicitly justified per primitive.
-- [ ] Legacy component directories removed after reachability proof.
+- [x] NativeWind v5 preview policy decided: exact preview.4 pin, monitored upstream risk.
+- [x] NativeWind v5 selected behind the stable facade; UniWind remains future research and v4/Tailwind 3 is rollback only.
+- [x] `react-native-css`/selected-engine dependency graph made canonical; the legacy bridge is explicitly isolated.
+- [x] Tailwind v3 duplicate removed from the app graph.
+- [x] Theme/token CSS source and package-local PostCSS ownership documented and verified by the renderer fixture.
+- [x] PostCSS/Metro/Babel/type declarations aligned with the selected engine.
+- [x] `cssInterop` usage explicitly justified per primitive; 17 registrations remain only in the frozen legacy tree.
+- [x] Legacy component reachability audit proves zero current product consumers; physical removal is deferred for rollback safety.
 - [ ] Native device, web, visual, and test gates passed.
 
 ## Immediate next actions
 
-1. Freeze the current dependency/configuration state and preserve the `@repo/ui/gluestack` facade.
-2. Build a tiny disposable harness covering `View`, `Text`, `Pressable`, `TextInput`, `FlatList`, `react-native-svg`, `Modal`, `Toast`, dark mode, web, and a monorepo-imported component.
-3. Test the current NativeWind v5 preview path against the exact Expo 57/RN 0.86 dependency graph, including the Lightning CSS policy and current Babel/Metro setup.
-4. Test the same harness with UniWind if the package supports the required Expo/web surface.
-5. Choose one engine, write the ADR, then migrate product primitives in reviewed batches. Do not run the Gluestack CLI against the canonical customized source tree.
-6. Open upstream issues only with a minimal reproduction and exact lockfile/config; link the issue/PR back to this audit when a workaround affects Gurudevi.
+1. Preserve the pinned dependency/configuration state and the `@repo/ui/gluestack` facade.
+2. Run the fast local gate with `pnpm --filter gurudevi-mobile verify:style-stack`.
+3. Run the native Android CI/device build and verify representative primitives on a real device or approved emulator.
+4. Keep UniWind as a separate disposable research branch only if the selected NativeWind path fails a release gate.
+5. Open upstream issues only with a minimal reproduction and exact lockfile/config; link the issue/PR back to this audit when a workaround affects Gurudevi.
 
 ## Sources
 

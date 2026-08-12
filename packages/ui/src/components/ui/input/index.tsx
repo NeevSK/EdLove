@@ -1,17 +1,8 @@
-﻿import { cssInterop } from 'react-native-css-interop';
 import React, { createContext, useContext, useMemo, useState } from 'react';
-import {
-  Pressable,
-  type PressableProps,
-  TextInput,
-  type TextInputProps,
-  View,
-  type ViewProps,
-} from 'react-native';
-
-cssInterop(View, { className: 'style' });
-cssInterop(TextInput, { className: 'style' });
-cssInterop(Pressable, { className: 'style' });
+import { type PressableProps, type TextInputProps, type ViewProps } from 'react-native';
+import { Pressable } from '@repo/ui/components/ui/pressable';
+import { TextInput } from '@repo/ui/components/ui/text-input';
+import { View } from '@repo/ui/components/ui/view';
 
 // --- Context ---
 interface InputContextType {
@@ -37,7 +28,7 @@ export interface IInputProps extends ViewProps {
   isInvalid?: boolean;
 }
 
-const Input = React.forwardRef<View, IInputProps>(
+const Input = React.forwardRef<React.ElementRef<typeof View>, IInputProps>(
   ({ className, isDisabled, isInvalid, children, ...props }, ref) => {
     const [isFocused, setIsFocused] = useState(false);
 
@@ -74,7 +65,7 @@ const Input = React.forwardRef<View, IInputProps>(
 Input.displayName = 'Input';
 
 export const InputField = React.forwardRef<
-  TextInput,
+  React.ElementRef<typeof TextInput>,
   TextInputProps & { className?: string; type?: 'text' | 'password' | 'number' }
 >(({ className, type, onFocus, onBlur, ...props }, ref) => {
   const { isDisabled, setIsFocused } = useInput();
@@ -87,7 +78,7 @@ export const InputField = React.forwardRef<
       accessibilityState={{ disabled: isDisabled }}
       secureTextEntry={type === 'password'}
       keyboardType={type === 'number' ? 'numeric' : props.keyboardType}
-      placeholderTextColor="#8B8599" // Fallback to theme-safe secondary
+      placeholderTextColor="#8B8599"
       onFocus={(e) => {
         setIsFocused(true);
         onFocus?.(e);
@@ -119,9 +110,8 @@ export const InputSlot = ({
 export const InputIcon = ({ as: Icon, className, color, size, ...props }: any) => {
   if (!Icon) return null;
   return (
-    <Icon {...props} size={size || 18} className={`text-phase-text-secondary ${className || ''}`} />
+    <Icon {...props} size={size || 18} color={color} className={`text-phase-text-secondary ${className || ''}`} />
   );
 };
 
 export { Input };
-
