@@ -2,7 +2,7 @@
 title: "Gurudevi Mobile Documentation Vault Index"
 status: "active"
 created: 2026-06-10
-updated: 2026-08-04
+updated: 2026-08-11
 author: "Naveen"
 scribe: "Antigravity"
 tags: [index, portal]
@@ -60,16 +60,19 @@ These documents are the current authority for capability inventory, rollout, sta
 
 | Date | Document | Category | Status | Summary |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-08-11** | [Gluestack UI v5 and NativeWind v5 Stack Audit](./infra/2026-08-11-gluestack-v5-stack-audit.md) | Infrastructure / Audit | `active` | Reconciles the July migration history with the current source tree, upstream v5/NativeWind guidance, CLI/codemod behavior, adoption signals, developer experience, and a controlled completion plan. |
+| **2026-08-12** | [UI Facade and Styling Engine Decision](./decisions/2026-08-12-ui-facade-and-styling-engine-decision.md) | Architecture / Decision | `active` | Keeps the Gurudevi-owned UI facade stable, makes the styling engine replaceable, prohibits paid runtime dependencies, and defines the one-week implementation gates. |
+| **2026-08-11** | [NativeWind CSS Interop Migration Inventory](./infra/2026-08-11-css-interop-migration-inventory.md) | Infrastructure / Migration | `active` | Classifies all 103 legacy `cssInterop` references across 38 UI source files and defines the safe first `styled()` experiment without mass-rewriting the product. |
 | **2026-08-04** | [GrowthBook Cloud Rollout Record](./architecture/2026-08-04-growthbook-cloud-rollout.md) | Architecture / Feature Flags | `active` | Created the 12 `gurudevi.*` flags in the live project (production + dev, all disabled), verified the SDK wiring against the GrowthBook quickstart, wired `sdk-...` client key, and confirmed zero control-plane drift via the strict audit. |
 | **2026-07-28** | [Production Readiness, oRPC Migration & PDPA Compliance Analysis](./current_progress/2026-07-28-production-readiness-and-compliance-analysis.md) | Current Progress | `active` | Evaluation of gurudevi-mobile production gaps, a detailed oRPC backend/client migration pattern, and a PDPA user consent & local cache cleaning compliance strategy. |
 | **2026-07-17** | [React Native Gesture Handler v3 Evolution Analysis & Gurudevi Mobile Migration Plan](./current_progress/2026-07-17-rngh-v3-comprehensive-migration-plan.md) | Current Progress | `active` | Evolution analysis of RNGH v2.x and v3.0 releases with a step-by-step hooks API migration plan for the mobile project. |
-| **2026-07-17** | [Gluestack UI Evolution Analysis & Gurudevi Mobile Migration Plan](./current_progress/2026-07-17-gluestack-comprehensive-migration-plan.md) | Current Progress | `active` | Comparative analysis of Gluestack v2, v3, and v5 changelogs with a concrete cleanup plan for the mobile project. |
+| **2026-07-17** | [Gluestack UI Evolution Analysis & Gurudevi Mobile Migration Plan](./current_progress/2026-07-17-gluestack-comprehensive-migration-plan.md) | Current Progress / Historical | `superseded` | Historical comparison and cleanup plan; superseded by the 2026-08-11 stack audit after source and upstream verification. |
 | **2026-07-17** | [Gurudevi Quality Constellation Brainstorm & Plan](./current_progress/2026-07-17-gurudevi-quality-constellation-plan.md) | Current Progress | `active` | Brainstorm mapping the quality constellation tools, monorepo diseases, and structural boundaries. |
 | **2026-07-17** | [Gurudevi Quality Constellation Adversarial Critique](./decisions/2026-07-17-gurudevi-quality-constellation-critique.md) | Decisions / Security | `active` | Detached adversarial critique exposing 7 defects in the quality constellation brainstorm. |
 | **2026-07-17** | [Gurudevi Quality Constellation & TS7 Compatibility Chronicle](./decisions/2026-07-17-gurudevi-quality-constellation-chronicle.md) | Decisions | `active` | Comprehensive chronicle of the Quality Constellation brainstorm, post-hoc linting critique, TS7 compatibility resolution, and toolchain complexity analysis. |
 | **2026-07-14** | [React Native Web Sustainability and Gurudevi Web Capability Plan](./current_progress/2026-07-14-react-native-web-sustainability-plan.md) | Current Progress / Architecture | `active` | Separates React Native Web rendering from Gurudevi-owned browser capabilities and defines now/future work, including Web Push. |
 | **2026-07-16** | [Icon Layer Fishbone Cleanup Plan](./current_progress/2026-07-16-icon-layer-fishbone-cleanup-plan.md) | Current Progress | `active` | Fishbone analysis of Lucide imports, bridge usage, Babel rewriting, and the migration plan for shared icons. |
-| **2026-07-14** | [Gluestack UI v5 and Styling Subsystem Migration Report](./infra/2026-07-14-gluestack-v5-migration-report.md) | Infrastructure | `active` | Technical report detailing Gluestack UI v5 & NativeWind v5 changes, cssInterop bypasses, and long-term actions. |
+| **2026-07-14** | [Gluestack UI v5 and Styling Subsystem Migration Report](./infra/2026-07-14-gluestack-v5-migration-report.md) | Infrastructure / Historical | `superseded` | Historical report of the initial Gluestack v5 dependency migration and compatibility bridge; superseded by the 2026-08-11 stack audit. |
 | **2026-06-26** | [Route Flow Implementation Checklist](./current_progress/2026-06-26-route-flow-implementation-checklist.md) | Current Progress | `draft` | Execution checklist for the route and onboarding cleanup. |
 | **2026-06-26** | [Developer Sandbox Console & Onboarding Parser](./architecture/2026-06-26-developer-sandbox-console.md) | Architecture | `active` | Canonical hidden dev shortcut contract for onboarding name-step templates. |
 | **2026-06-26** | [Test Strategy: Jest vs Vitest for Gurudevi Mobile](./current_progress/2026-06-26-test-strategy-jest-vs-vitest.md) | Current Progress | `draft` | Which test seam to use for route helpers, state machines, and Expo screen mounts. |
@@ -164,7 +167,9 @@ These documents are the current authority for capability inventory, rollout, sta
 
 ### 📦 Platform, Infrastructure & Deployment Guides (Vercel, Cloudflare, Expo, PNPM, ESLint)
 *   [Expo, EAS, and GitHub Build Verification Guide](./infra/expo-eas-build-verification-guide.md) - Low-bandwidth and full validation path for Expo configuration, Metro bundles, native Android builds, EAS, and GitHub runners.
-*   [Gluestack UI v5 and Styling Subsystem Migration Report](./infra/2026-07-14-gluestack-v5-migration-report.md) - Report on the structural changes, immediate workarounds, and long-term migration vectors for Gluestack v5 and NativeWind v5.
+*   [Gluestack UI v5 and NativeWind v5 Stack Audit](./infra/2026-08-11-gluestack-v5-stack-audit.md) - Current source-of-truth audit of migration state, upstream guidance, automation/codemod behavior, adoption, developer experience, and completion gates.
+*   [NativeWind CSS Interop Migration Inventory](./infra/2026-08-11-css-interop-migration-inventory.md) - Risk-ranked inventory of the 103 `cssInterop` references and controlled `styled()` migration rules.
+*   [Gluestack UI v5 and Styling Subsystem Migration Report](./infra/2026-07-14-gluestack-v5-migration-report.md) - Superseded historical report of the initial dependency migration and compatibility bridge.
 *   [Mobile Bundle Size Optimization Execution Report](./infra/2026-06-11-mobile-bundle-optimization-report.md) - Report detailing audit, leak plugging, and tree-shaking optimizations resulting in a 1.28 MB reduction in bundle size.
 *   [Monorepo Upgrade and Navigation Purge Execution Report](./infra/2026-06-10-monorepo-upgrade-and-cleanup-execution.md) - Report on Expo SDK 56 alignment, major version upgrades, and navigation cleanups.
 *   [Dependency Alignment and Upgrade Testing Playbook](./infra/2026-06-10-dependency-alignment-and-upgrade-testing.md) - Diagnostic tools and step-by-step procedures for testing major version updates.
@@ -200,7 +205,7 @@ These documents are the current authority for capability inventory, rollout, sta
 
 ### 📅 Current Progress & Plans
 *   [React Native Gesture Handler v3 Evolution Analysis & Gurudevi Mobile Migration Plan](./current_progress/2026-07-17-rngh-v3-comprehensive-migration-plan.md) - Evolution analysis of RNGH v2.x and v3.0 releases with a step-by-step hooks API migration plan for the mobile project.
-*   [Gluestack UI Evolution Analysis & Gurudevi Mobile Migration Plan](./current_progress/2026-07-17-gluestack-comprehensive-migration-plan.md) - Comparative analysis of Gluestack v2, v3, and v5 changelogs with a concrete cleanup plan for the mobile project.
+*   [Gluestack UI Evolution Analysis & Gurudevi Mobile Migration Plan](./current_progress/2026-07-17-gluestack-comprehensive-migration-plan.md) - Superseded historical comparison and cleanup plan; use the 2026-08-11 stack audit for current guidance.
 *   [Gurudevi Quality Constellation Brainstorm & Plan](./current_progress/2026-07-17-gurudevi-quality-constellation-plan.md) - The active roadmap for integrating duplication checks, boundary enforcement, and layout decomposition.
 *   [Pre-Migration Progress Tracker](./current_progress/2026-05-27-pre-migration-progress-tracker.md) - Plan status tracker.
 *   [Pre-Migration Operationalization Plan](./current_progress/2026-05-27-pre-migration-operationalization-plan.md) - Operational rollout stages.

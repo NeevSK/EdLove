@@ -38,7 +38,6 @@ The Operational Engine — mobile app for teachers, students, and principals. La
 @lottiefiles/dotlottie-react
 @op-engineering/op-sqlite
 @powersync/drizzle-driver
-@powersync/op-sqlite
 @powersync/react
 @powersync/react-native
 @powersync/web
@@ -169,6 +168,7 @@ react-i18next
 react-is
 react-native
 react-native-avoid-softinput
+react-native-css
 react-native-css-interop
 react-native-custom-pull-refresh
 react-native-ease
@@ -208,16 +208,18 @@ zod
 zustand
 ```
 
-## Dev tooling (33)
+## Dev tooling (35)
 
 ```text
 @babel/runtime
+@babel/traverse
 @playwright/test
 @repo/eslint-config
 @repo/types-shim
 @repo/typescript-config
 @rozenite/performance-monitor-plugin
 @sentry/cli
+@tailwindcss/postcss
 @testing-library/jest-dom
 @testing-library/jest-native
 @testing-library/react
@@ -235,12 +237,12 @@ expo-doctor
 globals
 jest-cucumber
 jest-expo
+postcss
 react-native-bundle-visualizer
 react-native-web
 react-test-renderer
 reassure
 supabase
-tailwindcss
 typescript
 vite-tsconfig-paths
 vitest

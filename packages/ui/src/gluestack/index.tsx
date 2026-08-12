@@ -1,10 +1,11 @@
 import type React from 'react';
 
 /**
- * UI Abstraction Layer (Hardened v3)
+ * UI Abstraction Layer (Gurudevi-owned compatibility facade)
  *
  * This is the ONLY file that other packages/apps should import from.
- * It provides a stable, hardened foundation using NativeWind v4 primitives.
+ * It provides a stable, product-owned foundation. These are local primitives,
+ * not direct imports of the official Gluestack runtime component package.
  */
 
 export * from '@repo/ui/components/ui/avatar';
@@ -72,8 +73,9 @@ export const GluestackUIProvider = ({
 };
 
 // Configuration & Tokens
-// Gluestack v3 (NativeWind) doesn't use the legacy createConfig system.
-// We provide these to maintain compatibility with existing config files.
+// The product-owned component layer does not consume the official Gluestack
+// runtime config. These exports preserve compatibility with existing config
+// files while the styling-engine migration remains explicit and testable.
 export const createConfig = (config: any) => config;
 export const gluestackConfig = {
   tokens: {
