@@ -1,0 +1,68 @@
+name: Load Doppler build environment
+description: Inject a reviewed, single-line allowlist from Doppler into the current GitHub job
+inputs:
+  project:
+    description: Doppler project
+    required: true
+  config:
+    description: Doppler config
+    required: true
+  token:
+    description: Scoped Doppler service token
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Install Doppler CLI
+      uses: dopplerhq/cli-action@v3
+
+    - name: Verify required Doppler names
+      shell: bash
+      env:
+        DOPPLER_TOKEN: ${{ inputs.token }}
+      run: node scripts/verify-doppler-config.mjs --scope mobile --project "${{ inputs.project }}" --config "${{ inputs.config }}" --require-token
+
+    - name: Export reviewed build variables
+      shell: bash
+      env:
+        DOPPLER_TOKEN: ${{ inputs.token }}
+      run: |
+        set -euo pipefail
+        doppler run \
+          --no-fallback \
+          --project "${{ inputs.project }}" \
+          --config "${{ inputs.config }}" \
+          -- bash -euo pipefail -c '
+            names=(
+              EXPO_PUBLIC_API_URL
+              EXPO_PUBLIC_ENABLE_DEV_SANDBOX
+              EXPO_PUBLIC_GROWTHBOOK_API_HOST
+              EXPO_PUBLIC_GROWTHBOOK_CLIENT_KEY
+              EXPO_PUBLIC_INNGEST_EVENT_KEY
+              EXPO_PUBLIC_POSTHOG_API_KEY
+              EXPO_PUBLIC_POSTHOG_ENABLED
+              EXPO_PUBLIC_POSTHOG_HOST
+              EXPO_PUBLIC_POWERSYNC_URL
+              EXPO_PUBLIC_SENTRY_DSN
+              EXPO_PUBLIC_SENTRY_ENVIRONMENT
+              EXPO_PUBLIC_SENTRY_RELEASE
+              EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+              EXPO_PUBLIC_SUPABASE_URL
+              EXPO_PUBLIC_WEB_PUSH_VAPID_PUBLIC_KEY
+              SENTRY_AUTH_TOKEN
+              EXPO_TOKEN
+              CLOUDFLARE_ACCOUNT_ID
+              CLOUDFLARE_API_TOKEN
+              FEATURE_LIFECYCLE_DB_URL
+              GROWTHBOOK_API_KEY
+              GROWTHBOOK_FEATURES_ENDPOINT
+              MAESTRO_KEY
+            )
+            for name in "${names[@]}"; do
+              value="${!name-}"
+              if [[ -n "$value" ]]; then
+                printf "::add-mask::%s\n" "$value"
+                printf "%s=%s\n" "$name" "$value" >> "$GITHUB_ENV"
+              fi
+            done
+          '
