@@ -25,16 +25,11 @@ sync_config:
 ## and provide individual fields (hostname, port, database, username, password, etc.); they are used
 ## to construct the connection URI. For MongoDB, `uri` is required.
 ## -------------------------------------------------------------------------
-#replication:
-#  connections:
-#    #     -------------------------------------------------------------------------
-#    #     PostgreSQL – uncomment this entire block to use
-#    #     -------------------------------------------------------------------------
-#    - type: postgresql
+replication:
+  connections:
+    - type: postgresql
 #      # [optional] Connection string (recommended). Omit and use hostname/port/database/username/password instead.
-#      uri: postgresql://user:pass@host:5432/dbname
-#      password:
-#        secret: !env POWERSYNC_DATABASE_PASSWORD
+      uri: !env POWERSYNC_DATABASE_URI
 #      # [optional] Alternative to uri: individual connection parameters.
 #      hostname: example.com
 #      port: 5432
@@ -45,7 +40,7 @@ sync_config:
 #      id: string
 #      tag: string
 #      # [optional] TLS mode. Options: verify-full | verify-ca. Default: verify-full. Use verify-full for production.
-#      sslmode: verify-full
+      sslmode: verify-full
 #      # [optional] TLS certificates (PEM). Required for verify-ca; optional for verify-full.
 #      cacert: string
 #      client_certificate: string
@@ -130,9 +125,9 @@ sync_config:
 ## -----------------------------------------------------------------------------
 ## CLIENT AUTH (optional) – uncomment this entire block to enable
 ## -----------------------------------------------------------------------------
-#client_auth:
+client_auth:
 #  # [optional] Use the same JWT secret as Supabase. Default: false.
-#  supabase: false
+  supabase: true
 #  # [optional] Legacy: Supabase project's legacy JWT secret from API settings in the Supabase Dashboard.
 #  supabase_jwt_secret:
 #    secret: !env POWERSYNC_SUPABASE_JWT_SECRET
@@ -169,4 +164,4 @@ sync_config:
 #  # [optional] Additional audiences to accept (instance domain is always accepted). Default: [].
 #  additional_audiences: []
 #  # [optional] Allow development/temporary tokens. Default: false.
-#  allow_temporary_tokens: false
+  allow_temporary_tokens: false

@@ -486,6 +486,69 @@ export class SchemaType implements SchemaDef {
                     array: true,
                     attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("SchoolRegistryClaimReviewer") }] }] as readonly AttributeApplication[],
                     relation: { opposite: "reviewer", name: "SchoolRegistryClaimReviewer" }
+                },
+                cycle_leadership_assignments: {
+                    name: "cycle_leadership_assignments",
+                    type: "AcademicCycleLeadershipAssignment",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("CycleLeadershipAssignee") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "assignee", name: "CycleLeadershipAssignee" }
+                },
+                grade_class_teacher_assignments: {
+                    name: "grade_class_teacher_assignments",
+                    type: "GradeClassTeacherAssignment",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("GradeClassTeacher") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "teacher", name: "GradeClassTeacher" }
+                },
+                student_grade_class_enrollments: {
+                    name: "student_grade_class_enrollments",
+                    type: "StudentGradeClassEnrollment",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("GradeClassStudent") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "student", name: "GradeClassStudent" }
+                },
+                student_daily_attendance: {
+                    name: "student_daily_attendance",
+                    type: "DailyAttendance",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("DailyAttendanceStudent") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "student", name: "DailyAttendanceStudent" }
+                },
+                student_attendance_sessions: {
+                    name: "student_attendance_sessions",
+                    type: "AttendanceSession",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("AttendanceSessionStudent") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "student", name: "AttendanceSessionStudent" }
+                },
+                teacher_attendance_sessions_covered: {
+                    name: "teacher_attendance_sessions_covered",
+                    type: "AttendanceSession",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("AttendanceSessionTeacher") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "teacher", name: "AttendanceSessionTeacher" }
+                },
+                teacher_daily_attendance: {
+                    name: "teacher_daily_attendance",
+                    type: "TeacherDailyAttendance",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("TeacherDailyAttendanceTeacher") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "teacher", name: "TeacherDailyAttendanceTeacher" }
+                },
+                teacher_attendance_sessions: {
+                    name: "teacher_attendance_sessions",
+                    type: "TeacherAttendanceSession",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("TeacherAttendanceSessionTeacher") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "teacher", name: "TeacherAttendanceSessionTeacher" }
+                },
+                grade_marks: {
+                    name: "grade_marks",
+                    type: "GradeMark",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("StudentGradeMarks") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "student", name: "StudentGradeMarks" }
                 }
             },
             attributes: [
@@ -2635,6 +2698,76 @@ export class SchemaType implements SchemaDef {
                     array: true,
                     relation: { opposite: "school" }
                 },
+                academic_cycles: {
+                    name: "academic_cycles",
+                    type: "AcademicCycle",
+                    array: true,
+                    relation: { opposite: "school" }
+                },
+                academic_cycle_leadership_assignments: {
+                    name: "academic_cycle_leadership_assignments",
+                    type: "AcademicCycleLeadershipAssignment",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("SchoolCycleLeadership") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "school", name: "SchoolCycleLeadership" }
+                },
+                grade_levels: {
+                    name: "grade_levels",
+                    type: "GradeLevel",
+                    array: true,
+                    relation: { opposite: "school" }
+                },
+                grade_classes: {
+                    name: "grade_classes",
+                    type: "GradeClass",
+                    array: true,
+                    relation: { opposite: "school" }
+                },
+                subjects: {
+                    name: "subjects",
+                    type: "Subject",
+                    array: true,
+                    relation: { opposite: "school" }
+                },
+                student_grade_class_enrollments: {
+                    name: "student_grade_class_enrollments",
+                    type: "StudentGradeClassEnrollment",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("SchoolGradeClassEnrollments") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "school", name: "SchoolGradeClassEnrollments" }
+                },
+                daily_attendance: {
+                    name: "daily_attendance",
+                    type: "DailyAttendance",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("SchoolDailyAttendance") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "school", name: "SchoolDailyAttendance" }
+                },
+                attendance_sessions: {
+                    name: "attendance_sessions",
+                    type: "AttendanceSession",
+                    array: true,
+                    relation: { opposite: "school" }
+                },
+                teacher_daily_attendance: {
+                    name: "teacher_daily_attendance",
+                    type: "TeacherDailyAttendance",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("SchoolTeacherDailyAttendance") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "school", name: "SchoolTeacherDailyAttendance" }
+                },
+                teacher_attendance_sessions: {
+                    name: "teacher_attendance_sessions",
+                    type: "TeacherAttendanceSession",
+                    array: true,
+                    relation: { opposite: "school" }
+                },
+                grade_marks: {
+                    name: "grade_marks",
+                    type: "GradeMark",
+                    array: true,
+                    relation: { opposite: "school" }
+                },
                 staff_leaves: {
                     name: "staff_leaves",
                     type: "StaffLeave",
@@ -4697,6 +4830,19 @@ export class SchemaType implements SchemaDef {
                     type: "SchoolGrade",
                     array: true,
                     relation: { opposite: "section" }
+                },
+                grade_levels: {
+                    name: "grade_levels",
+                    type: "GradeLevel",
+                    array: true,
+                    relation: { opposite: "section" }
+                },
+                cycle_leadership_assignments: {
+                    name: "cycle_leadership_assignments",
+                    type: "AcademicCycleLeadershipAssignment",
+                    array: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("SectionLeadership") }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "section", name: "SectionLeadership" }
                 }
             },
             attributes: [
@@ -4707,6 +4853,1682 @@ export class SchemaType implements SchemaDef {
             idFields: ["id"],
             uniqueFields: {
                 id: { type: "String" }
+            }
+        },
+        AcademicCycle: {
+            name: "AcademicCycle",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                school_id: {
+                    name: "school_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "school"
+                    ] as readonly string[]
+                },
+                name: {
+                    name: "name",
+                    type: "String"
+                },
+                starts_at: {
+                    name: "starts_at",
+                    type: "DateTime"
+                },
+                ends_at: {
+                    name: "ends_at",
+                    type: "DateTime"
+                },
+                status: {
+                    name: "status",
+                    type: "String",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("planned") }] }] as readonly AttributeApplication[],
+                    default: "planned" as FieldDefault
+                },
+                created_by: {
+                    name: "created_by",
+                    type: "String",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                school: {
+                    name: "school",
+                    type: "School",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "academic_cycles", fields: ["school_id"], references: ["id"] }
+                },
+                terms: {
+                    name: "terms",
+                    type: "Term",
+                    array: true,
+                    relation: { opposite: "academic_cycle" }
+                },
+                leadership: {
+                    name: "leadership",
+                    type: "AcademicCycleLeadershipAssignment",
+                    array: true,
+                    relation: { opposite: "academic_cycle" }
+                },
+                grade_classes: {
+                    name: "grade_classes",
+                    type: "GradeClass",
+                    array: true,
+                    relation: { opposite: "academic_cycle" }
+                },
+                teacher_assignments: {
+                    name: "teacher_assignments",
+                    type: "GradeClassTeacherAssignment",
+                    array: true,
+                    relation: { opposite: "academic_cycle" }
+                },
+                enrollments: {
+                    name: "enrollments",
+                    type: "StudentGradeClassEnrollment",
+                    array: true,
+                    relation: { opposite: "academic_cycle" }
+                },
+                daily_attendance: {
+                    name: "daily_attendance",
+                    type: "DailyAttendance",
+                    array: true,
+                    relation: { opposite: "academic_cycle" }
+                },
+                attendance_sessions: {
+                    name: "attendance_sessions",
+                    type: "AttendanceSession",
+                    array: true,
+                    relation: { opposite: "academic_cycle" }
+                },
+                teacher_daily_attendance: {
+                    name: "teacher_daily_attendance",
+                    type: "TeacherDailyAttendance",
+                    array: true,
+                    relation: { opposite: "academic_cycle" }
+                },
+                teacher_attendance_sessions: {
+                    name: "teacher_attendance_sessions",
+                    type: "TeacherAttendanceSession",
+                    array: true,
+                    relation: { opposite: "academic_cycle" }
+                },
+                grade_marks: {
+                    name: "grade_marks",
+                    type: "GradeMark",
+                    array: true,
+                    relation: { opposite: "academic_cycle" }
+                }
+            },
+            attributes: [
+                { name: "@@unique", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id"), ExpressionUtils.field("name")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id"), ExpressionUtils.field("status")]) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("academic_cycles") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                school_id_name: { school_id: { type: "String" }, name: { type: "String" } }
+            }
+        },
+        Term: {
+            name: "Term",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                academic_cycle_id: {
+                    name: "academic_cycle_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "academic_cycle"
+                    ] as readonly string[]
+                },
+                name: {
+                    name: "name",
+                    type: "String"
+                },
+                term_kind: {
+                    name: "term_kind",
+                    type: "String",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("term") }] }] as readonly AttributeApplication[],
+                    default: "term" as FieldDefault
+                },
+                sequence: {
+                    name: "sequence",
+                    type: "Int"
+                },
+                starts_at: {
+                    name: "starts_at",
+                    type: "DateTime"
+                },
+                ends_at: {
+                    name: "ends_at",
+                    type: "DateTime"
+                },
+                created_by: {
+                    name: "created_by",
+                    type: "String",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                academic_cycle: {
+                    name: "academic_cycle",
+                    type: "AcademicCycle",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("academic_cycle_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "terms", fields: ["academic_cycle_id"], references: ["id"] }
+                },
+                grade_class_subjects: {
+                    name: "grade_class_subjects",
+                    type: "GradeClassSubject",
+                    array: true,
+                    relation: { opposite: "term" }
+                },
+                attendance_sessions: {
+                    name: "attendance_sessions",
+                    type: "AttendanceSession",
+                    array: true,
+                    relation: { opposite: "term" }
+                },
+                teacher_attendance_sessions: {
+                    name: "teacher_attendance_sessions",
+                    type: "TeacherAttendanceSession",
+                    array: true,
+                    relation: { opposite: "term" }
+                },
+                grade_marks: {
+                    name: "grade_marks",
+                    type: "GradeMark",
+                    array: true,
+                    relation: { opposite: "term" }
+                }
+            },
+            attributes: [
+                { name: "@@unique", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("academic_cycle_id"), ExpressionUtils.field("sequence")]) }] },
+                { name: "@@unique", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("academic_cycle_id"), ExpressionUtils.field("name")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("academic_cycle_id"), ExpressionUtils.field("starts_at")]) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("academic_terms") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                academic_cycle_id_sequence: { academic_cycle_id: { type: "String" }, sequence: { type: "Int" } },
+                academic_cycle_id_name: { academic_cycle_id: { type: "String" }, name: { type: "String" } }
+            }
+        },
+        AcademicCycleLeadershipAssignment: {
+            name: "AcademicCycleLeadershipAssignment",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                school_id: {
+                    name: "school_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "school"
+                    ] as readonly string[]
+                },
+                academic_cycle_id: {
+                    name: "academic_cycle_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "academic_cycle"
+                    ] as readonly string[]
+                },
+                assignee_id: {
+                    name: "assignee_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "assignee"
+                    ] as readonly string[]
+                },
+                role: {
+                    name: "role",
+                    type: "String"
+                },
+                section_id: {
+                    name: "section_id",
+                    type: "String",
+                    optional: true,
+                    foreignKeyFor: [
+                        "section"
+                    ] as readonly string[]
+                },
+                grade_level_id: {
+                    name: "grade_level_id",
+                    type: "String",
+                    optional: true,
+                    foreignKeyFor: [
+                        "grade_level"
+                    ] as readonly string[]
+                },
+                effective_from: {
+                    name: "effective_from",
+                    type: "DateTime"
+                },
+                effective_to: {
+                    name: "effective_to",
+                    type: "DateTime",
+                    optional: true
+                },
+                status: {
+                    name: "status",
+                    type: "String",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("active") }] }] as readonly AttributeApplication[],
+                    default: "active" as FieldDefault
+                },
+                created_by: {
+                    name: "created_by",
+                    type: "String",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                school: {
+                    name: "school",
+                    type: "School",
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("SchoolCycleLeadership") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "academic_cycle_leadership_assignments", name: "SchoolCycleLeadership", fields: ["school_id"], references: ["id"] }
+                },
+                academic_cycle: {
+                    name: "academic_cycle",
+                    type: "AcademicCycle",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("academic_cycle_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "leadership", fields: ["academic_cycle_id"], references: ["id"] }
+                },
+                assignee: {
+                    name: "assignee",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("CycleLeadershipAssignee") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("assignee_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "cycle_leadership_assignments", name: "CycleLeadershipAssignee", fields: ["assignee_id"], references: ["id"] }
+                },
+                section: {
+                    name: "section",
+                    type: "Section",
+                    optional: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("SectionLeadership") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("section_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "cycle_leadership_assignments", name: "SectionLeadership", fields: ["section_id"], references: ["id"] }
+                },
+                grade_level: {
+                    name: "grade_level",
+                    type: "GradeLevel",
+                    optional: true,
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("grade_level_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "leadership_assignments", fields: ["grade_level_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id"), ExpressionUtils.field("academic_cycle_id"), ExpressionUtils.field("role")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("assignee_id"), ExpressionUtils.field("effective_from")]) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("academic_cycle_leadership_assignments") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" }
+            }
+        },
+        Subject: {
+            name: "Subject",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                school_id: {
+                    name: "school_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "school"
+                    ] as readonly string[]
+                },
+                code: {
+                    name: "code",
+                    type: "String"
+                },
+                name: {
+                    name: "name",
+                    type: "String"
+                },
+                name_si: {
+                    name: "name_si",
+                    type: "String",
+                    optional: true
+                },
+                name_ta: {
+                    name: "name_ta",
+                    type: "String",
+                    optional: true
+                },
+                is_active: {
+                    name: "is_active",
+                    type: "Boolean",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(true) }] }] as readonly AttributeApplication[],
+                    default: true as FieldDefault
+                },
+                created_by: {
+                    name: "created_by",
+                    type: "String",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                school: {
+                    name: "school",
+                    type: "School",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "subjects", fields: ["school_id"], references: ["id"] }
+                },
+                grade_class_subjects: {
+                    name: "grade_class_subjects",
+                    type: "GradeClassSubject",
+                    array: true,
+                    relation: { opposite: "subject" }
+                },
+                teacher_assignments: {
+                    name: "teacher_assignments",
+                    type: "GradeClassTeacherAssignment",
+                    array: true,
+                    relation: { opposite: "subject" }
+                },
+                attendance_sessions: {
+                    name: "attendance_sessions",
+                    type: "AttendanceSession",
+                    array: true,
+                    relation: { opposite: "subject" }
+                },
+                teacher_attendance_sessions: {
+                    name: "teacher_attendance_sessions",
+                    type: "TeacherAttendanceSession",
+                    array: true,
+                    relation: { opposite: "subject" }
+                },
+                grade_marks: {
+                    name: "grade_marks",
+                    type: "GradeMark",
+                    array: true,
+                    relation: { opposite: "subject" }
+                }
+            },
+            attributes: [
+                { name: "@@unique", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id"), ExpressionUtils.field("code")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id"), ExpressionUtils.field("is_active")]) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("academic_subjects") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                school_id_code: { school_id: { type: "String" }, code: { type: "String" } }
+            }
+        },
+        GradeLevel: {
+            name: "GradeLevel",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                section_id: {
+                    name: "section_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "section"
+                    ] as readonly string[]
+                },
+                school_id: {
+                    name: "school_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "school"
+                    ] as readonly string[]
+                },
+                grade_number: {
+                    name: "grade_number",
+                    type: "Int"
+                },
+                label: {
+                    name: "label",
+                    type: "String",
+                    optional: true
+                },
+                created_by: {
+                    name: "created_by",
+                    type: "String",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                section: {
+                    name: "section",
+                    type: "Section",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("section_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "grade_levels", fields: ["section_id"], references: ["id"] }
+                },
+                school: {
+                    name: "school",
+                    type: "School",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "grade_levels", fields: ["school_id"], references: ["id"] }
+                },
+                grade_classes: {
+                    name: "grade_classes",
+                    type: "GradeClass",
+                    array: true,
+                    relation: { opposite: "grade_level" }
+                },
+                leadership_assignments: {
+                    name: "leadership_assignments",
+                    type: "AcademicCycleLeadershipAssignment",
+                    array: true,
+                    relation: { opposite: "grade_level" }
+                }
+            },
+            attributes: [
+                { name: "@@unique", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("section_id"), ExpressionUtils.field("grade_number")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id"), ExpressionUtils.field("grade_number")]) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("academic_grade_levels") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                section_id_grade_number: { section_id: { type: "String" }, grade_number: { type: "Int" } }
+            }
+        },
+        GradeClass: {
+            name: "GradeClass",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                school_id: {
+                    name: "school_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "school"
+                    ] as readonly string[]
+                },
+                grade_level_id: {
+                    name: "grade_level_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "grade_level"
+                    ] as readonly string[]
+                },
+                academic_cycle_id: {
+                    name: "academic_cycle_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "academic_cycle"
+                    ] as readonly string[]
+                },
+                name: {
+                    name: "name",
+                    type: "String"
+                },
+                status: {
+                    name: "status",
+                    type: "String",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("active") }] }] as readonly AttributeApplication[],
+                    default: "active" as FieldDefault
+                },
+                created_by: {
+                    name: "created_by",
+                    type: "String",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                school: {
+                    name: "school",
+                    type: "School",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "grade_classes", fields: ["school_id"], references: ["id"] }
+                },
+                grade_level: {
+                    name: "grade_level",
+                    type: "GradeLevel",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("grade_level_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "grade_classes", fields: ["grade_level_id"], references: ["id"] }
+                },
+                academic_cycle: {
+                    name: "academic_cycle",
+                    type: "AcademicCycle",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("academic_cycle_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "grade_classes", fields: ["academic_cycle_id"], references: ["id"] }
+                },
+                subjects: {
+                    name: "subjects",
+                    type: "GradeClassSubject",
+                    array: true,
+                    relation: { opposite: "grade_class" }
+                },
+                teacher_assignments: {
+                    name: "teacher_assignments",
+                    type: "GradeClassTeacherAssignment",
+                    array: true,
+                    relation: { opposite: "grade_class" }
+                },
+                enrollments: {
+                    name: "enrollments",
+                    type: "StudentGradeClassEnrollment",
+                    array: true,
+                    relation: { opposite: "grade_class" }
+                },
+                daily_attendance: {
+                    name: "daily_attendance",
+                    type: "DailyAttendance",
+                    array: true,
+                    relation: { opposite: "grade_class" }
+                },
+                attendance_sessions: {
+                    name: "attendance_sessions",
+                    type: "AttendanceSession",
+                    array: true,
+                    relation: { opposite: "grade_class" }
+                },
+                teacher_attendance_sessions: {
+                    name: "teacher_attendance_sessions",
+                    type: "TeacherAttendanceSession",
+                    array: true,
+                    relation: { opposite: "grade_class" }
+                },
+                grade_marks: {
+                    name: "grade_marks",
+                    type: "GradeMark",
+                    array: true,
+                    relation: { opposite: "grade_class" }
+                }
+            },
+            attributes: [
+                { name: "@@unique", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("academic_cycle_id"), ExpressionUtils.field("grade_level_id"), ExpressionUtils.field("name")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id"), ExpressionUtils.field("academic_cycle_id"), ExpressionUtils.field("status")]) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("grade_classes") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                academic_cycle_id_grade_level_id_name: { academic_cycle_id: { type: "String" }, grade_level_id: { type: "String" }, name: { type: "String" } }
+            }
+        },
+        GradeClassSubject: {
+            name: "GradeClassSubject",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                grade_class_id: {
+                    name: "grade_class_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "grade_class"
+                    ] as readonly string[]
+                },
+                term_id: {
+                    name: "term_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "term"
+                    ] as readonly string[]
+                },
+                subject_id: {
+                    name: "subject_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "subject"
+                    ] as readonly string[]
+                },
+                status: {
+                    name: "status",
+                    type: "String",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("active") }] }] as readonly AttributeApplication[],
+                    default: "active" as FieldDefault
+                },
+                created_by: {
+                    name: "created_by",
+                    type: "String",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                grade_class: {
+                    name: "grade_class",
+                    type: "GradeClass",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("grade_class_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "subjects", fields: ["grade_class_id"], references: ["id"] }
+                },
+                term: {
+                    name: "term",
+                    type: "Term",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("term_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "grade_class_subjects", fields: ["term_id"], references: ["id"] }
+                },
+                subject: {
+                    name: "subject",
+                    type: "Subject",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("subject_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "grade_class_subjects", fields: ["subject_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@unique", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("grade_class_id"), ExpressionUtils.field("term_id"), ExpressionUtils.field("subject_id")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("term_id"), ExpressionUtils.field("subject_id")]) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("grade_class_subjects") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                grade_class_id_term_id_subject_id: { grade_class_id: { type: "String" }, term_id: { type: "String" }, subject_id: { type: "String" } }
+            }
+        },
+        GradeClassTeacherAssignment: {
+            name: "GradeClassTeacherAssignment",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                grade_class_id: {
+                    name: "grade_class_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "grade_class"
+                    ] as readonly string[]
+                },
+                academic_cycle_id: {
+                    name: "academic_cycle_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "academic_cycle"
+                    ] as readonly string[]
+                },
+                teacher_id: {
+                    name: "teacher_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "teacher"
+                    ] as readonly string[]
+                },
+                subject_id: {
+                    name: "subject_id",
+                    type: "String",
+                    optional: true,
+                    foreignKeyFor: [
+                        "subject"
+                    ] as readonly string[]
+                },
+                role: {
+                    name: "role",
+                    type: "String"
+                },
+                effective_from: {
+                    name: "effective_from",
+                    type: "DateTime"
+                },
+                effective_to: {
+                    name: "effective_to",
+                    type: "DateTime",
+                    optional: true
+                },
+                status: {
+                    name: "status",
+                    type: "String",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("active") }] }] as readonly AttributeApplication[],
+                    default: "active" as FieldDefault
+                },
+                created_by: {
+                    name: "created_by",
+                    type: "String",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                grade_class: {
+                    name: "grade_class",
+                    type: "GradeClass",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("grade_class_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "teacher_assignments", fields: ["grade_class_id"], references: ["id"] }
+                },
+                academic_cycle: {
+                    name: "academic_cycle",
+                    type: "AcademicCycle",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("academic_cycle_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "teacher_assignments", fields: ["academic_cycle_id"], references: ["id"] }
+                },
+                teacher: {
+                    name: "teacher",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("GradeClassTeacher") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("teacher_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "grade_class_teacher_assignments", name: "GradeClassTeacher", fields: ["teacher_id"], references: ["id"] }
+                },
+                subject: {
+                    name: "subject",
+                    type: "Subject",
+                    optional: true,
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("subject_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "teacher_assignments", fields: ["subject_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("grade_class_id"), ExpressionUtils.field("role"), ExpressionUtils.field("effective_from")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("teacher_id"), ExpressionUtils.field("effective_from")]) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("grade_class_teacher_assignments") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" }
+            }
+        },
+        StudentGradeClassEnrollment: {
+            name: "StudentGradeClassEnrollment",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                school_id: {
+                    name: "school_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "school"
+                    ] as readonly string[]
+                },
+                academic_cycle_id: {
+                    name: "academic_cycle_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "academic_cycle"
+                    ] as readonly string[]
+                },
+                grade_class_id: {
+                    name: "grade_class_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "grade_class"
+                    ] as readonly string[]
+                },
+                student_id: {
+                    name: "student_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "student"
+                    ] as readonly string[]
+                },
+                effective_from: {
+                    name: "effective_from",
+                    type: "DateTime"
+                },
+                effective_to: {
+                    name: "effective_to",
+                    type: "DateTime",
+                    optional: true
+                },
+                status: {
+                    name: "status",
+                    type: "String",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("active") }] }] as readonly AttributeApplication[],
+                    default: "active" as FieldDefault
+                },
+                is_primary: {
+                    name: "is_primary",
+                    type: "Boolean",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(true) }] }] as readonly AttributeApplication[],
+                    default: true as FieldDefault
+                },
+                created_by: {
+                    name: "created_by",
+                    type: "String",
+                    optional: true
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                school: {
+                    name: "school",
+                    type: "School",
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("SchoolGradeClassEnrollments") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "student_grade_class_enrollments", name: "SchoolGradeClassEnrollments", fields: ["school_id"], references: ["id"] }
+                },
+                academic_cycle: {
+                    name: "academic_cycle",
+                    type: "AcademicCycle",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("academic_cycle_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "enrollments", fields: ["academic_cycle_id"], references: ["id"] }
+                },
+                grade_class: {
+                    name: "grade_class",
+                    type: "GradeClass",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("grade_class_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "enrollments", fields: ["grade_class_id"], references: ["id"] }
+                },
+                student: {
+                    name: "student",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("GradeClassStudent") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("student_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "student_grade_class_enrollments", name: "GradeClassStudent", fields: ["student_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("student_id"), ExpressionUtils.field("effective_from")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("grade_class_id"), ExpressionUtils.field("status")]) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("student_grade_class_enrollments") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" }
+            }
+        },
+        DailyAttendance: {
+            name: "DailyAttendance",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                school_id: {
+                    name: "school_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "school"
+                    ] as readonly string[]
+                },
+                academic_cycle_id: {
+                    name: "academic_cycle_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "academic_cycle"
+                    ] as readonly string[]
+                },
+                grade_class_id: {
+                    name: "grade_class_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "grade_class"
+                    ] as readonly string[]
+                },
+                student_id: {
+                    name: "student_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "student"
+                    ] as readonly string[]
+                },
+                attendance_date: {
+                    name: "attendance_date",
+                    type: "DateTime",
+                    attributes: [{ name: "@db.Date" }] as readonly AttributeApplication[]
+                },
+                status: {
+                    name: "status",
+                    type: "String"
+                },
+                note: {
+                    name: "note",
+                    type: "String",
+                    optional: true
+                },
+                recorded_by: {
+                    name: "recorded_by",
+                    type: "String"
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                school: {
+                    name: "school",
+                    type: "School",
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("SchoolDailyAttendance") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "daily_attendance", name: "SchoolDailyAttendance", fields: ["school_id"], references: ["id"] }
+                },
+                academic_cycle: {
+                    name: "academic_cycle",
+                    type: "AcademicCycle",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("academic_cycle_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "daily_attendance", fields: ["academic_cycle_id"], references: ["id"] }
+                },
+                grade_class: {
+                    name: "grade_class",
+                    type: "GradeClass",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("grade_class_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "daily_attendance", fields: ["grade_class_id"], references: ["id"] }
+                },
+                student: {
+                    name: "student",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("DailyAttendanceStudent") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("student_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "student_daily_attendance", name: "DailyAttendanceStudent", fields: ["student_id"], references: ["id"] }
+                },
+                sessions: {
+                    name: "sessions",
+                    type: "AttendanceSession",
+                    array: true,
+                    relation: { opposite: "daily_attendance" }
+                }
+            },
+            attributes: [
+                { name: "@@unique", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("student_id"), ExpressionUtils.field("grade_class_id"), ExpressionUtils.field("attendance_date")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("grade_class_id"), ExpressionUtils.field("attendance_date")]) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("daily_attendance") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                student_id_grade_class_id_attendance_date: { student_id: { type: "String" }, grade_class_id: { type: "String" }, attendance_date: { type: "DateTime" } }
+            }
+        },
+        AttendanceSession: {
+            name: "AttendanceSession",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                daily_attendance_id: {
+                    name: "daily_attendance_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "daily_attendance"
+                    ] as readonly string[]
+                },
+                school_id: {
+                    name: "school_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "school"
+                    ] as readonly string[]
+                },
+                academic_cycle_id: {
+                    name: "academic_cycle_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "academic_cycle"
+                    ] as readonly string[]
+                },
+                grade_class_id: {
+                    name: "grade_class_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "grade_class"
+                    ] as readonly string[]
+                },
+                term_id: {
+                    name: "term_id",
+                    type: "String",
+                    optional: true,
+                    foreignKeyFor: [
+                        "term"
+                    ] as readonly string[]
+                },
+                student_id: {
+                    name: "student_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "student"
+                    ] as readonly string[]
+                },
+                teacher_id: {
+                    name: "teacher_id",
+                    type: "String",
+                    optional: true,
+                    foreignKeyFor: [
+                        "teacher"
+                    ] as readonly string[]
+                },
+                subject_id: {
+                    name: "subject_id",
+                    type: "String",
+                    optional: true,
+                    foreignKeyFor: [
+                        "subject"
+                    ] as readonly string[]
+                },
+                session_kind: {
+                    name: "session_kind",
+                    type: "String"
+                },
+                session_at: {
+                    name: "session_at",
+                    type: "DateTime"
+                },
+                status: {
+                    name: "status",
+                    type: "String"
+                },
+                recorded_by: {
+                    name: "recorded_by",
+                    type: "String"
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                daily_attendance: {
+                    name: "daily_attendance",
+                    type: "DailyAttendance",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("daily_attendance_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "sessions", fields: ["daily_attendance_id"], references: ["id"] }
+                },
+                school: {
+                    name: "school",
+                    type: "School",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "attendance_sessions", fields: ["school_id"], references: ["id"] }
+                },
+                academic_cycle: {
+                    name: "academic_cycle",
+                    type: "AcademicCycle",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("academic_cycle_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "attendance_sessions", fields: ["academic_cycle_id"], references: ["id"] }
+                },
+                grade_class: {
+                    name: "grade_class",
+                    type: "GradeClass",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("grade_class_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "attendance_sessions", fields: ["grade_class_id"], references: ["id"] }
+                },
+                term: {
+                    name: "term",
+                    type: "Term",
+                    optional: true,
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("term_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "attendance_sessions", fields: ["term_id"], references: ["id"] }
+                },
+                student: {
+                    name: "student",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("AttendanceSessionStudent") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("student_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "student_attendance_sessions", name: "AttendanceSessionStudent", fields: ["student_id"], references: ["id"] }
+                },
+                teacher: {
+                    name: "teacher",
+                    type: "User",
+                    optional: true,
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("AttendanceSessionTeacher") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("teacher_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "teacher_attendance_sessions_covered", name: "AttendanceSessionTeacher", fields: ["teacher_id"], references: ["id"] }
+                },
+                subject: {
+                    name: "subject",
+                    type: "Subject",
+                    optional: true,
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("subject_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "attendance_sessions", fields: ["subject_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("daily_attendance_id"), ExpressionUtils.field("session_at")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("grade_class_id"), ExpressionUtils.field("session_at")]) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("attendance_sessions") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" }
+            }
+        },
+        TeacherDailyAttendance: {
+            name: "TeacherDailyAttendance",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                school_id: {
+                    name: "school_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "school"
+                    ] as readonly string[]
+                },
+                academic_cycle_id: {
+                    name: "academic_cycle_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "academic_cycle"
+                    ] as readonly string[]
+                },
+                teacher_id: {
+                    name: "teacher_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "teacher"
+                    ] as readonly string[]
+                },
+                attendance_date: {
+                    name: "attendance_date",
+                    type: "DateTime",
+                    attributes: [{ name: "@db.Date" }] as readonly AttributeApplication[]
+                },
+                status: {
+                    name: "status",
+                    type: "String"
+                },
+                note: {
+                    name: "note",
+                    type: "String",
+                    optional: true
+                },
+                recorded_by: {
+                    name: "recorded_by",
+                    type: "String"
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                school: {
+                    name: "school",
+                    type: "School",
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("SchoolTeacherDailyAttendance") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "teacher_daily_attendance", name: "SchoolTeacherDailyAttendance", fields: ["school_id"], references: ["id"] }
+                },
+                academic_cycle: {
+                    name: "academic_cycle",
+                    type: "AcademicCycle",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("academic_cycle_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "teacher_daily_attendance", fields: ["academic_cycle_id"], references: ["id"] }
+                },
+                teacher: {
+                    name: "teacher",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("TeacherDailyAttendanceTeacher") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("teacher_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "teacher_daily_attendance", name: "TeacherDailyAttendanceTeacher", fields: ["teacher_id"], references: ["id"] }
+                },
+                sessions: {
+                    name: "sessions",
+                    type: "TeacherAttendanceSession",
+                    array: true,
+                    relation: { opposite: "daily_attendance" }
+                }
+            },
+            attributes: [
+                { name: "@@unique", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("teacher_id"), ExpressionUtils.field("attendance_date")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id"), ExpressionUtils.field("attendance_date")]) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("teacher_daily_attendance") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                teacher_id_attendance_date: { teacher_id: { type: "String" }, attendance_date: { type: "DateTime" } }
+            }
+        },
+        TeacherAttendanceSession: {
+            name: "TeacherAttendanceSession",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                teacher_daily_attendance_id: {
+                    name: "teacher_daily_attendance_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "daily_attendance"
+                    ] as readonly string[]
+                },
+                school_id: {
+                    name: "school_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "school"
+                    ] as readonly string[]
+                },
+                academic_cycle_id: {
+                    name: "academic_cycle_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "academic_cycle"
+                    ] as readonly string[]
+                },
+                grade_class_id: {
+                    name: "grade_class_id",
+                    type: "String",
+                    optional: true,
+                    foreignKeyFor: [
+                        "grade_class"
+                    ] as readonly string[]
+                },
+                term_id: {
+                    name: "term_id",
+                    type: "String",
+                    optional: true,
+                    foreignKeyFor: [
+                        "term"
+                    ] as readonly string[]
+                },
+                teacher_id: {
+                    name: "teacher_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "teacher"
+                    ] as readonly string[]
+                },
+                subject_id: {
+                    name: "subject_id",
+                    type: "String",
+                    optional: true,
+                    foreignKeyFor: [
+                        "subject"
+                    ] as readonly string[]
+                },
+                session_kind: {
+                    name: "session_kind",
+                    type: "String"
+                },
+                session_at: {
+                    name: "session_at",
+                    type: "DateTime"
+                },
+                status: {
+                    name: "status",
+                    type: "String"
+                },
+                recorded_by: {
+                    name: "recorded_by",
+                    type: "String"
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                daily_attendance: {
+                    name: "daily_attendance",
+                    type: "TeacherDailyAttendance",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("teacher_daily_attendance_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "sessions", fields: ["teacher_daily_attendance_id"], references: ["id"] }
+                },
+                school: {
+                    name: "school",
+                    type: "School",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "teacher_attendance_sessions", fields: ["school_id"], references: ["id"] }
+                },
+                academic_cycle: {
+                    name: "academic_cycle",
+                    type: "AcademicCycle",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("academic_cycle_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "teacher_attendance_sessions", fields: ["academic_cycle_id"], references: ["id"] }
+                },
+                grade_class: {
+                    name: "grade_class",
+                    type: "GradeClass",
+                    optional: true,
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("grade_class_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "teacher_attendance_sessions", fields: ["grade_class_id"], references: ["id"] }
+                },
+                term: {
+                    name: "term",
+                    type: "Term",
+                    optional: true,
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("term_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "teacher_attendance_sessions", fields: ["term_id"], references: ["id"] }
+                },
+                teacher: {
+                    name: "teacher",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("TeacherAttendanceSessionTeacher") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("teacher_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "teacher_attendance_sessions", name: "TeacherAttendanceSessionTeacher", fields: ["teacher_id"], references: ["id"] }
+                },
+                subject: {
+                    name: "subject",
+                    type: "Subject",
+                    optional: true,
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("subject_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "teacher_attendance_sessions", fields: ["subject_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("teacher_daily_attendance_id"), ExpressionUtils.field("session_at")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("grade_class_id"), ExpressionUtils.field("session_at")]) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("teacher_attendance_sessions") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" }
+            }
+        },
+        GradeMark: {
+            name: "GradeMark",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                school_id: {
+                    name: "school_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "school"
+                    ] as readonly string[]
+                },
+                academic_cycle_id: {
+                    name: "academic_cycle_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "academic_cycle"
+                    ] as readonly string[]
+                },
+                grade_class_id: {
+                    name: "grade_class_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "grade_class"
+                    ] as readonly string[]
+                },
+                term_id: {
+                    name: "term_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "term"
+                    ] as readonly string[]
+                },
+                subject_id: {
+                    name: "subject_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "subject"
+                    ] as readonly string[]
+                },
+                student_id: {
+                    name: "student_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "student"
+                    ] as readonly string[]
+                },
+                assignment_id: {
+                    name: "assignment_id",
+                    type: "String",
+                    optional: true
+                },
+                submission_id: {
+                    name: "submission_id",
+                    type: "String",
+                    optional: true
+                },
+                marks_earned: {
+                    name: "marks_earned",
+                    type: "Float"
+                },
+                max_points: {
+                    name: "max_points",
+                    type: "Float"
+                },
+                percentage: {
+                    name: "percentage",
+                    type: "Float"
+                },
+                gpa: {
+                    name: "gpa",
+                    type: "Float"
+                },
+                letter_grade: {
+                    name: "letter_grade",
+                    type: "String"
+                },
+                publication_state: {
+                    name: "publication_state",
+                    type: "String",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("draft") }] }] as readonly AttributeApplication[],
+                    default: "draft" as FieldDefault
+                },
+                graded_by: {
+                    name: "graded_by",
+                    type: "String"
+                },
+                graded_at: {
+                    name: "graded_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                published_by: {
+                    name: "published_by",
+                    type: "String",
+                    optional: true
+                },
+                published_at: {
+                    name: "published_at",
+                    type: "DateTime",
+                    optional: true
+                },
+                feedback: {
+                    name: "feedback",
+                    type: "String",
+                    optional: true
+                },
+                idempotency_key: {
+                    name: "idempotency_key",
+                    type: "String",
+                    unique: true,
+                    optional: true,
+                    attributes: [{ name: "@unique" }] as readonly AttributeApplication[]
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                updated_at: {
+                    name: "updated_at",
+                    type: "DateTime",
+                    updatedAt: true,
+                    attributes: [{ name: "@updatedAt" }] as readonly AttributeApplication[]
+                },
+                school: {
+                    name: "school",
+                    type: "School",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("school_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "grade_marks", fields: ["school_id"], references: ["id"] }
+                },
+                academic_cycle: {
+                    name: "academic_cycle",
+                    type: "AcademicCycle",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("academic_cycle_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "grade_marks", fields: ["academic_cycle_id"], references: ["id"] }
+                },
+                grade_class: {
+                    name: "grade_class",
+                    type: "GradeClass",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("grade_class_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "grade_marks", fields: ["grade_class_id"], references: ["id"] }
+                },
+                term: {
+                    name: "term",
+                    type: "Term",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("term_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "grade_marks", fields: ["term_id"], references: ["id"] }
+                },
+                subject: {
+                    name: "subject",
+                    type: "Subject",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("subject_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "grade_marks", fields: ["subject_id"], references: ["id"] }
+                },
+                student: {
+                    name: "student",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "name", value: ExpressionUtils.literal("StudentGradeMarks") }, { name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("student_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "grade_marks", name: "StudentGradeMarks", fields: ["student_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("student_id"), ExpressionUtils.field("term_id")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("grade_class_id"), ExpressionUtils.field("subject_id"), ExpressionUtils.field("term_id")]) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("grade_marks") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                idempotency_key: { type: "String" }
             }
         },
         SchoolGrade: {
@@ -4985,6 +6807,109 @@ export class SchemaType implements SchemaDef {
             uniqueFields: {
                 id: { type: "String" },
                 student_id_guardian_id: { student_id: { type: "String" }, guardian_id: { type: "String" } }
+            }
+        },
+        GuardianAssessmentPermission: {
+            name: "GuardianAssessmentPermission",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                relationship_id: {
+                    name: "relationship_id",
+                    type: "String"
+                },
+                guardian_id: {
+                    name: "guardian_id",
+                    type: "String"
+                },
+                student_id: {
+                    name: "student_id",
+                    type: "String"
+                },
+                permission_key: {
+                    name: "permission_key",
+                    type: "String",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("assessment_results") }] }] as readonly AttributeApplication[],
+                    default: "assessment_results" as FieldDefault
+                },
+                access_level: {
+                    name: "access_level",
+                    type: "String",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal("read") }] }] as readonly AttributeApplication[],
+                    default: "read" as FieldDefault
+                },
+                granted_at: {
+                    name: "granted_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                revoked_at: {
+                    name: "revoked_at",
+                    type: "DateTime",
+                    optional: true
+                }
+            },
+            attributes: [
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("read") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("guardian_id")), "&&", ExpressionUtils.binary(ExpressionUtils.field("revoked_at"), "==", ExpressionUtils._null())), "&&", ExpressionUtils.binary(ExpressionUtils.field("permission_key"), "==", ExpressionUtils.literal("assessment_results"))), "&&", ExpressionUtils.binary(ExpressionUtils.field("access_level"), "==", ExpressionUtils.literal("read"))) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("guardian_assessment_permissions") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" }
+            }
+        },
+        GuardianAssessmentReadAuditEvent: {
+            name: "GuardianAssessmentReadAuditEvent",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                guardian_id: {
+                    name: "guardian_id",
+                    type: "String"
+                },
+                student_id: {
+                    name: "student_id",
+                    type: "String"
+                },
+                outcome: {
+                    name: "outcome",
+                    type: "String"
+                },
+                reason: {
+                    name: "reason",
+                    type: "String"
+                },
+                result_count: {
+                    name: "result_count",
+                    type: "Int",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.literal(0) }] }] as readonly AttributeApplication[],
+                    default: 0 as FieldDefault
+                },
+                occurred_at: {
+                    name: "occurred_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                }
+            },
+            attributes: [
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM")))) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("guardian_assessment_read_audit_events") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" }
             }
         },
         Account: {

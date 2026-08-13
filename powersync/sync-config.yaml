@@ -19,22 +19,7 @@ streams:
     auto_subscribe: true
     query: |
       SELECT cs.*
-      FROM classroom_students cs
+      FROM classroom_students AS "cs"
       JOIN classrooms c ON c.id = cs.classroom_id
       WHERE c.teacher_id = auth.user_id()
          OR cs.student_id = auth.user_id()
-         OR EXISTS (
-              SELECT 1
-              FROM bonds b
-              WHERE b.user_id = auth.user_id()
-                AND b.entity_type = 'PLATFORM'
-                AND b.capacity = 'admin'
-            )
-         OR EXISTS (
-              SELECT 1
-              FROM bonds b
-              WHERE b.user_id = auth.user_id()
-                AND b.entity_type = 'SCHOOL'
-                AND b.entity_id = c.school_id
-                AND b.capacity IN ('principal', 'sectionHead', 'section_head')
-            )
