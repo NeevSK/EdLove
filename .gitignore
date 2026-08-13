@@ -83,3 +83,10 @@ spike-rust-inline/
 native-capabilities/
 
 *.zip
+
+# Local test outputs and reports
+apps/gurudevi-mobile/web-firewall-report.md
+apps/gurudevi-mobile/web-runtime-smoke.png
+apps/gurudevi-mobile/web-smoke.png
+docs/RN Terrain/radar/
+reports/playwright/
