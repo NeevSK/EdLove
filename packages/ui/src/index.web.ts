@@ -23,14 +23,19 @@ export * from '@repo/ui/utils';
 // The app root imports branded fallbacks from `@repo/ui`; omitting these here
 // turns a valid component into `undefined` only in production web bundles.
 export { BrandPulse } from './components/BrandPulse';
+export type { BrandPulseProps } from './components/BrandPulse';
 export { ErrorState as BrandedErrorState } from './components/ErrorState';
+export type { ErrorStateProps } from './components/ErrorState';
 export { SuccessCheck, SuccessGlow } from './components/Success';
 export { BrandedEmptyState } from './components/BrandedEmptyState';
+export type { BrandedEmptyStateProps } from './components/BrandedEmptyState';
+export type { ScreenWrapperProps } from './components/ScreenWrapper';
 export {
   ShimmerBlock,
   SkeletonCard as BrandedSkeletonCard,
   SkeletonList as BrandedSkeletonList,
 } from './components/Skeleton';
 export { duration, easing, scale, color } from './components/motion';
-export { useBreakpoint, useResponsiveGrid } from './components/layout';
+export { useBreakpoint, usePageFrame, useResponsiveGrid } from './components/layout';
+export type { PageFrame } from './components/layout';
 export { softCrossfadeScale, sharedTransitionTiming } from './components/screenTransitions';

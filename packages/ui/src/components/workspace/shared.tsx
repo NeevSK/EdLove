@@ -80,7 +80,7 @@ export function WorkspaceCanvasHero({
           </View>
           <View style={styles.metricPillMuted}>
             <Pin size={14} color={colors.textSecondary} />
-            <Text style={styles.metricTextMuted}>{pinnedCount} pinned</Text>
+            <Text style={styles.metricTextMuted}>{pinnedCount} pinned · max 4</Text>
           </View>
           <View style={styles.rendererPill}>
             <Text style={styles.rendererText}>

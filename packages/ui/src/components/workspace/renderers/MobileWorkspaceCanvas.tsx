@@ -1,10 +1,14 @@
 import type { WorkspaceRendererConfig } from '@repo/core/types';
-import { StyleSheet } from 'react-native';
+import { CanvasZoneColumn } from '@repo/ui/components/workspace/CanvasZoneColumn';
+import {
+  useWorkspaceCanvasData,
+  WorkspaceCanvasEmptyState,
+  WorkspaceCanvasHero,
+} from '@repo/ui/components/workspace/shared';
+import type { WorkspaceCanvasProps } from '@repo/ui/components/workspace/types';
 import { View } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
-import { CanvasZoneColumn } from '@repo/ui/components/workspace/CanvasZoneColumn';
-import { useWorkspaceCanvasData, WorkspaceCanvasEmptyState, WorkspaceCanvasHero } from '@repo/ui/components/workspace/shared';
-import type { WorkspaceCanvasProps } from '@repo/ui/components/workspace/types';
+import { StyleSheet } from 'react-native';
 
 export interface MobileWorkspaceCanvasProps<
   TSurfaceId extends string = string,
@@ -67,13 +71,19 @@ export function MobileWorkspaceCanvas<
 
 const styles = StyleSheet.create({
   shell: {
+    width: '100%',
+    minWidth: 0,
+    alignSelf: 'stretch',
     gap: Theme.spacing.lg,
   },
   stack: {
+    width: '100%',
+    minWidth: 0,
     gap: Theme.spacing.lg,
   },
   stackItem: {
     width: '100%',
+    minWidth: 0,
   },
 });
 

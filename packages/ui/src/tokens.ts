@@ -9,28 +9,77 @@
 
 export const tokens = {
   colors: {
-    // Core Brand
+    // Core brand roles
     primary: '#D4843A', // Saffron
     secondary: '#8BBF7A', // Dalu Green
 
-    // Surfaces
+    // Surface roles — vellum-based, never pure white
     background: '#F5EDD6', // Vellum (Paper-like, easy on eyes)
-    surface: '#FFFFFF',
-    surfaceSubtle: '#FAF6E9',
+    surface: '#FAF7ED', // Silk
+    surfaceSubtle: '#F0E8D0', // Linen / quiet recess
+    surfaceElevated: '#FDF0DC', // Warm raised surface
+    surfaceInteractive: 'rgba(232, 226, 207, 0.50)',
 
-    // Content
+    // Content roles — warm ink, never pure black
     ink: '#2A2318', // Primary Text
     inkSubtle: '#5B5448', // Secondary Text
+    textMuted: '#72695E',
+    textInverse: '#F5EDD6',
 
-    // Semantic
+    // Semantic status roles
     error: '#C64F3E',
+    errorSurface: '#FBEBD8',
     success: '#5B8C4F',
     warning: '#D4A03A',
     info: '#4F7DA3',
 
-    // Decorative / Special
+    // Atmospheric roles
+    accentLiving: '#8BBF7A',
+    accentAtmospheric: '#7DD4C0',
+    accentDepth: '#B8A9E0',
+    border: '#E8E2CF',
+    borderSubtle: 'rgba(42, 35, 24, 0.12)',
+    borderStrong: '#544A3D',
+    focus: '#7DD4C0',
+    shadowColor: '#6B6480',
     shadowViolet: 'rgba(107, 100, 128, 0.15)',
-    glass: 'rgba(255, 255, 255, 0.4)',
+    glass: 'rgba(245, 237, 214, 0.72)',
+    loading: '#C4956A',
+    emptyIllustration: '#C4956A',
+
+    // Skeleton material — warm, low-noise, and readable against vellum
+    skeletonBase: '#E8E2CF',
+    skeletonHighlight: '#F5EDD6',
+  },
+
+  /** Semantic aliases are the preferred vocabulary for components. */
+  semantic: {
+    surface: {
+      page: '#F5EDD6',
+      canvas: '#FAF7ED',
+      quiet: '#F0E8D0',
+      elevated: '#FDF0DC',
+      interactive: 'rgba(232, 226, 207, 0.50)',
+    },
+    text: {
+      primary: '#2A2318',
+      secondary: '#5B5448',
+      muted: '#72695E',
+      inverse: '#F5EDD6',
+    },
+    border: {
+      subtle: 'rgba(42, 35, 24, 0.12)',
+      base: '#E8E2CF',
+      strong: '#544A3D',
+      focus: '#7DD4C0',
+    },
+    status: {
+      error: '#C64F3E',
+      errorSurface: '#FBEBD8',
+      success: '#5B8C4F',
+      warning: '#D4A03A',
+      info: '#4F7DA3',
+    },
   },
 
   spacing: {
@@ -48,6 +97,38 @@ export const tokens = {
     md: 12,
     lg: 20,
     full: 9999,
+  },
+
+  layout: {
+    breakpoints: {
+      phone: 0,
+      tablet: 600,
+      desktop: 1024,
+    },
+    pageFrame: {
+      gutter: {
+        phone: 20,
+        tablet: 32,
+        desktop: 40,
+      },
+      maxWidth: {
+        phone: '100%',
+        tablet: 720,
+        desktop: 960,
+      },
+      readingMaxWidth: 720,
+      stateMessageMaxWidth: 320,
+    },
+    grid: {
+      phone: 1,
+      tablet: 2,
+      desktop: 3,
+    },
+  },
+
+  interaction: {
+    minTouchTarget: 44,
+    focusRingWidth: 2,
   },
 
   typography: {

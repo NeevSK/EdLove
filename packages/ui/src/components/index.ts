@@ -3,6 +3,7 @@ export { default as AchievementUnlockOverlay } from '@repo/ui/components/Achieve
 export { AdaptiveLayout } from '@repo/ui/components/AdaptiveLayout';
 export * from '@repo/ui/components/BreathAnimation';
 export { BrandPulse } from '@repo/ui/components/BrandPulse';
+export type { BrandPulseProps } from '@repo/ui/components/BrandPulse';
 export { default as BreathingLoader } from '@repo/ui/components/BreathingLoader';
 // Motion system exports
 export * from '@repo/ui/components/motion';
@@ -10,8 +11,10 @@ export * from '@repo/ui/components/layout';
 export * from '@repo/ui/components/screenTransitions';
 // New branded state components (renamed to avoid conflicts with existing components)
 export { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+export type { ErrorStateProps } from '@repo/ui/components/ErrorState';
 export { SuccessCheck, SuccessGlow } from '@repo/ui/components/Success';
 export { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+export type { BrandedEmptyStateProps } from '@repo/ui/components/BrandedEmptyState';
 export { ShimmerBlock, SkeletonCard as BrandedSkeletonCard, SkeletonList as BrandedSkeletonList } from '@repo/ui/components/Skeleton';
 export type { ChatComposerProps } from '@repo/ui/components/ChatComposer';
 export { ChatComposer } from '@repo/ui/components/ChatComposer';
@@ -123,6 +126,7 @@ export { default as SanctuaryStatsCard } from '@repo/ui/components/SanctuaryStat
 export { default as SanctuaryToast } from '@repo/ui/components/SanctuaryToast';
 export { default as SandboxBanner } from '@repo/ui/components/SandboxBanner';
 export { default as ScreenWrapper, useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
+export type { ScreenWrapperProps } from '@repo/ui/components/ScreenWrapper';
 export {
   default as SkeletonLoader,
   SkeletonAvatar,

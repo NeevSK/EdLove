@@ -1,3 +1,8 @@
+import {
+  isTabletViewport,
+  resolveOrientation,
+  responsiveBreakpoints,
+} from '@repo/ui/components/layout';
 import { useMemo } from 'react';
 import { useWindowDimensions } from 'react-native';
 
@@ -12,8 +17,9 @@ import { useWindowDimensions } from 'react-native';
  */
 export function useResponsive() {
   const { width, height } = useWindowDimensions();
-  const isTablet = width >= 768;
-  const isDesktop = width >= 1024;
+  const orientation = resolveOrientation(width, height);
+  const isTablet = isTabletViewport(width, height);
+  const isDesktop = width >= responsiveBreakpoints.desktopMinWidth;
 
   return useMemo(
     () => ({
@@ -21,9 +27,11 @@ export function useResponsive() {
       height,
       isTablet,
       isDesktop,
-      isMobile: !isTablet,
-      orientation: width > height ? 'landscape' : 'portrait',
+      isMobile: !isTablet && !isDesktop,
+      isLandscape: orientation === 'landscape',
+      isPortrait: orientation === 'portrait',
+      orientation,
     }),
-    [width, height, isTablet, isDesktop],
+    [width, height, isTablet, isDesktop, orientation],
   );
 }

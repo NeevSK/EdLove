@@ -1,15 +1,17 @@
 import { mediaInitialState, mediaReducer } from '@repo/core/logic';
-import { Pause, Play, RotateCcw, RotateCw, X } from '@repo/ui/icons';
-import type React from 'react';
-import { useCallback, useEffect, useReducer, useRef } from 'react';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { Box } from '@repo/ui/components/ui/box';
 import { HStack } from '@repo/ui/components/ui/hstack';
 import { Text } from '@repo/ui/components/ui/text';
 import { VStack } from '@repo/ui/components/ui/vstack';
 import { useTheme } from '@repo/ui/hooks/useTheme';
+import { Pause, Play, RotateCcw, RotateCw, X } from '@repo/ui/icons';
 import { Pressable } from '@repo/ui/primitives';
 import { formatTimeMs } from '@repo/ui/utils/dateTimeUtils';
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import type React from 'react';
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 
 export interface VideoPlayerProps {
   url: string;
@@ -28,6 +30,7 @@ export function VideoPlayer({ url, title, creator, onClose }: VideoPlayerProps) 
 
   const [state, dispatch] = useReducer(mediaReducer, mediaInitialState);
   const { isPlaying, positionMillis, durationMillis, showControls, hasError } = state;
+  const [isLoading, setIsLoading] = useState(Boolean(url));
 
   useEffect(() => {
     const video = videoRef.current;
@@ -43,18 +46,24 @@ export function VideoPlayer({ url, title, creator, onClose }: VideoPlayerProps) 
 
     const handlePlay = () => dispatch({ type: 'SET_PLAYING', payload: true });
     const handlePause = () => dispatch({ type: 'SET_PLAYING', payload: false });
-    const handleError = () => dispatch({ type: 'SET_ERROR', payload: true });
+    const handleError = () => {
+      setIsLoading(false);
+      dispatch({ type: 'SET_ERROR', payload: true });
+    };
+    const handleReady = () => setIsLoading(false);
 
     video.addEventListener('timeupdate', handleTimeUpdate);
     video.addEventListener('play', handlePlay);
     video.addEventListener('pause', handlePause);
     video.addEventListener('error', handleError);
+    video.addEventListener('loadeddata', handleReady);
 
     return () => {
       video.removeEventListener('timeupdate', handleTimeUpdate);
       video.removeEventListener('play', handlePlay);
       video.removeEventListener('pause', handlePause);
       video.removeEventListener('error', handleError);
+      video.removeEventListener('loadeddata', handleReady);
     };
   }, []);
 
@@ -96,15 +105,17 @@ export function VideoPlayer({ url, title, creator, onClose }: VideoPlayerProps) 
 
   if (hasError || !url) {
     return (
-      <Box className="flex-1 bg-black items-center justify-center h-full">
-        <Text className="text-white text-lg text-center p-8">
-          Unable to load video. Please check the URL and try again.
-        </Text>
-        {onClose && (
-          <SanctuaryButton onPress={onClose} leftIcon={X}>
-            Close
-          </SanctuaryButton>
-        )}
+      <Box className="flex-1 bg-phase-surface items-center justify-center h-full">
+        <BrandedErrorState
+          title={!url ? 'Video unavailable' : 'This video could not be opened'}
+          message="Check your connection or try the resource again later."
+        >
+          {onClose && (
+            <SanctuaryButton onPress={onClose} leftIcon={X}>
+              Close
+            </SanctuaryButton>
+          )}
+        </BrandedErrorState>
       </Box>
     );
   }
@@ -120,6 +131,12 @@ export function VideoPlayer({ url, title, creator, onClose }: VideoPlayerProps) 
       >
         <track kind="captions" />
       </video>
+
+      {isLoading && (
+        <Box className="absolute inset-0 items-center justify-center bg-black/30 pointer-events-none">
+          <BrandPulse size={44} tintColor="#F5EDD6" accessibilityLabel="Loading video" />
+        </Box>
+      )}
 
       {showControls && (
         <Box className="absolute inset-0 bg-black/40 p-4 transition-opacity duration-300 pointer-events-none">

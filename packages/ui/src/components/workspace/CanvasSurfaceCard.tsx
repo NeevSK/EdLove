@@ -1,5 +1,5 @@
 import type { ResolvedWorkspaceSurface } from '@repo/core/types';
-import { EyeOff, Info, Lock, MoveDiagonal2, Pin, Sparkles } from '@repo/ui/icons';
+import { EyeOff, Info, Lock, Pin, Sparkles } from '@repo/ui/icons';
 import type React from 'react';
 import { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
@@ -94,7 +94,7 @@ export function CanvasSurfaceCard<
           <Text style={cardStyles.title}>{title ?? surface.title}</Text>
           <Text style={cardStyles.subtitle}>{subtitle ?? surface.subtitle}</Text>
         </View>
-        <View style={cardStyles.badges}>
+          <View style={cardStyles.badges}>
           {temporalLabel ? (
             <View
               style={[cardStyles.badge, cardStyles.temporalBadge, temporalToneStyles[temporalTone]]}
@@ -108,10 +108,6 @@ export function CanvasSurfaceCard<
               <Text style={cardStyles.badgeTextDark}>Pinned</Text>
             </View>
           ) : null}
-          <View style={cardStyles.badge}>
-            <MoveDiagonal2 size={12} color={colors.textSecondary} />
-            <Text style={cardStyles.badgeText}>Order {surface.order + 1}</Text>
-          </View>
         </View>
       </View>
       {summary ? <Text style={cardStyles.summary}>{summary}</Text> : null}
@@ -167,10 +163,7 @@ export function CanvasSurfaceCard<
       {actions && !surface.isLocked ? <View style={cardStyles.actionsRow}>{actions}</View> : null}
 
       <View style={cardStyles.footer}>
-        <Text style={cardStyles.footerText}>
-          Default zone: {surface.defaultZone} {String.fromCharCode(8226)} Default order:{' '}
-          {surface.defaultOrder}
-        </Text>
+        <View style={cardStyles.footerSpacer} />
         <View style={cardStyles.footerActions}>
           {onPressInfo ? (
             <Pressable
@@ -390,10 +383,8 @@ function createStyles(colors: ReturnType<typeof useThemedColors>) {
       alignItems: 'center',
       gap: Theme.spacing.xs,
     },
-    footerText: {
+    footerSpacer: {
       flex: 1,
-      fontSize: Theme.typography.fontSize.xs,
-      color: colors.textSecondary,
     },
     iconButton: {
       width: 34,

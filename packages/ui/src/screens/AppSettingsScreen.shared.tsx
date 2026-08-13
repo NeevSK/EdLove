@@ -30,6 +30,7 @@ import { Switch } from '@repo/ui/components/ui/switch';
 import { Heading, Text } from '@repo/ui/components/ui/text';
 import { VStack } from '@repo/ui/components/ui/vstack';
 import { useEnvironment } from '@repo/ui/context';
+import { useResponsiveGrid } from '@repo/ui/components/layout';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
@@ -195,6 +196,7 @@ SectionHeader.displayName = 'SectionHeader';
 const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
   const { t, i18n } = useTranslation();
   const { accent, scene, text: themeText } = useTheme();
+  const { gutter, maxWidth } = useResponsiveGrid();
 
   const {
     themeMode,
@@ -713,7 +715,13 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
       <ScrollView
         style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ padding: 16 }}
+        contentContainerStyle={{
+          paddingHorizontal: gutter,
+          paddingVertical: gutter,
+          width: '100%',
+          maxWidth: typeof maxWidth === 'number' ? maxWidth + gutter * 2 : undefined,
+          alignSelf: 'center',
+        }}
       >
         {/* Appearance Section */}
         <SectionHeader

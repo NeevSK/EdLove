@@ -1,10 +1,15 @@
 import type { WorkspaceRendererConfig } from '@repo/core/types';
-import { StyleSheet } from 'react-native';
+import { responsiveLayout } from '@repo/ui/components/layout';
+import { CanvasZoneColumn } from '@repo/ui/components/workspace/CanvasZoneColumn';
+import {
+  useWorkspaceCanvasData,
+  WorkspaceCanvasEmptyState,
+  WorkspaceCanvasHero,
+} from '@repo/ui/components/workspace/shared';
+import type { WorkspaceCanvasProps } from '@repo/ui/components/workspace/types';
 import { View } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
-import { CanvasZoneColumn } from '@repo/ui/components/workspace/CanvasZoneColumn';
-import { useWorkspaceCanvasData, WorkspaceCanvasEmptyState, WorkspaceCanvasHero } from '@repo/ui/components/workspace/shared';
-import type { WorkspaceCanvasProps } from '@repo/ui/components/workspace/types';
+import { StyleSheet } from 'react-native';
 
 export interface TabletWorkspaceCanvasProps<
   TSurfaceId extends string = string,
@@ -42,7 +47,7 @@ export function TabletWorkspaceCanvas<
             <CanvasZoneColumn
               key={group.zone}
               group={group}
-              compact={true}
+              compact={false}
               style={styles.gridItem}
               renderSurfaceContent={props.renderSurfaceContent}
               getSurfaceTitle={props.getSurfaceTitle}
@@ -66,16 +71,24 @@ export function TabletWorkspaceCanvas<
 
 const styles = StyleSheet.create({
   shell: {
+    width: '100%',
+    minWidth: 0,
+    alignSelf: 'stretch',
     gap: Theme.spacing.lg,
   },
   grid: {
+    width: '100%',
+    minWidth: 0,
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Theme.spacing.lg,
     alignItems: 'flex-start',
   },
   gridItem: {
-    width: '48%',
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    minWidth: responsiveLayout.tabletColumnMinWidth,
   },
 });
 

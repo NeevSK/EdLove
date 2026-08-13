@@ -1,14 +1,12 @@
 import { Bell, BookOpen, Check, CircleCheck, Info, Users, X } from '@repo/ui/icons';
-import { Dimensions } from 'react-native';
+import { useStore } from '@repo/core/logic';
+import { useWindowDimensions } from 'react-native';
 import Animated, { Easing, SlideInLeft, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Box, Heading, HStack, Portal, Pressable, Text, VStack } from '@repo/ui/gluestack';
 import { ScrollView } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { SkeletonAvatar, SkeletonTextLine } from '@repo/ui/components/SkeletonLoader';
-
-const { width } = Dimensions.get('window');
-const DRAWER_WIDTH = width * 0.65;
 
 interface NotificationDrawerProps {
   isVisible: boolean;
@@ -72,6 +70,9 @@ export default function NotificationDrawer({
   onMarkAllRead,
 }: NotificationDrawerProps) {
   const insets = useSafeAreaInsets();
+  const { width: windowWidth } = useWindowDimensions();
+  const isOnline = useStore((state) => state.isOnline);
+  const drawerWidth = Math.min(windowWidth * 0.82, 420);
 
   if (!isVisible) return null;
 
@@ -95,7 +96,7 @@ export default function NotificationDrawer({
             top: 0,
             left: 0,
             bottom: 0,
-            width: DRAWER_WIDTH,
+            width: drawerWidth,
             paddingTop: insets.top,
             paddingBottom: insets.bottom,
           }}
@@ -115,9 +116,17 @@ export default function NotificationDrawer({
                   <Heading size="lg" className="text-phase-text-primary">
                     Notifications
                   </Heading>
-                  {isRealtimeConnected && (
+                  {isRealtimeConnected ? (
                     <Text className="text-[10px] text-green-500 font-bold uppercase tracking-wider">
                       Live • Connected
+                    </Text>
+                  ) : isOnline ? (
+                    <Text className="text-[10px] text-phase-text-secondary font-bold uppercase tracking-wider">
+                      Saved view • Live updates paused
+                    </Text>
+                  ) : (
+                    <Text className="text-[10px] text-phase-text-secondary font-bold uppercase tracking-wider">
+                      Offline • Showing saved updates
                     </Text>
                   )}
                 </VStack>
@@ -237,14 +246,7 @@ export default function NotificationDrawer({
                                     : '#94a3b8';
 
                             return (
-                              <Pressable
-                                accessibilityRole="button"
-                                key={n.id}
-                                onPress={() => {
-                                  hapticLight();
-                                  if (!n.is_read && onMarkRead) onMarkRead(n.id);
-                                }}
-                              >
+                              <Box key={n.id}>
                                 <Box
                                   className={`p-4 rounded-2xl border transition-all duration-300 ${
                                     n.is_read
@@ -290,10 +292,27 @@ export default function NotificationDrawer({
                                           <Box className="w-1 h-1 rounded-full bg-phase-accent" />
                                         )}
                                       </HStack>
+                                      {!n.is_read && onMarkRead && (
+                                        <Pressable
+                                          accessibilityRole="button"
+                                          accessibilityLabel={`Mark ${n.title} as read`}
+                                          accessibilityHint="Marks only this notification as read"
+                                          className="self-start flex-row items-center gap-1.5 mt-2 px-2.5 py-1.5 rounded-lg bg-phase-surface"
+                                          onPress={() => {
+                                            hapticLight();
+                                            onMarkRead(n.id);
+                                          }}
+                                        >
+                                          <Check size={14} color="#F6BF8C" />
+                                          <Text className="text-[10px] text-phase-text-primary font-semibold">
+                                            Mark read
+                                          </Text>
+                                        </Pressable>
+                                      )}
                                     </VStack>
                                   </HStack>
                                 </Box>
-                              </Pressable>
+                              </Box>
                             );
                           })}
                         </VStack>

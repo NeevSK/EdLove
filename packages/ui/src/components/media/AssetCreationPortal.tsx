@@ -1,7 +1,7 @@
-import { useCallback, useReducer } from 'react';
-import { HStack, Input, InputField, VStack } from '@repo/ui/primitives';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Box, HStack, Input, InputField, Text, VStack } from '@repo/ui/primitives';
+import { useCallback, useReducer, useState } from 'react';
 
 // ------------------------------------------------------------
 // ASSET CREATION MODAL
@@ -41,7 +41,7 @@ export function AssetCreationModal({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (data: any) => void;
+  onAdd: (data: any) => void | Promise<void>;
   title?: string;
   placeholders?: Record<string, string>;
 }) {
@@ -51,6 +51,8 @@ export function AssetCreationModal({
     description: '',
     tags: '',
   });
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSetTitle = useCallback(
     (t: string) => dispatch({ type: 'SET_FIELD', field: 'title', value: t }),
@@ -66,11 +68,22 @@ export function AssetCreationModal({
   );
 
   const handleAdd = useCallback(() => {
-    if (!formData.title || !formData.url) return;
-    onAdd({ ...formData, tags: formData.tags.split(',').map((t) => t.trim()) });
-    onClose();
-    dispatch({ type: 'RESET' });
-  }, [formData, onAdd, onClose]);
+    if (!formData.title || !formData.url || isSubmitting) return;
+    setErrorMessage(null);
+    setIsSubmitting(true);
+    void Promise.resolve()
+      .then(() => onAdd({ ...formData, tags: formData.tags.split(',').map((t) => t.trim()) }))
+      .then(() => {
+        onClose();
+        dispatch({ type: 'RESET' });
+      })
+      .catch((error: unknown) => {
+        setErrorMessage(error instanceof Error ? error.message : 'We could not add this resource.');
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
+  }, [formData, isSubmitting, onAdd, onClose]);
 
   return (
     <SanctuaryModal isOpen={isOpen} onClose={onClose} title={title}>
@@ -98,12 +111,21 @@ export function AssetCreationModal({
             multiline
           />
         </Input>
+        {errorMessage ? (
+          <Box className="rounded-xl border border-phase-danger/20 bg-phase-danger/10 px-3 py-2">
+            <Text className="text-sm text-phase-danger">{errorMessage}</Text>
+          </Box>
+        ) : null}
         <HStack className="justify-end gap-3 pt-4">
           <SanctuaryButton variant="ghost" onPress={onClose}>
             Dismiss
           </SanctuaryButton>
-          <SanctuaryButton onPress={handleAdd} isDisabled={!formData.title || !formData.url}>
-            Complete
+          <SanctuaryButton
+            onPress={handleAdd}
+            isLoading={isSubmitting}
+            isDisabled={isSubmitting || !formData.title || !formData.url}
+          >
+            {isSubmitting ? 'Adding…' : 'Complete'}
           </SanctuaryButton>
         </HStack>
       </VStack>

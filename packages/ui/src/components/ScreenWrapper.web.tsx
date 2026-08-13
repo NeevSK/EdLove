@@ -2,8 +2,9 @@ import type React from 'react';
 import { StyleSheet } from 'react-native';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import { ScrollView, View } from '@repo/ui/primitives';
+import { usePageFrame } from './layout';
 
-interface ScreenWrapperProps {
+export interface ScreenWrapperProps {
   children: React.ReactNode;
   title?: string;
   showBack?: boolean;
@@ -14,6 +15,7 @@ interface ScreenWrapperProps {
   style?: any;
   hasBottomTab?: boolean;
   noTopInset?: boolean;
+  className?: string;
 }
 
 export function useBottomTabPadding() {
@@ -37,8 +39,10 @@ export default function ScreenWrapper({
   backgroundColor,
   style,
   refreshControl,
+  className,
 }: ScreenWrapperProps) {
   const { scene } = useTheme();
+  const frame = usePageFrame();
 
   const isScrollable = scroll ?? scrollable;
   const resolvedBackground = backgroundColor || scene.canvas.bg;
@@ -47,12 +51,16 @@ export default function ScreenWrapper({
     <View
       role="main"
       aria-label={title}
+      className={className}
       style={[styles.container, { backgroundColor: resolvedBackground }]}
     >
       {isScrollable ? (
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={[styles.contentContainer, style]}
+          contentContainerStyle={[styles.contentContainer, {
+            maxWidth: frame.maxWidth,
+            paddingHorizontal: frame.gutter,
+          }, style]}
           // High-fidelity fix: show scrollbars on web for better spatial awareness (System 2 resonance)
           showsVerticalScrollIndicator={true}
           refreshControl={refreshControl}
@@ -61,7 +69,16 @@ export default function ScreenWrapper({
           {children}
         </ScrollView>
       ) : (
-        <View style={[styles.contentContainer, styles.flex1, style]}>{children}</View>
+        <View
+          style={[
+            styles.contentContainer,
+            styles.flex1,
+            { maxWidth: frame.maxWidth, paddingHorizontal: frame.gutter },
+            style,
+          ]}
+        >
+          {children}
+        </View>
       )}
     </View>
   );
@@ -76,6 +93,8 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flexGrow: 1,
+    width: '100%',
+    alignSelf: 'center',
   },
   flex1: {
     flex: 1,

@@ -3,8 +3,9 @@ import { Platform, StatusBar, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import { KeyboardAvoidingView, ScrollView, View } from '@repo/ui/components/ui/view';
+import { usePageFrame } from './layout';
 
-interface ScreenWrapperProps {
+export interface ScreenWrapperProps {
   children: React.ReactNode;
   title?: string;
   showBack?: boolean;
@@ -40,6 +41,7 @@ export default function ScreenWrapper({
 }: ScreenWrapperProps) {
   const insets = useSafeAreaInsets();
   const { isDark, scene } = useTheme();
+  const frame = usePageFrame();
 
   const safeAreaStyle = {
     paddingTop: noTopInset ? 0 : insets.top,
@@ -68,6 +70,7 @@ export default function ScreenWrapper({
             style={{ flex: 1 }}
             contentContainerStyle={[
               styles.contentContainer,
+              { width: '100%', maxWidth: frame.maxWidth, alignSelf: 'center' },
               hasBottomTab && { paddingBottom: 80 + insets.bottom },
               style,
             ]}
@@ -77,7 +80,15 @@ export default function ScreenWrapper({
             {children}
           </ScrollView>
         ) : (
-          <View style={[styles.contentContainer, { flex: 1 }, style]}>{children}</View>
+          <View
+            style={[
+              styles.contentContainer,
+              { flex: 1, width: '100%', maxWidth: frame.maxWidth, alignSelf: 'center' },
+              style,
+            ]}
+          >
+            {children}
+          </View>
         )}
       </View>
     </KeyboardAvoidingView>

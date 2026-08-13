@@ -1,9 +1,11 @@
 import type { DownloadState } from '@repo/core/hooks';
-import { CircleAlert, Download, ExternalLink, FileText, Info, Sparkles } from '@repo/ui/icons';
-import { Box, HStack, Text, useTheme, VStack } from '@repo/ui/primitives';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { Download, ExternalLink, FileText, Info, Sparkles } from '@repo/ui/icons';
+import { Box, HStack, Text, useTheme, VStack } from '@repo/ui/primitives';
 
 export interface UniversalDocumentPortalProps {
   title: string;
@@ -109,6 +111,14 @@ export function UniversalDocumentPortal({
         <VStack className="gap-6 mt-auto pb-8">
           {downloadState === 'downloading' && (
             <VStack className="gap-2">
+              <HStack className="items-center justify-center gap-2">
+                <BrandPulse
+                  size={22}
+                  tintColor={theme.accent.action}
+                  accessibilityLabel="Preparing document"
+                />
+                <Text className="text-xs text-phaseText-secondary">Preparing your document…</Text>
+              </HStack>
               <Box className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
                 <Box
                   className="h-full rounded-full bg-phase-accent"
@@ -122,10 +132,15 @@ export function UniversalDocumentPortal({
           )}
 
           {errorMsg && (
-            <HStack className="p-4 rounded-2xl bg-phase-danger/10 border border-phase-danger/20 items-center gap-3">
-              <CircleAlert size={20} color={theme.scene.danger.main} />
-              <Text className="text-sm text-phase-danger font-medium flex-1">{errorMsg}</Text>
-            </HStack>
+            <BrandedErrorState
+              title="This document is not ready yet"
+              message={
+                errorMsg.toLowerCase().includes('offline')
+                  ? 'You are offline. Reconnect to continue.'
+                  : errorMsg
+              }
+              style={{ paddingVertical: 12 }}
+            />
           )}
 
           <VStack className="gap-3">

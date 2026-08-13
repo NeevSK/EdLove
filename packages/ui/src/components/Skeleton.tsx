@@ -16,10 +16,11 @@
  *
  * Platform note: Uses platform-specific animation implementations.
  */
+import { tokens } from '@repo/ui/tokens';
 import React from 'react';
-import { View, StyleSheet, ViewStyle, Platform } from 'react-native';
-import { duration, easing, color } from './motion';
+import { Platform, StyleSheet, View, type ViewStyle } from 'react-native';
 import { useResponsiveGrid } from './layout';
+import { duration, easing } from './motion';
 
 // Conditional imports for Reanimated
 let Animated: any = null;
@@ -51,7 +52,7 @@ export function ShimmerBlock({ width = '100%', height, radius = 8, style, classN
       width,
       height,
       borderRadius: radius,
-      backgroundColor: color.neutral.warmGray200,
+      backgroundColor: tokens.colors.skeletonBase,
       ...(style || {}),
     };
     
@@ -84,7 +85,7 @@ export function ShimmerBlock({ width = '100%', height, radius = 8, style, classN
             width,
             height,
             borderRadius: radius,
-            backgroundColor: color.neutral.warmGray200,
+            backgroundColor: tokens.colors.skeletonBase,
           },
           style,
         ]}
@@ -100,7 +101,7 @@ export function ShimmerBlock({ width = '100%', height, radius = 8, style, classN
           width,
           height,
           borderRadius: radius,
-          backgroundColor: color.neutral.warmGray200,
+          backgroundColor: tokens.colors.skeletonBase,
         },
         {
           animationName: {
@@ -167,14 +168,14 @@ export function SkeletonList({ count = 6, className, style }: SkeletonListProps)
 const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
-    gap: 12,
-    padding: 14,
-    borderRadius: 16,
+    gap: tokens.spacing.md,
+    padding: tokens.spacing.md,
+    borderRadius: tokens.radii.lg,
   },
   lines: {
     flex: 1,
     justifyContent: 'center',
-    gap: 8,
+    gap: tokens.spacing.sm,
   },
   gridOuter: {
     width: '100%',
@@ -185,6 +186,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   cell: {
-    padding: 6,
+    padding: tokens.spacing.xs + 2,
   },
 });

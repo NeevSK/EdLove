@@ -9,6 +9,7 @@
  */
 
 import type { TemporalPhase } from '@repo/ui/context/types';
+import { tokens } from '../tokens';
 import { compositeColorOverBackground, getTextOnBackground } from '@repo/ui/utils/colorUtils';
 
 // ============================================================================
@@ -129,6 +130,13 @@ export const colors = {
   glassBorder: 'rgba(252, 249, 242, 0.12)', // Sacred White based (Default)
 } as const;
 
+/**
+ * The stable, component-facing vocabulary. Phase-aware components should use
+ * resolved scene tokens from useTheme(); static primitives use these roles.
+ */
+export const semanticTokens = tokens.semantic;
+export const layoutTokens = tokens.layout;
+
 // Standalone exports for legacy compatibility
 export const {
   sanctuarySaffron,
@@ -235,15 +243,15 @@ export const typography = {
 // ============================================================================
 
 export const spacing = {
-  small: 8, // Alias for sm
-  medium: 16, // Alias for md
-  large: 24, // Alias for lg
-  xs: 4, // Tight spacing (icon padding, small gaps)
-  sm: 8, // Small spacing (between related items)
-  md: 9, // Standard spacing (Refined - lean but breathable)
-  lg: 24, // Large spacing (section gaps)
-  xl: 32, // Extra large (page margins, major sections)
-  '2xl': 48, // Huge spacing (page padding)
+  small: tokens.spacing.sm, // Alias for sm
+  medium: tokens.spacing.md, // Alias for md
+  large: tokens.spacing.lg, // Alias for lg
+  xs: tokens.spacing.xs, // Tight spacing (icon padding, small gaps)
+  sm: tokens.spacing.sm, // Small spacing (between related items)
+  md: tokens.spacing.md, // Standard spacing
+  lg: tokens.spacing.lg, // Large spacing (section gaps)
+  xl: tokens.spacing.xl, // Extra large (page margins, major sections)
+  '2xl': tokens.spacing.xxl, // Huge spacing (page padding)
   '3xl': 64, // Massive spacing (hero sections)
 };
 
@@ -457,6 +465,8 @@ export const zIndex = {
 
 export const Theme = {
   colors,
+  semantic: semanticTokens,
+  layout: layoutTokens,
   typography,
   spacing,
   corners,

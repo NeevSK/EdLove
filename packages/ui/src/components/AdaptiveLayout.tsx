@@ -1,7 +1,9 @@
-import type React from 'react';
-import { StyleSheet, useWindowDimensions } from 'react-native';
+import { responsiveLayout } from '@repo/ui/components/layout';
+import { useResponsive } from '@repo/ui/hooks/useResponsive';
 import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
 import { ScrollView, View } from '@repo/ui/primitives';
+import type React from 'react';
+import { StyleSheet } from 'react-native';
 
 interface AdaptiveLayoutProps {
   /**
@@ -39,19 +41,25 @@ export const AdaptiveLayout = ({
   children,
   renderSidebar,
   renderContent,
-  sidebarWidth = 320,
+  sidebarWidth = responsiveLayout.defaultSidebarWidth,
   breakpoint = 768,
   scrollable = true,
 }: AdaptiveLayoutProps) => {
-  const { width } = useWindowDimensions();
+  const { width, isTablet, isLandscape } = useResponsive();
   const colors = useThemedColors();
-  const isTablet = width >= breakpoint;
+  const usesTabletLayout = isTablet && width >= breakpoint;
+  const resolvedSidebarWidth = isLandscape
+    ? Math.min(sidebarWidth, responsiveLayout.landscapeSidebarMaxWidth)
+    : sidebarWidth;
 
-  if (isTablet && renderSidebar && renderContent) {
+  if (usesTabletLayout && renderSidebar && renderContent) {
     return (
       <View style={styles.tabletContainer}>
         <View
-          style={[styles.sidebarColumn, { width: sidebarWidth, borderRightColor: colors.border }]}
+          style={[
+            styles.sidebarColumn,
+            { width: resolvedSidebarWidth, borderRightColor: colors.border },
+          ]}
         >
           {scrollable ? (
             <ScrollView showsVerticalScrollIndicator={false}>{renderSidebar()}</ScrollView>
@@ -76,15 +84,21 @@ export const AdaptiveLayout = ({
 const styles = StyleSheet.create({
   tabletContainer: {
     flex: 1,
+    width: '100%',
+    minHeight: 0,
     flexDirection: 'row',
     backgroundColor: 'transparent',
   },
   sidebarColumn: {
     height: '100%',
+    minWidth: 0,
+    flexShrink: 0,
     borderRightWidth: 1,
   },
   contentColumn: {
     flex: 1,
     height: '100%',
+    minWidth: 0,
+    flexShrink: 1,
   },
 });

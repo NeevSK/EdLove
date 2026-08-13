@@ -13,11 +13,12 @@
  *
  * Platform note: Uses platform-specific animation implementations.
  */
+import { tokens } from '@repo/ui/tokens';
 import React from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import { duration, easing, color } from './motion';
 import { useBreakpoint } from './layout';
+import { duration, easing } from './motion';
 
 // Same verified geometry as BrandPulse — see that file for the source trace.
 const PATHS = {
@@ -26,7 +27,7 @@ const PATHS = {
   br: 'M 256.14,425.79 L 277.78,435.38 L 303.53,440.31 L 333.11,439.76 L 361.60,433.73 L 394.48,419.76 L 427.90,396.20 L 452.82,369.08 L 472.00,336.21 L 441.05,312.65 L 406.53,295.67 L 367.63,284.98 L 331.47,282.24 L 328.46,308.27 L 323.80,328.27 L 318.05,345.52 L 308.73,366.07 L 300.24,380.31 L 286.54,398.39 L 271.48,413.73 L 256.96,425.24 Z',
 };
 
-type ErrorStateProps = {
+export type ErrorStateProps = {
   title: string;
   message?: string;
   /** Usually a "Try again" button. */
@@ -53,12 +54,15 @@ export function ErrorState({ title, message, children, className, style }: Error
             .error-icon-animated svg {
               animation: error-fade-in ${duration.transition}ms cubic-bezier(0.33, 1, 0.42, 0) forwards;
             }
+            @media (prefers-reduced-motion: reduce) {
+              .error-icon-animated svg { animation: none; }
+            }
           `}</style>
           <div className="error-icon-animated">
             <Svg width={size} height={size} viewBox="0 0 512 512">
-              <Path d={PATHS.top} fill={color.state.caution} />
-              <Path d={PATHS.bl} fill={color.state.caution} />
-              <Path d={PATHS.br} fill={color.state.caution} />
+              <Path d={PATHS.top} fill={tokens.colors.warning} />
+              <Path d={PATHS.bl} fill={tokens.colors.warning} />
+              <Path d={PATHS.br} fill={tokens.colors.warning} />
             </Svg>
           </div>
         </div>
@@ -97,9 +101,9 @@ export function ErrorState({ title, message, children, className, style }: Error
         }}
       >
         <Svg width={size} height={size} viewBox="0 0 512 512">
-          <Path d={PATHS.top} fill={color.state.caution} />
-          <Path d={PATHS.bl} fill={color.state.caution} />
-          <Path d={PATHS.br} fill={color.state.caution} />
+          <Path d={PATHS.top} fill={tokens.colors.warning} />
+          <Path d={PATHS.bl} fill={tokens.colors.warning} />
+          <Path d={PATHS.br} fill={tokens.colors.warning} />
         </Svg>
       </AnimatedView>
       <Text style={styles.title}>{title}</Text>
@@ -113,25 +117,25 @@ const styles = StyleSheet.create({
   wrap: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 48,
-    paddingHorizontal: 24,
-    gap: 12,
+    paddingVertical: tokens.spacing.xxl,
+    paddingHorizontal: tokens.spacing.lg,
+    gap: tokens.spacing.md,
   },
   title: {
-    fontSize: 16,
+    fontSize: tokens.typography.sizes.md,
     fontWeight: '600',
-    color: '#2A2118',
+    color: tokens.semantic.text.primary,
     textAlign: 'center',
-    marginTop: 8,
+    marginTop: tokens.spacing.sm,
   },
   message: {
-    fontSize: 13,
-    color: '#8A7B68',
+    fontSize: tokens.typography.sizes.sm,
+    color: tokens.semantic.text.secondary,
     textAlign: 'center',
-    lineHeight: 19,
-    maxWidth: 280,
+    lineHeight: tokens.typography.sizes.sm * 1.5,
+    maxWidth: tokens.layout.pageFrame.stateMessageMaxWidth,
   },
   actions: {
-    marginTop: 8,
+    marginTop: tokens.spacing.sm,
   },
 });

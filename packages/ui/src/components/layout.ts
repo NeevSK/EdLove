@@ -10,21 +10,61 @@
  * now" — which is exactly as true for a resized browser window on web as
  * it is for a rotated tablet.
  */
+
+import { tokens } from '@repo/ui/tokens';
 import { useWindowDimensions } from 'react-native';
 
 export const breakpoints = {
-  phone: 0,
-  tablet: 600,
-  desktop: 1024,
+  ...tokens.layout.breakpoints,
 } as const;
+
+/**
+ * Native viewport thresholds used when orientation matters.
+ *
+ * The portrait rule intentionally stays at 768px so existing portrait
+ * consumers keep their current behavior. In landscape, the short edge is
+ * the stable signal that separates a rotated phone from a tablet.
+ */
+export const responsiveBreakpoints = {
+  mobileMaxWidth: 767,
+  tabletMinWidth: 768,
+  tabletLandscapeMinHeight: 600,
+  desktopMinWidth: 1024,
+} as const;
+
+/** Shared geometry for adaptive two-column surfaces. */
+export const responsiveLayout = {
+  defaultSidebarWidth: 320,
+  landscapeSidebarMaxWidth: 288,
+  tabletColumnMinWidth: 320,
+} as const;
+
+export type ResponsiveOrientation = 'portrait' | 'landscape';
+
+export function resolveOrientation(width: number, height: number): ResponsiveOrientation {
+  return width > height ? 'landscape' : 'portrait';
+}
+
+/**
+ * Classifies native viewports without treating a wide, short phone as a
+ * tablet. This uses named dimensions rather than a device-specific ratio.
+ */
+export function isTabletViewport(width: number, height: number): boolean {
+  return resolveOrientation(width, height) === 'landscape'
+    ? height >= responsiveBreakpoints.tabletLandscapeMinHeight
+    : width >= responsiveBreakpoints.tabletMinWidth;
+}
+
+/** Width passed to the native workspace renderer for a stable mobile lane. */
+export function resolveNativeRendererWidth(width: number, height: number): number {
+  return isTabletViewport(width, height) ? width : responsiveBreakpoints.mobileMaxWidth;
+}
 
 export type Breakpoint = 'phone' | 'tablet' | 'desktop';
 
 /** How many grid columns list/grid content should use at each band. */
 export const columns: Record<Breakpoint, number> = {
-  phone: 1,
-  tablet: 2,
-  desktop: 3,
+  ...tokens.layout.grid,
 };
 
 /**
@@ -34,9 +74,20 @@ export const columns: Record<Breakpoint, number> = {
  * states share the same reading width.
  */
 export const maxContentWidth: Record<Breakpoint, number | '100%'> = {
-  phone: '100%',
-  tablet: 720,
-  desktop: 960,
+  ...tokens.layout.pageFrame.maxWidth,
+};
+
+/** Horizontal breathing room for the shared page frame. */
+export const pageGutters: Record<Breakpoint, number> = {
+  ...tokens.layout.pageFrame.gutter,
+};
+
+export type PageFrame = {
+  breakpoint: Breakpoint;
+  columns: number;
+  gutter: number;
+  maxWidth: number | '100%';
+  readingMaxWidth: number;
 };
 
 /**
@@ -70,5 +121,18 @@ export function useResponsiveGrid() {
     breakpoint: bp,
     columns: columns[bp],
     maxWidth: maxContentWidth[bp],
+    gutter: pageGutters[bp],
+  };
+}
+
+/** Shared frame metrics for screens, lists, and loading states. */
+export function usePageFrame(): PageFrame {
+  const breakpoint = useBreakpoint();
+  return {
+    breakpoint,
+    columns: columns[breakpoint],
+    gutter: pageGutters[breakpoint],
+    maxWidth: maxContentWidth[breakpoint],
+    readingMaxWidth: tokens.layout.pageFrame.readingMaxWidth,
   };
 }

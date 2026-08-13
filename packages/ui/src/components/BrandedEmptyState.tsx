@@ -13,11 +13,12 @@
  *
  * Platform note: Uses platform-specific animation implementations.
  */
+import { tokens } from '@repo/ui/tokens';
 import React from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import { duration, easing, color } from './motion';
 import { useBreakpoint } from './layout';
+import { duration, easing } from './motion';
 
 // Same traced geometry as the line-draw splash concept — the whole
 // silhouette plus the two heart-side lines, stroke only, never filled.
@@ -27,7 +28,7 @@ const PATHS = {
   studentSide: 'M 256.96,425.24 L 271.48,413.73 L 286.54,398.39 L 300.24,380.31 L 308.73,366.07 L 318.05,345.52 L 323.80,328.27 L 328.46,308.27 L 331.47,282.79 L 318.05,283.61 L 303.53,286.90 L 295.58,289.92 L 282.98,297.04 L 271.48,307.45 L 266.27,314.02 L 259.97,324.98 L 255.86,335.94',
 };
 
-type BrandedEmptyStateProps = {
+export type BrandedEmptyStateProps = {
   title: string;
   message?: string;
   /** Opt into a barely-there breathing opacity. Off by default — see note above. */
@@ -43,9 +44,9 @@ export function BrandedEmptyState({ title, message, subtle = false, children, cl
 
   const illustration = (
     <Svg width={size} height={size} viewBox="0 0 512 512">
-      <Path d={PATHS.outer} fill="none" stroke={color.neutral.warmGray400} strokeWidth={9} strokeLinejoin="round" />
-      <Path d={PATHS.teacherSide} fill="none" stroke={color.neutral.warmGray400} strokeWidth={9} strokeLinecap="round" />
-      <Path d={PATHS.studentSide} fill="none" stroke={color.neutral.warmGray400} strokeWidth={9} strokeLinecap="round" />
+      <Path d={PATHS.outer} fill="none" stroke={tokens.colors.emptyIllustration} strokeWidth={9} strokeLinejoin="round" />
+      <Path d={PATHS.teacherSide} fill="none" stroke={tokens.colors.emptyIllustration} strokeWidth={9} strokeLinecap="round" />
+      <Path d={PATHS.studentSide} fill="none" stroke={tokens.colors.emptyIllustration} strokeWidth={9} strokeLinecap="round" />
     </Svg>
   );
 
@@ -61,6 +62,9 @@ export function BrandedEmptyState({ title, message, subtle = false, children, cl
             }
             .empty-subtle-animated svg {
               animation: empty-subtle ${duration.breathe * 1.4}ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            }
+            @media (prefers-reduced-motion: reduce) {
+              .empty-subtle-animated svg { animation: none; }
             }
           `}</style>
           <div className="empty-subtle-animated">
@@ -126,25 +130,25 @@ const styles = StyleSheet.create({
   wrap: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 48,
-    paddingHorizontal: 24,
-    gap: 12,
+    paddingVertical: tokens.spacing.xxl,
+    paddingHorizontal: tokens.spacing.lg,
+    gap: tokens.spacing.md,
   },
   title: {
-    fontSize: 16,
+    fontSize: tokens.typography.sizes.md,
     fontWeight: '600',
-    color: '#2A2118',
+    color: tokens.semantic.text.primary,
     textAlign: 'center',
-    marginTop: 8,
+    marginTop: tokens.spacing.sm,
   },
   message: {
-    fontSize: 13,
-    color: '#8A7B68',
+    fontSize: tokens.typography.sizes.sm,
+    color: tokens.semantic.text.secondary,
     textAlign: 'center',
-    lineHeight: 19,
-    maxWidth: 280,
+    lineHeight: tokens.typography.sizes.sm * 1.5,
+    maxWidth: tokens.layout.pageFrame.stateMessageMaxWidth,
   },
   actions: {
-    marginTop: 8,
+    marginTop: tokens.spacing.sm,
   },
 });

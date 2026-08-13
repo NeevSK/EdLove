@@ -1,12 +1,13 @@
 import { coreRuntime, mediaInitialState, mediaReducer } from '@repo/core/logic';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { useTheme } from '@repo/ui/hooks/useTheme';
 import { Pause, Play, RotateCcw, RotateCw, X } from '@repo/ui/icons';
+import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { formatTimeMs } from '@repo/ui/utils/dateTimeUtils';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 import Animated, { FadeInUp } from 'react-native-reanimated';
-import { useTheme } from '@repo/ui/hooks/useTheme';
-import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { formatTimeMs } from '@repo/ui/utils/dateTimeUtils';
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 
 export interface VideoPlayerProps {
   url: string;
@@ -105,15 +106,17 @@ export function VideoPlayer({ url, title, creator, onClose }: VideoPlayerProps) 
 
   if (hasError || !url) {
     return (
-      <Box className="flex-1 bg-black items-center justify-center">
-        <Text className="text-white text-lg text-center p-8">
-          Unable to load video. Please check the URL and try again.
-        </Text>
-        {onClose && (
-          <SanctuaryButton onPress={onClose} leftIcon={X}>
-            Close
-          </SanctuaryButton>
-        )}
+      <Box className="flex-1 bg-phase-surface items-center justify-center">
+        <BrandedErrorState
+          title={!url ? 'Video unavailable' : 'This video could not be opened'}
+          message="Check your connection or try the resource again later."
+        >
+          {onClose && (
+            <SanctuaryButton onPress={onClose} leftIcon={X}>
+              Close
+            </SanctuaryButton>
+          )}
+        </BrandedErrorState>
       </Box>
     );
   }

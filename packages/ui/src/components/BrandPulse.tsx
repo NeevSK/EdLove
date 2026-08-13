@@ -11,10 +11,11 @@
  *
  * Platform note: Uses platform-specific animation implementations for best performance.
  */
+import { tokens } from '@repo/ui/tokens';
 import React from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import { duration, easing, scale as scaleTokens, color } from './motion';
+import { duration, easing, scale as scaleTokens } from './motion';
 
 // Traced directly from the logo (same source as the splash animation) —
 // three petals, viewBox roughly matches the 40-472 x 95-441 bounding box
@@ -25,37 +26,50 @@ const PATHS = {
   br: 'M 256.14,425.79 L 277.78,435.38 L 303.53,440.31 L 333.11,439.76 L 361.60,433.73 L 394.48,419.76 L 427.90,396.20 L 452.82,369.08 L 472.00,336.21 L 441.05,312.65 L 406.53,295.67 L 367.63,284.98 L 331.47,282.24 L 328.46,308.27 L 323.80,328.27 L 318.05,345.52 L 308.73,366.07 L 300.24,380.31 L 286.54,398.39 L 271.48,413.73 L 256.96,425.24 Z',
 };
 
-type BrandPulseProps = {
+export type BrandPulseProps = {
   /** Diameter in px. Defaults to 28, the standard inline-loader size. */
   size?: number;
   /** Overrides the brand orange if this loader sits on a colored surface. */
   tintColor?: string;
   className?: string;
   style?: any;
+  accessibilityLabel?: string;
 };
 
-export function BrandPulse({ size = 28, tintColor, className, style }: BrandPulseProps) {
-  const fill = tintColor ?? color.brand.orange;
+export function BrandPulse({
+  size = 28,
+  tintColor,
+  className,
+  style,
+  accessibilityLabel = 'Loading',
+}: BrandPulseProps) {
+  const fill = tintColor ?? tokens.colors.primary;
+  const sharedA11yProps = {
+    accessible: true,
+    accessibilityRole: 'progressbar' as const,
+    accessibilityLabel,
+    accessibilityState: { busy: true },
+  };
 
   // Web implementation using CSS animations
   if (Platform.OS === 'web') {
     return (
-      <View 
-        className={`brand-pulse-wrapper ${className || ''}`}
-        style={[
-          styles.wrap,
-          { width: size, height: size },
-          style,
-        ]}
+        <View
+          className={`brand-pulse-wrapper ${className || ''}`}
+          {...sharedA11yProps}
+          style={[styles.wrap, { width: size, height: size }, style]}
       >
         <style>{`
           @keyframes brand-pulse {
             0%, 100% { transform: scale(${scaleTokens.breatheMin}); opacity: 0.72; }
             50% { transform: scale(${scaleTokens.breatheMax}); opacity: 1; }
           }
-          .brand-pulse-wrapper svg {
-            animation: brand-pulse ${duration.breathe}ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
-          }
+           .brand-pulse-wrapper svg {
+             animation: brand-pulse ${duration.breathe}ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+           }
+           @media (prefers-reduced-motion: reduce) {
+             .brand-pulse-wrapper svg { animation: none; }
+           }
         `}</style>
         <Svg width={size} height={size} viewBox="0 0 512 512">
           <Path d={PATHS.top} fill={fill} />
@@ -76,7 +90,7 @@ export function BrandPulse({ size = 28, tintColor, className, style }: BrandPuls
 
   if (!Animated) {
     return (
-      <View style={[styles.wrap, { width: size, height: size }, style]}>
+      <View {...sharedA11yProps} style={[styles.wrap, { width: size, height: size }, style]}>
         <Svg width={size} height={size} viewBox="0 0 512 512">
           <Path d={PATHS.top} fill={fill} />
           <Path d={PATHS.bl} fill={fill} />
@@ -91,6 +105,7 @@ export function BrandPulse({ size = 28, tintColor, className, style }: BrandPuls
   return (
     <AnimatedView
       className={className}
+      {...sharedA11yProps}
       style={[
         styles.wrap,
         { width: size, height: size },

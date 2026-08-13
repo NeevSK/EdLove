@@ -1,10 +1,12 @@
 import type { DownloadState } from '@repo/core/hooks';
-import { Bookmark, CircleX, Download, ExternalLink } from '@repo/ui/icons';
-import { useTheme } from '@repo/ui/hooks/useTheme';
-import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { Bookmark, Download, ExternalLink } from '@repo/ui/icons';
+import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 
 export interface PdfViewerProps {
   title: string;
@@ -76,6 +78,14 @@ export function PdfViewer({
         {/* Progress bar - shown while downloading */}
         {downloadState === 'downloading' && (
           <Box className="w-full mb-8">
+            <HStack className="items-center justify-center gap-2 mb-3">
+              <BrandPulse
+                size={22}
+                tintColor={theme.accent.action}
+                accessibilityLabel="Preparing document"
+              />
+              <Text className="text-xs text-phaseText-secondary">Preparing your document…</Text>
+            </HStack>
             <Box className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
               <Box
                 className="h-full rounded-full bg-phase-accent"
@@ -89,10 +99,15 @@ export function PdfViewer({
         )}
 
         {errorMsg && (
-          <HStack className="items-center gap-2 mb-6 p-4 bg-phase-danger/10 rounded-2xl border border-phase-danger/20">
-            <CircleX size={16} color={theme.scene.danger.main} />
-            <Text className="text-sm text-phase-danger font-medium">{errorMsg}</Text>
-          </HStack>
+          <BrandedErrorState
+            title="This document could not be prepared"
+            message={
+              errorMsg.toLowerCase().includes('offline')
+                ? 'You are offline. Reconnect to download this document.'
+                : errorMsg
+            }
+            style={{ paddingVertical: 12 }}
+          />
         )}
 
         {/* Action buttons */}

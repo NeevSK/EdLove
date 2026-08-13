@@ -1,6 +1,10 @@
 import { useNotifications, useStore } from '@repo/core/logic';
 import type { AppNotification } from '@repo/core/types';
-import { Bell, CircleCheck, Inbox, Info, Shield, Sparkles } from '@repo/ui/icons';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { useResponsiveGrid } from '@repo/ui/components/layout';
+import { Bell, CircleCheck, Info, Shield, Sparkles } from '@repo/ui/icons';
 import { formatDistanceToNow } from 'date-fns';
 import React, { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +20,9 @@ const StackFallback = memo(({ variant }: { variant?: string }) => (
       gap: '16px',
     }}
   >
+    <div style={{ display: 'flex', justifyContent: 'center', padding: '8px' }}>
+      <BrandPulse size={32} accessibilityLabel="Loading notifications" />
+    </div>
     {[1, 2, 3].map((i) => (
       <div
         key={i}
@@ -50,25 +57,9 @@ const NotificationRow = memo(
   ({ notif, onRead }: { notif: AppNotification; onRead: (id: string) => Promise<void> }) => {
     const icon = ICON_MAP[notif.type] ?? ICON_MAP.system;
 
-    const handleClick = useCallback(() => {
-      if (!notif.is_read) {
-        void onRead(notif.id);
-      }
-    }, [notif.id, notif.is_read, onRead]);
-
     return (
       <div
-        role="button"
-        tabIndex={0}
-        onClick={handleClick}
-        onKeyDown={(e: React.KeyboardEvent) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            // preventDefault for Space only on the row element itself
-            // avoids blocking scroll in any scrollable child element.
-            if (e.target === e.currentTarget) e.preventDefault();
-            handleClick();
-          }
-        }}
+        role="article"
         className="sanctuary-card"
         style={{
           padding: '20px',
@@ -139,6 +130,18 @@ const NotificationRow = memo(
                 {notif.body}
               </p>
             )}
+            {!notif.is_read && (
+              <button
+                type="button"
+                aria-label={`Mark ${notif.title} as read`}
+                onClick={() => void onRead(notif.id)}
+                className="sanctuary-button-ghost"
+                style={{ marginTop: '12px', padding: '6px 10px', fontSize: '12px' }}
+              >
+                <CircleCheck size={14} />
+                Mark read
+              </button>
+            )}
           </div>
 
           {/* Unread dot */}
@@ -163,6 +166,8 @@ const NotificationRow = memo(
 export default memo(function NotificationsScreenWeb() {
   const { t } = useTranslation();
   const { user } = useStore();
+  const isOnline = useStore((state) => state.isOnline);
+  const { gutter, maxWidth } = useResponsiveGrid();
   const {
     notifications,
     unreadCount,
@@ -171,22 +176,20 @@ export default memo(function NotificationsScreenWeb() {
     error,
     markAsRead,
     markAllRead,
+    refresh,
   } = useNotifications(user?.id);
 
-  // Automatically mark all as read when visiting this screen
-  React.useEffect(() => {
-    if (!isLoading && unreadCount > 0) {
-      void markAllRead();
-    }
-  }, [isLoading, unreadCount, markAllRead]);
-
+  const hasData = notifications.length > 0;
   const handleMarkAllRead = useCallback(() => {
     void markAllRead();
   }, [markAllRead]);
 
   return (
     <div className="sanctuary-screen">
-      <div className="sanctuary-container">
+      <div
+        className="sanctuary-container"
+        style={{ maxWidth: typeof maxWidth === 'number' ? maxWidth : '100%', paddingInline: gutter }}
+      >
         {/* GREETING */}
         <WebScreenHeader
           title={t('notifications.title')}
@@ -196,7 +199,7 @@ export default memo(function NotificationsScreenWeb() {
 
         {/* CONTENT */}
         <div style={{ maxWidth: '800px' }}>
-          {isRealtimeConnected && (
+          {isRealtimeConnected ? (
             <div
               style={{
                 fontSize: '11px',
@@ -220,16 +223,24 @@ export default memo(function NotificationsScreenWeb() {
               />
               Live Stream Active
             </div>
+          ) : isOnline ? (
+            <div className="notification-state notification-state-stale">
+              Live updates are paused. Your saved notifications remain available.
+            </div>
+          ) : (
+            <div className="notification-state notification-state-offline">
+              You are offline. Showing the latest saved notifications.
+            </div>
           )}
 
           {error && (
             <div
               style={{
                 padding: '12px 16px',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                border: '1px solid rgba(239, 68, 68, 0.2)',
-                borderRadius: '12px',
-                color: '#ef4444',
+                backgroundColor: 'var(--warning-surface)',
+                border: '1px solid var(--warning)',
+                borderRadius: '16px',
+                color: 'var(--warning)',
                 fontSize: '13px',
                 marginBottom: '20px',
               }}
@@ -254,44 +265,25 @@ export default memo(function NotificationsScreenWeb() {
           )}
 
           {/* Loading */}
-          {isLoading && <StackFallback variant="list" />}
+          {isLoading && !hasData && <StackFallback variant="list" />}
 
           {/* Empty state */}
-          {!isLoading && notifications.length === 0 && (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '16px',
-                padding: '80px 40px',
-                textAlign: 'center',
-              }}
+          {!isLoading && error && !hasData && (
+            <BrandedErrorState
+              title={t('notifications.loadFailed', 'Notifications could not be opened')}
+              message={error}
             >
-              <div
-                style={{
-                  width: '64px',
-                  height: '64px',
-                  borderRadius: '20px',
-                  background: 'var(--action-soft)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Inbox size={28} color="var(--action)" />
-              </div>
-              <p
-                style={{
-                  color: 'var(--ink-ghost)',
-                  fontStyle: 'italic',
-                  maxWidth: '320px',
-                  lineHeight: 1.6,
-                }}
-              >
-                {t('notifications.empty')}
-              </p>
-            </div>
+              <button type="button" className="sanctuary-button" onClick={() => void refresh()}>
+                {t('common.retry', 'Try again')}
+              </button>
+            </BrandedErrorState>
+          )}
+
+          {!isLoading && !error && notifications.length === 0 && (
+            <BrandedEmptyState
+              title={t('notifications.quietTitle', 'A quiet garden')}
+              message={t('notifications.empty', 'There is nothing waiting for your attention.')}
+            />
           )}
 
           {/* Notification list */}
@@ -304,6 +296,20 @@ export default memo(function NotificationsScreenWeb() {
           )}
         </div>
       </div>
+      <style>{`
+        .notification-state {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 14px;
+          margin-bottom: 16px;
+          border-radius: 16px;
+          font-size: 12px;
+          font-weight: 600;
+        }
+        .notification-state-stale { background: var(--action-soft); color: var(--action); }
+        .notification-state-offline { background: var(--warning-surface); color: var(--warning); }
+      `}</style>
     </div>
   );
 });
