@@ -46,8 +46,13 @@ export function useStudentClassroomWorkspaceData(classroomId: string) {
       setIsLoading(true);
       setError(null);
 
-      const [classroom, lessons, materials, assignments, notes, submissions] = await Promise.all([
-        api.classrooms.getById(classroomId),
+      const classroom = await api.classrooms.getById(classroomId);
+      if (!classroom) {
+        setData(EMPTY_STATE);
+        return;
+      }
+
+      const [lessons, materials, assignments, notes, submissions] = await Promise.all([
         api.lessons.getAll(classroomId),
         api.lessonMaterials.getAll(classroomId),
         api.assignments.getAll(classroomId),

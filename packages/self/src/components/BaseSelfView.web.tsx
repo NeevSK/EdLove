@@ -1,14 +1,23 @@
-import { usePermissions, useTemporalStore } from '@repo/core/logic';
+import { usePermissions, useStore, useTemporalStore } from '@repo/core/logic';
 import FeatureInfoIcon from '@repo/ui/components/FeatureInfoIcon';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { DerivedHistoryView } from '@repo/ui/components/DerivedHistoryView';
 import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
 import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
+import EmptyState from '@repo/ui/components/EmptyState';
+import ErrorMessage from '@repo/ui/components/ErrorMessage';
+import { Sparkles } from '@repo/ui/icons';
+import { tokens } from '@repo/ui/tokens';
 import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { useEffect, useMemo, useState } from 'react';
+import { useWindowDimensions } from 'react-native';
 import type { BaseSelfViewProps, SelfViewFeature } from '@repo/self/components/BaseSelfView.types';
 import { FeatureErrorBoundary } from '@repo/self/components/FeatureErrorBoundary';
-import { FEATURE_DISCOVERY_DATA, FEATURE_EMOJIS } from '@repo/self/constants/selfRegistry';
+import {
+  canonicalSelfFeatureId,
+  FEATURE_DISCOVERY_DATA,
+  FEATURE_EMOJIS,
+} from '@repo/self/constants/selfRegistry';
 import { useFeatureActivity } from '@repo/self/hooks/useFeatureActivity';
 
 /**
@@ -18,6 +27,14 @@ import { useFeatureActivity } from '@repo/self/hooks/useFeatureActivity';
 export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseSelfViewProps) {
   const { context } = usePermissions();
   const isAnonymous = context.isAnonymous;
+  const isOnline = useStore((state) => state.isOnline);
+  const { width } = useWindowDimensions();
+  const breakpoint = width >= 1024 ? 'desktop' : width >= 600 ? 'tablet' : 'phone';
+  const frame = {
+    gutter: breakpoint === 'desktop' ? tokens.spacing.xl : breakpoint === 'tablet' ? tokens.spacing.lg : tokens.spacing.md,
+    maxWidth: breakpoint === 'desktop' ? 960 : breakpoint === 'tablet' ? 720 : '100%',
+  } as const;
+  const gridColumns = breakpoint === 'desktop' ? 3 : breakpoint === 'tablet' ? 2 : 1;
 
   const { viewMode, setViewMode, viewScale } = useTemporalStore();
   const isHistoryMode = viewMode === 'timeline';
@@ -25,8 +42,9 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
   const allFeatures = useMemo(
     () => [
       ...domains.flatMap((domain) =>
-        (domain.features || []).map((feature) => ({
-          ...feature,
+          (domain.features || []).map((feature) => ({
+            ...feature,
+            id: canonicalSelfFeatureId(feature.id),
           domainId: domain.id,
           domainColor: domain.accentColor,
           energyVibe: domain.energyVibe,
@@ -63,11 +81,12 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
   );
 
   const { getPinnedFeatures, togglePin, trackFeatureAccess } = useFeatureActivity();
-  const pinned = getPinnedFeatures();
+  const pinned = getPinnedFeatures().map(canonicalSelfFeatureId);
 
   const [focusedItemId, setFocusedItemId] = useState<string | null>(() => {
     if (typeof window === 'undefined') return null;
-    return window.location.hash.replace('#', '') || null;
+    const hash = window.location.hash.replace('#', '');
+    return hash ? canonicalSelfFeatureId(hash) : null;
   });
 
   // URL Resonance: Sync focused feature with URL hash
@@ -82,9 +101,10 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
   }, []);
 
   const updateFocusedId = (id: string | null) => {
-    setFocusedItemId(id);
-    window.location.hash = id || '';
-    if (id) trackFeatureAccess(id);
+    const canonicalId = id ? canonicalSelfFeatureId(id) : null;
+    setFocusedItemId(canonicalId);
+    window.location.hash = canonicalId || '';
+    if (canonicalId) trackFeatureAccess(canonicalId);
   };
 
   const focusedFeature = useMemo(
@@ -118,26 +138,52 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
             {...feature.temporalView}
           />
         ) : null}
-        <FeatureErrorBoundary featureName={feature.label}>{content}</FeatureErrorBoundary>
+        <FeatureErrorBoundary featureName={feature.label}>
+          {content ?? (
+            <EmptyState
+              icon={Sparkles}
+              title="This sanctuary is still taking shape"
+              description="This capability has no view for the current role yet."
+            />
+          )}
+        </FeatureErrorBoundary>
       </>
     );
   };
 
   return (
-    <Box className="flex-1 flex-col h-full overflow-hidden" style={backgroundStyle}>
+    <Box
+      className="flex-1 flex-col h-full overflow-hidden"
+      style={{
+        ...backgroundStyle,
+        backgroundColor: backgroundStyle.backgroundColor,
+        minHeight: '100%',
+      }}
+    >
       {/* Temporal Control Bar */}
-      <Box className="px-10 py-6 bg-white/30 backdrop-blur-md border-b border-black/5 sanctuary-glass-hub sticky top-0 z-30">
-        <HStack className="justify-between items-center gap-6">
+      <Box
+        className="sanctuary-glass-hub sticky top-0 z-30"
+        style={{
+          paddingHorizontal: frame.gutter,
+          paddingVertical: tokens.spacing.lg,
+          backgroundColor: tokens.colors.glass,
+          borderBottomWidth: 1,
+          borderBottomColor: tokens.colors.surfaceSubtle,
+        }}
+      >
+        <HStack className="justify-between items-center gap-6 flex-wrap">
           <VStack>
-            <Text className="text-2xl font-black tracking-tight text-[#1A1610]">Sadhana</Text>
-            <Text className="text-xs font-bold text-black/40 uppercase tracking-widest">
+            <Text style={{ fontSize: tokens.typography.sizes.xxl, fontWeight: '800', color: tokens.colors.ink }}>
+              Sadhana
+            </Text>
+            <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '700', color: tokens.colors.inkSubtle, textTransform: 'uppercase', letterSpacing: 1.2 }}>
               {isHistoryMode ? `History Hub / ${viewScale}` : `${perspective.toUpperCase()} Hub`}
             </Text>
           </VStack>
 
           <HStack className="gap-4 items-center">
             <TemporalNavigator />
-            <Box className="h-8 w-px bg-black/5 mx-2" />
+            <Box style={{ height: 32, width: 1, backgroundColor: tokens.colors.surfaceSubtle, marginHorizontal: tokens.spacing.sm }} />
             <HStack className="gap-2.5 items-center">
               <Pressable
                 onPress={() => {
@@ -145,26 +191,34 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
                   updateFocusedId(null);
                 }}
                 accessibilityRole="button"
-                className={`px-5 py-2.5 rounded-full border transition-all ${
-                  !isHistoryMode
-                    ? 'bg-white border-black/10 shadow-sm'
-                    : 'bg-transparent border-transparent opacity-40'
-                }`}
+                  style={{
+                    paddingHorizontal: tokens.spacing.lg,
+                    paddingVertical: tokens.spacing.sm,
+                    borderRadius: tokens.radii.full,
+                    borderWidth: 1,
+                    borderColor: !isHistoryMode ? tokens.colors.surfaceSubtle : 'transparent',
+                    backgroundColor: !isHistoryMode ? tokens.colors.surfaceSubtle : 'transparent',
+                    opacity: !isHistoryMode ? 1 : 0.5,
+                  }}
               >
-                <Text className="text-[11px] font-black uppercase tracking-widest text-[#1A1610]">
+                <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1.2, color: tokens.colors.ink }}>
                   Now
                 </Text>
               </Pressable>
               <Pressable
                 onPress={() => setViewMode('timeline')}
                 accessibilityRole="button"
-                className={`px-5 py-2.5 rounded-full border transition-all ${
-                  isHistoryMode
-                    ? 'bg-white border-black/10 shadow-sm'
-                    : 'bg-transparent border-transparent opacity-40'
-                }`}
+                  style={{
+                    paddingHorizontal: tokens.spacing.lg,
+                    paddingVertical: tokens.spacing.sm,
+                    borderRadius: tokens.radii.full,
+                    borderWidth: 1,
+                    borderColor: isHistoryMode ? tokens.colors.surfaceSubtle : 'transparent',
+                    backgroundColor: isHistoryMode ? tokens.colors.surfaceSubtle : 'transparent',
+                    opacity: isHistoryMode ? 1 : 0.5,
+                  }}
               >
-                <Text className="text-[11px] font-black uppercase tracking-widest text-[#1A1610]">
+                <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1.2, color: tokens.colors.ink }}>
                   History
                 </Text>
               </Pressable>
@@ -175,11 +229,26 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
 
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ padding: 40 }}
+        contentContainerStyle={{ paddingHorizontal: frame.gutter, paddingVertical: tokens.spacing.xl }}
         showsVerticalScrollIndicator={false}
       >
+        <Box style={{ maxWidth: frame.maxWidth, width: '100%', alignSelf: 'center' }}>
+          {!isOnline && (
+            <Box style={{ marginBottom: tokens.spacing.lg, padding: tokens.spacing.md, borderRadius: tokens.radii.md, backgroundColor: tokens.colors.surfaceSubtle, borderWidth: 1, borderColor: tokens.colors.surfaceSubtle }}>
+              <Text style={{ fontSize: tokens.typography.sizes.sm, color: tokens.colors.inkSubtle }}>
+                Offline · showing the last saved resonance. New entries will wait for connection.
+              </Text>
+            </Box>
+          )}
+          {isHistoryMode && (
+            <Box style={{ marginBottom: tokens.spacing.lg, padding: tokens.spacing.md, borderRadius: tokens.radii.md, backgroundColor: tokens.colors.surfaceSubtle, borderWidth: 1, borderColor: tokens.colors.surfaceSubtle }}>
+              <Text style={{ fontSize: tokens.typography.sizes.sm, color: tokens.colors.inkSubtle }}>
+                History is read-only for the {viewScale} view.
+              </Text>
+            </Box>
+          )}
         {focusedItemId ? (
-          <Box className="max-w-5xl mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <Box className="w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
             <Pressable
               onPress={() => updateFocusedId(null)}
               accessibilityRole="button"
@@ -232,7 +301,10 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
             </SanctuaryCard>
           </Box>
         ) : (
-          <VStack className="gap-16 max-w-[1400px] mx-auto w-full">
+          <VStack className="gap-16 w-full">
+            {!domains.length ? (
+              <ErrorMessage type="warning" message="Your current perspective does not have a readable Self surface." />
+            ) : null}
             {domains.map((domain) => (
               <VStack key={domain.id} className="gap-8">
                 <HStack className="items-center gap-4">
@@ -250,7 +322,9 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
                   </Box>
                 )}
 
-                <Box className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+                <Box
+                  className={`grid gap-6 ${gridColumns === 3 ? 'xl:grid-cols-3' : gridColumns === 2 ? 'md:grid-cols-2' : 'grid-cols-1'}`}
+                >
                   {domain.features?.map((feature) => (
                     <SanctuaryCard
                       key={feature.id}
@@ -279,12 +353,18 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
             {isAnonymous && (
               <Box className="mt-20 py-20 border-t border-black/5 flex items-center justify-center">
                 <Box className="max-w-2xl w-full">
-                  <PositiveInvitation context="self" onAction={() => {}} />
+                  <PositiveInvitation context="self" />
                 </Box>
+              </Box>
+            )}
+            {sideBar && (
+              <Box style={{ marginTop: tokens.spacing.xl, paddingTop: tokens.spacing.xl, borderTopWidth: 1, borderTopColor: tokens.colors.surfaceSubtle }}>
+                {sideBar}
               </Box>
             )}
           </VStack>
         )}
+        </Box>
       </ScrollView>
     </Box>
   );

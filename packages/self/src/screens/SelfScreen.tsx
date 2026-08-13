@@ -10,6 +10,7 @@ import {
   StudentSelfView,
   TeacherSelfView,
 } from '@repo/self/screens/self';
+import { resolveSelfViewRole } from '@repo/self/screens/self/roleResolution';
 
 /**
  * SelfScreen  declarative entry point for the user's sanctuary.
@@ -23,31 +24,22 @@ export default function SelfScreen() {
     void discoverFeature('section_self');
   }, [discoverFeature]);
 
-  const role = context.capacity;
+  const role = resolveSelfViewRole(context.capacity, can);
 
-  if (can('manage', 'FounderDashboard')) {
-    return <FounderSelfView />;
+  switch (role) {
+    case 'admin':
+      return <AdminSelfView />;
+    case 'founder':
+      return <FounderSelfView />;
+    case 'principal':
+      return <PrincipalSelfView />;
+    case 'teacher':
+      return <TeacherSelfView />;
+    case 'guardian':
+      return <GuardianSelfView />;
+    case 'student':
+      return <StudentSelfView />;
+    default:
+      return <StudentSelfView />;
   }
-
-  if (can('manage', 'AdminDashboard')) {
-    return <AdminSelfView />;
-  }
-
-  if (can('manage', 'PrincipalDashboard')) {
-    return <PrincipalSelfView />;
-  }
-
-  if (can('manage', 'TeacherDashboard') || role === 'teacher') {
-    return <TeacherSelfView />;
-  }
-
-  if (role === 'guardian' || role === 'parent') {
-    return <GuardianSelfView />;
-  }
-
-  if (can('manage', 'StudentDashboard') || role === 'student') {
-    return <StudentSelfView />;
-  }
-
-  return <StudentSelfView />;
 }

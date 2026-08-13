@@ -37,7 +37,6 @@ type UseClassroomWorkspaceSurfacesArgs = {
   setIsClaimInviteOpen: (value: boolean) => void;
   setBreathingOpen: (value: boolean) => void;
   fetchRoleData: () => void | Promise<void>;
-  navigation: { navigate: (screen: string, params?: any) => void };
   surfaceInsights?: Partial<
     Record<
       ClassroomWorkspaceSurfaceId,
@@ -72,7 +71,6 @@ export function useClassroomWorkspaceSurfaces({
   setIsClaimInviteOpen,
   setBreathingOpen,
   fetchRoleData,
-  navigation,
   surfaceInsights,
   citizenship,
   isPro,
@@ -177,7 +175,12 @@ export function useClassroomWorkspaceSurfaces({
       classroomData,
       schoolIdToUse,
       fetchRoleData,
-      navigation,
+      // Keep the legacy admin adapter connected to the declared Expo Router
+      // source; the classroom screen itself does not own a navigation object.
+      navigation: {
+        navigate: (screen, params) =>
+          router.push({ pathname: screen as never, params: params as never }),
+      },
       surfaceInsights,
       onTryDemo: () => setIsDemoModeTriggered(true),
       onCreateSchool: () => setIsCreateSchoolOpen(true),
@@ -280,7 +283,6 @@ export function useClassroomWorkspaceSurfaces({
     setIsCreateClassroomOpen,
     setIsClaimInviteOpen,
     fetchRoleData,
-    navigation,
     renderNudge,
     surfaceInsights,
     isPro,

@@ -1,4 +1,7 @@
 import React from 'react';
+import EmptyState from '@repo/ui/components/EmptyState';
+import { Sparkles } from '@repo/ui/icons';
+import { canonicalSelfFeatureId } from '@repo/self/constants/selfRegistry';
 
 // Lazy-loaded components for better performance
 const MoodLotus = React.lazy(() => import('./MoodLotus'));
@@ -35,8 +38,16 @@ export const FEATURE_COMPONENT_MAP: Record<
  * Helper to resolve a feature's content.
  */
 export function resolveFeatureContent(id: string, userId?: string) {
-  const Renderer = FEATURE_COMPONENT_MAP[id];
-  if (!Renderer) return null;
+  const Renderer = FEATURE_COMPONENT_MAP[canonicalSelfFeatureId(id)];
+  if (!Renderer) {
+    return (
+      <EmptyState
+        icon={Sparkles}
+        title="This feature is not available here"
+        description="The current role does not have a readable surface for this capability yet."
+      />
+    );
+  }
 
   return (
     <React.Suspense fallback={null}>

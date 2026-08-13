@@ -5,6 +5,7 @@ import { TemporalProvider } from '@repo/ui/components/TemporalProvider';
 import { TemporalShield } from '@repo/ui/components/TemporalShield';
 import { MessageSquare, Users } from '@repo/ui/icons';
 import { Icon } from '@repo/ui/primitives';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import DailyRhythm from '@repo/self/components/DailyRhythm';
@@ -35,6 +36,7 @@ export default function TeacherSelfView() {
   const { t } = useTranslation();
   const { context } = usePermissions();
   const userId = context.userId;
+  const [isMoodPickerOpen, setIsMoodPickerOpen] = useState(false);
   const { viewDate } = useTemporalStore();
   const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
   const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
@@ -71,8 +73,8 @@ export default function TeacherSelfView() {
   const sideBar = (
     <>
       <MoodPickerCard
-        isOpen={false}
-        onToggle={() => {}}
+        isOpen={isMoodPickerOpen}
+        onToggle={() => setIsMoodPickerOpen((open) => !open)}
         onSelect={async (mood: Parameters<typeof addMoodLog>[0], note: string) => {
           await addMoodLog(mood, note || undefined);
         }}
@@ -95,12 +97,12 @@ export default function TeacherSelfView() {
           Professional Ecology
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <button type="button" className="sidebar-item" onClick={() => {}}>
+          <a className="sidebar-item" href="#professional_history">
             <Icon as={Users} size={16} /> <span>Educational Ecology</span>
-          </button>
-          <button type="button" className="sidebar-item" onClick={() => {}}>
+          </a>
+          <a className="sidebar-item" href="#decisions">
             <Icon as={MessageSquare} size={16} /> <span>Faculty Resonance</span>
-          </button>
+          </a>
         </div>
       </div>
       <ImpactRipplesCard ripples={ripples} />
@@ -127,9 +129,9 @@ export default function TeacherSelfView() {
             accentColor: '#8B5CF6',
             features: [
               {
-                id: 'pulse',
+                id: 'daily_pulse',
                 label: 'Daily Pulse',
-                content: <PulseDashboard onEnterDetails={() => {}} />,
+                content: <PulseDashboard />,
               },
               {
                 id: 'mood_lotus',
@@ -138,7 +140,7 @@ export default function TeacherSelfView() {
                 historyContent: <MoodSection logs={moodLogs} loading={moodLoading} />,
               },
               {
-                id: 'wisdom',
+                id: 'wisdom_seeds',
                 label: 'Wisdom Seeds',
                 content: <WisdomSeeds userId={userId ?? undefined} />,
               },
@@ -158,7 +160,7 @@ export default function TeacherSelfView() {
                 ),
               },
               {
-                id: 'voice',
+                id: 'voice_journal',
                 label: 'Voice Journal',
                 content: <VoiceJournaling userId={userId ?? undefined} />,
               },
@@ -168,7 +170,7 @@ export default function TeacherSelfView() {
                 content: <JoyJar userId={userId ?? undefined} />,
               },
               {
-                id: 'gratitude',
+                id: 'gratitude_glimmers',
                 label: 'Gratitude Glimmers',
                 content: <GratitudeGlimmers userId={userId ?? undefined} />,
               },
@@ -180,12 +182,12 @@ export default function TeacherSelfView() {
             accentColor: '#F59E0B',
             features: [
               {
-                id: 'sleep',
+                id: 'sleep_tracker',
                 label: 'Sleep Tracker',
                 content: <SleepTracker userId={userId ?? undefined} />,
               },
               {
-                id: 'wind_down',
+                id: 'wind_down_ritual',
                 label: 'Restorative Ritual',
                 content: <SpotlightEmpty date={viewDate} />,
               },
@@ -202,7 +204,7 @@ export default function TeacherSelfView() {
                 content: <DailyRhythm />,
               },
               {
-                id: 'tomorrow',
+                id: 'tomorrow_prep',
                 label: 'Tomorrow Prep',
                 content: <TomorrowPrep userId={userId ?? undefined} />,
               },
@@ -217,7 +219,7 @@ export default function TeacherSelfView() {
                 content: <DecisionJournalSection userId={userId ?? ''} />,
               },
               {
-                id: 'history',
+                id: 'professional_history',
                 label: 'Professional History',
                 content: <TeachingHistoryTimeline userId={userId ?? ''} />,
               },

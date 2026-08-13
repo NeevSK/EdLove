@@ -28,7 +28,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { dailyContentAPI } from '@repo/self/api/dailyContent';
 
-export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void }) {
+export function PulseDashboard({ onEnterDetails }: { onEnterDetails?: () => void }) {
   const { t } = useTranslation();
   const user = useStore((state) => state.user);
   const userName = useStore((state) => state.userName);
@@ -201,19 +201,21 @@ export function PulseDashboard({ onEnterDetails }: { onEnterDetails: () => void 
         </BreathAnimation>
 
         {/* 5. Entrance to Full View */}
-        <BreathAnimation delay={700}>
-          <HStack className="justify-center pt-8">
-            <Pressable
-              onPress={onEnterDetails}
-              className="flex-row items-center gap-2 bg-sanctuarySaffron px-8 py-4 rounded-full shadow-lg shadow-sanctuarySaffron/30"
-            >
-              <Text className="text-obsidian font-black uppercase tracking-[1px] text-sm">
-                {t('pulse.view_full') || 'Explore Full Sanctuary'}
-              </Text>
-              <Icon as={ChevronRight} size={16} className="text-obsidian" />
-            </Pressable>
-          </HStack>
-        </BreathAnimation>
+        {onEnterDetails && (
+          <BreathAnimation delay={700}>
+            <HStack className="justify-center pt-8">
+              <Pressable
+                onPress={onEnterDetails}
+                className="flex-row items-center gap-2 bg-sanctuarySaffron px-8 py-4 rounded-full shadow-lg shadow-sanctuarySaffron/30"
+              >
+                <Text className="text-obsidian font-black uppercase tracking-[1px] text-sm">
+                  {t('pulse.view_full') || 'Explore Full Sanctuary'}
+                </Text>
+                <Icon as={ChevronRight} size={16} className="text-obsidian" />
+              </Pressable>
+            </HStack>
+          </BreathAnimation>
+        )}
       </VStack>
     </ScrollView>
   );

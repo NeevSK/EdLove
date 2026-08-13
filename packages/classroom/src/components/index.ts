@@ -5,6 +5,7 @@ export { ClaimInviteModal } from '@repo/classroom/components/ClaimInviteModal';
 export { default as ClassroomEchoSection } from '@repo/classroom/components/ClassroomEchoSection';
 export { default as ClassroomHolisticInsights } from '@repo/classroom/components/ClassroomHolisticInsights';
 export { default as ClassroomList } from '@repo/classroom/components/ClassroomList';
+export { default as ClassroomAccessState } from '@repo/classroom/components/ClassroomAccessState';
 export { default as ClassroomNotes } from '@repo/classroom/components/ClassroomNotes';
 export { default as CreateClassroomModal } from '@repo/classroom/components/CreateClassroomModal';
 export { default as CreateSchoolModal } from '@repo/classroom/components/CreateSchoolModal';

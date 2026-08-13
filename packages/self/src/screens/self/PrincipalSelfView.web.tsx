@@ -5,6 +5,7 @@ import { TemporalProvider } from '@repo/ui/components/TemporalProvider';
 import { TemporalShield } from '@repo/ui/components/TemporalShield';
 import { Activity, BookOpen } from '@repo/ui/icons';
 import { Icon } from '@repo/ui/primitives';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import DailyRhythm from '@repo/self/components/DailyRhythm';
@@ -29,6 +30,7 @@ export default function PrincipalSelfView() {
   const { t } = useTranslation();
   const { context } = usePermissions();
   const userId = context.userId;
+  const [isMoodPickerOpen, setIsMoodPickerOpen] = useState(false);
   const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
   const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
   const { warmMirrorText, ripples } = useWellbeingEnrichment(userId);
@@ -68,8 +70,8 @@ export default function PrincipalSelfView() {
   const sideBar = (
     <>
       <MoodPickerCard
-        isOpen={false}
-        onToggle={() => {}}
+        isOpen={isMoodPickerOpen}
+        onToggle={() => setIsMoodPickerOpen((open) => !open)}
         onSelect={async (mood: Parameters<typeof addMoodLog>[0], note: string) => {
           await addMoodLog(mood, note || undefined);
         }}
@@ -92,12 +94,12 @@ export default function PrincipalSelfView() {
           Leadership ecology
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <button type="button" className="sidebar-item" onClick={() => {}}>
+          <a className="sidebar-item" href="#decisions">
             <Icon as={Activity} size={16} /> <span>Leadership Ecology</span>
-          </button>
-          <button type="button" className="sidebar-item" onClick={() => {}}>
+          </a>
+          <a className="sidebar-item" href="#professional_history">
             <Icon as={BookOpen} size={16} /> <span>Governance Ledger</span>
-          </button>
+          </a>
         </div>
       </div>
       <ImpactRipplesCard ripples={ripples} />
@@ -124,9 +126,9 @@ export default function PrincipalSelfView() {
             accentColor: '#8B5CF6',
             features: [
               {
-                id: 'pulse',
+                id: 'daily_pulse',
                 label: 'Personal Pulse',
-                content: <PulseDashboard onEnterDetails={() => {}} />,
+                content: <PulseDashboard />,
               },
               {
                 id: 'mood_lotus',
@@ -203,7 +205,7 @@ export default function PrincipalSelfView() {
                 ),
               },
               {
-                id: 'history',
+                id: 'governance_history',
                 label: 'Governance History',
                 content: <GovernanceHistoryTimeline userId={userId ?? ''} />,
               },

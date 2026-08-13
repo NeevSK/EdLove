@@ -56,7 +56,7 @@ export default function DecisionJournalSection({ userId }: DecisionJournalSectio
   };
 
   if (!activeUserId) {
-    return <PositiveInvitation type="anonymous" onAction={() => {}} />;
+    return <PositiveInvitation type="anonymous" />;
   }
 
   return (

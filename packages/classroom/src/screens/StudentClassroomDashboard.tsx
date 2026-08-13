@@ -29,6 +29,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   AttendanceView,
+  ClassroomAccessState,
   ClassroomEchoSection,
   ClassroomHolisticInsights,
   ResourcesView,
@@ -103,6 +104,10 @@ export default function StudentClassroomDashboard() {
     }
   };
 
+  if (!classroomId) {
+    return <ClassroomAccessState kind="missing" onBack={() => safeBack('/workspace')} />;
+  }
+
   if (workspace.isLoading) {
     return (
       <ScreenWrapper>
@@ -117,6 +122,10 @@ export default function StudentClassroomDashboard() {
         </VStack>
       </ScreenWrapper>
     );
+  }
+
+  if (!classroom || workspace.error) {
+    return <ClassroomAccessState kind="unavailable" onBack={() => safeBack('/workspace')} />;
   }
 
   const summaryCards = [

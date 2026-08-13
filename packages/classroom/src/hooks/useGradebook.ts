@@ -1,4 +1,5 @@
 import { gradingAPI, growthSignalsAPI, studentsAPI } from '@repo/core/api';
+import type { GradeMark } from '@repo/core/logic/schemas/grade-domain.schema';
 import { type ClassroomGradingSettings, type StudentGrade } from '@repo/core/types';
 import { useStore } from '@repo/core/logic';
 
@@ -6,7 +7,30 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export type SortOption = 'name' | 'marks' | 'rank';
 
-export const useGradebook = (classroomId: string) => {
+/** Required scope for every GradeMark read/write. Never derive these from classroomId. */
+export interface GradeMarkLifecycleContext {
+  schoolId: string;
+  academicCycleId: string;
+  gradeClassId: string;
+  termId: string;
+  subjectId: string;
+}
+
+function toGradebookRow(mark: GradeMark): StudentGrade {
+  // Compatibility view model for the existing table. The source remains GradeMark;
+  // classroom_id is intentionally not synthesized because it is not the same identity.
+  return {
+    ...mark,
+    marks: mark.marks_earned,
+    grade: mark.letter_grade,
+    publication_state: mark.publication_state,
+  } as unknown as StudentGrade;
+}
+
+export const useGradebook = (
+  classroomId: string,
+  lifecycleContext?: GradeMarkLifecycleContext,
+) => {
   const [grades, setGrades] = useState<StudentGrade[]>([]);
   const [studentNames, setStudentNames] = useState<{ [key: string]: string }>({});
   const [gradingSettings, setGradingSettings] = useState<ClassroomGradingSettings | null>(null);
@@ -19,13 +43,18 @@ export const useGradebook = (classroomId: string) => {
     setIsLoading(true);
     setError(null);
     try {
+      if (!lifecycleContext) {
+        throw new Error(
+          'Gradebook requires GradeMark lifecycle context: schoolId, academicCycleId, gradeClassId, termId, and subjectId.',
+        );
+      }
       const viewDate = new Date().toISOString().split('T')[0] || new Date().toISOString();
       const [snapshot, studentsData] = await Promise.all([
-        gradingAPI.getGradebookSnapshot(classroomId, viewDate),
+        gradingAPI.getGradebookSnapshot(lifecycleContext, viewDate),
         studentsAPI.getAll(classroomId),
       ]);
 
-      setGrades(snapshot.grades);
+      setGrades(snapshot.gradeMarks.map(toGradebookRow));
       setGradingSettings(snapshot.gradingSettings);
 
       const names: { [key: string]: string } = {};
@@ -40,7 +69,7 @@ export const useGradebook = (classroomId: string) => {
     } finally {
       setIsLoading(false);
     }
-  }, [classroomId]);
+  }, [classroomId, lifecycleContext]);
 
   useEffect(() => {
     loadData();
@@ -85,19 +114,33 @@ export const useGradebook = (classroomId: string) => {
     marks: number,
     feedback?: string,
     assignmentId?: string,
+    maxPoints?: number,
   ) => {
-    const saved = await gradingAPI.saveGradeDraft(
-      studentId,
-      classroomId,
-      marks,
-      assignmentId,
-      feedback,
+    if (!lifecycleContext) {
+      throw new Error(
+        'Saving a GradeMark requires GradeMark lifecycle context: schoolId, academicCycleId, gradeClassId, termId, and subjectId.',
+      );
+    }
+    if (!maxPoints || maxPoints <= 0) {
+      throw new Error('Saving a GradeMark requires maxPoints; no default scale is inferred from classroomId.');
+    }
+
+    const savedMark = await gradingAPI.saveGradeDraft(
+      {
+        ...lifecycleContext,
+        studentId,
+        marksEarned: marks,
+        maxPoints,
+        ...(assignmentId ? { assignmentId } : {}),
+        ...(feedback ? { feedback } : {}),
+      },
       {
         actorId: currentUser?.id,
         reason: 'grade_draft',
         accessKind: 'teacher_authoring',
       },
     );
+    const saved = toGradebookRow(savedMark);
     // Refresh grades so the table reflects the new entry
     setGrades((prev) => {
       const idx = prev.findIndex(
@@ -121,11 +164,12 @@ export const useGradebook = (classroomId: string) => {
   };
 
   const publishGrade = async (gradeId: string) => {
-    const published = await gradingAPI.publishGrade(gradeId, {
+    const publishedMark = await gradingAPI.publishGrade(gradeId, {
       actorId: currentUser?.id,
       reason: 'grade_publish',
       accessKind: 'teacher_authoring',
     });
+    const published = toGradebookRow(publishedMark);
     setGrades((prev) => prev.map((grade) => (grade.id === gradeId ? published : grade)));
     return published;
   };

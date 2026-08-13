@@ -90,12 +90,12 @@ export default function PrincipalSelfView() {
             accentColor: '#8B5CF6',
             features: [
               {
-                id: 'pulse',
+                id: 'daily_pulse',
                 label: 'Daily Pulse',
-                content: <PulseDashboard onEnterDetails={() => {}} />,
+                content: <PulseDashboard />,
               },
               {
-                id: 'voice',
+                id: 'voice_journal',
                 label: 'Voice Journal',
                 content: <VoiceJournaling userId={userId ?? undefined} />,
               },
@@ -113,7 +113,7 @@ export default function PrincipalSelfView() {
             accentColor: '#3B82F6', // Water/Blue
             features: [
               {
-                id: 'mood_picker',
+                id: 'mood_checkin',
                 label: 'Mood Tracking',
                 content: (
                   <MoodPickerCard
@@ -187,7 +187,7 @@ export default function PrincipalSelfView() {
                 ),
               },
               {
-                id: 'history',
+                id: 'governance_history',
                 label: 'Governance History',
                 content: <GovernanceHistoryTimeline userId={userId ?? ''} />,
               },

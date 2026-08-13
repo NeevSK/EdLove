@@ -4,12 +4,9 @@
  * Fast, swipe-based attendance marking interface
  */
 
-// Types
-import { api } from '@repo/core/api';
-import { useSafeMutation } from '@repo/core/hooks';
 import type { AttendanceStatus, StudentAttendance } from '@repo/core/logic';
 import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
-import { Check, Clock, RefreshCcw, Search, X } from '@repo/ui/icons';
+import { Check, Clock, Search, X } from '@repo/ui/icons';
 import {
   Box,
   Heading,
@@ -55,7 +52,6 @@ const STATUS_CONFIG = {
 };
 
 export default function AttendanceSheet({
-  classroomId,
   date = new Date().toISOString().split('T')[0],
   initialStudents = [],
   onAttendanceChange,
@@ -63,43 +59,12 @@ export default function AttendanceSheet({
   const { t } = useTranslation();
   const {
     students,
-    setStudents,
     searchQuery,
     setSearchQuery,
     updateStudentStatus,
     filteredStudents,
     stats,
   } = useAttendance(initialStudents);
-
-  useEffect(() => {
-    if (initialStudents.length === 0 && students.length === 0) {
-      // Fallback mock fetch
-      const mockStudents: StudentAttendance[] = [
-        {
-          id: '1',
-          student_id: 's1',
-          full_name: 'Anura Kumara',
-          roll_number: '1',
-          status: 'present',
-        },
-        {
-          id: '2',
-          student_id: 's2',
-          full_name: 'Sithum Silva',
-          roll_number: '2',
-          status: 'present',
-        },
-        {
-          id: '3',
-          student_id: 's3',
-          full_name: 'Nimal Perera',
-          roll_number: '3',
-          status: 'present',
-        },
-      ];
-      setStudents(mockStudents);
-    }
-  }, [initialStudents, students.length, setStudents]);
 
   // Notify parent on change
   useEffect(() => {
@@ -108,29 +73,12 @@ export default function AttendanceSheet({
     }
   }, [students, onAttendanceChange]);
 
-  const { mutate: recordAttendance, isLoading: isSyncing } = useSafeMutation(
-    ({ studentId, status }: { studentId: string; status: AttendanceStatus }) =>
-      api.attendance.record(classroomId, studentId, status, date),
-    {
-      mutationKey: 'recordAttendance',
-      scope: 'attendance',
-      mutationType: 'CREATE',
-      onSuccess: () => {
-        // Success is already reflected in local state
-      },
-    },
-  );
-
   const handleUpdateStatus = (id: string, status: AttendanceStatus) => {
     hapticLight();
     const student = students.find((s) => s.id === id);
     if (!student) return;
 
-    // 1. Update local UI state immediately
     updateStudentStatus(id, status);
-
-    // 2. Queue for persistence
-    recordAttendance({ studentId: student.student_id, status });
   };
 
   // Render swipeable student row
@@ -211,14 +159,7 @@ export default function AttendanceSheet({
             </Heading>
             <HStack className="items-center justify-between mb-6">
               <Text className="text-phaseText-secondary text-sm">{date}</Text>
-              {isSyncing && (
-                <HStack className="items-center gap-2">
-                  <Icon as={RefreshCcw} size={14} className="text-sanctuarySaffron animate-spin" />
-                  <Text className="text-[10px] font-black text-sanctuarySaffron uppercase tracking-widest">
-                    Syncing...
-                  </Text>
-                </HStack>
-              )}
+
             </HStack>
 
             {/* Stats Row */}

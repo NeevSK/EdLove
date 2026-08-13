@@ -1,4 +1,4 @@
-import { Box, Text, VStack } from '@repo/ui/primitives';
+import ErrorMessage from '@repo/ui/components/ErrorMessage';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 
 interface Props {
@@ -36,17 +36,11 @@ export class FeatureErrorBoundary extends Component<Props, State> {
   public override render() {
     if (this.state.hasError) {
       return (
-        <Box className="p-6 border border-red-100 rounded-2xl bg-red-50/30">
-          <VStack space="xs">
-            <Text className="text-sm font-black text-red-600 uppercase tracking-widest">
-              Capability Halted
-            </Text>
-            <Text className="text-xs text-red-400">
-              The {this.props.featureName} is currently out of resonance. Our guardians have been
-              notified.
-            </Text>
-          </VStack>
-        </Box>
+        <ErrorMessage
+          type="warning"
+          message={`The ${this.props.featureName} could not be shown. Your other sanctuary surfaces remain available.`}
+          onDismiss={() => this.setState({ hasError: false })}
+        />
       );
     }
 

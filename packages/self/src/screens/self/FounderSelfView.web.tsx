@@ -5,6 +5,7 @@ import { TemporalProvider } from '@repo/ui/components/TemporalProvider';
 import { TemporalShield } from '@repo/ui/components/TemporalShield';
 
 import { Lightbulb, Sparkles } from '@repo/ui/icons';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BaseSelfView } from '@repo/self/components/BaseSelfView';
 import { ImpactRipplesCard } from '@repo/self/components/ImpactRipplesCard';
@@ -27,6 +28,7 @@ export default function FounderSelfView() {
 
   const { context } = usePermissions();
   const { userId } = context;
+  const [isMoodPickerOpen, setIsMoodPickerOpen] = useState(false);
 
   const justFinishedOnboarding = useStore((s) => s.justFinishedOnboarding);
   const setJustFinishedOnboarding = useStore((s) => s.setJustFinishedOnboarding);
@@ -62,8 +64,8 @@ export default function FounderSelfView() {
   const sideBar = (
     <>
       <MoodPickerCard
-        isOpen={false}
-        onToggle={() => {}}
+        isOpen={isMoodPickerOpen}
+        onToggle={() => setIsMoodPickerOpen((open) => !open)}
         onSelect={async (mood: Parameters<typeof addMoodLog>[0], note: string) => {
           await addMoodLog(mood, note || undefined);
         }}
@@ -86,12 +88,12 @@ export default function FounderSelfView() {
           Ecosystem Flux
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <button type="button" className="sidebar-item" onClick={() => {}}>
+          <a className="sidebar-item" href="#vision_lab">
             <Sparkles size={16} /> <span>Vision Alignment</span>
-          </button>
-          <button type="button" className="sidebar-item" onClick={() => {}}>
+          </a>
+          <a className="sidebar-item" href="#philosophy_lab">
             <Lightbulb size={16} /> <span>Philosophy Lab</span>
-          </button>
+          </a>
         </div>
       </div>
       <ImpactRipplesCard ripples={ripples} />
@@ -129,9 +131,9 @@ export default function FounderSelfView() {
                 historyContent: <PhilosophySection wisdom={wisdomNotes} loading={wisdomLoading} />,
               },
               {
-                id: 'ecosystem_dash',
+                id: 'daily_pulse',
                 label: 'Global Dash',
-                content: <PulseDashboard onEnterDetails={() => {}} />,
+                content: <PulseDashboard />,
               },
               {
                 id: 'mood_lotus',
@@ -140,12 +142,12 @@ export default function FounderSelfView() {
                 historyContent: <MoodSection logs={moodLogs} loading={moodLoading} />,
               },
               {
-                id: 'voice',
+                id: 'voice_journal',
                 label: 'Voice Journal',
                 content: <VoiceJournaling userId={userId ?? undefined} />,
               },
               {
-                id: 'wisdom',
+                id: 'wisdom_seeds',
                 label: 'Wisdom Seeds',
                 content: <WisdomSeeds userId={userId ?? undefined} />,
               },

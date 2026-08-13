@@ -1,5 +1,6 @@
 import { api } from '@repo/core/api';
 import type { Student } from '@repo/core/types';
+import type { GradeMarkLifecycleContext } from '@repo/classroom/hooks/useGradebook';
 
 import { StudentAnalysisModal } from '@repo/library';
 import { Activity, Sparkles, TrendingUp, TriangleAlert } from '@repo/ui/icons';
@@ -11,16 +12,19 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 interface TeacherAnalysisWorkspaceProps {
   classroomId: string;
   students: Student[];
+  gradeMarkLifecycleContext?: GradeMarkLifecycleContext;
 }
 
 export default function TeacherAnalysisWorkspace({
   classroomId,
   students,
+  gradeMarkLifecycleContext,
 }: TeacherAnalysisWorkspaceProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [grades, setGrades] = useState<any[]>([]);
   const [attendance, setAttendance] = useState<any[]>([]);
   const [observations, setObservations] = useState<any[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedStudent, setSelectedStudent] = useState<{
     id: string;
     full_name: string;
@@ -28,24 +32,33 @@ export default function TeacherAnalysisWorkspace({
 
   const loadAnalysis = useCallback(async () => {
     setIsLoading(true);
+    setLoadError(null);
     try {
+      if (!gradeMarkLifecycleContext) {
+        throw new Error(
+          'Analysis requires GradeMark lifecycle context: schoolId, academicCycleId, gradeClassId, termId, and subjectId.',
+        );
+      }
       const today = new Date().toISOString().split('T')[0];
       const [gradebookSnapshot, attendanceSnapshot, observationData] = await Promise.all([
-        api.grading.getGradebookSnapshot(classroomId, today || '').catch(() => ({ grades: [] })),
+        api.grading
+          .getGradebookSnapshot(gradeMarkLifecycleContext, today || '')
+          .catch(() => ({ gradeMarks: [] })),
         api.attendance
           .getClassroomAttendanceSnapshot(classroomId, today || '')
           .catch(() => ({ records: [] })),
         api.studentObservations.getForClassroom(classroomId).catch(() => []),
       ]);
-      setGrades(gradebookSnapshot.grades || []);
+      setGrades(gradebookSnapshot.gradeMarks || []);
       setAttendance(attendanceSnapshot.records || []);
       setObservations(observationData || []);
     } catch (error) {
       console.error('Failed to load analysis', error);
+      setLoadError(error instanceof Error ? error.message : 'Failed to load analysis');
     } finally {
       setIsLoading(false);
     }
-  }, [classroomId]);
+  }, [classroomId, gradeMarkLifecycleContext]);
 
   useEffect(() => {
     loadAnalysis();
@@ -134,6 +147,10 @@ export default function TeacherAnalysisWorkspace({
         {isLoading ? (
           <Box className="items-center py-20">
             <Spinner className="text-sanctuarySaffron" />
+          </Box>
+        ) : loadError ? (
+          <Box className="bg-chestnutRed/10 border border-chestnutRed/20 rounded-[24px] p-6">
+            <Text className="text-chestnutRed font-bold">{loadError}</Text>
           </Box>
         ) : (
           <Box className="bg-phase-surface rounded-[32px] border border-phase-border/40 p-8 shadow-sm">

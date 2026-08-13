@@ -96,21 +96,21 @@ export default function FounderSelfView() {
               {
                 id: 'pulse',
                 label: 'Ecosystem Dash',
-                content: <PulseDashboard onEnterDetails={() => {}} />,
+                content: <PulseDashboard />,
               },
               {
-                id: 'voice',
+                id: 'voice_journal',
                 label: 'Voice Journal',
                 content: <VoiceJournaling userId={userId ?? undefined} />,
               },
               {
-                id: 'mood-lotus',
+                id: 'mood_lotus',
                 label: 'Mood Lotus',
                 content: <MoodLotus userId={userId ?? undefined} />,
                 historyContent: <MoodSection logs={moodHistory} loading={loadingMoods} />,
               },
               {
-                id: 'wisdom',
+                id: 'wisdom_seeds',
                 label: 'Wisdom Seeds',
                 content: <WisdomSeeds userId={userId ?? undefined} />,
               },

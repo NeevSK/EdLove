@@ -1,5 +1,6 @@
 import { api, growthSignalsAPI } from '@repo/core/api';
 import { type StudentAttendance, useStore } from '@repo/core/logic';
+import { generateIdempotencyKey } from '@repo/core/utils';
 import type { AttendanceRecord } from '@repo/core/types';
 
 import { Check, ChevronLeft, Clock, Save, X } from '@repo/ui/icons';
@@ -114,16 +115,17 @@ export default function AttendanceScreenWeb() {
   const [state, dispatch] = useReducer(attendanceReducer, initialState);
 
   useEffect(() => {
-    if (!classroomId) return;
+    if (!classroomId) {
+      dispatch({ type: 'FETCH_ERROR', payload: 'No classroom selected' });
+      return;
+    }
     async function loadData() {
       dispatch({ type: 'FETCH_START' });
       try {
         const attendanceDate = new Date().toISOString().split('T')[0] || new Date().toISOString();
         const [data, snapshot] = await Promise.all([
           api.classroomStudents.getAll(classroomId),
-          api.attendance
-            .getClassroomAttendanceSnapshot(classroomId, attendanceDate)
-            .catch(() => ({ records: [] as AttendanceRecord[] })),
+          api.attendance.getClassroomAttendanceSnapshot(classroomId, attendanceDate),
         ]);
         const savedStatus = new Map<string, string>(
           snapshot.records.map(
@@ -182,6 +184,7 @@ export default function AttendanceScreenWeb() {
           actorId: user?.id,
           reason: 'daily_roll_call',
           accessKind: 'teacher_marking',
+          idempotencyKey: generateIdempotencyKey('attendance'),
         },
       );
       if (user?.id) {
@@ -364,6 +367,7 @@ export default function AttendanceScreenWeb() {
                 <button
                   key={status}
                   onClick={() => setAll(status)}
+                  disabled={students.length === 0}
                   style={{
                     padding: '5px 12px',
                     borderRadius: '8px',
@@ -385,7 +389,11 @@ export default function AttendanceScreenWeb() {
               className="sanctuary-card"
               style={{ padding: 0, overflow: 'hidden', marginBottom: '20px' }}
             >
-              {students.map((student, index) => {
+              {students.length === 0 ? (
+                <div style={{ padding: '28px 20px', textAlign: 'center', color: 'var(--ink-ghost)' }}>
+                  No students are currently enrolled in this classroom.
+                </div>
+              ) : students.map((student, index) => {
                 const config = STATUS_CONFIG[student.status as Status];
                 return (
                   <div
@@ -489,7 +497,7 @@ export default function AttendanceScreenWeb() {
                   cursor: 'pointer',
                 }}
                 onClick={handleSave}
-                disabled={saving}
+                disabled={saving || students.length === 0}
               >
                 {saving ? (
                   '... Saving...'

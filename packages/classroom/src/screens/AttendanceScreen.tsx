@@ -21,14 +21,19 @@ export default function AttendanceScreen() {
   const fetchStudents = useCallback(async () => {
     setIsLoading(true);
     try {
+      if (!classroomId) {
+        setError('No classroom selected');
+        setStudents([]);
+        return;
+      }
+
       const today = new Date().toISOString().split('T')[0];
 
-      // Load student roster and any already-saved attendance for today in parallel
+      // The register is local until the explicit batch save below. This keeps
+      // one idempotent write path and avoids saving each swipe twice.
       const [roster, snapshot] = await Promise.all([
         api.classroomStudents.getAll(classroomId),
-        api.attendance.getClassroomAttendanceSnapshot(classroomId, today || '').catch(() => ({
-          records: [] as { student_id: string; status: AttendanceStatus }[],
-        })),
+        api.attendance.getClassroomAttendanceSnapshot(classroomId, today || ''),
       ]);
 
       // Build a lookup map: student_id -> saved status
@@ -39,14 +44,21 @@ export default function AttendanceScreen() {
         ]),
       );
 
-      const attendanceData: StudentAttendance[] = (roster as any[]).map((student) => ({
-        id: student.id,
-        student_id: student.student_id || student.id,
-        full_name: student.full_name || 'Unknown Student',
-        roll_number: student.roll_number || null,
-        // Restore saved status; default to 'present' for unmarked students
-        status: (savedStatus.get(student.student_id || student.id) as any) ?? 'present',
-      })) as StudentAttendance[];
+      const attendanceData: StudentAttendance[] = (roster as any[]).flatMap((student) => {
+        const studentId = student.student_id || student.id;
+        if (!studentId || !student.full_name) return [];
+
+        return [
+          {
+            id: student.id,
+            student_id: studentId,
+            full_name: student.full_name,
+            roll_number: student.roll_number || null,
+            // Unmarked students begin present locally; only the explicit batch save persists it.
+            status: (savedStatus.get(studentId) as AttendanceStatus) ?? 'present',
+          } satisfies StudentAttendance,
+        ];
+      });
 
       setStudents(attendanceData);
     } catch (_err) {
@@ -127,7 +139,7 @@ export default function AttendanceScreen() {
     return (
       <Box className="flex-1 justify-center items-center bg-phase-surface-primary">
         <Spinner color="#F6BF8C" />
-        <Text className="text-phase-text-secondary mt-4 font-black">Loading class list...</Text>
+        <Text className="text-phase-text-secondary mt-4 font-black">Loading classroom roster...</Text>
       </Box>
     );
   }
@@ -150,7 +162,7 @@ export default function AttendanceScreen() {
       <Box className="p-4 bg-phase-surface-primary pb-10 border-t border-phase-border">
         <Button
           onPress={handleSave}
-          disabled={saveMutation.isLoading}
+          disabled={saveMutation.isLoading || students.length === 0}
           className="bg-sanctuarySaffron rounded-[24px] h-[56px] justify-center"
         >
           <ButtonText className="text-white font-black">

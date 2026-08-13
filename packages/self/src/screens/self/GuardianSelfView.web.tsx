@@ -89,12 +89,12 @@ export default function GuardianSelfView() {
                 ),
               },
               {
-                id: 'voice',
+                id: 'voice_journal',
                 label: 'Voice Journal',
                 content: <VoiceJournaling userId={userId ?? undefined} />,
               },
               {
-                id: 'wisdom',
+                id: 'wisdom_seeds',
                 label: 'Wisdom Seeds',
                 content: <WisdomSeeds userId={userId ?? undefined} />,
               },
@@ -111,12 +111,12 @@ export default function GuardianSelfView() {
                 content: <JoyJar userId={userId ?? undefined} />,
               },
               {
-                id: 'gratitude',
+                id: 'gratitude_glimmers',
                 label: 'Gratitude Glimmers',
                 content: <GratitudeGlimmers userId={userId ?? undefined} />,
               },
               {
-                id: 'tomorrow',
+                id: 'tomorrow_prep',
                 label: 'Tomorrow Prep',
                 content: <TomorrowPrep userId={userId ?? undefined} />,
               },
@@ -131,7 +131,7 @@ export default function GuardianSelfView() {
                 content: <DailyRhythm />,
               },
               {
-                id: 'sleep',
+                id: 'sleep_tracker',
                 label: 'Sleep Tracker',
                 content: <SleepTracker userId={userId ?? undefined} />,
               },

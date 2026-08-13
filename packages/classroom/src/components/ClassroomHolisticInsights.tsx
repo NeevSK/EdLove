@@ -1,4 +1,5 @@
 import { api, type StudentObservation } from '@repo/core/api';
+import type { GradeMarkLifecycleContext } from '@repo/classroom/hooks/useGradebook';
 import type { StudentGrade } from '@repo/core/types';
 import type { AttendanceRecord } from '@repo/core/types';
 
@@ -19,9 +20,13 @@ import { useTranslation } from 'react-i18next';
 
 interface ClassroomHolisticInsightsProps {
   classroomId: string;
+  gradeMarkLifecycleContext?: GradeMarkLifecycleContext;
 }
 
-export default function ClassroomHolisticInsights({ classroomId }: ClassroomHolisticInsightsProps) {
+export default function ClassroomHolisticInsights({
+  classroomId,
+  gradeMarkLifecycleContext,
+}: ClassroomHolisticInsightsProps) {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<{
@@ -29,14 +34,21 @@ export default function ClassroomHolisticInsights({ classroomId }: ClassroomHoli
     grades: StudentGrade[];
     observations: StudentObservation[];
   }>({ attendance: [], grades: [], observations: [] });
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
+      setLoadError(null);
+      if (!gradeMarkLifecycleContext) {
+        throw new Error(
+          'Insights require GradeMark lifecycle context: schoolId, academicCycleId, gradeClassId, termId, and subjectId.',
+        );
+      }
       const today = new Date().toISOString().split('T')[0] ?? '';
       const [attendanceSnapshot, gradebookSnapshot, obsData] = await Promise.all([
         api.attendance.getClassroomAttendanceSnapshot(classroomId ?? '', today),
-        api.grading.getGradebookSnapshot(classroomId ?? '', today),
+        api.grading.getGradebookSnapshot(gradeMarkLifecycleContext, today),
         api.studentObservations.getForClassroom(classroomId ?? ''),
       ]);
 
@@ -45,15 +57,16 @@ export default function ClassroomHolisticInsights({ classroomId }: ClassroomHoli
           ...r,
           id: r.id || `temp-${Math.random()}`,
         })) as AttendanceRecord[],
-        grades: gradebookSnapshot.grades,
+        grades: gradebookSnapshot.gradeMarks,
         observations: obsData,
       });
     } catch (error) {
       console.error('Failed to fetch classroom insights:', error);
+      setLoadError(error instanceof Error ? error.message : 'Failed to fetch classroom insights');
     } finally {
       setIsLoading(false);
     }
-  }, [classroomId]);
+  }, [classroomId, gradeMarkLifecycleContext]);
 
   useEffect(() => {
     if (classroomId) {
@@ -87,6 +100,14 @@ export default function ClassroomHolisticInsights({ classroomId }: ClassroomHoli
     return (
       <Center className="flex-1 p-10">
         <ActivityIndicator color="#F6BF8C" />
+      </Center>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <Center className="flex-1 p-10">
+        <Text className="text-chestnutRed font-bold text-center">{loadError}</Text>
       </Center>
     );
   }

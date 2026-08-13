@@ -118,9 +118,9 @@ export default function TeacherSelfView() {
             accentColor: '#8B5CF6',
             features: [
               {
-                id: 'pulse',
+                id: 'daily_pulse',
                 label: 'Daily Pulse',
-                content: <PulseDashboard onEnterDetails={() => {}} />,
+                content: <PulseDashboard />,
               },
               {
                 id: 'mood_lotus',
@@ -155,12 +155,12 @@ export default function TeacherSelfView() {
                 ),
               },
               {
-                id: 'voice',
+                id: 'voice_journal',
                 label: 'Voice Journal',
                 content: <VoiceJournaling userId={userId ?? undefined} />,
               },
               {
-                id: 'mood_picker',
+                id: 'mood_checkin',
                 label: 'Mood Tracking',
                 content: (
                   <MoodPickerCard
@@ -179,7 +179,7 @@ export default function TeacherSelfView() {
                 content: <JoyJar userId={userId ?? undefined} />,
               },
               {
-                id: 'gratitude',
+                id: 'gratitude_glimmers',
                 label: 'Gratitude Glimmers',
                 content: <GratitudeGlimmers userId={userId ?? undefined} />,
               },
@@ -206,12 +206,12 @@ export default function TeacherSelfView() {
                 ),
               },
               {
-                id: 'wind_down',
+                id: 'wind_down_ritual',
                 label: 'Restorative Ritual',
                 content: <WindDownRitual userId={userId ?? undefined} />,
               },
               {
-                id: 'sleep',
+                id: 'sleep_tracker',
                 label: 'Sleep Tracker',
                 content: <SleepTracker userId={userId ?? undefined} />,
               },
@@ -228,7 +228,7 @@ export default function TeacherSelfView() {
                 content: <DailyRhythm />,
               },
               {
-                id: 'tomorrow',
+                id: 'tomorrow_prep',
                 label: 'Tomorrow Prep',
                 content: <TomorrowPrep userId={userId ?? undefined} />,
               },
@@ -243,7 +243,7 @@ export default function TeacherSelfView() {
                 content: <DecisionJournalSection userId={userId} />,
               },
               {
-                id: 'history',
+                id: 'professional_history',
                 label: 'Professional History',
                 content: <TeachingHistoryTimeline userId={userId ?? ''} />,
               },

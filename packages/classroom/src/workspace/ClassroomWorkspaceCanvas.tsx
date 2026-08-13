@@ -76,6 +76,7 @@ export function ClassroomWorkspaceCanvas({
               accessibilityRole="button"
               onPress={() => onMoveToNextZone(typedSurface.surfaceId, nextZone)}
               className="bg-phase-surface-light border border-phase-border px-4 py-2 rounded-full active:opacity-70"
+              accessibilityHint="Moves this surface to the next workspace zone"
             >
               <Text className="text-xs font-semibold text-phaseText-primary">
                 Move to {nextZone}

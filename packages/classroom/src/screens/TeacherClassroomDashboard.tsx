@@ -55,6 +55,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
   AttendanceView,
+  ClassroomAccessState,
   ClassroomEchoSection,
   ClassroomHolisticInsights,
   InventoryView,
@@ -478,6 +479,10 @@ export default function TeacherClassroomDashboard() {
     }
   };
 
+  if (!classroomId) {
+    return <ClassroomAccessState kind="missing" onBack={() => safeBack('/workspace')} />;
+  }
+
   if (workspace.isLoading) {
     return (
       <ScreenWrapper>
@@ -492,6 +497,10 @@ export default function TeacherClassroomDashboard() {
         </VStack>
       </ScreenWrapper>
     );
+  }
+
+  if (!classroom || workspace.error || workspace.workspaceError) {
+    return <ClassroomAccessState kind="unavailable" onBack={() => safeBack('/workspace')} />;
   }
 
   const schoolId = classroom?.school_id || '';
@@ -633,11 +642,6 @@ export default function TeacherClassroomDashboard() {
               <Text className="text-xs text-phase-text-secondary font-medium leading-relaxed">
                 Move between roster and attendance report to follow classroom rhythm.
               </Text>
-              {!!workspace.workspaceError && (
-                <Text className="text-[10px] text-emberRed font-bold mt-2">
-                  {workspace.workspaceError.message}
-                </Text>
-              )}
             </VStack>
             <HStack className="gap-3">
               <PredictiveButton

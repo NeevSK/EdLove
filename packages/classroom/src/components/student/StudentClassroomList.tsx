@@ -59,7 +59,7 @@ export const StudentClassroomList = ({
           key={cls.id}
           onPress={() =>
             router.push({
-              pathname: '/self',
+              pathname: '/workspace/classroom/student/[classroomId]',
               params: { classroomId: cls.id, classroomName: cls.name },
             })
           }

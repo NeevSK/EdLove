@@ -58,7 +58,7 @@ export default function StudentDashboard({ forceDemo, userId }: StudentDashboard
     onOpenClassroom: (classroom) => {
       hapticLight();
       router.push({
-        pathname: '/self',
+        pathname: '/workspace/classroom/student/[classroomId]',
         params: {
           classroomId: classroom.id,
           classroomName: classroom.name,

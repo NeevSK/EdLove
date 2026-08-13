@@ -72,13 +72,13 @@ export default function GuardianSelfView() {
             accentColor: '#10B981',
             features: [
               {
-                id: 'mood-lotus',
+                id: 'mood_lotus',
                 label: 'Mood Lotus',
                 content: <MoodLotus userId={userId ?? undefined} />,
                 historyContent: <MoodSection logs={moodLogs} loading={loadingMoods} />,
               },
               {
-                id: 'fire-journal',
+                id: 'fire_journal',
                 label: 'Fire Journal',
                 content: <FireJournal userId={userId ?? undefined} />,
                 historyContent: (
@@ -86,12 +86,12 @@ export default function GuardianSelfView() {
                 ),
               },
               {
-                id: 'voice',
+                id: 'voice_journal',
                 label: 'Voice Journal',
                 content: <VoiceJournaling userId={userId ?? undefined} />,
               },
               {
-                id: 'wisdom',
+                id: 'wisdom_seeds',
                 label: 'Wisdom Seeds',
                 content: <WisdomSeeds userId={userId ?? undefined} />,
               },
@@ -103,17 +103,17 @@ export default function GuardianSelfView() {
             accentColor: '#F59E0B',
             features: [
               {
-                id: 'joy-jar',
+                id: 'joy_jar',
                 label: 'Joy Jar',
                 content: <JoyJar userId={userId ?? undefined} />,
               },
               {
-                id: 'gratitude',
+                id: 'gratitude_glimmers',
                 label: 'Gratitude Glimmers',
                 content: <GratitudeGlimmers userId={userId ?? undefined} />,
               },
               {
-                id: 'tomorrow',
+                id: 'tomorrow_prep',
                 label: 'Tomorrow Prep',
                 content: <TomorrowPrep userId={userId ?? undefined} />,
               },
@@ -122,9 +122,9 @@ export default function GuardianSelfView() {
                 label: 'Reminders',
                 content: <RemindersManager userId={userId ?? undefined} />,
               },
-              { id: 'rhythm', label: 'Daily Rhythm', content: <DailyRhythm /> },
+                { id: 'daily_rhythm', label: 'Daily Rhythm', content: <DailyRhythm /> },
               {
-                id: 'sleep',
+                id: 'sleep_tracker',
                 label: 'Sleep Tracker',
                 content: <SleepTracker userId={userId ?? undefined} />,
               },

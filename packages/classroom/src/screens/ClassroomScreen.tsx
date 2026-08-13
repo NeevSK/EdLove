@@ -65,7 +65,6 @@ export default function ClassroomScreen() {
     setIsClaimInviteOpen,
     setBreathingOpen,
     fetchRoleData,
-    navigation,
     surfaceInsights,
     citizenship: context.citizenship || 'WANDERER',
     isPro: context.pricing_tier === 'PRO',

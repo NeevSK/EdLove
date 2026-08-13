@@ -23,6 +23,57 @@ export interface SelfDomain {
   features: string[]; // IDs of features in this domain
 }
 
+/** Canonical feature IDs shared by the registry, web hash focus, and native pins. */
+export const SELF_FEATURE_IDS = {
+  journeyTimeline: 'journey_timeline',
+  dailyPulse: 'daily_pulse',
+  moodCheckin: 'mood_checkin',
+  moodLotus: 'mood_lotus',
+  wisdomSeeds: 'wisdom_seeds',
+  studyRhythm: 'study_rhythm',
+  personalGoals: 'personal_goals',
+  academicGrades: 'academic_grades',
+  sleepTracker: 'sleep_tracker',
+  joyJar: 'joy_jar',
+  gratitudeGlimmers: 'gratitude_glimmers',
+  fireJournal: 'fire_journal',
+  voiceJournal: 'voice_journal',
+  tomorrowPrep: 'tomorrow_prep',
+  dailyRhythm: 'daily_rhythm',
+  reminders: 'reminders',
+  decisions: 'decisions',
+  professionalHistory: 'professional_history',
+} as const;
+
+/**
+ * Legacy role-view IDs are normalized at the composition boundary. This keeps
+ * existing local pins and URL hashes meaningful while web and native converge
+ * on the registry vocabulary.
+ */
+export const SELF_FEATURE_ID_ALIASES: Record<string, string> = {
+  pulse: SELF_FEATURE_IDS.dailyPulse,
+  'mood-lotus': SELF_FEATURE_IDS.moodLotus,
+  mood_picker: SELF_FEATURE_IDS.moodCheckin,
+  'mood-picker': SELF_FEATURE_IDS.moodCheckin,
+  wisdom: SELF_FEATURE_IDS.wisdomSeeds,
+  voice: SELF_FEATURE_IDS.voiceJournal,
+  'voice-journal': SELF_FEATURE_IDS.voiceJournal,
+  joy: SELF_FEATURE_IDS.joyJar,
+  'joy-jar': SELF_FEATURE_IDS.joyJar,
+  gratitude: SELF_FEATURE_IDS.gratitudeGlimmers,
+  sleep: SELF_FEATURE_IDS.sleepTracker,
+  'sleep-tracker': SELF_FEATURE_IDS.sleepTracker,
+  tomorrow: SELF_FEATURE_IDS.tomorrowPrep,
+  'tomorrow-prep': SELF_FEATURE_IDS.tomorrowPrep,
+  rhythm: SELF_FEATURE_IDS.dailyRhythm,
+  'daily-rhythm': SELF_FEATURE_IDS.dailyRhythm,
+  history: SELF_FEATURE_IDS.professionalHistory,
+};
+
+export function canonicalSelfFeatureId(id: string): string {
+  return SELF_FEATURE_ID_ALIASES[id] ?? id;
+}
+
 const SELF_LIFECYCLE = defineFeatureLifecycle({
   owner: 'self',
   createdAt: '2026-07-26',

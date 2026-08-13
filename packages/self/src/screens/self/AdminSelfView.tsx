@@ -70,7 +70,7 @@ export default function AdminSelfView() {
               {
                 id: 'pulse',
                 label: 'Daily Pulse',
-                content: <PulseDashboard onEnterDetails={() => {}} />,
+                content: <PulseDashboard />,
               },
               {
                 id: 'voice',

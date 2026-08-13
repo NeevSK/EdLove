@@ -1,4 +1,4 @@
-import { usePermissions, useTemporalStore } from '@repo/core/logic';
+import { usePermissions, useStore, useTemporalStore } from '@repo/core/logic';
 import FeatureInfoIcon from '@repo/ui/components/FeatureInfoIcon';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
@@ -6,12 +6,20 @@ import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import { DerivedHistoryView } from '@repo/ui/components/DerivedHistoryView';
 import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
 import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import EmptyState from '@repo/ui/components/EmptyState';
+import { Sparkles } from '@repo/ui/icons';
+import { tokens } from '@repo/ui/tokens';
+import { useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import React, { useCallback, useMemo } from 'react';
 import type { BaseSelfViewProps, SelfViewFeature } from '@repo/self/components/BaseSelfView.types';
 import { FeatureErrorBoundary } from '@repo/self/components/FeatureErrorBoundary';
-import { FEATURE_DISCOVERY_DATA, FEATURE_EMOJIS } from '@repo/self/constants/selfRegistry';
+import {
+  canonicalSelfFeatureId,
+  FEATURE_DISCOVERY_DATA,
+  FEATURE_EMOJIS,
+} from '@repo/self/constants/selfRegistry';
 import { useDynamicSelfFeatures } from '@repo/self/hooks/useDynamicSelfFeatures';
 import { useFeatureActivity } from '@repo/self/hooks/useFeatureActivity';
 
@@ -36,12 +44,17 @@ export function BaseSelfView({
   const isHistoryMode = viewMode === 'timeline';
   const { context } = usePermissions();
   const isAnonymous = context.isAnonymous;
+  const isOnline = useStore((state) => state.isOnline);
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+  const isTablet = isLandscape ? height >= 600 : width >= 768;
 
   const allFeatures = useMemo(
     () => [
       ...domains.flatMap((domain) =>
-        (domain.features || []).map((feature) => ({
-          ...feature,
+          (domain.features || []).map((feature) => ({
+            ...feature,
+            id: canonicalSelfFeatureId(feature.id),
           domainId: domain.id,
           domainColor: domain.accentColor,
           energyVibe: domain.energyVibe,
@@ -94,12 +107,12 @@ export function BaseSelfView({
 
   const { getPinnedFeatures, togglePin, trackFeatureAccess } = useFeatureActivity();
   const { topItems: sortedFeatures } = useDynamicSelfFeatures(allFeatures);
-  const pinned = getPinnedFeatures();
+  const pinned = getPinnedFeatures().map(canonicalSelfFeatureId);
 
   const [activeFeatureId, setActiveFeatureId] = React.useState<string | undefined>();
   const activeFeatureIdResolved =
     activeFeatureId ??
-    sortedFeatures.find((f) => f.id === 'energy_pulse' || f.id === 'mood_checkin')?.id ??
+    sortedFeatures.find((f) => f.id === 'daily_pulse' || f.id === 'mood_checkin')?.id ??
     sortedFeatures[0]?.id;
 
   const activeFeature = useMemo(
@@ -141,7 +154,8 @@ export function BaseSelfView({
           onPress={() => handleFeaturePress(feature.id)}
           onLongPress={() => togglePin(feature.id)}
           accessibilityRole="button"
-          className="items-center w-[72px]"
+          className="items-center"
+          style={{ width: isTablet ? 104 : 72 }}
         >
           <Box
             className="w-16 h-16 rounded-full p-[3px] justify-center items-center mb-1 border-2"
@@ -187,13 +201,14 @@ export function BaseSelfView({
             className={`text-[9px] text-center uppercase tracking-wider font-bold ${
               isActive ? 'text-black' : 'text-black/40'
             }`}
+            style={{ fontSize: isTablet ? 11 : 9 }}
           >
             {feature.label}
           </Text>
         </Pressable>
       );
     },
-    [activeFeatureIdResolved, pinned, togglePin, handleFeaturePress, getEmoji],
+    [activeFeatureIdResolved, pinned, togglePin, handleFeaturePress, getEmoji, isTablet],
   );
 
   const renderFeatureContent = (feature?: SelfViewFeature & { domainColor?: string }) => {
@@ -218,7 +233,7 @@ export function BaseSelfView({
   };
 
   return (
-    <VStack className="flex-1 transition-all duration-700" style={backgroundStyle}>
+    <VStack className="flex-1 transition-all duration-700" style={{ ...backgroundStyle, maxWidth: isTablet ? 1024 : undefined, alignSelf: isTablet ? 'center' : undefined, width: '100%' }}>
       <GlobalHeader isSelfView={true} subtitle={perspective.toUpperCase()} title="Sadhana" />
 
       <TemporalNavigator />
@@ -237,20 +252,35 @@ export function BaseSelfView({
         {voiceJournal && <Box className="px-lg pt-sm">{voiceJournal}</Box>}
         {morningRitual && <Box className="px-lg pt-sm">{morningRitual}</Box>}
 
-        <Box className="py-md bg-transparent min-h-[110px]">
+      {!isOnline && (
+        <Box className="mx-md mt-sm rounded-xl border px-md py-sm" style={{ borderColor: tokens.colors.surfaceSubtle, backgroundColor: tokens.colors.surfaceSubtle }}>
+          <Text className="text-xs" style={{ color: tokens.colors.inkSubtle }}>
+            Offline · showing saved resonance. New entries will wait for connection.
+          </Text>
+        </Box>
+      )}
+      {isHistoryMode && (
+        <Box className="mx-md mt-sm rounded-xl border px-md py-sm" style={{ borderColor: tokens.colors.surfaceSubtle, backgroundColor: tokens.colors.surfaceSubtle }}>
+          <Text className="text-xs" style={{ color: tokens.colors.inkSubtle }}>
+            History is read-only for the {viewScale} view.
+          </Text>
+        </Box>
+      )}
+
+      <Box className="py-md bg-transparent min-h-[110px]" style={{ paddingHorizontal: isTablet ? tokens.spacing.sm : 0 }}>
           <SanctuaryFlashList
             data={sortedFeatures}
             renderItem={renderFeatureItem}
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 20 }}
-            estimatedItemSize={72}
+            contentContainerStyle={{ paddingHorizontal: isTablet ? 32 : 20 }}
+            estimatedItemSize={isTablet ? 104 : 72}
             keyExtractor={(item) => item.id}
             getItemType={(item) => (item.id === 'mirrors' ? 'insight' : 'regular')}
           />
         </Box>
 
-        <Box className="px-md pt-md min-h-[400px]">
+        <Box className="px-md pt-md min-h-[400px]" style={{ paddingHorizontal: isTablet ? 32 : 16, width: '100%', maxWidth: isLandscape ? 900 : undefined, alignSelf: isLandscape ? 'center' : undefined }}>
           {activeFeature && (
             <VStack className="mb-4">
               <HStack className="justify-between items-center mb-3">
@@ -275,6 +305,13 @@ export function BaseSelfView({
               </HStack>
               {renderFeatureContent(activeFeature)}
             </VStack>
+          )}
+          {!activeFeature && (
+            <EmptyState
+              icon={Sparkles}
+              title="Your sanctuary is waiting"
+              description="There are no readable Self capabilities for this perspective yet."
+            />
           )}
         </Box>
 
