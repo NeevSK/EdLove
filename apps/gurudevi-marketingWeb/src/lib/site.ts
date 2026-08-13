@@ -12,6 +12,41 @@ export const SITE_KEYWORDS = [
   'EdLove',
 ];
 
+export const LAUNCH = {
+  iso: '2026-10-06T09:00:00+05:30',
+  label: 'October 6, 2026',
+  timezone: 'Asia/Colombo',
+  timezoneLabel: 'Sri Lanka time',
+  status: 'scheduled' as const,
+  ctaTarget: '#launch',
+} as const;
+
+// Keep public language in a locale-shaped object so Sinhala/Tamil translations
+// can be added without changing page structure or CTA wiring.
+export const MARKETING_COPY = {
+  en: {
+    hero: {
+      eyebrow: 'Gurudevi · An education ecology',
+      title: 'Technology that gives energy back to education.',
+      lede: 'A connected, respectful space for teachers, students, schools, families, and communities in Sri Lanka.',
+      primaryCta: 'Follow the October 6 launch',
+      secondaryCta: 'See how it works',
+    },
+    roles: [
+      { label: 'For teachers', title: 'More room to teach.', body: 'Prepare, teach, reflect, and stay connected without carrying every part of the work alone.' },
+      { label: 'For principals', title: 'Visibility without surveillance.', body: 'Coordinate the school with useful patterns while respecting the private lives of educators.' },
+      { label: 'For students', title: 'Learning with agency.', body: 'A learning space that treats young people as participants, not as data points.' },
+      { label: 'For families', title: 'Connection with dignity.', body: 'A clearer way to stay close to a learner’s journey without turning care into control.' },
+    ],
+    workspaces: [
+      { number: '01', name: 'Classroom', body: 'The everyday place where teaching, learning, preparation, and care meet.' },
+      { number: '02', name: 'School', body: 'A shared view for coordination, support, and decisions that serve the whole community.' },
+      { number: '03', name: 'Family Space', body: 'A respectful bridge between the learner’s world at school and the people who care for them.' },
+      { number: '04', name: 'Learning Studio', body: 'A place for curiosity, practice, resources, and the learner’s own direction.' },
+    ],
+  },
+} as const;
+
 function validateUrl(name: string, value: string): string {
   const parsed = new URL(value);
   if (parsed.protocol !== 'https:' && parsed.protocol !== 'mailto:') {
@@ -84,5 +119,5 @@ export function canonicalUrl(pathname: string) {
 }
 
 export function defaultOgImage(pathname = '/') {
-  return absoluteUrl('/og-image.png');
+  return absoluteUrl('/hero-teacher-editorial.png');
 }

@@ -1,56 +1,16 @@
 ---
-import { CONTACT_EMAILS } from '../lib/site';
+import { CONTACT_EMAILS, WEB_LINKS } from '../lib/site';
+const questions = [
+  ['What is Gurudevi?', 'Gurudevi is an education ecology support system for teachers, students, schools, families, and communities. It brings practical work and respectful support into connected spaces.'],
+  ['Who is it for?', 'Teachers are our first design beneficiary, but the ecology includes students, principals and school leaders, families, and community partners.'],
+  ['When does it launch?', 'The public launch is planned for October 6, 2026, at 9:00 AM Sri Lanka time. Some parts of the platform may remain invite-only while we learn with early schools.'],
+  ['What can a principal see?', 'School leaders can see the shared patterns needed for coordination and support. Personal reflections and private inner work are not treated as institutional surveillance.'],
+  ['Does Gurudevi replace teachers?', 'No. Gurudevi is designed to reduce avoidable friction around teaching and learning so educators have more room for professional judgment and human connection.'],
+  ['How can my school get involved?', `Write to ${CONTACT_EMAILS.institutional}. We are speaking with principals and school heads who want to explore a careful, invite-led transition.`],
+];
 ---
 
-<Layout title="FAQ & Support">
-	<Header />
-	
-	<main class="flex-grow py-24 px-8">
-		<div class="max-w-4xl mx-auto space-y-16">
-			<div class="text-center space-y-4">
-				<h1 class="text-5xl font-bold text-charcoal-truth">FAQ & Institutional Support</h1>
-				<p class="text-xl text-mud-brown">Answers to common questions about joining the Gurudevi ecology.</p>
-			</div>
-
-			<div id="community-boundaries" class="space-y-8">
-				{[
-					{
-						q: "How can my school join Gurudevi?",
-						a: `During our Alpha phase, we are onboarding schools through an invite-only transition. If you are a Principal or School Head, please reach out to us at ${CONTACT_EMAILS.institutional} to request an invitation code.`
-					},
-					{
-						q: "Is teacher data visible to the Principal?",
-						a: "No. Our 'Law of Different Views' ensures that Principals see school-wide patterns (like resource needs or aggregated attendance trends) to support the teacher, but individual personal reflections and inner explorations are strictly private."
-					},
-					{
-						q: "Does the app work offline?",
-						a: "Yes. We understand the 'rooted in mud' reality of many teachers. The mobile app is designed to work with intermittent internet, syncing data when a connection becomes available."
-					},
-					{
-						q: "What is the cost for public schools?",
-						a: "Gurudevi is committed to the Sri Lankan educational ecology. We offer a generous free tier for all public school teachers. Pro features can be enabled through our Thuthimal (Gratitude) economy."
-					},
-					{
-						q: "Is there a desktop version?",
-						a: "Yes — the Gurudevi web platform is being prepared as the connected product experience. This website is the public home and informational hub, while the platform will give teachers a Classroom workspace, school leaders a School workspace, and students a Learning Studio."
-					}
-				].map((item) => (
-					<div class="p-8 bg-white rounded-3xl border border-mud-brown/10 shadow-sm space-y-4">
-						<h3 class="text-xl font-bold text-peacock-blue">{item.q}</h3>
-						<p class="text-mud-brown leading-relaxed">{item.a}</p>
-					</div>
-				))}
-			</div>
-
-			<section class="bg-void-indigo text-sacred-white p-12 rounded-[3rem] text-center space-y-8">
-				<h2 class="text-3xl font-bold">Still have questions?</h2>
-				<p class="opacity-80">We are here to help you navigate the topology of your school's needs.</p>
-				<a href={`mailto:${CONTACT_EMAILS.support}`} class="inline-block px-10 py-4 bg-sanctuary-saffron text-white rounded-full font-bold hover:bg-peacock-blue transition-all">
-					Contact Support
-				</a>
-			</section>
-		</div>
-	</main>
-	
-	<Footer />
+<Layout title="Questions">
+  <Header />
+  <main><section class="page-intro"><p class="eyebrow">Questions</p><h1>Clear answers for a living system.</h1><p>We are early, so we will be direct about what Gurudevi is, what it is not, and where the work is heading.</p></section><section class="section faq-list">{questions.map(([question, answer]) => <details><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</section><section class="section contact-strip"><div><p class="eyebrow">Still wondering?</p><h2>Ask a human.</h2></div><div><p>We welcome practical questions from teachers, families, and school leaders.</p><a class="button button--dark" href={`mailto:${CONTACT_EMAILS.support}`}>Contact support ↗</a></div></section></main><Footer />
 </Layout>

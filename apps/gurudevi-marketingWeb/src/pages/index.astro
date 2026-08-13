@@ -1,227 +1,81 @@
 ---
-import { WEB_LINKS } from '../lib/site';
+import { LAUNCH, MARKETING_COPY, WEB_LINKS } from '../lib/site';
 
-const _machineReadableData = {
+const machineReadableData = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
   name: 'Gurudevi',
   applicationCategory: 'EducationalApplication',
   operatingSystem: 'Web',
   url: WEB_LINKS.app,
-  description:
-    'An Education Ecology Support System designed to mend the teaching-learning impedance match.',
-  offers: {
-    '@type': 'Offer',
-    price: '0',
-    priceCurrency: 'USD',
-  },
-  potentialAction: {
-    '@type': 'ControlAction',
-    name: 'Enter Platform',
-    target: WEB_LINKS.app,
-  },
+  description: 'A respectful education ecology for the people who make learning possible.',
 };
 
-const launchAt = '2026-10-06T09:00:00+05:30';
+const copy = MARKETING_COPY.en;
 ---
 
 <Layout title="Home" structuredData={machineReadableData}>
-	<Header />
-	
-	<main class="flex-grow">
-		<!-- Hero Section -->
-		<section class="relative overflow-hidden pt-24 pb-32 px-8 bg-gradient-to-b from-cream-silence to-temple-stone">
-			<div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between relative z-10">
-				<div class="md:w-1/2 space-y-8">
-					<div class="inline-block px-4 py-1.5 bg-sanctuary-saffron/10 border border-sanctuary-saffron/20 rounded-full text-sanctuary-saffron text-sm font-semibold tracking-wide uppercase">
-						Education Ecology Support System
-					</div>
-					<h1 class="text-5xl md:text-7xl font-bold leading-tight text-charcoal-truth">
-						A Sanctuary for <span class="text-peacock-blue">Teachers</span>
-					</h1>
-					<p class="text-xl text-mud-brown leading-relaxed max-w-xl">
-						Gurudevi is an education ecology support system for Sri Lanka: a connected sanctuary for teachers, students, and the people who hold a school together.
-					</p>
-					<div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-						<a href={WEB_LINKS.app} target="_blank" rel="noopener noreferrer" class="px-8 py-4 bg-void-indigo text-sacred-white rounded-full font-bold shadow-xl hover:bg-peacock-blue transition-all text-center">
-							Enter the Platform
-						</a>
-						<a href="/thuthimal" class="px-8 py-4 border-2 border-sanctuary-saffron text-sanctuary-saffron rounded-full font-bold hover:bg-sanctuary-saffron/5 transition-all text-center">
-							Gift Gratitude (තුතිමල්)
-						</a>
-					</div>
-					<div class="mt-8 max-w-md rounded-2xl border border-sanctuary-saffron/20 bg-white/60 px-5 py-4" data-launch-countdown data-launch-at={launchAt}>
-						<p class="text-xs font-bold uppercase tracking-[0.2em] text-sanctuary-saffron">Launching October 6</p>
-						<p class="mt-2 text-lg font-semibold text-charcoal-truth" data-countdown-value>Preparing the sanctuary…</p>
-						<p class="mt-1 text-sm text-mud-brown">Sri Lanka time · Asia/Colombo</p>
-					</div>
-				</div>
-				
-				<div class="md:w-1/2 mt-16 md:mt-0 flex justify-center relative">
-					<div class="w-80 h-80 bg-teal-water/20 rounded-full animate-pulse blur-3xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
-					<div class="relative z-20 w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-mud-brown/10 transform rotate-2 hover:rotate-0 transition-transform duration-500">
-						<div class="p-8 space-y-6">
-							<div class="flex items-center space-x-3">
-								<div class="w-12 h-12 bg-sage-green rounded-full flex items-center justify-center text-white">
-									<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-									</svg>
-								</div>
-								<div>
-									<h3 class="font-bold">Sanctuary Self</h3>
-									<p class="text-sm opacity-60">Daily Breathing & Reflection</p>
-								</div>
-							</div>
-							<div class="space-y-2">
-								<div class="h-3 bg-temple-stone rounded-full w-full"></div>
-								<div class="h-3 bg-temple-stone rounded-full w-4/5"></div>
-								<div class="h-3 bg-temple-stone rounded-full w-3/4"></div>
-							</div>
-							<div class="pt-4 flex justify-between items-center text-xs font-semibold text-sanctuary-saffron uppercase tracking-widest">
-								<span>Pillar I: SELF</span>
-								<span class="px-3 py-1 bg-sanctuary-saffron/10 rounded-full line-through opacity-50">LMS</span>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
+  <Header />
+  <main>
+    <section class="hero-editorial">
+      <img class="hero-editorial__image" src="/hero-teacher-editorial.png" alt="A teacher prepares learning materials in a sunlit Sri Lankan classroom." />
+      <div class="hero-editorial__wash"></div>
+      <div class="hero-editorial__content">
+        <p class="eyebrow hero-editorial__eyebrow">{copy.hero.eyebrow}</p>
+        <h1>{copy.hero.title}</h1>
+        <p class="hero-editorial__lede">{copy.hero.lede}</p>
+        <div class="hero-editorial__actions">
+          <a class="button button--light" href={LAUNCH.ctaTarget}>{copy.hero.primaryCta} <span aria-hidden="true">↘</span></a>
+          <a class="text-link text-link--light" href="#ecology">{copy.hero.secondaryCta}</a>
+        </div>
+      </div>
+      <div class="hero-editorial__caption"><span>Built around the people who make learning possible.</span><span aria-hidden="true">↓</span></div>
+    </section>
 
-		<!-- Stats Section -->
-		<section class="py-20 px-8 bg-temple-stone/20">
-			<StatsSection client:visible />
-		</section>
+    <section class="section section--intro" id="ecology">
+      <div class="section__label eyebrow">The starting point</div>
+      <div class="intro-copy"><h2>Education is held together by people carrying too much alone.</h2><p>Gurudevi exists to make the relationships around learning easier to see, easier to support, and more worthy of care.</p></div>
+    </section>
 
-		<!-- Pillars Section -->
-		<section class="py-24 px-8 bg-white">
-			<div class="max-w-7xl mx-auto space-y-16">
-				<div class="text-center space-y-4">
-					<h2 class="text-4xl font-bold">The Five Pillars</h2>
-					<p class="text-mud-brown max-w-2xl mx-auto">
-						Gurudevi is structured around five ecological zones that support every aspect of the educational experience.
-					</p>
-				</div>
-				
-				<div class="grid grid-cols-1 md:grid-cols-5 gap-6">
-					{[
-						{ name: 'Self', desc: 'The Inner Ecology', color: 'bg-teal-water' },
-						{ name: 'Workspace', desc: 'Classroom, School, Family Space & Learning Studio', color: 'bg-peacock-blue' },
-						{ name: 'Library', desc: 'Knowledge Ecology', color: 'bg-sage-green' },
-						{ name: 'Community', desc: 'Relational Ecology', color: 'bg-sanctuary-saffron' },
-						{ name: 'Profile', desc: 'Identity & Boundaries', color: 'bg-mud-brown' }
-					].map((pillar) => (
-						<div class="p-8 rounded-3xl border border-mud-brown/10 hover:shadow-xl transition-all hover:-translate-y-2 text-center space-y-4">
-							<div class={`w-16 h-16 ${pillar.color} rounded-2xl mx-auto flex items-center justify-center text-sacred-white shadow-lg`}>
-								{pillar.name[0]}
-							</div>
-							<h3 class="text-xl font-bold">{pillar.name}</h3>
-							<p class="text-sm text-mud-brown opacity-80">{pillar.desc}</p>
-						</div>
-					))}
-				</div>
-			</div>
-		</section>
+    <section class="section section--roles" aria-labelledby="roles-title">
+      <div class="section__heading"><div><p class="eyebrow">One ecology, many centers</p><h2 id="roles-title">A different kind of school technology.</h2></div><p>Each person gets a place to work, contribute, and belong—without being flattened into one role.</p></div>
+      <div class="role-list">
+        {copy.roles.map((role, index) => <article class="role-row" style={`--delay: ${index * 70}ms`}><span class="role-row__index">0{index + 1}</span><div><p class="eyebrow">{role.label}</p><h3>{role.title}</h3></div><p>{role.body}</p><span class="role-row__arrow" aria-hidden="true">↗</span></article>)}
+      </div>
+    </section>
 
-		<!-- Stories Section -->
-		<section class="py-24 px-8 bg-temple-stone/20 overflow-hidden">
-			<div class="max-w-7xl mx-auto space-y-16">
-				<div class="text-center space-y-4">
-					<h2 class="text-4xl font-bold">Stories of the Sanctuary</h2>
-					<p class="text-mud-brown max-w-2xl mx-auto">Voices from the ecology—hear how teachers are mending the impedance match.</p>
-				</div>
-				
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-					<StoryCard 
-						quote="Every line of code in Gurudevi must honor the people who give everything to children while their own lives quietly collapse."
-						author="Visionary Builder"
-						role="Ecology Architect"
-					/>
-					<StoryCard 
-						quote="The architecture of care starts with respecting the boundaries of the educator. We build for human flourishing, not institutional capture."
-						author="System Designer"
-						role="Topology Observer"
-					/>
-				</div>
-			</div>
-		</section>
+    <section class="section section--dark" aria-labelledby="workspaces-title">
+      <div class="section__heading section__heading--dark"><div><p class="eyebrow">Inside Gurudevi</p><h2 id="workspaces-title">Four spaces, one living system.</h2></div><p>The product follows the shape of education itself: connected, local, and always in relationship.</p></div>
+      <div class="workspace-list">{copy.workspaces.map((workspace) => <div class="workspace-row"><span>{workspace.number}</span><h3>{workspace.name}</h3><p>{workspace.body}</p></div>)}</div>
+    </section>
 
-		<!-- Join Section -->
-		<section id="join" class="py-32 px-8 bg-gradient-to-br from-teal-water to-peacock-blue text-sacred-white relative overflow-hidden text-center border-b border-white/10">
-			<div class="max-w-3xl mx-auto space-y-10 relative z-10">
-				<h2 class="text-5xl font-bold">Join the Education Ecology</h2>
-				<p class="text-xl opacity-80 leading-relaxed">
-					Teachers remain at the heart of Gurudevi. The wider ecology matters too: students, school leaders, families, and communities all need room to participate with dignity.
-				</p>
-				
-				<div class="flex flex-col sm:flex-row justify-center items-center space-y-6 sm:space-y-0 sm:space-x-8">
-					<div class="space-y-4">
-						<p class="text-sm uppercase tracking-widest text-temple-gold font-bold">Web Platform</p>
-						<a href={WEB_LINKS.app} target="_blank" rel="noopener noreferrer" class="px-10 py-4 bg-sacred-white text-peacock-blue rounded-full font-bold hover:bg-peacock-blue hover:text-white transition-all block">
-							Open Web App
-						</a>
-					</div>
+    <section class="section section--trust" aria-labelledby="trust-title">
+      <div class="trust-mark"><img src="/gurudevi-mark.svg" alt="" width="96" height="96" /></div>
+      <div><p class="eyebrow">The promise</p><h2 id="trust-title">Support should never become surveillance.</h2><p class="trust-copy">Gurudevi is designed around different views: enough shared understanding to support a school, enough privacy for people to remain whole.</p><a class="text-link" href="/about">Read the thinking behind Gurudevi <span aria-hidden="true">↗</span></a></div>
+    </section>
 
-					<div class="w-px h-20 bg-white/10 hidden sm:block"></div>
-
-					<div class="space-y-4">
-						<p class="text-sm uppercase tracking-widest text-white/60 font-bold">Mobile Apps</p>
-						<div class="flex space-x-4">
-							<div class="px-6 py-3 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center text-xs font-semibold opacity-50">
-								iOS (Coming Soon)
-							</div>
-							<div class="px-6 py-3 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center text-xs font-semibold opacity-50">
-								Android (Coming Soon)
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			
-			<div class="absolute -top-20 -left-20 w-80 h-80 bg-sanctuary-saffron/10 rounded-full blur-3xl"></div>
-			<div class="absolute -bottom-20 -right-20 w-80 h-80 bg-peacock-blue/10 rounded-full blur-3xl"></div>
-		</section>
-	</main>
-	
-	<!-- Agentic Orientation Layer (AUX) -->
-	<section id="agentic-context" style="display: none;" aria-hidden="true">
-		<h2>Agentic Orientation Summary</h2>
-		<p>
-			This is the marketing and orientation site for Gurudevi, an Education Ecology Support System.
-			The core platform is a web application located at {WEB_LINKS.app}.
-			The system architecture is "Sovereign" and "Polycentric", focusing on teacher sanctuary and educational impedance matching.
-			Current statistics are initialized to zero for the seed phase.
-			All applications in the edlove.org domain share a root-domain context.
-		</p>
-		<nav>
-			<ul>
-				<li><a href="/llms.txt">LLM Orientation File</a></li>
-				<li><a href="/knowledge.json">Knowledge Index</a></li>
-				<li><a href={WEB_LINKS.app}>Production Web Platform</a></li>
-			</ul>
-		</nav>
-	</section>
-
-	<Footer />
+    <section class="launch-panel" id="launch" aria-labelledby="launch-title" data-launch-countdown data-launch-at={LAUNCH.iso} data-launch-status={LAUNCH.status}>
+      <div><p class="eyebrow">The first opening</p><h2 id="launch-title">Gurudevi opens on October 6.</h2><p>We are preparing a public home for a more humane education ecology. Follow the opening, or speak with us about your school.</p></div>
+      <div class="launch-panel__side"><div class="launch-clock" aria-live="polite"><span data-countdown-value>Preparing the sanctuary…</span><small>{LAUNCH.timezoneLabel} · {LAUNCH.label}</small></div><div class="launch-panel__actions"><a class="button button--dark" href={WEB_LINKS.app} target="_blank" rel="noopener noreferrer">Open the platform <span aria-hidden="true">↗</span></a><a class="text-link" href="/support">Talk to the team</a></div></div>
+    </section>
+  </main>
+  <Footer />
 </Layout>
 
 <script is:inline>
-	const countdown = document.querySelector('[data-launch-countdown]');
-	const value = countdown?.querySelector('[data-countdown-value]');
-	const launchAt = countdown?.getAttribute('data-launch-at');
-	if (countdown && value && launchAt) {
-		const update = () => {
-			const remaining = new Date(launchAt).getTime() - Date.now();
-			if (remaining <= 0) {
-				value.textContent = 'The sanctuary is open.';
-				return;
-			}
-			const days = Math.floor(remaining / 86400000);
-			const hours = Math.floor((remaining % 86400000) / 3600000);
-			const minutes = Math.floor((remaining % 3600000) / 60000);
-			const seconds = Math.floor((remaining % 60000) / 1000);
-			value.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s to launch`;
-		};
-		update();
-		window.setInterval(update, 1000);
-	}
+  const countdown = document.querySelector('[data-launch-countdown]');
+  const value = countdown?.querySelector('[data-countdown-value]');
+  const launchAt = countdown?.getAttribute('data-launch-at');
+  if (countdown && value && launchAt) {
+    const update = () => {
+      const remaining = new Date(launchAt).getTime() - Date.now();
+      if (remaining <= 0) { value.textContent = 'The sanctuary is open.'; return; }
+      const days = Math.floor(remaining / 86400000);
+      const hours = Math.floor((remaining % 86400000) / 3600000);
+      const minutes = Math.floor((remaining % 3600000) / 60000);
+      const seconds = Math.floor((remaining % 60000) / 1000);
+      value.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s to launch`;
+    };
+    update(); window.setInterval(update, 1000);
+  }
 </script>

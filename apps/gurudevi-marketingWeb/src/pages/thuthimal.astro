@@ -5,21 +5,22 @@ import { CONTACT_EMAILS } from '../lib/site';
 <Layout title="Thuthimal (තුතිමල්)">
 	<Header />
 	
-	<main class="flex-grow py-24 px-8 bg-gradient-to-b from-cream-silence to-white">
-		<div class="max-w-4xl mx-auto space-y-16">
-			<div class="text-center space-y-8">
-				<div class="w-24 h-24 bg-sanctuary-saffron/20 rounded-full mx-auto flex items-center justify-center text-sanctuary-saffron">
+	<main class="page-shell">
+		<div class="prose-section">
+			<div class="page-intro">
+				<p class="eyebrow">A flower of gratitude</p>
+				<div class="thuthimal-mark">
 					<svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.168.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18 18.246 18.477 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
 					</svg>
 				</div>
-				<h1 class="text-6xl font-bold text-charcoal-truth">Thuthimal (තුතිමල්)</h1>
-				<p class="text-2xl text-mud-brown italic">"The Flower of Gratitude"</p>
+				<h1>Thuthimal (තුතිමල්)</h1>
+				<p class="lede">The Flower of Gratitude</p>
 			</div>
 
-			<section class="bg-white p-12 rounded-3xl shadow-xl border border-mud-brown/10 space-y-8">
-				<h2 class="text-3xl font-bold text-sanctuary-saffron">What is Thuthimal?</h2>
-				<div class="prose prose-lg text-mud-brown space-y-6">
+			<section class="prose-card">
+				<h2>What is Thuthimal?</h2>
+				<div>
 					<p>
 						In Sinhala, <strong>Thuthimal</strong> means "Flower of Gratitude." It is a unique concept that embeds gratitude and recognition into our economic model.
 					</p>
@@ -29,27 +30,27 @@ import { CONTACT_EMAILS } from '../lib/site';
 				</div>
 			</section>
 
-			<section class="grid grid-cols-1 md:grid-cols-2 gap-8">
-				<div class="p-8 bg-peacock-blue rounded-3xl text-sacred-white space-y-4">
-					<h3 class="text-2xl font-bold">For Teachers</h3>
+			<section class="about-principles">
+				<div class="principle-card">
+					<h3>For Teachers</h3>
 					<p class="opacity-90">
 						Receive a Pro subscription as a gift of gratitude. Your profile will display a badge of honor, acknowledging the impact you've made.
 					</p>
 				</div>
-				<div class="p-8 bg-sage-green rounded-3xl text-sacred-white space-y-4">
-					<h3 class="text-2xl font-bold">For Sponsors</h3>
+				<div class="principle-card">
+					<h3>For Sponsors</h3>
 					<p class="opacity-90">
 						Honor a teacher who changed your life. Provide them with the tools they need to flourish in their sanctuary.
 					</p>
 				</div>
 			</section>
 
-			<section class="text-center space-y-8 pt-12">
-				<h2 class="text-3xl font-bold text-charcoal-truth">Become a Part of the Economy</h2>
-				<p class="text-mud-brown max-w-xl mx-auto">
+			<section class="contact-strip">
+				<h2>Become a part of the economy</h2>
+				<p>
 					During our Alpha phase, we are processing Thuthimal gifts manually to ensure every "flower" reaches its intended sanctuary.
 				</p>
-				<a href={`mailto:${CONTACT_EMAILS.gratitude}`} class="inline-block px-12 py-5 bg-sanctuary-saffron text-sacred-white rounded-full font-bold text-xl shadow-2xl hover:bg-peacock-blue transition-all transform hover:scale-105">
+				<a href={`mailto:${CONTACT_EMAILS.gratitude}`} class="button button--primary">
 					Sponsor a Teacher
 				</a>
 			</section>

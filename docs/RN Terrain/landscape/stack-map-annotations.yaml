@@ -2,7 +2,7 @@
 # Update this file (or agents add entries), then regenerate.
 
 metadata:
-  updated: 2026-08-12
+  updated: 2026-08-13
   convention: "1) bootstrap drafts new entries  2) curate summary/layer/floating  3) pnpm run stack-map"
 
 package_entries:

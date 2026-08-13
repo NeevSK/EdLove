@@ -24,7 +24,6 @@
     "@astrojs/vercel": "^11.0.5",
     "@repo/analytics": "workspace:*",
     "@repo/core": "workspace:*",
-    "@repo/form-builder": "workspace:*",
     "@repo/ui": "workspace:*",
     "@supabase/supabase-js": "2.102.1",
     "@tailwindcss/vite": "^4.3.3",

@@ -17,6 +17,9 @@ export default defineConfig({
       mainFields: ['browser', 'module', 'main'],
       alias: {
         '@': fileURLToPath(new URL('../../packages/ui/src', import.meta.url)),
+        // Keep the public marketing build on the workspace source export so
+        // new shared icons do not depend on a stale generated UI dist folder.
+        '@repo/ui/icons': fileURLToPath(new URL('../../packages/ui/src/icons.ts', import.meta.url)),
         '@cedar-policy/cedar-wasm/web': fileURLToPath(
           new URL('./src/shims/cedar-web.ts', import.meta.url),
         ),

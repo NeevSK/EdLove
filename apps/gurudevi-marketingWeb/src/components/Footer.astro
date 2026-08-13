@@ -1,64 +1,13 @@
 ---
 import { SOCIAL_LINKS, WEB_LINKS } from '../lib/site';
-
 const currentYear = new Date().getFullYear();
 ---
 
-<footer class="bg-void-indigo text-sacred-white py-12 px-8 mt-auto">
-  <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
-    <div class="space-y-4">
-      <div class="flex items-center space-x-2">
-        <img src="/Gurudevi-logo.png" alt="" class="w-8 h-8 object-contain" />
-        <span class="text-xl font-bold tracking-tight">Gurudevi</span>
-      </div>
-      <p class="text-silver-subtle text-sm max-w-xs">
-        An Education Ecology Support System. Mending the teaching-learning impedance match through care and technology.
-      </p>
-    </div>
-    
-    <div>
-      <h3 class="text-temple-gold font-bold mb-4">Explore</h3>
-      <ul class="space-y-2 text-silver-subtle">
-        <li><a href="/" class="hover:text-sacred-white transition-colors">Home</a></li>
-        <li><a href="/about" class="hover:text-sacred-white transition-colors">About the Ecology</a></li>
-        <li><a href="/faq" class="hover:text-sacred-white transition-colors">FAQ</a></li>
-        <li><a href="/support" class="hover:text-sacred-white transition-colors">Support & Feedback</a></li>
-        <li><a href="/delete-account" class="hover:text-sacred-white transition-colors">Delete Account</a></li>
-        <li><a href="/privacy" class="hover:text-sacred-white transition-colors">Privacy Policy</a></li>
-        <li><a href="/terms" class="hover:text-sacred-white transition-colors">Terms of Use</a></li>
-        <li><a href="/thuthimal" class="hover:text-sacred-white transition-colors">Thuthimal (Gratitude)</a></li>
-        <li><a href={WEB_LINKS.app} target="_blank" rel="noopener noreferrer" class="hover:text-sacred-white transition-colors">Open Web Platform</a></li>
-      </ul>
-    </div>
-    
-    <div>
-      <h3 class="text-temple-gold font-bold mb-4">Connect</h3>
-      <p class="text-silver-subtle text-sm mb-4">
-        Gurudevi lives inside the EdLove constellation. These are our official homes.
-      </p>
-      <ul class="space-y-2 text-silver-subtle text-sm">
-        <li><a href={WEB_LINKS.edlove} target="_blank" rel="noopener noreferrer" class="hover:text-sacred-white transition-colors">EdLove Foundation</a></li>
-        <li><a href={WEB_LINKS.intuitui} target="_blank" rel="noopener noreferrer" class="hover:text-sacred-white transition-colors">intuitui labs</a></li>
-        <li><a href={WEB_LINKS.founder} target="_blank" rel="noopener noreferrer" class="hover:text-sacred-white transition-colors">Founder: Neevsk</a></li>
-        <li><a href={SOCIAL_LINKS.beacons} target="_blank" rel="noopener noreferrer" class="hover:text-sacred-white transition-colors">All official links</a></li>
-      </ul>
-      <div class="flex flex-wrap gap-x-4 gap-y-2 mt-5 text-xs">
-        <a href={SOCIAL_LINKS.facebook} target="_blank" rel="noopener noreferrer" class="hover:text-sacred-white transition-colors">Facebook</a>
-        <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" class="hover:text-sacred-white transition-colors">LinkedIn</a>
-        <a href={SOCIAL_LINKS.youtube} target="_blank" rel="noopener noreferrer" class="hover:text-sacred-white transition-colors">YouTube</a>
-        <a href={SOCIAL_LINKS.tiktok} target="_blank" rel="noopener noreferrer" class="hover:text-sacred-white transition-colors">TikTok</a>
-        <a href={SOCIAL_LINKS.x} target="_blank" rel="noopener noreferrer" class="hover:text-sacred-white transition-colors">X</a>
-        <a href={SOCIAL_LINKS.email} target="_blank" rel="noopener noreferrer" class="hover:text-sacred-white transition-colors">Email</a>
-      </div>
-    </div>
+<footer class="site-footer">
+  <div class="site-footer__grid">
+    <div class="site-footer__brand"><div class="brand brand--footer"><img src="/gurudevi-mark.svg" alt="" width="28" height="28" /><span>Gurudevi</span></div><p>Technology that gives energy back to education.</p></div>
+    <div><p class="eyebrow footer-label">Explore</p><div class="footer-links"><a href="/about">The ecology</a><a href="/faq">Questions</a><a href="/support">Support</a><a href="/thuthimal">Thuthimal</a></div></div>
+    <div><p class="eyebrow footer-label">Elsewhere</p><div class="footer-links"><a href={WEB_LINKS.app} target="_blank" rel="noopener noreferrer">Open platform ↗</a><a href={WEB_LINKS.edlove} target="_blank" rel="noopener noreferrer">EdLove ↗</a><a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a></div></div>
   </div>
-  
-  <div class="max-w-7xl mx-auto border-t border-sacred-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-lg text-silver-subtle space-y-4 md:space-y-0 text-center md:text-left">
-    <p>&copy; {currentYear} Gurudevi. Part of the <a href={WEB_LINKS.edlove} target="_blank" rel="noopener noreferrer" class="text-sanctuary-saffron font-bold hover:text-temple-gold transition-colors">EdLove Constellation</a>.</p>
-    <p class="tracking-wide">
-      Handcrafted with 💖 by 
-      <a href={WEB_LINKS.intuitui} target="_blank" rel="noopener noreferrer" class="text-temple-gold hover:text-sanctuary-saffron transition-colors font-bold tracking-tighter lowercase">intuitui labs</a>
-      for the educational topology
-    </p>
-  </div>
+  <div class="site-footer__bottom"><span>© {currentYear} Gurudevi · Part of EdLove</span><span><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · <a href="/delete-account">Delete account</a></span></div>
 </footer>

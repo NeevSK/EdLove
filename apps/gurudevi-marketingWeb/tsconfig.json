@@ -31,12 +31,6 @@
       "@repo/database/*": [
         "../../packages/database/src/*"
       ],
-      "@repo/form-builder/*": [
-        "../../packages/form-builder/src/*"
-      ],
-      "@intuitui-labs/form-builder-engine/*": [
-        "../../packages/form-builder-engine/src/*"
-      ],
       "@repo/graphics/*": [
         "../../packages/graphics/src/*"
       ],

@@ -1,76 +1,36 @@
 ---
 import { WEB_LINKS } from '../lib/site';
 
-const _navItems = [
-  { name: 'About', href: '/about' },
-  { name: 'Thuthimal', href: '/thuthimal' },
-  { name: 'FAQ', href: '/faq' },
+const navItems = [
+  { name: 'The ecology', href: '/about' },
+  { name: 'Questions', href: '/faq' },
   { name: 'Support', href: '/support' },
 ];
 ---
 
-<header class="w-full py-4 md:py-6 px-6 md:px-8 flex justify-between items-center bg-white/70 backdrop-blur-xl sticky top-0 z-[100] border-b border-mud-brown/10">
-  <!-- Logo/Home Link -->
-  <a href="/" class="group flex items-center space-x-3 hover:scale-105 transition-transform duration-300">
-    <img src="/Gurudevi-logo.png" alt="" class="w-10 h-10 md:w-12 md:h-12 object-contain rounded-full shadow-lg group-hover:scale-105 transition-transform" />
-    <span class="text-xl md:text-2xl font-bold tracking-tight text-charcoal-truth">Gurudevi</span>
-  </a>
-  
-  <!-- Desktop Navigation -->
-  <nav class="hidden md:block">
-    <ul class="flex space-x-8">
-      {navItems.map((item) => (
-        <li>
-          <a 
-            href={item.href} 
-            class="text-mud-brown hover:text-sanctuary-saffron transition-colors font-semibold py-2"
-          >
-            {item.name}
-          </a>
-        </li>
-      ))}
-    </ul>
-  </nav>
-
-  <div class="hidden md:flex items-center space-x-4">
-    <a 
-      href={WEB_LINKS.app}
-      target="_blank"
-      rel="noopener noreferrer"
-      class="bg-sanctuary-saffron text-sacred-white px-6 py-2.5 rounded-full font-bold shadow-md hover:bg-peacock-blue transition-all transform hover:scale-105"
-    >
-      Open Platform
+<header class="site-header">
+  <div class="site-header__inner">
+    <a href="/" class="brand" aria-label="Gurudevi home">
+      <img src="/gurudevi-mark.svg" alt="" width="28" height="28" />
+      <span>Gurudevi</span>
     </a>
+    <nav class="desktop-nav" aria-label="Main navigation">
+      {navItems.map((item) => <a href={item.href}>{item.name}</a>)}
+    </nav>
+    <div class="header-actions">
+      <a href="/#launch" class="header-launch">October 6 <span aria-hidden="true">↗</span></a>
+      <a href={WEB_LINKS.app} target="_blank" rel="noopener noreferrer" class="header-platform">Open platform</a>
+      <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="mobile-menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </div>
   </div>
-
-  <!-- Mobile Toggle -->
-  <button id="menu-toggle" class="md:hidden p-2 text-mud-brown hover:text-sanctuary-saffron transition-colors" aria-label="Open navigation menu" aria-controls="mobile-menu" aria-expanded="false">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-    </svg>
-  </button>
-
-  <!-- Mobile Navigation Overlay -->
-  <div id="mobile-menu" aria-hidden="true" inert class="fixed inset-0 bg-cream-silence z-[200] transform translate-x-full transition-transform duration-500 ease-in-out md:hidden flex flex-col items-center justify-center space-y-8 p-8">
-    <button id="menu-close" class="absolute top-6 right-6 p-2 text-mud-brown" aria-label="Close Menu">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </button>
-    
-    <img src="/Gurudevi-logo.png" alt="Gurudevi" class="w-20 h-20 mb-4 object-contain" />
-    
-    <nav class="w-full text-center">
-      <ul class="space-y-6">
-        {navItems.map((item) => (
-          <li>
-            <a href={item.href} class="text-3xl font-bold text-charcoal-truth hover:text-sanctuary-saffron block py-2">{item.name}</a>
-          </li>
-        ))}
-        <li>
-          <a href={WEB_LINKS.app} target="_blank" rel="noopener noreferrer" class="inline-block mt-4 px-10 py-4 bg-sanctuary-saffron text-white rounded-full font-bold text-xl">Open Platform</a>
-        </li>
-      </ul>
+  <div id="mobile-menu" class="mobile-menu" aria-hidden="true" inert>
+    <div class="mobile-menu__top"><span class="eyebrow">Gurudevi</span><button id="menu-close" type="button" aria-label="Close navigation menu">Close</button></div>
+    <nav aria-label="Mobile navigation">
+      {navItems.map((item) => <a href={item.href}>{item.name}</a>)}
+      <a href="/#launch">The October 6 launch</a>
+      <a href={WEB_LINKS.app} target="_blank" rel="noopener noreferrer">Open platform ↗</a>
     </nav>
   </div>
 </header>
@@ -79,25 +39,17 @@ const _navItems = [
   const toggle = document.getElementById('menu-toggle');
   const close = document.getElementById('menu-close');
   const menu = document.getElementById('mobile-menu');
-  const links = document.querySelectorAll('#mobile-menu a');
-
-  const setMenu = (open) => {
+  const setMenu = (open: boolean) => {
     if (!menu || !toggle) return;
-    menu.classList.toggle('translate-x-full', !open);
+    menu.classList.toggle('is-open', open);
     document.body.classList.toggle('overflow-hidden', open);
     toggle.setAttribute('aria-expanded', String(open));
-    toggle.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
     menu.setAttribute('aria-hidden', String(!open));
-    if (open) menu.removeAttribute('inert');
-    else menu.setAttribute('inert', '');
-    if (open) close?.focus();
-    else toggle.focus();
+    if (open) menu.removeAttribute('inert'); else menu.setAttribute('inert', '');
+    if (open) close?.focus(); else toggle.focus();
   };
-
   toggle?.addEventListener('click', () => setMenu(true));
   close?.addEventListener('click', () => setMenu(false));
-  links.forEach(link => link.addEventListener('click', () => setMenu(false)));
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && !menu?.classList.contains('translate-x-full')) setMenu(false);
-  });
+  menu?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setMenu(false)));
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') setMenu(false); });
 </script>

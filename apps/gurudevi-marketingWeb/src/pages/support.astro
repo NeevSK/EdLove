@@ -2,36 +2,4 @@
 import { CONTACT_EMAILS } from '../lib/site';
 ---
 
-<Layout title="Support & Feedback">
-  <Header />
-
-  <main class="flex-grow py-24 px-8">
-    <div class="max-w-4xl mx-auto space-y-16">
-      <div class="text-center space-y-4">
-        <h1 class="text-5xl font-bold text-charcoal-truth">Support & Feedback</h1>
-        <p class="text-xl text-mud-brown">
-          If something feels broken, confusing, or heavy — tell us. Gurudevi is a healing ecosystem, and your signals help
-          it self-repair.
-        </p>
-      </div>
-
-      <SupportForm client:load />
-
-      <section class="bg-temple-stone/50 p-10 rounded-3xl border border-mud-brown/10 space-y-4">
-        <h2 class="text-2xl font-bold text-peacock-blue">Institutional inquiries</h2>
-        <p class="text-mud-brown">
-          If you are a Principal or School Head and want to onboard your school, email us and we’ll guide the transition.
-        </p>
-        <a
-          href={`mailto:${CONTACT_EMAILS.institutional}?subject=Gurudevi%20Institutional%20Onboarding`}
-          class="inline-block px-8 py-3 bg-sanctuary-saffron text-white rounded-full font-bold hover:bg-peacock-blue transition-all"
-        >
-          Email Institutional Support
-        </a>
-      </section>
-    </div>
-  </main>
-
-  <Footer />
-</Layout>
-
+<Layout title="Support & Feedback"><Header /><main><section class="page-intro"><p class="eyebrow">Support</p><h1>Tell us what would make the work lighter.</h1><p>Report a problem, share feedback, request a feature, or ask about bringing Gurudevi to your school.</p></section><section class="section support-layout"><div><p class="eyebrow">A direct line</p><h2>We are still listening closely.</h2><p>Gurudevi is being shaped with the people who will use it. Your report does not disappear into a queue—it helps us understand where the system needs to become more useful, more careful, or more clear.</p><div class="support-links"><a href={`mailto:${CONTACT_EMAILS.support}?subject=Gurudevi%20Support`}>Support & bugs ↗</a><a href={`mailto:${CONTACT_EMAILS.institutional}?subject=Gurudevi%20School%20conversation`}>School conversation ↗</a><a href={`mailto:${CONTACT_EMAILS.gratitude}?subject=Gurudevi%20Thuthimal`}>Thuthimal ↗</a></div></div><div class="support-form-wrap"><SupportForm client:load /></div></section></main><Footer /></Layout>

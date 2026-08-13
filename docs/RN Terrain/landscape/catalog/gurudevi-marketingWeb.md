@@ -10,7 +10,6 @@ Marketing web (gurudevi.edlove.org) — forms, analytics, landings.
 | :--- | :--- | :--- |
 | [@repo/analytics](../stack-map.md#repoanalytics) | domain | Premium analytics engine — student performance insights, GPA calculations, predictive analytics. |
 | [@repo/core](../stack-map.md#repocore) | core | Platform spine — shared contracts & infrastructure every domain relies on. |
-| [@repo/form-builder](../stack-map.md#repoform-builder) | domain | Feature host for forms (build + render flows) — the app-side shell, not the engine. |
 | [@repo/ui](../stack-map.md#repoui) | ui | Shared design system & shell primitives for the whole product family. |
 
 ## External deps (11 direct)

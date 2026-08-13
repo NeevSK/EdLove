@@ -28,7 +28,6 @@ Gurudevi is not only an LMS or teacher dashboard. It supports the relationships 
 - Privacy: ${SITE_URL}/privacy
 - Terms: ${SITE_URL}/terms
 - Delete Account: ${SITE_URL}/delete-account
-- Sensing: ${SITE_URL}/sensing
 
 ## Machine-Readable Endpoints
 - Sitemap: ${SITE_URL}/sitemap-index.xml

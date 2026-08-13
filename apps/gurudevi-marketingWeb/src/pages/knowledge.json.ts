@@ -50,13 +50,6 @@ const entries = [
     category: 'policy',
     url: absoluteUrl('/terms'),
   },
-  {
-    id: 'sensing',
-    title: 'Sensing',
-    subtitle: 'School climate sensing and resonance pulse flow',
-    category: 'tool',
-    url: absoluteUrl('/sensing'),
-  },
 ];
 
 export function GET() {
