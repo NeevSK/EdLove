@@ -54,6 +54,7 @@ jobs:
     needs: prep
     runs-on: ubuntu-latest
     continue-on-error: true
+    environment: ${{ github.event.inputs.profile == 'production' && 'production' || github.event.inputs.profile == 'preview' && 'preview' || 'development' }}
     env:
       DOPPLER_PROJECT: gurudevi-mobile
       DOPPLER_CONFIG: ${{ github.event.inputs.profile == 'production' && 'prd' || github.event.inputs.profile == 'preview' && 'stg' || 'dev' }}
@@ -169,6 +170,7 @@ jobs:
     needs: [prep, prebundle]
     runs-on: ubuntu-latest
     if: always()
+    environment: ${{ github.event.inputs.profile == 'production' && 'production' || github.event.inputs.profile == 'preview' && 'preview' || 'development' }}
     env:
       DOPPLER_PROJECT: gurudevi-mobile
       DOPPLER_CONFIG: ${{ github.event.inputs.profile == 'production' && 'prd' || github.event.inputs.profile == 'preview' && 'stg' || 'dev' }}
@@ -346,6 +348,7 @@ jobs:
     needs: [prep, prebundle, build]
     runs-on: ubuntu-latest
     continue-on-error: true
+    environment: ${{ github.event.inputs.profile == 'production' && 'production' || github.event.inputs.profile == 'preview' && 'preview' || 'development' }}
     env:
       DOPPLER_PROJECT: gurudevi-mobile
       DOPPLER_CONFIG: ${{ github.event.inputs.profile == 'production' && 'prd' || github.event.inputs.profile == 'preview' && 'stg' || 'dev' }}

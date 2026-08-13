@@ -10,6 +10,7 @@ on:
 jobs:
   quality-check:
     runs-on: ubuntu-latest
+    environment: development
     env:
       DOPPLER_PROJECT: gurudevi-mobile
       DOPPLER_CONFIG: dev
