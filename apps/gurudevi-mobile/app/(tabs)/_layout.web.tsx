@@ -3,7 +3,18 @@ import { usePermissions, useStore } from '@repo/core/logic';
 import { BreathGuide } from '@repo/self/wellbeing';
 import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
 import type { LucideIcon } from '@repo/ui/icons';
-import { Bell, Heart, Library, Menu, School, Settings, Sparkles, User, Users, X } from '@repo/ui/icons';
+import {
+  Bell,
+  Heart,
+  Library,
+  Menu,
+  School,
+  Settings,
+  Sparkles,
+  User,
+  Users,
+  X,
+} from '@repo/ui/icons';
 import { Box, Modal, ModalContent, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { colors, corners, typography } from '@repo/ui/theme';
 import { router, Slot, usePathname } from 'expo-router';
@@ -28,8 +39,8 @@ const PRIMARY_NAV: NavItem[] = [
   { href: '/workspace', icon: School, label: 'Workspace' },
   { href: '/community', icon: Users, label: 'Community' },
   { href: '/library', icon: Library, label: 'Library' },
-      { href: '/profile', icon: User, label: 'Profile' },
-      { href: '/durable-agents', icon: Sparkles, label: 'Agent Lab', group: 'utility' },
+  { href: '/profile', icon: User, label: 'Profile' },
+  { href: '/durable-agents', icon: Sparkles, label: 'Agent Lab', group: 'utility' },
 ];
 
 export default function WebTabsLayout() {
