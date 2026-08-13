@@ -5,7 +5,7 @@ permit(
   resource
 ) when {
   principal.capacity == "parent" &&
-  resource is Grade &&
+  (resource is Grade || resource is GradeMark) &&
   resource has student_id &&
   principal has child_student_ids &&
   principal.child_student_ids.contains(resource.student_id)
@@ -18,7 +18,7 @@ permit(
   resource
 ) when {
   principal.capacity == "parent" &&
-  resource is AttendanceRecord &&
+  (resource is AttendanceRecord || resource is DailyAttendance || resource is AttendanceSession) &&
   resource has student_id &&
   principal has child_student_ids &&
   principal.child_student_ids.contains(resource.student_id)

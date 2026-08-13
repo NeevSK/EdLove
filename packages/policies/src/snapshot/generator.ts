@@ -19,6 +19,7 @@ export function generateSnapshot(user: UserContext, secret?: string): Permission
     Classroom: ['school_id', 'teacher_id', 'grade_id', 'section_id'],
     AttendanceRecord: ['school_id', 'classroom_id', 'student_id', 'grade_id', 'section_id'],
     Grade: ['school_id', 'classroom_id', 'student_id', 'graded_by'],
+    GradeMark: ['school_id', 'academic_cycle_id', 'grade_class_id', 'term_id', 'subject_id', 'student_id', 'graded_by'],
     Assignment: ['school_id', 'classroom_id', 'teacher_id'],
     Lesson: ['school_id', 'classroom_id', 'teacher_id'],
     Material: ['school_id', 'classroom_id', 'teacher_id'],
@@ -48,6 +49,7 @@ export function generateSnapshot(user: UserContext, secret?: string): Permission
     grade_id: user.grade_id || '',
     section_id: user.section_id || '',
     classroom_id: user.classroom_ids?.[0] || 'dummy-classroom-id',
+    grade_class_id: user.classroom_ids?.[0] || 'dummy-grade-class-id',
     graded_by: user.id,
   };
 

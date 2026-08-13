@@ -18,7 +18,7 @@ permit(
   resource
 ) when {
   principal.capacity == "gradeHead" &&
-  resource is AttendanceRecord &&
+  (resource is AttendanceRecord || resource is DailyAttendance || resource is AttendanceSession) &&
   resource has grade_id &&
   principal has grade_id &&
   resource.grade_id == principal.grade_id

@@ -45,11 +45,14 @@ permit(
   (
     resource is Classroom ||
     resource is AttendanceRecord ||
+    resource is DailyAttendance ||
+    resource is AttendanceSession ||
     resource is Assignment ||
     resource is Lesson ||
     resource is Material ||
     resource is InventoryItem ||
     resource is Grade ||
+    resource is GradeMark ||
     resource is ClassroomNote ||
     resource is Library ||
     resource is AssignmentSubmission
@@ -58,12 +61,14 @@ permit(
     (resource is Classroom && resource has teacher_id && resource.teacher_id == principal.id) ||
     (resource has teacher_id && resource.teacher_id == principal.id) ||
     (resource has classroom_id && principal has classroom_ids && principal.classroom_ids.contains(resource.classroom_id)) ||
+    (resource has grade_class_id && principal has classroom_ids && principal.classroom_ids.contains(resource.grade_class_id)) ||
+    (resource has grade_class_id && principal has classroom_ids && principal.classroom_ids.contains(resource.grade_class_id)) ||
     (resource is Classroom && principal has classroom_ids && principal.classroom_ids.contains(resource.id)) ||
     (resource is Library) // Library reads/actions are generally permitted
   ) &&
   // Optionally restrict Grade creation to highly trusted devices
   (
-    if (action == Action::"create" && resource is Grade) then (context has device_trust && context.device_trust == "high") else true
+    if (action == Action::"create" && (resource is Grade || resource is GradeMark)) then (context has device_trust && context.device_trust == "high") else true
   )
 };
 

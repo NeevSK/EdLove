@@ -46,6 +46,40 @@ entity Grade {
   graded_by?: String
 };
 
+entity DailyAttendance {
+  id: String,
+  school_id?: String,
+  academic_cycle_id?: String,
+  grade_class_id?: String,
+  student_id?: String,
+  grade_id?: String,
+  section_id?: String
+};
+
+entity AttendanceSession {
+  id: String,
+  school_id?: String,
+  academic_cycle_id?: String,
+  grade_class_id?: String,
+  student_id?: String,
+  teacher_id?: String,
+  subject_id?: String,
+  term_id?: String,
+  grade_id?: String,
+  section_id?: String
+};
+
+entity GradeMark {
+  id: String,
+  school_id?: String,
+  academic_cycle_id?: String,
+  grade_class_id?: String,
+  term_id?: String,
+  subject_id?: String,
+  student_id?: String,
+  graded_by?: String
+};
+
 entity Assignment {
   id: String,
   school_id?: String,
@@ -194,7 +228,7 @@ type SecurityContext = {
 action "read", "create", "update", "delete", "use_ai" appliesTo {
     principal: [User],
   resource: [
-    User, School, Classroom, AttendanceRecord, Grade, Assignment, Lesson, Material,
+    User, School, Classroom, AttendanceRecord, DailyAttendance, AttendanceSession, Grade, GradeMark, Assignment, Lesson, Material,
     StaffLeave, MoodLog, FireJournal, InventoryItem, Group, Post, Ledger,
     Guardian, SentinelAuditLog, JoyMoments, GratitudeEntries, EnergyForecasts,
     PersonalClassroom, AIAssistant, ClassroomNote, Library, Wellbeing, Staff, DailyContent,
