@@ -1,6 +1,3 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
-import { selectLatestPublishedSnapshots } from '@repo/core/lib/gradePublication';
-import { selectGuardianVisibleGrades } from '@repo/core/logic/domains/guardian/gradeVisibility';
 import type { GuardianRepository } from '@repo/core/logic/domains/guardian/ports';
 import {
   type GuardianIdentity,
@@ -15,6 +12,7 @@ import {
   StudentGuardianRelationshipSchema,
 } from '@repo/core/logic/schemas/guardian.schema';
 import { APIError } from '@repo/core/types/API';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 interface AttendanceRow {
   id: string;
@@ -29,17 +27,6 @@ interface AssignmentRow {
   subject?: string;
   due_date: string;
   classroom_id: string;
-}
-
-interface GradeRow {
-  id: string;
-  subject?: string;
-  grade?: string;
-  percentage?: number;
-  marks?: number;
-  published_at?: string;
-  created_at: string;
-  type?: string;
 }
 
 interface NotificationRow {
@@ -81,50 +68,38 @@ function mapGuardianIdentity(row: Record<string, unknown>): GuardianIdentity {
   });
 }
 
-function mapGuardianRelationship(row: Record<string, unknown>): StudentGuardianRelationship {
+function mapGuardianRelationship(
+  row: Record<string, unknown>,
+  permissions: GuardianPermissionConfig[] = [],
+): StudentGuardianRelationship {
   const r = row as any;
+  const createdAt = r.createdAt ?? r.created_at ?? new Date().toISOString();
   return StudentGuardianRelationshipSchema.parse({
     id: r.id,
     student_id: r.studentId ?? r.student_id,
     guardian_id: r.guardianId ?? r.guardian_id,
     relationship_type: r.relationshipType ?? r.relationship_type,
-    permissions: r.permissions ?? [],
+    permissions,
     custody_level: r.custodyLevel ?? r.custody_level,
-    effective_date: r.effectiveDate ?? r.effective_date,
+    effective_date: r.effectiveDate ?? r.effective_date ?? createdAt,
     termination_date: r.terminationDate ?? r.termination_date,
-    is_active: r.isActive ?? r.is_active,
-    created_at: r.createdAt ?? r.created_at,
-    updated_at: r.updatedAt ?? r.updated_at,
-    school_id: r.schoolId ?? r.school_id,
+    is_active: r.isActive ?? r.is_active ?? true,
+    created_at: createdAt,
+    updated_at: r.updatedAt ?? r.updated_at ?? createdAt,
+    school_id: r.schoolId ?? r.school_id ?? '',
   });
 }
 
+function mapAssessmentPermission(row: Record<string, unknown>): GuardianPermissionConfig {
+  const r = row as any;
+  return {
+    category: 'grades',
+    level: r.access_level === 'read' ? 'read' : 'none',
+    scope: 'assigned_students',
+  };
+}
+
 export const createSupabaseGuardianRepository = (supabase: SupabaseClient): GuardianRepository => {
-  async function getGuardianPublishedGrades(studentId: string) {
-    const { data: gradeRows, error: gradesError } = await supabase
-      .from('grades')
-      .select('id')
-      .eq('student_id', studentId);
-
-    if (gradesError)
-      throw new APIError('Failed to fetch guardian grade ids', gradesError.code, gradesError);
-    if (!gradeRows || gradeRows.length === 0) return [];
-
-    const { data: auditRows, error: auditError } = await supabase
-      .from('audit_logs')
-      .select('action, entity_id, created_at, metadata')
-      .eq('entity_type', 'grade')
-      .in(
-        'entity_id',
-        gradeRows.map((grade) => grade.id),
-      );
-
-    if (auditError)
-      throw new APIError('Failed to fetch guardian published grades', auditError.code, auditError);
-
-    return selectGuardianVisibleGrades(selectLatestPublishedSnapshots(auditRows ?? []));
-  }
-
   return {
     async createGuardianProfile(data: GuardianProfileCreate) {
       const payload = {
@@ -195,23 +170,16 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
       relationshipType: GuardianIdentity['relationship_type'],
       schoolId?: string,
     ) {
-      let resolvedSchoolId = schoolId;
-      if (!resolvedSchoolId) {
+      if (!schoolId) {
         const guardianProfile = await this.getGuardianProfile(guardianId);
-        resolvedSchoolId = guardianProfile?.school_id;
+        if (!guardianProfile) throw new APIError('Guardian profile not found', 'NOT_FOUND');
       }
       const payload = {
         id: crypto.randomUUID(),
-        guardianId,
-        studentId,
+        guardian_id: guardianId,
+        student_id: studentId,
         relationship_type: relationshipType,
-        permissions: [],
-        custodyLevel: 'partial',
-        effectiveDate: new Date().toISOString(),
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        school_id: resolvedSchoolId ?? '',
+        created_at: new Date().toISOString(),
       };
 
       const { data, error } = await supabase
@@ -227,33 +195,80 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
       studentId: string,
       permissions: GuardianPermissionConfig[],
     ) {
-      const { error } = await supabase
+      const { data: relationship, error: relationshipError } = await supabase
         .from('student_guardian_relationships')
-        .update({
-          permissions,
-          updatedAt: new Date().toISOString(),
-        })
+        .select('id')
         .eq('guardian_id', guardianId)
-        .eq('student_id', studentId);
-      if (error) throw new APIError('Failed to update guardian permissions', error.code, error);
+        .eq('student_id', studentId)
+        .maybeSingle();
+      if (relationshipError)
+        throw new APIError(
+          'Failed to resolve guardian relationship',
+          relationshipError.code,
+          relationshipError,
+        );
+      if (!relationship)
+        throw new APIError('Guardian relationship not found', 'NOT_FOUND');
+
+      const assessmentPermission = permissions.find((permission) => permission.category === 'grades');
+      const { error } = await supabase
+        .from('guardian_assessment_permissions')
+        .update({ revoked_at: new Date().toISOString() })
+        .eq('relationship_id', relationship.id)
+        .eq('permission_key', 'assessment_results')
+        .is('revoked_at', null);
+      if (error) throw new APIError('Failed to revoke guardian assessment permission', error.code, error);
+
+      if (assessmentPermission && assessmentPermission.level !== 'none') {
+        const { error: grantError } = await supabase
+          .from('guardian_assessment_permissions')
+          .insert({
+            relationship_id: relationship.id,
+            guardian_id: guardianId,
+            student_id: studentId,
+            permission_key: 'assessment_results',
+            access_level: 'read',
+          });
+        if (grantError)
+          throw new APIError('Failed to grant guardian assessment permission', grantError.code, grantError);
+      }
     },
     async getGuardianRelationships(guardianId: string) {
       const { data, error } = await supabase
         .from('student_guardian_relationships')
-        .select('*')
-        .eq('guardian_id', guardianId)
-        .eq('is_active', true);
+        .select('id, student_id, guardian_id, relationship_type, created_at')
+        .eq('guardian_id', guardianId);
       if (error) throw new APIError('Failed to fetch guardian relationships', error.code, error);
-      return (data || []).map(mapGuardianRelationship);
+
+      const relationships = data || [];
+      if (relationships.length === 0) return [];
+
+      const { data: permissionRows, error: permissionError } = await supabase
+        .from('guardian_assessment_permissions')
+        .select('relationship_id, access_level')
+        .eq('guardian_id', guardianId)
+        .eq('permission_key', 'assessment_results')
+        .eq('access_level', 'read')
+        .is('revoked_at', null)
+        .in('relationship_id', relationships.map((relationship) => relationship.id));
+      if (permissionError)
+        throw new APIError('Failed to fetch guardian permissions', permissionError.code, permissionError);
+
+      const permissionsByRelationship = new Map<string, GuardianPermissionConfig[]>();
+      for (const permission of permissionRows || []) {
+        const list = permissionsByRelationship.get(permission.relationship_id) ?? [];
+        list.push(mapAssessmentPermission(permission));
+        permissionsByRelationship.set(permission.relationship_id, list);
+      }
+
+      return relationships.map((relationship) =>
+        mapGuardianRelationship(relationship, permissionsByRelationship.get(relationship.id) ?? []),
+      );
     },
     async terminateGuardianRelationship(guardianId: string, studentId: string) {
       const { error } = await supabase
         .from('student_guardian_relationships')
-        .update({
-          isActive: false,
-          terminationDate: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        })
+        .delete()
         .eq('guardian_id', guardianId)
         .eq('student_id', studentId);
       if (error) throw new APIError('Failed to terminate guardian relationship', error.code, error);
@@ -266,13 +281,12 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
       const { data, error } = await supabase
         .from('student_guardian_relationships')
         .select(`
-                guardianId,
+                guardian_id,
                 guardians:guardian_id (
                   *
                 )
               `)
-        .eq('student_id', studentId)
-        .eq('is_active', true);
+        .eq('student_id', studentId);
       if (error) throw new APIError('Failed to fetch student guardians', error.code, error);
       return (
         (data?.map((relationship: any) => relationship.guardians) as Record<string, any>[]) || []
@@ -284,7 +298,7 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
       const { data: relationships, error: relationshipsError } = await supabase
         .from('student_guardian_relationships')
         .select(`
-                studentId,
+                student_id,
                 students:student_id (
                   id,
                   first_name,
@@ -293,8 +307,7 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
                   classroom_id
                 )
               `)
-        .eq('guardian_id', guardianId)
-        .eq('is_active', true);
+        .eq('guardian_id', guardianId);
       if (relationshipsError)
         throw new APIError(
           'Failed to fetch guardian students',
@@ -312,13 +325,12 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
 
       const studentOverviews = await Promise.all(
         students.map(async (student: Record<string, any>) => {
-          const [attendanceRes, publishedGrades, assignmentsRes] = await Promise.all([
+          const [attendanceRes, assignmentsRes] = await Promise.all([
             supabase
               .from('attendance')
               .select('*')
               .eq('student_id', student.id)
               .gte('date', monthAgoIso),
-            getGuardianPublishedGrades(student.id),
             supabase
               .from('assignments')
               .select('*')
@@ -342,7 +354,6 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
             );
 
           const attendance = (attendanceRes.data as AttendanceRow[]) || [];
-          const grades = publishedGrades as GradeRow[];
           const assignments = (assignmentsRes.data as AssignmentRow[]) || [];
           const presentCount = attendance.filter((record) => record.status === 'present').length;
 
@@ -359,20 +370,10 @@ export const createSupabaseGuardianRepository = (supabase: SupabaseClient): Guar
               percentage: attendance.length > 0 ? (presentCount / attendance.length) * 100 : 0,
             },
             grades: {
-              latest: grades.map((grade) => ({
-                subject: grade.subject ?? 'Published assessment',
-                grade: grade.grade ?? '',
-                percentage: grade.percentage ?? grade.marks,
-                date: grade.published_at ?? grade.created_at,
-                type: (grade.type as any) ?? 'assignment',
-              })),
-              average:
-                grades.length > 0
-                  ? grades.reduce(
-                      (sum: number, grade) => sum + (grade.percentage ?? grade.marks ?? 0),
-                      0,
-                    ) / grades.length
-                  : 0,
+              // Assessment results are served by Sanctuary's guardian assessment API.
+              // The Supabase repository deliberately does not read grades or grade marks.
+              latest: [],
+              average: 0,
             },
             upcomingAssignments: assignments.map((assignment) => ({
               id: assignment.id,

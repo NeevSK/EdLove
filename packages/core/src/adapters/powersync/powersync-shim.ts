@@ -33,6 +33,14 @@ export class PowerSyncDatabase {
   disconnect(): Promise<void> {
     return Promise.resolve();
   }
+
+  close(): Promise<void> {
+    return Promise.resolve();
+  }
+
+  disconnectAndClear(): Promise<void> {
+    return Promise.resolve();
+  }
 }
 
 export type CrudEntry = {
@@ -42,16 +50,23 @@ export type CrudEntry = {
   opData?: Record<string, unknown> | null;
 };
 
-export type PowerSyncCredentials = { endpoint: string; token: string };
+export type PowerSyncCredentials = {
+  endpoint: string;
+  token: string;
+  expiresAt?: Date;
+};
 
-export interface AbstractPowerSyncDatabase {
+export interface CommonPowerSyncDatabase {
   getCrudBatch(limit: number): Promise<{
     crud: CrudEntry[];
     complete(): Promise<void>;
   }>;
 }
 
+/** @deprecated Use CommonPowerSyncDatabase for PowerSync JS v2 terminology. */
+export type AbstractPowerSyncDatabase = CommonPowerSyncDatabase;
+
 export interface PowerSyncBackendConnector {
   fetchCredentials(): Promise<PowerSyncCredentials>;
-  uploadData(database: AbstractPowerSyncDatabase): Promise<void>;
+  uploadData(database: CommonPowerSyncDatabase): Promise<void>;
 }

@@ -7,7 +7,7 @@ import { z } from 'zod';
  */
 export const StudentSchema = makeModelSchema('ClassroomStudent').extend({
   full_name: z.string(), // Joined from User
-  roll_number: z.string().nullable().optional(),
+  roll_number: z.number().nullable().optional(),
   is_claimed: z.boolean().nullable().optional(),
   invite_code: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),

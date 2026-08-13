@@ -1,7 +1,8 @@
-import { calculateRanks, marksToGPA } from '@repo/core/lib/grading';
 import { APIError } from '@repo/core/types/API';
 import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+import { GradeMarkSchema } from '@repo/core/logic/schemas/grade-domain.schema';
+import { z } from 'zod';
 
 /**
  * GRADING API (Sovereign RPC Proxy)
@@ -12,31 +13,82 @@ import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 
 const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
-export const gradingAPI = {
-  async getGradebookSnapshot(classroomId: string, _viewDate?: string) {
-    const { data: gradesData, error: gradesError } = await supabase
-      .from('grades')
-      .select('*')
-      .eq('classroom_id', classroomId);
+type StudentGradeMarkScope = {
+  studentId: string;
+  schoolId: string;
+  academicCycleId: string;
+  termId?: string;
+  subjectId?: string;
+};
 
-    if (gradesError) throw new APIError('Failed to fetch snapshot grades', gradesError.code);
+type GradeMarkSubmission = StudentGradeMarkScope & {
+  gradeClassId: string;
+  termId: string;
+  subjectId: string;
+  marksEarned: number;
+  maxPoints: number;
+  assignmentId?: string;
+  submissionId?: string;
+  idempotencyKey?: string;
+  feedback?: string;
+};
+
+const gradeMarkCollectionSchema = z.array(GradeMarkSchema);
+type GradebookLifecycleScope = Omit<StudentGradeMarkScope, 'studentId'> & { gradeClassId: string };
+
+async function parseGradeMarkResponse(response: Response, action: string) {
+  if (!response.ok) {
+    throw new APIError(`${action}: ${response.statusText || 'request failed'}`, response.status.toString());
+  }
+
+  const payload: unknown = await response.json();
+  const parsed = GradeMarkSchema.safeParse(payload);
+  if (!parsed.success) {
+    throw new APIError(`${action}: Sanctuary returned an invalid GradeMark`, 'INVALID_GRADE_MARK_RESPONSE');
+  }
+  return parsed.data;
+}
+
+export const gradingAPI = {
+  async getGradebookSnapshot(
+    scope: GradebookLifecycleScope,
+    _viewDate?: string,
+  ) {
+    if (!scope.schoolId || !scope.academicCycleId || !scope.gradeClassId) {
+      throw new APIError(
+        'Gradebook snapshot requires schoolId, academicCycleId, and gradeClassId',
+        'MISSING_GRADEMARK_LIFECYCLE_CONTEXT',
+      );
+    }
+
+    const response = await (client.api as any).grading.classroom.$get({
+      query: {
+        schoolId: scope.schoolId,
+        academicCycleId: scope.academicCycleId,
+        gradeClassId: scope.gradeClassId,
+        ...(scope.termId ? { termId: scope.termId } : {}),
+        ...(scope.subjectId ? { subjectId: scope.subjectId } : {}),
+      },
+    });
+    if (!response.ok) {
+      throw new APIError('Failed to fetch GradeMark snapshot', response.status.toString());
+    }
+    const gradeMarks = gradeMarkCollectionSchema.parse(await response.json());
 
     const { data: settingsData } = await supabase
       .from('classroom_grading_settings')
       .select('*')
-      .eq('classroom_id', classroomId)
+      .eq('classroom_id', scope.gradeClassId)
       .maybeSingle();
 
     const gradingSettings = settingsData || {
-      classroom_id: classroomId,
+      classroom_id: scope.gradeClassId,
       grading_mode: 'both',
       show_ranks: true,
     };
 
-    const gradesWithRanks = calculateRanks(gradesData || []);
-
     return {
-      grades: gradesWithRanks,
+      gradeMarks,
       gradingSettings,
     };
   },
@@ -52,96 +104,91 @@ export const gradingAPI = {
     return data;
   },
 
-  async saveGradeDraft(
-    studentId: string,
-    classroomId: string,
-    marks: number,
-    assignmentId?: string,
-    feedback?: string,
-    _auditCtx?: any,
-  ) {
-    const { grade, gpa } = marksToGPA(marks);
-    const { data, error } = await supabase
-      .from('grades')
-      .upsert({
-        student_id: studentId,
-        classroom_id: classroomId,
-        assignment_id: assignmentId || null,
-        marks,
-        grade,
-        gpa,
-        feedback: feedback || null,
-        graded_by: (await supabase.auth.getSession()).data.session?.user?.id || 'system',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        status: 'draft',
-      })
-      .select()
-      .single();
+  async saveGradeDraft(input: GradeMarkSubmission, _auditCtx?: any) {
+    if (!input.schoolId || !input.academicCycleId || !input.gradeClassId || !input.termId || !input.subjectId) {
+      throw new APIError(
+        'Saving a GradeMark requires the complete academic lifecycle context',
+        'MISSING_GRADEMARK_LIFECYCLE_CONTEXT',
+      );
+    }
 
-    if (error) throw new APIError('Failed to save draft grade', error.code);
-    return data;
+    const response = await (client.api as any).grading.$post({
+      json: input,
+    });
+    return parseGradeMarkResponse(response, 'Failed to save GradeMark draft');
   },
 
   async publishGrade(gradeId: string, _auditCtx?: any) {
-    const { data, error } = await supabase
-      .from('grades')
-      .update({ status: 'published', updated_at: new Date().toISOString() })
-      .eq('id', gradeId)
-      .select()
-      .single();
+    if (!gradeId) {
+      throw new APIError('Publishing a GradeMark requires its id', 'MISSING_GRADEMARK_ID');
+    }
 
-    if (error) throw new APIError('Failed to publish grade', error.code);
-    return data;
+    const response = await (client.api as any).grading[':id'].publish.$post({
+      param: { id: gradeId },
+    });
+    return parseGradeMarkResponse(response, 'Failed to publish GradeMark');
   },
   /**
    * [LOUD-FAILURE] Renamed from getReportCard.
    */
-  async fetchStudentReport(studentId: string) {
+  async fetchStudentReport(scope: StudentGradeMarkScope) {
+    if (!scope.studentId || !scope.schoolId || !scope.academicCycleId) {
+      throw new APIError(
+        'Fetching a report card requires studentId, schoolId, and academicCycleId',
+        'MISSING_GRADEMARK_LIFECYCLE_CONTEXT',
+      );
+    }
+
     const res = await (client.api as any).grading['report-card'].$get({
-      query: { studentId },
+      query: {
+        studentId: scope.studentId,
+        schoolId: scope.schoolId,
+        academicCycleId: scope.academicCycleId,
+        ...(scope.termId ? { termId: scope.termId } : {}),
+        ...(scope.subjectId ? { subjectId: scope.subjectId } : {}),
+      },
     });
 
     if (!res.ok) {
       throw new APIError('Failed to fetch report card', res.status.toString());
     }
 
-    return await res.json();
+    const payload = gradeMarkCollectionSchema.safeParse(await res.json());
+    if (!payload.success) {
+      throw new APIError('Failed to fetch report card: Sanctuary returned invalid GradeMarks', 'INVALID_GRADE_MARK_RESPONSE');
+    }
+    return payload.data;
   },
 
   /**
    * [LOUD-FAILURE] Renamed from submitGrade.
    */
-  async recordAcademicMark(params: {
-    studentId: string;
-    classroomId: string;
-    marks: number;
-    assignmentId?: string;
-    feedback?: string;
-  }) {
+  async recordAcademicMark(params: GradeMarkSubmission) {
+    if (!params.schoolId || !params.academicCycleId || !params.gradeClassId || !params.termId || !params.subjectId) {
+      throw new APIError(
+        'Submitting a GradeMark requires the complete academic lifecycle context',
+        'MISSING_GRADEMARK_LIFECYCLE_CONTEXT',
+      );
+    }
+
     const res = await (client.api as any).grading.$post({
       json: params,
     });
 
-    if (!res.ok) {
-      throw new APIError('Failed to submit grade', res.status.toString());
-    }
-
-    return await res.json();
+    return parseGradeMarkResponse(res, 'Failed to submit GradeMark');
   },
 
   /**
    * [LOUD-FAILURE] Renamed from publishGrade.
    */
   async finalizeAcademicRecord(id: string) {
+    if (!id) {
+      throw new APIError('Publishing a GradeMark requires its id', 'MISSING_GRADEMARK_ID');
+    }
+
     const res = await (client.api as any).grading[':id'].publish.$post({
       param: { id },
     });
-
-    if (!res.ok) {
-      throw new APIError('Failed to publish grade', res.status.toString());
-    }
-
-    return await res.json();
+    return parseGradeMarkResponse(res, 'Failed to publish GradeMark');
   },
 };

@@ -44,6 +44,7 @@ function createDashboardFixture(): GuardianDashboard {
               percentage: 93,
               date: '2026-03-27T09:00:00.000Z',
               type: 'exam',
+              status: 'published',
             },
             {
               subject: 'Science',
@@ -51,6 +52,7 @@ function createDashboardFixture(): GuardianDashboard {
               percentage: 88,
               date: '2026-03-14T09:00:00.000Z',
               type: 'project',
+              status: 'published',
             },
           ],
           average: 90.5,
@@ -70,7 +72,7 @@ function createDashboardFixture(): GuardianDashboard {
     notifications: [],
     upcomingEvents: [],
     recentActivity: [],
-  };
+  } as unknown as GuardianDashboard;
 }
 
 describe('guardian temporal policy', () => {
@@ -92,7 +94,10 @@ describe('guardian temporal policy', () => {
         student_id: 'student-1',
         guardian_id: 'guardian-1',
         relationship_type: 'parent',
-        permissions: [],
+        permissions: [
+          { category: 'attendance', level: 'read', scope: 'assigned_students' },
+          { category: 'grades', level: 'read', scope: 'assigned_students' },
+        ],
         custody_level: 'full',
         effective_date: '2026-01-01T00:00:00.000Z',
         is_active: true,
@@ -154,7 +159,10 @@ describe('guardian temporal policy', () => {
         student_id: 'student-1',
         guardian_id: 'guardian-1',
         relationship_type: 'parent',
-        permissions: [],
+        permissions: [
+          { category: 'attendance', level: 'read', scope: 'assigned_students' },
+          { category: 'grades', level: 'read', scope: 'assigned_students' },
+        ],
         custody_level: 'full',
         effective_date: '2026-01-01T00:00:00.000Z',
         is_active: true,

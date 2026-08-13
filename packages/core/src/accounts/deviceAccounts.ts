@@ -232,6 +232,12 @@ export const deviceAccounts = {
     });
 
     if (error) {
+      // Treat account switching as a transaction. If the cached session is no
+      // longer usable offline, restore the previous active account and leave
+      // both account-scoped local databases untouched.
+      await setActiveAccount(previousAccountId);
+      resetScopedStores();
+      await rehydrateScopedStores();
       throw error;
     }
 
@@ -267,6 +273,11 @@ export const deviceAccounts = {
   async removeAccount(accountId: string) {
     const isActiveAccount = getActiveAccountId() === accountId;
     if (isActiveAccount) {
+      // Account removal is destructive: close and clear only the removed
+      // account's active PowerSync database before another account is opened.
+      const { clearPowerSyncAccount } = await import('../adapters/powersync/database');
+      await clearPowerSyncAccount();
+
       void deviceTrustAPI.getInstallId().then((installId) => {
         if (installId) {
           queueAuditOp(() =>

@@ -13,11 +13,9 @@
  *   <Stack>...</Stack>
  * </PowerSyncGate>
  */
-import { type PropsWithChildren, useEffect, useRef } from 'react';
-import { disconnectPowerSync, getPowerSyncDB } from '@repo/core/adapters/powersync/database';
+import { type PropsWithChildren } from 'react';
+import { getActivePowerSyncDB } from '@repo/core/adapters/powersync/database';
 import { PowerSyncContext } from '@repo/core/adapters/powersync/powersync-react-shim';
-import { SupabasePowerSyncConnector } from '@repo/core/adapters/powersync/SupabasePowerSyncConnector';
-import { sovereignBus } from '@repo/core/lib/sync/eventBus';
 import { useStore } from '@repo/core/store/useStore';
 
 interface PowerSyncGateProps extends PropsWithChildren {
@@ -30,30 +28,14 @@ export function PowerSyncGate({ children, enabled = true }: PowerSyncGateProps) 
   const isAnonymous = useStore((s) => s.user?.is_anonymous === true);
   const isActive = enabled && isPowerSyncEnabled && !isAnonymous;
 
-  const connectorRef = useRef<SupabasePowerSyncConnector | null>(null);
-  const db = isActive ? getPowerSyncDB() : null;
-
-  useEffect(() => {
-    if (!isActive || !db) return;
-
-    connectorRef.current = new SupabasePowerSyncConnector();
-
-    // Connect to the PowerSync replication stream
-    db.connect(connectorRef.current).catch((err: unknown) => {
-      console.error('[PowerSync] Connection failed. Falling back to Message Bus.', err);
-      sovereignBus.emit('powersync:unavailable', { reason: 'service_down' });
-    });
-
-    return () => {
-      // Disconnect on unmount (e.g. logout)
-      disconnectPowerSync().catch(console.error);
-    };
-  }, [isActive, db]);
+  const db = isActive ? getActivePowerSyncDB() : null;
 
   if (!isActive || !db) {
-    // Flag is off — render with no PowerSync overhead
+    if (isActive && !db) {
+      console.error('[PowerSync] Feature enabled without an active provider runtime.');
+    }
     return <>{children}</>;
   }
 
-  return <PowerSyncContext.Provider value={db}>{children}</PowerSyncContext.Provider>;
+  return <PowerSyncContext.Provider value={db as any}>{children}</PowerSyncContext.Provider>;
 }

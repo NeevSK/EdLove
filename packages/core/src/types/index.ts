@@ -11,6 +11,15 @@ export type {
 export type { PaginatedResponse, PaginationParams } from './API';
 export type { Assignment } from './Assignment';
 export type {
+  AcademicCycleLeadershipAssignment,
+  AcademicCycleLeadershipRole,
+  AttendanceSession,
+  AttendanceSessionKind,
+  DailyAttendance,
+  DailyAttendanceStatus,
+  GradeClassSubject,
+} from './AcademicLifecycle';
+export type {
   AttendanceRecord,
   AttendanceStatus,
   StudentAttendance,
@@ -54,6 +63,15 @@ export type {
   FormTemplate,
 } from './Form';
 export type { ClassroomGradingSettings, StudentGrade } from './Grade';
+export type {
+  AcademicCycleContract,
+  GradeClass,
+  GradeClassTeacherAssignment,
+  GradeLevel,
+  GradeMark,
+  GradeMarkPublicationState,
+  Term,
+} from './GradeDomain';
 export type { StudentGroup } from './Group';
 export type { Bond, Perspective } from './Identity';
 export type {

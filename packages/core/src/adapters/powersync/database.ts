@@ -83,11 +83,27 @@ export function injectNativePowerSyncDB(nativeDb: any, nativeDrizzleDb: any): vo
   _drizzleInstance = createSecureDrizzleProxy(nativeDrizzleDb) as any;
 }
 
-/** Call this on logout to clear the local SQLite state. */
-export async function disconnectPowerSync(): Promise<void> {
+/** Returns the injected active runtime without creating a fallback database. */
+export function getActivePowerSyncDB(): PowerSyncDatabase | null {
+  return _instance;
+}
+
+/** Close the active runtime; clear is reserved for explicit account removal. */
+export async function disconnectPowerSync(options?: { clear?: boolean }): Promise<void> {
   if (_instance) {
-    await _instance.disconnect();
+    if (options?.clear && 'disconnectAndClear' in _instance) {
+      await (_instance as any).disconnectAndClear();
+    } else if ('close' in _instance) {
+      await (_instance as any).close({ disconnect: true });
+    } else {
+      await (_instance as any).disconnect();
+    }
     _instance = null;
     _drizzleInstance = null;
   }
+}
+
+/** Explicit destructive cleanup for account removal or sign-out-all. */
+export async function clearPowerSyncAccount(): Promise<void> {
+  await disconnectPowerSync({ clear: true });
 }

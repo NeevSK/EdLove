@@ -16,18 +16,6 @@
       "@/*": [
         "./src/*"
       ],
-      "@powersync/op-sqlite": [
-        "./src/adapters/powersync/opsqlite.shim.ts"
-      ],
-      "@powersync/web": [
-        "./src/adapters/powersync/wasqlite.shim.ts"
-      ],
-      "@powersync/react-native": [
-        "./src/adapters/powersync/powersync-shim.ts"
-      ],
-      "@powersync/react": [
-        "./src/adapters/powersync/powersync-react-shim.ts"
-      ],
       "@repo/core/*": [
         "./src/*"
       ],

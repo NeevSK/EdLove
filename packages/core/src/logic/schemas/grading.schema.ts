@@ -1,5 +1,9 @@
 import { makeModelSchema } from '@repo/schema';
 import { z } from 'zod';
+import { GradeMarkSchema } from './grade-domain.schema';
+
+/** Authoritative Sanctuary grading projection backed by `grade_marks`. */
+export const SanctuaryGradeMarkSchema = GradeMarkSchema;
 
 /**
  * StudentGradeSchema - A record of academic performance.
@@ -70,3 +74,4 @@ export type PublishedSchoolGradingCompletion = z.infer<
 // Aliases for backward compatibility or semantic clarity in classroom package
 export type StudentGrade = Grade;
 export type StudentGradebookSnapshot = GradebookSnapshot;
+export type SanctuaryGradeMark = z.infer<typeof SanctuaryGradeMarkSchema>;

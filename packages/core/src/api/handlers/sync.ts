@@ -1,5 +1,6 @@
 import { Effect } from 'effect';
 import type { Context } from 'hono';
+import { createHash } from 'node:crypto';
 
 class SyncTableError {
   readonly _tag = 'SyncTableError';
@@ -77,39 +78,91 @@ const tableToModelMap: Record<string, string> = {
   staff_leaves: 'staffLeave',
 };
 
-const idempotencyCache = new Map<string, { success: boolean; processedCount: number; timestamp: number }>();
+type IdempotencyOutcome = {
+  success: true;
+  processedCount: number;
+  idempotent?: boolean;
+};
+
+type LocalIdempotencyRecord = IdempotencyOutcome & {
+  payloadHash: string;
+  timestamp: number;
+};
+
+/**
+ * Only used by database-less unit fixtures. Production requests use the
+ * powersync_idempotency_keys table through the transaction connection.
+ */
+const localIdempotencyCache = new Map<string, LocalIdempotencyRecord>();
 
 // Clean up cache periodically (e.g. keys older than 10 minutes)
-if (typeof globalThis !== 'undefined' && !(globalThis as any).__idempotencyCleanupInterval) {
-  (globalThis as any).__idempotencyCleanupInterval = setInterval(() => {
+if (typeof globalThis !== 'undefined' && !(globalThis as any).__powerSyncIdempotencyCleanupInterval) {
+  (globalThis as any).__powerSyncIdempotencyCleanupInterval = setInterval(() => {
     const now = Date.now();
-    for (const [key, val] of idempotencyCache.entries()) {
+    for (const [key, val] of localIdempotencyCache.entries()) {
       if (now - val.timestamp > 10 * 60 * 1000) {
-        idempotencyCache.delete(key);
+        localIdempotencyCache.delete(key);
       }
     }
   }, 5 * 60 * 1000);
 }
 
-export async function applyPowerSyncBatch(db: any, crud: any[], idempotencyKey?: string | null) {
-  if (idempotencyKey && idempotencyCache.has(idempotencyKey)) {
-    console.log(`[Sync] Duplicate batch detected via idempotency key: "${idempotencyKey}". Returning cached response.`);
-    const cached = idempotencyCache.get(idempotencyKey)!;
-    return {
-      success: cached.success,
-      processedCount: cached.processedCount,
-      idempotent: true,
-    };
-  }
+class IdempotencyConflictError extends Error {
+  readonly code = 'IDEMPOTENCY_CONFLICT';
+}
 
+const hashCrud = (crud: any[]) => createHash('sha256').update(JSON.stringify(crud)).digest('hex');
+
+export async function applyPowerSyncBatch(
+  db: any,
+  crud: any[],
+  idempotencyKey?: string | null,
+  principalId = 'anonymous',
+): Promise<IdempotencyOutcome> {
   if (!Array.isArray(crud)) {
     throw new Error('Invalid payload: crud must be an array');
   }
+
+  const payloadHash = hashCrud(crud);
+  const scopedKey = `${principalId}:${idempotencyKey ?? ''}`;
+  const useDurableLedger = Boolean(idempotencyKey && typeof db?.$queryRaw === 'function');
 
   console.log(`[Sync] Processing transactional upload batch of ${crud.length} mutations.`);
 
   try {
     await db.$transaction(async (tx: any) => {
+      if (idempotencyKey) {
+        if (useDurableLedger && typeof tx.$executeRaw === 'function' && typeof tx.$queryRaw === 'function') {
+          await tx.$executeRaw`
+            INSERT INTO powersync_idempotency_keys (principal_id, idempotency_key, payload_hash, status, processed_count)
+            VALUES (${principalId}, ${idempotencyKey}, ${payloadHash}, 'processing', 0)
+            ON CONFLICT (principal_id, idempotency_key) DO NOTHING
+          `;
+
+          const rows = await tx.$queryRaw`
+            SELECT payload_hash, status, processed_count
+            FROM powersync_idempotency_keys
+            WHERE principal_id = ${principalId} AND idempotency_key = ${idempotencyKey}
+            FOR UPDATE
+          `;
+          const record = rows?.[0];
+          if (record?.payload_hash !== payloadHash) {
+            throw new IdempotencyConflictError('Idempotency key was reused with a different batch payload');
+          }
+          if (record?.status === 'completed') {
+            throw new IdempotencyReplay(Number(record.processed_count ?? 0));
+          }
+        } else {
+          const cached = localIdempotencyCache.get(scopedKey);
+          if (cached) {
+            if (cached.payloadHash !== payloadHash) {
+              throw new IdempotencyConflictError('Idempotency key was reused with a different batch payload');
+            }
+            throw new IdempotencyReplay(cached.processedCount);
+          }
+        }
+      }
+
       for (const item of crud) {
         const { id, op, table, opData } = item;
         const modelKey = tableToModelMap[table] || tableToModelMap[table.toLowerCase()];
@@ -145,18 +198,30 @@ export async function applyPowerSyncBatch(db: any, crud: any[], idempotencyKey?:
             throw new SyncOperationError(op);
         }
       }
+
+      if (idempotencyKey && useDurableLedger) {
+        await tx.$executeRaw`
+          UPDATE powersync_idempotency_keys
+          SET status = 'completed', processed_count = ${crud.length}, completed_at = NOW()
+          WHERE principal_id = ${principalId} AND idempotency_key = ${idempotencyKey}
+        `;
+      }
     });
 
     if (idempotencyKey) {
-      idempotencyCache.set(idempotencyKey, {
+      localIdempotencyCache.set(scopedKey, {
         success: true,
         processedCount: crud.length,
+        payloadHash,
         timestamp: Date.now(),
       });
     }
 
     return { success: true, processedCount: crud.length };
   } catch (e) {
+    if (e instanceof IdempotencyReplay) {
+      return { success: true, processedCount: e.processedCount, idempotent: true };
+    }
     const err = e as Error | SyncTableError | SyncDelegateError | SyncOperationError;
     const message =
       err instanceof SyncTableError ||
@@ -166,6 +231,12 @@ export async function applyPowerSyncBatch(db: any, crud: any[], idempotencyKey?:
         : err?.message || 'Transaction Aborted';
     console.error('[Sync] Transaction processing failed, batch aborted:', err);
     throw new Error(message);
+  }
+}
+
+class IdempotencyReplay extends Error {
+  constructor(readonly processedCount: number) {
+    super('Idempotent replay');
   }
 }
 
@@ -189,7 +260,8 @@ export const syncHandlers = {
     const idempotencyKey = c.req.header('X-Idempotency-Key');
     try {
       const { crud } = await c.req.json();
-      const outcome = await applyPowerSyncBatch(db, crud, idempotencyKey);
+      const user = c.get('user') as { id?: string } | undefined;
+      const outcome = await applyPowerSyncBatch(db, crud, idempotencyKey, user?.id ?? 'anonymous');
       return c.json(outcome, 200);
     } catch (err: any) {
       return c.json({ error: 'Transaction Aborted', message: err.message }, 400);

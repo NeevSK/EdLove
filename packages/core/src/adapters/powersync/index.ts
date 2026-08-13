@@ -6,11 +6,17 @@
  */
 
 export {
+  clearPowerSyncAccount,
   disconnectPowerSync,
   getDrizzleDB,
+  getActivePowerSyncDB,
   getPowerSyncDB,
   injectNativePowerSyncDB,
 } from '@repo/core/adapters/powersync/database';
+export {
+  SingleActivePowerSyncRuntime,
+} from '@repo/core/adapters/powersync/singleActivePowerSyncRuntime';
+export { connectPowerSyncRuntime } from '@repo/core/adapters/powersync/connectionLifecycle';
 export {
   useAttendanceForClassroom,
   useDrizzleQuery,

@@ -13,6 +13,9 @@ export const WORKSPACE_CANVAS_ZONES = [
   'private',
 ] as const satisfies readonly WorkspaceZoneId[];
 
+/** Keep the canvas's high-attention layer within the dense-workspace limit. */
+export const MAX_PINNED_WORKSPACE_SURFACES = 4;
+
 export type WorkspaceCanvasZoneId = (typeof WORKSPACE_CANVAS_ZONES)[number];
 
 export interface WorkspaceZoneLayoutGroup<
@@ -110,7 +113,9 @@ export function normalizeWorkspaceLayout<TSurfaceId extends string, TCapabilityK
     surfaceMap.has(surfaceId),
   );
 
-  const pinned = unique(layout.pinned).filter((surfaceId) => surfaceMap.has(surfaceId));
+  const pinned = unique(layout.pinned)
+    .filter((surfaceId) => surfaceMap.has(surfaceId))
+    .slice(0, MAX_PINNED_WORKSPACE_SURFACES);
 
   const zoneBySurface = defaultOrder.reduce<Partial<Record<TSurfaceId, WorkspaceZoneId>>>(
     (zones, surfaceId) => {
@@ -241,11 +246,21 @@ export function setWorkspaceSurfacePinned<TSurfaceId extends string>(
   pinned: boolean,
   updatedAt = new Date().toISOString(),
 ): WorkspaceLayout<TSurfaceId> {
+  const currentPinned = unique(layout.pinned);
+  if (pinned && !currentPinned.includes(surfaceId)) {
+    if (currentPinned.length >= MAX_PINNED_WORKSPACE_SURFACES) return layout;
+    return {
+      ...layout,
+      pinned: [...currentPinned, surfaceId],
+      updatedAt,
+    };
+  }
+
   return {
     ...layout,
     pinned: pinned
-      ? unique([...layout.pinned, surfaceId])
-      : layout.pinned.filter((candidate) => candidate !== surfaceId),
+      ? currentPinned
+      : currentPinned.filter((candidate) => candidate !== surfaceId),
     updatedAt,
   };
 }

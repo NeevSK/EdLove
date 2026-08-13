@@ -1,13 +1,14 @@
 import type {
-  AbstractPowerSyncDatabase,
+  CommonPowerSyncDatabase,
   PowerSyncBackendConnector,
   PowerSyncCredentials,
-} from '@repo/core/adapters/powersync/powersync-shim';
+} from '@powersync/common';
 import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { sovereignBus } from '@repo/core/lib/sync/eventBus';
 import { runEffect, tryPromise } from '@repo/core/utils/effect';
 import { getConsistentIdempotencyKey } from '@repo/core/lib/sync/idempotency';
+import { getActiveAccountId } from '@repo/core/lib/accountScope';
 import { Duration, Effect, Schedule } from 'effect';
 
 const POWERSYNC_URL = process.env.EXPO_PUBLIC_POWERSYNC_URL ?? '';
@@ -20,32 +21,52 @@ class PowerSyncUploadError {
   ) {}
 }
 
-function fetchSession$(): Effect.Effect<{ access_token: string; user_id: string }, PowerSyncUploadError> {
+class PowerSyncAccountChangedError extends PowerSyncUploadError {
+}
+
+function fetchSession$(
+  expectedAccountId: string,
+): Effect.Effect<{ access_token: string; user_id: string; expires_at?: number }, PowerSyncUploadError> {
   return tryPromise(() => supabaseClient.auth.getSession()).pipe(
     Effect.mapError((error) => new PowerSyncUploadError(0, error.message)),
-    Effect.flatMap(({ data: { session }, error }) =>
-      error || !session || !session.user || session.user.is_anonymous
-      ? Effect.fail(new PowerSyncUploadError(0, 'no_session'))
-        : Effect.succeed({ access_token: session.access_token, user_id: session.user.id }),
-    ),
+    Effect.flatMap(({ data: { session }, error }) => {
+      if (getActiveAccountId() !== expectedAccountId) {
+        return Effect.fail(new PowerSyncAccountChangedError(0, 'account_changed'));
+      }
+      return error || !session || !session.user || session.user.is_anonymous
+        ? Effect.fail(new PowerSyncUploadError(0, 'no_session'))
+        : Effect.succeed({
+            access_token: session.access_token,
+            user_id: session.user.id,
+            expires_at: session.expires_at,
+          });
+    }),
   );
 }
 
 export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
+  constructor(private readonly accountId: string) {}
+
   async fetchCredentials(): Promise<PowerSyncCredentials> {
-    const session = await runEffect(fetchSession$(), 'POWERSYNC_CREDENTIALS_FAILED');
-    return { endpoint: POWERSYNC_URL, token: session.access_token };
+    const session = await runEffect(
+      fetchSession$(this.accountId),
+      'POWERSYNC_CREDENTIALS_FAILED',
+    );
+    return {
+      endpoint: POWERSYNC_URL,
+      token: session.access_token,
+      expiresAt: session.expires_at ? new Date(session.expires_at * 1000) : undefined,
+    };
   }
 
-  async uploadData(database: AbstractPowerSyncDatabase): Promise<void> {
+  async uploadData(database: CommonPowerSyncDatabase): Promise<void> {
+    const accountId = this.accountId;
     await runEffect(
       Effect.gen(function* () {
         const batch = yield* tryPromise(() => database.getCrudBatch(200));
         if (!batch || batch.crud.length === 0) return;
 
-        const session = yield* fetchSession$().pipe(
-          Effect.catchAll(() => Effect.fail(new PowerSyncUploadError(0, 'no_session'))),
-        );
+        const session = yield* fetchSession$(accountId);
 
         const client = createSovereignClient(SOVEREIGN_API_URL);
         const idempotencyKey = yield* tryPromise(() =>
@@ -105,7 +126,9 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
       }).pipe(
         Effect.catchAll((error) =>
           Effect.sync(() => {
-            sovereignBus.emit('powersync:unavailable', { reason: 'service_down' });
+            sovereignBus.emit('powersync:unavailable', {
+              reason: error instanceof PowerSyncAccountChangedError ? 'account_switched' : 'service_down',
+            });
           }).pipe(Effect.zipRight(Effect.fail(error))),
         ),
       ),

@@ -1,19 +1,6 @@
-import * as React from 'react';
-import type { PowerSyncDatabase } from '@repo/core/adapters/powersync/powersync-shim';
-
-export const PowerSyncContext = React.createContext<PowerSyncDatabase | null>(null);
-
-export function useQuery<T = Record<string, unknown>>(
-  _sql: string,
-  _parameters?: unknown[],
-): { data: T[] } {
-  return { data: [] };
-}
-
-export function useStatus(): {
-  connected: boolean;
-  connecting: boolean;
-  hasSynced: boolean;
-} {
-  return { connected: false, connecting: false, hasSynced: false };
-}
+/**
+ * Compatibility barrel for older @repo/core imports.
+ * The implementation now comes from the official PowerSync React v2 hooks;
+ * keeping this path avoids a broad import migration across the app surface.
+ */
+export { PowerSyncContext, useQuery, useStatus } from '@powersync/react';

@@ -8,9 +8,11 @@
  * @see https://docs.powersync.com/usage/use-case-examples/drizzle
  */
 
-import { and, desc, eq } from 'drizzle-orm';
+import { and, desc, eq, type Query } from 'drizzle-orm';
+import { toCompilableQuery } from '@powersync/drizzle-driver';
 import { useEffect } from 'react';
 import {
+  getActivePowerSyncDB,
   getDrizzleDB,
   registerPolicyVersionHash,
   setActiveCapabilityToken,
@@ -52,9 +54,9 @@ export function usePowerSyncQuery<T = Record<string, unknown>>(
  *
  * Provides absolute compile-time type safety from the DB to the UI render tree.
  */
-export function useDrizzleQuery<T>(query: { toSQL(): { sql: string; params: unknown[] } }): T[] {
-  const { sql: compiledSql, params } = query.toSQL();
-  return usePowerSyncQuery<T>(compiledSql, params);
+export function useDrizzleQuery<T>(query: { execute: () => Promise<T | T[]>; toSQL: () => Query }): T[] {
+  const { data } = useQuery<T>(toCompilableQuery<T>(query));
+  return data;
 }
 
 /**
@@ -143,7 +145,18 @@ export function useSchool(schoolId: string): School | null {
  * per ADR-006 and ADR-012.
  */
 export function usePolicyVersion(): PolicyVersion | null {
+  if (!getActivePowerSyncDB()) return null;
   const db = getDrizzleDB();
+  // The browser runtime can be active before its Drizzle query facade is
+  // ready (or can be intentionally disabled while offline). Do not let that
+  // transient state crash the application shell.
+  if (
+    !db ||
+    typeof db.select !== 'function' ||
+    typeof db.select()?.from !== 'function'
+  ) {
+    return null;
+  }
   const query = db.select().from(policyVersion).limit(1);
 
   const rows = useDrizzleQuery<PolicyVersion>(query);

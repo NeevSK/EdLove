@@ -15,10 +15,29 @@ async function listEvents(
   viewDate: string,
   entityTypes?: LongitudinalEntityType[],
 ): Promise<StudentLongitudinalEvent[]> {
+  const { data: enrollmentRows, error: enrollmentError } = await supabaseClient
+    .from('classroom_students')
+    .select('classroom_id')
+    .eq('student_id', studentId)
+    .eq('status', 'active');
+
+  if (enrollmentError) {
+    throw new APIError('Failed to resolve student classroom scope', enrollmentError.code, enrollmentError);
+  }
+
+  const allowedClassroomIds = (enrollmentRows ?? [])
+    .map((row) => row.classroom_id)
+    .filter((id): id is string => typeof id === 'string' && id.length > 0);
+
+  if (allowedClassroomIds.length === 0) {
+    throw new APIError('Student has no active classroom scope', 'NO_CLASSROOM_SCOPE');
+  }
+
   let query = supabaseClient
     .from('student_longitudinal_events')
     .select('*')
     .eq('student_id', studentId)
+    .in('classroom_id', allowedClassroomIds)
     .lte('occurred_at', toTemporalCutoff(viewDate))
     .order('occurred_at', { ascending: false })
     .order('recorded_at', { ascending: false });
@@ -30,6 +49,15 @@ async function listEvents(
   const { data, error } = await query;
   if (error) {
     throw new APIError('Failed to fetch student longitudinal timeline', error.code, error);
+  }
+
+  const unauthorizedClassroom = (data ?? []).find(
+    (row) =>
+      typeof row.classroom_id === 'string' &&
+      !allowedClassroomIds.includes(row.classroom_id),
+  );
+  if (unauthorizedClassroom) {
+    throw new APIError('Longitudinal event outside student classroom scope', 'CLASSROOM_SCOPE_DENIED');
   }
 
   return (data ?? []).map((row) => {

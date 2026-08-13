@@ -48,7 +48,19 @@ export interface SovereignEventMap {
 
   // PowerSync (future-ready — no-op until adapter is wired)
   'powersync:sync_complete': { tablesAffected: string[] };
-  'powersync:unavailable': { reason: 'quota_exceeded' | 'service_down' | 'disabled' };
+  'powersync:first_sync_complete': { accountId: string };
+  'powersync:status': {
+    accountId: string;
+    connected: boolean;
+    connecting: boolean;
+    downloading: boolean;
+    uploading: boolean;
+    hasSynced?: boolean;
+    error: string | null;
+  };
+  'powersync:unavailable': {
+    reason: 'quota_exceeded' | 'service_down' | 'account_switched' | 'disabled';
+  };
 }
 
 export type SovereignEvent = keyof SovereignEventMap;

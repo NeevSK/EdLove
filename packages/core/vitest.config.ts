@@ -1,8 +1,15 @@
+import path from 'node:path';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   plugins: [tsconfigPaths()],
+  resolve: {
+    alias: {
+      'expo-constants': path.resolve(import.meta.dirname, 'src/test-shims/expo-constants.ts'),
+      'react-native': path.resolve(import.meta.dirname, 'src/test-shims/react-native.ts'),
+    },
+  },
   define: {
     __DEV__: 'true',
   },

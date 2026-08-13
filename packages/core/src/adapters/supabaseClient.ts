@@ -1,8 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
+import Constants from 'expo-constants';
 import { supabaseAuthStorage } from '@repo/core/lib/authStorage';
 
-let supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
-let supabasePublishableKey = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+type PublicRuntimeConfig = {
+  supabaseUrl?: string;
+  supabasePublishableKey?: string;
+};
+
+const publicRuntime = Constants.expoConfig?.extra?.publicRuntime as
+  | PublicRuntimeConfig
+  | undefined;
+
+let supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || publicRuntime?.supabaseUrl;
+let supabasePublishableKey =
+  process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY || publicRuntime?.supabasePublishableKey;
 const baseFetch = globalThis.fetch.bind(globalThis);
 
 const urlStringFromInput = (url: Parameters<typeof fetch>[0]): string =>

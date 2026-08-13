@@ -210,6 +210,35 @@ export {
   StudentAttendanceSchema,
 } from '@repo/core/logic/schemas/attendance.schema';
 export { CapacitySchema } from '@repo/core/logic/schemas/capacity.schema';
+export {
+  AcademicCycleLeadershipAssignmentSchema,
+  AcademicCycleLeadershipAssignmentStatusSchema,
+  AcademicCycleLeadershipRoleSchema,
+  AcademicCycleWithTermsSchema,
+  AttendanceSessionKindSchema,
+  AttendanceSessionSchema,
+  DailyAttendanceSchema,
+  DailyAttendanceStatusSchema,
+  GradeClassSubjectSchema,
+  GradeClassSubjectContextSchema,
+  GradeClassSubjectStatusSchema,
+} from '@repo/core/logic/schemas/academic-lifecycle.schema';
+export {
+  AcademicCycleSchema,
+  AcademicCycleStatusSchema,
+  GradeMarkCollectionSchema,
+  GradeMarkLetterGradeSchema,
+  GradeMarkPublicationStateSchema,
+  GradeMarkSchema,
+  GradeClassSchema,
+  GradeClassStatusSchema,
+  GradeClassTeacherAssignmentSchema,
+  GradeClassTeacherAssignmentStatusSchema,
+  GradeLevelSchema,
+  TermKindSchema,
+  TermSchema,
+  selectGuardianVisibleGradeMarks,
+} from '@repo/core/logic/schemas/grade-domain.schema';
 export type {
   Echo,
   TeacherStats,

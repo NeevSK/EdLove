@@ -53,6 +53,9 @@ const _schoolCoverage = assertContractCoverage(
       'getSchool',
       'update',
       'searchSchools',
+      // Canonical school search remains an internal adapter method until the
+      // operations contract gains a dedicated typed endpoint entry.
+      'searchCanonicalSchools',
       'getSections',
       'getGrades',
       'getSchoolStats',

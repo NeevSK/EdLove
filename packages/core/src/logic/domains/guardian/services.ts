@@ -1,4 +1,4 @@
-import { APIError } from '@repo/core/types/API';
+import type { GuardianRepository } from '@repo/core/logic/domains/guardian/ports';
 import type {
   GuardianDashboard,
   GuardianIdentity,
@@ -8,7 +8,8 @@ import type {
   GuardianVerificationDocument,
   StudentGuardianRelationship,
 } from '@repo/core/logic/schemas/guardian.schema';
-import type { GuardianRepository } from '@repo/core/logic/domains/guardian/ports';
+import { APIError } from '@repo/core/types/API';
+import { selectGuardianPublishedGrades } from './gradeVisibility';
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 const ATTENDANCE_WINDOW_DAYS = 30;
@@ -45,11 +46,25 @@ function canReadGuardianCategory(
 ): boolean {
   const categoryPermissions = permissions.filter((permission) => permission.category === category);
 
-  if (categoryPermissions.length === 0) {
-    return true;
-  }
+  if (categoryPermissions.length === 0) return false;
 
   return categoryPermissions.some((permission) => permission.level !== 'none');
+}
+
+function minimizePublishedGrades(dashboard: GuardianDashboard['students'][number]) {
+  const latest = selectGuardianPublishedGrades(dashboard.grades.latest);
+  const percentages = latest
+    .map((grade) => grade.percentage)
+    .filter((percentage): percentage is number => typeof percentage === 'number');
+
+  return {
+    ...dashboard.grades,
+    latest,
+    average:
+      percentages.length > 0
+        ? percentages.reduce((total, percentage) => total + percentage, 0) / percentages.length
+        : 0,
+  };
 }
 
 function applyGuardianRelationshipPolicy(
@@ -92,7 +107,7 @@ function applyGuardianRelationshipPolicy(
                 percentage: 0,
               },
           grades: sectionVisibility.grades
-            ? student.grades
+            ? minimizePublishedGrades(student)
             : {
                 latest: [],
                 average: 0,

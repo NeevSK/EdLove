@@ -9,6 +9,7 @@ import {
   GuardianVerificationDocumentSchema,
   StudentGuardianRelationshipSchema,
 } from '@repo/core/logic/schemas/guardian.schema';
+import { GuardianPublishedAssessmentSummarySchema } from '@repo/core/api/guardian-assessment.contract';
 import type { SovereignContract } from '@repo/core/api/contract';
 
 const guardianAuthority = (action: 'create' | 'read' | 'update' | 'delete', subject: string) =>
@@ -96,6 +97,25 @@ export const guardianContract = {
       200: {
         schema: GuardianDashboardSchema,
         description: 'Get guardian dashboard analytics',
+      },
+    },
+    metadata: guardianAuthority('read', 'GuardianDashboard'),
+  },
+
+  getPublishedAssessmentSummary: {
+    method: 'get',
+    path: '/guardian/students/:studentId/assessments',
+    request: {
+      params: z.strictObject({ studentId: z.uuid() }),
+      query: z.strictObject({
+        cursor: z.string().min(1).optional(),
+        limit: z.coerce.number().int().min(1).max(50).default(25),
+      }),
+    },
+    responses: {
+      200: {
+        schema: GuardianPublishedAssessmentSummarySchema,
+        description: 'Published, minimized assessment results for an authorized guardian',
       },
     },
     metadata: guardianAuthority('read', 'GuardianDashboard'),

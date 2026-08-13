@@ -1,4 +1,5 @@
 export * from '@repo/core/logic/schemas/accounting.schema';
+export * from '@repo/core/logic/schemas/academic-lifecycle.schema';
 export * from '@repo/core/logic/schemas/attendance.schema';
 export * from '@repo/core/logic/schemas/capacity.schema';
 export * from '@repo/core/logic/schemas/classroom.schema';
@@ -6,6 +7,7 @@ export * from '@repo/core/logic/schemas/classroom-note.schema';
 export * from '@repo/core/logic/schemas/community.schema';
 export * from '@repo/core/logic/schemas/dashboard.schema';
 export * from '@repo/core/logic/schemas/founder.schema';
+export * from '@repo/core/logic/schemas/grade-domain.schema';
 export * from '@repo/core/logic/schemas/grading.schema';
 export * from '@repo/core/logic/schemas/growth.schema';
 export * from '@repo/core/logic/schemas/guardian.schema';

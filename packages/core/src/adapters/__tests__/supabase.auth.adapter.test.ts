@@ -24,7 +24,7 @@ const mockAuth = vi.hoisted(() => ({
   },
 }));
 
-vi.mock('../../api/supabase', () => ({
+vi.mock('@repo/core/adapters/supabaseClient', () => ({
   supabaseClient: {
     auth: mockAuth,
     rpc: vi.fn(),

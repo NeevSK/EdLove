@@ -1,5 +1,4 @@
 import { DrizzleAppSchema } from '@powersync/drizzle-driver';
-import { OPSqliteOpenFactory } from '@powersync/op-sqlite';
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 import type { IDatabasePort } from '@repo/core/logic/ports/database.port';
@@ -23,8 +22,9 @@ async function getOrCreateEncryptionKey(accountId: string): Promise<string> {
       });
     }
     return key;
-  } catch {
-    return 'gurudevi-resilience-fallback-security-key';
+  } catch (error) {
+    console.error('[PowerSync] Unable to access the device encryption key.', error);
+    throw new Error('PowerSync encryption key unavailable');
   }
 }
 
@@ -33,17 +33,17 @@ export class OPSQLiteAdapter implements IDatabasePort {
 
   async createDatabaseFactory(accountId: string = this.accountId) {
     const encryptionKey = await getOrCreateEncryptionKey(accountId);
-    const factory = new OPSqliteOpenFactory({
-      dbFilename: `gurudevi-powersync-${accountId}.db`,
-      sqliteOptions: {
-        encryptionKey,
-      },
-    });
 
     return {
       schema: new DrizzleAppSchema(AppSchema),
-      database: factory,
-      sync: new SupabasePowerSyncConnector(),
+      sourceType: 'database' as const,
+      database: {
+        dbFilename: `gurudevi-powersync-${accountId}.db`,
+        sqliteOptions: {
+          encryptionKey,
+        },
+      },
+      sync: new SupabasePowerSyncConnector(accountId),
     };
   }
 }

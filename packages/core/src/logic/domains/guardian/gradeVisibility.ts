@@ -35,3 +35,8 @@ export function selectGuardianVisibleGrades(rows: any[]): any[] {
 
   return rows.filter(isPublishedGradeRow);
 }
+
+/** Dashboard boundary: publication metadata is mandatory for guardian reads. */
+export function selectGuardianPublishedGrades<T>(rows: readonly T[]): T[] {
+  return rows.filter((row) => rowHasPublicationMetadata(row) && isPublishedGradeRow(row));
+}

@@ -7,6 +7,7 @@ export {
   setWorkspaceSurfaceOrder,
   setWorkspaceSurfacePinned,
   setWorkspaceSurfaceZone,
+  MAX_PINNED_WORKSPACE_SURFACES,
   WORKSPACE_CANVAS_ZONES,
 } from '@repo/core/logic/workspace/canvas';
 export {

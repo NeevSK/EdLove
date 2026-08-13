@@ -52,7 +52,9 @@ describe('API Schema Validation (Zero-Trust)', () => {
       student_id: UUID,
       status: 'active',
       full_name: 'Jane Smith',
-      roll_number: '10',
+      roll_number: 10,
+      enrolled_at: NOW,
+      claimed_at: null,
       joined_at: NOW,
       updated_at: NOW,
     };
@@ -91,13 +93,11 @@ describe('API Schema Validation (Zero-Trust)', () => {
 
   describe('AttendanceSchema', () => {
     const validAttendance = {
-      id: UUID,
       classroom_id: OTHER_UUID,
       student_id: UUID,
       status: 'present',
       date: NOW, // Must be ISO datetime
-      created_at: NOW,
-      updated_at: NOW,
+      idempotency_key: UUID,
     };
 
     test('should validate a valid attendance record', () => {

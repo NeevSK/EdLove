@@ -29,7 +29,7 @@ vi.mock('../../store/useFeatureStore', () => ({
 }));
 
 // Mock Supabase client
-vi.mock('../../api/supabase', () => ({
+vi.mock('@repo/core/adapters/supabaseClient', () => ({
   supabaseClient: {
     from: (table: string) => {
       if (table === 'users') {
@@ -42,6 +42,15 @@ vi.mock('../../api/supabase', () => ({
                 }
                 return { data: null, error: null };
               },
+            }),
+          }),
+        };
+      }
+      if (table === 'user_entitlement_grants') {
+        return {
+          select: () => ({
+            eq: () => ({
+              in: async () => ({ data: [], error: null }),
             }),
           }),
         };
@@ -66,7 +75,7 @@ const mockFrom = vi.fn(() => {
 });
 const mockSelect = vi.fn(() => ({ from: mockFrom }));
 
-vi.mock('../powersync/database', () => ({
+vi.mock('@repo/core/adapters/powersync/database', () => ({
   getDrizzleDB: () => ({ select: mockSelect }),
 }));
 

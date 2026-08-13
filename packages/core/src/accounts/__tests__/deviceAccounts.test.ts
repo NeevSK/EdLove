@@ -47,7 +47,7 @@ vi.mock('../../api/identity', () => ({
   },
 }));
 
-vi.mock('../../api/supabase', () => ({
+vi.mock('@repo/core/adapters/supabaseClient', () => ({
   supabaseClient: {
     auth: {
       setSession: (...args: unknown[]) => mockSetSession(...args),
@@ -63,7 +63,15 @@ vi.mock('../../lib/supabaseAuthStorage', () => ({
   setStoredSessionForAccount: vi.fn(),
 }));
 
-vi.mock('../../store/resetScopedStores', () => ({
+vi.mock('@repo/core/store/useAuthStore', () => ({
+  useAuthStore: Object.assign(() => ({}), {
+    getState: vi.fn(),
+    setState: vi.fn(),
+    persist: { rehydrate: vi.fn() },
+  }),
+}));
+
+vi.mock('@repo/core/store/resetScopedStores', () => ({
   rehydrateScopedStores: vi.fn(),
   resetScopedStores: vi.fn(),
 }));
@@ -76,6 +84,10 @@ vi.mock('../../lib/accountPin', () => ({
 
 import { deviceAccounts } from '../deviceAccounts';
 import { setActiveAccountId } from '../../lib/accountScope';
+
+const validAccessToken =
+  'eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJ1c2VyLTEiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJleHAiOjQxMDI0NDQ4MDB9.signature';
+const validRefreshToken = 'refresh-token-for-test';
 
 describe('deviceAccounts', () => {
   beforeEach(() => {
@@ -113,7 +125,7 @@ describe('deviceAccounts', () => {
   it('switches to a stored account session', async () => {
     mockGetString.mockImplementation((key: string) => {
       if (key.includes('sb-')) {
-        return JSON.stringify({ access_token: 'token-a', refresh_token: 'token-r' });
+        return JSON.stringify({ access_token: validAccessToken, refresh_token: validRefreshToken });
       }
       if (key === 'gurudevi-device-accounts') {
         return JSON.stringify([{ accountId: 'account-1', lastUsedAt: '2026-01-01T00:00:00.000Z' }]);
@@ -121,8 +133,8 @@ describe('deviceAccounts', () => {
       return null;
     });
     mockGetStoredSessionForAccount.mockResolvedValue({
-      access_token: 'token-a',
-      refresh_token: 'token-r',
+      access_token: validAccessToken,
+      refresh_token: validRefreshToken,
     });
     mockSetSession.mockResolvedValue({ error: null });
     mockTouchCurrentDevice.mockResolvedValue({ isTrusted: true });
@@ -130,8 +142,8 @@ describe('deviceAccounts', () => {
     await deviceAccounts.switchTo('account-1');
 
     expect(mockSetSession).toHaveBeenCalledWith({
-      access_token: 'token-a',
-      refresh_token: 'token-r',
+      access_token: validAccessToken,
+      refresh_token: validRefreshToken,
     });
     expect(mockTouchCurrentDevice).toHaveBeenCalledWith('account-1');
   });
@@ -157,8 +169,8 @@ describe('deviceAccounts', () => {
     mockGetStoredSessionForAccount.mockImplementation((accountId: string) =>
       Promise.resolve(
         accountId === 'account-2'
-          ? { access_token: 'token-b', refresh_token: 'token-s' }
-          : { access_token: 'token-a', refresh_token: 'token-r' },
+          ? { access_token: `${validAccessToken.slice(0, -9)}account2`, refresh_token: 'refresh-token-account-2' }
+          : { access_token: validAccessToken, refresh_token: validRefreshToken },
       ),
     );
     mockSetSession.mockResolvedValue({ error: null });
@@ -176,8 +188,8 @@ describe('deviceAccounts', () => {
     await deviceAccounts.removeAccount('account-1');
 
     expect(mockSetSession).toHaveBeenCalledWith({
-      access_token: 'token-b',
-      refresh_token: 'token-s',
+      access_token: `${validAccessToken.slice(0, -9)}account2`,
+      refresh_token: 'refresh-token-account-2',
     });
     expect(mockSignOut).not.toHaveBeenCalled();
   });

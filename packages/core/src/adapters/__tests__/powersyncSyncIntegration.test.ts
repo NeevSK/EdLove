@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { getDrizzleDB, registerPermissionValidator } from '../powersync/database';
 import { SupabasePowerSyncConnector } from '../powersync/SupabasePowerSyncConnector';
+import { setActiveAccountId } from '../../lib/accountScope';
 
 // Mock store state
 vi.mock('../../store/useStore', () => ({
@@ -28,7 +29,7 @@ const mockGetSession = vi.fn().mockResolvedValue({
   },
   error: null,
 });
-vi.mock('../../api/supabase', () => ({
+vi.mock('../supabaseClient', () => ({
   supabaseClient: {
     auth: {
       getSession: () => mockGetSession(),
@@ -108,9 +109,10 @@ describe('PowerSync Offline Write Gating & Replication Loop', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockCrudQueue.length = 0; // Clear simulated SQLite sync queue
+    setActiveAccountId('user-123');
 
     secureDb = getDrizzleDB();
-    connector = new SupabasePowerSyncConnector();
+    connector = new SupabasePowerSyncConnector('user-123');
 
     mockBatch = {
       crud: mockCrudQueue,
@@ -187,5 +189,19 @@ describe('PowerSync Offline Write Gating & Replication Loop', () => {
 
     // 5. Verify batch is completed locally inside SQLite
     expect(mockBatch.complete).toHaveBeenCalled();
+  });
+
+  it('rejects a stale connector after the active account changes', async () => {
+    mockCrudQueue.push({
+      id: 1,
+      op: 'PUT',
+      table: 'students',
+      opData: { id: 'student-999', name: 'John Doe' },
+    });
+    setActiveAccountId('user-456');
+
+    await expect(connector.uploadData(mockPowerSyncDb)).rejects.toThrow();
+    expect(mockUploadPost).not.toHaveBeenCalled();
+    expect(mockBatch.complete).not.toHaveBeenCalled();
   });
 });
