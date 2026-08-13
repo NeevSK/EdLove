@@ -1,3 +1,4 @@
+export { default as CollectionDetailScreen } from '@repo/library/screens/CollectionDetailScreen';
 export { default as CollectionDetailScreenWeb } from '@repo/library/screens/CollectionDetailScreen.web';
 export { default as CuratorReviewScreen } from '@repo/library/screens/CuratorReviewScreen';
 export { default as DocumentViewerScreen } from '@repo/library/screens/DocumentViewerScreen';

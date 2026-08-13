@@ -9,12 +9,14 @@
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { useSafeMutation } from '@repo/core/hooks';
 import { useStore } from '@repo/core/store';
+import { useTemporalStore } from '@repo/core/store';
 import { ChatComposer } from '@repo/ui/components/ChatComposer';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { SanctuaryLegendList } from '@repo/ui/components/SanctuaryLegendList';
 import { ChatProvider } from '@repo/ui/context/ChatContext';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
+import { BrandedErrorState } from '@repo/ui/components/ErrorState';
 import { MessageSquare } from '@repo/ui/icons';
 import {
   AnimatedView,
@@ -78,10 +80,14 @@ export default function BaseChatScreen({
   isReadOnly,
 }: BaseChatScreenProps) {
   const user = useStore((state) => state.user);
+  const isOffline = useTemporalStore((state) => state.isOffline);
   const { t } = useTranslation();
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [failedMessage, setFailedMessage] = useState<string | null>(null);
+  const [retryNonce, setRetryNonce] = useState(0);
   const [draft, setDraft] = useState('');
   const [isPending, startTransition] = useTransition();
 
@@ -96,6 +102,7 @@ export default function BaseChatScreen({
       mutationKey: 'sendMessage',
       scope: 'chat',
       mutationType: 'CREATE',
+      onError: (_error, content) => setFailedMessage(content),
       onSuccess: (data) => {
         if (data) {
           setMessages((prev) => [...prev, data]);
@@ -111,14 +118,16 @@ export default function BaseChatScreen({
       try {
         const data = await fetchMessages();
         setMessages(data);
+        setLoadError(null);
       } catch (err) {
         console.error('[BaseChatScreen] fetch error', err);
+        setLoadError(err instanceof Error ? err.message : 'Messages could not be loaded.');
       } finally {
         setLoading(false);
       }
     }
     void load();
-  }, [fetchMessages]);
+  }, [fetchMessages, retryNonce]);
 
   // Real-time subscription
   useEffect(() => {
@@ -245,6 +254,15 @@ export default function BaseChatScreen({
                 Tuning Frequencies...
               </Text>
             </Box>
+          ) : loadError ? (
+            <BrandedErrorState
+              title="Messages could not settle"
+              message={isOffline ? 'Reconnect to try again.' : loadError}
+            >
+              <Pressable onPress={() => setRetryNonce((value) => value + 1)}>
+                <Text className="text-phase-interactive font-bold">Try again</Text>
+              </Pressable>
+            </BrandedErrorState>
           ) : (
             <SanctuaryLegendList
               keyboardLiftBehavior="always"
@@ -274,6 +292,28 @@ export default function BaseChatScreen({
 
           {/* Compose bar */}
           <Box className="bg-phase-surface border-t border-border px-4 py-4 shadow-sm">
+            {isOffline && !isReadOnly ? (
+              <Box className="mb-3 rounded-xl border border-phase-warning/30 bg-phase-warning/10 px-3 py-2">
+                <Text className="text-phase-warning text-[11px] font-semibold text-center">
+                  Offline — sending may be delayed until you reconnect.
+                </Text>
+              </Box>
+            ) : null}
+            {failedMessage ? (
+              <Box className="mb-3 rounded-xl border border-phase-warning/30 bg-phase-warning/10 px-3 py-2 flex-row items-center justify-between">
+                <Text className="text-phase-warning text-[11px] font-semibold">
+                  Message failed to send.
+                </Text>
+                <Pressable
+                  onPress={() => {
+                    setDraft(failedMessage);
+                    setFailedMessage(null);
+                  }}
+                >
+                  <Text className="text-phase-interactive text-[11px] font-bold">Retry</Text>
+                </Pressable>
+              </Box>
+            ) : null}
             {isReadOnly ? (
               <Box className="py-2 items-center bg-ink/5 rounded-xl border border-dashed border-border">
                 <Text className="text-ink/40 text-[11px] font-medium italic">

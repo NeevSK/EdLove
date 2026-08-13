@@ -34,6 +34,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
 import { communityAPI } from '@repo/community/api/community';
+import { directMessageRoute } from '@repo/community/navigation/communityRoutes';
 
 /**
  * UserPublicProfileScreen.web
@@ -117,13 +118,7 @@ export default function UserPublicProfileScreen() {
     setInitiatingDM(true);
     try {
       const conversationId = await communityAPI.getOrCreateDirectConversation(userId);
-      router.push({
-        pathname: '/community/direct-messages',
-        params: {
-          conversationId,
-          userName: user?.full_name || userName || 'User',
-        },
-      });
+      router.push(directMessageRoute(conversationId, user?.full_name || userName || 'User'));
     } catch (error) {
       console.error('[UserProfile.web] DM Error:', error);
     } finally {

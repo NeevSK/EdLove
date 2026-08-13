@@ -6,8 +6,10 @@
  */
 
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import { BrandedErrorState } from '@repo/ui/components/ErrorState';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
-import { ChevronRight, MessageSquare } from '@repo/ui/icons';
+import { ChevronRight } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -15,19 +17,27 @@ import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { communityAPI } from '@repo/community/api/community';
 import type { DirectConversation } from '@repo/community/types';
+import { directMessageRoute } from '@repo/community/navigation/communityRoutes';
+import { usePermissions } from '@repo/core/logic';
+import { useTemporalStore } from '@repo/core/store';
 
 export default function DirectMessagesListScreen() {
   const { t } = useTranslation();
   const [conversations, setConversations] = useState<DirectConversation[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { can } = usePermissions();
+  const isOffline = useTemporalStore((state) => state.isOffline);
 
   const load = useCallback(async () => {
+    setError(null);
     try {
       const data = await communityAPI.getDirectConversations();
       setConversations(data as DirectConversation[]);
     } catch (err) {
       console.error('[DirectMessagesListScreen] load error', err);
+      setError(err instanceof Error ? err.message : 'Direct messages could not be loaded.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -43,6 +53,36 @@ export default function DirectMessagesListScreen() {
     load();
   };
 
+  if (!can('read', 'DirectMessages')) {
+    return (
+      <BrandedErrorState
+        title="Private conversations are not available"
+        message="Your current sanctuary permissions do not include direct messages."
+      />
+    );
+  }
+
+  if (isOffline && conversations.length === 0) {
+    return (
+      <BrandedErrorState
+        title="Messages are resting"
+        message="Direct messages are online-only right now. Reconnect to continue."
+      >
+        <Text className="text-ink/60 text-xs">Your conversation history is kept private.</Text>
+      </BrandedErrorState>
+    );
+  }
+
+  if (error && conversations.length === 0) {
+    return (
+      <BrandedErrorState title="The conversation list could not settle" message={error}>
+        <Text onPress={() => void load()} className="text-phase-interactive font-bold">
+          Try again
+        </Text>
+      </BrandedErrorState>
+    );
+  }
+
   const renderItem = ({ item, index }: { item: DirectConversation; index: number }) => {
     const name = item.other_user_name || 'Explorer';
     const date = new Date(item.updated_at);
@@ -55,13 +95,7 @@ export default function DirectMessagesListScreen() {
       <Animated.View entering={FadeInDown.delay(index * 100).springify()}>
         <Pressable
           onPress={() =>
-            router.push({
-              pathname: '/community/direct-messages',
-              params: {
-                conversationId: item.id,
-                userName: name,
-              },
-            })
+            router.push(directMessageRoute(item.id, name))
           }
           className="mx-5 mb-3"
           accessibilityRole="button"
@@ -111,20 +145,13 @@ export default function DirectMessagesListScreen() {
         refreshing={refreshing}
         contentContainerStyle={{ paddingTop: 20, paddingBottom: 100 }}
         ListEmptyComponent={
-          <VStack className="flex-1 p-10 pt-20 items-center justify-center gap-6">
-            <Box className="w-20 h-20 rounded-full bg-ink/5 items-center justify-center">
-              <Icon as={MessageSquare} size="lg" className="text-ink/20" />
-            </Box>
-            <VStack className="gap-2 items-center">
-              <Text className="text-xl font-black text-ink text-center">
-                {t('chat.noConversationsTitle') || 'Quiet Sanctuary'}
-              </Text>
-              <Text className="text-center text-ink/40 font-medium px-4 leading-relaxed">
-                {t('chat.noConversationsDesc') ||
-                  "No direct resonances yet. Start a conversation from a user's profile to begin."}
-              </Text>
-            </VStack>
-          </VStack>
+          <BrandedEmptyState
+            title={t('chat.noConversationsTitle') || 'Quiet Sanctuary'}
+            message={
+              t('chat.noConversationsDesc') ||
+              "Your first private conversation is waiting to begin from a member's profile."
+            }
+          />
         }
       />
     </Box>

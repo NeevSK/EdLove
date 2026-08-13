@@ -34,7 +34,7 @@
     "gn-divisions",
     "educational-zones"
   ],
-  "packageManager": "pnpm@11.9.0",
+  "packageManager": "pnpm@11.21.0",
   "scripts": {
     "build": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsup src/index.ts --format esm,cjs --dts --clean\" --name \"packages_lk-edu-geo-build\"",
     "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"packages_lk-edu-geo-test\"",

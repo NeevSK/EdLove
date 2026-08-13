@@ -17,6 +17,7 @@ type ProfileAction =
   | { type: 'FETCH_START'; refreshing?: boolean }
   | { type: 'FETCH_SUCCESS'; payload: UserProfile | null }
   | { type: 'FETCH_FAILURE'; payload: string }
+  | { type: 'SET_ERROR'; payload: string }
   | { type: 'UPDATE_FIELD'; field: keyof UserProfile; value: unknown };
 
 function profileReducer(state: ProfileState, action: ProfileAction): ProfileState {
@@ -29,9 +30,11 @@ function profileReducer(state: ProfileState, action: ProfileAction): ProfileStat
         error: null,
       };
     case 'FETCH_SUCCESS':
-      return { ...state, loading: false, refreshing: false, profile: action.payload };
+      return { ...state, loading: false, refreshing: false, error: null, profile: action.payload };
     case 'FETCH_FAILURE':
       return { ...state, loading: false, refreshing: false, error: action.payload };
+    case 'SET_ERROR':
+      return { ...state, error: action.payload };
     case 'UPDATE_FIELD':
       if (!state.profile) return state;
       return { ...state, profile: { ...state.profile, [action.field]: action.value } };
@@ -49,7 +52,7 @@ const initialState: ProfileState = {
 
 export function useProfile(userId?: string) {
   const [state, dispatch] = useReducer(profileReducer, initialState);
-  const { profile, loading, refreshing } = state;
+  const { profile, loading, refreshing, error } = state;
 
   const { rewards, isLoading: isRewardsLoading } = useRewards({ userId });
   const addToQueue = useMutationQueue((state) => state.addToQueue);
@@ -122,8 +125,9 @@ export function useProfile(userId?: string) {
       await profileAPI.updateProfile(profile.id, { [field]: value });
       return { success: true };
     } catch (error) {
-      console.log('Sync pending for:', field, error);
-      return { success: true, pending: true };
+      const errorMessage = (error as any)?.message || 'Profile update is waiting to sync';
+      dispatch({ type: 'SET_ERROR', payload: errorMessage });
+      return { success: true, pending: true, error: errorMessage };
     }
   };
 
@@ -155,6 +159,7 @@ export function useProfile(userId?: string) {
 
   return {
     profile,
+    error,
     loading: loading || isRewardsLoading,
     refreshing,
     refresh,

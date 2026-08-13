@@ -51,27 +51,29 @@ export default function DirectMessageScreen() {
     void fetchContext();
   }, [conversationId, user]);
 
-  const fetchMessages = async (): Promise<ChatMessage[]> => {
+  const fetchMessages = React.useCallback(async (): Promise<ChatMessage[]> => {
     return communityAPI.getDirectMessages(conversationId, 60, viewDate) as Promise<ChatMessage[]>;
-  };
+  }, [conversationId, viewDate]);
 
-  const sendMessage = async (content: string): Promise<ChatMessage> => {
+  const sendMessage = React.useCallback(async (content: string): Promise<ChatMessage> => {
     if (isPastView) throw new Error('Cannot send messages in historical view');
     return communityAPI.sendDirectMessage(conversationId, content) as Promise<ChatMessage>;
-  };
+  }, [conversationId, isPastView]);
 
-  const subscription: SubscriptionConfig = {
-    table: 'direct_messages',
-    filter: `conversation_id=eq.${conversationId}`,
-    fetchById: async (id: string) => {
-      const { data } = await supabase
-        .from('direct_messages')
-        .select('*, author:users!direct_messages_author_id_fkey(full_name, avatar_url)')
-        .eq('id', id)
-        .single();
-      return data as ChatMessage | null;
-    },
-  };
+  const subscription = React.useMemo<SubscriptionConfig>(() => ({
+      table: 'direct_messages',
+      filter: `conversation_id=eq.${conversationId}`,
+      fetchById: async (id: string) => {
+        const { data } = await supabase
+          .from('direct_messages')
+          .select('*, author:users!direct_messages_author_id_fkey(full_name, avatar_url)')
+          .eq('id', id)
+          .single();
+        return data as ChatMessage | null;
+      },
+    }),
+    [conversationId],
+  );
 
   return (
     <BaseChatScreen

@@ -5,6 +5,15 @@
 import { identityAPI } from '@repo/core/api';
 import { useDomainRollout, useTracking } from '@repo/core/hooks';
 import { coreRuntime, usePermissions, useStore, useTemporalStore } from '@repo/core/logic';
+import { libraryAPI } from '@repo/library/api/library';
+import { CollectionPickerModal } from '@repo/library/components/CollectionPickerModal';
+import { LibraryThumbnailCard } from '@repo/library/components/LibraryThumbnailCard';
+import { ResourceList } from '@repo/library/components/ResourceList';
+import { getOrderedShelfDefs } from '@repo/library/constants/shelf';
+import { useBookmarkedResources, useLibrary } from '@repo/library/hooks/useLibrary';
+import type { CreateResourceInput, LibraryResource, ResourceType } from '@repo/library/types';
+import { buildLibraryExternalLinkOptions } from '@repo/library/utils/externalLinks';
+import { buildLibraryResourceOpenParams } from '@repo/library/utils/resourceLinks';
 import { CollectionCard } from '@repo/ui/components/CollectionCard';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { HorizontalChipRow } from '@repo/ui/components/HorizontalChipRow';
@@ -44,27 +53,19 @@ import {
 import { Theme } from '@repo/ui/theme';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { useRouter } from 'expo-router';
-import React, { memo, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { Alert } from 'react-native';
 import {
   Edit2,
-  FileText as LucideFileText,
   Globe,
   Lock,
+  FileText as LucideFileText,
+  Users as LucideUsers,
   MoreVertical,
   Trash2,
-  Users as LucideUsers,
 } from 'lucide-react-native';
+import React, { memo, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Alert, useWindowDimensions } from 'react-native';
 import { FadeInDown } from 'react-native-reanimated';
-import { libraryAPI } from '@repo/library/api/library';
-import { CollectionPickerModal } from '@repo/library/components/CollectionPickerModal';
-import { LibraryThumbnailCard } from '@repo/library/components/LibraryThumbnailCard';
-import { ResourceList } from '@repo/library/components/ResourceList';
-import { getOrderedShelfDefs } from '@repo/library/constants/shelf';
-import { useBookmarkedResources, useLibrary } from '@repo/library/hooks/useLibrary';
-import type { LibraryResource } from '@repo/library/types';
-import { buildLibraryExternalLinkOptions } from '@repo/library/utils/externalLinks';
 
 const LIBRARY_UI_CATEGORIES = [
   { id: 'All', en: 'All' },
@@ -74,6 +75,18 @@ const LIBRARY_UI_CATEGORIES = [
   { id: 'text', en: 'Articles' },
   { id: 'note', en: 'Personal Notes' },
 ];
+
+function getLibraryCreateErrorMessage(error: unknown): string {
+  const candidate = error as { message?: unknown; code?: unknown } | null;
+  const message = error instanceof Error ? error.message : candidate?.message;
+  const code = typeof candidate?.code === 'string' ? candidate.code : '';
+  if (code === '42501' || String(message).toLowerCase().includes('permission')) {
+    return 'Your current library permission does not allow contributions.';
+  }
+  return typeof message === 'string' && message.length > 0
+    ? message
+    : 'We could not add this resource. Please try again.';
+}
 
 const MapInvitation = memo(({ onPress }: { onPress: () => void }) => {
   const theme = useTheme();
@@ -282,7 +295,7 @@ export default function LibraryScreen() {
   const isPastView = useTemporalStore((state) => state.isPastView);
   const deskItems = useStore((state) => state.deskItems);
   const user = useStore((state) => state.user);
-  const _showToast = useStore((state) => state.showToast);
+  const showToast = useStore((state) => state.showToast);
 
   // Search Debouncing (Orchestrated by Reducer)
   useEffect(() => {
@@ -293,6 +306,8 @@ export default function LibraryScreen() {
   }, [searchQuery]);
 
   const theme = useTheme();
+  const { width, height } = useWindowDimensions();
+  const shelfColumns = width >= 700 || width > height ? 2 : 1;
   const bottomPadding = useBottomTabPadding();
   const { discoverFeature } = useTracking();
 
@@ -336,6 +351,7 @@ export default function LibraryScreen() {
     updateCollection,
     deleteCollection,
     createCollection,
+    createResource,
     totalResourcesCount,
     totalCollectionsCount,
   } = useLibrary(libraryFilters, libraryFilters);
@@ -518,25 +534,14 @@ export default function LibraryScreen() {
       if (resource.type === 'pdf') {
         router.push({
           pathname: '/library/document/[resourceId]',
-          params: {
-            resourceId: resource.id,
-            title: resource.title,
-            url: resource.url,
-            creator: resource.creator_name ?? '',
-            format: resource.format ?? 'pdf',
-          },
+          params: buildLibraryResourceOpenParams(resource),
         });
         return;
       }
       if (resource.type === 'video' || resource.type === 'movie_trailer') {
         router.push({
           pathname: '/library/video/[resourceId]',
-          params: {
-            resourceId: resource.id,
-            title: resource.title,
-            url: resource.url,
-            creator: resource.creator_name ?? '',
-          },
+          params: buildLibraryResourceOpenParams(resource),
         });
         return;
       }
@@ -561,17 +566,56 @@ export default function LibraryScreen() {
     );
   }, []);
 
-  const handleAddResource = useCallback(() => {
-    const add = async () => {
-      try {
-        await fetchResources();
-        await refetchBookmarks();
-      } catch (err) {
-        console.error('Failed to refresh after add', err);
+  const handleAddResource = useCallback(
+    async (data: { title: string; url: string; description: string; tags: string[] }) => {
+      if (isPastView) {
+        throw new Error('Past view is read-only. Return to today to contribute.');
       }
-    };
-    void add();
-  }, [fetchResources, refetchBookmarks]);
+      if (!isLibraryManagementEnabled || !can('create', 'LibraryResource')) {
+        throw new Error('Your current library permission does not allow contributions.');
+      }
+      const creatorId = await identityAPI.getMyInternalId();
+      if (!creatorId) throw new Error('Sign in before contributing a resource.');
+
+      const input: CreateResourceInput = {
+        title: data.title.trim(),
+        description: data.description.trim(),
+        type: (selectedCategoryId === 'All' ? 'lesson' : selectedCategoryId) as ResourceType,
+        format: /\.pdf(\?|$)/i.test(data.url) ? 'document' : 'text',
+        url: data.url.trim(),
+        subject: data.tags[0] || 'General',
+        subjects: data.tags.length > 0 ? data.tags : ['General'],
+        topics: data.tags,
+        grades: [],
+        difficulty: 'intermediate',
+        language: 'english',
+        languages: ['english'],
+        visibility: 'school',
+      };
+      const creatorRole =
+        (user as any)?.capacity ?? (user as any)?.authority ?? (user as any)?.role ?? 'student';
+      try {
+        await createResource({ input, creatorId, creatorRole });
+        await Promise.all([fetchResources(), refetchBookmarks()]);
+        showToast('Resource contributed. It will be reviewed before publishing.', 'success');
+      } catch (error) {
+        const message = getLibraryCreateErrorMessage(error);
+        showToast(message, 'error');
+        throw new Error(message);
+      }
+    },
+    [
+      can,
+      createResource,
+      fetchResources,
+      isLibraryManagementEnabled,
+      isPastView,
+      refetchBookmarks,
+      selectedCategoryId,
+      showToast,
+      user,
+    ],
+  );
 
   const handleBookmark = useCallback(
     (resource: LibraryResource) => {
@@ -696,8 +740,16 @@ export default function LibraryScreen() {
   }, [hasNextResources, isFetchingNextResources, fetchNextResources]);
 
   const handleOpenAddModal = useCallback(() => {
+    if (isPastView) {
+      showToast('Past view is read-only. Return to today to contribute.', 'info');
+      return;
+    }
+    if (!isLibraryManagementEnabled || !can('create', 'LibraryResource')) {
+      showToast('Your current library permission does not allow contributions.', 'info');
+      return;
+    }
     dispatch({ type: 'SET_MODAL', name: 'add', isOpen: true });
-  }, []);
+  }, [can, isLibraryManagementEnabled, isPastView, showToast]);
 
   const fabConfig = useMemo(
     () => ({
@@ -910,45 +962,53 @@ export default function LibraryScreen() {
 
                   const handleOwnerLongPress = () => {
                     const visOptions = [
-                      { label: vis === 'private' ? 'Private ✓ (current)' : 'Make Private 🔒', value: 'private' },
-                      { label: vis === 'shared'  ? 'Shared ✓ (current)'  : 'Make Shared 👥',  value: 'shared'  },
-                      { label: vis === 'public'  ? 'Public ✓ (current)'  : 'Make Public 🌐',  value: 'public'  },
+                      {
+                        label: vis === 'private' ? 'Private ✓ (current)' : 'Make Private 🔒',
+                        value: 'private',
+                      },
+                      {
+                        label: vis === 'shared' ? 'Shared ✓ (current)' : 'Make Shared 👥',
+                        value: 'shared',
+                      },
+                      {
+                        label: vis === 'public' ? 'Public ✓ (current)' : 'Make Public 🌐',
+                        value: 'public',
+                      },
                     ];
-                    Alert.alert(
-                      col.name,
-                      'Manage your collection',
-                      [
-                        ...visOptions
-                          .filter((o) => o.value !== vis)
-                          .map((o) => ({
-                            text: o.label,
-                            onPress: () =>
-                              updateCollection({ id: col.id, updates: { visibility: o.value } as any }),
-                          })),
-                        {
-                          text: '✏️ Edit (open detail)',
-                          onPress: () => handleOpenCollectionDetail(col),
-                        },
-                        {
-                          text: '🗑️ Delete',
-                          style: 'destructive' as const,
+                    Alert.alert(col.name, 'Manage your collection', [
+                      ...visOptions
+                        .filter((o) => o.value !== vis)
+                        .map((o) => ({
+                          text: o.label,
                           onPress: () =>
-                            Alert.alert(
-                              'Delete Collection',
-                              `Delete "${col.name}"? This cannot be undone.`,
-                              [
-                                { text: 'Cancel', style: 'cancel' },
-                                {
-                                  text: 'Delete',
-                                  style: 'destructive',
-                                  onPress: () => deleteCollection(col.id),
-                                },
-                              ],
-                            ),
-                        },
-                        { text: 'Cancel', style: 'cancel' as const },
-                      ],
-                    );
+                            updateCollection({
+                              id: col.id,
+                              updates: { visibility: o.value } as any,
+                            }),
+                        })),
+                      {
+                        text: '✏️ Edit (open detail)',
+                        onPress: () => handleOpenCollectionDetail(col),
+                      },
+                      {
+                        text: '🗑️ Delete',
+                        style: 'destructive' as const,
+                        onPress: () =>
+                          Alert.alert(
+                            'Delete Collection',
+                            `Delete "${col.name}"? This cannot be undone.`,
+                            [
+                              { text: 'Cancel', style: 'cancel' },
+                              {
+                                text: 'Delete',
+                                style: 'destructive',
+                                onPress: () => deleteCollection(col.id),
+                              },
+                            ],
+                          ),
+                      },
+                      { text: 'Cancel', style: 'cancel' as const },
+                    ]);
                   };
 
                   return (
@@ -1048,7 +1108,6 @@ export default function LibraryScreen() {
           </HStack>
         }
       />
-
 
       {libraryError ? (
         <VStack className="p-md mt-lg items-center gap-3">
@@ -1166,7 +1225,7 @@ export default function LibraryScreen() {
                   refreshing={refreshing}
                   onRefresh={onRefresh}
                   masonry
-                  numColumns={2}
+                  numColumns={shelfColumns}
                 />
               </Box>
             ) : (
@@ -1194,6 +1253,22 @@ export default function LibraryScreen() {
         </Box>
       )}
 
+      {isPastView ? (
+        <Box className="mx-md mb-sm rounded-xl border border-phase-border bg-phase-interactive/5 px-3 py-2">
+          <Text className="text-xs text-phaseText-secondary">
+            This is a read-only historical view. Return to today to contribute.
+          </Text>
+        </Box>
+      ) : null}
+      {!isLibraryManagementEnabled || !can('create', 'LibraryResource') ? (
+        <Box className="mx-md mb-sm rounded-xl border border-phase-border bg-phase-interactive/5 px-3 py-2">
+          <Text className="text-xs text-phaseText-secondary">
+            {isLibraryManagementEnabled
+              ? 'Contributions are unavailable for this account.'
+              : 'Contributions are currently unavailable.'}
+          </Text>
+        </Box>
+      ) : null}
       <AssetCreationModal
         isOpen={isAddModalOpen && !isPastView}
         onClose={handleCloseAddModal}

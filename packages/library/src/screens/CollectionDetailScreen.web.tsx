@@ -1,4 +1,11 @@
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { useStore } from '@repo/core/logic';
+import { libraryAPI } from '@repo/library/api/library';
+import { LibraryThumbnailCard } from '@repo/library/components/LibraryThumbnailCard';
+import { LIBRARY_KEYS, useCollection } from '@repo/library/hooks/useLibrary';
+import type { LibraryCollection, LibraryResource, ResourceVisibility } from '@repo/library/types';
+import { buildLibraryExternalLinkOptions } from '@repo/library/utils/externalLinks';
+import { buildLibraryResourceOpenParams } from '@repo/library/utils/resourceLinks';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
@@ -6,27 +13,21 @@ import { ArrowLeft, Library, RefreshCw } from '@repo/ui/icons';
 import { ActivityIndicator, Box, HStack, Text, useTheme, VStack } from '@repo/ui/primitives';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { safeBack } from '@repo/ui/utils/navigation';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Alert } from 'react-native';
-import { LibraryThumbnailCard } from '@repo/library/components/LibraryThumbnailCard';
-import { useCollection, LIBRARY_KEYS } from '@repo/library/hooks/useLibrary';
-import { libraryAPI } from '@repo/library/api/library';
 import { useQueryClient } from '@tanstack/react-query';
-import type { LibraryCollection, LibraryResource, ResourceVisibility } from '@repo/library/types';
-import { buildLibraryExternalLinkOptions } from '@repo/library/utils/externalLinks';
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
-  ArrowLeft as LucideArrowLeft,
   Edit2,
   Globe,
   Lock,
+  ArrowLeft as LucideArrowLeft,
+  Users as LucideUsers,
   Plus,
   Trash2,
-  Users as LucideUsers,
   X,
 } from 'lucide-react-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Alert } from 'react-native';
 
 // ─── Resource Search Results (inline picker for Add Resources panel) ──────────────────────
 function ResourceSearchResults({
@@ -78,14 +79,30 @@ function ResourceSearchResults({
   }, [search]);
 
   if (isSearching) {
-    return <Text style={{ color: 'var(--ink-ghost)' as any, fontSize: 13, paddingVertical: 8 }}>Searching…</Text>;
+    return (
+      <Text style={{ color: 'var(--ink-ghost)' as any, fontSize: 13, paddingVertical: 8 }}>
+        Searching…
+      </Text>
+    );
   }
   if (!results.length) {
-    return <Text style={{ color: 'var(--ink-ghost)' as any, fontSize: 13, paddingVertical: 8 }}>No resources found.</Text>;
+    return (
+      <Text style={{ color: 'var(--ink-ghost)' as any, fontSize: 13, paddingVertical: 8 }}>
+        No resources found.
+      </Text>
+    );
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '320px', overflowY: 'auto' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+        maxHeight: '320px',
+        overflowY: 'auto',
+      }}
+    >
       {results.map((r) => {
         const alreadyAdded = existingSet.has(r.id!);
         return (
@@ -102,7 +119,16 @@ function ResourceSearchResults({
               gap: '12px',
             }}
           >
-            <span style={{ fontSize: '13px', color: 'var(--ink)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span
+              style={{
+                fontSize: '13px',
+                color: 'var(--ink)',
+                flex: 1,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
               {r.title}
             </span>
             <button
@@ -383,14 +409,27 @@ function EditCollectionModal({
           </span>
           <button
             onClick={onClose}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)' }}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--ink-ghost)',
+            }}
           >
             <X size={20} />
           </button>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <label
+            style={{
+              fontSize: '12px',
+              fontWeight: 700,
+              color: 'var(--ink-ghost)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+            }}
+          >
             Collection Name
           </label>
           <input
@@ -409,7 +448,15 @@ function EditCollectionModal({
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--ink-ghost)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <label
+            style={{
+              fontSize: '12px',
+              fontWeight: 700,
+              color: 'var(--ink-ghost)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+            }}
+          >
             Description
           </label>
           <textarea
@@ -533,9 +580,7 @@ export default function CollectionDetailScreenWeb() {
 
   const handleDelete = useCallback(async () => {
     if (!collection) return;
-    const confirmed = window.confirm(
-      `Delete "${collection.name}"? This cannot be undone.`,
-    );
+    const confirmed = window.confirm(`Delete "${collection.name}"? This cannot be undone.`);
     if (!confirmed) return;
     setIsDeleting(true);
     try {
@@ -570,24 +615,14 @@ export default function CollectionDetailScreenWeb() {
       if (resource.type === 'pdf') {
         router.push({
           pathname: '/library/document/[resourceId]',
-          params: {
-            resourceId: resource.id,
-            title: resource.title,
-            url: resource.url,
-            creator: resource.creator_name ?? '',
-          },
+          params: buildLibraryResourceOpenParams(resource),
         });
         return;
       }
       if (resource.type === 'video' || resource.type === 'movie_trailer') {
         router.push({
           pathname: '/library/video/[resourceId]',
-          params: {
-            resourceId: resource.id,
-            title: resource.title,
-            url: resource.url,
-            creator: resource.creator_name ?? '',
-          },
+          params: buildLibraryResourceOpenParams(resource),
         });
         return;
       }
@@ -743,11 +778,25 @@ export default function CollectionDetailScreenWeb() {
               marginBottom: '16px',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-              <span style={{ fontSize: '15px', fontWeight: 800, color: 'var(--ink)' }}>Add Resources</span>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '14px',
+              }}
+            >
+              <span style={{ fontSize: '15px', fontWeight: 800, color: 'var(--ink)' }}>
+                Add Resources
+              </span>
               <button
                 onClick={() => setIsAddResourcesOpen(false)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ink-ghost)' }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--ink-ghost)',
+                }}
               >
                 <X size={18} />
               </button>
@@ -780,7 +829,9 @@ export default function CollectionDetailScreenWeb() {
                 try {
                   await libraryAPI.addToCollection(collection.id, resourceId);
                   queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collectionsAll() });
-                  queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collection(collection.id) });
+                  queryClient.invalidateQueries({
+                    queryKey: LIBRARY_KEYS.collection(collection.id),
+                  });
                 } catch (e) {
                   console.error('Failed to add resource', e);
                 } finally {

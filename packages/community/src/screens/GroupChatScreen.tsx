@@ -10,6 +10,7 @@ import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 
 import { useTemporalStore } from '@repo/core/store';
 import { router, useLocalSearchParams } from 'expo-router';
+import React from 'react';
 import { communityAPI } from '@repo/community/api/community';
 import HeaderMoreMenu from '@repo/community/components/HeaderMoreMenu';
 import type { ChatMessage } from '@repo/community/types';
@@ -24,27 +25,30 @@ export default function GroupChatScreen() {
 
   const { viewDate, isPastView } = useTemporalStore();
 
-  const fetchMessages = async (): Promise<ChatMessage[]> => {
+  const fetchMessages = React.useCallback(async (): Promise<ChatMessage[]> => {
     return communityAPI.getGroupMessages(groupId, 60, viewDate) as Promise<ChatMessage[]>;
-  };
+  }, [groupId, viewDate]);
 
-  const sendMessage = async (content: string): Promise<ChatMessage> => {
+  const sendMessage = React.useCallback(async (content: string): Promise<ChatMessage> => {
     if (isPastView) throw new Error('Cannot send messages in historical view');
     return communityAPI.sendGroupMessage(groupId, content) as Promise<ChatMessage>;
-  };
+  }, [groupId, isPastView]);
 
-  const subscription: SubscriptionConfig = {
-    table: 'group_messages',
-    filter: `group_id=eq.${groupId}`,
-    fetchById: async (id: string) => {
-      const { data } = await supabase
-        .from('group_messages')
-        .select('*, author:users!group_messages_author_id_fkey(full_name, avatar_url)')
-        .eq('id', id)
-        .single();
-      return data as ChatMessage | null;
-    },
-  };
+  const subscription = React.useMemo<SubscriptionConfig>(
+    () => ({
+      table: 'group_messages',
+      filter: `group_id=eq.${groupId}`,
+      fetchById: async (id: string) => {
+        const { data } = await supabase
+          .from('group_messages')
+          .select('*, author:users!group_messages_author_id_fkey(full_name, avatar_url)')
+          .eq('id', id)
+          .single();
+        return data as ChatMessage | null;
+      },
+    }),
+    [groupId],
+  );
 
   return (
     <BaseChatScreen

@@ -2,6 +2,7 @@ import { communityAPI } from '@repo/core/api';
 import { useManifestoHooks, useNotificationHooks } from '@repo/core/api/hooks';
 import { useDomainRollout, usePendingGateAction } from '@repo/core/hooks';
 import { setPendingGateAction, usePermissions, useStore } from '@repo/core/logic';
+import { useTemporalStore } from '@repo/core/store';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
 import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
@@ -26,6 +27,7 @@ import {
   mapCommunitySurfaceSlots,
 } from '@repo/community/screens/communityWorkspace.shared';
 import type { CommunityPost, DirectConversation } from '@repo/community/types';
+import { directMessageRoute } from '@repo/community/navigation/communityRoutes';
 
 type CommunityState = {
   activeMode: CommunityWorkspaceMode;
@@ -117,6 +119,7 @@ export default function CommunityScreenWeb() {
   const { isSocialShieldEnabled } = flags;
   const pending = usePendingGateAction();
   const { unreadCount } = useNotificationHooks();
+  const isOffline = useTemporalStore((state) => state.isOffline);
 
   const userId = user?.id ?? 'guest';
   const schoolId = user?.school_id ?? undefined;
@@ -142,7 +145,16 @@ export default function CommunityScreenWeb() {
     loadingMessages,
   } = state;
 
-  const { posts, isLoadingPosts, fetchPosts, fetchGroups } = useCommunity(
+  const {
+    posts,
+    isLoadingPosts,
+    error: postsError,
+    fetchPosts,
+    fetchGroups,
+    fetchNextPosts,
+    hasNextPosts,
+    isFetchingNextPosts,
+  } = useCommunity(
     selectedFilter !== 'all' ? selectedFilter : undefined,
   );
 
@@ -324,6 +336,18 @@ export default function CommunityScreenWeb() {
       );
     }
 
+    if (postsError) {
+      return (
+        <div className="community-empty-card">
+          <h3>The feed could not settle</h3>
+          <p>{isOffline ? 'You are offline. Reconnect and try again.' : postsError}</p>
+          <button type="button" className="secondary-button" onClick={() => void fetchPosts()}>
+            Try again
+          </button>
+        </div>
+      );
+    }
+
     return (
       <div style={{ flex: 1, minHeight: '500px' }}>
         <SanctuaryFlashList
@@ -331,6 +355,13 @@ export default function CommunityScreenWeb() {
           renderItem={renderPostItem}
           keyExtractor={(item: CommunityPost) => item.id}
           estimatedItemSize={240}
+          onEndReached={() => {
+            if (hasNextPosts && !isFetchingNextPosts) void fetchNextPosts();
+          }}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            isFetchingNextPosts ? <div className="community-pagination-status">Loading older notes…</div> : null
+          }
         />
       </div>
     );
@@ -406,13 +437,7 @@ export default function CommunityScreenWeb() {
             type="button"
             className="community-message-row"
             onClick={() => {
-              router.push({
-                pathname: '/community/direct-messages',
-                params: {
-                  conversationId: conversation.id,
-                  userName: conversation.other_user_name,
-                },
-              });
+              router.push(directMessageRoute(conversation.id, conversation.other_user_name));
             }}
           >
             <div className="community-message-avatar">
@@ -511,13 +536,24 @@ export default function CommunityScreenWeb() {
                 <Users size={15} />
                 New Group
               </button>
-              <button type="button" className="secondary-button" aria-label="Notifications">
+              <button
+                type="button"
+                className="secondary-button"
+                aria-label="Notifications"
+                onClick={() => router.push('/notifications')}
+              >
                 <Bell size={15} />
                 {unreadCount > 0 ? `${unreadCount}` : '0'}
               </button>
             </div>
           }
         />
+
+        {isOffline ? (
+          <div className="community-offline-banner" role="status">
+            Offline — showing cached community data. New messages remain read-only until you reconnect.
+          </div>
+        ) : null}
 
         <div className="community-layout">
           <aside className="community-left-rail">
@@ -600,24 +636,7 @@ export default function CommunityScreenWeb() {
           </aside>
 
           <main className="community-center-column">
-            <section className="community-hearth-card">
-              <div className="community-hearth-copy">
-                <div>
-                  <span className="community-section-eyebrow">The Community Hearth</span>
-                  <h2>Presence, welcome, manifestos, and spotlight belong together.</h2>
-                  <p>
-                    The school should feel emotionally alive before it feels operational. That is
-                    why the hearth remains first.
-                  </p>
-                </div>
-
-                <div className="community-pulse-box">
-                  <span className="community-section-eyebrow">Community pulse</span>
-                  <strong>{pulse.membersSeen} school members seen this cycle</strong>
-                  <span>{pulse.circlesActive} circles active</span>
-                  <span>{pulse.newPostsToday} new posts today</span>
-                </div>
-              </div>
+            <section className="community-hearth-card" aria-label="Community hearth">
               <CommunityHearth manifestos={manifestos as any} userId={userId} />
             </section>
 
@@ -630,18 +649,6 @@ export default function CommunityScreenWeb() {
                   placeholder="Search posts, circles, members, announcements..."
                   aria-label="Search community"
                 />
-              </div>
-              <div className="community-mode-inline">
-                {modeOptions.map((mode) => (
-                  <button
-                    key={mode.key}
-                    type="button"
-                    className={`community-inline-chip ${activeMode === mode.key ? 'active' : ''}`}
-                    onClick={() => dispatch({ type: 'SET_MODE', mode: mode.key })}
-                  >
-                    {mode.label}
-                  </button>
-                ))}
               </div>
             </section>
 
@@ -837,8 +844,24 @@ export default function CommunityScreenWeb() {
                 }
 
                 .community-mode-inline {
-                    display: flex;
-                    gap: 8px;
+                    display: none;
+                }
+
+                .community-offline-banner {
+                    margin-top: 16px;
+                    padding: 10px 14px;
+                    border: 1px solid var(--phase-warning);
+                    border-radius: 12px;
+                    color: var(--phase-warning);
+                    background: var(--phase-warning-light);
+                    font-size: 13px;
+                }
+
+                .community-pagination-status {
+                    padding: 16px;
+                    text-align: center;
+                    color: var(--ink-light);
+                    font-size: 13px;
                 }
 
                 .community-inline-chip {

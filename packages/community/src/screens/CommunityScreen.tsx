@@ -12,6 +12,7 @@ import type { CommunityPost, DirectConversation, SanctuaryGroup } from '@repo/co
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { HorizontalChipRow } from '@repo/ui/components/HorizontalChipRow';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { BrandedErrorState } from '@repo/ui/components/ErrorState';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
@@ -57,6 +58,7 @@ interface CommunityScreenState {
   };
   conversations: DirectConversation[];
   loadingMessages: boolean;
+  messageError: string | null;
 }
 
 type CommunityScreenAction =
@@ -72,7 +74,8 @@ type CommunityScreenAction =
     }
   | { type: 'CLOSE_REPORT_MODAL' }
   | { type: 'SET_CONVERSATIONS'; payload: DirectConversation[] }
-  | { type: 'SET_LOADING_MESSAGES'; payload: boolean };
+  | { type: 'SET_LOADING_MESSAGES'; payload: boolean }
+  | { type: 'SET_MESSAGE_ERROR'; payload: string | null };
 
 const initialState: CommunityScreenState = {
   activeMode: 'feed',
@@ -92,6 +95,7 @@ const initialState: CommunityScreenState = {
   },
   conversations: [],
   loadingMessages: false,
+  messageError: null,
 };
 
 function communityScreenReducer(
@@ -149,6 +153,8 @@ function communityScreenReducer(
       return { ...state, conversations: action.payload };
     case 'SET_LOADING_MESSAGES':
       return { ...state, loadingMessages: action.payload };
+    case 'SET_MESSAGE_ERROR':
+      return { ...state, messageError: action.payload };
     default:
       return state;
   }
@@ -158,7 +164,7 @@ export default function CommunityScreen() {
   const bottomPadding = useBottomTabPadding();
   const { discoverFeature } = useTracking();
   const { can } = usePermissions();
-  const { isPastView } = useTemporalStore();
+  const { isPastView, isOffline } = useTemporalStore();
   const { user, flags } = useStore();
   const isCommunityEnabled = useDomainRollout('hearth');
   const isMessagingRolloutEnabled = useDomainRollout('messages');
@@ -183,6 +189,8 @@ export default function CommunityScreen() {
     fetchNextPage: fetchNextPosts,
     hasNextPage: hasNextPosts,
     isFetchingNextPage: isFetchingNextPosts,
+    error: postsError,
+    refetch: refetchPosts,
   } = usePostsInfiniteQuery(state.selectedFilter !== 'all' ? state.selectedFilter : 'all');
 
   const posts = useMemo(
@@ -258,11 +266,18 @@ export default function CommunityScreen() {
       .getDirectConversations()
       .then((data: unknown) => {
         if (!cancelled) {
+          dispatch({ type: 'SET_MESSAGE_ERROR', payload: null });
           dispatch({ type: 'SET_CONVERSATIONS', payload: data as DirectConversation[] });
         }
       })
       .catch((error: unknown) => {
         console.error('[CommunityScreen] Failed to load direct conversations', error);
+        if (!cancelled) {
+          dispatch({
+            type: 'SET_MESSAGE_ERROR',
+            payload: error instanceof Error ? error.message : 'Messages could not be loaded.',
+          });
+        }
       })
       .finally(() => {
         if (!cancelled) {
@@ -547,6 +562,19 @@ export default function CommunityScreen() {
       );
     }
 
+    if (postsError) {
+      return (
+        <BrandedErrorState
+          title="The feed could not settle"
+          message={isOffline ? 'You are offline. Reconnect and try again.' : 'Please try again.'}
+        >
+          <SanctuaryButton action="secondary" onPress={() => void refetchPosts()}>
+            <Text className="text-ink font-bold">Try again</Text>
+          </SanctuaryButton>
+        </BrandedErrorState>
+      );
+    }
+
     return (
       <SanctuaryFlashList
         data={posts}
@@ -575,7 +603,14 @@ export default function CommunityScreen() {
           </VStack>
         }
         ListEmptyComponent={
-          !loading ? (
+          loading ? (
+            <Box className="py-12 items-center">
+              <Spinner />
+              <Text className="mt-3 text-ink/50 text-xs font-semibold">
+                Gathering the community pulse…
+              </Text>
+            </Box>
+          ) : (
             <Box className="px-4 pt-8">
               <PositiveInvitation
                 title="Seed the first note"
@@ -660,6 +695,22 @@ export default function CommunityScreen() {
               <Box className="py-12 items-center">
                 <Spinner />
               </Box>
+            ) : state.messageError ? (
+              <BrandedErrorState
+                title="Messages are resting"
+                message={
+                  isOffline
+                    ? 'Direct messages are available when you are back online.'
+                    : state.messageError
+                }
+              >
+                <SanctuaryButton
+                  action="secondary"
+                  onPress={() => dispatch({ type: 'SET_ACTIVE_MODE', payload: 'messages' })}
+                >
+                  <Text className="text-ink font-bold">Try again</Text>
+                </SanctuaryButton>
+              </BrandedErrorState>
             ) : (
               <DirectMessagesListScreen />
             )}
@@ -696,6 +747,13 @@ export default function CommunityScreen() {
     <ScreenWrapper scroll={false} noTopInset className="bg-phase-canvas">
       <Box className="flex-1">
         <GlobalHeader title="Community" />
+        {isOffline ? (
+          <Box className="mx-4 mt-2 rounded-xl border border-phase-warning/30 bg-phase-warning/10 px-4 py-2">
+            <Text className="text-phase-warning text-xs font-semibold">
+              Offline — showing what is already here. New community messages stay read-only until you reconnect.
+            </Text>
+          </Box>
+        ) : null}
 
         {state.activeMode === 'feed' && renderFeed()}
         {state.activeMode === 'circles' && renderCircles()}

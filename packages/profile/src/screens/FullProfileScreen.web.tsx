@@ -39,6 +39,7 @@ export default function FullProfileScreenWeb() {
 
   const {
     profile: liveProfile,
+    error,
     updateField,
     refresh,
     uploadAvatar,
@@ -50,6 +51,7 @@ export default function FullProfileScreenWeb() {
 
   const [showSocialModal, setShowSocialModal] = useState(false);
   const [showThuthimalModal, setShowThuthimalModal] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const currentUserId = currentUser?.id;
   const currentUserName = currentUser?.display_name || currentUser?.email || '';
@@ -82,8 +84,11 @@ export default function FullProfileScreenWeb() {
     const result = await updateField(field as keyof UserProfile, valueToSave);
     const success = !!result?.success;
     if (success) {
+      if (result.pending) setSaveError(result.error || 'Profile update is waiting to sync.');
       hapticSuccess();
       refresh?.();
+    } else if (result.error) {
+      setSaveError(result.error);
     }
     return success;
   };
@@ -93,6 +98,13 @@ export default function FullProfileScreenWeb() {
       <GlobalHeader title={t('profile.fullProfile')} showBack onBack={() => safeBack('/profile')} />
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         <Box className="max-w-[800px] mx-auto w-full p-6">
+          {(error || saveError) && (
+            <Box className="bg-warning-surface border border-warning rounded-2xl p-3 mb-4">
+              <Text className="text-warning text-xs" accessibilityRole="alert">
+                {saveError || error}
+              </Text>
+            </Box>
+          )}
           <VStack space="2xl">
             <HStack space="xl" className="items-center">
               <AvatarDisplay

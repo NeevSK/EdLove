@@ -10,6 +10,7 @@ import { NotificationSettingsPanel } from '@repo/ui/components/NotificationSetti
 import { SanctuaryProgressBar } from '@repo/ui/components/SanctuaryProgressBar';
 import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 import {
+  ChevronDown,
   CircleQuestionMark,
   Eye,
   Heart,
@@ -35,7 +36,7 @@ import {
 } from '@repo/ui/primitives';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import type { TFunction } from 'i18next';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Platform, RefreshControl, ScrollView, useWindowDimensions } from 'react-native';
 import Animated, {
@@ -253,12 +254,61 @@ const AppExperienceSection = ({ t, cardWidth }: AppExperienceSectionProps) => {
   );
 };
 
+interface DisclosureSectionProps {
+  title: string;
+  description: string;
+  cardWidth: number;
+  defaultExpanded?: boolean;
+  children: ReactNode;
+}
+
+const DisclosureSection = ({
+  title,
+  description,
+  cardWidth,
+  defaultExpanded = false,
+  children,
+}: DisclosureSectionProps) => {
+  const [expanded, setExpanded] = useState(defaultExpanded);
+
+  return (
+    <Center>
+      <Box
+        style={{ width: cardWidth }}
+        className="rounded-3xl border border-phase-surface bg-phase-canvas overflow-hidden"
+      >
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={title}
+          accessibilityHint={description}
+          accessibilityState={{ expanded }}
+          onPress={() => setExpanded((value) => !value)}
+          className="p-4"
+        >
+          <HStack className="items-center justify-between gap-4">
+            <VStack className="flex-1 gap-1">
+              <Heading className="text-phase-text-primary text-base font-bold">{title}</Heading>
+              <Text className="text-phase-text-secondary text-xs">{description}</Text>
+            </VStack>
+            <ChevronDown
+              size={20}
+              className="text-phase-interactive"
+              style={{ transform: [{ rotate: expanded ? '180deg' : '0deg' }] }}
+            />
+          </HStack>
+        </Pressable>
+        {expanded && <VStack className="gap-4 px-4 pb-4">{children}</VStack>}
+      </Box>
+    </Center>
+  );
+};
+
 // --- Main Screen ---
 
 export const ProfileScreen = () => {
   const { t } = useTranslation();
   const navigation = useProfileNavigation();
-  const { profile, loading, refreshing, refresh, logout } = useProfile();
+  const { profile, error, loading, refreshing, refresh, logout } = useProfile();
 
   const { context } = usePermissions();
   const capacity = context.activeBond?.capacity || context.primaryCapacity || 'member';
@@ -342,6 +392,24 @@ export const ProfileScreen = () => {
     );
   }
 
+  if (!profile && error) {
+    return (
+      <ScreenWrapper noTopInset={true}>
+        <Center className="flex-1 p-6">
+          <VStack className="items-center gap-3">
+            <Heading className="text-phase-text-primary text-lg">
+              {t('profile.loadFailed', 'Your profile could not be opened')}
+            </Heading>
+            <Text className="text-phase-text-secondary text-center text-sm">{error}</Text>
+            <Button size="sm" onPress={() => void refresh()}>
+              <ButtonText>{t('common.retry', 'Try again')}</ButtonText>
+            </Button>
+          </VStack>
+        </Center>
+      </ScreenWrapper>
+    );
+  }
+
   return (
     <ScreenWrapper scroll={false} noTopInset={true}>
       <GlobalHeader
@@ -375,6 +443,15 @@ export const ProfileScreen = () => {
           }
         >
           <VStack space="2xl">
+            {error && (
+              <Center>
+                <Box style={{ width: cardWidth }} className="rounded-2xl bg-phase-surface p-3">
+                  <Text className="text-phase-text-secondary text-xs" accessibilityRole="alert">
+                    {error}
+                  </Text>
+                </Box>
+              </Center>
+            )}
             {profile?.is_anonymous && (
               <Center>
                 <Animated.View style={[{ width: cardWidth }, animatedBannerStyle]}>
@@ -470,108 +547,106 @@ export const ProfileScreen = () => {
               <StatsSection profile={profile} role={capacity} />
             </Animated.View>
 
-            <Animated.View entering={FadeInDown.delay(400).duration(500)}>
-              <Center>
-                <Box style={{ width: cardWidth }}>
-                  <ProfileListItem
-                    icon={Settings}
-                    label={t('settings.title')}
-                    onPress={() => navigation.openSettings?.()}
-                  />
-                </Box>
-              </Center>
-            </Animated.View>
+            <DisclosureSection
+              title={t('profile.toolsTitle', 'Profile tools')}
+              description={t(
+                'profile.toolsDescription',
+                'Manage your settings, privacy record, and public view.',
+              )}
+              cardWidth={cardWidth}
+            >
+              <Animated.View entering={FadeInDown.delay(400).duration(500)}>
+                <ProfileListItem
+                  icon={Settings}
+                  label={t('settings.title')}
+                  onPress={() => navigation.openSettings?.()}
+                />
+              </Animated.View>
+              <Animated.View entering={FadeInDown.delay(475).duration(500)}>
+                <ProfileListItem
+                  icon={Info}
+                  label={t('profile.privacyLedgerTitle')}
+                  onPress={() => navigation.openPrivacyLedger?.()}
+                />
+              </Animated.View>
+              <Animated.View entering={FadeInDown.delay(500).duration(500)}>
+                <ProfileListItem
+                  icon={Eye}
+                  label={t('profile.publicPreviewTitle')}
+                  onPress={() =>
+                    profile?.id
+                      ? navigation.openPublicProfile?.({
+                          id: profile.id,
+                          type: 'user',
+                        })
+                      : undefined
+                  }
+                />
+              </Animated.View>
+            </DisclosureSection>
 
-            <Animated.View entering={FadeInDown.delay(475).duration(500)}>
-              <Center>
-                <Box style={{ width: cardWidth }}>
-                  <ProfileListItem
-                    icon={Info}
-                    label={t('profile.privacyLedgerTitle')}
-                    onPress={() => navigation.openPrivacyLedger?.()}
-                  />
-                </Box>
-              </Center>
-            </Animated.View>
+            <DisclosureSection
+              title={t('profile.careTitle', 'Care & preferences')}
+              description={t(
+                'profile.careDescription',
+                'Support, notifications, and device security stay close at hand.',
+              )}
+              cardWidth={cardWidth}
+            >
+              <Animated.View entering={FadeInDown.delay(550).duration(500)}>
+                <SupportSection t={t} cardWidth={cardWidth} />
+              </Animated.View>
+              <Animated.View entering={FadeInDown.delay(600).duration(500)}>
+                <AppExperienceSection t={t} cardWidth={cardWidth} />
+              </Animated.View>
+              <Animated.View entering={FadeInDown.delay(650).duration(500)}>
+                <NotificationSettingsPanel />
+              </Animated.View>
+              <Animated.View entering={FadeInDown.delay(700).duration(500)}>
+                <DeviceSecurityCenter />
+              </Animated.View>
+            </DisclosureSection>
 
-            <Animated.View entering={FadeInDown.delay(500).duration(500)}>
-              <Center>
-                <Box style={{ width: cardWidth }}>
-                  <ProfileListItem
-                    icon={Eye}
-                    label={t('profile.publicPreviewTitle')}
-                    onPress={() =>
-                      profile?.id
-                        ? navigation.openPublicProfile?.({
-                            id: profile.id,
-                            type: 'user',
-                          })
-                        : undefined
-                    }
-                  />
-                </Box>
-              </Center>
-            </Animated.View>
-
-            <Animated.View entering={FadeInDown.delay(550).duration(500)}>
-              <SupportSection t={t} cardWidth={cardWidth} />
-            </Animated.View>
-
-            <Animated.View entering={FadeInDown.delay(600).duration(500)}>
-              <AppExperienceSection t={t} cardWidth={cardWidth} />
-            </Animated.View>
-
-            <Animated.View entering={FadeInDown.delay(650).duration(500)}>
-              <Center>
-                <Box style={{ width: cardWidth }}>
-                  <NotificationSettingsPanel />
-                </Box>
-              </Center>
-            </Animated.View>
-
-            <Animated.View entering={FadeInDown.delay(700).duration(500)}>
-              <Center>
-                <Box style={{ width: cardWidth }} className="mt-4">
-                  <DeviceSecurityCenter />
-                </Box>
-              </Center>
-            </Animated.View>
-
-            <Animated.View entering={FadeInDown.delay(750).duration(500)}>
-              <Center>
-                <Box className="mt-4 mb-20" style={{ width: cardWidth }}>
-                  <VStack
-                    space="md"
-                    className="p-4 bg-phase-surface rounded-3xl border border-phase-surface"
+            <DisclosureSection
+              title={t('profile.account.actions', 'Account actions')}
+              description={t(
+                'profile.account.actionsDescription',
+                'Sign out or begin the protected account deletion flow.',
+              )}
+              cardWidth={cardWidth}
+            >
+              <Animated.View entering={FadeInDown.delay(750).duration(500)}>
+                <VStack
+                  space="md"
+                  className="p-4 bg-phase-surface rounded-3xl border border-phase-surface"
+                >
+                  <Pressable
+                    onPress={handleLogout}
+                    accessible={true}
+                    accessibilityRole="button"
+                    accessibilityLabel={t('profile.logout')}
+                    accessibilityHint="Logs you out of your account"
+                    className="flex-row items-center justify-center p-4 bg-phase-canvas rounded-2xl border border-phase-surface"
                   >
-                    <Pressable
-                      onPress={handleLogout}
-                      accessible={true}
-                      accessibilityRole="button"
-                      accessibilityLabel={t('profile.logout')}
-                      accessibilityHint="Logs you out of your account"
-                      className="flex-row items-center justify-center p-4 bg-phase-canvas rounded-2xl border border-phase-surface"
-                    >
-                      <Icon as={LogOut} size={20} color="#FF6B6B" className="mr-2" />
-                      <Text className="text-phase-error font-bold">{t('profile.logout')}</Text>
-                    </Pressable>
-                    <Pressable
-                      onPress={handleDeleteAccount}
-                      accessible={true}
-                      accessibilityRole="button"
-                      accessibilityLabel={t('profile.deleteAccount')}
-                      accessibilityHint="Opens the account deletion modal"
-                      className="flex-row items-center justify-center p-1"
-                    >
-                      <Icon as={Trash2} size={16} color="#9DA1A3" className="mr-1.5" />
-                      <Text className="text-phase-text-tertiary text-xs">
-                        {t('profile.deleteAccount')}
-                      </Text>
-                    </Pressable>
-                  </VStack>
-                </Box>
-              </Center>
-            </Animated.View>
+                    <Icon as={LogOut} size={20} className="mr-2 text-phase-error" />
+                    <Text className="text-phase-error font-bold">{t('profile.logout')}</Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={handleDeleteAccount}
+                    accessible={true}
+                    accessibilityRole="button"
+                    accessibilityLabel={t('profile.deleteAccount')}
+                    accessibilityHint="Opens the account deletion modal"
+                    className="flex-row items-center justify-center p-1"
+                  >
+                    <Icon as={Trash2} size={16} className="mr-1.5 text-phase-text-tertiary" />
+                    <Text className="text-phase-text-tertiary text-xs">
+                      {t('profile.deleteAccount')}
+                    </Text>
+                  </Pressable>
+                </VStack>
+              </Animated.View>
+            </DisclosureSection>
           </VStack>
         </ScrollView>
       </Box>

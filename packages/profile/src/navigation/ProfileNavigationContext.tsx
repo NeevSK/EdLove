@@ -5,6 +5,9 @@ import { createContext, useContext } from 'react';
 
 type PublicProfileTargetType = 'user' | 'school' | 'classroom' | 'community';
 
+/** Canonical app-wide settings destination. The profile route remains a compatibility alias. */
+export const PROFILE_SETTINGS_ROUTE = '/settings' as const;
+
 export interface ProfileNavigationCapabilities {
   openFullProfile: (profile: FullProfileParams) => void;
   openSettings?: () => void;
@@ -39,7 +42,7 @@ export function useProfileNavigation(): ProfileNavigationCapabilities {
     openFullProfile: (profile) => {
       router.push({ pathname: '/profile/full/[id]', params: { id: profile.id } });
     },
-    openSettings: () => router.push('/profile/settings'),
+    openSettings: () => router.push(PROFILE_SETTINGS_ROUTE),
     openPrivacyLedger: () => router.push('/profile/privacy-ledger'),
     openMuteHub: () => router.push('/profile/mute-hub'),
     openPublicProfile: (target) => {

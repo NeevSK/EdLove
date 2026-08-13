@@ -28,6 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView } from 'react-native';
 import { communityAPI } from '@repo/community/api/community';
 import SocialShieldModal from '@repo/community/components/SocialShieldModal';
+import { directMessageRoute } from '@repo/community/navigation/communityRoutes';
 
 interface PublicUser {
   id: string;
@@ -128,13 +129,7 @@ export default function UserPublicProfileScreen() {
     setInitiatingDM(true);
     try {
       const conversationId = await communityAPI.getOrCreateDirectConversation(userId);
-      router.push({
-        pathname: '/community/direct-messages',
-        params: {
-          conversationId,
-          userName: user?.full_name || userName || 'Explorer',
-        },
-      });
+      router.push(directMessageRoute(conversationId, user?.full_name || userName || 'Explorer'));
     } catch (err) {
       console.error('Failed to initiate DM', err);
     } finally {

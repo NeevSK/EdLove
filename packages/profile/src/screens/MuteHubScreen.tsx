@@ -3,7 +3,7 @@ import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { CircleX, Shield, Trash2 } from '@repo/ui/icons';
-import { Box, Center, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { Box, Button, ButtonText, Center, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { router } from 'expo-router';
@@ -24,13 +24,15 @@ export default function MuteHubScreen() {
   const [mutedUsers, setMutedUsers] = useState<MutedUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchMutes = useCallback(async () => {
     try {
+      setError(null);
       const data = await socialAPI.getMutedUsers();
       setMutedUsers((data as MutedUser[]) || []);
     } catch (error) {
-      console.error('Failed to fetch muted users:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load muted connections');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -55,9 +57,14 @@ export default function MuteHubScreen() {
             try {
               await socialAPI.unblockUser(userId);
               hapticSuccess();
+              setError(null);
               setMutedUsers((prev) => prev.filter((u) => u.id !== userId));
             } catch (error) {
-              console.error('Failed to unmute user:', error);
+              Alert.alert(
+                t('profile.safety.unmuteFailedTitle') || 'Could not unmute connection',
+                error instanceof Error ? error.message : t('profile.safety.unmuteFailedMessage') || 'Please try again.',
+                [{ text: t('common.ok') || 'OK' }],
+              );
             }
           },
         },
@@ -100,11 +107,31 @@ export default function MuteHubScreen() {
             </HStack>
           </Box>
 
+          {error && mutedUsers.length > 0 && (
+            <Box className="p-3 rounded-xl bg-phase-surface">
+              <Text className="text-phase-text-secondary text-xs" accessibilityRole="alert">
+                {error}
+              </Text>
+            </Box>
+          )}
+
           <Heading className="text-phase-text-secondary text-sm mt-4">
             {t('profile.safety.mutedList') || 'Muted List'} ({mutedUsers.length})
           </Heading>
 
-          {mutedUsers.length === 0 && !loading ? (
+          {error && mutedUsers.length === 0 && !loading ? (
+            <Center className="py-12">
+              <VStack className="items-center gap-3">
+                <Heading className="text-phase-text-primary text-lg">
+                  {t('profile.safety.loadFailed') || 'Muted connections could not be loaded'}
+                </Heading>
+                <Text className="text-phase-text-secondary text-center text-sm">{error}</Text>
+              <Button size="sm" onPress={() => void fetchMutes()}>
+                <ButtonText>{t('common.retry') || 'Try again'}</ButtonText>
+              </Button>
+              </VStack>
+            </Center>
+          ) : mutedUsers.length === 0 && !loading ? (
             <Center className="h-48 mt-8">
               <VStack space="md" className="items-center">
                 <Icon as={CircleX} size={48} color="#9DA1A3" className="opacity-30" />

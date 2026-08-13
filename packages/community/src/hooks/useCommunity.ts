@@ -47,14 +47,14 @@ export const useCommunity = (
 
   const joinGroupMutation = useMutation({
     mutationFn: async ({
-      groupId: targetGroupId,
+      groupId,
       userId,
       joinPolicy,
     }: {
       groupId: string;
       userId: string;
       joinPolicy?: string;
-    }) => communityAPI.joinGroup(targetGroupId, userId, joinPolicy || 'member'),
+    }) => communityAPI.joinGroup(groupId, userId, joinPolicy || 'member'),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: COMMUNITY_KEYS.groups() });
     },

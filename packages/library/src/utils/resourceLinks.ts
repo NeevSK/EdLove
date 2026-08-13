@@ -4,6 +4,32 @@ import { GURUDEVI_APP } from '@repo/ui/utils';
 
 const LIBRARY_SHARE_BASE_URL = `${GURUDEVI_APP}/p/library/resource`;
 
+/**
+ * Query payload shared by every Library resource-opening surface.
+ *
+ * Keep the legacy keys (`title`, `url`, `creator`, and `format`) intact: the
+ * viewer routes still accept them for deep links shared by older app builds.
+ */
+export interface LibraryResourceOpenParams extends Record<string, string> {
+  resourceId: string;
+  title: string;
+  url: string;
+  creator: string;
+  format: string;
+}
+
+export function buildLibraryResourceOpenParams(
+  resource: Pick<LibraryResource, 'id' | 'title' | 'url' | 'creator_name' | 'format'>,
+): LibraryResourceOpenParams {
+  return {
+    resourceId: resource.id,
+    title: resource.title,
+    url: resource.url ?? '',
+    creator: resource.creator_name ?? '',
+    format: resource.format ?? '',
+  };
+}
+
 export interface ResourceCompanionLink {
   id: string;
   label: string;

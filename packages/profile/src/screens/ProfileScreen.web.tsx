@@ -41,6 +41,7 @@ export default function ProfileScreenWeb({
   const { user } = useStore();
   const {
     profile,
+    error,
     loading: isProfileLoading,
     updateField,
     refresh,
@@ -55,6 +56,7 @@ export default function ProfileScreenWeb({
     username: string;
   } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const isOwnProfile = !userId || userId === user?.id;
   const { links: socialLinks } = useSocialLinks(userId || user?.id);
@@ -72,15 +74,33 @@ export default function ProfileScreenWeb({
   const saveEdit = async () => {
     if (!editForm || !profile) return;
     setIsSaving(true);
+    setSaveError(null);
+    let pendingMessage: string | null = null;
     try {
-      if (editForm.display_name !== profile.display_name)
-        await updateField('display_name', editForm.display_name);
-      if (editForm.bio !== (profile.bio ?? '')) await updateField('bio', editForm.bio);
-      if (editForm.phone !== (profile.phone ?? '')) await updateField('phone', editForm.phone);
-      if (editForm.username !== (profile.username ?? ''))
-        await updateField('username', editForm.username);
+      const updates = [
+        ['display_name', editForm.display_name, profile.display_name],
+        ['bio', editForm.bio, profile.bio ?? ''],
+        ['phone', editForm.phone, profile.phone ?? ''],
+        ['username', editForm.username, profile.username ?? ''],
+      ] as const;
+
+      for (const [field, value, previousValue] of updates) {
+        if (value === previousValue) continue;
+        const result = await updateField(field, value);
+        if (!result.success) {
+          throw new Error(result.error || t('profile.updateFailed', 'Profile update failed'));
+        }
+        if (result.pending) pendingMessage = result.error || 'Profile update is waiting to sync.';
+      }
       setEditForm(null);
       refresh?.();
+      if (pendingMessage) setSaveError(pendingMessage);
+    } catch (saveFailure) {
+      setSaveError(
+        saveFailure instanceof Error
+          ? saveFailure.message
+          : t('profile.updateFailed', 'Profile update failed'),
+      );
     } finally {
       setIsSaving(false);
     }
@@ -112,7 +132,7 @@ export default function ProfileScreenWeb({
       ? [profile.qualifications]
       : [];
 
-  if (isProfileLoading || !profile) {
+  if (isProfileLoading) {
     return (
       <div className="sanctuary-screen">
         <div className="sanctuary-container">
@@ -140,6 +160,24 @@ export default function ProfileScreenWeb({
       </div>
     );
   }
+
+  if (!profile && error) {
+    return (
+      <div className="sanctuary-screen">
+        <div className="sanctuary-container">
+          <div className="sanctuary-card" style={{ padding: '48px', textAlign: 'center' }}>
+            <h2>{t('profile.loadFailed', 'Your profile could not be opened')}</h2>
+            <p style={{ color: 'var(--ink-soft)' }}>{error}</p>
+            <button type="button" className="sanctuary-button" onClick={() => void refresh()}>
+              {t('common.retry', 'Try again')}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile) return null;
 
   return (
     <div className="sanctuary-screen">
@@ -514,6 +552,23 @@ export default function ProfileScreenWeb({
           </div>
         </div>
 
+        {(error || saveError) && (
+          <div
+            role="alert"
+            style={{
+              marginBottom: '24px',
+              padding: '12px 16px',
+              borderRadius: '16px',
+              background: 'var(--warning-surface)',
+              border: '1px solid var(--warning)',
+              color: 'var(--warning)',
+              fontSize: '13px',
+            }}
+          >
+            {saveError || error}
+          </div>
+        )}
+
         {editForm && !context.isAnonymous && (
           <div
             className="sanctuary-card"
@@ -770,6 +825,13 @@ export default function ProfileScreenWeb({
               </p>
             </div>
 
+            <details className="profile-secondary-disclosure">
+              <summary>
+                <span>{t('profile.moreDetails', 'More about this profile')}</span>
+                <span className="profile-secondary-disclosure-hint">
+                  {t('profile.moreDetailsHint', 'Professional credentials and social links')}
+                </span>
+              </summary>
             {isStaff &&
               (subjectsTaught.length > 0 ||
                 qualifications.length > 0 ||
@@ -936,6 +998,7 @@ export default function ProfileScreenWeb({
                 inline
               />
             </div>
+            </details>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {isStaff && profile.school_id && (
@@ -974,6 +1037,30 @@ export default function ProfileScreenWeb({
                     .profile-content-grid {
                         grid-template-columns: minmax(0, 1.18fr) minmax(300px, 0.82fr);
                     }
+
+                    .profile-secondary-disclosure {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 24px;
+                    }
+
+                    .profile-secondary-disclosure summary {
+                        display: flex;
+                        align-items: baseline;
+                        justify-content: space-between;
+                        gap: 16px;
+                        cursor: pointer;
+                        list-style: none;
+                        padding: 16px 4px;
+                        color: var(--ink);
+                        font-size: 14px;
+                        font-weight: 800;
+                    }
+
+                    .profile-secondary-disclosure summary::-webkit-details-marker { display: none; }
+                    .profile-secondary-disclosure summary::after { content: '⌄'; color: var(--action); font-size: 18px; }
+                    .profile-secondary-disclosure[open] summary::after { content: '⌃'; }
+                    .profile-secondary-disclosure-hint { color: var(--ink-ghost); font-size: 12px; font-weight: 500; }
 
                     @media (max-width: 980px) {
                         .profile-hero-grid,

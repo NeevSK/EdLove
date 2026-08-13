@@ -109,13 +109,13 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
           bg: 'bg-phase-interactive/10',
           label: 'Executive',
         };
-      case 'sectionHead':
+      case 'section_head':
         return {
           color: 'text-phase-interactive',
           bg: 'bg-phase-interactive/10',
           label: 'Admin',
         };
-      case 'gradeHead':
+      case 'grade_head':
         return {
           color: 'text-phase-interactive',
           bg: 'bg-phase-interactive/10',
@@ -201,7 +201,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
             <HStack className="gap-4">
               <Button
                 variant="outline"
-                onPress={() => handleGenerateCode('sectionHead')}
+                onPress={() => handleGenerateCode('section_head')}
                 isDisabled={isGenerating}
                 className="flex-1 bg-phase-canvas h-14 rounded-[20px] border-phase-border"
               >
@@ -211,7 +211,7 @@ export default function InviteManager({ schoolId, userId, onBack }: InviteManage
               </Button>
               <Button
                 variant="outline"
-                onPress={() => handleGenerateCode('gradeHead')}
+                onPress={() => handleGenerateCode('grade_head')}
                 isDisabled={isGenerating}
                 className="flex-1 bg-phase-canvas h-14 rounded-[20px] border-phase-border"
               >

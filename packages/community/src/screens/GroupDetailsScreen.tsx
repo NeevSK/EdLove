@@ -6,7 +6,7 @@ import {
   usePermissions,
 } from '@repo/core/logic';
 
-import { useStore } from '@repo/core/store';
+import { useStore, useTemporalStore } from '@repo/core/store';
 import { QRBuilder, QRCodeGenerator } from '@repo/scanner-kit';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
@@ -14,6 +14,7 @@ import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useLotusToast } from '@repo/ui/hooks';
+import { BrandedErrorState } from '@repo/ui/components/ErrorState';
 import {
   ChevronLeft,
   EllipsisVertical,
@@ -53,12 +54,21 @@ export default function GroupDetailsScreen() {
   const groupId = Array.isArray(groupIdParam) ? groupIdParam[0] : groupIdParam;
   const { can, flags } = usePermissions();
   const user = useStore((state) => state.user);
+  const isOffline = useTemporalStore((state) => state.isOffline);
   const { showToast } = useLotusToast();
-  const { joinGroup, isJoiningGroup, posts, fetchPosts } = useCommunity();
+  const {
+    joinGroup,
+    isJoiningGroup,
+    posts,
+    isLoadingPosts,
+    error: postsError,
+    fetchPosts,
+  } = useCommunity(groupId);
 
   const [group, setGroup] = useState<any>(null);
   const [isMember, setIsMember] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [showAdmin, setShowAdmin] = useState(false);
   const [reportPostId, setReportPostId] = useState<string | undefined>(undefined);
   const [showReportModal, setShowReportModal] = useState(false);
@@ -72,7 +82,9 @@ export default function GroupDetailsScreen() {
   useEffect(() => {
     const fetchGroup = async () => {
       setLoading(true);
+      setLoadError(null);
       try {
+        if (!groupId) throw new Error('This circle could not be identified.');
         const { data } = await supabase
           .from('community_groups')
           .select('*, creator:users!community_groups_created_by_fkey(full_name, avatar_url)')
@@ -95,6 +107,7 @@ export default function GroupDetailsScreen() {
         }
       } catch (err) {
         console.error(err);
+        setLoadError(err instanceof Error ? err.message : 'This circle could not be loaded.');
       } finally {
         setLoading(false);
       }
@@ -138,7 +151,7 @@ export default function GroupDetailsScreen() {
   }, []);
 
   const handleJoin = React.useCallback(async () => {
-    if (!canJoinGroup || !user?.id) {
+    if (!groupId || !canJoinGroup || !user?.id) {
       await setPendingGateAction({
         kind: 'community_join_group',
         // eslint-disable-next-line no-restricted-syntax
@@ -201,6 +214,17 @@ export default function GroupDetailsScreen() {
     };
   }, [canJoinGroup, groupId, user?.id, isMember, handleJoin]);
 
+  if (!can('read', 'CommunityGroups')) {
+    return (
+      <ScreenWrapper noTopInset className="bg-phase-canvas">
+        <BrandedErrorState
+          title="This circle is not available"
+          message="Your current sanctuary permissions do not include community groups."
+        />
+      </ScreenWrapper>
+    );
+  }
+
   if (loading) {
     return (
       <ScreenWrapper noTopInset className="bg-phase-canvas">
@@ -214,7 +238,20 @@ export default function GroupDetailsScreen() {
     );
   }
 
-  if (!group) return null;
+  if (loadError || !group) {
+    return (
+      <ScreenWrapper noTopInset className="bg-phase-canvas">
+        <BrandedErrorState
+          title="The circle could not settle"
+          message={isOffline ? 'You are offline. Reconnect and try again.' : loadError ?? 'Circle not found.'}
+        >
+          <SanctuaryButton action="secondary" onPress={() => router.replace('/community')}>
+            <Text className="text-ink font-bold">Back to Community</Text>
+          </SanctuaryButton>
+        </BrandedErrorState>
+      </ScreenWrapper>
+    );
+  }
 
   const isAdmin = group.created_by === user?.id || canManageGroup;
 
@@ -392,7 +429,16 @@ export default function GroupDetailsScreen() {
             </AnimatedView>
           )}
           ListEmptyComponent={
-            posts.length === 0 ? (
+            isLoadingPosts ? (
+              <Box className="py-12 items-center">
+                <Spinner />
+              </Box>
+            ) : postsError ? (
+              <BrandedErrorState
+                title="Posts could not settle"
+                message={isOffline ? 'Reconnect to try again.' : postsError}
+              />
+            ) : posts.length === 0 ? (
               <VStack className="py-20 items-center justify-center gap-4">
                 <Box className="w-16 h-16 rounded-full bg-ink/5 items-center justify-center">
                   <Icon as={MessageSquare} size="lg" className="text-ink/20" />

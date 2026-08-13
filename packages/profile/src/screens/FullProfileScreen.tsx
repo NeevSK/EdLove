@@ -70,6 +70,7 @@ export const FullProfileScreen = () => {
 
   const {
     profile: liveProfile,
+    error,
     updateField,
     refresh,
     uploadAvatar,
@@ -82,6 +83,7 @@ export const FullProfileScreen = () => {
   const [showCelebration, setShowCelebration] = useState(false);
   const [showSocialModal, setShowSocialModal] = useState(false);
   const [showThuthimalModal, setShowThuthimalModal] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const currentUserId = currentUser?.id;
   const currentUserName = currentUser?.display_name || currentUser?.email || '';
@@ -144,8 +146,11 @@ export const FullProfileScreen = () => {
     const result = await updateField(field as keyof UserProfile, valueToSave);
     const success = !!result?.success;
     if (success) {
+      if (result.pending) setSaveError(result.error || 'Profile update is waiting to sync.');
       hapticSuccess();
       void refresh?.();
+    } else if (result.error) {
+      setSaveError(result.error);
     }
     return success;
   };
@@ -161,6 +166,13 @@ export const FullProfileScreen = () => {
         }}
       >
         <VStack space="2xl">
+          {(error || saveError) && (
+            <Box className="rounded-2xl bg-phase-surface p-3">
+              <Text className="text-phase-text-secondary text-xs" accessibilityRole="alert">
+                {saveError || error}
+              </Text>
+            </Box>
+          )}
           <Center>
             <Box style={{ width: cardWidth }}>
               <IdentityCard data={{ ...(profile as any), capacity: profileRole }} />

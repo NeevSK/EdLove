@@ -43,9 +43,11 @@ export default function DirectMessageScreen() {
   const [loading, setLoading] = useState(true);
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [failedMessage, setFailedMessage] = useState<string | null>(null);
   const [targetUserId, setTargetUserId] = useState<string | undefined>();
   const [isBlocked, setIsBlocked] = useState(false);
-  const { viewDate, viewScale, isPastView } = useTemporalStore();
+  const { viewDate, viewScale, isPastView, isOffline } = useTemporalStore();
 
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -60,7 +62,9 @@ export default function DirectMessageScreen() {
   // \u2500\u2500 Initial load \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   useEffect(() => {
     async function fetchContext() {
+      setError(null);
       try {
+        if (!conversationId) throw new Error('This conversation could not be identified.');
         const msgs = (await communityAPI.getDirectMessages(
           conversationId,
           60,
@@ -84,6 +88,7 @@ export default function DirectMessageScreen() {
         }
       } catch (e: any) {
         console.error('[DirectMessage] load error', e);
+        setError(e instanceof Error ? e.message : 'Messages could not be loaded.');
       } finally {
         setLoading(false);
       }
@@ -158,6 +163,7 @@ export default function DirectMessageScreen() {
     } catch {
       setMessages((prev) => prev.filter((m) => m.id !== optimisticId));
       setDraft(content);
+      setFailedMessage(content);
     } finally {
       setSending(false);
     }
@@ -245,6 +251,23 @@ export default function DirectMessageScreen() {
             }}
           >
             Loading messages...
+          </div>
+        ) : error ? (
+          <div
+            style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--ink-ghost)',
+              gap: '12px',
+            }}
+          >
+            <div style={{ fontSize: '14px' }}>{isOffline ? 'Reconnect to load this conversation.' : error}</div>
+            <button type="button" className="secondary-button" onClick={() => window.location.reload()}>
+              Try again
+            </button>
           </div>
         ) : messages.length === 0 ? (
           <div
@@ -355,6 +378,26 @@ export default function DirectMessageScreen() {
           alignItems: 'flex-end',
         }}
       >
+        {isOffline ? (
+          <div style={{ color: 'var(--ink-ghost)', fontSize: '12px', paddingBottom: '8px' }}>
+            Offline — direct messages are read-only until you reconnect.
+          </div>
+        ) : null}
+        {failedMessage ? (
+          <div style={{ color: 'var(--phase-warning)', fontSize: '12px', paddingBottom: '8px' }}>
+            Message failed to send.{' '}
+            <button
+              type="button"
+              onClick={() => {
+                setDraft(failedMessage);
+                setFailedMessage(null);
+              }}
+              style={{ color: 'var(--phase-interactive)', fontWeight: 700 }}
+            >
+              Retry
+            </button>
+          </div>
+        ) : null}
         {isPastView ? (
           <div
             style={{

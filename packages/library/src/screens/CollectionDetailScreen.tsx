@@ -1,17 +1,28 @@
 import { useStore } from '@repo/core/logic';
+import { libraryAPI } from '@repo/library/api/library';
+import { LibraryThumbnailCard } from '@repo/library/components/LibraryThumbnailCard';
+import { LIBRARY_KEYS, useCollection } from '@repo/library/hooks/useLibrary';
+import type { LibraryCollection, LibraryResource, ResourceVisibility } from '@repo/library/types';
+import { buildLibraryResourceOpenParams } from '@repo/library/utils/resourceLinks';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useThemedColors } from '@repo/ui/hooks';
-import { Box, HStack, Icon, Modal, Pressable, ScrollView, Text, TextInput, VStack } from '@repo/ui/primitives';
+import {
+  Box,
+  HStack,
+  Icon,
+  Modal,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  VStack,
+} from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowLeft, Edit2, Globe, Lock, MoreVertical, Trash2, Users, X } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
-import { LibraryThumbnailCard } from '@repo/library/components/LibraryThumbnailCard';
-import { libraryAPI } from '@repo/library/api/library';
-import { LIBRARY_KEYS, useCollection } from '@repo/library/hooks/useLibrary';
-import type { LibraryCollection, LibraryResource, ResourceVisibility } from '@repo/library/types';
 
 const VISIBILITY_OPTIONS: {
   value: ResourceVisibility;
@@ -45,7 +56,10 @@ export default function CollectionDetailScreen() {
 
   const handleOpenResource = useCallback(
     (resource: LibraryResource) => {
-      router.push(`/library/resource/${resource.id}`);
+      router.push({
+        pathname: '/library/resource/[resourceId]',
+        params: buildLibraryResourceOpenParams(resource),
+      });
     },
     [router],
   );
@@ -100,28 +114,24 @@ export default function CollectionDetailScreen() {
   const handleDelete = useCallback(() => {
     if (!collection) return;
     setActionSheetOpen(false);
-    Alert.alert(
-      'Delete Collection',
-      `Delete "${collection.name}"? This cannot be undone.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            setIsDeleting(true);
-            try {
-              await libraryAPI.deleteCollection(collection.id);
-              queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collections() });
-              safeBack('/library');
-            } catch {
-              Alert.alert('Error', 'Failed to delete collection.');
-              setIsDeleting(false);
-            }
-          },
+    Alert.alert('Delete Collection', `Delete "${collection.name}"? This cannot be undone.`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          setIsDeleting(true);
+          try {
+            await libraryAPI.deleteCollection(collection.id);
+            queryClient.invalidateQueries({ queryKey: LIBRARY_KEYS.collections() });
+            safeBack('/library');
+          } catch {
+            Alert.alert('Error', 'Failed to delete collection.');
+            setIsDeleting(false);
+          }
         },
-      ],
-    );
+      },
+    ]);
   }, [collection, queryClient]);
 
   // ── Remove resource ───────────────────────────────────────────────────────
@@ -252,9 +262,7 @@ export default function CollectionDetailScreen() {
                   disabled={isUpdating}
                   className="flex-1 h-11 rounded-xl bg-phase-accent items-center justify-center"
                 >
-                  <Text className="font-bold text-white">
-                    {isUpdating ? 'Saving…' : 'Save'}
-                  </Text>
+                  <Text className="font-bold text-white">{isUpdating ? 'Saving…' : 'Save'}</Text>
                 </Pressable>
               </HStack>
             </VStack>
@@ -285,7 +293,9 @@ export default function CollectionDetailScreen() {
                   className="flex-row items-center gap-3 p-3.5 rounded-xl bg-phase-surface/60"
                 >
                   <Icon as={Edit2} size={18} color={colors.textPrimary} />
-                  <Text className="font-semibold text-phaseText-primary">Edit name & description</Text>
+                  <Text className="font-semibold text-phaseText-primary">
+                    Edit name & description
+                  </Text>
                 </Pressable>
 
                 {/* Visibility options */}
@@ -301,7 +311,11 @@ export default function CollectionDetailScreen() {
                       className="flex-row items-center gap-3 p-3.5 rounded-xl"
                       style={{ backgroundColor: isActive ? `${opt.color}18` : 'transparent' }}
                     >
-                      <Icon as={opt.icon} size={18} color={isActive ? opt.color : colors.textSecondary} />
+                      <Icon
+                        as={opt.icon}
+                        size={18}
+                        color={isActive ? opt.color : colors.textSecondary}
+                      />
                       <Text
                         className="font-semibold flex-1"
                         style={{ color: isActive ? opt.color : colors.textPrimary }}

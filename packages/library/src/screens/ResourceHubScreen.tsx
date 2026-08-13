@@ -1,4 +1,14 @@
 import { coreRuntime, useStore } from '@repo/core/logic';
+import { libraryAPI } from '@repo/library/api/library';
+import { ResourceShareQRModal } from '@repo/library/components/ResourceShareQRModal';
+import type { LibraryResource } from '@repo/library/types';
+import { buildLibraryExternalLinkOptions } from '@repo/library/utils/externalLinks';
+import {
+  buildLibraryResourceOpenParams,
+  buildLibraryResourceShareUrl,
+  buildResourceCompanionLinks,
+  type ResourceCompanionLink,
+} from '@repo/library/utils/resourceLinks';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useThemedColors } from '@repo/ui/hooks';
 import {
@@ -27,15 +37,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import type React from 'react';
 import { useCallback, useMemo, useState } from 'react';
-import { libraryAPI } from '@repo/library/api/library';
-import { ResourceShareQRModal } from '@repo/library/components/ResourceShareQRModal';
-import type { LibraryResource } from '@repo/library/types';
-import { buildLibraryExternalLinkOptions } from '@repo/library/utils/externalLinks';
-import {
-  buildLibraryResourceShareUrl,
-  buildResourceCompanionLinks,
-  type ResourceCompanionLink,
-} from '@repo/library/utils/resourceLinks';
 
 function ActionButton({
   label,
@@ -148,7 +149,7 @@ function RelatedResourceCard({
 export default function ResourceHubScreen() {
   const router = useRouter();
   const colors = useThemedColors();
-  const { user } = useStore();
+  const { user, isOnline } = useStore();
   const [qrVisible, setQrVisible] = useState(false);
 
   const { resourceId } = useLocalSearchParams<{ resourceId?: string }>();
@@ -220,12 +221,7 @@ export default function ResourceHubScreen() {
       if (item.type === 'pdf') {
         router.push({
           pathname: '/library/document/[resourceId]',
-          params: {
-            resourceId: item.id,
-            title: item.title,
-            url: item.url,
-            creator: item.creator_name ?? '',
-          },
+          params: buildLibraryResourceOpenParams(item),
         });
         return;
       }
@@ -233,12 +229,7 @@ export default function ResourceHubScreen() {
       if (item.type === 'video' || item.type === 'movie_trailer') {
         router.push({
           pathname: '/library/video/[resourceId]',
-          params: {
-            resourceId: item.id,
-            title: item.title,
-            url: item.url,
-            creator: item.creator_name ?? '',
-          },
+          params: buildLibraryResourceOpenParams(item),
         });
         return;
       }
@@ -246,12 +237,7 @@ export default function ResourceHubScreen() {
       if (item.type === 'doc' || item.format === 'document') {
         router.push({
           pathname: '/library/document/[resourceId]',
-          params: {
-            resourceId: item.id,
-            title: item.title,
-            url: item.url,
-            creator: item.creator_name ?? '',
-          },
+          params: buildLibraryResourceOpenParams(item),
         });
         return;
       }
@@ -349,10 +335,12 @@ export default function ResourceHubScreen() {
       <ScreenWrapper>
         <VStack className="flex-1 items-center justify-center gap-3.5 px-6">
           <Text className="text-xl font-extrabold text-phaseText-primary">
-            We couldn{"'"}t load this resource
+            {isOnline ? 'We could not load this resource' : 'You are offline'}
           </Text>
           <Text className="text-center text-phaseText-secondary">
-            {String((error as Error)?.message || 'The resource may have moved or been removed.')}
+            {isOnline
+              ? String((error as Error)?.message || 'The resource may have moved or been removed.')
+              : 'Reconnect to open this resource.'}
           </Text>
           <HStack className="gap-2.5">
             <ActionButton
