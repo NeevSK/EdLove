@@ -9,6 +9,10 @@
     "rn-eval": "./src/index.ts"
   },
   "scripts": {
+    "radar": "tsx src/index.ts radar:list",
+    "radar:add": "tsx src/index.ts radar:add",
+    "radar:show": "tsx src/index.ts radar:show",
+    "radar:decide": "tsx src/index.ts radar:decide",
     "check-types": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec tsc --build --noEmit\" --name \"packages_rn-terrain-cli-check-types\"",
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"packages_rn-terrain-cli-clean\""
   },
@@ -21,7 +25,8 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "typescript": "rc"
+    "tsx": "^4.22.4",
+    "typescript": "7.0.2"
   },
   "_originalScripts": {
     "check-types": "pnpm exec tsc --build --noEmit",

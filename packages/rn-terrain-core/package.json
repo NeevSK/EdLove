@@ -32,7 +32,7 @@
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@types/semver": "^7.7.1",
-    "typescript": "rc"
+    "typescript": "7.0.2"
   },
   "_originalScripts": {
     "check-types": "pnpm exec tsc --build --noEmit",

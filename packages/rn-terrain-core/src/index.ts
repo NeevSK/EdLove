@@ -6,3 +6,4 @@ export * from '@rn-terrain/core/scoring/vendor-priors';
 export * from '@rn-terrain/core/scoring/weights';
 export * from '@rn-terrain/core/sync-daily';
 export * from '@rn-terrain/core/types';
+export * from '@rn-terrain/core/radar';
