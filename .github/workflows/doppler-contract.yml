@@ -1,0 +1,28 @@
+name: Doppler Contract
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 5 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify Doppler secret contract
+    runs-on: ubuntu-latest
+    environment: development
+    env:
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+      DOPPLER_PROJECT: gurudevi-mobile
+      DOPPLER_CONFIG: dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+
+      - name: Verify all CI environment contracts without printing values
+        run: node scripts/verify-doppler-config.mjs --scope ci --all-ci --require-token

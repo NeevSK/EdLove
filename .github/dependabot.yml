@@ -1,0 +1,21 @@
+version: 2
+updates:
+  - package-ecosystem: pnpm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      non-expo-patch-and-minor:
+        update-types:
+          - patch
+          - minor
+        exclude-patterns:
+          - expo
+          - expo-*
+          - react-native
+          - react-native-*
+          - '@expo/*'
+          - '@sentry/react-native'
+          - '@shopify/react-native-skia'
+    versioning-strategy: increase

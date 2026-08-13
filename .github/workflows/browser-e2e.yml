@@ -1,0 +1,129 @@
+name: Browser E2E
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'apps/gurudevi-mobile/**'
+      - 'apps/neevsk-web/**'
+      - 'packages/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/browser-e2e.yml'
+  push:
+    branches: [ main ]
+    paths:
+      - 'apps/gurudevi-mobile/**'
+      - 'apps/neevsk-web/**'
+      - 'packages/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/browser-e2e.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: browser-e2e-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  neevsk-web:
+    name: NeevSK web / Chromium
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: pnpm
+
+      - name: Verify runner toolchain
+        run: node scripts/check-toolchain.mjs
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --fetch-timeout 100000
+
+      - name: Install Chromium and Linux dependencies
+        working-directory: apps/neevsk-web
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run browser tests
+        working-directory: apps/neevsk-web
+        run: pnpm exec playwright test --project=chromium
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: neevsk-playwright-report
+          path: apps/neevsk-web/playwright-report
+          if-no-files-found: ignore
+          retention-days: 14
+
+  gurudevi-web:
+    name: Gurudevi web / Chromium
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    environment: development
+    timeout-minutes: 45
+    env:
+      DOPPLER_PROJECT: gurudevi-mobile
+      DOPPLER_CONFIG: dev
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: pnpm
+
+      - name: Verify runner toolchain
+        run: node scripts/check-toolchain.mjs
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --fetch-timeout 100000
+
+      - name: Load Doppler web environment
+        uses: ./.github/actions/load-doppler-env
+        with:
+          project: ${{ env.DOPPLER_PROJECT }}
+          config: ${{ env.DOPPLER_CONFIG }}
+          token: ${{ env.DOPPLER_TOKEN }}
+
+      - name: Install Chromium and Linux dependencies
+        working-directory: apps/gurudevi-mobile
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run browser tests
+        working-directory: apps/gurudevi-mobile
+        run: pnpm exec playwright test --project="Desktop Chrome"
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: gurudevi-playwright-report
+          path: apps/gurudevi-mobile/playwright-report
+          if-no-files-found: ignore
+          retention-days: 14
