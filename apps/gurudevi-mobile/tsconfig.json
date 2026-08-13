@@ -79,18 +79,6 @@
       "@self/*": [
         "../../packages/self/src/*"
       ],
-      "@powersync/op-sqlite": [
-        "../../packages/core/src/adapters/powersync/opsqlite.shim.ts"
-      ],
-      "@powersync/web": [
-        "../../packages/core/src/adapters/powersync/wasqlite.shim.ts"
-      ],
-      "@powersync/react-native": [
-        "../../packages/core/src/adapters/powersync/powersync-shim.ts"
-      ],
-      "@powersync/react": [
-        "../../packages/core/src/adapters/powersync/powersync-react-shim.ts"
-      ],
       "@repo/accounting/*": [
         "../../packages/accounting/src/*"
       ],

@@ -1,12 +1,15 @@
 ---
 title: "Gluestack UI Evolution Analysis & Gurudevi Mobile Migration Plan"
-status: "active"
+status: "superseded"
 created: 2026-07-17
-updated: 2026-07-17
+updated: 2026-08-11
 author: "Naveen"
 scribe: "Antigravity"
 tags: [mobile, gluestack, nativewind, migration, planning]
+superseded_by: "../infra/2026-08-11-gluestack-v5-stack-audit.md"
 ---
+
+> Superseded by [Gluestack UI v5 and NativeWind v5 Stack Audit](../infra/2026-08-11-gluestack-v5-stack-audit.md), which keeps the useful historical plan context but updates its claims against the current source tree and upstream documentation.
 
 # Gluestack UI Evolution Analysis & Gurudevi Mobile Migration Plan
 

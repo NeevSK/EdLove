@@ -20,26 +20,56 @@ import { PowerSyncContext } from '@powersync/react';
 import { PowerSyncDatabase } from '@powersync/react-native';
 import { OPSQLiteAdapter } from '@repo/core/adapters/powersync/opsqlite.adapter';
 import { AppSchema, injectNativePowerSyncDB } from '@repo/core/powersync';
+import { SingleActivePowerSyncRuntime } from '@repo/core/adapters/powersync/singleActivePowerSyncRuntime';
+import { connectPowerSyncRuntime } from '@repo/core/adapters/powersync/connectionLifecycle';
 import { useStore } from '@repo/core/store/useStore';
 import { type PropsWithChildren, useEffect, useState } from 'react';
 
 type PowerSyncProviderProps = PropsWithChildren;
+const powerSyncRuntime = new SingleActivePowerSyncRuntime<PowerSyncDatabase>();
 
 export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
   const [db, setDb] = useState<PowerSyncDatabase | null>(null);
-  const accountId = useStore((state) => state.user?.id ?? 'anonymous');
+  const accountId = useStore((state) => state.user?.id ?? null);
+  const isPowerSyncEnabled = useStore((state) => state.flags.isPowerSyncEnabled);
 
   useEffect(() => {
     let active = true;
+    setDb(null);
+    const activeAccountId = accountId;
+
+    if (!isPowerSyncEnabled || !activeAccountId) {
+      void powerSyncRuntime.deactivate().catch((error) => {
+        console.error('[PowerSync] Failed to deactivate inactive runtime:', error);
+      });
+      return () => {
+        active = false;
+      };
+    }
+    const resolvedAccountId = activeAccountId as string;
 
     async function initDB() {
       try {
-        const adapter = new OPSQLiteAdapter(accountId);
-        const factory = await adapter.createDatabaseFactory(accountId);
-        const powersyncDb = new PowerSyncDatabase(factory as any);
-        const drizzleDb = wrapPowerSyncWithDrizzle(powersyncDb as any, { schema: AppSchema });
+        const powersyncDb = await powerSyncRuntime.activate(resolvedAccountId, async () => {
+          const adapter = new OPSQLiteAdapter(resolvedAccountId);
+          const source = await adapter.createDatabaseFactory(resolvedAccountId);
+          const database = new PowerSyncDatabase({
+            schema: source.schema,
+            database: source.database,
+          });
+          const drizzleDb = wrapPowerSyncWithDrizzle(database, { schema: AppSchema });
 
-        injectNativePowerSyncDB(powersyncDb, drizzleDb);
+          injectNativePowerSyncDB(database, drizzleDb);
+          if (source.sync) {
+            void connectPowerSyncRuntime(database, source.sync, resolvedAccountId).catch((error) => {
+              // Local reads/writes remain available while the sync stream is
+              // offline; PowerSync will retry when connectivity returns.
+              console.warn('[PowerSync] Native first sync unavailable:', error);
+            });
+          }
+          return database;
+        });
+
         if (active) setDb(powersyncDb);
       } catch (error) {
         console.error('❌ [PowerSync] Native JSI initialization failed:', error);
@@ -50,8 +80,11 @@ export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
 
     return () => {
       active = false;
+      void powerSyncRuntime.deactivate().catch((error) => {
+        console.error('[PowerSync] Native runtime cleanup failed:', error);
+      });
     };
-  }, [accountId]);
+  }, [accountId, isPowerSyncEnabled]);
 
   if (!db) {
     // Return null or splash screen during fast JSI load sequence (<20ms)

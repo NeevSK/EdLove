@@ -1,10 +1,3 @@
-// Try to load .env file if dotenv is available
-try {
-  require('dotenv').config();
-} catch {
-  // dotenv not available; rely on environment variables being set externally
-}
-
 const { createClient } = require('@supabase/supabase-js');
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
@@ -15,8 +8,7 @@ const supabasePublishableKey =
 if (!supabaseUrl || !supabasePublishableKey) {
   console.error(
     'Missing required environment variables.\n' +
-      'Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY in your .env file.\n' +
-      'See .env.example for reference.',
+      'Run this command through Doppler: pnpm run tools:check-schools',
   );
   process.exit(1);
 }
@@ -34,4 +26,7 @@ async function checkSchools() {
   }
 }
 
-checkSchools();
+checkSchools().catch((error) => {
+  console.error('School check failed:', error instanceof Error ? error.message : error);
+  process.exitCode = 1;
+});

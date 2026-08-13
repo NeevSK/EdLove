@@ -2,7 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 
 /**
  * Playwright configuration for testing the Web version of the Gurudevi Mobile app.
- * This tests the app as it runs via Metro/React Native Web.
+ * The suite exercises the exported web app through a small local static server.
+ * This keeps E2E tests independent from Metro's dev-only transform pipeline and
+ * matches the artifact that gets deployed to the web.
  */
 export default defineConfig({
   testDir: './tests/e2e',
@@ -10,39 +12,34 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
+  reporter: [['list'], ['html', { outputFolder: '../../reports/playwright', open: 'never' }]],
   use: {
-    /* Metro defaults to 8081 for the web server in recent Expo versions */
-    baseURL: 'http://localhost:8081',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:4173',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
   },
 
   /* We primarily care about mobile viewports for this app */
   projects: [
     {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 13'] },
-    },
-    {
-      name: 'Mobile Chrome',
+      name: 'Mobile Chromium',
       use: { ...devices['Pixel 5'] },
     },
-    /* Desktop view to ensure responsive behavior */
     {
-      name: 'Desktop Chrome',
+      name: 'Desktop Chromium',
       use: { ...devices['Desktop Chrome'] },
     },
   ],
 
   /*
-   * This command starts the Expo Web server.
-   * Note: The server can take a while to bundle the JS on first run.
+   * Export first, then serve the exact static artifact. The export can take a
+   * while on a cold cache, so the timeout is intentionally generous.
    */
   webServer: {
-    command: 'pnpm run web',
-    url: 'http://localhost:8081',
+    command: 'doppler run --project gurudevi-mobile --config dev --no-fallback -- pnpm exec node scripts/playwright-web-server.mjs',
+    url: 'http://127.0.0.1:4173',
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000, // 2 minutes for bundling
+    timeout: 10 * 60 * 1000,
   },
 });

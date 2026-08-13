@@ -36,7 +36,7 @@ Does the workflow need typed errors/retry/cancellation?      → Effect
 
 ## CI runtime and Sentry version contract
 
-- Node is pinned to `22.23.0` in `.nvmrc`, the root `engines` range, EAS profiles, and every GitHub Actions workflow through `actions/setup-node`.
+- Node is pinned to `22.23.2` in `.nvmrc`, the root `engines` range, EAS profiles, and every GitHub Actions workflow through `actions/setup-node`.
 - The mobile Sentry stack is intentionally compatibility-aligned with the current Expo 57 / React Native 0.86 graph: `@sentry/react-native` `8.18.0`, `@sentry/cli` `3.6.0`, and `@sentry/browser` `10.64.0`.
 - The Android build and manual upload workflows try Sentry's debug-ID upload mode first and fall back to release/dist mode. The upload command returns a failure when both modes fail, while the surrounding job is non-blocking and reports a GitHub warning.
 - The CI token must be scoped for CI/source-map work (`org:ci`, plus `org:read` for CLI access). Never print the token or upload user data as release metadata.

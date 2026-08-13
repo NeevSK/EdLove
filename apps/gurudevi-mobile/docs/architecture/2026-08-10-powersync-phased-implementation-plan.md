@@ -2,7 +2,7 @@
 title: "PowerSync Phased Implementation Plan"
 status: "active"
 created: 2026-08-10
-updated: 2026-08-10
+updated: 2026-08-12
 author: "Codex"
 tags: [powersync, implementation-plan, migration, testing, release, offline-first]
 ---
@@ -10,6 +10,22 @@ tags: [powersync, implementation-plan, migration, testing, release, offline-firs
 # PowerSync Phased Implementation Plan
 
 This plan takes the repository from a disabled, partially wired PowerSync foundation to a measured production rollout. Every phase has a gate. A later phase must not hide an earlier correctness gap.
+
+## Operating model: many device accounts, one active local runtime
+
+PowerSync is a selective offline subsystem, not the application-wide data
+access layer. Each supported offline account gets its own account-scoped local
+database and encryption key, but only the currently active account may have a
+live PowerSync database and sync connection. Switching accounts closes the
+previous runtime before opening the next one. The previous account's local
+cache may be retained for fast re-login, while explicit account removal or
+sign-out-all can clear it.
+
+Domains that need immediate server authority, transactional RPCs, sensitive
+claims, invitations, entitlements, or large/rarely used data remain on the
+direct API highway. A domain enters PowerSync only after it has an explicit
+offline contract: row-scoped stream, local schema, read path, write path,
+conflict semantics, account-isolation proof, and offline tests.
 
 ## Phase 0 — Freeze the contract and inventory the surface
 
@@ -61,8 +77,10 @@ Work:
 - make the app provider, core runtime registry, and Drizzle accessor resolve the same active database instance;
 - replace or retire the no-op `database.web.ts` proxy;
 - enforce account-scoped filenames and lifecycle teardown;
+- introduce a serialized single-active-account runtime controller so an async account switch cannot leave two connected databases or close the new one;
+- bind every connector to its account scope so an in-flight old connector cannot fetch or upload with the newly selected account's session;
 - define boot order: identity, secure key, runtime registration, database creation, provider mount, connector connection;
-- define logout and account-switch behavior: drain, disconnect, clear, reset security state, then boot the next account;
+- define logout and account-switch behavior separately: switch closes the old runtime while preserving its account-scoped cache; account removal/sign-out-all disconnects and clears the selected caches;
 - fail visibly when a real PowerSync feature is requested without a real database.
 
 Gate:
@@ -92,6 +110,56 @@ Gate:
 - stream validation passes in CI;
 - service logs and diagnostics show successful replication and client connections.
 
+### 2026-08-12 Development deployment checkpoint
+
+- PowerSync CLI `0.10.0` is installed as a workspace dev dependency and should
+  be invoked through `doppler run -- powersync ...`.
+- Doppler project/config: `gurudevi-mobile` / `dev`.
+- The linked Development Cloud instance is `69f985158d064eb85ee933e0` in
+  project `69f98513b0f9f400071f2114`; Production instance
+  `69f985158d064eb85ee933e2` remains untouched.
+- Doppler now provides the client endpoint and instance metadata through
+  `EXPO_PUBLIC_POWERSYNC_URL`, `POWERSYNC_URL`, `POWERSYNC_INSTANCE_ID`,
+  `POWERSYNC_PROJECT_ID`, and `POWERSYNC_ORG_ID`. The replication URI is
+  provided as `POWERSYNC_DATABASE_URI`; secrets are not committed.
+- The Supabase direct Postgres connection is healthy. The explicit
+  `powersync` publication covers `bonds`, `school_memberships`, `classrooms`,
+  and `classroom_students`, with `REPLICA IDENTITY FULL`.
+- Development deployment completed successfully on 2026-08-12. Initial
+  replication completed, replication lag was zero, and CLI configuration,
+  connection, and sync-config validation all passed.
+- Client lifecycle now waits for the official SDK first-sync checkpoint with a
+  bounded timeout, emits typed connection/status events, and keeps local
+  operation available when the network service is unavailable.
+- The browser coordinator and first-sync lifecycle have focused regression
+  tests. The feature flag remains off until real authenticated clients prove
+  row isolation and upload behavior.
+- The first deployed streams are intentionally narrow: identity rows are
+  scoped by `auth.user_id()`, and classroom roster rows are scoped to the
+  authenticated teacher or student. Admin/principal expansion remains a
+  separately tested stream task.
+
+Next Phase 3 gates:
+
+- obtain a real Supabase JWT session and verify `fetchCredentials()` against
+  the Development endpoint;
+- prove teacher A/student B isolation with seeded records;
+- verify first-sync completion and upload behavior from the app;
+- add the admin/principal stream only after its query passes compiler and
+  authorization tests;
+- do not deploy or alter the Production instance until Development passes the
+  complete vertical-slice checklist.
+
+Implementation status after this checkpoint:
+
+- Completed in code: v2 SDK migration, native SQLCipher/runtime ownership,
+  browser OPFS runtime, account-scoped databases, serialized single-active
+  lifecycle, account-bound connectors, durable upload idempotency, provider
+  mounting, first-sync timeout/status bridge, and browser tab coordination.
+- Still requires external evidence: physical Android/iOS runs, supported
+  browser matrix, real-user JWT isolation, offline roster/attendance mutation,
+  reconnect upload verification, and Production release approval.
+
 ## Phase 4 — Ship one vertical slice
 
 **Goal:** prove the full offline lifecycle with a narrow classroom workflow.
@@ -104,6 +172,7 @@ Work:
 - use one explicit classroom/teacher stream and one policy/identity stream;
 - migrate reads to current reactive hooks;
 - route writes through the secure Drizzle boundary;
+- keep unrelated workflows on their declared direct-API or local-queue highway;
 - implement pending/synced/rejected UI states;
 - test server acceptance, server rejection, retries, duplicate delivery, restart recovery, and stale data disclosure.
 
@@ -121,11 +190,12 @@ Gate:
 
 Work:
 
-- replace process-local idempotency with a durable server ledger;
+- apply the durable server ledger migration and verify it in staging;
 - include account/principal, operation IDs, batch identity, result, and retention metadata in the ledger;
 - remove the deterministic encryption-key fallback and define a recoverable secure-storage failure state;
 - add metrics for queue depth, upload/download errors, last successful sync, replication lag, and rejected operations;
 - exercise token expiry, policy-version changes, logout during upload, and network transitions;
+- test app termination during upload and retry the same batch through the durable idempotency ledger;
 - run the PowerSync diagnostics workflow and attach sanitized evidence to support runbooks.
 
 Gate:
@@ -153,6 +223,11 @@ For each domain, repeat the vertical-slice checklist:
 
 Keep identity, onboarding, invites, entitlements, notifications requiring immediate authority, and sensitive RPC workflows on the direct API highway unless a separate offline command contract is approved.
 
+The migration is additive: a screen may combine PowerSync-backed reads for an
+approved offline domain with direct API calls for authority-sensitive actions.
+It must label those states explicitly instead of presenting all local data as
+server-authoritative.
+
 ## Phase 7 — Add web parity selectively
 
 **Goal:** make selected browser workflows genuinely offline-capable.
@@ -160,6 +235,7 @@ Keep identity, onboarding, invites, entitlements, notifications requiring immedi
 Work:
 
 - verify OPFS, IndexedDB fallback, workers, service-worker/build assets, and multi-tab behavior;
+- coordinate account switches across browser tabs with the implemented account broadcast protocol; one tab must not keep uploading after another tab changes the shared auth session to account B;
 - define browser account isolation and logout deletion semantics;
 - test Safari private mode, Firefox, Chromium, and an unsupported-browser state;
 - do not claim SQLCipher-equivalent web encryption until the browser storage/security review is complete;
@@ -170,6 +246,18 @@ Gate:
 - selected web flows pass offline/reload/reconnect tests;
 - private browsing and storage-quota failures are visible and recoverable;
 - browser data cannot be mistaken for server-authoritative state.
+
+## Edge-case release matrix
+
+| Event | Required behavior |
+|---|---|
+| Account switch during upload | Old connector is account-bound; old database closes before the new one connects; queued data remains in the old account file. |
+| Offline account switch | Open the cached account database locally; if cached authentication cannot be restored, roll back the switch without clearing either cache. |
+| App termination during upload | The batch may be retried; server-side durable idempotency must make the retry safe before production. |
+| Intermittent network | Local reads/writes continue; sync reports status and retries; no UI silently replaces local data with empty mock data. |
+| Browser tab switch | Coordinate the active account across tabs/workers and isolate account-specific database filenames. |
+| Account removal | Explicitly disconnect and clear only the removed account's local database; normal switching never clears it. |
+| Validation/conflict response | Do not permanently block the queue with a retryable HTTP error; record a user-visible rejection/conflict according to the backend contract. |
 
 ## Phase 8 — Optional attachments and advanced capabilities
 

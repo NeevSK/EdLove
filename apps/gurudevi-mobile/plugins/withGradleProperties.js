@@ -36,7 +36,9 @@ const withCustomGradleProperties = (config) => {
       }
     };
 
-    updateProperty('org.gradle.jvmargs', '-Xmx3072m -XX:MaxMetaspaceSize=512m');
+    const gradleHeap = process.env.GRADLE_MAX_HEAP || '5120m';
+    const gradleMetaspace = process.env.GRADLE_MAX_METASPACE || '768m';
+    updateProperty('org.gradle.jvmargs', `-Xmx${gradleHeap} -XX:MaxMetaspaceSize=${gradleMetaspace}`);
     updateProperty('org.gradle.parallel', 'false');
     updateProperty('reactNativeArchitectures', arch);
 

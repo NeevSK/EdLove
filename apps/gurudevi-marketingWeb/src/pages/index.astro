@@ -21,6 +21,8 @@ const _machineReadableData = {
     target: WEB_LINKS.app,
   },
 };
+
+const launchAt = '2026-10-06T09:00:00+05:30';
 ---
 
 <Layout title="Home" structuredData={machineReadableData}>
@@ -47,6 +49,11 @@ const _machineReadableData = {
 						<a href="/thuthimal" class="px-8 py-4 border-2 border-sanctuary-saffron text-sanctuary-saffron rounded-full font-bold hover:bg-sanctuary-saffron/5 transition-all text-center">
 							Gift Gratitude (තුතිමල්)
 						</a>
+					</div>
+					<div class="mt-8 max-w-md rounded-2xl border border-sanctuary-saffron/20 bg-white/60 px-5 py-4" data-launch-countdown data-launch-at={launchAt}>
+						<p class="text-xs font-bold uppercase tracking-[0.2em] text-sanctuary-saffron">Launching October 6</p>
+						<p class="mt-2 text-lg font-semibold text-charcoal-truth" data-countdown-value>Preparing the sanctuary…</p>
+						<p class="mt-1 text-sm text-mud-brown">Sri Lanka time · Asia/Colombo</p>
 					</div>
 				</div>
 				
@@ -98,7 +105,7 @@ const _machineReadableData = {
 				<div class="grid grid-cols-1 md:grid-cols-5 gap-6">
 					{[
 						{ name: 'Self', desc: 'The Inner Ecology', color: 'bg-teal-water' },
-						{ name: 'Workspace', desc: 'Classroom, School & Learning Studio', color: 'bg-peacock-blue' },
+						{ name: 'Workspace', desc: 'Classroom, School, Family Space & Learning Studio', color: 'bg-peacock-blue' },
 						{ name: 'Library', desc: 'Knowledge Ecology', color: 'bg-sage-green' },
 						{ name: 'Community', desc: 'Relational Ecology', color: 'bg-sanctuary-saffron' },
 						{ name: 'Profile', desc: 'Identity & Boundaries', color: 'bg-mud-brown' }
@@ -196,3 +203,25 @@ const _machineReadableData = {
 
 	<Footer />
 </Layout>
+
+<script is:inline>
+	const countdown = document.querySelector('[data-launch-countdown]');
+	const value = countdown?.querySelector('[data-countdown-value]');
+	const launchAt = countdown?.getAttribute('data-launch-at');
+	if (countdown && value && launchAt) {
+		const update = () => {
+			const remaining = new Date(launchAt).getTime() - Date.now();
+			if (remaining <= 0) {
+				value.textContent = 'The sanctuary is open.';
+				return;
+			}
+			const days = Math.floor(remaining / 86400000);
+			const hours = Math.floor((remaining % 86400000) / 3600000);
+			const minutes = Math.floor((remaining % 3600000) / 60000);
+			const seconds = Math.floor((remaining % 60000) / 1000);
+			value.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s to launch`;
+		};
+		update();
+		window.setInterval(update, 1000);
+	}
+</script>

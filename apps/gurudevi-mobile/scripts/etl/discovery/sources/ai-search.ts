@@ -1,8 +1,3 @@
-import path from 'node:path';
-import dotenv from 'dotenv';
-
-dotenv.config({ path: path.resolve(__dirname, '../../../../.env') });
-
 const _LIBRARIAN_SYSTEM_PROMPT = `
 You are the librarian of Gurudevi  a sacred epistemic 
 universe for Sri Lankan teachers, students, and principals.

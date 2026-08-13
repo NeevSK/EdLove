@@ -32,12 +32,14 @@ It is manual-only until the Cloudflare project and secrets are configured. It bu
 1. Create or select the Cloudflare account that owns `edlove.org`.
 2. Create a Pages project named `gurudevi-platform`.
 3. Connect the GitHub repository `NeevSK/Gurudevi` if dashboard Git integration is preferred, or use the repository workflow as the deployment source. The project is already connected to the repository with automatic deployments disabled until the first verified deployment.
-4. Add GitHub Actions secrets to the selected repository/environment:
+4. Configure the matching Doppler `stg` or `prd` config with:
    - `CLOUDFLARE_API_TOKEN` — scoped to Pages deploy/edit for the account.
    - `CLOUDFLARE_ACCOUNT_ID`.
-   - `SUPABASE_URL`.
-   - `SUPABASE_PUBLISHABLE_KEY`.
-   - Optional: `POSTHOG_API_KEY`, `POSTHOG_HOST`, `SENTRY_DSN`, `INNGEST_EVENT_KEY`, `POWERSYNC_URL`.
+   - `EXPO_PUBLIC_SUPABASE_URL`.
+   - `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
+   - Optional: `EXPO_PUBLIC_POSTHOG_API_KEY`, `EXPO_PUBLIC_POSTHOG_HOST`, `EXPO_PUBLIC_SENTRY_DSN`, `EXPO_PUBLIC_INNGEST_EVENT_KEY`, `EXPO_PUBLIC_POWERSYNC_URL`.
+5. Add only the scoped Doppler service token as `DOPPLER_TOKEN` to the GitHub
+   Environment (`preview` or `production`).
 5. Add the custom domain `platform.gurudevi.edlove.org` under Pages → Custom domains after the first successful preview deployment. The custom-domain record has already been registered and is awaiting validation.
 6. Verify the DNS record is managed by the same Cloudflare account and points to `gurudevi-platform.pages.dev`. The previous GitHub Pages CNAME was replaced during this setup.
 
@@ -56,4 +58,8 @@ It is manual-only until the Cloudflare project and secrets are configured. It bu
 
 The Cloudflare Pages project, GitHub source connection, and custom-domain registration are complete. The local Expo web export also passes after adding the missing `babel-plugin-transform-imports@2.0.0` development dependency.
 
-The first deployment is still pending because the repository does not yet have the required GitHub Actions secrets. Automatic source deployments remain disabled intentionally; after secrets are added, run the `Deploy Gurudevi Platform to Cloudflare Pages` workflow manually for a preview, complete the proof checklist, and then run it for production.
+The first deployment is still pending until the Doppler config, scoped service
+token, and protected GitHub Environment are configured. Automatic source
+deployments remain disabled intentionally; after that setup, run the workflow
+manually for a preview, complete the proof checklist, and then run it for
+production.

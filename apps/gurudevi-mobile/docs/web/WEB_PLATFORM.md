@@ -137,12 +137,12 @@ All P0 and most P1/P2 items are now resolved:
 
 | Variable | Source | Required? |
 |---|---|---|
-| `EXPO_PUBLIC_SUPABASE_URL` | GH Secret `SUPABASE_URL` | ✅ Yes |
-| `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | GH Secret `SUPABASE_PUBLISHABLE_KEY` | ✅ Yes |
-| `EXPO_PUBLIC_POSTHOG_API_KEY` | GH Secret `POSTHOG_API_KEY` | Optional |
-| `EXPO_PUBLIC_POSTHOG_HOST` | GH Secret `POSTHOG_HOST` | Optional |
-| `EXPO_PUBLIC_SENTRY_DSN` | GH Secret `SENTRY_DSN` | Optional |
-| `SENTRY_AUTH_TOKEN` | GH Secret `SENTRY_AUTH_TOKEN` | Optional |
+| `EXPO_PUBLIC_SUPABASE_URL` | Doppler `gurudevi-mobile` config | ✅ Yes |
+| `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Doppler `gurudevi-mobile` config | ✅ Yes |
+| `EXPO_PUBLIC_POSTHOG_API_KEY` | Doppler `gurudevi-mobile` config | Optional |
+| `EXPO_PUBLIC_POSTHOG_HOST` | Doppler `gurudevi-mobile` config | Optional |
+| `EXPO_PUBLIC_SENTRY_DSN` | Doppler `gurudevi-mobile` config | Optional |
+| `SENTRY_AUTH_TOKEN` | Doppler protected CI config | Optional |
 
 ---
 
@@ -324,12 +324,12 @@ This throws before React mounts. Everything else was already handled. One file c
 
 | Variable | Source | Required? |
 |---|---|---|
-| `EXPO_PUBLIC_SUPABASE_URL` | GH Secret `SUPABASE_URL` | ✅ Yes |
-| `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | GH Secret `SUPABASE_PUBLISHABLE_KEY` | ✅ Yes |
-| `EXPO_PUBLIC_POSTHOG_API_KEY` | GH Secret `POSTHOG_API_KEY` | Optional |
-| `EXPO_PUBLIC_POSTHOG_HOST` | GH Secret `POSTHOG_HOST` | Optional |
-| `EXPO_PUBLIC_SENTRY_DSN` | GH Secret `SENTRY_DSN` | Optional |
-| `SENTRY_AUTH_TOKEN` | GH Secret `SENTRY_AUTH_TOKEN` | Optional |
+| `EXPO_PUBLIC_SUPABASE_URL` | Doppler `gurudevi-mobile` config | ✅ Yes |
+| `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Doppler `gurudevi-mobile` config | ✅ Yes |
+| `EXPO_PUBLIC_POSTHOG_API_KEY` | Doppler `gurudevi-mobile` config | Optional |
+| `EXPO_PUBLIC_POSTHOG_HOST` | Doppler `gurudevi-mobile` config | Optional |
+| `EXPO_PUBLIC_SENTRY_DSN` | Doppler `gurudevi-mobile` config | Optional |
+| `SENTRY_AUTH_TOKEN` | Doppler protected CI config | Optional |
 
 ---
 

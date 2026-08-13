@@ -3,16 +3,21 @@ import { usePermissions, useStore } from '@repo/core/logic';
 import { BreathGuide } from '@repo/self';
 import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
 import type { LucideIcon } from '@repo/ui/icons';
-import { Bell, Heart, Library, Menu, School, Settings, User, Users, X } from '@repo/ui/icons';
-import { Box, Modal, ModalContent, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { Bell, Heart, Library, Menu, School, Settings, Sparkles, User, Users, X } from '@repo/ui/icons';
+import { Box, Modal, ModalContent, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { colors, corners, typography } from '@repo/ui/theme';
 import { router, Slot, usePathname } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Platform, useWindowDimensions, type ViewStyle } from 'react-native';
-import { resolveResponsiveShellMode } from '@/lib/responsiveShell';
+import { Platform, type TextStyle, useWindowDimensions, type ViewStyle } from 'react-native';
+import {
+  getResponsiveShellConfig,
+  resolveResponsiveShellMode,
+  webShellTokens,
+} from '@/lib/responsiveShell';
 
 type NavItem = {
   href: string;
-  icon: any;
+  icon: LucideIcon;
   label: string;
   group?: 'primary' | 'utility';
   badge?: number;
@@ -23,7 +28,8 @@ const PRIMARY_NAV: NavItem[] = [
   { href: '/workspace', icon: School, label: 'Workspace' },
   { href: '/community', icon: Users, label: 'Community' },
   { href: '/library', icon: Library, label: 'Library' },
-  { href: '/profile', icon: User, label: 'Profile' },
+      { href: '/profile', icon: User, label: 'Profile' },
+      { href: '/durable-agents', icon: Sparkles, label: 'Agent Lab', group: 'utility' },
 ];
 
 export default function WebTabsLayout() {
@@ -42,8 +48,7 @@ export default function WebTabsLayout() {
   const setBreathingOpen = useStore((state) => state.setBreathingOpen ?? (() => {}));
 
   const mode = resolveResponsiveShellMode(Platform.OS, width);
-  const isCompact = mode === 'webCompact' || mode === 'webTabletCompact';
-  const isTabletLike = mode === 'webTabletCompact';
+  const shell = getResponsiveShellConfig(mode, railExpanded);
 
   const navItems = useMemo<NavItem[]>(
     () => [
@@ -60,12 +65,6 @@ export default function WebTabsLayout() {
     [unreadCount],
   );
 
-  const shellStyle: ViewStyle = {
-    flex: 1,
-    flexDirection: isCompact ? 'column' : 'row',
-    backgroundColor: '#0F131C',
-  };
-
   const handleToggleRail = useCallback(() => {
     setRailExpanded((value) => !value);
   }, []);
@@ -74,10 +73,13 @@ export default function WebTabsLayout() {
     router.push(href);
   }, []);
 
+  const pageTitle = getPageTitle(pathname);
+  const userLabel = user?.display_name || user?.email || 'Guest';
+
   useEffect(() => {
     if (typeof document === 'undefined') return;
-    document.title = `Gurudevi · ${getPageTitle(pathname)}`;
-  }, [pathname]);
+    document.title = `Gurudevi · ${pageTitle}`;
+  }, [pageTitle]);
 
   useEffect(() => {
     if (newAchievements === previousAchievementsRef.current) return;
@@ -98,174 +100,65 @@ export default function WebTabsLayout() {
   }, [newAchievements, showCelebration]);
 
   return (
-    <Box style={shellStyle}>
-      <Box
-        style={{
-          width: isCompact ? '100%' : railExpanded ? (isTabletLike ? 320 : 288) : 92,
-          backgroundColor: '#131A26',
-          borderRightWidth: isCompact ? 0 : 1,
-          borderRightColor: 'rgba(255,255,255,0.08)',
-          borderBottomWidth: isCompact ? 1 : 0,
-          borderBottomColor: 'rgba(255,255,255,0.08)',
-          paddingHorizontal: 16,
-          paddingVertical: 16,
-          gap: 16,
-        }}
-      >
-        <Box
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 12,
-          }}
-        >
-          <Box>
-            <Text style={{ color: '#F8F5EA', fontSize: 18, fontWeight: '800' }}>Gurudevi</Text>
-            {!isCompact && (
-              <Text style={{ color: 'rgba(248,245,234,0.72)', fontSize: 12 }}>
-                {isTabletLike ? 'Tablet web shell' : 'Desktop sanctuary shell'}
-              </Text>
-            )}
-          </Box>
+    <Box
+      accessibilityLabel="Gurudevi sanctuary"
+      accessibilityHint="Contains Gurudevi navigation and the current route"
+      style={[
+        styles.shell,
+        {
+          flexDirection: shell.navigation.layout === 'topbar' ? 'column' : 'row',
+        },
+      ]}
+    >
+      <WebNavigation
+        items={navItems}
+        pathname={pathname}
+        railExpanded={railExpanded}
+        shell={shell}
+        userLabel={userLabel}
+        onNavigate={handleNavigate}
+        onToggleRail={handleToggleRail}
+      />
 
-          {!isCompact && (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={railExpanded ? 'Collapse navigation' : 'Expand navigation'}
-              accessibilityHint="Toggles the web navigation rail between compact and expanded modes"
-              onPress={handleToggleRail}
-              style={{
-                width: 36,
-                height: 36,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 12,
-                backgroundColor: 'rgba(255,255,255,0.06)',
-              }}
-            >
-              <Menu size={18} color="#F8F5EA" />
-            </Pressable>
-          )}
-        </Box>
-
-        <VStack style={{ gap: 8 }}>
-          {navItems
-            .filter((item) => item.group !== 'utility')
-            .map((item) => {
-              const active = pathname === item.href;
-              return (
-                <WebNavItemButton
-                  key={item.href}
-                  active={active}
-                  expanded={railExpanded}
-                  href={item.href}
-                  icon={item.icon}
-                  label={item.label}
-                  onNavigate={handleNavigate}
-                />
-              );
-            })}
-        </VStack>
-
-        <Box
-          style={{
-            marginTop: 'auto',
-            paddingTop: 16,
-            borderTopWidth: 1,
-            borderTopColor: 'rgba(255,255,255,0.08)',
-            gap: 8,
-          }}
-        >
-          {navItems
-            .filter((item) => item.group === 'utility')
-            .map((item) => {
-              const active = pathname === item.href;
-              return (
-                <WebNavItemButton
-                  key={item.href}
-                  active={active}
-                  badge={item.badge}
-                  expanded={railExpanded}
-                  href={item.href}
-                  icon={item.icon}
-                  label={item.label}
-                  onNavigate={handleNavigate}
-                />
-              );
-            })}
-
-          {railExpanded && (
-            <Box
-              style={{
-                marginTop: 12,
-                padding: 12,
-                borderRadius: 18,
-                backgroundColor: 'rgba(255,255,255,0.04)',
-              }}
-            >
-              <Text style={{ color: '#F8F5EA', fontSize: 12, fontWeight: '700' }}>
-                {user?.display_name || user?.email || 'Guest'}
-              </Text>
-              <Text style={{ color: 'rgba(248,245,234,0.72)', fontSize: 11, marginTop: 4 }}>
-                {isCompact ? 'Compact web shell' : 'Desktop web shell'}
-              </Text>
-            </Box>
-          )}
-        </Box>
-      </Box>
-
-      <Box
-        style={{
-          flex: 1,
-          backgroundColor: '#F5EDD6',
-          padding: isCompact ? 16 : 24,
-          gap: 16,
-          minHeight: 0,
-        }}
-      >
-        <Box
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 12,
-            paddingVertical: 4,
-          }}
-        >
-          <Box>
-            <Text style={{ color: '#2A2318', fontSize: 12, fontWeight: '700', letterSpacing: 1.2 }}>
-              WEB {mode === 'webCompact' ? 'COMPACT' : isTabletLike ? 'TABLET' : 'DESKTOP'}
-            </Text>
-            <Text style={{ color: '#2A2318', fontSize: isCompact ? 24 : 30, fontWeight: '800' }}>
-              {getPageTitle(pathname)}
-            </Text>
-          </Box>
-          <Box
-            style={{
-              paddingHorizontal: 14,
-              paddingVertical: 10,
-              borderRadius: 999,
-              backgroundColor: 'rgba(42,35,24,0.08)',
-            }}
-          >
-            <Text style={{ color: '#2A2318', fontSize: 12, fontWeight: '700' }}>
-              {isCompact ? 'Compact web' : 'Desktop web'}
-            </Text>
-          </Box>
-        </Box>
-
+      <Box style={[styles.canvas, getCanvasStyle(mode)]}>
         <Box
           style={{
             flex: 1,
-            borderRadius: 28,
-            backgroundColor: '#FAF7ED',
-            overflow: 'hidden',
-            padding: isCompact ? 16 : 24,
-            minHeight: 0,
+            width: '100%',
+            maxWidth: shell.content.maxWidth,
+            alignSelf: 'center',
+            padding: shell.content.outerPadding,
+            gap: shell.content.gap,
           }}
         >
-          <Slot />
+          <Box
+            accessibilityRole="header"
+            style={{
+              minHeight: shell.isCompact
+                ? webShellTokens.size.control
+                : webShellTokens.size.navItem,
+              justifyContent: 'center',
+              paddingHorizontal: shell.isCompact ? 0 : webShellTokens.space.navGap,
+            }}
+          >
+            <Text style={styles.kicker}>GURUDEVI</Text>
+            <Text style={[styles.pageTitle, { fontSize: shell.content.titleSize }]}>
+              {pageTitle}
+            </Text>
+          </Box>
+
+          <Box
+            style={[
+              styles.contentSurface,
+              {
+                padding: shell.content.surfacePadding,
+                borderRadius: shell.content.surfaceRadius,
+                backgroundColor: shell.content.surfaceBackground,
+              },
+            ]}
+          >
+            <Slot />
+          </Box>
         </Box>
       </Box>
 
@@ -275,80 +168,147 @@ export default function WebTabsLayout() {
         onHide={() => setShowCelebration(false)}
       />
 
-      {isBreathingOpen && (
-        <Box
-          style={{
-            position: 'absolute',
-            inset: 0,
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 9999,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'rgba(0,0,0,0.6)',
-          }}
-        >
-          <Box
-            style={{
-              width: '100%',
-              maxWidth: 500,
-              borderRadius: 24,
-              backgroundColor: '#FAF7ED',
-              overflow: 'hidden',
-              padding: 16,
-              gap: 12,
-            }}
-          >
-            <Box
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
+      <Modal isOpen={isBreathingOpen} onClose={() => setBreathingOpen(false)}>
+        <ModalContent>
+          <Box style={styles.breathingCard}>
+            <Box style={styles.breathingHeader}>
               <Box>
-                <Text style={{ color: '#2A2318', fontSize: 18, fontWeight: '700' }}>
-                  Breathing Reset
-                </Text>
-                <Text style={{ color: '#74685A', fontSize: 12 }}>1 minute of peace</Text>
+                <Text style={styles.breathingTitle}>Breathing Reset</Text>
+                <Text style={styles.breathingSubtitle}>1 minute of peace</Text>
               </Box>
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="Close breathing reset"
                 accessibilityHint="Closes the breathing reset dialog"
                 onPress={() => setBreathingOpen(false)}
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 999,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: 'rgba(42,35,24,0.08)',
-                }}
+                style={styles.closeButton}
               >
-                <X size={18} color="#2A2318" />
+                <X size={18} color={webShellTokens.color.text} />
               </Pressable>
             </Box>
-            <Box style={{ minHeight: 400, justifyContent: 'center' }}>
+            <Box style={styles.breathingGuide}>
               <BreathGuide onComplete={() => setBreathingOpen(false)} />
             </Box>
           </Box>
-        </Box>
-      )}
+        </ModalContent>
+      </Modal>
     </Box>
   );
 }
 
-function getPageTitle(pathname: string) {
-  if (pathname.startsWith('/notifications')) return 'Notifications';
-  if (pathname.startsWith('/settings')) return 'Settings';
-  if (pathname.startsWith('/community')) return 'Community';
-  if (pathname.startsWith('/workspace')) return 'Workspace';
-  if (pathname.startsWith('/library')) return 'Library';
-  if (pathname.startsWith('/profile')) return 'Profile';
-  return 'Self';
+type WebNavigationProps = {
+  items: NavItem[];
+  pathname: string;
+  railExpanded: boolean;
+  shell: ReturnType<typeof getResponsiveShellConfig>;
+  userLabel: string;
+  onNavigate: (href: string) => void;
+  onToggleRail: () => void;
+};
+
+function WebNavigation({
+  items,
+  pathname,
+  railExpanded,
+  shell,
+  userLabel,
+  onNavigate,
+  onToggleRail,
+}: WebNavigationProps) {
+  const labelsVisible = shell.navigation.labelsVisible;
+  const isCompact = shell.navigation.layout === 'topbar';
+  const primaryItems = items.filter((item) => item.group !== 'utility');
+  const utilityItems = items.filter((item) => item.group === 'utility');
+
+  const renderItem = (item: NavItem) => (
+    <WebNavItemButton
+      key={item.href}
+      active={isRouteActive(pathname, item.href)}
+      badge={item.badge}
+      expanded={isCompact || labelsVisible}
+      href={item.href}
+      icon={item.icon}
+      label={item.label}
+      onNavigate={onNavigate}
+    />
+  );
+
+  return (
+    <Box
+      accessibilityRole="toolbar"
+      accessibilityLabel="Gurudevi navigation"
+      accessibilityHint="Use these controls to move between Gurudevi spaces"
+      style={[
+        styles.navigation,
+        {
+          width: shell.navigation.railWidth,
+          padding: isCompact ? webShellTokens.space.compactOuter : webShellTokens.space.navGap,
+          borderRightWidth: isCompact ? 0 : 1,
+          borderBottomWidth: isCompact ? 1 : 0,
+          borderColor: webShellTokens.color.chromeBorder,
+        },
+      ]}
+    >
+      <Box style={styles.navigationHeader}>
+        <Box
+          accessibilityLabel="Gurudevi sanctuary home"
+          accessibilityHint="Identifies the current Gurudevi sanctuary shell"
+          style={[
+            styles.brand,
+            {
+              flex: isCompact || labelsVisible ? 1 : 0,
+              minWidth: isCompact || labelsVisible ? undefined : webShellTokens.size.control,
+            },
+          ]}
+        >
+          <Text style={styles.brandMark}>{isCompact || labelsVisible ? 'Gurudevi' : 'G'}</Text>
+          {labelsVisible && <Text style={styles.brandCaption}>Sanctuary</Text>}
+        </Box>
+
+        {shell.navigation.canToggleRail && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={railExpanded ? 'Collapse navigation' : 'Expand navigation'}
+            accessibilityHint="Toggles the desktop navigation rail labels"
+            onPress={onToggleRail}
+            style={styles.navigationToggle}
+          >
+            <Menu size={18} color={webShellTokens.color.chromeText} />
+          </Pressable>
+        )}
+      </Box>
+
+      {isCompact ? (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.compactNavContent}
+          accessibilityLabel="Primary and utility navigation"
+          accessibilityHint="Scroll horizontally to reach every route"
+        >
+          {items.map(renderItem)}
+        </ScrollView>
+      ) : (
+        <>
+          <VStack style={styles.navigationGroup}>{primaryItems.map(renderItem)}</VStack>
+          <Box style={styles.utilityGroup}>
+            {utilityItems.map(renderItem)}
+            {labelsVisible && (
+              <Box
+                accessibilityLabel={`Signed in as ${userLabel}`}
+                accessibilityHint="Shows the current account"
+                style={styles.userPanel}
+              >
+                <Text numberOfLines={1} style={styles.userName}>
+                  {userLabel}
+                </Text>
+              </Box>
+            )}
+          </Box>
+        </>
+      )}
+    </Box>
+  );
 }
 
 type WebNavItemButtonProps = {
@@ -370,50 +330,252 @@ function WebNavItemButton({
   label,
   onNavigate,
 }: WebNavItemButtonProps) {
+  const handlePress = useCallback(() => onNavigate(href), [href, onNavigate]);
+  const accessibleLabel = badge ? `${label}, ${badge > 99 ? 'more than 99' : badge} unread` : label;
+
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={accessibleLabel}
+      accessibilityHint={`Navigates to ${label}`}
       accessibilityState={{ selected: active }}
-      onPress={useCallback(() => onNavigate(href), [href, onNavigate])}
-      style={{
-        minHeight: 48,
-        borderRadius: 18,
-        paddingHorizontal: expanded ? 16 : 0,
-        alignItems: 'center',
-        justifyContent: expanded ? 'flex-start' : 'center',
-        flexDirection: 'row',
-        gap: expanded ? 12 : 0,
-        backgroundColor: active ? 'rgba(141,191,122,0.18)' : 'transparent',
-        borderWidth: active ? 1 : 0,
-        borderColor: active ? 'rgba(141,191,122,0.42)' : 'transparent',
-      }}
+      onPress={handlePress}
+      testID={`web-nav-${href.replace('/', '') || 'self'}`}
+      style={[
+        styles.navItem,
+        {
+          minHeight: webShellTokens.size.navItem,
+          minWidth: expanded ? undefined : webShellTokens.size.control,
+          paddingHorizontal: expanded ? webShellTokens.space.navGap : webShellTokens.space.navGap,
+          marginRight: expanded ? undefined : webShellTokens.space.navGap,
+          justifyContent: expanded ? 'flex-start' : 'center',
+          backgroundColor: active
+            ? webShellTokens.color.activeSurface
+            : webShellTokens.color.transparent,
+          borderColor: active
+            ? webShellTokens.color.activeBorder
+            : webShellTokens.color.transparent,
+          borderWidth: active ? 1 : 0,
+        },
+      ]}
     >
-      <Box style={{ position: 'relative' }}>
-        <Icon size={20} color={active ? '#F8F5EA' : 'rgba(248,245,234,0.7)'} />
+      <Box style={styles.iconWrap}>
+        <Icon
+          size={20}
+          color={active ? webShellTokens.color.chromeText : webShellTokens.color.chromeTextMuted}
+        />
         {badge ? (
-          <Box
-            style={{
-              position: 'absolute',
-              top: -6,
-              right: -10,
-              minWidth: 18,
-              height: 18,
-              borderRadius: 9,
-              backgroundColor: '#FDD925',
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingHorizontal: 4,
-            }}
-          >
-            <Text style={{ color: '#1A1A1A', fontSize: 10, fontWeight: '800' }}>
-              {badge > 99 ? '99+' : badge}
-            </Text>
+          <Box style={styles.badge}>
+            <Text style={styles.badgeText}>{badge > 99 ? '99+' : badge}</Text>
           </Box>
         ) : null}
       </Box>
       {expanded && (
-        <Text style={{ color: active ? '#F8F5EA' : 'rgba(248,245,234,0.82)' }}>{label}</Text>
+        <Text
+          numberOfLines={1}
+          style={[
+            styles.navLabel,
+            {
+              color: active
+                ? webShellTokens.color.chromeText
+                : webShellTokens.color.chromeTextMuted,
+            },
+          ]}
+        >
+          {label}
+        </Text>
       )}
     </Pressable>
   );
 }
+
+function getPageTitle(pathname: string) {
+  if (pathname.startsWith('/notifications')) return 'Notifications';
+  if (pathname.startsWith('/settings')) return 'Settings';
+  if (pathname.startsWith('/community')) return 'Community';
+  if (pathname.startsWith('/workspace')) return 'Workspace';
+  if (pathname.startsWith('/library')) return 'Library';
+  if (pathname.startsWith('/profile')) return 'Profile';
+  return 'Self';
+}
+
+function isRouteActive(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function getCanvasStyle(mode: ReturnType<typeof resolveResponsiveShellMode>): ViewStyle {
+  const atmosphere =
+    mode === 'webDesktop' ? webShellTokens.color.canvasWarm : webShellTokens.color.canvas;
+  return {
+    backgroundColor: webShellTokens.color.canvas,
+    ...(mode === 'webCompact'
+      ? {}
+      : {
+          backgroundImage: `radial-gradient(circle at 18% 0%, ${atmosphere} 0%, ${webShellTokens.color.canvas} 42%, ${colors.linen} 100%)`,
+        }),
+  } as ViewStyle;
+}
+
+const styles = {
+  shell: {
+    flex: 1,
+    backgroundColor: webShellTokens.color.canvas,
+  } satisfies ViewStyle,
+  navigation: {
+    backgroundColor: webShellTokens.color.chrome,
+    borderColor: webShellTokens.color.chromeBorder,
+    gap: webShellTokens.space.navGap,
+    minHeight: 0,
+  } satisfies ViewStyle,
+  navigationHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: webShellTokens.space.navGap,
+    minHeight: webShellTokens.size.control,
+  } satisfies ViewStyle,
+  brand: {
+    justifyContent: 'center',
+    minHeight: webShellTokens.size.control,
+  } satisfies ViewStyle,
+  brandMark: {
+    color: webShellTokens.color.chromeText,
+    fontSize: webShellTokens.type.brand,
+    fontWeight: typography.fontWeight.bold,
+    letterSpacing: typography.letterSpacing.tight,
+  } satisfies TextStyle,
+  brandCaption: {
+    color: webShellTokens.color.chromeTextMuted,
+    fontSize: webShellTokens.type.caption,
+    letterSpacing: typography.letterSpacing.wide,
+    marginTop: 2,
+  } satisfies TextStyle,
+  navigationToggle: {
+    width: webShellTokens.size.control,
+    height: webShellTokens.size.control,
+    borderRadius: webShellTokens.radius.control,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: webShellTokens.color.chromeRaised,
+  } satisfies ViewStyle,
+  compactNavContent: {
+    alignItems: 'center',
+    gap: webShellTokens.space.navGap,
+  } satisfies ViewStyle,
+  navigationGroup: {
+    gap: webShellTokens.space.navGap,
+  } satisfies ViewStyle,
+  utilityGroup: {
+    marginTop: 'auto',
+    paddingTop: webShellTokens.space.navGap,
+    borderTopWidth: 1,
+    borderTopColor: webShellTokens.color.chromeBorder,
+    gap: webShellTokens.space.navGap,
+  } satisfies ViewStyle,
+  userPanel: {
+    marginTop: webShellTokens.space.navGap,
+    padding: webShellTokens.space.navGap,
+    borderRadius: webShellTokens.radius.navItem,
+    backgroundColor: webShellTokens.color.chromeRaised,
+  } satisfies ViewStyle,
+  userName: {
+    color: webShellTokens.color.chromeText,
+    fontSize: webShellTokens.type.navLabel,
+    fontWeight: typography.fontWeight.semibold,
+  } satisfies TextStyle,
+  canvas: {
+    flex: 1,
+    minWidth: 0,
+    minHeight: 0,
+  } satisfies ViewStyle,
+  kicker: {
+    color: webShellTokens.color.textSecondary,
+    fontSize: webShellTokens.type.caption,
+    fontWeight: typography.fontWeight.bold,
+    letterSpacing: typography.letterSpacing.wide,
+  } satisfies TextStyle,
+  pageTitle: {
+    color: webShellTokens.color.text,
+    fontWeight: typography.fontWeight.bold,
+    marginTop: 2,
+  } satisfies TextStyle,
+  contentSurface: {
+    flex: 1,
+    minHeight: 0,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: webShellTokens.color.surfaceBorder,
+  } satisfies ViewStyle,
+  navItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: webShellTokens.radius.navItem,
+    gap: webShellTokens.space.navGap,
+  } satisfies ViewStyle,
+  iconWrap: {
+    position: 'relative',
+    width: webShellTokens.size.control,
+    height: webShellTokens.size.control,
+    alignItems: 'center',
+    justifyContent: 'center',
+  } satisfies ViewStyle,
+  navLabel: {
+    fontSize: webShellTokens.type.navLabel,
+    fontWeight: typography.fontWeight.semibold,
+  } satisfies TextStyle,
+  badge: {
+    position: 'absolute',
+    top: 0,
+    right: -4,
+    minWidth: 18,
+    height: 18,
+    paddingHorizontal: 4,
+    borderRadius: corners.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: webShellTokens.color.badge,
+  } satisfies ViewStyle,
+  badgeText: {
+    color: webShellTokens.color.badgeText,
+    fontSize: webShellTokens.type.caption,
+    fontWeight: typography.fontWeight.bold,
+  } satisfies TextStyle,
+  breathingCard: {
+    width: '100%',
+    maxWidth: webShellTokens.size.modalMaxWidth,
+    borderRadius: webShellTokens.radius.surface,
+    backgroundColor: webShellTokens.color.surfaceWarm,
+    overflow: 'hidden',
+  } satisfies ViewStyle,
+  breathingHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: webShellTokens.space.navGap,
+    borderBottomWidth: 1,
+    borderBottomColor: webShellTokens.color.surfaceBorder,
+  } satisfies ViewStyle,
+  breathingTitle: {
+    color: webShellTokens.color.text,
+    fontSize: typography.fontSize.lg,
+    fontWeight: typography.fontWeight.bold,
+  } satisfies TextStyle,
+  breathingSubtitle: {
+    color: webShellTokens.color.textSecondary,
+    fontSize: webShellTokens.type.caption,
+    marginTop: 2,
+  } satisfies TextStyle,
+  closeButton: {
+    width: webShellTokens.size.control,
+    height: webShellTokens.size.control,
+    borderRadius: webShellTokens.radius.control,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: webShellTokens.color.controlSurface,
+  } satisfies ViewStyle,
+  breathingGuide: {
+    minHeight: webShellTokens.size.modalMinHeight,
+    padding: webShellTokens.space.navGap,
+    justifyContent: 'center',
+  } satisfies ViewStyle,
+};

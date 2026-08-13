@@ -82,6 +82,7 @@ import {
   installMobileWorkflowEventBridge,
 } from '@/lib/inngestEvents';
 import { LanguageUtils } from '@/utils/LanguageUtils';
+import { PowerSyncProvider } from '@/providers/PowerSyncProvider';
 
 registerAppCatalog();
 
@@ -565,7 +566,9 @@ function RootShell() {
       <GlobalProvider>
         {bootstrapped ? (
           <EnvironmentProvider>
-            <AppContent />
+            <PowerSyncProvider>
+              <AppContent />
+            </PowerSyncProvider>
           </EnvironmentProvider>
         ) : (
           <FullScreenFallback />

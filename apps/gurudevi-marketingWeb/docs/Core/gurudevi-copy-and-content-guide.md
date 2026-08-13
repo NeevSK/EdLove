@@ -33,6 +33,7 @@ These are working lines, not claims of adoption or impact.
 | Teacher | The primary person we design around: teaching, care, preparation, and reflection without unnecessary extraction. | Classroom workspace |
 | Student | A person with agency, curiosity, work, and a right to dignity—not a data point. | Learning Studio |
 | Principal/admin | A school steward who needs coordination and visibility without turning care into surveillance. | School workspace |
+| Parent/caregiver | A trusted partner who can stay connected to a learner’s journey without being treated as a surveillance audience. | Family Space |
 | Community | Peers, families, mentors, and collaborators who strengthen the ecology. | Community |
 
 ## Voice
@@ -49,7 +50,7 @@ Prepare English copy as translation-ready keys for Sinhala and Tamil. Avoid plac
 
 - **Home:** say what Gurudevi is, who it supports, and where to begin.
 - **About:** explain the ecology and the polycentric philosophy in accessible language.
-- **Workspace:** explain Classroom, School, and Learning Studio without collapsing them into one role.
+- **Workspace:** explain Classroom, School, Family Space, and Learning Studio without collapsing them into one role.
 - **Library/Ideas:** connect product practice to EdLove research and philosophy.
 - **FAQ:** answer practical questions about users, access, privacy, and stage of development.
 - **Support:** collect help, feedback, bug reports, and feature requests.
