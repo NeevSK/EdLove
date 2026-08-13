@@ -19,6 +19,8 @@ This index lists all design specifications, plans, guides, decisions, and workfl
 - **`current_progress/`** — Active plans, migration paths, linting setups, implementation checklists
 - **`decisions/`** — ADRs (Architecture Decision Records)
 - **`infra/`** — Git workflows, CI/CD, build tools, local runlog histories
+- **`files/fundamental/`** — General/fundamental architecture, design philosophy, UX, and transport patterns
+- **`files/specialized/`** — Specialized domain-specific audits and app/tab implementations
 
 ---
 
@@ -59,7 +61,7 @@ These files outline security models, data lifecycle policies, platform topologie
 | [architecture/2026-07-24-expo-57-rust-inline-module-chronicle.md](architecture/2026-07-24-expo-57-rust-inline-module-chronicle.md) | Technical chronicle detailing inline Kotlin/Rust JNI bridge integrations |
 | [architecture/2026-07-24-permission-refactor-review-report.md](architecture/2026-07-24-permission-refactor-review-report.md) | Post-refactor review report for permission systems |
 | [architecture/2026-08-10-gurudevi-edlove-exploration-vs-current-implementation.md](architecture/2026-08-10-gurudevi-edlove-exploration-vs-current-implementation.md) | Evidence-backed comparison of the imported exploration corpus against current code, schema, migrations, and UI |
-| [files new/README.md](files%20new/README.md) | Preserved imported exploration evidence archive and reading boundary |
+| [files/README.md](files/README.md) | Preserved imported exploration evidence archive and reading boundary |
 | [architecture/production-software-landscape.md](architecture/production-software-landscape.md) | Full-stack mental map of production web + mobile software — for non-coders |
 
 ---
@@ -113,6 +115,9 @@ CI/CD setups, developer workflow scripts, versioning plans, and build diagnostic
 | [infra/expo-57-rust-inline-module-sop.md](infra/expo-57-rust-inline-module-sop.md) | Step-by-step SOP for Kotlin inline modules with JNI Rust |
 | [infra/2026-07-24-physical-device-deployment-log.md](infra/2026-07-24-physical-device-deployment-log.md) | Live runlog for physical hardware builds and USB debugging |
 | [infra/doppler-secrets-management-guide.md](infra/doppler-secrets-management-guide.md) | Comprehensive guide for Doppler secrets management integration across dev/staging/prod/next environments |
+| [infra/production-readiness-program.md](infra/production-readiness-program.md) | Cross-platform production-readiness checklist for mobile, API, web, data, sync, security, and operations |
+| [infra/release-environments-runbook.md](infra/release-environments-runbook.md) | Dev/preview/staging/production promotion, Doppler, Android, iOS posture, and rollback |
+| [infra/critical-infra-vs-use-cases.md](infra/critical-infra-vs-use-cases.md) | Which capabilities must be foundational and which can be added by use case |
 | [infra/doppler-day-to-day-usage-guide.md](infra/doppler-day-to-day-usage-guide.md) | Daily usage reference for Doppler CLI commands, workflows, troubleshooting, and best practices |
 
 ---

@@ -34,6 +34,7 @@ Welcome to the documentation vault for `RN Terrain`. This file serves as the ent
 *   [Dependency Catalog](file:///c:/Users/Naween/projects/polymath-platform/docs/RN%20Terrain/landscape/dependency-catalog.md) - Every external npm package/SDK/CLI the monorepo stands on: category, versions, consumers, sacred pins, version drift (source: `landscape/dependency-annotations.yaml`; regenerate with `pnpm run stack-map:deps`).
 *   [Per-App Footprints](file:///c:/Users/Naween/projects/polymath-platform/docs/RN%20Terrain/landscape/catalog) - Thin reference sheets per app, linking back into the catalog.
 *   [Landscape & Giants](file:///c:/Users/Naween/projects/polymath-platform/docs/RN%20Terrain/landscape/rn-terrain-landscape-giants.md) - Ecosystem tools RN Terrain stands on/learns from.
+*   [Technology Radar](file:///c:/Users/Naween/projects/polymath-platform/docs/RN%20Terrain/radar/README.md) - Captured candidates, evidence, verdicts, and revisit conditions.
 
 ### 🛡️ Decisions & Strategy
 *   [Open Source Strategy](file:///c:/Users/Naween/projects/polymath-platform/docs/RN%20Terrain/decisions/2026-06-02-rn-terrain-open-source-strategy.md) - MIT/CC licensing strategy, community flywheel.

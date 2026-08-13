@@ -40,7 +40,7 @@ is `docs/architecture/2026-08-10-gurudevi-edlove-exploration-vs-current-implemen
 
 ## Phase 0 — Save, index, and establish the baseline
 
-- Preserve `docs/files new` and add SOP frontmatter/index references without rewriting its findings.
+- Preserve `docs/files` (organized into fundamental and specialized tiers) and add SOP frontmatter/index references without rewriting its findings.
 - Link database-review batches 01–06 as prior work, not new tasks.
 - Record the current parity baseline: local score `86/100`, 287 findings, 115 nullability mismatches, 59 extra columns, 107 extra tables, and 6 extra views.
 - Keep `students` as an unresolved legacy/parallel roster decision.
@@ -124,7 +124,7 @@ include database-review batches as completed or in-progress evidence.
 
 ## Assumptions
 
-- `docs/files new` remains an evidence archive.
+- `docs/files` remains an organized evidence archive.
 - Gurudevi mobile is the first rollout.
 - Existing database parity work is the baseline and continues through bounded batches.
 - No destructive Expo/native regeneration or sacred dependency changes are implied.

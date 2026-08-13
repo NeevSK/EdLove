@@ -145,7 +145,7 @@ Organize secrets by category with appropriate visibility:
   ```bash
   # These secrets are managed in Doppler
   # Run: doppler run -- <your-command>
-  # Or download: doppler secrets download --format env > .env
+  # Normal development: doppler run -- <your-command>
   ```
 
 ### Completion Criteria
