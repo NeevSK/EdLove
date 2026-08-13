@@ -1,0 +1,556 @@
+
+{
+  name: [32m'gurudevi-mobile'[39m,
+  slug: [32m'gurudevi-mobile'[39m,
+  version: [32m'1.0.2'[39m,
+  orientation: [32m'portrait'[39m,
+  icon: [32m'./assets/icon.png'[39m,
+  userInterfaceStyle: [32m'light'[39m,
+  scheme: [32m'gurudevi'[39m,
+  plugins: [
+    [32m'expo-font'[39m,
+    [32m'./plugins/withNdkVersion'[39m,
+    [32m'./plugins/withAndroidCruncherDisabled'[39m,
+    [32m'./plugins/withGradleProperties'[39m,
+    [32m'expo-localization'[39m,
+    [32m'expo-asset'[39m,
+    [32m'expo-audio'[39m,
+    [32m'expo-secure-store'[39m,
+    [
+      [32m'@sentry/react-native/expo'[39m,
+      {
+        url: [32m'https://sentry.io/'[39m,
+        project: [32m'gurudevi-mobile'[39m,
+        organization: [32m'intuitui-labs'[39m,
+        uploadNativeSymbols: [33mfalse[39m,
+        autoUploadNativeSymbols: [33mfalse[39m,
+        autoUpload: [33mfalse[39m,
+        uploadSourceMaps: [33mfalse[39m
+      }
+    ],
+    [32m'expo-web-browser'[39m,
+    [32m'expo-image'[39m,
+    [32m'expo-sharing'[39m,
+    [32m'expo-sqlite'[39m,
+    [32m'expo-video'[39m,
+    [32m'expo-notifications'[39m,
+    [32m'@react-native-community/datetimepicker'[39m,
+    [
+      [32m'@stripe/stripe-react-native'[39m,
+      {
+        merchantIdentifier: [32m'merchant.org.edlove.gurudevi'[39m,
+        enableGooglePay: [33mfalse[39m
+      }
+    ],
+    [
+      [32m'expo-build-properties'[39m,
+      {
+        android: {
+          extraMavenRepos: []
+        }
+      }
+    ],
+    [32m'expo-mail-composer'[39m,
+    [
+      [32m'expo-splash-screen'[39m,
+      {
+        image: [32m'./assets/splash-icon.png'[39m,
+        imageWidth: [33m220[39m,
+        resizeMode: [32m'contain'[39m,
+        backgroundColor: [32m'#0F131C'[39m,
+        dark: {
+          backgroundColor: [32m'#0F131C'[39m
+        }
+      }
+    ],
+    [32m'expo-widgets'[39m,
+    [32m'expo-router'[39m,
+    [32m'react-native-enriched-markdown'[39m,
+    [32m'react-native-nano-icons'[39m,
+    [32m'@sentry/react-native'[39m,
+    [32m'expo-background-task'[39m,
+    [32m'expo-status-bar'[39m,
+    [32m'@react-native-vector-icons/lucide'[39m,
+    [
+      [32m'react-native-nitro-google-signin'[39m,
+      {
+        iosUrlScheme: [32m'com.googleusercontent.apps.YOUR_IOS_CLIENT_ID'[39m
+      }
+    ]
+  ],
+  owner: [32m'neevsk'[39m,
+  description: [90mundefined[39m,
+  sdkVersion: [32m'57.0.0'[39m,
+  platforms: [
+    [32m'ios'[39m,
+    [32m'android'[39m,
+    [32m'web'[39m
+  ],
+  ios: {
+    supportsTablet: [33mtrue[39m,
+    bundleIdentifier: [32m'org.edlove.gurudevi'[39m,
+    buildNumber: [32m'1'[39m
+  },
+  android: {
+    package: [32m'org.edlove.gurudevi'[39m,
+    versionCode: [33m23[39m,
+    predictiveBackGestureEnabled: [33mfalse[39m,
+    softwareKeyboardLayoutMode: [32m'resize'[39m,
+    intentFilters: [
+      {
+        action: [32m'VIEW'[39m,
+        autoVerify: [33mtrue[39m,
+        data: [
+          {
+            scheme: [32m'gurudevi'[39m,
+            host: [32m'auth'[39m,
+            pathPrefix: [32m'/callback'[39m
+          }
+        ],
+        category: [
+          [32m'BROWSABLE'[39m,
+          [32m'DEFAULT'[39m
+        ]
+      },
+      {
+        action: [32m'VIEW'[39m,
+        autoVerify: [33mtrue[39m,
+        data: [
+          {
+            scheme: [32m'gurudevi'[39m,
+            host: [32m'qr'[39m
+          }
+        ],
+        category: [
+          [32m'BROWSABLE'[39m,
+          [32m'DEFAULT'[39m
+        ]
+      },
+      {
+        action: [32m'VIEW'[39m,
+        autoVerify: [33mtrue[39m,
+        data: [
+          {
+            scheme: [32m'https'[39m,
+            host: [32m'platform.gurudevi.edlove.org'[39m,
+            pathPrefix: [32m'/qr'[39m
+          },
+          {
+            scheme: [32m'https'[39m,
+            host: [32m'platform.gurudevi.edlove.org'[39m,
+            pathPrefix: [32m'/p'[39m
+          }
+        ],
+        category: [
+          [32m'BROWSABLE'[39m,
+          [32m'DEFAULT'[39m
+        ]
+      }
+    ],
+    permissions: [
+      [32m'android.permission.RECORD_AUDIO'[39m,
+      [32m'android.permission.MODIFY_AUDIO_SETTINGS'[39m,
+      [32m'android.permission.FOREGROUND_SERVICE'[39m,
+      [32m'android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK'[39m,
+      [32m'android.permission.READ_CONTACTS'[39m,
+      [32m'android.permission.WRITE_CONTACTS'[39m,
+      [32m'android.permission.WRITE_SETTINGS'[39m,
+      [32m'android.permission.READ_CALENDAR'[39m,
+      [32m'android.permission.WRITE_CALENDAR'[39m,
+      [32m'android.permission.CAMERA'[39m,
+      [32m'android.permission.READ_PHONE_STATE'[39m,
+      [32m'android.permission.READ_EXTERNAL_STORAGE'[39m,
+      [32m'android.permission.WRITE_EXTERNAL_STORAGE'[39m,
+      [32m'android.permission.INTERNET'[39m,
+      [32m'android.permission.ACCESS_COARSE_LOCATION'[39m,
+      [32m'android.permission.ACCESS_FINE_LOCATION'[39m,
+      [32m'android.permission.READ_MEDIA_VISUAL_USER_SELECTED'[39m,
+      [32m'android.permission.READ_MEDIA_IMAGES'[39m,
+      [32m'android.permission.READ_MEDIA_VIDEO'[39m,
+      [32m'android.permission.READ_MEDIA_AUDIO'[39m,
+      [32m'android.permission.USE_BIOMETRIC'[39m,
+      [32m'android.permission.USE_FINGERPRINT'[39m
+    ],
+    adaptiveIcon: {
+      foregroundImage: [32m'./assets/adaptive-icon.png'[39m,
+      backgroundColor: [32m'#ffffff'[39m
+    }
+  },
+  web: {
+    favicon: [32m'./assets/favicon.png'[39m,
+    bundler: [32m'metro'[39m,
+    baseUrl: [32m'/'[39m,
+    name: [32m'Gurudevi'[39m,
+    shortName: [32m'Gurudevi'[39m,
+    lang: [32m'en'[39m,
+    display: [32m'standalone'[39m,
+    themeColor: [32m'#D4843A'[39m,
+    backgroundColor: [32m'#F5EDD6'[39m
+  },
+  experiments: {
+    baseUrl: [32m'/'[39m
+  },
+  extra: {
+    googleIosUrlScheme: [32m'com.googleusercontent.apps.YOUR_IOS_CLIENT_ID'[39m,
+    eas: {
+      projectId: [32m'1701dfb9-c59e-45c6-a391-58c061a0b8ce'[39m,
+      build: {
+        experimental: {
+          ios: {
+            appExtensions: [
+              {
+                targetName: [32m'ExpoWidgetsTarget'[39m,
+                bundleIdentifier: [32m'org.edlove.gurudevi.ExpoWidgetsTarget'[39m,
+                entitlements: {
+                  [32m'com.apple.security.application-groups'[39m: [
+                    [32m'group.org.edlove.gurudevi'[39m
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    publicRuntime: {
+      supabaseUrl: [90mundefined[39m,
+      supabasePublishableKey: [90mundefined[39m
+    },
+    router: {}
+  },
+  runtimeVersion: {
+    policy: [32m'appVersion'[39m
+  },
+  updates: {
+    url: [32m'https://u.expo.dev/1701dfb9-c59e-45c6-a391-58c061a0b8ce'[39m
+  },
+  _internal: {
+    isDebug: [33mfalse[39m,
+    projectRoot: [32m'C:\\Users\\Naween\\projects\\polymath-platform\\apps\\gurudevi-mobile'[39m,
+    dynamicConfigPath: [32m'C:\\Users\\Naween\\projects\\polymath-platform\\apps\\gurudevi-mobile\\app.config.js'[39m,
+    staticConfigPath: [32m'C:\\Users\\Naween\\projects\\polymath-platform\\apps\\gurudevi-mobile\\app.json'[39m,
+    packageJsonPath: [32m'C:\\Users\\Naween\\projects\\polymath-platform\\apps\\gurudevi-mobile\\package.json'[39m,
+    autolinkedModules: [
+      [32m'@expo/app-integrity'[39m,
+      [32m'@expo/dom-webview'[39m,
+      [32m'@expo/log-box'[39m,
+      [32m'@expo/ui'[39m,
+      [32m'@sentry/react-native'[39m,
+      [32m'expo'[39m,
+      [32m'expo-age-range'[39m,
+      [32m'expo-apple-authentication'[39m,
+      [32m'expo-application'[39m,
+      [32m'expo-asset'[39m,
+      [32m'expo-audio'[39m,
+      [32m'expo-background-task'[39m,
+      [32m'expo-battery'[39m,
+      [32m'expo-blob'[39m,
+      [32m'expo-blur'[39m,
+      [32m'expo-brightness'[39m,
+      [32m'expo-calendar'[39m,
+      [32m'expo-camera'[39m,
+      [32m'expo-cellular'[39m,
+      [32m'expo-clipboard'[39m,
+      [32m'expo-constants'[39m,
+      [32m'expo-contacts'[39m,
+      [32m'expo-crypto'[39m,
+      [32m'expo-dev-client'[39m,
+      [32m'expo-dev-launcher'[39m,
+      [32m'expo-dev-menu'[39m,
+      [32m'expo-dev-menu-interface'[39m,
+      [32m'expo-device'[39m,
+      [32m'expo-document-picker'[39m,
+      [32m'expo-eas-client'[39m,
+      [32m'expo-file-system'[39m,
+      [32m'expo-font'[39m,
+      [32m'expo-gl'[39m,
+      [32m'expo-glass-effect'[39m,
+      [32m'expo-haptics'[39m,
+      [32m'expo-image'[39m,
+      [32m'expo-image-loader'[39m,
+      [32m'expo-image-manipulator'[39m,
+      [32m'expo-image-picker'[39m,
+      [32m'expo-intent-launcher'[39m,
+      [32m'expo-json-utils'[39m,
+      [32m'expo-keep-awake'[39m,
+      [32m'expo-linear-gradient'[39m,
+      [32m'expo-linking'[39m,
+      [32m'expo-live-photo'[39m,
+      [32m'expo-local-authentication'[39m,
+      [32m'expo-localization'[39m,
+      [32m'expo-location'[39m,
+      [32m'expo-mail-composer'[39m,
+      [32m'expo-manifests'[39m,
+      [32m'expo-media-library'[39m,
+      [32m'expo-mesh-gradient'[39m,
+      [32m'expo-modules-core'[39m,
+      [32m'expo-modules-jsi'[39m,
+      [32m'expo-navigation-bar'[39m,
+      [32m'expo-network'[39m,
+      [32m'expo-notifications'[39m,
+      [32m'expo-print'[39m,
+      [32m'expo-router'[39m,
+      [32m'expo-screen-capture'[39m,
+      [32m'expo-screen-orientation'[39m,
+      [32m'expo-secure-store'[39m,
+      [32m'expo-sensors'[39m,
+      [32m'expo-sharing'[39m,
+      [32m'expo-sms'[39m,
+      [32m'expo-splash-screen'[39m,
+      [32m'expo-sqlite'[39m,
+      [32m'expo-status-bar'[39m,
+      [32m'expo-store-review'[39m,
+      [32m'expo-structured-headers'[39m,
+      [32m'expo-symbols'[39m,
+      [32m'expo-system-ui'[39m,
+      [32m'expo-task-manager'[39m,
+      [32m'expo-updates'[39m,
+      [32m'expo-updates-interface'[39m,
+      [32m'expo-video'[39m,
+      [32m'expo-video-thumbnails'[39m,
+      [32m'expo-web-browser'[39m,
+      [32m'expo-widgets'[39m,
+      [32m'unimodules-app-loader'[39m,
+      [32m'voltra'[39m
+    ],
+    pluginHistory: {
+      [32m'expo-font'[39m: {
+        name: [32m'expo-font'[39m,
+        version: [32m'57.0.1'[39m
+      },
+      [32m'expo-asset'[39m: {
+        name: [32m'expo-asset'[39m,
+        version: [32m'57.0.10'[39m
+      },
+      [32m'expo-audio'[39m: {
+        name: [32m'expo-audio'[39m,
+        version: [32m'57.0.3'[39m
+      },
+      [32m'expo-secure-store'[39m: {
+        name: [32m'expo-secure-store'[39m,
+        version: [32m'57.0.1'[39m
+      },
+      [32m'@sentry/react-native/expo'[39m: {
+        name: [32m'@sentry/react-native/expo'[39m,
+        version: [32m'8.18.0'[39m
+      },
+      [32m'expo-web-browser'[39m: {
+        name: [32m'expo-web-browser'[39m,
+        version: [32m'57.0.2'[39m
+      },
+      [32m'expo-image'[39m: {
+        name: [32m'expo-image'[39m,
+        version: [32m'57.0.2'[39m
+      },
+      [32m'expo-sharing'[39m: {
+        name: [32m'expo-sharing'[39m,
+        version: [32m'57.0.11'[39m
+      },
+      [32m'expo-sqlite'[39m: {
+        name: [32m'expo-sqlite'[39m,
+        version: [32m'57.0.1'[39m
+      },
+      [32m'expo-notifications'[39m: {
+        name: [32m'expo-notifications'[39m,
+        version: [32m'57.0.10'[39m
+      },
+      [32m'@stripe/stripe-react-native'[39m: {
+        name: [32m'@stripe/stripe-react-native'[39m,
+        version: [32m'0.64.0'[39m
+      },
+      [32m'expo-mail-composer'[39m: {
+        name: [32m'expo-mail-composer'[39m,
+        version: [32m'57.0.1'[39m
+      },
+      [32m'expo-splash-screen'[39m: {
+        name: [32m'expo-splash-screen'[39m,
+        version: [32m'57.0.6'[39m
+      },
+      [32m'expo-widgets'[39m: {
+        name: [32m'expo-widgets'[39m,
+        version: [32m'57.0.9'[39m
+      },
+      [32m'expo-background-task'[39m: {
+        name: [32m'expo-background-task'[39m,
+        version: [32m'57.0.9'[39m
+      },
+      [32m'expo-status-bar'[39m: {
+        name: [32m'expo-status-bar'[39m,
+        version: [32m'57.0.1'[39m
+      },
+      [32m'react-native-nitro-google-signin'[39m: {
+        name: [32m'react-native-nitro-google-signin'[39m,
+        version: [32m'1.3.0'[39m
+      },
+      [32m'react-native-maps'[39m: {
+        name: [32m'react-native-maps'[39m,
+        version: [32m'UNVERSIONED'[39m
+      },
+      [32m'expo-apple-authentication'[39m: {
+        name: [32m'expo-apple-authentication'[39m,
+        version: [32m'57.0.1'[39m
+      },
+      [32m'expo-contacts'[39m: {
+        name: [32m'expo-contacts'[39m,
+        version: [32m'57.0.3'[39m
+      },
+      [32m'expo-updates'[39m: {
+        name: [32m'expo-updates'[39m,
+        version: [32m'57.0.13'[39m
+      },
+      [32m'expo-document-picker'[39m: {
+        name: [32m'expo-document-picker'[39m,
+        version: [32m'57.0.1'[39m
+      },
+      [32m'expo-system-ui'[39m: {
+        name: [32m'expo-system-ui'[39m,
+        version: [32m'57.0.2'[39m
+      },
+      [32m'expo-brightness'[39m: {
+        name: [32m'expo-brightness'[39m,
+        version: [32m'57.0.1'[39m
+      },
+      [32m'expo-calendar'[39m: {
+        name: [32m'expo-calendar'[39m,
+        version: [32m'57.0.1'[39m
+      },
+      [32m'expo-camera'[39m: {
+        name: [32m'expo-camera'[39m,
+        version: [32m'57.0.3'[39m
+      },
+      [32m'expo-cellular'[39m: {
+        name: [32m'expo-cellular'[39m,
+        version: [32m'57.0.1'[39m
+      },
+      [32m'expo-dev-menu'[39m: {
+        name: [32m'expo-dev-menu'[39m,
+        version: [32m'57.0.11'[39m
+      },
+      [32m'expo-dev-launcher'[39m: {
+        name: [32m'expo-dev-launcher'[39m,
+        version: [32m'57.0.11'[39m
+      },
+      [32m'expo-dev-client'[39m: {
+        name: [32m'expo-dev-client'[39m,
+        version: [32m'57.0.11'[39m
+      },
+      [32m'expo-image-picker'[39m: {
+        name: [32m'expo-image-picker'[39m,
+        version: [32m'57.0.9'[39m
+      },
+      [32m'expo-file-system'[39m: {
+        name: [32m'expo-file-system'[39m,
+        version: [32m'57.0.2'[39m
+      },
+      [32m'expo-location'[39m: {
+        name: [32m'expo-location'[39m,
+        version: [32m'57.0.9'[39m
+      },
+      [32m'expo-media-library'[39m: {
+        name: [32m'expo-media-library'[39m,
+        version: [32m'57.0.3'[39m
+      },
+      [32m'expo-screen-orientation'[39m: {
+        name: [32m'expo-screen-orientation'[39m,
+        version: [32m'57.0.1'[39m
+      },
+      [32m'expo-sensors'[39m: {
+        name: [32m'expo-sensors'[39m,
+        version: [32m'57.0.2'[39m
+      },
+      [32m'expo-task-manager'[39m: {
+        name: [32m'expo-task-manager'[39m,
+        version: [32m'57.0.9'[39m
+      },
+      [32m'expo-local-authentication'[39m: {
+        name: [32m'expo-local-authentication'[39m,
+        version: [32m'57.0.2'[39m
+      },
+      withNdkVersion: {
+        name: [32m'withNdkVersion'[39m,
+        version: [32m'1.0.0'[39m
+      },
+      withAndroidCruncherDisabled: {
+        name: [32m'withAndroidCruncherDisabled'[39m,
+        version: [32m'1.0.0'[39m
+      },
+      withCustomGradleProperties: {
+        name: [32m'withCustomGradleProperties'[39m,
+        version: [32m'1.0.0'[39m
+      }
+    },
+    sentryBuildProperties: {
+      organization: [32m'intuitui-labs'[39m,
+      project: [32m'gurudevi-mobile'[39m,
+      url: [32m'https://sentry.io/'[39m
+    }
+  },
+  mods: {
+    android: {
+      projectBuildGradle: [AsyncFunction: interceptingMod] {
+        isProvider: [33mfalse[39m
+      },
+      appBuildGradle: [AsyncFunction: interceptingMod] {
+        isProvider: [33mfalse[39m
+      },
+      gradleProperties: [AsyncFunction: interceptingMod] {
+        isProvider: [33mfalse[39m
+      },
+      manifest: [AsyncFunction: interceptingMod] {
+        isProvider: [33mfalse[39m
+      },
+      strings: [AsyncFunction: interceptingMod] {
+        isProvider: [33mfalse[39m
+      },
+      dangerous: [AsyncFunction: interceptingMod] {
+        isProvider: [33mfalse[39m
+      },
+      colors: [AsyncFunction: interceptingMod] {
+        isProvider: [33mfalse[39m
+      },
+      colorsNight: [AsyncFunction: interceptingMod] {
+        isProvider: [33mfalse[39m
+      },
+      styles: [AsyncFunction: interceptingMod] {
+        isProvider: [33mfalse[39m
+      },
+      settingsGradle: [AsyncFunction: interceptingMod] {
+        isProvider: [33mfalse[39m
+      },
+      mainActivity: [AsyncFunction: interceptingMod] {
+        isProvider: [33mfalse[39m
+      }
+    },
+    ios: {
+      infoPlist: [AsyncFunction: interceptingMod] {
+        isProvider: [33mfalse[39m
+      },
+      xcodeproj: [AsyncFunction: interceptingMod] {
+        isProvider: [33mfalse[39m
+      },
+      dangerous: [AsyncFunction: interceptingMod] {
+        isProvider: [33mfalse[39m
+      },
+      podfileProperties: [AsyncFunction: interceptingMod] {
+        isProvider: [33mfalse[39m
+      },
+      entitlements: [AsyncFunction: interceptingMod] {
+        isProvider: [33mfalse[39m
+      },
+      splashScreenStoryboard: [AsyncFunction: interceptingMod] {
+        isProvider: [33mtrue[39m,
+        isIntrospective: [33mtrue[39m
+      },
+      podfile: [AsyncFunction: interceptingMod] {
+        isProvider: [33mfalse[39m
+      },
+      appDelegate: [AsyncFunction: interceptingMod] {
+        isProvider: [33mfalse[39m
+      },
+      expoPlist: [AsyncFunction: interceptingMod] {
+        isProvider: [33mfalse[39m
+      }
+    }
+  }
+}
+

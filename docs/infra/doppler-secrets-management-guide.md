@@ -10,7 +10,7 @@ tags: [secrets, infrastructure, security, doppler]
 
 # Doppler Secrets Management Integration Guide
 
-This guide provides comprehensive documentation for integrating Doppler Secrets Manager across the Polymath Platform environments (dev, staging, prod, next). Doppler serves as the single source of truth for all secrets, API keys, and sensitive configuration data.
+This guide provides background documentation for integrating Doppler Secrets Manager across the Polymath Platform environments. The current operational source of truth is [`doppler-toolchain.md`](./doppler-toolchain.md); examples below that download files are migration or emergency procedures only.
 
 ---
 
@@ -259,16 +259,10 @@ doppler run --mount .env -- npm start
 ```
 
 #### Downloading Secrets
-```bash
-# Download as .env file
-doppler secrets download --format env > .env
-
-# Download for specific config
-doppler secrets download --config staging --format env > .env.staging
-
-# Download as JSON
-doppler secrets download --format json > secrets.json
-```
+Normal development should use `doppler run -- <command>` and should not write
+secret values to the filesystem. If a one-time migration requires a file,
+use a temporary location, keep it outside the repository, and remove it after
+the import.
 
 ### 4. Managing Secret Versions
 

@@ -312,9 +312,9 @@ Runs on push/PR to main/develop:
 ### 8.2 Package Manager
 
 **pnpm**: Fast, disk-space efficient package manager
-- **Version**: 11.8.0
+- **Version**: 11.21.0
 - **Workspace**: `pnpm-workspace.yaml`
-- **Node Version**: 24.x
+- **Node Version**: 22.23.2
 
 ---
 

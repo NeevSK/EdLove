@@ -75,9 +75,8 @@ doppler secrets delete API_KEY
 # List all secrets (names only)
 doppler secrets download --format json | jq 'keys'
 
-# Download secrets to file
-doppler secrets download --format env > .env
-doppler secrets download --format json > secrets.json
+# Normal development: inject secrets into a child process; do not materialize them
+doppler run -- npm run dev
 ```
 
 ### Environment Management
@@ -410,7 +409,7 @@ doppler run --config staging -- npm run build
 1. **Fallback to .env**: Use local .env files temporarily
 2. **Monitor status**: Check https://status.doppler.com
 3. **Communication**: Alert team about fallback procedures
-4. **Recovery**: When service is back, `doppler secrets download --format env > .env`
+4. **Recovery**: restore access through Doppler and rerun the names-only contract; only use a temporary, out-of-repository export for an explicit emergency migration.
 
 ### Accidental Secret Deletion
 

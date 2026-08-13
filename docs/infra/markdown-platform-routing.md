@@ -32,28 +32,16 @@ Add `"browser": "./lib/module/index.web.js"` to the library's `package.json` via
 `AIAssistantScreen.tsx` → `MessageBubble.tsx` → `EnrichedMarkdownText`
 → native `lib/module/index` | web `lib/module/index.web.js` → `./web/EnrichedMarkdownText.js`.
 
-## Known blocker (pre-existing — not introduced here)
-The repo root `package.json` declares `"packageManager": "yarn@4.11.0"`, but the repo is actually
-a **pnpm** workspace (`pnpm-lock.yaml`, `pnpm-workspace.yaml`, and every mobile script uses
-`pnpm exec ...`). pnpm v11 enforces the `packageManager` field and refuses to run:
-
-```
-[ERROR] This project is configured to use yarn
-For help, run: pnpm help install
-```
-
-So `pnpm install`/`pnpm exec`/`pnpm run` are **all blocked** under pnpm v11.18 in this checkout
-(older pnpm treated the field as a warning, not an error). To apply the registered patch from a
-clean state and unblock the toolchain, set the field to match the lock + scripts:
+## Resolved toolchain note
+The repository is a **pnpm** workspace (`pnpm-lock.yaml`, `pnpm-workspace.yaml`, and every mobile script uses
+`pnpm exec ...`). The root package manager is aligned with the lockfile and CI at pnpm v11.21.0:
 
 ```jsonc
 // package.json (repo root)
-"packageManager": "pnpm@11.18.0"
+"packageManager": "pnpm@11.21.0"
 ```
 
-The patch is already registered in `pnpm-workspace.yaml`, so the next successful `pnpm install`
-re-applies it automatically. The store copy is also patched in place so the fix is effective now
-without a full reinstall.
+`pnpm install --frozen-lockfile` now completes successfully with this alignment.
 
 ## Other notes
 - **css-interop**: the repo is Gluestack v3 + `react-native-css-interop@0.1.22`
