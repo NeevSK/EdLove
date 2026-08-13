@@ -195,6 +195,7 @@ import { messagingRouter } from './handlers/messaging';
 import { socialRouter } from './handlers/social';
 import { announcementsRouter } from './handlers/announcements';
 import { guardianAssessmentRouter } from './handlers/guardianAssessment';
+import { agentRouter } from './handlers/agent';
 
 // Root Router initialization
 export const router = o.router({
@@ -216,5 +217,6 @@ export const router = o.router({
   social: socialRouter,
   announcements: announcementsRouter,
   guardianAssessment: guardianAssessmentRouter,
+  agent: agentRouter,
 });
 

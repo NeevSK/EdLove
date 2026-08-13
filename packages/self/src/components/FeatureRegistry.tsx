@@ -42,7 +42,7 @@ export function resolveFeatureContent(id: string, userId?: string) {
   if (!Renderer) {
     return (
       <EmptyState
-        icon={Sparkles}
+        icon={<Sparkles size={48} />}
         title="This feature is not available here"
         description="The current role does not have a readable surface for this capability yet."
       />

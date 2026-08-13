@@ -396,6 +396,7 @@ function getPageTitle(pathname: string) {
   if (pathname.startsWith('/workspace')) return 'Workspace';
   if (pathname.startsWith('/library')) return 'Library';
   if (pathname.startsWith('/profile')) return 'Profile';
+  if (pathname.startsWith('/durable-agents')) return 'Agent Lab';
   return 'Self';
 }
 

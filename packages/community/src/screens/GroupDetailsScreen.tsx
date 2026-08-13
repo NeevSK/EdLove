@@ -14,7 +14,7 @@ import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useLotusToast } from '@repo/ui/hooks';
-import { BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import {
   ChevronLeft,
   EllipsisVertical,

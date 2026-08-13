@@ -82,15 +82,14 @@ Today, this repo does not yet have that lane implemented.
 As of 2026-04-28:
 
 - we have durable workflows
-- we do not yet have a durable-agent runtime
+- we have a narrow durable-agent R&D runtime hosted by the current worker shell
 - we do not currently use Temporal
 - we do not currently use the Vercel AI SDK in production workflow code
 - we do not currently have a general governor layer for model tool loops
 
-That is not a failure.
-
-It means durable agents should be treated as an R&D lane, not as a hidden
-assumption in current architecture.
+The implementation remains deliberately narrow and review-first. It is
+exposed through the mobile product surfaces, while orchestration stays behind
+the worker/API boundary rather than leaking into the public marketing site.
 
 ## R&D Goal
 
@@ -112,7 +111,7 @@ As of 2026-04-28, there is now a functional internal demo lane in
 
 Current demo surface:
 
-- `/durable-agents`
+- Gurudevi Mobile `/durable-agents` route, including its web composition
 - bounded "Teacher Summary Draft" run
 - bounded "Student Support Snapshot" run
 - demo scenarios with governed evidence inputs
@@ -299,9 +298,9 @@ Required shared factors:
 
 Current reusable pieces:
 
-- provider abstraction:
+- provider abstraction (currently hosted by the worker shell):
   `apps/gurudevi-marketingWeb/src/lib/durableAgents/llmProvider.ts`
-- run materialization and promotion:
+- run materialization and promotion (currently hosted by the worker shell):
   `apps/gurudevi-marketingWeb/src/lib/durableAgents/durableAgentRuns.ts`
 - shared request surfaces:
   `/api/durable-agents/*`

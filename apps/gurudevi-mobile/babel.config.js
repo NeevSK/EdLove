@@ -13,17 +13,6 @@ module.exports = (api) => {
         },
       ],
     ],
-    plugins: [
-      require('react-native-worklets/plugin'),
-      !isWeb && [
-        'transform-imports',
-        {
-          'lucide-react-native': {
-            transform: (member) => `lucide-react-native/dist/esm/icons/${kebabCase(member)}`,
-            preventFullImport: true,
-          },
-        },
-      ],
-    ].filter(Boolean),
+    plugins: [require('react-native-worklets/plugin')],
   };
 };

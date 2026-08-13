@@ -81,8 +81,9 @@ import {
   dispatchQueuedMutationToSovereignBus,
   installMobileWorkflowEventBridge,
 } from '@/lib/inngestEvents';
-import { LanguageUtils } from '@/utils/LanguageUtils';
+import { DeepLinkProvider } from '@/providers/DeepLinkProvider';
 import { PowerSyncProvider } from '@/providers/PowerSyncProvider';
+import { LanguageUtils } from '@/utils/LanguageUtils';
 
 registerAppCatalog();
 
@@ -567,7 +568,9 @@ function RootShell() {
         {bootstrapped ? (
           <EnvironmentProvider>
             <PowerSyncProvider>
-              <AppContent />
+              <DeepLinkProvider>
+                <AppContent />
+              </DeepLinkProvider>
             </PowerSyncProvider>
           </EnvironmentProvider>
         ) : (

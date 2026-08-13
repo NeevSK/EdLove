@@ -12,7 +12,7 @@ import type { CommunityPost, DirectConversation, SanctuaryGroup } from '@repo/co
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { HorizontalChipRow } from '@repo/ui/components/HorizontalChipRow';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
-import { BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
@@ -626,7 +626,7 @@ export default function CommunityScreen() {
                 }}
               />
             </Box>
-          ) : null
+          )
         }
         onEndReached={() => {
           if (hasNextPosts) {

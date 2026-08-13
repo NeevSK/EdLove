@@ -39,7 +39,7 @@ import { useRouter } from 'expo-router';
 import {
   Bookmark,
   Clock,
-  Edit2,
+  EllipsisVertical,
   Flame,
   Globe,
   Layers,
@@ -48,13 +48,13 @@ import {
   List,
   Lock,
   Map as MapIcon,
-  MoreVertical,
+  Pen,
   Play,
   Plus,
   Search,
   Trash2,
   Users,
-} from 'lucide-react-native';
+} from '@repo/ui/icons';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -1722,7 +1722,7 @@ function CollectionPreviewCard({
               justifyContent: 'center',
             }}
           >
-            <MoreVertical size={15} color="var(--ink)" />
+            <EllipsisVertical size={15} color="var(--ink)" />
           </button>
 
           {/* Dropdown menu */}
@@ -1764,7 +1764,7 @@ function CollectionPreviewCard({
                   color: 'var(--ink)',
                 }}
               >
-                <Edit2 size={14} color="var(--ink)" /> {t('library.actions.edit', 'Edit')}
+                <Pen size={14} color="var(--ink)" /> {t('library.actions.edit', 'Edit')}
               </button>
 
               {/* Divider */}

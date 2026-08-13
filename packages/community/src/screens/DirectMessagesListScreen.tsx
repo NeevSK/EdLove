@@ -7,7 +7,7 @@
 
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
-import { BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { ChevronRight } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';

@@ -29,8 +29,7 @@
   },
   "dependencies": {
     "@repo/core": "workspace:*",
-    "@repo/ui": "workspace:*",
-    "lucide-react-native": "^1.17.0"
+    "@repo/ui": "workspace:*"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",

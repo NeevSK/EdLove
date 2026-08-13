@@ -17,10 +17,10 @@ import {
   TextInput,
   VStack,
 } from '@repo/ui/primitives';
+import { ArrowLeft, EllipsisVertical, Globe, Lock, Pen, Trash2, Users, X } from '@repo/ui/icons';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ArrowLeft, Edit2, Globe, Lock, MoreVertical, Trash2, Users, X } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
 
@@ -292,7 +292,7 @@ export default function CollectionDetailScreen() {
                   onPress={openEdit}
                   className="flex-row items-center gap-3 p-3.5 rounded-xl bg-phase-surface/60"
                 >
-                  <Icon as={Edit2} size={18} color={colors.textPrimary} />
+                  <Icon as={Pen} size={18} color={colors.textPrimary} />
                   <Text className="font-semibold text-phaseText-primary">
                     Edit name & description
                   </Text>
@@ -378,7 +378,7 @@ export default function CollectionDetailScreen() {
                 onPress={() => setActionSheetOpen(true)}
                 className="w-10 h-10 rounded-xl border border-phase-border bg-phase-surface/50 items-center justify-center"
               >
-                <Icon as={MoreVertical} size={18} color={colors.textPrimary} />
+                <Icon as={EllipsisVertical} size={18} color={colors.textPrimary} />
               </Pressable>
             )}
           </HStack>

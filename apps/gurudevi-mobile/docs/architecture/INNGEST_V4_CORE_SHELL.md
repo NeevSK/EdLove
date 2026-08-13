@@ -15,9 +15,10 @@ If you are evaluating model-driven durable agents, read this together with
 [DURABLE_AGENTS_RND_GUIDE.md](/C:/Users/Naween/projects/polymath-platform/docs/architecture/DURABLE_AGENTS_RND_GUIDE.md).
 This document is for durable workflows, not for general agent-loop design.
 
-The current durable-agent demo lane lives separately at
-`gurudevi-marketingWeb` `/durable-agents` and should be treated as R&D, not as
-the canonical path for normal product workflows.
+The current durable-agent review lane is surfaced by the Gurudevi Mobile
+route `/durable-agents` (with a dedicated web composition). The marketing site
+no longer owns a public UI route; its existing server/API worker remains an
+implementation host until a dedicated Sanctuary API deployment is available.
 
 That R&D lane is intentionally provider-agnostic at the synthesis layer, so
 capabilities can switch between supported model providers without rewriting the

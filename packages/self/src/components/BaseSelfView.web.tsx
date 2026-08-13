@@ -141,7 +141,7 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
         <FeatureErrorBoundary featureName={feature.label}>
           {content ?? (
             <EmptyState
-              icon={Sparkles}
+              icon={<Sparkles size={48} />}
               title="This sanctuary is still taking shape"
               description="This capability has no view for the current role yet."
             />

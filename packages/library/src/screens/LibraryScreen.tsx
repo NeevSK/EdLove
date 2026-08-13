@@ -53,15 +53,6 @@ import {
 import { Theme } from '@repo/ui/theme';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { useRouter } from 'expo-router';
-import {
-  Edit2,
-  Globe,
-  Lock,
-  FileText as LucideFileText,
-  Users as LucideUsers,
-  MoreVertical,
-  Trash2,
-} from 'lucide-react-native';
 import React, { memo, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, useWindowDimensions } from 'react-native';

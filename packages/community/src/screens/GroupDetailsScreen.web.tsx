@@ -1,7 +1,7 @@
 import { usePermissions } from '@repo/core/logic';
 import { useStore, useTemporalStore } from '@repo/core/store';
 import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
-import { BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { Box, Heading, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { router, useLocalSearchParams } from 'expo-router';

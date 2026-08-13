@@ -2,7 +2,7 @@
 title: "Gurudevi Mobile Documentation Vault Index"
 status: "active"
 created: 2026-06-10
-updated: 2026-08-11
+updated: 2026-08-13
 author: "Naveen"
 scribe: "Antigravity"
 tags: [index, portal]
@@ -60,6 +60,7 @@ These documents are the current authority for capability inventory, rollout, sta
 
 | Date | Document | Category | Status | Summary |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-08-13** | [Auth Gate and Deep Link Audit](./architecture/2026-08-13-auth-gate-deeplink-audit.md) | Architecture / Audit | `active` | Verifies auth gates are deterministic and testable for device-control automation; found `DeepLinkProvider` was never mounted (magic-link callback + classroom invites dead on native) and fixed it in root `_layout.tsx`. |
 | **2026-08-11** | [Gluestack UI v5 and NativeWind v5 Stack Audit](./infra/2026-08-11-gluestack-v5-stack-audit.md) | Infrastructure / Audit | `active` | Reconciles the July migration history with the current source tree, upstream v5/NativeWind guidance, CLI/codemod behavior, adoption signals, developer experience, and a controlled completion plan. |
 | **2026-08-12** | [UI Facade and Styling Engine Decision](./decisions/2026-08-12-ui-facade-and-styling-engine-decision.md) | Architecture / Decision | `active` | Keeps the Gurudevi-owned UI facade stable, makes the styling engine replaceable, prohibits paid runtime dependencies, and defines the one-week implementation gates. |
 | **2026-08-11** | [NativeWind CSS Interop Migration Inventory](./infra/2026-08-11-css-interop-migration-inventory.md) | Infrastructure / Migration | `active` | Classifies all 103 legacy `cssInterop` references across 38 UI source files and defines the safe first `styled()` experiment without mass-rewriting the product. |
@@ -187,6 +188,7 @@ These documents are the current authority for capability inventory, rollout, sta
 *   [Hosting Guide](./infra/hosting-guide.md) - General topology specs.
 
 ### 🛡️ Security, ReBAC & Audits
+*   [Auth Gate and Deep Link Audit](./architecture/2026-08-13-auth-gate-deeplink-audit.md) - Verifies auth gates/deep links are deterministic for device-control automation; flags unmounted `DeepLinkProvider` and missing iOS universal links.
 *   [Expo Router Migration and Major Dependencies Audit](./infra/2026-06-10-migration-and-major-dependency-audit.md) - Deep-dive review of Expo Router transfer status, Expo mismatches, major updates list, and gesture handler risks.
 *   [Gurudevi Mobile and Shared Packages Dependency Audit](./infra/2026-06-10-dependency-audit.md) - Deep-dive audit of outdated dependencies in gurudevi-mobile and shared libraries using taze.
 *   [Offline Security & Resilience Blueprint](./architecture/offline-security-and-resilience.md) - Security controls, keys configuration, and system threat mitigation model.

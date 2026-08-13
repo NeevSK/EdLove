@@ -144,7 +144,6 @@
     "expo-clipboard": "~57.0.1",
     "expo-image-picker": "~57.0.9",
     "expo-router": "~57.0.12",
-    "lucide-react-native": "^1.17.0",
     "react-i18next": "^17.0.8",
     "react-native-reanimated": "^4.4.1"
   },
@@ -162,7 +161,6 @@
     "@repo/ui": "*",
     "@supabase/postgrest-js": "2.102.1",
     "@supabase/supabase-js": "2.102.1",
-    "lucide-react-native": "*",
     "react": "*",
     "react-i18next": "*",
     "react-native": "*"

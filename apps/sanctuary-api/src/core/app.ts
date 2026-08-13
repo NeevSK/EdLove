@@ -972,6 +972,13 @@ app.all('/api/guardianAssessment/*', async (c) => {
   const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
   return matched && response ? response : c.text('Not Found', 404);
 });
+
+// Native oRPC routes (Vertical Slice: AGENT SURFACE)
+app.all('/api/agent/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
 const aiPolicyRoute: SovereignRoute = {
   path: '/api/ai/chat',
   method: 'post',

@@ -66,5 +66,42 @@ export const config = [
       '**/__mocks__/**',
     ],
   },
+  {
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'lucide-react-native',
+              message:
+                'Import icons from @repo/ui/icons instead of directly from lucide-react-native. See 2026-07-16-icon-bridge-contract.md.',
+            },
+            {
+              name: 'lucide-react-native/icons',
+              message:
+                'Import icons from @repo/ui/icons instead of the lucide-react-native/icons barrel.',
+            },
+            {
+              name: 'lucide-react',
+              message:
+                'Import icons from @repo/ui/icons instead of directly from lucide-react (web). The Metro web shim routes @repo/ui/icons to DOM icons.',
+            },
+          ],
+          patterns: [
+            {
+              group: ['lucide-react-native/icons/*', 'lucide-react-native/dist/**'],
+              message:
+                'Only the icon bridge (packages/ui/src/icons.native.ts) may use lucide-react-native subpaths. Import from @repo/ui/icons instead.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ['**/packages/ui/src/icons.native.ts'],
+    rules: { 'no-restricted-imports': 'off' },
+  },
   ...eslintPluginOxlint.configs['flat/recommended'],
 ];

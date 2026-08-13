@@ -2,7 +2,7 @@
 title: "Documentation Index"
 status: "active"
 created: 2026-06-26
-updated: 2026-08-11
+updated: 2026-08-13
 author: "Naveen"
 scribe: "Antigravity"
 tags: [docs, index, changelog]
@@ -61,6 +61,8 @@ These files outline security models, data lifecycle policies, platform topologie
 | [architecture/2026-07-24-expo-57-rust-inline-module-chronicle.md](architecture/2026-07-24-expo-57-rust-inline-module-chronicle.md) | Technical chronicle detailing inline Kotlin/Rust JNI bridge integrations |
 | [architecture/2026-07-24-permission-refactor-review-report.md](architecture/2026-07-24-permission-refactor-review-report.md) | Post-refactor review report for permission systems |
 | [architecture/2026-08-10-gurudevi-edlove-exploration-vs-current-implementation.md](architecture/2026-08-10-gurudevi-edlove-exploration-vs-current-implementation.md) | Evidence-backed comparison of the imported exploration corpus against current code, schema, migrations, and UI |
+| [Core/data-state-ownership-map.md](Core/data-state-ownership-map.md) | Per-domain source-of-truth map across the six storage layers (Zustand, TanStack Query, MMKV, PowerSync, Supabase, Postgres) with agent read/write rules |
+| [Core/agent-observability-contract.md](Core/agent-observability-contract.md) | Agent-queryable observability contract: signal-by-destination, single-line-JSON log events, correlation flow, enforcement boundaries |
 | [files/README.md](files/README.md) | Preserved imported exploration evidence archive and reading boundary |
 | [architecture/production-software-landscape.md](architecture/production-software-landscape.md) | Full-stack mental map of production web + mobile software — for non-coders |
 
@@ -76,6 +78,7 @@ Records documenting the rationale behind core design and architecture choices.
 | [decisions/2026-06-26-route-onboarding-through-api.md](decisions/2026-06-26-route-onboarding-through-api.md) | ADR outlining why onboarding routes through the Sanctuary API |
 | [decisions/2026-07-28-gurudevi-authz-decision-record.md](decisions/2026-07-28-gurudevi-authz-decision-record.md) | ADR for mobile client authorization rules and PDP configuration |
 | [decisions/2026-08-09-doppler-secrets-management-adoption.md](decisions/2026-08-09-doppler-secrets-management-adoption.md) | ADR for adopting Doppler as centralized secrets management across dev/staging/prod/next environments |
+| [decisions/2026-08-13-expo-orchestrator-agent-toolchain-adr.md](decisions/2026-08-13-expo-orchestrator-agent-toolchain-adr.md) | ADR for the Expo orchestrator agent toolchain: typed agent API surface, MCP + Doppler routing, visual editing (OSS primary / custom fallback), Inngest + Eve orchestration layering |
 
 ---
 
@@ -96,6 +99,7 @@ Checklists, active feature roadmaps, migration paths, and lint configuration pla
 | [current_progress/2026-08-09-doppler-implementation-plan.md](current_progress/2026-08-09-doppler-implementation-plan.md) | 6-phase implementation plan for Doppler secrets management integration across dev/staging/prod/next environments |
 | [current_progress/2026-08-10-gurudevi-edlove-exploration-integration-plan.md](current_progress/2026-08-10-gurudevi-edlove-exploration-integration-plan.md) | Gurudevi-first phased program for integrating the imported exploration corpus into the Edlove platform |
 | [current_progress/2026-08-10-live-supabase-inspection.md](current_progress/2026-08-10-live-supabase-inspection.md) | Read-only linked Supabase structural, RLS, grants, and advisor inspection |
+| [current_progress/2026-08-13-expo-orchestrator-production-setup-plan.md](current_progress/2026-08-13-expo-orchestrator-production-setup-plan.md) | 7-phase production setup plan for the Expo 57 app orchestrator: foundation contracts, agent tooling/MCP, visual editing, Inngest+Eve orchestration, ship pipeline, Doppler-first secrets |
 
 ---
 
@@ -123,6 +127,13 @@ CI/CD setups, developer workflow scripts, versioning plans, and build diagnostic
 ---
 
 ## Changelog
+
+### 2026-08-13
+
+- **Added**: `Core/data-state-ownership-map.md` — per-domain source-of-truth map across the six storage layers with agent read/write rules.
+- **Added**: `Core/agent-observability-contract.md` — agent-queryable observability contract (structured log events, correlation flow, boundaries).
+- **Added**: `current_progress/2026-08-13-expo-orchestrator-production-setup-plan.md` — 7-phase production setup plan for the Expo 57 app orchestrator (foundation contracts, agent tooling/MCP, visual editing with OSS-primary/custom-fallback, Inngest + Eve orchestration, ship pipeline, Doppler-first secrets).
+- **Added**: `decisions/2026-08-13-expo-orchestrator-agent-toolchain-adr.md` — ADR recording the orchestrator agent toolchain decisions (typed agent API surface, MCP + Doppler routing, visual-editor decision gate, Inngest + Eve layering).
 
 ### 2026-08-11
 

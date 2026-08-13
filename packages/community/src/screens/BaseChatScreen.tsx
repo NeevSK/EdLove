@@ -16,7 +16,7 @@ import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { SanctuaryLegendList } from '@repo/ui/components/SanctuaryLegendList';
 import { ChatProvider } from '@repo/ui/context/ChatContext';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
-import { BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import { MessageSquare } from '@repo/ui/icons';
 import {
   AnimatedView,

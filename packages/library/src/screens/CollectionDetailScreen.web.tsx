@@ -9,22 +9,12 @@ import { buildLibraryResourceOpenParams } from '@repo/library/utils/resourceLink
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
-import { ArrowLeft, Library, RefreshCw } from '@repo/ui/icons';
+import { ArrowLeft, Globe, Library, Lock, Pen, Plus, RefreshCw, Trash2, Users, X } from '@repo/ui/icons';
 import { ActivityIndicator, Box, HStack, Text, useTheme, VStack } from '@repo/ui/primitives';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import {
-  Edit2,
-  Globe,
-  Lock,
-  ArrowLeft as LucideArrowLeft,
-  Users as LucideUsers,
-  Plus,
-  Trash2,
-  X,
-} from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert } from 'react-native';
@@ -174,11 +164,11 @@ function VisibilityBadge({ visibility }: { visibility: ResourceVisibility }) {
   const config = {
     private: { icon: Lock, label: 'Private', color: '#e88c30', bg: 'rgba(232,140,48,0.12)' },
     personal: { icon: Lock, label: 'Private', color: '#e88c30', bg: 'rgba(232,140,48,0.12)' },
-    shared: { icon: LucideUsers, label: 'Shared', color: '#6798d6', bg: 'rgba(103,152,214,0.12)' },
+    shared: { icon: Users, label: 'Shared', color: '#6798d6', bg: 'rgba(103,152,214,0.12)' },
     public: { icon: Globe, label: 'Public', color: '#34a853', bg: 'rgba(52,168,83,0.12)' },
-    class: { icon: LucideUsers, label: 'Class', color: '#6798d6', bg: 'rgba(103,152,214,0.12)' },
-    grade: { icon: LucideUsers, label: 'Grade', color: '#6798d6', bg: 'rgba(103,152,214,0.12)' },
-    school: { icon: LucideUsers, label: 'School', color: '#6798d6', bg: 'rgba(103,152,214,0.12)' },
+    class: { icon: Users, label: 'Class', color: '#6798d6', bg: 'rgba(103,152,214,0.12)' },
+    grade: { icon: Users, label: 'Grade', color: '#6798d6', bg: 'rgba(103,152,214,0.12)' },
+    school: { icon: Users, label: 'School', color: '#6798d6', bg: 'rgba(103,152,214,0.12)' },
   };
   const c = config[visibility] ?? config.private;
   const Icon = c.icon;
@@ -221,7 +211,7 @@ function OwnerPanel({
   const vis = collection.visibility;
   const visOptions: { value: ResourceVisibility; label: string; icon: any; color: string }[] = [
     { value: 'private', label: 'Private', icon: Lock, color: '#e88c30' },
-    { value: 'shared', label: 'Shared', icon: LucideUsers, color: '#6798d6' },
+    { value: 'shared', label: 'Shared', icon: Users, color: '#6798d6' },
     { value: 'public', label: 'Public', icon: Globe, color: '#34a853' },
   ];
 
@@ -326,7 +316,7 @@ function OwnerPanel({
             cursor: 'pointer',
           }}
         >
-          <Edit2 size={12} color="var(--ink)" />
+          <Pen size={12} color="var(--ink)" />
           Edit
         </button>
 

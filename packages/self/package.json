@@ -66,7 +66,6 @@
     "drizzle-orm": "^0.45.2",
     "expo-haptics": "~57.0.1",
     "expo-router": "~57.0.12",
-    "lucide-react-native": "^1.17.0",
     "react-native-reanimated": "^4.4.1"
   },
   "devDependencies": {
@@ -83,7 +82,6 @@
     "@repo/ui": "*",
     "@supabase/postgrest-js": "2.102.1",
     "@supabase/supabase-js": "2.102.1",
-    "lucide-react-native": "*",
     "react": "*",
     "react-i18next": "*",
     "react-native": "*"

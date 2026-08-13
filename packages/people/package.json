@@ -32,7 +32,6 @@
     "@repo/core": "workspace:*",
     "@repo/ui": "workspace:*",
     "date-fns": "^4.4.0",
-    "lucide-react-native": "^1.17.0",
     "react-i18next": "^17.0.8"
   },
   "devDependencies": {

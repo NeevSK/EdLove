@@ -34,8 +34,6 @@
     "@repo/ui": "workspace:*",
     "@tanstack/react-form": "^0.20.0",
     "expo-router": "~57.0.12",
-    "lucide-react": "^1.17.0",
-    "lucide-react-native": "^1.17.0",
     "react-i18next": "^17.0.8"
   },
   "devDependencies": {

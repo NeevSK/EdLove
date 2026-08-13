@@ -29,6 +29,7 @@ export default function TabsLayout() {
     if (pathname.startsWith('/profile')) return 'Profile';
     if (pathname.startsWith('/settings')) return 'Settings';
     if (pathname.startsWith('/notifications')) return 'Notifications';
+    if (pathname.startsWith('/durable-agents')) return 'Agent Lab';
     return 'Self';
   }, [pathname]);
 

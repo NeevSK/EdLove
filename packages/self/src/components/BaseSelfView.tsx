@@ -308,7 +308,7 @@ export function BaseSelfView({
           )}
           {!activeFeature && (
             <EmptyState
-              icon={Sparkles}
+              icon={<Sparkles size={48} />}
               title="Your sanctuary is waiting"
               description="There are no readable Self capabilities for this perspective yet."
             />

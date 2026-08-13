@@ -1,4 +1,5 @@
 import { academicCyclesAPI } from '@repo/core/api/academicCycles';
+import { agentAPI } from '@repo/core/api/agent';
 import { announcementAPI } from '@repo/core/api/announcements';
 import { authAPI } from '@repo/core/api/auth';
 import { circleAPI } from '@repo/core/api/circles';
@@ -19,7 +20,13 @@ import { messagingAPI } from '@repo/core/api/messaging';
 import { moonPhaseAPI } from '@repo/core/api/moonPhase';
 import { naturePathsAPI } from '@repo/core/api/naturePaths';
 import { onboardingAPI } from '@repo/core/api/onboarding';
-import { growthAPI, growthStateAPI, missionsAPI, proAPI, ripplesAPI } from '@repo/core/api/orchestration/growth';
+import {
+  growthAPI,
+  growthStateAPI,
+  missionsAPI,
+  proAPI,
+  ripplesAPI,
+} from '@repo/core/api/orchestration/growth';
 import { presenceAPI } from '@repo/core/api/presence';
 import { principalNotesAPI } from '@repo/core/api/principalNotes';
 import { privacyAPI } from '@repo/core/api/privacy';
@@ -75,21 +82,9 @@ import {
   teacherInsightsAPI,
 } from '@repo/core/api/orchestration/specialized';
 
-export type { CalendarEvent } from '@repo/schema';
-export type { ClassroomNote } from '@repo/core/types/ClassroomNote';
-export type {
-  BanyanStage,
-  BhumiStage,
-  CrystalTier,
-  ImpactRipple,
-  RippleSourceEntityType,
-  RippleType,
-  RiverStage,
-  UserGrowthState,
-} from '@repo/core/types/Growth';
-export type { PrincipalNote } from '@repo/core/types/PrincipalNote';
-// --- Re-exports (Types & Contracts) ---
 export * from '@repo/core/api/admin.contract';
+// --- Re-exports (Types & Contracts) ---
+export * from '@repo/core/api/agent.contract';
 export * from '@repo/core/api/announcements';
 export * from '@repo/core/api/circles';
 export * from '@repo/core/api/classroomGroups';
@@ -138,9 +133,23 @@ export * from '@repo/core/api/thuthimal';
 export * from '@repo/core/api/userGrowthState';
 export * from '@repo/core/api/warmMirror';
 export * from '@repo/core/api/workspaceLayout.contract';
+export type { ClassroomNote } from '@repo/core/types/ClassroomNote';
+export type {
+  BanyanStage,
+  BhumiStage,
+  CrystalTier,
+  ImpactRipple,
+  RippleSourceEntityType,
+  RippleType,
+  RiverStage,
+  UserGrowthState,
+} from '@repo/core/types/Growth';
+export type { PrincipalNote } from '@repo/core/types/PrincipalNote';
+export type { CalendarEvent } from '@repo/schema';
 
 export {
   academicCyclesAPI,
+  agentAPI,
   assignmentsAPI,
   attendanceAPI,
   authAPI,
@@ -181,6 +190,7 @@ export {
  */
 export const api: Record<string, any> = {
   announcements: announcementAPI,
+  agent: agentAPI,
   auth: authAPI,
   circles: circleAPI,
   identity: identityAPI,
