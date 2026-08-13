@@ -2,43 +2,56 @@ import './setup';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createTestORPCClient } from './orpc-client';
 import { setMockActiveBond, setMockZenStackDbAvailable } from './setup';
+import { gradingContract } from '@repo/core/api/grading.contract';
 
-describe('Sanctuary API: grading via native oRPC', () => {
+describe('Sanctuary API: lifecycle grading via native oRPC', () => {
   const headers = {
     Authorization: 'Bearer 123e4567-e89b-12d3-a456-426614174000',
-    'x-classroom-ids': '123e4567-e89b-12d3-a456-426614174001',
+    'x-classroom-ids': '123e4567-e89b-12d3-a456-426614174003',
+    'x-device-trust': 'high',
   };
-  const classroomId = '123e4567-e89b-12d3-a456-426614174001';
+  const ids = {
+    studentId: '123e4567-e89b-12d3-a456-426614174000',
+    schoolId: '123e4567-e89b-12d3-a456-426614174001',
+    academicCycleId: '123e4567-e89b-12d3-a456-426614174002',
+    gradeClassId: '123e4567-e89b-12d3-a456-426614174003',
+    termId: '123e4567-e89b-12d3-a456-426614174004',
+    subjectId: '123e4567-e89b-12d3-a456-426614174005',
+  };
 
   beforeEach(() => {
     setMockZenStackDbAvailable(true);
-    setMockActiveBond({ id: 'bond-grading', user_id: '123e4567-e89b-12d3-a456-426614174000', entity_id: 'school-123', entity_type: 'SCHOOL', capacity: 'teacher', status: 'active' });
+    setMockActiveBond({ id: 'bond-grading', user_id: ids.studentId, entity_id: ids.schoolId, entity_type: 'SCHOOL', capacity: 'teacher', status: 'active' });
   });
 
-  it('executes classroom grade reads and validates the explicit DTO list', async () => {
-    const body = await createTestORPCClient(headers).grading.getClassroomGrades({ classroomId });
+  it('reads grade marks through the lifecycle grade class scope', async () => {
+    const body = await createTestORPCClient(headers).grading.getClassroomGrades({
+      schoolId: ids.schoolId,
+      academicCycleId: ids.academicCycleId,
+      gradeClassId: ids.gradeClassId,
+      termId: ids.termId,
+      subjectId: ids.subjectId,
+    });
     expect(body).toEqual([]);
   });
 
-  it('rejects marks outside the contract range before the handler runs', async () => {
-    await expect(createTestORPCClient(headers).grading.submitGrade({
-      studentId: classroomId,
-      classroomId,
-      marks: 101,
-    })).rejects.toMatchObject({ status: 400 });
+  it('rejects legacy classroom identifiers and invalid marks at the contract boundary', async () => {
+    const result = gradingContract.submitGrade.request.body.safeParse({
+      ...ids,
+      marksEarned: 101,
+      maxPoints: 100,
+      classroomId: ids.gradeClassId,
+    });
+    expect(result.success).toBe(false);
   });
 
-  it('reads and updates grading settings through typed procedures', async () => {
-    const client = createTestORPCClient(headers);
-    await expect(client.grading.getGradingSettings({ classroomId })).resolves.toEqual({
-      classroom_id: classroomId,
-      grading_mode: 'both',
-      show_ranks: true,
+  it('requires every lifecycle identifier for writes', async () => {
+    const { subjectId: _subjectId, ...missingSubject } = ids;
+    const result = gradingContract.submitGrade.request.body.safeParse({
+      ...missingSubject,
+      marksEarned: 75,
+      maxPoints: 100,
     });
-    await expect(client.grading.updateGradingSettings({ classroomId, gradingMode: 'points', showRanks: false })).resolves.toMatchObject({
-      classroom_id: classroomId,
-      grading_mode: 'points',
-      show_ranks: false,
-    });
+    expect(result.success).toBe(false);
   });
 });

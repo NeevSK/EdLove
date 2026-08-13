@@ -1,5 +1,5 @@
-# Doppler Configuration for Sanctuary API
-# This file configures the Doppler project and config for the Sanctuary API
+# Doppler setup hint for Sanctuary API.
+# Runtime scripts inject secrets with `doppler run`; `.env` fallback is explicit only.
 setup:
   - project: gurudevi-mobile
     config: dev

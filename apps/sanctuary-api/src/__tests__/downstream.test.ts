@@ -104,9 +104,14 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
       'x-capacity': 'student',
       'x-school-id': schoolId,
     }).grading.submitGrade({
-      classroomId: schoolId,
+      schoolId,
+      academicCycleId: '123e4567-e89b-12d3-a456-426614174010',
+      gradeClassId: classroomId,
+      termId: '123e4567-e89b-12d3-a456-426614174011',
+      subjectId: '123e4567-e89b-12d3-a456-426614174012',
       studentId: '123e4567-e89b-12d3-a456-426614174003',
-      marks: 85,
+      marksEarned: 85,
+      maxPoints: 100,
     })).rejects.toMatchObject({ status: 403 });
   });
 
@@ -118,14 +123,19 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
         'x-capacity': 'teacher',
         'x-school-id': schoolId,
         'x-classroom-ids': classroomId,
-        'x-device-trust': 'high',
+      'x-device-trust': 'high',
       }).grading.submitGrade({
-        classroomId,
+        schoolId,
+        academicCycleId: '123e4567-e89b-12d3-a456-426614174010',
+        gradeClassId: classroomId,
+        termId: '123e4567-e89b-12d3-a456-426614174011',
+        subjectId: '123e4567-e89b-12d3-a456-426614174012',
         studentId: '123e4567-e89b-12d3-a456-426614174003',
-        marks: 85,
+        marksEarned: 85,
+        maxPoints: 100,
       });
 
-    expect(body.classroom_id).toBe(classroomId);
+    expect(body.grade_class_id).toBe(classroomId);
     expect(body.student_id).toBe('123e4567-e89b-12d3-a456-426614174003');
   });
 

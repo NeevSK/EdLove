@@ -37,6 +37,7 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
             (typeof procedureInput.id === 'string' && procedureInput.id) ||
             context.schoolId || 'school_institutional'
         : (typeof procedureInput.id === 'string' && procedureInput.id) ||
+          (typeof procedureInput.gradeClassId === 'string' && procedureInput.gradeClassId) ||
           (typeof procedureInput.classroomId === 'string' && procedureInput.classroomId) ||
           (typeof procedureInput.studentId === 'string' && procedureInput.studentId) ||
           (typeof procedureInput.commentId === 'string' && procedureInput.commentId) ||
@@ -64,8 +65,11 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
         ...(resourceType === 'Classroom' && typeof procedureInput.teacherId === 'string' && { teacher_id: procedureInput.teacherId }),
         ...(resourceType === 'Announcement' && typeof procedureInput.schoolId === 'string' && { school_id: procedureInput.schoolId }),
         ...(resourceType === 'Announcement' && cedarAction === 'create' && { author_id: context.user.id }),
-        ...(resourceType !== 'Classroom' && typeof procedureInput.classroomId === 'string' && { classroom_id: procedureInput.classroomId }),
-        ...(['Grade', 'AttendanceRecord', 'AssignmentSubmission'].includes(resourceType) && typeof procedureInput.studentId === 'string' && { student_id: procedureInput.studentId }),
+        ...(['Grade', 'AttendanceRecord', 'AssignmentSubmission'].includes(resourceType) && typeof procedureInput.classroomId === 'string' && { classroom_id: procedureInput.classroomId }),
+        ...(['DailyAttendance', 'AttendanceSession'].includes(resourceType) && typeof procedureInput.gradeClassId === 'string' && { grade_class_id: procedureInput.gradeClassId }),
+        ...(resourceType === 'GradeMark' && typeof procedureInput.gradeClassId === 'string' && { grade_class_id: procedureInput.gradeClassId }),
+        ...(resourceType === 'GradeMark' && typeof procedureInput.schoolId === 'string' && { school_id: procedureInput.schoolId }),
+        ...(['Grade', 'GradeMark', 'AttendanceRecord', 'DailyAttendance', 'AttendanceSession', 'AssignmentSubmission'].includes(resourceType) && typeof procedureInput.studentId === 'string' && { student_id: procedureInput.studentId }),
         ...(resourceType === 'AssignmentSubmission' && typeof procedureInput.assignmentId === 'string' && { assignment_id: procedureInput.assignmentId }),
         ...(resourceType === 'AssignmentSubmission' && typeof procedureInput.classroomId === 'string' && { classroom_id: procedureInput.classroomId }),
         ...(resourceType === 'AssignmentSubmission' && cedarAction === 'create' && { student_id: context.user.id }),

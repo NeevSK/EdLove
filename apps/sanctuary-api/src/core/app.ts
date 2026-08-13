@@ -301,6 +301,26 @@ app.use('*', logger());
 app.use('*', requestId());
 app.use('/api/*', otelMiddleware());
 
+// Platform health contract. Liveness never touches external dependencies;
+// readiness verifies the minimum runtime configuration and database reachability.
+app.get('/health/live', (c) =>
+  c.json({ status: 'ok', service: 'sanctuary-api', environment: getEnv('NODE_ENV') || 'unknown' }),
+);
+
+app.get('/health/ready', async (c) => {
+  const databaseUrl = (c.env as any)?.DATABASE_URL || getEnv('DATABASE_URL');
+  if (!databaseUrl) {
+    return c.json({ status: 'not_ready', reason: 'database_configuration_missing' }, 503);
+  }
+
+  try {
+    await queryDatabaseRows<{ ok: number }>('SELECT 1 AS ok');
+    return c.json({ status: 'ready', service: 'sanctuary-api' });
+  } catch {
+    return c.json({ status: 'not_ready', reason: 'database_unreachable' }, 503);
+  }
+});
+
 // --- 2. Sovereign Auth & ZenStack (ReBAC) Middleware ---
 app.use('/api/*', async (c, next) => {
   // 1. Resolve User from Header using Authoritative Asymmetric Cryptographic JWT Verification
@@ -946,6 +966,12 @@ app.all('/api/attendance/*', async (c) => {
   const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
   return matched && response ? response : c.text('Not Found', 404);
 });
+
+app.all('/api/guardianAssessment/*', async (c) => {
+  const context = await buildORPCContextFromHono(c);
+  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
+  return matched && response ? response : c.text('Not Found', 404);
+});
 const aiPolicyRoute: SovereignRoute = {
   path: '/api/ai/chat',
   method: 'post',
@@ -955,6 +981,29 @@ const aiPolicyRoute: SovereignRoute = {
 app.use('/api/ai/*', poa(aiPolicyRoute));
 app.use('/api/ai/*', featureFlagGateForKey('isAIAssistantEnabled', '/api/ai'));
 app.route('/api/ai', aiRouter);
+
+// Transitional ownership bridge: the durable-agent UI now lives in Gurudevi
+// Mobile (including web), while the server-only worker is being moved behind
+// the canonical Sanctuary API.
+app.all('/api/durable-agents/*', async (c) => {
+  const legacyBase = getEnv('DURABLE_AGENT_LEGACY_API_URL')?.replace(/\/$/, '');
+  if (!legacyBase) return c.json({ error: 'Durable-agent service is not configured.' }, 503);
+
+  const incoming = new URL(c.req.url);
+  const target = new URL(`${legacyBase}${incoming.pathname}`);
+  incoming.searchParams.forEach((value, key) => target.searchParams.append(key, value));
+  const headers = new Headers(c.req.raw.headers);
+  headers.delete('host');
+  headers.delete('content-length');
+  const response = await fetch(target, {
+    method: c.req.raw.method,
+    headers,
+    body: c.req.raw.method === 'GET' || c.req.raw.method === 'HEAD' ? undefined : c.req.raw.body,
+    // @ts-expect-error Node fetch requires duplex for streaming request bodies.
+    duplex: 'half',
+  });
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers: response.headers });
+});
 
 // Public Payments Webhook (Bypasses Bearer Auth)
 app.post('/payments/payhere-webhook', async (c) => {

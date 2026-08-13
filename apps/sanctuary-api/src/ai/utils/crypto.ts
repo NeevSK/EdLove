@@ -1,15 +1,20 @@
 import crypto from 'node:crypto';
 
-// Use a 32-byte secret derived from env, or a stable fallback for development
-const SECRET = (
-  process.env.BYOK_ENCRYPTION_SECRET || 'default-32-character-secret-key-12345'
-).substring(0, 32);
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 12;
 
+function getSecret(): Buffer {
+  const configured = process.env.BYOK_ENCRYPTION_SECRET;
+  if (!configured) {
+    throw new Error('BYOK_ENCRYPTION_SECRET must be provided by Doppler before encrypting keys');
+  }
+
+  return Buffer.from(configured.substring(0, 32));
+}
+
 export function encryptKey(text: string): string {
   const iv = crypto.randomBytes(IV_LENGTH);
-  const cipher = crypto.createCipheriv(ALGORITHM, Buffer.from(SECRET), iv);
+  const cipher = crypto.createCipheriv(ALGORITHM, getSecret(), iv);
 
   let encrypted = cipher.update(text, 'utf8', 'hex');
   encrypted += cipher.final('hex');
@@ -30,7 +35,7 @@ export function decryptKey(encryptedText: string): string {
   const encrypted = parts[1]!;
   const authTag = Buffer.from(parts[2]!, 'hex');
 
-  const decipher = crypto.createDecipheriv(ALGORITHM, Buffer.from(SECRET), iv);
+  const decipher = crypto.createDecipheriv(ALGORITHM, getSecret(), iv);
   decipher.setAuthTag(authTag);
 
   let decrypted = decipher.update(encrypted, 'hex', 'utf8');

@@ -22,6 +22,7 @@ export const syncRouter = impl.router({
       context.db,
       input.crud,
       input.idempotencyKey,
+      context.user.id,
     );
   }),
 });
