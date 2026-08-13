@@ -9,11 +9,24 @@ on:
       version_code:
         description: 'Android versionCode (30)'
         required: true
+      environment:
+        description: 'Doppler/GitHub deployment environment'
+        required: true
+        default: production
+        type: choice
+        options:
+          - preview
+          - production
 
 jobs:
   sentry-upload:
     runs-on: ubuntu-latest
     continue-on-error: true
+    environment: ${{ github.event.inputs.environment || 'production' }}
+    env:
+      DOPPLER_PROJECT: gurudevi-mobile
+      DOPPLER_CONFIG: ${{ github.event.inputs.environment == 'preview' && 'stg' || 'prd' }}
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
     steps:
       - name: 🏗 Checkout
         uses: actions/checkout@v4
@@ -21,7 +34,7 @@ jobs:
       - name: 🏗 Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 11.18.0
+          version: 11.21.0
 
       - name: 🏗 Setup Node
         uses: actions/setup-node@v4
@@ -29,8 +42,15 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
 
+      - name: 🔐 Load Doppler build environment
+        uses: ./.github/actions/load-doppler-env
+        with:
+          project: ${{ env.DOPPLER_PROJECT }}
+          config: ${{ env.DOPPLER_CONFIG }}
+          token: ${{ env.DOPPLER_TOKEN }}
+
       - name: 📦 Install dependencies
-        run: pnpm install --fetch-timeout 100000
+        run: pnpm install --frozen-lockfile --fetch-timeout 100000
 
       # ── Metro bundle (JS only, no Android build) ──────────────────────────
       - name: 📦 Metro bundle
@@ -38,13 +58,6 @@ jobs:
         continue-on-error: true
         env:
           EXPO_NO_DOCTOR: 1
-          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
-          EXPO_PUBLIC_POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
-          EXPO_PUBLIC_POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
-          EXPO_PUBLIC_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-          EXPO_PUBLIC_INNGEST_EVENT_KEY: ${{ secrets.INNGEST_EVENT_KEY }}
-          EXPO_PUBLIC_POWERSYNC_URL: ${{ secrets.POWERSYNC_URL }}
           NODE_ENV: production
           NODE_OPTIONS: --max-old-space-size=8192
         run: |
@@ -94,35 +107,10 @@ jobs:
           fi
 
       # ── Sentry upload ──────────────────────────────────────────────────────
-      - name: 🔍 Debug — sentry-cli auth check
-        if: steps.verify.outputs.available == 'true'
-        continue-on-error: true
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: intuitui-labs
-          SENTRY_PROJECT: gurudevi-mobile
-        run: |
-          echo "=== sentry-cli check ==="
-
-          if [ -z "$SENTRY_AUTH_TOKEN" ]; then
-            echo "❌ SENTRY_AUTH_TOKEN not set"
-          else
-            LEN=${#SENTRY_AUTH_TOKEN}
-            PREVIEW="${SENTRY_AUTH_TOKEN:0:4}...${SENTRY_AUTH_TOKEN: -4}"
-            echo "✅ Token present (length=$LEN, preview=$PREVIEW)"
-          fi
-
-          echo ""
-          cd apps/gurudevi-mobile
-          pnpm exec sentry-cli --version 2>&1 || echo "❌ sentry-cli not available"
-          echo ""
-          pnpm exec sentry-cli info 2>&1 || echo "⚠️ auth check failed"
-
       - name: 🚀 Sentry sourcemap upload
         id: sentry-upload
         if: steps.verify.outputs.available == 'true'
         env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: intuitui-labs
           SENTRY_PROJECT: gurudevi-mobile
         run: |

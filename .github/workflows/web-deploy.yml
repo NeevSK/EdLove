@@ -38,6 +38,10 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'production' || 'preview') }}
+    env:
+      DOPPLER_PROJECT: gurudevi-mobile
+      DOPPLER_CONFIG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production' && 'prd' || github.event_name != 'workflow_dispatch' && github.ref == 'refs/heads/main' && 'prd' || 'stg' }}
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
 
     steps:
       - name: 🏗 Checkout
@@ -46,13 +50,20 @@ jobs:
       - name: 🏗 Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 11.18.0
+          version: 11.21.0
 
       - name: 🏗 Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
+
+      - name: 🔐 Load Doppler build environment
+        uses: ./.github/actions/load-doppler-env
+        with:
+          project: ${{ env.DOPPLER_PROJECT }}
+          config: ${{ env.DOPPLER_CONFIG }}
+          token: ${{ env.DOPPLER_TOKEN }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -64,16 +75,10 @@ jobs:
         working-directory: apps/gurudevi-mobile
         run: |
           if [ -z "$EXPO_PUBLIC_SUPABASE_URL" ]; then
-            echo "❌ Error: EXPO_PUBLIC_SUPABASE_URL is not set. Check your GitHub Secrets."
+            echo "❌ Error: EXPO_PUBLIC_SUPABASE_URL is not present in the Doppler config."
             exit 1
           fi
           pnpm build:web
-        env:
-          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
-          EXPO_PUBLIC_POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
-          EXPO_PUBLIC_POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
-          EXPO_PUBLIC_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
 
       - name: 📤 Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -91,28 +96,3 @@ jobs:
       - name: 🚀 Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-
-        
-      # ──────────────────────────────────────────────────────────────
-      # Vercel deployment (uncomment once VERCEL_TOKEN secret is set)
-      # See: https://vercel.com/docs/deployments/deploy-button
-      # ──────────────────────────────────────────────────────────────
-      # - name: 🚀 Deploy to Vercel (preview)
-      #   if: github.event_name == 'pull_request'
-      #   uses: amondnet/vercel-action@v25
-      #   with:
-      #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
-      #     vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-      #     vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
-      #     working-directory: apps/gurudevi-mobile/dist
-      #
-      # - name: 🚀 Deploy to Vercel (production)
-      #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      #   uses: amondnet/vercel-action@v25
-      #   with:
-      #     vercel-token: ${{ secrets.VERCEL_TOKEN }}
-      #     vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-      #     vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_WEB }}
-      #     vercel-args: '--prod'
-      #     working-directory: apps/gurudevi-mobile/dist

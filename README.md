@@ -14,6 +14,7 @@ A single monorepo for the EdLove education ecosystem:
 - Openness/licensing decision (pending): [docs/OPENNESS_DECISION.md](./docs/OPENNESS_DECISION.md)
 - Branch pipeline (solo, scalable): [docs/BRANCHING_MODEL.md](./docs/BRANCHING_MODEL.md)
 - Codex skill usage guide: [docs/SKILL_PLAYBOOK.md](./docs/SKILL_PLAYBOOK.md)
+- Doppler-centered engineering toolchain: [docs/infra/doppler-toolchain.md](./docs/infra/doppler-toolchain.md)
 
 App contexts (read before working in an app):
 
@@ -27,6 +28,8 @@ App contexts (read before working in an app):
 
 - Public marketing site (Astro): `apps/gurudevi-marketingWeb` (domain: `gurudevi.edlove.org`, eventually `gurudevi.lk`)
 - Platform web app (React Native Web via Expo/Metro): `apps/gurudevi-mobile` (domain: `platform.gurudevi.edlove.org`, GitHub Pages)
+- Toolchain authority and CI/free-first integrations: [docs/infra/doppler-toolchain.md](./docs/infra/doppler-toolchain.md) and [docs/infra/github-student-pack-toolchain.md](./docs/infra/github-student-pack-toolchain.md)
+- Testing and performance lanes: [docs/infra/testing-and-performance-toolchain.md](./docs/infra/testing-and-performance-toolchain.md)
 
 Web guide: [apps/gurudevi-mobile/docs/web/WEB_GUIDE.md](./apps/gurudevi-mobile/docs/web/WEB_GUIDE.md)
 
@@ -43,6 +46,7 @@ pnpm dev
 pnpm build
 pnpm lint
 pnpm check-types
+pnpm audit:secrets
 ```
 
 This repo uses `pnpm` workspaces + `turbo` to orchestrate tasks across apps/packages.

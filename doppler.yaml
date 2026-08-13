@@ -1,5 +1,6 @@
-# Doppler Configuration for Polymath Platform Monorepo
-# This file configures the default Doppler project and config for the entire workspace
+# Doppler setup hint for the Polymath Platform monorepo.
+# Run `doppler setup --no-interactive` once on this directory after login.
+# CI always passes the project/config explicitly and uses a scoped service token.
 setup:
   - project: gurudevi-mobile
     config: dev

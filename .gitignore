@@ -12,8 +12,16 @@ node_modules
 .env.test.local
 .env.production.local
 
+# Doppler fallback files are encrypted, machine-bound cache artifacts.
+# They must not be committed or used as the workspace source of truth.
+**/doppler.json
+.doppler/
+
 # Testing
 coverage
+**/playwright-report/
+**/test-results/
+**/.astro/
 
 # Turbo
 .turbo
