@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 import type { PrincipalInviteRole } from '@repo/core/logic';
 
 export type InviteCode = Awaited<

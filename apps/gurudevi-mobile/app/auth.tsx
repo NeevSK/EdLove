@@ -1,9 +1,9 @@
 import { Center, Spinner } from '@repo/ui/primitives';
-import { identityAPI } from '@repo/core/api';
+import { identityAPI } from '@repo/core/api/identity';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
 import { Suspense, useCallback } from 'react';
-import AuthScreen from '@/screens/AuthScreen';
+import AuthScreen from '../src/screens/AuthScreen';
 
 function Fallback() {
   return (

@@ -4,7 +4,7 @@ import {
   ProGiftSchema,
   UserEntitlementsSchema,
 } from '@repo/core/logic/schemas/pro.schema';
-import type { SovereignContract } from '@repo/core/api/contract';
+import type { SovereignContract } from '@repo/core/api/contracts';
 
 const proAuthority = (
   action: 'manage' | 'create' | 'read' | 'update' | 'delete' | 'submit' | 'verify',

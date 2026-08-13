@@ -1,4 +1,4 @@
-import { api, type StudentObservation } from '@repo/core/api';
+import { api, type StudentObservation } from '@repo/core/api/client';
 import type { GradeMarkLifecycleContext } from '@repo/classroom/hooks/useGradebook';
 import type { StudentGrade } from '@repo/core/types';
 import type { AttendanceRecord } from '@repo/core/types';

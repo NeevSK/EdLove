@@ -1,6 +1,7 @@
 import { guestStorageKey } from '@repo/core/native/guestScope';
 import { SafeZustandStorage } from '@repo/core/native/storageWrapper';
-import { Data, Effect } from 'effect';
+import * as Data from 'effect/Data';
+import * as Effect from 'effect/Effect';
 
 // Keys for MMKV storage
 const GUEST_TIMETABLE_KEY = () => guestStorageKey('timetable');

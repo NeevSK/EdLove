@@ -158,14 +158,13 @@ export { applyRule, validateRules } from '@intuitui-labs/form-builder-engine/val
 export { GrowthBookFeatureRolloutAdapter } from '@repo/core/adapters/feature-rollout/growthBookFeatureRollout.adapter';
 // Hexagonal Adapters
 export { SupabaseEntitlementAdapter } from '@repo/core/adapters/supabase/supabaseEntitlement.adapter';
-export * from '@repo/core/api';
+export * from '@repo/core/api/client';
 export {
-  adaptToHono,
   type POAMetadata,
   POAMetadataSchema,
   type SovereignContract,
   type SovereignRoute,
-} from '@repo/core/api/contract';
+} from '@repo/core/api/contracts';
 export * from '@repo/core/constants/SriLankanSchools';
 export * from '@repo/core/hooks';
 export {

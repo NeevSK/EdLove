@@ -4,7 +4,7 @@ import {
   MoodLogSchema,
   UserPreferencesSchema,
 } from '@repo/core/logic/schemas/self.schema';
-import type { SovereignContract } from '@repo/core/api/contract';
+import type { SovereignContract } from '@repo/core/api/contracts';
 
 const wellbeingAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
   ({

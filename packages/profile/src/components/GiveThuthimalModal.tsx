@@ -1,4 +1,4 @@
-import { thuthimalAPI } from '@repo/core/api';
+import { thuthimalAPI } from '@repo/core/api/client';
 
 import { useLotusToast } from '@repo/ui/hooks';
 import { X } from '@repo/ui/icons';

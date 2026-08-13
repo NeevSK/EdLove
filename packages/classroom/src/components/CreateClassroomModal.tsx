@@ -1,4 +1,4 @@
-import { api, communityAPI, identityAPI } from '@repo/core/api';
+import { api, communityAPI, identityAPI } from '@repo/core/api/client';
 import { useEntity } from '@repo/core/hooks';
 import { handleAPIError } from '@repo/core/logic';
 

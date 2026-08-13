@@ -1,5 +1,5 @@
 import { communityAPI } from '@repo/community';
-import { schoolAPI } from '@repo/core/api';
+import { schoolAPI } from '@repo/core/api/client';
 import { useSchoolCreation } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
 import { KeyboardAwareForm } from '@repo/core/hooks/useKeyboard';

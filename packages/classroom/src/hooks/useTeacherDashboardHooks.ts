@@ -1,4 +1,4 @@
-import { assignmentsAPI, classroomsAPI } from '@repo/core/api';
+import { assignmentsAPI, classroomsAPI } from '@repo/core/api/client';
 import { type Assignment, type Echo, type TeacherStats, useAuthStore } from '@repo/core/logic';
 
 import { useQuery } from '@tanstack/react-query';

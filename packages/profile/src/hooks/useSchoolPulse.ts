@@ -1,4 +1,4 @@
-import { profileAPI } from '@repo/core/api';
+import { profileAPI } from '@repo/core/api/client';
 import { handleAPIError, useTemporalStore } from '@repo/core/logic';
 import { useCallback, useEffect, useReducer } from 'react';
 export interface PulseMetrics {

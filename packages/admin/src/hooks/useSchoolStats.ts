@@ -1,4 +1,4 @@
-import { api, MOCK_SCHOOL_STATS } from '@repo/core/api';
+import { api, MOCK_SCHOOL_STATS } from '@repo/core/api/client';
 import { useIsGuest } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';

@@ -10,7 +10,7 @@
  *  - Supabase subscription on 'direct_messages' table
  */
 
-import { socialAPI } from '@repo/core/api';
+import { socialAPI } from '@repo/core/api/client';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 

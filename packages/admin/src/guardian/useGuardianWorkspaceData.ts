@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 
 import { useCallback, useEffect, useState } from 'react';
 import type { GuardianDashboardData } from '@repo/admin/guardian/types';

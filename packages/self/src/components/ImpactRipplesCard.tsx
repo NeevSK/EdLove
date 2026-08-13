@@ -4,7 +4,7 @@
  * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
-import type { ImpactRipple } from '@repo/core/api';
+import type { ImpactRipple } from '@repo/core/api/client';
 import { Droplet, Heart, Sparkles } from '@repo/ui/icons';
 import { AnimatedView, Box, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { FadeInDown } from 'react-native-reanimated';

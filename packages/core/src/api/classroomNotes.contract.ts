@@ -5,7 +5,7 @@ import {
   ClassroomNoteTypeSchema,
   ClassroomNoteVisibilitySchema,
 } from '@repo/core/logic/schemas/classroom-note.schema';
-import type { SovereignContract } from '@repo/core/api/contract';
+import type { SovereignContract } from '@repo/core/api/contracts';
 
 const classroomNoteAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',

@@ -1,4 +1,4 @@
-import { attendanceAPI } from '@repo/core/api';
+import { attendanceAPI } from '@repo/core/api/client';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import type { AttendanceReport, TenantKind } from '@repo/core/logic';
 

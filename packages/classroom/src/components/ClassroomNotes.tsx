@@ -19,7 +19,7 @@
  *   - Infinite scroll backward in time — old notes are never deleted
  */
 
-import { api, type ClassroomNote } from '@repo/core/api';
+import { api, type ClassroomNote } from '@repo/core/api/client';
 
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { useLotusToast } from '@repo/ui/hooks';

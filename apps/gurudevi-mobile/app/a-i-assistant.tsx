@@ -1,4 +1,4 @@
-import { AIAssistantScreen } from '@repo/ai';
+import { AIAssistantScreen } from '@repo/ai/assistant';
 import { Flower2 } from '@repo/ui/icons';
 import { Center, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { Suspense } from 'react';

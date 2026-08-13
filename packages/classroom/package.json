@@ -9,6 +9,41 @@
       "import": "./src/index.ts",
       "default": "./src/index.ts"
     },
+    "./overview": {
+      "types": "./src/entrypoints/overview.ts",
+      "import": "./src/entrypoints/overview.ts",
+      "default": "./src/entrypoints/overview.ts"
+    },
+    "./teacher": {
+      "types": "./src/entrypoints/teacher.ts",
+      "import": "./src/entrypoints/teacher.ts",
+      "default": "./src/entrypoints/teacher.ts"
+    },
+    "./student": {
+      "types": "./src/entrypoints/student.ts",
+      "import": "./src/entrypoints/student.ts",
+      "default": "./src/entrypoints/student.ts"
+    },
+    "./attendance": {
+      "types": "./src/entrypoints/attendance.ts",
+      "import": "./src/entrypoints/attendance.ts",
+      "default": "./src/entrypoints/attendance.ts"
+    },
+    "./gradebook": {
+      "types": "./src/entrypoints/gradebook.ts",
+      "import": "./src/entrypoints/gradebook.ts",
+      "default": "./src/entrypoints/gradebook.ts"
+    },
+    "./content": {
+      "types": "./src/entrypoints/content.ts",
+      "import": "./src/entrypoints/content.ts",
+      "default": "./src/entrypoints/content.ts"
+    },
+    "./api": {
+      "types": "./src/entrypoints/api.ts",
+      "import": "./src/entrypoints/api.ts",
+      "default": "./src/entrypoints/api.ts"
+    },
     "./*": {
       "types": "./src/*.ts",
       "import": "./src/*.js",

@@ -1,5 +1,5 @@
 import type { Session } from '@supabase/supabase-js';
-import { Effect } from 'effect';
+import * as Effect from 'effect/Effect';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { setActiveCapabilityToken } from '@repo/core/adapters/powersync/database';
 import { authAPI } from '@repo/core/api/auth';

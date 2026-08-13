@@ -21,7 +21,7 @@ import {
   runEffect,
   tryPromise,
 } from '@repo/core/utils/effect';
-import { Effect } from 'effect';
+import * as Effect from 'effect/Effect';
 
 export * from '@repo/core/types/Growth';
 

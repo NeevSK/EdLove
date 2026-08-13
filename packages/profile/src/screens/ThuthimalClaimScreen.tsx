@@ -5,7 +5,7 @@
  * Philosophy: Non-transactional, dignified, honors teaching as sacred work.
  */
 
-import { identityAPI, thuthimalAPI } from '@repo/core/api';
+import { identityAPI, thuthimalAPI } from '@repo/core/api/client';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import {
   AnimatedView,

@@ -8,7 +8,7 @@ import {
   SentinelAuditLogSchema,
 } from '@repo/core/logic/schemas/founder.schema';
 import { SchoolSchema } from '@repo/core/logic/schemas/school.schema';
-import type { SovereignContract } from '@repo/core/api/contract';
+import type { SovereignContract } from '@repo/core/api/contracts';
 
 const founderAuthority = (action: 'create' | 'read' | 'update' | 'delete', subject: string) =>
   ({ policy: { action, subject } }) as const;

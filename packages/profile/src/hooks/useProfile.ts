@@ -1,4 +1,4 @@
-import { authAPI, identityAPI, profileAPI } from '@repo/core/api';
+import { authAPI, identityAPI, profileAPI } from '@repo/core/api/client';
 import { useRewards } from '@repo/core/hooks';
 import { handleAPIError, useMutationQueue, useTemporalStore } from '@repo/core/logic';
 

@@ -1,7 +1,7 @@
 /**
  * ThuthimalClaimScreen.tsx
  */
-import { ThuthimalClaimScreen as PackageThuthimalClaimScreen } from '@repo/profile';
+import { ThuthimalClaimScreen as PackageThuthimalClaimScreen } from '@repo/profile/own';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 
 const ThuthimalWrapper = (props: Record<string, unknown>) => (

@@ -1,4 +1,4 @@
-import { assignmentsAPI } from '@repo/core/api';
+import { assignmentsAPI } from '@repo/core/api/client';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { Award, BookMarked } from '@repo/ui/icons';
 import { Box, HStack, Icon, Text, VStack } from '@repo/ui/primitives';

@@ -9,6 +9,11 @@
       "import": "./src/index.ts",
       "default": "./src/index.ts"
     },
+    "./founder": { "types": "./src/founder.ts", "import": "./src/founder.ts", "default": "./src/founder.ts" },
+    "./principal": { "types": "./src/principal.ts", "import": "./src/principal.ts", "default": "./src/principal.ts" },
+    "./guardian": { "types": "./src/guardian.ts", "import": "./src/guardian.ts", "default": "./src/guardian.ts" },
+    "./school-operations": { "types": "./src/school-operations.ts", "import": "./src/school-operations.ts", "default": "./src/school-operations.ts" },
+    "./api": { "types": "./src/api.ts", "import": "./src/api.ts", "default": "./src/api.ts" },
     "./screens/FounderDashboard": {
       "types": "./src/screens/FounderDashboard.tsx",
       "import": "./src/screens/FounderDashboard.tsx",

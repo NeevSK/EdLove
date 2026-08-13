@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 import { useStore } from '@repo/core/logic';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';
 import type { ClassroomResource } from '@repo/core/types';

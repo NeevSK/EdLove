@@ -1,1 +1,1 @@
-export { ResourceHubScreen as default } from '@repo/library';
+export { ResourceHubScreen as default } from '@repo/library/browse';

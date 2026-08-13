@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { GradeMarkSchema } from '@repo/core/logic/schemas/grade-domain.schema';
-import type { SovereignContract } from '@repo/core/api/contract';
+import type { SovereignContract } from '@repo/core/api/contracts';
 
 const gradingAuthority = (
   action: 'read' | 'grade' | 'publish',

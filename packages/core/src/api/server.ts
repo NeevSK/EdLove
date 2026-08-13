@@ -2,11 +2,13 @@ export { adminContract } from '@repo/core/api/admin.contract';
 export { communityContract } from '@repo/core/api/community.contract';
 export {
   adaptToHono,
+} from '@repo/core/api/serverAdapter';
+export {
   type POAMetadata,
   POAMetadataSchema,
   type SovereignContract,
   type SovereignRoute,
-} from '@repo/core/api/contract';
+} from '@repo/core/api/contracts';
 export { dailyContentContract } from '@repo/core/api/dailyContent.contract';
 export { educationalContract } from '@repo/core/api/educational.contract';
 export { gradingContract } from '@repo/core/api/grading.contract';

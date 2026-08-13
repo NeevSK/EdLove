@@ -1,4 +1,4 @@
-import { historyAPI } from '@repo/core/api';
+import { historyAPI } from '@repo/core/api/client';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 
 import { useEffect, useState } from 'react';

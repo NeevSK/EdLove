@@ -1,4 +1,4 @@
-import { ThuthimalClaimScreen } from '@repo/profile';
+import { ThuthimalClaimScreen } from '@repo/profile/own';
 import { Center, Spinner } from '@repo/ui/primitives';
 import { Suspense } from 'react';
 

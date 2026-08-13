@@ -1,4 +1,4 @@
-import { createSovereignClient as createSovereignClientRaw } from '@repo/core/api/contract';
+import { createSovereignClient as createSovereignClientRaw } from '@repo/core/api/clientRuntime';
 
 /**
  * AppType - The shared type definition for the entire Sovereign API.

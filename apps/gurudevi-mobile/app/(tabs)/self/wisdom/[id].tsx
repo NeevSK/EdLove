@@ -1,5 +1,5 @@
 import { usePermissions, useStore } from '@repo/core/logic';
-import { useWisdom } from '@repo/self';
+import { useWisdom } from '@repo/self/wisdom';
 import { ChevronLeft, Leaf } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';

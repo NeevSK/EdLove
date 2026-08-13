@@ -4,7 +4,7 @@ import {
   AttendanceSchema,
   SchoolAttendancePulseSchema,
 } from '@repo/core/logic/schemas/attendance.schema';
-import type { SovereignContract } from '@repo/core/api/contract';
+import type { SovereignContract } from '@repo/core/api/contracts';
 
 const operationsAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',

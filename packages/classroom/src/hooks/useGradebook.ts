@@ -1,4 +1,4 @@
-import { gradingAPI, growthSignalsAPI, studentsAPI } from '@repo/core/api';
+import { gradingAPI, growthSignalsAPI, studentsAPI } from '@repo/core/api/client';
 import type { GradeMark } from '@repo/core/logic/schemas/grade-domain.schema';
 import { type ClassroomGradingSettings, type StudentGrade } from '@repo/core/types';
 import { useStore } from '@repo/core/logic';

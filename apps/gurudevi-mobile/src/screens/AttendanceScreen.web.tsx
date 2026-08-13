@@ -5,7 +5,7 @@
  * Orchestration and logic are managed in @repo/classroom.
  */
 
-import { AttendanceScreenWeb } from '@repo/classroom';
+import { AttendanceScreenWeb } from '@repo/classroom/attendance';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 
 const AttendanceScreen = (props: Record<string, unknown>) => {

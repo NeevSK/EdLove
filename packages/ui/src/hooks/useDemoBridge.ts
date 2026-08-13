@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 import { useStore } from '@repo/core/logic';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -1,5 +1,5 @@
 import { communityAPI } from '@repo/community';
-import { growthSignalsAPI, identityAPI } from '@repo/core/api';
+import { growthSignalsAPI, identityAPI } from '@repo/core/api/client';
 import { handleAPIError } from '@repo/core/logic';
 import type { School } from '@repo/core/types';
 

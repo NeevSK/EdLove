@@ -1,4 +1,4 @@
-import { profileAPI } from '@repo/core/api';
+import { profileAPI } from '@repo/core/api/client';
 import { handleAPIError } from '@repo/core/logic';
 import type { SocialLink } from '@repo/core/types';
 import { useCallback, useEffect, useReducer } from 'react';

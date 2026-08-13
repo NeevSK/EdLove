@@ -5,7 +5,7 @@ import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import { networkManager } from '@repo/core/logic/managers/NetworkManager';
 import { useStore } from '@repo/core/store/useStore';
 import { executeMutation$, OfflineMutationError } from '@repo/core/utils/mutation';
-import { Effect } from 'effect';
+import * as Effect from 'effect/Effect';
 import { useCallback, useState } from 'react';
 import { v7 as uuidv7 } from 'uuid';
 

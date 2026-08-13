@@ -1,4 +1,7 @@
-import { Data, Duration, Effect, Schedule } from 'effect';
+import * as Data from 'effect/Data';
+import * as Duration from 'effect/Duration';
+import * as Effect from 'effect/Effect';
+import * as Schedule from 'effect/Schedule';
 
 export class OfflineMutationError extends Data.TaggedError('OfflineMutationError')<{}> {}
 

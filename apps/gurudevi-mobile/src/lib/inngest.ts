@@ -1,6 +1,3 @@
-import { createInngestEventBusAdapter } from '@repo/core/adapters/events/inngest.adapter';
-import { Inngest } from 'inngest';
-
 /**
  * Gurudevi Inngest Client (Mobile Shell)
  *
@@ -8,12 +5,17 @@ import { Inngest } from 'inngest';
  * This is the emitter client for the mobile application.
  * Mobile apps primarily emit events; they rarely serve as background workers.
  */
-const inngestClient = new Inngest({
-  id: 'gurudevi-mobile-app',
-  // Expo uses process.env with EXPO_PUBLIC_ prefix
-  eventKey: process.env.EXPO_PUBLIC_INNGEST_EVENT_KEY,
-});
+let inngestPromise: Promise<import('@repo/core/logic/ports/eventBus.port').IEventBusPort> | undefined;
 
-export const inngest = createInngestEventBusAdapter(inngestClient as any);
+export function getInngest() {
+  inngestPromise ??= import('@repo/core/adapters/events/inngest.adapter')
+    .then(({ createInngestEventBusAdapter }) => import('inngest').then(({ Inngest }) => {
+      const client = new Inngest({
+        id: 'gurudevi-mobile-app',
+        eventKey: process.env.EXPO_PUBLIC_INNGEST_EVENT_KEY,
+      });
+      return createInngestEventBusAdapter(client as any);
+    }));
 
-export default inngest;
+  return inngestPromise;
+}

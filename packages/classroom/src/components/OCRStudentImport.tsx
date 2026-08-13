@@ -8,7 +8,7 @@
  * Uncertain items (low OCR confidence) are highlighted amber for teacher review.
  */
 
-import { studentsAPI } from '@repo/core/api';
+import { studentsAPI } from '@repo/core/api/client';
 
 import type { ScannedStudent } from '@repo/scanner-kit';
 import { Camera, Check, Info, RotateCcw, X } from '@repo/ui/icons';

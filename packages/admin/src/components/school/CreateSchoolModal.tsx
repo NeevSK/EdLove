@@ -1,4 +1,4 @@
-import { communityAPI, identityAPI, onboardingAPI } from '@repo/core/api';
+import { communityAPI, identityAPI, onboardingAPI } from '@repo/core/api/client';
 import {
   RELIGIOUS_AFFILIATIONS,
   SRI_LANKAN_DISTRICTS,

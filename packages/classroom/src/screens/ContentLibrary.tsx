@@ -7,7 +7,7 @@
  * - Pin to Top functionality
  */
 
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 import { useSafeMutation } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';
 import type { ClassroomResource, ClassroomStackParamList, ResourceType } from '@repo/core/types';

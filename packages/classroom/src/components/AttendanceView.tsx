@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 import type { AttendanceStatus, StudentAttendance } from '@repo/core/logic';
 import { Box, Spinner, Text } from '@repo/ui/primitives';
 import { useCallback, useEffect, useState } from 'react';

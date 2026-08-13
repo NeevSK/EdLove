@@ -14,6 +14,31 @@
       "import": "./src/api/index.ts",
       "default": "./src/api/index.ts"
     },
+    "./browse": {
+      "types": "./src/entrypoints/browse.ts",
+      "import": "./src/entrypoints/browse.ts",
+      "default": "./src/entrypoints/browse.ts"
+    },
+    "./readers": {
+      "types": "./src/entrypoints/readers.ts",
+      "import": "./src/entrypoints/readers.ts",
+      "default": "./src/entrypoints/readers.ts"
+    },
+    "./collections": {
+      "types": "./src/entrypoints/collections.ts",
+      "import": "./src/entrypoints/collections.ts",
+      "default": "./src/entrypoints/collections.ts"
+    },
+    "./curation": {
+      "types": "./src/entrypoints/curation.ts",
+      "import": "./src/entrypoints/curation.ts",
+      "default": "./src/entrypoints/curation.ts"
+    },
+    "./map": {
+      "types": "./src/entrypoints/map.ts",
+      "import": "./src/entrypoints/map.ts",
+      "default": "./src/entrypoints/map.ts"
+    },
     "./screens/LibraryScreen": {
       "import": "./src/screens/LibraryScreen.tsx",
       "browser": "./src/screens/LibraryScreen.web.tsx",

@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { CircleCheck, QrCode } from '@repo/ui/icons';

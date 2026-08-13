@@ -11,6 +11,10 @@
       "import": "./src/index.ts",
       "default": "./src/index.ts"
     },
+    "./own": { "types": "./src/own.ts", "import": "./src/own.ts", "default": "./src/own.ts" },
+    "./public": { "types": "./src/public.ts", "import": "./src/public.ts", "default": "./src/public.ts" },
+    "./settings": { "types": "./src/settings.ts", "import": "./src/settings.ts", "default": "./src/settings.ts" },
+    "./history": { "types": "./src/history.ts", "import": "./src/history.ts", "default": "./src/history.ts" },
     "./api": {
       "types": "./src/api/index.ts",
       "import": "./src/api/index.ts",

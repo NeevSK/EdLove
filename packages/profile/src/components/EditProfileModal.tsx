@@ -1,4 +1,4 @@
-import { profileAPI } from '@repo/core/api';
+import { profileAPI } from '@repo/core/api/client';
 import { type Capacity, handleAPIError, usePermissions } from '@repo/core/logic';
 import { Camera, ChevronDown, Save, X } from '@repo/ui/icons';
 import {

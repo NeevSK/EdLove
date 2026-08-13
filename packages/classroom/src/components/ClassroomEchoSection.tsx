@@ -1,4 +1,4 @@
-import { echoAPI } from '@repo/core/api';
+import { echoAPI } from '@repo/core/api/client';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { useStore } from '@repo/core/logic';
 

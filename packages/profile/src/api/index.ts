@@ -1,1 +1,1 @@
-export { profileAPI, socialAPI } from '@repo/core/api';
+export { profileAPI, socialAPI } from '@repo/core/api/client';

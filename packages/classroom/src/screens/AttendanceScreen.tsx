@@ -1,4 +1,4 @@
-import { academicCyclesAPI, api, growthSignalsAPI } from '@repo/core/api';
+import { academicCyclesAPI, api, growthSignalsAPI } from '@repo/core/api/client';
 import { useSafeMutation } from '@repo/core/hooks';
 import { type AttendanceStatus, type StudentAttendance, useStore } from '@repo/core/logic';
 import { generateIdempotencyKey, getCurrentTimestamp } from '@repo/core/utils';

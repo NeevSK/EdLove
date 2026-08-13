@@ -9,6 +9,9 @@
       "import": "./src/index.ts",
       "default": "./src/index.ts"
     },
+    "./assistant": { "types": "./src/assistant.ts", "import": "./src/assistant.ts", "default": "./src/assistant.ts" },
+    "./analytics": { "types": "./src/analytics.ts", "import": "./src/analytics.ts", "default": "./src/analytics.ts" },
+    "./api": { "types": "./src/api.ts", "import": "./src/api.ts", "default": "./src/api.ts" },
     "./screens/AIAssistantScreen": {
       "import": "./src/screens/AIAssistantScreen.tsx",
       "browser": "./src/screens/AIAssistantScreen.web.tsx",

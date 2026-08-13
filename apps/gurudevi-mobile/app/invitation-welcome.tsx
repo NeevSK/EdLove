@@ -1,4 +1,4 @@
-import { InvitationWelcomeScreen } from '@repo/community';
+import { InvitationWelcomeScreen } from '@repo/community/onboarding';
 import { Center, Spinner } from '@repo/ui/primitives';
 import { Suspense } from 'react';
 

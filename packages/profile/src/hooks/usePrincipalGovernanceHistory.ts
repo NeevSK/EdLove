@@ -1,4 +1,4 @@
-import { studentsAPI } from '@repo/core/api';
+import { studentsAPI } from '@repo/core/api/client';
 import type { PrincipalGovernanceRecord } from '@repo/core/logic';
 import { useQuery } from '@tanstack/react-query';
 

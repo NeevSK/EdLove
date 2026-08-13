@@ -1,4 +1,4 @@
-import { api, type PrincipalGovernanceEventZod } from '@repo/core/api';
+import { api, type PrincipalGovernanceEventZod } from '@repo/core/api/client';
 import { useTemporalStore } from '@repo/core/logic';
 import { Activity, Clock, FileText, History, Plus, ShieldCheck } from '@repo/ui/icons';
 import {

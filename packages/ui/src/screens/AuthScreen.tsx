@@ -1,4 +1,4 @@
-import { authAPI, identityAPI } from '@repo/core/api';
+import { authAPI, identityAPI } from '@repo/core/api/client';
 import { handleAPIError } from '@repo/core/api/interceptor';
 import { useIdentity } from '@repo/core/hooks';
 import { getSessionIdentityMode } from '@repo/core/logic';

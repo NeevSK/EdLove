@@ -1,4 +1,4 @@
-import { attendanceAPI, type StudentAttendancePulse } from '@repo/core/api';
+import { attendanceAPI, type StudentAttendancePulse } from '@repo/core/api/client';
 
 export type { StudentAttendancePulse };
 

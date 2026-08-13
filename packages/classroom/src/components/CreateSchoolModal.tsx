@@ -1,4 +1,4 @@
-import { api, communityAPI, identityAPI, onboardingAPI } from '@repo/core/api';
+import { api, communityAPI, identityAPI, onboardingAPI } from '@repo/core/api/client';
 
 import { CircleCheck, MessageSquare, School } from '@repo/ui/icons';
 import {

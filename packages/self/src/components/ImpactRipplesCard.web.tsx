@@ -5,7 +5,7 @@
  * Purged raw HTML fragments and malformed inline styles in favor of @repo/ui primitives and Sanctuary design tokens.
  */
 
-import type { ImpactRipple } from '@repo/core/api';
+import type { ImpactRipple } from '@repo/core/api/client';
 import { WavesHorizontal } from '@repo/ui/icons';
 import { Box, Icon, Text, VStack } from '@repo/ui/primitives';
 

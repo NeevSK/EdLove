@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 import { useSafeMutation } from '@repo/core/hooks';
 import { CLASSROOM_RESOURCE_SCOPE } from '@repo/core/lib';
 import { useStore } from '@repo/core/logic';

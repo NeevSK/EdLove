@@ -1,7 +1,7 @@
 /**
  * NoSchoolView.web.tsx
  */
-import { NoSchoolView as PackageNoSchoolView } from '@repo/classroom';
+import { NoSchoolView as PackageNoSchoolView } from '@repo/classroom/overview';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 
 const NoSchoolView = (props: Record<string, unknown>) => (

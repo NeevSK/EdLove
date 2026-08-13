@@ -1,4 +1,4 @@
-import { socialAPI } from '@repo/core/api';
+import { socialAPI } from '@repo/core/api/client';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';

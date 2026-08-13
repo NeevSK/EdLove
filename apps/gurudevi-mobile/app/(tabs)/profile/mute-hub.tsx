@@ -1,1 +1,1 @@
-export { MuteHubScreen as default } from '@repo/profile';
+export { MuteHubScreen as default } from '@repo/profile/settings';

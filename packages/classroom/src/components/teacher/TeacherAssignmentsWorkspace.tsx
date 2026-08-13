@@ -1,4 +1,4 @@
-import { assignmentsAPI } from '@repo/core/api';
+import { assignmentsAPI } from '@repo/core/api/client';
 
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { CalendarDays, ClipboardList, Clock3, Plus, Sparkles } from '@repo/ui/icons';

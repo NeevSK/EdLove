@@ -1,4 +1,4 @@
-import { identityAPI } from '@repo/core/api';
+import { identityAPI } from '@repo/core/api/identity';
 import { Box, Button, ButtonText, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 

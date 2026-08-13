@@ -16,7 +16,7 @@ import {
   type RiverStage,
   socialAPI,
   type UserGrowthState,
-} from '@repo/core/api';
+} from '@repo/core/api/client';
 import { type TemporalScale, usePermissions, useTemporalStore } from '@repo/core/logic';
 import { AnimatedView, Box, Heading, HStack, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { useEffect, useReducer } from 'react';

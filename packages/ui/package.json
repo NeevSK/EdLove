@@ -14,6 +14,8 @@
       "browser": "./src/index.web.ts",
       "default": "./src/index.ts"
     },
+    "./brand": { "types": "./src/brand.ts", "import": "./src/brand.ts", "default": "./src/brand.ts" },
+    "./feedback": { "types": "./src/feedback.ts", "import": "./src/feedback.ts", "default": "./src/feedback.ts" },
     "./icons": {
       "types": "./src/icons.ts",
       "import": "./src/icons.ts",

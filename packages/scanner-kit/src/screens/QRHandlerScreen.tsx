@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { identityAPI } from '@repo/core/api';
+import { identityAPI } from '@repo/core/api/client';
 import { FlowResolver } from '@repo/core/native';
 import type { QRPayload } from '@repo/core/types';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';

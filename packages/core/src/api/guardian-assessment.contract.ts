@@ -1,4 +1,4 @@
-import type { SovereignContract } from '@repo/core/api/contract';
+import type { SovereignContract } from '@repo/core/api/contracts';
 import {
   GuardianAssessmentReadAuditEventSchema,
   GuardianPublishedGradeMarkSchema,

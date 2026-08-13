@@ -1,4 +1,4 @@
-import { communityAPI } from '@repo/core/api';
+import { communityAPI } from '@repo/core/api/client';
 import { useManifestoHooks, useNotificationHooks } from '@repo/core/api/hooks';
 import { useDomainRollout, usePendingGateAction } from '@repo/core/hooks';
 import { setPendingGateAction, usePermissions, useStore } from '@repo/core/logic';

@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 
 import { BookOpen, CircleAlert, Lightbulb, Package, Users, Wifi } from '@repo/ui/icons';
 import {

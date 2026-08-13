@@ -1,3 +1,3 @@
-import DurableAgentsScreen from '@/screens/DurableAgentsScreen';
+import DurableAgentsScreen from '../src/screens/DurableAgentsScreen';
 
 export default DurableAgentsScreen;

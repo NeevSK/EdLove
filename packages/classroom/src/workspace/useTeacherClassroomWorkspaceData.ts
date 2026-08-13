@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 import { workspaceLayoutServices } from '@repo/core/api/runtimes/workspaceLayout.runtime';
 import { useTeacherClassroom } from '@repo/core/hooks';
 import { useStore } from '@repo/core/logic';

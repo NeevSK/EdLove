@@ -1,4 +1,4 @@
-import { profileAPI } from '@repo/core/api';
+import { profileAPI } from '@repo/core/api/client';
 import type { CommunityProfile, ProfileHistoryEntry } from '@repo/core/logic';
 import { handleAPIError } from '@repo/core/logic';
 import { useCallback, useEffect, useReducer } from 'react';

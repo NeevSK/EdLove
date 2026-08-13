@@ -8,7 +8,7 @@
  * forest weather narrative.
  */
 
-import { type SchoolForestState, schoolForestAPI, type TeacherTree } from '@repo/core/api';
+import { type SchoolForestState, schoolForestAPI, type TeacherTree } from '@repo/core/api/client';
 import { usePermissions } from '@repo/core/logic';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { ArrowLeft, RefreshCw } from '@repo/ui/icons';

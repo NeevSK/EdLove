@@ -4,7 +4,7 @@
  * Thin wrapper for the Community Announcements UI.
  */
 
-import { AnnouncementsScreen as PackageAnnouncementsScreen } from '@repo/community';
+import { AnnouncementsScreen as PackageAnnouncementsScreen } from '@repo/community/announcements';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 
 const AnnouncementsWrapper = (props: Record<string, unknown>) => (

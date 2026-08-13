@@ -9,6 +9,10 @@
       "import": "./src/index.ts",
       "default": "./src/index.ts"
     },
+    "./wellbeing": { "types": "./src/wellbeing.ts", "import": "./src/wellbeing.ts", "default": "./src/wellbeing.ts" },
+    "./wisdom": { "types": "./src/wisdom.ts", "import": "./src/wisdom.ts", "default": "./src/wisdom.ts" },
+    "./progress": { "types": "./src/progress.ts", "import": "./src/progress.ts", "default": "./src/progress.ts" },
+    "./privacy": { "types": "./src/privacy.ts", "import": "./src/privacy.ts", "default": "./src/privacy.ts" },
     "./api": {
       "types": "./src/api/index.ts",
       "import": "./src/api/index.ts",

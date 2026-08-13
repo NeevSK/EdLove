@@ -1,6 +1,6 @@
 import { useNotifications, useRewards } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
-import { BreathGuide } from '@repo/self';
+import { BreathGuide } from '@repo/self/wellbeing';
 import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
 import type { LucideIcon } from '@repo/ui/icons';
 import { Bell, Heart, Library, Menu, School, Settings, Sparkles, User, Users, X } from '@repo/ui/icons';

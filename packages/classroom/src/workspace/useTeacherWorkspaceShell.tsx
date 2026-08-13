@@ -1,4 +1,4 @@
-import { identityAPI } from '@repo/core/api';
+import { identityAPI } from '@repo/core/api/client';
 import { useIsGuest } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 import { FlowResolver } from '@repo/core/native';

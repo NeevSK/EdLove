@@ -1,4 +1,4 @@
-import { growthSignalsAPI } from '@repo/core/api';
+import { growthSignalsAPI } from '@repo/core/api/client';
 import { type ClassroomGradingSettings } from '@repo/core/types';
 import { useStore } from '@repo/core/logic';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';

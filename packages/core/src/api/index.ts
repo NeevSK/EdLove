@@ -42,17 +42,6 @@ import { trackingAPI } from '@repo/core/api/tracking';
 import { warmMirrorAPI } from '@repo/core/api/warmMirror';
 
 export * from '@repo/core/api/base';
-export { adminHandlers } from '@repo/core/api/handlers/admin';
-export { communityHandlers } from '@repo/core/api/handlers/community';
-export { educationalHandlers } from '@repo/core/api/handlers/educational';
-export { gradingHandlers } from '@repo/core/api/handlers/grading';
-export { identityHandlers } from '@repo/core/api/handlers/identity';
-export { libraryHandlers } from '@repo/core/api/handlers/library';
-export { operationsHandlers } from '@repo/core/api/handlers/operations';
-export { profileHandlers } from '@repo/core/api/handlers/profile';
-export { selfHandlers } from '@repo/core/api/handlers/self';
-export { syncHandlers } from '@repo/core/api/handlers/sync';
-
 import { communityAPI } from '@repo/core/api/orchestration/community';
 import {
   assignmentsAPI,
@@ -92,6 +81,7 @@ export * from '@repo/core/api/classroomNotes.contract';
 export * from '@repo/core/api/community.contract';
 export * from '@repo/core/api/contextualChallenges';
 export * from '@repo/core/api/contractCoverage';
+export * from '@repo/core/api/contracts';
 export * from '@repo/core/api/educational.contract';
 export * from '@repo/core/api/erp';
 export * from '@repo/core/api/erp.contract';
@@ -145,7 +135,7 @@ export type {
   UserGrowthState,
 } from '@repo/core/types/Growth';
 export type { PrincipalNote } from '@repo/core/types/PrincipalNote';
-export type { CalendarEvent } from '@repo/schema';
+export type { CalendarEvent } from '@repo/schema/generated/orm/models';
 
 export {
   academicCyclesAPI,

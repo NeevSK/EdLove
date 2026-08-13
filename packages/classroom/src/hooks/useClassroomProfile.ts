@@ -1,4 +1,4 @@
-import { classroomsAPI } from '@repo/core/api';
+import { classroomsAPI } from '@repo/core/api/client';
 import { handleAPIError, useMutationQueue, usePermissions } from '@repo/core/logic';
 import type { Classroom } from '@repo/core/types';
 

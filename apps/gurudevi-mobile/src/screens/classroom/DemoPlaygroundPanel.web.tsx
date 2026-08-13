@@ -4,7 +4,7 @@
  * Thin wrapper for the Classroom Demo UI.
  */
 
-import { DemoPlaygroundPanel as PackageDemoPlaygroundPanel } from '@repo/classroom';
+import { DemoPlaygroundPanel as PackageDemoPlaygroundPanel } from '@repo/classroom/overview';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 
 const DemoPlaygroundPanel = (props: Record<string, unknown>) => (

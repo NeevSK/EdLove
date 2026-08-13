@@ -1,4 +1,4 @@
-import { api, type StudentObservation } from '@repo/core/api';
+import { api, type StudentObservation } from '@repo/core/api/client';
 import { useTemporalStore } from '@repo/core/logic';
 import type { StudentLongitudinalEvent } from '@repo/core';
 import type { StudentGrade } from '@repo/core/types';

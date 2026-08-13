@@ -5,7 +5,7 @@ import {
   SanctuaryManifestoSchema,
   UserGrowthStateSchema,
 } from '@repo/core/logic/schemas/growth.schema';
-import type { SovereignContract } from '@repo/core/api/contract';
+import type { SovereignContract } from '@repo/core/api/contracts';
 
 const growthAuthority = (
   action: 'manage' | 'create' | 'read' | 'update' | 'delete' | 'submit' | 'verify',

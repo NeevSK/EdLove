@@ -1,4 +1,8 @@
-import { Data, Duration, Effect, pipe, Schedule } from 'effect';
+import * as Data from 'effect/Data';
+import * as Duration from 'effect/Duration';
+import * as Effect from 'effect/Effect';
+import { pipe } from 'effect/Function';
+import * as Schedule from 'effect/Schedule';
 import { APIError } from '@repo/core/types/API';
 import type { AppType } from '@repo/core/api/base';
 import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';

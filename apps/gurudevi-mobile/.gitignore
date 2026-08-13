@@ -53,6 +53,8 @@ assets/*
 !assets/splash-icon.png
 !assets/adaptive-icon.png
 !assets/favicon.png
+# Runtime animation consumed by LottieSplashScreen.tsx; keep it in the repo.
+!assets/splash-animation.json
 
 # IDE / editor config (keep out of source control)
 .cursor/

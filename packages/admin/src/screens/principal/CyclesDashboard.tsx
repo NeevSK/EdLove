@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { ArrowLeft, Calendar, Plus } from '@repo/ui/icons';
 import {

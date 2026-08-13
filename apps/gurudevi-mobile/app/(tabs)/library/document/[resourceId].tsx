@@ -1,1 +1,1 @@
-export { DocumentViewerScreen as default } from '@repo/library';
+export { DocumentViewerScreen as default } from '@repo/library/readers';

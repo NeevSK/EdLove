@@ -1,4 +1,4 @@
-import { api, type PrincipalNote } from '@repo/core/api';
+import { api, type PrincipalNote } from '@repo/core/api/client';
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';

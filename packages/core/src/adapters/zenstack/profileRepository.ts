@@ -1,4 +1,4 @@
-import type { User as ZenStackUser } from '@repo/schema';
+import type { User as ZenStackUser } from '@repo/schema/contracts';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import type {
   CommunityProfile,

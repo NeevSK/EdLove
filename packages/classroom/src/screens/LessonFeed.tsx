@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 import type { Assignment, Lesson, LessonMaterial } from '@repo/core/types';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { ChevronDown, ChevronUp, CircleCheck, FileText, Pen, Plus, Trash2 } from '@repo/ui/icons';

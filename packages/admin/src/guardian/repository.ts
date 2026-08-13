@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 
 import type { GuardianIdentity } from '@repo/admin/guardian/types';
 

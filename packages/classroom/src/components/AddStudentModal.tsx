@@ -4,7 +4,7 @@
  * Modal for adding or editing a student in a classroom.
  */
 
-import { studentsAPI } from '@repo/core/api';
+import { studentsAPI } from '@repo/core/api/client';
 import type { Student } from '@repo/core/types';
 
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';

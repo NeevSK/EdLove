@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 import { usePermissions, useStore } from '@repo/core/logic';
 
 import { useCallback, useEffect, useState } from 'react';

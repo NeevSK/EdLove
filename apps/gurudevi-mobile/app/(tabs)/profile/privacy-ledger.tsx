@@ -1,1 +1,1 @@
-export { PrivacyLedgerScreen as default } from '@repo/self';
+export { PrivacyLedgerScreen as default } from '@repo/self/privacy';

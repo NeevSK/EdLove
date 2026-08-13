@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 import { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
 import { usePermissions, useStore } from '@repo/core/logic';
 import { useConflictStore } from '@repo/core/store/useConflictStore';

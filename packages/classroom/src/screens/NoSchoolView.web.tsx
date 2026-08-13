@@ -1,4 +1,4 @@
-import { api, communityAPI, onboardingAPI, schoolAPI } from '@repo/core/api';
+import { api, communityAPI, onboardingAPI, schoolAPI } from '@repo/core/api/client';
 import {
   incrementInviteCodeUsage,
   usePermissions,

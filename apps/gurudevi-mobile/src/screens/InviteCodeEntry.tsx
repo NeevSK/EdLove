@@ -4,7 +4,7 @@
  * Thin wrapper for the Invite Code entry UI.
  */
 
-import { InviteCodeEntry as PackageInviteCodeEntry } from '@repo/community';
+import { InviteCodeEntry as PackageInviteCodeEntry } from '@repo/community/onboarding';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 
 const InviteCodeWrapper = (props: Record<string, unknown>) => (

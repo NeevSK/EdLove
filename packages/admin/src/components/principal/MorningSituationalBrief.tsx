@@ -13,7 +13,7 @@ import {
   type StaffPresenceSummary,
   type StudentAttendancePulse,
   staffManagementAPI,
-} from '@repo/core/api';
+} from '@repo/core/api/client';
 
 import { ChevronRight, CircleAlert, FileCheck, TrendingDown, TrendingUp } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';

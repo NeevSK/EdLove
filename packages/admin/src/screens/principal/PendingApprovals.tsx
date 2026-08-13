@@ -1,4 +1,4 @@
-import type { StaffLeaveDTO } from '@repo/core/api';
+import type { StaffLeaveDTO } from '@repo/core/api/client';
 import { ClipboardList } from '@repo/ui/icons';
 import { Box, Button, ButtonText, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';

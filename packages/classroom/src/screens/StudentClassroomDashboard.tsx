@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 import type { Assignment } from '@repo/core/types';
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';

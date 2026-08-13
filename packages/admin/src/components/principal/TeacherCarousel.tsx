@@ -8,7 +8,7 @@
  *  - Class count
  */
 
-import { staffManagementAPI, type TeacherCarouselItem } from '@repo/core/api';
+import { staffManagementAPI, type TeacherCarouselItem } from '@repo/core/api/client';
 import { Box, HStack, Pressable, ScrollView, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { getInitialsFromName } from '@repo/ui/utils/stringUtils';

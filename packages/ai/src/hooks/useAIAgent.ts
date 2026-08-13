@@ -1,5 +1,5 @@
 import { type CoordinationGap, TimetableScheduler } from '@repo/ai/api/agents';
-import { authAPI, identityAPI, moonPhaseAPI, SOVEREIGN_API_URL } from '@repo/core/api';
+import { authAPI, identityAPI, moonPhaseAPI, SOVEREIGN_API_URL } from '@repo/core/api/client';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { cryptoManager, usePermissions, useStore } from '@repo/core/logic';
 import type { MultimodalContent } from '@tanstack/ai-client';

@@ -9,6 +9,7 @@ export type {
 } from '@repo/admin/document-workflow/types';
 
 import { documentWorkflowEngine } from '@repo/admin/document-workflow/engine';
+import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import type {
   ChangeRecord,
   DocumentCollaborator,
@@ -126,7 +127,6 @@ export const documentWorkflowAPI: DocumentWorkflowAPI = {
   },
   // Document retrieval
   async getDocument(documentId: string): Promise<DocumentWorkflow | null> {
-    const { supabase } = await import('@repo/core/api');
     const { data, error } = await supabase
       .from('document_workflows')
       .select('*')
@@ -140,7 +140,6 @@ export const documentWorkflowAPI: DocumentWorkflowAPI = {
     status?: DocumentStatus,
     authorId?: string,
   ): Promise<DocumentWorkflow[]> {
-    const { supabase } = await import('@repo/core/api');
     let query = supabase.from('document_workflows').select('*').eq('schoolId', schoolId);
     if (status) {
       query = query.eq('status', status);
@@ -155,7 +154,6 @@ export const documentWorkflowAPI: DocumentWorkflowAPI = {
     return data || [];
   },
   async getDocumentsForReview(schoolId: string, userId: string): Promise<DocumentWorkflow[]> {
-    const { supabase } = await import('@repo/core/api');
     const { data, error } = await supabase
       .from('document_workflows')
       .select('*')
@@ -167,7 +165,6 @@ export const documentWorkflowAPI: DocumentWorkflowAPI = {
     return data || [];
   },
   async getPublishedDocuments(schoolId: string): Promise<DocumentWorkflow[]> {
-    const { supabase } = await import('@repo/core/api');
     const { data, error } = await supabase
       .from('document_workflows')
       .select('*')

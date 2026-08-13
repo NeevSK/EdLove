@@ -1,7 +1,7 @@
 /**
  * GradebookScreen.web.tsx
  */
-import { GradebookScreenWeb } from '@repo/classroom';
+import { GradebookScreenWeb } from '@repo/classroom/gradebook';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 
 const GradebookScreen = (props: Record<string, unknown>) => (

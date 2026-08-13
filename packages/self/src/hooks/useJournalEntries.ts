@@ -1,4 +1,4 @@
-import { authAPI, growthSignalsAPI, identityAPI } from '@repo/core/api';
+import { authAPI, growthSignalsAPI, identityAPI } from '@repo/core/api/client';
 import { useTemporalStore } from '@repo/core/logic';
 import { GuestDataManager } from '@repo/core/native';
 

@@ -1,7 +1,7 @@
 /**
  * TimetableScreen.web.tsx
  */
-import { TimetableScreen } from '@repo/classroom';
+import { TimetableScreen } from '@repo/classroom/overview';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 
 const TimetableWrapper = (props: Record<string, unknown>) => (

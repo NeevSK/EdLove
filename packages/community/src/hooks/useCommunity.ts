@@ -1,4 +1,4 @@
-import { identityAPI } from '@repo/core/api';
+import { identityAPI } from '@repo/core/api/client';
 import {
   useCreatePostMutation,
   useGroupsInfiniteQuery,

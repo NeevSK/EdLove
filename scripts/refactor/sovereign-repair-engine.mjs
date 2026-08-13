@@ -207,7 +207,7 @@ for (const file of files) {
           if (arg.text === '@repo/core') {
             modified = true;
             return ts.factory.updateCallExpression(node, node.expression, node.typeArguments, [
-              ts.factory.createStringLiteral('@repo/core/api'),
+              ts.factory.createStringLiteral('@repo/core/api/client'),
             ]);
           }
         }
@@ -228,7 +228,7 @@ for (const file of files) {
         if (pkg && arg.text === '@repo/core') {
           modified = true;
           const newArgs = [...node.arguments];
-          newArgs[0] = ts.factory.createStringLiteral('@repo/core/api');
+          newArgs[0] = ts.factory.createStringLiteral('@repo/core/api/client');
           return ts.factory.updateCallExpression(
             node,
             node.expression,

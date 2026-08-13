@@ -24,10 +24,30 @@
       "import": "./src/shared/*.ts",
       "default": "./src/shared/*.ts"
     },
-    "./api": {
+    "./api/client": {
       "types": "./src/api/index.ts",
       "import": "./src/api/index.ts",
       "default": "./src/api/index.ts"
+    },
+    "./api/identity": {
+      "types": "./src/api/identity.ts",
+      "import": "./src/api/identity.ts",
+      "default": "./src/api/identity.ts"
+    },
+    "./api/contracts": {
+      "types": "./src/api/contracts.ts",
+      "import": "./src/api/contracts.ts",
+      "default": "./src/api/contracts.ts"
+    },
+    "./api/clientRuntime": {
+      "types": "./src/api/clientRuntime.ts",
+      "import": "./src/api/clientRuntime.ts",
+      "default": "./src/api/clientRuntime.ts"
+    },
+    "./api/serverAdapter": {
+      "types": "./src/api/serverAdapter.ts",
+      "import": "./src/api/serverAdapter.ts",
+      "default": "./src/api/serverAdapter.ts"
     },
     "./api/server": {
       "types": "./src/api/server.ts",
@@ -78,6 +98,13 @@
       "types": "./src/native/index.ts",
       "import": "./src/native/index.ts",
       "default": "./src/native/index.ts"
+    },
+    "./native/webSentryAdapter": {
+      "types": "./src/native/webSentryAdapter.web.ts",
+      "browser": "./src/native/webSentryAdapter.web.ts",
+      "react-native": "./src/native/webSentryAdapter.native.ts",
+      "import": "./src/native/webSentryAdapter.web.ts",
+      "default": "./src/native/webSentryAdapter.web.ts"
     },
     "./native/webPush": {
       "types": "./src/native/webPush.web.ts",

@@ -4,7 +4,7 @@ import {
   type StaffLeaveDTO,
   type StaffPresenceSummary,
   type TeacherCarouselItem,
-} from '@repo/core/api';
+} from '@repo/core/api/client';
 import { useIsGuest } from '@repo/core/hooks';
 import {
   type PublishedSchoolGradingCompletion,

@@ -3,7 +3,7 @@ import {
   useStudentAssignmentsQuery,
   useStudentClassroomsQuery,
   useStudentStatsQuery,
-} from '@repo/core/api';
+} from '@repo/core/api/client';
 import { useRewards } from '@repo/core/hooks';
 import { useAuthStore } from '@repo/core/logic';
 

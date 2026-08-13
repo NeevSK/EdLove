@@ -1,4 +1,4 @@
-import { type StudentPotentialAnalysis, studentPotentialAPI } from '@repo/core/api';
+import { type StudentPotentialAnalysis, studentPotentialAPI } from '@repo/core/api/client';
 import { CaptureEngine } from '@repo/graphics/algorithms';
 import { radarLayout } from '@repo/graphics/layouts';
 import { GlassCard } from '@repo/ui/components/GlassCard';

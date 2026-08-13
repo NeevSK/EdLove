@@ -10,24 +10,24 @@ import {
   type WellbeingMoodLoggedPayload,
 } from '@repo/core/logic';
 import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/sync';
-import { inngest } from '@/lib/inngest';
+import { getInngest } from '@/lib/inngest';
 
 const REMOTE_SYNC_MUTATIONS = new Set(['saveJournalEntry', 'saveDecision', 'updateAttendance']);
 
 export function emitWellbeingMoodLogged(payload: WellbeingMoodLoggedPayload) {
-  return sendWellbeingMoodLogged(inngest, payload);
+  return getInngest().then((inngest) => sendWellbeingMoodLogged(inngest, payload));
 }
 
 export function emitSyncMutationQueued(payload: SyncMutationQueuedPayload) {
-  return sendSyncMutationQueued(inngest, payload);
+  return getInngest().then((inngest) => sendSyncMutationQueued(inngest, payload));
 }
 
 export function emitSchoolGradePublished(payload: SchoolGradePublishedPayload) {
-  return sendSchoolGradePublished(inngest, payload);
+  return getInngest().then((inngest) => sendSchoolGradePublished(inngest, payload));
 }
 
 export function emitSchoolClassroomCreated(payload: SchoolClassroomCreatedPayload) {
-  return sendSchoolClassroomCreated(inngest, payload);
+  return getInngest().then((inngest) => sendSchoolClassroomCreated(inngest, payload));
 }
 
 export function installMobileWorkflowEventBridge() {

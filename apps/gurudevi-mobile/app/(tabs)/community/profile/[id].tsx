@@ -1,1 +1,1 @@
-export { UserPublicProfileScreen as default } from '@repo/community';
+export { UserPublicProfileScreen as default } from '@repo/community/profile';

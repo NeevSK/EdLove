@@ -1,4 +1,4 @@
-import type { UserGrowthState } from '@repo/schema';
+import type { UserGrowthState } from '@repo/schema/contracts';
 import { mediaAPI } from '@repo/core/api/media';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import type {

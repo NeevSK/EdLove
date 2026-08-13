@@ -1,1 +1,1 @@
-export { GroupDetailsScreen as default } from '@repo/community';
+export { GroupDetailsScreen as default } from '@repo/community/groups';

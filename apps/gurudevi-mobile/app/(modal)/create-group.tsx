@@ -1,4 +1,4 @@
-import { CreateGroupModal } from '@repo/community';
+import { CreateGroupModal } from '@repo/community/groups';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useCallback } from 'react';
 

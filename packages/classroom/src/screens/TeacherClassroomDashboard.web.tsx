@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 import { usePermissions } from '@repo/core/logic';
 import ClassroomLegacyTimeline from '@repo/self/components/ClassroomLegacyTimeline';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';

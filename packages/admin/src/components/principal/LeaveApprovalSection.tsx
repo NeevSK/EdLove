@@ -6,7 +6,7 @@
  *  - Approve / Reject buttons per request
  */
 
-import { type StaffLeaveDTO, staffManagementAPI } from '@repo/core/api';
+import { type StaffLeaveDTO, staffManagementAPI } from '@repo/core/api/client';
 
 import { Check, Clock, FileText, X } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';

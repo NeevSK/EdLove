@@ -1,4 +1,4 @@
-import { authAPI, identityAPI } from '@repo/core/api';
+import { authAPI, identityAPI } from '@repo/core/api/client';
 import { useStore } from '@repo/core/logic';
 import { GuestDataManager } from '@repo/core/native';
 import { SafeZustandStorage } from '@repo/core/storage-wrapper';

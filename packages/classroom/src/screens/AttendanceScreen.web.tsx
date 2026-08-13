@@ -1,4 +1,4 @@
-import { api, growthSignalsAPI } from '@repo/core/api';
+import { api, growthSignalsAPI } from '@repo/core/api/client';
 import { type StudentAttendance, useStore } from '@repo/core/logic';
 import { generateIdempotencyKey } from '@repo/core/utils';
 import type { AttendanceRecord } from '@repo/core/types';

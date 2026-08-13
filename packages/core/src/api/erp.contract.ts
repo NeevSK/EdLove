@@ -5,7 +5,7 @@ import {
   PaymentIntentSchema,
   ReceiptSchema,
 } from '@repo/core/logic/schemas/payments.schema';
-import type { SovereignContract } from '@repo/core/api/contract';
+import type { SovereignContract } from '@repo/core/api/contracts';
 
 const erpAuthority = (action: 'create' | 'read' | 'update' | 'delete', subject: string) =>
   ({ policy: { action, subject } }) as const;

@@ -6,7 +6,7 @@ import {
   StaffPresenceSummarySchema,
   TeacherCarouselItemSchema,
 } from '@repo/core/logic/schemas/staff.schema';
-import type { SovereignContract } from '@repo/core/api/contract';
+import type { SovereignContract } from '@repo/core/api/contracts';
 
 const adminAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',

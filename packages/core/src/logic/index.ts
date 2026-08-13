@@ -1,7 +1,5 @@
 // Logic Hooks & Utilities
 
-// ZENSTACK MODELS (Namespaced to avoid member collisions with Zod schemas)
-export * as ZenModels from '@repo/schema';
 export * from '@repo/core/api/history';
 export {
   type DeviceAccountRecord,

@@ -30,10 +30,13 @@
     "audit:style-stack": "node ../../scripts/run-and-report.mjs --cmd \"node scripts/audit-style-stack.mjs\" --name \"apps_gurudevi-mobile-audit_style_stack\"",
     "audit:css-interop": "node scripts/audit-css-interop-inventory.mjs --check",
     "audit:expo-native-graph": "node scripts/audit-expo-native-graph.mjs",
+    "audit:boundaries": "node ../../scripts/audit-mobile-boundaries.mjs",
+    "audit:tree-shaking": "node ../../scripts/audit-tree-shaking.mjs",
     "verify:style-stack": "pnpm run audit:expo-native-graph && pnpm run audit:style-stack && pnpm run audit:css-interop && pnpm run check-types && pnpm run test",
     "inspect:web-runtime": "node scripts/inspect-web-runtime.mjs",
     "inspect:style-engine-fixture": "node scripts/inspect-style-engine-fixture.mjs",
     "audit:bundle": "node ../../scripts/run-and-report.mjs --cmd \"react-native-bundle-visualizer --expo\" --name \"apps_gurudevi-mobile-audit_bundle\"",
+    "audit:route-bundles": "node ../../scripts/report-mobile-route-bundles.mjs",
     "audit:contrast": "node ../../scripts/run-and-report.mjs --cmd \"node scripts/audit-contrast.mjs\" --name \"apps_gurudevi-mobile-audit_contrast\"",
     "audit:font-scaling": "node ../../scripts/run-and-report.mjs --cmd \"node scripts/audit-font-scaling.mjs\" --name \"apps_gurudevi-mobile-audit_font_scaling\"",
     "fix:web-shim": "node ../../scripts/run-and-report.mjs --cmd \"node scripts/add-web-shim.mjs\" --name \"apps_gurudevi-mobile-fix_web-shim\"",
@@ -45,7 +48,7 @@
     "test:e2e": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec playwright test\" --name \"apps_gurudevi-mobile-test_e2e\"",
     "doctor": "node ../../scripts/run-and-report.mjs --cmd \"npx react-doctor\" --name \"apps_gurudevi-mobile-doctor\"",
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"pnpm exec rimraf .turbo node_modules dist .expo\" --name \"apps_gurudevi-mobile-clean\"",
-    "postinstall": "powersync-web copy-assets"
+    "postinstall": "node scripts/copy-powersync-assets.mjs"
   },
   "dependencies": {
     "@azure/core-asynciterator-polyfill": "^1.0.2",
@@ -335,6 +338,6 @@
     "test:e2e": "pnpm exec playwright test",
     "doctor": "npx react-doctor",
     "clean": "pnpm exec rimraf .turbo node_modules dist .expo",
-    "postinstall": "powersync-web copy-assets"
+    "postinstall": "node scripts/copy-powersync-assets.mjs"
   }
 }

@@ -8,7 +8,7 @@ import {
   PrincipalObservationFollowUpCreateSchema,
   PrincipalObservationSchema,
 } from '@repo/core/logic/schemas/principal-workspace.schema';
-import type { SovereignContract } from '@repo/core/api/contract';
+import type { SovereignContract } from '@repo/core/api/contracts';
 
 const principalWorkspaceAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',

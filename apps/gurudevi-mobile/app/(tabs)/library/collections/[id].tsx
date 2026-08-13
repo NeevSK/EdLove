@@ -1,5 +1,7 @@
-import NativeCollectionDetailScreen from '@repo/library/screens/CollectionDetailScreen';
-import WebCollectionDetailScreen from '@repo/library/screens/CollectionDetailScreen.web';
+import {
+  CollectionDetailScreen as NativeCollectionDetailScreen,
+  CollectionDetailScreenWeb as WebCollectionDetailScreen,
+} from '@repo/library/collections';
 import { Platform } from 'react-native';
 
 // Keep the route explicit: Expo Router can load this file in both Metro and

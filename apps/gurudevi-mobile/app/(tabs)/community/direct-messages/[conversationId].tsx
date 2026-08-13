@@ -1,1 +1,1 @@
-export { DirectMessageScreen as default } from '@repo/community';
+export { DirectMessageScreen as default } from '@repo/community/chat';

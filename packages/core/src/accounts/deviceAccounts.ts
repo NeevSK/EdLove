@@ -1,5 +1,6 @@
 import type { Session } from '@supabase/supabase-js';
-import { Effect, Queue } from 'effect';
+import * as Effect from 'effect/Effect';
+import * as Queue from 'effect/Queue';
 import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
 import { assertHighway } from '@repo/core/api/highways';
 import { identityAPI } from '@repo/core/api/identity';

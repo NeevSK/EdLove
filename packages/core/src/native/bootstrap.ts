@@ -38,9 +38,7 @@ export async function bootstrapPlatform() {
     deviceIdentity.registerAdapter(new SimulatorDeviceIdentityAdapter());
   } else {
     cryptoManager.registerAdapter(new WebCryptoAdapter());
-    const { BrowserSentryTelemetryAdapter } = await import(
-      '@repo/core/adapters/web/SentryTelemetryAdapter'
-    );
+    const { BrowserSentryTelemetryAdapter } = await import('@repo/core/native/webSentryAdapter');
     telemetry.registerAdapter(new BrowserSentryTelemetryAdapter());
     networkManager.registerAdapter(new WebNetworkAdapter());
   }

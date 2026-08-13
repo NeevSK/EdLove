@@ -22,7 +22,7 @@
  *   await schoolForestAPI.sendGratitudeGift(principalId, teacherId, 'lantern', message);
  */
 
-import { Effect } from 'effect';
+import * as Effect from 'effect/Effect';
 import { checkLocalPermission } from '@repo/core/logic/permissions/localEvaluator';
 import { APIError } from '@repo/core/types/API';
 import { identityAPI } from '@repo/core/api/identity';

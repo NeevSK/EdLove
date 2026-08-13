@@ -1,1 +1,1 @@
-export { AttendanceScreen as default } from '@/screens';
+export { AttendanceScreen as default } from '@repo/classroom/attendance';

@@ -4,7 +4,7 @@ import {
   WorkspaceLayoutRecordSchema,
   WorkspaceLayoutUpsertSchema,
 } from '@repo/core/logic/schemas/workspace-layout.schema';
-import type { SovereignContract } from '@repo/core/api/contract';
+import type { SovereignContract } from '@repo/core/api/contracts';
 
 const workspaceLayoutAuthority = (action: 'read' | 'update' | 'delete', subject: string) =>
   ({

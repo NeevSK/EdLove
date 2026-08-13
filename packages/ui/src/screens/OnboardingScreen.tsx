@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { authAPI, identityAPI, onboardingAPI } from '@repo/core/api';
+import { authAPI, identityAPI, onboardingAPI } from '@repo/core/api/client';
 import { useStore } from '@repo/core/store';
 import type { Capacity } from '@repo/core/types';
 import type React from 'react';

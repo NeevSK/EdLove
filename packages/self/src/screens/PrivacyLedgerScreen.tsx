@@ -4,7 +4,7 @@
  * Standardized to Zero-Legacy: purged corrupted imports and migrated to Sanctuary V3 architecture.
  */
 
-import { type PrivacyLedgerEntry, privacyAPI } from '@repo/core/api';
+import { type PrivacyLedgerEntry, privacyAPI } from '@repo/core/api/client';
 
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';

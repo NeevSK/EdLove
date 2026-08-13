@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 
 import { useEffect, useMemo, useState } from 'react';
 import { useSchoolStats } from '@repo/classroom/hooks/useSchoolStats';

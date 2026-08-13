@@ -1,1 +1,1 @@
-export { CuratorReviewScreen as default } from '@repo/library';
+export { CuratorReviewScreen as default } from '@repo/library/curation';

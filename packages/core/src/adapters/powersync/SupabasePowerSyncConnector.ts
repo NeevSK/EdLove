@@ -9,7 +9,9 @@ import { sovereignBus } from '@repo/core/lib/sync/eventBus';
 import { runEffect, tryPromise } from '@repo/core/utils/effect';
 import { getConsistentIdempotencyKey } from '@repo/core/lib/sync/idempotency';
 import { getActiveAccountId } from '@repo/core/lib/accountScope';
-import { Duration, Effect, Schedule } from 'effect';
+import * as Duration from 'effect/Duration';
+import * as Effect from 'effect/Effect';
+import * as Schedule from 'effect/Schedule';
 
 const POWERSYNC_URL = process.env.EXPO_PUBLIC_POWERSYNC_URL ?? '';
 

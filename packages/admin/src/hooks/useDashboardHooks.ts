@@ -1,4 +1,4 @@
-import { api as coreAPI, mappingAPI } from '@repo/core/api';
+import { api as coreAPI, mappingAPI } from '@repo/core/api/client';
 import {
   KnowledgeTopologySchema,
   type PulseMetricsZod,

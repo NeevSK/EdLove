@@ -21,6 +21,31 @@
       "import": "./src/feed.ts",
       "default": "./src/feed.ts"
     },
+    "./groups": {
+      "types": "./src/groups.ts",
+      "import": "./src/groups.ts",
+      "default": "./src/groups.ts"
+    },
+    "./announcements": {
+      "types": "./src/announcements.ts",
+      "import": "./src/announcements.ts",
+      "default": "./src/announcements.ts"
+    },
+    "./profile": {
+      "types": "./src/profile.ts",
+      "import": "./src/profile.ts",
+      "default": "./src/profile.ts"
+    },
+    "./onboarding": {
+      "types": "./src/onboarding.ts",
+      "import": "./src/onboarding.ts",
+      "default": "./src/onboarding.ts"
+    },
+    "./api": {
+      "types": "./src/api/index.ts",
+      "import": "./src/api/index.ts",
+      "default": "./src/api/index.ts"
+    },
     "./screens/CommunityScreen": {
       "types": "./src/screens/CommunityScreen.tsx",
       "import": "./src/screens/CommunityScreen.tsx",

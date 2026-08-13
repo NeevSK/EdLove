@@ -1,4 +1,4 @@
-import { classroomGroupsAPI } from '@repo/core/api';
+import { classroomGroupsAPI } from '@repo/core/api/client';
 
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { useLotusToast } from '@repo/ui/hooks';

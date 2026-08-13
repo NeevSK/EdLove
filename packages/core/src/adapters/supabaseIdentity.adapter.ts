@@ -1,5 +1,9 @@
-import { Data, Duration, Effect, pipe, Schedule } from 'effect';
-import { registerActiveBondIdResolver, registerTokenResolver } from '@repo/core/api/contract';
+import * as Data from 'effect/Data';
+import * as Duration from 'effect/Duration';
+import * as Effect from 'effect/Effect';
+import { pipe } from 'effect/Function';
+import * as Schedule from 'effect/Schedule';
+import { registerActiveBondIdResolver, registerTokenResolver } from '@repo/core/api/clientRuntime';
 import type { Identity } from '@repo/core/api/identity.generated';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { storage } from '@repo/core/lib/storage';

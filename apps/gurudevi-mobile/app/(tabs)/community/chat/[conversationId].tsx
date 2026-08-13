@@ -1,1 +1,1 @@
-export { GroupChatScreen as default } from '@repo/community';
+export { GroupChatScreen as default } from '@repo/community/chat';

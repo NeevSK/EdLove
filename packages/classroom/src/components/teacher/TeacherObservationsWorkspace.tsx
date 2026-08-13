@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 import type { Student } from '@repo/core/types';
 
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';

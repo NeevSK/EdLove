@@ -154,6 +154,18 @@ jobs:
             echo "sourcemaps_available=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: 📊 Record bundle metrics
+        if: always()
+        run: |
+          node scripts/report-mobile-bundle.mjs \
+            /tmp/sentry-artifacts/index.android.bundle \
+            /tmp/sentry-artifacts/index.android.bundle.map \
+            /tmp/sentry-artifacts/bundle-metrics.json
+          node scripts/report-mobile-bundle-packages.mjs \
+            /tmp/sentry-artifacts/index.android.bundle \
+            /tmp/sentry-artifacts/index.android.bundle.map \
+            /tmp/sentry-artifacts/bundle-packages.json
+
       - name: 📤 Upload sourcemap artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -243,6 +255,14 @@ jobs:
         working-directory: apps/gurudevi-mobile
         run: pnpm run audit:expo-native-graph
 
+      - name: 🧱 Validate mobile boundaries and runtime assets
+        working-directory: apps/gurudevi-mobile
+        run: pnpm run audit:boundaries
+
+      - name: 🌳 Audit tree-shaking surfaces
+        working-directory: apps/gurudevi-mobile
+        run: pnpm run audit:tree-shaking
+
       - name: 🎨 Validate NativeWind v5 style stack
         working-directory: apps/gurudevi-mobile
         run: |
@@ -277,8 +297,9 @@ jobs:
         env:
           EXPO_NO_DOCTOR: 1
           NODE_OPTIONS: --max-old-space-size=8192
-          GRADLE_MAX_HEAP: 5120m
-          GRADLE_MAX_METASPACE: 768m
+          GRADLE_MAX_HEAP: 4096m
+          GRADLE_MAX_METASPACE: 512m
+          GRADLE_MAX_WORKERS: 2
         run: |
           set -eo pipefail
           pnpm config set side-effects-cache false
@@ -288,10 +309,6 @@ jobs:
 
           if [ "${{ github.event.inputs.build_method }}" == "local" ]; then
             echo "🏗️ Starting LOCAL EAS Build..."
-
-            if [ "${{ needs.prebundle.outputs.sourcemaps_available }}" == "true" ]; then
-              export EXPO_BUNDLE_APP=0
-            fi
 
             eas build \
               --platform android \

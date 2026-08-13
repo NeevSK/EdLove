@@ -1,4 +1,4 @@
-import { studentsAPI } from '@repo/core/api';
+import { studentsAPI } from '@repo/core/api/client';
 import type { Student } from '@repo/core/types';
 
 import { QRCodeGenerator } from '@repo/scanner-kit';

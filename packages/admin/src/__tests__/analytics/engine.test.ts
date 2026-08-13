@@ -3,7 +3,7 @@ import { multiTenantAnalyticsEngine } from '../../analytics/engine';
 import type { CustomReportConfig, EducationSector, MetricDefinition } from '../../analytics/types';
 
 // Mock Supabase
-jest.mock('@repo/core/api', () => ({
+jest.mock('@repo/core/api/client', () => ({
   supabase: {
     from: jest.fn(() => ({
       select: jest.fn(() => ({
@@ -297,7 +297,7 @@ describe('MultiTenantAnalyticsEngine', () => {
   describe('Error Handling', () => {
     it('should handle database errors gracefully', async () => {
       // Mock a database error
-      const { supabase } = require('@repo/core/api');
+      const { supabase } = require('@repo/core/api/client');
       supabase.from.mockImplementation(() => ({
         select: jest.fn(() => ({
           eq: jest.fn(() => ({

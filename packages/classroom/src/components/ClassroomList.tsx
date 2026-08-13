@@ -1,4 +1,4 @@
-import { api, identityAPI, MOCK_CLASSROOMS } from '@repo/core/api';
+import { api, identityAPI, MOCK_CLASSROOMS } from '@repo/core/api/client';
 import { useIsGuest } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 

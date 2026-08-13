@@ -1,4 +1,4 @@
-import { schoolAPI } from '@repo/core/api';
+import { schoolAPI } from '@repo/core/api/client';
 import { handleAPIError, useMutationQueue, usePermissions } from '@repo/core/logic';
 import type { School, SchoolStats } from '@repo/core/types';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';

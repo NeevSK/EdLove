@@ -301,7 +301,12 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
 
   // C. Universal Shims (The Firewall)
   for (const shimKey in UNIVERSAL_SHIMS) {
-    if (moduleName === shimKey || moduleName.startsWith(`${shimKey}/`)) {
+    if (
+      moduleName === shimKey ||
+      moduleName.startsWith(`${shimKey}/`) ||
+      moduleName === `node:${shimKey}` ||
+      moduleName.startsWith(`node:${shimKey}/`)
+    ) {
       console.log(`[Metro-Firewall] 🛡️ UNIVERSAL Intercept: ${moduleName} -> ${shimKey}`);
       return { filePath: UNIVERSAL_SHIMS[shimKey], type: 'sourceFile' };
     }

@@ -1,5 +1,5 @@
 import { reportingAPI } from '@repo/admin/reporting';
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 import type { AttendanceReport } from '@repo/core/logic';
 import type { AcademicCycle } from '@repo/core/types';
 

@@ -1,4 +1,4 @@
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
 

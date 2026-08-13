@@ -3,7 +3,7 @@ import {
   createSovereignClient,
   growthSignalsAPI,
   SOVEREIGN_API_URL,
-} from '@repo/core/api';
+} from '@repo/core/api/client';
 import { useStore } from '@repo/core/logic';
 import { APIError } from '@repo/core/types';
 import type { FireJournalEntry, MoodLog } from '@repo/self/types';

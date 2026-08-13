@@ -1,4 +1,4 @@
-import { assertContractCoverage, createTemporalProxy, defineContractCoverage, growthSignalsAPI, identityAPI, impactRipplesAPI, libraryContract } from '@repo/core/api';
+import { assertContractCoverage, createTemporalProxy, defineContractCoverage, growthSignalsAPI, identityAPI, impactRipplesAPI, libraryContract } from '@repo/core/api/client';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { applyTemporalFilter } from '@repo/core/logic';
 
@@ -403,7 +403,7 @@ const rawLibraryAPI = {
     });
     // Direct Rewards: Add 50 points for contribution
     try {
-      const { rewardsAPI } = await import('@repo/core/api');
+      const { rewardsAPI } = await import('@repo/core/api/client');
       void rewardsAPI.addPoints(creatorId, 50).catch(() => { });
     } catch (e) {
       console.warn('Rewards API not available for points', e);

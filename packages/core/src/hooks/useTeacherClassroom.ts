@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { api } from '@repo/core/api';
+import { api } from '@repo/core/api/client';
 import type { Classroom, Student } from '@repo/core/types';
 
 /**

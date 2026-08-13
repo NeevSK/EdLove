@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { SovereignContract } from '@repo/core/api/contract';
+import type { SovereignContract } from '@repo/core/api/contracts';
 import { FacetedProfileSchema, IdentitySchema } from '@repo/core/api/identity.generated';
 
 export const OnboardingStateSchema = z.enum([

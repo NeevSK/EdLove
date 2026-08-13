@@ -15,7 +15,7 @@ import {
   useEcosystemStatsQuery,
   useGlobalUsersQuery,
   useSentinelGovernanceQuery,
-} from '@repo/core/api';
+} from '@repo/core/api/client';
 import { usePermissions, useStore, useTemporalStore } from '@repo/core/logic';
 import type { School } from '@repo/core/types';
 

@@ -1,4 +1,4 @@
-import { communityAPI } from '@repo/core/api';
+import { communityAPI } from '@repo/core/api/client';
 import {
   useAnnouncementsQuery,
   useGroupsInfiniteQuery,
