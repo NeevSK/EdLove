@@ -92,7 +92,15 @@ Commit: `1ef893df8dc9c9039c11b84ca89b15a803eb3f55`
 
 Result: the disk fix worked. The runner reported `23 GB` available immediately before Gradle, and native compilation progressed for 34 minutes 22 seconds with 972 actionable tasks executed. The build then failed at `:app:createBundleReleaseJsAndAssets` because Metro rejected the missing `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. The dependent Sentry upload task also failed with `No such file or directory` because the JavaScript bundle was never produced. This was a configuration/bootstrap failure, not a disk failure and not evidence that the native modules failed to compile.
 
-The next workflow revision loads the reviewed public runtime allowlist from Doppler's `gurudevi-mobile/dev` config without printing values, and disables automatic Sentry artifact upload for this device APK lane. Sentry sourcemap publication remains a separate explicit workflow concern.
+The next workflow revision disables automatic Sentry artifact upload for this device APK lane and injects the two already-configured public Supabase values from repository secrets. The Doppler service token is not currently configured in GitHub, so this lane must not depend on it. Sentry sourcemap publication remains a separate explicit workflow concern.
+
+### Third attempt: early configuration guard
+
+Run: [31783622949](https://github.com/NeevSK/EdLove/actions/runs/31783622949)
+
+Commit: `f4cc038042126896a996d8e27aac68db0b5f9cbf`
+
+Result: intentionally stopped in 39 seconds at the runtime-configuration step because the repository has no `DOPPLER_TOKEN` secret. The token was empty and was not printed. This prevented another long native build with missing Metro inputs. Repository secret inventory confirmed that `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` already exist, so the workflow now uses those existing values directly and does not require Doppler for the device-artifact lane.
 
 ### Warning inventory from run 31780627576
 

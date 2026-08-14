@@ -25,9 +25,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
-      DOPPLER_PROJECT: gurudevi-mobile
-      DOPPLER_CONFIG: dev
-      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+      # These are public client configuration values. They are injected from
+      # existing repository secrets so Metro can build a real device APK
+      # without requiring a Doppler service token in GitHub Actions.
+      EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -54,12 +56,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-      - name: Load reviewed mobile runtime configuration
-        uses: ./.github/actions/load-doppler-env
-        with:
-          project: ${{ env.DOPPLER_PROJECT }}
-          config: ${{ env.DOPPLER_CONFIG }}
-          token: ${{ env.DOPPLER_TOKEN }}
       - name: Setup Java
         uses: actions/setup-java@v5
         with:
