@@ -1,4 +1,5 @@
 import { type InviteCodeData, validateInviteCode } from '@repo/core/logic';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useSanctuaryToast } from '@repo/ui/hooks';
@@ -10,7 +11,6 @@ import {
   Icon,
   InputField,
   Pressable,
-  Spinner,
   Text,
   VStack,
 } from '@repo/ui/primitives';
@@ -135,7 +135,7 @@ export default function InviteCodeEntry({ onCodeValidated, onSkip }: InviteCodeE
               className="h-16 rounded-2xl"
             >
               {loading ? (
-                <Spinner />
+                <BrandPulse size={22} accessibilityLabel="Validating invitation code" />
               ) : (
                 <HStack className="gap-2 items-center">
                   <Text className="text-white font-black text-lg">

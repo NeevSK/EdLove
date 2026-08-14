@@ -1,11 +1,12 @@
+import { useProfileNavigation } from '@repo/profile/navigation';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { Camera } from '@repo/ui/icons';
-import { Box, Pressable, Spinner } from '@repo/ui/primitives';
+import { Box, Pressable } from '@repo/ui/primitives';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { useProfileNavigation } from '@repo/profile/navigation';
 
 let Paths: typeof import('expo-file-system').Paths | null = null;
 let File: typeof import('expo-file-system').File | null = null;
@@ -179,7 +180,7 @@ export function AvatarDisplay({
       {content}
       {uploading ? (
         <Box className="absolute inset-0 bg-black/40 items-center justify-center">
-          <Spinner className="text-white" size="small" />
+          <BrandPulse size={24} tintColor="#FFFFFF" accessibilityLabel="Uploading profile image" />
         </Box>
       ) : (
         <Box className="absolute inset-0 bg-black/20 items-center justify-center">

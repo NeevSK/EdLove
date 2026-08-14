@@ -1,6 +1,7 @@
 import { type StudentPotentialAnalysis, studentPotentialAPI } from '@repo/core/api/client';
 import { CaptureEngine } from '@repo/graphics/algorithms';
 import { radarLayout } from '@repo/graphics/layouts';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { GlassCard } from '@repo/ui/components/GlassCard';
 import { useResponsive } from '@repo/ui/hooks';
 import { FileCheck, Save, Sparkles, X } from '@repo/ui/icons';
@@ -17,7 +18,6 @@ import {
   Pressable,
   ScrollView,
   Slider,
-  Spinner,
   Text,
   useTheme,
   VStack,
@@ -306,7 +306,11 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                 disabled={state.exporting}
               >
                 {state.exporting ? (
-                  <Spinner size="small" color={Theme.colors.sanctuarySaffron} />
+                  <BrandPulse
+                    size={18}
+                    tintColor={Theme.colors.sanctuarySaffron}
+                    accessibilityLabel="Exporting analysis"
+                  />
                 ) : (
                   <FileCheck size={20} color={Theme.colors.sanctuarySaffron} />
                 )}
@@ -321,7 +325,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
         <ModalBody className="px-6">
           {state.loading ? (
             <Box className="h-[400px] justify-center items-center">
-              <Spinner color={Theme.colors.sanctuarySaffron} />
+              <BrandPulse size={36} accessibilityLabel="Loading student analysis" />
             </Box>
           ) : (
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -412,7 +416,11 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
                     className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sanctuarySaffron/10 border border-sanctuarySaffron/20"
                   >
                     {state.loadingAI ? (
-                      <Spinner size="small" color={Theme.colors.sanctuarySaffron} />
+                      <BrandPulse
+                        size={18}
+                        tintColor={Theme.colors.sanctuarySaffron}
+                        accessibilityLabel="Generating insights"
+                      />
                     ) : (
                       <Sparkles size={16} color={Theme.colors.sanctuarySaffron} />
                     )}
@@ -497,7 +505,7 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
             disabled={state.saving}
           >
             {state.saving ? (
-              <Spinner color="black" size="small" />
+              <BrandPulse size={18} tintColor="#000000" accessibilityLabel="Saving analysis" />
             ) : (
               <HStack className="gap-2 items-center">
                 <Save size={18} color="black" />

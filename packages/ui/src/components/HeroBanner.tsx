@@ -3,6 +3,7 @@ import { Dimensions, Image, Pressable, Text, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Box, HStack, VStack } from '@repo/ui/gluestack';
 import { Theme } from '@repo/ui/theme/Theme';
+import { tokens } from '@repo/ui/tokens';
 
 export interface HeroBannerProps {
   title: string;
@@ -84,14 +85,13 @@ export function HeroBanner({
               className="bg-phase-danger px-3 py-1 rounded mb-2 self-start"
               style={{ backgroundColor: NETFLIX_TOKENS.accent }}
             >
-              <Text className="text-white font-bold text-xs">{badge}</Text>
+              <Text className="text-white" style={tokens.typography.roles.label}>{badge}</Text>
             </Box>
           )}
           <Text
             className="text-white font-bold"
             style={{
-              fontSize: 28,
-              lineHeight: 36,
+              ...tokens.typography.roles.display,
               color: NETFLIX_TOKENS.textPrimary,
               textShadowColor: 'rgba(0,0,0,0.8)',
               textShadowOffset: { width: 0, height: 1 },
@@ -104,7 +104,7 @@ export function HeroBanner({
             <Text
               className="text-white mt-1"
               style={{
-                fontSize: 14,
+                ...tokens.typography.roles.body,
                 color: NETFLIX_TOKENS.textSecondary,
                 textShadowColor: 'rgba(0,0,0,0.8)',
                 textShadowOffset: { width: 0, height: 1 },

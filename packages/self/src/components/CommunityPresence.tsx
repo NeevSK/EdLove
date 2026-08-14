@@ -4,17 +4,10 @@
  * Standardized to Zero-Legacy: purged sx props and fixed syntax corruption in animations/renders.
  */
 
+import { useCommunityPresence } from '@repo/self/hooks/useCommunityPresence';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { Globe, Users, WifiOff } from '@repo/ui/icons';
-import {
-  AnimatedView,
-  Box,
-  Heading,
-  HStack,
-  Icon,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui/primitives';
+import { AnimatedView, Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -25,7 +18,6 @@ import {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import { useCommunityPresence } from '@repo/self/hooks/useCommunityPresence';
 
 interface CommunityPresenceProps {
   compact?: boolean;
@@ -101,7 +93,7 @@ export default function CommunityPresence({
   if (isLoading) {
     return (
       <HStack className={`items-center gap-3 ${hidePadding || compact ? '' : 'p-4'} opacity-50`}>
-        <Spinner size="small" className="text-sanctuarySaffron" />
+        <BrandPulse size={20} accessibilityLabel="Loading community presence" />
         <Text className="text-mistGray text-xs font-bold uppercase tracking-widest">
           Synchronizing Presence...
         </Text>

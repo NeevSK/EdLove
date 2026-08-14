@@ -1,5 +1,6 @@
 import { api, communityAPI, identityAPI, onboardingAPI } from '@repo/core/api/client';
 
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { CircleCheck, MessageSquare, School } from '@repo/ui/icons';
 import {
   Box,
@@ -20,7 +21,6 @@ import {
   ModalFooter,
   ModalHeader,
   Pressable,
-  Spinner,
   Text,
   VStack,
 } from '@repo/ui/primitives';
@@ -375,7 +375,11 @@ export default function CreateSchoolModal({
                   isDisabled={isSubmitting}
                 >
                   {isSubmitting ? (
-                    <Spinner size="small" className="text-sacredWhite" />
+                    <BrandPulse
+                      size={20}
+                      tintColor="#FFFFFF"
+                      accessibilityLabel="Creating school"
+                    />
                   ) : (
                     <ButtonText className="text-sacredWhite font-English">
                       {isEdit ? 'Save Changes' : 'Establish Sanctuary'}

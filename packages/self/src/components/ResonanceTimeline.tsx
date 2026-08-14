@@ -5,13 +5,13 @@
  */
 
 import { useTemporalStore } from '@repo/core/logic';
-import { Box, Heading, ScrollView, Spinner, Text, VStack } from '@repo/ui/primitives';
-
-import type React from 'react';
-import Animated, { FadeIn } from 'react-native-reanimated';
-import { useJourneyData } from '@repo/self/hooks/useJourneyData';
 import { GenesisNode } from '@repo/self/components/GenesisNode';
 import { TimelineEvent } from '@repo/self/components/TimelineEvent';
+import { useJourneyData } from '@repo/self/hooks/useJourneyData';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { Box, Heading, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import type React from 'react';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 export const ResonanceTimeline: React.FC = () => {
   const { journey, loading } = useJourneyData();
@@ -20,7 +20,7 @@ export const ResonanceTimeline: React.FC = () => {
   if (loading) {
     return (
       <Box className="flex-1 items-center justify-center min-h-[300px]">
-        <Spinner size="large" className="text-sanctuarySaffron" />
+        <BrandPulse size={36} accessibilityLabel="Loading journey path" />
         <Text className="text-mistGray/40 text-xs font-black uppercase tracking-[0.2em] mt-4">
           Synthesizing Journey Path...
         </Text>

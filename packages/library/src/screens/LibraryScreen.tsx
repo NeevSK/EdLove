@@ -170,6 +170,7 @@ export default function LibraryScreen() {
 
   // --- 1. STATE MACHINE (Mechanism) ---
   interface LibraryState {
+    activeSection: 'browse' | 'collections' | 'contribute';
     searchQuery: string;
     debouncedSearchQuery: string;
     selectedCategoryId: string;
@@ -188,6 +189,7 @@ export default function LibraryScreen() {
   }
 
   const initialState: LibraryState = {
+    activeSection: 'browse',
     searchQuery: '',
     debouncedSearchQuery: '',
     selectedCategoryId: 'All',
@@ -208,6 +210,7 @@ export default function LibraryScreen() {
   const isFetchingPublicRef = useRef(false);
 
   type LibraryAction =
+    | { type: 'SET_SECTION'; section: LibraryState['activeSection'] }
     | { type: 'SET_SEARCH'; query: string }
     | { type: 'SET_DEBOUNCED_SEARCH'; query: string }
     | { type: 'SET_CATEGORY'; id: string }
@@ -227,6 +230,8 @@ export default function LibraryScreen() {
 
   function libraryReducer(state: LibraryState, action: LibraryAction): LibraryState {
     switch (action.type) {
+      case 'SET_SECTION':
+        return { ...state, activeSection: action.section };
       case 'SET_SEARCH':
         return { ...state, searchQuery: action.query };
       case 'SET_DEBOUNCED_SEARCH':
@@ -263,6 +268,7 @@ export default function LibraryScreen() {
 
   const [
     {
+      activeSection,
       searchQuery,
       debouncedSearchQuery,
       selectedCategoryId,
@@ -298,11 +304,15 @@ export default function LibraryScreen() {
 
   const theme = useTheme();
   const { width, height } = useWindowDimensions();
-  const shelfColumns = width >= 700 || width > height ? 2 : 1;
+  // Landscape keeps the phone's single reading axis. Two columns are reserved
+  // for genuinely wider tablet compositions so short heights never force text
+  // into cramped cards.
+  const shelfColumns = width >= 700 && width >= height ? 2 : 1;
   const bottomPadding = useBottomTabPadding();
   const { discoverFeature } = useTracking();
 
-  const isSearchMode = searchQuery.trim().length > 0 || selectedCategoryId !== 'All';
+  const isSearchMode =
+    activeSection === 'browse' && (searchQuery.trim().length > 0 || selectedCategoryId !== 'All');
 
   const resourceTypeFilter = useMemo(() => {
     if (selectedCategoryId === 'All') return undefined;
@@ -492,7 +502,7 @@ export default function LibraryScreen() {
       rows.push({
         type: 'SHELF',
         id: 'shelf-trending',
-        label: '⭐ Trending',
+        label: 'Trending',
         items: trending,
       });
     }
@@ -501,7 +511,7 @@ export default function LibraryScreen() {
       rows.push({
         type: 'SHELF',
         id: 'shelf-new',
-        label: '✨ New Arrivals',
+        label: 'New Arrivals',
         items: newArrivals,
       });
     }
@@ -762,6 +772,10 @@ export default function LibraryScreen() {
     dispatch({ type: 'SET_SEARCH', query: text });
   }, []);
 
+  const handleSelectSection = useCallback((section: LibraryState['activeSection']) => {
+    dispatch({ type: 'SET_SECTION', section });
+  }, []);
+
   const handleNavigateToMap = useCallback(() => {
     router.push('/library/map');
   }, [router]);
@@ -926,7 +940,7 @@ export default function LibraryScreen() {
         case 'CATEGORIES':
           return (
             <Box className="mb-lg">
-              <SmartShelf title="🌟 Discover Categories">
+              <SmartShelf title="Discover Categories">
                 {item.items.map((col: any) => (
                   <CollectionCard
                     key={col.id}
@@ -946,7 +960,7 @@ export default function LibraryScreen() {
         case 'COLLECTIONS':
           return (
             <Box className="mb-lg">
-              <SmartShelf title="📚 Featured Collections">
+              <SmartShelf title="Featured Collections">
                 {item.items.map((col: any) => {
                   const isOwner = !!user?.id && col.creator_id === user.id;
                   const vis = col.visibility;
@@ -954,15 +968,15 @@ export default function LibraryScreen() {
                   const handleOwnerLongPress = () => {
                     const visOptions = [
                       {
-                        label: vis === 'private' ? 'Private ✓ (current)' : 'Make Private 🔒',
+                        label: vis === 'private' ? 'Private ✓ (current)' : 'Make Private',
                         value: 'private',
                       },
                       {
-                        label: vis === 'shared' ? 'Shared ✓ (current)' : 'Make Shared 👥',
+                        label: vis === 'shared' ? 'Shared ✓ (current)' : 'Make Shared',
                         value: 'shared',
                       },
                       {
-                        label: vis === 'public' ? 'Public ✓ (current)' : 'Make Public 🌐',
+                        label: vis === 'public' ? 'Public ✓ (current)' : 'Make Public',
                         value: 'public',
                       },
                     ];
@@ -1036,7 +1050,7 @@ export default function LibraryScreen() {
                               fontWeight: '800',
                             }}
                           >
-                            {vis === 'shared' ? '👥 Shared' : '🔒 Private'}
+                            {vis === 'shared' ? 'Shared' : 'Private'}
                           </Text>
                         </Box>
                       )}
@@ -1087,18 +1101,57 @@ export default function LibraryScreen() {
                 <Box className="w-2 h-2 rounded-full bg-phase-accent" />
               </AnimatedView>
             )}
-            <Pressable
-              onPress={handleNavigateToMap}
-              accessibilityRole="button"
-              accessibilityLabel="Library Map"
-              accessibilityHint="Opens constellation view of sanctuary wisdom"
-              className="p-2 rounded-xl bg-phase-interactive/10 border border-phase-interactive/15 mr-1"
-            >
-              <Icon as={MapIcon} size={20} color={theme.text.primary} />
-            </Pressable>
+            {activeSection === 'browse' && (
+              <Pressable
+                onPress={handleNavigateToMap}
+                accessibilityRole="button"
+                accessibilityLabel="Open knowledge map"
+                accessibilityHint="Explore relationships between library resources"
+                className="min-w-11 min-h-11 p-2 rounded-xl bg-phase-interactive/10 border border-phase-interactive/15 mr-1 justify-center items-center"
+              >
+                <Icon as={MapIcon} size={20} color={theme.text.primary} />
+              </Pressable>
+            )}
           </HStack>
         }
       />
+
+      <VStack className="px-md pt-sm pb-md gap-2 bg-phase-surface">
+        <Text className="text-sm font-bold text-phaseText-primary">Library spaces</Text>
+        <HStack
+          className="rounded-2xl border border-phase-border bg-phase-surface-light p-1 gap-1"
+          accessibilityRole="tablist"
+          accessibilityLabel="Choose a library space"
+          accessibilityHint="Switch between browsing, collections, and contribution tasks"
+        >
+          {(
+            [
+              ['browse', 'Browse', 'Find and open resources'],
+              ['collections', 'Collections', 'Explore grouped resources'],
+              ['contribute', 'Contribute & Review', 'Add, curate, or review resources'],
+            ] as const
+          ).map(([section, label, hint]) => {
+            const selected = activeSection === section;
+            return (
+              <Pressable
+                key={section}
+                onPress={() => handleSelectSection(section)}
+                accessibilityRole="tab"
+                accessibilityLabel={label}
+                accessibilityHint={hint}
+                accessibilityState={{ selected }}
+                className={`min-h-11 flex-1 px-2 rounded-xl justify-center items-center ${selected ? 'bg-phase-interactive' : ''}`}
+              >
+                <Text
+                  className={`text-center text-[14px] font-bold ${selected ? 'text-white' : 'text-phaseText-secondary'}`}
+                >
+                  {label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </HStack>
+      </VStack>
 
       {libraryError ? (
         <VStack className="p-md mt-lg items-center gap-3">
@@ -1122,125 +1175,212 @@ export default function LibraryScreen() {
         </VStack>
       ) : (
         <Box className="flex-1">
-          {!isSearchMode && isLibraryManagementEnabled && can('create', 'Library') && (
-            <HStack className="px-md py-3 gap-3">
-              <Pressable
-                onPress={handleOpenCollectionModal}
-                accessibilityRole="button"
-                accessibilityLabel="Create Collection"
-                accessibilityHint="Opens a form to create a new resource collection"
-                className="flex-row items-center gap-2 px-4 py-2.5 rounded-2xl bg-phase-interactive/10 border border-phase-interactive/50"
-              >
-                <Icon as={Library} size={14} color={theme.accent.action} />
-                <Text className="text-[13px] font-bold text-phaseText-primary">+ Collection</Text>
-              </Pressable>
-            </HStack>
-          )}
-
-          <Box className="flex-1 bg-phase-surface">
-            <AnimatedView entering={FadeInDown.delay(100).springify()}>
-              <HorizontalChipRow
-                chips={chipData}
-                selectedValue={selectedCategoryId}
-                onSelect={handleSelectCategory}
-                size="sm"
-              />
-            </AnimatedView>
-
-            <AnimatedView entering={FadeInDown.delay(160).springify()}>
-              <HStack className="px-md pb-sm justify-between items-center">
-                <Box className="flex-1">
-                  <HorizontalChipRow
-                    chips={sortChips}
-                    selectedValue={selectedSort}
-                    onSelect={handleSelectSort}
-                    size="sm"
-                  />
-                </Box>
-                <HStack className="gap-1 p-1 rounded-xl border border-phase-border bg-phase-surface/80">
-                  <Pressable
-                    onPress={handleSetViewModeShelf}
-                    accessibilityRole="button"
-                    accessibilityLabel="Shelf layout"
-                    accessibilityHint="Shows resources in a grouped shelf view"
-                    className={`w-8 h-8 rounded-lg justify-center items-center ${viewMode === 'shelf' ? 'bg-phase-interactive' : ''}`}
-                  >
-                    <Icon
-                      as={Layers}
-                      size={14}
-                      color={viewMode === 'shelf' ? theme.text.inverse : theme.text.secondary}
-                    />
-                  </Pressable>
-                  <Pressable
-                    onPress={handleSetViewModeGrid}
-                    accessibilityRole="button"
-                    accessibilityLabel="Grid layout"
-                    accessibilityHint="Shows resources in a grid view"
-                    className={`w-8 h-8 rounded-lg justify-center items-center ${viewMode === 'grid' ? 'bg-phase-interactive' : ''}`}
-                  >
-                    <Icon
-                      as={LayoutGrid}
-                      size={14}
-                      color={viewMode === 'grid' ? theme.text.inverse : theme.text.secondary}
-                    />
-                  </Pressable>
-                  <Pressable
-                    onPress={handleSetViewModeList}
-                    accessibilityRole="button"
-                    accessibilityLabel="List layout"
-                    accessibilityHint="Shows resources in a detailed list view"
-                    className={`w-8 h-8 rounded-lg justify-center items-center ${viewMode === 'list' ? 'bg-phase-interactive' : ''}`}
-                  >
-                    <Icon
-                      as={List}
-                      size={14}
-                      color={viewMode === 'list' ? theme.text.inverse : theme.text.secondary}
-                    />
-                  </Pressable>
-                </HStack>
-              </HStack>
-            </AnimatedView>
-
-            {viewMode === 'shelf' && !isSearchMode ? (
-              <Box className="flex-1">
+          {activeSection === 'collections' && (
+            <Box className="flex-1 bg-phase-surface px-md pt-md">
+              <VStack className="gap-1 mb-md">
+                <Text className="text-xl font-extrabold text-phaseText-primary">Collections</Text>
+                <Text className="text-sm leading-5 text-phaseText-secondary">
+                  Follow a themed path through resources gathered together.
+                </Text>
+              </VStack>
+              {collections.length > 0 ? (
                 <SanctuaryFlashList
-                  data={shelfData}
+                  data={[{ type: 'COLLECTIONS', id: 'collections' }]}
                   keyExtractor={keyExtractor}
                   renderItem={renderFlatListItem}
                   estimatedItemSize={280}
-                  contentContainerStyle={{
-                    paddingBottom: bottomPadding + 40,
-                    paddingTop: Theme.spacing.md,
-                  }}
+                  contentContainerStyle={{ paddingBottom: bottomPadding + 40 }}
                   showsVerticalScrollIndicator={false}
                   refreshing={refreshing}
                   onRefresh={onRefresh}
-                  masonry
-                  numColumns={shelfColumns}
                 />
-              </Box>
-            ) : (
-              <ResourceList
-                resources={resources}
-                onOpenResource={handleOpenResource}
-                onOpenResourceOptions={handleOpenResourceOptions}
-                onPullToDesk={handlePullToDesk}
-                viewMode={viewMode === 'grid' ? 'grid' : 'list'}
-                ListHeaderComponent={
-                  <Box className="p-md">
-                    <Text className="text-[13px] text-phaseText-secondary">
-                      {searchQuery
-                        ? `Found ${resources.length} resources for "${searchQuery}"`
-                        : `Showing curated findings`}
+              ) : (
+                <VStack className="rounded-2xl border border-phase-border bg-phase-surface-light p-5 gap-2">
+                  <Text className="text-base font-bold text-phaseText-primary">
+                    No collections yet
+                  </Text>
+                  <Text className="text-sm leading-5 text-phaseText-secondary">
+                    Create a collection from Contribute & Review when you are ready to gather
+                    resources.
+                  </Text>
+                </VStack>
+              )}
+            </Box>
+          )}
+          {activeSection === 'contribute' && (
+            <VStack className="flex-1 bg-phase-surface px-md pt-md gap-3">
+              <VStack className="gap-1 mb-1">
+                <Text className="text-xl font-extrabold text-phaseText-primary">
+                  Contribute & Review
+                </Text>
+                <Text className="text-sm leading-5 text-phaseText-secondary">
+                  Add useful knowledge, shape collections, or review community submissions.
+                </Text>
+              </VStack>
+              {isLibraryManagementEnabled && can('create', 'LibraryResource') ? (
+                <Pressable
+                  onPress={handleOpenAddModal}
+                  accessibilityRole="button"
+                  accessibilityLabel="Add a resource"
+                  accessibilityHint="Open the form to contribute a library resource"
+                  className="min-h-16 rounded-2xl border border-phase-interactive/40 bg-phase-interactive/10 px-4 py-3 flex-row items-center gap-3"
+                >
+                  <Icon as={Plus} size={22} color={theme.accent.action} />
+                  <VStack className="flex-1 gap-0.5">
+                    <Text className="text-base font-bold text-phaseText-primary">
+                      Add a resource
                     </Text>
+                    <Text className="text-sm text-phaseText-secondary">
+                      Share an article, video, note, or link.
+                    </Text>
+                  </VStack>
+                </Pressable>
+              ) : (
+                <VStack className="rounded-2xl border border-phase-border bg-phase-surface-light p-4 gap-1">
+                  <Text className="text-base font-bold text-phaseText-primary">
+                    Contributions are unavailable
+                  </Text>
+                  <Text className="text-sm leading-5 text-phaseText-secondary">
+                    Your current account cannot add library resources right now.
+                  </Text>
+                </VStack>
+              )}
+              {isLibraryManagementEnabled && can('create', 'Library') && (
+                <Pressable
+                  onPress={handleOpenCollectionModal}
+                  accessibilityRole="button"
+                  accessibilityLabel="Create a collection"
+                  accessibilityHint="Open the form to create a library collection"
+                  className="min-h-16 rounded-2xl border border-phase-border bg-phase-surface-light px-4 py-3 flex-row items-center gap-3"
+                >
+                  <Icon as={Library} size={22} color={theme.accent.action} />
+                  <VStack className="flex-1 gap-0.5">
+                    <Text className="text-base font-bold text-phaseText-primary">
+                      Create a collection
+                    </Text>
+                    <Text className="text-sm text-phaseText-secondary">
+                      Give related resources one home.
+                    </Text>
+                  </VStack>
+                </Pressable>
+              )}
+              {isLibraryManagementEnabled && can('manage', 'LibraryCuratorDashboard') ? (
+                <CuratorInvitation onPress={handleNavigateToCuratorReview} />
+              ) : (
+                <Text className="px-1 pt-2 text-sm leading-5 text-phaseText-secondary">
+                  Reviews appear here when curator access is enabled for your account.
+                </Text>
+              )}
+            </VStack>
+          )}
+          {activeSection === 'browse' && (
+            <>
+              <Box className="flex-1 bg-phase-surface">
+                <AnimatedView entering={FadeInDown.delay(100).springify()}>
+                  <HorizontalChipRow
+                    chips={chipData}
+                    selectedValue={selectedCategoryId}
+                    onSelect={handleSelectCategory}
+                    size="sm"
+                  />
+                </AnimatedView>
+
+                <AnimatedView entering={FadeInDown.delay(160).springify()}>
+                  <HStack className="px-md pb-sm justify-between items-center">
+                    <Box className="flex-1">
+                      <HorizontalChipRow
+                        chips={sortChips}
+                        selectedValue={selectedSort}
+                        onSelect={handleSelectSort}
+                        size="sm"
+                      />
+                    </Box>
+                    <HStack className="gap-1 p-1 rounded-xl border border-phase-border bg-phase-surface/80">
+                      <Pressable
+                        onPress={handleSetViewModeShelf}
+                        accessibilityRole="button"
+                        accessibilityLabel="Shelf layout"
+                        accessibilityHint="Shows resources in a grouped shelf view"
+                        className={`w-8 h-8 rounded-lg justify-center items-center ${viewMode === 'shelf' ? 'bg-phase-interactive' : ''}`}
+                      >
+                        <Icon
+                          as={Layers}
+                          size={14}
+                          color={viewMode === 'shelf' ? theme.text.inverse : theme.text.secondary}
+                        />
+                      </Pressable>
+                      <Pressable
+                        onPress={handleSetViewModeGrid}
+                        accessibilityRole="button"
+                        accessibilityLabel="Grid layout"
+                        accessibilityHint="Shows resources in a grid view"
+                        className={`w-8 h-8 rounded-lg justify-center items-center ${viewMode === 'grid' ? 'bg-phase-interactive' : ''}`}
+                      >
+                        <Icon
+                          as={LayoutGrid}
+                          size={14}
+                          color={viewMode === 'grid' ? theme.text.inverse : theme.text.secondary}
+                        />
+                      </Pressable>
+                      <Pressable
+                        onPress={handleSetViewModeList}
+                        accessibilityRole="button"
+                        accessibilityLabel="List layout"
+                        accessibilityHint="Shows resources in a detailed list view"
+                        className={`w-8 h-8 rounded-lg justify-center items-center ${viewMode === 'list' ? 'bg-phase-interactive' : ''}`}
+                      >
+                        <Icon
+                          as={List}
+                          size={14}
+                          color={viewMode === 'list' ? theme.text.inverse : theme.text.secondary}
+                        />
+                      </Pressable>
+                    </HStack>
+                  </HStack>
+                </AnimatedView>
+
+                {viewMode === 'shelf' && !isSearchMode ? (
+                  <Box className="flex-1">
+                    <SanctuaryFlashList
+                      data={shelfData}
+                      keyExtractor={keyExtractor}
+                      renderItem={renderFlatListItem}
+                      estimatedItemSize={280}
+                      contentContainerStyle={{
+                        paddingBottom: bottomPadding + 40,
+                        paddingTop: Theme.spacing.md,
+                      }}
+                      showsVerticalScrollIndicator={false}
+                      refreshing={refreshing}
+                      onRefresh={onRefresh}
+                      masonry
+                      numColumns={shelfColumns}
+                    />
                   </Box>
-                }
-                onEndReached={handleEndReached}
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-              />
-            )}
-          </Box>
+                ) : (
+                  <ResourceList
+                    resources={resources}
+                    onOpenResource={handleOpenResource}
+                    onOpenResourceOptions={handleOpenResourceOptions}
+                    onPullToDesk={handlePullToDesk}
+                    viewMode={viewMode === 'grid' ? 'grid' : 'list'}
+                    ListHeaderComponent={
+                      <Box className="p-md">
+                        <Text className="text-[13px] text-phaseText-secondary">
+                          {searchQuery
+                            ? `Found ${resources.length} resources for "${searchQuery}"`
+                            : `Showing curated findings`}
+                        </Text>
+                      </Box>
+                    }
+                    onEndReached={handleEndReached}
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                  />
+                )}
+              </Box>
+            </>
+          )}
         </Box>
       )}
 

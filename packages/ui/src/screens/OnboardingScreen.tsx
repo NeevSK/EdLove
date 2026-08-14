@@ -2,9 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authAPI, identityAPI, onboardingAPI } from '@repo/core/api/client';
 import { useStore } from '@repo/core/store';
 import type { Capacity } from '@repo/core/types';
-import type React from 'react';
-import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 import { ProgressIndicator } from '@repo/ui/components/ProgressIndicator';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import {
@@ -20,6 +17,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/gluestack';
+import { BookOpen, Compass, Flower2, GraduationCap, Lock, School, Sprout } from '@repo/ui/icons';
 import {} from '@repo/ui/screens/devOnboardingFastTrack';
 import {
   getDevOnboardingTemplateLabel,
@@ -32,6 +30,9 @@ import {
 } from '@repo/ui/screens/onboardingFlow';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
+import type React from 'react';
+import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // ──────────────────────────────────────────────────────────
 // CONSTANTS
@@ -39,15 +40,15 @@ import { safeBack } from '@repo/ui/utils/navigation';
 
 const JOURNEY_PILLARS = ['Self', 'Classroom', 'Community', 'Library'];
 const TOTAL_STEPS = 7;
-const CAPACITY_OPTIONS: Array<{ value: Capacity; emoji: string; descKey: string }> = [
-  { value: 'teacher', emoji: '🧑‍🏫', descKey: 'onboarding.roleDesc.teacher' },
-  { value: 'student', emoji: '🎒', descKey: 'onboarding.roleDesc.student' },
+const CAPACITY_OPTIONS = [
+  { value: 'teacher' as Capacity, Icon: GraduationCap, descKey: 'onboarding.roleDesc.teacher' },
+  { value: 'student' as Capacity, Icon: BookOpen, descKey: 'onboarding.roleDesc.student' },
   {
-    value: 'principal',
-    emoji: '🏫',
+    value: 'principal' as Capacity,
+    Icon: School,
     descKey: 'onboarding.roleDesc.principal',
   },
-];
+] as const;
 
 // ──────────────────────────────────────────────────────────
 // TYPES & REDUCER
@@ -173,7 +174,7 @@ const ErrorBanner = memo(({ error }: { error: string | null }) => {
   if (!error) return null;
   return (
     <Box className="bg-phase-danger/10 border border-phase-danger/20 p-3 rounded-comfortable mb-4">
-      <Text className="text-phase-danger text-sm text-center">⚠️ {error}</Text>
+      <Text className="text-phase-danger text-sm text-center">{error}</Text>
     </Box>
   );
 });
@@ -308,7 +309,7 @@ const IdentityStep = memo(
               ${isLoading ? 'opacity-50' : ''}
             `}
             >
-              <Text className="text-2xl mr-3">{r.emoji}</Text>
+              <r.Icon size={30} className={selected ? 'text-phase-accent' : 'text-phase-text-secondary'} />
               <VStack className="flex-1">
                 <Text
                   className={`text-md font-bold ${selected ? 'text-phase-accent' : 'text-phase-text-primary'}`}
@@ -352,7 +353,7 @@ const IdentityStep = memo(
 IdentityStep.displayName = 'IdentityStep';
 
 interface TourScreen {
-  emoji: string;
+  Icon: typeof Flower2;
   title: string;
   subtitle: string;
   content: string;
@@ -379,9 +380,7 @@ const TourStep = memo(
     <VStack className="gap-6 mt-8 px-6 flex-1">
       <ProgressIndicator currentStep={index} totalSteps={TOTAL_STEPS} />
       <VStack className="gap-4 items-center">
-        <Text className="text-6xl text-center leading-[80px]" accessible={false}>
-          {screen.emoji}
-        </Text>
+        <screen.Icon size={72} className="text-phase-accent" accessibilityElementsHidden />
         <Heading size="2xl" className="text-phase-accent text-center" accessibilityRole="header">
           {screen.title}
         </Heading>
@@ -729,31 +728,31 @@ const OnboardingScreen = memo(function OnboardingScreen({
   const tourScreens = useMemo(
     () => [
       {
-        emoji: '🪷',
+        Icon: Flower2,
         title: t('onboarding.philosophyTitle'),
         subtitle: t('onboarding.philosophySubtitle'),
         content: t('onboarding.philosophyContent'),
       },
       {
-        emoji: '🏫',
+        Icon: School,
         title: t('onboarding.sectionsTitle'),
         subtitle: t('onboarding.sectionsSubtitle'),
         content: t('onboarding.sectionsContent'),
       },
       {
-        emoji: '🌱',
+        Icon: Sprout,
         title: t('onboarding.ecologyTitle'),
         subtitle: t('onboarding.ecologySubtitle'),
         content: t('onboarding.ecologyContent'),
       },
       {
-        emoji: '🔒',
+        Icon: Lock,
         title: t('onboarding.privacyTitle'),
         subtitle: t('onboarding.privacySubtitle'),
         content: t('onboarding.privacyContent'),
       },
       {
-        emoji: '🧭',
+        Icon: Compass,
         title: t('onboarding.navigationTitle'),
         subtitle: t('onboarding.navigationSubtitle'),
         content: t('onboarding.navigationContent'),

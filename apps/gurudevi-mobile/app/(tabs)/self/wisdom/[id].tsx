@@ -1,7 +1,9 @@
 import { usePermissions, useStore } from '@repo/core/logic';
 import { useWisdom } from '@repo/self/wisdom';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { ChevronLeft, Leaf } from '@repo/ui/icons';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo } from 'react';
@@ -22,17 +24,17 @@ export default function WisdomDetailRoute() {
         onPress={() => safeBack('/self')}
         className="self-start flex-row items-center gap-2 px-3.5 py-2 rounded-full bg-white/5 border border-white/10"
       >
-        <ChevronLeft size={16} color="#F6BF8C" />
-        <Text className="text-[12px] font-bold text-mistGray">Back</Text>
+        <ChevronLeft size={16} color={tokens.colors.primary} />
+        <Text className="text-xs font-bold text-mistGray">Back</Text>
       </Pressable>
 
       <HStack className="items-center gap-3">
         <Box className="w-10 h-10 rounded-full bg-emeraldGreen/10 items-center justify-center">
-          <Leaf size={18} color="#5AD39B" />
+          <Leaf size={18} color={tokens.colors.success} />
         </Box>
         <VStack className="gap-0.5">
           <Text className="text-sacredWhite text-lg font-bold">Wisdom Detail</Text>
-          <Text className="text-mistGray text-[11px] uppercase tracking-widest">
+          <Text className="text-mistGray text-xs uppercase tracking-widest">
             {id ? `Seed ${id}` : 'Wisdom seed'}
           </Text>
         </VStack>
@@ -40,12 +42,17 @@ export default function WisdomDetailRoute() {
 
       {isLoading ? (
         <Box className="rounded-3xl bg-white/5 p-5 border border-white/10">
-          <Text className="text-mistGray">Loading wisdom...</Text>
+          <BrandPulse
+            size={32}
+            tintColor={tokens.colors.primary}
+            accessibilityLabel="Loading wisdom"
+          />
+          <Text className="text-mistGray">Settling your wisdom note…</Text>
         </Box>
       ) : note ? (
         <Box className="rounded-3xl bg-white/5 p-5 border border-white/10">
           <Text className="text-sacredWhite text-base leading-7">{note.insight}</Text>
-          <Text className="mt-4 text-mistGray text-[11px] uppercase tracking-widest">
+          <Text className="mt-4 text-mistGray text-xs uppercase tracking-widest">
             {new Date(note.created_at).toLocaleString()}
           </Text>
         </Box>

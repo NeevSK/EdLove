@@ -1,5 +1,6 @@
-import { Center, Spinner } from '@repo/ui/primitives';
 import { identityAPI } from '@repo/core/api/identity';
+import { BrandPulse } from '@repo/ui';
+import { Center } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
 import { Suspense, useCallback } from 'react';
@@ -8,7 +9,7 @@ import AuthScreen from '../src/screens/AuthScreen';
 function Fallback() {
   return (
     <Center className="flex-1 bg-obsidian">
-      <Spinner />
+      <BrandPulse accessibilityLabel="Loading sign in" />
     </Center>
   );
 }

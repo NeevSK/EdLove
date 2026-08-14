@@ -33,9 +33,6 @@ import { UniversalPerspective } from '@repo/ui/components/visualization';
 import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 import { useRegisterFAB } from '@repo/ui/context/FABContext';
 import { useResponsive } from '@repo/ui/hooks';
-import { Box } from '@repo/ui/primitives';
-import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
-import { useRouter } from 'expo-router';
 import {
   Bookmark,
   Clock,
@@ -55,6 +52,9 @@ import {
   Trash2,
   Users,
 } from '@repo/ui/icons';
+import { Box } from '@repo/ui/primitives';
+import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
+import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -114,6 +114,8 @@ export default function LibraryScreenWeb() {
   const { t } = useTranslation();
   const router = useRouter();
   const { width } = useResponsive();
+  const isCompactWeb = width < 920;
+  const collectionsSectionRef = useRef<HTMLDivElement>(null);
   const { can } = usePermissions();
   const { isPastView } = useTemporalStore();
 
@@ -606,9 +608,21 @@ export default function LibraryScreenWeb() {
     [t],
   );
 
+  const handleBrowse = useCallback(() => {
+    dispatch({ type: 'SET_SEARCH', query: '' });
+    dispatch({ type: 'SET_CATEGORY', id: 'All' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  const handleCollections = useCallback(() => {
+    dispatch({ type: 'SET_SEARCH', query: '' });
+    dispatch({ type: 'SET_CATEGORY', id: 'All' });
+    collectionsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
+
   return (
     <div className="sanctuary-screen">
-      <div className="sanctuary-container">
+      <div className="sanctuary-container" style={{ maxWidth: isCompactWeb ? '760px' : '1180px' }}>
         <WebScreenHeader
           title={t('library.web.title', 'The Sanctuary')}
           note={t('library.web.note', 'Gurudevi Knowledge Hub')}
@@ -685,6 +699,67 @@ export default function LibraryScreenWeb() {
           }
         />
         {/* No temporal filter in library tab */}
+
+        <nav
+          aria-label={t('library.web.sectionNavigation', 'Library sections')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: isCompactWeb ? '4px' : '8px',
+            marginBottom: isCompactWeb ? '24px' : '32px',
+            padding: '4px',
+            border: '1px solid var(--border)',
+            borderRadius: '14px',
+            background: 'var(--scene-interactive)',
+            width: 'fit-content',
+            maxWidth: '100%',
+            overflowX: 'auto',
+          }}
+        >
+          <button
+            type="button"
+            onClick={handleBrowse}
+            aria-current={!searchQuery && selectedCategoryId === 'All' ? 'page' : undefined}
+            className="top-tab"
+            style={{
+              border: 'none',
+              background:
+                !searchQuery && selectedCategoryId === 'All' ? 'var(--action)' : 'transparent',
+              color:
+                !searchQuery && selectedCategoryId === 'All'
+                  ? 'var(--text-on-action)'
+                  : 'var(--ink-soft)',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {t('library.web.browse', 'Browse')}
+          </button>
+          <button
+            type="button"
+            onClick={handleCollections}
+            aria-controls="library-collections"
+            className="top-tab"
+            style={{ border: 'none', background: 'transparent', whiteSpace: 'nowrap' }}
+          >
+            {t('library.web.collections', 'Collections')}
+          </button>
+          {canContribute && (
+            <button
+              type="button"
+              onClick={handleAddResourcePress}
+              disabled={isPastView}
+              className="top-tab"
+              style={{
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--action)',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {t('library.web.contribute', 'Contribute')}
+            </button>
+          )}
+        </nav>
 
         {/* 2. FILTERS & SEARCH */}
         <div
@@ -1106,6 +1181,8 @@ export default function LibraryScreenWeb() {
             ) : (
               /* DEFAULT VIEW */
               <div
+                id="library-collections"
+                ref={collectionsSectionRef}
                 style={{
                   display: 'flex',
                   flexDirection: 'column',

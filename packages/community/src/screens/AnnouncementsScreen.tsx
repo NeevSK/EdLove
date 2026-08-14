@@ -8,6 +8,9 @@
 import { usePermissions } from '@repo/core/logic';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Globe, Megaphone, Pin, Plus } from '@repo/ui/icons';
 import {
@@ -18,13 +21,13 @@ import {
   Input,
   InputField,
   ScrollView,
-  Spinner,
   Switch,
   Text,
   VStack,
 } from '@repo/ui/primitives';
 import { useCallback, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useTemporalStore } from '@repo/core/store';
 import { communityAPI as community } from '@repo/community/api/community';
 import type { AnnouncementWithAuthor } from '@repo/community/types/Community';
 
@@ -103,6 +106,7 @@ const initialState: State = {
 export default function AnnouncementsScreen({ schoolId, userId }: AnnouncementsScreenProps) {
   const { t } = useTranslation();
   const { can } = usePermissions();
+  const isOffline = useTemporalStore((store) => store.isOffline);
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const {
@@ -215,7 +219,7 @@ export default function AnnouncementsScreen({ schoolId, userId }: AnnouncementsS
           {/* Loading State */}
           {isLoading && (
             <Box className="py-20 items-center">
-              <Spinner />
+              <BrandPulse size={32} accessibilityLabel="Loading announcements" />
               <Text className="text-ink/40 text-sm mt-4 font-medium uppercase tracking-widest">
                 Gathering Updates...
               </Text>
@@ -223,10 +227,23 @@ export default function AnnouncementsScreen({ schoolId, userId }: AnnouncementsS
           )}
 
           {/* Error State */}
-          {error && !isLoading && (
-            <Box className="p-4 bg-red-500/10 rounded-2xl border border-red-500/20">
-              <Text className="text-red-500 font-medium text-center">{error}</Text>
+          {isOffline && !isLoading && (
+            <Box className="p-4 bg-phase-warning/10 rounded-2xl border border-phase-warning/20">
+              <Text className="text-phase-warning font-medium text-center">
+                You are offline. Reconnect to check for newer announcements.
+              </Text>
             </Box>
+          )}
+
+          {error && !isLoading && (
+            <BrandedErrorState
+              title="Announcements could not settle"
+              message={isOffline ? 'Reconnect to try again.' : 'We could not load the latest announcements.'}
+            >
+              <SanctuaryButton action="secondary" onPress={() => void loadAnnouncements()}>
+                <Text className="text-ink font-bold">Try again</Text>
+              </SanctuaryButton>
+            </BrandedErrorState>
           )}
 
           {/* Pinned Announcements */}
@@ -296,15 +313,10 @@ export default function AnnouncementsScreen({ schoolId, userId }: AnnouncementsS
 
           {/* Empty State */}
           {!isLoading && announcements.length === 0 && (
-            <Box className="py-20 items-center justify-center">
-              <Box className="w-16 h-16 rounded-full bg-ink/5 items-center justify-center mb-4">
-                <Icon as={Megaphone} size="lg" className="text-ink/20" />
-              </Box>
-              <Text className="text-lg text-ink/20 font-bold text-center">All is Quiet</Text>
-              <Text className="text-sm text-ink/40 text-center px-10 mt-2">
-                No school-wide resonance has been broadcast yet. Check back for future updates.
-              </Text>
-            </Box>
+            <BrandedEmptyState
+              title="No announcements yet"
+              message="There are no school-wide updates to share right now. Check back when something new needs your attention."
+            />
           )}
         </VStack>
       </ScrollView>
@@ -366,7 +378,7 @@ export default function AnnouncementsScreen({ schoolId, userId }: AnnouncementsS
               isDisabled={isCreating}
             >
               {isCreating ? (
-                <Spinner />
+                <BrandPulse size={24} tintColor="var(--phase-canvas)" accessibilityLabel="Broadcasting announcement" />
               ) : (
                 <Text className="text-white font-bold text-lg">Broadcast</Text>
               )}

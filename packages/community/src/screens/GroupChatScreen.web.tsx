@@ -11,17 +11,17 @@
  *  - Supabase postgres_changes subscription for instant messages
  */
 
+import { communityAPI } from '@repo/community/api/community';
+import HeaderMoreMenu from '@repo/community/components/HeaderMoreMenu';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { useStore, useTemporalStore } from '@repo/core/logic';
-
+import { MessageCircle } from '@repo/ui/icons';
 import { formatTimestamp } from '@repo/ui/utils/dateTimeUtils';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { getInitialsFromName } from '@repo/ui/utils/stringUtils';
 import { router, useLocalSearchParams } from 'expo-router';
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { communityAPI } from '@repo/community/api/community';
-import HeaderMoreMenu from '@repo/community/components/HeaderMoreMenu';
 
 interface ChatMessage {
   id: string;
@@ -230,8 +230,8 @@ export default function GroupChatScreen() {
               gap: '8px',
             }}
           >
-            <div style={{ fontSize: '32px' }}>💬</div>
-            <div style={{ fontSize: '14px' }}>No messages yet. Say hello 👋</div>
+            <MessageCircle size={32} color="var(--ink-ghost)" aria-hidden />
+            <div style={{ fontSize: '14px' }}>No messages yet. Say hello</div>
           </div>
         ) : (
           messages.map((msg) => {

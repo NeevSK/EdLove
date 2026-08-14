@@ -1,4 +1,5 @@
 import { SupabasePushNotificationAdapter } from '@repo/core/adapters/supabasePushNotification.adapter';
+import { BrandPulse } from './BrandPulse';
 import { storage, useStore } from '@repo/core/logic';
 import { getWebPushPermission, registerWebPushSubscription } from '@repo/core/native/webPush';
 import { BellRing, Mail, Moon, Smartphone } from '@repo/ui/icons';
@@ -14,7 +15,6 @@ import {
   Heading,
   HStack,
   Icon,
-  Spinner,
   Switch,
   Text,
   VStack,
@@ -76,7 +76,7 @@ export const NotificationSettingsPanel = () => {
   if (loading) {
     return (
       <Box className="p-8 items-center justify-center">
-        <Spinner />
+        <BrandPulse size={28} tintColor="#D4843A" />
       </Box>
     );
   }

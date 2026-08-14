@@ -1,4 +1,4 @@
-import { Center, Spinner } from '@repo/ui/primitives';
+import { Center } from '@repo/ui/primitives';
 import { BrandPulse } from '@repo/ui';
 import { LottieSplashScreen } from '@/components/LottieSplashScreen';
 import { useEffect, useState } from 'react';

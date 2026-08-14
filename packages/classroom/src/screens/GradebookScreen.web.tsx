@@ -1,6 +1,9 @@
+import type { SortOption } from '@repo/classroom/hooks/useGradebook';
+import { useGradebook } from '@repo/classroom/hooks/useGradebook';
 import { growthSignalsAPI } from '@repo/core/api/client';
-import { type ClassroomGradingSettings } from '@repo/core/types';
 import { useStore } from '@repo/core/logic';
+import { type ClassroomGradingSettings } from '@repo/core/types';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { Award, Check, ChevronLeft, Settings2, SquarePen, TrendingUp, Users } from '@repo/ui/icons';
 import {
@@ -20,7 +23,6 @@ import {
   ModalHeader,
   Pressable,
   ScrollView,
-  Spinner,
   Text,
   Textarea,
   TextareaInput,
@@ -30,8 +32,6 @@ import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import type React from 'react';
 import { useState } from 'react';
-import type { SortOption } from '@repo/classroom/hooks/useGradebook';
-import { useGradebook } from '@repo/classroom/hooks/useGradebook';
 
 // -- Helpers --------------------------------------------------
 
@@ -135,7 +135,7 @@ function GradeModal({
           >
             <HStack className="items-center justify-center gap-2">
               {saving ? (
-                <Spinner size="small" color="#FFFFFF" />
+                <BrandPulse size={18} tintColor="#FFFFFF" accessibilityLabel="Saving grade" />
               ) : (
                 <Icon as={Check} size="xs" className="text-white" />
               )}
@@ -229,7 +229,9 @@ function SettingsModal({
             className="flex-[2] bg-phase-interactive"
           >
             <HStack className="items-center justify-center gap-2">
-              {saving && <Spinner size="small" color="#FFFFFF" />}
+              {saving && (
+                <BrandPulse size={18} tintColor="#FFFFFF" accessibilityLabel="Saving settings" />
+              )}
               <Text className="text-white font-bold">{saving ? 'Saving...' : 'Save Settings'}</Text>
             </HStack>
           </SanctuaryButton>
@@ -305,6 +307,7 @@ export default function GradebookScreenWeb() {
           <SanctuaryButton
             action="secondary"
             onPress={() => safeBack('/workspace')}
+            accessibilityLabel="Back to workspace"
             className="px-4 py-2 bg-phase-surface/40 border-phase-border/20"
           >
             <HStack className="items-center gap-1.5">
@@ -320,6 +323,7 @@ export default function GradebookScreenWeb() {
           <SanctuaryButton
             action="secondary"
             onPress={() => setShowSettings(true)}
+            accessibilityLabel="Open grading settings"
             className="px-4 py-2 bg-phase-surface/40 border-phase-border/20"
           >
             <HStack className="items-center gap-2">
@@ -333,7 +337,7 @@ export default function GradebookScreenWeb() {
 
         {isLoading ? (
           <Center className="py-20">
-            <Spinner size="large" className="text-phase-interactive" />
+            <BrandPulse size={32} accessibilityLabel="Loading gradebook" />
             <Text className="mt-4 text-phaseText-muted font-bold">Loading gradebook...</Text>
           </Center>
         ) : error ? (

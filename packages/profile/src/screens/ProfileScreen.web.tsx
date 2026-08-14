@@ -1,11 +1,5 @@
 import { usePermissions, useStore } from '@repo/core/logic';
-import { SignupPrompt } from '@repo/ui';
-
 import { StaffPresencePulse } from '@repo/people';
-import { QRCodeGenerator } from '@repo/scanner-kit';
-import { Briefcase, CircleCheck, FileText, Globe, GraduationCap, SquarePen } from '@repo/ui/icons';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { AvatarDisplay } from '@repo/profile/components/AvatarDisplay';
 import { ContactLinktree } from '@repo/profile/components/ContactLinktree';
 import LivingJourneyPanel from '@repo/profile/components/LivingJourneyPanel';
@@ -13,11 +7,17 @@ import { useProfile } from '@repo/profile/hooks/useProfile';
 import { useProfileCompletion } from '@repo/profile/hooks/useProfileCompletion';
 import { useSocialLinks } from '@repo/profile/hooks/useSocialLinks';
 import { toFullProfileParams, useProfileNavigation } from '@repo/profile/navigation';
+import { QRCodeGenerator } from '@repo/scanner-kit';
+import { SignupPrompt } from '@repo/ui';
+import { Briefcase, CircleCheck, FileText, Globe, GraduationCap, SquarePen } from '@repo/ui/icons';
 import { GURUDEVI_APP } from '@repo/ui/utils';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // Skeleton Component logic (mocked because it was used in corrupt code)
 const SkeletonCard = ({ height }: { height: number }) => (
   <div
+    aria-hidden="true"
     style={{
       height: `${height}px`,
       background: 'var(--border)',
@@ -134,8 +134,9 @@ export default function ProfileScreenWeb({
 
   if (isProfileLoading) {
     return (
-      <div className="sanctuary-screen">
+      <div className="sanctuary-screen profile-web-surface" role="status" aria-live="polite" aria-busy="true">
         <div className="sanctuary-container">
+          <p className="profile-state-label">{t('profile.loading', 'Loading your profile')}</p>
           <div
             style={{
               height: '220px',
@@ -163,10 +164,10 @@ export default function ProfileScreenWeb({
 
   if (!profile && error) {
     return (
-      <div className="sanctuary-screen">
+      <div className="sanctuary-screen profile-web-surface">
         <div className="sanctuary-container">
-          <div className="sanctuary-card" style={{ padding: '48px', textAlign: 'center' }}>
-            <h2>{t('profile.loadFailed', 'Your profile could not be opened')}</h2>
+          <div className="sanctuary-card profile-state-card" role="alert" aria-live="assertive">
+            <h1>{t('profile.loadFailed', 'Your profile could not be opened')}</h1>
             <p style={{ color: 'var(--ink-soft)' }}>{error}</p>
             <button type="button" className="sanctuary-button" onClick={() => void refresh()}>
               {t('common.retry', 'Try again')}
@@ -177,13 +178,25 @@ export default function ProfileScreenWeb({
     );
   }
 
-  if (!profile) return null;
+  if (!profile) {
+    return (
+      <div className="sanctuary-screen profile-web-surface">
+        <div className="sanctuary-container">
+          <div className="sanctuary-card profile-state-card">
+            <h1>{t('profile.emptyTitle', 'Profile not available')}</h1>
+            <p>{t('profile.emptyMessage', 'There is no profile information to show yet.')}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="sanctuary-screen">
+    <div className="sanctuary-screen profile-web-surface">
       <div className="sanctuary-container">
-        <div
+        <section
           className="profile-hero sanctuary-card"
+          aria-labelledby="profile-heading"
           style={{
             padding: '40px',
             marginBottom: '32px',
@@ -254,6 +267,7 @@ export default function ProfileScreenWeb({
                   }}
                 >
                   <h1
+                    id="profile-heading"
                     style={{
                       margin: 0,
                       fontSize: '30px',
@@ -524,6 +538,7 @@ export default function ProfileScreenWeb({
                 </p>
                 <button
                   type="button"
+                  aria-label={t('profile.copyLink', 'Copy link')}
                   style={{
                     background: 'none',
                     border: 'none',
@@ -550,11 +565,12 @@ export default function ProfileScreenWeb({
               </div>
             )}
           </div>
-        </div>
+        </section>
 
         {(error || saveError) && (
           <div
             role="alert"
+            aria-live="assertive"
             style={{
               marginBottom: '24px',
               padding: '12px 16px',
@@ -571,7 +587,11 @@ export default function ProfileScreenWeb({
 
         {editForm && !context.isAnonymous && (
           <div
-            className="sanctuary-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="profile-edit-title"
+            aria-describedby="profile-edit-description"
+            className="sanctuary-card profile-edit-dialog"
             style={{
               padding: '32px',
               marginBottom: '24px',
@@ -586,11 +606,12 @@ export default function ProfileScreenWeb({
                 marginBottom: '24px',
               }}
             >
-              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>
+              <h2 id="profile-edit-title" style={{ margin: 0, fontSize: '18px', fontWeight: '800' }}>
                 {t('profile.editProfile', 'Edit Profile')}
-              </h3>
+              </h2>
               <button
                 type="button"
+                aria-label={t('profile.closeEditProfile', 'Close edit profile')}
                 onClick={cancelEdit}
                 style={{
                   background: 'none',
@@ -603,6 +624,9 @@ export default function ProfileScreenWeb({
                 \u00D7
               </button>
             </div>
+            <p id="profile-edit-description" className="profile-dialog-description">
+              {t('profile.editProfileHint', 'Update the details shown on your profile.')}
+            </p>
             <div
               style={{
                 display: 'grid',
@@ -613,7 +637,7 @@ export default function ProfileScreenWeb({
             >
               <div>
                 <label
-                  htmlFor="edit-full-name"
+                  htmlFor="edit-display-name"
                   style={{
                     display: 'block',
                     fontSize: '11px',
@@ -779,6 +803,9 @@ export default function ProfileScreenWeb({
           </div>
         )}
 
+        <main
+          aria-label={t('profile.profileContent', 'Profile content')}
+        >
         <div
           className="profile-content-grid"
           style={{
@@ -788,7 +815,7 @@ export default function ProfileScreenWeb({
             alignItems: 'start',
           }}
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <section aria-labelledby="profile-bio-title" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div className="sanctuary-card" style={{ padding: '32px' }}>
               <div
                 style={{
@@ -800,6 +827,7 @@ export default function ProfileScreenWeb({
               >
                 <FileText size={18} color="var(--ink-ghost)" />
                 <h3
+                  id="profile-bio-title"
                   style={{
                     margin: 0,
                     fontSize: '14px',
@@ -975,7 +1003,7 @@ export default function ProfileScreenWeb({
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <Globe size={18} color="var(--ink-ghost)" />
-                  <h3
+                  <h2
                     style={{
                       margin: 0,
                       fontSize: '14px',
@@ -986,7 +1014,7 @@ export default function ProfileScreenWeb({
                     }}
                   >
                     {t('profile.socialSanctuary', 'Social Sanctuary')}
-                  </h3>
+                  </h2>
                 </div>
               </div>
               <ContactLinktree
@@ -999,8 +1027,8 @@ export default function ProfileScreenWeb({
               />
             </div>
             </details>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          </section>
+          <aside aria-label={t('profile.journeyAside', 'Profile journey')} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {isStaff && profile.school_id && (
               <div className="sanctuary-card" style={{ padding: '24px' }}>
                 <StaffPresencePulse userId={profile.id} schoolId={profile.school_id} />
@@ -1010,9 +1038,68 @@ export default function ProfileScreenWeb({
             <div style={{ width: '100%' }}>
               <LivingJourneyPanel userId={profile.id} authority={authority as any} />
             </div>
-          </div>
+          </aside>
         </div>
+        </main>
         <style>{`
+                    .profile-web-surface {
+                        --profile-focus: var(--focus-ring, var(--action));
+                        --profile-control-surface: var(--glass-surface);
+                    }
+
+                    .profile-web-surface button,
+                    .profile-web-surface input,
+                    .profile-web-surface textarea,
+                    .profile-web-surface summary {
+                        font: inherit;
+                    }
+
+                    .profile-web-surface button:focus-visible,
+                    .profile-web-surface input:focus-visible,
+                    .profile-web-surface textarea:focus-visible,
+                    .profile-web-surface summary:focus-visible {
+                        outline: 3px solid var(--profile-focus);
+                        outline-offset: 3px;
+                    }
+
+                    .profile-state-label {
+                        margin: 0 0 16px;
+                        color: var(--ink-ghost);
+                        font-size: 13px;
+                        font-weight: 700;
+                    }
+
+                    .profile-state-card {
+                        padding: clamp(28px, 6vw, 48px);
+                        text-align: center;
+                    }
+
+                    .profile-state-card h1 {
+                        margin: 0 0 12px;
+                        color: var(--ink);
+                        font-size: clamp(22px, 3vw, 30px);
+                    }
+
+                    .profile-state-card p {
+                        max-width: 48ch;
+                        margin: 0 auto 20px;
+                        color: var(--ink-soft);
+                        line-height: 1.6;
+                    }
+
+                    .profile-edit-dialog {
+                        padding: 32px;
+                        margin-bottom: 24px;
+                        border: 2px solid var(--action);
+                    }
+
+                    .profile-dialog-description {
+                        margin: -12px 0 24px;
+                        color: var(--ink-soft);
+                        font-size: 14px;
+                        line-height: 1.5;
+                    }
+
                     .profile-hero {
                         background:
                             linear-gradient(135deg, rgba(252, 249, 242, 0.74) 0%, rgba(252, 249, 242, 0.56) 100%),
@@ -1062,16 +1149,34 @@ export default function ProfileScreenWeb({
                     .profile-secondary-disclosure[open] summary::after { content: '⌃'; }
                     .profile-secondary-disclosure-hint { color: var(--ink-ghost); font-size: 12px; font-weight: 500; }
 
-                    @media (max-width: 980px) {
-                        .profile-hero-grid,
+                    @media (max-width: 919px) {
+                        .profile-web-surface .sanctuary-container { padding-inline: 16px; }
+                        .profile-hero { padding: 24px !important; margin-bottom: 24px !important; }
+                        .profile-hero-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+                        .profile-identity-column { gap: 16px !important; }
                         .profile-content-grid {
-                            grid-template-columns: 1fr !important;
+                            grid-template-columns: minmax(0, 1fr) minmax(220px, 0.68fr) !important;
+                            gap: 16px !important;
                         }
+                        .profile-web-surface .sanctuary-card { border-radius: 18px; }
+                        .profile-edit-dialog { padding: 24px !important; }
 
                         .profile-qr-panel {
                             min-width: 0 !important;
                             width: 100%;
+                            flex-direction: row !important;
+                            justify-content: flex-start;
+                            align-items: center !important;
                         }
+                    }
+
+                    @media (max-width: 680px) {
+                        .profile-content-grid { grid-template-columns: 1fr !important; }
+                        .profile-qr-panel { flex-wrap: wrap; }
+                    }
+
+                    @media (prefers-reduced-motion: reduce) {
+                        .profile-web-surface * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
                     }
                 `}</style>
       </div>

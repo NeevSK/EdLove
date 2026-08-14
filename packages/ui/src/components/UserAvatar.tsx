@@ -1,8 +1,8 @@
-import type React from 'react';
-import { Image, StyleSheet } from 'react-native';
 import { Text, View } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 import { getInitialsFromName } from '@repo/ui/utils/stringUtils';
+import type React from 'react';
+import { Image, StyleSheet } from 'react-native';
 
 export interface UserAvatarProps {
   avatarUrl?: string | null;
@@ -15,7 +15,7 @@ export interface UserAvatarProps {
   style?: object;
 }
 
-const DEFAULT_ICON = '🌿';
+const DEFAULT_ICON = 'G';
 
 /** Deterministic background colour from user's name using theme palette */
 const AVATAR_COLORS = [

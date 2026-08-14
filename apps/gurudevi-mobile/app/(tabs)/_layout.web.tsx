@@ -18,6 +18,7 @@ import {
 import { Box, Modal, ModalContent, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { colors, corners, typography } from '@repo/ui/theme';
 import { router, Slot, usePathname } from 'expo-router';
+import type React from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, type TextStyle, useWindowDimensions, type ViewStyle } from 'react-native';
 import {
@@ -25,6 +26,7 @@ import {
   resolveResponsiveShellMode,
   webShellTokens,
 } from '@/lib/responsiveShell';
+import { PowerSyncProvider } from '@/providers/PowerSyncProvider';
 
 type NavItem = {
   href: string;
@@ -44,6 +46,14 @@ const PRIMARY_NAV: NavItem[] = [
 ];
 
 export default function WebTabsLayout() {
+  return (
+    <PowerSyncProvider>
+      <WebTabsLayoutContent />
+    </PowerSyncProvider>
+  );
+}
+
+function WebTabsLayoutContent() {
   const pathname = usePathname();
   const { width } = useWindowDimensions();
   const { context } = usePermissions();
@@ -179,7 +189,11 @@ export default function WebTabsLayout() {
         onHide={() => setShowCelebration(false)}
       />
 
-      <Modal isOpen={isBreathingOpen} onClose={() => setBreathingOpen(false)}>
+      <Modal
+        isOpen={isBreathingOpen}
+        onClose={() => setBreathingOpen(false)}
+        accessibilityLabel="Breathing reset dialog"
+      >
         <ModalContent>
           <Box style={styles.breathingCard}>
             <Box style={styles.breathingHeader}>
@@ -277,7 +291,7 @@ function WebNavigation({
         </Box>
 
         {shell.navigation.canToggleRail && (
-          <Pressable
+          <NavigationControl
             accessibilityRole="button"
             accessibilityLabel={railExpanded ? 'Collapse navigation' : 'Expand navigation'}
             accessibilityHint="Toggles the desktop navigation rail labels"
@@ -285,7 +299,7 @@ function WebNavigation({
             style={styles.navigationToggle}
           >
             <Menu size={18} color={webShellTokens.color.chromeText} />
-          </Pressable>
+          </NavigationControl>
         )}
       </Box>
 
@@ -322,6 +336,25 @@ function WebNavigation({
   );
 }
 
+function NavigationControl({ children, ...props }: React.ComponentProps<typeof Pressable>) {
+  const [focused, setFocused] = useState(false);
+  const { style: controlStyle, ...pressableProps } = props;
+
+  return (
+    <Pressable
+      {...pressableProps}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+      style={(state) => [
+        typeof controlStyle === 'function' ? controlStyle(state) : controlStyle,
+        focused && styles.focusRing,
+      ]}
+    >
+      {children}
+    </Pressable>
+  );
+}
+
 type WebNavItemButtonProps = {
   active: boolean;
   badge?: number;
@@ -341,6 +374,7 @@ function WebNavItemButton({
   label,
   onNavigate,
 }: WebNavItemButtonProps) {
+  const [focused, setFocused] = useState(false);
   const handlePress = useCallback(() => onNavigate(href), [href, onNavigate]);
   const accessibleLabel = badge ? `${label}, ${badge > 99 ? 'more than 99' : badge} unread` : label;
 
@@ -351,6 +385,8 @@ function WebNavItemButton({
       accessibilityHint={`Navigates to ${label}`}
       accessibilityState={{ selected: active }}
       onPress={handlePress}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
       testID={`web-nav-${href.replace('/', '') || 'self'}`}
       style={[
         styles.navItem,
@@ -363,10 +399,12 @@ function WebNavItemButton({
           backgroundColor: active
             ? webShellTokens.color.activeSurface
             : webShellTokens.color.transparent,
-          borderColor: active
-            ? webShellTokens.color.activeBorder
-            : webShellTokens.color.transparent,
-          borderWidth: active ? 1 : 0,
+          borderColor: focused
+            ? webShellTokens.color.focusRing
+            : active
+              ? webShellTokens.color.activeBorder
+              : webShellTokens.color.transparent,
+          borderWidth: focused ? 2 : active ? 1 : 0,
         },
       ]}
     >
@@ -469,6 +507,13 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: webShellTokens.color.chromeRaised,
+  } satisfies ViewStyle,
+  focusRing: {
+    borderWidth: 2,
+    borderColor: webShellTokens.color.focusRing,
+    shadowColor: webShellTokens.color.focusRing,
+    shadowOpacity: 0.35,
+    shadowRadius: 4,
   } satisfies ViewStyle,
   compactNavContent: {
     alignItems: 'center',

@@ -2,8 +2,9 @@ import { usePermissions } from '@repo/core/logic';
 import { useStore, useTemporalStore } from '@repo/core/store';
 import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
-import { Box, Heading, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Box, Heading, Text, VStack } from '@repo/ui/primitives';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { communityAPI } from '@repo/community/api/community';
@@ -71,7 +72,7 @@ export default function GroupDetailsScreenWeb() {
   if (loading) {
     return (
       <Box className="flex-1 items-center justify-center bg-phase-canvas">
-        <Spinner />
+        <BrandPulse size={32} accessibilityLabel="Loading circle" />
         <Text className="mt-3 text-ink/50 text-xs font-semibold">Opening this circle…</Text>
       </Box>
     );
@@ -111,7 +112,7 @@ export default function GroupDetailsScreenWeb() {
         ) : null}
 
         {isLoadingPosts ? (
-          <Box className="py-16 items-center"><Spinner /></Box>
+          <Box className="py-16 items-center"><BrandPulse size={28} accessibilityLabel="Loading circle posts" /></Box>
         ) : postsError ? (
           <BrandedErrorState title="Posts could not settle" message={isOffline ? 'Reconnect to try again.' : postsError} />
         ) : posts.length === 0 ? (

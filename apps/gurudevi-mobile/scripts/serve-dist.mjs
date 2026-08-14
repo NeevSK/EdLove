@@ -3,7 +3,8 @@ import { createServer } from 'node:http';
 import { extname, join, normalize, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const root = resolve(fileURLToPath(new URL('../dist', import.meta.url)));
+const defaultRoot = fileURLToPath(new URL('../dist', import.meta.url));
+const root = resolve(process.env.EXPO_WEB_DIST ?? defaultRoot);
 const port = Number(process.env.PORT ?? 4173);
 
 const contentTypes = {

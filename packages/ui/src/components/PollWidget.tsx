@@ -1,10 +1,11 @@
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { Check, Clock, Lock } from '@repo/ui/icons';
+import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme/Theme';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { EaseView } from 'react-native-ease';
-import { useTheme } from '@repo/ui/hooks/useTheme';
-import { Check, Clock, Lock } from '@repo/ui/icons';
-import { Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme/Theme';
+import { BrandPulse } from './BrandPulse';
 
 export interface PollOption {
   id: string;
@@ -79,7 +80,7 @@ export function PollWidget({
   }, [ends_at]);
 
   if (isLoading) {
-    return <Spinner size="small" className="mt-3" />;
+    return <BrandPulse size={22} tintColor="#D4843A" />;
   }
 
   return (
@@ -170,7 +171,7 @@ function PollOptionRow({
 }: PollOptionRowProps) {
   const theme = useTheme();
 
-  const pct = showResults ? (totalVotes > 0 ? (count / totalVotes) : 0) : 0;
+  const pct = showResults ? (totalVotes > 0 ? count / totalVotes : 0) : 0;
 
   const isWinner = isExpired && count > 0 && count === maxCount;
   const canTap = !isExpired && !isVoting;

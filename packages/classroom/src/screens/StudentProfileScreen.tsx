@@ -1,9 +1,8 @@
+import type { StudentLongitudinalEvent } from '@repo/core';
 import { api, type StudentObservation } from '@repo/core/api/client';
 import { useTemporalStore } from '@repo/core/logic';
-import type { StudentLongitudinalEvent } from '@repo/core';
-import type { StudentGrade } from '@repo/core/types';
-import type { AttendanceRecord } from '@repo/core/types';
-
+import type { AttendanceRecord, StudentGrade } from '@repo/core/types';
+import { BrandPulse } from '@repo/ui';
 import { Card } from '@repo/ui/components/SanctuaryCard';
 import { useThemedColors } from '@repo/ui/hooks';
 import { ArrowLeft, Calendar, Clock3, Lock, ShieldCheck, Trophy } from '@repo/ui/icons';
@@ -16,7 +15,6 @@ import {
   Pressable,
   RefreshControl,
   ScrollView,
-  Spinner,
   Text,
   VStack,
 } from '@repo/ui/primitives';
@@ -420,7 +418,7 @@ export default function StudentProfileScreen() {
       >
         {isLoading ? (
           <Center className="p-10">
-            <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
+            <BrandPulse size={32} tintColor={Theme.colors.sanctuarySaffron} />
           </Center>
         ) : (
           <>

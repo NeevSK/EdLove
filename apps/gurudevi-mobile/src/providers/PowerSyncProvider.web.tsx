@@ -1,11 +1,11 @@
 import { wrapPowerSyncWithDrizzle } from '@powersync/drizzle-driver';
 import { PowerSyncContext } from '@powersync/react';
 import { PowerSyncDatabase } from '@powersync/web';
-import { WASQLiteAdapter } from '@repo/core/adapters/powersync/wasqlite.adapter';
-import { AppSchema, injectNativePowerSyncDB } from '@repo/core/powersync';
-import { SingleActivePowerSyncRuntime } from '@repo/core/adapters/powersync/singleActivePowerSyncRuntime';
 import { BrowserPowerSyncAccountCoordinator } from '@repo/core/adapters/powersync/browserAccountCoordinator';
 import { connectPowerSyncRuntime } from '@repo/core/adapters/powersync/connectionLifecycle';
+import { SingleActivePowerSyncRuntime } from '@repo/core/adapters/powersync/singleActivePowerSyncRuntime';
+import { WASQLiteAdapter } from '@repo/core/adapters/powersync/wasqlite.adapter';
+import { AppSchema, injectNativePowerSyncDB } from '@repo/core/powersync';
 import { useStore } from '@repo/core/store/useStore';
 import { type PropsWithChildren, useEffect, useState } from 'react';
 
@@ -86,7 +86,11 @@ export function PowerSyncProvider({ children }: PowerSyncProviderProps) {
     };
   }, [accountId, isPowerSyncEnabled]);
 
-  if (!db) return null;
+  // PowerSync is a capability for authenticated, opted-in tab sessions; it
+  // must not become the app shell's render gate. During signed-out startup
+  // there is no account to initialize, so keep the navigation mounted and let
+  // screen-level data states handle sync readiness.
+  if (!db) return <>{children}</>;
 
   return <PowerSyncContext.Provider value={db}>{children}</PowerSyncContext.Provider>;
 }

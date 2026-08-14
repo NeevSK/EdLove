@@ -2,7 +2,7 @@ import { communityAPI } from '@repo/community';
 import { api, growthSignalsAPI, identityAPI } from '@repo/core/api/client';
 import { handleAPIError } from '@repo/core/logic';
 import type { School } from '@repo/core/types';
-
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import type { LucideIcon } from '@repo/ui/icons';
 import { ChevronDown, LayoutGrid, School as SchoolIcon, Users } from '@repo/ui/icons';
@@ -24,7 +24,6 @@ import {
   Icon,
   Input,
   InputField,
-  Spinner,
   Text,
   Textarea,
   TextareaInput,
@@ -203,7 +202,7 @@ export default function GlobalCreateModal({
               isDisabled={isSubmitting || !name.trim()}
             >
               {isSubmitting ? (
-                <Spinner color="#fff" size="small" />
+                <BrandPulse size={20} tintColor="#FFFFFF" accessibilityLabel="Creating classroom" />
               ) : (
                 <ButtonText className="text-sanctuary-ink font-bold">Initialize</ButtonText>
               )}

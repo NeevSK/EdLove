@@ -4,6 +4,9 @@
  * Standardized to Zero-Legacy: purged corrupted StyleSheet and migrated to NativeWind v4.
  */
 
+import { MOOD_COLORS, MOOD_LABELS, MOOD_OPTIONS } from '@repo/self/constants/wellbeing';
+import type { MoodLog } from '@repo/self/types/Wellbeing';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { History, MessageSquare, Plus, X } from '@repo/ui/icons';
 import {
   Box,
@@ -13,15 +16,12 @@ import {
   Input,
   InputField,
   Pressable,
-  Spinner,
   Text,
   VStack,
 } from '@repo/ui/primitives';
 import { formatDistanceToNow } from 'date-fns';
 import { useMemo, useState } from 'react';
 import Animated, { FadeIn, FadeInUp, Layout } from 'react-native-reanimated';
-import { MOOD_COLORS, MOOD_LABELS, MOOD_OPTIONS } from '@repo/self/constants/wellbeing';
-import type { MoodLog } from '@repo/self/types/Wellbeing';
 
 interface MoodPickerCardProps {
   isOpen: boolean;
@@ -158,7 +158,7 @@ export function MoodPickerCard({
 
                 {isSaving && (
                   <HStack className="items-center gap-2 justify-center py-2">
-                    <Spinner size="small" className="text-sanctuarySaffron" />
+                    <BrandPulse size={18} accessibilityLabel="Saving mood" />
                     <Text className="text-sanctuarySaffron text-[10px] uppercase font-black">
                       Recording Breath...
                     </Text>
@@ -173,7 +173,11 @@ export function MoodPickerCard({
             <Box>
               {isLoading ? (
                 <HStack className="items-center justify-center py-6 gap-3">
-                  <Spinner size="small" className="text-skyBlue" />
+                  <BrandPulse
+                    size={18}
+                    tintColor="#7DD3FC"
+                    accessibilityLabel="Loading mood history"
+                  />
                   <Text className="text-skyBlue opacity-60 text-xs font-bold uppercase tracking-widest">
                     Sensing resonance...
                   </Text>

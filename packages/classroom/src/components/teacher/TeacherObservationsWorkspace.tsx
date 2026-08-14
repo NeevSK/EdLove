@@ -1,6 +1,7 @@
 import { api } from '@repo/core/api/client';
 import type { Student } from '@repo/core/types';
 
+import { BrandPulse } from '@repo/ui';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { MessageCircle, Plus, Sparkles, Trash2, TriangleAlert } from '@repo/ui/icons';
 import {
@@ -161,8 +162,8 @@ export default function TeacherObservationsWorkspace({
         </Box>
 
         {isLoading ? (
-          <Box className="py-20 items-center">
-            <Spinner className="text-sanctuarySaffron" />
+          <Box className="py-20 items-center" accessibilityRole="progressbar" accessibilityLabel="Loading observations">
+            <BrandPulse size={28} tintColor="#D4843A" />
           </Box>
         ) : observations.length === 0 ? (
           <Box className="bg-phase-surface-secondary/40 rounded-[32px] border border-phase-border/40 p-12 items-center gap-6">

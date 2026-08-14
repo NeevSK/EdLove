@@ -1,6 +1,6 @@
+import { styled } from 'nativewind';
 import React from 'react';
 import { type StyleProp, View, type ViewProps, type ViewStyle } from 'react-native';
-import { styled } from 'nativewind';
 
 const StyledView = styled(View);
 
@@ -21,7 +21,7 @@ const spaceMap: Record<string, string> = {
 };
 
 export const HStack = React.forwardRef<View, IHStackProps>(
-  ({ className, space, reversed, sx, style, ...props }, ref) => {
+  ({ className, space, reversed, sx, style, children, ...props }, ref) => {
     const gapClass = space ? spaceMap[space] || `gap-${space}` : '';
     return (
       <StyledView
@@ -29,7 +29,9 @@ export const HStack = React.forwardRef<View, IHStackProps>(
         ref={ref}
         className={`flex-row ${reversed ? 'flex-row-reverse' : ''} ${gapClass} ${className || ''}`}
         style={[sx, style]}
-      />
+      >
+        {children}
+      </StyledView>
     );
   },
 );

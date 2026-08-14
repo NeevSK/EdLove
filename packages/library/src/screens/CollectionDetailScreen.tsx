@@ -4,8 +4,12 @@ import { LibraryThumbnailCard } from '@repo/library/components/LibraryThumbnailC
 import { LIBRARY_KEYS, useCollection } from '@repo/library/hooks/useLibrary';
 import type { LibraryCollection, LibraryResource, ResourceVisibility } from '@repo/library/types';
 import { buildLibraryResourceOpenParams } from '@repo/library/utils/resourceLinks';
+import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useThemedColors } from '@repo/ui/hooks';
+import { ArrowLeft, EllipsisVertical, Globe, Lock, Pen, Trash2, Users, X } from '@repo/ui/icons';
 import {
   Box,
   HStack,
@@ -17,7 +21,7 @@ import {
   TextInput,
   VStack,
 } from '@repo/ui/primitives';
-import { ArrowLeft, EllipsisVertical, Globe, Lock, Pen, Trash2, Users, X } from '@repo/ui/icons';
+import { Theme } from '@repo/ui/theme';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -30,9 +34,14 @@ const VISIBILITY_OPTIONS: {
   icon: any;
   color: string;
 }[] = [
-  { value: 'private', label: 'Private — Only me', icon: Lock, color: '#e88c30' },
-  { value: 'shared', label: 'Shared — School members', icon: Users, color: '#6798d6' },
-  { value: 'public', label: 'Public — Everyone', icon: Globe, color: '#34a853' },
+  { value: 'private', label: 'Private — Only me', icon: Lock, color: Theme.colors.warning },
+  {
+    value: 'shared',
+    label: 'Shared — School members',
+    icon: Users,
+    color: Theme.colors.gurudeviBlue,
+  },
+  { value: 'public', label: 'Public — Everyone', icon: Globe, color: Theme.colors.success },
 ];
 
 export default function CollectionDetailScreen() {
@@ -173,6 +182,7 @@ export default function CollectionDetailScreen() {
     return (
       <ScreenWrapper>
         <Box className="flex-1 items-center justify-center">
+          <BrandPulse size={40} tintColor={colors.action} accessibilityLabel="Loading collection" />
           <Text className="text-phaseText-secondary">Loading collection...</Text>
         </Box>
       </ScreenWrapper>
@@ -182,27 +192,26 @@ export default function CollectionDetailScreen() {
   if (error || !collection) {
     return (
       <ScreenWrapper>
-        <VStack className="flex-1 items-center justify-center p-lg gap-3">
-          <Text className="text-xl font-extrabold text-phaseText-primary">
-            Collection unavailable
-          </Text>
-          <Text className="text-center text-phaseText-secondary">
-            {String(error || 'We could not load this collection right now.')}
-          </Text>
-          <HStack className="gap-2.5 mt-2">
-            <Pressable
-              onPress={() => safeBack('/library')}
-              className="h-10 px-6 rounded-xl border border-phase-border bg-phase-interactive/5 items-center justify-center"
-            >
-              <Text className="font-bold text-phaseText-primary">Back</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => refetch()}
-              className="h-10 px-6 rounded-xl bg-phase-accent items-center justify-center"
-            >
-              <Text className="font-bold text-white">Retry</Text>
-            </Pressable>
-          </HStack>
+        <VStack className="flex-1 items-center justify-center p-lg">
+          <BrandedErrorState
+            title="Collection unavailable"
+            message={String(error || 'We could not load this collection right now.')}
+          >
+            <HStack className="gap-2.5 mt-2">
+              <Pressable
+                onPress={() => safeBack('/library')}
+                className="h-10 px-6 rounded-xl border border-phase-border bg-phase-interactive/5 items-center justify-center"
+              >
+                <Text className="font-bold text-phaseText-primary">Back</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => refetch()}
+                className="h-10 px-6 rounded-xl bg-phase-accent items-center justify-center"
+              >
+                <Text className="font-bold text-white">Retry</Text>
+              </Pressable>
+            </HStack>
+          </BrandedErrorState>
         </VStack>
       </ScreenWrapper>
     );
@@ -210,7 +219,7 @@ export default function CollectionDetailScreen() {
 
   const currentVis = collection.visibility;
   const visLabel =
-    currentVis === 'public' ? '🌐 Public' : currentVis === 'shared' ? '👥 Shared' : '🔒 Private';
+    currentVis === 'public' ? 'Public' : currentVis === 'shared' ? 'Shared' : 'Private';
 
   return (
     <ScreenWrapper scroll={false}>
@@ -342,8 +351,8 @@ export default function CollectionDetailScreen() {
                   className="flex-row items-center gap-3 p-3.5 rounded-xl mt-2"
                   style={{ backgroundColor: 'rgba(220,60,60,0.08)' }}
                 >
-                  <Icon as={Trash2} size={18} color="#dc3c3c" />
-                  <Text className="font-semibold" style={{ color: '#dc3c3c' }}>
+                  <Icon as={Trash2} size={18} color={colors.error} />
+                  <Text className="font-semibold" style={{ color: colors.error }}>
                     {isDeleting ? 'Deleting…' : 'Delete collection'}
                   </Text>
                 </Pressable>
@@ -464,11 +473,14 @@ export default function CollectionDetailScreen() {
 
           {collection.resources.length === 0 && (
             <Box className="py-16 items-center">
-              <Text className="text-phaseText-muted italic text-center">
-                {isOwner
-                  ? 'No resources yet. Add resources from the Library.'
-                  : 'This collection has no resources yet.'}
-              </Text>
+              <BrandedEmptyState
+                title="No resources yet"
+                message={
+                  isOwner
+                    ? 'Add resources from the Library to begin this collection.'
+                    : 'This collection has no resources yet.'
+                }
+              />
             </Box>
           )}
         </Box>

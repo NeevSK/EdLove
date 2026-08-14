@@ -15,12 +15,10 @@ import {
   useTheme,
   VStack,
 } from '@repo/ui/primitives';
-import { colors } from '@repo/ui/theme';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
-
-const { shroud, sanctuarySaffron } = colors;
+import { webShellTokens } from '@/lib/responsiveShell';
 
 // ─── Icons (inline SVG paths) ──────────────────────────────────────────────────
 const GLYPHS: Record<string, string> = {
@@ -277,17 +275,25 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
 
   if (!visible) return null;
 
-  const bg = isDark ? shroud : '#FFFDF7';
-  const border = isDark ? 'rgba(252,249,242,0.10)' : 'rgba(42,35,24,0.08)';
-  const sectionColor = isDark ? '#A0A0A0' : '#4B4B4B';
-  const inputColor = isDark ? '#FFFFFF' : '#000000';
+  const bg = isDark ? webShellTokens.color.chromeRaised : webShellTokens.color.surfaceWarm;
+  const border = isDark ? webShellTokens.color.chromeBorder : webShellTokens.color.surfaceBorder;
+  const sectionColor = isDark
+    ? webShellTokens.color.chromeTextMuted
+    : webShellTokens.color.textSecondary;
+  const inputColor = isDark ? webShellTokens.color.chromeText : webShellTokens.color.text;
 
   let globalIndex = 0;
 
   return (
     <Box className="absolute inset-0 z-[1000]" style={{ pointerEvents: 'box-none' }}>
       {/* Backdrop */}
-      <AnimatedView style={backdropStyle} className="absolute inset-0 bg-black/40">
+      <AnimatedView
+        style={[
+          backdropStyle,
+          { backgroundColor: webShellTokens.color.scrim, backdropFilter: 'blur(8px)' },
+        ]}
+        className="absolute inset-0"
+      >
         <Pressable
           className="absolute inset-0"
           onPress={close}
@@ -313,11 +319,14 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
           <Box
             className="flex-row items-center px-5 py-4 border-b gap-3"
             style={{
-              borderBottomColor: searchFocused ? '#D4843A' : border,
+              borderBottomColor: searchFocused ? webShellTokens.color.focusRing : border,
               borderBottomWidth: searchFocused ? 1.5 : 1,
             }}
           >
-            <Text className="text-xl w-[22px] text-center" style={{ color: sanctuarySaffron }}>
+            <Text
+              className="text-xl w-[22px] text-center"
+              style={{ color: webShellTokens.color.focusRing }}
+            >
               ⌕
             </Text>
             {/* Standard HTML input for Sovereign Web purity */}
@@ -372,24 +381,25 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                       style={
                         isSelected
                           ? {
-                              backgroundColor: isDark
-                                ? 'rgba(212,132,58,0.12)'
-                                : 'rgba(212,132,58,0.08)',
+                              backgroundColor: webShellTokens.color.activeSurface,
                             }
                           : undefined
                       }
                     >
                       {/* Active bar */}
                       <Box
-                        className="absolute left-0 top-[20%] bottom-[20%] w-[3px] rounded-sm bg-sanctuarySaffron"
-                        style={{ opacity: isSelected ? 1 : 0 }}
+                        className="absolute left-0 top-[20%] bottom-[20%] w-[3px] rounded-sm"
+                        style={{
+                          backgroundColor: webShellTokens.color.focusRing,
+                          opacity: isSelected ? 1 : 0,
+                        }}
                       />
 
                       <Box
                         className="w-9 h-9 rounded-xl items-center justify-center flex-shrink-0"
                         style={{
                           backgroundColor: isSelected
-                            ? `${sanctuarySaffron}1A`
+                            ? webShellTokens.color.activeSurface
                             : isDark
                               ? 'rgba(252,249,242,0.06)'
                               : 'rgba(42,35,24,0.05)',
@@ -402,7 +412,7 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                         <Text
                           className="text-[15px] tracking-tight"
                           style={{
-                            color: isSelected ? '#D4843A' : inputColor,
+                            color: isSelected ? webShellTokens.color.focusRing : inputColor,
                             fontWeight: isSelected ? '700' : '500',
                           }}
                         >
@@ -420,17 +430,17 @@ export default function CommandPalette({ onOpenAI, onOpenScanner }: CommandPalet
                           className="px-2 py-0.75 rounded-md border"
                           style={{
                             backgroundColor: isSelected
-                              ? '#D4843A20'
-                              : isDark
-                                ? 'rgba(252,249,242,0.08)'
-                                : 'rgba(42,35,24,0.06)',
-                            borderColor: isSelected ? '#D4843A40' : border,
+                              ? webShellTokens.color.activeSurface
+                              : webShellTokens.color.controlSurface,
+                            borderColor: isSelected
+                              ? webShellTokens.color.activeBorder
+                              : border,
                           }}
                         >
                           <Text
                             className="text-xs font-bold tracking-tight"
                             style={{
-                              color: isSelected ? '#D4843A' : sectionColor,
+                              color: isSelected ? webShellTokens.color.focusRing : sectionColor,
                             }}
                           >
                             {cmd.shortcut}

@@ -61,6 +61,9 @@ export function TabletWorkspaceCanvas<
               onSurfacePress={props.onSurfacePress}
               onPressSurfaceInfo={props.onPressSurfaceInfo}
               onToggleHidden={props.onToggleHidden}
+              onReorder={props.onReorder}
+              dragEnabled={Boolean(props.onReorder)}
+              reorderHint="Drag up or down to reorder"
             />
           ))}
         </View>

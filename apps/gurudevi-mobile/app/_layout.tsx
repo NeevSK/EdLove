@@ -40,6 +40,7 @@ import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';
 import { SyncManager } from '@repo/core/sync';
 import { useQRDeepLink } from '@repo/scanner-kit';
+import { BrandPulse } from '@repo/ui';
 import { AccountPinModal } from '@repo/ui/components';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 import NetworkStatusBanner from '@repo/ui/components/NetworkStatusBanner';
@@ -49,15 +50,13 @@ import { EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';
 import { FABProvider } from '@repo/ui/context/FABContext';
 import { GluestackUIProvider } from '@repo/ui/gluestack';
 import { Shield } from '@repo/ui/icons';
-import { Box, Center, Spinner } from '@repo/ui/primitives';
-import { BrandPulse } from '@repo/ui';
+import { Box, Center } from '@repo/ui/primitives';
 import { ToastProvider } from '@repo/ui/providers';
 import { FeatureProvider } from '@repo/ui/providers/FeatureProvider';
 import { sanctuarySaffron } from '@repo/ui/theme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as LocalAuthentication from 'expo-local-authentication';
-import { usePathname, useRouter } from 'expo-router';
-import { Stack } from 'expo-router/stack';
+import { Stack, usePathname, useRouter } from 'expo-router';
 import * as ScreenCapture from 'expo-screen-capture';
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback, useEffect, useState } from 'react';
@@ -82,7 +81,6 @@ import {
   installMobileWorkflowEventBridge,
 } from '@/lib/inngestEvents';
 import { DeepLinkProvider } from '@/providers/DeepLinkProvider';
-import { PowerSyncProvider } from '@/providers/PowerSyncProvider';
 import { LanguageUtils } from '@/utils/LanguageUtils';
 
 registerAppCatalog();
@@ -112,9 +110,20 @@ configureGoogleOneTap();
 
 function FullScreenFallback() {
   return (
-    <Center className="flex-1 bg-obsidian">
-      <BrandPulse size={28} tintColor="#D4843A" />
-    </Center>
+    <View
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 32,
+        backgroundColor: '#0F131C',
+      }}
+    >
+      <BrandPulse size={28} tintColor="#D4843A" accessibilityLabel="Preparing Gurudevi" />
+      <Text style={{ marginTop: 16, textAlign: 'center', fontSize: 14, color: '#F5EDD6' }}>
+        Preparing your sanctuary…
+      </Text>
+    </View>
   );
 }
 
@@ -219,6 +228,7 @@ function AppContent() {
   const toast = useStore((state) => state.toast);
   const hideToast = useStore((state) => state.hideToast);
   const [fontsReady, setFontsReady] = useState(() => !coreRuntime.isRegistered());
+  const [bootstrapTimedOut, setBootstrapTimedOut] = useState(false);
 
   const [lockState, setLockState] = useState(() => ({
     isUnlocked: Platform.OS === 'web' || !storage.getBoolean('require_biometrics'),
@@ -226,7 +236,24 @@ function AppContent() {
     showPinUnlock: false,
   }));
   const { isUnlocked, hasPinCode, showPinUnlock } = lockState;
-  const bootstrapReady = !loading && !isProfileLoading && fontsReady;
+  // Web can render the route shell while native-only adapters and remote auth
+  // settle. Keeping this platform-specific prevents a missing/slow browser
+  // capability from hiding the entire web product behind the native boot gate.
+  const bootstrapReady =
+    Platform.OS === 'web' || (!loading && !isProfileLoading && fontsReady) || bootstrapTimedOut;
+
+  useEffect(() => {
+    if (bootstrapReady) return;
+
+    const timeout = setTimeout(() => {
+      console.warn(
+        '[AppContent] auth/profile bootstrap exceeded 10s; continuing with route shell and local fallbacks',
+      );
+      setBootstrapTimedOut(true);
+    }, 10000);
+
+    return () => clearTimeout(timeout);
+  }, [bootstrapReady]);
   const sessionMode = getSessionIdentityMode(session);
   const routeTarget = getAuthRouteTarget({
     pathname,
@@ -421,16 +448,6 @@ function AppContent() {
     router.push({ pathname: '/qr', params: { payload: JSON.stringify(payload) } });
   });
 
-  if (!bootstrapReady) {
-    return (
-      <SafeAreaProvider>
-        <GluestackUIProvider>
-          <FullScreenFallback />
-        </GluestackUIProvider>
-      </SafeAreaProvider>
-    );
-  }
-
   if (!isUnlocked) {
     return (
       <SafeAreaProvider>
@@ -511,9 +528,12 @@ function AppContent() {
                       <Stack.Screen name="public-form/[slug]" options={{ title: 'Form' }} />
                     </Stack>
                   </FeatureProvider>
-                  <SyncManager dispatchQueuedMutation={dispatchQueuedMutationToSovereignBus} />
                   <NetworkStatusBanner />
-                  <PDPAConsentModal isOpen={!hasDecidedConsent} onClose={() => {}} />
+                  <PDPAConsentModal
+                    isOpen={bootstrapReady && !hasDecidedConsent}
+                    onClose={() => {}}
+                  />
+                  <SyncManager dispatchQueuedMutation={dispatchQueuedMutationToSovereignBus} />
                   {Platform.OS === 'web' && <PWAInstallBanner />}
                   {toast && (
                     <SanctuaryToast
@@ -539,6 +559,13 @@ function RootShell() {
 
   useEffect(() => {
     let cancelled = false;
+    const bootstrapTimeout = setTimeout(() => {
+      if (!cancelled) {
+        console.warn('[bootstrapPlatform] timed out; continuing with available adapters');
+        setBootstrapped(true);
+      }
+    }, 10000);
+
     void bootstrapPlatform()
       .then(() => {
         if (!coreRuntime.isRegistered()) {
@@ -546,9 +573,13 @@ function RootShell() {
         }
         installMobileWorkflowEventBridge();
         void registerBackgroundSync();
-        if (!cancelled) setBootstrapped(true);
+        if (!cancelled) {
+          clearTimeout(bootstrapTimeout);
+          setBootstrapped(true);
+        }
       })
       .catch((error) => {
+        clearTimeout(bootstrapTimeout);
         console.warn('[bootstrapPlatform] continuing with fallback startup', error);
         if (!cancelled) setBootstrapped(true);
       });
@@ -559,19 +590,18 @@ function RootShell() {
 
     return () => {
       cancelled = true;
+      clearTimeout(bootstrapTimeout);
     };
   }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
       <GlobalProvider>
-        {bootstrapped ? (
+        {bootstrapped || Platform.OS === 'web' ? (
           <EnvironmentProvider>
-            <PowerSyncProvider>
-              <DeepLinkProvider>
-                <AppContent />
-              </DeepLinkProvider>
-            </PowerSyncProvider>
+            <DeepLinkProvider>
+              <AppContent />
+            </DeepLinkProvider>
           </EnvironmentProvider>
         ) : (
           <FullScreenFallback />

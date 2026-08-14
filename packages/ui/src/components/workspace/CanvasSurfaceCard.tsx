@@ -1,5 +1,5 @@
 import type { ResolvedWorkspaceSurface } from '@repo/core/types';
-import { EyeOff, Info, Lock, Pin, Sparkles } from '@repo/ui/icons';
+import { ChevronDown, ChevronUp, EyeOff, GripVertical, Info, Lock, Pin, Sparkles } from '@repo/ui/icons';
 import type React from 'react';
 import { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
@@ -25,6 +25,15 @@ export interface CanvasSurfaceCardProps<
   onPress?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => void;
   onPressInfo?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => void;
   onToggleHidden?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => void;
+  reorderEnabled?: boolean;
+  dragEnabled?: boolean;
+  reorderHint?: string;
+  reorderControls?: {
+    canMoveUp: boolean;
+    canMoveDown: boolean;
+    onMoveUp: () => void;
+    onMoveDown: () => void;
+  };
 }
 
 const OWNER_LABELS: Record<string, string> = {
@@ -53,6 +62,10 @@ export function CanvasSurfaceCard<
   onPress,
   onPressInfo,
   onToggleHidden,
+  reorderEnabled = false,
+  dragEnabled = reorderEnabled,
+  reorderHint = 'Hold and drag to reorder',
+  reorderControls,
 }: CanvasSurfaceCardProps<TSurfaceId, TCapabilityKey>) {
   const colors = useThemedColors();
   const ownerLabel = OWNER_LABELS[surface.ownerPackage] ?? surface.ownerPackage;
@@ -165,9 +178,54 @@ export function CanvasSurfaceCard<
       <View style={cardStyles.footer}>
         <View style={cardStyles.footerSpacer} />
         <View style={cardStyles.footerActions}>
+          {reorderEnabled && dragEnabled ? (
+            <View
+              accessibilityRole="image"
+              accessibilityLabel={reorderHint}
+              style={cardStyles.reorderAffordance}
+            >
+              <GripVertical size={16} color={colors.textSecondary} />
+              <Text style={cardStyles.reorderText}>Reorder</Text>
+            </View>
+          ) : null}
+          {reorderControls ? (
+            <View accessibilityLabel="Keyboard and pointer reorder controls" style={cardStyles.reorderControls}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Move ${title ?? surface.title} earlier`}
+                accessibilityHint="Moves this surface one position earlier in its zone."
+                accessibilityState={{ disabled: !reorderControls.canMoveUp }}
+                disabled={!reorderControls.canMoveUp}
+                onPress={reorderControls.onMoveUp}
+                style={({ pressed }) => [
+                  cardStyles.iconButton,
+                  !reorderControls.canMoveUp ? cardStyles.controlDisabled : null,
+                  pressed ? cardStyles.toggleButtonPressed : null,
+                ]}
+              >
+                <ChevronUp size={14} color={colors.textSecondary} />
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Move ${title ?? surface.title} later`}
+                accessibilityHint="Moves this surface one position later in its zone."
+                accessibilityState={{ disabled: !reorderControls.canMoveDown }}
+                disabled={!reorderControls.canMoveDown}
+                onPress={reorderControls.onMoveDown}
+                style={({ pressed }) => [
+                  cardStyles.iconButton,
+                  !reorderControls.canMoveDown ? cardStyles.controlDisabled : null,
+                  pressed ? cardStyles.toggleButtonPressed : null,
+                ]}
+              >
+                <ChevronDown size={14} color={colors.textSecondary} />
+              </Pressable>
+            </View>
+          ) : null}
           {onPressInfo ? (
             <Pressable
               accessibilityRole="button"
+              accessibilityLabel={`More information about ${title ?? surface.title}`}
               onPress={handlePressInfo}
               style={({ pressed }) => [
                 cardStyles.iconButton,
@@ -180,6 +238,7 @@ export function CanvasSurfaceCard<
           {onToggleHidden && !surface.isLocked ? (
             <Pressable
               accessibilityRole="button"
+              accessibilityLabel={`${surface.hidden ? 'Show' : 'Hide'} ${title ?? surface.title}`}
               onPress={handleToggleHidden}
               style={({ pressed }) => [
                 cardStyles.toggleButton,
@@ -382,6 +441,28 @@ function createStyles(colors: ReturnType<typeof useThemedColors>) {
       flexDirection: 'row',
       alignItems: 'center',
       gap: Theme.spacing.xs,
+    },
+    reorderAffordance: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 5,
+      borderRadius: Theme.corners.full,
+      paddingHorizontal: 8,
+      paddingVertical: 7,
+      backgroundColor: Theme.colors.silk,
+    },
+    reorderText: {
+      fontSize: Theme.typography.fontSize.xs,
+      fontWeight: '600',
+      color: colors.textSecondary,
+    },
+    reorderControls: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: Theme.spacing.xs,
+    },
+    controlDisabled: {
+      opacity: 0.45,
     },
     footerSpacer: {
       flex: 1,

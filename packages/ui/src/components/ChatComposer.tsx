@@ -1,6 +1,7 @@
 import { useOptionalChatContext } from '@repo/ui/context/ChatContext';
+import { BrandPulse } from './BrandPulse';
 import { Image as ImageIcon, Send } from '@repo/ui/icons';
-import { Box, HStack, Icon, InputField, Pressable, Spinner } from '@repo/ui/primitives';
+import { Box, HStack, Icon, InputField, Pressable } from '@repo/ui/primitives';
 import React, { useCallback } from 'react';
 import type { LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native';
 
@@ -116,7 +117,7 @@ export function ChatComposer({
           }`}
         >
           {isSending ? (
-            <Spinner />
+            <BrandPulse size={18} tintColor="#FFFFFF" />
           ) : (
             <Icon as={Send} size="sm" className={canSend ? 'text-white' : 'text-ink/20'} />
           )}

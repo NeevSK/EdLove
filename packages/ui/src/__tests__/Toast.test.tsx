@@ -36,7 +36,7 @@ describe('Toast System Logic (2026 Standard)', () => {
     expect(getByText(/Test Success/)).toBeTruthy();
   });
 
-  it('automatically removes toast after duration', async () => {
+  it('keeps a readable minimum duration before removing a toast', async () => {
     const { getByText, queryByText } = await render(
       <ToastProvider>
         <TestComponent message="Timed Toast" duration={100} />
@@ -52,9 +52,43 @@ describe('Toast System Logic (2026 Standard)', () => {
     expect(getByText(/Timed Toast/)).toBeTruthy();
 
     await act(async () => {
-      jest.advanceTimersByTime(200);
+      jest.advanceTimersByTime(2499);
+    });
+
+    expect(queryByText(/Timed Toast/)).toBeTruthy();
+
+    await act(async () => {
+      jest.advanceTimersByTime(1);
     });
 
     expect(queryByText(/Timed Toast/)).toBeNull();
+  });
+
+  it('exposes status feedback as an alert without decorative emoji text', async () => {
+    const { getByRole, getByText } = await render(
+      <ToastProvider>
+        <TestComponent message="Saved" type="success" />
+      </ToastProvider>,
+    );
+
+    await fireEvent.press(getByText('Trigger Toast'));
+
+    expect(getByRole('alert')).toBeTruthy();
+    expect(getByText('Saved')).toBeTruthy();
+    expect(getByText('Saved').props.children).toBe('Saved');
+  });
+
+  it('allows a queued toast to be dismissed before its timer expires', async () => {
+    const { getByText, getByLabelText, queryByText } = await render(
+      <ToastProvider>
+        <TestComponent message="Dismiss me" duration={5000} />
+      </ToastProvider>,
+    );
+
+    await fireEvent.press(getByText('Trigger Toast'));
+    expect(getByText('Dismiss me')).toBeTruthy();
+
+    await fireEvent.press(getByLabelText('Dismiss notification'));
+    expect(queryByText('Dismiss me')).toBeNull();
   });
 });

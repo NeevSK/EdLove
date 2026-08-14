@@ -4,7 +4,8 @@ import { usePermissions } from '@repo/core/logic';
 import { useStore } from '@repo/core/store';
 import { GiveThuthimalModal } from '@repo/profile';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
-import LoadingOverlay from '@repo/ui/components/LoadingOverlay';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import { SanctuaryBackground } from '@repo/ui/components/SanctuaryBackground';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import {
@@ -56,6 +57,7 @@ export default function UserPublicProfileScreen() {
   const currentUser = useStore((state) => state.user);
 
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [user, setUser] = useState<any>(null);
   const [initiatingDM, setInitiatingDM] = useState(false);
   const [showThuthimal, setShowThuthimal] = useState(false);
@@ -64,6 +66,7 @@ export default function UserPublicProfileScreen() {
   const loadProfile = useCallback(async () => {
     if (!userId) return;
     setLoading(true);
+    setLoadError(null);
     try {
       const { data, error } = await supabase
         .from('users')
@@ -98,6 +101,7 @@ export default function UserPublicProfileScreen() {
       });
     } catch (error) {
       console.error('[UserProfile.web] Load Error:', error);
+      setLoadError('We could not load this profile right now.');
     } finally {
       setLoading(false);
     }
@@ -128,6 +132,18 @@ export default function UserPublicProfileScreen() {
 
   const isPrivate = user && user.public_profile === false && currentUserId !== userId;
 
+  if (!loading && loadError) {
+    return (
+      <Box className="flex-1 items-center justify-center bg-phase-canvas">
+        <BrandedErrorState title="Profile could not settle" message={loadError}>
+          <Button variant="outline" onPress={() => void loadProfile()}>
+            <ButtonText>Try again</ButtonText>
+          </Button>
+        </BrandedErrorState>
+      </Box>
+    );
+  }
+
   return (
     <Box className="flex-1 w-full h-full">
       <SanctuaryBackground />
@@ -150,7 +166,7 @@ export default function UserPublicProfileScreen() {
                   <Heading className="text-2xl font-black text-foreground">
                     {user?.full_name || userName}
                   </Heading>
-                  <BadgeCheck size={20} color="#E67E22" />
+                  <BadgeCheck size={20} color="var(--phase-interactive)" />
                 </HStack>
                 <Text className="text-sm text-muted-foreground">@{user?.username || 'member'}</Text>
               </VStack>
@@ -169,7 +185,7 @@ export default function UserPublicProfileScreen() {
             </VStack>
 
             {isPrivate && (
-              <HStack className="gap-2 items-center opacity-70 p-3 rounded-xl bg-black/5">
+                <HStack className="gap-2 items-center opacity-70 p-3 rounded-xl bg-phase-surface">
                 <Shield size={14} color="rgba(255,255,255,0.6)" />
                 <Text className="text-[12px] text-muted-foreground italic">
                   {t('community.profile.privateSanctuary') || 'Private Sanctuary'}
@@ -202,7 +218,7 @@ export default function UserPublicProfileScreen() {
                       onPress={() => setShowThuthimal(true)}
                       className="h-[52px] rounded-[26px]"
                     >
-                      <ButtonIcon as={Gift} size={18} color="#E67E22" />
+                      <ButtonIcon as={Gift} size={18} color="var(--phase-interactive)" />
                       <ButtonText className="font-extrabold ml-2">Send Thuthimal {'=O'}</ButtonText>
                     </Button>
                   )}
@@ -330,11 +346,11 @@ export default function UserPublicProfileScreen() {
                   </Heading>
                   <VStack className="gap-3">
                     <BadgeItem
-                      icon={<Medal size={18} color="#E67E22" />}
+                      icon={<Medal size={18} color="var(--phase-interactive)" />}
                       title={t('community.profile.explorer') || 'Explorer'}
                     />
                     <BadgeItem
-                      icon={<BadgeCheck size={18} color="#10b981" />}
+                      icon={<BadgeCheck size={18} color="var(--phase-success)" />}
                       title={t('community.profile.verified') || 'Verified'}
                     />
                   </VStack>
@@ -353,7 +369,12 @@ export default function UserPublicProfileScreen() {
         </Box>
       </HStack>
 
-      <LoadingOverlay visible={loading} />
+      {loading ? (
+        <Box className="absolute inset-0 items-center justify-center bg-phase-canvas/80">
+          <BrandPulse size={40} accessibilityLabel="Loading profile" />
+          <Text className="mt-3 text-muted-foreground">Loading profile…</Text>
+        </Box>
+      ) : null}
     </Box>
   );
 }
@@ -372,7 +393,7 @@ function StatCard({ label, value, icon }: { label: string; value: string; icon: 
     <VStack className="flex-1 min-w-[100px] p-4 rounded-[20px] bg-surface-lowest border border-outline-variant gap-1">
       <HStack className="justify-between items-center">
         {React.cloneElement(icon as React.ReactElement<any>, {
-          color: '#E67E22',
+          color: 'var(--phase-interactive)',
           size: 14,
         })}
         <Text className="text-[18px] font-black text-foreground">{value}</Text>

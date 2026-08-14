@@ -1,5 +1,5 @@
 import { api } from '@repo/core/api/client';
-
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { CircleCheck, QrCode } from '@repo/ui/icons';
 import {
@@ -13,7 +13,6 @@ import {
   Icon,
   Input,
   InputField,
-  Spinner,
   Text,
   VStack,
 } from '@repo/ui/primitives';
@@ -115,7 +114,7 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
             className={`w-full h-16 ${loading || inviteCode.length < 6 ? 'bg-phase-surface opacity-50' : 'bg-templeGold shadow-lg shadow-templeGold/20'} rounded-[24px] flex-row items-center justify-center gap-3`}
           >
             {loading ? (
-              <Spinner className="text-phaseText-inverse" size="small" />
+              <BrandPulse size={20} tintColor="#FFFFFF" accessibilityLabel="Claiming invitation" />
             ) : (
               <ButtonText className="text-phaseText-inverse font-bold text-lg">
                 Claim Record

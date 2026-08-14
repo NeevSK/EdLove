@@ -4,34 +4,108 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authAPI, identityAPI, onboardingAPI } from '@repo/core/api/client';
+import { isAnonymousIdentity } from '@repo/core/logic';
 import { useStore } from '@repo/core/store';
 import type { Capacity } from '@repo/core/types';
+import { GatewayFooter } from '@repo/ui/components/GatewayFooter.web';
+import { GatewayHeader } from '@repo/ui/components/GatewayHeader.web';
+import {
+  getDevOnboardingTemplateLabel,
+  resolveOnboardingDevIntent,
+} from '@repo/ui/screens/onboardingDevFlow';
+import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWindowDimensions } from 'react-native';
-import { GatewayFooter } from '@repo/ui/components/GatewayFooter.web';
-import { GatewayHeader } from '@repo/ui/components/GatewayHeader.web';
-import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-import { isAnonymousIdentity } from '@repo/core/logic';
-import { getDevOnboardingTemplateLabel, resolveOnboardingDevIntent } from '@repo/ui/screens/onboardingDevFlow';
 
 // ──────────────────────────────────────────────────────────
 // CONSTANTS
 // ──────────────────────────────────────────────────────────
 
 const PILLARS = [
-  { name: 'Self', emoji: '🧘' },
-  { name: 'Classroom', emoji: '🏫' },
-  { name: 'Community', emoji: '🤝' },
-  { name: 'Library', emoji: '📚' },
-  { name: 'Profile', emoji: '👤' },
+  { name: 'Self', glyph: 'self' },
+  { name: 'Classroom', glyph: 'school' },
+  { name: 'Community', glyph: 'community' },
+  { name: 'Library', glyph: 'book' },
+  { name: 'Profile', glyph: 'profile' },
 ];
 
 const CAPACITY_OPTIONS = [
-  { value: 'teacher', emoji: '🧑‍🏫', descKey: 'onboarding.roleDesc.teacher' },
-  { value: 'student', emoji: '🎓', descKey: 'onboarding.roleDesc.student' },
-  { value: 'principal', emoji: '🏫', descKey: 'onboarding.roleDesc.principal' },
+  { value: 'teacher', glyph: 'teacher', descKey: 'onboarding.roleDesc.teacher' },
+  { value: 'student', glyph: 'student', descKey: 'onboarding.roleDesc.student' },
+  { value: 'principal', glyph: 'school', descKey: 'onboarding.roleDesc.principal' },
 ];
+
+function WebGlyph({ glyph, size = 32 }: { glyph: string; size?: number }) {
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {glyph === 'school' || glyph === 'teacher' || glyph === 'student' ? (
+        <>
+          <path d="m3 9 9-5 9 5-9 5-9-5Z" />
+          <path d="M7 11v5c2.8 2 7.2 2 10 0v-5" />
+          <path d="M21 10v6" />
+        </>
+      ) : glyph === 'book' ? (
+        <>
+          <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z" />
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+        </>
+      ) : glyph === 'community' ? (
+        <>
+          <circle cx="9" cy="8" r="3" />
+          <circle cx="17" cy="9" r="2.5" />
+          <path d="M3.5 20a5.5 5.5 0 0 1 11 0" />
+          <path d="M14 16a5 5 0 0 1 6.5 4" />
+        </>
+      ) : glyph === 'profile' ? (
+        <>
+          <circle cx="12" cy="8" r="3.5" />
+          <path d="M4 21a8 8 0 0 1 16 0" />
+        </>
+      ) : glyph === 'lock' ? (
+        <>
+          <rect x="5" y="10" width="14" height="10" rx="2" />
+          <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+        </>
+      ) : glyph === 'sprout' ? (
+        <>
+          <path d="M12 21V10" />
+          <path d="M12 13c-4 0-6-2.5-6-6 3.5 0 6 2 6 6Z" />
+          <path d="M12 16c4 0 6-2.5 6-6-3.5 0-6 2-6 6Z" />
+        </>
+      ) : glyph === 'compass' ? (
+        <>
+          <circle cx="12" cy="12" r="9" />
+          <path d="m15.5 8.5-2 5-5 2 2-5 5-2Z" />
+        </>
+      ) : glyph === 'flower' ? (
+        <>
+          <circle cx="12" cy="12" r="2" />
+          <path d="M12 10c-3-1-4-3-2-5 2-1 3 1 2 5Z" />
+          <path d="M14 12c1-3 3-4 5-2 1 2-1 3-5 2Z" />
+          <path d="M12 14c3 1 4 3 2 5-2 1-3-1-2-5Z" />
+          <path d="M10 12c-1 3-3 4-5 2-1-2 1-3 5-2Z" />
+        </>
+      ) : (
+        <>
+          <circle cx="12" cy="12" r="8" />
+          <path d="M12 8v4l3 2" />
+        </>
+      )}
+    </svg>
+  );
+}
 
 const TOTAL_STEPS = 7; // 0: Name, 1: Role, 2-6: Tour
 
@@ -110,7 +184,9 @@ const ErrorBanner = memo(({ error }: { error: string | null }) => {
   if (!error) return null;
   return (
     <div className="ob-error-banner">
-      <span className="ob-error-icon">⚠️ </span>
+      <span className="ob-error-icon" aria-hidden="true">
+        !
+      </span>
       <span className="ob-error-text">{error}</span>
     </div>
   );
@@ -147,7 +223,9 @@ const NameStep = memo(
       <div className="ob-step">
         <div className="ob-step-shell">
           <div className="ob-step-meta">Step 1 · Arrival</div>
-          <div className="ob-step-icon">👋🏻</div>
+          <div className="ob-step-icon">
+            <WebGlyph glyph="self" size={48} />
+          </div>
         </div>
         <h2 className="ob-step-title">{t('onboarding.nameTitle')}</h2>
         <p className="ob-step-subtitle">{t('onboarding.nameSubtitle')}</p>
@@ -215,7 +293,9 @@ const IdentityStep = memo(
       <div className="ob-step">
         <div className="ob-step-shell">
           <div className="ob-step-meta">Step 2 · Belonging</div>
-          <div className="ob-step-icon">🎯</div>
+          <div className="ob-step-icon">
+            <WebGlyph glyph="goal" size={48} />
+          </div>
         </div>
         <h2 className="ob-step-title">{t('onboarding.roleTitle')}</h2>
         <p className="ob-step-subtitle">{t('onboarding.roleSubtitle')}</p>
@@ -229,7 +309,9 @@ const IdentityStep = memo(
               className={`ob-role-card ${capacity === r.value ? 'selected' : ''}`}
               onClick={handleCapacityClick}
             >
-              <span className="ob-role-emoji">{r.emoji}</span>
+              <span className="ob-role-emoji">
+                <WebGlyph glyph={r.glyph} size={34} />
+              </span>
               <span className="ob-role-name">{t(`identity.${r.value}`)}</span>
               <span className="ob-role-desc">{t(r.descKey)}</span>
             </button>
@@ -261,7 +343,7 @@ const TourStep = memo(
   }: {
     t: (key: string) => string;
     currentStep: number;
-    screen: { emoji: string; title: string; subtitle: string; content: string };
+    screen: { glyph: string; title: string; subtitle: string; content: string };
     isCompleting: boolean;
     onBack: () => void;
     onNext: () => void;
@@ -270,7 +352,9 @@ const TourStep = memo(
     <div className="ob-step">
       <div className="ob-step-shell">
         <div className="ob-step-meta">Sanctuary Tour</div>
-        <div className="ob-step-icon">{screen.emoji}</div>
+        <div className="ob-step-icon">
+          <WebGlyph glyph={screen.glyph} size={64} />
+        </div>
       </div>
       <h2 className="ob-step-title">{screen.title}</h2>
       <p className="ob-step-subtitle">{screen.subtitle}</p>
@@ -335,7 +419,9 @@ const DevSandboxConsoleInner = memo(
       <div className="ob-step ob-dev-sandbox">
         <div className="ob-step-shell">
           <div className="ob-step-meta">DEVELOPER TOOLKIT</div>
-          <div className="ob-step-icon">⚙️</div>
+          <div className="ob-step-icon">
+            <WebGlyph glyph="settings" size={48} />
+          </div>
         </div>
         <h2 className="ob-step-title">Sandbox Console</h2>
         <p className="ob-step-subtitle">
@@ -573,31 +659,31 @@ export default memo(function OnboardingScreenWeb({
   const tourScreens = useMemo(
     () => [
       {
-        emoji: '🪷',
+        glyph: 'flower',
         title: t('onboarding.philosophyTitle'),
         subtitle: t('onboarding.philosophySubtitle'),
         content: t('onboarding.philosophyContent'),
       },
       {
-        emoji: '🏫',
+        glyph: 'school',
         title: t('onboarding.sectionsTitle'),
         subtitle: t('onboarding.sectionsSubtitle'),
         content: t('onboarding.sectionsContent'),
       },
       {
-        emoji: '🌱',
+        glyph: 'sprout',
         title: t('onboarding.ecologyTitle'),
         subtitle: t('onboarding.ecologySubtitle'),
         content: t('onboarding.ecologyContent'),
       },
       {
-        emoji: '🔒',
+        glyph: 'lock',
         title: t('onboarding.privacyTitle'),
         subtitle: t('onboarding.privacySubtitle'),
         content: t('onboarding.privacyContent'),
       },
       {
-        emoji: '🧭',
+        glyph: 'compass',
         title: t('onboarding.navigationTitle'),
         subtitle: t('onboarding.navigationSubtitle'),
         content: t('onboarding.navigationContent'),
@@ -729,10 +815,10 @@ export default memo(function OnboardingScreenWeb({
           input: name,
         });
         if (devIntent.kind === 'menu') {
-            dispatch({ type: 'SET_PROCESSING', isProcessing: false });
-            dispatch({ type: 'SHOW_DEV_SANDBOX', visible: true });
-            return;
-          }
+          dispatch({ type: 'SET_PROCESSING', isProcessing: false });
+          dispatch({ type: 'SHOW_DEV_SANDBOX', visible: true });
+          return;
+        }
         if (devIntent.kind === 'template') {
           const template = devIntent.intent.template;
 
@@ -955,7 +1041,9 @@ export default memo(function OnboardingScreenWeb({
               <div className="ob-pillars">
                 {PILLARS.map((p) => (
                   <div key={p.name} className="ob-pillar">
-                    <span>{p.emoji}</span>
+                    <span>
+                      <WebGlyph glyph={p.glyph} size={18} />
+                    </span>
                     <span>{p.name}</span>
                   </div>
                 ))}
@@ -1252,7 +1340,8 @@ const ONBOARDING_STYLES = `
         letter-spacing: 1.5px;
         color: var(--action, #D4843A);
     }
-    .ob-step-icon { font-size: 24px; }
+    .ob-step-icon { font-size: 24px; color: var(--action, #D4843A); display: grid; place-items: center; }
+    .ob-step-icon svg, .ob-role-emoji svg, .ob-pillar svg { display: block; }
     .ob-step-title {
         font-size: 36px;
         font-weight: 800;
@@ -1376,7 +1465,9 @@ const ONBOARDING_STYLES = `
     }
     .ob-role-emoji {
         grid-area: emoji;
-        font-size: 32px;
+        color: var(--action, #D4843A);
+        display: grid;
+        place-items: center;
     }
     .ob-role-name {
         grid-area: name;

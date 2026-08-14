@@ -1,16 +1,16 @@
-import { usePermissions, useStore } from '@repo/core/logic';
-
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
-import { ArrowRight } from '@repo/ui/icons';
-import { Box, Heading, Icon, Pressable, Text } from '@repo/ui/primitives';
-import { useRouter } from 'expo-router';
 import CreateClassroomModal from '@repo/classroom/components/CreateClassroomModal';
 import PrincipalOnboardingView from '@repo/classroom/components/onboarding/PrincipalOnboardingView.web';
 import PrincipalDashboardWebSurface from '@repo/classroom/screens/PrincipalDashboard.web';
 // Direct imports for sub-views
 import StudentDashboardWeb from '@repo/classroom/screens/StudentDashboard.web';
 import TeacherDashboardWeb from '@repo/classroom/screens/TeacherDashboard.web';
+import { usePermissions, useStore } from '@repo/core/logic';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
+import { ArrowRight, School } from '@repo/ui/icons';
+import { Box, Heading, Icon, Pressable, Text } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
+import { useRouter } from 'expo-router';
 
 /**
  * ClassroomScreen.web.tsx (POA 100% Realized)
@@ -40,7 +40,12 @@ export default function ClassroomScreenWeb() {
     return (
       <ScreenWrapper>
         <Box className="flex-1 items-center justify-center gap-5 text-center">
-          <Text className="text-5xl font-black mb-4">🏫</Text>
+          <School
+            aria-hidden
+            size={48}
+            color={tokens.semantic.status.info}
+            style={{ marginBottom: 16 }}
+          />
           <Heading size="2xl" className="font-black text-phase-text-primary">
             Welcome to Gurudevi
           </Heading>

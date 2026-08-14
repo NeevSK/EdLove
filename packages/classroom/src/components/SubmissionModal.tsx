@@ -9,6 +9,7 @@
  */
 
 import { handleAPIError } from '@repo/core/logic';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { Camera, CircleCheck, Send, Trash2, X } from '@repo/ui/icons';
 import {
@@ -20,7 +21,6 @@ import {
   Image,
   Image as ImageIcon,
   Pressable,
-  Spinner,
   Text,
   Textarea,
   TextareaInput,
@@ -178,7 +178,11 @@ export default function SubmissionModal({
         >
           {isSubmitting ? (
             <HStack className="items-center gap-2">
-              <Spinner className="text-phaseText-inverse" size="small" />
+              <BrandPulse
+                size={20}
+                tintColor="#FFFFFF"
+                accessibilityLabel="Submitting assignment"
+              />
               <ButtonText className="text-phaseText-inverse font-bold text-lg">
                 {t('submission.submitting') || 'Turning in...'}
               </ButtonText>

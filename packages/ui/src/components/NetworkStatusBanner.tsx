@@ -1,9 +1,10 @@
 import { useMutationQueue, useStore } from '@repo/core/logic';
+import { BrandPulse } from './BrandPulse';
 import { WifiOff } from '@repo/ui/icons';
 import { Platform } from 'react-native';
 import Animated, { SlideInUp, SlideOutUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Box, HStack, Spinner, Text } from '@repo/ui/gluestack';
+import { Box, HStack, Text } from '@repo/ui/gluestack';
 
 /**
  * NetworkStatusBanner
@@ -45,7 +46,7 @@ export default function NetworkStatusBanner() {
             </>
           ) : (
             <>
-              <Spinner className="text-white" size="small" />
+              <BrandPulse size={18} tintColor="#FFFFFF" />
               <Text className="text-white text-xs font-bold">
                 Syncing {queue.length} pending actions...
               </Text>

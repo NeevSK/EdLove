@@ -2,10 +2,11 @@ import { useAuth } from '@repo/core/logic';
 import { useAuthStore } from '@repo/core/store';
 import { SyncManager } from '@repo/core/sync';
 import { SanctuaryGlobalStyles } from '@repo/ui/components/SanctuaryGlobalStyles';
+import { BrandPulse } from '@repo/ui';
 import { EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';
 import { FABProvider } from '@repo/ui/context/FABContext';
 import { GluestackUIProvider } from '@repo/ui/gluestack';
-import { Box, Center, Spinner } from '@repo/ui/primitives';
+import { Box, Center } from '@repo/ui/primitives';
 import { ToastProvider } from '@repo/ui/providers';
 import { AppLifecycle } from '@repo/core/hooks/useAppLifecycle';
 import * as Sentry from '@sentry/react-native';
@@ -40,7 +41,7 @@ function AssetLoaderWatcher({ children }: { children: React.ReactNode }) {
     return (
       <SafeAreaProvider>
         <Center className="flex-1 bg-obsidian">
-          <Spinner size="large" className="text-sanctuarySaffron" />
+          <BrandPulse size={48} tintColor="#D4843A" />
         </Center>
       </SafeAreaProvider>
     );

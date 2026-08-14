@@ -6,7 +6,9 @@ import {
   validateInviteCode,
 } from '@repo/core/logic';
 import type { School } from '@repo/core/types';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import type { LucideIcon } from '@repo/ui/icons';
 import {
   ArrowRight,
   BookOpen,
@@ -27,7 +29,6 @@ import {
   InputField,
   Pressable,
   ScrollView,
-  Spinner,
   Text,
   VStack,
 } from '@repo/ui/primitives';
@@ -93,13 +94,13 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 function SuccessCard({
-  emoji,
+  icon: StatusIcon,
   title,
   body,
   cta,
   onCta,
 }: {
-  emoji: string;
+  icon: LucideIcon;
   title: string;
   body: string;
   cta: string;
@@ -110,7 +111,7 @@ function SuccessCard({
       <Center className="w-16 h-16 rounded-full bg-phase-success/10">
         <Icon as={CircleCheck} size="xl" className="text-phase-success" />
       </Center>
-      <Text className="text-[28px]">{emoji}</Text>
+      <StatusIcon size={28} color="#4F7DA3" aria-hidden />
       <VStack className="items-center">
         <Heading size="xs" className="m-0 text-phaseText-primary">
           {title}
@@ -137,19 +138,19 @@ const SCHOOL_TYPES = [
   {
     value: 'primary',
     label: 'Primary School',
-    emoji: '🏫',
+    icon: Building2,
     desc: 'Grades 1–5',
   },
   {
     value: 'secondary',
     label: 'Secondary School',
-    emoji: '🎓',
+    icon: BookOpen,
     desc: 'Grades 6–13',
   },
   {
     value: 'mixed',
     label: 'Mixed / All Grades',
-    emoji: '🌿',
+    icon: Users,
     desc: 'All grade levels',
   },
 ] as const;
@@ -210,7 +211,7 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
   if (state.step === 'done')
     return (
       <SuccessCard
-        emoji="🏛️"
+        icon={Building2}
         title={`${state.schoolName} is live!`}
         body="Your school sanctuary is ready. Invite teachers, create classrooms and start your journey."
         cta="Set up my school"
@@ -270,7 +271,7 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
                   : 'bg-phase-surface-secondary border-phase-border'
               }`}
             >
-              <Text className="text-[22px]">{t.emoji}</Text>
+              <Icon as={t.icon} size="sm" className="text-phase-interactive" />
               <VStack className="flex-1">
                 <Text className="text-sm font-bold text-phaseText-primary">{t.label}</Text>
                 <Text className="text-xs text-phaseText-muted">{t.desc}</Text>
@@ -299,7 +300,7 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
             >
               <HStack className="items-center justify-center gap-2">
                 {state.loading ? (
-                  <Spinner size="small" color="#FFFFFF" />
+                  <BrandPulse size={18} tintColor="#FFFFFF" accessibilityLabel="Creating school" />
                 ) : (
                   <Icon as={Building2} size="xs" className="text-white" />
                 )}
@@ -474,7 +475,7 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
   if (state.reqSent)
     return (
       <SuccessCard
-        emoji="📬"
+        icon={CircleCheck}
         title="Request Sent!"
         body="Your join request has been sent to the Principal. You'll be notified once approved."
         cta="OK, I'll wait"
@@ -487,8 +488,8 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
       <HStack className="gap-1.5 p-1 bg-phase-surface/40 rounded-[12px] border border-phase-border/20">
         {(
           [
-            { id: 'code', label: '🔑 Invite Code' },
-            { id: 'search', label: '🔍 Search School' },
+            { id: 'code', label: 'Invite Code', icon: Key },
+            { id: 'search', label: 'Search School', icon: Search },
           ] as const
         ).map((m) => {
           const isActive = state.method === m.id;
@@ -504,13 +505,20 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
                 isActive ? 'bg-phase-surface shadow-sm' : ''
               }`}
             >
-              <Text
-                className={`text-[12px] font-bold ${
-                  isActive ? 'text-phaseText-primary' : 'text-phaseText-muted'
-                }`}
-              >
-                {m.label}
-              </Text>
+              <HStack className="items-center gap-1.5">
+                <Icon
+                  as={m.icon}
+                  size="xs"
+                  className={isActive ? 'text-phase-interactive' : 'text-phaseText-muted'}
+                />
+                <Text
+                  className={`text-[12px] font-bold ${
+                    isActive ? 'text-phaseText-primary' : 'text-phaseText-muted'
+                  }`}
+                >
+                  {m.label}
+                </Text>
+              </HStack>
             </Pressable>
           );
         })}
@@ -547,7 +555,7 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
           >
             <HStack className="items-center justify-center gap-2">
               {state.codeLoading ? (
-                <Spinner size="small" color="#FFFFFF" />
+                <BrandPulse size={18} tintColor="#FFFFFF" accessibilityLabel="Joining school" />
               ) : (
                 <Icon as={Key} size="xs" className="text-white" />
               )}
@@ -581,7 +589,11 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
               accessibilityHint="Triggers a search for schools matching your query"
             >
               <HStack className="items-center gap-2">
-                {state.searching ? <Spinner size="small" /> : <Icon as={Search} size="xs" />}
+                {state.searching ? (
+                  <BrandPulse size={16} accessibilityLabel="Searching schools" />
+                ) : (
+                  <Icon as={Search} size="xs" />
+                )}
                 <Text className="text-xs font-bold text-phaseText-primary">Search</Text>
               </HStack>
             </SanctuaryButton>
@@ -696,7 +708,7 @@ function TeacherCreateStandaloneClassroom({ onSuccess }: { onSuccess: () => void
   if (state.createdName)
     return (
       <SuccessCard
-        emoji="📚"
+        icon={BookOpen}
         title={`"${state.createdName}" is ready!`}
         body="Your personal classroom is live. Start adding students and lessons."
         cta="Go to my classroom"
@@ -708,7 +720,7 @@ function TeacherCreateStandaloneClassroom({ onSuccess }: { onSuccess: () => void
     <VStack className="gap-4">
       <Box className="p-4 bg-phase-interactive/5 rounded-xl border border-phase-interactive/10">
         <Text className="text-[12px] text-phaseText-muted leading-[1.6]">
-          💡 A <Text className="font-bold text-phaseText-primary">standalone classroom</Text> is
+          A <Text className="font-bold text-phaseText-primary">standalone classroom</Text> is
           personal &mdash; it&apos;s not linked to any school.
         </Text>
       </Box>
@@ -748,7 +760,7 @@ function TeacherCreateStandaloneClassroom({ onSuccess }: { onSuccess: () => void
       >
         <HStack className="items-center justify-center gap-2">
           {state.loading ? (
-            <Spinner size="small" color="#FFFFFF" />
+            <BrandPulse size={18} tintColor="#FFFFFF" accessibilityLabel="Creating classroom" />
           ) : (
             <Icon as={BookOpen} size="xs" className="text-white" />
           )}
@@ -808,7 +820,7 @@ function TeacherFlow({ onSuccess }: { onSuccess: () => void }) {
       {tab === 'join_school' &&
         (joinedSchoolId ? (
           <SuccessCard
-            emoji="🎉"
+            icon={CircleCheck}
             title="Joined!"
             body="You've been added to the school. Go ahead and create your classroom."
             cta="Continue"
@@ -886,7 +898,7 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
   if (state.done)
     return (
       <SuccessCard
-        emoji="🌱"
+        icon={CircleCheck}
         title="Enrolled!"
         body="You've been linked to your classroom. Your teacher will see you in the roll."
         cta="Go to my classes"
@@ -937,7 +949,7 @@ function StudentJoinClassroom({ onSuccess }: { onSuccess: () => void }) {
       >
         <HStack className="items-center justify-center gap-2">
           {state.loading ? (
-            <Spinner size="small" color="#FFFFFF" />
+            <BrandPulse size={18} tintColor="#FFFFFF" accessibilityLabel="Joining classroom" />
           ) : (
             <Icon as={BookOpen} size="xs" className="text-white" />
           )}
@@ -964,18 +976,18 @@ export default function NoSchoolView() {
 
   const META = canCreateSchool
     ? {
-        emoji: '🏛️',
+        icon: Building2,
         heading: 'Create your school',
         sub: 'Set up your school sanctuary. Invite teachers and students once ready.',
       }
     : canCreateClassroom
       ? {
-          emoji: '📚',
+          icon: BookOpen,
           heading: 'Set up your classroom',
           sub: 'Join a school, or create a standalone personal classroom right away.',
         }
       : {
-          emoji: '🌱',
+          icon: Users,
           heading: 'Join your classroom',
           sub: 'Enter the invite code your teacher gave you to link your account.',
         };
@@ -984,7 +996,7 @@ export default function NoSchoolView() {
     <ScrollView className="bg-phase-canvas">
       <VStack className="max-w-[520px] mx-auto py-12 px-6 w-full">
         <VStack className="items-center text-center mb-10">
-          <Text className="text-5xl mb-3">{META.emoji}</Text>
+          <META.icon size={44} color="#4F7DA3" aria-hidden />
           <Heading className="text-[28px] font-black text-phaseText-primary mb-2">
             {META.heading}
           </Heading>

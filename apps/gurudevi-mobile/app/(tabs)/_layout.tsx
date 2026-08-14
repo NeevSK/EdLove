@@ -5,11 +5,30 @@ import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverl
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { Bell, Heart, Library, School, Settings, User, Users, X } from '@repo/ui/icons';
 import { Box, Modal, ModalContent, Pressable, Text } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
 import { router, Tabs, usePathname } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getNativeShellConfig } from '@/lib/responsiveShell';
+import { PowerSyncProvider } from '@/providers/PowerSyncProvider';
 
 export default function TabsLayout() {
+  return (
+    <PowerSyncProvider>
+      <TabsLayoutContent />
+    </PowerSyncProvider>
+  );
+}
+
+function TabsLayoutContent() {
   const pathname = usePathname();
+  const { width, height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const shell = useMemo(
+    () => getNativeShellConfig(width, height, insets.bottom),
+    [height, insets.bottom, width],
+  );
   const { context } = usePermissions();
   const userId = context.userId;
   const { newAchievements } = useRewards();
@@ -59,12 +78,32 @@ export default function TabsLayout() {
       <Tabs
         screenOptions={{
           headerShown: true,
+          tabBarHideOnKeyboard: true,
+          tabBarShowLabel: shell.visibleChrome.tabLabels,
+          tabBarStyle: {
+            minHeight: shell.tabBar.minHeight,
+            paddingTop: shell.tabBar.paddingTop,
+            paddingBottom: shell.tabBar.paddingBottom,
+            backgroundColor: tokens.semantic.surface.canvas,
+            borderTopColor: tokens.semantic.border.subtle,
+          },
+          tabBarLabelStyle: {
+            fontSize: tokens.typography.sizes.xs,
+            fontWeight: '600',
+          },
           header: () => (
             <GlobalHeader
               title={title}
-              subtitle={displayName}
+              subtitle={shell.header.subtitleVisible ? displayName : undefined}
               rightAction={
-                <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                <Box
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: tokens.spacing.sm,
+                    paddingHorizontal: shell.header.horizontalPadding - tokens.spacing.md,
+                  }}
+                >
                   <Pressable
                     accessibilityRole="button"
                     accessibilityLabel="Open notifications"
@@ -72,15 +111,15 @@ export default function TabsLayout() {
                     onPress={() => router.push('/notifications')}
                     style={{
                       position: 'relative',
-                      width: 40,
-                      height: 40,
+                      width: tokens.interaction.minTouchTarget,
+                      height: tokens.interaction.minTouchTarget,
                       alignItems: 'center',
                       justifyContent: 'center',
-                      borderRadius: 999,
-                      backgroundColor: 'rgba(42,35,24,0.08)',
+                      borderRadius: tokens.radii.full,
+                      backgroundColor: tokens.semantic.surface.interactive,
                     }}
                   >
-                    <Bell size={18} color="#2A2318" />
+                    <Bell size={18} color={tokens.semantic.text.primary} />
                     {unreadCount > 0 ? (
                       <Box
                         style={{
@@ -90,13 +129,19 @@ export default function TabsLayout() {
                           minWidth: 16,
                           height: 16,
                           borderRadius: 8,
-                          backgroundColor: '#D4843A',
+                          backgroundColor: tokens.colors.primary,
                           paddingHorizontal: 4,
                           alignItems: 'center',
                           justifyContent: 'center',
                         }}
                       >
-                        <Text style={{ color: '#fff', fontSize: 9, fontWeight: '800' }}>
+                        <Text
+                          style={{
+                            color: tokens.semantic.text.inverse,
+                            fontSize: tokens.typography.sizes.xs,
+                            fontWeight: '800',
+                          }}
+                        >
                           {unreadCount > 99 ? '99+' : unreadCount}
                         </Text>
                       </Box>
@@ -109,15 +154,15 @@ export default function TabsLayout() {
                     accessibilityHint="Navigates to the settings page to configure user preferences"
                     onPress={() => router.push('/settings')}
                     style={{
-                      width: 40,
-                      height: 40,
+                      width: tokens.interaction.minTouchTarget,
+                      height: tokens.interaction.minTouchTarget,
                       alignItems: 'center',
                       justifyContent: 'center',
-                      borderRadius: 999,
-                      backgroundColor: 'rgba(42,35,24,0.08)',
+                      borderRadius: tokens.radii.full,
+                      backgroundColor: tokens.semantic.surface.interactive,
                     }}
                   >
-                    <Settings size={18} color="#2A2318" />
+                    <Settings size={18} color={tokens.semantic.text.primary} />
                   </Pressable>
                 </Box>
               }
@@ -170,7 +215,15 @@ export default function TabsLayout() {
 
       <Modal isOpen={isBreathingOpen} onClose={() => setBreathingOpen(false)}>
         <ModalContent className="bg-phase-canvas">
-          <Box className="pt-xl pb-md px-md border-b border-phase-surface/10">
+          <Box
+            style={{
+              paddingTop: shell.modal.contentPadding,
+              paddingBottom: tokens.spacing.md,
+              paddingHorizontal: shell.modal.contentPadding,
+              borderBottomWidth: 1,
+              borderBottomColor: tokens.semantic.border.subtle,
+            }}
+          >
             <Box
               style={{
                 flexDirection: 'row',
@@ -179,10 +232,23 @@ export default function TabsLayout() {
               }}
             >
               <Box>
-                <Text style={{ color: '#2A2318', fontSize: 18, fontWeight: '700' }}>
+                <Text
+                  style={{
+                    color: tokens.semantic.text.primary,
+                    fontSize: tokens.typography.sizes.lg,
+                    fontWeight: '700',
+                  }}
+                >
                   Breathing Reset
                 </Text>
-                <Text style={{ color: '#74685A', fontSize: 12 }}>1 minute of peace</Text>
+                <Text
+                  style={{
+                    color: tokens.semantic.text.secondary,
+                    fontSize: tokens.typography.sizes.xs,
+                  }}
+                >
+                  1 minute of peace
+                </Text>
               </Box>
               <Pressable
                 accessibilityRole="button"
@@ -190,19 +256,25 @@ export default function TabsLayout() {
                 accessibilityHint="Closes the breathing reset dialog"
                 onPress={() => setBreathingOpen(false)}
                 style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 999,
+                  width: tokens.interaction.minTouchTarget,
+                  height: tokens.interaction.minTouchTarget,
+                  borderRadius: tokens.radii.full,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: 'rgba(42,35,24,0.08)',
+                  backgroundColor: tokens.semantic.surface.interactive,
                 }}
               >
-                <X size={18} color="#2A2318" />
+                <X size={18} color={tokens.semantic.text.primary} />
               </Pressable>
             </Box>
           </Box>
-          <Box style={{ padding: 16, minHeight: 400, justifyContent: 'center' }}>
+          <Box
+            style={{
+              padding: shell.modal.contentPadding,
+              minHeight: shell.modal.minHeight,
+              justifyContent: 'center',
+            }}
+          >
             <BreathGuide onComplete={() => setBreathingOpen(false)} />
           </Box>
         </ModalContent>

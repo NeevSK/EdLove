@@ -1,5 +1,5 @@
 import type React from 'react';
-import { createContext, useContext, useMemo } from 'react';
+import { createContext, useContext, useEffect, useMemo } from 'react';
 import { Platform, type ViewProps } from 'react-native';
 import { ZoomIn, ZoomOut } from 'react-native-reanimated';
 import { Box } from '@repo/ui/components/ui/box';
@@ -32,23 +32,38 @@ export const Modal = ({
   isOpen,
   onClose,
   children,
+  accessibilityLabel,
+  closeOnBackdropPress = true,
+  trapFocus = true,
   ...props
 }: {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  accessibilityLabel?: string;
+  closeOnBackdropPress?: boolean;
+  trapFocus?: boolean;
 } & ViewProps) => {
   const contextValue = useMemo(() => ({ onClose }), [onClose]);
   const enteringAnimation =
     Platform.OS === 'web' ? undefined : ZoomIn.duration(300).springify().damping(20);
   const exitingAnimation = Platform.OS === 'web' ? undefined : ZoomOut.duration(200);
 
+  useEffect(() => {
+    if (!isOpen || Platform.OS !== 'web') return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
     <ModalContext.Provider value={contextValue}>
       <Portal>
-        <Overlay isOpen={isOpen} onPress={onClose} />
+        <Overlay isOpen={isOpen} onPress={closeOnBackdropPress ? onClose : undefined} />
         <View
           className="absolute inset-0 items-center justify-center p-4"
           pointerEvents="box-none"
@@ -59,8 +74,9 @@ export const Modal = ({
             entering={enteringAnimation}
             exiting={exitingAnimation}
             className="w-full max-w-[500px]"
-            accessibilityRole="alert"
-            accessibilityViewIsModal={true}
+            accessibilityRole="dialog"
+            accessibilityLabel={accessibilityLabel}
+            accessibilityViewIsModal={trapFocus}
             accessible={true}
           >
             <Box className="bg-phase-elevated rounded-3xl overflow-hidden shadow-2xl border border-phase-interactive/10">

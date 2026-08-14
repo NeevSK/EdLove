@@ -1,10 +1,11 @@
 import { ChevronLeft, ChevronRight, ExternalLink, RotateCcw, Share2, X } from '@repo/ui/icons';
+import { Pressable, Text, useTheme, View } from '@repo/ui/primitives';
 import * as WebBrowser from 'expo-web-browser';
 import type React from 'react';
 import { useCallback, useReducer, useRef } from 'react';
 import { Linking, Share, StyleSheet } from 'react-native';
 import { WebView, type WebViewNavigation } from 'react-native-webview';
-import { ActivityIndicator, Pressable, Text, useTheme, View } from '@repo/ui/primitives';
+import { BrandPulse } from './BrandPulse';
 
 export interface InternalBrowserProps {
   url: string;
@@ -239,7 +240,7 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
       {/* Initial Loading Overlay */}
       {isLoading && progress === 0 && (
         <View style={[styles.loadingOverlay, { backgroundColor: scene.canvas.bg }]}>
-          <ActivityIndicator color={scene.primary.main} />
+          <BrandPulse size={28} tintColor={scene.primary.main} />
         </View>
       )}
     </View>

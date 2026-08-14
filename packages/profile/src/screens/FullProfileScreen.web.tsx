@@ -1,17 +1,5 @@
 import { usePermissions, useStore } from '@repo/core/logic';
 import { StaffPresencePulse } from '@repo/people';
-import GlobalHeader from '@repo/ui/components/GlobalHeader';
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { useThemedColors } from '@repo/ui/hooks';
-import { AtSign, SquarePen, User as UserIcon } from '@repo/ui/icons';
-import { Box, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
-import { hapticSuccess } from '@repo/ui/utils/haptics';
-import { safeBack } from '@repo/ui/utils/navigation';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { ScrollView } from 'react-native';
 import { AddSocialLinkModal } from '@repo/profile/components/AddSocialLinkModal';
 import { AvatarDisplay } from '@repo/profile/components/AvatarDisplay';
 import { ContactLinktree } from '@repo/profile/components/ContactLinktree';
@@ -21,16 +9,33 @@ import { useProfile } from '@repo/profile/hooks/useProfile';
 import { useProfileCompletion } from '@repo/profile/hooks/useProfileCompletion';
 import { useSocialLinks } from '@repo/profile/hooks/useSocialLinks';
 import type { UserProfile } from '@repo/profile/types';
+import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { useThemedColors } from '@repo/ui/hooks';
+import { AtSign, SquarePen, User as UserIcon } from '@repo/ui/icons';
+import { Box, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
+import { hapticSuccess } from '@repo/ui/utils/haptics';
+import { safeBack } from '@repo/ui/utils/navigation';
+import { useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ScrollView } from 'react-native';
 
 export default function FullProfileScreenWeb() {
   const params = useLocalSearchParams<{ id?: string; userId?: string; full_name?: string }>();
   const profileId = Array.isArray(params.id) ? params.id[0] : params.id || params.userId || '';
-  const initialProfile = {
-    id: profileId,
-    full_name: Array.isArray(params.full_name)
-      ? params.full_name[0]
-      : params.full_name || 'Profile',
-  } as UserProfile;
+  const initialProfile = profileId
+    ? ({
+        id: profileId,
+        full_name: Array.isArray(params.full_name)
+          ? params.full_name[0]
+          : params.full_name || 'Profile',
+      } as UserProfile)
+    : null;
 
   const { t } = useTranslation();
   const _colors = useThemedColors();
@@ -39,6 +44,7 @@ export default function FullProfileScreenWeb() {
 
   const {
     profile: liveProfile,
+    loading,
     error,
     updateField,
     refresh,
@@ -56,7 +62,38 @@ export default function FullProfileScreenWeb() {
   const currentUserId = currentUser?.id;
   const currentUserName = currentUser?.display_name || currentUser?.email || '';
 
-  if (!profile) return null;
+  if (loading && !liveProfile) {
+    return (
+      <ScreenWrapper>
+        <Box className="min-h-screen items-center justify-center">
+          <BrandPulse accessibilityLabel={t('profile.loading', 'Loading profile')} />
+        </Box>
+      </ScreenWrapper>
+    );
+  }
+
+  if (error && !profile) {
+    return (
+      <ScreenWrapper>
+        <BrandedErrorState title={t('profile.errorTitle', 'Profile unavailable')} message={error}>
+          <SanctuaryButton onPress={() => void refresh?.()}>
+            <Text className="text-white font-bold">{t('common.retry', 'Try again')}</Text>
+          </SanctuaryButton>
+        </BrandedErrorState>
+      </ScreenWrapper>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <ScreenWrapper>
+        <BrandedEmptyState
+          title={t('profile.emptyTitle', 'Profile not available')}
+          message={t('profile.emptyMessage', 'There is no profile information to show yet.')}
+        />
+      </ScreenWrapper>
+    );
+  }
 
   const isOtherProfile = currentUserId !== undefined && currentUserId !== profile.id;
   const profileCapacity =

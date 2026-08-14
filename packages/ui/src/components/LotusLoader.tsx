@@ -1,7 +1,7 @@
 import { Flower } from '@repo/ui/icons';
+import { BrandPulse } from './BrandPulse';
 import { EaseView } from 'react-native-ease';
 import { Center, Text, VStack } from '@repo/ui/gluestack';
-import { ActivityIndicator } from '@repo/ui/primitives';
 
 interface LotusLoaderProps {
   size?: 'sm' | 'md' | 'lg';
@@ -35,7 +35,7 @@ export default function LotusLoader({
           <Flower size={SIZES[size]} className="text-phase-accent" strokeWidth={1.5} />
         </EaseView>
       </EaseView>
-      <ActivityIndicator size="large" className="text-phase-text-secondary" />
+      <BrandPulse size={SIZES[size]} tintColor="#6B647F" />
       {text && <Text className="text-phase-text-secondary text-sm tracking-[1px]">{text}</Text>}
     </VStack>
   );

@@ -4,8 +4,9 @@ import { View } from 'react-native';
 import { Pressable } from '@repo/ui/primitives';
 import { Box } from '@repo/ui/components/ui/box';
 import { Text } from '@repo/ui/components/ui/text';
+import { tokens } from '@repo/ui/tokens';
 
-export type ToastType = 'success' | 'error' | 'info';
+export type ToastType = 'success' | 'error' | 'info' | 'warning';
 
 interface SanctuaryToastProps {
   message: string;
@@ -25,12 +26,14 @@ export default function SanctuaryToast({
   const getIconData = () => {
     switch (type) {
       case 'success':
-        return { icon: CircleCheck, color: '#10B981' };
+        return { icon: CircleCheck, color: tokens.colors.success };
       case 'error':
-        return { icon: CircleAlert, color: '#EF4444' };
+        return { icon: CircleAlert, color: tokens.colors.error };
       case 'info':
       default:
-        return { icon: Info, color: '#F6BF8C' };
+        return { icon: Info, color: tokens.colors.info };
+      case 'warning':
+        return { icon: CircleAlert, color: tokens.colors.warning };
     }
   };
 
@@ -66,23 +69,29 @@ export default function SanctuaryToast({
     >
       <Box
         style={{
-          backgroundColor: '#1C1917',
+          backgroundColor: tokens.colors.toastSurface,
           borderWidth: 1,
-          borderColor: 'rgba(246, 191, 140, 0.2)',
+          borderColor: tokens.colors.toastBorder,
           borderRadius: 16,
           padding: 16,
           width: '100%',
           maxWidth: 420,
-          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.35)',
+          boxShadow: tokens.colors.toastShadow,
         }}
       >
         <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <Icon color={iconColor} size={24} />
-          <Text style={{ color: '#FFFFFF', flex: 1, fontSize: 14, fontWeight: '500' }}>
+          <Text style={{ color: tokens.colors.toastText, flex: 1, fontSize: 14, fontWeight: '500' }}>
             {message}
           </Text>
-          <Pressable accessibilityRole="button" onPress={hide} className="p-1 active:opacity-60">
-            <X size={18} color="#9CA3AF" />
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Dismiss notification"
+            accessibilityHint="Closes this notification"
+            onPress={hide}
+            className="p-1 active:opacity-60"
+          >
+            <X size={18} color={tokens.colors.toastTextMuted} />
           </Pressable>
         </Box>
       </Box>

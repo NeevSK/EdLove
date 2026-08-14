@@ -9,8 +9,8 @@
  */
 
 import type { TemporalPhase } from '@repo/ui/context/types';
-import { tokens } from '../tokens';
 import { compositeColorOverBackground, getTextOnBackground } from '@repo/ui/utils/colorUtils';
+import { tokens } from '../tokens';
 
 // ============================================================================
 // COLORS - Sanctuary Palette
@@ -122,7 +122,7 @@ export const colors = {
   borderDark: '#3D3528', // shroud
 
   error: '#FF6347', // emberRed
-  errorText: '#FF6347',
+  errorText: '#B42318', // WCAG AA error copy on the light error surface
   errorBackground: '#FFF0EE',
 
   success: '#8BBF7A', // sageGreen

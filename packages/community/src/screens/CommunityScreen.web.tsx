@@ -1,15 +1,3 @@
-import { communityAPI } from '@repo/core/api/client';
-import { useManifestoHooks, useNotificationHooks } from '@repo/core/api/hooks';
-import { useDomainRollout, usePendingGateAction } from '@repo/core/hooks';
-import { setPendingGateAction, usePermissions, useStore } from '@repo/core/logic';
-import { useTemporalStore } from '@repo/core/store';
-import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
-import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
-import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
-import { Bell, Compass, Info, Plus, Shield, Users } from '@repo/ui/icons';
-import { Box, Heading, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
-import { router } from 'expo-router';
-import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { CommentSheet } from '@repo/community/components/CommentSheet';
 import CommunityHearth from '@repo/community/components/CommunityHearth';
 import CreateGroupModal from '@repo/community/components/CreateGroupModal';
@@ -17,6 +5,7 @@ import CreatePostModal from '@repo/community/components/CreatePostModal';
 import { PostCard } from '@repo/community/components/PostCard';
 import { useCommunity } from '@repo/community/hooks/useCommunity';
 import { useCommunityGroups } from '@repo/community/hooks/useCommunityGroups';
+import { directMessageRoute } from '@repo/community/navigation/communityRoutes';
 import AnnouncementsScreen from '@repo/community/screens/AnnouncementsScreen';
 import {
   type CommunityWorkspaceMode,
@@ -27,7 +16,19 @@ import {
   mapCommunitySurfaceSlots,
 } from '@repo/community/screens/communityWorkspace.shared';
 import type { CommunityPost, DirectConversation } from '@repo/community/types';
-import { directMessageRoute } from '@repo/community/navigation/communityRoutes';
+import { communityAPI } from '@repo/core/api/client';
+import { useManifestoHooks, useNotificationHooks } from '@repo/core/api/hooks';
+import { useDomainRollout, usePendingGateAction } from '@repo/core/hooks';
+import { setPendingGateAction, usePermissions, useStore } from '@repo/core/logic';
+import { useTemporalStore } from '@repo/core/store';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { SanctuaryFlashList } from '@repo/ui/components/SanctuaryFlashList';
+import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
+import { Bell, Compass, Info, Plus, Shield, Users } from '@repo/ui/icons';
+import { Box, Heading, Icon, Text, VStack } from '@repo/ui/primitives';
+import { router } from 'expo-router';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
 
 type CommunityState = {
   activeMode: CommunityWorkspaceMode;
@@ -40,6 +41,7 @@ type CommunityState = {
   commentPostType: string | undefined;
   conversations: DirectConversation[];
   loadingMessages: boolean;
+  messagesError: string | null;
   announcementCount: number;
 };
 
@@ -58,6 +60,7 @@ type CommunityAction =
   | { type: 'CLOSE_COMMENTS' }
   | { type: 'SET_CONVERSATIONS'; conversations: DirectConversation[] }
   | { type: 'SET_LOADING_MESSAGES'; loading: boolean }
+  | { type: 'SET_MESSAGES_ERROR'; error: string | null }
   | { type: 'SET_ANNOUNCEMENT_COUNT'; count: number };
 
 function communityReducer(state: CommunityState, action: CommunityAction): CommunityState {
@@ -90,6 +93,8 @@ function communityReducer(state: CommunityState, action: CommunityAction): Commu
       return { ...state, conversations: action.conversations };
     case 'SET_LOADING_MESSAGES':
       return { ...state, loadingMessages: action.loading };
+    case 'SET_MESSAGES_ERROR':
+      return { ...state, messagesError: action.error };
     case 'SET_ANNOUNCEMENT_COUNT':
       return { ...state, announcementCount: action.count };
     default:
@@ -108,6 +113,7 @@ const initialState: CommunityState = {
   commentPostType: undefined,
   conversations: [],
   loadingMessages: false,
+  messagesError: null,
   announcementCount: 0,
 };
 
@@ -143,6 +149,7 @@ export default function CommunityScreenWeb() {
     commentPostType,
     conversations,
     loadingMessages,
+    messagesError,
   } = state;
 
   const {
@@ -154,9 +161,7 @@ export default function CommunityScreenWeb() {
     fetchNextPosts,
     hasNextPosts,
     isFetchingNextPosts,
-  } = useCommunity(
-    selectedFilter !== 'all' ? selectedFilter : undefined,
-  );
+  } = useCommunity(selectedFilter !== 'all' ? selectedFilter : undefined);
 
   const { sanctuaryGroups, galaxyGroups } = useCommunityGroups({
     schoolId,
@@ -215,6 +220,7 @@ export default function CommunityScreenWeb() {
     if (!isCommunityEnabled || activeMode !== 'messages' || !canReadMessages) return;
     let cancelled = false;
     dispatch({ type: 'SET_LOADING_MESSAGES', loading: true });
+    dispatch({ type: 'SET_MESSAGES_ERROR', error: null });
     communityAPI
       .getDirectConversations()
       .then((data: any) => {
@@ -226,6 +232,14 @@ export default function CommunityScreenWeb() {
       })
       .catch((error: any) => {
         console.error('[CommunityScreen.web] Failed to load direct conversations', error);
+        if (!cancelled) {
+          dispatch({
+            type: 'SET_MESSAGES_ERROR',
+            error: isOffline
+              ? 'You are offline. Reconnect and try again.'
+              : 'Messages are unavailable right now. Please try again.',
+          });
+        }
       })
       .finally(() => {
         if (!cancelled) dispatch({ type: 'SET_LOADING_MESSAGES', loading: false });
@@ -233,7 +247,7 @@ export default function CommunityScreenWeb() {
     return () => {
       cancelled = true;
     };
-  }, [activeMode, canReadMessages, isCommunityEnabled]);
+  }, [activeMode, canReadMessages, isCommunityEnabled, isOffline]);
 
   useEffect(() => {
     if (!isCommunityEnabled || !canReadAnnouncements || !schoolId) return;
@@ -330,15 +344,16 @@ export default function CommunityScreenWeb() {
 
     if (isLoadingPosts) {
       return (
-        <div className="community-empty-card" style={{ textAlign: 'center', padding: '48px 24px' }}>
-          <Spinner />
+        <div className="community-state-card" role="status" aria-live="polite">
+          <BrandPulse size={32} accessibilityLabel="Loading community notes" />
+          <p>Gathering the latest notes…</p>
         </div>
       );
     }
 
     if (postsError) {
       return (
-        <div className="community-empty-card">
+        <div className="community-state-card" role="alert">
           <h3>The feed could not settle</h3>
           <p>{isOffline ? 'You are offline. Reconnect and try again.' : postsError}</p>
           <button type="button" className="secondary-button" onClick={() => void fetchPosts()}>
@@ -348,8 +363,32 @@ export default function CommunityScreenWeb() {
       );
     }
 
+    if (filteredPosts.length === 0) {
+      return (
+        <div className="community-state-card">
+          <h3>
+            {searchQuery ? 'No notes match that search' : 'The feed is ready for its first note'}
+          </h3>
+          <p>
+            {searchQuery
+              ? 'Try a different word or clear the search to return to the full feed.'
+              : 'Share a thoughtful update to begin the conversation.'}
+          </p>
+          {searchQuery ? (
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={() => dispatch({ type: 'SET_SEARCH', query: '' })}
+            >
+              Clear search
+            </button>
+          ) : null}
+        </div>
+      );
+    }
+
     return (
-      <div style={{ flex: 1, minHeight: '500px' }}>
+      <div className="community-feed-list" aria-label="Community feed">
         <SanctuaryFlashList
           data={filteredPosts as CommunityPost[]}
           renderItem={renderPostItem}
@@ -360,7 +399,9 @@ export default function CommunityScreenWeb() {
           }}
           onEndReachedThreshold={0.5}
           ListFooterComponent={
-            isFetchingNextPosts ? <div className="community-pagination-status">Loading older notes…</div> : null
+            isFetchingNextPosts ? (
+              <div className="community-pagination-status">Loading older notes…</div>
+            ) : null
           }
         />
       </div>
@@ -382,6 +423,15 @@ export default function CommunityScreenWeb() {
             group.description?.toLowerCase().includes(searchQuery.toLowerCase()),
         )
       : [...sanctuaryGroups, ...galaxyGroups];
+
+    if (visibleGroups.length === 0) {
+      return (
+        <div className="community-state-card">
+          <h3>No circles found</h3>
+          <p>Try a different search, or create a circle for a shared interest.</p>
+        </div>
+      );
+    }
 
     return (
       <div className="community-circle-grid">
@@ -414,15 +464,32 @@ export default function CommunityScreenWeb() {
 
     if (loadingMessages) {
       return (
-        <div className="community-empty-card" style={{ textAlign: 'center', padding: '48px 24px' }}>
-          <Spinner />
+        <div className="community-state-card" role="status" aria-live="polite">
+          <BrandPulse size={32} accessibilityLabel="Loading conversations" />
+          <p>Loading your conversations…</p>
+        </div>
+      );
+    }
+
+    if (messagesError) {
+      return (
+        <div className="community-state-card" role="alert">
+          <h3>Messages could not settle</h3>
+          <p>{messagesError}</p>
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={() => dispatch({ type: 'SET_MODE', mode: 'messages' })}
+          >
+            Try again
+          </button>
         </div>
       );
     }
 
     if (conversations.length === 0) {
       return (
-        <div className="community-empty-card">
+        <div className="community-state-card">
           <h3>No direct conversations yet</h3>
           <p>Messages stay close by, but they only appear once you begin a 1:1 thread.</p>
         </div>
@@ -511,7 +578,7 @@ export default function CommunityScreenWeb() {
           note="Same capabilities, wiser order: pulse first, conversation second, circles and messages close by, trust visible but quiet."
           timeText="Community workspace"
           actions={
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <div className="community-header-actions">
               <button
                 type="button"
                 className="premium-button"
@@ -550,29 +617,31 @@ export default function CommunityScreenWeb() {
         />
 
         {isOffline ? (
-          <div className="community-offline-banner" role="status">
-            Offline — showing cached community data. New messages remain read-only until you reconnect.
+          <div className="community-offline-banner" role="status" aria-live="polite">
+            Offline — showing cached community data. New messages remain read-only until you
+            reconnect.
           </div>
         ) : null}
 
         <div className="community-layout">
           <aside className="community-left-rail">
-            <section className="community-rail-card">
+            <section className="community-rail-card community-mode-card">
               <span className="community-section-eyebrow">
                 {slots.modes ? 'Modes' : 'Community'}
               </span>
-              <div className="community-mode-stack">
+              <nav className="community-mode-stack" aria-label="Community sections">
                 {modeOptions.map((mode) => (
                   <button
                     key={mode.key}
                     type="button"
                     className={`community-mode-button ${activeMode === mode.key ? 'active' : ''}`}
+                    aria-current={activeMode === mode.key ? 'page' : undefined}
                     onClick={() => dispatch({ type: 'SET_MODE', mode: mode.key })}
                   >
                     {mode.label}
                   </button>
                 ))}
-              </div>
+              </nav>
             </section>
 
             <section className="community-rail-card">
@@ -635,15 +704,30 @@ export default function CommunityScreenWeb() {
             </section>
           </aside>
 
-          <main className="community-center-column">
-            <section className="community-hearth-card" aria-label="Community hearth">
+          <main className="community-center-column" id="community-main" tabIndex={-1}>
+            <section className="community-hearth-card" aria-label="Community introduction">
               <CommunityHearth manifestos={manifestos as any} userId={userId} />
             </section>
 
-            <section className="community-search-row">
+            <nav className="community-mode-inline" aria-label="Community sections">
+              {modeOptions.map((mode) => (
+                <button
+                  key={mode.key}
+                  type="button"
+                  className={`community-mode-button ${activeMode === mode.key ? 'active' : ''}`}
+                  aria-current={activeMode === mode.key ? 'page' : undefined}
+                  onClick={() => dispatch({ type: 'SET_MODE', mode: mode.key })}
+                >
+                  {mode.label}
+                </button>
+              ))}
+            </nav>
+
+            <section className="community-search-row" aria-label="Community search">
               <div className="community-search-shell">
                 <Compass size={16} />
                 <input
+                  type="search"
                   value={searchQuery}
                   onChange={(event) => dispatch({ type: 'SET_SEARCH', query: event.target.value })}
                   placeholder="Search posts, circles, members, announcements..."
@@ -652,7 +736,12 @@ export default function CommunityScreenWeb() {
               </div>
             </section>
 
-            <section className="community-main-stream">{renderActiveSurface()}</section>
+            <section className="community-main-stream" aria-label={`${activeMode} content`}>
+              <h2 className="community-surface-title">
+                {modeOptions.find((mode) => mode.key === activeMode)?.label ?? 'Feed'}
+              </h2>
+              {renderActiveSurface()}
+            </section>
           </main>
 
           <aside className="community-right-rail">
@@ -704,6 +793,18 @@ export default function CommunityScreenWeb() {
                     background: var(--phase-canvas);
                     min-height: 100vh;
                     padding-bottom: 80px;
+                    --community-surface: var(--phase-surface, #fffdf7);
+                    --community-border: var(--border, #e7e1d8);
+                    --community-ink: var(--ink, #2f302d);
+                    --community-muted: var(--ink-light, #73756f);
+                    --community-focus: var(--phase-interactive, #66856f);
+                }
+
+                .community-header-actions {
+                    display: flex;
+                    gap: 10px;
+                    align-items: center;
+                    flex-wrap: wrap;
                 }
 
                 .community-layout {
@@ -714,8 +815,8 @@ export default function CommunityScreenWeb() {
                 }
 
                 .community-rail-card {
-                    background: white;
-                    border: 1px solid var(--border);
+                    background: var(--community-surface);
+                    border: 1px solid var(--community-border);
                     border-radius: 24px;
                     padding: 24px;
                     margin-bottom: 24px;
@@ -750,7 +851,7 @@ export default function CommunityScreenWeb() {
                     padding: 12px 16px;
                     border-radius: 12px;
                     font-weight: 600;
-                    color: var(--ink);
+                    color: var(--community-ink);
                     transition: all 0.2s;
                     background: transparent;
                     border: none;
@@ -759,6 +860,18 @@ export default function CommunityScreenWeb() {
                 .community-mode-button.active {
                     background: var(--phase-interactive-light);
                     color: var(--phase-interactive);
+                }
+
+                .community-mode-button:focus-visible,
+                .community-chip:focus-visible,
+                .community-quick-path:focus-visible,
+                .community-circle-card:focus-visible,
+                .community-message-row:focus-visible,
+                .community-inline-chip:focus-visible,
+                .community-header-actions button:focus-visible,
+                .community-search-shell:focus-within {
+                    outline: 3px solid color-mix(in srgb, var(--community-focus) 45%, transparent);
+                    outline-offset: 2px;
                 }
 
                 .community-chip-stack {
@@ -784,8 +897,8 @@ export default function CommunityScreenWeb() {
                 }
 
                 .community-hearth-card {
-                    background: white;
-                    border: 1px solid var(--border);
+                    background: var(--community-surface);
+                    border: 1px solid var(--community-border);
                     border-radius: 32px;
                     padding: 40px;
                     margin-bottom: 32px;
@@ -825,8 +938,8 @@ export default function CommunityScreenWeb() {
                 }
 
                 .community-search-shell {
-                    background: white;
-                    border: 1px solid var(--border);
+                    background: var(--community-surface);
+                    border: 1px solid var(--community-border);
                     border-radius: 20px;
                     padding: 0 20px;
                     display: flex;
@@ -847,6 +960,17 @@ export default function CommunityScreenWeb() {
                     display: none;
                 }
 
+                .community-surface-title {
+                    margin: 0;
+                    color: var(--community-ink);
+                    font-size: 20px;
+                    line-height: 1.2;
+                }
+
+                .community-feed-list {
+                    min-height: 500px;
+                }
+
                 .community-offline-banner {
                     margin-top: 16px;
                     padding: 10px 14px;
@@ -860,7 +984,7 @@ export default function CommunityScreenWeb() {
                 .community-pagination-status {
                     padding: 16px;
                     text-align: center;
-                    color: var(--ink-light);
+                    color: var(--community-muted);
                     font-size: 13px;
                 }
 
@@ -881,11 +1005,35 @@ export default function CommunityScreenWeb() {
                 }
 
                 .community-empty-card {
-                    background: white;
-                    border: 1px solid var(--border);
+                    background: var(--community-surface);
+                    border: 1px solid var(--community-border);
                     border-radius: 32px;
                     padding: 60px 40px;
                     text-align: center;
+                }
+
+                .community-state-card {
+                    min-height: 220px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 12px;
+                    padding: 40px 24px;
+                    background: var(--community-surface);
+                    border: 1px solid var(--community-border);
+                    border-radius: 24px;
+                    text-align: center;
+                }
+
+                .community-state-card h3,
+                .community-state-card p {
+                    margin: 0;
+                }
+
+                .community-state-card p,
+                .community-rail-card p {
+                    color: var(--community-muted);
                 }
 
                 .community-circle-grid {
@@ -973,11 +1121,39 @@ export default function CommunityScreenWeb() {
                     }
                 }
 
-                @media (max-width: 900px) {
+                @media (max-width: 919px) {
                     .community-layout {
                         grid-template-columns: 1fr;
                     }
                     .community-left-rail {
+                        display: none;
+                    }
+                    .community-mode-inline {
+                        display: flex;
+                        gap: 8px;
+                        overflow-x: auto;
+                        padding: 4px 2px 8px;
+                        scrollbar-width: thin;
+                    }
+                    .community-mode-inline .community-mode-button {
+                        flex: 0 0 auto;
+                        white-space: nowrap;
+                    }
+                    .community-hearth-card {
+                        padding: 24px;
+                        border-radius: 24px;
+                    }
+                    .community-search-row {
+                        margin-bottom: 20px;
+                    }
+                }
+
+                @media (max-width: 640px) {
+                    .community-header-actions .secondary-button,
+                    .community-header-actions .premium-button {
+                        min-height: 40px;
+                    }
+                    .community-header-actions .secondary-button:not([aria-label]) {
                         display: none;
                     }
                 }

@@ -1,4 +1,8 @@
+import GradebookTable from '@repo/classroom/components/grading/GradebookTable';
+import GradingSettings from '@repo/classroom/components/grading/GradingSettings';
+import { useGradebook } from '@repo/classroom/hooks/useGradebook';
 import type { ClassroomGradingSettings } from '@repo/core/types';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import {
   Box,
   Button,
@@ -6,17 +10,12 @@ import {
   HStack,
   Pressable,
   ScrollView,
-  Spinner,
   Text,
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
-
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useGradebook } from '@repo/classroom/hooks/useGradebook';
-import GradebookTable from '@repo/classroom/components/grading/GradebookTable';
-import GradingSettings from '@repo/classroom/components/grading/GradingSettings';
 
 interface GradebookViewProps {
   classroomId: string;
@@ -136,7 +135,7 @@ export default function GradebookView({ classroomId }: GradebookViewProps) {
           <Box className="flex-1">
             {isLoading && (
               <Box className="py-12 items-center">
-                <Spinner className="text-sanctuarySaffron" />
+                <BrandPulse size={28} accessibilityLabel="Loading gradebook" />
                 <Text className="text-sanctuary-text-tertiary mt-4 animate-pulse">
                   Synchronizing Gradebook...
                 </Text>

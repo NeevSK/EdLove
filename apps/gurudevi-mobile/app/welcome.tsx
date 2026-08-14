@@ -1,4 +1,5 @@
-import { Center, Spinner } from '@repo/ui/primitives';
+import { BrandPulse } from '@repo/ui';
+import { Center } from '@repo/ui/primitives';
 import WelcomeScreen from '@repo/ui/screens/WelcomeScreen';
 import { useRouter } from 'expo-router';
 import { Suspense, useCallback } from 'react';
@@ -6,7 +7,7 @@ import { Suspense, useCallback } from 'react';
 function Fallback() {
   return (
     <Center className="flex-1 bg-obsidian">
-      <Spinner />
+      <BrandPulse accessibilityLabel="Loading welcome" />
     </Center>
   );
 }

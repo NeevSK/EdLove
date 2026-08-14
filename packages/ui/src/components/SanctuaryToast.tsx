@@ -2,7 +2,7 @@
 'use no memo';
 
 import { CircleAlert, CircleCheck, Info, X } from '@repo/ui/icons';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import { Platform } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -14,8 +14,11 @@ import { runOnJS } from 'react-native-worklets';
 import { Pressable } from '@repo/ui/primitives';
 import { Box } from '@repo/ui/components/ui/box';
 import { Text } from '@repo/ui/components/ui/text';
+import { tokens } from '@repo/ui/tokens';
+import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
+import { useAccessibility } from '@repo/ui/hooks/useAccessibility';
 
-export type ToastType = 'success' | 'error' | 'info';
+export type ToastType = 'success' | 'error' | 'info' | 'warning';
 
 // Constants to avoid negative literals in worklets
 const HIDDEN_Y_OFFSET = 120;
@@ -38,30 +41,35 @@ export default function SanctuaryToast({
   'use no memo';
   const translateY = useSharedValue(-HIDDEN_Y_OFFSET);
   const opacity = useSharedValue(0);
+  const insets = useContext(SafeAreaInsetsContext) ?? { top: 0, bottom: 0, left: 0, right: 0 };
+  const { isReduceMotionEnabled } = useAccessibility();
 
   const getIconData = () => {
     switch (type) {
       case 'success':
-        return { icon: CircleCheck, color: '#10B981' }; // phase-reward
+        return { icon: CircleCheck, color: tokens.colors.success };
       case 'error':
-        return { icon: CircleAlert, color: '#EF4444' }; // phase-danger
+        return { icon: CircleAlert, color: tokens.colors.error };
       case 'info':
-        return { icon: Info, color: '#F6BF8C' }; // phase-accent
+        return { icon: Info, color: tokens.colors.info };
+      case 'warning':
+        return { icon: CircleAlert, color: tokens.colors.warning };
       default:
-        return { icon: Info, color: '#F6BF8C' };
+        return { icon: Info, color: tokens.colors.info };
     }
   };
 
   const { icon: Icon, color: iconColor } = getIconData();
 
   const hide = useCallback(() => {
-    opacity.value = withTiming(0);
-    translateY.value = withTiming(-HIDDEN_Y_OFFSET, {}, (finished) => {
+    opacity.value = isReduceMotionEnabled ? 0 : withTiming(0);
+    translateY.value = isReduceMotionEnabled ? -HIDDEN_Y_OFFSET : withTiming(-HIDDEN_Y_OFFSET, {}, (finished) => {
       if (finished && visible) {
         runOnJS(onHide)();
       }
     });
-  }, [visible, onHide, opacity, translateY]);
+    if (isReduceMotionEnabled && visible) onHide();
+  }, [visible, onHide, opacity, translateY, isReduceMotionEnabled]);
 
   useEffect(() => {
     if (!visible) {
@@ -69,15 +77,15 @@ export default function SanctuaryToast({
       return;
     }
 
-    translateY.value = withSpring(0, { damping: 15, stiffness: 100 });
-    opacity.value = withTiming(1);
+    translateY.value = isReduceMotionEnabled ? 0 : withSpring(0, { damping: 15, stiffness: 100 });
+    opacity.value = isReduceMotionEnabled ? 1 : withTiming(1);
 
     const timer = setTimeout(() => {
       hide();
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [visible, hide, duration, opacity, translateY]);
+  }, [visible, hide, duration, opacity, translateY, isReduceMotionEnabled]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
@@ -92,7 +100,7 @@ export default function SanctuaryToast({
       style={[
         {
           position: 'absolute',
-          top: Platform.OS === 'web' ? 24 : 60,
+          top: Platform.OS === 'web' ? 24 : Math.max(insets.top + 12, 24),
           left: 20,
           right: 20,
           alignItems: 'center',
@@ -103,14 +111,14 @@ export default function SanctuaryToast({
     >
       <Box
         style={{
-          backgroundColor: '#1C1917', // Solid warm black (Stone 900)
+          backgroundColor: tokens.colors.toastSurface,
           borderWidth: 1,
-          borderColor: 'rgba(246, 191, 140, 0.2)', // Accent gold tint
+          borderColor: tokens.colors.toastBorder,
           borderRadius: 16,
           padding: 16,
           width: '100%',
           maxWidth: 420,
-          shadowColor: '#000',
+          shadowColor: tokens.colors.shadowViolet,
           shadowOffset: { width: 0, height: 10 },
           shadowOpacity: 0.35,
           shadowRadius: 20,
@@ -119,11 +127,17 @@ export default function SanctuaryToast({
       >
         <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <Icon color={iconColor} size={24} />
-          <Text style={{ color: '#FFFFFF', flex: 1, fontSize: 14, fontWeight: '500' }}>
+          <Text style={{ color: tokens.colors.toastText, flex: 1, fontSize: 14, fontWeight: '500' }}>
             {message}
           </Text>
-          <Pressable accessibilityRole="button" onPress={hide} className="p-1 active:opacity-60">
-            <X size={18} color="#9CA3AF" />
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Dismiss notification"
+            accessibilityHint="Closes this notification"
+            onPress={hide}
+            className="p-1 active:opacity-60"
+          >
+            <X size={18} color={tokens.colors.toastTextMuted} />
           </Pressable>
         </Box>
       </Box>

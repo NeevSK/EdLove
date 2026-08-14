@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
+import { BrandPulse } from './BrandPulse';
 import { Actionsheet } from '@repo/ui/gluestack';
 import { ChevronDown, EyeOff, Lock, Send, Shield, ThumbsUp, Trash2 } from '@repo/ui/icons';
 import {
@@ -11,7 +12,6 @@ import {
   InputField,
   KeyboardAvoidingView,
   Pressable,
-  Spinner,
   Text,
   VStack,
 } from '@repo/ui/primitives';
@@ -238,7 +238,7 @@ export function ConversationSheet({
             {/* Content */}
             {isLoading ? (
               <Box className="flex-1 items-center justify-center">
-                <Spinner />
+                <BrandPulse size={28} tintColor="#D4843A" />
               </Box>
             ) : comments.length === 0 ? (
               <VStack className="flex-1 items-center justify-center py-12 px-8 gap-3">
@@ -309,7 +309,7 @@ export function ConversationSheet({
                 className={`w-11 h-11 rounded-2xl items-center justify-center shrink-0 ${!draft.trim() ? 'bg-ink/5' : 'bg-phase-interactive'}`}
               >
                 {isPosting ? (
-                  <Spinner />
+                  <BrandPulse size={18} tintColor="#FFFFFF" />
                 ) : (
                   <Icon
                     as={Send}

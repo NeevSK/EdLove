@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EaseView } from 'react-native-ease';
+import { BrandPulse } from '../BrandPulse';
 import { Users, WifiOff } from '@repo/ui/icons';
-import { Box, Heading, HStack, Icon, Spinner, Text, View, VStack } from '@repo/ui/primitives';
+import { Box, Heading, HStack, Icon, Text, View, VStack } from '@repo/ui/primitives';
 
 // These props will be consumed by the UI from its own internal hook or props
 export interface CommunityPresenceProps {
@@ -67,7 +68,7 @@ export default function CommunityPresence({
   if (isLoading) {
     return (
       <HStack className={`items-center opacity-60 gap-3 ${hidePadding || compact ? 'p-0' : 'p-4'}`}>
-        <Spinner />
+        <BrandPulse size={20} tintColor="#D4843A" />
         <Text className="text-ink/60 text-sm">Locating Sanctuary Presence...</Text>
       </HStack>
     );

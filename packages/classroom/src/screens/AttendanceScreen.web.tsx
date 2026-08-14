@@ -1,14 +1,16 @@
 import { api, growthSignalsAPI } from '@repo/core/api/client';
 import { type StudentAttendance, useStore } from '@repo/core/logic';
-import { generateIdempotencyKey } from '@repo/core/utils';
 import type { AttendanceRecord } from '@repo/core/types';
+import { generateIdempotencyKey } from '@repo/core/utils';
 
 import { Check, ChevronLeft, Clock, Save, X } from '@repo/ui/icons';
 import { Icon } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type Status = 'present' | 'absent' | 'late';
 
@@ -86,26 +88,27 @@ const STATUS_CONFIG: Record<
 > = {
   present: {
     label: 'Present',
-    color: '#16a34a',
-    bg: 'rgba(34,197,94,0.10)',
+    color: tokens.semantic.status.success,
+    bg: 'rgba(91,140,79,0.12)',
     Icon: Check,
   },
   late: {
     label: 'Late',
-    color: '#d97706',
-    bg: 'rgba(245,158,11,0.10)',
+    color: tokens.semantic.status.warning,
+    bg: 'rgba(212,160,58,0.14)',
     Icon: Clock,
   },
   absent: {
     label: 'Absent',
-    color: '#dc2626',
-    bg: 'rgba(239,68,68,0.10)',
+    color: tokens.semantic.status.error,
+    bg: 'rgba(198,79,62,0.12)',
     Icon: X,
   },
 };
 
 export default function AttendanceScreenWeb() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { classroomId = '', classroomName = 'Classroom' } = useLocalSearchParams<{
     classroomId?: string;
     classroomName?: string;
@@ -227,10 +230,15 @@ export default function AttendanceScreenWeb() {
   );
 
   const { students, loading, saving, saved, error } = state;
+  const statusLabels: Record<Status, string> = {
+    present: t('attendance.status.present') || STATUS_CONFIG.present.label,
+    late: t('attendance.status.late') || STATUS_CONFIG.late.label,
+    absent: t('attendance.status.absent') || STATUS_CONFIG.absent.label,
+  };
 
   return (
-    <div className="sanctuary-screen">
-      <div className="sanctuary-container" style={{ maxWidth: '700px' }}>
+    <div className="sanctuary-screen" style={{ background: tokens.semantic.surface.page }}>
+      <div className="sanctuary-container" style={{ maxWidth: '820px' }}>
         <div
           style={{
             display: 'flex',
@@ -240,6 +248,7 @@ export default function AttendanceScreenWeb() {
           }}
         >
           <button
+            aria-label={`Back to workspace from ${classroomName}`}
             onClick={() => safeBack('/workspace')}
             style={{
               display: 'flex',
@@ -259,7 +268,7 @@ export default function AttendanceScreenWeb() {
           </button>
           <div>
             <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '800' }}>
-              Attendance - {classroomName}
+              {t('attendance.sheet.title') || 'Attendance'} · {classroomName}
             </h2>
             <p
               style={{
@@ -275,18 +284,21 @@ export default function AttendanceScreenWeb() {
 
         {loading && (
           <div
+            role="status"
+            aria-live="polite"
             style={{
               textAlign: 'center',
               padding: '60px 0',
               color: 'var(--ink-ghost)',
             }}
           >
-            Loading class list...
+            {t('common.loading') || 'Loading class list…'}
           </div>
         )}
 
         {!loading && error && (
           <div
+            role="alert"
             style={{
               padding: '16px',
               background: 'rgba(239,68,68,0.08)',
@@ -334,7 +346,7 @@ export default function AttendanceScreenWeb() {
                         color: config.color,
                       }}
                     >
-                      {counts[status] ?? 0} {config.label}
+                      {counts[status] ?? 0} {statusLabels[status]}
                     </span>
                   </div>
                 );
@@ -366,6 +378,8 @@ export default function AttendanceScreenWeb() {
               {(Object.keys(STATUS_CONFIG) as Status[]).map((status) => (
                 <button
                   key={status}
+                  type="button"
+                  aria-label={`Mark all students ${statusLabels[status].toLowerCase()}`}
                   onClick={() => setAll(status)}
                   disabled={students.length === 0}
                   style={{
@@ -380,7 +394,7 @@ export default function AttendanceScreenWeb() {
                     fontFamily: 'var(--font-body)',
                   }}
                 >
-                  {STATUS_CONFIG[status].label}
+                  {statusLabels[status]}
                 </button>
               ))}
             </div>
@@ -390,84 +404,100 @@ export default function AttendanceScreenWeb() {
               style={{ padding: 0, overflow: 'hidden', marginBottom: '20px' }}
             >
               {students.length === 0 ? (
-                <div style={{ padding: '28px 20px', textAlign: 'center', color: 'var(--ink-ghost)' }}>
+                <div
+                  style={{ padding: '28px 20px', textAlign: 'center', color: 'var(--ink-ghost)' }}
+                >
                   No students are currently enrolled in this classroom.
                 </div>
-              ) : students.map((student, index) => {
-                const config = STATUS_CONFIG[student.status as Status];
-                return (
-                  <div
-                    key={student.id}
-                    onClick={() => toggle(student.id)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '16px',
-                      padding: '14px 20px',
-                      borderBottom:
-                        index < students.length - 1 ? '1px solid var(--border-light)' : 'none',
-                      cursor: 'pointer',
-                      background: 'transparent',
-                      transition: 'background 0.12s',
-                    }}
-                    onMouseOver={(event) => {
-                      event.currentTarget.style.background = 'var(--background-alt)';
-                    }}
-                    onMouseOut={(event) => {
-                      event.currentTarget.style.background = 'transparent';
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: '12px',
-                        fontWeight: '700',
-                        color: 'var(--ink-ghost)',
-                        minWidth: '32px',
-                      }}
-                    >
-                      {student.roll_number ?? index + 1}
-                    </span>
-                    <span
-                      style={{
-                        flex: 1,
-                        fontSize: '14px',
-                        fontWeight: '600',
-                        color: 'var(--ink)',
-                      }}
-                    >
-                      {student.full_name}
-                    </span>
+              ) : (
+                students.map((student, index) => {
+                  const config = STATUS_CONFIG[student.status as Status];
+                  return (
                     <div
+                      key={student.id}
+                      onClick={() => toggle(student.id)}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`${student.full_name}, currently ${statusLabels[student.status as Status]}. Activate to change status.`}
+                      aria-pressed={student.status === 'present'}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          toggle(student.id);
+                        }
+                      }}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '6px',
-                        padding: '5px 12px',
-                        borderRadius: '100px',
-                        background: config.bg,
-                        border: `1px solid ${config.color}44`,
-                        minWidth: '90px',
-                        justifyContent: 'center',
+                        gap: '16px',
+                        padding: '14px 20px',
+                        borderBottom:
+                          index < students.length - 1 ? '1px solid var(--border-light)' : 'none',
+                        cursor: 'pointer',
+                        background: 'transparent',
+                        transition: 'background 0.12s',
+                      }}
+                      onMouseOver={(event) => {
+                        event.currentTarget.style.background = 'var(--background-alt)';
+                      }}
+                      onMouseOut={(event) => {
+                        event.currentTarget.style.background = 'transparent';
                       }}
                     >
-                      <config.Icon size={13} color={config.color} />
                       <span
                         style={{
                           fontSize: '12px',
                           fontWeight: '700',
-                          color: config.color,
+                          color: 'var(--ink-ghost)',
+                          minWidth: '32px',
                         }}
                       >
-                        {config.label}
+                        {student.roll_number ?? index + 1}
                       </span>
+                      <span
+                        style={{
+                          flex: 1,
+                          fontSize: '14px',
+                          fontWeight: '600',
+                          color: 'var(--ink)',
+                        }}
+                      >
+                        {student.full_name}
+                      </span>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '5px 12px',
+                          borderRadius: '100px',
+                          background: config.bg,
+                          border: `1px solid ${config.color}44`,
+                          minWidth: '90px',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <config.Icon size={13} color={config.color} />
+                        <span
+                          style={{
+                            fontSize: '12px',
+                            fontWeight: '700',
+                            color: config.color,
+                          }}
+                        >
+                          {statusLabels[student.status as Status]}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
 
             {saved ? (
               <div
+                role="status"
+                aria-live="polite"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -485,6 +515,9 @@ export default function AttendanceScreenWeb() {
               </div>
             ) : (
               <button
+                type="button"
+                aria-busy={saving}
+                aria-label={saving ? 'Saving attendance' : 'Complete attendance marking'}
                 className="premium-button"
                 style={{
                   width: '100%',

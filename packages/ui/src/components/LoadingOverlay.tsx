@@ -1,5 +1,6 @@
 import type React from 'react';
-import { Center, Modal, Spinner } from '@repo/ui/gluestack';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { Center, Modal } from '@repo/ui/gluestack';
 
 interface LoadingOverlayProps {
   visible: boolean;
@@ -9,11 +10,11 @@ interface LoadingOverlayProps {
 /**
  * LoadingOverlay - Hardened v3 implementation.
  */
-export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ visible }) => {
+export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ visible, message }) => {
   return (
     <Modal isOpen={visible} onClose={() => {}}>
       <Center className="flex-1">
-        <Spinner accessibilityLabel="Loading" size="large" className="text-phase-accent" />
+        <BrandPulse accessibilityLabel={message ?? 'Loading'} size={36} />
       </Center>
     </Modal>
   );

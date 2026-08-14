@@ -6,7 +6,9 @@
  */
 
 import { identityAPI, thuthimalAPI } from '@repo/core/api/client';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { CircleAlert, Heart } from '@repo/ui/icons';
 import {
   AnimatedView,
   Box,
@@ -14,10 +16,10 @@ import {
   ButtonText,
   Heading,
   HStack,
-  Spinner,
   Text,
   VStack,
 } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
 import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -112,7 +114,7 @@ export default function ThuthimalClaimScreen() {
       <ScreenWrapper>
         <Box className="flex-1 items-center justify-center">
           <VStack className="items-center" space="lg">
-            <Spinner size="large" color="#E67E22" />
+            <BrandPulse accessibilityLabel={t('thuthimalClaim.loading')} />
             <Text className="text-phase-text-secondary text-center">
               {t('thuthimalClaim.loading')}
             </Text>
@@ -128,7 +130,7 @@ export default function ThuthimalClaimScreen() {
         <Box className="flex-1 items-center justify-center p-8">
           <AnimatedView entering={FadeInDown.duration(500)}>
             <VStack className="items-center" space="lg">
-              <Text className="text-[56px] text-center">🌸</Text>
+              <Heart size={56} color={tokens.colors.primary} accessibilityLabel="" />
               <Heading className="text-center text-2xl text-phase-text-primary">
                 {t('thuthimalClaim.alreadyBloomedTitle')}
               </Heading>
@@ -157,7 +159,7 @@ export default function ThuthimalClaimScreen() {
       <ScreenWrapper>
         <Box className="flex-1 items-center justify-center p-8">
           <VStack className="items-center" space="lg">
-            <Text className="text-5xl">⚠️</Text>
+            <CircleAlert size={48} color={tokens.colors.error} accessibilityLabel="" />
             <Heading className="text-center text-phase-error">
               {t('thuthimalClaim.errorTitle')}
             </Heading>
@@ -183,10 +185,10 @@ export default function ThuthimalClaimScreen() {
   // SUCCESS STATE — warm, sacred, non-transactional
   return (
     <ScreenWrapper>
-      <Box className="flex-1 items-center justify-center p-8 bg-black">
+      <Box className="flex-1 items-center justify-center p-8 bg-phase-text-primary">
         {/* Flower */}
         <AnimatedView style={[flowerStyle]} className="items-center justify-center">
-          <Text className="text-[80px] text-center">🌸</Text>
+          <Heart size={80} color={tokens.colors.primary} accessibilityLabel="" />
         </AnimatedView>
 
         <AnimatedView entering={FadeInDown.delay(400).duration(600)} className="w-full">
@@ -195,7 +197,7 @@ export default function ThuthimalClaimScreen() {
             <Text className="text-phase-interactive text-2xl tracking-[2px] text-center">
               {t('thuthimalClaim.flowerTitle')}
             </Text>
-            <Heading className="text-center text-3xl font-bold text-white">
+            <Heading className="text-center text-3xl font-bold text-phase-text-inverse">
               {t('thuthimalClaim.giftHeading')}
             </Heading>
 
@@ -204,7 +206,9 @@ export default function ThuthimalClaimScreen() {
               <Text className="text-phase-text-secondary text-center leading-6 text-lg">
                 {t('thuthimalClaim.giftFrom')}
               </Text>
-              <Text className="text-white text-center font-bold text-2xl mt-2">{gifterName}</Text>
+              <Text className="text-phase-text-inverse text-center font-bold text-2xl mt-2">
+                {gifterName}
+              </Text>
               <Text className="text-phase-text-tertiary text-center text-sm mt-2">
                 {t('thuthimalClaim.giftRecognition')}
               </Text>
@@ -212,11 +216,11 @@ export default function ThuthimalClaimScreen() {
 
             {/* Pro status confirmation */}
             <HStack
-              className="bg-emerald-500/10 rounded-2xl border border-emerald-500/20 px-6 py-4 items-center"
+              className="bg-phase-success/10 rounded-2xl border border-phase-success/20 px-6 py-4 items-center"
               space="sm"
             >
-              <Text className="text-xl">✨</Text>
-              <Text className="text-emerald-500 font-semibold">
+              <Heart size={20} color={tokens.colors.success} accessibilityLabel="" />
+              <Text className="text-phase-success font-semibold">
                 {t('thuthimalClaim.proActive')}
               </Text>
             </HStack>
@@ -227,7 +231,7 @@ export default function ThuthimalClaimScreen() {
               onPress={handleContinue}
               className="w-full mt-6 bg-phase-interactive rounded-2xl"
             >
-              <ButtonText className="text-white font-bold text-lg">
+              <ButtonText className="text-phase-text-inverse font-bold text-lg">
                 {t('thuthimalClaim.enterSanctuary')}
               </ButtonText>
             </Button>

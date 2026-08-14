@@ -10,6 +10,9 @@ import {
   type ResourceCompanionLink,
 } from '@repo/library/utils/resourceLinks';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import { useThemedColors } from '@repo/ui/hooks';
 import {
   ArrowLeft,
@@ -26,7 +29,6 @@ import {
   Pressable,
   Icon as SanctuaryIcon,
   ScrollView,
-  Spinner,
   Text,
   VStack,
 } from '@repo/ui/primitives';
@@ -304,16 +306,17 @@ export default function ResourceHubScreen() {
     return (
       <ScreenWrapper>
         <VStack className="flex-1 items-center justify-center gap-3.5 px-6">
-          <Text className="text-xl font-extrabold text-phaseText-primary">Resource not found</Text>
-          <Text className="text-center text-phaseText-secondary">
-            This link does not include a valid Gurudevi resource id.
-          </Text>
-          <ActionButton
-            label="Back to Library"
-            icon={<SanctuaryIcon as={ArrowLeft} size={16} color="white" />}
-            onPress={handleBack}
-            accent
-          />
+          <BrandedEmptyState
+            title="Resource not found"
+            message="This link does not include a valid Gurudevi resource id."
+          >
+            <ActionButton
+              label="Back to Library"
+              icon={<SanctuaryIcon as={ArrowLeft} size={16} color="white" />}
+              onPress={handleBack}
+              accent
+            />
+          </BrandedEmptyState>
         </VStack>
       </ScreenWrapper>
     );
@@ -323,7 +326,7 @@ export default function ResourceHubScreen() {
     return (
       <ScreenWrapper>
         <VStack className="flex-1 items-center justify-center gap-3.5">
-          <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
+          <BrandPulse size={40} tintColor={Theme.colors.sanctuarySaffron} accessibilityLabel="Loading resource" />
           <Text className="text-[13px] text-phaseText-secondary">Loading resource hub...</Text>
         </VStack>
       </ScreenWrapper>
@@ -333,16 +336,16 @@ export default function ResourceHubScreen() {
   if (error || !resource) {
     return (
       <ScreenWrapper>
-        <VStack className="flex-1 items-center justify-center gap-3.5 px-6">
-          <Text className="text-xl font-extrabold text-phaseText-primary">
-            {isOnline ? 'We could not load this resource' : 'You are offline'}
-          </Text>
-          <Text className="text-center text-phaseText-secondary">
-            {isOnline
-              ? String((error as Error)?.message || 'The resource may have moved or been removed.')
-              : 'Reconnect to open this resource.'}
-          </Text>
-          <HStack className="gap-2.5">
+        <VStack className="flex-1 items-center justify-center px-6">
+          <BrandedErrorState
+            title={isOnline ? 'We could not load this resource' : 'You are offline'}
+            message={
+              isOnline
+                ? String((error as Error)?.message || 'The resource may have moved or been removed.')
+                : 'Reconnect to open this resource.'
+            }
+          >
+            <HStack className="gap-2.5">
             <ActionButton
               label="Back"
               icon={<SanctuaryIcon as={ArrowLeft} size={16} color={colors.textPrimary} />}
@@ -354,7 +357,8 @@ export default function ResourceHubScreen() {
               onPress={handleRetry}
               accent
             />
-          </HStack>
+            </HStack>
+          </BrandedErrorState>
         </VStack>
       </ScreenWrapper>
     );

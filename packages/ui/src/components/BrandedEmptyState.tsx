@@ -135,17 +135,15 @@ const styles = StyleSheet.create({
     gap: tokens.spacing.md,
   },
   title: {
-    fontSize: tokens.typography.sizes.md,
-    fontWeight: '600',
+    ...tokens.typography.roles.cardTitle,
     color: tokens.semantic.text.primary,
     textAlign: 'center',
     marginTop: tokens.spacing.sm,
   },
   message: {
-    fontSize: tokens.typography.sizes.sm,
+    ...tokens.typography.roles.body,
     color: tokens.semantic.text.secondary,
     textAlign: 'center',
-    lineHeight: tokens.typography.sizes.sm * 1.5,
     maxWidth: tokens.layout.pageFrame.stateMessageMaxWidth,
   },
   actions: {

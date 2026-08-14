@@ -1,6 +1,18 @@
 import { useAccountDeletion, useTracking } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
-
+import LivingJourneyPanel from '@repo/profile/components/LivingJourneyPanel';
+import ProfileListItem from '@repo/profile/components/ProfileListItem';
+// Local Package Imports
+import ProfileSkeleton from '@repo/profile/components/ProfileSkeleton';
+import ThuthimalBadge from '@repo/profile/components/ThuthimalBadge';
+import { useProfile } from '@repo/profile/hooks/useProfile';
+import { useProfileCompletion } from '@repo/profile/hooks/useProfileCompletion';
+import {
+  type ProfileNavigationCapabilities,
+  toFullProfileParams,
+  useProfileNavigation,
+} from '@repo/profile/navigation';
+import type { UserProfile } from '@repo/profile/types';
 import DeleteAccountModal from '@repo/ui/components/DeleteAccountModal';
 import DeviceSecurityCenter from '@repo/ui/components/DeviceSecurityCenter';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
@@ -9,6 +21,7 @@ import LogoutModal from '@repo/ui/components/LogoutModal';
 import { NotificationSettingsPanel } from '@repo/ui/components/NotificationSettingsPanel';
 import { SanctuaryProgressBar } from '@repo/ui/components/SanctuaryProgressBar';
 import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
+import { useTheme } from '@repo/ui/hooks/useTheme';
 import {
   ChevronDown,
   CircleQuestionMark,
@@ -36,7 +49,7 @@ import {
 } from '@repo/ui/primitives';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import type { TFunction } from 'i18next';
-import { useEffect, useState, type ReactNode } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Platform, RefreshControl, ScrollView, useWindowDimensions } from 'react-native';
 import Animated, {
@@ -47,19 +60,6 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import LivingJourneyPanel from '@repo/profile/components/LivingJourneyPanel';
-import ProfileListItem from '@repo/profile/components/ProfileListItem';
-// Local Package Imports
-import ProfileSkeleton from '@repo/profile/components/ProfileSkeleton';
-import ThuthimalBadge from '@repo/profile/components/ThuthimalBadge';
-import { useProfile } from '@repo/profile/hooks/useProfile';
-import { useProfileCompletion } from '@repo/profile/hooks/useProfileCompletion';
-import {
-  type ProfileNavigationCapabilities,
-  toFullProfileParams,
-  useProfileNavigation,
-} from '@repo/profile/navigation';
-import type { UserProfile } from '@repo/profile/types';
 
 // --- Internal Sub-Components ---
 
@@ -81,6 +81,7 @@ const IdentitySection = ({
   cardWidth,
 }: IdentitySectionProps) => {
   const { context } = usePermissions();
+  const { accent } = useTheme();
   const isWanderer = context.isAnonymous;
   const capacity = context.activeBond?.capacity || context.primaryCapacity || 'member';
 
@@ -136,9 +137,9 @@ const IdentitySection = ({
       >
         <HStack space="sm" className="items-center">
           {isWanderer ? (
-            <UserPlus size={18} color="#4A90E2" />
+            <UserPlus size={18} color={accent.action} />
           ) : (
-            <SquarePen size={18} color="#4A90E2" />
+            <SquarePen size={18} color={accent.action} />
           )}
           <Text className="text-phase-text-primary font-bold">
             {isWanderer ? t('auth.createAccount') : t('profile.viewEditProfile')}
@@ -167,36 +168,44 @@ interface SupportSectionProps {
   cardWidth: number;
 }
 
-const SupportSection = ({ t, cardWidth }: SupportSectionProps) => (
-  <Center>
-    <VStack
-      className="bg-phase-canvas rounded-3xl p-4 border border-phase-surface shadow-md"
-      style={{
-        width: cardWidth,
-        shadowColor: '#9DA1A3',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 10,
-      }}
-      space="sm"
-    >
-      <Heading className="text-phase-text-secondary text-sm mt-1 mb-3 px-1">
-        {t('profile.account.support')}
-      </Heading>
-      <ProfileListItem
-        icon={CircleQuestionMark}
-        label={t('profile.faqTitle')}
-        onPress={() => hapticLight()}
-      />
-      <ProfileListItem
-        icon={MessageSquare}
-        label={t('profile.feedbackTitle')}
-        onPress={() => hapticLight()}
-      />
-      <ProfileListItem icon={Info} label={t('profile.aboutTitle')} onPress={() => hapticLight()} />
-    </VStack>
-  </Center>
-);
+const SupportSection = ({ t, cardWidth }: SupportSectionProps) => {
+  const { scene } = useTheme();
+
+  return (
+    <Center>
+      <VStack
+        className="bg-phase-canvas rounded-3xl p-4 border border-phase-surface shadow-md"
+        style={{
+          width: cardWidth,
+          shadowColor: scene.text.muted,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.1,
+          shadowRadius: 10,
+        }}
+        space="sm"
+      >
+        <Heading className="text-phase-text-secondary text-sm mt-1 mb-3 px-1">
+          {t('profile.account.support')}
+        </Heading>
+        <ProfileListItem
+          icon={CircleQuestionMark}
+          label={t('profile.faqTitle')}
+          onPress={() => hapticLight()}
+        />
+        <ProfileListItem
+          icon={MessageSquare}
+          label={t('profile.feedbackTitle')}
+          onPress={() => hapticLight()}
+        />
+        <ProfileListItem
+          icon={Info}
+          label={t('profile.aboutTitle')}
+          onPress={() => hapticLight()}
+        />
+      </VStack>
+    </Center>
+  );
+};
 
 interface AppExperienceSectionProps {
   t: TFunction;
@@ -205,13 +214,14 @@ interface AppExperienceSectionProps {
 
 const AppExperienceSection = ({ t, cardWidth }: AppExperienceSectionProps) => {
   const showToast = useStore((state) => state.showToast);
+  const { scene } = useTheme();
   return (
     <Center>
       <VStack
         className="bg-phase-canvas rounded-3xl p-4 border border-phase-surface shadow-md"
         style={{
           width: cardWidth,
-          shadowColor: '#9DA1A3',
+          shadowColor: scene.text.muted,
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.1,
           shadowRadius: 10,
@@ -315,8 +325,10 @@ export const ProfileScreen = () => {
   const completionCapacity = (context.activeBond?.capacity || context.primaryCapacity) ?? null;
   const completionResult = useProfileCompletion(profile, completionCapacity as any);
   const bottomPadding = useBottomTabPadding();
-  const { width: windowWidth } = useWindowDimensions();
-  const cardWidth = Math.min(windowWidth, 600) - 32;
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+  const { accent, scene } = useTheme();
+  const isCompactLandscape = windowWidth > windowHeight && windowHeight < 500;
+  const cardWidth = Math.min(windowWidth, 600) - (isCompactLandscape ? 24 : 32);
 
   const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
   const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);
@@ -387,7 +399,15 @@ export const ProfileScreen = () => {
   if (loading && !refreshing) {
     return (
       <ScreenWrapper noTopInset={true}>
-        <ProfileSkeleton />
+        <Center
+          accessible={true}
+          accessibilityRole="progressbar"
+          accessibilityLabel={t('profile.loading', 'Loading your profile')}
+          accessibilityHint={t('profile.loadingHint', 'Please wait while your profile is loaded')}
+          className="flex-1"
+        >
+          <ProfileSkeleton />
+        </Center>
       </ScreenWrapper>
     );
   }
@@ -395,13 +415,23 @@ export const ProfileScreen = () => {
   if (!profile && error) {
     return (
       <ScreenWrapper noTopInset={true}>
-        <Center className="flex-1 p-6">
+        <Center className="flex-1 p-6" accessibilityRole="alert">
           <VStack className="items-center gap-3">
             <Heading className="text-phase-text-primary text-lg">
               {t('profile.loadFailed', 'Your profile could not be opened')}
             </Heading>
-            <Text className="text-phase-text-secondary text-center text-sm">{error}</Text>
-            <Button size="sm" onPress={() => void refresh()}>
+            <Text className="text-phase-text-secondary text-center text-sm">
+              {t(
+                'profile.loadFailedDescription',
+                'Your saved details are safe. Check your connection and try opening your profile again.',
+              )}
+            </Text>
+            <Button
+              size="sm"
+              onPress={() => void refresh()}
+              accessibilityLabel={t('common.retry', 'Try again')}
+              accessibilityHint={t('profile.retryHint', 'Attempts to load your profile again')}
+            >
               <ButtonText>{t('common.retry', 'Try again')}</ButtonText>
             </Button>
           </VStack>
@@ -427,7 +457,7 @@ export const ProfileScreen = () => {
             accessibilityHint="Opens the settings screen"
             className="p-2 rounded-xl bg-phase-canvas border border-phase-surface"
           >
-            <Settings size={24} color="#4A90E2" />
+            <Settings size={24} color={accent.action} />
           </Pressable>
         }
       />
@@ -435,20 +465,34 @@ export const ProfileScreen = () => {
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
-            paddingVertical: 16,
-            paddingBottom: bottomPadding + 32,
+            paddingVertical: isCompactLandscape ? 8 : 16,
+            paddingBottom: bottomPadding + (isCompactLandscape ? 16 : 32),
           }}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor="#E67E22" />
+            <RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={accent.action} />
           }
         >
-          <VStack space="2xl">
+          <VStack space={isCompactLandscape ? 'lg' : '2xl'}>
             {error && (
               <Center>
-                <Box style={{ width: cardWidth }} className="rounded-2xl bg-phase-surface p-3">
-                  <Text className="text-phase-text-secondary text-xs" accessibilityRole="alert">
-                    {error}
-                  </Text>
+                <Box style={{ width: cardWidth }} className="rounded-2xl bg-phase-surface p-4">
+                  <VStack className="gap-2">
+                    <Text
+                      className="text-phase-text-primary text-sm font-bold"
+                      accessibilityRole="alert"
+                    >
+                      {t('profile.refreshFailed', 'Your profile could not be refreshed.')}
+                    </Text>
+                    <Text className="text-phase-text-secondary text-xs">
+                      {t(
+                        'profile.refreshFailedDescription',
+                        'Your last available details are still shown.',
+                      )}
+                    </Text>
+                    <Button size="sm" onPress={() => void refresh()}>
+                      <ButtonText>{t('common.retry', 'Try again')}</ButtonText>
+                    </Button>
+                  </VStack>
                 </Box>
               </Center>
             )}
@@ -481,10 +525,11 @@ export const ProfileScreen = () => {
             <Animated.View entering={FadeInDown.delay(80).duration(500)}>
               <Center>
                 <Box
-                  className="bg-phase-canvas rounded-3xl p-6 border border-phase-surface shadow-md"
+                  className="bg-phase-canvas rounded-3xl border border-phase-surface shadow-md"
                   style={{
                     width: cardWidth,
-                    shadowColor: '#9DA1A3',
+                    padding: isCompactLandscape ? 16 : 24,
+                    shadowColor: scene.text.muted,
                     shadowOffset: { width: 0, height: 10 },
                     shadowOpacity: 0.1,
                     shadowRadius: 20,
@@ -504,15 +549,19 @@ export const ProfileScreen = () => {
                       ))}
                     </HStack>
                     <Text className="text-[10px] text-phase-interactive font-bold tracking-widest">
-                      PERSONAL SANCTUARY
+                      {t('profile.landingEyebrow', 'YOUR SANCTUARY')}
                     </Text>
                     <Heading className="text-base text-phase-text-primary">
-                      Your profile is the living record of how you move through Gurudevi.
+                      {t('profile.landingTitle', 'Your identity and journey, in one place.')}
                     </Heading>
-                    <Text className="text-phase-text-secondary text-sm">
-                      Everything below stays the same functionally, but this space helps hold
-                      identity, progress, and support in one calmer rhythm.
-                    </Text>
+                    {!isCompactLandscape && (
+                      <Text className="text-phase-text-secondary text-sm">
+                        {t(
+                          'profile.landingDescription',
+                          'See who you are becoming, then open the quieter tools when you need them.',
+                        )}
+                      </Text>
+                    )}
                   </VStack>
                 </Box>
               </Center>

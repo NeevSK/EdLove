@@ -1,5 +1,5 @@
+import { tokens } from '@repo/ui/tokens';
 import type React from 'react';
-import { Pressable, View } from '@repo/ui/primitives';
 
 export interface UniversalModalProps {
   isOpen: boolean;
@@ -23,18 +23,24 @@ export const UniversalModal = ({
   if (!isOpen) return null;
 
   return (
-    <View className="fixed top-0 left-0 right-0 bottom-0 z-[9999] justify-center items-center">
+    <div className="fixed top-0 left-0 right-0 bottom-0 z-[9999] flex justify-center items-center">
       {hasBackdrop && (
-        <Pressable
-          className="absolute top-0 left-0 right-0 bottom-0 bg-black/50"
-          onPress={onClose}
-          accessibilityRole="button"
-          accessibilityLabel="Close modal"
+        <div
+          className="absolute top-0 left-0 right-0 bottom-0"
+          style={{ backgroundColor: tokens.colors.overlay, backdropFilter: 'blur(8px)' }}
+          onClick={onClose}
+          role="button"
+          aria-label="Close modal"
         />
       )}
-      <View className="z-[10000] w-full h-full justify-center items-center pointer-events-none">
-        <View className="pointer-events-auto">{children}</View>
-      </View>
-    </View>
+      <div
+        className="z-[10000] w-full h-full flex justify-center items-center pointer-events-none"
+        role="presentation"
+      >
+        <div className="pointer-events-auto" role="dialog">
+          {children}
+        </div>
+      </div>
+    </div>
   );
 };

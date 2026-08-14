@@ -50,6 +50,20 @@ export const tokens = {
     // Skeleton material — warm, low-noise, and readable against vellum
     skeletonBase: '#E8E2CF',
     skeletonHighlight: '#F5EDD6',
+
+    // Shared transient layers. Keep these semantic so web/native primitives
+    // resolve to the same visual language without sharing layout mechanics.
+    overlay: 'rgba(42, 35, 24, 0.62)',
+    overlayFallback: 'rgba(42, 35, 24, 0.78)',
+    toastSurface: 'rgba(42, 35, 24, 0.94)',
+    toastBorder: 'rgba(252, 249, 242, 0.18)',
+    toastText: '#FCF9F2',
+    toastTextMuted: '#D8D0C3',
+    toastShadow: '0 10px 30px rgba(107, 100, 128, 0.28)',
+    toastSuccess: '#8BBF7A',
+    toastError: '#C64F3E',
+    toastWarning: '#D4A03A',
+    toastInfo: '#7DD4C0',
   },
 
   /** Semantic aliases are the preferred vocabulary for components. */
@@ -72,6 +86,18 @@ export const tokens = {
       base: '#E8E2CF',
       strong: '#544A3D',
       focus: '#7DD4C0',
+      overlay: 'rgba(42, 35, 24, 0.62)',
+      overlayFallback: 'rgba(42, 35, 24, 0.78)',
+      toast: {
+        surface: 'rgba(42, 35, 24, 0.94)',
+        border: 'rgba(252, 249, 242, 0.18)',
+        text: '#FCF9F2',
+        textMuted: '#D8D0C3',
+        success: '#8BBF7A',
+        error: '#C64F3E',
+        warning: '#D4A03A',
+        info: '#7DD4C0',
+      },
     },
     status: {
       error: '#C64F3E',
@@ -146,6 +172,16 @@ export const tokens = {
       xl: 20,
       xxl: 24,
       display: 32,
+    },
+    // Semantic roles keep repeated content hierarchy consistent across
+    // native, compact, and web surfaces without changing caller copy.
+    roles: {
+      display: { fontSize: 32, lineHeight: 38, fontWeight: '600' },
+      sectionTitle: { fontSize: 20, lineHeight: 26, fontWeight: '600' },
+      cardTitle: { fontSize: 16, lineHeight: 22, fontWeight: '600' },
+      body: { fontSize: 14, lineHeight: 21, fontWeight: '400' },
+      meta: { fontSize: 12, lineHeight: 17, fontWeight: '400' },
+      label: { fontSize: 12, lineHeight: 16, fontWeight: '600' },
     },
   },
 

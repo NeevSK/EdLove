@@ -1,6 +1,7 @@
-import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { usePermissions } from '@repo/core/logic';
-import { Center, Heading, Spinner, Text } from '@repo/ui/primitives';
+import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { Center, Heading, Text } from '@repo/ui/primitives';
 import { Redirect, useLocalSearchParams } from 'expo-router';
 
 export default function WorkspaceDispatcher() {
@@ -14,7 +15,7 @@ export default function WorkspaceDispatcher() {
   if (loading) {
     return (
       <Center className="flex-1 bg-phase-canvas">
-        <Spinner />
+        <BrandPulse size={32} accessibilityLabel="Loading workspace" />
       </Center>
     );
   }

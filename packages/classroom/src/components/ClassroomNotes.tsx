@@ -21,6 +21,7 @@
 
 import { api, type ClassroomNote } from '@repo/core/api/client';
 
+import { BrandPulse } from '@repo/ui';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { useLotusToast } from '@repo/ui/hooks';
 import {
@@ -97,7 +98,7 @@ function groupNotesByDate(notes: ClassroomNote[]): NoteGroup[] {
   }
 
   const result: NoteGroup[] = [];
-  if (pinned.length > 0) result.push({ label: '📌 Pinned', data: pinned });
+  if (pinned.length > 0) result.push({ label: 'Pinned', data: pinned });
 
   for (const label of Object.keys(groups)) {
     const data = groups[label];
@@ -423,8 +424,12 @@ export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNote
 
   if (state.loading) {
     return (
-      <Box className="flex-1 items-center justify-center pt-10">
-        <Spinner color="#F6BF8C" />
+      <Box
+        className="flex-1 items-center justify-center pt-10"
+        accessibilityRole="progressbar"
+        accessibilityLabel="Loading classroom notes"
+      >
+        <BrandPulse size={28} tintColor="#F6BF8C" />
       </Box>
     );
   }

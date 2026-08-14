@@ -4,9 +4,8 @@ import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { DerivedHistoryView } from '@repo/ui/components/DerivedHistoryView';
 import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
 import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
-import EmptyState from '@repo/ui/components/EmptyState';
+import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 import ErrorMessage from '@repo/ui/components/ErrorMessage';
-import { Sparkles } from '@repo/ui/icons';
 import { tokens } from '@repo/ui/tokens';
 import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { useEffect, useMemo, useState } from 'react';
@@ -19,6 +18,7 @@ import {
   FEATURE_EMOJIS,
 } from '@repo/self/constants/selfRegistry';
 import { useFeatureActivity } from '@repo/self/hooks/useFeatureActivity';
+import { getCalmFeatureLabel, getHistoryNotice } from '@repo/self/components/selfEntryPresentation';
 
 /**
  * BaseSelfView.web - Capability-Driven Sanctuary for Web.
@@ -58,8 +58,8 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
               content: sideBar,
               historyContent: sideBar,
               domainId: 'reflections',
-              domainColor: '#8B5CF6',
-              energyVibe: ['#F5F3FF', '#EDE9FE'] as [string, string],
+              domainColor: tokens.colors.accentDepth,
+              energyVibe: [tokens.colors.surface, tokens.colors.surfaceSubtle] as [string, string],
             },
           ]
         : []),
@@ -71,8 +71,8 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
               content: reminders,
               historyContent: reminders,
               domainId: 'reminders',
-              domainColor: '#F59E0B',
-              energyVibe: ['#FFFBEB', '#FEF3C7'] as [string, string],
+              domainColor: tokens.colors.warning,
+              energyVibe: [tokens.colors.surfaceElevated, tokens.colors.surfaceSubtle] as [string, string],
             },
           ]
         : []),
@@ -114,7 +114,9 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
 
   // Energy Sensing: Derive background from focused domain or perspective
   const backgroundStyle = useMemo(() => {
-    const baseVibe = perspective === 'student' ? ['#F5F3FF', '#FAF5FF'] : ['#FFF7ED', '#FFFAF5'];
+    const baseVibe = perspective === 'student'
+      ? [tokens.colors.surface, tokens.colors.surfaceElevated]
+      : [tokens.colors.surfaceElevated, tokens.colors.surface];
     const activeVibe = focusedFeature?.energyVibe || baseVibe;
     return {
       backgroundColor: activeVibe[0],
@@ -140,10 +142,9 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
         ) : null}
         <FeatureErrorBoundary featureName={feature.label}>
           {content ?? (
-            <EmptyState
-              icon={<Sparkles size={48} />}
-              title="This sanctuary is still taking shape"
-              description="This capability has no view for the current role yet."
+            <BrandedEmptyState
+              title="This space is taking shape"
+              message="There is no view for this role yet."
             />
           )}
         </FeatureErrorBoundary>
@@ -177,7 +178,7 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
               Sadhana
             </Text>
             <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '700', color: tokens.colors.inkSubtle, textTransform: 'uppercase', letterSpacing: 1.2 }}>
-              {isHistoryMode ? `History Hub / ${viewScale}` : `${perspective.toUpperCase()} Hub`}
+              {isHistoryMode ? `History · ${viewScale}` : 'Now'}
             </Text>
           </VStack>
 
@@ -191,34 +192,36 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
                   updateFocusedId(null);
                 }}
                 accessibilityRole="button"
+                accessibilityState={{ selected: !isHistoryMode }}
                   style={{
                     paddingHorizontal: tokens.spacing.lg,
                     paddingVertical: tokens.spacing.sm,
                     borderRadius: tokens.radii.full,
                     borderWidth: 1,
-                    borderColor: !isHistoryMode ? tokens.colors.surfaceSubtle : 'transparent',
-                    backgroundColor: !isHistoryMode ? tokens.colors.surfaceSubtle : 'transparent',
+                    borderColor: !isHistoryMode ? tokens.colors.success : tokens.colors.borderSubtle,
+                    backgroundColor: !isHistoryMode ? tokens.colors.surfaceElevated : tokens.colors.surface,
                     opacity: !isHistoryMode ? 1 : 0.5,
                   }}
               >
-                <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1.2, color: tokens.colors.ink }}>
+                <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '600', color: tokens.colors.ink }}>
                   Now
                 </Text>
               </Pressable>
               <Pressable
                 onPress={() => setViewMode('timeline')}
                 accessibilityRole="button"
+                accessibilityState={{ selected: isHistoryMode }}
                   style={{
                     paddingHorizontal: tokens.spacing.lg,
                     paddingVertical: tokens.spacing.sm,
                     borderRadius: tokens.radii.full,
                     borderWidth: 1,
-                    borderColor: isHistoryMode ? tokens.colors.surfaceSubtle : 'transparent',
-                    backgroundColor: isHistoryMode ? tokens.colors.surfaceSubtle : 'transparent',
+                    borderColor: isHistoryMode ? tokens.colors.info : tokens.colors.borderSubtle,
+                    backgroundColor: isHistoryMode ? tokens.colors.surfaceInteractive : tokens.colors.surface,
                     opacity: isHistoryMode ? 1 : 0.5,
                   }}
               >
-                <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1.2, color: tokens.colors.ink }}>
+                <Text style={{ fontSize: tokens.typography.sizes.xs, fontWeight: '600', color: tokens.colors.ink }}>
                   History
                 </Text>
               </Pressable>
@@ -236,14 +239,14 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
           {!isOnline && (
             <Box style={{ marginBottom: tokens.spacing.lg, padding: tokens.spacing.md, borderRadius: tokens.radii.md, backgroundColor: tokens.colors.surfaceSubtle, borderWidth: 1, borderColor: tokens.colors.surfaceSubtle }}>
               <Text style={{ fontSize: tokens.typography.sizes.sm, color: tokens.colors.inkSubtle }}>
-                Offline · showing the last saved resonance. New entries will wait for connection.
+                Offline · saved entries remain available. New entries will sync later.
               </Text>
             </Box>
           )}
           {isHistoryMode && (
             <Box style={{ marginBottom: tokens.spacing.lg, padding: tokens.spacing.md, borderRadius: tokens.radii.md, backgroundColor: tokens.colors.surfaceSubtle, borderWidth: 1, borderColor: tokens.colors.surfaceSubtle }}>
               <Text style={{ fontSize: tokens.typography.sizes.sm, color: tokens.colors.inkSubtle }}>
-                History is read-only for the {viewScale} view.
+                {getHistoryNotice(viewScale)}
               </Text>
             </Box>
           )}
@@ -255,14 +258,14 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
               className="flex-row items-center gap-2 mb-8 group opacity-60 hover:opacity-100 transition-all"
             >
               <Text className="text-xl group-hover:-translate-x-1 transition-transform">←</Text>
-              <Text className="text-xs font-black uppercase tracking-widest">
-                Back to Sanctuary
+              <Text className="text-sm font-semibold" style={{ color: tokens.colors.inkSubtle }}>
+                Back
               </Text>
             </Pressable>
 
             <SanctuaryCard
               className="p-10 border-l-[8px] sanctuary-glass-card shadow-2xl"
-              style={{ borderLeftColor: focusedFeature?.domainColor ?? '#8B5CF6' }}
+              style={{ borderLeftColor: focusedFeature?.domainColor ?? tokens.colors.accentDepth }}
             >
               <HStack className="justify-between items-start mb-8">
                 <HStack className="items-center gap-4">
@@ -272,9 +275,6 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
                   <VStack>
                     <Text className="text-2xl font-black tracking-tight">
                       {focusedFeature?.label}
-                    </Text>
-                    <Text className="text-xs font-bold text-black/40 uppercase tracking-widest">
-                      Capability View
                     </Text>
                   </VStack>
                 </HStack>
@@ -293,7 +293,11 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
                     accessibilityRole="button"
                     className="p-2 bg-black/5 rounded-full"
                   >
-                    <Text>{pinned.includes(focusedFeature?.id || '') ? '📌' : '📍'}</Text>
+                    <Box
+                      accessible={false}
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: pinned.includes(focusedFeature?.id || '') ? tokens.colors.success : tokens.colors.textMuted }}
+                    />
                   </Pressable>
                 </HStack>
               </HStack>
@@ -310,9 +314,9 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
                 <HStack className="items-center gap-4">
                   <Box
                     className="w-2 h-8 rounded-full"
-                    style={{ backgroundColor: domain.accentColor }}
+                    style={{ backgroundColor: domain.accentColor || tokens.colors.accentDepth }}
                   />
-                  <Text className="text-xl font-black tracking-tight text-[#1A1610]">
+                  <Text className="text-xl font-semibold" style={{ color: tokens.colors.ink }}>
                     {domain.title}
                   </Text>
                 </HStack>
@@ -338,12 +342,14 @@ export function BaseSelfView({ perspective, domains, sideBar, reminders }: BaseS
                         </Text>
                         {pinned.includes(feature.id) && <Text className="text-xs">📌</Text>}
                       </HStack>
-                      <Text className="text-sm font-black uppercase tracking-wider mb-1">
-                        {feature.label}
+                      <Text className="text-base font-semibold mb-1" style={{ color: tokens.colors.ink }}>
+                        {getCalmFeatureLabel(feature)}
                       </Text>
-                      <Text className="text-xs text-black/50 leading-relaxed line-clamp-2">
-                        Engage with this sanctuary capability.
-                      </Text>
+                      {feature.summary ? (
+                        <Text className="text-sm leading-relaxed" style={{ color: tokens.colors.inkSubtle }} numberOfLines={2}>
+                          {feature.summary}
+                        </Text>
+                      ) : null}
                     </SanctuaryCard>
                   ))}
                 </Box>
@@ -374,12 +380,12 @@ function HistoryScaffold({ feature, viewScale }: { feature: SelfViewFeature; vie
   return (
     <Box
       className="border rounded-3xl px-8 py-8 bg-white/20"
-      style={{ borderColor: feature.domainColor || '#8B5CF6' }}
+      style={{ borderColor: feature.domainColor || tokens.colors.accentDepth }}
     >
       <Text className="text-lg font-black mb-4 uppercase tracking-widest">
         {feature.label} history
       </Text>
-      <Text className="text-sm leading-7 text-black/60">
+      <Text className="text-sm leading-7" style={{ color: tokens.colors.inkSubtle }}>
         {`Viewing the ${viewScale} perspective. Analytics will surface as data builds.`}
       </Text>
     </Box>

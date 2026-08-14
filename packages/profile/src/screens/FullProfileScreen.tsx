@@ -1,7 +1,19 @@
 import { usePermissions, useStore } from '@repo/core/logic';
 // Local Package Imports
 import { StaffPresencePulse } from '@repo/people';
+import { AddSocialLinkModal } from '@repo/profile/components/AddSocialLinkModal';
+import { AvatarDisplay } from '@repo/profile/components/AvatarDisplay';
+import { ContactLinktree } from '@repo/profile/components/ContactLinktree';
+import { EditableItem } from '@repo/profile/components/EditableItem';
+import { GiveThuthimalModal } from '@repo/profile/components/GiveThuthimalModal';
+import { useProfile } from '@repo/profile/hooks/useProfile';
+import { useProfileCompletion } from '@repo/profile/hooks/useProfileCompletion';
+import { useSocialLinks } from '@repo/profile/hooks/useSocialLinks';
+import type { UserProfile } from '@repo/profile/types';
 import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
+import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import IdentityCard from '@repo/ui/components/IdentityCard';
 import { SanctuaryProgressBar } from '@repo/ui/components/SanctuaryProgressBar';
@@ -30,6 +42,7 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -37,15 +50,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, useWindowDimensions } from 'react-native';
 import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { AddSocialLinkModal } from '@repo/profile/components/AddSocialLinkModal';
-import { AvatarDisplay } from '@repo/profile/components/AvatarDisplay';
-import { ContactLinktree } from '@repo/profile/components/ContactLinktree';
-import { EditableItem } from '@repo/profile/components/EditableItem';
-import { GiveThuthimalModal } from '@repo/profile/components/GiveThuthimalModal';
-import { useProfile } from '@repo/profile/hooks/useProfile';
-import { useProfileCompletion } from '@repo/profile/hooks/useProfileCompletion';
-import { useSocialLinks } from '@repo/profile/hooks/useSocialLinks';
-import type { UserProfile } from '@repo/profile/types';
 
 const readParam = (value: string | string[] | undefined) =>
   Array.isArray(value) ? value[0] : value;
@@ -70,6 +74,7 @@ export const FullProfileScreen = () => {
 
   const {
     profile: liveProfile,
+    loading,
     error,
     updateField,
     refresh,
@@ -114,7 +119,38 @@ export const FullProfileScreen = () => {
     return;
   }, [completionResult, barOpacity]);
 
-  if (!profile) return null;
+  if (loading && !liveProfile) {
+    return (
+      <ScreenWrapper>
+        <Center className="flex-1">
+          <BrandPulse accessibilityLabel={t('profile.loading', 'Loading profile')} />
+        </Center>
+      </ScreenWrapper>
+    );
+  }
+
+  if (error && !profile) {
+    return (
+      <ScreenWrapper>
+        <BrandedErrorState title={t('profile.errorTitle', 'Profile unavailable')} message={error}>
+          <Button size="sm" onPress={() => void refresh?.()}>
+            <ButtonText>{t('common.retry', 'Try again')}</ButtonText>
+          </Button>
+        </BrandedErrorState>
+      </ScreenWrapper>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <ScreenWrapper>
+        <BrandedEmptyState
+          title={t('profile.emptyTitle', 'Profile not available')}
+          message={t('profile.emptyMessage', 'There is no profile information to show yet.')}
+        />
+      </ScreenWrapper>
+    );
+  }
 
   const isOtherProfile = currentUserId !== undefined && currentUserId !== profile.id;
   const profileRole = (
@@ -234,7 +270,7 @@ export const FullProfileScreen = () => {
               className="bg-phase-canvas rounded-3xl p-6 border border-phase-surface shadow-md"
               style={{
                 width: cardWidth,
-                shadowColor: '#9DA1A3',
+                shadowColor: tokens.colors.shadowColor,
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.1,
                 shadowRadius: 10,
@@ -320,7 +356,7 @@ export const FullProfileScreen = () => {
                 className="bg-phase-canvas rounded-3xl p-6 border border-phase-surface shadow-md"
                 style={{
                   width: cardWidth,
-                  shadowColor: '#9DA1A3',
+                  shadowColor: tokens.colors.shadowColor,
                   shadowOffset: { width: 0, height: 4 },
                   shadowOpacity: 0.1,
                   shadowRadius: 10,
@@ -380,7 +416,7 @@ export const FullProfileScreen = () => {
               className="bg-phase-canvas rounded-3xl p-6 border border-phase-surface shadow-md"
               style={{
                 width: cardWidth,
-                shadowColor: '#9DA1A3',
+                shadowColor: tokens.colors.shadowColor,
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.1,
                 shadowRadius: 10,
@@ -420,7 +456,7 @@ export const FullProfileScreen = () => {
                   className="mt-4 p-4 rounded-2xl border border-dashed border-phase-surface items-center bg-phase-surface/30"
                 >
                   <HStack space="sm" className="items-center">
-                    <SquarePen size={18} color="#4A90E2" />
+                    <SquarePen size={18} color={tokens.colors.primary} />
                     <Text className="text-phase-interactive font-bold">Manage Social Hub</Text>
                   </HStack>
                 </Pressable>

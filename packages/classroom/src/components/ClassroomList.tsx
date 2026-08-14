@@ -1,27 +1,16 @@
+import CreateClassroomModal from '@repo/classroom/components/CreateClassroomModal';
 import { api, identityAPI, MOCK_CLASSROOMS } from '@repo/core/api/client';
 import { useIsGuest } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
-
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
 import { BookOpen, ChevronRight, ClipboardCheck, Plus, Users, Zap } from '@repo/ui/icons';
-import {
-  Box,
-  FlatList,
-  Heading,
-  HStack,
-  Icon,
-  Pressable,
-  Spinner,
-  Text,
-  VStack,
-} from '@repo/ui/primitives';
+import { Box, FlatList, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { useToast } from '@repo/ui/providers';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import CreateClassroomModal from '@repo/classroom/components/CreateClassroomModal';
 
 interface ClassroomListProps {
   onClassroomPress?: (classroom: WorkspaceClassroom) => void;
@@ -349,7 +338,13 @@ export default function ClassroomList({
             onEndReached={fetchMore}
             onEndReachedThreshold={0.5}
             ListFooterComponent={
-              isFetchingMore ? <Spinner className="p-4" /> : <Box className="h-20" />
+              isFetchingMore ? (
+                <Box className="items-center py-4">
+                  <BrandPulse size={22} accessibilityLabel="Loading more classrooms" />
+                </Box>
+              ) : (
+                <Box className="h-20" />
+              )
             }
           />
 

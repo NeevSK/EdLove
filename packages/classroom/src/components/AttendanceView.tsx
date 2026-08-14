@@ -1,8 +1,9 @@
+import AttendanceSheet from '@repo/classroom/components/AttendanceSheet';
 import { api } from '@repo/core/api/client';
 import type { AttendanceStatus, StudentAttendance } from '@repo/core/logic';
-import { Box, Spinner, Text } from '@repo/ui/primitives';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { Box, Text } from '@repo/ui/primitives';
 import { useCallback, useEffect, useState } from 'react';
-import AttendanceSheet from '@repo/classroom/components/AttendanceSheet';
 
 interface AttendanceViewProps {
   classroomId: string;
@@ -70,7 +71,7 @@ export default function AttendanceView({ classroomId }: AttendanceViewProps) {
   if (isLoading) {
     return (
       <Box className="flex-1 p-8 items-center">
-        <Spinner color="#F6BF8C" />
+        <BrandPulse size={28} tintColor="#F6BF8C" accessibilityLabel="Loading attendance roster" />
         <Text className="text-typography-500 mt-4">Loading class list...</Text>
       </Box>
     );

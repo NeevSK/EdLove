@@ -30,7 +30,11 @@ module.exports = {
   testMatch: ['**/__tests__/**/*.test.[jt]s?(x)'],
   moduleNameMapper: {
     // @repo/* packages resolve directly from workspace sources
-    '^@repo/(.*)$': '<rootDir>/../../packages/$1/src/index.ts',
+    // Keep package-root and package-deep imports separate; mapping every
+    // import to src/index.ts breaks audits/tests that intentionally import a
+    // focused hook or token module.
+    '^@repo/([^/]+)$': '<rootDir>/../../packages/$1/src/index.ts',
+    '^@repo/([^/]+)/(.*)$': '<rootDir>/../../packages/$1/src/$2',
     // @gluestack-ui/themed AND all its build/components/* sub-paths use one mock.
     // Packages import from deep paths like '@gluestack-ui/themed/build/components/Box'
     // which bypass a jest.mock('@gluestack-ui/themed') (only matches root).

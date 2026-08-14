@@ -2,6 +2,7 @@ import { studentsAPI } from '@repo/core/api/client';
 import type { Student } from '@repo/core/types';
 
 import { QRCodeGenerator } from '@repo/scanner-kit';
+import { BrandPulse } from '@repo/ui';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { Pen, Plus, QrCode, Sparkles, Trash2 } from '@repo/ui/icons';
 import {
@@ -259,7 +260,7 @@ const StudentRow = React.memo(
             </Pressable>
             <Pressable onPress={() => onRemove(student.id)} disabled={isDeleting} className="p-2.5">
               {isDeleting ? (
-                <ActivityIndicator size="small" color="#ef4444" />
+                <BrandPulse size={20} tintColor="#B42318" />
               ) : (
                 <Icon as={Trash2} size={18} className="text-sanctuary-error" />
               )}

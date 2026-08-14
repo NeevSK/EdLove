@@ -1,13 +1,24 @@
 import { useAuthStore, useDeviceSecurity } from '@repo/core/logic';
+import DeviceAccountManager from '@repo/ui/components/DeviceAccountManager';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Box, Button, ButtonText, Heading, HStack, Text, VStack } from '@repo/ui/gluestack';
+import {
+  Activity,
+  Clock3,
+  History,
+  Key,
+  Laptop,
+  Lock,
+  Smartphone,
+  Tablet,
+  Trash2,
+} from '@repo/ui/icons';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useMemo, useOptimistic, useReducer, useTransition } from 'react';
 import { Platform, StyleSheet } from 'react-native';
-import { Box, Button, ButtonText, Heading, HStack, Spinner, Text, VStack } from '@repo/ui/gluestack';
-import { Activity, Clock3, History, Key, Laptop, Lock, Smartphone, Tablet, Trash2 } from '@repo/ui/icons';
-import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
-import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-import DeviceAccountManager from '@repo/ui/components/DeviceAccountManager';
-import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { BrandPulse } from './BrandPulse';
 
 // ── Types & Reducer ──────────────────────────────────────────────────────────
 
@@ -363,7 +374,7 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
             case 'LOADING':
               return (
                 <HStack key="loading" className="items-center gap-3 py-4">
-                  <Spinner size="small" />
+                  <BrandPulse size={20} tintColor="#D4843A" />
                   <Text className="text-sm text-phase-secondary">Synchronizing trust graph...</Text>
                 </HStack>
               );

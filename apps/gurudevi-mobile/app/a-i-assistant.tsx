@@ -1,13 +1,14 @@
 import { AIAssistantScreen } from '@repo/ai/assistant';
+import { BrandPulse } from '@repo/ui';
 import { Flower2 } from '@repo/ui/icons';
-import { Center, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Center, Text, VStack } from '@repo/ui/primitives';
 import { Suspense } from 'react';
 import { usePremiumStatus } from '@/hooks/usePremiumStatus';
 
 function Fallback() {
   return (
     <Center className="flex-1 bg-obsidian">
-      <Spinner />
+      <BrandPulse accessibilityLabel="Loading AI assistant" />
     </Center>
   );
 }

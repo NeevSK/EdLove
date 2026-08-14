@@ -5,6 +5,7 @@
  */
 
 import { usePermissions } from '@repo/core/logic';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import {
   BookOpen,
   Brain,
@@ -16,7 +17,7 @@ import {
   User,
   Zap,
 } from '@repo/ui/icons';
-import { Box, HStack, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Box, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import type React from 'react';
 
 type JournalEntry = {
@@ -81,7 +82,7 @@ export const JournalSection: React.FC<{
 
     {loading ? (
       <VStack className="py-5 items-center justify-center">
-        <Spinner className="text-violet-400" />
+        <BrandPulse size={24} tintColor="#A78BFA" accessibilityLabel="Loading inner resonance" />
       </VStack>
     ) : entries.length > 0 ? (
       <VStack className="gap-3">
@@ -118,7 +119,7 @@ export const MoodSection: React.FC<{ logs: MoodLog[]; loading?: boolean }> = ({
 
     {loading ? (
       <VStack className="py-5 items-center justify-center">
-        <Spinner className="text-pink-400" />
+        <BrandPulse size={24} tintColor="#F472B6" accessibilityLabel="Loading emotional flow" />
       </VStack>
     ) : (
       <Text className="text-sacredWhite/70 text-sm leading-relaxed italic">
@@ -150,7 +151,11 @@ export const TeacherPulse: React.FC<{
 
       {loading ? (
         <VStack className="py-5 items-center justify-center">
-          <Spinner className="text-emeraldGreen" />
+          <BrandPulse
+            size={24}
+            tintColor="#6EE7B7"
+            accessibilityLabel="Loading instructional energy"
+          />
         </VStack>
       ) : (
         <VStack className="gap-2">
@@ -212,7 +217,7 @@ export const PrincipalPulse: React.FC<{
       </HStack>
       {loading ? (
         <VStack className="py-5 items-center justify-center">
-          <Spinner className="text-amber-400" />
+          <BrandPulse size={24} tintColor="#FBBF24" accessibilityLabel="Loading wisdom" />
         </VStack>
       ) : (
         <VStack className="gap-2">
@@ -243,7 +248,7 @@ export const DecisionSection: React.FC<{
     </HStack>
     {loading ? (
       <VStack className="py-5 items-center justify-center">
-        <Spinner className="text-amber-400" />
+        <BrandPulse size={24} tintColor="#FBBF24" accessibilityLabel="Loading practice" />
       </VStack>
     ) : decisions.length > 0 ? (
       <VStack className="gap-3">
@@ -304,7 +309,7 @@ export const PhilosophySection: React.FC<{
       </HStack>
       {loading ? (
         <VStack className="py-5 items-center justify-center">
-          <Spinner className="text-sanctuarySaffron" />
+          <BrandPulse size={24} accessibilityLabel="Loading daily reflection" />
         </VStack>
       ) : wisdom.length > 0 ? (
         <VStack className="gap-3">
@@ -345,7 +350,11 @@ export const GoalSection: React.FC<{ goals: GoalItem[]; loading?: boolean }> = (
       </HStack>
       {loading ? (
         <VStack className="py-5 items-center justify-center">
-          <Spinner className="text-indigo-400" />
+          <BrandPulse
+            size={24}
+            tintColor="#818CF8"
+            accessibilityLabel="Loading community presence"
+          />
         </VStack>
       ) : goals.length > 0 ? (
         <VStack className="gap-2">
@@ -354,7 +363,7 @@ export const GoalSection: React.FC<{ goals: GoalItem[]; loading?: boolean }> = (
               key={g.id}
               className="items-center gap-3 bg-white/[0.02] p-3 rounded-lg border border-white/5"
             >
-              <Text className="text-lg">🎯</Text>
+              <Icon as={Target} size={18} className="text-indigo-300" />
               <Text className="text-sacredWhite/80 font-bold text-sm flex-1">{g.title}</Text>
             </HStack>
           ))}
@@ -385,7 +394,11 @@ export const StudentPulse: React.FC<{
       </HStack>
       {loading ? (
         <VStack className="py-5 items-center justify-center">
-          <Spinner className="text-indigo-400" />
+          <BrandPulse
+            size={24}
+            tintColor="#818CF8"
+            accessibilityLabel="Loading community presence"
+          />
         </VStack>
       ) : (
         <VStack className="gap-2">
@@ -424,7 +437,7 @@ export const NatureSection: React.FC<{ paths: NaturePath | null; loading?: boole
     </HStack>
     {loading ? (
       <VStack className="py-5 items-center justify-center">
-        <Spinner className="text-emeraldGreen" />
+        <BrandPulse size={24} tintColor="#6EE7B7" accessibilityLabel="Loading progress" />
       </VStack>
     ) : (
       <VStack className="gap-3">

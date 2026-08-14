@@ -1,14 +1,14 @@
+import AttendanceSheet from '@repo/classroom/components/AttendanceSheet';
 import { academicCyclesAPI, api, growthSignalsAPI } from '@repo/core/api/client';
 import { useSafeMutation } from '@repo/core/hooks';
 import { type AttendanceStatus, type StudentAttendance, useStore } from '@repo/core/logic';
 import { generateIdempotencyKey, getCurrentTimestamp } from '@repo/core/utils';
+import { BrandPulse } from '@repo/ui';
 import { useAppStoreReview } from '@repo/ui/hooks';
-import { Box, Button, ButtonText, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Box, Button, ButtonText, Text, VStack } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
 import { useLocalSearchParams } from 'expo-router';
-
 import { useCallback, useEffect, useState } from 'react';
-import AttendanceSheet from '@repo/classroom/components/AttendanceSheet';
 
 export default function AttendanceScreen() {
   const { classroomId = '' } = useLocalSearchParams<{ classroomId?: string }>();
@@ -138,8 +138,10 @@ export default function AttendanceScreen() {
   if (isLoading) {
     return (
       <Box className="flex-1 justify-center items-center bg-phase-surface-primary">
-        <Spinner color="#F6BF8C" />
-        <Text className="text-phase-text-secondary mt-4 font-black">Loading classroom roster...</Text>
+        <BrandPulse size={28} accessibilityLabel="Loading classroom roster" />
+        <Text className="text-phase-text-secondary mt-4 font-black">
+          Loading classroom roster...
+        </Text>
       </Box>
     );
   }

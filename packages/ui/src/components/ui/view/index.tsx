@@ -1,5 +1,6 @@
-import React from 'react';
+import { styled } from 'nativewind';
 import type { ComponentType } from 'react';
+import React from 'react';
 import {
   type FlatListProps,
   type KeyboardAvoidingViewProps,
@@ -15,7 +16,6 @@ import {
   type ViewProps,
 } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { styled } from 'nativewind';
 
 const StyledView = styled(RNView);
 const StyledScrollView = styled(RNScrollView as ComponentType<any>, {
@@ -30,25 +30,35 @@ const StyledKeyboardAvoidingView = styled(RNKeyboardAvoidingView);
 const StyledAnimatedView = styled(Animated.View as ComponentType<any>);
 
 export const View = React.forwardRef<RNView, ViewProps & { className?: string }>(
-  ({ className, ...props }, ref) => <StyledView {...props} ref={ref} className={className} />,
+  ({ className, children, ...props }, ref) => (
+    <StyledView {...props} ref={ref} className={className}>
+      {children}
+    </StyledView>
+  ),
 );
 View.displayName = 'View';
 
 export const ScrollView = React.forwardRef<
   RNScrollView,
   ScrollViewProps & { className?: string; contentContainerClassName?: string }
->(({ className, contentContainerClassName, ...props }, ref) => (
+>(({ className, contentContainerClassName, children, ...props }, ref) => (
   <StyledScrollView
     {...props}
     ref={ref}
     className={className}
     contentContainerClassName={contentContainerClassName}
-  />
+  >
+    {children}
+  </StyledScrollView>
 ));
 ScrollView.displayName = 'ScrollView';
 
 export const Pressable = React.forwardRef<RNView, PressableProps & { className?: string }>(
-  ({ className, ...props }, ref) => <StyledPressable {...props} ref={ref} className={className} />,
+  ({ className, children, ...props }, ref) => (
+    <StyledPressable {...props} ref={ref} className={className}>
+      {children}
+    </StyledPressable>
+  ),
 );
 Pressable.displayName = 'Pressable';
 

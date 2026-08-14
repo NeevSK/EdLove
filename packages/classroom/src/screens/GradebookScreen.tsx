@@ -2,6 +2,11 @@
  * GRADEBOOK SCREEN
  */
 
+import GradebookTable from '@repo/classroom/components/grading/GradebookTable';
+import GradeEntryForm from '@repo/classroom/components/grading/GradeEntryForm';
+import GradingSettings from '@repo/classroom/components/grading/GradingSettings';
+import { useGradebook } from '@repo/classroom/hooks/useGradebook';
+import { BrandPulse } from '@repo/ui';
 import {
   Box,
   Button,
@@ -10,17 +15,12 @@ import {
   HStack,
   Pressable,
   ScrollView,
-  Spinner,
   Text,
   VStack,
 } from '@repo/ui/primitives';
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import GradebookTable from '@repo/classroom/components/grading/GradebookTable';
-import GradeEntryForm from '@repo/classroom/components/grading/GradeEntryForm';
-import GradingSettings from '@repo/classroom/components/grading/GradingSettings';
-import { useGradebook } from '@repo/classroom/hooks/useGradebook';
 
 interface GradebookScreenProps {
   classroomId: string;
@@ -159,8 +159,12 @@ export default function GradebookScreen({ classroomId }: GradebookScreenProps) {
 
           {/* Loading State */}
           {isLoading && (
-            <Box className="p-xl items-center">
-              <Spinner className="text-templeGold" />
+            <Box
+              className="p-xl items-center"
+              accessibilityRole="progressbar"
+              accessibilityLabel="Loading gradebook"
+            >
+              <BrandPulse size={28} tintColor="#D4843A" />
               <Text className="mt-md text-phaseText-secondary">
                 {t('common.loading') || 'Loading...'}
               </Text>

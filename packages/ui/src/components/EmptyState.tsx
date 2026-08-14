@@ -16,6 +16,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
+import { tokens } from '@repo/ui/tokens';
 import { duration, easing, color } from './motion';
 import { useBreakpoint } from './layout';
 
@@ -142,20 +143,18 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#2A2118',
+    ...tokens.typography.roles.cardTitle,
+    color: tokens.semantic.text.primary,
     textAlign: 'center',
-    marginTop: 8,
+    marginTop: tokens.spacing.sm,
   },
   message: {
-    fontSize: 13,
-    color: '#8A7B68',
+    ...tokens.typography.roles.body,
+    color: tokens.semantic.text.secondary,
     textAlign: 'center',
-    lineHeight: 19,
-    maxWidth: 280,
+    maxWidth: tokens.layout.pageFrame.stateMessageMaxWidth,
   },
   actions: {
-    marginTop: 8,
+    marginTop: tokens.spacing.sm,
   },
 });

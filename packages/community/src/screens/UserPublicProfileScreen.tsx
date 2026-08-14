@@ -8,6 +8,8 @@ import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import { useRegisterFAB } from '@repo/ui/context';
 import {
   BadgeCheck,
@@ -20,7 +22,7 @@ import {
   ShieldAlert,
   ThumbsUp,
 } from '@repo/ui/icons';
-import { Box, HStack, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -64,14 +66,17 @@ export default function UserPublicProfileScreen() {
   const [user, setUser] = useState<PublicUser | null>(null);
   const [stats, setStats] = useState({ posts: 0, endorsements: 0 });
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [initiatingDM, setInitiatingDM] = useState(false);
   const [showShieldModal, setShowShieldModal] = useState(false);
 
   const fetchProfile = useCallback(async () => {
     setLoading(true);
+    setLoadError(null);
     try {
       if (!userId) {
         console.error('UserPublicProfileScreen: missing user id in route params');
+        setLoadError('This profile could not be identified.');
         setLoading(false);
         return;
       }
@@ -92,6 +97,8 @@ export default function UserPublicProfileScreen() {
           public_profile: userData.public_profile ?? true,
           school_name: (userData.school as any)?.name ?? null,
         });
+      } else {
+        setLoadError('This profile could not be found.');
       }
 
       const { count: postCount } = await supabase
@@ -112,6 +119,7 @@ export default function UserPublicProfileScreen() {
       });
     } catch (err) {
       console.error('UserPublicProfileScreen fetch error', err);
+      setLoadError('We could not load this profile right now.');
     } finally {
       setLoading(false);
     }
@@ -161,11 +169,21 @@ export default function UserPublicProfileScreen() {
 
       {loading ? (
         <Box className="flex-1 items-center justify-center">
-          <Spinner />
+          <BrandPulse size={36} accessibilityLabel="Loading profile" />
           <Text className="text-ink/40 text-xs font-bold uppercase tracking-widest mt-4">
             Gathering Presence...
           </Text>
         </Box>
+      ) : loadError ? (
+        <BrandedErrorState title="Profile could not settle" message={loadError}>
+          <Pressable
+            onPress={() => void fetchProfile()}
+            accessibilityRole="button"
+            accessibilityLabel="Try loading profile again"
+          >
+            <Text className="text-phase-interactive font-bold">Try again</Text>
+          </Pressable>
+        </BrandedErrorState>
       ) : (
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -223,7 +241,7 @@ export default function UserPublicProfileScreen() {
                       >
                         <HStack className="items-center gap-2">
                           {initiatingDM ? (
-                            <Spinner />
+                            <BrandPulse size={22} accessibilityLabel="Opening conversation" />
                           ) : (
                             <Icon as={Send} size="sm" className="text-white" />
                           )}
@@ -297,8 +315,8 @@ export default function UserPublicProfileScreen() {
                       <Box className="w-[1px] bg-border h-12 mx-2" />
 
                       <VStack className="items-center flex-1 gap-2">
-                        <Box className="w-10 h-10 rounded-xl bg-green-500/10 items-center justify-center">
-                          <Icon as={ThumbsUp} size="sm" className="text-green-600" />
+                        <Box className="w-10 h-10 rounded-xl bg-phase-success/10 items-center justify-center">
+                          <Icon as={ThumbsUp} size="sm" className="text-phase-success" />
                         </Box>
                         <VStack className="items-center gap-0.5">
                           <Text className="text-ink text-xl font-black">{stats.endorsements}</Text>

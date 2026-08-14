@@ -1,10 +1,11 @@
+import type { GradeMarkLifecycleContext } from '@repo/classroom/hooks/useGradebook';
 import { api } from '@repo/core/api/client';
 import type { Student } from '@repo/core/types';
-import type { GradeMarkLifecycleContext } from '@repo/classroom/hooks/useGradebook';
 
 import { StudentAnalysisModal } from '@repo/library';
+import { BrandPulse } from '@repo/ui';
 import { Activity, Sparkles, TrendingUp, TriangleAlert } from '@repo/ui/icons';
-import { Box, Heading, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -145,8 +146,12 @@ export default function TeacherAnalysisWorkspace({
         </Box>
 
         {isLoading ? (
-          <Box className="items-center py-20">
-            <Spinner className="text-sanctuarySaffron" />
+          <Box
+            className="items-center py-20"
+            accessibilityRole="progressbar"
+            accessibilityLabel="Loading student analysis"
+          >
+            <BrandPulse size={28} tintColor="#D4843A" />
           </Box>
         ) : loadError ? (
           <Box className="bg-chestnutRed/10 border border-chestnutRed/20 rounded-[24px] p-6">

@@ -1,9 +1,20 @@
-import type React from 'react';
-import { createContext, useCallback, useContext, useMemo, useReducer, useRef } from 'react';
-import { Platform, View } from 'react-native';
-import Animated, { FadeInUp, FadeOutUp, Layout } from 'react-native-reanimated';
+import { Text } from '@repo/ui/components/ui/text';
 import { Toast, ToastTitle } from '@repo/ui/components/ui/toast';
 import { VStack } from '@repo/ui/components/ui/vstack';
+import { useAccessibility } from '@repo/ui/hooks/useAccessibility';
+import type React from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+} from 'react';
+import { Platform, Pressable, View } from 'react-native';
+import Animated, { FadeInUp, FadeOutUp, Layout } from 'react-native-reanimated';
+import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 
 /**
  * Toast State Excellence (2026 Standard)
@@ -12,7 +23,7 @@ import { VStack } from '@repo/ui/components/ui/vstack';
  * Uses a reducer for atomic state transitions and rigorous memoization.
  */
 
-type ToastType = 'success' | 'error' | 'info' | 'sanctuary' | 'warning';
+export type ToastType = 'success' | 'error' | 'info' | 'sanctuary' | 'warning';
 
 interface ToastItem {
   id: string;
@@ -44,21 +55,37 @@ function toastReducer(state: ToastItem[], action: ToastAction): ToastItem[] {
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [toasts, dispatch] = useReducer(toastReducer, []);
   const counterRef = useRef(0);
+  const timersRef = useRef(new Map<string, ReturnType<typeof setTimeout>>());
+  const insets = useContext(SafeAreaInsetsContext) ?? { top: 0, bottom: 0, left: 0, right: 0 };
+  const { isReduceMotionEnabled } = useAccessibility();
 
   const removeToast = useCallback((id: string) => {
+    const timer = timersRef.current.get(id);
+    if (timer) clearTimeout(timer);
+    timersRef.current.delete(id);
     dispatch({ type: 'REMOVE_TOAST', id });
   }, []);
 
   const showToast = useCallback(
-    ({ message, type = 'sanctuary', duration = 3000 }: Omit<ToastItem, 'id'>) => {
+    ({ message, type = 'sanctuary', duration = 4000 }: Omit<ToastItem, 'id'>) => {
       const id = `toast-${counterRef.current++}`;
-      dispatch({ type: 'ADD_TOAST', payload: { id, message, type, duration } });
+      const readableDuration = Math.max(2500, Math.min(duration, 10000));
+      dispatch({ type: 'ADD_TOAST', payload: { id, message, type, duration: readableDuration } });
 
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         removeToast(id);
-      }, duration);
+      }, readableDuration);
+      timersRef.current.set(id, timer);
     },
     [removeToast],
+  );
+
+  useEffect(
+    () => () => {
+      timersRef.current.forEach((timer) => clearTimeout(timer));
+      timersRef.current.clear();
+    },
+    [],
   );
 
   const contextValue = useMemo(() => ({ showToast, removeToast }), [showToast, removeToast]);
@@ -82,29 +109,12 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  const getIcon = (type: ToastType) => {
-    switch (type) {
-      case 'success':
-        return '✨';
-      case 'error':
-        return '⚠️';
-      case 'warning':
-        return '🔸';
-      case 'info':
-        return 'ℹ️';
-      case 'sanctuary':
-        return '💫';
-      default:
-        return '💫';
-    }
-  };
-
   return (
     <ToastContext.Provider value={contextValue}>
       {children}
       <VStack
-        className="absolute top-12 left-4 right-4 z-[1000] gap-2"
-        style={{ pointerEvents: 'box-none' }}
+        className="absolute left-4 right-4 z-[1000] gap-2"
+        style={{ top: Math.max(insets.top + 12, 24), pointerEvents: 'box-none' }}
       >
         {toasts.map((toast) => {
           const ToastContainer = Platform.OS === 'web' ? View : Animated.View;
@@ -112,9 +122,9 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             Platform.OS === 'web'
               ? ({ className: 'w-full', style: { pointerEvents: 'auto' } } as const)
               : ({
-                  entering: FadeInUp,
-                  exiting: FadeOutUp,
-                  layout: Layout.springify(),
+                  entering: isReduceMotionEnabled ? undefined : FadeInUp,
+                  exiting: isReduceMotionEnabled ? undefined : FadeOutUp,
+                  layout: isReduceMotionEnabled ? undefined : Layout.springify(),
                   className: 'w-full',
                   style: { pointerEvents: 'auto' },
                 } as const);
@@ -123,10 +133,17 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             <ToastContainer key={toast.id} {...toastProps}>
               <Toast action={mapTypeToVariant(toast.type)}>
                 <VStack className="flex-1">
-                  <ToastTitle>
-                    {getIcon(toast.type)} {toast.message}
-                  </ToastTitle>
+                  <ToastTitle>{toast.message}</ToastTitle>
                 </VStack>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Dismiss notification"
+                  accessibilityHint="Closes this notification"
+                  onPress={() => removeToast(toast.id)}
+                  className="p-1 active:opacity-60"
+                >
+                  <Text style={{ color: '#D8D0C3', fontSize: 18, lineHeight: 20 }}>×</Text>
+                </Pressable>
               </Toast>
             </ToastContainer>
           );

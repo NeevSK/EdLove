@@ -17,6 +17,7 @@ import { SanctuaryLegendList } from '@repo/ui/components/SanctuaryLegendList';
 import { ChatProvider } from '@repo/ui/context/ChatContext';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { MessageSquare } from '@repo/ui/icons';
 import {
   AnimatedView,
@@ -24,7 +25,6 @@ import {
   HStack,
   Icon,
   Pressable,
-  Spinner,
   Text,
   VStack,
 } from '@repo/ui/primitives';
@@ -249,7 +249,7 @@ export default function BaseChatScreen({
         <Box className="flex-1">
           {loading ? (
             <Box className="flex-1 items-center justify-center">
-              <Spinner />
+              <BrandPulse size={32} accessibilityLabel="Loading messages" />
               <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-widest mt-4">
                 Tuning Frequencies...
               </Text>
@@ -259,7 +259,11 @@ export default function BaseChatScreen({
               title="Messages could not settle"
               message={isOffline ? 'Reconnect to try again.' : loadError}
             >
-              <Pressable onPress={() => setRetryNonce((value) => value + 1)}>
+              <Pressable
+                onPress={() => setRetryNonce((value) => value + 1)}
+                accessibilityRole="button"
+                accessibilityLabel="Try loading messages again"
+              >
                 <Text className="text-phase-interactive font-bold">Try again</Text>
               </Pressable>
             </BrandedErrorState>
@@ -321,8 +325,8 @@ export default function BaseChatScreen({
                 </Text>
               </Box>
             ) : isBlocked ? (
-              <Box className="py-2 items-center bg-red-500/5 rounded-xl border border-dashed border-red-500/20">
-                <Text className="text-red-500/60 text-[11px] font-medium italic">
+              <Box className="py-2 items-center bg-phase-danger/5 rounded-xl border border-dashed border-phase-danger/20">
+                <Text className="text-phase-danger text-[11px] font-medium italic">
                   {blockedMessage || 'You cannot send messages to this sanctuary.'}
                 </Text>
               </Box>

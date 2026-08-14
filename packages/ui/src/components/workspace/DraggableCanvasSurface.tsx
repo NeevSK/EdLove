@@ -20,13 +20,18 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { runOnJS } from 'react-native-worklets';
+import { resolveDragTranslation } from './reorder';
 
 interface DraggableCanvasSurfaceProps {
   children: React.ReactNode;
   id: string;
+  dragAxis?: 'vertical' | 'both';
+  enabled?: boolean;
   onDragStart?: () => void;
   onDragEnd?: (id: string, translation: { x: number; y: number }) => void;
 }
+
+export { resolveDragTranslation } from './reorder';
 
 /**
  * DRAGGABLE CANVAS SURFACE
@@ -47,6 +52,8 @@ const styles = StyleSheet.create({
 export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
   children,
   id,
+  dragAxis = 'both',
+  enabled = true,
   onDragStart,
   onDragEnd,
 }) => {
@@ -74,8 +81,14 @@ export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
       'worklet';
       if (!isDragging.value) return;
       // @ts-ignore - translationX/translationY exist in runtime but type definition is incomplete
-      translateX.value = event.translationX;
-      translateY.value = event.translationY;
+      const translation = resolveDragTranslation(dragAxis, {
+        // @ts-ignore - translationX/translationY exist in runtime but type definition is incomplete
+        x: event.translationX,
+        // @ts-ignore - translationX/translationY exist in runtime but type definition is incomplete
+        y: event.translationY,
+      });
+      translateX.value = translation.x;
+      translateY.value = translation.y;
     },
     onDeactivate: () => {
       'worklet';
@@ -111,9 +124,13 @@ export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <GestureDetector gesture={composed}>
-        <Animated.View style={[styles.wrapper, animatedStyle]}>{children}</Animated.View>
-      </GestureDetector>
+      {enabled ? (
+        <GestureDetector gesture={composed}>
+          <Animated.View style={[styles.wrapper, animatedStyle]}>{children}</Animated.View>
+        </GestureDetector>
+      ) : (
+        children
+      )}
     </GestureHandlerRootView>
   );
 };

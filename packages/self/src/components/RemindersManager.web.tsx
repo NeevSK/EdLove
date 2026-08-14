@@ -4,6 +4,14 @@
  * Standardized to Zero-Legacy: purged raw HTML styles and integrated @repo/ui primitives.
  */
 
+import {
+  createReminder,
+  deleteReminder,
+  fetchReminders,
+  type ReminderRecord,
+  updateReminder,
+} from '@repo/self/api/selfFeatureRepository';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { Bell, Droplets, Plus, Trash2, X } from '@repo/ui/icons';
 import {
   Box,
@@ -15,19 +23,11 @@ import {
   Input,
   InputField,
   Pressable,
-  Spinner,
   Text,
   VStack,
 } from '@repo/ui/primitives';
 import { useCallback, useEffect, useState } from 'react';
 import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
-import {
-  createReminder,
-  deleteReminder,
-  fetchReminders,
-  type ReminderRecord,
-  updateReminder,
-} from '@repo/self/api/selfFeatureRepository';
 
 type Reminder = ReminderRecord;
 
@@ -189,7 +189,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
             >
               <HStack className="items-center gap-2">
                 {saving ? (
-                  <Spinner size="small" color="#544A3D" />
+                  <BrandPulse size={18} tintColor="#544A3D" accessibilityLabel="Saving reminder" />
                 ) : (
                   <Icon as={Plus} size={16} className="text-obsidian" />
                 )}

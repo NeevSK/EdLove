@@ -36,13 +36,17 @@ const withCustomGradleProperties = (config) => {
       }
     };
 
-    const gradleHeap = process.env.GRADLE_MAX_HEAP || '4096m';
-    const gradleMetaspace = process.env.GRADLE_MAX_METASPACE || '512m';
-    const gradleWorkers = process.env.GRADLE_MAX_WORKERS || '2';
-    updateProperty('org.gradle.jvmargs', `-Xmx${gradleHeap} -XX:MaxMetaspaceSize=${gradleMetaspace}`);
+    const gradleHeap = process.env.GRADLE_MAX_HEAP || '3072m';
+    const gradleMetaspace = process.env.GRADLE_MAX_METASPACE || '384m';
+    const gradleWorkers = process.env.GRADLE_MAX_WORKERS || '1';
+    updateProperty(
+      'org.gradle.jvmargs',
+      `-Xmx${gradleHeap} -XX:MaxMetaspaceSize=${gradleMetaspace} -XX:+UseG1GC`,
+    );
     updateProperty('org.gradle.parallel', 'false');
     updateProperty('org.gradle.workers.max', gradleWorkers);
     updateProperty('org.gradle.daemon', 'false');
+    updateProperty('kotlin.daemon.jvm.options', '-Xmx1024m');
     updateProperty('reactNativeArchitectures', arch);
 
     return cfg;

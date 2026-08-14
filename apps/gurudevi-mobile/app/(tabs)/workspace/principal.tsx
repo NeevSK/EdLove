@@ -1,7 +1,8 @@
 import PrincipalDashboard from '@repo/admin/screens/PrincipalDashboard';
-import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { usePermissions } from '@repo/core/logic';
-import { Center, Spinner } from '@repo/ui/primitives';
+import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { Center } from '@repo/ui/primitives';
 
 export default function PrincipalRoute() {
   const { context } = usePermissions();
@@ -10,7 +11,7 @@ export default function PrincipalRoute() {
   if (loading) {
     return (
       <Center className="flex-1 bg-phase-canvas">
-        <Spinner />
+        <BrandPulse size={32} accessibilityLabel="Loading workspace" />
       </Center>
     );
   }

@@ -61,6 +61,9 @@ export function MobileWorkspaceCanvas<
               onPressSurfaceInfo={props.onPressSurfaceInfo}
               onToggleHidden={props.onToggleHidden}
               onReorder={props.onReorder}
+              dragEnabled={Boolean(props.onReorder)}
+              dragAxis="vertical"
+              reorderHint="Hold and drag up or down to reorder"
             />
           ))}
         </View>

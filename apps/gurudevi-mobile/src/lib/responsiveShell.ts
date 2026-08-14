@@ -7,6 +7,71 @@ export type ResponsiveShellMode =
   | 'webTabletCompact'
   | 'webDesktop';
 
+export type NativeShellOrientation = 'portrait' | 'landscape';
+
+/** Native composition modes. Landscape is split by device class, not only by orientation. */
+export type NativeShellMode =
+  | 'phonePortrait'
+  | 'phoneLandscape'
+  | 'phoneLandscapeShort'
+  | 'tabletPortrait'
+  | 'tabletLandscape';
+
+export type NativeShellTextWidthOptions = {
+  /** Width occupied by a leading icon or control. */
+  leadingWidth?: number;
+  /** Width occupied by a trailing action or control. */
+  trailingWidth?: number;
+  /** Gap between text and an adjacent control. */
+  controlGap?: number;
+  /** Horizontal inset reserved by the containing surface. */
+  horizontalPadding?: number;
+};
+
+export type NativeShellConfig = {
+  orientation: NativeShellOrientation;
+  isLandscape: boolean;
+  mode: NativeShellMode;
+  isTablet: boolean;
+  isShortHeight: boolean;
+  header: {
+    horizontalPadding: number;
+    subtitleVisible: boolean;
+  };
+  tabBar: {
+    minHeight: number;
+    paddingTop: number;
+    paddingBottom: number;
+  };
+  modal: {
+    contentPadding: number;
+    minHeight: number;
+  };
+  /** Additive contract for screens that opt into native landscape composition. */
+  spacing: {
+    content: number;
+    section: number;
+    chrome: number;
+  };
+  typography: {
+    titleSize: number;
+    titleLineHeight: number;
+    bodySize: number;
+    bodyLineHeight: number;
+    chromeSize: number;
+  };
+  visibleChrome: {
+    subtitle: boolean;
+    tabLabels: boolean;
+    secondaryPane: boolean;
+  };
+};
+
+export const NATIVE_SHELL_BREAKPOINTS = {
+  tabletMinWidth: 768,
+  shortLandscapeMaxHeight: 480,
+} as const;
+
 /**
  * Web shell bands are deliberately about available composition space, not
  * device names. The compact band keeps navigation horizontal, the middle
@@ -17,6 +82,129 @@ export const WEB_SHELL_BREAKPOINTS = {
   compactMaxWidth: 920,
   tabletMaxWidth: 1280,
 } as const;
+
+export const NATIVE_SHELL_TOKENS = {
+  header: {
+    portraitPadding: spacing.md,
+    landscapePadding: spacing.lg,
+  },
+  tabBar: {
+    portraitHeight: 64,
+    landscapeHeight: 52,
+    portraitTop: spacing.sm,
+    landscapeTop: spacing.xs,
+  },
+  modal: {
+    portraitPadding: spacing.md,
+    landscapePadding: spacing.lg,
+    portraitMinHeight: 400,
+    landscapeMinHeight: 280,
+  },
+} as const;
+
+export function getNativeShellConfig(
+  width: number,
+  height: number,
+  bottomInset = 0,
+): NativeShellConfig {
+  const isLandscape = width > height;
+  const isTablet = Math.min(width, height) >= NATIVE_SHELL_BREAKPOINTS.tabletMinWidth;
+  const isShortHeight =
+    isLandscape && height <= NATIVE_SHELL_BREAKPOINTS.shortLandscapeMaxHeight;
+  const mode: NativeShellMode = isTablet
+    ? isLandscape
+      ? 'tabletLandscape'
+      : 'tabletPortrait'
+    : isLandscape
+      ? isShortHeight
+        ? 'phoneLandscapeShort'
+        : 'phoneLandscape'
+      : 'phonePortrait';
+  const isShortLandscape = mode === 'phoneLandscapeShort';
+
+  return {
+    orientation: isLandscape ? 'landscape' : 'portrait',
+    isLandscape,
+    mode,
+    isTablet,
+    isShortHeight,
+    header: {
+      horizontalPadding: isLandscape
+        ? NATIVE_SHELL_TOKENS.header.landscapePadding
+        : NATIVE_SHELL_TOKENS.header.portraitPadding,
+      subtitleVisible: !isLandscape,
+    },
+    tabBar: {
+      minHeight:
+        (isLandscape
+          ? NATIVE_SHELL_TOKENS.tabBar.landscapeHeight
+          : NATIVE_SHELL_TOKENS.tabBar.portraitHeight) + bottomInset,
+      paddingTop: isLandscape
+        ? NATIVE_SHELL_TOKENS.tabBar.landscapeTop
+        : NATIVE_SHELL_TOKENS.tabBar.portraitTop,
+      paddingBottom: bottomInset,
+    },
+    modal: {
+      contentPadding: isLandscape
+        ? NATIVE_SHELL_TOKENS.modal.landscapePadding
+        : NATIVE_SHELL_TOKENS.modal.portraitPadding,
+      minHeight: isLandscape
+        ? NATIVE_SHELL_TOKENS.modal.landscapeMinHeight
+        : NATIVE_SHELL_TOKENS.modal.portraitMinHeight,
+    },
+    spacing: {
+      content: isShortLandscape ? spacing.sm : isLandscape ? spacing.md : spacing.lg,
+      section: isShortLandscape ? spacing.md : isLandscape ? spacing.lg : spacing.xl,
+      chrome: isShortLandscape ? spacing.xs : isLandscape ? spacing.sm : spacing.md,
+    },
+    typography: {
+      // Keep body text at the readable 14sp floor; reclaim height from chrome.
+      titleSize: isShortLandscape
+        ? typography.fontSize.lg
+        : isLandscape
+          ? typography.fontSize.xl
+          : typography.fontSize['2xl'],
+      titleLineHeight: isShortLandscape
+        ? typography.fontSize.lg * typography.lineHeight.tight
+        : isLandscape
+          ? typography.fontSize.xl * typography.lineHeight.tight
+          : typography.fontSize['2xl'] * typography.lineHeight.tight,
+      bodySize: typography.fontSize.sm,
+      bodyLineHeight: typography.fontSize.sm * typography.lineHeight.relaxed,
+      chromeSize: typography.fontSize.xs,
+    },
+    visibleChrome: {
+      subtitle: !isLandscape,
+      tabLabels: !isShortLandscape,
+      secondaryPane: isTablet && isLandscape,
+    },
+  };
+}
+
+/**
+ * Returns the usable width for localized text beside optional controls.
+ * Callers should apply the result as maxWidth and allow flexShrink: 1;
+ * no locale-specific character count is assumed.
+ */
+export function getNativeShellTextWidth(
+  containerWidth: number,
+  options: NativeShellTextWidthOptions = {},
+): number {
+  const {
+    leadingWidth = 0,
+    trailingWidth = 0,
+    controlGap = spacing.sm,
+    horizontalPadding = spacing.md,
+  } = options;
+  const reservedControls =
+    leadingWidth > 0 && trailingWidth > 0
+      ? leadingWidth + trailingWidth + controlGap * 2
+      : leadingWidth + trailingWidth + (leadingWidth > 0 || trailingWidth > 0 ? controlGap : 0);
+  return Math.max(0, containerWidth - horizontalPadding * 2 - reservedControls);
+}
+
+/** Backward-friendly semantic alias for callers working with translated copy. */
+export const getLocalizedTextWidth = getNativeShellTextWidth;
 
 function withAlpha(hexColor: string, alpha: number) {
   const value = hexColor.replace('#', '');
@@ -52,6 +240,7 @@ export const webShellTokens = {
     active: colors.sageGreen,
     activeSurface: withAlpha(colors.sageGreen, 0.16),
     activeBorder: withAlpha(colors.sageGreen, 0.5),
+    focusRing: colors.sanctuarySaffron,
     controlSurface: withAlpha(colors.inkTruth, 0.08),
     badge: colors.templeGold,
     badgeText: colors.ink,

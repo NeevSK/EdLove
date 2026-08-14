@@ -1,11 +1,11 @@
 import { GuestDataSync } from '@repo/core/native';
-
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
 import { Check, CircleAlert, TriangleAlert } from '@repo/ui/icons';
 import { useCallback, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, HStack, Spinner, Text, VStack } from '@repo/ui/gluestack';
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
-import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { BrandPulse } from './BrandPulse';
 
 interface GuestDataSyncModalProps {
   isOpen: boolean;
@@ -199,7 +199,7 @@ export default function GuestDataSyncModal({
       <VStack className="gap-6">
         {state.status === 'loading' && (
           <HStack className="justify-center p-8">
-            <Spinner size="large" className="text-phase-accent" />
+            <BrandPulse size={40} tintColor="#D4843A" />
           </HStack>
         )}
 
@@ -289,7 +289,7 @@ export default function GuestDataSyncModal({
 
         {state.status === 'syncing' && (
           <VStack className="gap-4 items-center">
-            <Spinner size="large" className="text-phase-accent" />
+            <BrandPulse size={40} tintColor="#D4843A" />
             <Text className="text-phase-text-primary text-center">{state.progress.step}</Text>
             <Text className="text-phase-text-secondary text-xs">
               {state.progress.current} / {state.progress.total} items synced

@@ -1,32 +1,44 @@
 import { useEntity } from '@repo/core/hooks';
 import type { EntityType } from '@repo/core/logic';
-import IdentityCard, { type IdentityData } from '@repo/ui/components/IdentityCard';
-import { Box, Center, Spinner } from '@repo/ui/primitives';
-import { useLocalSearchParams } from 'expo-router';
 import { useProfile } from '@repo/profile/hooks/useProfile';
+import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import IdentityCard, { type IdentityData } from '@repo/ui/components/IdentityCard';
+import { Box } from '@repo/ui/primitives';
+import { useLocalSearchParams } from 'expo-router';
 
 export default function PublicProfileScreenWeb() {
   const params = useLocalSearchParams<{ id?: string; type?: EntityType }>();
   const id = Array.isArray(params.id) ? params.id[0] : params.id || '';
   const type = (Array.isArray(params.type) ? params.type[0] : params.type) || 'user';
 
-  const { profile, loading: isProfileLoading } = useProfile(type === 'user' ? id : undefined);
+  const {
+    profile,
+    loading: isProfileLoading,
+    error: profileError,
+  } = useProfile(type === 'user' ? id : undefined);
   const { instance, isLoading, error } = useEntity(type as EntityType, id);
 
   if (type === 'user') {
     if (isProfileLoading) {
       return (
-        <Center className="h-screen">
-          <Spinner size="large" />
-        </Center>
+        <Box className="h-screen items-center justify-center">
+          <BrandPulse accessibilityLabel="Loading public profile" />
+        </Box>
       );
+    }
+
+    if (profileError) {
+      return <BrandedErrorState title="Public profile unavailable" message={profileError} />;
     }
 
     if (!profile) {
       return (
-        <Box className="p-10 text-center text-text-tertiary">
-          Profile Not Found or Error Loading
-        </Box>
+        <BrandedEmptyState
+          title="Profile not available"
+          message="There is no public profile to show."
+        />
       );
     }
 
@@ -39,15 +51,22 @@ export default function PublicProfileScreenWeb() {
 
   if (isLoading) {
     return (
-      <Center className="h-screen">
-        <Spinner size="large" />
-      </Center>
+      <Box className="h-screen items-center justify-center">
+        <BrandPulse accessibilityLabel="Loading public profile" />
+      </Box>
     );
   }
 
-  if (error || !instance) {
+  if (error) {
+    return <BrandedErrorState title="Public profile unavailable" message={String(error)} />;
+  }
+
+  if (!instance) {
     return (
-      <Box className="p-10 text-center text-text-tertiary">Profile Not Found or Error Loading</Box>
+      <BrandedEmptyState
+        title="Profile not available"
+        message="There is no public profile to show."
+      />
     );
   }
 

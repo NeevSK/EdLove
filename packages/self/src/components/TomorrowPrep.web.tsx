@@ -5,6 +5,9 @@
  */
 
 import { useTemporalStore } from '@repo/core/logic';
+import { useTomorrowPrep } from '@repo/self/hooks/useTomorrowPrep';
+import type { DailyPrepItem } from '@repo/self/types';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { Check, Moon, Plus, Target, Trash2, X } from '@repo/ui/icons';
 import {
   Box,
@@ -17,14 +20,11 @@ import {
   Pressable,
   Progress,
   ProgressFilledTrack,
-  Spinner,
   Text,
   VStack,
 } from '@repo/ui/primitives';
 import { useEffect, useState } from 'react';
 import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
-import { useTomorrowPrep } from '@repo/self/hooks/useTomorrowPrep';
-import type { DailyPrepItem } from '@repo/self/types';
 
 interface TomorrowPrepProps {
   userId?: string;
@@ -175,7 +175,11 @@ export default function TomorrowPrep({ userId }: TomorrowPrepProps) {
             >
               <HStack className="items-center justify-center">
                 {saving ? (
-                  <Spinner size="small" color="#544A3D" />
+                  <BrandPulse
+                    size={18}
+                    tintColor="#544A3D"
+                    accessibilityLabel="Saving tomorrow plan"
+                  />
                 ) : (
                   <Icon as={Plus} size={18} className="text-obsidian" />
                 )}

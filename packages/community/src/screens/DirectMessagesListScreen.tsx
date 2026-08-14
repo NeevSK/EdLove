@@ -6,11 +6,12 @@
  */
 
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { ChevronRight } from '@repo/ui/icons';
-import { Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -76,9 +77,13 @@ export default function DirectMessagesListScreen() {
   if (error && conversations.length === 0) {
     return (
       <BrandedErrorState title="The conversation list could not settle" message={error}>
-        <Text onPress={() => void load()} className="text-phase-interactive font-bold">
-          Try again
-        </Text>
+        <Pressable
+          onPress={() => void load()}
+          accessibilityRole="button"
+          accessibilityLabel="Try loading conversations again"
+        >
+          <Text className="text-phase-interactive font-bold">Try again</Text>
+        </Pressable>
       </BrandedErrorState>
     );
   }
@@ -126,7 +131,7 @@ export default function DirectMessagesListScreen() {
   if (loading) {
     return (
       <Box className="flex-1 justify-center items-center bg-phase-canvas">
-        <Spinner />
+        <BrandPulse size={32} accessibilityLabel="Loading conversations" />
         <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-widest mt-4">
           Gathering Resonances...
         </Text>

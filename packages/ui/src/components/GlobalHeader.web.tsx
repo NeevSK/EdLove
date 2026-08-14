@@ -1,4 +1,8 @@
 import { type TotalState, useNotifications, usePermissions, useStore } from '@repo/core/logic';
+import NotificationDrawer from '@repo/ui/components/NotificationDrawer';
+import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
+import { UserAvatar } from '@repo/ui/components/UserAvatar';
+import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
 import {
   Bell,
   ChevronLeft,
@@ -10,18 +14,15 @@ import {
   Search,
   X,
 } from '@repo/ui/icons';
+import { Pressable } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
+import { hapticLight } from '@repo/ui/utils/haptics';
 import { router } from 'expo-router';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, Easing } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
-import { Pressable } from '@repo/ui/primitives';
-import { hapticLight } from '@repo/ui/utils/haptics';
-import NotificationDrawer from '@repo/ui/components/NotificationDrawer';
-import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
-import { UserAvatar } from '@repo/ui/components/UserAvatar';
 
 export interface GlobalHeaderProps {
   title?: string;
@@ -139,9 +140,9 @@ export default function GlobalHeader({
 
   const greetingDetails = useMemo(() => {
     const hour = new Date().getHours();
-    if (hour < 12) return { text: t('goodMorning'), emoji: '🌅' };
-    if (hour < 18) return { text: t('goodAfternoon'), emoji: '☀️' };
-    return { text: t('goodEvening'), emoji: '🏮' };
+    if (hour < 12) return { text: t('goodMorning') };
+    if (hour < 18) return { text: t('goodAfternoon') };
+    return { text: t('goodEvening') };
   }, [t]);
 
   const handleToggleSearch = useCallback(() => {
@@ -243,7 +244,7 @@ export default function GlobalHeader({
                   <UserAvatar
                     avatarUrl={avatarUrl || user?.avatar_url}
                     fullName={userFullName}
-                    fallbackEmoji={roleContextEmoji(can)}
+                    fallbackEmoji={roleContextFallback(can)}
                     size={32}
                     borderRadius={12}
                   />
@@ -257,7 +258,6 @@ export default function GlobalHeader({
                   <Text className="text-[10px] font-bold tracking-widest uppercase text-phase-text-secondary">
                     {title ? subtitle : greetingDetails.text}
                   </Text>
-                  {!title && <Text className="text-sm -mt-0.5">{greetingDetails.emoji}</Text>}
                 </HStack>
               )}
               <Text className="text-lg font-bold text-phase-text-primary">
@@ -325,8 +325,12 @@ export default function GlobalHeader({
                       <Box
                         className="ml-auto w-2.5 h-2.5 rounded-full"
                         style={{
-                          backgroundColor: error ? '#ef4444' : notifLoading ? '#f59e0b' : '#10b981',
-                          boxShadow: `0 0 10px ${error ? '#ef4444' : notifLoading ? '#f59e0b' : '#10b981'}`,
+                          backgroundColor: error
+                            ? tokens.colors.error
+                            : notifLoading
+                              ? tokens.colors.warning
+                              : tokens.colors.success,
+                          boxShadow: `0 0 10px ${error ? tokens.colors.error : notifLoading ? tokens.colors.warning : tokens.colors.success}`,
                         }}
                       />
                     )}
@@ -357,12 +361,12 @@ export default function GlobalHeader({
   );
 }
 
-function roleContextEmoji(can: (action: any, subject: any) => boolean) {
-  if (can('manage', 'AdminDashboard')) return '⚡';
-  if (can('manage', 'PrincipalDashboard')) return '🏛️';
-  if (can('manage', 'SectionHeadDashboard')) return '🏔️';
-  if (can('manage', 'GradeHeadDashboard')) return '🌲';
-  if (can('manage', 'TeacherDashboard')) return '🌱';
-  if (can('manage', 'StudentDashboard')) return '📚';
-  return '🌿';
+function roleContextFallback(can: (action: any, subject: any) => boolean) {
+  if (can('manage', 'AdminDashboard')) return 'A';
+  if (can('manage', 'PrincipalDashboard')) return 'P';
+  if (can('manage', 'SectionHeadDashboard')) return 'S';
+  if (can('manage', 'GradeHeadDashboard')) return 'G';
+  if (can('manage', 'TeacherDashboard')) return 'T';
+  if (can('manage', 'StudentDashboard')) return 'L';
+  return 'G';
 }

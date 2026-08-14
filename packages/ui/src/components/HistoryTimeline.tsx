@@ -1,8 +1,9 @@
 import { type AuditLogEntry, historyAPI } from '@repo/core/logic';
+import { BrandPulse } from './BrandPulse';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { ActivityIndicator, ScrollView, Text, View } from '@repo/ui/primitives';
+import { ScrollView, Text, View } from '@repo/ui/primitives';
 
 interface HistoryTimelineProps {
   tableName: string;
@@ -30,7 +31,7 @@ export const HistoryTimeline: React.FC<HistoryTimelineProps> = ({ tableName, rec
     fetchHistory();
   }, [tableName, recordId]);
 
-  if (loading) return <ActivityIndicator size="small" color="#666" />;
+  if (loading) return <BrandPulse size={24} tintColor="#666666" />;
   if (error) return <Text style={styles.error}>{error}</Text>;
   if (history.length === 0)
     return <Text style={styles.empty}>No history found for this item.</Text>;

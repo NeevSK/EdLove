@@ -10,6 +10,7 @@
  */
 
 import { handleAPIError } from '@repo/core/logic';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { CircleCheck, Send, X } from '@repo/ui/icons';
 import {
@@ -19,7 +20,6 @@ import {
   HStack,
   Icon,
   Image as ImageIcon,
-  Spinner,
   Text,
   VStack,
 } from '@repo/ui/primitives';
@@ -134,7 +134,11 @@ export default function SubmissionModal({
         >
           {isSubmitting ? (
             <HStack className="items-center gap-2">
-              <Spinner className="text-phaseText-inverse" size="small" />
+              <BrandPulse
+                size={20}
+                tintColor="#FFFFFF"
+                accessibilityLabel="Submitting assignment"
+              />
               <ButtonText className="text-phaseText-inverse font-bold text-lg">
                 {t('submission.submitting') || 'Turning in...'}
               </ButtonText>

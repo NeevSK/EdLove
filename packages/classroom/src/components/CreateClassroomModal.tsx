@@ -1,8 +1,9 @@
+import GuestConversionPrompt from '@repo/classroom/shared/GuestConversionPrompt';
 import { api, communityAPI, identityAPI } from '@repo/core/api/client';
 import { useEntity } from '@repo/core/hooks';
 import { handleAPIError } from '@repo/core/logic';
-
 import { resolveQR, ScannerModal } from '@repo/scanner-kit';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { Globe, ScanLine } from '@repo/ui/icons';
 import {
@@ -18,7 +19,6 @@ import {
   Input,
   InputField,
   Pressable,
-  Spinner,
   Text,
   useTheme,
   VStack,
@@ -28,7 +28,6 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
-import GuestConversionPrompt from '@repo/classroom/shared/GuestConversionPrompt';
 
 // Constants for Classroom logic
 const CLASSROOM_THEMES = [
@@ -480,7 +479,11 @@ export default function CreateClassroomModal({
                   }
                 >
                   {isSubmitting ? (
-                    <Spinner size="small" className="text-white" />
+                    <BrandPulse
+                      size={20}
+                      tintColor="#FFFFFF"
+                      accessibilityLabel="Creating classroom"
+                    />
                   ) : (
                     <ButtonText className="text-white">
                       {mode === 'edit' ? 'Save Changes' : 'Establish Sanctuary'}

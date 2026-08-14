@@ -4,13 +4,15 @@ import { usePermissions, useStore } from '@repo/core/logic';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import { Check, RefreshCw, Trash2, X } from '@repo/ui/icons';
 import {
   Box,
   HStack,
   Pressable,
   Icon as SanctuaryIcon,
-  Spinner,
   Text,
   useTheme,
   VStack,
@@ -27,6 +29,7 @@ interface CuratorState {
   stagingItems: any[];
   brokenItems: any[];
   loading: boolean;
+  error: string | null;
   activeTab: CuratorTab;
 }
 
@@ -35,20 +38,23 @@ type CuratorAction =
   | { type: 'SET_STAGING'; payload: any[] }
   | { type: 'SET_BROKEN'; payload: any[] }
   | { type: 'SET_TAB'; payload: CuratorTab }
+  | { type: 'SET_ERROR'; payload: string }
   | { type: 'FINISH_LOADING' };
 
 const curatorReducer = (state: CuratorState, action: CuratorAction): CuratorState => {
   switch (action.type) {
     case 'START_LOADING':
-      return { ...state, loading: true };
+      return { ...state, loading: true, error: null };
     case 'SET_STAGING':
-      return { ...state, stagingItems: action.payload, loading: false };
+      return { ...state, stagingItems: action.payload, loading: false, error: null };
     case 'SET_BROKEN':
-      return { ...state, brokenItems: action.payload, loading: false };
+      return { ...state, brokenItems: action.payload, loading: false, error: null };
     case 'SET_TAB':
       return { ...state, activeTab: action.payload };
     case 'FINISH_LOADING':
       return { ...state, loading: false };
+    case 'SET_ERROR':
+      return { ...state, loading: false, error: action.payload };
     default:
       return state;
   }
@@ -58,6 +64,7 @@ const initialState: CuratorState = {
   stagingItems: [],
   brokenItems: [],
   loading: true,
+  error: null,
   activeTab: 'staging',
 };
 
@@ -86,7 +93,7 @@ export default function CuratorReviewScreen() {
       .order('created_at', { ascending: false });
 
     if (!error) dispatch({ type: 'SET_STAGING', payload: data || [] });
-    else dispatch({ type: 'FINISH_LOADING' });
+    else dispatch({ type: 'SET_ERROR', payload: error.message });
   }, []);
 
   const fetchBroken = useCallback(async () => {
@@ -98,7 +105,7 @@ export default function CuratorReviewScreen() {
       .order('fail_count', { ascending: false });
 
     if (!error) dispatch({ type: 'SET_BROKEN', payload: data || [] });
-    else dispatch({ type: 'FINISH_LOADING' });
+    else dispatch({ type: 'SET_ERROR', payload: error.message });
   }, []);
 
   const handlePublish = useCallback(
@@ -303,9 +310,20 @@ export default function CuratorReviewScreen() {
 
       {state.loading ? (
         <Box className="mt-10 items-center">
-          <Spinner size="large" color={theme.accent.action} />
+          <BrandPulse size={40} tintColor={theme.accent.action} accessibilityLabel="Loading curator queue" />
         </Box>
       ) : (
+        state.error ? (
+          <BrandedErrorState title="Curator queue unavailable" message={state.error}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Retry curator queue"
+              onPress={() => (state.activeTab === 'staging' ? void fetchStaging() : void fetchBroken())}
+            >
+              <Text className="font-bold text-phaseText-primary">Retry</Text>
+            </Pressable>
+          </BrandedErrorState>
+        ) : (
         <SanctuaryFlashList
           data={activeData}
           keyExtractor={(item) => item.id}
@@ -313,13 +331,10 @@ export default function CuratorReviewScreen() {
           contentContainerStyle={{ padding: 16 }}
           estimatedItemSize={120}
           ListEmptyComponent={
-            <Box className="mt-20 items-center">
-              <Text className="text-phaseText-secondary text-center">
-                The wisdom stream is quiet today.
-              </Text>
-            </Box>
+            <BrandedEmptyState title="The wisdom stream is quiet" message="There are no items waiting in this queue." />
           }
         />
+        )
       )}
     </ScreenWrapper>
   );

@@ -59,6 +59,9 @@ export function WebWorkspaceCanvas<
               onPressSurfaceInfo={props.onPressSurfaceInfo}
               onToggleHidden={props.onToggleHidden}
               onReorder={props.onReorder}
+              dragEnabled={false}
+              reorderHint="Use the move controls to reorder this surface"
+              style={styles.webColumn}
             />
           ))}
         </ScrollView>
@@ -74,6 +77,10 @@ const styles = StyleSheet.create({
   columns: {
     gap: Theme.spacing.lg,
     paddingBottom: Theme.spacing.sm,
+  },
+  webColumn: {
+    minWidth: 360,
+    maxWidth: 440,
   },
 });
 

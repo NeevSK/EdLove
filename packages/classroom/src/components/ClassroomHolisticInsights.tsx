@@ -1,20 +1,10 @@
-import { api, type StudentObservation } from '@repo/core/api/client';
 import type { GradeMarkLifecycleContext } from '@repo/classroom/hooks/useGradebook';
-import type { StudentGrade } from '@repo/core/types';
-import type { AttendanceRecord } from '@repo/core/types';
-
+import { api, type StudentObservation } from '@repo/core/api/client';
+import type { AttendanceRecord, StudentGrade } from '@repo/core/types';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { Card } from '@repo/ui/components/SanctuaryCard';
 import { Activity, Calendar, ChevronRight, TrendingUp } from '@repo/ui/icons';
-import {
-  Spinner as ActivityIndicator,
-  Box,
-  Center,
-  Heading,
-  HStack,
-  Icon,
-  Text,
-  VStack,
-} from '@repo/ui/primitives';
+import { Box, Center, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -99,7 +89,7 @@ export default function ClassroomHolisticInsights({
   if (isLoading) {
     return (
       <Center className="flex-1 p-10">
-        <ActivityIndicator color="#F6BF8C" />
+        <BrandPulse size={28} tintColor="#F6BF8C" accessibilityLabel="Loading classroom insights" />
       </Center>
     );
   }

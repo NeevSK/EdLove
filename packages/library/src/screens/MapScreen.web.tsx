@@ -4,7 +4,9 @@ import {
   KnowledgeParser,
 } from '@repo/graphics/algorithms';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
-import LotusLoader from '@repo/ui/components/LotusLoader';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import {
   AstroView,
@@ -29,7 +31,7 @@ import {
 import { Theme } from '@repo/ui/theme';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { libraryAPI } from '@repo/library/api/library';
 import { usePerspectiveLayout } from '@repo/library/hooks/usePerspectiveLayout';
 import type { KnowledgeNode, KnowledgeTopology } from '@repo/library/types/Library';
@@ -102,21 +104,24 @@ export default function MapScreen() {
   const [isExporting, setIsExporting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<KnowledgeTopology | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedNode, setSelectedNode] = useState<KnowledgeNode | null>(null);
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setLoadError(null);
       try {
         const topology = await libraryAPI.getMapTopology();
         setData(topology);
       } catch (err) {
         console.error('Failed to fetch map topology:', err);
+        setLoadError('The knowledge map is unavailable right now.');
       } finally {
         setLoading(false);
       }
-    };
-    fetchData();
   }, []);
+  useEffect(() => {
+    void fetchData();
+  }, [fetchData]);
   // Simulation: Load Mermaid data if AI mode is active
   const activeData = useMemo(() => {
     if (activePerspective === 'astro' && !data?.nodes?.length) {
@@ -162,10 +167,23 @@ export default function MapScreen() {
     }
   };
   const renderContent = () => {
+    if (loadError) {
+      return (
+        <BrandedErrorState title="Map unavailable" message={loadError}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Retry loading knowledge map"
+            onPress={() => void fetchData()}
+          >
+            <Text className="font-bold text-phaseText-primary">Retry</Text>
+          </Pressable>
+        </BrandedErrorState>
+      );
+    }
     if (loading) {
       return (
         <Box className="flex-1 justify-center items-center">
-          <LotusLoader size="lg" />
+          <BrandPulse size={40} tintColor={theme.accent.action} accessibilityLabel="Loading knowledge map" />
         </Box>
       );
     }
@@ -215,7 +233,7 @@ export default function MapScreen() {
     }
     return (
       <Box className="flex-1 justify-center items-center">
-        <LotusLoader size="md" />
+        <BrandedEmptyState title="No map view yet" message="Choose another perspective to continue exploring." />
       </Box>
     );
   };

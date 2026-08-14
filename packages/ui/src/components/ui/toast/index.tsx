@@ -3,6 +3,7 @@ import { createContext, useMemo } from 'react';
 import { type ViewProps } from 'react-native';
 import { Box } from '@repo/ui/components/ui/box';
 import { Text } from '@repo/ui/components/ui/text';
+import { tokens } from '@repo/ui/tokens';
 
 
 /**
@@ -36,20 +37,30 @@ export const Toast = ({
   const contextValue = useMemo(() => ({ action, variant }), [action, variant]);
 
   const actionStyles = {
-    success: 'bg-phase-reward/80 border-emerald-500/30',
-    error: 'bg-phase-danger/80 border-rose-500/30',
-    warning: 'bg-orange-500/80 border-orange-600/30',
-    info: 'bg-phase-interactive/80 border-sky-500/30',
-    attention: 'bg-phase-accent/80 border-amber-500/30',
+    success: tokens.colors.toastSuccess,
+    error: tokens.colors.toastError,
+    warning: tokens.colors.toastWarning,
+    info: tokens.colors.toastInfo,
+    attention: tokens.colors.primary,
   };
 
   const variantStyles =
     variant === 'outline' ? 'bg-phase-elevated/80 border-2' : 'border shadow-2xl backdrop-blur-xl';
 
+  const accentColor = actionStyles[action];
+
   return (
     <ToastContext.Provider value={contextValue}>
       <Box
-        className={`p-4 rounded-2xl flex-row items-center gap-3 ${actionStyles[action]} ${variantStyles} ${className || ''}`}
+        className={`p-4 rounded-2xl flex-row items-center gap-3 ${variantStyles} ${className || ''}`}
+        style={{
+          backgroundColor: tokens.colors.toastSurface,
+          borderColor: accentColor,
+          borderLeftWidth: 4,
+        }}
+        accessible
+        accessibilityRole="alert"
+        accessibilityLiveRegion="polite"
         {...props}
       >
         {children}
@@ -66,7 +77,10 @@ export const ToastTitle = ({
   className?: string;
 }) => {
   return (
-    <Text className={`text-white font-bold text-base tracking-tight ${className || ''}`}>
+    <Text
+      className={`font-bold text-base tracking-tight ${className || ''}`}
+      style={{ color: tokens.colors.toastText }}
+    >
       {children}
     </Text>
   );
@@ -80,7 +94,10 @@ export const ToastDescription = ({
   className?: string;
 }) => {
   return (
-    <Text className={`text-white/90 text-sm font-medium leading-tight ${className || ''}`}>
+    <Text
+      className={`text-sm font-medium leading-tight ${className || ''}`}
+      style={{ color: tokens.colors.toastTextMuted }}
+    >
       {children}
     </Text>
   );

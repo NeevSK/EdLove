@@ -15,6 +15,7 @@ import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useLotusToast } from '@repo/ui/hooks';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import {
   ChevronLeft,
   EllipsisVertical,
@@ -31,7 +32,6 @@ import {
   Icon,
   Image,
   Pressable,
-  Spinner,
   Text,
   VStack,
 } from '@repo/ui/primitives';
@@ -229,7 +229,7 @@ export default function GroupDetailsScreen() {
     return (
       <ScreenWrapper noTopInset className="bg-phase-canvas">
         <Box className="flex-1 justify-center items-center">
-          <Spinner />
+          <BrandPulse size={32} accessibilityLabel="Loading circle" />
           <Text className="text-ink/40 text-[10px] font-bold uppercase tracking-widest mt-4">
             Calibrating Resonance...
           </Text>
@@ -322,7 +322,7 @@ export default function GroupDetailsScreen() {
                 >
                   <HStack className="items-center gap-2">
                     {isJoiningGroup ? (
-                      <Spinner />
+                      <BrandPulse size={22} accessibilityLabel="Joining circle" />
                     ) : (
                       <>
                         <Icon
@@ -431,7 +431,7 @@ export default function GroupDetailsScreen() {
           ListEmptyComponent={
             isLoadingPosts ? (
               <Box className="py-12 items-center">
-                <Spinner />
+                <BrandPulse size={28} accessibilityLabel="Loading circle posts" />
               </Box>
             ) : postsError ? (
               <BrandedErrorState

@@ -28,6 +28,47 @@ function resolvePnpmPackageRuntime(packageName, runtimeFile) {
 // autumn Expo's winter runtime initialises before the app boots.
 const config = getSentryExpoConfig(projectRoot, { isCSSEnabled: true });
 
+// Expo CLI resolves the dynamic app config before Metro starts its transform
+// workers. On some Windows + pnpm + Doppler runs, those workers do not inherit
+// the two public variables even though `expo config --json` resolved them
+// correctly. Re-hydrate the worker environment from the already-resolved
+// public Expo config so babel-preset-expo can inline both the web manifest and
+// direct EXPO_PUBLIC_* references. These are public client values; private
+// service credentials must never be placed here.
+const { getConfig: getExpoConfig } = require('expo/config');
+const { exp: resolvedExpoConfig } = getExpoConfig(projectRoot, {
+  skipSDKVersionRequirement: true,
+});
+const publicRuntime = resolvedExpoConfig.extra?.publicRuntime;
+const publicRuntimePath = path.join(projectRoot, '.expo', 'gurudevi-public-runtime.json');
+// Never let a previous interrupted build supply configuration to a new one.
+if (fs.existsSync(publicRuntimePath)) {
+  fs.rmSync(publicRuntimePath, { force: true });
+}
+if (!publicRuntime?.supabaseUrl || !publicRuntime?.supabasePublishableKey) {
+  throw new Error(
+    'Missing public Supabase runtime config during Metro setup. Run the app/export through Doppler with EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY.',
+  );
+}
+process.env.EXPO_PUBLIC_SUPABASE_URL = publicRuntime.supabaseUrl;
+process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY = publicRuntime.supabasePublishableKey;
+fs.mkdirSync(path.dirname(publicRuntimePath), { recursive: true });
+fs.writeFileSync(
+  publicRuntimePath,
+  JSON.stringify({
+    supabaseUrl: publicRuntime.supabaseUrl,
+    supabasePublishableKey: publicRuntime.supabasePublishableKey,
+  }),
+  'utf8',
+);
+process.once('exit', () => {
+  try {
+    fs.rmSync(publicRuntimePath, { force: true });
+  } catch {
+    // Best-effort cleanup; the next Metro setup removes stale generated data.
+  }
+});
+
 // Add support for WASM files (required by expo-sqlite on web)
 config.resolver.assetExts.push('wasm');
 
@@ -178,8 +219,23 @@ if (fs.existsSync(pnpmRoot)) {
 }
 
 // Ensure react-native is a singleton on native platforms
-const isWeb = process.argv.find((arg) => arg.includes('platform=web'));
-if (!isWeb) {
+// Expo invokes web builds as either `-p web`, `--platform web`, or
+// `platform=web` depending on the command surface. The previous check only
+// recognized the last form, which could make a web export resolve native
+// React Native instead of React Native Web.
+const isWeb =
+  process.env.EXPO_PLATFORM === 'web' ||
+  process.argv.some(
+    (arg, index) =>
+      arg === 'web' ||
+      arg === '--web' ||
+      arg.includes('platform=web') ||
+      (arg === '-p' && process.argv[index + 1] === 'web') ||
+      (arg === '--platform' && process.argv[index + 1] === 'web'),
+  );
+if (isWeb) {
+  SINGLETON_OVERRIDES['react-native'] = path.resolve(projectRoot, 'node_modules/react-native-web');
+} else {
   SINGLETON_OVERRIDES['react-native'] = path.resolve(projectRoot, 'node_modules/react-native');
 }
 

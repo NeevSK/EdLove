@@ -3,6 +3,7 @@ import { useDomainRollout } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { Compass, Globe, Plus, Shield, X } from '@repo/ui/icons';
 import {
   AnimatedView,
@@ -13,7 +14,6 @@ import {
   InputField,
   Pressable,
   SkeletonCard,
-  Spinner,
   Text,
   VStack,
 } from '@repo/ui/primitives';
@@ -93,6 +93,10 @@ export default function GroupsScreen({
             value={searchQuery}
             onChangeText={handleSearchChange}
             autoCapitalize="none"
+            accessibilityLabel={
+              activeSubTab === 'sanctuary' ? 'Search sanctuary circles' : 'Search galaxy circles'
+            }
+            accessibilityHint="Filters the circles shown below"
           />
           {searchQuery ? (
             <Pressable
@@ -295,7 +299,7 @@ export default function GroupsScreen({
         ListFooterComponent={
           isFetchingNextGroups ? (
             <Box className="py-8 items-center">
-              <Spinner />
+              <BrandPulse size={28} accessibilityLabel="Loading more circles" />
             </Box>
           ) : null
         }

@@ -5,6 +5,8 @@
  */
 
 import { useTemporalStore } from '@repo/core/logic';
+import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { Activity, ChevronRight, CircleCheck, Clock, Wind } from '@repo/ui/icons';
 import {
   AnimatedView,
@@ -17,13 +19,11 @@ import {
   Input,
   InputField,
   Pressable,
-  Spinner,
   Text,
   VStack,
 } from '@repo/ui/primitives';
 import { useEffect, useRef, useState } from 'react';
 import { FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
-import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
 
 interface MoodLotusProps {
   userId?: string;
@@ -253,7 +253,7 @@ export default function MoodLotus({ userId, onMoodChange, variant = 'summary' }:
                 >
                   <HStack className="items-center gap-2">
                     {saving ? (
-                      <Spinner size="small" color="#FFFFFF" />
+                      <BrandPulse size={18} tintColor="#FFFFFF" accessibilityLabel="Saving mood" />
                     ) : saved ? (
                       <Icon as={CircleCheck} size={18} className="text-white" />
                     ) : null}

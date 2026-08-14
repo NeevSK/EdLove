@@ -8,6 +8,9 @@ import { View } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 import { CanvasSurfaceCard } from '@repo/ui/components/workspace/CanvasSurfaceCard';
 import { DraggableCanvasSurface } from '@repo/ui/components/workspace/DraggableCanvasSurface';
+import { clampReorderIndex, resolveReorderTarget } from '@repo/ui/components/workspace/reorder';
+
+export { clampReorderIndex, resolveReorderTarget } from '@repo/ui/components/workspace/reorder';
 
 export interface CanvasZoneColumnProps<
   TSurfaceId extends string = string,
@@ -45,6 +48,9 @@ export interface CanvasZoneColumnProps<
   onPressSurfaceInfo?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => void;
   onToggleHidden?: (surface: ResolvedWorkspaceSurface<TSurfaceId, TCapabilityKey>) => void;
   onReorder?: (surfaceId: TSurfaceId, newIndex: number) => void;
+  dragAxis?: 'vertical' | 'both';
+  dragEnabled?: boolean;
+  reorderHint?: string;
   emptyMessage?: string;
   compact?: boolean;
   style?: StyleProp<ViewStyle>;
@@ -86,17 +92,26 @@ export function CanvasZoneColumn<
   onPressSurfaceInfo,
   onToggleHidden,
   onReorder,
+  dragAxis = 'both',
+  dragEnabled = Boolean(onReorder),
+  reorderHint,
   emptyMessage = 'No visible surfaces in this zone yet.',
   compact = false,
   style,
 }: CanvasZoneColumnProps<TSurfaceId, TCapabilityKey>) {
   const colors = useThemedColors();
   const styles = createStyles(colors);
+  const canReorder = Boolean(onReorder);
 
   return (
     <View style={[styles.column, compact ? styles.columnCompact : null, style]}>
-      <View style={styles.header}>
-        <Text style={styles.title}>{title ?? ZONE_TITLES[group.zone] ?? group.zone}</Text>
+      <View accessibilityRole="header" style={styles.header}>
+        <View style={styles.headerRow}>
+          <Text style={styles.title}>{title ?? ZONE_TITLES[group.zone] ?? group.zone}</Text>
+          <View style={styles.countPill}>
+            <Text style={styles.countText}>{group.surfaces.length}</Text>
+          </View>
+        </View>
         <Text style={styles.description}>
           {description ?? ZONE_DESCRIPTIONS[group.zone] ?? 'Shared workspace zone.'}
         </Text>
@@ -107,6 +122,8 @@ export function CanvasZoneColumn<
             <DraggableCanvasSurface
               key={surface.surfaceId}
               id={surface.surfaceId}
+              dragAxis={dragAxis}
+              enabled={canReorder && dragEnabled}
               onDragEnd={(id, translation) => {
                 // Logic to calculate new index based on vertical translation
                 // For now, we'll assume a simple vertical stack reorder
@@ -114,7 +131,8 @@ export function CanvasZoneColumn<
                 const shift = Math.round(translation.y / cardHeight);
                 if (shift !== 0 && onReorder) {
                   const currentIndex = group.surfaces.findIndex((s) => s.surfaceId === id);
-                  onReorder(id as TSurfaceId, currentIndex + shift);
+                  const nextIndex = clampReorderIndex(currentIndex, shift, group.surfaces.length);
+                  if (nextIndex !== currentIndex) onReorder(id as TSurfaceId, nextIndex);
                 }
               }}
             >
@@ -132,6 +150,37 @@ export function CanvasZoneColumn<
                 onPress={onSurfacePress}
                 onPressInfo={onPressSurfaceInfo}
                 onToggleHidden={onToggleHidden}
+                reorderEnabled={canReorder}
+                dragEnabled={dragEnabled}
+                reorderHint={reorderHint}
+                reorderControls={
+                  canReorder
+                    ? {
+                        canMoveUp: group.surfaces.findIndex((item) => item.surfaceId === surface.surfaceId) > 0,
+                        canMoveDown:
+                          group.surfaces.findIndex((item) => item.surfaceId === surface.surfaceId) <
+                          group.surfaces.length - 1,
+                        onMoveUp: () => {
+                          const currentIndex = group.surfaces.findIndex(
+                            (item) => item.surfaceId === surface.surfaceId,
+                          );
+                          onReorder?.(
+                            surface.surfaceId as TSurfaceId,
+                            resolveReorderTarget(currentIndex, -1, group.surfaces.length),
+                          );
+                        },
+                        onMoveDown: () => {
+                          const currentIndex = group.surfaces.findIndex(
+                            (item) => item.surfaceId === surface.surfaceId,
+                          );
+                          onReorder?.(
+                            surface.surfaceId as TSurfaceId,
+                            resolveReorderTarget(currentIndex, 1, group.surfaces.length),
+                          );
+                        },
+                      }
+                    : undefined
+                }
               />
             </DraggableCanvasSurface>
           ))
@@ -160,10 +209,31 @@ function createStyles(colors: ReturnType<typeof useThemedColors>) {
       gap: 4,
       paddingHorizontal: 2,
     },
+    headerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: Theme.spacing.sm,
+    },
     title: {
       fontSize: Theme.typography.fontSize.xl,
       fontWeight: '700',
       color: colors.text,
+    },
+    countPill: {
+      minWidth: 28,
+      alignItems: 'center',
+      borderRadius: Theme.corners.full,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      backgroundColor: Theme.colors.silk,
+      borderWidth: 1,
+      borderColor: Theme.colors.border,
+    },
+    countText: {
+      fontSize: Theme.typography.fontSize.xs,
+      fontWeight: '700',
+      color: colors.textSecondary,
     },
     description: {
       fontSize: Theme.typography.fontSize.sm,

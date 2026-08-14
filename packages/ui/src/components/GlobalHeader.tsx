@@ -1,18 +1,19 @@
 import { type TotalState, useNotifications, usePermissions, useStore } from '@repo/core/logic';
+import NotificationDrawer from '@repo/ui/components/NotificationDrawer';
+import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
+import { UserAvatar } from '@repo/ui/components/UserAvatar';
+import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
 import { Bell, ChevronLeft, Menu, MoreHorizontal, Search, X } from '@repo/ui/icons';
+import { Pressable } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
+import { hapticLight } from '@repo/ui/utils/haptics';
+import { safeBack } from '@repo/ui/utils/navigation';
 import { router } from 'expo-router';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, Easing } from 'react-native';
+import { Animated, Easing, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
-import { Pressable } from '@repo/ui/primitives';
-import { hapticLight } from '@repo/ui/utils/haptics';
-import { safeBack } from '@repo/ui/utils/navigation';
-import NotificationDrawer from '@repo/ui/components/NotificationDrawer';
-import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
-import { UserAvatar } from '@repo/ui/components/UserAvatar';
 
 export interface GlobalHeaderProps {
   title?: string;
@@ -91,6 +92,8 @@ export default function GlobalHeader({
   const { can } = usePermissions();
   const user = useStore((state: TotalState) => state.user);
   const insets = useSafeAreaInsets();
+  const { width: viewportWidth, height: viewportHeight } = useWindowDimensions();
+  const isCompactLandscape = viewportWidth > viewportHeight && viewportHeight < 600;
   const roleLabel = useRoleLabel();
   const [showSecondaryActions, setShowSecondaryActions] = useState(false);
   const animatedSecondary = useState(() => new Animated.Value(0))[0];
@@ -120,9 +123,9 @@ export default function GlobalHeader({
 
   const greetingDetails = useMemo(() => {
     const hour = new Date().getHours();
-    if (hour < 12) return { text: t('goodMorning'), emoji: '🌅' };
-    if (hour < 18) return { text: t('goodAfternoon'), emoji: '☀️' };
-    return { text: t('goodEvening'), emoji: '🏮' };
+    if (hour < 12) return { text: t('goodMorning') };
+    if (hour < 18) return { text: t('goodAfternoon') };
+    return { text: t('goodEvening') };
   }, [t]);
 
   const handleToggleSearch = useCallback(() => {
@@ -180,7 +183,7 @@ export default function GlobalHeader({
 
   const secondaryMaxHeight = animatedSecondary.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 64],
+    outputRange: [0, isCompactLandscape ? 52 : 64],
   });
 
   const secondaryOpacity = animatedSecondary.interpolate({
@@ -188,7 +191,10 @@ export default function GlobalHeader({
     outputRange: [0, 1],
   });
 
-  const headerHeight = insets.top + 92 + (showSecondaryActions ? 64 : 0);
+  const headerHeight =
+    insets.top +
+    (isCompactLandscape ? 64 : 92) +
+    (showSecondaryActions ? (isCompactLandscape ? 52 : 64) : 0);
 
   return (
     <Box accessibilityRole="header" className="w-full relative" style={{ height: headerHeight }}>
@@ -204,34 +210,50 @@ export default function GlobalHeader({
       <VStack
         className="flex-1 px-4"
         style={{
-          gap: 12,
-          paddingTop: insets.top + 10,
-          paddingBottom: 12,
+          gap: isCompactLandscape ? 6 : 12,
+          paddingTop: insets.top + (isCompactLandscape ? 6 : 10),
+          paddingBottom: isCompactLandscape ? 6 : 12,
         }}
       >
         <HStack className="items-center justify-between gap-2">
           <HStack className="items-center gap-2">
             {showBack ? (
-              <Pressable accessibilityRole="button" onPress={handleBack}>
-                <Box className="p-2 rounded-full bg-black/5">
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('common.back', 'Go back')}
+                accessibilityHint={t('common.backHint', 'Returns to the previous screen')}
+                onPress={handleBack}
+              >
+                <Box
+                  className="p-2 rounded-full"
+                  style={{ backgroundColor: tokens.colors.surfaceInteractive }}
+                >
                   <ChevronLeft size={24} className="text-phase-text-primary" />
                 </Box>
               </Pressable>
             ) : (
               showMenu && (
-                <Pressable accessibilityRole="button" onPress={handleOpenDrawer}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('common.openSelf', 'Open Self')}
+                  onPress={handleOpenDrawer}
+                >
                   <Menu className="text-phase-text-primary" size={24} />
                 </Pressable>
               )
             )}
 
             {isSelfView && (
-              <Pressable accessibilityRole="button" onPress={handleNavigateProfile}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('profile.open', 'Open profile')}
+                onPress={handleNavigateProfile}
+              >
                 <Box className="mr-2">
                   <UserAvatar
                     avatarUrl={avatarUrl || user?.avatar_url}
                     fullName={userFullName}
-                    fallbackEmoji="🌿"
+                    fallbackEmoji="G"
                     size={32}
                     borderRadius={12}
                   />
@@ -240,15 +262,16 @@ export default function GlobalHeader({
             )}
 
             <VStack className="gap-0.5">
-              {(subtitle || (!title && greetingDetails.text)) && (
+              {!isCompactLandscape && (subtitle || (!title && greetingDetails.text)) && (
                 <HStack className="items-center gap-1">
                   <Text className="text-[10px] font-bold tracking-widest uppercase text-phase-text-secondary">
                     {title ? subtitle : greetingDetails.text}
                   </Text>
-                  {!title && <Text className="text-sm -mt-0.5">{greetingDetails.emoji}</Text>}
                 </HStack>
               )}
-              <Text className="text-lg font-bold text-phase-text-primary">
+              <Text
+                className={`${isCompactLandscape ? 'text-base' : 'text-lg'} font-bold text-phase-text-primary`}
+              >
                 {title
                   ? title
                   : isSelfView
@@ -261,8 +284,20 @@ export default function GlobalHeader({
           </HStack>
 
           <HStack className="items-center gap-2">
-            <Pressable accessibilityRole="button" onPress={toggleSecondaryActions}>
-              <Box className="p-2 rounded-full bg-black/5">
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={
+                showSecondaryActions
+                  ? t('common.closeActions', 'Close actions')
+                  : t('common.moreActions', 'More actions')
+              }
+              accessibilityState={{ expanded: showSecondaryActions }}
+              onPress={toggleSecondaryActions}
+            >
+              <Box
+                className="p-2 rounded-full"
+                style={{ backgroundColor: tokens.colors.surfaceInteractive }}
+              >
                 <MoreHorizontal size={22} className="text-phase-text-primary" />
               </Box>
             </Pressable>
@@ -278,9 +313,23 @@ export default function GlobalHeader({
         >
           <VStack style={{ gap: 10 }}>
             {showSearch && (
-              <Pressable accessibilityRole="button" onPress={handleToggleSearch}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={
+                  state.isSearchActive
+                    ? t('common.closeSearch', 'Close search')
+                    : t('common.search', 'Search')
+                }
+                accessibilityState={{ expanded: state.isSearchActive }}
+                onPress={handleToggleSearch}
+              >
                 <Box
-                  className={`p-2 rounded-2xl ${state.isSearchActive ? 'bg-black/8' : 'bg-black/4'}`}
+                  className="p-2 rounded-2xl"
+                  style={{
+                    backgroundColor: state.isSearchActive
+                      ? tokens.colors.surfaceInteractive
+                      : tokens.colors.surfaceSubtle,
+                  }}
                 >
                   <HStack className="items-center gap-2">
                     {state.isSearchActive ? (
@@ -297,8 +346,15 @@ export default function GlobalHeader({
             )}
 
             {!rightAction ? (
-              <Pressable accessibilityRole="button" onPress={handleOpenNotifications}>
-                <Box className="relative rounded-2xl bg-black/4 p-2">
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('notifications.title', 'Notifications')}
+                onPress={handleOpenNotifications}
+              >
+                <Box
+                  className="relative rounded-2xl p-2"
+                  style={{ backgroundColor: tokens.colors.surfaceSubtle }}
+                >
                   <HStack className="items-center gap-2">
                     <Bell size={20} className="text-phase-text-primary" />
                     <Text className="text-sm text-phase-text-primary">Notifications</Text>
@@ -306,7 +362,11 @@ export default function GlobalHeader({
                       <Box
                         className="ml-auto w-2.5 h-2.5 rounded-full"
                         style={{
-                          backgroundColor: error ? '#ef4444' : isLoading ? '#f59e0b' : '#10b981',
+                          backgroundColor: error
+                            ? tokens.colors.error
+                            : isLoading
+                              ? tokens.colors.warning
+                              : tokens.colors.success,
                         }}
                       />
                     )}

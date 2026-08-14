@@ -1,8 +1,17 @@
+import {
+  Box,
+  Button,
+  ButtonIcon,
+  ButtonText,
+  Center,
+  Heading,
+  Text,
+  VStack,
+} from '@repo/ui/gluestack';
 import { RefreshCw, TriangleAlert } from '@repo/ui/icons';
+import { View } from '@repo/ui/primitives';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Platform, Text as RNText, StyleSheet, TouchableOpacity } from 'react-native';
-import { Box, Button, ButtonIcon, ButtonText, Center, Heading, Text, VStack } from '@repo/ui/gluestack';
-import { View } from '@repo/ui/primitives';
 
 interface Props {
   children: ReactNode;
@@ -85,7 +94,7 @@ export default class ErrorBoundary extends Component<Props, State> {
       // If this fails (double-fault), we fall back to the basic React Native View/Text.
       try {
         return (
-          <Box className="flex-1 bg-phase-ink">
+          <Box className="flex-1 bg-phase-ink" style={{ backgroundColor: '#211A17' }}>
             <Center className="flex-1 p-8">
               <VStack className="gap-8 items-center max-w-[400px]">
                 <Box className="p-8 bg-phase-danger/10 rounded-full">
@@ -93,7 +102,7 @@ export default class ErrorBoundary extends Component<Props, State> {
                   {Platform.OS !== 'web' ? (
                     <TriangleAlert size={64} className="text-phase-danger" />
                   ) : (
-                    <RNText style={{ fontSize: 64 }}>⚠️</RNText>
+                    <RNText style={{ fontSize: 64, color: '#F6BF8C', fontWeight: '700' }}>!</RNText>
                   )}
                 </Box>
 
@@ -109,11 +118,14 @@ export default class ErrorBoundary extends Component<Props, State> {
                 <Button
                   onPress={this.handleReset}
                   className="h-14 px-8 bg-phase-danger rounded-xl flex-row items-center gap-2"
+                  style={{ backgroundColor: '#B42318' }}
                 >
                   {Platform.OS !== 'web' && (
                     <ButtonIcon as={RefreshCw} className="text-phase-text-primary" />
                   )}
-                  <ButtonText className="text-white font-bold text-lg">Try Again</ButtonText>
+                  <ButtonText className="text-white font-bold text-lg" style={{ color: '#FFFFFF' }}>
+                    Try Again
+                  </ButtonText>
                 </Button>
 
                 {__DEV__ && this.state.error && (

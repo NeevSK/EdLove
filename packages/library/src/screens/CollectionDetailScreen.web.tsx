@@ -7,10 +7,13 @@ import type { LibraryCollection, LibraryResource, ResourceVisibility } from '@re
 import { buildLibraryExternalLinkOptions } from '@repo/library/utils/externalLinks';
 import { buildLibraryResourceOpenParams } from '@repo/library/utils/resourceLinks';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 import { ArrowLeft, Globe, Library, Lock, Pen, Plus, RefreshCw, Trash2, Users, X } from '@repo/ui/icons';
-import { ActivityIndicator, Box, HStack, Text, useTheme, VStack } from '@repo/ui/primitives';
+import { Box, HStack, Text, useTheme, VStack } from '@repo/ui/primitives';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useQueryClient } from '@tanstack/react-query';
@@ -146,11 +149,11 @@ function ResourceSearchResults({
   );
 }
 
-function LoadingState() {
+function LoadingState({ tintColor }: { tintColor: string }) {
   return (
     <Box className="flex-1 items-center justify-center p-20 bg-phase-surface">
       <VStack className="items-center gap-4">
-        <ActivityIndicator size="large" />
+        <BrandPulse size={40} tintColor={tintColor} accessibilityLabel="Loading collection" />
         <Text className="text-phaseText-tertiary animate-pulse font-medium">
           Restoring collection...
         </Text>
@@ -680,23 +683,15 @@ export default function CollectionDetailScreenWeb() {
   );
 
   // ── Render ─────────────────────────────────────────────────────────────────
-  if (isLoading || !id) return <LoadingState />;
+  if (isLoading || !id) return <LoadingState tintColor={theme.accent.action} />;
 
   if (error || !collection) {
     return (
       <Box className="flex-1 bg-phase-surface items-center justify-center p-10">
-        <VStack className="max-w-md w-full p-10 rounded-[32px] bg-white/5 border border-white/10 items-center gap-6">
-          <Box className="w-16 h-16 rounded-2xl bg-phase-accent/20 items-center justify-center">
-            <Library size={32} color={theme.accent.action} />
-          </Box>
-          <VStack className="items-center gap-2">
-            <Text className="text-xl font-bold text-phaseText-primary text-center">
-              {error ? t('library.errorLoading') : t('library.emptyTitle')}
-            </Text>
-            <Text className="text-md text-phaseText-secondary text-center leading-6">
-              {error ? String(error) : t('library.emptyDesc')}
-            </Text>
-          </VStack>
+        <BrandedErrorState
+          title={error ? t('library.errorLoading') : t('library.emptyTitle')}
+          message={error ? String(error) : t('library.emptyDesc')}
+        >
           <HStack className="gap-3 w-full">
             <SanctuaryButton
               variant="outline"
@@ -710,7 +705,7 @@ export default function CollectionDetailScreenWeb() {
               {t('library.retry') || 'Retry'}
             </SanctuaryButton>
           </HStack>
-        </VStack>
+        </BrandedErrorState>
       </Box>
     );
   }

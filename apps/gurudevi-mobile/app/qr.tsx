@@ -1,11 +1,12 @@
 import { QRHandlerScreen } from '@repo/scanner-kit';
-import { Center, Spinner } from '@repo/ui/primitives';
+import { BrandPulse } from '@repo/ui';
+import { Center } from '@repo/ui/primitives';
 import { Suspense } from 'react';
 
 function Fallback() {
   return (
     <Center className="flex-1 bg-obsidian">
-      <Spinner />
+      <BrandPulse accessibilityLabel="Loading QR scanner" />
     </Center>
   );
 }

@@ -25,8 +25,20 @@ describe('Modal Component (Robustness)', () => {
     );
     expect(screen.getByText('Modal Content')).toBeTruthy();
 
-    const dialog = screen.getByRole('alert');
+    const dialog = screen.getByRole('dialog');
     expect(dialog.props.accessibilityViewIsModal).toBe(true);
+  });
+
+  it('can opt out of focus trapping for non-dialog overlays', async () => {
+    await render(
+      <Modal isOpen={true} onClose={() => {}} trapFocus={false}>
+        <ModalBody>
+          <Text>Non trapping content</Text>
+        </ModalBody>
+      </Modal>,
+    );
+
+    expect(screen.getByRole('dialog').props.accessibilityViewIsModal).toBe(false);
   });
 
   it('calls onClose when backdrop is pressed', async () => {

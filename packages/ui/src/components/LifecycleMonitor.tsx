@@ -1,8 +1,8 @@
+import { Progress, ProgressFilledTrack } from '@repo/ui/components/ui/progress';
+import type { SafeActionProgress } from '@repo/ui/hooks/useSafeAction';
 import type React from 'react';
 import { Text, View } from 'react-native';
-import type { SafeActionProgress } from '@repo/ui/hooks/useSafeAction';
-import { Progress, ProgressFilledTrack } from '@repo/ui/components/ui/progress';
-import { Spinner } from '@repo/ui/components/ui/spinner';
+import { BrandPulse } from './BrandPulse';
 
 interface LifecycleMonitorProps {
   progress: SafeActionProgress | null;
@@ -28,7 +28,7 @@ export const LifecycleMonitor: React.FC<LifecycleMonitorProps> = ({ progress, cl
       <View className="flex-row items-center justify-between mb-3">
         <View className="flex-row items-center gap-3">
           {isPending ? (
-            <Spinner size="small" className="text-phase-accent" />
+            <BrandPulse size={20} tintColor="#D4843A" />
           ) : (
             <View
               className={`w-2 h-2 rounded-full ${isError ? 'bg-phase-danger' : 'bg-phase-success'}`}

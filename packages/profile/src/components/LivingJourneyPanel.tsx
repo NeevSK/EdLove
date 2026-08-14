@@ -18,7 +18,8 @@ import {
   type UserGrowthState,
 } from '@repo/core/api/client';
 import { type TemporalScale, usePermissions, useTemporalStore } from '@repo/core/logic';
-import { AnimatedView, Box, Heading, HStack, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { AnimatedView, Box, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
 import { useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
@@ -405,7 +406,7 @@ export default function LivingJourneyPanel({ userId }: LivingJourneyPanelProps) 
   if (state.loading) {
     return (
       <Box className="bg-phase-canvas rounded-3xl border border-phase-surface p-10 mx-5 mt-8 min-h-[200px] items-center justify-center shadow-lg">
-        <Spinner className="text-phase-interactive" size="large" />
+        <BrandPulse size={36} accessibilityLabel="Loading living journey" />
       </Box>
     );
   }

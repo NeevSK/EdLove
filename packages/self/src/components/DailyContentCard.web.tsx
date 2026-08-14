@@ -4,12 +4,13 @@
  * Standardized to Zero-Legacy: purged raw HTML/inline styles and fixed syntax corruption in style objects.
  */
 
-import { Lightbulb, Sparkles, User } from '@repo/ui/icons';
-import { Box, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';
-import { useEffect, useState } from 'react';
-import Animated, { FadeIn, Layout } from 'react-native-reanimated';
 import { dailyContentAPI } from '@repo/self/api/dailyContent';
 import type { DailyContent } from '@repo/self/types/Wellbeing';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { Lightbulb, Sparkles, User } from '@repo/ui/icons';
+import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { useEffect, useState } from 'react';
+import Animated, { FadeIn, Layout } from 'react-native-reanimated';
 
 interface DailyContentCardProps {
   type: 'motivation' | 'did_you_know';
@@ -39,7 +40,7 @@ export default function DailyContentCard({ type }: DailyContentCardProps) {
   if (loading) {
     return (
       <Box className="h-[72px] bg-white/5 rounded-2xl items-center justify-center border border-white/5">
-        <Spinner size="small" className="text-mistGray/30" />
+        <BrandPulse size={20} tintColor="#A8A29E" accessibilityLabel="Loading daily content" />
       </Box>
     );
   }

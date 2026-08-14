@@ -1,28 +1,3 @@
-import { communityAPI } from '@repo/core/api/client';
-import {
-  useAnnouncementsQuery,
-  useGroupsInfiniteQuery,
-  useManifestoHooks,
-  usePostsInfiniteQuery,
-} from '@repo/core/api/hooks';
-import { useDomainRollout, useTracking } from '@repo/core/hooks';
-import { setPendingGateAction, usePermissions } from '@repo/core/logic';
-import { useStore, useTemporalStore } from '@repo/core/store';
-import type { CommunityPost, DirectConversation, SanctuaryGroup } from '@repo/core/types';
-import GlobalHeader from '@repo/ui/components/GlobalHeader';
-import { HorizontalChipRow } from '@repo/ui/components/HorizontalChipRow';
-import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
-import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
-import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
-import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
-import { useRegisterFAB } from '@repo/ui/context';
-import { Info, Plus } from '@repo/ui/icons';
-import { Box, Heading, HStack, Icon, ScrollView, Spinner, Text, VStack } from '@repo/ui/primitives';
-import { router } from 'expo-router';
-import type React from 'react';
-import { useCallback, useEffect, useMemo, useReducer } from 'react';
-import { Platform } from 'react-native';
 import { CommentSheet } from '@repo/community/components/CommentSheet';
 import CommunityHearth from '@repo/community/components/CommunityHearth';
 import CreateGroupModal from '@repo/community/components/CreateGroupModal';
@@ -39,6 +14,32 @@ import {
 } from '@repo/community/screens/communityWorkspace.shared';
 import DirectMessagesListScreen from '@repo/community/screens/DirectMessagesListScreen';
 import GroupsScreen from '@repo/community/screens/GroupsScreen';
+import { communityAPI } from '@repo/core/api/client';
+import {
+  useGroupsInfiniteQuery,
+  useManifestoHooks,
+  usePostsInfiniteQuery,
+} from '@repo/core/api/hooks';
+import { useDomainRollout, useTracking } from '@repo/core/hooks';
+import { setPendingGateAction, usePermissions } from '@repo/core/logic';
+import { useStore, useTemporalStore } from '@repo/core/store';
+import type { CommunityPost, DirectConversation, SanctuaryGroup } from '@repo/core/types';
+import { color } from '@repo/ui';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { HorizontalChipRow } from '@repo/ui/components/HorizontalChipRow';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
+import { useRegisterFAB } from '@repo/ui/context';
+import { Info, Plus } from '@repo/ui/icons';
+import { Box, Heading, HStack, Icon, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { router } from 'expo-router';
+import type React from 'react';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
+import { Platform, useWindowDimensions } from 'react-native';
 
 interface CommunityScreenState {
   activeMode: CommunityWorkspaceMode;
@@ -162,6 +163,8 @@ function communityScreenReducer(
 
 export default function CommunityScreen() {
   const bottomPadding = useBottomTabPadding();
+  const { width, height } = useWindowDimensions();
+  const isShortLandscape = width > height && height < 500;
   const { discoverFeature } = useTracking();
   const { can } = usePermissions();
   const { isPastView, isOffline } = useTemporalStore();
@@ -208,8 +211,6 @@ export default function CommunityScreen() {
 
   const { sanctuaryGroups = [] } = { sanctuaryGroups: groups }; // Compatibility alias
   const { manifestos = [] } = useManifestoHooks(schoolId || 'default', user?.id ?? undefined);
-  const { data: announcements = [] } = useAnnouncementsQuery(schoolId || '');
-  const announcementCount = announcements?.length ?? 0;
 
   const loading = loadingPosts || loadingGroups;
 
@@ -248,7 +249,7 @@ export default function CommunityScreen() {
   useRegisterFAB({
     tabType: 'community',
     visible: !isPastView && (canCreatePost || canCreateGroup) && isCommunityEnabled,
-    icon: <Plus size={24} color="#FFF" />,
+    icon: <Plus size={24} color={color.neutral.warmGray50} />,
     onPress: handleFabPress,
   });
 
@@ -450,34 +451,52 @@ export default function CommunityScreen() {
   }
 
   const renderHero = () => (
-    <Box className="mx-4 mt-3 px-5 py-6 rounded-3xl bg-phase-surface border border-border">
-      <VStack className="gap-4">
+    <Box
+      className={`mx-4 mt-2 px-4 ${isShortLandscape ? 'py-3' : 'py-5'} rounded-3xl bg-phase-surface border border-border`}
+    >
+      <VStack className={isShortLandscape ? 'gap-2' : 'gap-3'}>
         <VStack className="gap-1">
-          <Text className="text-ink/60 text-[10px] font-bold uppercase tracking-[2px]">
+          <Text className="text-phase-text-secondary text-xs font-semibold uppercase tracking-wide">
             {workspaceSlots.hearth ? 'Community workspace' : 'Community'}
           </Text>
-          <Heading className="text-3xl text-ink font-bold">The Heart</Heading>
-          <Text className="text-ink/60 leading-relaxed text-sm mt-1">
-            Shared pulse, groups, and conversation. Presence leads before activity so the sanctuary
-            feels alive before it feels busy.
-          </Text>
+          <Heading
+            className={`${isShortLandscape ? 'text-xl' : 'text-2xl'} text-phase-text-primary font-bold`}
+          >
+            {state.activeMode === 'feed'
+              ? 'Feed'
+              : modeChips.find((mode) => mode.value === state.activeMode)?.label}
+          </Heading>
+          {!isShortLandscape ? (
+            <Text className="text-phase-text-secondary leading-snug text-sm mt-1">
+              Shared updates first. Groups, messages, and announcements stay one tap away.
+            </Text>
+          ) : null}
         </VStack>
 
-        <HStack className="gap-2 flex-wrap items-center">
-          <HeroPill label={`${pulse.circlesActive} circles`} />
-          <HeroPill label={`${pulse.newPostsToday} new posts`} />
-          <HeroPill label={`${pulse.messagesOpen} conversations`} />
-          {canReadAnnouncements ? <HeroPill label={`${announcementCount} announcements`} /> : null}
-        </HStack>
-
-        <Box className="pt-2">
-          <HorizontalChipRow
-            chips={modeChips}
-            selectedValue={state.activeMode}
-            onSelect={handleModeChange}
-            center={false}
-          />
-        </Box>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: 8 }}
+          accessibilityLabel="Community destinations"
+        >
+          {modeChips.map((mode) => {
+            const selected = mode.value === state.activeMode;
+            return (
+              <SanctuaryButton
+                key={mode.value}
+                size="md"
+                action={selected ? 'primary' : 'secondary'}
+                variant={selected ? 'solid' : 'outline'}
+                onPress={() => handleModeChange(mode.value)}
+                accessibilityLabel={`Show ${mode.label}`}
+                accessibilityHint={selected ? 'Currently selected' : `Open ${mode.label}`}
+                className="rounded-xl"
+              >
+                {mode.label}
+              </SanctuaryButton>
+            );
+          })}
+        </ScrollView>
       </VStack>
     </Box>
   );
@@ -597,7 +616,7 @@ export default function CommunityScreen() {
         ListHeaderComponent={
           <VStack>
             {renderHero()}
-            {renderHearthCard()}
+            {!isShortLandscape ? renderHearthCard() : null}
             {renderFilterRow()}
             {renderComposeCard()}
           </VStack>
@@ -605,7 +624,7 @@ export default function CommunityScreen() {
         ListEmptyComponent={
           loading ? (
             <Box className="py-12 items-center">
-              <Spinner />
+              <BrandPulse size={28} />
               <Text className="mt-3 text-ink/50 text-xs font-semibold">
                 Gathering the community pulse…
               </Text>
@@ -637,7 +656,7 @@ export default function CommunityScreen() {
         ListFooterComponent={
           isFetchingNextPosts ? (
             <Box className="py-8 items-center">
-              <Spinner />
+              <BrandPulse size={28} />
             </Box>
           ) : null
         }
@@ -657,7 +676,7 @@ export default function CommunityScreen() {
     return (
       <ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + 32 }}>
         {renderHero()}
-        {renderHearthCard()}
+        {!isShortLandscape ? renderHearthCard() : null}
         <Box className="px-4 pt-4">
           <SectionCard
             title="My sanctuary"
@@ -693,7 +712,7 @@ export default function CommunityScreen() {
           >
             {state.loadingMessages ? (
               <Box className="py-12 items-center">
-                <Spinner />
+                <BrandPulse size={28} />
               </Box>
             ) : state.messageError ? (
               <BrandedErrorState
@@ -748,9 +767,14 @@ export default function CommunityScreen() {
       <Box className="flex-1">
         <GlobalHeader title="Community" />
         {isOffline ? (
-          <Box className="mx-4 mt-2 rounded-xl border border-phase-warning/30 bg-phase-warning/10 px-4 py-2">
+          <Box
+            className="mx-4 mt-2 rounded-xl border border-phase-warning/30 bg-phase-warning/10 px-4 py-2"
+            accessibilityRole="alert"
+            accessibilityLabel="Community is offline. Cached content is available and new messages are read-only until reconnection."
+          >
             <Text className="text-phase-warning text-xs font-semibold">
-              Offline — showing what is already here. New community messages stay read-only until you reconnect.
+              Offline — showing cached community content. New messages stay read-only until you
+              reconnect.
             </Text>
           </Box>
         ) : null}
@@ -788,14 +812,6 @@ export default function CommunityScreen() {
         />
       </Box>
     </ScreenWrapper>
-  );
-}
-
-function HeroPill({ label }: { label: string }) {
-  return (
-    <Box className="px-3 py-1.5 rounded-full bg-white/40 border border-white/20">
-      <Text className="text-[10px] font-bold text-ink uppercase tracking-wide">{label}</Text>
-    </Box>
   );
 }
 

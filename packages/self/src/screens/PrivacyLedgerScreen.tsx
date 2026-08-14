@@ -5,13 +5,13 @@
  */
 
 import { type PrivacyLedgerEntry, privacyAPI } from '@repo/core/api/client';
-
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Clock, FileText, Lock, Shield, ShieldCheck } from '@repo/ui/icons';
-import { Box, Heading, HStack, Icon, Spinner, Text, VStack } from '@repo/ui/primitives';
+import { Box, Heading, HStack, Icon, Text, VStack } from '@repo/ui/primitives';
 import { useEffect, useState } from 'react';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
@@ -100,7 +100,7 @@ export default function PrivacyLedgerScreen() {
 
         {loading ? (
           <Box className="flex-1 justify-center items-center pb-20">
-            <Spinner size="large" className="text-sanctuarySaffron" />
+            <BrandPulse size={36} accessibilityLabel="Loading privacy ledger" />
             <Text className="text-mistGray/30 text-[10px] font-black uppercase tracking-[0.3em] mt-4">
               Verifying Integrity
             </Text>

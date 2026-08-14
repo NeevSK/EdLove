@@ -6,6 +6,9 @@ import {
   KnowledgeParser,
 } from '@repo/graphics/algorithms';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import {
   AstroView,
@@ -24,7 +27,6 @@ import {
   Pressable,
   Icon as SanctuaryIcon,
   ScrollView,
-  Spinner,
   Text,
   useTheme,
   VStack,
@@ -34,7 +36,7 @@ import { safeBack } from '@repo/ui/utils/navigation';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { styled } from 'nativewind';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useSharedValue, withSpring } from 'react-native-reanimated';
 import { libraryAPI } from '@repo/library/api/library';
@@ -99,25 +101,28 @@ export default function MapScreen() {
   const [isExporting, setIsExporting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<KnowledgeTopology | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedNode, setSelectedNode] = useState<KnowledgeNode | null>(null);
   // Zoom and Pan state for layout reference (though views handle their own state)
   const scale = useSharedValue(1);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setLoadError(null);
       try {
         const topology = await libraryAPI.getMapTopology();
         setData(topology);
       } catch (err) {
         console.error('Failed to fetch map topology:', err);
+        setLoadError('The knowledge map is unavailable right now.');
       } finally {
         setLoading(false);
       }
-    };
-    void fetchData();
   }, []);
+  useEffect(() => {
+    void fetchData();
+  }, [fetchData]);
   const availablePerspectives = useMemo(() => {
     if (!data) return PERSPECTIVES;
     const engineIds = getEnginePerspectives(data);
@@ -183,7 +188,7 @@ export default function MapScreen() {
     if (loading) {
       return (
         <Box className="flex-1 justify-center items-center">
-          <Spinner size="large" color={Theme.colors.sanctuarySaffron} />
+          <BrandPulse size={40} tintColor={theme.accent.action} accessibilityLabel="Loading knowledge map" />
         </Box>
       );
     }
@@ -223,9 +228,21 @@ export default function MapScreen() {
     if (activePerspective === 'vatya' && data && layout) {
       return <VatyaView data={data as any} layout={layout} width={width} height={height} />;
     }
+    if (loadError) {
+      return (
+        <BrandedErrorState
+          title={reality.networkQuality === 'offline' ? 'You are offline' : 'Map unavailable'}
+          message={reality.networkQuality === 'offline' ? 'Reconnect to explore the knowledge map.' : loadError}
+        >
+          <Pressable accessibilityRole="button" accessibilityLabel="Retry loading knowledge map" onPress={() => void fetchData()}>
+            <Text className="font-bold text-phaseText-primary">Retry</Text>
+          </Pressable>
+        </BrandedErrorState>
+      );
+    }
     return (
       <Box className="flex-1 justify-center items-center">
-        <Spinner color={Theme.colors.sanctuarySaffron} />
+        <BrandedEmptyState title="No map view yet" message="Choose another perspective to continue exploring." />
       </Box>
     );
   }, [loading, activePerspective, data, layout, handleNodePress, selectedNode, width, height]);
@@ -280,6 +297,10 @@ export default function MapScreen() {
                     key={p.id}
                     onPress={() => !isDisabled && setActivePerspective(p.id)}
                     disabled={isDisabled}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${p.label} perspective`}
+                    accessibilityHint={p.description}
+                    accessibilityState={{ selected: isActive, disabled: isDisabled }}
                     className={`px-4 py-2.5 rounded-2xl flex-row items-center mx-1 gap-2 border ${isActive ? 'bg-amber-500/15 border-amber-500/30' : 'border-transparent'} ${isDisabled ? 'opacity-30' : 'active:opacity-80'}`}
                   >
                     <SanctuaryIcon
@@ -323,6 +344,8 @@ export default function MapScreen() {
                     </VStack>
                     <Pressable
                       onPress={() => setSelectedNode(null)}
+                      accessibilityRole="button"
+                      accessibilityLabel="Close selected knowledge node"
                       className="p-2 rounded-full bg-white/10 active:bg-white/20"
                     >
                       <SanctuaryIcon as={X} size={20} color="white" />
@@ -345,6 +368,8 @@ export default function MapScreen() {
                         });
                       }
                     }}
+                    accessibilityRole="button"
+                    accessibilityLabel={selectedNode.type === 'topic' ? 'Explore knowledge' : 'Begin learning'}
                   >
                     <Text className="text-white font-black uppercase tracking-widest">
                       {selectedNode.type === 'topic' ? 'Explore Knowledge' : 'Begin Learning'}

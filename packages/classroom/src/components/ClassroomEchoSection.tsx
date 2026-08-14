@@ -2,6 +2,7 @@ import { echoAPI } from '@repo/core/api/client';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { useStore } from '@repo/core/logic';
 
+import { BrandPulse } from '@repo/ui';
 import { EyeOff, Inbox, User } from '@repo/ui/icons';
 import {
   Box,
@@ -349,8 +350,8 @@ export default function ClassroomEchoSection({ classroomId, isTeacher }: Props) 
 
   if (isLoading)
     return (
-      <Box className="p-xl items-center">
-        <Spinner className="text-sanctuarySaffron" />
+      <Box className="p-xl items-center" accessibilityRole="progressbar" accessibilityLabel="Loading classroom echoes">
+        <BrandPulse size={28} tintColor="#D4843A" />
       </Box>
     );
 

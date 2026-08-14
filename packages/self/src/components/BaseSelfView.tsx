@@ -1,20 +1,11 @@
 import { usePermissions, useStore, useTemporalStore } from '@repo/core/logic';
-import FeatureInfoIcon from '@repo/ui/components/FeatureInfoIcon';
-import GlobalHeader from '@repo/ui/components/GlobalHeader';
-import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
-import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
-import { DerivedHistoryView } from '@repo/ui/components/DerivedHistoryView';
-import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
-import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
-import EmptyState from '@repo/ui/components/EmptyState';
-import { Sparkles } from '@repo/ui/icons';
-import { tokens } from '@repo/ui/tokens';
-import { useWindowDimensions } from 'react-native';
-import { useRouter } from 'expo-router';
-
-import React, { useCallback, useMemo } from 'react';
 import type { BaseSelfViewProps, SelfViewFeature } from '@repo/self/components/BaseSelfView.types';
 import { FeatureErrorBoundary } from '@repo/self/components/FeatureErrorBoundary';
+import {
+  getCalmFeatureLabel,
+  getHistoryNotice,
+  getShortcutToastMessage,
+} from '@repo/self/components/selfEntryPresentation';
 import {
   canonicalSelfFeatureId,
   FEATURE_DISCOVERY_DATA,
@@ -22,6 +13,19 @@ import {
 } from '@repo/self/constants/selfRegistry';
 import { useDynamicSelfFeatures } from '@repo/self/hooks/useDynamicSelfFeatures';
 import { useFeatureActivity } from '@repo/self/hooks/useFeatureActivity';
+import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import { DerivedHistoryView } from '@repo/ui/components/DerivedHistoryView';
+import FeatureInfoIcon from '@repo/ui/components/FeatureInfoIcon';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
+import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
+import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
+import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import { tokens } from '@repo/ui/tokens';
+import { useRouter } from 'expo-router';
+import React, { useCallback, useMemo } from 'react';
+import { useWindowDimensions } from 'react-native';
 
 const TEMPORAL_SCALES = ['day', 'week', 'month', 'year'] as const;
 
@@ -52,9 +56,9 @@ export function BaseSelfView({
   const allFeatures = useMemo(
     () => [
       ...domains.flatMap((domain) =>
-          (domain.features || []).map((feature) => ({
-            ...feature,
-            id: canonicalSelfFeatureId(feature.id),
+        (domain.features || []).map((feature) => ({
+          ...feature,
+          id: canonicalSelfFeatureId(feature.id),
           domainId: domain.id,
           domainColor: domain.accentColor,
           energyVibe: domain.energyVibe,
@@ -70,8 +74,8 @@ export function BaseSelfView({
                 domains.find((domain) => domain.historyContent)?.historyContent ??
                 domains.find((domain) => domain.content)?.content,
               domainId: 'journey',
-              domainColor: '#8B5CF6',
-              energyVibe: ['#ECFDF5', '#D1FAE5'] as [string, string],
+              domainColor: tokens.colors.accentDepth,
+              energyVibe: [tokens.colors.surface, tokens.colors.surfaceSubtle] as [string, string],
             },
           ]
         : []),
@@ -83,8 +87,8 @@ export function BaseSelfView({
               content: sideBar,
               historyContent: sideBar,
               domainId: 'reflections',
-              domainColor: '#8B5CF6',
-              energyVibe: ['#F5F3FF', '#EDE9FE'] as [string, string],
+              domainColor: tokens.colors.accentDepth,
+              energyVibe: [tokens.colors.surface, tokens.colors.surfaceSubtle] as [string, string],
             },
           ]
         : []),
@@ -96,8 +100,11 @@ export function BaseSelfView({
               content: reminders,
               historyContent: reminders,
               domainId: 'reminders',
-              domainColor: '#F59E0B',
-              energyVibe: ['#FFFBEB', '#FEF3C7'] as [string, string],
+              domainColor: tokens.colors.warning,
+              energyVibe: [tokens.colors.surfaceElevated, tokens.colors.surfaceSubtle] as [
+                string,
+                string,
+              ],
             },
           ]
         : []),
@@ -106,6 +113,7 @@ export function BaseSelfView({
   );
 
   const { getPinnedFeatures, togglePin, trackFeatureAccess } = useFeatureActivity();
+  const { showToast } = useSanctuaryToast();
   const { topItems: sortedFeatures } = useDynamicSelfFeatures(allFeatures);
   const pinned = getPinnedFeatures().map(canonicalSelfFeatureId);
 
@@ -122,7 +130,8 @@ export function BaseSelfView({
 
   // Energy Sensing: Derive background from active feature's vibe
   const backgroundStyle = useMemo(() => {
-    const baseColor = perspective === 'student' ? '#F5F3FF' : '#FFF7ED';
+    const baseColor =
+      perspective === 'student' ? tokens.colors.surface : tokens.colors.surfaceElevated;
     const activeVibe = activeFeature?.energyVibe?.[0] || baseColor;
     return {
       backgroundColor: activeVibe,
@@ -142,18 +151,32 @@ export function BaseSelfView({
     [trackFeatureAccess],
   );
 
+  const handleFeatureLongPress = useCallback(
+    (feature: SelfViewFeature) => {
+      togglePin(feature.id);
+      showToast({
+        message: getShortcutToastMessage(feature, pinned.includes(feature.id)),
+        type: 'info',
+        duration: 2500,
+      });
+    },
+    [pinned, showToast, togglePin],
+  );
+
   const renderFeatureItem = useCallback(
     ({ item: feature }: { item: SelfViewFeature & { domainColor?: string } }) => {
       const isActive = activeFeatureIdResolved === feature.id;
       const isPinned = pinned.includes(feature.id);
       const isInsight = feature.id === 'mirrors' || feature.id === 'reminders';
-      const hasHistory = Boolean(feature.historyContent);
+      const label = getCalmFeatureLabel(feature);
 
       return (
         <Pressable
           onPress={() => handleFeaturePress(feature.id)}
-          onLongPress={() => togglePin(feature.id)}
+          onLongPress={() => handleFeatureLongPress(feature)}
           accessibilityRole="button"
+          accessibilityLabel={label}
+          accessibilityHint="Double tap to open. Long press to save or remove from shortcuts."
           className="items-center"
           style={{ width: isTablet ? 104 : 72 }}
         >
@@ -182,12 +205,7 @@ export function BaseSelfView({
                   className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full justify-center items-center border-2 border-white shadow-sm"
                   style={{ backgroundColor: feature.domainColor }}
                 >
-                  <Text className="text-[10px] text-white">📌</Text>
-                </Box>
-              )}
-              {hasHistory && (
-                <Box className="absolute -bottom-1.5 -right-0.5 w-[18px] h-[18px] rounded-full justify-center items-center bg-[#EBE5FA] border border-white">
-                  <Text className="text-[8px] text-[#5B3FD6]">⏳</Text>
+                  <Box accessible={false} className="w-1.5 h-1.5 rounded-full bg-white" />
                 </Box>
               )}
             </Box>
@@ -203,12 +221,19 @@ export function BaseSelfView({
             }`}
             style={{ fontSize: isTablet ? 11 : 9 }}
           >
-            {feature.label}
+            {label}
           </Text>
         </Pressable>
       );
     },
-    [activeFeatureIdResolved, pinned, togglePin, handleFeaturePress, getEmoji, isTablet],
+    [
+      activeFeatureIdResolved,
+      pinned,
+      handleFeatureLongPress,
+      handleFeaturePress,
+      getEmoji,
+      isTablet,
+    ],
   );
 
   const renderFeatureContent = (feature?: SelfViewFeature & { domainColor?: string }) => {
@@ -227,13 +252,29 @@ export function BaseSelfView({
             {...feature.temporalView}
           />
         ) : null}
-        <FeatureErrorBoundary featureName={feature.label}>{content}</FeatureErrorBoundary>
+        <FeatureErrorBoundary featureName={feature.label}>
+          {content ?? (
+            <BrandedEmptyState
+              title="This space is taking shape"
+              message="There is no update for this space yet."
+              subtle
+            />
+          )}
+        </FeatureErrorBoundary>
       </>
     );
   };
 
   return (
-    <VStack className="flex-1 transition-all duration-700" style={{ ...backgroundStyle, maxWidth: isTablet ? 1024 : undefined, alignSelf: isTablet ? 'center' : undefined, width: '100%' }}>
+    <VStack
+      className="flex-1 transition-all duration-700"
+      style={{
+        ...backgroundStyle,
+        maxWidth: isTablet ? 1024 : undefined,
+        alignSelf: isTablet ? 'center' : undefined,
+        width: '100%',
+      }}
+    >
       <GlobalHeader isSelfView={true} subtitle={perspective.toUpperCase()} title="Sadhana" />
 
       <TemporalNavigator />
@@ -252,67 +293,107 @@ export function BaseSelfView({
         {voiceJournal && <Box className="px-lg pt-sm">{voiceJournal}</Box>}
         {morningRitual && <Box className="px-lg pt-sm">{morningRitual}</Box>}
 
-      {!isOnline && (
-        <Box className="mx-md mt-sm rounded-xl border px-md py-sm" style={{ borderColor: tokens.colors.surfaceSubtle, backgroundColor: tokens.colors.surfaceSubtle }}>
-          <Text className="text-xs" style={{ color: tokens.colors.inkSubtle }}>
-            Offline · showing saved resonance. New entries will wait for connection.
-          </Text>
-        </Box>
-      )}
-      {isHistoryMode && (
-        <Box className="mx-md mt-sm rounded-xl border px-md py-sm" style={{ borderColor: tokens.colors.surfaceSubtle, backgroundColor: tokens.colors.surfaceSubtle }}>
-          <Text className="text-xs" style={{ color: tokens.colors.inkSubtle }}>
-            History is read-only for the {viewScale} view.
-          </Text>
-        </Box>
-      )}
+        {!isOnline && (
+          <Box
+            className="mx-md mt-sm rounded-xl border px-md py-sm"
+            style={{
+              borderColor: tokens.colors.surfaceSubtle,
+              backgroundColor: tokens.colors.surfaceSubtle,
+            }}
+          >
+            <Text className="text-xs" style={{ color: tokens.colors.inkSubtle }}>
+              Offline · saved entries remain available. New entries will sync later.
+            </Text>
+          </Box>
+        )}
+        {isHistoryMode && (
+          <Box
+            className="mx-md mt-sm rounded-xl border px-md py-sm"
+            style={{
+              borderColor: tokens.colors.surfaceSubtle,
+              backgroundColor: tokens.colors.surfaceSubtle,
+            }}
+          >
+            <Text className="text-xs" style={{ color: tokens.colors.inkSubtle }}>
+              {getHistoryNotice(viewScale)}
+            </Text>
+          </Box>
+        )}
 
-      <Box className="py-md bg-transparent min-h-[110px]" style={{ paddingHorizontal: isTablet ? tokens.spacing.sm : 0 }}>
-          <SanctuaryFlashList
-            data={sortedFeatures}
-            renderItem={renderFeatureItem}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: isTablet ? 32 : 20 }}
-            estimatedItemSize={isTablet ? 104 : 72}
-            keyExtractor={(item) => item.id}
-            getItemType={(item) => (item.id === 'mirrors' ? 'insight' : 'regular')}
-          />
-        </Box>
-
-        <Box className="px-md pt-md min-h-[400px]" style={{ paddingHorizontal: isTablet ? 32 : 16, width: '100%', maxWidth: isLandscape ? 900 : undefined, alignSelf: isLandscape ? 'center' : undefined }}>
-          {activeFeature && (
-            <VStack className="mb-4">
-              <HStack className="justify-between items-center mb-3">
-                <HStack className="items-center flex-1 gap-1">
-                  <Text className="text-lg font-extrabold text-[#1A1610] tracking-tighter">
-                    {activeFeature.label}
-                    {isHistoryMode ? ' History' : ''}
-                  </Text>
-                  <FeatureInfoIcon
-                    title={activeFeature.label}
-                    discoveryInfo={
-                      FEATURE_DISCOVERY_DATA[
-                        activeFeature.id as keyof typeof FEATURE_DISCOVERY_DATA
-                      ]
-                    }
-                    color={activeFeature.domainColor}
-                  />
-                </HStack>
-                <Text className="text-[10px] text-black/35 font-bold tracking-widest uppercase">
-                  {isHistoryMode ? `${viewScale.toUpperCase()} VIEW` : 'PRESENT FOCUS'}
-                </Text>
-              </HStack>
-              {renderFeatureContent(activeFeature)}
-            </VStack>
-          )}
-          {!activeFeature && (
-            <EmptyState
-              icon={<Sparkles size={48} />}
-              title="Your sanctuary is waiting"
-              description="There are no readable Self capabilities for this perspective yet."
+        <Box
+          style={{
+            flexDirection: isLandscape ? 'row' : 'column',
+            flex: isLandscape ? 1 : undefined,
+            width: '100%',
+          }}
+        >
+          <Box
+            className="py-md bg-transparent"
+            style={{
+              width: isLandscape ? 136 : '100%',
+              minHeight: isLandscape ? undefined : 110,
+              paddingHorizontal: isLandscape ? tokens.spacing.xs : isTablet ? tokens.spacing.sm : 0,
+            }}
+          >
+            <SanctuaryFlashList
+              data={sortedFeatures}
+              renderItem={renderFeatureItem}
+              horizontal={!isLandscape}
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={
+                isLandscape
+                  ? { paddingVertical: tokens.spacing.xs, paddingHorizontal: tokens.spacing.xs }
+                  : { paddingHorizontal: isTablet ? 32 : 20 }
+              }
+              estimatedItemSize={isLandscape ? 72 : isTablet ? 104 : 72}
+              keyExtractor={(item) => item.id}
+              getItemType={(item) => (item.id === 'mirrors' ? 'insight' : 'regular')}
             />
-          )}
+          </Box>
+
+          <Box
+            className="px-md pt-md min-h-[400px]"
+            style={{
+              flex: isLandscape ? 1 : undefined,
+              paddingHorizontal: isTablet ? 32 : 16,
+              width: isLandscape ? undefined : '100%',
+              maxWidth: isLandscape ? 900 : undefined,
+              alignSelf: isLandscape ? 'center' : undefined,
+            }}
+          >
+            {activeFeature && (
+              <VStack className="mb-4">
+                <HStack className="justify-between items-center mb-3">
+                  <HStack className="items-center flex-1 gap-1">
+                    <Text className="text-lg font-semibold" style={{ color: tokens.colors.ink }}>
+                      {activeFeature.label}
+                    </Text>
+                    <FeatureInfoIcon
+                      title={activeFeature.label}
+                      discoveryInfo={
+                        FEATURE_DISCOVERY_DATA[
+                          activeFeature.id as keyof typeof FEATURE_DISCOVERY_DATA
+                        ]
+                      }
+                      color={activeFeature.domainColor}
+                    />
+                  </HStack>
+                  <Text className="text-xs" style={{ color: tokens.colors.textMuted }}>
+                    {isHistoryMode ? viewScale : 'Now'}
+                  </Text>
+                </HStack>
+                {renderFeatureContent(activeFeature)}
+              </VStack>
+            )}
+            {!activeFeature && (
+              <BrandedEmptyState
+                title="A quiet space is ready"
+                message="Your Self spaces will appear here when they have something to share."
+                subtle
+              />
+            )}
+          </Box>
         </Box>
 
         {nightRitual && <Box className="px-lg pt-sm">{nightRitual}</Box>}
@@ -350,14 +431,16 @@ function TemporalShellControls({
         <Pressable
           onPress={() => onModeChange('spotlight')}
           accessibilityRole="button"
-          className={`px-3.5 py-2 rounded-full border ${
-            !isHistoryMode ? 'bg-[#DEF2E8] border-[#29A17D40]' : 'bg-white/60 border-black/10'
-          }`}
+          className="px-3.5 py-2 rounded-full border"
+          style={{
+            backgroundColor: !isHistoryMode ? tokens.colors.surfaceElevated : tokens.colors.surface,
+            borderColor: !isHistoryMode ? tokens.colors.success : tokens.colors.borderSubtle,
+          }}
+          accessibilityState={{ selected: !isHistoryMode }}
         >
           <Text
-            className={`text-[11px] font-bold uppercase tracking-wider ${
-              !isHistoryMode ? 'text-[#29A17D]' : 'text-[#6E594F]'
-            }`}
+            className="text-xs font-semibold"
+            style={{ color: !isHistoryMode ? tokens.colors.success : tokens.colors.inkSubtle }}
           >
             Now
           </Text>
@@ -365,14 +448,18 @@ function TemporalShellControls({
         <Pressable
           onPress={() => onModeChange('timeline')}
           accessibilityRole="button"
-          className={`px-3.5 py-2 rounded-full border ${
-            isHistoryMode ? 'bg-[#EBE5FA] border-[#835CF630]' : 'bg-white/60 border-black/10'
-          }`}
+          className="px-3.5 py-2 rounded-full border"
+          style={{
+            backgroundColor: isHistoryMode
+              ? tokens.colors.surfaceInteractive
+              : tokens.colors.surface,
+            borderColor: isHistoryMode ? tokens.colors.info : tokens.colors.borderSubtle,
+          }}
+          accessibilityState={{ selected: isHistoryMode }}
         >
           <Text
-            className={`text-[11px] font-bold uppercase tracking-wider ${
-              isHistoryMode ? 'text-[#5B3FD6]' : 'text-[#6E594F]'
-            }`}
+            className="text-xs font-semibold"
+            style={{ color: isHistoryMode ? tokens.colors.info : tokens.colors.inkSubtle }}
           >
             History
           </Text>
@@ -389,18 +476,21 @@ function TemporalShellControls({
               key={scale}
               onPress={() => onScaleChange(scale)}
               accessibilityRole="button"
-              className={`px-3 py-1.5 rounded-full border ${
-                viewScale === scale
-                  ? 'bg-[#EBE5FA] border-[#835CF630]'
-                  : 'bg-white/60 border-black/10'
-              }`}
+              className="px-3 py-1.5 rounded-full border"
+              style={{
+                backgroundColor:
+                  viewScale === scale ? tokens.colors.surfaceInteractive : tokens.colors.surface,
+                borderColor: viewScale === scale ? tokens.colors.info : tokens.colors.borderSubtle,
+              }}
+              accessibilityState={{ selected: viewScale === scale }}
             >
               <Text
-                className={`text-[10px] font-extrabold tracking-wider ${
-                  viewScale === scale ? 'text-[#5B3FD6]' : 'text-[#6E594F]'
-                }`}
+                className="text-xs font-semibold"
+                style={{
+                  color: viewScale === scale ? tokens.colors.info : tokens.colors.inkSubtle,
+                }}
               >
-                {scale.toUpperCase()}
+                {scale}
               </Text>
             </Pressable>
           ))}
@@ -421,14 +511,14 @@ function HistoryScaffold({
     <Box
       className="border rounded-[20px] px-[18px] py-5"
       style={{
-        borderColor: feature.domainColor || '#8B5CF6',
-        backgroundColor: 'rgba(255,255,255,0.72)',
+        borderColor: feature.domainColor || tokens.colors.accentDepth,
+        backgroundColor: tokens.colors.glass,
       }}
     >
-      <Text className="text-sm font-extrabold text-[#2E2924] mb-2 uppercase tracking-wider">
-        {feature.label} history scaffold
+      <Text className="text-sm font-semibold mb-2" style={{ color: tokens.colors.ink }}>
+        {feature.label} history
       </Text>
-      <Text className="text-[13px] leading-5 text-[#6E594F]">
+      <Text className="text-[13px] leading-5" style={{ color: tokens.colors.inkSubtle }}>
         {`The shell is ready to show ${viewScale}-range history here once this feature exposes its temporal view.`}
       </Text>
     </Box>
