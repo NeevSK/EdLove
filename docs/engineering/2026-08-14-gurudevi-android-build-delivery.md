@@ -84,6 +84,28 @@ Result: failed during `Assemble release-mode APK` after approximately 4 minutes 
 
 This run is important because it compiled the complete audited UI commit, not only the build workflow. It also consumed no EAS build. The workflow now reclaims unused preinstalled toolchains, disables large pnpm/Gradle cache restores for this artifact lane, and records disk usage before dependency installation and Gradle. If the standard runner still cannot complete, the next supported option is a larger GitHub-hosted runner or a dedicated Android builder; changing application code would be unrelated.
 
+### Second full-source GitHub attempt
+
+Run: [31780627576](https://github.com/NeevSK/EdLove/actions/runs/31780627576)
+
+Commit: `1ef893df8dc9c9039c11b84ca89b15a803eb3f55`
+
+Result: the disk fix worked. The runner reported `23 GB` available immediately before Gradle, and native compilation progressed for 34 minutes 22 seconds with 972 actionable tasks executed. The build then failed at `:app:createBundleReleaseJsAndAssets` because Metro rejected the missing `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. The dependent Sentry upload task also failed with `No such file or directory` because the JavaScript bundle was never produced. This was a configuration/bootstrap failure, not a disk failure and not evidence that the native modules failed to compile.
+
+The next workflow revision loads the reviewed public runtime allowlist from Doppler's `gurudevi-mobile/dev` config without printing values, and disables automatic Sentry artifact upload for this device APK lane. Sentry sourcemap publication remains a separate explicit workflow concern.
+
+### Warning inventory from run 31780627576
+
+| Class | Evidence | Disposition |
+| --- | --- | --- |
+| Kotlin configuration-check tasks marked `SKIPPED` | Repeated `checkKotlinGradlePluginConfigurationErrors SKIPPED` lines across Expo and native modules | Informational Gradle task status; do not treat the word `Error` in the task name as a build error. |
+| Native C++ unused parameter/variable | `react-native-nitro-modules` `queueMutexLock`; `@op-engineering/op-sqlite` `errMsg` | Upstream warnings; track during dependency upgrades, but not a blocker for this APK. |
+| Native C++ exception/deprecation warnings | `react-native-worklets-core` exception handler ordering; Expo/Nitro `RawPropsParser` deprecations | Upstream/new-architecture compatibility noise; verify after Expo/RN upgrades rather than patching generated or vendored code. |
+| Android/Kotlin React Native API deprecations | `react-native-webview` `RCTEventEmitter` and event constructor warnings; NetInfo `onCatalystInstanceDestroy` removal warning | Dependency maintenance items. Pin compatibility is currently intentional; create upgrade follow-ups, not build-lane workarounds. |
+| Gradle daemon performance logging notice | Suggestion to set `org.gradle.daemon.performance.disable-logging=true` | Low priority informational notice; unrelated to the failure. |
+| Missing public runtime configuration | Metro error for the two `EXPO_PUBLIC_SUPABASE_*` variables | P0 build defect for any fresh CI checkout; fixed by loading the reviewed Doppler allowlist before prebuild/Metro. |
+| Sentry upload with no bundle | `createBundleReleaseJsAndAssets_SentryUpload...` and `No such file or directory` after Metro failure | Secondary failure; automatic upload is disabled for the device lane, while explicit source-map upload remains separate. |
+
 ### EAS preview or release
 
 Use `Android EAS Release Build` only after the GitHub APK has compiled and the device validation has passed. The workflow requires an explicit `github-apk-verified` confirmation. Select `preview` for an internal APK and `production` for a store AAB. The workflow must never be changed back to `--local`.
