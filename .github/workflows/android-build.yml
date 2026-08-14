@@ -27,6 +27,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Reclaim hosted-runner disk
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'Disk before cleanup:'
+          df -h /
+          # The standard hosted image is storage-constrained. These tools are
+          # not used by this Android/Expo lane and compete with Gradle/NDK.
+          sudo rm -rf /opt/ghc /usr/local/.ghcup /usr/share/dotnet /opt/hostedtoolcache/CodeQL
+          android_sdk="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          sudo rm -rf "$android_sdk/ndk" "$android_sdk/ndk-bundle"
+          sudo apt-get clean
+          docker system prune --all --force || true
+          echo 'Disk after cleanup:'
+          df -h /
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -35,19 +50,21 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: pnpm
       - name: Setup Java
         uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: temurin
-          cache: gradle
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
       - name: Install pinned Android NDK
         run: sdkmanager "ndk;27.1.12297006"
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --prefer-offline --fetch-timeout 100000
+      - name: Report dependency disk usage
+        run: |
+          df -h /
+          du -sh node_modules apps/gurudevi-mobile/node_modules packages/*/node_modules 2>/dev/null | sort -h | tail -20 || true
       - name: Validate mobile contracts
         working-directory: apps/gurudevi-mobile
         run: |
@@ -64,7 +81,9 @@ jobs:
         working-directory: apps/gurudevi-mobile/android
         env:
           GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.parallel=false -Dorg.gradle.workers.max=2'
-        run: ./gradlew :app:assembleRelease --stacktrace
+        run: |
+          df -h /
+          ./gradlew :app:assembleRelease --stacktrace
       - name: Upload device-test APK
         uses: actions/upload-artifact@v4
         with:

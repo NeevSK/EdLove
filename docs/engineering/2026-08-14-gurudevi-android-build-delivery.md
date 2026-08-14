@@ -80,9 +80,9 @@ Run: [31779380444](https://github.com/NeevSK/EdLove/actions/runs/31779380444)
 
 Commit: `d47f9be1a3b0ca2fe4e3c5a47b9cf209ca0f7f85`
 
-Result: failed during `Assemble release-mode APK` after approximately 4 minutes 54 seconds of Gradle execution. Checkout, pnpm, Node, Java, Android SDK, pinned NDK installation, dependency installation, mobile contract validation, and Expo native project generation all passed. GitHub exposed no Gradle log for the terminated step (`gh run view --log-failed` and the job log endpoint returned no blob), and the job metadata left the assembly step without a conclusion. Treat this as an abrupt runner/process termination until a subsequent run produces a compiler diagnostic; do not label it an application or Gradle source error from this evidence alone.
+Result: failed during `Assemble release-mode APK` after approximately 4 minutes 54 seconds of Gradle execution. The attached GitHub UI evidence shows `System.IO.IOException: No space left on device` while the runner was writing its own diagnostic log under `/home/runner/actions-runner/_diag`. Checkout, pnpm, Node, Java, Android SDK, pinned NDK installation, dependency installation, mobile contract validation, and Expo native project generation all passed. This is a hosted-runner disk exhaustion failure, not an application or Gradle source diagnosis.
 
-This run is important because it compiled the complete audited UI commit, not only the build workflow. It also consumed no EAS build. The next diagnosis should preserve the same commit and inspect runner termination/resource telemetry before changing application code or spending an EAS build.
+This run is important because it compiled the complete audited UI commit, not only the build workflow. It also consumed no EAS build. The workflow now reclaims unused preinstalled toolchains, disables large pnpm/Gradle cache restores for this artifact lane, and records disk usage before dependency installation and Gradle. If the standard runner still cannot complete, the next supported option is a larger GitHub-hosted runner or a dedicated Android builder; changing application code would be unrelated.
 
 ### EAS preview or release
 
