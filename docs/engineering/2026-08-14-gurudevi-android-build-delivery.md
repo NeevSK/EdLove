@@ -114,6 +114,18 @@ Result: intentionally stopped in 39 seconds at the runtime-configuration step be
 | Missing public runtime configuration | Metro error for the two `EXPO_PUBLIC_SUPABASE_*` variables | P0 build defect for any fresh CI checkout; fixed by loading the reviewed Doppler allowlist before prebuild/Metro. |
 | Sentry upload with no bundle | `createBundleReleaseJsAndAssets_SentryUpload...` and `No such file or directory` after Metro failure | Secondary failure; automatic upload is disabled for the device lane, while explicit source-map upload remains separate. |
 
+### Fourth attempt: direct Babel preset resolution
+
+Run: [31783912382](https://github.com/NeevSK/EdLove/actions/runs/31783912382)
+
+Result: the Supabase configuration fix worked, and the run reached JavaScript bundling after 34m48s of native work. The new failure was `Cannot find module 'babel-preset-expo'`, followed by Metro's `transformFile` undefined error. The preset existed only transitively in the lock graph; pnpm's isolated workspace layout did not guarantee that the app's Babel config could resolve it by name. The app now declares `babel-preset-expo ~57.0.6` directly and the lockfile importer records that dependency.
+
+### Proactive JS preflight
+
+The workflow now runs `require.resolve('babel-preset-expo')` and an Android `expo export:embed` before native generation and Gradle. Missing Babel dependencies, Metro transformers, or required public runtime inputs should now fail within minutes rather than after 30–40 minutes of native compilation.
+
+The package install also reported deprecated direct package `@testing-library/jest-native@5.4.3`, deprecated workspace subdependency `@types/glob@9.0.0`, and 19 deprecated transitive subdependencies including older Babel proposal plugins, unimodules packages, `expo-random`, and older `uuid`/DOM compatibility packages. These are dependency-maintenance backlog items, not the cause of the APK failure; they require an intentional Expo/RN-compatible review rather than opportunistic upgrades during build recovery.
+
 ### EAS preview or release
 
 Use `Android EAS Release Build` only after the GitHub APK has compiled and the device validation has passed. The workflow requires an explicit `github-apk-verified` confirmation. Select `preview` for an internal APK and `production` for a store AAB. The workflow must never be changed back to `--local`.

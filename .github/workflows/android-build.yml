@@ -78,6 +78,18 @@ jobs:
           pnpm run audit:boundaries
           pnpm run audit:style-stack
           pnpm run audit:css-interop
+      - name: Preflight Android JavaScript bundle
+        working-directory: apps/gurudevi-mobile
+        env:
+          EXPO_NO_DOCTOR: '1'
+          NODE_ENV: production
+        run: |
+          node -e "console.log(require.resolve('babel-preset-expo'))"
+          pnpm exec expo export:embed \
+            --platform android \
+            --entry-file index.ts \
+            --bundle-output "$RUNNER_TEMP/gurudevi-preflight.android.bundle" \
+            --sourcemap-output "$RUNNER_TEMP/gurudevi-preflight.android.bundle.map"
       - name: Generate native project
         working-directory: apps/gurudevi-mobile
         env:
