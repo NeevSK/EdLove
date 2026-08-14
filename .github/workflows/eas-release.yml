@@ -1,0 +1,51 @@
+name: Android EAS Release Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: EAS profile to build remotely
+        required: true
+        default: preview
+        type: choice
+        options: [preview, production]
+      github_gate:
+        description: Confirm the GitHub APK build and device checks already passed
+        required: true
+        type: choice
+        options: [github-apk-verified]
+
+permissions:
+  contents: read
+
+jobs:
+  trigger-eas:
+    name: Trigger isolated EAS Android build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: ${{ inputs.profile == 'production' && 'production' || 'preview' }}
+    if: inputs.github_gate == 'github-apk-verified'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+      - name: Setup EAS CLI
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EAS_TOKEN }}
+      - name: Trigger remote EAS build
+        working-directory: apps/gurudevi-mobile
+        run: |
+          eas build \
+            --platform android \
+            --profile "${{ inputs.profile }}" \
+            --non-interactive \
+            --no-wait

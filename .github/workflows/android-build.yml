@@ -1,476 +1,74 @@
-name: Manual Android Build
+name: Android APK Build (GitHub)
 
 on:
   workflow_dispatch:
-    inputs:
-      profile:
-        description: 'EAS Build Profile'
-        required: true
-        default: 'preview'
-        type: choice
-        options:
-          - development
-          - preview
-          - production
-      build_method:
-        description: 'Build Method'
-        required: true
-        default: 'local'
-        type: choice
-        options:
-          - local
-          - remote
-      build_type:
-        description: 'Build Type'
-        required: true
-        default: 'apk'
-        type: choice
-        options:
-          - apk
-          - aab
-          - both
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/gurudevi-mobile/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - 'package.json'
+      - '.github/workflows/android-build.yml'
+
+concurrency:
+  group: android-debug-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
-  # ─────────────────────────────────────────────────────────────────────────
-  # JOB 1: Determine build matrix
-  # ─────────────────────────────────────────────────────────────────────────
-  prep:
+  build-debug-apk:
+    name: Build release-mode APK with debug signing on Linux
     runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    timeout-minutes: 45
     steps:
-      - id: set-matrix
-        run: |
-          if [ "${{ github.event.inputs.build_type }}" == "both" ]; then
-            echo 'matrix=["apk", "aab"]' >> $GITHUB_OUTPUT
-          else
-            echo 'matrix=["${{ github.event.inputs.build_type }}"]' >> $GITHUB_OUTPUT
-          fi
-
-  # ─────────────────────────────────────────────────────────────────────────
-  # JOB 2: Pre-bundle with Metro to capture sourcemaps
-  # ─────────────────────────────────────────────────────────────────────────
-  prebundle:
-    needs: prep
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    environment: ${{ github.event.inputs.profile == 'production' && 'production' || github.event.inputs.profile == 'preview' && 'preview' || 'development' }}
-    env:
-      DOPPLER_PROJECT: gurudevi-mobile
-      DOPPLER_CONFIG: ${{ github.event.inputs.profile == 'production' && 'prd' || github.event.inputs.profile == 'preview' && 'stg' || 'dev' }}
-      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
-    outputs:
-      sourcemaps_available: ${{ steps.check.outputs.sourcemaps_available }}
-    steps:
-      # --- OPTIMIZATION: Maximize space for Pre-bundling ---
-      - name: 🧹 Free Disk Space
-        uses: jlumbroso/free-disk-space@v1.3.1
-        with:
-          tool-cache: true
-          android: false # Keep Android components safe
-          dotnet: true
-          haskell: true
-          large-packages: true
-          docker-images: true
-          swap-storage: true
-
-      - name: 🏗 Checkout
+      - name: Checkout
         uses: actions/checkout@v4
-
-      - name: 🏗 Setup pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 11.21.0
-
-      - name: 🏗 Setup Node
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'pnpm'
-
-      - name: 🔐 Load Doppler build environment
-        uses: ./.github/actions/load-doppler-env
-        with:
-          project: ${{ env.DOPPLER_PROJECT }}
-          config: ${{ env.DOPPLER_CONFIG }}
-          token: ${{ env.DOPPLER_TOKEN }}
-
-      - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile --fetch-timeout 100000
-
-      - name: 🔍 Verify Module Resolution (Critical CSS)
-        run: |
-          cd apps/gurudevi-mobile
-          node -e "try { require.resolve('@repo/ui/global.css'); console.log('✅ @repo/ui/global.css is resolvable'); } catch(e) { console.error('❌ @repo/ui/global.css NOT found'); process.exit(1); }"
-
-      - name: 🔍 Debug — Runner environment
-        run: |
-          echo "=== Runner info ==="
-          echo "OS: $(uname -a)"
-          echo "Node: $(node --version)"
-          echo "pnpm: $(pnpm --version)"
-          echo "Workspace: $GITHUB_WORKSPACE"
-          echo ""
-          echo "=== Disk space ==="
-          df -h
-          echo ""
-          echo "=== /tmp contents ==="
-          ls -la /tmp/ || true
-
-      - name: 📦 Pre-bundle with Metro
-        id: metro
-        continue-on-error: true
-        env:
-          EXPO_NO_DOCTOR: 1
-          NODE_ENV: production
-          NODE_OPTIONS: --max-old-space-size=8192
-        run: |
-          mkdir -p /tmp/sentry-artifacts
-          cd apps/gurudevi-mobile
-          pnpm exec expo export:embed \
-            --platform android \
-            --entry-file index.ts \
-            --bundle-output /tmp/sentry-artifacts/index.android.bundle \
-            --sourcemap-output /tmp/sentry-artifacts/index.android.bundle.map \
-            --dev false \
-            --minify true \
-            2>&1
-
-      - name: 🔍 Debug — Verify bundle and sourcemap output
-        id: check
-        if: always()
-        run: |
-          BUNDLE="/tmp/sentry-artifacts/index.android.bundle"
-          MAP="/tmp/sentry-artifacts/index.android.bundle.map"
-          BUNDLE_OK=false
-          MAP_OK=false
-
-          if [ -f "$BUNDLE" ]; then BUNDLE_OK=true; fi
-          if [ -f "$MAP" ]; then MAP_OK=true; fi
-
-          if [ "$BUNDLE_OK" = true ] && [ "$MAP_OK" = true ]; then
-            echo "sourcemaps_available=true" >> $GITHUB_OUTPUT
-          else
-            echo "sourcemaps_available=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: 📊 Record bundle metrics
-        if: always()
-        run: |
-          node scripts/report-mobile-bundle.mjs \
-            /tmp/sentry-artifacts/index.android.bundle \
-            /tmp/sentry-artifacts/index.android.bundle.map \
-            /tmp/sentry-artifacts/bundle-metrics.json
-          node scripts/report-mobile-bundle-packages.mjs \
-            /tmp/sentry-artifacts/index.android.bundle \
-            /tmp/sentry-artifacts/index.android.bundle.map \
-            /tmp/sentry-artifacts/bundle-packages.json
-
-      - name: 📤 Upload sourcemap artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: sentry-artifacts-prebundle
-          path: /tmp/sentry-artifacts/
-          if-no-files-found: warn
-          retention-days: 3
-
-  # ─────────────────────────────────────────────────────────────────────────
-  # JOB 3: Build the app (CRITICAL DISK OPTIMIZATION ADDED HERE)
-  # ─────────────────────────────────────────────────────────────────────────
-  build:
-    needs: [prep, prebundle]
-    runs-on: ubuntu-latest
-    if: always()
-    environment: ${{ github.event.inputs.profile == 'production' && 'production' || github.event.inputs.profile == 'preview' && 'preview' || 'development' }}
-    env:
-      DOPPLER_PROJECT: gurudevi-mobile
-      DOPPLER_CONFIG: ${{ github.event.inputs.profile == 'production' && 'prd' || github.event.inputs.profile == 'preview' && 'stg' || 'dev' }}
-      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
-    strategy:
-      matrix:
-        type: ${{ fromJson(needs.prep.outputs.matrix) }}
-    steps:
-      # --- CRITICAL FIX: Reclaim ~25-30GB of space before compiling native Android code ---
-      - name: 🧹 Free Disk Space (Prevent System.IO.IOException)
-        uses: jlumbroso/free-disk-space@v1.3.1
-        with:
-          tool-cache: true
-          android: false # MUST remain false so your setup-android action can locate native tools
-          dotnet: true
-          haskell: true
-          large-packages: true
-          docker-images: true
-          swap-storage: true
-
-      - name: 🏗 Checkout
-        uses: actions/checkout@v4
-
-      - name: 🏗 Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 11.21.0
-
-      - name: 🏗 Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'pnpm'
-
-      - name: 🔐 Load Doppler build environment
-        uses: ./.github/actions/load-doppler-env
-        with:
-          project: ${{ env.DOPPLER_PROJECT }}
-          config: ${{ env.DOPPLER_CONFIG }}
-          token: ${{ env.DOPPLER_TOKEN }}
-
-      - name: 🏗 Setup JDK 17
+          cache: pnpm
+      - name: Setup Java
         uses: actions/setup-java@v5
         with:
           java-version: '17'
-          distribution: 'temurin'
-
-      - name: 🏗 Setup Android SDK
+          distribution: temurin
+          cache: gradle
+      - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-
-      - name: 🏗 Setup EAS
-        uses: expo/expo-github-action@v8
-        with:
-          eas-version: latest
-
-      - name: 🏗 Setup Gradle Cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile --fetch-timeout 100000
-
-      - name: 🔍 Validate Expo native dependency graph
-        working-directory: apps/gurudevi-mobile
-        run: pnpm run audit:expo-native-graph
-
-      - name: 🧱 Validate mobile boundaries and runtime assets
-        working-directory: apps/gurudevi-mobile
-        run: pnpm run audit:boundaries
-
-      - name: 🌳 Audit tree-shaking surfaces
-        working-directory: apps/gurudevi-mobile
-        run: pnpm run audit:tree-shaking
-
-      - name: 🎨 Validate NativeWind v5 style stack
+      - name: Install pinned Android NDK
+        run: sdkmanager "ndk;27.1.12297006"
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --prefer-offline --fetch-timeout 100000
+      - name: Validate mobile contracts
         working-directory: apps/gurudevi-mobile
         run: |
+          pnpm run audit:expo-native-graph
+          pnpm run audit:boundaries
           pnpm run audit:style-stack
           pnpm run audit:css-interop
-
-      - name: 🔍 Debug — prebundle job outcome
-        run: |
-          echo "=== Prebundle job result ==="
-          echo "prebundle result : ${{ needs.prebundle.result }}"
-          echo "sourcemaps_available: ${{ needs.prebundle.outputs.sourcemaps_available }}"
-
-      - name: 📥 Restore pre-built bundle
-        if: needs.prebundle.outputs.sourcemaps_available == 'true'
-        uses: actions/download-artifact@v4
-        with:
-          name: sentry-artifacts-prebundle
-          path: /tmp/sentry-artifacts
-
-      - name: 🔍 Debug — Confirm bundle restored on this runner
-        if: needs.prebundle.outputs.sourcemaps_available == 'true'
-        run: |
-          echo "=== Restored artifacts on build runner ==="
-          ls -lah /tmp/sentry-artifacts/ || echo "(nothing restored)"
-
-      - name: 🔍 Debug — Verify sentry.properties after prebuild
-        if: github.event.inputs.build_method == 'local'
-        run: |
-          find $GITHUB_WORKSPACE -name "sentry.properties" 2>/dev/null || echo "(none found yet)"
-
-      - name: 🚀 Build App
+      - name: Generate native project
+        working-directory: apps/gurudevi-mobile
         env:
-          EXPO_NO_DOCTOR: 1
-          NODE_OPTIONS: --max-old-space-size=8192
-          GRADLE_MAX_HEAP: 4096m
-          GRADLE_MAX_METASPACE: 512m
-          GRADLE_MAX_WORKERS: 2
-        run: |
-          set -eo pipefail
-          pnpm config set side-effects-cache false
-          pnpm approve-builds --yes 2>/dev/null || true
-
-          cd apps/gurudevi-mobile
-
-          if [ "${{ github.event.inputs.build_method }}" == "local" ]; then
-            echo "🏗️ Starting LOCAL EAS Build..."
-
-            eas build \
-              --platform android \
-              --profile ${{ github.event.inputs.profile }} \
-              --non-interactive \
-              --local \
-              --output=app.${{ matrix.type }} \
-              2>&1 | tee /tmp/eas_build_log.txt
-
-            mkdir -p /tmp/sentry-artifacts
-            grep -o 'Incrementing versionCode from .* to [0-9]*' /tmp/eas_build_log.txt \
-              | grep -o '[0-9]*$' \
-              | tail -n 1 \
-              | tr -d '[:space:]' \
-              > /tmp/sentry-artifacts/versionCode.txt 2>/dev/null || true
-
-            if [ ! -s /tmp/sentry-artifacts/versionCode.txt ]; then
-              grep -o '"versionCode": *"[0-9]*"' /tmp/eas_build_log.txt \
-                | grep -o '[0-9]*' \
-                | tail -n 1 \
-                | tr -d '[:space:]' \
-                > /tmp/sentry-artifacts/versionCode.txt 2>/dev/null || true
-            fi
-          else
-            echo "☁️ Triggering REMOTE EAS Build..."
-            eas build \
-              --platform android \
-              --profile ${{ github.event.inputs.profile }} \
-              --non-interactive \
-              --no-wait
-          fi
-
-      - name: 📤 Upload Build Artifact
-        if: github.event.inputs.build_method == 'local'
+          EXPO_NO_DOCTOR: '1'
+        run: pnpm exec expo prebuild --no-install --platform android
+      - name: Assemble release-mode APK
+        working-directory: apps/gurudevi-mobile/android
+        env:
+          GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.parallel=false -Dorg.gradle.workers.max=2'
+        run: ./gradlew :app:assembleRelease --stacktrace
+      - name: Upload device-test APK
         uses: actions/upload-artifact@v4
         with:
-          name: android-build-${{ matrix.type }}
-          path: apps/gurudevi-mobile/app.${{ matrix.type }}
-
-      - name: 📤 Re-upload Sentry artifacts with versionCode
-        if: |
-          github.event.inputs.build_method == 'local' &&
-          needs.prebundle.outputs.sourcemaps_available == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: sentry-artifacts-final-${{ matrix.type }}
-          path: /tmp/sentry-artifacts/
-          retention-days: 3
-
-  # ─────────────────────────────────────────────────────────────────────────
-  # JOB 4: Upload sourcemaps to Sentry
-  # ─────────────────────────────────────────────────────────────────────────
-  sentry-upload:
-    needs: [prep, prebundle, build]
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    environment: ${{ github.event.inputs.profile == 'production' && 'production' || github.event.inputs.profile == 'preview' && 'preview' || 'development' }}
-    env:
-      DOPPLER_PROJECT: gurudevi-mobile
-      DOPPLER_CONFIG: ${{ github.event.inputs.profile == 'production' && 'prd' || github.event.inputs.profile == 'preview' && 'stg' || 'dev' }}
-      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
-    if: |
-      needs.build.result == 'success' &&
-      needs.prebundle.outputs.sourcemaps_available == 'true' &&
-      github.event.inputs.build_method == 'local'
-    strategy:
-      matrix:
-        type: ${{ fromJson(needs.prep.outputs.matrix) }}
-    steps:
-      - name: 🏗 Checkout
-        uses: actions/checkout@v4
-
-      - name: 🏗 Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 11.21.0
-
-      - name: 🏗 Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'pnpm'
-
-      - name: 🔐 Load Doppler build environment
-        uses: ./.github/actions/load-doppler-env
-        with:
-          project: ${{ env.DOPPLER_PROJECT }}
-          config: ${{ env.DOPPLER_CONFIG }}
-          token: ${{ env.DOPPLER_TOKEN }}
-
-      - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile --fetch-timeout 100000
-
-      - name: 📥 Download Sentry artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: sentry-artifacts-final-${{ matrix.type }}
-          path: /tmp/sentry-artifacts
-
-      - name: 🚀 Sentry Sourcemap Upload
-        id: sentry-upload
-        env:
-          SENTRY_ORG: intuitui-labs
-          SENTRY_PROJECT: gurudevi-mobile
-        run: |
-          BUNDLE_PATH="/tmp/sentry-artifacts/index.android.bundle"
-          MAP_PATH="/tmp/sentry-artifacts/index.android.bundle.map"
-          STRIP_PREFIX="$GITHUB_WORKSPACE/apps/gurudevi-mobile"
-
-          VERSION_CODE=$(cat /tmp/sentry-artifacts/versionCode.txt 2>/dev/null | tr -d '[:space:]')
-          if [ -z "$VERSION_CODE" ]; then
-            VERSION_CODE=$(node -p "require('./apps/gurudevi-mobile/app.json').expo.android.versionCode")
-          fi
-
-          VERSION=$(node -p "require('./apps/gurudevi-mobile/app.json').expo.version")
-          RELEASE="org.edlove.gurudevi@${VERSION}+${VERSION_CODE}"
-
-          cd apps/gurudevi-mobile
-
-          UPLOAD_OK=0
-          for ATTEMPT in 1 2 3; do
-            if pnpm exec sentry-cli sourcemaps upload \
-              --org "$SENTRY_ORG" \
-              --project "$SENTRY_PROJECT" \
-              --debug-id-reference \
-              --strip-prefix "$STRIP_PREFIX" \
-              --validate \
-              "$BUNDLE_PATH" \
-              "$MAP_PATH"; then
-              UPLOAD_OK=1
-              break
-            fi
-            sleep $((ATTEMPT * 10))
-          done
-
-          if [ "$UPLOAD_OK" -eq 0 ]; then
-            for ATTEMPT in 1 2 3; do
-              if pnpm exec sentry-cli sourcemaps upload \
-                --org "$SENTRY_ORG" \
-                --project "$SENTRY_PROJECT" \
-                --release "$RELEASE" \
-                --dist "$VERSION_CODE" \
-                --strip-prefix "$STRIP_PREFIX" \
-                --validate \
-                "$BUNDLE_PATH" \
-                "$MAP_PATH"; then
-                UPLOAD_OK=1
-                break
-              fi
-              sleep $((ATTEMPT * 10))
-            done
-          fi
-
-          if [ "$UPLOAD_OK" -ne 1 ]; then
-            exit 1
-          fi
-
-      - name: ⚠️ Report non-blocking Sentry result
-        if: always()
-        run: |
-          if [ "${{ steps.sentry-upload.outcome }}" != "success" ]; then
-            echo "::warning::Sentry source-map upload failed or was skipped; Android build artifacts remain valid, but Sentry stack traces may be unmapped."
-          else
-            echo "Sentry source-map upload completed successfully."
-          fi
+          name: gurudevi-github-device-apk-${{ github.sha }}
+          path: apps/gurudevi-mobile/android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+          retention-days: 7

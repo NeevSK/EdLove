@@ -1,15 +1,18 @@
-name: Quality Gate (PR Guard)
+name: Deep Quality Audit
 
 on:
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
   schedule:
     - cron: '0 6 * * 1'
 
+concurrency:
+  group: deep-quality-audit-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   quality-check:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     environment: development
     env:
       DOPPLER_PROJECT: gurudevi-mobile
@@ -43,7 +46,7 @@ jobs:
         run: pnpm --filter apps-gurudevi-marketing-web build
 
       - name: 🔐 Load optional audit environment from Doppler
-        if: ${{ secrets.DOPPLER_TOKEN != '' }}
+        if: ${{ env.DOPPLER_TOKEN != '' }}
         uses: ./.github/actions/load-doppler-env
         with:
           project: ${{ env.DOPPLER_PROJECT }}
@@ -91,13 +94,13 @@ jobs:
         run: pnpm run test:feature-lifecycle
 
       - name: 🌱 GrowthBook control-plane inventory
-        if: ${{ secrets.DOPPLER_TOKEN != '' }}
+        if: ${{ env.DOPPLER_TOKEN != '' }}
         env:
           GROWTHBOOK_FEATURE_SCOPE_PREFIX: ${{ vars.GROWTHBOOK_FEATURE_SCOPE_PREFIX }}
         run: pnpm run audit:feature-lifecycle:control-plane
 
       - name: 🗄️ Legacy feature schema evidence
-        if: ${{ secrets.DOPPLER_TOKEN != '' }}
+        if: ${{ env.DOPPLER_TOKEN != '' }}
         run: pnpm run feature-lifecycle:schema-check -- --execute
 
       - name: 🌐 i18n policy checks
@@ -119,7 +122,7 @@ jobs:
         run: pnpm run audit:bundle
 
       - name: 📱 Maestro E2E (Mobile)
-        if: ${{ secrets.DOPPLER_TOKEN != '' }}
+        if: ${{ env.DOPPLER_TOKEN != '' }}
         run: |
           if [ -z "${MAESTRO_KEY:-}" ]; then
             echo "MAESTRO_KEY is not configured in Doppler; skipping Maestro."

@@ -13,6 +13,8 @@
         "NODE_ENV": "development"
       },
       "android": {
+        "image": "ubuntu-26.04-jdk-17-ndk-r27b-sdk-57",
+        "resourceClass": "medium",
         "buildType": "apk",
         "gradleCommand": ":app:assembleDebug"
       },
@@ -26,6 +28,8 @@
       "distribution": "internal",
       "channel": "preview",
       "android": {
+        "image": "ubuntu-26.04-jdk-17-ndk-r27b-sdk-57",
+        "resourceClass": "medium",
         "buildType": "apk"
       },
       "ios": {
@@ -44,6 +48,8 @@
         "SENTRY_DISABLE_AUTO_UPLOAD": "true"
       },
       "android": {
+        "image": "ubuntu-26.04-jdk-17-ndk-r27b-sdk-57",
+        "resourceClass": "medium",
         "buildType": "app-bundle"
       }
     }
