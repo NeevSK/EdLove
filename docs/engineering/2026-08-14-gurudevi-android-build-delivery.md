@@ -74,6 +74,16 @@ Treat the affected Android signing credential as potentially exposed. Do not pas
 4. Validate portrait and landscape, modal background blur, toast positioning, typography, font scaling, offline/error states, and accessibility.
 5. Record the device model, Android version, commit SHA, APK run URL, and findings in the real-device validation runbook.
 
+### First full-source GitHub attempt
+
+Run: [31779380444](https://github.com/NeevSK/EdLove/actions/runs/31779380444)
+
+Commit: `d47f9be1a3b0ca2fe4e3c5a47b9cf209ca0f7f85`
+
+Result: failed during `Assemble release-mode APK` after approximately 4 minutes 54 seconds of Gradle execution. Checkout, pnpm, Node, Java, Android SDK, pinned NDK installation, dependency installation, mobile contract validation, and Expo native project generation all passed. GitHub exposed no Gradle log for the terminated step (`gh run view --log-failed` and the job log endpoint returned no blob), and the job metadata left the assembly step without a conclusion. Treat this as an abrupt runner/process termination until a subsequent run produces a compiler diagnostic; do not label it an application or Gradle source error from this evidence alone.
+
+This run is important because it compiled the complete audited UI commit, not only the build workflow. It also consumed no EAS build. The next diagnosis should preserve the same commit and inspect runner termination/resource telemetry before changing application code or spending an EAS build.
+
 ### EAS preview or release
 
 Use `Android EAS Release Build` only after the GitHub APK has compiled and the device validation has passed. The workflow requires an explicit `github-apk-verified` confirmation. Select `preview` for an internal APK and `production` for a store AAB. The workflow must never be changed back to `--local`.
