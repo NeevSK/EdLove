@@ -1,10 +1,9 @@
-import { z } from 'zod';
-import { GradeMarkSchema } from '@repo/core/logic/schemas/grade-domain.schema';
 import type { SovereignContract } from '@repo/core/api/contracts';
+import { GradeMarkSchema } from '@repo/core/logic/schemas/grade-domain.schema';
+import { z } from 'zod';
 
-const gradingAuthority = (
-  action: 'read' | 'grade' | 'publish',
-) => ({ policy: { action, subject: 'GradeMark' } }) as const;
+const gradingAuthority = (action: 'read' | 'grade' | 'publish') =>
+  ({ policy: { action, subject: 'GradeMark' } }) as const;
 
 const lifecycleReadScope = z.object({
   studentId: z.uuid(),
@@ -26,7 +25,10 @@ export const gradingContract = {
     path: '/grades/report-card',
     request: { query: z.strictObject(lifecycleReadScope.shape) },
     responses: {
-      200: { schema: z.array(GradeMarkSchema), description: 'Retrieve grade marks for a student and academic cycle' },
+      200: {
+        schema: z.array(GradeMarkSchema),
+        description: 'Retrieve grade marks for a student and academic cycle',
+      },
     },
     metadata: gradingAuthority('read'),
   },
@@ -44,7 +46,10 @@ export const gradingContract = {
       }),
     },
     responses: {
-      200: { schema: z.array(GradeMarkSchema), description: 'Retrieve grade marks for a lifecycle grade class' },
+      200: {
+        schema: z.array(GradeMarkSchema),
+        description: 'Retrieve grade marks for a lifecycle grade class',
+      },
     },
     metadata: gradingAuthority('read'),
   },
@@ -53,24 +58,33 @@ export const gradingContract = {
     method: 'post',
     path: '/grades',
     request: {
-      body: z.strictObject({
-        studentId: z.uuid(),
-        schoolId: z.uuid(),
-        academicCycleId: z.uuid(),
-        gradeClassId: z.uuid(),
-        termId: z.uuid(),
-        subjectId: z.uuid(),
-        marksEarned: z.number().finite().min(0),
-        maxPoints: z.number().finite().positive(),
-        assignmentId: z.uuid().optional(),
-        submissionId: z.uuid().optional(),
-        idempotencyKey: z.string().trim().min(1).optional(),
-        feedback: z.string().optional(),
-      }).superRefine((input, context) => {
-        if (input.marksEarned > input.maxPoints) {
-          context.addIssue({ code: 'too_big', origin: 'number', maximum: input.maxPoints, inclusive: true, path: ['marksEarned'], message: 'Marks earned cannot exceed max points' });
-        }
-      }),
+      body: z
+        .strictObject({
+          studentId: z.uuid(),
+          schoolId: z.uuid(),
+          academicCycleId: z.uuid(),
+          gradeClassId: z.uuid(),
+          termId: z.uuid(),
+          subjectId: z.uuid(),
+          marksEarned: z.number().finite().min(0),
+          maxPoints: z.number().finite().positive(),
+          assignmentId: z.uuid().optional(),
+          submissionId: z.uuid().optional(),
+          idempotencyKey: z.string().trim().min(1).optional(),
+          feedback: z.string().optional(),
+        })
+        .superRefine((input, context) => {
+          if (input.marksEarned > input.maxPoints) {
+            context.addIssue({
+              code: 'too_big',
+              origin: 'number',
+              maximum: input.maxPoints,
+              inclusive: true,
+              path: ['marksEarned'],
+              message: 'Marks earned cannot exceed max points',
+            });
+          }
+        }),
     },
     responses: { 201: gradeMarkResponse },
     metadata: gradingAuthority('grade'),
@@ -82,5 +96,45 @@ export const gradingContract = {
     request: { params: z.strictObject({ id: z.uuid() }) },
     responses: { 200: gradeMarkResponse },
     metadata: gradingAuthority('publish'),
+  },
+
+  getGradingSettings: {
+    method: 'get',
+    path: '/grades/classrooms/:classroomId/settings',
+    request: { params: z.strictObject({ classroomId: z.uuid() }) },
+    responses: {
+      200: {
+        schema: z.object({
+          classroom_id: z.uuid(),
+          grading_mode: z.string(),
+          show_ranks: z.boolean(),
+        }),
+        description: 'Retrieve classroom grading settings',
+      },
+    },
+    metadata: { policy: { action: 'read', subject: 'Classroom' } },
+  },
+
+  updateGradingSettings: {
+    method: 'put',
+    path: '/grades/classrooms/:classroomId/settings',
+    request: {
+      params: z.strictObject({ classroomId: z.uuid() }),
+      body: z.strictObject({
+        grading_mode: z.string().trim().min(1).max(40).optional(),
+        show_ranks: z.boolean().optional(),
+      }),
+    },
+    responses: {
+      200: {
+        schema: z.object({
+          classroom_id: z.uuid(),
+          grading_mode: z.string(),
+          show_ranks: z.boolean(),
+        }),
+        description: 'Update classroom grading settings',
+      },
+    },
+    metadata: { policy: { action: 'update', subject: 'Classroom' } },
   },
 } as const satisfies SovereignContract;

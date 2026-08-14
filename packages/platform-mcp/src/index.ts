@@ -14,11 +14,12 @@ import { Client } from '@modelcontextprotocol/client';
 import { StdioClientTransport } from '@modelcontextprotocol/client/stdio';
 import { McpServer } from '@modelcontextprotocol/server';
 import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
-import { z } from 'zod';
 import * as dotenv from 'dotenv';
+import { z } from 'zod';
 
 // --- Service Imports: The Modular Sovereignty ---
 import { AuditService } from './services/AuditService.js';
+import { DeviceService } from './services/DeviceService.js';
 import { DiscoveryService } from './services/DiscoveryService.js';
 import { DocumentService } from './services/DocumentService.js';
 import { HelpService } from './services/HelpService.js';
@@ -41,12 +42,11 @@ class PolymathPlatformServer {
   private scout: ScoutService;
   private help: HelpService;
   private document: DocumentService;
+  private device: DeviceService;
   private downstreamClients: Map<string, { client: Client; tools: any[] }> = new Map();
 
   constructor() {
-    this.server = new McpServer(
-      { name: 'polymath-platform-mcp', version: '2.0.0' }
-    );
+    this.server = new McpServer({ name: 'polymath-platform-mcp', version: '2.0.0' });
 
     this.document = new DocumentService();
     this.audit = new AuditService(this.document);
@@ -54,6 +54,7 @@ class PolymathPlatformServer {
     this.maintenance = new MaintenanceService();
     this.scout = new ScoutService(this.document);
     this.help = new HelpService();
+    this.device = new DeviceService();
 
     this.setupHandlers();
     this.server.server.onerror = (error: any) => console.error('[MCP Error]', error);
@@ -424,32 +425,38 @@ class PolymathPlatformServer {
         // Register downstream tools with the gateway server
         for (const tool of toolsList) {
           const toolName = `${serverConf.name}_${tool.name}`;
-          this.server.registerTool(toolName, {
-            description: `[${serverConf.name}] ${tool.description || ''}`,
-            inputSchema: z.object({}).passthrough() // Accept any input structure
-          }, async (args: any) => {
-            try {
-              const downstreamClient = this.downstreamClients.get(serverConf.name);
-              if (!downstreamClient) {
-                throw new Error(`Downstream client ${serverConf.name} not available`);
+          this.server.registerTool(
+            toolName,
+            {
+              description: `[${serverConf.name}] ${tool.description || ''}`,
+              inputSchema: z.object({}).passthrough(), // Accept any input structure
+            },
+            async (args: any) => {
+              try {
+                const downstreamClient = this.downstreamClients.get(serverConf.name);
+                if (!downstreamClient) {
+                  throw new Error(`Downstream client ${serverConf.name} not available`);
+                }
+
+                const result = await downstreamClient.client.callTool({
+                  name: tool.name,
+                  arguments: args,
+                });
+
+                return result;
+              } catch (error: any) {
+                return {
+                  content: [{ type: 'text', text: `Error calling ${toolName}: ${error.message}` }],
+                  isError: true,
+                };
               }
-              
-              const result = await downstreamClient.client.callTool({
-                name: tool.name,
-                arguments: args
-              });
-              
-              return result;
-            } catch (error: any) {
-              return {
-                content: [{ type: 'text', text: `Error calling ${toolName}: ${error.message}` }],
-                isError: true,
-              };
-            }
-          });
+            },
+          );
         }
-        
-        console.error(`[Gateway] Registered ${toolsList.length} tools from ${serverConf.name} as gateway tools`);
+
+        console.error(
+          `[Gateway] Registered ${toolsList.length} tools from ${serverConf.name} as gateway tools`,
+        );
       } catch (err: any) {
         console.error(
           `[Gateway] Failed to bind downstream server ${serverConf.name}:`,
@@ -463,7 +470,7 @@ class PolymathPlatformServer {
     name: string,
     description: string,
     schema: T,
-    handler: (args: z.infer<T>) => Promise<any>
+    handler: (args: z.infer<T>) => Promise<any>,
   ) {
     const mcpMode = process.env.MCP_MODE || 'GATEWAY';
     const gatewayTools = [
@@ -471,6 +478,7 @@ class PolymathPlatformServer {
       'sovereign_discovery',
       'sovereign_maintenance',
       'sovereign_guide',
+      'sovereign_device',
       'help',
       'info',
       'sync_workspace_skills',
@@ -503,19 +511,23 @@ class PolymathPlatformServer {
     }
 
     if (shouldRegister) {
-      this.server.registerTool(name, {
-        description,
-        inputSchema: schema.shape
-      }, async (args: any) => {
-        try {
-          return await handler(args);
-        } catch (error: any) {
-          return {
-            content: [{ type: 'text', text: `Error: ${error.message}` }],
-            isError: true,
-          };
-        }
-      });
+      this.server.registerTool(
+        name,
+        {
+          description,
+          inputSchema: schema.shape,
+        },
+        async (args: any) => {
+          try {
+            return await handler(args);
+          } catch (error: any) {
+            return {
+              content: [{ type: 'text', text: `Error: ${error.message}` }],
+              isError: true,
+            };
+          }
+        },
+      );
     }
   }
 
@@ -535,22 +547,64 @@ class PolymathPlatformServer {
             },
           ],
         };
-      }
+      },
     );
 
     // --- GATEWAY ROUTING ---
+    this.registerPlatformTool(
+      'sovereign_device',
+      'Unified device interaction and control engine for mobile simulators and emulators.',
+      z.object({
+        action: z.enum([
+          'doctor',
+          'snapshot',
+          'press',
+          'type',
+          'scroll',
+          'tap',
+          'open_app',
+          'screenshot',
+          'logs',
+        ]),
+        params: z.record(z.string(), z.any()).optional(),
+      }),
+      async ({ action, params = {} }) => {
+        return this.device.handleDeviceAction(action, params);
+      },
+    );
+
     this.registerPlatformTool(
       'sovereign_audit',
       'Unified auditing engine for hygiene, architecture, and compliance.',
       z.object({
         action: z.enum([
-          'hygiene', 'legacy_ui', 'architecture', 'a11y', 'dependency_health',
-          'taze', 'i18n', 'colors', 'boundaries', 'features', 'exports',
-          'design_tokens', 'stale_flags', 'load_report', 'bundle_leak', 'lint',
-          'biome_lint', 'check', 'syncpack_fix', 'types', 'hooks', 'deprecations',
-          'memory_sinks', 'cognitive_load', 'push_audit'
+          'hygiene',
+          'legacy_ui',
+          'architecture',
+          'a11y',
+          'dependency_health',
+          'taze',
+          'i18n',
+          'colors',
+          'boundaries',
+          'features',
+          'exports',
+          'design_tokens',
+          'stale_flags',
+          'load_report',
+          'bundle_leak',
+          'lint',
+          'biome_lint',
+          'check',
+          'syncpack_fix',
+          'types',
+          'hooks',
+          'deprecations',
+          'memory_sinks',
+          'cognitive_load',
+          'push_audit',
         ]),
-        params: z.record(z.string(), z.any()).optional()
+        params: z.record(z.string(), z.any()).optional(),
       }),
       async ({ action, params = {} }) => {
         switch (action) {
@@ -607,7 +661,7 @@ class PolymathPlatformServer {
           default:
             throw new Error(`Unknown audit action: ${action}`);
         }
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -615,12 +669,27 @@ class PolymathPlatformServer {
       'Unified discovery engine for search, scouting, and intel.',
       z.object({
         action: z.enum([
-          'grep', 'scout', 'docs', 'inventory', 'view', 'find', 'lens',
-          'simulate', 'structural', 'stats', 'component_api', 'imports',
-          'ui_report', 'native_leaks', 'metro_debug', 'impact', 'jina',
-          'spellcheck', 'disk_usage'
+          'grep',
+          'scout',
+          'docs',
+          'inventory',
+          'view',
+          'find',
+          'lens',
+          'simulate',
+          'structural',
+          'stats',
+          'component_api',
+          'imports',
+          'ui_report',
+          'native_leaks',
+          'metro_debug',
+          'impact',
+          'jina',
+          'spellcheck',
+          'disk_usage',
         ]),
-        params: z.record(z.string(), z.any()).optional()
+        params: z.record(z.string(), z.any()).optional(),
       }),
       async ({ action, params = {} }) => {
         switch (action) {
@@ -665,7 +734,7 @@ class PolymathPlatformServer {
           default:
             throw new Error(`Unknown discovery action: ${action}`);
         }
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -673,12 +742,27 @@ class PolymathPlatformServer {
       'Unified maintenance engine for healing, refactoring, and synchronization.',
       z.object({
         action: z.enum([
-          'heal', 'sync', 'checkpoint', 'refactor', 'normalize', 'inputs',
-          'scaffold', 'lint_fix', 'heal_architecture', 'zod_bridge',
-          'sleekness_test', 'readme_usage', 'scaffold_mocks', 'shield_unicode',
-          'dep_duplicate', 'schema_drift', 'purge', 'runbyte_config', 'push'
+          'heal',
+          'sync',
+          'checkpoint',
+          'refactor',
+          'normalize',
+          'inputs',
+          'scaffold',
+          'lint_fix',
+          'heal_architecture',
+          'zod_bridge',
+          'sleekness_test',
+          'readme_usage',
+          'scaffold_mocks',
+          'shield_unicode',
+          'dep_duplicate',
+          'schema_drift',
+          'purge',
+          'runbyte_config',
+          'push',
         ]),
-        params: z.record(z.string(), z.any()).optional()
+        params: z.record(z.string(), z.any()).optional(),
       }),
       async ({ action, params = {} }) => {
         switch (action) {
@@ -723,7 +807,7 @@ class PolymathPlatformServer {
           default:
             throw new Error(`Unknown maintenance action: ${action}`);
         }
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -731,9 +815,15 @@ class PolymathPlatformServer {
       'Help, architecture documentation, and tool inventory for the Polymath MCP.',
       z.object({
         action: z.enum([
-          'architecture', 'inventory', 'philosophy', 'soul', 'mistakes',
-          'refusal', 'recent_evolutions', 'runbyte'
-        ])
+          'architecture',
+          'inventory',
+          'philosophy',
+          'soul',
+          'mistakes',
+          'refusal',
+          'recent_evolutions',
+          'runbyte',
+        ]),
       }),
       async ({ action }) => {
         switch (action) {
@@ -756,7 +846,7 @@ class PolymathPlatformServer {
           default:
             throw new Error(`Unknown guide action: ${action}`);
         }
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -765,7 +855,7 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.help.handleGetHelpOverview();
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -774,7 +864,7 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.help.handleGetArchitectureDoc();
-      }
+      },
     );
 
     // --- LEGACY MODES (Retained for migration/full options) ---
@@ -784,18 +874,18 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.audit.handleAuditHygiene();
-      }
+      },
     );
 
     this.registerPlatformTool(
       'heal_codebase',
       'Surgically repairs JSX/TS syntax corruption.',
       z.object({
-        files: z.array(z.string()).describe('File paths to heal.')
+        files: z.array(z.string()).describe('File paths to heal.'),
       }),
       async (args) => {
         return this.maintenance.handleHealCodebase(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -804,18 +894,18 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.maintenance.handleSyncIdentity();
-      }
+      },
     );
 
     this.registerPlatformTool(
       'check_package_types',
       'Runs tsc audits for specific packages or monorepo root.',
       z.object({
-        package: z.string().optional().describe("Package name (e.g., '@repo/ui').")
+        package: z.string().optional().describe("Package name (e.g., '@repo/ui')."),
       }),
       async (args) => {
         return this.audit.handleCheckTypes(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -823,18 +913,30 @@ class PolymathPlatformServer {
       'Global structural code search with smart filtering. Powered by ripgrep (rg).',
       z.object({
         query: z.string().describe('Search term or pattern.'),
-        target: z.string().optional().describe('Target directory or package alias (e.g. @repo/ui).'),
-        context: z.number().optional().describe('Number of context lines (before/after) to show. Default 0.'),
+        target: z
+          .string()
+          .optional()
+          .describe('Target directory or package alias (e.g. @repo/ui).'),
+        context: z
+          .number()
+          .optional()
+          .describe('Number of context lines (before/after) to show. Default 0.'),
         fileType: z.string().optional().describe('Filter by file type (e.g. ts, tsx, css, md).'),
         isRegex: z.boolean().optional().describe('Treat query as a regular expression.'),
         include: z.string().optional().describe('Glob pattern for files to include.'),
-        includeNodeModules: z.boolean().optional().describe('Search inside node_modules (default false).'),
-        summaryOnly: z.boolean().optional().describe('Return only file counts instead of full results.'),
-        richText: z.boolean().optional().describe('Output with enhanced formatting if possible.')
+        includeNodeModules: z
+          .boolean()
+          .optional()
+          .describe('Search inside node_modules (default false).'),
+        summaryOnly: z
+          .boolean()
+          .optional()
+          .describe('Return only file counts instead of full results.'),
+        richText: z.boolean().optional().describe('Output with enhanced formatting if possible.'),
       }),
       async (args) => {
         return this.discovery.handleGrepCode(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -842,11 +944,11 @@ class PolymathPlatformServer {
       'Orchestrated discovery intelligence. Combines file scouts, doc mining, and codebase heatmap.',
       z.object({
         query: z.string().describe('Search term or feature keyword.'),
-        target: z.string().optional().describe('Target directory or package alias.')
+        target: z.string().optional().describe('Target directory or package alias.'),
       }),
       async (args) => {
         return this.scout.handleSovereignScout(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -857,11 +959,11 @@ class PolymathPlatformServer {
         target: z.string().optional(),
         includeNodeModules: z.boolean().optional(),
         summaryOnly: z.boolean().optional(),
-        hybrid: z.boolean().optional()
+        hybrid: z.boolean().optional(),
       }),
       async (args) => {
         return this.discovery.handleSearchDocs(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -869,33 +971,33 @@ class PolymathPlatformServer {
       'Atomically stages and commits changes with a smart ledger.',
       z.object({
         message: z.string(),
-        stage_all: z.boolean().optional()
+        stage_all: z.boolean().optional(),
       }),
       async (args) => {
         return this.maintenance.handleCreateCheckpoint(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
       'normalize_imports',
       'Converts relative imports to workspace aliases.',
       z.object({
-        target: z.string().optional()
+        target: z.string().optional(),
       }),
       async (args) => {
         return this.maintenance.handleNormalizeImports(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
       'normalize_inputs',
       'Plumbing: Resolves package aliases to absolute filesystem paths.',
       z.object({
-        target: z.string()
+        target: z.string(),
       }),
       async (args) => {
         return this.maintenance.handleNormalizeInputs(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -904,18 +1006,18 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.maintenance.handleAuditDependencyHealth();
-      }
+      },
     );
 
     this.registerPlatformTool(
       'audit_accessibility',
       'Targeted a11y linting and ARIA violation checks.',
       z.object({
-        target: z.string().optional()
+        target: z.string().optional(),
       }),
       async (args) => {
         return this.audit.handleAuditA11y(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -923,55 +1025,55 @@ class PolymathPlatformServer {
       'WCAG/APCA contrast ratio calculation.',
       z.object({
         fg: z.string(),
-        bg: z.string()
+        bg: z.string(),
       }),
       async (args) => {
         return this.audit.handleCheckContrast(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
       'lint_package',
       'High-speed Biome linting for packages.',
       z.object({
-        target: z.string().optional()
+        target: z.string().optional(),
       }),
       async (args) => {
         return this.audit.handleLintPackage(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
       'get_component_api',
       'Extracts props/API docs for a React component.',
       z.object({
-        name: z.string()
+        name: z.string(),
       }),
       async (args) => {
         return this.discovery.handleGetComponentApi(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
       'audit_legacy_ui',
       'High-speed audit for legacy Gluestack/RN components. Powered by ripgrep.',
       z.object({
-        target: z.string().optional().describe('Directory to audit (defaults to packages).')
+        target: z.string().optional().describe('Directory to audit (defaults to packages).'),
       }),
       async (args) => {
         return this.audit.handleAuditLegacyUI(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
       'audit_package_architecture',
       'Ensures platform agnosticism and boundary integrity.',
       z.object({
-        target: z.string()
+        target: z.string(),
       }),
       async (args) => {
         return this.audit.handleAuditPackageArchitecture(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -981,11 +1083,11 @@ class PolymathPlatformServer {
         target: z.string().optional(),
         depth: z.number().optional(),
         format: z.enum(['markdown', 'text']).optional(),
-        verbose: z.boolean().optional()
+        verbose: z.boolean().optional(),
       }),
       async (args) => {
         return this.discovery.handleGetInventory(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -993,11 +1095,11 @@ class PolymathPlatformServer {
       'Enhanced file viewer with syntax highlighting and Git integration. Powered by bat.',
       z.object({
         path: z.string().describe('Path to the file.'),
-        range: z.string().optional().describe('Line range (e.g. "10:40").')
+        range: z.string().optional().describe('Line range (e.g. "10:40").'),
       }),
       async (args) => {
         return this.discovery.handleShinyView(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1005,11 +1107,11 @@ class PolymathPlatformServer {
       'Ultra-fast filename search. Powered by fd.',
       z.object({
         query: z.string().describe('Search pattern.'),
-        target: z.string().optional().describe('Target directory.')
+        target: z.string().optional().describe('Target directory.'),
       }),
       async (args) => {
         return this.discovery.handleShinyFind(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1018,11 +1120,11 @@ class PolymathPlatformServer {
       z.object({
         query: z.string().describe('GritQL or structural pattern.'),
         target: z.string().optional().describe('Target directory or package alias.'),
-        include: z.string().optional().describe('Glob pattern for files to include.')
+        include: z.string().optional().describe('Glob pattern for files to include.'),
       }),
       async (args) => {
         return this.discovery.handleStructuralSearch(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1031,7 +1133,7 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.audit.handleAuditColors();
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1040,7 +1142,7 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.maintenance.handleTestSleekness();
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1049,7 +1151,7 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.maintenance.handleGenerateGrowthSignals();
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1057,11 +1159,11 @@ class PolymathPlatformServer {
       'Generates Zod validation schemas from any Sovereign JSON Schema.',
       z.object({
         input: z.string().describe('Path to input .json schema'),
-        output: z.string().describe('Path to output .ts Zod file')
+        output: z.string().describe('Path to output .ts Zod file'),
       }),
       async (args) => {
         return this.maintenance.handleBridgeSchemaZod(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1070,7 +1172,7 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.discovery.handleAuditImports();
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1079,7 +1181,7 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.audit.handleCheckClassroomBoundaries();
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1088,18 +1190,18 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.audit.handleCheckSelfBoundaries();
-      }
+      },
     );
 
     this.registerPlatformTool(
       'generate_readme_usage',
       'Generates Usage sections in package READMEs from JSDocs.',
       z.object({
-        package_path: z.string()
+        package_path: z.string(),
       }),
       async (args) => {
         return this.maintenance.handleGenerateReadmeUsage(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1108,29 +1210,29 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.audit.handleAuditFeatureFlags();
-      }
+      },
     );
 
     this.registerPlatformTool(
       'scaffold_mocks',
       'Generates a Vitest mock scaffold based on file imports.',
       z.object({
-        file_path: z.string()
+        file_path: z.string(),
       }),
       async (args) => {
         return this.maintenance.handleScaffoldMocks(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
       'report_cognitive_load',
       "Reports high cognitive load 'God Files' in the codebase.",
       z.object({
-        target: z.string().optional()
+        target: z.string().optional(),
       }),
       async (args) => {
         return this.audit.handleReportCognitiveLoad(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1139,7 +1241,7 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.discovery.handleAuditUIComponents();
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1148,7 +1250,7 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.audit.handleAuditI18n();
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1157,18 +1259,18 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.discovery.handleFindNativeLeaks();
-      }
+      },
     );
 
     this.registerPlatformTool(
       'shield_unicode',
       'Protects against encoding corruption by escaping non-ASCII characters.',
       z.object({
-        target: z.string().optional()
+        target: z.string().optional(),
       }),
       async (args) => {
         return this.maintenance.handleShieldUnicode(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1177,7 +1279,7 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.maintenance.handleAuditDependencyDuplication();
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1186,18 +1288,18 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.discovery.handleDebugMetro();
-      }
+      },
     );
 
     this.registerPlatformTool(
       'scaffold_feature_context',
       'Scouts existing schemas, components, and events related to a feature keyword.',
       z.object({
-        keyword: z.string()
+        keyword: z.string(),
       }),
       async (args) => {
         return this.discovery.handleScaffoldFeatureContext(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1206,18 +1308,18 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.audit.handleAuditExportIntegrity();
-      }
+      },
     );
 
     this.registerPlatformTool(
       'trace_deletion_impact',
       'Traces the recursive impact of deleting a symbol across the monorepo.',
       z.object({
-        symbol: z.string()
+        symbol: z.string(),
       }),
       async (args) => {
         return this.discovery.handleTraceDeletionImpact(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1226,7 +1328,7 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.maintenance.handleCheckSchemaDrift();
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1235,18 +1337,18 @@ class PolymathPlatformServer {
       z.object({}),
       async () => {
         return this.audit.handleAuditBundleLeak();
-      }
+      },
     );
 
     this.registerPlatformTool(
       'audit_feature_fidelity',
       'Audits the gap between documentation promises and actual implementation.',
       z.object({
-        includeArchives: z.boolean().optional()
+        includeArchives: z.boolean().optional(),
       }),
       async (args) => {
         return this.audit.handleAuditFeatureFidelity(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1254,33 +1356,33 @@ class PolymathPlatformServer {
       'Removes old reports, logs, and temporary files.',
       z.object({
         ageDays: z.number().optional(),
-        dryRun: z.boolean().optional()
+        dryRun: z.boolean().optional(),
       }),
       async (args) => {
         return this.maintenance.handlePurgeStaleArtifacts(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
       'shiny_stats',
       'Code statistics by language.',
       z.object({
-        target: z.string().optional()
+        target: z.string().optional(),
       }),
       async (args) => {
         return this.discovery.handleGetCodeStats(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
       'shiny_spellcheck',
       'Ultra-fast source code spell checker.',
       z.object({
-        target: z.string().optional()
+        target: z.string().optional(),
       }),
       async (args) => {
         return this.discovery.handleCheckSpelling(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1288,11 +1390,11 @@ class PolymathPlatformServer {
       'Visualizes directory size and disk usage.',
       z.object({
         target: z.string().optional(),
-        depth: z.number().optional()
+        depth: z.number().optional(),
       }),
       async (args) => {
         return this.discovery.handleDiskUsage(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
@@ -1301,25 +1403,25 @@ class PolymathPlatformServer {
       z.object({
         find: z.string(),
         replace: z.string(),
-        target: z.string().optional()
+        target: z.string().optional(),
       }),
       async (args) => {
         return this.maintenance.handleRefactorReplace(args as any);
-      }
+      },
     );
 
     this.registerPlatformTool(
       'map_architecture',
       'Performs full architecture analysis and identifies misalignments.',
       z.object({
-        target: z.string().optional()
+        target: z.string().optional(),
       }),
       async (args) => {
         return this.discovery.handleGetLens({
           type: 'debt',
           ...args,
         } as any);
-      }
+      },
     );
   }
 

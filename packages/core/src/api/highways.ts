@@ -31,6 +31,26 @@ export const DATA_HIGHWAYS: Record<string, DataHighwayRule> = {
     reason: 'Profile updates used for onboarding and routing should stay authoritative and loud.',
     failLoudly: true,
   },
+  principal_notes_core: {
+    highway: 'direct-api',
+    reason: 'Principal notes are private authoritative records and must not bypass server authorization.',
+    failLoudly: true,
+  },
+  messaging_core: {
+    highway: 'direct-api',
+    reason: 'Private messages must use the server-owned participant and authorization boundary.',
+    failLoudly: true,
+  },
+  announcements_core: {
+    highway: 'direct-api',
+    reason: 'School announcements require server-side school scope and author derivation.',
+    failLoudly: true,
+  },
+  social_core: {
+    highway: 'direct-api',
+    reason: 'Notifications and safety controls require server-side user ownership checks.',
+    failLoudly: true,
+  },
 };
 
 export function assertHighway(ruleName: string, actual: DataHighway) {

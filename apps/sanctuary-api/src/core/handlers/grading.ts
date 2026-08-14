@@ -1,12 +1,13 @@
-import { implement } from '../orpc';
 import { ORPCError } from '@orpc/server';
 import { gradingORPCContract } from '@repo/core/api/grading.orpc.contract';
+import { assertDatabase } from '../apiErrors';
 import type { ORPCContext } from '../orpc';
+import { implement } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 
 const impl = implement(gradingORPCContract).$context<ORPCContext>();
 
-const iso = (value: unknown) => value instanceof Date ? value.toISOString() : String(value ?? '');
+const iso = (value: unknown) => (value instanceof Date ? value.toISOString() : String(value ?? ''));
 
 function letterGrade(percentage: number) {
   if (percentage >= 75) return 'A';
@@ -53,34 +54,66 @@ function lifecycleWhere(input: Record<string, string>, extra: Record<string, unk
 }
 
 export const gradingRouter = impl.router({
-  getReportCard: impl.getReportCard.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    if (!context.db) throw new Error('Database context not initialized');
-    const rows = await (context.db as any).gradeMark.findMany({
-      where: lifecycleWhere(input, {
-        student_id: input.studentId,
-        ...(input.termId ? { term_id: input.termId } : {}),
-        ...(input.subjectId ? { subject_id: input.subjectId } : {}),
-      }),
-      orderBy: [{ term_id: 'asc' }, { subject_id: 'asc' }, { created_at: 'desc' }],
-    });
-    return rows.map(mapGradeMark);
-  }),
+  getGradingSettings: impl.getGradingSettings
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      assertDatabase(context);
+      const row = await (context.db as any).classroomGradingSettings.findUnique({
+        where: { classroom_id: input.classroomId },
+      });
+      return row ?? { classroom_id: input.classroomId, grading_mode: 'both', show_ranks: true };
+    }),
 
-  getClassroomGrades: impl.getClassroomGrades.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    if (!context.db) throw new Error('Database context not initialized');
-    const rows = await (context.db as any).gradeMark.findMany({
-      where: lifecycleWhere(input, {
-        grade_class_id: input.gradeClassId,
-        ...(input.termId ? { term_id: input.termId } : {}),
-        ...(input.subjectId ? { subject_id: input.subjectId } : {}),
-      }),
-      orderBy: [{ student_id: 'asc' }, { created_at: 'desc' }],
-    });
-    return rows.map(mapGradeMark);
-  }),
+  updateGradingSettings: impl.updateGradingSettings
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      assertDatabase(context);
+      return (context.db as any).classroomGradingSettings.upsert({
+        where: { classroom_id: input.classroomId },
+        create: {
+          classroom_id: input.classroomId,
+          grading_mode: input.grading_mode ?? 'both',
+          show_ranks: input.show_ranks ?? true,
+        },
+        update: {
+          ...(input.grading_mode !== undefined ? { grading_mode: input.grading_mode } : {}),
+          ...(input.show_ranks !== undefined ? { show_ranks: input.show_ranks } : {}),
+        },
+      });
+    }),
+
+  getReportCard: impl.getReportCard
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      assertDatabase(context);
+      const rows = await (context.db as any).gradeMark.findMany({
+        where: lifecycleWhere(input, {
+          student_id: input.studentId,
+          ...(input.termId ? { term_id: input.termId } : {}),
+          ...(input.subjectId ? { subject_id: input.subjectId } : {}),
+        }),
+        orderBy: [{ term_id: 'asc' }, { subject_id: 'asc' }, { created_at: 'desc' }],
+      });
+      return rows.map(mapGradeMark);
+    }),
+
+  getClassroomGrades: impl.getClassroomGrades
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      assertDatabase(context);
+      const rows = await (context.db as any).gradeMark.findMany({
+        where: lifecycleWhere(input, {
+          grade_class_id: input.gradeClassId,
+          ...(input.termId ? { term_id: input.termId } : {}),
+          ...(input.subjectId ? { subject_id: input.subjectId } : {}),
+        }),
+        orderBy: [{ student_id: 'asc' }, { created_at: 'desc' }],
+      });
+      return rows.map(mapGradeMark);
+    }),
 
   submitGrade: impl.submitGrade.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    if (!context.db) throw new Error('Database context not initialized');
+    assertDatabase(context);
     const percentage = (input.marksEarned / input.maxPoints) * 100;
     const db = context.db as any;
     const gradeMark = await db.gradeMark.create({
@@ -104,19 +137,39 @@ export const gradingRouter = impl.router({
         graded_at: new Date(),
       },
     });
-    await db.sentinelAuditLog.create({ data: { action: 'grade_mark_submitted', entity_id: gradeMark.id, entity_type: 'grade_mark', executor_id: context.user.id, metadata: input } });
+    await db.sentinelAuditLog.create({
+      data: {
+        action: 'grade_mark_submitted',
+        entity_id: gradeMark.id,
+        entity_type: 'grade_mark',
+        executor_id: context.user.id,
+        metadata: input,
+      },
+    });
     return mapGradeMark(gradeMark);
   }),
 
   publishGrade: impl.publishGrade.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    if (!context.db) throw new Error('Database context not initialized');
+    assertDatabase(context);
     const db = context.db as any;
     const gradeMark = await db.gradeMark.update({
       where: { id: input.id },
-      data: { publication_state: 'published', published_at: new Date(), published_by: context.user.id },
+      data: {
+        publication_state: 'published',
+        published_at: new Date(),
+        published_by: context.user.id,
+      },
     });
     if (!gradeMark) throw new ORPCError('NOT_FOUND', { message: 'Grade mark not found' });
-    await db.sentinelAuditLog.create({ data: { action: 'grade_mark_published', entity_id: input.id, entity_type: 'grade_mark', executor_id: context.user.id, metadata: { publication_state: 'published' } } });
+    await db.sentinelAuditLog.create({
+      data: {
+        action: 'grade_mark_published',
+        entity_id: input.id,
+        entity_type: 'grade_mark',
+        executor_id: context.user.id,
+        metadata: { publication_state: 'published' },
+      },
+    });
     return mapGradeMark(gradeMark);
   }),
 });

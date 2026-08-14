@@ -26,6 +26,12 @@
     "notifications": "Notifications",
     "settings": "Settings",
     "close": "Close",
+    "backHint": "පෙර තිරයට ආපසු යයි",
+    "openSelf": "Self විවෘත කරන්න",
+    "closeActions": "ක්‍රියා වසන්න",
+    "moreActions": "තවත් ක්‍රියා",
+    "closeSearch": "සෙවීම වසන්න",
+    "search": "සොයන්න",
     "now": "Now",
     "saving": "Saving",
     "comingSoon": "Coming Soon"
@@ -570,6 +576,7 @@
     "filterByTag": "#{{tag}} ශ්‍රේණිය අනුව පෙරීම"
   },
   "profile": {
+    "open": "පැතිකඩ විවෘත කරන්න",
     "title": "ප්‍රොෆයිල්",
     "fullName": "සම්පූර්ණ නම",
     "phone": "දුරකථන අංකය",
@@ -1197,7 +1204,7 @@
   },
   "notifications": {
     "stream": "Echoes of the Sanctuary",
-    "title": "Notifications",
+    "title": "දැනුම්දීම්",
     "unread": "{{count}} unread echoes",
     "description": "Stay in resonance with your community and growth",
     "markAllRead": "Mark all as read",

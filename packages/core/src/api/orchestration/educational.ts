@@ -63,6 +63,7 @@ const _studentsCoverage = assertContractCoverage(
       'getHistoricalGovernanceRecords',
       'getSchoolLegacyHistory',
       'getClassroomLegacyHistory',
+      'removeById',
     ],
   }),
 );

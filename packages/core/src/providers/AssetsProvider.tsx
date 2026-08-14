@@ -1,15 +1,13 @@
-import type React from 'react';
-import { type ReactNode, useEffect, useState } from 'react';
 import { storage } from '@repo/core/lib/storage';
 import { LanguageUtils } from '@repo/core/logic/utils/LanguageUtils';
+import type React from 'react';
+import { type ReactNode, useEffect } from 'react';
 
 /**
  * AssetsProvider: Handles initialization of static assets,
  * localization, and theme-related resources.
  */
 export const AssetsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isReady, setIsReady] = useState(false);
-
   useEffect(() => {
     async function initAssets() {
       try {
@@ -30,10 +28,8 @@ export const AssetsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
         // Initialize Language
         await LanguageUtils.init();
-        setIsReady(true);
       } catch (e) {
         console.warn('AssetsProvider failed to initialize:', e);
-        setIsReady(true); // Proceed anyway to avoid total block
       }
     }
 
@@ -42,9 +38,8 @@ export const AssetsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     });
   }, []);
 
-  if (!isReady) {
-    return null; // Or a splash screen
-  }
-
+  // Language and asset hydration is non-critical for first paint. Keep the
+  // app tree mounted so the shell can show its branded loading/fallback state
+  // instead of leaving a blank root during slow or offline web startup.
   return <>{children}</>;
 };

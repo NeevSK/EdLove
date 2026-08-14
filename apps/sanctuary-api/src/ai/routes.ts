@@ -76,6 +76,61 @@ function wireToHistory(messages: WireMessage[]): Array<{
 
 export const aiRouter = new Hono<AiEnv>();
 
+async function collectStudentPotentialInsight(
+  userId: string,
+  db: any,
+  studentName: string,
+  analysis: Record<string, unknown>,
+) {
+  const useVercelSdk = process.env.AI_SDK === 'vercel';
+  const billingAdapter = new DbBillingAdapter(db);
+  const orchestrator = new Orchestrator(billingAdapter, (provider) => {
+    if (useVercelSdk) {
+      switch (provider) {
+        case 'gemini': return new VercelGeminiAdapter();
+        case 'anthropic': return new VercelAnthropicAdapter();
+        case 'deepseek': return new VercelDeepSeekAdapter();
+        case 'openrouter': return new VercelOpenRouterAdapter();
+        default: return new VercelOpenAiAdapter();
+      }
+    }
+    switch (provider) {
+      case 'gemini': return new GeminiAdapter();
+      case 'anthropic': return new AnthropicAdapter();
+      case 'deepseek': return new DeepSeekAdapter();
+      case 'openrouter': return new OpenRouterAdapter();
+      default: return new OpenAiAdapter();
+    }
+  });
+  const prompt = [
+    `Analyze student potential for ${studentName}.`,
+    `Cognitive flow: ${analysis.cognitive_flow ?? 'unknown'}%.`,
+    `Emotional resonance: ${analysis.emotional_resonance ?? 'unknown'}%.`,
+    `Social weaving: ${analysis.social_weaving ?? 'unknown'}%.`,
+    `Creative spark: ${analysis.creative_spark ?? 'unknown'}%.`,
+    `Practical mastery: ${analysis.practical_mastery ?? 'unknown'}%.`,
+    `Silver lining: ${analysis.silver_lining ?? 'None recorded'}.`,
+    'Provide three nurturing intervention suggestions. Avoid rankings, labels, diagnoses, or score-based judgments.',
+  ].join(' ');
+  const rawStream = await orchestrator.processChat(
+    userId,
+    prompt,
+    [{ role: 'user', content: prompt }],
+    { role: 'teacher' },
+  );
+  let reply = '';
+  let textChunkCount = 0;
+  for await (const chunk of rawStream) {
+    if (chunk.type === 'TEXT_MESSAGE_CONTENT') {
+      textChunkCount++;
+      const part = chunk.content as { text?: string } | undefined;
+      if (part?.text) reply += part.text;
+    }
+  }
+  if (!reply) throw new Error(`AI returned no student-potential insight (${textChunkCount} text chunks)`);
+  return reply;
+}
+
 aiRouter.post('/chat', rateLimit, async (c) => {
   const user = c.get('user');
   const db = c.get('db');
@@ -222,13 +277,37 @@ aiRouter.post('/chat', rateLimit, async (c) => {
       headers: { 'Cache-Control': 'no-cache' },
     });
   } catch (err: any) {
-    console.error('[aiRouter] error:', err);
+    const requestId = c.get('requestId') || 'unknown';
+    console.error(`[aiRouter] request ${requestId} failed:`, err);
     return c.json(
       {
-        error: 'Internal server error',
-        details: err instanceof Error ? err.message : String(err),
+        error: 'INTERNAL_SERVER_ERROR',
+        request_id: requestId,
       },
       500,
     );
+  }
+});
+
+aiRouter.post('/student-potential', rateLimit, async (c) => {
+  const user = c.get('user');
+  const db = c.get('db');
+  if (!user || user.id === 'anonymous') return c.json({ error: 'Unauthorized' }, 401);
+  try {
+    const body = await c.req.json();
+    if (typeof body.studentName !== 'string' || !body.studentName.trim() || !body.analysis) {
+      return c.json({ error: 'Invalid student-potential request' }, 400);
+    }
+    const reply = await collectStudentPotentialInsight(
+      user.id,
+      db,
+      body.studentName.trim().slice(0, 200),
+      body.analysis,
+    );
+    return c.json({ reply }, 200);
+  } catch (err) {
+    const requestId = c.get('requestId') || 'unknown';
+    console.error(`[aiRouter] student-potential request ${requestId} failed:`, err);
+    return c.json({ error: 'AI_INSIGHT_UNAVAILABLE', request_id: requestId }, 503);
   }
 });

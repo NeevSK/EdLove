@@ -107,4 +107,82 @@ export class SovereignError extends Error {
       },
     });
   }
+
+  static authenticationRequired(): SovereignError {
+    return new SovereignError({
+      type: 'https://polymath.network/errors/authentication-required',
+      title: 'Authentication Required',
+      detail: 'A valid authenticated session is required for this operation.',
+      status: 401,
+      category: ErrorCategory.AUTHORIZATION,
+      code: 'AUTHENTICATION_REQUIRED',
+      userMessage: 'Please sign in and try again.',
+      agentAction: { suggestedAction: 'AUTHENTICATE_AND_RETRY' },
+    });
+  }
+
+  static notFound(resource = 'Resource'): SovereignError {
+    return new SovereignError({
+      type: 'https://polymath.network/errors/not-found',
+      title: `${resource} Not Found`,
+      detail: 'The requested resource could not be found.',
+      status: 404,
+      category: ErrorCategory.UNKNOWN,
+      code: 'RESOURCE_NOT_FOUND',
+      userMessage: 'That resource is no longer available.',
+      agentAction: { suggestedAction: 'REFRESH_RESOURCE_AND_RETRY' },
+    });
+  }
+
+  static unavailable(code = 'DEPENDENCY_UNAVAILABLE'): SovereignError {
+    return new SovereignError({
+      type: 'https://polymath.network/errors/dependency-unavailable',
+      title: 'Service Unavailable',
+      detail: 'A required platform dependency is unavailable.',
+      status: 503,
+      category: ErrorCategory.NETWORK,
+      code,
+      userMessage: 'The service is temporarily unavailable. Please try again shortly.',
+      agentAction: { suggestedAction: 'RETRY_WITH_BACKOFF' },
+    });
+  }
+
+  static conflict(code = 'CONFLICT'): SovereignError {
+    return new SovereignError({
+      type: 'https://polymath.network/errors/conflict',
+      title: 'Conflict',
+      detail: 'The requested change conflicts with the current resource state.',
+      status: 409,
+      category: ErrorCategory.DATABASE,
+      code,
+      userMessage: 'That change could not be applied because the data has changed.',
+      agentAction: { suggestedAction: 'REFRESH_RESOURCE_AND_RETRY' },
+    });
+  }
+
+  static invalidInput(detail = 'One or more fields are invalid.'): SovereignError {
+    return new SovereignError({
+      type: 'https://polymath.network/errors/invalid-input',
+      title: 'Invalid Request',
+      detail,
+      status: 400,
+      category: ErrorCategory.VALIDATION,
+      code: 'INVALID_INPUT',
+      userMessage: 'Please check the information you entered.',
+      agentAction: { suggestedAction: 'CHECK_INPUT_AND_RETRY' },
+    });
+  }
+
+  static rateLimited(retryAfter?: number): SovereignError {
+    return new SovereignError({
+      type: 'https://polymath.network/errors/rate-limited',
+      title: 'Too Many Requests',
+      detail: 'The request rate limit has been exceeded.',
+      status: 429,
+      category: ErrorCategory.NETWORK,
+      code: 'RATE_LIMITED',
+      userMessage: 'Please wait a moment before trying again.',
+      agentAction: { suggestedAction: 'RETRY_WITH_BACKOFF', retryAfter },
+    });
+  }
 }

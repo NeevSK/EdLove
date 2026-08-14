@@ -35,6 +35,29 @@ permit(
   resource.school_id == principal.school_id
 };
 
+// Sacred Missions: teachers may read their school's manifestos and manage
+// only their own endorsement records. The handler separately verifies the
+// endorsement's manifesto belongs to the active school.
+permit(
+  principal,
+  action == Action::"read",
+  resource
+) when {
+  principal.capacity == "teacher" &&
+  resource is Manifesto &&
+  resource.school_id == principal.school_id
+};
+
+permit(
+  principal,
+  action in [Action::"read", Action::"create", Action::"delete"],
+  resource
+) when {
+  principal.capacity == "teacher" &&
+  resource is ManifestoEndorsement &&
+  resource.user_id == principal.id
+};
+
 // 2. Full CRUD on Classroom, AttendanceRecord, Assignment, Lesson, Material, InventoryItem — scoped to classrooms they teach
 permit(
   principal,

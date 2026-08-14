@@ -1,59 +1,25 @@
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+/** Transport client for authenticated feature-discovery tracking. */
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import type { FeatureUsage } from '@repo/core/api/tracking.contract';
 
-/**
- * API for tracking feature usage and exploration to drive gamification.
- */
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
+
 export const trackingAPI = {
-  /**
-   * Logs feature usage. If it's the first time, it records the entry.
-   */
   async logFeatureUsage(
-    userId: string,
+    _userId: string,
     featureName: string,
-    interactionType: string = 'exploration',
-  ) {
-    // Find if already logged
-    const { data: existing } = await supabaseClient
-      .from('feature_usage_log')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('feature_name', featureName)
-      .maybeSingle();
-
-    if (existing) return existing;
-
-    const { data, error } = await supabaseClient
-      .from('feature_usage_log')
-      .insert([
-        {
-          user_id: userId,
-          feature_name: featureName,
-          interaction_type: interactionType,
-        },
-      ])
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error logging feature usage:', error);
-      throw error;
-    }
-    return data;
+    interactionType = 'exploration',
+  ): Promise<FeatureUsage> {
+    const response = await (client.api as any).tracking.features.$post({
+      json: { featureName, interactionType },
+    });
+    if (!response.ok) throw new Error('Error logging feature usage.');
+    return (await response.json()) as FeatureUsage;
   },
 
-  /**
-   * Fetches all unique features explored by the user.
-   */
-  async getExploredFeatures(userId: string) {
-    const { data, error } = await supabaseClient
-      .from('feature_usage_log')
-      .select('feature_name')
-      .eq('user_id', userId);
-
-    if (error) {
-      console.error('Error fetching explored features:', error);
-      throw error;
-    }
-    return data.map((item) => item.feature_name);
+  async getExploredFeatures(_userId: string): Promise<string[]> {
+    const response = await (client.api as any).tracking.features.$get();
+    if (!response.ok) throw new Error('Error fetching explored features.');
+    return (await response.json()) as string[];
   },
 };

@@ -45,7 +45,18 @@ export const erpContract = {
     method: 'post',
     path: '/erp/transactions',
     request: {
-      body: FinancialTransactionSchema.omit({ id: true }),
+      body: z.object({
+        date: z.string().datetime().optional(),
+        description: z.string().trim().min(1).max(500),
+        referenceNo: z.string().trim().max(120).optional().nullable(),
+        metadata: z.record(z.string(), z.any()).optional(),
+        entries: z.array(z.object({
+          accountId: z.string(),
+          amount: z.number().finite().positive(),
+          side: z.enum(['debit', 'credit']),
+          description: z.string().max(500).optional().nullable(),
+        })).min(2),
+      }),
     },
     responses: {
       201: {
@@ -62,10 +73,11 @@ export const erpContract = {
     path: '/erp/payments/intent',
     request: {
       body: z.object({
-        amount: z.number(),
-        currency: z.string(),
-        provider: z.string(),
+        amount: z.number().finite().positive(),
+        currency: z.string().length(3),
+        provider: z.enum(['stripe', 'payhere']),
         metadata: z.record(z.string(), z.any()).optional(),
+        idempotencyKey: z.string().trim().min(8).max(200).optional(),
       }),
     },
     responses: {

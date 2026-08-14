@@ -34,9 +34,12 @@ export const schoolAttendanceRecorded = inngest.createFunction(
   },
   async ({ event, step }) => {
     const attendance = event.data as unknown as SchoolAttendanceRecordedPayload;
+    const attendanceId =
+      attendance.idempotency_key ??
+      `${attendance.classroom_id}:${attendance.student_id}:${new Date(attendance.date).toISOString()}`;
     const domainServices = createDomainServices(supabaseAdmin);
-    const correlationId = attendance.correlationId ?? attendance.id;
-    const causationId = attendance.causationId ?? attendance.id;
+    const correlationId = attendance.correlationId ?? attendanceId;
+    const causationId = attendance.causationId ?? attendanceId;
     const classroomContext = await step.run('load-classroom-context', () =>
       getClassroomContext(attendance.classroom_id),
     );
@@ -45,10 +48,10 @@ export const schoolAttendanceRecorded = inngest.createFunction(
         supabase: supabaseAdmin,
         id: uuidv7(),
         action: 'attendance_recorded_background',
-        entityId: attendance.id,
+        entityId: attendanceId,
         entityType: 'attendance',
         schoolId: classroomContext.school_id,
-        idempotencyKey: `attendance-recorded:${attendance.id}:audit`,
+        idempotencyKey: `attendance-recorded:${attendanceId}:audit`,
         correlationId,
         causationId,
         metadata: {
@@ -68,7 +71,7 @@ export const schoolAttendanceRecorded = inngest.createFunction(
         correlationId,
         causationId,
         properties: {
-          attendance_id: attendance.id,
+          attendance_id: attendanceId,
           student_id: attendance.student_id,
           classroom_id: attendance.classroom_id,
           school_id: classroomContext.school_id,
@@ -91,13 +94,13 @@ export const schoolAttendanceRecorded = inngest.createFunction(
               'Use this as a private cue for follow-up, not as a finalized student judgment.',
             ].join(' '),
           },
-          `attendance-recorded:${attendance.id}:teacher-note`,
+          `attendance-recorded:${attendanceId}:teacher-note`,
         );
       });
     }
     return {
       processed: true,
-      attendanceId: attendance.id,
+      attendanceId,
       schoolId: classroomContext.school_id,
       correlationId,
     };

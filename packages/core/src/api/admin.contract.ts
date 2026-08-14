@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import type { SovereignContract } from '@repo/core/api/contracts';
 import { SchoolSchema } from '@repo/core/logic/schemas/school.schema';
 import {
   CalendarEventSchema,
@@ -6,7 +6,7 @@ import {
   StaffPresenceSummarySchema,
   TeacherCarouselItemSchema,
 } from '@repo/core/logic/schemas/staff.schema';
-import type { SovereignContract } from '@repo/core/api/contracts';
+import { z } from 'zod';
 
 const adminAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',
@@ -53,7 +53,8 @@ export const adminContract = {
     request: {
       body: z.strictObject({
         schoolId: z.uuid(),
-        userId: z.uuid(),
+        // The server derives the acting user from the authenticated context.
+        userId: z.uuid().optional(),
         leaveType: z.string(),
         startDate: z.string(),
         endDate: z.string(),
@@ -96,7 +97,8 @@ export const adminContract = {
     request: {
       params: z.strictObject({ leaveId: z.uuid() }),
       body: z.strictObject({
-        reviewedBy: z.uuid(),
+        // The server derives the reviewer from the authenticated context.
+        reviewedBy: z.uuid().optional(),
         approved: z.boolean(),
       }),
     },
@@ -128,7 +130,8 @@ export const adminContract = {
     request: {
       params: z.strictObject({ schoolId: z.uuid() }),
       body: z.strictObject({
-        principalId: z.uuid(),
+        // Calendar authorship is derived from the authenticated context.
+        principalId: z.uuid().optional(),
         event: z.strictObject({
           title: z.string(),
           type: z.string(),

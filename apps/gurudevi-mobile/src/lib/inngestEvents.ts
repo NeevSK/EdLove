@@ -9,6 +9,7 @@ import {
   sendWellbeingMoodLogged,
   type WellbeingMoodLoggedPayload,
 } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 import type { QueuedMutation, QueuedMutationDispatchResult } from '@repo/core/sync';
 import { getInngest } from '@/lib/inngest';
 
@@ -46,9 +47,15 @@ export async function dispatchQueuedMutationToSovereignBus(
     return false;
   }
 
+  const actorId = useAuthStore.getState().user?.id;
+  if (!actorId) {
+    throw new Error('Cannot dispatch a queued mutation without an authenticated actor.');
+  }
+
   await emitSyncMutationQueued({
     mutationId: mutation.id,
     action: mutation.name,
+    actorId,
     scope: mutation.scope,
     idempotencyKey: mutation.idempotencyKey,
     payload: mutation.variables,

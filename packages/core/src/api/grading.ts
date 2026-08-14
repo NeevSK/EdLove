@@ -1,7 +1,6 @@
-import { APIError } from '@repo/core/types/API';
 import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { GradeMarkSchema } from '@repo/core/logic/schemas/grade-domain.schema';
+import { APIError } from '@repo/core/types/API';
 import { z } from 'zod';
 
 /**
@@ -38,22 +37,25 @@ type GradebookLifecycleScope = Omit<StudentGradeMarkScope, 'studentId'> & { grad
 
 async function parseGradeMarkResponse(response: Response, action: string) {
   if (!response.ok) {
-    throw new APIError(`${action}: ${response.statusText || 'request failed'}`, response.status.toString());
+    throw new APIError(
+      `${action}: ${response.statusText || 'request failed'}`,
+      response.status.toString(),
+    );
   }
 
   const payload: unknown = await response.json();
   const parsed = GradeMarkSchema.safeParse(payload);
   if (!parsed.success) {
-    throw new APIError(`${action}: Sanctuary returned an invalid GradeMark`, 'INVALID_GRADE_MARK_RESPONSE');
+    throw new APIError(
+      `${action}: Sanctuary returned an invalid GradeMark`,
+      'INVALID_GRADE_MARK_RESPONSE',
+    );
   }
   return parsed.data;
 }
 
 export const gradingAPI = {
-  async getGradebookSnapshot(
-    scope: GradebookLifecycleScope,
-    _viewDate?: string,
-  ) {
+  async getGradebookSnapshot(scope: GradebookLifecycleScope, _viewDate?: string) {
     if (!scope.schoolId || !scope.academicCycleId || !scope.gradeClassId) {
       throw new APIError(
         'Gradebook snapshot requires schoolId, academicCycleId, and gradeClassId',
@@ -75,17 +77,14 @@ export const gradingAPI = {
     }
     const gradeMarks = gradeMarkCollectionSchema.parse(await response.json());
 
-    const { data: settingsData } = await supabase
-      .from('classroom_grading_settings')
-      .select('*')
-      .eq('classroom_id', scope.gradeClassId)
-      .maybeSingle();
-
-    const gradingSettings = settingsData || {
-      classroom_id: scope.gradeClassId,
-      grading_mode: 'both',
-      show_ranks: true,
-    };
+    const settingsResponse = await (client.api as any).grading.classrooms[
+      ':classroomId'
+    ].settings.$get({
+      param: { classroomId: scope.gradeClassId },
+    });
+    if (!settingsResponse.ok)
+      throw new APIError('Failed to fetch grading settings', settingsResponse.status.toString());
+    const gradingSettings = await settingsResponse.json();
 
     return {
       gradeMarks,
@@ -94,18 +93,23 @@ export const gradingAPI = {
   },
 
   async updateGradingSettings(classroomId: string, settings: any) {
-    const { data, error } = await supabase
-      .from('classroom_grading_settings')
-      .upsert({ classroom_id: classroomId, ...settings })
-      .select()
-      .single();
-
-    if (error) throw new APIError('Failed to update grading settings', error.code);
-    return data;
+    const response = await (client.api as any).grading.classrooms[':classroomId'].settings.$put({
+      param: { classroomId },
+      json: { grading_mode: settings.grading_mode, show_ranks: settings.show_ranks },
+    });
+    if (!response.ok)
+      throw new APIError('Failed to update grading settings', response.status.toString());
+    return await response.json();
   },
 
   async saveGradeDraft(input: GradeMarkSubmission, _auditCtx?: any) {
-    if (!input.schoolId || !input.academicCycleId || !input.gradeClassId || !input.termId || !input.subjectId) {
+    if (
+      !input.schoolId ||
+      !input.academicCycleId ||
+      !input.gradeClassId ||
+      !input.termId ||
+      !input.subjectId
+    ) {
       throw new APIError(
         'Saving a GradeMark requires the complete academic lifecycle context',
         'MISSING_GRADEMARK_LIFECYCLE_CONTEXT',
@@ -155,7 +159,10 @@ export const gradingAPI = {
 
     const payload = gradeMarkCollectionSchema.safeParse(await res.json());
     if (!payload.success) {
-      throw new APIError('Failed to fetch report card: Sanctuary returned invalid GradeMarks', 'INVALID_GRADE_MARK_RESPONSE');
+      throw new APIError(
+        'Failed to fetch report card: Sanctuary returned invalid GradeMarks',
+        'INVALID_GRADE_MARK_RESPONSE',
+      );
     }
     return payload.data;
   },
@@ -164,7 +171,13 @@ export const gradingAPI = {
    * [LOUD-FAILURE] Renamed from submitGrade.
    */
   async recordAcademicMark(params: GradeMarkSubmission) {
-    if (!params.schoolId || !params.academicCycleId || !params.gradeClassId || !params.termId || !params.subjectId) {
+    if (
+      !params.schoolId ||
+      !params.academicCycleId ||
+      !params.gradeClassId ||
+      !params.termId ||
+      !params.subjectId
+    ) {
       throw new APIError(
         'Submitting a GradeMark requires the complete academic lifecycle context',
         'MISSING_GRADEMARK_LIFECYCLE_CONTEXT',

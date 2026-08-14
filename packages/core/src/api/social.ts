@@ -1,7 +1,18 @@
-import { applyTemporalFilter } from '@repo/core/logic/utils/temporalUtils';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { communityAPI } from '@repo/core/api/community';
+import { assertHighway } from '@repo/core/api/highways';
+import { APIError } from '@repo/core/types/API';
 import type { TemporalScale } from '@repo/core/store/useTemporalStore';
-import { identityAPI } from '@repo/core/api/identity';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
+
+function assertSocialHighway() {
+  assertHighway('social_core', 'direct-api');
+}
+
+async function throwApiError(res: Response, operation: string): Promise<never> {
+  throw new APIError(operation, res.status.toString());
+}
 
 /**
  * Social & Safety API
@@ -19,31 +30,7 @@ export const socialAPI = {
     userId: string,
     options: { viewDate?: string; viewScale?: TemporalScale } = {},
   ) {
-    let query = supabaseClient
-      .from('community_posts_with_counts')
-      .select('reaction_count, comment_count')
-      .eq('author_id', userId);
-
-    if (options.viewDate) {
-      query = applyTemporalFilter(query, {
-        column: 'created_at',
-        mode: 'event_time',
-        capability: 'event_stream',
-        scale: options.viewScale,
-      });
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-
-    return (data || []).reduce(
-      (acc, curr: any) => ({
-        likes: acc.likes + (curr.reaction_count || 0),
-        comments: acc.comments + (curr.comment_count || 0),
-        shares: acc.shares,
-      }),
-      { likes: 0, comments: 0, shares: 0 },
-    );
+    return communityAPI.getCommunityResonance(userId, { viewDate: options.viewDate });
   },
 
   /**
@@ -53,74 +40,45 @@ export const socialAPI = {
     limit = 30,
     options: { viewDate?: string; viewScale?: TemporalScale } = {},
   ) {
-    const identity = await identityAPI.identifyActiveCitizen();
-    const myId = identity?.id;
-    if (!myId) return [];
-
-    let query = supabaseClient
-      .from('notifications')
-      .select('*')
-      .eq('user_id', myId);
-
-    if (options.viewDate) {
-      query = applyTemporalFilter(query, {
-        column: 'created_at',
-        mode: 'event_time',
-        capability: 'event_stream',
-        scale: options.viewScale,
-      });
-    } else {
-      query = query.order('created_at', { ascending: false }).limit(limit);
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-    return data || [];
+    assertSocialHighway();
+    const res = await (client.api as any).social.notifications.$get({
+      query: { limit, viewDate: options.viewDate ?? undefined },
+    });
+    if (!res.ok) await throwApiError(res, 'Failed to fetch notifications');
+    return ((await res.json()) as any[]).map((notification) => ({
+      ...notification,
+      body: notification.message,
+    }));
   },
 
   /**
    * @policy read User
    */
   async getUnreadNotificationCount() {
-    const identity = await identityAPI.identifyActiveCitizen();
-    const myId = identity?.id;
-    if (!myId) return 0;
-
-    const { count, error } = await supabaseClient
-      .from('notifications')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', myId)
-      .eq('is_read', false);
-
-    if (error) return 0;
-    return count ?? 0;
+    assertSocialHighway();
+    const res = await (client.api as any).social.notifications['unread-count'].$get();
+    if (!res.ok) await throwApiError(res, 'Failed to fetch unread notification count');
+    return Number(await res.json());
   },
 
   /**
    * @policy update User
    */
   async markNotificationRead(notificationId: string) {
-    const { error } = await supabaseClient
-      .from('notifications')
-      .update({ is_read: true, read_at: new Date().toISOString() })
-      .eq('id', notificationId);
-    if (error) throw error;
+    assertSocialHighway();
+    const res = await (client.api as any).social.notifications.read.$post({
+      json: { notificationId },
+    });
+    if (!res.ok) await throwApiError(res, 'Failed to mark notification read');
   },
 
   /**
    * @policy update User
    */
   async markAllNotificationsRead() {
-    const identity = await identityAPI.identifyActiveCitizen();
-    const myId = identity?.id;
-    if (!myId) return;
-
-    const { error } = await supabaseClient
-      .from('notifications')
-      .update({ is_read: true, read_at: new Date().toISOString() })
-      .eq('user_id', myId)
-      .eq('is_read', false);
-    if (error) throw error;
+    assertSocialHighway();
+    const res = await (client.api as any).social.notifications['read-all'].$post();
+    if (!res.ok) await throwApiError(res, 'Failed to mark notifications read');
   },
 
   // --- Safety & Moderation ---
@@ -129,80 +87,44 @@ export const socialAPI = {
    * Blocks a user.
    */
   async blockUser(targetUserId: string): Promise<void> {
-    const identity = await identityAPI.identifyActiveCitizen();
-    const myId = identity?.id;
-    if (!myId) throw new Error('Authentication required');
-
-    const { error } = await supabaseClient.from('user_blocks').insert([
-      {
-        blocker_id: myId,
-        blocked_id: targetUserId,
-      },
-    ]);
-
-    if (error && error.code !== '23505') throw error;
+    assertSocialHighway();
+    const res = await (client.api as any).social.block.$post({
+      json: { targetUserId },
+    });
+    if (!res.ok) await throwApiError(res, 'Failed to block user');
   },
 
   /**
    * Unblocks a user.
    */
   async unblockUser(targetUserId: string): Promise<void> {
-    const identity = await identityAPI.identifyActiveCitizen();
-    const myId = identity?.id;
-    if (!myId) throw new Error('Authentication required');
-
-    const { error } = await supabaseClient
-      .from('user_blocks')
-      .delete()
-      .eq('blocker_id', myId)
-      .eq('blocked_id', targetUserId);
-
-    if (error) throw error;
+    assertSocialHighway();
+    const res = await (client.api as any).social.unblock.$post({
+      json: { targetUserId },
+    });
+    if (!res.ok) await throwApiError(res, 'Failed to unblock user');
   },
 
   /**
    * Checks if a blocking relationship exists between the current user and target user.
    */
   async isBlockingActive(targetUserId: string): Promise<boolean> {
-    const identity = await identityAPI.identifyActiveCitizen();
-    const myId = identity?.id;
-    if (!myId) return false;
-
-    const { data, error } = await supabaseClient
-      .from('user_blocks')
-      .select('blocker_id')
-      .or(
-        `and(blocker_id.eq.${myId},blocked_id.eq.${targetUserId}),and(blocker_id.eq.${targetUserId},blocked_id.eq.${myId})`,
-      )
-      .maybeSingle();
-
-    if (error) throw error;
-    return !!data;
+    assertSocialHighway();
+    const res = await (client.api as any).social.block.active.$get({
+      query: { targetUserId },
+    });
+    if (!res.ok) await throwApiError(res, 'Failed to check block status');
+    return Boolean(await res.json());
   },
 
   /**
    * Fetches the list of users blocked by the current user.
    */
   async getMutedUsers() {
-    const identity = await identityAPI.identifyActiveCitizen();
-    const myId = identity?.id;
-    if (!myId) return [];
-
-    const { data, error } = await supabaseClient
-      .from('user_blocks')
-      .select(`
-                blocked_id, 
-                blocked:users(
-                    id, 
-                    full_name, 
-                    avatar_url,
-                    capacity
-                )
-            `)
-      .eq('blocker_id', myId);
-
-    if (error) throw error;
-    return (data || []).map((b: any) => b.blocked).filter(Boolean);
+    assertSocialHighway();
+    const res = await (client.api as any).social.block.list.$get();
+    if (!res.ok) await throwApiError(res, 'Failed to fetch blocked users');
+    return await res.json();
   },
 
   /**
@@ -218,23 +140,6 @@ export const socialAPI = {
     },
     reporterId: string,
   ) {
-    const { data, error } = await supabaseClient
-      .from('community_reports')
-      .insert([
-        {
-          reporter_id: reporterId,
-          post_id: params.postId,
-          group_id: params.groupId,
-          target_user_id: params.targetUserId,
-          reason: params.reason,
-          report_target: params.report_target,
-          status: 'pending',
-        },
-      ])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+    return communityAPI.reportContent({ ...params, reporter_id: reporterId });
   },
 };

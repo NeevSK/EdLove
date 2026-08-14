@@ -5,9 +5,10 @@
  */
 
 import { APIError } from '@repo/core/types/API';
-import { identityAPI } from '@repo/core/api/identity';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import { teacherInsightsAPI } from '@repo/core/api/teacherInsights';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { studentPotentialContract } from '@repo/core/api/studentPotential.contract';
+
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export interface StudentPotentialAnalysis {
   id: string;
@@ -43,10 +44,11 @@ export const studentPotentialAPI = {
     studentId: string,
     classroomId: string,
   ): Promise<StudentPotentialAnalysis | null> {
-    const identity = await identityAPI.identifyActiveCitizen();
-    const myId = identity?.id;
-    if (!myId) return null;
-    const data = await teacherInsightsAPI.getStudentPotential(studentId, classroomId);
+    const response = await (client.api as any).studentPotential.students[':studentId'].classrooms[
+      ':classroomId'
+    ].$get({ param: { studentId, classroomId } });
+    if (!response.ok) throw new APIError('Failed to fetch potential analysis', response.status.toString());
+    const data = await response.json();
     if (!data) return null;
     const { audit, visibility, ...analysis } = data;
     return analysis as StudentPotentialAnalysis;
@@ -56,28 +58,28 @@ export const studentPotentialAPI = {
    * Get all analyses for a student across all classrooms
    */
   async getAllForStudent(studentId: string): Promise<StudentPotentialAnalysis[]> {
-    const { data, error } = await supabaseClient
-      .from('student_potential_analysis')
-      .select(`
-                *,
-                teacher:users!teacher_id (full_name),
-                classroom:classrooms(name)
-            `)
-      .eq('student_id', studentId)
-      .order('updated_at', { ascending: false });
-
-    if (error) {
-      throw new APIError('Failed to fetch all potential analyses', error.code, error);
+    const response = await (client.api as any).studentPotential.students[':studentId'].$get({
+      param: { studentId },
+    });
+    if (!response.ok) {
+      throw new APIError('Failed to fetch all potential analyses', response.status.toString());
     }
-
-    return (data || []) as StudentPotentialAnalysis[];
+    return (await response.json()).map((row: any) => {
+      const { audit, visibility, ...analysis } = studentPotentialContract.listForStudent.responses[200].schema.element.parse(row);
+      return analysis as StudentPotentialAnalysis;
+    });
   },
 
   /**
-   * Upsert potential analysis through the teacherInsights seam.
+   * Upsert potential analysis through the Sanctuary boundary.
    */
   async upsert(input: CreatePotentialAnalysisInput): Promise<StudentPotentialAnalysis> {
-    const data = await teacherInsightsAPI.upsertStudentPotential(input);
+    const response = await (client.api as any).studentPotential.students[':studentId'].$put({
+      param: { studentId: input.student_id },
+      json: input,
+    });
+    if (!response.ok) throw new APIError('Failed to save potential analysis', response.status.toString());
+    const data = await response.json();
     const { audit, visibility, ...analysis } = data;
     return analysis as StudentPotentialAnalysis;
   },
@@ -90,21 +92,12 @@ export const studentPotentialAPI = {
     analysis: Partial<StudentPotentialAnalysis>,
   ): Promise<string> {
     try {
-      const response = await supabaseClient.functions.invoke(
-        'ai-assistant',
-        {
-          body: {
-            message: `Analyze potential for student "${studentName}" based on these dimensions: Cognitive: ${analysis.cognitive_flow}%, Emotional: ${analysis.emotional_resonance}%, Social: ${analysis.social_weaving}%, Creative: ${analysis.creative_spark}%, Practical: ${analysis.practical_mastery}%. Current Silver Lining: "${analysis.silver_lining || 'None recorded'}". Provide 3 nurturing intervention suggestions.`,
-            context: {
-              type: 'student_potential_insight',
-              studentName,
-              analysis,
-            },
-          },
-        },
-      );
-
-      if (response.data?.reply) return response.data.reply;
+      const response = await (client.api as any).ai['student-potential'].$post({
+        json: { studentName, analysis },
+      });
+      if (!response.ok) throw new Error(`AI gateway returned ${response.status}`);
+      const body = await response.json();
+      if (body?.reply) return body.reply as string;
       throw new Error('No reply from AI scout');
     } catch (error) {
       console.error('[studentPotentialAPI] AI Insight error:', error);

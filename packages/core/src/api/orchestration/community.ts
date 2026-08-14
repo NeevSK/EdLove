@@ -8,8 +8,8 @@ import { socialAPI } from '@repo/core/api/social';
 import { createTemporalProxy } from '@repo/core/api/temporalProxy';
 
 const combinedRawAPI = {
-  ...rawCommunityAPI,
   ...circleAPI,
+  ...rawCommunityAPI,
   ...announcementAPI,
   ...messagingAPI,
   ...socialAPI,

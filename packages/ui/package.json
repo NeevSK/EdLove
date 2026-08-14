@@ -879,7 +879,7 @@
     "react": "19.2.3",
     "react-i18next": "*",
     "react-native": "~0.86.0",
-    "react-native-enriched-markdown": "^0.6.0",
+    "react-native-enriched-markdown": "^1.0.1",
     "react-native-keyboard-controller": "1.21.9",
     "svelte": "^5.0.0"
   },
@@ -897,7 +897,7 @@
     "eslint": "^10.4.1",
     "i18next": "^26.3.1",
     "react-i18next": "^17.0.8",
-    "react-native-enriched-markdown": "^0.6.0",
+    "react-native-enriched-markdown": "^1.0.1",
     "react-native-keyboard-controller": "1.21.9",
     "tailwindcss": "4.3.0",
     "typescript": "rc",

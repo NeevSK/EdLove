@@ -1,10 +1,10 @@
-import { z } from 'zod';
+import type { SovereignContract } from '@repo/core/api/contracts';
 import {
   FireJournalEntrySchema,
   MoodLogSchema,
   UserPreferencesSchema,
 } from '@repo/core/logic/schemas/self.schema';
-import type { SovereignContract } from '@repo/core/api/contracts';
+import { z } from 'zod';
 
 const wellbeingAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
   ({
@@ -41,8 +41,9 @@ export const selfContract = {
     path: '/self/mood',
     request: {
       query: z.strictObject({
-        userId: z.uuid(),
+        userId: z.uuid().optional(),
         limit: z.coerce.number().optional(),
+        viewDate: z.string().datetime().optional(),
       }),
     },
     responses: {
@@ -74,7 +75,7 @@ export const selfContract = {
     path: '/self/journal',
     request: {
       query: z.strictObject({
-        userId: z.uuid(),
+        userId: z.uuid().optional(),
         limit: z.coerce.number().optional(),
       }),
     },
@@ -91,7 +92,7 @@ export const selfContract = {
     method: 'get',
     path: '/self/mood/today',
     request: {
-      query: z.strictObject({ userId: z.uuid() }),
+      query: z.strictObject({ userId: z.uuid().optional() }),
     },
     responses: {
       200: {

@@ -25,6 +25,8 @@
     "@modelcontextprotocol/core": "^2.0.0",
     "@modelcontextprotocol/server": "^2.0.0",
     "@modelcontextprotocol/server-sequential-thinking": "2025.12.18",
+    "@swmansion/argent": "^0.20.0",
+    "agent-device": "^0.20.8",
     "dotenv": "^17.4.2",
     "zod": "4.4.3"
   },

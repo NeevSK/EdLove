@@ -9,7 +9,9 @@ import { AccountSchema, FinancialTransactionSchema } from '@repo/core/logic/sche
 import { InvoiceSchema, PaymentIntentSchema } from '@repo/core/logic/schemas/payments.schema';
 import { APIError } from '@repo/core/types/API';
 import { erpContract } from '@repo/core/api/erp.contract';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export const accountingAPI = {
   /**
@@ -17,16 +19,9 @@ export const accountingAPI = {
    * @policy read Accounting
    */
   async getAccounts(): Promise<z.infer<typeof AccountSchema>[]> {
-    const { data, error } = await supabaseClient
-      .from('accounting_accounts')
-      .select('*')
-      .order('code', { ascending: true });
-
-    if (error) {
-      throw new APIError('Failed to fetch accounts', error.code, error);
-    }
-
-    return z.array(AccountSchema).parse(data || []);
+    const res = await (client.api as any).erp.accounts.$get();
+    if (!res.ok) throw new APIError('Failed to fetch accounts', res.status.toString());
+    return z.array(AccountSchema).parse(await res.json());
   },
 
   /**
@@ -36,19 +31,9 @@ export const accountingAPI = {
   async recordTransaction(
     tx: Omit<z.infer<typeof FinancialTransactionSchema>, 'id'>,
   ): Promise<z.infer<typeof FinancialTransactionSchema>> {
-    // In a real implementation, this would be a complex RPC call to handle double-entry
-    const { data, error } = await supabaseClient.rpc(
-      'record_financial_transaction',
-      {
-        tx_data: tx,
-      },
-    );
-
-    if (error) {
-      throw new APIError('Failed to record transaction', error.code, error);
-    }
-
-    return FinancialTransactionSchema.parse(data);
+    const res = await (client.api as any).erp.transactions.$post({ json: tx });
+    if (!res.ok) throw new APIError('Failed to record transaction', res.status.toString());
+    return FinancialTransactionSchema.parse(await res.json());
   },
 };
 
@@ -62,19 +47,11 @@ export const paymentsAPI = {
     currency: string;
     provider: string;
     metadata?: any;
+    idempotencyKey?: string;
   }): Promise<z.infer<typeof PaymentIntentSchema>> {
-    const { data, error } = await supabaseClient.functions.invoke(
-      'create-payment-intent',
-      {
-        body: vars,
-      },
-    );
-
-    if (error) {
-      throw new APIError('Failed to create payment intent', 'PAYMENT_INTENT_ERROR', error);
-    }
-
-    return PaymentIntentSchema.parse(data);
+    const res = await (client.api as any).erp.payments.intent.$post({ json: vars });
+    if (!res.ok) throw new APIError('Failed to create payment intent', res.status.toString());
+    return PaymentIntentSchema.parse(await res.json());
   },
 
   /**
@@ -82,18 +59,17 @@ export const paymentsAPI = {
    * @policy read Payments
    */
   async getInvoices(customerId?: string): Promise<z.infer<typeof InvoiceSchema>[]> {
-    let query = supabaseClient.from('billing_invoices').select('*');
-    if (customerId) query = query.eq('customer_id', customerId);
-
-    const { data, error } = await query.order('created_at', {
-      ascending: false,
+    const res = await (client.api as any).erp.invoices.$get({
+      query: customerId ? { customerId } : {},
     });
+    if (!res.ok) throw new APIError('Failed to fetch invoices', res.status.toString());
+    return z.array(InvoiceSchema).parse(await res.json());
+  },
 
-    if (error) {
-      throw new APIError('Failed to fetch invoices', error.code, error);
-    }
-
-    return z.array(InvoiceSchema).parse(data || []);
+  async getReceipt(id: string) {
+    const res = await (client.api as any).erp.receipts[':id'].$get({ param: { id } });
+    if (!res.ok) throw new APIError('Failed to fetch receipt', res.status.toString());
+    return res.json();
   },
 };
 

@@ -1,10 +1,10 @@
-import { o, type ORPCContext } from './orpc';
 import { ORPCError } from '@orpc/server';
-import { verifySupabaseJwt } from '../jwt';
-import { createZenStackDb, canUseZenStackDb } from '@repo/database/client';
 import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
+import { canUseZenStackDb, createZenStackDb } from '@repo/database/client';
 import { endTime, startTime } from 'hono/timing';
+import { verifySupabaseJwt } from '../jwt';
 import { getCurrentTraceId } from '../telemetry/otel';
+import { type ORPCContext, o } from './orpc';
 
 // Context Builder for oRPC from incoming HTTP headers/request
 export async function parseORPCContext(req: Request, env: any, requestId: string) {
@@ -112,7 +112,9 @@ export async function buildORPCContextFromHono(c: any): Promise<ORPCContext> {
       schoolId = scope.schoolId || schoolId;
       capacity = activeBond.capacity;
       if (requestedCapacity === 'admin' && capacity !== 'admin') {
-        throw new ORPCError('FORBIDDEN', { message: 'Authoritative database policy rejects the requested administrative capability.' });
+        throw new ORPCError('FORBIDDEN', {
+          message: 'Authoritative database policy rejects the requested administrative capability.',
+        });
       }
     }
   } else if (user.id !== 'anonymous' && db && activeBondId) {
@@ -177,25 +179,42 @@ export async function buildORPCContextFromHono(c: any): Promise<ORPCContext> {
 
 export { doubleGateMiddleware } from './orpcMiddleware';
 
-import { selfRouter } from './handlers/self';
-import { profileRouter } from './handlers/profile';
-import { identityRouter } from './handlers/identity';
-import { onboardingRouter } from './handlers/onboarding';
-import { principalNotesRouter } from './handlers/principalNotes';
-import { syncRouter } from './handlers/sync';
-import { dailyContentRouter } from './handlers/dailyContent';
-import { libraryRouter } from './handlers/library';
-import { permissionSnapshotRouter } from './handlers/permissionSnapshot';
-import { educationalRouter } from './handlers/educational';
-import { gradingRouter } from './handlers/grading';
+import { adminRouter } from './handlers/admin';
+import { agentRouter } from './handlers/agent';
+import { announcementsRouter } from './handlers/announcements';
 import { attendanceRouter } from './handlers/attendance';
 import { communityRouter } from './handlers/community';
-import { adminRouter } from './handlers/admin';
-import { messagingRouter } from './handlers/messaging';
-import { socialRouter } from './handlers/social';
-import { announcementsRouter } from './handlers/announcements';
+import { dailyContentRouter } from './handlers/dailyContent';
+import { decisionJournalRouter } from './handlers/decisionJournal';
+import { echoRouter } from './handlers/echo';
+import { educationalRouter } from './handlers/educational';
+import { erpRouter } from './handlers/erp';
+import { formsRouter } from './handlers/forms';
+import { gradingRouter } from './handlers/grading';
 import { guardianAssessmentRouter } from './handlers/guardianAssessment';
-import { agentRouter } from './handlers/agent';
+import { historyRouter } from './handlers/history';
+import { identityRouter } from './handlers/identity';
+import { inventoryRouter } from './handlers/inventory';
+import { journalEntriesRouter } from './handlers/journalEntries';
+import { libraryRouter } from './handlers/library';
+import { longitudinalRouter } from './handlers/longitudinal';
+import { mappingRouter } from './handlers/mapping';
+import { messagingRouter } from './handlers/messaging';
+import { onboardingRouter } from './handlers/onboarding';
+import { permissionSnapshotRouter } from './handlers/permissionSnapshot';
+import { presenceRouter } from './handlers/presence';
+import { principalNotesRouter } from './handlers/principalNotes';
+import { privacyRouter } from './handlers/privacy';
+import { profileRouter } from './handlers/profile';
+import { sacredMissionsRouter } from './handlers/sacredMissions';
+import { schoolForestRouter } from './handlers/schoolForest';
+import { selfRouter } from './handlers/self';
+import { socialRouter } from './handlers/social';
+import { studentPotentialRouter } from './handlers/studentPotential';
+import { syncRouter } from './handlers/sync';
+import { thuthimalRouter } from './handlers/thuthimal';
+import { trackingRouter } from './handlers/tracking';
+import { warmMirrorRouter } from './handlers/warmMirror';
 
 // Root Router initialization
 export const router = o.router({
@@ -206,6 +225,9 @@ export const router = o.router({
   principalNotes: principalNotesRouter,
   sync: syncRouter,
   dailyContent: dailyContentRouter,
+  decisionJournal: decisionJournalRouter,
+  journalEntries: journalEntriesRouter,
+  sacredMissions: sacredMissionsRouter,
   library: libraryRouter,
   authorization: permissionSnapshotRouter,
   educational: educationalRouter,
@@ -218,5 +240,18 @@ export const router = o.router({
   announcements: announcementsRouter,
   guardianAssessment: guardianAssessmentRouter,
   agent: agentRouter,
+  thuthimal: thuthimalRouter,
+  erp: erpRouter,
+  mapping: mappingRouter,
+  inventory: inventoryRouter,
+  history: historyRouter,
+  longitudinal: longitudinalRouter,
+  schoolForest: schoolForestRouter,
+  tracking: trackingRouter,
+  warmMirror: warmMirrorRouter,
+  presence: presenceRouter,
+  privacy: privacyRouter,
+  echoes: echoRouter,
+  studentPotential: studentPotentialRouter,
+  forms: formsRouter,
 });
-

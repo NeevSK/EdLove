@@ -55,6 +55,28 @@ permit(
   resource is DailyContent
 };
 
+// Sacred Missions: students may read school manifestos and manage their own
+// endorsement records; school membership is enforced by the API handler.
+permit(
+  principal,
+  action == Action::"read",
+  resource
+) when {
+  principal.capacity == "student" &&
+  resource is Manifesto &&
+  resource.school_id == principal.school_id
+};
+
+permit(
+  principal,
+  action in [Action::"read", Action::"create", Action::"delete"],
+  resource
+) when {
+  principal.capacity == "student" &&
+  resource is ManifestoEndorsement &&
+  resource.user_id == principal.id
+};
+
 // 3e. Read Assignment generally permitted for own school
 permit(
   principal,

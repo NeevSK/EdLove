@@ -10,7 +10,10 @@
 
 import type { ThuthimalGift } from '@repo/core/types';
 import { growthSignalsAPI } from '@repo/core/api/growthSignals';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { APIError } from '@repo/core/types/API';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export interface CreateGiftInput {
   gifterName: string;
@@ -26,6 +29,7 @@ export interface CreateGiftInput {
 export interface ClaimResult {
   success: boolean;
   gifter_name?: string;
+  recipient_id?: string;
   error?: 'already_claimed_or_invalid' | string;
 }
 
@@ -38,22 +42,18 @@ export const thuthimalAPI = {
   async createGift(
     input: CreateGiftInput & { gifter_id: string },
   ): Promise<{ gift_token: string }> {
-    const { gifter_id: gifterId } = input;
-    const { data, error } = await supabaseClient
-      .from('thuthimal_gifts')
-      .insert({
-        gifter_id: gifterId,
-        gifter_name: input.gifterName,
-        recipient_tier: input.recipientTier,
-        recipient_id: input.recipientId ?? null,
-        expires_at: input.expiresAt ?? null,
+    const res = await (client.api as any).thuthimal.gifts.$post({
+      json: {
+        gifterName: input.gifterName,
+        recipientTier: input.recipientTier,
+        recipientId: input.recipientId ?? null,
+        expiresAt: input.expiresAt ?? null,
         message: input.message ?? null,
-      })
-      .select('gift_token')
-      .single();
-
-    if (error) throw new Error(`Failed to create thuthimal gift: ${error.message}`);
-    return { gift_token: data.gift_token };
+      },
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new APIError('Failed to create thuthimal gift', res.status.toString());
+    return data as { gift_token: string };
   },
 
   /**
@@ -61,26 +61,19 @@ export const thuthimalAPI = {
    * Uses server-side RPC with row-lock to prevent double-claim.
    */
   async claimGift(input: { gift_token: string; recipient_id: string }): Promise<ClaimResult> {
-    const { gift_token: giftToken, recipient_id: recipientId } = input;
-    const { data, error } = await supabaseClient.rpc(
-      'claim_thuthimal_gift',
-      {
-        p_token: giftToken,
-        p_recipient: recipientId,
-      },
-    );
-
-    if (error) throw new Error(`Claim RPC failed: ${error.message}`);
-
-    const result = data as ClaimResult;
+    const res = await (client.api as any).thuthimal.gifts.claim.$post({
+      json: { giftToken: input.gift_token },
+    });
+    const result = (await res.json().catch(() => null)) as ClaimResult | null;
+    if (!res.ok || !result) throw new APIError('Claim request failed', res.status.toString());
 
     // Growth signal: receiving a Thuthimal is the apex Blooming event \u2014
     // a past student honoring their teacher years later.
     // This can advance the teacher to P\u016Br\u1E47a Kamala (Full Lotus).
-    if (result.success) {
+    if (result.success && result.recipient_id) {
       void growthSignalsAPI
         .emitSignal({
-          user_id: recipientId,
+          user_id: result.recipient_id,
           event_type: 'thuthimal_received',
           event_metadata: {
             gifter_name: result.gifter_name,
@@ -96,14 +89,10 @@ export const thuthimalAPI = {
    * Get gift history for the current user as gifter.
    */
   async getMyGifts(gifterId: string): Promise<ThuthimalGift[]> {
-    const { data, error } = await supabaseClient
-      .from('thuthimal_gifts')
-      .select('*')
-      .eq('gifter_id', gifterId)
-      .order('created_at', { ascending: false });
-
-    if (error) throw new Error(`Failed to fetch gifts: ${error.message}`);
-    return (data ?? []) as ThuthimalGift[];
+    void gifterId;
+    const res = await (client.api as any).thuthimal.gifts.$get();
+    if (!res.ok) throw new APIError('Failed to fetch gifts', res.status.toString());
+    return (await res.json()) as ThuthimalGift[];
   },
 
   /**
@@ -113,14 +102,10 @@ export const thuthimalAPI = {
   async previewGift(
     giftToken: string,
   ): Promise<Pick<ThuthimalGift, 'gifter_name' | 'recipient_tier'> | null> {
-    const { data, error } = await supabaseClient
-      .from('thuthimal_gifts')
-      .select('gifter_name, recipient_tier')
-      .eq('gift_token', giftToken)
-      .eq('claimed', false)
-      .maybeSingle();
-
-    if (error || !data) return null;
-    return data as Pick<ThuthimalGift, 'gifter_name' | 'recipient_tier'>;
+    const res = await (client.api as any).thuthimal.gifts[':giftToken'].preview.$get({
+      param: { giftToken },
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as Pick<ThuthimalGift, 'gifter_name' | 'recipient_tier'> | null;
   },
 };

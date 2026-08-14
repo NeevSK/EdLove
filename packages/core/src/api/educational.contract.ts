@@ -1,10 +1,10 @@
-import { z } from 'zod';
+import type { SovereignContract } from '@repo/core/api/contracts';
 import { ClassroomSchema, LessonSchema } from '@repo/core/logic/schemas/classroom.schema';
 import {
   ClassroomNoteLifecycleEventSchema,
   ClassroomNoteSchema,
 } from '@repo/core/logic/schemas/classroom-note.schema';
-import type { SovereignContract } from '@repo/core/api/contracts';
+import { z } from 'zod';
 
 const classroomAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
   ({
@@ -16,10 +16,34 @@ const lessonAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
     policy: { action, subject: 'Lesson' },
   }) as const;
 
+const classroomNoteCreate = ClassroomNoteSchema.omit({
+  id: true,
+  created_at: true,
+  updated_at: true,
+  author_id: true,
+  author: true,
+}).extend({
+  note_type: ClassroomNoteSchema.shape.note_type.optional(),
+  visibility: ClassroomNoteSchema.shape.visibility.optional(),
+  is_pinned: ClassroomNoteSchema.shape.is_pinned.optional(),
+});
+
 const classroomNoteAuthority = (action: 'create' | 'read' | 'update' | 'delete') =>
   ({
     policy: { action, subject: 'ClassroomNote' },
   }) as const;
+
+const classroomStudent = z.object({
+  id: z.uuid(),
+  classroom_id: z.uuid(),
+  student_id: z.uuid().nullable(),
+  full_name: z.string().nullable(),
+  invite_code: z.string().nullable(),
+  roll_number: z.number().nullable(),
+  enrolled_at: z.string().nullable(),
+  claimed_at: z.string().nullable(),
+  class_id: z.uuid().optional(),
+});
 
 /**
  * Educational Port (Sovereign RPC)
@@ -98,6 +122,60 @@ export const educationalContract = {
     metadata: classroomAuthority('read'),
   },
 
+  createClassroom: {
+    method: 'post',
+    path: '/educational/classrooms',
+    request: {
+      body: z.strictObject({
+        name: z.string().min(1),
+        teacherId: z.uuid(),
+        schoolId: z.uuid().optional().nullable(),
+        gradeId: z.uuid().optional().nullable(),
+        sectionId: z.uuid().optional().nullable(),
+        subject: z.string().optional().nullable(),
+        description: z.string().optional().nullable(),
+        handle: z.string().optional().nullable(),
+        colorTheme: z.string().optional().nullable(),
+        academicYear: z.string().optional().nullable(),
+      }),
+    },
+    responses: { 201: { schema: ClassroomSchema, description: 'Create classroom' } },
+    metadata: classroomAuthority('create'),
+  },
+
+  updateClassroom: {
+    method: 'patch',
+    path: '/educational/classrooms/:id',
+    request: {
+      params: z.strictObject({ id: z.uuid() }),
+      body: z.strictObject({
+        id: z.uuid(),
+        name: z.string().optional(),
+        teacherId: z.uuid().optional().nullable(),
+        schoolId: z.uuid().optional().nullable(),
+        gradeId: z.uuid().optional().nullable(),
+        sectionId: z.uuid().optional().nullable(),
+        subject: z.string().optional().nullable(),
+        description: z.string().optional().nullable(),
+        handle: z.string().optional().nullable(),
+        colorTheme: z.string().optional().nullable(),
+        isArchived: z.boolean().optional(),
+      }),
+    },
+    responses: { 200: { schema: ClassroomSchema, description: 'Update classroom' } },
+    metadata: classroomAuthority('update'),
+  },
+
+  deleteClassroom: {
+    method: 'delete',
+    path: '/educational/classrooms/:id',
+    request: { params: z.strictObject({ id: z.uuid() }) },
+    responses: {
+      200: { schema: z.object({ success: z.literal(true) }), description: 'Delete classroom' },
+    },
+    metadata: classroomAuthority('delete'),
+  },
+
   getClassroomResources: {
     method: 'get',
     path: '/educational/classrooms/:classroomId/resources',
@@ -126,6 +204,74 @@ export const educationalContract = {
       },
     },
     metadata: lessonAuthority('create'),
+  },
+
+  getClassroomStudents: {
+    method: 'get',
+    path: '/educational/classrooms/:classroomId/students',
+    request: { params: z.strictObject({ classroomId: z.uuid() }) },
+    responses: {
+      200: { schema: z.array(classroomStudent), description: 'List classroom students' },
+    },
+    metadata: classroomAuthority('read'),
+  },
+
+  enrollStudent: {
+    method: 'post',
+    path: '/educational/classrooms/:classroomId/students/enroll',
+    request: {
+      params: z.strictObject({ classroomId: z.uuid() }),
+      body: z.strictObject({ studentId: z.uuid(), rollNumber: z.number().optional().nullable() }),
+    },
+    responses: { 200: { schema: classroomStudent, description: 'Enroll a student' } },
+    metadata: classroomAuthority('update'),
+  },
+
+  addShadowStudent: {
+    method: 'post',
+    path: '/educational/classrooms/:classroomId/students/shadow',
+    request: {
+      params: z.strictObject({ classroomId: z.uuid() }),
+      body: z.strictObject({
+        fullName: z.string().trim().min(1).max(200),
+        rollNumber: z.number().optional().nullable(),
+      }),
+    },
+    responses: {
+      201: { schema: classroomStudent, description: 'Add an unclaimed classroom student' },
+    },
+    metadata: classroomAuthority('create'),
+  },
+
+  updateClassroomStudent: {
+    method: 'patch',
+    path: '/educational/classroom-students/:id',
+    request: {
+      params: z.strictObject({ id: z.uuid() }),
+      body: z.strictObject({
+        classroomId: z.uuid().optional(),
+        fullName: z.string().trim().min(1).max(200).optional(),
+        rollNumber: z.number().optional().nullable(),
+      }),
+    },
+    responses: { 200: { schema: classroomStudent, description: 'Update a classroom student' } },
+    metadata: classroomAuthority('update'),
+  },
+
+  removeClassroomStudent: {
+    method: 'delete',
+    path: '/educational/classroom-students/:id',
+    request: {
+      params: z.strictObject({ id: z.uuid() }),
+      body: z.strictObject({ classroomId: z.uuid().optional() }),
+    },
+    responses: {
+      200: {
+        schema: z.object({ success: z.literal(true) }),
+        description: 'Remove a classroom student',
+      },
+    },
+    metadata: classroomAuthority('delete'),
   },
 
   // Classroom Notes
@@ -164,7 +310,7 @@ export const educationalContract = {
     method: 'post',
     path: '/educational/notes',
     request: {
-      body: ClassroomNoteSchema.omit({ id: true, created_at: true, author_id: true }),
+      body: classroomNoteCreate,
     },
     responses: {
       201: {

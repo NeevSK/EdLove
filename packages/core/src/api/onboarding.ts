@@ -83,28 +83,27 @@ export const onboardingAPI = {
 
   /** Creates the founder's verified school bond after an official school is created. */
   async createFounderSchoolBond(userId: string, schoolId: string): Promise<string> {
-    const { data, error } = await supabaseClient.rpc(
-      'create_school_founder_bond',
-      { p_school_id: schoolId, p_user_id: userId },
-    );
-    if (error) throw new APIError('Failed to establish the school founder bond', error.code, error);
-    if (!data?.success || typeof data.bond_id !== 'string') {
+    const res = await (client.api as any).identity['school-founder-bond'].$post({
+      json: { schoolId },
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data?.success || typeof data.bondId !== 'string') {
       throw new APIError(
         data?.message || 'School founder bond was not established',
-        'SCHOOL_BOND_NOT_CREATED',
+        res.status.toString() || 'SCHOOL_BOND_NOT_CREATED',
       );
     }
-    return data.bond_id;
+    return data.bondId;
   },
 
   async revokeSchoolBond(userId: string, schoolId: string): Promise<void> {
-    const { data, error } = await supabaseClient.rpc(
-      'revoke_school_bond',
-      { p_school_id: schoolId, p_user_id: userId },
-    );
-    if (error) throw new APIError('Failed to revoke the school bond', error.code, error);
-    if (!data?.success) {
-      throw new APIError(data?.message || 'School bond was not revoked', 'SCHOOL_BOND_NOT_REVOKED');
+    const res = await (client.api as any).identity['school-bond'][schoolId].$delete();
+    if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      throw new APIError(
+        data?.message || 'School bond was not revoked',
+        res.status.toString() || 'SCHOOL_BOND_NOT_REVOKED',
+      );
     }
   },
 

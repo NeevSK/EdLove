@@ -2,11 +2,10 @@ import { moodLogs } from '@repo/core/adapters/powersync/schema';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { applyTemporalFilter, getTemporalRange } from '@repo/core/logic';
 import { getDrizzleDB } from '@repo/core/powersync';
+import { selfAPI } from '@repo/self/api/self';
+import type { FireJournalEntry, MoodLog } from '@repo/self/types';
 import { desc, eq } from 'drizzle-orm';
 import { Platform } from 'react-native';
-
-import type { FireJournalEntry, MoodLog } from '@repo/self/types';
-import { selfAPI } from '@repo/self/api/self';
 
 const MOOD_SEQUENCE: NonNullable<MoodLog['mood']>[] = [
   'joyful',
@@ -157,22 +156,11 @@ export async function fetchFireJournalHistoryForView(
   userId: string,
   options: { viewDate: string; isPastView: boolean },
 ): Promise<FireJournalEntry[]> {
-  // Fire journal is fully transient/private by design and bypassed in SQLite schema.
-  // We fetch directly from the remote database or local temporal caching state.
-  let query = supabase.from('fire_journal').select('*').eq('user_id', userId);
-
-  if (options.isPastView) {
-    const range = getTemporalRange(options.viewDate, 'day');
-    query = query.gte('created_at', range.start).lte('created_at', range.end);
-  } else {
-    query = query.order('created_at', { ascending: false }).limit(10);
-  }
-
-  const { data, error } = await query;
-
-  if (error) throw error;
-
-  return data ?? [];
+  return selfAPI.getBurnedHistory(
+    userId,
+    10,
+    options.isPastView ? new Date(`${options.viewDate}T00:00:00.000Z`).toISOString() : undefined,
+  );
 }
 
 export async function burnFireJournalEntry(

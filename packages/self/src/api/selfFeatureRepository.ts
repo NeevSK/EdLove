@@ -1,4 +1,6 @@
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+import { decisionJournalAPI } from '@repo/core/api/decisionJournal';
+import { journalEntriesAPI } from '@repo/core/api/journalEntries';
 import { applyTemporalFilter, getTemporalRange } from '@repo/core/logic';
 
 import type {
@@ -310,39 +312,19 @@ export async function fetchDecisionLogs(
   userId: string,
   options?: { viewDate?: string; isPastView?: boolean },
 ): Promise<DecisionLog[]> {
-  let query = supabase.from('decision_journals').select('*').eq('user_id', userId);
-
-  if (options?.isPastView && options.viewDate) {
-    const range = getTemporalRange(options.viewDate, 'day');
-    query = query.gte('created_at', range.start).lte('created_at', range.end);
-  } else {
-    query = query.order('created_at', { ascending: false }).limit(20);
-  }
-
-  const { data, error } = await query;
-  if (error) {
-    if (error.code === '42P01') return [];
-    throw error;
-  }
-  return data ?? [];
+  void userId;
+  return (await decisionJournalAPI.list({
+    limit: 20,
+    view_date:
+      options?.isPastView && options.viewDate
+        ? new Date(`${options.viewDate}T00:00:00.000Z`).toISOString()
+        : undefined,
+  })) as DecisionLog[];
 }
 
 export async function createDecisionLog(userId: string, text: string): Promise<DecisionLog | null> {
-  const { data, error } = await supabase
-    .from('decision_journals')
-    .insert({
-      user_id: userId,
-      decision_text: text,
-      is_reviewed: false,
-    })
-    .select()
-    .single();
-
-  if (error) {
-    if (error.code === '42P01') return null;
-    throw error;
-  }
-  return data;
+  void userId;
+  return (await decisionJournalAPI.create({ decision_text: text })) as DecisionLog;
 }
 
 export async function fetchTimetablePeriods(activeDay: number): Promise<Period[]> {
@@ -416,29 +398,14 @@ export async function fetchJournalEntries(
   userId: string,
   options?: { viewDate?: string },
 ): Promise<JournalEntry[]> {
-  let query = supabase.from('journal_entries').select('*').eq('user_id', userId);
-
-  if (options?.viewDate) {
-    query = applyTemporalFilter(query, {
-      column: 'created_at',
-      mode: 'event_time',
-      capability: 'event_stream',
-    });
-  }
-  query = query.order('created_at', { ascending: false }).limit(50);
-
-  const { data, error } = await query;
-  if (error) throw error;
-  return data ?? [];
+  void userId;
+  return (await journalEntriesAPI.list({
+    limit: 50,
+    view_date: options?.viewDate,
+  })) as JournalEntry[];
 }
 
 export async function createJournalEntry(userId: string, content: string): Promise<JournalEntry> {
-  const { data, error } = await supabase
-    .from('journal_entries')
-    .insert([{ content, user_id: userId }])
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
+  void userId;
+  return (await journalEntriesAPI.create(content)) as JournalEntry;
 }

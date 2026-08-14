@@ -1,8 +1,6 @@
 import { swaggerUI } from '@hono/swagger-ui';
 import { OpenAPIHono } from '@hono/zod-openapi';
-import {
-  type SovereignRoute,
-} from '@repo/core/api/server';
+import { type SovereignRoute } from '@repo/core/api/server';
 import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
 import { satisfiesEntitlementRequirement } from '@repo/core/logic/ports/entitlement.port';
 import {
@@ -27,12 +25,14 @@ import { timeout } from 'hono/timeout';
 import { endTime, startTime, timing } from 'hono/timing';
 import { z } from 'zod';
 import { aiRouter } from '../ai/routes';
-import {
-  evaluateWithRust,
-  RustEvaluatorUnavailableError,
-} from '../authorization/rustEvaluator';
+import { evaluateWithRust, RustEvaluatorUnavailableError } from '../authorization/rustEvaluator';
 import { verifySupabaseJwt } from '../jwt';
 import { getCurrentTraceId, otelMiddleware } from '../telemetry/otel';
+import { createConfiguredRateLimitStore, createRateLimitMiddleware } from './rateLimit';
+import { createDurableAgentRoutes } from './routes/durableAgents';
+import { healthRoutes } from './routes/health';
+import { registerNativeORPCRoutes } from './routes/orpc';
+import { createPayhereWebhookRoutes } from './routes/payhereWebhook';
 
 interface Env {
   Variables: {
@@ -81,6 +81,20 @@ function getEnv(key: string): string | undefined {
   }
   return undefined;
 }
+
+function assertProductionTransportConfiguration() {
+  if (getEnv('NODE_ENV') !== 'production') return;
+  if (getEnv('RATE_LIMIT_STORE') !== 'postgres') {
+    throw new Error('Production requires RATE_LIMIT_STORE=postgres for shared rate limiting.');
+  }
+  if (!getEnv('RATE_LIMIT_TRUSTED_PROXY_HEADER')) {
+    throw new Error(
+      'Production requires RATE_LIMIT_TRUSTED_PROXY_HEADER to identify clients safely.',
+    );
+  }
+}
+
+assertProductionTransportConfiguration();
 
 // Pure JS MD5 implementation to ensure 100% WinterCG compliance (standard Web Crypto does not mandate MD5)
 async function md5Hex(str: string): Promise<string> {
@@ -168,6 +182,11 @@ async function md5Hex(str: string): Promise<string> {
   return hex(a) + hex(b) + hex(c) + hex(d);
 }
 
+async function sha256Hex(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
 // --- 1. Global Middleware ---
 
 // Mount core security and transport optimization middlewares
@@ -237,19 +256,17 @@ app.use('/api/*', async (c, next) => {
 });
 app.use('/api/powersync/upload', timeout(45000)); // 45s bulk sync timeout
 
-// Rate Limiter (custom in-memory — no built-in equivalent in hono core)
-const RATE_LIMIT_WINDOW = 60 * 1000;
-const RATE_LIMIT_MAX = 100;
-const rateLimitCache = new Map<string, { count: number; resetTime: number }>();
-
-if (typeof globalThis !== 'undefined' && !(globalThis as any).__rateLimitCleanupInterval) {
-  (globalThis as any).__rateLimitCleanupInterval = setInterval(() => {
-    const now = Date.now();
-    for (const [key, val] of rateLimitCache.entries()) {
-      if (now > val.resetTime) rateLimitCache.delete(key);
-    }
-  }, 60 * 1000);
-}
+const apiRateLimit = createRateLimitMiddleware({
+  prefix: 'api',
+  limit: 100,
+  windowMs: 60 * 1000,
+  store: createConfiguredRateLimitStore(),
+  key: (context) => {
+    const configuredHeader = getEnv('RATE_LIMIT_TRUSTED_PROXY_HEADER') || 'CF-Connecting-IP';
+    const value = context.req.header(configuredHeader);
+    return value ? `proxy:${value.split(',')[0].trim()}` : 'anonymous';
+  },
+});
 
 const rateLimitHandler = factory.createMiddleware(async (c, next) => {
   if (
@@ -262,33 +279,7 @@ const rateLimitHandler = factory.createMiddleware(async (c, next) => {
     return next();
   }
 
-  const ip =
-    c.req.header('CF-Connecting-IP') ||
-    c.req.header('X-Forwarded-For') ||
-    c.req.header('X-Forwarding-For') ||
-    'unknown-ip';
-  const now = Date.now();
-  const record = rateLimitCache.get(ip) || { count: 0, resetTime: now + RATE_LIMIT_WINDOW };
-
-  if (now > record.resetTime) {
-    record.count = 1;
-    record.resetTime = now + RATE_LIMIT_WINDOW;
-  } else {
-    record.count++;
-  }
-  rateLimitCache.set(ip, record);
-
-  c.header('X-RateLimit-Limit', String(RATE_LIMIT_MAX));
-  c.header('X-RateLimit-Remaining', String(Math.max(0, RATE_LIMIT_MAX - record.count)));
-  c.header('X-RateLimit-Reset', String(Math.ceil((record.resetTime - now) / 1000)));
-
-  if (record.count > RATE_LIMIT_MAX) {
-    return c.json(
-      { error: 'Too Many Requests', message: 'Rate limit exceeded. Please try again later.' },
-      429,
-    );
-  }
-  return next();
+  return apiRateLimit(c, next);
 });
 
 // Rate Limiter
@@ -301,25 +292,7 @@ app.use('*', logger());
 app.use('*', requestId());
 app.use('/api/*', otelMiddleware());
 
-// Platform health contract. Liveness never touches external dependencies;
-// readiness verifies the minimum runtime configuration and database reachability.
-app.get('/health/live', (c) =>
-  c.json({ status: 'ok', service: 'sanctuary-api', environment: getEnv('NODE_ENV') || 'unknown' }),
-);
-
-app.get('/health/ready', async (c) => {
-  const databaseUrl = (c.env as any)?.DATABASE_URL || getEnv('DATABASE_URL');
-  if (!databaseUrl) {
-    return c.json({ status: 'not_ready', reason: 'database_configuration_missing' }, 503);
-  }
-
-  try {
-    await queryDatabaseRows<{ ok: number }>('SELECT 1 AS ok');
-    return c.json({ status: 'ready', service: 'sanctuary-api' });
-  } catch {
-    return c.json({ status: 'not_ready', reason: 'database_unreachable' }, 503);
-  }
-});
+app.route('/', healthRoutes);
 
 // --- 2. Sovereign Auth & ZenStack (ReBAC) Middleware ---
 app.use('/api/*', async (c, next) => {
@@ -642,9 +615,10 @@ function poa(route: SovereignRoute) {
         },
         context,
       };
-      const result = process.env.SANCTUARY_AUTHZ_EVALUATOR === 'rust'
-        ? await evaluateWithRust(request, c.get('requestId'))
-        : checkCedar(request);
+      const result =
+        process.env.SANCTUARY_AUTHZ_EVALUATOR === 'rust'
+          ? await evaluateWithRust(request, c.get('requestId'))
+          : checkCedar(request);
       endTime(c, 'cedar');
       return result;
     };
@@ -840,145 +814,39 @@ function featureFlagGate(route: SovereignRoute) {
     : factory.createMiddleware(async (_c, next) => next());
 }
 
-import { RPCHandler } from '@orpc/server/fetch';
 import { OpenAPIHandler } from '@orpc/openapi/fetch';
+import { RPCHandler } from '@orpc/server/fetch';
 import { buildORPCContextFromHono, router as orpcRouter } from './router';
 
 const rpcHandler = new RPCHandler(orpcRouter);
 const openapiHandler = new OpenAPIHandler(orpcRouter, {
   filter: ({ contract }) => {
     const policy = (contract['~orpc'].meta as any)?.policy;
-    return policy?.action === 'read' && ['Classroom', 'Material', 'Assignment', 'AssignmentSubmission', 'Group', 'Post', 'School'].includes(policy.subject);
+    return (
+      policy?.action === 'read' &&
+      [
+        'Classroom',
+        'Material',
+        'Assignment',
+        'AssignmentSubmission',
+        'Group',
+        'Post',
+        'School',
+      ].includes(policy.subject)
+    );
   },
 });
 
 app.all('/api/openapi/*', async (c) => {
   const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await openapiHandler.handle(c.req.raw, { context, prefix: '/api/openapi' });
+  const { matched, response } = await openapiHandler.handle(c.req.raw, {
+    context,
+    prefix: '/api/openapi',
+  });
   return matched && response ? response : c.text('Not Found', 404);
 });
 
-app.all('/api/self/*', async (c) => {
-  const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
-  return matched && response ? response : c.text('Not Found', 404);
-});
-
-app.all('/api/profile/*', async (c) => {
-  const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
-  return matched && response ? response : c.text('Not Found', 404);
-});
-
-app.all('/api/identity/*', async (c) => {
-  const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
-  return matched && response ? response : c.text('Not Found', 404);
-});
-
-app.all('/api/onboarding/*', async (c) => {
-  const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
-  return matched && response ? response : c.text('Not Found', 404);
-});
-
-// Native oRPC community procedures are the sole community API surface.
-app.all('/api/community/*', async (c) => {
-  const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
-  return matched && response ? response : c.text('Not Found', 404);
-});
-
-app.all('/api/messaging/*', async (c) => {
-  const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
-  return matched && response ? response : c.text('Not Found', 404);
-});
-
-app.all('/api/social/*', async (c) => {
-  const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
-  return matched && response ? response : c.text('Not Found', 404);
-});
-
-app.all('/api/announcements/*', async (c) => {
-  const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
-  return matched && response ? response : c.text('Not Found', 404);
-});
-
-app.all('/api/principalNotes/*', async (c) => {
-  const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
-  return matched && response ? response : c.text('Not Found', 404);
-});
-
-app.all('/api/admin/*', async (c) => {
-  const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
-  return matched && response ? response : c.text('Not Found', 404);
-});
-
-// Native oRPC routes (Vertical Slice: SYNC)
-app.all('/api/sync/*', async (c) => {
-  const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
-  return matched && response ? response : c.text('Not Found', 404);
-});
-
-// Native oRPC routes (Vertical Slice: DAILY CONTENT)
-app.all('/api/dailyContent/*', async (c) => {
-  const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
-  return matched && response ? response : c.text('Not Found', 404);
-});
-
-// Native oRPC routes (Vertical Slice: LIBRARY)
-app.all('/api/library/*', async (c) => {
-  const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
-  return matched && response ? response : c.text('Not Found', 404);
-});
-
-// Native oRPC routes (Vertical Slice: OFFLINE AUTHORIZATION SNAPSHOT)
-app.all('/api/authorization/*', async (c) => {
-  const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
-  return matched && response ? response : c.text('Not Found', 404);
-});
-
-// Native oRPC routes (Vertical Slice: EDUCATION)
-app.all('/api/educational/*', async (c) => {
-  const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
-  return matched && response ? response : c.text('Not Found', 404);
-});
-
-// Native oRPC routes (Vertical Slice: GRADING)
-app.all('/api/grading/*', async (c) => {
-  const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
-  return matched && response ? response : c.text('Not Found', 404);
-});
-
-app.all('/api/attendance/*', async (c) => {
-  const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
-  return matched && response ? response : c.text('Not Found', 404);
-});
-
-app.all('/api/guardianAssessment/*', async (c) => {
-  const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
-  return matched && response ? response : c.text('Not Found', 404);
-});
-
-// Native oRPC routes (Vertical Slice: AGENT SURFACE)
-app.all('/api/agent/*', async (c) => {
-  const context = await buildORPCContextFromHono(c);
-  const { matched, response } = await rpcHandler.handle(c.req.raw, { context, prefix: '/api' });
-  return matched && response ? response : c.text('Not Found', 404);
-});
+registerNativeORPCRoutes(app, rpcHandler);
 const aiPolicyRoute: SovereignRoute = {
   path: '/api/ai/chat',
   method: 'post',
@@ -989,95 +857,9 @@ app.use('/api/ai/*', poa(aiPolicyRoute));
 app.use('/api/ai/*', featureFlagGateForKey('isAIAssistantEnabled', '/api/ai'));
 app.route('/api/ai', aiRouter);
 
-// Transitional ownership bridge: the durable-agent UI now lives in Gurudevi
-// Mobile (including web), while the server-only worker is being moved behind
-// the canonical Sanctuary API.
-app.all('/api/durable-agents/*', async (c) => {
-  const legacyBase = getEnv('DURABLE_AGENT_LEGACY_API_URL')?.replace(/\/$/, '');
-  if (!legacyBase) return c.json({ error: 'Durable-agent service is not configured.' }, 503);
+app.route('/', createDurableAgentRoutes());
 
-  const incoming = new URL(c.req.url);
-  const target = new URL(`${legacyBase}${incoming.pathname}`);
-  incoming.searchParams.forEach((value, key) => target.searchParams.append(key, value));
-  const headers = new Headers(c.req.raw.headers);
-  headers.delete('host');
-  headers.delete('content-length');
-  const response = await fetch(target, {
-    method: c.req.raw.method,
-    headers,
-    body: c.req.raw.method === 'GET' || c.req.raw.method === 'HEAD' ? undefined : c.req.raw.body,
-    // @ts-expect-error Node fetch requires duplex for streaming request bodies.
-    duplex: 'half',
-  });
-  return new Response(response.body, { status: response.status, statusText: response.statusText, headers: response.headers });
-});
-
-// Public Payments Webhook (Bypasses Bearer Auth)
-app.post('/payments/payhere-webhook', async (c) => {
-  const body = await c.req.parseBody();
-  const { merchant_id, order_id, payhere_amount, payhere_currency, status_code, md5sig } = body;
-
-  if (
-    typeof merchant_id !== 'string' ||
-    typeof order_id !== 'string' ||
-    typeof payhere_amount !== 'string' ||
-    typeof payhere_currency !== 'string' ||
-    typeof status_code !== 'string' ||
-    typeof md5sig !== 'string'
-  ) {
-    return c.text('Bad Request', 400);
-  }
-
-  const merchantSecret = getEnv('PAYHERE_MERCHANT_SECRET');
-  if (!merchantSecret) {
-    console.error('PAYHERE_MERCHANT_SECRET is not set in environment variables');
-    return c.text('Configuration Error', 500);
-  }
-
-  // Calculate MD5 signature to verify authenticity using standard Web Crypto API
-  const secretHash = (await md5Hex(merchantSecret)).toUpperCase();
-  const rawString = `${merchant_id}${order_id}${payhere_amount}${payhere_currency}${status_code}${secretHash}`;
-  const localSignature = (await md5Hex(rawString)).toUpperCase();
-
-  if (localSignature !== md5sig) {
-    console.error('Invalid signature received for order:', order_id);
-    return c.text('Unauthorized', 401);
-  }
-
-  // Signature matches! Let's process the payment
-  if (status_code === '2') {
-    console.log(
-      `Payment successful for order ${order_id}, amount: ${payhere_amount} ${payhere_currency}`,
-    );
-
-    const systemDb = createZenStackDb({ id: 'system-payment-service' });
-
-    try {
-      const user = await systemDb.user.findUnique({
-        where: { id: order_id },
-      });
-
-      if (user) {
-        await systemDb.user.update({
-          where: { id: order_id },
-          data: {
-            pricing_tier: 'PRO',
-          },
-        });
-        console.log(`Successfully upgraded user ${order_id} to PRO tier.`);
-      } else {
-        console.log(
-          `Order ID ${order_id} is not a direct user. Handling as transaction reference...`,
-        );
-      }
-    } catch (dbError) {
-      console.error('Database update failed during webhook handling:', dbError);
-      return c.text('Database Error', 500);
-    }
-  }
-
-  return c.text('OK', 200);
-});
+app.route('/', createPayhereWebhookRoutes({ md5Hex, sha256Hex }, getEnv));
 
 // --- 4. Documentation ---
 app.doc('/doc', {

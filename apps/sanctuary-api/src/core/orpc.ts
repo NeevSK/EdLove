@@ -1,6 +1,6 @@
 import { os } from '@orpc/server';
-import { z } from 'zod';
 import type { createZenStackDb } from '@repo/database/client';
+import { z } from 'zod';
 
 export interface ORPCContext {
   db?: ReturnType<typeof createZenStackDb>;
@@ -52,8 +52,8 @@ export interface ProcedureMeta {
   };
 }
 
-import { implement as baseImplement } from '@orpc/server';
 import { oc } from '@orpc/contract';
+import { implement as baseImplement } from '@orpc/server';
 
 /**
  * toORPCContract
@@ -63,43 +63,27 @@ import { oc } from '@orpc/contract';
 function transformSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
   if (schema instanceof z.ZodObject) {
     const shape = schema.shape;
-    const newShape: any = {};
-    for (const [key, val] of Object.entries(shape)) {
-      newShape[key] = (val as z.ZodTypeAny).optional();
-      if (key.includes('_')) {
-        const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
-        newShape[camelKey] = (val as z.ZodTypeAny).optional();
-      }
-      const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-      if (snakeKey !== key) {
-        newShape[snakeKey] = (val as z.ZodTypeAny).optional();
-      }
-      if (key === 'userId' || key === 'user_id') {
-        newShape[key] = (val as z.ZodTypeAny).optional();
-      }
-    }
-    
-    const baseObject = z.object(newShape).passthrough();
+    // Normalize aliases before parsing the original schema. The previous
+    // implementation cloned every field as optional and only logged parse
+    // failures, allowing malformed requests to reach handlers. Required
+    // fields must remain required at the transport boundary.
     return z.preprocess((input: any) => {
       if (input && typeof input === 'object') {
         const result = { ...input };
-        for (const key of Object.keys(input)) {
-          if (key.includes('_')) {
-            const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
-            if (result[camelKey] === undefined) {
-              result[camelKey] = input[key];
-            }
-          } else {
-            const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-            if (snakeKey !== key && result[snakeKey] === undefined) {
-              result[snakeKey] = input[key];
-            }
+        for (const key of Object.keys(shape)) {
+          const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+          const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+          if (result[key] === undefined && result[snakeKey] !== undefined) {
+            result[key] = result[snakeKey];
+          }
+          if (result[key] === undefined && result[camelKey] !== undefined) {
+            result[key] = result[camelKey];
           }
         }
-        
+
         const hasIdInSchema = 'id' in shape;
         if (hasIdInSchema && result.id === undefined) {
-          const idKeys = Object.keys(result).filter(k => k.endsWith('Id') && k !== 'id');
+          const idKeys = Object.keys(result).filter((k) => k.endsWith('Id') && k !== 'id');
           if (idKeys.length === 1) {
             result.id = result[idKeys[0]];
           }
@@ -107,12 +91,7 @@ function transformSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
         return result;
       }
       return input;
-    }, baseObject).superRefine((val, ctx) => {
-      const res = baseObject.safeParse(val);
-      if (!res.success) {
-        console.error('SERVER-SIDE ZOD ERROR:', JSON.stringify(res.error.format()));
-      }
-    });
+    }, schema.passthrough());
   }
   return schema;
 }
@@ -131,7 +110,25 @@ function inferContractPrefix(contract: any): string {
   return '';
 }
 
+function assertExplicitPolicyMetadata(contract: any): void {
+  if (!contract || typeof contract !== 'object') return;
+  for (const [key, value] of Object.entries(contract)) {
+    if (!value || typeof value !== 'object') continue;
+    if ('method' in value && 'path' in value) {
+      const route = value as { path?: unknown; metadata?: { policy?: unknown } };
+      if (!route.metadata?.policy) {
+        throw new Error(
+          `Protected oRPC contract route "${String(route.path)}" (key "${key}") is missing explicit policy metadata`,
+        );
+      }
+      continue;
+    }
+    assertExplicitPolicyMetadata(value);
+  }
+}
+
 export function toORPCContract(contract: any, prefix = ''): any {
+  if (!prefix) assertExplicitPolicyMetadata(contract);
   const inferred = prefix || inferContractPrefix(contract);
   return new Proxy(contract, {
     get(target, key) {
@@ -151,20 +148,21 @@ export function toORPCContract(contract: any, prefix = ''): any {
       // If it's a route definition:
       if (val && typeof val === 'object' && 'method' in val && 'path' in val) {
         const route = val as any;
+        if (!route.metadata?.policy) {
+          throw new Error(
+            `Protected oRPC contract route "${String(route.path)}" is missing explicit policy metadata`,
+          );
+        }
         let builder = oc.route({
           method: route.method.toUpperCase() as any,
           path: route.path,
         });
 
-        if (route.metadata) {
-          builder = builder.meta(route.metadata);
-        }
+        builder = builder.meta(route.metadata);
 
-        const schemas = [
-          route.request?.params,
-          route.request?.query,
-          route.request?.body,
-        ].filter(Boolean);
+        const schemas = [route.request?.params, route.request?.query, route.request?.body].filter(
+          Boolean,
+        );
 
         if (schemas.length > 0) {
           let combined = schemas[0];
@@ -185,11 +183,30 @@ export function toORPCContract(contract: any, prefix = ''): any {
       // Fallback for missing keys in mock contract definitions
       if (!val) {
         let action = 'read';
-        if (key.startsWith('create') || key.startsWith('submit') || key.startsWith('add') || key.startsWith('send') || key.startsWith('join') || key.startsWith('record') || key.startsWith('engage')) {
+        if (
+          key.startsWith('create') ||
+          key.startsWith('submit') ||
+          key.startsWith('add') ||
+          key.startsWith('send') ||
+          key.startsWith('join') ||
+          key.startsWith('record') ||
+          key.startsWith('engage')
+        ) {
           action = 'create';
-        } else if (key.startsWith('update') || key.startsWith('patch') || key.startsWith('put') || key.startsWith('edit') || key.startsWith('grade') || key.startsWith('approve')) {
+        } else if (
+          key.startsWith('update') ||
+          key.startsWith('patch') ||
+          key.startsWith('put') ||
+          key.startsWith('edit') ||
+          key.startsWith('grade') ||
+          key.startsWith('approve')
+        ) {
           action = 'update';
-        } else if (key.startsWith('delete') || key.startsWith('remove') || key.startsWith('revoke')) {
+        } else if (
+          key.startsWith('delete') ||
+          key.startsWith('remove') ||
+          key.startsWith('revoke')
+        ) {
           action = 'delete';
         }
 
@@ -200,14 +217,15 @@ export function toORPCContract(contract: any, prefix = ''): any {
         else if (lowerPrefix.includes('community')) subject = 'Post';
 
         if (key.includes('Material')) subject = 'Material';
-        else if (key.includes('Submission') || key === 'submitAssignment') subject = 'AssignmentSubmission';
+        else if (key.includes('Submission') || key === 'submitAssignment')
+          subject = 'AssignmentSubmission';
         else if (key.includes('Assignment')) subject = 'Assignment';
         else if (key.includes('Group')) subject = 'Group';
         else if (key.includes('Post')) subject = 'Post';
         else if (key.includes('School')) subject = 'School';
 
         const policy = { action, subject };
-        
+
         const routePath = (inferred ? `${inferred}/${key}` : `/${key}`) as `/${string}`;
         let builder = oc.route({
           method: 'POST',
@@ -230,13 +248,15 @@ export function toORPCContract(contract: any, prefix = ''): any {
     },
     getOwnPropertyDescriptor(target, prop) {
       return Reflect.getOwnPropertyDescriptor(target, prop);
-    }
+    },
   });
 }
 
-export function implement(contract: any, config?: any): {
+export function implement(
+  contract: any,
+  config?: any,
+): {
   $context<U>(): any;
 } {
   return baseImplement(toORPCContract(contract) as any, config) as any;
 }
-

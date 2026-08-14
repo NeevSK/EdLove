@@ -107,10 +107,14 @@ export const selfAPI = {
   /**
    * Retrieve burned history.
    */
-  async getBurnedHistory(userId: string, limit: number = 10): Promise<FireJournalEntry[]> {
+  async getBurnedHistory(
+    userId: string,
+    limit: number = 10,
+    viewDate?: string,
+  ): Promise<FireJournalEntry[]> {
     assertAuthenticated();
     const res = await client.api.self.journal.$get({
-      query: { userId, limit: limit.toString() },
+      query: { userId, limit: limit.toString(), viewDate },
     });
 
     if (!res.ok) {

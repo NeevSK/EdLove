@@ -207,7 +207,7 @@ zod
 zustand
 ```
 
-## Dev tooling (35)
+## Dev tooling (36)
 
 ```text
 @babel/runtime
@@ -226,6 +226,7 @@ zustand
 @types/jest
 @types/react
 @types/react-test-renderer
+babel-preset-expo
 cross-env
 eslint
 eslint-config-expo

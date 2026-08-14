@@ -46,6 +46,30 @@ entity Grade {
   graded_by?: String
 };
 
+entity Student {
+  id: String,
+  school_id?: String
+};
+
+entity GratitudeGift {
+  id: String,
+  school_id?: String,
+  sender_user_id?: String,
+  recipient_user_id?: String
+};
+
+entity PrivacyLedgerEntry {
+  id: String,
+  user_id?: String
+};
+
+entity ClassroomEchoFeedback {
+  id: String,
+  classroom_id?: String,
+  school_id?: String,
+  student_id?: String
+};
+
 entity DailyAttendance {
   id: String,
   school_id?: String,
@@ -138,9 +162,45 @@ entity Post {
   author_id?: String
 };
 
+entity Manifesto {
+  id: String,
+  school_id?: String,
+  creator_id?: String
+};
+
+entity ManifestoEndorsement {
+  id: String,
+  manifesto_id?: String,
+  user_id?: String,
+  school_id?: String
+};
+
 entity Ledger {
   id: String,
   school_id?: String
+};
+
+entity Accounting {
+  id: String,
+  school_id?: String
+};
+
+entity Payments {
+  id: String,
+  school_id?: String,
+  user_id?: String
+};
+
+entity MappingTopology {
+  id: String,
+  owner_id?: String
+};
+
+entity InventoryRequest {
+  id: String,
+  school_id?: String,
+  classroom_id?: String,
+  teacher_id?: String
 };
 
 entity Guardian {
@@ -207,8 +267,59 @@ entity DailyContent {
   school_id?: String
 };
 
+entity DecisionJournal {
+  id: String,
+  user_id?: String
+};
+
 entity Calendar {
   id: String,
+  school_id?: String
+};
+
+entity FormTemplate {
+  id: String,
+  owner_id?: String,
+  school_id?: String
+};
+
+entity Notification {
+  id: String,
+  user_id?: String,
+  school_id?: String
+};
+
+entity PrincipalNote {
+  id: String,
+  author_id?: String,
+  school_id?: String
+};
+
+entity Announcement {
+  id: String,
+  author_id?: String,
+  school_id?: String
+};
+
+entity UserBlock {
+  id: String,
+  blocker_id?: String,
+  blocked_id?: String,
+  school_id?: String
+};
+
+entity DirectConversation {
+  id: String,
+  user1_id?: String,
+  user2_id?: String,
+  target_user_id?: String,
+  school_id?: String
+};
+
+entity DirectMessage {
+  id: String,
+  conversation_id?: String,
+  author_id?: String,
   school_id?: String
 };
 
@@ -228,11 +339,12 @@ type SecurityContext = {
 action "read", "create", "update", "delete", "use_ai" appliesTo {
     principal: [User],
   resource: [
-    User, School, Classroom, AttendanceRecord, DailyAttendance, AttendanceSession, Grade, GradeMark, Assignment, Lesson, Material,
-    StaffLeave, MoodLog, FireJournal, InventoryItem, Group, Post, Ledger,
+    User, Student, GratitudeGift, School, Classroom, AttendanceRecord, DailyAttendance, AttendanceSession, Grade, GradeMark, Assignment, Lesson, Material,
+    StaffLeave, MoodLog, FireJournal, InventoryItem, InventoryRequest, Group, Post, Ledger, Accounting, Payments, MappingTopology,
     Guardian, SentinelAuditLog, JoyMoments, GratitudeEntries, EnergyForecasts,
-    PersonalClassroom, AIAssistant, ClassroomNote, Library, Wellbeing, Staff, DailyContent,
-    AssignmentSubmission, Calendar
+    PersonalClassroom, AIAssistant, ClassroomNote, Library, Wellbeing, Staff, DailyContent, DecisionJournal,
+    Manifesto, ManifestoEndorsement, AssignmentSubmission, Calendar, Notification, PrincipalNote, Announcement,
+    UserBlock, DirectConversation, DirectMessage
   ],
   context: SecurityContext
 };

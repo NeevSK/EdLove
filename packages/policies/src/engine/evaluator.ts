@@ -38,6 +38,7 @@ try {
     'school/parent.cedar',
     'school/staff.cedar',
     'guest/personal.cedar',
+    'platform/dataBoundaries.cedar',
   ];
 
   const policyTexts: string[] = [];

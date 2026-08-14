@@ -13,7 +13,9 @@ export type LinkRelationship =
   | 'part_of' // Source is a sub-component of target
   | 'example' // Source illustrates target
   | 'path' // Explicit curated learning sequence
-  | 'topic_association'; // Loose semantic grouping
+  | 'topic_association' // Loose semantic grouping
+  | 'manages' // School/department ownership edge
+  | 'contains'; // Department/classroom containment edge
 
 /**
  * GraphNode  Canonical, perspective-agnostic knowledge node.

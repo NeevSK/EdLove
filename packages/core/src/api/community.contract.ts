@@ -1,10 +1,10 @@
-import { z } from 'zod';
+import type { SovereignContract } from '@repo/core/api/contracts';
 import {
   CommunityGroupSchema,
   CommunityPostSchema,
   GroupMemberSchema,
 } from '@repo/core/logic/schemas/community.schema';
-import type { SovereignContract } from '@repo/core/api/contracts';
+import { z } from 'zod';
 
 const communityAuthority = (
   action: 'create' | 'read' | 'update' | 'delete',
@@ -76,7 +76,8 @@ export const communityContract = {
     request: {
       params: z.strictObject({ groupId: z.uuid() }),
       body: z.strictObject({
-        user_id: z.uuid(),
+        // Membership ownership is derived from the authenticated context.
+        user_id: z.uuid().optional(),
         capacity: z.string(),
       }),
     },
@@ -94,12 +95,54 @@ export const communityContract = {
         groupId: z.uuid().optional(),
         limit: z.coerce.number().default(20),
         offset: z.coerce.number().default(0),
+        viewDate: z.string().datetime().optional(),
       }),
     },
     responses: {
       200: { schema: z.array(CommunityPostSchema), description: 'Retrieve posts' },
     },
     metadata: communityAuthority('read', 'Post'),
+  },
+
+  getCommunityResonance: {
+    method: 'get',
+    path: '/community/resonance/:userId',
+    request: {
+      params: z.strictObject({ userId: z.uuid() }),
+      query: z.strictObject({ viewDate: z.string().datetime().optional() }),
+    },
+    responses: {
+      200: {
+        schema: z.strictObject({ likes: z.number(), comments: z.number(), shares: z.number() }),
+        description: 'Aggregated community resonance for a user',
+      },
+    },
+    metadata: communityAuthority('read', 'Post'),
+  },
+
+  getGroupMessages: {
+    method: 'get',
+    path: '/community/groups/:groupId/messages',
+    request: {
+      params: z.strictObject({ groupId: z.uuid() }),
+      query: z.strictObject({
+        limit: z.coerce.number().int().positive().max(200).optional(),
+        viewDate: z.string().datetime().optional(),
+      }),
+    },
+    responses: { 200: { schema: z.array(z.any()), description: 'Group messages' } },
+    metadata: communityAuthority('read', 'Group'),
+  },
+
+  sendGroupMessage: {
+    method: 'post',
+    path: '/community/groups/:groupId/messages',
+    request: {
+      params: z.strictObject({ groupId: z.uuid() }),
+      body: z.strictObject({ content: z.string() }),
+    },
+    responses: { 201: { schema: z.any(), description: 'Sent group message' } },
+    metadata: communityAuthority('create', 'Group'),
   },
 
   createPost: {
@@ -223,6 +266,83 @@ export const communityContract = {
     metadata: communityAuthority('create', 'Poll'),
   },
 
+  updateMemberStatus: {
+    method: 'patch',
+    path: '/community/groups/:groupId/members/status',
+    request: {
+      params: z.strictObject({ groupId: z.uuid() }),
+      body: z.strictObject({ groupId: z.uuid(), userId: z.uuid(), status: z.string() }),
+    },
+    responses: { 200: { schema: GroupMemberSchema, description: 'Member status updated' } },
+    metadata: communityAuthority('update', 'Group'),
+  },
+
+  updateGroupPolicy: {
+    method: 'patch',
+    path: '/community/groups/:groupId/policy',
+    request: {
+      params: z.strictObject({ groupId: z.uuid() }),
+      body: z.strictObject({ groupId: z.uuid(), joinPolicy: z.string() }),
+    },
+    responses: { 200: { schema: z.any(), description: 'Group policy updated' } },
+    metadata: communityAuthority('update', 'Group'),
+  },
+
+  getGroupMembers: {
+    method: 'get',
+    path: '/community/groups/:groupId/members',
+    request: {
+      params: z.strictObject({ groupId: z.uuid() }),
+      query: z.strictObject({ status: z.string().optional() }),
+    },
+    responses: { 200: { schema: z.array(GroupMemberSchema), description: 'Group members' } },
+    metadata: communityAuthority('read', 'Group'),
+  },
+
+  updateMemberRole: {
+    method: 'patch',
+    path: '/community/groups/:groupId/members/role',
+    request: {
+      params: z.strictObject({ groupId: z.uuid() }),
+      body: z.strictObject({ groupId: z.uuid(), userId: z.uuid(), role: z.string() }),
+    },
+    responses: { 200: { schema: GroupMemberSchema, description: 'Member role updated' } },
+    metadata: communityAuthority('update', 'Group'),
+  },
+
+  approveAllMembers: {
+    method: 'post',
+    path: '/community/groups/:groupId/members/approve-all',
+    request: {
+      params: z.strictObject({ groupId: z.uuid() }),
+      body: z.strictObject({ groupId: z.uuid() }),
+    },
+    responses: { 200: { schema: z.any(), description: 'Pending members approved' } },
+    metadata: communityAuthority('update', 'Group'),
+  },
+
+  updatePost: {
+    method: 'patch',
+    path: '/community/posts/:postId',
+    request: {
+      params: z.strictObject({ postId: z.uuid() }),
+      body: z.strictObject({ postId: z.uuid(), content: z.string() }),
+    },
+    responses: { 200: { schema: CommunityPostSchema, description: 'Post updated' } },
+    metadata: communityAuthority('update', 'Post'),
+  },
+
+  deletePost: {
+    method: 'delete',
+    path: '/community/posts/:postId',
+    request: {
+      params: z.strictObject({ postId: z.uuid() }),
+      body: z.strictObject({ postId: z.uuid() }),
+    },
+    responses: { 200: { schema: z.any(), description: 'Post deleted' } },
+    metadata: communityAuthority('delete', 'Post'),
+  },
+
   reportContent: {
     method: 'post',
     path: '/community/report',
@@ -233,7 +353,8 @@ export const communityContract = {
         targetUserId: z.uuid().optional(),
         reason: z.string(),
         report_target: z.enum(['teacher', 'principal', 'platform']),
-        reporter_id: z.uuid(),
+        reporter_id: z.uuid().optional(),
+        details: z.string().optional(),
       }),
     },
     responses: {

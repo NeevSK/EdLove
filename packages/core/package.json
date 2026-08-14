@@ -89,6 +89,11 @@
       "import": "./src/logic/schemas/*.ts",
       "default": "./src/logic/schemas/*.ts"
     },
+    "./logic/events/*": {
+      "types": "./src/logic/events/*.ts",
+      "import": "./src/logic/events/*.ts",
+      "default": "./src/logic/events/*.ts"
+    },
     "./zen": {
       "types": "./src/logic/generated/index.ts",
       "import": "./src/logic/generated/index.ts",

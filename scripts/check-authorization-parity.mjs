@@ -52,13 +52,35 @@ for (const resource of resources) {
 }
 
 const zmodelAliases = {
+  Student: null,
+  GratitudeGift: 'GratitudeGift',
+  PrivacyLedgerEntry: null,
+  ClassroomEchoFeedback: null,
   FireJournal: 'FireJournalEntry',
   Ledger: 'LedgerEntry',
+  Accounting: null,
+  Payments: null,
+  MappingTopology: 'MappingTopology',
+  InventoryItem: 'InventoryItem',
+  InventoryRequest: 'InventoryRequest',
   Guardian: 'StudentGuardianRelationship',
   JoyMoments: null,
   GratitudeEntries: null,
   EnergyForecasts: null,
   AIAssistant: null,
+  Library: null,
+  FormTemplate: null,
+  Wellbeing: null,
+  Staff: null,
+  DailyContent: null,
+  Calendar: 'CalendarEvent',
+  PrincipalNote: null,
+  Announcement: null,
+  UserBlock: null,
+  DirectConversation: null,
+  DirectMessage: null,
+  Manifesto: 'SanctuaryManifesto',
+  ManifestoEndorsement: 'ManifestoEndorsement',
 };
 for (const resource of resources) {
   const model = Object.hasOwn(zmodelAliases, resource) ? zmodelAliases[resource] : resource;

@@ -1,73 +1,18 @@
-import { selectLatestTemporalRecordsAsOf, toTemporalCutoff } from '@repo/core/lib/temporalEvents';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { longitudinalContract } from '@repo/core/api/longitudinal.contract';
 import type {
   LongitudinalEntityType,
-  StudentLongitudinalEvent,
   StudentLongitudinalSnapshot,
   StudentLongitudinalTimeline,
 } from '@repo/core/logic/schemas/temporal.schema';
-import { StudentLongitudinalEventSchema } from '@repo/core/logic/schemas/temporal.schema';
 import { APIError } from '@repo/core/types/API';
-import { longitudinalContract } from '@repo/core/api/longitudinal.contract';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
-async function listEvents(
-  studentId: string,
-  viewDate: string,
-  entityTypes?: LongitudinalEntityType[],
-): Promise<StudentLongitudinalEvent[]> {
-  const { data: enrollmentRows, error: enrollmentError } = await supabaseClient
-    .from('classroom_students')
-    .select('classroom_id')
-    .eq('student_id', studentId)
-    .eq('status', 'active');
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
-  if (enrollmentError) {
-    throw new APIError('Failed to resolve student classroom scope', enrollmentError.code, enrollmentError);
-  }
-
-  const allowedClassroomIds = (enrollmentRows ?? [])
-    .map((row) => row.classroom_id)
-    .filter((id): id is string => typeof id === 'string' && id.length > 0);
-
-  if (allowedClassroomIds.length === 0) {
-    throw new APIError('Student has no active classroom scope', 'NO_CLASSROOM_SCOPE');
-  }
-
-  let query = supabaseClient
-    .from('student_longitudinal_events')
-    .select('*')
-    .eq('student_id', studentId)
-    .in('classroom_id', allowedClassroomIds)
-    .lte('occurred_at', toTemporalCutoff(viewDate))
-    .order('occurred_at', { ascending: false })
-    .order('recorded_at', { ascending: false });
-
-  if (entityTypes?.length) {
-    query = query.in('entity_type', entityTypes);
-  }
-
-  const { data, error } = await query;
-  if (error) {
-    throw new APIError('Failed to fetch student longitudinal timeline', error.code, error);
-  }
-
-  const unauthorizedClassroom = (data ?? []).find(
-    (row) =>
-      typeof row.classroom_id === 'string' &&
-      !allowedClassroomIds.includes(row.classroom_id),
-  );
-  if (unauthorizedClassroom) {
-    throw new APIError('Longitudinal event outside student classroom scope', 'CLASSROOM_SCOPE_DENIED');
-  }
-
-  return (data ?? []).map((row) => {
-    const parsed = StudentLongitudinalEventSchema.parse(row);
-    return {
-      ...parsed,
-      snapshot: parsed.metadata,
-    };
-  }) as StudentLongitudinalEvent[];
-}
+const parseResponse = async <T>(res: Response, message: string): Promise<T> => {
+  if (!res.ok) throw new APIError(message, res.status.toString());
+  return (await res.json()) as T;
+};
 
 export const longitudinalAPI = {
   /**
@@ -78,12 +23,12 @@ export const longitudinalAPI = {
     viewDate: string,
     entityTypes?: LongitudinalEntityType[],
   ): Promise<StudentLongitudinalTimeline> {
-    const events = await listEvents(studentId, viewDate, entityTypes);
-    return {
-      studentId,
-      viewDate,
-      events,
-    };
+    return parseResponse<StudentLongitudinalTimeline>(
+      await (client.api as any).longitudinal.student.timeline.$get({
+        query: { studentId, viewDate, entityTypes },
+      }),
+      'Failed to fetch student longitudinal timeline',
+    );
   },
 
   /**
@@ -94,16 +39,12 @@ export const longitudinalAPI = {
     viewDate: string,
     entityTypes?: LongitudinalEntityType[],
   ): Promise<StudentLongitudinalSnapshot> {
-    const events = await listEvents(studentId, viewDate, entityTypes);
-
-    return {
-      studentId,
-      viewDate,
-      records: selectLatestTemporalRecordsAsOf(events, viewDate, {
-        getEntityKey: (event) => `${event.entity_type}:${event.entity_id}`,
-        getEffectiveTo: (event) => event.effective_to,
-      }) as StudentLongitudinalEvent[],
-    };
+    return parseResponse<StudentLongitudinalSnapshot>(
+      await (client.api as any).longitudinal.student.snapshot.$get({
+        query: { studentId, viewDate, entityTypes },
+      }),
+      'Failed to fetch student longitudinal snapshot',
+    );
   },
 };
 

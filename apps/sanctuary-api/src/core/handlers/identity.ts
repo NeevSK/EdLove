@@ -1,6 +1,7 @@
-import { implement } from '../orpc';
 import { identityContract } from '@repo/core/api/server';
-import { type ORPCContext } from '../orpc';
+import { SovereignError } from '@repo/core/types/Errors';
+import { assertDatabase } from '../apiErrors';
+import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 
 const impl = implement(identityContract).$context<ORPCContext>();
@@ -58,23 +59,25 @@ export const identityRouter = impl.router({
       },
     });
 
-    if (!identity) throw new Error('Identity not found');
+    if (!identity) throw SovereignError.notFound('Identity');
     return mapToIdentityPayload(identity) as any;
   }),
 
-  fetchUserProfile: impl.fetchUserProfile.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    if (!context.db) throw new Error('Database context not initialized');
+  fetchUserProfile: impl.fetchUserProfile
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      assertDatabase(context);
 
-    const profile = await context.db.user.findUnique({
-      where: { id: input.id },
-      include: {
-        bonds: true,
-      },
-    });
+      const profile = await context.db.user.findUnique({
+        where: { id: input.id },
+        include: {
+          bonds: true,
+        },
+      });
 
-    if (!profile) throw new Error('Profile not found');
-    return mapToIdentityPayload(profile) as any;
-  }),
+      if (!profile) throw SovereignError.notFound('Profile');
+      return mapToIdentityPayload(profile) as any;
+    }),
 
   // Bypasses doubleGateMiddleware as this checks classroom workspaces before active bond contexts are set up
   resolveWorkspaceContext: impl.resolveWorkspaceContext.handler(async ({ input, context }) => {
@@ -98,7 +101,7 @@ export const identityRouter = impl.router({
       }),
     ]);
 
-    if (!user) throw new Error('User not found');
+    if (!user) throw SovereignError.notFound('User');
 
     return {
       user_id: input.id,
@@ -111,22 +114,24 @@ export const identityRouter = impl.router({
     };
   }),
 
-  modifyUserProfile: impl.modifyUserProfile.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    if (!context.db) throw new Error('Database context not initialized');
+  modifyUserProfile: impl.modifyUserProfile
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      assertDatabase(context);
 
-    const body = { ...input.body };
-    if ('email' in body && body.email === '') {
-      body.email = null;
-    }
+      const body = { ...input.body };
+      if ('email' in body && body.email === '') {
+        body.email = null;
+      }
 
-    const updated = await context.db.user.update({
-      where: { id: input.id },
-      data: body as any,
-      include: {
-        bonds: true,
-      },
-    });
+      const updated = await context.db.user.update({
+        where: { id: input.id },
+        data: body as any,
+        include: {
+          bonds: true,
+        },
+      });
 
-    return mapToIdentityPayload(updated) as any;
-  }),
+      return mapToIdentityPayload(updated) as any;
+    }),
 });

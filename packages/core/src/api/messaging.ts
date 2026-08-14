@@ -1,108 +1,81 @@
-import { applyTemporalFilter } from '@repo/core/logic/utils/temporalUtils';
-import type { TemporalScale } from '@repo/core/store/useTemporalStore';
-import { identityAPI } from '@repo/core/api/identity';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-
 /**
- * Messaging API
+ * Direct messaging API adapter.
  *
- * Handles direct conversations and peer-to-peer messaging.
+ * Conversations and messages are private server-owned data. Keep this
+ * surface transport-only so the client cannot accidentally recreate the
+ * authorization and participant checks that belong in Sanctuary.
  */
+
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { assertHighway } from '@repo/core/api/highways';
+import type { TemporalScale } from '@repo/core/store/useTemporalStore';
+import { APIError } from '@repo/core/types/API';
+
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
+
+function assertMessagingHighway() {
+  assertHighway('messaging_core', 'direct-api');
+}
+
+async function throwApiError(res: Response, operation: string): Promise<never> {
+  throw new APIError(operation, res.status.toString());
+}
+
+function mapMessage(message: any) {
+  return {
+    id: message.id,
+    conversation_id: message.conversation_id,
+    author_id: message.author_id,
+    content: message.content,
+    created_at: message.created_at,
+    author: {
+      full_name: message.author_name ?? 'Anonymous User',
+      avatar_url: message.author_avatar_url ?? undefined,
+    },
+  };
+}
+
 export const messagingAPI = {
-  /**
-   * @policy read User
-   */
   async getDirectConversations() {
-    const identity = await identityAPI.identifyActiveCitizen();
-    if (!identity) throw new Error('Not authenticated');
-
-    const { data, error } = await supabaseClient
-      .from('direct_conversations')
-      .select(`
-                *,
-                user1:users!direct_conversations_user1_id_fkey(full_name, avatar_url),
-                user2:users!direct_conversations_user2_id_fkey(full_name, avatar_url)
-            `)
-      .or(`user1_id.eq.${identity.id},user2_id.eq.${identity.id}`)
-      .order('updated_at', { ascending: false });
-
-    if (error) throw error;
-
-    return (data || []).map((conv: any) => {
-      const otherUser = conv.user1_id === identity.id ? conv.user2 : conv.user1;
-      return {
-        ...conv,
-        other_user_name: otherUser?.full_name || 'Anonymous User',
-        other_user_avatar: otherUser?.avatar_url,
-      };
-    });
+    assertMessagingHighway();
+    const res = await (client.api as any).messaging.conversations.$get();
+    if (!res.ok) await throwApiError(res, 'Failed to fetch direct conversations');
+    return await res.json();
   },
 
-  /**
-   * @policy create User
-   */
   async getOrCreateDirectConversation(targetUserId: string): Promise<string> {
-    const { data, error } = await supabaseClient.rpc(
-      'get_or_create_direct_conversation',
-      {
-        target_user_id: targetUserId,
-      },
-    );
-
-    if (error) throw error;
-    return data;
+    assertMessagingHighway();
+    const res = await (client.api as any).messaging.conversations.$post({
+      json: { targetUserId },
+    });
+    if (!res.ok) await throwApiError(res, 'Failed to create direct conversation');
+    return String(await res.json());
   },
 
-  /**
-   * @policy read User
-   */
   async getDirectMessages(
     conversationId: string,
     limit = 60,
     viewDate?: string,
-    viewScale?: TemporalScale,
+    _viewScale?: TemporalScale,
   ) {
-    let query = supabaseClient
-      .from('direct_messages')
-      .select('*, author:users!direct_messages_author_id_fkey(full_name, avatar_url)')
-      .eq('conversation_id', conversationId);
-
-    if (viewDate) {
-      query = applyTemporalFilter(query, {
-        column: 'created_at',
-        mode: 'event_time',
-        capability: 'event_stream',
-        scale: viewScale,
-      });
-    } else {
-      query = query.order('created_at', { ascending: false }).limit(limit);
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-    return (data || []).reverse();
+    assertMessagingHighway();
+    const res = await (client.api as any).messaging.messages.$get({
+      query: {
+        conversationId,
+        limit,
+        viewDate: viewDate ?? undefined,
+      },
+    });
+    if (!res.ok) await throwApiError(res, 'Failed to fetch direct messages');
+    return ((await res.json()) as any[]).map(mapMessage);
   },
 
-  /**
-   * @policy create User
-   */
   async sendDirectMessage(conversationId: string, content: string) {
-    const identity = await identityAPI.identifyActiveCitizen();
-    if (!identity) throw new Error('Not authenticated');
-
-    const { data, error } = await supabaseClient
-      .from('direct_messages')
-      .insert([
-        {
-          conversation_id: conversationId,
-          author_id: identity.id,
-          content: content.trim(),
-        },
-      ])
-      .select('*, author:users!direct_messages_author_id_fkey(full_name, avatar_url)')
-      .single();
-
-    if (error) throw error;
-    return data;
+    assertMessagingHighway();
+    const res = await (client.api as any).messaging.messages.$post({
+      json: { conversationId, content: content.trim() },
+    });
+    if (!res.ok) await throwApiError(res, 'Failed to send direct message');
+    return mapMessage(await res.json());
   },
 };

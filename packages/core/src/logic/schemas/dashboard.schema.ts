@@ -16,6 +16,8 @@ export const LinkRelationshipSchema = z.enum([
   'example',
   'path',
   'topic_association',
+  'manages',
+  'contains',
 ]);
 
 /**

@@ -1,127 +1,94 @@
 /**
- * Principal Notes API
+ * Principal Notes API.
  *
- * The principal's private school logbook — a personal memory-offload
- * layer scoped to school_id. Mirrors the classroom notes topology:
- *   classroom → ClassroomNote  (teacher + student, per classroom)
- *   school    → PrincipalNote  (principal only, per school)
- *
- * Notes are never deleted. Todos are checked off with is_done=true
- * but remain in the record forever (the history matters).
+ * Principal notes use the authoritative Sanctuary API highway. Authorization,
+ * persistence, and response shaping live in the server handler; this module
+ * is intentionally only a transport adapter for existing callers.
  */
 
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { assertHighway } from '@repo/core/api/highways';
 import { APIError } from '@repo/core/types/API';
 import type { PrincipalNote } from '@repo/core/types/PrincipalNote';
 
-import { identityAPI } from '@repo/core/api/identity';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
+
+function assertPrincipalNotesHighway() {
+  assertHighway('principal_notes_core', 'direct-api');
+}
+
+async function throwApiError(res: Response, operation: string): Promise<never> {
+  throw new APIError(operation, res.status.toString());
+}
+
+function asPrincipalNote(value: unknown): PrincipalNote {
+  return value as PrincipalNote;
+}
 
 export const principalNotesAPI = {
-  /**
-   * Fetch all notes for a school, newest first.
-   * Pinned notes are sorted to the top.
-   * RLS guarantees only the author ever sees their own notes.
-   */
   async getAll(schoolId: string): Promise<PrincipalNote[]> {
-    const identity = await identityAPI.identifyActiveCitizen();
-    if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
-
-    const { data, error } = await supabaseClient
-      .from('principal_notes')
-      .select(`
-                *,
-                context_teacher:users!principal_notes_context_teacher_id_fkey(full_name),
-                context_classroom:classrooms!principal_notes_context_classroom_id_fkey(name)
-            `)
-      .eq('school_id', schoolId)
-      .eq('author_id', identity.id)
-      .order('is_pinned', { ascending: false })
-      .order('created_at', { ascending: false });
-
-    if (error) throw new APIError('Failed to fetch principal notes', error.code, error);
-    return (data || []) as PrincipalNote[];
+    assertPrincipalNotesHighway();
+    const res = await (client.api as any)['principal-notes'].$get({
+      query: { schoolId },
+    });
+    if (!res.ok) await throwApiError(res, 'Failed to fetch principal notes');
+    return ((await res.json()) as unknown[]).map(asPrincipalNote);
   },
 
-  /**
-   * Fetch only the most recent N notes — used for the compact
-   * dashboard preview strip.
-   */
   async getRecent(schoolId: string, limit = 3): Promise<PrincipalNote[]> {
-    const identity = await identityAPI.identifyActiveCitizen();
-    if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
-
-    const { data, error } = await supabaseClient
-      .from('principal_notes')
-      .select('*')
-      .eq('school_id', schoolId)
-      .eq('author_id', identity.id)
-      .eq('is_done', false)
-      .order('is_pinned', { ascending: false })
-      .order('created_at', { ascending: false })
-      .limit(limit);
-
-    if (error) throw new APIError('Failed to fetch recent principal notes', error.code, error);
-    return (data || []) as PrincipalNote[];
+    assertPrincipalNotesHighway();
+    const res = await (client.api as any)['principal-notes'].recent.$get({
+      query: { schoolId, limit },
+    });
+    if (!res.ok) await throwApiError(res, 'Failed to fetch recent principal notes');
+    return ((await res.json()) as unknown[]).map(asPrincipalNote);
   },
 
-  /**
-   * Create a new note in the school logbook.
-   */
   async create(note: {
     school_id: string;
     content: string;
     note_type: PrincipalNote['note_type'];
     context_teacher_id?: string | null;
     context_classroom_id?: string | null;
+    target_date?: string | null;
   }): Promise<PrincipalNote> {
-    const identity = await identityAPI.identifyActiveCitizen();
-    if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
-
-    const { data, error } = await supabaseClient
-      .from('principal_notes')
-      .insert([
-        {
-          ...note,
-          author_id: identity.id,
-          is_pinned: false,
-          is_done: false,
-        },
-      ])
-      .select('*')
-      .single();
-
-    if (error) throw new APIError('Failed to create principal note', error.code, error);
-    return data as PrincipalNote;
+    assertPrincipalNotesHighway();
+    const res = await (client.api as any)['principal-notes'].$post({
+      json: {
+        schoolId: note.school_id,
+        content: note.content,
+        noteType: note.note_type,
+        contextTeacherId: note.context_teacher_id ?? null,
+        contextClassroomId: note.context_classroom_id ?? null,
+        targetDate: note.target_date ?? null,
+      },
+    });
+    if (!res.ok) await throwApiError(res, 'Failed to create principal note');
+    return asPrincipalNote(await res.json());
   },
 
-  /**
-   * Update a note — content, pinned state, or done state.
-   * Only the author can update (enforced by RLS).
-   */
   async update(
     id: string,
     updates: Partial<Pick<PrincipalNote, 'content' | 'is_pinned' | 'is_done'>>,
   ): Promise<PrincipalNote> {
-    const { data, error } = await supabaseClient
-      .from('principal_notes')
-      .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq('id', id)
-      .select('*')
-      .single();
-
-    if (error) throw new APIError('Failed to update principal note', error.code, error);
-    return data as PrincipalNote;
+    assertPrincipalNotesHighway();
+    const res = await (client.api as any)['principal-notes'][':id'].$patch({
+      param: { id },
+      json: {
+        ...(updates.content !== undefined ? { content: updates.content } : {}),
+        ...(updates.is_pinned !== undefined ? { isPinned: updates.is_pinned } : {}),
+        ...(updates.is_done !== undefined ? { isDone: updates.is_done } : {}),
+      },
+    });
+    if (!res.ok) await throwApiError(res, 'Failed to update principal note');
+    return asPrincipalNote(await res.json());
   },
 
-  /**
-   * Delete a note. Only the author can delete (enforced by RLS).
-   */
   async delete(id: string): Promise<void> {
-    const { error } = await supabaseClient
-      .from('principal_notes')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw new APIError('Failed to delete principal note', error.code, error);
+    assertPrincipalNotesHighway();
+    const res = await (client.api as any)['principal-notes'][':id'].$delete({
+      param: { id },
+    });
+    if (!res.ok) await throwApiError(res, 'Failed to delete principal note');
   },
 };

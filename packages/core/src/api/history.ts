@@ -4,8 +4,17 @@
  * Fetches version history/audit logs for records.
  */
 
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import {
+  auditLogEntry,
+  collectionMembershipAsOfEntry,
+  collectionMembershipEvent,
+  historyContract,
+  versionHistoryEntry,
+} from '@repo/core/api/history.contract';
 import { APIError } from '@repo/core/types/API';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export interface AuditLogEntry {
   id: string;
@@ -67,23 +76,13 @@ export const historyAPI = {
    * Get the history for a specific record in a table.
    */
   async getForRecord(tableName: string, recordId: string): Promise<AuditLogEntry[]> {
-    const { data, error } = await supabaseClient
-      .from('audit_logs') // Assuming we create a view or use the audit schema directly
-      .select(`
-                *,
-                author:users!changed_by (
-                    full_name
-                )
-            `)
-      .eq('table_name', tableName)
-      .eq('record_id', recordId)
-      .order('changed_at', { ascending: false });
-
-    if (error) {
-      throw new APIError(`Failed to fetch history for ${tableName}:${recordId}`, error.code, error);
-    }
-
-    return (data || []) as AuditLogEntry[];
+    if (tableName !== 'classroom_notes')
+      throw new APIError('History is not available for this table', 'UNSUPPORTED_HISTORY_TABLE');
+    const res = await (client.api as any).history['classroom-notes'][':recordId'].$get({
+      param: { recordId },
+    });
+    if (!res.ok) throw new APIError('Failed to fetch record history', res.status.toString());
+    return (await res.json()).map((row: unknown) => auditLogEntry.parse(row)) as AuditLogEntry[];
   },
 
   /**
@@ -93,27 +92,13 @@ export const historyAPI = {
     entityType: CommunityHistoryEntityType,
     entityId: string,
   ): Promise<VersionHistoryEntry[]> {
-    const { data, error } = await supabaseClient
-      .from('community_entity_versions')
-      .select(`
-                *,
-                author:users!changed_by (
-                    full_name
-                )
-            `)
-      .eq('entity_type', entityType)
-      .eq('entity_id', entityId)
-      .order('changed_at', { ascending: false });
-
-    if (error) {
-      throw new APIError(
-        `Failed to fetch community history for ${entityType}:${entityId}`,
-        error.code,
-        error,
-      );
-    }
-
-    return (data || []) as VersionHistoryEntry[];
+    const res = await (client.api as any).history.community[':entityType'][':entityId'].$get({
+      param: { entityType, entityId },
+    });
+    if (!res.ok) throw new APIError('Failed to fetch community history', res.status.toString());
+    return (await res.json()).map((row: unknown) =>
+      versionHistoryEntry.parse(row),
+    ) as VersionHistoryEntry[];
   },
 
   /**
@@ -123,27 +108,13 @@ export const historyAPI = {
     entityType: LibraryHistoryEntityType,
     entityId: string,
   ): Promise<VersionHistoryEntry[]> {
-    const { data, error } = await supabaseClient
-      .from('library_entity_versions')
-      .select(`
-                *,
-                author:users!changed_by (
-                    full_name
-                )
-            `)
-      .eq('entity_type', entityType)
-      .eq('entity_id', entityId)
-      .order('changed_at', { ascending: false });
-
-    if (error) {
-      throw new APIError(
-        `Failed to fetch library history for ${entityType}:${entityId}`,
-        error.code,
-        error,
-      );
-    }
-
-    return (data || []) as VersionHistoryEntry[];
+    const res = await (client.api as any).history.library[':entityType'][':entityId'].$get({
+      param: { entityType, entityId },
+    });
+    if (!res.ok) throw new APIError('Failed to fetch library history', res.status.toString());
+    return (await res.json()).map((row: unknown) =>
+      versionHistoryEntry.parse(row),
+    ) as VersionHistoryEntry[];
   },
 
   /**
@@ -152,26 +123,14 @@ export const historyAPI = {
   async getCollectionMembershipTimeline(
     collectionId: string,
   ): Promise<CollectionMembershipEvent[]> {
-    const { data, error } = await supabaseClient
-      .from('collection_node_events')
-      .select(`
-                *,
-                actor:users!actor_id (
-                    full_name
-                )
-            `)
-      .eq('collection_id', collectionId)
-      .order('occurred_at', { ascending: false });
-
-    if (error) {
-      throw new APIError(
-        `Failed to fetch collection membership timeline for ${collectionId}`,
-        error.code,
-        error,
-      );
-    }
-
-    return (data || []) as CollectionMembershipEvent[];
+    const res = await (client.api as any).history.collections[':collectionId'].membership.$get({
+      param: { collectionId },
+    });
+    if (!res.ok)
+      throw new APIError('Failed to fetch collection membership timeline', res.status.toString());
+    return (await res.json()).map((row: unknown) =>
+      collectionMembershipEvent.parse(row),
+    ) as CollectionMembershipEvent[];
   },
 
   /**
@@ -181,22 +140,18 @@ export const historyAPI = {
     collectionId: string,
     asOf: string,
   ): Promise<CollectionMembershipAsOfEntry[]> {
-    const { data, error } = await supabaseClient.rpc(
-      'get_collection_membership_as_of',
-      {
-        p_collection_id: collectionId,
-        p_as_of: asOf,
-      },
-    );
-
-    if (error) {
-      throw new APIError(
-        `Failed to reconstruct collection membership for ${collectionId}`,
-        error.code,
-        error,
-      );
-    }
-
-    return (data || []) as CollectionMembershipAsOfEntry[];
+    const res = await (client.api as any).history.collections[':collectionId'].membership[
+      'as-of'
+    ].$get({
+      param: { collectionId },
+      query: { asOf },
+    });
+    if (!res.ok)
+      throw new APIError('Failed to reconstruct collection membership', res.status.toString());
+    return (await res.json()).map((row: unknown) =>
+      collectionMembershipAsOfEntry.parse(row),
+    ) as CollectionMembershipAsOfEntry[];
   },
 };
+
+void historyContract;

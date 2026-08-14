@@ -2,6 +2,32 @@ import { ORPCError } from '@orpc/server';
 import { check as checkCedar } from '@repo/policies';
 import { evaluateWithRust } from '../authorization/rustEvaluator';
 import { type ORPCContext, o } from './orpc';
+import { SovereignError } from '@repo/core/types/Errors';
+
+function toORPCError(error: unknown): unknown {
+  if (!(error instanceof SovereignError)) return error;
+  const status = error.details.status;
+  const code =
+    status === 400
+      ? 'BAD_REQUEST'
+      : status === 401
+        ? 'UNAUTHORIZED'
+        : status === 403
+          ? 'FORBIDDEN'
+          : status === 404
+            ? 'NOT_FOUND'
+            : status === 409
+              ? 'CONFLICT'
+              : status === 429
+                ? 'TOO_MANY_REQUESTS'
+                : status === 503
+                  ? 'SERVICE_UNAVAILABLE'
+                  : 'INTERNAL_SERVER_ERROR';
+  return new ORPCError(code, {
+    message: error.details.detail || error.details.title,
+    data: { code: error.details.code, requestId: error.details.instance },
+  });
+}
 
 /** Shared procedure boundary: Cedar authorization plus sanitized oRPC errors. */
 export const doubleGateMiddleware = o.middleware(async ({ next, procedure, context }, input) => {
@@ -18,21 +44,20 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
     throw new ORPCError('FORBIDDEN', { message: 'Access denied for anonymous principal' });
   }
   if (!policy) {
-    const result = await next({});
-    console.info(
+    // Protected procedures must never degrade to authentication-only access.
+    // Contract conversion rejects this earlier; this guard protects dynamically
+    // composed procedures and future middleware changes as well.
+    console.error(
       JSON.stringify({
-        event: 'orpc.procedure',
+        event: 'orpc.authorization.missing_policy',
         procedure: procedureName,
         path: context.requestPath,
-        method: context.requestMethod,
         requestId: context.requestId,
-        traceId: context.traceId,
-        userId: context.user.id,
-        status: 'ok',
-        durationMs: Math.round(performance.now() - startedAt),
       }),
     );
-    return result;
+    throw new ORPCError('INTERNAL_SERVER_ERROR', {
+      message: `Authorization policy is not configured for procedure ${procedureName}`,
+    });
   }
 
   const cedarAction = policy.action;
@@ -151,6 +176,19 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
             school_id: procedureInput.schoolId,
           }),
         }),
+        ...(resourceType === 'Notification' && { user_id: context.user.id }),
+        ...(resourceType === 'FormTemplate' && { owner_id: context.user.id }),
+        ...(resourceType === 'UserBlock' && { blocker_id: context.user.id }),
+        ...(resourceType === 'DirectMessage' &&
+          cedarAction === 'create' && { author_id: context.user.id }),
+        ...(resourceType === 'DirectConversation' &&
+          cedarAction === 'create' && {
+            user1_id: context.user.id,
+            target_user_id:
+              typeof procedureInput.targetUserId === 'string'
+                ? procedureInput.targetUserId
+                : undefined,
+          }),
       },
     },
     context: context.securityContext,
@@ -181,7 +219,12 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
       }),
     );
   }
-  const result = await next({});
+  let result;
+  try {
+    result = await next({});
+  } catch (error) {
+    throw toORPCError(error);
+  }
   console.info(
     JSON.stringify({
       event: 'orpc.procedure',

@@ -1,5 +1,9 @@
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 import { identityAPI } from '@repo/core/api/identity';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { privacyContract, privacyLedgerEntry } from '@repo/core/api/privacy.contract';
+import { APIError } from '@repo/core/types/API';
+
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export interface PrivacyLedgerEntry {
   id: string;
@@ -17,16 +21,13 @@ export const privacyAPI = {
    */
   async getPrivacyLedger() {
     const identity = await identityAPI.identifyActiveCitizen();
-    if (!identity) throw new Error('Not authenticated');
-
-    const { data, error } = await supabaseClient
-      .from('privacy_ledger_entries')
-      .select('*')
-      .eq('user_id', identity.id)
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return data as PrivacyLedgerEntry[];
+    if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
+    const response = await (client.api as any).privacy.ledger.$get();
+    if (!response.ok)
+      throw new APIError('Failed to fetch privacy ledger', response.status.toString());
+    return (await response.json()).map((entry: unknown) =>
+      privacyLedgerEntry.parse(entry),
+    ) as PrivacyLedgerEntry[];
   },
 
   /**
@@ -39,20 +40,12 @@ export const privacyAPI = {
     metadata?: any;
   }) {
     const identity = await identityAPI.identifyActiveCitizen();
-    if (!identity) throw new Error('Not authenticated');
-
-    const { data, error } = await supabaseClient
-      .from('privacy_ledger_entries')
-      .insert([
-        {
-          ...input,
-          user_id: identity.id,
-        },
-      ])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data as PrivacyLedgerEntry;
+    if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
+    const response = await (client.api as any).privacy.ledger.events.$post({ json: input });
+    if (!response.ok)
+      throw new APIError('Failed to record privacy event', response.status.toString());
+    return privacyLedgerEntry.parse(await response.json()) as PrivacyLedgerEntry;
   },
 };
+
+void privacyContract;

@@ -1,6 +1,5 @@
 import { APIError } from '@repo/core/types/API';
 import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
-import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 
 /**
  * CLASSROOMS API (Sovereign RPC Proxy)
@@ -16,34 +15,23 @@ export const classroomsAPI = {
   },
 
   async update(id: string, updates: any) {
-    const { data, error } = await supabase
-      .from('classrooms')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      throw new APIError('Failed to update classroom', error.code);
-    }
-    return data;
+    const res = await (client.api as any).educational.classrooms[':id'].$patch({
+      param: { id },
+      json: { id, ...updates },
+    });
+    if (!res.ok) throw new APIError('Failed to update classroom', res.status.toString());
+    return await res.json();
   },
 
   async create(classroom: any) {
-    const { data, error } = await supabase.from('classrooms').insert([classroom]).select().single();
-
-    if (error) {
-      throw new APIError('Failed to create classroom', error.code);
-    }
-    return data;
+    const res = await (client.api as any).educational.classrooms.$post({ json: classroom });
+    if (!res.ok) throw new APIError('Failed to create classroom', res.status.toString());
+    return await res.json();
   },
 
   async delete(id: string) {
-    const { error } = await supabase.from('classrooms').delete().eq('id', id);
-
-    if (error) {
-      throw new APIError('Failed to delete classroom', error.code);
-    }
+    const res = await (client.api as any).educational.classrooms[':id'].$delete({ param: { id } });
+    if (!res.ok) throw new APIError('Failed to delete classroom', res.status.toString());
   },
   async getByTeacher(teacher_id: string, params: { limit?: number; offset?: number } = {}) {
     const res = await (client.api as any).educational.classrooms['by-teacher'].$get({

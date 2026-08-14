@@ -1,32 +1,51 @@
-import { community } from '@repo/core/logic/managers/factory';
-
 /**
- * Announcements API
+ * School announcements API adapter.
  *
- * Dedicated domain for school-wide and system announcements.
+ * The server derives the author from the authenticated principal. The legacy
+ * `authorId` argument remains accepted for source compatibility but is
+ * deliberately ignored so callers cannot impersonate another author.
  */
+
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { assertHighway } from '@repo/core/api/highways';
+import { APIError } from '@repo/core/types/API';
+
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
+
+function assertAnnouncementsHighway() {
+  assertHighway('announcements_core', 'direct-api');
+}
+
+async function throwApiError(res: Response, operation: string): Promise<never> {
+  throw new APIError(operation, res.status.toString());
+}
+
 export const announcementAPI = {
-  /**
-   * @policy read Group
-   */
   async getAnnouncements(schoolId: string) {
-    return community.getAnnouncements(schoolId);
+    assertAnnouncementsHighway();
+    const res = await (client.api as any).announcements.$get({
+      query: { schoolId },
+    });
+    if (!res.ok) await throwApiError(res, 'Failed to fetch announcements');
+    return await res.json();
   },
 
-  /**
-   * @policy create Group
-   */
   async createAnnouncement(
     schoolId: string,
-    authorId: string,
+    _authorId: string,
     content: string,
-    isPinned: boolean = false,
+    isPinned = false,
   ) {
-    return community.createAnnouncement({
-      schoolId,
-      authorId,
-      content,
-      isPinned,
+    assertAnnouncementsHighway();
+    const res = await (client.api as any).announcements.$post({
+      json: {
+        schoolId,
+        title: '',
+        content,
+        isPinned,
+      },
     });
+    if (!res.ok) await throwApiError(res, 'Failed to create announcement');
+    return await res.json();
   },
 };

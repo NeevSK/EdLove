@@ -9,7 +9,10 @@ export default defineConfig({
   },
   resolve: {
     alias: [
-      { find: /^@\/generated\/orm\/(.+)$/, replacement: path.resolve(__dirname, '../../packages/schema/src/generated/orm/$1') },
+      {
+        find: /^@\/generated\/orm\/(.+)$/,
+        replacement: path.resolve(__dirname, '../../packages/schema/src/generated/orm/$1'),
+      },
       { find: /^@\/(.+)$/, replacement: path.resolve(__dirname, '../../packages/core/src/$1') },
       { find: /^react-native$/, replacement: shimPath },
       { find: /^react-native\/.+$/, replacement: shimPath },
@@ -38,7 +41,10 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     alias: [
-      { find: /^@\/generated\/orm\/(.+)$/, replacement: path.resolve(__dirname, '../../packages/schema/src/generated/orm/$1') },
+      {
+        find: /^@\/generated\/orm\/(.+)$/,
+        replacement: path.resolve(__dirname, '../../packages/schema/src/generated/orm/$1'),
+      },
       { find: /^@\/(.+)$/, replacement: path.resolve(__dirname, '../../packages/core/src/$1') },
       { find: /^react-native$/, replacement: shimPath },
       { find: /^react-native\/.+$/, replacement: shimPath },
@@ -89,6 +95,18 @@ export default defineConfig({
       EXPO_PUBLIC_SUPABASE_URL: 'http://localhost:54321',
       EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
         'sb_publishable_placeholder_for_vitest_integration_tests',
+    },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json-summary', 'html'],
+      reportsDirectory: './coverage',
+      exclude: ['src/__tests__/**', '**/*.d.ts'],
+      thresholds: {
+        lines: 35,
+        functions: 35,
+        branches: 25,
+        statements: 35,
+      },
     },
     setupFiles: [path.resolve(__dirname, './src/__tests__/setup.ts')],
   },

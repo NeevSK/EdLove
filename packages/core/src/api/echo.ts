@@ -1,21 +1,9 @@
-import { APIError } from '@repo/core/types/API';
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { echoContract, type StudentEcho } from '@repo/core/api/echo.contract';
 import { identityAPI } from '@repo/core/api/identity';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { APIError } from '@repo/core/types/API';
 
-export interface StudentEcho {
-  id: string;
-  classroom_id: string;
-  school_id: string;
-  student_id: string;
-  content: string;
-  is_anonymous: boolean;
-  is_read: boolean;
-  teacher_response?: string;
-  responded_by?: string;
-  responded_at?: string;
-  created_at: string;
-  updated_at: string;
-}
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export const echoAPI = {
   /**
@@ -30,20 +18,15 @@ export const echoAPI = {
     const identity = await identityAPI.identifyActiveCitizen();
     if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
-    const { data, error } = await supabaseClient
-      .from('classroom_echo_feedback')
-      .insert([
-        {
-          ...echo,
-          student_id: identity.id,
-          is_read: false,
-        },
-      ])
-      .select('*')
-      .single();
-
-    if (error) throw new APIError('Failed to send echo', error.code, error);
-    return data as StudentEcho;
+    const response = await (client.api as any).echoes.$post({
+      json: {
+        classroomId: echo.classroom_id,
+        content: echo.content,
+        isAnonymous: echo.is_anonymous,
+      },
+    });
+    if (!response.ok) throw new APIError('Failed to send echo', response.status.toString());
+    return (await response.json()) as StudentEcho;
   },
 
   /**
@@ -53,14 +36,9 @@ export const echoAPI = {
     const identity = await identityAPI.identifyActiveCitizen();
     if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
-    const { data, error } = await supabaseClient
-      .from('classroom_echo_feedback')
-      .select('*')
-      .eq('student_id', identity.id)
-      .order('created_at', { ascending: false });
-
-    if (error) throw new APIError('Failed to fetch your echoes', error.code, error);
-    return (data || []) as StudentEcho[];
+    const response = await (client.api as any).echoes.mine.$get();
+    if (!response.ok) throw new APIError('Failed to fetch your echoes', response.status.toString());
+    return (await response.json()) as StudentEcho[];
   },
 
   /**
@@ -70,63 +48,24 @@ export const echoAPI = {
     const identity = await identityAPI.identifyActiveCitizen();
     if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
-    // Check if teacher for this classroom (simplified check for now)
-    const { data: classData } = await supabaseClient
-      .from('classrooms')
-      .select('teacher_id')
-      .eq('id', classroomId)
-      .single();
-
-    const isTeacher = classData?.teacher_id === identity.id;
-
-    let query = supabaseClient
-      .from('classroom_echo_feedback')
-      .select(`
-                *,
-                student:users!classroom_echo_feedback_student_id_fkey(full_name, avatar_url)
-            `)
-      .eq('classroom_id', classroomId);
-
-    if (!isTeacher) {
-      // Students only see their own echoes
-      query = query.eq('student_id', identity.id);
-    }
-
-    const { data, error } = await query
-      .order('is_read', { ascending: true })
-      .order('created_at', { ascending: false });
-
-    if (error) throw new APIError('Failed to fetch classroom echoes', error.code, error);
-
-    return (data || []).map((echo: any) => ({
-      ...echo,
-      student_name: echo.is_anonymous ? 'Anonymous Soul' : echo.student?.full_name,
-      student_avatar: echo.is_anonymous ? null : echo.student?.avatar_url,
-    }));
+    const response = await (client.api as any).echoes.classrooms[':classroomId'].$get({
+      param: { classroomId },
+    });
+    if (!response.ok)
+      throw new APIError('Failed to fetch classroom echoes', response.status.toString());
+    return (await response.json()) as StudentEcho[];
   },
 
   /**
    * Fetch echoes for a teacher (feedback from their students).
    */
   async getTeacherEchoes(classroomId: string): Promise<StudentEcho[]> {
-    const { data, error } = await supabaseClient
-      .from('classroom_echo_feedback')
-      .select(`
-                *,
-                student:users!classroom_echo_feedback_student_id_fkey(full_name, avatar_url)
-            `)
-      .eq('classroom_id', classroomId)
-      .order('is_read', { ascending: true })
-      .order('created_at', { ascending: false });
-
-    if (error) throw new APIError('Failed to fetch student echoes', error.code, error);
-
-    // Handle anonymity in the API layer for safety
-    return (data || []).map((echo: any) => ({
-      ...echo,
-      student_name: echo.is_anonymous ? 'Anonymous Soul' : echo.student?.full_name,
-      student_avatar: echo.is_anonymous ? null : echo.student?.avatar_url,
-    })) as (StudentEcho & { student_name: string; student_avatar?: string })[];
+    const response = await (client.api as any).echoes.classrooms[':classroomId'].teacher.$get({
+      param: { classroomId },
+    });
+    if (!response.ok)
+      throw new APIError('Failed to fetch student echoes', response.status.toString());
+    return (await response.json()) as StudentEcho[];
   },
 
   /**
@@ -136,31 +75,21 @@ export const echoAPI = {
     const identity = await identityAPI.identifyActiveCitizen();
     if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
 
-    const { data, error } = await supabaseClient
-      .from('classroom_echo_feedback')
-      .update({
-        teacher_response: response,
-        responded_by: identity.id,
-        responded_at: new Date().toISOString(),
-        is_read: true,
-      })
-      .eq('id', echoId)
-      .select('*')
-      .single();
-
-    if (error) throw new APIError('Failed to respond to echo', error.code, error);
-    return data as StudentEcho;
+    const result = await (client.api as any).echoes[':echoId'].response.$patch({
+      param: { echoId },
+      json: { response },
+    });
+    if (!result.ok) throw new APIError('Failed to respond to echo', result.status.toString());
+    return (await result.json()) as StudentEcho;
   },
 
   /**
    * Mark an echo as read without responding.
    */
   async markAsRead(echoId: string): Promise<void> {
-    const { error } = await supabaseClient
-      .from('classroom_echo_feedback')
-      .update({ is_read: true })
-      .eq('id', echoId);
-
-    if (error) throw new APIError('Failed to mark echo as read', error.code, error);
+    const result = await (client.api as any).echoes[':echoId'].read.$patch({ param: { echoId } });
+    if (!result.ok) throw new APIError('Failed to mark echo as read', result.status.toString());
   },
 };
+
+void echoContract;

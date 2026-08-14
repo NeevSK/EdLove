@@ -113,7 +113,6 @@ overrides:
 
 patchedDependencies:
   '@noble/hashes@1.8.0': 'patches/@noble__hashes@1.8.0.patch'
-  'react-native-enriched-markdown@0.6.0': 'patches/react-native-enriched-markdown@0.6.0.patch'
   'react-native-web@0.21.2': 'patches/react-native-web@0.21.2.patch'
   '@react-native-ml-kit/text-recognition': 'patches/@react-native-ml-kit__text-recognition.patch'
   '@react-native-ml-kit/barcode-scanning': 'patches/@react-native-ml-kit__barcode-scanning.patch'
@@ -123,6 +122,7 @@ patchedDependencies:
 
 allowBuilds:
   '@biomejs/biome': true
+  '@fails-components/webtransport-transport-http3-quiche': false
   '@google/genai': true
   '@img/sharp-win32-x64': true
   '@journeyapps/wa-sqlite': true
@@ -138,12 +138,17 @@ allowBuilds:
   core-js: true
   esbuild: true
   msgpackr-extract: true
+  node-pty: true
   onnxruntime-node: true
   prisma: true
   protobufjs: true
+  react-native-enriched-markdown: true
   react-native-nitro-modules: true
   sharp: true
   supabase: true
+  tree-sitter: true
+  tree-sitter-javascript: true
+  tree-sitter-typescript: true
   turbo: true
   unrs-resolver: true
   vd-tool: true

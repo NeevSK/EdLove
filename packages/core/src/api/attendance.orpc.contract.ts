@@ -3,6 +3,29 @@ import { z } from 'zod';
 const status = z.enum(['present', 'absent', 'late', 'excused']);
 const sessionKind = z.enum(['lesson', 'arrival', 'departure']);
 
+const attendance = z.object({
+  id: z.string().uuid(),
+  student_id: z.string().uuid(),
+  grade_class_id: z.string().uuid(),
+  status,
+  attendance_date: z.string(),
+  created_at: z.string(),
+  updated_at: z.string(),
+  student_name: z.string().nullable(),
+  student_avatar_url: z.string().nullable(),
+  sessions: z.array(
+    z.object({
+      id: z.string().uuid(),
+      session_kind: sessionKind,
+      session_at: z.string(),
+      status,
+      teacher_id: z.string().uuid().nullable(),
+      subject_id: z.string().uuid().nullable(),
+      term_id: z.string().uuid().nullable(),
+    }),
+  ),
+});
+
 const sessionInput = z.strictObject({
   sessionKind: sessionKind.optional(),
   sessionAt: z.string().datetime().optional(),
@@ -11,12 +34,14 @@ const sessionInput = z.strictObject({
   termId: z.string().uuid().nullable().optional(),
 });
 
-const recordInput = z.strictObject({
-  gradeClassId: z.string().uuid(),
-  studentId: z.string().uuid(),
-  status,
-  date: z.string(),
-}).merge(sessionInput);
+const recordInput = z
+  .strictObject({
+    gradeClassId: z.string().uuid(),
+    studentId: z.string().uuid(),
+    status,
+    date: z.string(),
+  })
+  .merge(sessionInput);
 
 const attendanceRead = { policy: { action: 'read', subject: 'DailyAttendance' } } as const;
 const attendanceWrite = { policy: { action: 'create', subject: 'DailyAttendance' } } as const;
@@ -31,6 +56,7 @@ export const attendanceORPCContract = {
         date: z.string().optional(),
       }),
     },
+    responses: { 200: { schema: z.array(attendance), description: 'Classroom attendance' } },
     metadata: attendanceRead,
   },
   record: {
@@ -38,12 +64,14 @@ export const attendanceORPCContract = {
     path: '/attendance/record',
     request: { body: recordInput },
     metadata: attendanceWrite,
+    responses: { 201: { schema: attendance, description: 'Recorded attendance' } },
   },
   batchRecord: {
     method: 'post',
     path: '/attendance/batch-record',
     request: { body: z.array(recordInput).min(1).max(500) },
     metadata: attendanceWrite,
+    responses: { 201: { schema: z.array(attendance), description: 'Recorded attendance batch' } },
   },
   getSchoolPulse: {
     method: 'get',
@@ -54,6 +82,16 @@ export const attendanceORPCContract = {
         gradeClassId: z.string().uuid().optional(),
         viewDate: z.string().optional(),
       }),
+    },
+    responses: {
+      200: {
+        schema: z.object({
+          todayRate: z.number(),
+          yesterdayRate: z.number(),
+          atRiskCount: z.number().int().nonnegative(),
+        }),
+        description: 'School attendance pulse',
+      },
     },
     metadata: attendanceRead,
   },
@@ -67,6 +105,25 @@ export const attendanceORPCContract = {
         endDate: z.string(),
         gradeClassId: z.string().uuid().optional(),
       }),
+    },
+    responses: {
+      200: {
+        schema: z.object({
+          trend: z.array(
+            z.object({
+              date: z.string(),
+              presentCount: z.number(),
+              absentCount: z.number(),
+              lateCount: z.number(),
+              totalCount: z.number(),
+              rate: z.number(),
+            }),
+          ),
+          overallRate: z.number(),
+          totalAbsences: z.number(),
+        }),
+        description: 'Attendance report',
+      },
     },
     metadata: attendanceRead,
   },

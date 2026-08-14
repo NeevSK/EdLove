@@ -1,95 +1,55 @@
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { mappingContract, mappingTopology } from '@repo/core/api/mapping.contract';
 import { KnowledgeTopologySchema } from '@repo/core/logic/schemas/dashboard.schema';
+import { APIError } from '@repo/core/types/API';
 import type { KnowledgeTopology } from '@repo/core/types/topology';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 
-export interface MappingTopology extends KnowledgeTopology {
-  id: string;
-  owner_id: string;
-  name: string;
-  is_public: boolean;
-  created_at: string;
-  updated_at: string;
-  share_token?: string;
-}
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
+
+export type MappingTopology = ReturnType<typeof mappingTopology.parse>;
 
 export const mappingAPI = {
-  /**
-   * Fetch a topology by ID (subject to RLS)
-   */
   async getById(id: string): Promise<MappingTopology | null> {
-    const { data, error } = await supabaseClient
-      .from('mapping_topologies')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (error) {
-      console.error('[MappingAPI] Fetch error:', error);
-      return null;
-    }
-
-    try {
-      // Validate the core topology part
-      KnowledgeTopologySchema.parse(data);
-      return data as MappingTopology;
-    } catch (e) {
-      console.error('[MappingAPI] Validation error for topology:', e);
-      return data as MappingTopology; // Fallback but logged
-    }
+    const res = await (client.api as any).mapping.topologies[':id'].$get({ param: { id } });
+    if (!res.ok) throw new APIError('Failed to fetch topology', res.status.toString());
+    return mappingTopology.nullable().parse(await res.json());
   },
 
-  /**
-   * Fetch the "School Pulse" for a principal or authorized staff
-   */
   async getSchoolPulse(schoolId: string, viewDate?: string): Promise<KnowledgeTopology | null> {
-    const { data, error } = await supabaseClient.rpc(
-      'get_school_mapping_pulse',
-      {
-        p_school_id: schoolId,
-        p_view_date: viewDate || new Date().toISOString().split('T')[0],
-      },
-    );
-
-    if (error) {
-      console.error('[MappingAPI] School Pulse error:', error);
-      return null;
-    }
-
-    try {
-      return KnowledgeTopologySchema.parse(data) as KnowledgeTopology;
-    } catch (e) {
-      console.error('[MappingAPI] Pulse validation error:', e);
-      return data as KnowledgeTopology;
-    }
+    const res = await (client.api as any).mapping.schools[':schoolId'].pulse.$get({
+      param: { schoolId },
+      query: viewDate ? { viewDate } : {},
+    });
+    if (!res.ok) throw new APIError('Failed to fetch school mapping pulse', res.status.toString());
+    return KnowledgeTopologySchema.parse(await res.json());
   },
 
-  /**
-   * Create or update a topology
-   */
   async upsert(topology: Partial<MappingTopology>): Promise<MappingTopology> {
-    const { data, error } = await supabaseClient
-      .from('mapping_topologies')
-      .upsert(topology)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data as MappingTopology;
+    if (!topology.id) throw new APIError('A topology id is required', '400');
+    const res = await (client.api as any).mapping.topologies[':id'].$put({
+      param: { id: topology.id },
+      json: {
+        nodes: topology.nodes,
+        links: topology.links,
+        supportedPerspectives: topology.supportedPerspectives,
+        context: topology.context,
+        name: topology.name,
+        description: topology.description,
+        isPublic: topology.is_public,
+      },
+    });
+    if (!res.ok) throw new APIError('Failed to save topology', res.status.toString());
+    return mappingTopology.parse(await res.json());
   },
 
-  /**
-   * Generate a signed share link for a topology
-   */
-  async createShareLink(id: string, expiresDays: number = 7): Promise<string> {
-    const { data, error } = await supabaseClient.rpc(
-      'generate_mapping_share_token',
-      {
-        p_topology_id: id,
-        p_expires_days: expiresDays,
-      },
-    );
-
-    if (error) throw error;
-    return data as string;
+  async createShareLink(id: string, expiresDays = 7): Promise<string> {
+    const res = await (client.api as any).mapping.topologies[':id'].share.$post({
+      param: { id },
+      json: { expiresDays },
+    });
+    if (!res.ok) throw new APIError('Failed to create topology share link', res.status.toString());
+    return (await res.json()).token as string;
   },
 };
+
+void mappingContract;

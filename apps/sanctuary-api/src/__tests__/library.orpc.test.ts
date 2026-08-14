@@ -1,7 +1,13 @@
 import './setup';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createTestORPCClient } from './orpc-client';
-import { setMockActiveBond, setMockZenStackDbAvailable } from './setup';
+import {
+  getMockLibraryCollectionFindManyArgs,
+  setMockActiveBond,
+  setMockLibraryCollections,
+  setMockLibraryTemporalRead,
+  setMockZenStackDbAvailable,
+} from './setup';
 
 describe('Sanctuary API: library via native oRPC', () => {
   const headers = { Authorization: 'Bearer 123e4567-e89b-12d3-a456-426614174000' };
@@ -16,6 +22,8 @@ describe('Sanctuary API: library via native oRPC', () => {
       capacity: 'teacher',
       status: 'active',
     });
+    setMockLibraryTemporalRead({ collection: null, resources: [], events: [] });
+    setMockLibraryCollections([]);
   });
 
   it('executes the native procedure and validates an explicit resource DTO list', async () => {
@@ -24,22 +32,200 @@ describe('Sanctuary API: library via native oRPC', () => {
     expect(body).toEqual([]);
   });
 
+  it('executes server-owned library search with typed filters', async () => {
+    const body = await createTestORPCClient(headers).library.searchLibrary({
+      query: 'fractions',
+      type: 'lesson',
+      subject: 'mathematics',
+      limit: 10,
+    });
+
+    expect(body).toEqual([]);
+  });
+
   it('rejects malformed resource identifiers through oRPC input validation', async () => {
-    await expect(createTestORPCClient(headers).library.getResource({ id: 'not-a-uuid' })).rejects.toMatchObject({
+    await expect(
+      createTestORPCClient(headers).library.getResource({ id: 'not-a-uuid' }),
+    ).rejects.toMatchObject({
       status: 400,
     });
   });
 
   it('executes native collection reads with an explicit collection DTO', async () => {
-    const body = await createTestORPCClient(headers).library.getCollections({ limit: 10, offset: 0 });
+    const body = await createTestORPCClient(headers).library.getCollections({
+      limit: 10,
+      offset: 0,
+    });
 
     expect(body).toEqual([]);
   });
 
+  it('applies visibility, grade, search, and pagination filters on the server', async () => {
+    setMockLibraryCollections([
+      {
+        id: 'a23e4567-e89b-12d3-a456-426614174000',
+        name: 'Mathematics Collection',
+        description: 'Grade five resources',
+        creator_id: '123e4567-e89b-12d3-a456-426614174000',
+        visibility: 'public',
+        subjects: ['mathematics'],
+        topics: [],
+        grades: [5],
+        created_at: new Date('2026-01-01T00:00:00.000Z'),
+        updated_at: new Date('2026-01-01T00:00:00.000Z'),
+        collection_nodes: [],
+      },
+    ]);
+    const body = await createTestORPCClient(headers).library.getCollections({
+      visibility: 'public',
+      grades: '5',
+      search: 'Mathematics',
+      limit: 1,
+      offset: 0,
+    });
+
+    expect(body).toHaveLength(1);
+    expect(getMockLibraryCollectionFindManyArgs().where.visibility).toBe('public');
+    expect(getMockLibraryCollectionFindManyArgs().where.grades).toEqual({ hasSome: [5] });
+  });
+
+  it('reconstructs collection membership for temporal collection listings', async () => {
+    const resource = {
+      id: '923e4567-e89b-12d3-a456-426614174000',
+      title: 'Historical Listing Resource',
+      type: 'lesson',
+      format: 'text',
+      subjects: ['mathematics'],
+      topics: [],
+      grades: [5],
+      language: [],
+      visibility: 'public',
+      creator_id: '123e4567-e89b-12d3-a456-426614174000',
+      creator_role: 'teacher',
+      created_at: new Date('2026-01-01T00:00:00.000Z'),
+      updated_at: new Date('2026-01-01T00:00:00.000Z'),
+      creator: { full_name: 'Mock User', avatar_url: null },
+    };
+    setMockLibraryCollections([
+      {
+        id: 'a23e4567-e89b-12d3-a456-426614174000',
+        name: 'Historical Listing',
+        creator_id: '123e4567-e89b-12d3-a456-426614174000',
+        visibility: 'public',
+        subjects: ['mathematics'],
+        topics: [],
+        grades: [5],
+        created_at: new Date('2026-01-01T00:00:00.000Z'),
+        updated_at: new Date('2026-01-01T00:00:00.000Z'),
+        creator: { full_name: 'Mock User', avatar_url: null },
+        collection_nodes: [],
+      },
+    ]);
+    setMockLibraryTemporalRead({
+      collection: null,
+      resources: [resource],
+      events: [
+        {
+          id: 'b23e4567-e89b-12d3-a456-426614174000',
+          collection_id: 'a23e4567-e89b-12d3-a456-426614174000',
+          node_id: resource.id,
+          event_type: 'added',
+          position: 0,
+          occurred_at: new Date('2026-01-02T00:00:00.000Z'),
+        },
+      ],
+    });
+
+    const body = await createTestORPCClient(headers).library.getCollections({
+      view_date: '2026-01-03T00:00:00.000Z',
+    });
+
+    expect(body[0].resources?.map((item) => item.id)).toEqual([resource.id]);
+  });
+
   it('rejects malformed collection identifiers through oRPC input validation', async () => {
-    await expect(createTestORPCClient(headers).library.getCollection({ id: 'not-a-uuid' })).rejects.toMatchObject({
+    await expect(
+      createTestORPCClient(headers).library.getCollection({ id: 'not-a-uuid' }),
+    ).rejects.toMatchObject({
       status: 400,
     });
+  });
+
+  it('preserves dynamic subject collections as a server-owned read mode', async () => {
+    const body = await createTestORPCClient(headers).library.getCollection({
+      id: 'subject:mathematics',
+    });
+
+    expect(body.id).toBe('subject:mathematics');
+    expect(body.is_virtual).toBe(true);
+    expect(body.subjects).toEqual(['mathematics']);
+  });
+
+  it('reconstructs explicit collection membership at the requested historical cutoff', async () => {
+    const firstResource = {
+      id: '923e4567-e89b-12d3-a456-426614174000',
+      title: 'Historical Resource',
+      type: 'lesson',
+      format: 'text',
+      subjects: [],
+      topics: [],
+      grades: [],
+      language: [],
+      visibility: 'public',
+      creator_id: '123e4567-e89b-12d3-a456-426614174000',
+      creator_role: 'teacher',
+      created_at: new Date('2026-01-01T00:00:00.000Z'),
+      updated_at: new Date('2026-01-01T00:00:00.000Z'),
+      creator: { full_name: 'Mock User', avatar_url: null },
+    };
+    setMockLibraryTemporalRead({
+      collection: {
+        id: 'a23e4567-e89b-12d3-a456-426614174000',
+        name: 'Historical Collection',
+        creator_id: '123e4567-e89b-12d3-a456-426614174000',
+        visibility: 'public',
+        subjects: [],
+        topics: [],
+        grades: [],
+        created_at: new Date('2026-01-01T00:00:00.000Z'),
+        updated_at: new Date('2026-01-01T00:00:00.000Z'),
+        creator: { full_name: 'Mock User', avatar_url: null },
+      },
+      resources: [firstResource],
+      events: [
+        {
+          id: 'b23e4567-e89b-12d3-a456-426614174000',
+          collection_id: 'a23e4567-e89b-12d3-a456-426614174000',
+          node_id: firstResource.id,
+          event_type: 'added',
+          position: 0,
+          occurred_at: new Date('2026-01-02T00:00:00.000Z'),
+        },
+      ],
+    });
+
+    const body = await createTestORPCClient(headers).library.getCollection({
+      id: 'a23e4567-e89b-12d3-a456-426614174000',
+      view_date: '2026-01-03T00:00:00.000Z',
+    });
+
+    expect(body.resources?.map((resource) => resource.id)).toEqual([firstResource.id]);
+  });
+
+  it('rejects empty resource lifecycle updates at the contract boundary', async () => {
+    await expect(
+      createTestORPCClient(headers).library.updateResource({
+        id: '923e4567-e89b-12d3-a456-426614174000',
+      }),
+    ).rejects.toMatchObject({ status: 400 });
+  });
+
+  it('does not allow ordinary school capacity to verify resources', async () => {
+    await expect(
+      createTestORPCClient(headers).library.verifyResource({
+        id: '923e4567-e89b-12d3-a456-426614174000',
+      }),
+    ).rejects.toMatchObject({ status: 403 });
   });
 
   it('derives library resource authorship from the authenticated context', async () => {
@@ -77,6 +263,88 @@ describe('Sanctuary API: library via native oRPC', () => {
     expect(body.creator_id).toBe('123e4567-e89b-12d3-a456-426614174000');
   });
 
+  it('makes collection membership writes retry-safe and actor-owned', async () => {
+    const body = await createTestORPCClient(headers).library.addToCollection({
+      id: 'a23e4567-e89b-12d3-a456-426614174000',
+      resource_id: '923e4567-e89b-12d3-a456-426614174000',
+    });
+
+    expect(body).toEqual({ success: true });
+  });
+
+  it('protects collection lifecycle mutations with creator ownership', async () => {
+    setMockLibraryTemporalRead({
+      collection: {
+        id: 'a23e4567-e89b-12d3-a456-426614174000',
+        creator_id: '123e4567-e89b-12d3-a456-426614174000',
+      },
+      resources: [],
+      events: [],
+    });
+    const client = createTestORPCClient(headers);
+
+    expect(
+      await client.library.updateCollection({
+        id: 'a23e4567-e89b-12d3-a456-426614174000',
+        name: 'Renamed Collection',
+      }),
+    ).toMatchObject({ name: 'Renamed Collection' });
+    expect(
+      await client.library.removeFromCollection({
+        id: 'a23e4567-e89b-12d3-a456-426614174000',
+        resourceId: '923e4567-e89b-12d3-a456-426614174000',
+      }),
+    ).toEqual({ success: true });
+    await expect(
+      client.library.deleteCollection({ id: 'a23e4567-e89b-12d3-a456-426614174000' }),
+    ).resolves.toEqual({ success: true });
+  });
+
+  it('rejects collection lifecycle mutations for another creator', async () => {
+    setMockLibraryTemporalRead({
+      collection: {
+        id: 'a23e4567-e89b-12d3-a456-426614174000',
+        creator_id: '223e4567-e89b-12d3-a456-426614174000',
+      },
+      resources: [],
+      events: [],
+    });
+    await expect(
+      createTestORPCClient(headers).library.updateCollection({
+        id: 'a23e4567-e89b-12d3-a456-426614174000',
+        name: 'Unauthorized',
+      }),
+    ).rejects.toMatchObject({ status: 403 });
+  });
+
+  it('forks a visible collection through a server transaction and derives the new actor', async () => {
+    setMockLibraryTemporalRead({
+      collection: {
+        id: 'a23e4567-e89b-12d3-a456-426614174000',
+        name: 'Shared Collection',
+        description: 'A source collection',
+        creator_id: '223e4567-e89b-12d3-a456-426614174000',
+        visibility: 'public',
+        subjects: ['mathematics'],
+        topics: [],
+        grades: [5],
+        created_at: new Date('2026-01-01T00:00:00.000Z'),
+        updated_at: new Date('2026-01-01T00:00:00.000Z'),
+        creator: { full_name: 'Source User', avatar_url: null },
+      },
+      resources: [],
+      events: [],
+    });
+
+    const body = await createTestORPCClient(headers).library.forkCollection({
+      id: 'a23e4567-e89b-12d3-a456-426614174000',
+    });
+
+    expect(body.name).toBe('Shared Collection (Fork)');
+    expect(body.creator_id).toBe('123e4567-e89b-12d3-a456-426614174000');
+    expect(body.visibility).toBe('private');
+  });
+
   it('records engagement through one transactional native procedure', async () => {
     const body = await createTestORPCClient(headers).library.engage({
       id: '923e4567-e89b-12d3-a456-426614174000',
@@ -89,9 +357,30 @@ describe('Sanctuary API: library via native oRPC', () => {
     expect(body.engagement_type).toBe('bookmark');
   });
 
+  it('accepts server-owned use engagement without trusting a supplied actor', async () => {
+    const body = await createTestORPCClient(headers).library.engage({
+      id: '923e4567-e89b-12d3-a456-426614174000',
+      engagement_type: 'use',
+      classroom_id: 'a23e4567-e89b-12d3-a456-426614174000',
+    });
+
+    expect(body.user_id).toBe('123e4567-e89b-12d3-a456-426614174000');
+    expect(body.engagement_type).toBe('use');
+    expect(body.classroom_id).toBe('a23e4567-e89b-12d3-a456-426614174000');
+  });
+
   it('derives bookmarked-resource reads from the authenticated user', async () => {
-    const body = await createTestORPCClient(headers).library.getBookmarkedResources({ limit: 10, offset: 0 });
+    const body = await createTestORPCClient(headers).library.getBookmarkedResources({
+      limit: 10,
+      offset: 0,
+    });
 
     expect(body).toEqual([]);
+  });
+
+  it('returns the public Library topology through Sanctuary', async () => {
+    const body = await createTestORPCClient(headers).library.getMapTopology({});
+
+    expect(body).toEqual({ nodes: [], links: [] });
   });
 });

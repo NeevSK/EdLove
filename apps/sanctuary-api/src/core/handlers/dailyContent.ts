@@ -1,6 +1,7 @@
-import { implement } from '../orpc';
 import { dailyContentContract } from '@repo/core/api/server';
+import { assertDatabase } from '../apiErrors';
 import type { ORPCContext } from '../orpc';
+import { implement } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 
 const impl = implement(dailyContentContract).$context<ORPCContext>();
@@ -33,7 +34,7 @@ async function fetchRows(db: NonNullable<ORPCContext['db']>, date: string, days?
 
 export const dailyContentRouter = impl.router({
   getToday: impl.getToday.use(doubleGateMiddleware).handler(async ({ context }) => {
-    if (!context.db) throw new Error('Database context not initialized');
+    assertDatabase(context);
     const rows = await fetchRows(context.db, new Date().toISOString().slice(0, 10));
     return {
       motivation: rows.find((row) => row.type === 'motivation') ?? null,
@@ -41,11 +42,11 @@ export const dailyContentRouter = impl.router({
     };
   }),
   getForDate: impl.getForDate.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    if (!context.db) throw new Error('Database context not initialized');
+    assertDatabase(context);
     return fetchRows(context.db, input.date);
   }),
   getRecent: impl.getRecent.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    if (!context.db) throw new Error('Database context not initialized');
+    assertDatabase(context);
     const startDate = new Date(Date.now() - input.days * 24 * 60 * 60 * 1000)
       .toISOString()
       .slice(0, 10);

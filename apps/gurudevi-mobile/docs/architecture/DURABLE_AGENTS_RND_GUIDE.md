@@ -290,7 +290,7 @@ Required shared factors:
 
 1. Event contract in a shared package
 2. Request API route in the shell
-3. Inngest handler in the worker shell
+3. Inngest handler in the Sanctuary API worker runtime
 4. Evidence loader and deterministic fallback
 5. Provider-agnostic synthesis adapter
 6. Audit-backed run materializer
@@ -298,16 +298,18 @@ Required shared factors:
 
 Current reusable pieces:
 
-- provider abstraction (currently hosted by the worker shell):
-  `apps/gurudevi-marketingWeb/src/lib/durableAgents/llmProvider.ts`
-- run materialization and promotion (currently hosted by the worker shell):
-  `apps/gurudevi-marketingWeb/src/lib/durableAgents/durableAgentRuns.ts`
+- worker runtime and event registration:
+  `apps/sanctuary-api/src/agents/studentSupport.ts`
+- run materialization, authenticated enqueue, and promotion:
+  `apps/sanctuary-api/src/core/routes/durableAgents.ts`
 - shared request surfaces:
   `/api/durable-agents/*`
 
 Recommended environment knobs:
 
-- `DURABLE_AGENT_PROVIDER=openai|anthropic`
+- `INNGEST_EVENT_KEY`
+- `INNGEST_SIGNING_KEY`
+- `DURABLE_AGENT_MODEL`
 - `OPENAI_API_KEY`
 - `ANTHROPIC_API_KEY`
 - provider-specific model env vars when needed

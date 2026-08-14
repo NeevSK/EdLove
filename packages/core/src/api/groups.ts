@@ -14,9 +14,23 @@ export const groupsAPI = {
   /**
    * Retrieves all groups for a school.
    */
-  async getAll(schoolId?: string) {
+  async getAll(filters: {
+    school_id?: string;
+    limit?: number;
+    offset?: number;
+    search?: string;
+    is_public?: boolean;
+    type?: string;
+  } = {}) {
     const res = await (client.api as any).community.groups.$get({
-      query: { school_id: schoolId },
+      query: {
+        school_id: filters.school_id,
+        limit: filters.limit,
+        offset: filters.offset,
+        search: filters.search,
+        is_public: filters.is_public,
+        type: filters.type,
+      },
     });
 
     if (!res.ok) {

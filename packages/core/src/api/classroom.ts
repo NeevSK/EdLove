@@ -1,7 +1,8 @@
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { educationalContract } from '@repo/core/api/educational.contract';
 import { useStore } from '@repo/core/store/useStore';
 import { APIError } from '@repo/core/types/API';
 import { SovereignError } from '@repo/core/types/Errors';
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 
 /**
  * LESSONS & STUDENTS API (Sovereign RPC Proxy)
@@ -35,40 +36,33 @@ import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 // ... (Students API remains on local manager for now until educational.contract is fully expanded)
 export const studentsAPI = {
   async getAll(classroomId: string): Promise<any[]> {
-    const { data, error } = await supabase
-      .from('classroom_students')
-      .select('*, student:users!student_id(full_name)')
-      .eq('classroom_id', classroomId)
-      .order('roll_number', { ascending: true });
-    if (error) throw new APIError('Failed to fetch classroom students', error.code);
-    return (data || []).map((item: any) => ({
+    const res = await (client.api as any).educational.classrooms[':classroomId'].students.$get({
+      param: { classroomId },
+    });
+    if (!res.ok) throw new APIError('Failed to fetch classroom students', res.status.toString());
+    return (await res.json()).map((item: any) => ({
       ...item,
       class_id: item.classroom_id,
-      full_name: item.student?.full_name || item.full_name || 'Unregistered Student',
+      full_name: item.full_name || 'Unregistered Student',
     }));
   },
 
   async enroll(classroomId: string, studentId: string): Promise<any> {
-    const { data, error } = await supabase
-      .from('classroom_students')
-      .upsert({
-        classroom_id: classroomId,
-        student_id: studentId,
-        status: 'active',
-      })
-      .select()
-      .single();
-    if (error) throw new APIError('Failed to enroll student', error.code);
-    return data;
+    const res = await (client.api as any).educational.classrooms[
+      ':classroomId'
+    ].students.enroll.$post({
+      param: { classroomId },
+      json: { studentId },
+    });
+    if (!res.ok) throw new APIError('Failed to enroll student', res.status.toString());
+    return await res.json();
   },
 
   async remove(classroomId: string, studentId: string): Promise<void> {
-    const { error } = await supabase
-      .from('classroom_students')
-      .delete()
-      .eq('classroom_id', classroomId)
-      .eq('student_id', studentId);
-    if (error) throw new APIError('Failed to remove student from classroom', error.code);
+    const students = await this.getAll(classroomId);
+    const row = students.find((student) => student.student_id === studentId);
+    if (!row?.id) throw new APIError('Student is not enrolled in classroom', 'NOT_FOUND');
+    await this.removeById(row.id);
   },
 
   async create(input: {
@@ -77,19 +71,17 @@ export const studentsAPI = {
     notes?: string;
     classroom_id: string;
   }): Promise<any> {
-    const { data, error } = await supabase
-      .from('classroom_students')
-      .insert([
-        {
-          classroom_id: input.classroom_id,
-          full_name: input.full_name,
-          roll_number: input.roll_number,
-          notes: input.notes,
-        },
-      ])
-      .select()
-      .single();
-    if (error) throw new APIError('Failed to add student to classroom', error.code);
+    const res = await (client.api as any).educational.classrooms[
+      ':classroomId'
+    ].students.shadow.$post({
+      param: { classroomId: input.classroom_id },
+      json: {
+        fullName: input.full_name,
+        rollNumber: input.roll_number ? Number(input.roll_number) : undefined,
+      },
+    });
+    if (!res.ok) throw new APIError('Failed to add student to classroom', res.status.toString());
+    const data = await res.json();
     return {
       ...data,
       class_id: data.classroom_id,
@@ -97,17 +89,24 @@ export const studentsAPI = {
   },
 
   async update(id: string, updates: { roll_number?: string; notes?: string }): Promise<any> {
-    const { data, error } = await supabase
-      .from('classroom_students')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
-    if (error) throw new APIError('Failed to update classroom student', error.code);
+    const res = await (client.api as any).educational['classroom-students'][':id'].$patch({
+      param: { id },
+      json: { rollNumber: updates.roll_number ? Number(updates.roll_number) : undefined },
+    });
+    if (!res.ok) throw new APIError('Failed to update classroom student', res.status.toString());
+    const data = await res.json();
     return {
       ...data,
       class_id: data.classroom_id,
     };
+  },
+
+  async removeById(id: string): Promise<void> {
+    const res = await (client.api as any).educational['classroom-students'][':id'].$delete({
+      param: { id },
+    });
+    if (!res.ok)
+      throw new APIError('Failed to remove student from classroom', res.status.toString());
   },
 
   async getSchoolLegacyHistory(schoolId: string): Promise<any[]> {
@@ -174,3 +173,5 @@ export const studentsAPI = {
     }));
   },
 };
+
+void educationalContract;

@@ -1,229 +1,78 @@
-/**
- * Warm Mirror API — Competence through personal narrative.
- */
+/** Warm Mirror: server-owned personal data points plus pure narrative helpers. */
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import type { WarmMirrorDataPoints } from '@repo/core/api/warmMirror.contract';
 
-import { checkLocalPermission } from '@repo/core/logic/permissions/localEvaluator';
-import { APIError } from '@repo/core/types/API';
-import { identityAPI } from '@repo/core/api/identity';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+export type { WarmMirrorDataPoints };
 
-export interface WarmMirrorDataPoints {
-  days_present: number;
-  quiet_moments: number;
-  ripples_received: number;
-  assignments_with_feedback: number;
-  resources_that_reached_others: number;
-  posts_that_sparked: number;
-  days_since_joined: number;
-  primary_classroom_name?: string;
-}
+const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export const warmMirrorAPI = {
   async getDataPoints(userId: string, since?: string): Promise<WarmMirrorDataPoints> {
-    const identity = await identityAPI.identifyActiveCitizen();
-    const loggedInId = identity?.id;
-    if (!loggedInId) throw new APIError('Authentication required', 'UNAUTHORIZED');
-
-    const isAllowed = await checkLocalPermission({
-      action: 'manage',
-      resourceType: 'Wellbeing',
-      resourceId: userId,
-      userContext: { userId: loggedInId },
+    const response = await (client.api as any).warmMirror[':userId'].$get({
+      param: { userId },
+      query: since ? { since } : {},
     });
-
-    if (loggedInId !== userId && !isAllowed) {
-      throw new APIError('Unauthorized access to wellbeing data', 'FORBIDDEN');
-    }
-
-    const now = Date.now();
-    const periodStart = since ?? new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString();
-
-    const { data: growthEvents } = await supabaseClient
-      .from('growth_events')
-      .select('created_at')
-      .eq('user_id', userId)
-      .gte('created_at', periodStart);
-
-    const distinctDays = new Set((growthEvents ?? []).map((e) => e.created_at.slice(0, 10)));
-    const days_present = distinctDays.size;
-
-    const { count: quietCount } = await supabaseClient
-      .from('growth_events')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', userId)
-      .gte('created_at', periodStart)
-      .in('event_type', ['mood_checkin', 'breathing_exercise_complete', 'fire_journal_entry']);
-    const quiet_moments = quietCount ?? 0;
-
-    const { count: ripplesCount } = await supabaseClient
-      .from('impact_ripples')
-      .select('id', { count: 'exact', head: true })
-      .eq('recipient_user_id', userId)
-      .eq('delivered', true)
-      .gte('delivered_at', periodStart);
-    const ripples_received = ripplesCount ?? 0;
-
-    const { data: gradingData } = await supabaseClient
-      .from('student_grades')
-      .select('feedback')
-      .eq('student_id', userId)
-      .gte('created_at', periodStart)
-      .not('feedback', 'is', null);
-    const assignments_with_feedback = (gradingData ?? []).filter(
-      (g) => (g.feedback?.length ?? 0) > 20,
-    ).length;
-
-    const { data: reachRipples } = await supabaseClient
-      .from('impact_ripples')
-      .select('entity_id')
-      .eq('recipient_user_id', userId)
-      .eq('delivered', true)
-      .in('ripple_type', ['resource_saved', 'resource_read', 'lesson_accessed'])
-      .gte('delivered_at', periodStart);
-    const resources_that_reached_others = new Set(
-      (reachRipples ?? []).map((r) => r.entity_id).filter(Boolean),
-    ).size;
-
-    const { count: postsCount } = await supabaseClient
-      .from('impact_ripples')
-      .select('id', { count: 'exact', head: true })
-      .eq('recipient_user_id', userId)
-      .eq('ripple_type', 'post_sparked')
-      .eq('delivered', true)
-      .gte('delivered_at', periodStart);
-    const posts_that_sparked = postsCount ?? 0;
-
-    const { data: growthState } = await supabaseClient
-      .from('user_growth_state')
-      .select('created_at')
-      .eq('user_id', userId)
-      .maybeSingle();
-    const joinedAt = growthState?.created_at ? new Date(growthState.created_at) : new Date();
-    const days_since_joined = Math.floor((now - joinedAt.getTime()) / (1000 * 60 * 60 * 24));
-
-    return {
-      days_present,
-      quiet_moments,
-      ripples_received,
-      assignments_with_feedback,
-      resources_that_reached_others,
-      posts_that_sparked,
-      days_since_joined,
-    };
+    if (!response.ok) throw new Error('Failed to fetch warm mirror data.');
+    return (await response.json()) as WarmMirrorDataPoints;
   },
 
   generateNarrativeEn(data: WarmMirrorDataPoints): string {
-    const lines: string[] = ['This past week in your sanctuary:'];
-
+    const lines = ['This past week in your sanctuary:'];
     if (data.days_present === 0) {
-      lines.push(
+      return [
+        ...lines,
         'This week was a quiet one.',
         'The sanctuary is here when you return.',
         'Rest is part of the rhythm.',
-      );
-      return lines.join('\n');
+      ].join('\n');
     }
-
-    if (data.days_present === 1) {
+    if (data.days_present === 1)
       lines.push('You found your way here once this week. That still counts.');
-    } else if (data.days_present <= 3) {
-      lines.push(`You were present on ${data.days_present} days.`);
-    } else {
-      lines.push(`You showed up on ${data.days_present} days — including the harder ones.`);
-    }
-
-    if (data.quiet_moments >= 3) {
+    else if (data.days_present <= 3) lines.push(`You were present on ${data.days_present} days.`);
+    else lines.push(`You showed up on ${data.days_present} days — including the harder ones.`);
+    if (data.quiet_moments >= 3)
       lines.push('You made space for yourself more than once. That takes intention.');
-    } else if (data.quiet_moments === 1) {
-      lines.push('You made space for yourself at least once.');
-    }
-
-    if (data.ripples_received >= 3) {
+    else if (data.quiet_moments === 1) lines.push('You made space for yourself at least once.');
+    if (data.ripples_received >= 3)
       lines.push(
         `Your work reached people — ${data.ripples_received} quiet echoes came back to you this week.`,
       );
-    } else if (data.ripples_received === 1) {
-      lines.push('Your work touched someone this week.');
-    }
-
-    if (data.resources_that_reached_others > 0) {
+    else if (data.ripples_received === 1) lines.push('Your work touched someone this week.');
+    if (data.resources_that_reached_others > 0)
       lines.push(
         `${data.resources_that_reached_others === 1 ? 'Something' : `${data.resources_that_reached_others} things`} you created found their way to another person.`,
       );
-    }
-
-    if (data.assignments_with_feedback > 0) {
+    if (data.assignments_with_feedback > 0)
       lines.push(
-        `You wrote careful feedback for ${data.assignments_with_feedback} ${
-          data.assignments_with_feedback === 1 ? 'student' : 'students'
-        }. They received more than a mark.`,
+        `You wrote careful feedback for ${data.assignments_with_feedback} ${data.assignments_with_feedback === 1 ? 'student' : 'students'}. They received more than a mark.`,
       );
-    }
-
-    if (data.posts_that_sparked > 0) {
-      lines.push('A question you raised opened a conversation.');
-    }
-
+    if (data.posts_that_sparked > 0) lines.push('A question you raised opened a conversation.');
     if (data.days_since_joined >= 30 && data.primary_classroom_name) {
       const months = Math.floor(data.days_since_joined / 30);
       lines.push(
-        `${data.primary_classroom_name} has been your classroom for ${months} ${
-          months === 1 ? 'month' : 'months'
-        } now.`,
+        `${data.primary_classroom_name} has been your classroom for ${months} ${months === 1 ? 'month' : 'months'} now.`,
       );
     }
-
     lines.push('You showed up. That is not a small thing.');
-
     return lines.join('\n');
   },
 
   generateNarrativeSi(data: WarmMirrorDataPoints): string {
-    const lines: string[] = [
-      '\u0D94\u0DB6\u0DDA \u0DC1\u0DCF\u0DBD\u0DCF\u0DC0\u0DDA \u0DB4\u0DC3\u0DD4\u0D9C\u0DD2\u0DBA \u0DC3\u0DAD\u0DD2\u0DBA:',
-    ];
-
-    if (data.days_present === 0) {
-      lines.push(
-        '\u0DB8\u0DDA \u0DC3\u0DAD\u0DD2\u0DBA \u0DB1\u0DD2\u0DC4\u0DAC \u0D91\u0D9A\u0D9A\u0DCA \u0DC0\u0DD2\u0DBA.',
-        '\u0DC1\u0DCF\u0DBD\u0DCF\u0DC0 \u0D94\u0DB6 \u0D86\u0DB4\u0DC3\u0DD4 \u0D86 \u0DC0\u0DD2\u0DA7 \u0DB8\u0DD9\u0DC4\u0DD2\u0DB8 \u0D87\u0DAD.',
-        '\u0DC0\u0DD2\u0DC1\u0DCA\u200D\u0DBB\u0DCF\u0DB8\u0DBA \u0DAF \u0D9C\u0DB8\u0DB1\u0DDA \u0D9A\u0DDC\u0DA7\u0DC3\u0D9A\u0DD2.',
+    const lines = ['ඔබේ ශාලාවේ පසුගිය සතිය:'];
+    if (data.days_present === 0)
+      return [...lines, 'මෙය නිහඬ සතියක් විය.', 'ඔබ නැවත එන විට ශාලාව මෙහි ඇත.', 'විවේකයද ගමනේ කොටසකි.'].join(
+        '\n',
       );
-      return lines.join('\n');
-    }
-
-    if (data.days_present === 1) {
-      lines.push(
-        '\u0D94\u0DB6 \u0DB8\u0DDA \u0DC3\u0DAD\u0DD2\u0DBA \u0DAD\u0DD4\u0DC5 \u0D91\u0D9A\u0DCA \u0DC0\u0DBB\u0D9A\u0DCA \u0DB8\u0DD9\u0DC4\u0DD2 \u0D86\u0DC0\u0DCF. \u0D91\u0DBA \u0DAF \u0D9C\u0DAB\u0DB1\u0DCF\u0DC0\u0DDA.',
-      );
-    } else {
-      lines.push(
-        `\u0D94\u0DB6 ${data.days_present} \u0DAF\u0DD2\u0DB1\u0D9A\u0DCA \u0DC5\u0D9F \u0DC3\u0DD2\u0DA7\u0DD2\u0DBA\u0DCF.`,
-      );
-    }
-
-    if (data.quiet_moments >= 1) {
-      lines.push(
-        '\u0D94\u0DB6 \u0D94\u0DB6 \u0DC3\u0DB3\u0DC4\u0DCF \u0D89\u0DA9\u0D9A\u0DCA \u0DC3\u0DD1\u0DAF\u0DD6.',
-      );
-    }
-
-    if (data.ripples_received >= 1) {
-      lines.push(
-        '\u0D94\u0DB6\u0DDA \u0D9A\u0DCF\u0DBB\u0DCA\u0DBA\u0DBA\u0DED\u0D9C\u0DD2\u0DBA \u0DAD\u0DBB\u0D82\u0D9C \u0D86\u0DB4\u0DC3\u0DD4 \u0D86\u0DC0\u0DCF.',
-      );
-    }
-
-    if (data.assignments_with_feedback > 0) {
-      lines.push(
-        `\u0D94\u0DB6 ${data.assignments_with_feedback} \u0DAF\u0DD9\u0DB1\u0DD9\u0D9A\u0DD4\u0DA7 \u0D9C\u0DD0\u0DB9\u0DD4\u0DBB\u0DD4 \u0DB4\u0DCA\u200D\u0DBB\u0DAD\u0DD2\u0DA0\u0DCF\u0DBB \u0DBD\u0DD2\u0DC0\u0DCA\u0DC0\u0DCF.`,
-      );
-    }
-
     lines.push(
-      '\u0D94\u0DB6 \u0D9C\u0DD9\u0DB1\u0DBA. \u0D91\u0DBA \u0D9A\u0DD4\u0DA9\u0DAF\u0DD9\u0DBA\u0D9A\u0DCA \u0DB1\u0DDC\u0DC0\u0DDA.',
+      data.days_present === 1
+        ? 'ඔබ මේ සතියේ එක් වරක් මෙහි පැමිණියා. එයද වැදගත්ය.'
+        : `ඔබ දින ${data.days_present}ක් මෙහි සිටියා.`,
     );
-
+    if (data.quiet_moments > 0) lines.push('ඔබ ඔබ වෙනුවෙන් ඉඩක් සාදා ගත්තා.');
+    if (data.ripples_received > 0) lines.push('ඔබේ කාර්යයේ උණුසුම නැවත ඔබ වෙත පැමිණියා.');
+    if (data.assignments_with_feedback > 0)
+      lines.push(`ඔබ සිසුන් ${data.assignments_with_feedback} දෙනෙකුට ප්‍රතිචාර ලබා දුන්නා.`);
+    lines.push('ඔබ පැමිණියා. එය සුළු දෙයක් නොවේ.');
     return lines.join('\n');
   },
 };

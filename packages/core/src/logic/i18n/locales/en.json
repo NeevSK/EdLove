@@ -31,6 +31,12 @@
     "notifications": "Notifications",
     "settings": "Settings",
     "close": "Close",
+    "backHint": "Returns to the previous screen",
+    "openSelf": "Open Self",
+    "closeActions": "Close actions",
+    "moreActions": "More actions",
+    "closeSearch": "Close search",
+    "search": "Search",
     "now": "Now",
     "saving": "Saving",
     "comingSoon": "Coming Soon"
@@ -787,6 +793,7 @@
     "showingCurated": "Showing {{category}} curated findings"
   },
   "profile": {
+    "open": "Open profile",
     "title": "Profile",
     "fullName": "Full Name",
     "phone": "Phone Number",

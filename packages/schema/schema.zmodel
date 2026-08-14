@@ -79,6 +79,8 @@ model User {
   // Growth & Wellbeing
   gifts_given ThuthimalGift[] @relation("GiftsGiven")
   gifts_received ThuthimalGift[] @relation("GiftsReceived")
+  gratitude_gifts_sent GratitudeGift[] @relation("GratitudeGiftsSent")
+  gratitude_gifts_received GratitudeGift[] @relation("GratitudeGiftsReceived")
   impact_ripples ImpactRipple[] @relation("RecipientRipples")
   actions_rippled ImpactRipple[] @relation("ActorRipples")
   whispered_moments WhisperedMoment[]
@@ -885,6 +887,25 @@ model InventoryItem {
   @@map("inventory_items")
 }
 
+model InventoryRequest {
+  id          String   @id @default(uuid())
+  school_id   String?
+  classroom_id String?
+  teacher_id   String?
+  item_name   String
+  quantity    String
+  reason      String?
+  status      String?  @default("pending")
+  priority    String?  @default("normal")
+  created_at  DateTime @default(now())
+
+  @@allow('read', auth() != null && (auth().id == teacher_id || auth().bonds?[entity_id == this.school_id] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@allow('create', auth() != null && (auth().id == teacher_id || auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'teacher')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@allow('update,delete', auth() != null && (auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+
+  @@map("inventory_requests")
+}
+
 // ============================================================================
 // SELF DOMAIN
 // ============================================================================
@@ -918,6 +939,21 @@ model FireJournalEntry {
   @@map("fire_journal")
 }
 
+model DecisionJournal {
+  id              String   @id @default(uuid())
+  user_id         String
+  decision_text   String
+  context         String?
+  is_reviewed     Boolean  @default(false)
+  idempotency_key String?
+  created_at      DateTime @default(now())
+  @@unique([idempotency_key])
+  @@index([user_id, created_at])
+
+  @@allow('all', auth() != null && auth().id == user_id)
+  @@map("decision_journals")
+}
+
 model UserPreferences {
   id                        String   @id @default(uuid())
   user_id                   String   @unique
@@ -940,6 +976,31 @@ model UserPreferences {
 //  ============================================================================
 // LIBRARY DOMAIN
 // ============================================================================
+
+/**
+ * Persisted visualization topology. The legacy client used this table
+ * directly; the Sanctuary API is now the authority for reads and writes.
+ */
+model MappingTopology {
+  id                       String   @id @default(uuid())
+  owner_id                 String?
+  name                     String
+  description              String?
+  nodes                    Json
+  links                    Json
+  supported_perspectives   String[]
+  context                  Json?
+  is_public                Boolean  @default(false)
+  share_token              String?  @unique
+  share_token_expires_at   DateTime?
+  created_at               DateTime @default(now())
+  updated_at               DateTime @default(now())
+
+  @@allow('read', auth() != null && (is_public == true || owner_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@allow('all', auth() != null && (owner_id == auth().id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+
+  @@map("mapping_topologies")
+}
 
 model LibraryResource {
   id               String   @id @default(uuid())
@@ -1263,6 +1324,30 @@ model Section {
   @@allow('create,update,delete', auth().bonds?[entity_id == this.school_id && (capacity == 'principal' || capacity == 'section_head' || capacity == 'grade_head')] || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
 
   @@map("sections")
+}
+
+model GratitudeGift {
+  id                String   @id @default(uuid())
+  sender_user_id    String
+  recipient_user_id String
+  school_id         String?
+  message           String?
+  gift_type         String
+  warm_message_en   String
+  warm_message_si   String?
+  warm_message_ta   String?
+  delivered         Boolean  @default(false)
+  delivered_at      DateTime?
+  created_at        DateTime @default(now())
+
+  sender    User @relation("GratitudeGiftsSent", fields: [sender_user_id], references: [id])
+  recipient User @relation("GratitudeGiftsReceived", fields: [recipient_user_id], references: [id])
+
+  @@index([recipient_user_id, delivered, created_at])
+  @@allow('read', auth().id == recipient_user_id || auth().id == sender_user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@allow('create', auth().id == sender_user_id && auth().bonds?[capacity in ['admin', 'principal', 'assistant_principal']])
+  @@allow('update', auth().id == recipient_user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+  @@map("gratitude_gifts")
 }
 
 // ============================================================================

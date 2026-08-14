@@ -29,6 +29,7 @@ export interface WellbeingMoodLoggedPayload {
 export interface SyncMutationQueuedPayload {
   mutationId: string;
   action: string;
+  actorId: string;
   scope?: string;
   idempotencyKey?: string;
   payload: unknown;
@@ -185,6 +186,7 @@ export async function sendSyncMutationQueued(bus: IEventBusPort, input: SyncMuta
     data: {
       mutationId: input.mutationId,
       action: input.action,
+      actorId: input.actorId,
       scope: input.scope,
       idempotencyKey: input.idempotencyKey,
       payload: input.payload,

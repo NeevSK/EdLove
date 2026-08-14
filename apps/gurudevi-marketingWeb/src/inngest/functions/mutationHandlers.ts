@@ -90,7 +90,7 @@ async function executeRemoteMutation(
         action,
         executed: true,
         target: 'attendance',
-        recordId: record.id,
+        recordId: record.idempotency_key ?? `${classroomId}:${studentId}:${date}`,
       };
     }
     default:

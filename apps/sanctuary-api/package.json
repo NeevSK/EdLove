@@ -15,6 +15,7 @@
     "lint": "node ../../scripts/run-and-report.mjs --cmd \"biome check src\" --name \"apps_sanctuary-api-lint\"",
     "format": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs --write\" --name \"apps_sanctuary-api-format\"",
     "test": "node ../../scripts/run-and-report.mjs --cmd \"vitest run\" --name \"apps_sanctuary-api-test\"",
+    "test:coverage": "vitest run --coverage",
     "test:bun": "node ../../scripts/run-and-report.mjs --cmd \"bun x vitest run\" --name \"apps_sanctuary-api-test_bun\""
   },
   "dependencies": {
@@ -47,10 +48,12 @@
     "dotenv": "^17.4.2",
     "foglamp": "^0.7.1",
     "hono": "^4.12.33",
+    "inngest": "^4.18.0",
     "zod": "4.4.3"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.16",
+    "@vitest/coverage-v8": "4.1.8",
     "tsdown": "^0.22.3",
     "tsup": "^8.5.1",
     "tsx": "^4.22.4",

@@ -22,6 +22,8 @@ export interface PrincipalNote {
   context_teacher?: { full_name: string } | null;
   /** Joined from classrooms table when fetching (context classroom name) */
   context_classroom?: { name: string } | null;
+  /** Optional due date for todo/reminder notes. */
+  target_date?: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -1,13 +1,11 @@
+import { AttendanceSchema } from '@repo/core/logic/schemas/attendance.schema';
+import { ClassroomSchema } from '@repo/core/logic/schemas/classroom.schema';
+import { StudentGradeSchema } from '@repo/core/logic/schemas/grading.schema';
+import { StudentSchema } from '@repo/core/logic/schemas/student.schema';
+import { UserSchema } from '@repo/core/logic/schemas/user.schema';
 import type { StandardSchemaV1 } from 'inngest';
 import { eventType } from 'inngest';
 import { z } from 'zod';
-import {
-  AttendanceSchema,
-  ClassroomSchema,
-  StudentGradeSchema,
-  StudentSchema,
-  UserSchema,
-} from '@repo/core/logic/schemas';
 
 const withWorkflowMetadata = <TSchema extends z.ZodObject<any>>(schema: TSchema) =>
   schema.extend({
@@ -66,6 +64,7 @@ export const syncMutationQueuedEvent = eventType('sync/mutation-queued', {
   schema: z.object({
     mutationId: z.string(),
     action: z.string().min(1),
+    actorId: z.uuid(),
     scope: z.string().min(1).optional(),
     idempotencyKey: z.string().min(1).optional(),
     payload: z.unknown(),
