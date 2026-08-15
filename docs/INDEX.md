@@ -123,10 +123,17 @@ CI/CD setups, developer workflow scripts, versioning plans, and build diagnostic
 | [infra/release-environments-runbook.md](infra/release-environments-runbook.md) | Dev/preview/staging/production promotion, Doppler, Android, iOS posture, and rollback |
 | [infra/critical-infra-vs-use-cases.md](infra/critical-infra-vs-use-cases.md) | Which capabilities must be foundational and which can be added by use case |
 | [infra/doppler-day-to-day-usage-guide.md](infra/doppler-day-to-day-usage-guide.md) | Daily usage reference for Doppler CLI commands, workflows, troubleshooting, and best practices |
+| [infra/android-local-and-cloud-build-guide.md](infra/android-local-and-cloud-build-guide.md) | Android local/cloud build runbook, zero-quota APK generation, and native C++ compilation explanation |
+| [infra/2026-08-15-android-build-log.md](infra/2026-08-15-android-build-log.md) | Execution chronicle and diagnostics log for local and cloud Android builds |
 
 ---
 
 ## Changelog
+
+### 2026-08-15
+
+- **Added**: `infra/android-local-and-cloud-build-guide.md` — Android local & cloud build guide covering custom native C++ compilation (RNGH v3, Skia, MMKV Nitro, OP-SQLite), zero-quota EAS local builds, direct Gradle workflows, and CI timeout remediation.
+- **Added**: `infra/2026-08-15-android-build-log.md` — Execution chronicle and diagnostics log capturing local Android environment verification, Gradle task evaluation, and Windows CMake/Ninja behavior.
 
 ### 2026-08-13
 

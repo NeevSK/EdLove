@@ -23,7 +23,7 @@ jobs:
   build-debug-apk:
     name: Build release-mode APK with debug signing on Linux
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
     env:
       # These are public client configuration values. They are injected from
       # existing repository secrets so Metro can build a real device APK
