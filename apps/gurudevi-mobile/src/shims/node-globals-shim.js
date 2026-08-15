@@ -23,6 +23,13 @@ if (typeof g.__dirname === 'undefined') {
   g.__dirname = '/';
 }
 
+if (typeof g.SharedArrayBuffer === 'undefined') {
+  // Hermes on Android does not enable SharedArrayBuffer by default.
+  // Polyfilling a dummy constructor prevents libraries (like buffer/node-globals)
+  // from crashing when evaluating `typeof SharedArrayBuffer !== 'undefined'`.
+  g.SharedArrayBuffer = ArrayBuffer;
+}
+
 if (typeof g.process === 'undefined') {
   g.process = {
     env: { NODE_ENV: 'development' },
