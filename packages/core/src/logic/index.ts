@@ -113,7 +113,7 @@ export * from '@repo/core/logic/schemas';
 export * from '@repo/core/logic/store-slices';
 export * from '@repo/core/logic/utils';
 export * from '@repo/core/logic/workspace/index';
-export { useAuthLifecycle } from '@repo/core/native/useAuthLifecycle';
+export { useAuthLifecycle } from '@repo/core/hooks/useAuthLifecycle';
 export { useAuth } from '@repo/core/providers/AuthProvider';
 export { GlobalProvider } from '@repo/core/providers/GlobalProvider';
 export { useAuthStore } from '@repo/core/store/useAuthStore';

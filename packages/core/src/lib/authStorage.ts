@@ -1,22 +1,15 @@
+import { storage } from '@repo/core/lib/storage';
+
 const AUTH_STORAGE_PREFIX = 'supabase-auth-';
-
-const isWeb = typeof document !== 'undefined';
-
-async function getSecureStore() {
-  const { default: SecureStore } = await import('expo-secure-store');
-  return SecureStore;
-}
 
 export const supabaseAuthStorage = {
   async getItem(key: string): Promise<string | null> {
     const storageKey = `${AUTH_STORAGE_PREFIX}${key}`;
-    if (isWeb) {
-      return globalThis.localStorage?.getItem(storageKey) ?? null;
-    }
-
     try {
-      const SecureStore = await getSecureStore();
-      return await SecureStore.getItemAsync(storageKey);
+      const syncVal = storage.getString(storageKey);
+      if (syncVal !== undefined) return syncVal;
+      const asyncVal = await storage.getStringAsync(storageKey);
+      return asyncVal ?? null;
     } catch {
       return null;
     }
@@ -24,33 +17,19 @@ export const supabaseAuthStorage = {
 
   async setItem(key: string, value: string): Promise<void> {
     const storageKey = `${AUTH_STORAGE_PREFIX}${key}`;
-    if (isWeb) {
-      globalThis.localStorage?.setItem(storageKey, value);
-      return;
-    }
-
     try {
-      const SecureStore = await getSecureStore();
-      await SecureStore.setItemAsync(storageKey, value, {
-        keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-      });
+      storage.set(storageKey, value);
     } catch {
-      // storage not available
+      // ignore
     }
   },
 
   async removeItem(key: string): Promise<void> {
     const storageKey = `${AUTH_STORAGE_PREFIX}${key}`;
-    if (isWeb) {
-      globalThis.localStorage?.removeItem(storageKey);
-      return;
-    }
-
     try {
-      const SecureStore = await getSecureStore();
-      await SecureStore.deleteItemAsync(storageKey);
+      storage.delete(storageKey);
     } catch {
-      // storage not available
+      // ignore
     }
   },
 };

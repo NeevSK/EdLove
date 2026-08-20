@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { Platform } from 'react-native';
 import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
 import {
   type FeaturePresentation,
@@ -58,6 +57,7 @@ export function useFeatureRegistry(
         const flagActive = resolveFeatureFlagValue(flags, flagKey);
         const flagType = feature.lifecycle.flagClass ?? 'operational';
 
+        const isWeb = typeof window !== 'undefined' && typeof document !== 'undefined';
         const result = sanctuaryFeature(
           {
             userId: principalId,
@@ -83,7 +83,7 @@ export function useFeatureRegistry(
           },
           {
             citizenshipRequired: feature.citizenshipRequired ?? CITIZENSHIP.FIRST_CLASS,
-            platformSupported: Platform.OS === 'web' ? feature.webSupport : feature.mobileSupport,
+            platformSupported: isWeb ? feature.webSupport : feature.mobileSupport,
             entitlementModule: feature.entitlementModule,
             entitlementTier: feature.entitlementTier,
             entitlementScope: feature.entitlementScope,

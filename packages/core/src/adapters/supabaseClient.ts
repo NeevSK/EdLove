@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import Constants from 'expo-constants';
 import { supabaseAuthStorage } from '@repo/core/lib/authStorage';
 
 type PublicRuntimeConfig = {
@@ -7,13 +6,21 @@ type PublicRuntimeConfig = {
   supabasePublishableKey?: string;
 };
 
-const publicRuntime = Constants.expoConfig?.extra?.publicRuntime as
-  | PublicRuntimeConfig
-  | undefined;
+const getExpoPublicRuntime = (): PublicRuntimeConfig | undefined => {
+  try {
+    // Only access global Expo constants if available
+    const Constants = (globalThis as any).expo?.modules?.ExponentConstants ?? null;
+    return Constants?.expoConfig?.extra?.publicRuntime;
+  } catch {
+    return undefined;
+  }
+};
 
-let supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || publicRuntime?.supabaseUrl;
+const publicRuntime = getExpoPublicRuntime();
+
+let supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || publicRuntime?.supabaseUrl;
 let supabasePublishableKey =
-  process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY || publicRuntime?.supabasePublishableKey;
+  process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY || publicRuntime?.supabasePublishableKey;
 const baseFetch = globalThis.fetch.bind(globalThis);
 
 const urlStringFromInput = (url: Parameters<typeof fetch>[0]): string =>
@@ -41,9 +48,9 @@ const sanitizeSupabaseUrl = (url: Parameters<typeof fetch>[0]): string => {
 };
 
 if (!supabaseUrl || !supabasePublishableKey) {
-  if (process.env.NODE_ENV === 'test') {
-    supabaseUrl = 'https://mock-supabase-url.supabase.co';
-    supabasePublishableKey = 'mock-supabase-key';
+  if (process.env.NODE_ENV === 'test' || typeof window === 'undefined') {
+    supabaseUrl = supabaseUrl || 'https://mock-supabase-url.supabase.co';
+    supabasePublishableKey = supabasePublishableKey || 'mock-supabase-key';
   } else {
     throw new Error(
       'Missing Supabase credentials. Please check your .env file.\n' +

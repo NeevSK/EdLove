@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "doppler run --no-fallback -- node ../../scripts/run-and-report.mjs --cmd \"tsx watch src/entry-node.ts\" --name \"apps_sanctuary-api-dev\"",
+    "dev": "doppler run --no-fallback -- node ../../scripts/run-and-report.mjs --cmd \"node --import tsx --watch-path=src src/entry-node.ts\" --name \"apps_sanctuary-api-dev\"",
     "dev:bun": "doppler run --no-fallback -- node ../../scripts/run-and-report.mjs --cmd \"bun --watch src/index.ts\" --name \"apps_sanctuary-api-dev_bun\"",
     "dev:rust": "cargo run --manifest-path ../../native-capabilities/Cargo.toml -p gurudevi-authorization-evaluator",
-    "dev:no-doppler": "node ../../scripts/with-dotenv-fallback.mjs node ../../scripts/run-and-report.mjs --cmd \"tsx watch src/entry-node.ts\" --name \"apps_sanctuary-api-dev\"",
+    "dev:no-doppler": "node ../../scripts/with-dotenv-fallback.mjs node ../../scripts/run-and-report.mjs --cmd \"node --import tsx --watch-path=src src/entry-node.ts\" --name \"apps_sanctuary-api-dev\"",
     "build": "doppler run --no-fallback -- node ../../scripts/run-and-report.mjs --cmd \"tsup src/index.ts src/entry-node.ts --format esm --clean\" --name \"apps_sanctuary-api-build\"",
     "start": "doppler run --no-fallback -- node ../../scripts/run-and-report.mjs --cmd \"node dist/entry-node.js\" --name \"apps_sanctuary-api-start\"",
     "start:bun": "doppler run --no-fallback -- node ../../scripts/run-and-report.mjs --cmd \"bun src/index.ts\" --name \"apps_sanctuary-api-start_bun\"",

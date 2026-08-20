@@ -4,6 +4,8 @@
 node_modules
 .pnp
 .pnp.js
+.pnpm-store
+.pnpm-store/
 
 # Local env files
 .env
@@ -11,6 +13,12 @@ node_modules
 .env.development.local
 .env.test.local
 .env.production.local
+.env.docker
+.env.*.local
+.env.*
+
+# Temporary files
+_tmp_*
 
 # Doppler fallback files are encrypted, machine-bound cache artifacts.
 # They must not be committed or used as the workspace source of truth.

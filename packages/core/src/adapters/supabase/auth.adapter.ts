@@ -6,7 +6,6 @@ import type {
   IAuthPort,
 } from '@repo/core/logic/ports/auth.port';
 import { APIError } from '@repo/core/types/API';
-import { Platform } from 'react-native';
 
 export class SupabaseAuthAdapter implements IAuthPort {
   private get client() {
@@ -96,8 +95,8 @@ export class SupabaseAuthAdapter implements IAuthPort {
   }
 
   private magicLinkRedirectUri(): string {
-    if (Platform.OS === 'web') {
-      return typeof window !== 'undefined' ? window.location.origin : '';
+    if (typeof window !== 'undefined' && window.location?.origin) {
+      return window.location.origin;
     }
     return 'gurudevi://auth/callback';
   }

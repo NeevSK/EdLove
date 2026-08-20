@@ -106,6 +106,9 @@
       ],
       "@repo/workforce/*": [
         "../../packages/workforce/src/*"
+      ],
+      "react-native": [
+        "../../packages/core/src/test-shims/react-native.ts"
       ]
     }
   },

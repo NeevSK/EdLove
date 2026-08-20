@@ -116,13 +116,6 @@ export {
 } from '@repo/core/logic/utils/temporalUtils';
 export { v4, v7, v7 as uuidv7 } from '@repo/core/logic/utils/uuid';
 export {
-  FlowResolver,
-  type FlowResult,
-} from '@repo/core/native/flows/FlowResolver';
-export { GuestDataManager } from '@repo/core/native/guestDataManager';
-export { GuestDataSync } from '@repo/core/native/guestDataSync';
-export { Runtime } from '@repo/core/native/runtime';
-export {
   invalidateResilience,
   type ResilienceOptions,
   withResilience,
@@ -166,12 +159,39 @@ export {
   type SovereignRoute,
 } from '@repo/core/api/contracts';
 export * from '@repo/core/constants/SriLankanSchools';
-export * from '@repo/core/hooks';
+export { useAccountDeletion } from '@repo/core/hooks/useAccountDeletion';
+export { useBanyanGrowth } from '@repo/core/hooks/useBanyanGrowth';
+export { useClassroomCreation } from '@repo/core/hooks/useClassroomCreation';
+export { useDeviceAccounts } from '@repo/core/hooks/useDeviceAccounts';
+export { useDeviceSecurity } from '@repo/core/hooks/useDeviceSecurity';
+export { useDomainRollout } from '@repo/core/hooks/useDomainRollout';
 export {
-  type InviteCodeData,
-  incrementInviteCodeUsage,
-  validateInviteCode,
-} from '@repo/core/lib/inviteCodes';
+  useClassroomNotes,
+  useDomainServices,
+  useEducational,
+  useTeacherInsights,
+} from '@repo/core/hooks/useDomainServices';
+export { useEntity } from '@repo/core/hooks/useEntity';
+export { useForm } from '@repo/core/hooks/useForm';
+export { useGroupCreation } from '@repo/core/hooks/useGroupCreation';
+export { useIdentity } from '@repo/core/hooks/useIdentity';
+export { useIsGuest } from '@repo/core/hooks/useIsGuest';
+export { useJourneyHistory } from '@repo/core/hooks/useJourneyHistory';
+export { useManualSnapshot } from '@repo/core/hooks/useManualSnapshot';
+export { type DownloadState, useMediaDownloader } from '@repo/core/hooks/useMediaDownloader';
+export { useNaturePaths } from '@repo/core/hooks/useNaturePaths';
+export { useNotifications } from '@repo/core/hooks/useNotifications';
+export { usePendingActions } from '@repo/core/hooks/usePendingActions';
+export { usePendingGateAction } from '@repo/core/hooks/usePendingGateAction';
+export { useRewards } from '@repo/core/hooks/useRewards';
+export { useSafeMutation } from '@repo/core/hooks/useSafeMutation';
+export { useSchoolCreation } from '@repo/core/hooks/useSchoolCreation';
+export { useStudentGoals } from '@repo/core/hooks/useStudentGoals';
+export { useTaskActions } from '@repo/core/hooks/useTaskActions';
+export { useTeacherClassroom } from '@repo/core/hooks/useTeacherClassroom';
+export { useTemporalHeatmap } from '@repo/core/hooks/useTemporalHeatmap';
+export { useTenantContext } from '@repo/core/hooks/useTenantContext';
+export { useTracking } from '@repo/core/hooks/useTracking';
 export { generateIdempotencyKey } from '@repo/core/lib/sync/idempotency';
 export { useMutationAuditLog } from '@repo/core/lib/sync/MutationAuditLog';
 export { default as SyncManager } from '@repo/core/lib/sync/sync/SyncManager';
@@ -290,5 +310,4 @@ export { UserSchema } from '@repo/core/logic/schemas/user.schema';
 export { validateForm, validators } from '@repo/core/logic/utils/validators';
 export * from '@repo/core/logic/workspace/canvas';
 export { resolveWorkspaceSwitcherTargets } from '@repo/core/logic/workspace/workspaceSwitcher';
-export { useWorkspaceLayoutSync } from '@repo/core/native/useWorkspaceLayoutSync';
 export { z };

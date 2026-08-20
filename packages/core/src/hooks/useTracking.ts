@@ -1,6 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform } from 'react-native';
 import { identityAPI } from '@repo/core/api/identity';
 import { trackingAPI } from '@repo/core/api/tracking';
 import { trackProductEvent } from '@repo/core/lib/monitoring/posthog';
@@ -16,9 +15,11 @@ export function useTracking() {
   const { context } = usePermissions();
   const analyticsContext = useMemo(
     () => ({
-      platform: (Platform.OS === 'ios' || Platform.OS === 'android' || Platform.OS === 'web'
-        ? Platform.OS
-        : 'unknown') as ProductAnalyticsContext['platform'],
+      platform: (typeof window !== 'undefined'
+        ? 'web'
+        : typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_PLATFORM
+          ? (process.env.EXPO_PUBLIC_PLATFORM as ProductAnalyticsContext['platform'])
+          : 'unknown') as ProductAnalyticsContext['platform'],
       identity_mode: context.isAnonymous ? ('anonymous' as const) : ('authenticated' as const),
       citizenship: context.citizenship,
       onboarding_completed: Boolean(context.onboarding_completed),

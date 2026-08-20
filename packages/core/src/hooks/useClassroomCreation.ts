@@ -1,5 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { storage } from '@repo/core/lib/storage';
 
 const PERSISTENCE_KEY = 'GURUDEVI_CLASSROOM_CREATION_STATE';
 
@@ -48,7 +48,7 @@ export function useClassroomCreation() {
   useEffect(() => {
     const loadState = async () => {
       try {
-        const savedState = await AsyncStorage.getItem(PERSISTENCE_KEY);
+        const savedState = storage.getString(PERSISTENCE_KEY);
         if (savedState) {
           setState(JSON.parse(savedState));
         }
@@ -65,9 +65,11 @@ export function useClassroomCreation() {
 
   useEffect(() => {
     if (isLoaded) {
-      AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state)).catch((e) => {
+      try {
+        storage.set(PERSISTENCE_KEY, JSON.stringify(state));
+      } catch (e) {
         console.error('ClassroomCreation: Failed to save state', e);
-      });
+      }
     }
   }, [state, isLoaded]);
 
@@ -98,7 +100,7 @@ export function useClassroomCreation() {
   );
 
   const resetProgress = useCallback(async () => {
-    await AsyncStorage.removeItem(PERSISTENCE_KEY);
+    storage.delete(PERSISTENCE_KEY);
     setState(initialState);
   }, []);
 
