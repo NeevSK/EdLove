@@ -207,7 +207,7 @@ zod
 zustand
 ```
 
-## Dev tooling (36)
+## Dev tooling (35)
 
 ```text
 @babel/runtime
@@ -244,7 +244,6 @@ react-test-renderer
 reassure
 supabase
 typescript
-vite-tsconfig-paths
 vitest
 ```
 

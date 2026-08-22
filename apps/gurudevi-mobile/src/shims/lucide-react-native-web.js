@@ -51,7 +51,11 @@ const IconProxy = new Proxy(LotusFallback, {
     if (typeof prop === 'symbol') return target[prop];
 
     // 1. Standard Module/React Exports
-    if (prop === 'default') return LucideWeb ? LucideWeb.default || LucideWeb : LotusFallback;
+    // `lucide-react-native/icons/*` imports a default component. Returning the
+    // entire lucide-react module here produces an invalid React element on
+    // web (`Icon` becomes an object). The shim cannot know the requested
+    // subpath, so return a valid branded fallback for default imports.
+    if (prop === 'default') return LotusFallback;
     if (prop === '__esModule') return true;
     if (prop === '$$typeof') return target[prop];
     if (prop === 'displayName') return 'IconProxy';

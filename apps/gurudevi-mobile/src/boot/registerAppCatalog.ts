@@ -8,6 +8,8 @@ import { LIBRARY_REGISTRY } from '@repo/library/constants/libraryRegistry';
 import { SELF_REGISTRY } from '@repo/self/constants/selfRegistry';
 import { WORKFORCE_REGISTRY } from '@repo/workforce/constants/workforceRegistry';
 
+let isAppCatalogRegistered = false;
+
 /**
  * registerAppCatalog — assembles all domain registries into
  * the AppCatalog singleton.
@@ -21,6 +23,8 @@ import { WORKFORCE_REGISTRY } from '@repo/workforce/constants/workforceRegistry'
  * 3. Done — the catalog picks it up automatically
  */
 export function registerAppCatalog(): void {
+  if (isAppCatalogRegistered) return;
+
   registerDomains({
     ...SELF_REGISTRY,
     ...CLASSROOM_REGISTRY,
@@ -31,4 +35,5 @@ export function registerAppCatalog(): void {
     ...FORM_BUILDER_REGISTRY,
     ...WORKFORCE_REGISTRY,
   });
+  isAppCatalogRegistered = true;
 }

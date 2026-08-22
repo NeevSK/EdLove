@@ -2,7 +2,7 @@
 title: "Expo 57 Native Gradle SOP"
 status: "active"
 created: 2026-08-03
-updated: 2026-08-03
+updated: 2026-08-22
 author: "Naveen"
 scribe: "opencode"
 tags: [infra, android, gradle, expo, build]
@@ -205,6 +205,129 @@ The local audits are necessary but insufficient: a successful native validation 
 
 ## 7. Troubleshooting
 
+### Windows versus WSL
+
+Use Windows `adb` for USB device discovery, APK installation, logcat, and
+screenshots. Use WSL for the Linux-native Gradle/NDK toolchain when Windows
+path length or native build tooling causes problems. Keep one WSL checkout and
+one pnpm installation there; repeatedly reinstalling dependencies or switching
+between Windows and WSL node_modules wastes disk and invalidates caches.
+
+The fast, stable WSL profile is: arm64-v8a only, Gradle max-workers 2, CMake
+parallelism 2, and a 1.5GB Gradle heap on an 8GB host. The first build remains
+expensive; warm builds reuse the native and Metro caches.
+
+### Disk-growth audit (2026-08-22)
+
+The Windows system drive was at 92% usage with approximately 26 GB free. The
+Ubuntu WSL virtual disk had grown to 41.09 GB. Its main build consumers were:
+
+| Location | Approx. size | Meaning |
+|---|---:|---|
+| `/home/nsk/.gradle/caches` | 8.8 GB | Gradle dependency/build cache |
+| `/home/nsk/.local/share/pnpm` | 7.6 GB | pnpm content-addressable store |
+| `/home/nsk/Android/Sdk` | 4.7 GB | SDK, NDK, CMake, build tools |
+| mobile `android/` | 4.8 GB | Generated Gradle/native build tree |
+| WSL checkout `node_modules` | 11 GB | Workspace dependency installation |
+
+This is expected accumulation from native builds plus caches, but it is not
+free space. Before deleting anything, preserve the single working checkout and
+confirm no build is running. Safe cleanup candidates are stale generated
+`android/` artifacts and unused Gradle/pnpm cache entries; do not delete the
+active pnpm store, Android NDK 27.1.12297006, or the working checkout blindly.
+After cleanup, `wsl --shutdown` is required before compacting the WSL VHDX;
+compaction is a separate operation from deleting files inside Linux.
+
+### Hardware guidance for local Android builds
+
+The inspected build machine has an Intel Core i7-1195G7 with 4 cores and 8
+logical processors. That is the primary bottleneck for Gradle/CMake compilation;
+`vmmem` is the WSL virtual machine process and becomes CPU-heavy while Linux
+native builds are running. More RAM helps when Windows is paging or the build
+hits memory pressure, but it does not materially speed a CPU-bound compile.
+
+Use 16 GB system RAM as the practical minimum for Windows + WSL + Android
+tooling, and 32 GB if the machine is upgradeable and is used with Android
+Studio, browsers, and multiple services. The i7-1195G7 is a soldered/mobile
+processor in typical systems, so a CPU upgrade normally means replacing the
+machine; do not purchase RAM until the installed capacity and upgrade slots
+are checked. For a replacement, prioritize a modern 8-core/16-thread or
+higher CPU and 32 GB RAM over gaming-oriented features.
+
+### Release build versus development build
+
+`assembleDebug`/Expo development profiles produce a dev client that expects a
+Metro server and may show the Expo development launcher. `assembleRelease`
+embeds the JavaScript bundle and is the correct artifact for testing startup,
+routing, native modules, and production behavior without Metro. Always record
+which artifact was installed when reporting a device result.
+
+### Device acceptance is separate from Gradle success
+
+A successful `assembleRelease` proves packaging only. The acceptance gate is:
+install, launch, live process after 10–15 seconds, no fatal logcat exception,
+and visible app UI. A live process with a black screen remains a failed device
+test and requires checking the focused window and first JavaScript error.
+
+### Bootstrap ordering contract
+
+`apps/gurudevi-mobile/index.ts` is the true entrypoint and must load early
+Hermes shims before `expo-router/entry`. Its only other permitted side effect is
+the lightweight `backgroundSyncTask` definition: Expo can boot a JavaScript
+worker without rendering React, so `TaskManager.defineTask` must be registered
+at entry evaluation time. The worker dynamically imports its sync graph and
+calls `bootstrapPlatform()` before using `coreRuntime`.
+
+For the foreground app, `RootShell` owns the hard sequence:
+
+```text
+bootstrapPlatform (idempotent) → AppCatalog → workflow bridge → GlobalProvider/routes
+```
+
+`GlobalProvider` and routed content must not mount before that sequence
+completes. Runtime failure displays a recovery screen and may be retried; it
+must not be replaced by a timeout-based "ready" state. Google One Tap,
+analytics, language setup, and background-task registration are deferred and
+cannot block first render. Modules imported by the route graph must never
+dereference `coreRuntime` providers at module scope.
+
+The order, failure gate, retry semantics, and worker definition are covered by
+the mobile Vitest startup-contract tests.
+
+### Post-bootstrap visual and sign-in contract
+
+After `RootShell` has completed critical boot and mounted the provider tree,
+the native splash is hidden on the next committed React frame. This guarantees a
+painted app shell exists before the Android starting window disappears. The
+initial `/` route then owns the finite Lottie splash and calls `replace` exactly
+once to `/welcome`; the existing auth route guard may instead send a resolved
+authenticated session to `/onboarding` or `/self`.
+
+Do not bind native-splash dismissal to auth, profile, font, analytics, or
+network completion. Those are not prerequisites for a first frame. A fallback
+font or route loading placeholder is preferable to an indefinite native splash
+or black screen.
+
+Google One-Tap configuration is deferred until after critical boot, is
+idempotent, and never presents UI itself. `signInWithGoogleNative()` invokes the
+same configuration defensively before checking Play Services and showing the
+user-requested credential UI. This preserves the required Android ordering
+without allowing Google configuration failure to block app startup.
+
+### Session and offline authorization boundary
+
+The foreground route guard separates session restoration from authorization.
+It may enter the app offline only with a fresh user-scoped entitlement snapshot
+(`verified` or `cached`) whose `snapshotUserId` matches the restored Supabase
+session user. A profile object by itself is not a capability grant. Signed
+Cedar snapshots continue to control individual local actions; remote refreshes
+are best-effort and never decide whether the initial React frame can render.
+
+When identity resolution fails without that local capability evidence, keep the
+public shell visible and present Retry. Do not redirect to onboarding, synthesize
+a role, or use an elapsed-time fallback. This avoids both incorrect access and
+the misleading "app started" state that previously hid initialization failure.
+
 ### "Could not resolve ... from project :app"
 
 A dependency needs a repo that isn't in the configured repositories. Check:
@@ -261,3 +384,8 @@ The `withSentryGradleDisabled.js` plugin comments out `apply from: "../../node_m
 | Dual maven injection | buildscript needs text injection; allprojects via autolinking | 2026-08-03 |
 | Shared helper for android{} mutations | Idempotency + ordering across plugins | 2026-08-03 |
 | GRADLE_ABI env override | Future flexibility for emulators/multi-ABI without code edits | 2026-08-03 |
+| Explicit JS boot boundary | Runtime/catalog/bridge precede providers; optional services are deferred | 2026-08-22 |
+| Entry-defined background worker | Android worker boot may occur without React; worker bootstraps runtime lazily | 2026-08-22 |
+| Frame-based native splash handoff | Hide only after the React shell commits; auth/font work remains non-blocking | 2026-08-22 |
+| Idempotent Google One-Tap setup | Configure after critical boot and again safely at user-initiated sign-in | 2026-08-22 |
+| Offline capability gate | Permit offline app entry only from a fresh, session-owned entitlement snapshot; otherwise show retryable public shell | 2026-08-22 |

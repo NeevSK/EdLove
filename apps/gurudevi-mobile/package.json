@@ -1,7 +1,7 @@
 {
   "name": "gurudevi-mobile",
   "version": "1.1.0",
-  "main": "expo-router/entry",
+  "main": "index.ts",
   "scripts": {
     "setup:env": "node scripts/load-doppler-env.js",
     "tools:check-schools": "doppler run --no-fallback -- node check_schools.js",
@@ -255,7 +255,6 @@
     "@rozenite/performance-monitor-plugin": "^1.12.0",
     "@sentry/cli": "3.6.0",
     "@tailwindcss/postcss": "4.3.0",
-    "babel-preset-expo": "~57.0.6",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react": "^16.3.2",
@@ -263,6 +262,7 @@
     "@types/jest": "^29.5.14",
     "@types/react": "^19.2.17",
     "@types/react-test-renderer": "19.1.0",
+    "babel-preset-expo": "~57.0.6",
     "cross-env": "^10.1.0",
     "eslint": "^10.4.1",
     "eslint-config-expo": "~57.0.1",
@@ -280,7 +280,6 @@
     "reassure": "^1.5.1",
     "supabase": "^2.105.0",
     "typescript": "7.0.2",
-    "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.8"
   },
   "private": true,

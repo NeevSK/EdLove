@@ -15,6 +15,22 @@ if (typeof g.SharedArrayBuffer === 'undefined') {
   g.SharedArrayBuffer = ArrayBuffer;
 }
 
+// webidl-conversions@8 reads these modern getters at module evaluation time.
+// Hermes on older Android devices has neither, and calling `.get` on the
+// missing property crashes the route loader before the app can render.
+if (!Object.getOwnPropertyDescriptor(ArrayBuffer.prototype, 'resizable')) {
+  Object.defineProperty(ArrayBuffer.prototype, 'resizable', {
+    configurable: true,
+    get: () => false,
+  });
+}
+if (!Object.getOwnPropertyDescriptor(g.SharedArrayBuffer.prototype, 'growable')) {
+  Object.defineProperty(g.SharedArrayBuffer.prototype, 'growable', {
+    configurable: true,
+    get: () => false,
+  });
+}
+
 if (typeof g.__dirname === 'undefined') {
   g.__dirname = '/';
 }

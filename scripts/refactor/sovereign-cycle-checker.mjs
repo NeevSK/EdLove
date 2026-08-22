@@ -39,7 +39,6 @@ async function runSentinel() {
 
     // --- 1. Deep Cycle Detection (Value vs Type sensitivity) ---
     const madgeConfig = {
-      tsConfig: path.join(pkgPath, 'tsconfig.json'),
       fileExtensions: ['ts', 'tsx'],
       baseDir: pkgPath,
       alias: { '@': path.join(pkgPath, 'src') },
@@ -47,6 +46,11 @@ async function runSentinel() {
         ts: { skipTypeImports: true }, // Value-only cycles are the "Metro Killers"
       },
     };
+
+    // Madge 8 calls TypeScript's removed `ts.sys` API when given a tsConfig.
+    // The workspace intentionally pins TypeScript 7, so omit that option and
+    // let Madge analyze the source graph directly instead of failing every
+    // package before cycle detection begins.
 
     try {
       const res = await madge(srcDir, madgeConfig);

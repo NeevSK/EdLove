@@ -20,7 +20,7 @@ import { tokens } from '@repo/ui/tokens';
 import React from 'react';
 import { Platform, StyleSheet, View, type ViewStyle } from 'react-native';
 import { useResponsiveGrid } from './layout';
-import { duration, easing } from './motion';
+import { duration, easing, nativeEasing } from './motion';
 
 // Conditional imports for Reanimated
 let Animated: any = null;
@@ -110,7 +110,7 @@ export function ShimmerBlock({ width = '100%', height, radius = 8, style, classN
             '100%': { opacity: 0.55 },
           },
           animationDuration: duration.breathe * 0.55, // a bit brisker than the ambient breathe
-          animationTimingFunction: easing.standard,
+          animationTimingFunction: nativeEasing.standard,
           animationIterationCount: 'infinite',
         } as any,
         style,

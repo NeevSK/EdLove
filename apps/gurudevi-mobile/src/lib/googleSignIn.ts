@@ -13,6 +13,8 @@ export interface NativeGoogleResult {
   accessToken: string | null;
 }
 
+let googleOneTapConfigured = false;
+
 function resolveClientIds(): { webClientId: string; iosClientId?: string } {
   const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
   if (!webClientId) {
@@ -27,20 +29,27 @@ function resolveClientIds(): { webClientId: string; iosClientId?: string } {
   return { webClientId, iosClientId };
 }
 
-export function configureGoogleOneTap(): void {
+export function configureGoogleOneTap(): boolean {
   if (!process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID) {
     console.warn(
       '[GoogleSignIn] EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID is not set; native Google One-Tap is disabled.',
     );
-    return;
+    return false;
   }
+  if (googleOneTapConfigured) return true;
+
   const { webClientId, iosClientId } = resolveClientIds();
   GoogleOneTapSignIn.configure({ webClientId, iosClientId });
+  googleOneTapConfigured = true;
+  return true;
 }
 
 export async function signInWithGoogleNative(): Promise<NativeGoogleResult> {
-  const { webClientId, iosClientId } = resolveClientIds();
-  GoogleOneTapSignIn.configure({ webClientId, iosClientId });
+  if (!configureGoogleOneTap()) {
+    throw new Error(
+      'Google sign-in is unavailable because its public client ID is not configured.',
+    );
+  }
 
   try {
     await GoogleOneTapSignIn.checkPlayServices();

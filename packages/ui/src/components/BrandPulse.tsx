@@ -15,7 +15,7 @@ import { tokens } from '@repo/ui/tokens';
 import React from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import { duration, easing, scale as scaleTokens } from './motion';
+import { duration, easing, nativeEasing, scale as scaleTokens } from './motion';
 
 // Traced directly from the logo (same source as the splash animation) —
 // three petals, viewBox roughly matches the 40-472 x 95-441 bounding box
@@ -116,7 +116,7 @@ export function BrandPulse({
             '100%': { transform: [{ scale: scaleTokens.breatheMin }], opacity: 0.72 },
           },
           animationDuration: duration.breathe,
-          animationTimingFunction: easing.standard,
+          animationTimingFunction: nativeEasing.standard,
           animationIterationCount: 'infinite',
         } as any,
         style,

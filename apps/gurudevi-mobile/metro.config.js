@@ -94,6 +94,10 @@ config.resolver.disableHierarchicalLookup = true;
 
 // 4. Aggressive blockList to ensure Metro NEVER follows paths into package-level React.
 config.resolver.blockList = [
+  // The workspace root is watched for internal packages, but Git metadata
+  // contains ephemeral Codex checkpoint refs that can disappear while Metro
+  // is registering filesystem watchers.
+  /(?:^|[/\\])\.git(?:[/\\]|$)/,
   /packages[/\\].*[/\\]node_modules[/\\]react[/\\].*/,
   /packages[/\\].*[/\\]node_modules[/\\]react-native[/\\].*/,
   /packages[/\\].*[/\\]node_modules[/\\]@react-native-async-storage[/\\].*/,

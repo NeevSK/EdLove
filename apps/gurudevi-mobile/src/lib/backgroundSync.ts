@@ -12,8 +12,9 @@
 import { coreRuntime, useMutationQueue } from '@repo/core/logic';
 import { MUTATION_REGISTRY, sovereignBus } from '@repo/core/sync';
 import { BackgroundTaskResult, BackgroundTaskStatus } from '@repo/core/types';
+import { BACKGROUND_SYNC_TASK } from '@/lib/backgroundSyncTask';
 
-export const BACKGROUND_SYNC_TASK = 'GURUDEVI_BACKGROUND_SYNC';
+export { BACKGROUND_SYNC_TASK } from '@/lib/backgroundSyncTask';
 
 // Configuration
 const SYNC_CONFIG = {
@@ -86,7 +87,7 @@ function calculateBackoff(retryCount: number): number {
 
 // ─── Task Definition ──────────────────────────────────────────────────────────
 
-coreRuntime.backgroundTask.defineTask(BACKGROUND_SYNC_TASK, async () => {
+export async function runBackgroundSyncTask() {
   const { queue, removeFromQueue, setSyncing, updateMutation } = useMutationQueue.getState();
 
   if (queue.length === 0) {
@@ -151,7 +152,7 @@ coreRuntime.backgroundTask.defineTask(BACKGROUND_SYNC_TASK, async () => {
   });
 
   return drained > 0 || failed > 0 ? BackgroundTaskResult.NewData : BackgroundTaskResult.NoData;
-});
+}
 
 // ─── Registration ─────────────────────────────────────────────────────────────
 

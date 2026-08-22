@@ -1,19 +1,21 @@
 import { resolve } from 'path';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  plugins: [tsconfigPaths()],
   define: {
     __DEV__: 'true',
   },
   resolve: {
+    // Vite 8 resolves the aliases declared in tsconfig.json natively.
+    // Keeping this here avoids a separate vite-tsconfig-paths plugin and its
+    // config-loader warning while preserving the mobile test import contract.
+    tsconfigPaths: true,
     alias: {
-      'react-native': resolve(__dirname, './vitest-react-native-mock.ts'),
-      'expo-sqlite': resolve(__dirname, './vitest-sqlite-mock.ts'),
-      'expo-modules-core': resolve(__dirname, './vitest-expo-modules-core-mock.ts'),
-      'expo-constants': resolve(__dirname, './vitest-expo-constants-mock.ts'),
-      '@cedar-policy/cedar-wasm/web': resolve(__dirname, './vitest-cedar-web-mock.ts'),
+      'react-native': resolve(import.meta.dirname, './vitest-react-native-mock.ts'),
+      'expo-sqlite': resolve(import.meta.dirname, './vitest-sqlite-mock.ts'),
+      'expo-modules-core': resolve(import.meta.dirname, './vitest-expo-modules-core-mock.ts'),
+      'expo-constants': resolve(import.meta.dirname, './vitest-expo-constants-mock.ts'),
+      '@cedar-policy/cedar-wasm/web': resolve(import.meta.dirname, './vitest-cedar-web-mock.ts'),
     },
   },
   test: {

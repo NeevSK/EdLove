@@ -18,7 +18,7 @@ import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useBreakpoint } from './layout';
-import { duration, easing } from './motion';
+import { duration, easing, nativeEasing } from './motion';
 
 // Same traced geometry as the line-draw splash concept — the whole
 // silhouette plus the two heart-side lines, stroke only, never filled.
@@ -101,7 +101,7 @@ export function BrandedEmptyState({ title, message, subtle = false, children, cl
               '100%': { opacity: 0.6 },
             },
             animationDuration: duration.breathe * 1.4,
-            animationTimingFunction: easing.standard,
+            animationTimingFunction: nativeEasing.standard,
             animationIterationCount: 'infinite',
           } as any
         }

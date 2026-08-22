@@ -13,7 +13,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import Svg, { Path, Circle } from 'react-native-svg';
-import { duration, easing, scale as scaleTokens, color } from './motion';
+import { duration, easing, nativeEasing, scale as scaleTokens, color } from './motion';
 
 // Conditional imports for Reanimated
 let Animated: any = null;
@@ -73,7 +73,7 @@ export function SuccessCheck({ size = 22, className, style }: { size?: number; c
             '100%': { opacity: 1, transform: [{ scale: scaleTokens.rest }] },
           },
           animationDuration: duration.micro,
-          animationTimingFunction: easing.decelerate,
+          animationTimingFunction: nativeEasing.decelerate,
           animationFillMode: 'forwards',
         } as any : {}),
         style,
@@ -158,7 +158,7 @@ function Mote({ dx, dy, delayMs }: { dx: number; dy: number; delayMs: number }) 
         },
         animationDuration: duration.meaningful,
         animationDelay: delayMs,
-        animationTimingFunction: easing.decelerate,
+          animationTimingFunction: nativeEasing.decelerate,
         animationFillMode: 'forwards',
       } as any}
     />
@@ -214,7 +214,7 @@ export function SuccessGlow({ size = 64, className, style }: { size?: number; cl
               '100%': { opacity: 1, transform: [{ scale: 1 }] },
             },
             animationDuration: duration.meaningful,
-            animationTimingFunction: easing.decelerate,
+          animationTimingFunction: nativeEasing.decelerate,
             animationFillMode: 'forwards',
           } as any : {}),
         }}

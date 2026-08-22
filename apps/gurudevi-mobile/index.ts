@@ -1,4 +1,5 @@
 import './src/shims/early-bootstrap';
+import './src/lib/backgroundSyncTask';
 import '@azure/core-asynciterator-polyfill'; // Required for PowerSync watched queries
 import './src/shims/node-globals-shim';
 import 'react-native-reanimated';

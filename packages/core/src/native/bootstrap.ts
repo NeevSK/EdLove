@@ -21,14 +21,21 @@ import { coreRuntime } from '@repo/core/logic/runtimeRegistry';
 import { Runtime } from '@repo/core/native/runtime';
 import { nativeRuntimeEnvironment, webRuntimeEnvironment } from '@repo/core/native/runtimeAdapter';
 
+let bootstrapPromise: Promise<void> | null = null;
+
 /**
  * Sovereign Bootstrap
  * Initializes all platform-specific adapters.
  */
-export async function bootstrapPlatform() {
+async function initializePlatform(): Promise<void> {
   const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
   const isWeb = Platform.OS === 'web';
   const isReady = Runtime.isReady();
+  // MMKV/Nitro initialization is synchronous and can stall the first render
+  // on a physical device while the bridgeless runtime is settling. Keep the
+  // reliable AsyncStorage path as the default; opt into MMKV only after it has
+  // been validated on the target build/device.
+  const useMMKV = process.env.EXPO_PUBLIC_USE_MMKV === 'true';
 
   // 1. Initialize Crypto & Telemetry (Unified)
   if (!isWeb) {
@@ -52,7 +59,7 @@ export async function bootstrapPlatform() {
   }
 
   // 2. Initialize Storage
-  if (isExpoGo || isWeb || !isReady) {
+  if (isExpoGo || isWeb || !isReady || !useMMKV) {
     storage.registerAdapter(new AsyncStorageAdapter());
   } else {
     try {
@@ -68,4 +75,27 @@ export async function bootstrapPlatform() {
   // 3. Register Core Runtime with all providers (asset, haptics, linking, etc.)
   //     This must happen after adapter initialization but before app mount
   coreRuntime.register(isWeb ? webRuntimeEnvironment : nativeRuntimeEnvironment);
+}
+
+/**
+ * Registers the platform runtime exactly once per JavaScript execution context.
+ *
+ * The foreground app and an Expo background worker can both enter through this
+ * function. Sharing the promise makes the ordering explicit: consumers can
+ * only proceed after every core provider has been registered. A failed attempt
+ * is deliberately retryable rather than leaving a rejected promise cached.
+ */
+export function bootstrapPlatform(): Promise<void> {
+  if (coreRuntime.isRegistered()) {
+    return Promise.resolve();
+  }
+
+  if (!bootstrapPromise) {
+    bootstrapPromise = initializePlatform().catch((error) => {
+      bootstrapPromise = null;
+      throw error;
+    });
+  }
+
+  return bootstrapPromise;
 }

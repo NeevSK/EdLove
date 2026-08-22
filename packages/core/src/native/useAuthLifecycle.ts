@@ -27,6 +27,8 @@ export function useAuthLifecycle() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
+  const [isProfileResolving, setIsProfileResolving] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
 
   const setUser = useStore((state) => state.setUser);
   const setPerspective = useStore((state) => state.setPerspective);
@@ -37,6 +39,8 @@ export function useAuthLifecycle() {
   const setAuthSessionResolved = useStore((state) => state.setAuthSessionResolved);
 
   const fetchAndSetUserProfile = useCallback(async () => {
+    setIsProfileResolving(true);
+    setProfileError(null);
     setIsProfileLoading(true);
     try {
       assertHighway('identity_bootstrap', 'direct-api');
@@ -85,8 +89,10 @@ export function useAuthLifecycle() {
       }
     } catch (error) {
       console.warn('❌ Profile: Fetching encountered an error:', error);
+      setProfileError(error instanceof Error ? error.message : 'Unable to restore your profile.');
     } finally {
       setIsProfileLoading(false);
+      setIsProfileResolving(false);
     }
   }, [setUser, setPerspective, setAvailableBonds, setSchoolType, setOnboardingCompleted]);
 
@@ -245,7 +251,14 @@ export function useAuthLifecycle() {
   }, [currentUser?.id, refreshProfile]);
 
   return useMemo(
-    () => ({ session, loading, isProfileLoading, refreshProfile }),
-    [session, loading, isProfileLoading, refreshProfile],
+    () => ({
+      session,
+      loading,
+      isProfileLoading,
+      isProfileResolving,
+      profileError,
+      refreshProfile,
+    }),
+    [session, loading, isProfileLoading, isProfileResolving, profileError, refreshProfile],
   );
 }

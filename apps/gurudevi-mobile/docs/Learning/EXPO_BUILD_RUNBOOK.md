@@ -2,7 +2,7 @@
 title: "Expo CNG Build Runbook"
 status: "active"
 created: 2026-08-03
-updated: 2026-08-03
+updated: 2026-08-22
 author: "Naveen"
 scribe: "opencode"
 tags: [mobile, build, expo, gradle, android]
@@ -106,6 +106,130 @@ pnpm --filter gurudevi-mobile build:preview
 # Production build (AAB, Play Store)
 pnpm --filter gurudevi-mobile build:prod
 ```
+
+### Local standalone release APK (WSL + physical Android device)
+
+Use this path when the goal is to test the exact bundled production JavaScript
+and native code on a phone. A development APK is different: it expects Metro
+and opens the Expo development launcher.
+
+The current reliable environment is Ubuntu in WSL with the repository checked
+out at `/home/<user>/polymath-platform-wsl`, Android SDK under
+`/home/<user>/Android/Sdk`, and only the phone ABI enabled. Run the build from
+the generated Android directory:
+
+```bash
+export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
+export ANDROID_HOME="$ANDROID_SDK_ROOT"
+export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk/27.1.12297006"
+export CMAKE_BUILD_PARALLEL_LEVEL=2
+export GRADLE_OPTS='-Xmx1536m -XX:MaxMetaspaceSize=256m -XX:+UseSerialGC'
+
+cd apps/gurudevi-mobile/android
+./gradlew :app:assembleRelease --no-daemon --max-workers=2 \
+  -PreactNativeArchitectures=arm64-v8a --console=plain
+```
+
+The release bundle must receive the public runtime variables. When Doppler is
+configured on Windows, pass only the required public values into WSL; do not
+print or commit secrets. The repository's Windows wrapper does this before
+calling the command above.
+
+Copy and install the APK from Windows:
+
+```powershell
+Copy-Item -Force "\\wsl$\Ubuntu\home\<user>\polymath-platform-wsl\apps\gurudevi-mobile\android\app\build\outputs\apk\release\app-release.apk" `
+  "C:\x\output\gurudevi-standalone-release.apk"
+adb install -r C:\x\output\gurudevi-standalone-release.apk
+```
+
+### Release verification gate
+
+Do not call a build successful only because Gradle produced an APK. Verify all
+three layers:
+
+1. `BUILD SUCCESSFUL` from Gradle.
+2. `adb install -r` succeeds and the launcher starts `org.edlove.gurudevi`.
+3. After 10–15 seconds, `adb shell pidof org.edlove.gurudevi` is non-empty,
+   logcat has no fatal exception, and the phone shows the app UI rather than a
+   blank/black surface.
+
+Useful clean-launch checks:
+
+```powershell
+adb logcat -c
+adb shell am force-stop org.edlove.gurudevi
+adb shell monkey -p org.edlove.gurudevi -c android.intent.category.LAUNCHER 1
+Start-Sleep -Seconds 12
+adb shell pidof org.edlove.gurudevi
+adb logcat -d -v threadtime | Select-String 'FATAL EXCEPTION|ReactNativeJS: .*Error|crash : org.edlove.gurudevi'
+```
+
+An alive process with a black screen is not a pass. Check the focused window,
+device unlock state, splash-screen logs, and the first JavaScript exception.
+
+### Startup visual contract: native splash → app splash → welcome
+
+These are three different layers and must be verified separately:
+
+1. **Native splash:** controlled by the `expo-splash-screen` plugin in
+   `app.json`. The current repository configuration points to
+   `assets/splash-icon.png`; changing the JavaScript route does not change this
+   image. If that asset is not the approved Gurudevi artwork, the APK will show
+   the wrong artwork before JavaScript starts.
+2. **App splash:** `app/index.tsx` renders `assets/splash-animation.json`. It is
+   finite and must navigate to `/welcome`; it must never be an infinite loop.
+3. **Welcome route:** `app/welcome.tsx` renders the real welcome screen. A
+   device test is not complete until the native splash disappears and the
+   welcome route is visible.
+
+The post-bootstrap handoff is deliberate and must remain in this order:
+
+```text
+native splash (Expo) → React shell commits → next animation frame hides native splash
+→ finite Lottie index route → /welcome for a public session
+→ /onboarding or /self when the session route guard resolves otherwise
+```
+
+Native splash must not wait for remote auth/profile calls or fonts. Those can be
+slow, unavailable, or cancelled, and delaying the native splash until they
+finish makes the visual sequence nondeterministic. `AppContent` schedules the
+handoff after its first committed frame; the index route then owns the finite
+Lottie transition and has one guarded completion path shared by the animation
+callback and timeout fallback.
+
+Google One-Tap is configured only after critical boot succeeds. Configuration
+does not show a prompt; it only prepares Credential Manager. The actual Google
+UI appears only after the user opens `/auth` and taps the sign-in action. The
+sign-in call reuses the same idempotent configuration, so a fast user action
+cannot race deferred startup.
+
+### Production session and offline-capability contract
+
+Authentication and capabilities are deliberately different concerns. Restoring
+a Supabase session is local and may work without a network, but creating a new
+credential, refreshing an expired credential, Google sign-in, and fetching a
+previously unseen profile require the network. The app must never treat a
+persisted profile record as proof of authorization.
+
+For an offline return, the route guard accepts only a hydrated entitlement
+snapshot that is fresh, marked `verified` or `cached`, and belongs to the same
+Supabase user ID as the restored session. That snapshot is the local authority
+for feature continuity; individual actions remain protected by the signed
+Cedar permission snapshot and the local data store. A stale, missing, or
+other-user snapshot is rejected and cannot route into the authenticated app.
+
+If the profile/capability request fails and no valid local snapshot exists,
+Gurudevi keeps the public shell on screen, preserves local data, shows a
+retryable capability-recovery notice, and does not use a timer to guess that
+authorization is safe. This is the intended production failure mode. Test the
+owner match, stale-snapshot rejection, offline return, and retry notice before
+changing session or entitlement persistence.
+
+The current source contains a target/grid placeholder for the native splash,
+while the available marketing artwork lives outside the mobile app. Do not
+silently substitute one for the other: approve the intended artwork first,
+then wire that exact asset through `app.json` and regenerate native artifacts.
 
 ### Native migration validation in CI
 
@@ -270,6 +394,61 @@ The `withGradleProperties.js` plugin sets JVM memory to 3GB. If still OOM:
 1. Close other apps
 2. Check `$env:GRADLE_ABI` — building all 4 ABIs uses 4x memory
 3. Use `arm64-v8a` only (default)
+
+For WSL, the 3GB JVM setting is too aggressive on a typical 8GB Windows
+machine. Use the release command's 1.5GB heap, two Gradle workers, and CMake
+parallelism of two. This avoids native C++ OOM and is usually faster than
+repeated failed builds.
+
+### Why the first build is slow
+
+The first local release build compiles React Native, Expo modules, Nitro/MMKV,
+Skia, and other native dependencies, and Metro creates a production bundle and
+sourcemap. Subsequent builds reuse Gradle, CMake, pnpm, and Metro caches. A
+warm release build is therefore commonly a few minutes, not 50 minutes.
+
+It becomes slow again after a clean build, deleted caches, a native dependency
+or Expo plugin change, a prebuild that changes generated native files, or a
+new WSL checkout. JavaScript-only changes normally avoid most native work, but
+still require Metro to regenerate the production bundle for a release APK.
+
+### Standalone startup crash or blank screen
+
+Gurudevi has two intentionally separate startup modes:
+
+1. **Foreground UI:** `index.ts` loads only entry-safe shims and the background
+   task definition before `expo-router/entry`. `RootShell` then completes the
+   critical sequence `runtime → catalog → workflow bridge` before mounting
+   `GlobalProvider` or a route. A failed runtime remains on the recovery screen;
+   it must never be converted into a normal app render by a timeout.
+2. **Background worker:** Android may load the JavaScript bundle without mounting
+   React. `src/lib/backgroundSyncTask.ts` therefore defines the Expo task at
+   entry evaluation time and dynamically loads the sync graph only when the OS
+   invokes that worker. The worker calls the same idempotent `bootstrapPlatform`
+   before accessing storage or network adapters.
+
+Keep `index.ts` entry-safe: Hermes/polyfills and worker definitions only. Domain
+catalogs, providers, authentication, native sign-in setup, analytics, fonts,
+and remote work belong after critical startup. Optional services must log and
+continue; only runtime/catalog/bridge failure may block UI.
+
+The contract is covered by `startup-coordinator.test.ts` and
+`background-sync-task-entry.test.ts`, `native-splash-handoff.test.ts`, and
+`google-one-tap-bootstrap.test.ts`. Session/capability routing is covered by
+`session-route-readiness.test.ts`. Run it with:
+
+```bash
+pnpm --filter gurudevi-mobile test
+```
+
+Vitest resolves workspace aliases through Vite's native
+`resolve.tsconfigPaths: true` in `vitest.config.mts`; do not restore
+`vite-tsconfig-paths` merely to suppress configuration issues.
+
+If the process dies, capture the first `ReactNativeJS` error rather than the
+later Expo Router `ErrorBoundary` error. The latter is usually a secondary
+rendering symptom. Symbolicate Hermes bundle frames using the release
+sourcemap under `android/app/build/generated/sourcemaps/react/release/`.
 
 ### "expo install --fix" was accidentally run
 

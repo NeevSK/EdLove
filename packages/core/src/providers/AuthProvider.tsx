@@ -7,6 +7,8 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   isProfileLoading: boolean;
+  isProfileResolving: boolean;
+  profileError: string | null;
   refreshProfile: () => Promise<void>;
 }
 

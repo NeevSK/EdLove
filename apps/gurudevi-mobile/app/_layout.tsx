@@ -41,7 +41,7 @@ import { useFeatureStore } from '@repo/core/store/useFeatureStore';
 import { SyncManager } from '@repo/core/sync';
 import { useQRDeepLink } from '@repo/scanner-kit';
 import { BrandPulse } from '@repo/ui';
-import { AccountPinModal } from '@repo/ui/components';
+import AccountPinModal from '@repo/ui/components/AccountPinModal';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 import NetworkStatusBanner from '@repo/ui/components/NetworkStatusBanner';
 import { SanctuaryGlobalStyles } from '@repo/ui/components/SanctuaryGlobalStyles';
@@ -70,20 +70,20 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { registerAppCatalog } from '@/boot/registerAppCatalog';
+import { scheduleNativeSplashHandoff } from '@/boot/nativeSplashHandoff';
+import {
+  getSessionRouteReadiness,
+  hasUsableOfflineCapabilitySnapshot,
+} from '@/boot/sessionRouteReadiness';
+import { completeEssentialStartup } from '@/boot/startupCoordinator';
 import PDPAConsentModal from '@/components/PDPAConsentModal';
 import { PWAInstallBanner } from '@/components/web/PWAInstallBanner';
 import { fontAssets } from '@/constants/Fonts';
-import { registerBackgroundSync } from '@/lib/backgroundSync';
-import { configureGoogleOneTap } from '@/lib/googleSignIn';
 import {
   dispatchQueuedMutationToSovereignBus,
   installMobileWorkflowEventBridge,
 } from '@/lib/inngestEvents';
 import { DeepLinkProvider } from '@/providers/DeepLinkProvider';
-import { LanguageUtils } from '@/utils/LanguageUtils';
-
-registerAppCatalog();
 
 void SplashScreen.preventAutoHideAsync().catch(() => {
   // Native splash is best-effort; the in-app fallback covers slow boots.
@@ -99,16 +99,12 @@ if (
 
 const queryClient = new QueryClient();
 
-// Inject the platform analytics adapter before any auth/bootstrap effects run.
-// This prevents the core bridge from observing an uninitialized PostHog instance
-// during the first render cycle.
-injectPostHog(initTracker);
+type BootState =
+  | { phase: 'registering-runtime' }
+  | { phase: 'ready' }
+  | { phase: 'failed'; error: Error };
 
-// Configure native Google One-Tap / Credential Manager before any sign-in
-// attempt. No-op on web and when the client IDs are unset.
-configureGoogleOneTap();
-
-function FullScreenFallback() {
+function FullScreenFallback({ error, onRetry }: { error?: Error; onRetry?: () => void }) {
   return (
     <View
       style={{
@@ -121,8 +117,28 @@ function FullScreenFallback() {
     >
       <BrandPulse size={28} tintColor="#D4843A" accessibilityLabel="Preparing Gurudevi" />
       <Text style={{ marginTop: 16, textAlign: 'center', fontSize: 14, color: '#F5EDD6' }}>
-        Preparing your sanctuary…
+        {error ? 'Gurudevi could not finish starting.' : 'Preparing your sanctuary…'}
       </Text>
+      {error && (
+        <>
+          <Text style={{ marginTop: 8, textAlign: 'center', fontSize: 12, color: '#B7C0D1' }}>
+            {error.message}
+          </Text>
+          <TouchableOpacity
+            accessibilityRole="button"
+            onPress={onRetry}
+            style={{
+              backgroundColor: '#D4843A',
+              borderRadius: 12,
+              marginTop: 20,
+              paddingHorizontal: 20,
+              paddingVertical: 12,
+            }}
+          >
+            <Text style={{ color: '#FFFFFF', fontWeight: '700' }}>Try again</Text>
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 }
@@ -217,9 +233,9 @@ function BootstrapSideEffects() {
 function AppContent() {
   const router = useRouter();
   const pathname = usePathname();
-  const { session, loading, isProfileLoading } = useAuth();
+  const { session, loading, isProfileResolving, profileError, refreshProfile } = useAuth();
   const onboardingCompleted = useStore((state) => state.onboardingCompleted);
-  const hasActiveCapacity = useStore((state) => Boolean(state.activeBond?.capacity));
+  const hasLiveCapacity = useStore((state) => Boolean(state.activeBond?.capacity));
   const activeBond = useStore((state) => state.activeBond);
   const activeBondScopeId = useStore((state) => state.activeBond?.id ?? null);
   const clearCedarDecisions = useCedarDecisionStore((state) => state.clearDecisions);
@@ -227,8 +243,6 @@ function AppContent() {
   const { hasDecidedConsent } = useConsentStore();
   const toast = useStore((state) => state.toast);
   const hideToast = useStore((state) => state.hideToast);
-  const [fontsReady, setFontsReady] = useState(() => !coreRuntime.isRegistered());
-  const [bootstrapTimedOut, setBootstrapTimedOut] = useState(false);
 
   const [lockState, setLockState] = useState(() => ({
     isUnlocked: Platform.OS === 'web' || !storage.getBoolean('require_biometrics'),
@@ -236,28 +250,31 @@ function AppContent() {
     showPinUnlock: false,
   }));
   const { isUnlocked, hasPinCode, showPinUnlock } = lockState;
-  // Web can render the route shell while native-only adapters and remote auth
-  // settle. Keeping this platform-specific prevents a missing/slow browser
-  // capability from hiding the entire web product behind the native boot gate.
-  const bootstrapReady =
-    Platform.OS === 'web' || (!loading && !isProfileLoading && fontsReady) || bootstrapTimedOut;
-
-  useEffect(() => {
-    if (bootstrapReady) return;
-
-    const timeout = setTimeout(() => {
-      console.warn(
-        '[AppContent] auth/profile bootstrap exceeded 10s; continuing with route shell and local fallbacks',
-      );
-      setBootstrapTimedOut(true);
-    }, 10000);
-
-    return () => clearTimeout(timeout);
-  }, [bootstrapReady]);
+  const entitlementSnapshot = useEntitlementStore((state) => ({
+    manifestLoaded: state.manifestLoaded,
+    readiness: state.readiness,
+    snapshotUserId: state.snapshotUserId,
+  }));
+  // Session restoration is local; identity and fresh capabilities may require
+  // the network. An offline return is permitted only from a verified, local,
+  // user-scoped entitlement snapshot — never just a stale profile object.
+  const hasCachedCapabilities = hasUsableOfflineCapabilitySnapshot({
+    sessionUserId: session?.user?.id,
+    ...entitlementSnapshot,
+  });
+  const { routeGuardReady, hasActiveCapacity, isCapabilityResolutionBlocked } =
+    getSessionRouteReadiness({
+      isSessionLoading: loading,
+      isProfileResolving,
+      hasProfileError: Boolean(profileError),
+      hasSession: Boolean(session),
+      hasCachedCapabilities,
+      hasLiveCapacity,
+    });
   const sessionMode = getSessionIdentityMode(session);
   const routeTarget = getAuthRouteTarget({
     pathname,
-    bootstrapReady,
+    bootstrapReady: routeGuardReady,
     sessionMode,
     onboardingCompleted,
     hasActiveCapacity,
@@ -353,34 +370,13 @@ function AppContent() {
       return;
     }
 
-    let cancelled = false;
-    const timeout = setTimeout(() => {
-      if (!cancelled) {
-        console.warn('[font bootstrap] timed out, rendering app without waiting longer');
-        setFontsReady(true);
-      }
-    }, 8000);
-
-    void coreRuntime.asset
-      .loadAsync(fontAssets)
-      .catch((error) => {
-        console.warn('[font bootstrap] continuing with fallback fonts', error);
-      })
-      .finally(() => {
-        clearTimeout(timeout);
-        if (!cancelled) {
-          setFontsReady(true);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timeout);
-    };
+    void coreRuntime.asset.loadAsync(fontAssets).catch((error) => {
+      console.warn('[font bootstrap] continuing with fallback fonts', error);
+    });
   }, []);
 
   useEffect(() => {
-    if (!bootstrapReady) return;
+    if (!routeGuardReady) return;
 
     // Token-Based Access Control (TOBAC) Route Guard
     if (session?.expires_at) {
@@ -396,15 +392,20 @@ function AppContent() {
     if (routeTarget.redirectTo && pathname !== routeTarget.redirectTo) {
       router.replace(routeTarget.redirectTo);
     }
-  }, [bootstrapReady, pathname, routeTarget.redirectTo, router, session, onboardingCompleted]);
+  }, [routeGuardReady, pathname, routeTarget.redirectTo, router, session, onboardingCompleted]);
 
-  useEffect(() => {
-    if (!bootstrapReady) return;
-
-    void SplashScreen.hideAsync().catch((error) => {
-      console.warn('[splash] hideAsync failed, continuing anyway', error);
-    });
-  }, [bootstrapReady]);
+  useEffect(
+    () =>
+      scheduleNativeSplashHandoff({
+        requestFrame: requestAnimationFrame,
+        cancelFrame: cancelAnimationFrame,
+        hide: () => SplashScreen.hideAsync(),
+        onError: (error) => {
+          console.warn('[splash] hideAsync failed, continuing anyway', error);
+        },
+      }),
+    [],
+  );
 
   const loadDecisions = useCedarDecisionStore((state) => state.loadDecisions);
   const loadEntitlements = useEntitlementStore((state) => state.loadEntitlements);
@@ -529,8 +530,35 @@ function AppContent() {
                     </Stack>
                   </FeatureProvider>
                   <NetworkStatusBanner />
+                  {isCapabilityResolutionBlocked && (
+                    <View
+                      accessibilityRole="alert"
+                      style={{
+                        marginHorizontal: 16,
+                        marginBottom: 12,
+                        padding: 14,
+                        borderRadius: 12,
+                        backgroundColor: '#2A1B12',
+                      }}
+                    >
+                      <Text style={{ color: '#FDE7D2', fontSize: 14 }}>
+                        We could not restore your account capabilities. Your local data remains
+                        safe.
+                      </Text>
+                      <TouchableOpacity
+                        accessibilityRole="button"
+                        accessibilityLabel="Retry restoring account capabilities"
+                        onPress={() => {
+                          void refreshProfile();
+                        }}
+                        style={{ alignSelf: 'flex-start', marginTop: 10 }}
+                      >
+                        <Text style={{ color: '#F4B66E', fontWeight: '700' }}>Retry</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
                   <PDPAConsentModal
-                    isOpen={bootstrapReady && !hasDecidedConsent}
+                    isOpen={routeGuardReady && !hasDecidedConsent}
                     onClose={() => {}}
                   />
                   <SyncManager dispatchQueuedMutation={dispatchQueuedMutationToSovereignBus} />
@@ -555,58 +583,85 @@ function AppContent() {
 }
 
 function RootShell() {
-  const [bootstrapped, setBootstrapped] = useState(false);
+  const [bootState, setBootState] = useState<BootState>({ phase: 'registering-runtime' });
+  const [bootAttempt, setBootAttempt] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
-    const bootstrapTimeout = setTimeout(() => {
-      if (!cancelled) {
-        console.warn('[bootstrapPlatform] timed out; continuing with available adapters');
-        setBootstrapped(true);
-      }
-    }, 10000);
 
-    void bootstrapPlatform()
-      .then(() => {
-        if (!coreRuntime.isRegistered()) {
-          throw new Error('Core runtime failed to register during platform bootstrap.');
+    setBootState({ phase: 'registering-runtime' });
+
+    void (async () => {
+      try {
+        // This is the hard boot boundary. Nothing that can read coreRuntime is
+        // rendered until this completes successfully.
+        await completeEssentialStartup({
+          bootstrapPlatform,
+          isRuntimeRegistered: () => coreRuntime.isRegistered(),
+          loadCatalog: () => import('@/boot/registerAppCatalog'),
+          installWorkflowBridge: installMobileWorkflowEventBridge,
+        });
+
+        if (cancelled) return;
+        setBootState({ phase: 'ready' });
+
+        try {
+          // These services must never decide whether first render is possible.
+          injectPostHog(initTracker);
+          void import('@/lib/googleSignIn')
+            .then(({ configureGoogleOneTap }) => configureGoogleOneTap())
+            .catch((error) => {
+              console.warn('[GoogleSignIn] deferred configuration failed:', error);
+            });
+          void import('@/lib/backgroundSync')
+            .then(({ registerBackgroundSync }) => registerBackgroundSync())
+            .catch((error) => {
+              console.warn('[BackgroundSync] deferred registration failed:', error);
+            });
+          void import('@/utils/LanguageUtils')
+            .then(({ LanguageUtils }) => LanguageUtils.init())
+            .catch((error) => {
+              console.warn('[LanguageUtils.init] continuing without language bootstrap', error);
+            });
+        } catch (error) {
+          console.warn('[boot] deferred startup service failed:', error);
         }
-        installMobileWorkflowEventBridge();
-        void registerBackgroundSync();
+      } catch (error) {
+        console.error('[boot] core startup failed:', error);
         if (!cancelled) {
-          clearTimeout(bootstrapTimeout);
-          setBootstrapped(true);
+          setBootState({
+            phase: 'failed',
+            error: error instanceof Error ? error : new Error('Unknown startup failure.'),
+          });
         }
-      })
-      .catch((error) => {
-        clearTimeout(bootstrapTimeout);
-        console.warn('[bootstrapPlatform] continuing with fallback startup', error);
-        if (!cancelled) setBootstrapped(true);
-      });
-
-    void LanguageUtils.init().catch((error) => {
-      console.warn('[LanguageUtils.init] continuing without language bootstrap', error);
-    });
+      }
+    })();
 
     return () => {
       cancelled = true;
-      clearTimeout(bootstrapTimeout);
     };
-  }, []);
+  }, [bootAttempt]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <GlobalProvider>
-        {bootstrapped || Platform.OS === 'web' ? (
+      {bootState.phase === 'ready' ? (
+        <GlobalProvider>
           <EnvironmentProvider>
             <DeepLinkProvider>
               <AppContent />
             </DeepLinkProvider>
           </EnvironmentProvider>
-        ) : (
-          <FullScreenFallback />
-        )}
-      </GlobalProvider>
+        </GlobalProvider>
+      ) : (
+        <FullScreenFallback
+          error={bootState.phase === 'failed' ? bootState.error : undefined}
+          onRetry={
+            bootState.phase === 'failed'
+              ? () => setBootAttempt((attempt) => attempt + 1)
+              : undefined
+          }
+        />
+      )}
     </QueryClientProvider>
   );
 }

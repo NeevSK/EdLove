@@ -11,10 +11,11 @@ export interface NativeGoogleResult {
   accessToken: string | null;
 }
 
-export function configureGoogleOneTap(): void {
+export function configureGoogleOneTap(): boolean {
   console.warn(
     '[GoogleSignIn] Native One-Tap is not available on the web platform; routing to browser OAuth flow.',
   );
+  return false;
 }
 
 export function signInWithGoogleNative(): Promise<NativeGoogleResult> {

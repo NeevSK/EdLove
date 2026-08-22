@@ -17,7 +17,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { tokens } from '@repo/ui/tokens';
-import { duration, easing, color } from './motion';
+import { duration, easing, nativeEasing, color } from './motion';
 import { useBreakpoint } from './layout';
 
 // Same traced geometry as the line-draw splash concept — the whole
@@ -106,7 +106,7 @@ export function EmptyState({ title, message, description, icon, subtle = false, 
               '100%': { opacity: 0.6 },
             },
             animationDuration: duration.breathe * 1.4,
-            animationTimingFunction: easing.standard,
+            animationTimingFunction: nativeEasing.standard,
             animationIterationCount: 'infinite',
           } as any
         }

@@ -48,6 +48,17 @@ export const easing = {
 } as const;
 
 /**
+ * Reanimated's native CSS animation API accepts named timing functions, but
+ * does not accept CSS cubic-bezier strings. Keep this platform-specific
+ * mapping separate from the web CSS tokens above.
+ */
+export const nativeEasing = {
+  decelerate: 'ease-out',
+  accelerate: 'ease-in',
+  standard: 'ease-in-out',
+} as const;
+
+/**
  * For the classic worklet API — pass straight into Easing.bezier(...args),
  * e.g. Easing.bezier(...easingPoints.decelerate). Used by
  * react-native-screen-transitions and any withTiming() call.

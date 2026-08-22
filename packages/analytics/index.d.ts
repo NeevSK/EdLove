@@ -1,5 +1,5 @@
 declare module '@repo/analytics' {
-  export * from './index';
+  export * from './src/index';
 }
 
 declare module '@repo/analytics/hooks' {

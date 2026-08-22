@@ -18,7 +18,7 @@ import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useBreakpoint } from './layout';
-import { duration, easing } from './motion';
+import { duration, easing, nativeEasing } from './motion';
 
 // Same verified geometry as BrandPulse — see that file for the source trace.
 const PATHS = {
@@ -95,7 +95,7 @@ export function ErrorState({ title, message, children, className, style }: Error
               '100%': { opacity: 1 },
             },
             animationDuration: duration.transition,
-            animationTimingFunction: easing.decelerate,
+            animationTimingFunction: nativeEasing.decelerate,
             animationFillMode: 'forwards',
           } as any : {}),
         }}

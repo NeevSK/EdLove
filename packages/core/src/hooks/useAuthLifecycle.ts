@@ -23,6 +23,8 @@ export function useAuthLifecycle() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
+  const [isProfileResolving, setIsProfileResolving] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
 
   // Tracks whether the very first profile load has completed successfully.
   // After that, subsequent tab-focus/token-refresh fetches run silently
@@ -42,6 +44,8 @@ export function useAuthLifecycle() {
     // Only block the UI with a loading spinner on the very first boot fetch.
     // All subsequent fetches (tab focus, token refresh) run silently.
     const isFirstLoad = !hasBootstrappedRef.current;
+    setIsProfileResolving(true);
+    setProfileError(null);
     if (isFirstLoad) {
       setIsProfileLoading(true);
     }
@@ -95,7 +99,9 @@ export function useAuthLifecycle() {
       }
     } catch (error) {
       console.warn('❌ Profile: Fetching encountered an error:', error);
+      setProfileError(error instanceof Error ? error.message : 'Unable to restore your profile.');
     } finally {
+      setIsProfileResolving(false);
       if (isFirstLoad) {
         setIsProfileLoading(false);
       }
@@ -228,7 +234,14 @@ export function useAuthLifecycle() {
   }, [currentUser?.id, refreshProfile]);
 
   return useMemo(
-    () => ({ session, loading, isProfileLoading, refreshProfile }),
-    [session, loading, isProfileLoading, refreshProfile],
+    () => ({
+      session,
+      loading,
+      isProfileLoading,
+      isProfileResolving,
+      profileError,
+      refreshProfile,
+    }),
+    [session, loading, isProfileLoading, isProfileResolving, profileError, refreshProfile],
   );
 }
