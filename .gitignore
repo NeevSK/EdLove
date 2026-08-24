@@ -109,3 +109,7 @@ scan.json
 scan-viewer.html
 .viewer.html
 .shell.html
+
+# Stray nested pnpm lockfiles (root lockfile is canonical)
+**/pnpm-lock.yaml
+!/pnpm-lock.yaml
