@@ -81,12 +81,12 @@ module.exports = {
       severity: 'error',
       comment: 'Layer 2 (Infrastructure) should not import from higher layers.',
       from: {
-        path: '^packages/(scanner-kit|ai|analytics|form-builder|trube-art|lk-edu-geo|graphics)/src/',
+        path: '^packages/(scanner-kit|ai|analytics|form-builder|lk-edu-geo|graphics)/src/',
       },
       to: {
         path: '^packages/',
         pathNot:
-          '^packages/(core|types-shim|ui|graphics|scanner-kit|ai|analytics|form-builder|trube-art|lk-edu-geo|eslint-config|typescript-config|form-builder-engine)/',
+          '^packages/(core|types-shim|ui|graphics|scanner-kit|ai|analytics|form-builder|lk-edu-geo|eslint-config|typescript-config|form-builder-engine)/',
       },
     },
     {
@@ -104,7 +104,7 @@ module.exports = {
       name: 'standalone-isolation',
       severity: 'error',
       comment: 'Standalone packages should have ZERO dependencies on Layer 3 or 4.',
-      from: { path: '^packages/(trube-art|lk-edu-geo)/' },
+      from: { path: '^packages/lk-edu-geo/' },
       to: {
         path: '^packages/(classroom|people|self|admin|community|profile|workforce|library|payments|accounting)/',
       },
@@ -162,11 +162,11 @@ module.exports = {
       severity: 'error',
       comment: 'Independent/Public packages must be accessed only via their public API (index.ts).',
       from: {
-        pathNot: '^packages/(form-builder|trube-art|lk-edu-geo)/',
+        pathNot: '^packages/(form-builder|lk-edu-geo)/',
       },
       to: {
-        path: '^packages/(form-builder|trube-art|lk-edu-geo)/src/.+',
-        pathNot: '^packages/(form-builder|trube-art|lk-edu-geo)/src/(index\\.ts|api/index\\.ts)$',
+        path: '^packages/(form-builder|lk-edu-geo)/src/.+',
+        pathNot: '^packages/(form-builder|lk-edu-geo)/src/(index\\.ts|api/index\\.ts)$',
       },
     },
     {

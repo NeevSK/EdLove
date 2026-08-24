@@ -151,18 +151,6 @@
       "@repo/profile/*": [
         "./packages/profile/src/*"
       ],
-      "@rn-terrain/cli/*": [
-        "./packages/rn-terrain-cli/src/*"
-      ],
-      "@rn-terrain/core/*": [
-        "./packages/rn-terrain-core/src/*"
-      ],
-      "@rn-terrain/mcp/*": [
-        "./packages/rn-terrain-mcp/src/*"
-      ],
-      "@rn-terrain/vscode/*": [
-        "./packages/rn-terrain-vscode/src/*"
-      ],
       "@repo/scanner-kit/*": [
         "./packages/scanner-kit/src/*"
       ],
@@ -171,9 +159,6 @@
       ],
       "@repo/self/*": [
         "./packages/self/src/*"
-      ],
-      "@repo/trube-art/*": [
-        "./packages/trube-art/src/*"
       ],
       "@repo/ui/*": [
         "./packages/ui/src/*"
