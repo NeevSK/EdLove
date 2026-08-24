@@ -18,7 +18,6 @@ export default [
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-misused-promises': 'warn',
       '@typescript-eslint/no-require-imports': 'warn',
-      '@typescript-eslint/preserve-caught-error': 'warn',
       '@eslint-react/static-components': 'warn',
       '@eslint-react/no-nested-component-definitions': 'warn',
       '@eslint-react/unsupported-syntax': 'warn',
