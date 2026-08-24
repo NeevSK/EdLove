@@ -74,7 +74,7 @@ hence MIT. The same logic applies to trube-art: its value is craft and brand,
 not secrecy of source.
 
 If a future extracted package ever carries real patent exposure (e.g., native
-FFI work from `docs/Advanced Rust CPP`), revisit Apache-2.0 for that repo only.
+FFI work from the local `rust-lab/research` notes), revisit Apache-2.0 for that repo only.
 
 ## Consequences
 

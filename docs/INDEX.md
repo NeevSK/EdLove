@@ -12,6 +12,10 @@ tags: [docs, index, changelog]
 
 This index lists all design specifications, plans, guides, decisions, and workflow checklists for the Polymath Platform, organized by functional area according to the workspace documentation SOP.
 
+> **Local-only:** Rust research notes, FFI runbooks (chronicle, inline-module SOP,
+> git guidelines), and the `spike-rust-inline` experiment live in the gitignored
+> `rust-lab/` folder at the repo root. They are intentionally untracked.
+
 ## Directory Structure
 
 - **`Core/`** — Core product logic, guides, execution playbooks
@@ -58,7 +62,6 @@ These files outline security models, data lifecycle policies, platform topologie
 | [architecture/2026-07-23-architecture-analysis.md](architecture/2026-07-23-architecture-analysis.md) | Architecture audit and vulnerability analysis report |
 | [architecture/2026-07-23-docs-grounded-architecture-analysis.md](architecture/2026-07-23-docs-grounded-architecture-analysis.md) | Document-grounded architecture review and gap analysis |
 | [architecture/2026-07-24-cedar-benchmark-sop-architecture.md](architecture/2026-07-24-cedar-benchmark-sop-architecture.md) | Performance benchmark and SOP for Cedar-based policy evaluation |
-| [architecture/2026-07-24-expo-57-rust-inline-module-chronicle.md](architecture/2026-07-24-expo-57-rust-inline-module-chronicle.md) | Technical chronicle detailing inline Kotlin/Rust JNI bridge integrations |
 | [architecture/2026-07-24-permission-refactor-review-report.md](architecture/2026-07-24-permission-refactor-review-report.md) | Post-refactor review report for permission systems |
 | [architecture/2026-08-10-gurudevi-edlove-exploration-vs-current-implementation.md](architecture/2026-08-10-gurudevi-edlove-exploration-vs-current-implementation.md) | Evidence-backed comparison of the imported exploration corpus against current code, schema, migrations, and UI |
 | [Core/data-state-ownership-map.md](Core/data-state-ownership-map.md) | Per-domain source-of-truth map across the six storage layers (Zustand, TanStack Query, MMKV, PowerSync, Supabase, Postgres) with agent read/write rules |
@@ -115,8 +118,6 @@ CI/CD setups, developer workflow scripts, versioning plans, and build diagnostic
 | [infra/git-branching-model.md](infra/git-branching-model.md) | Branch naming structures, merge strategies, PR templates |
 | [infra/code-quality-workflow.md](infra/code-quality-workflow.md) | Pre-commit/pre-push hooks setup, commitlint standards |
 | [infra/code-checkers.md](infra/code-checkers.md) | Code quality scripts catalog and run flags |
-| [infra/rust-git-guidelines.md](infra/rust-git-guidelines.md) | Rust & Git Integration Guide & SOP for beginners |
-| [infra/expo-57-rust-inline-module-sop.md](infra/expo-57-rust-inline-module-sop.md) | Step-by-step SOP for Kotlin inline modules with JNI Rust |
 | [infra/2026-07-24-physical-device-deployment-log.md](infra/2026-07-24-physical-device-deployment-log.md) | Live runlog for physical hardware builds and USB debugging |
 | [infra/doppler-secrets-management-guide.md](infra/doppler-secrets-management-guide.md) | Comprehensive guide for Doppler secrets management integration across dev/staging/prod/next environments |
 | [infra/production-readiness-program.md](infra/production-readiness-program.md) | Cross-platform production-readiness checklist for mobile, API, web, data, sync, security, and operations |

@@ -90,7 +90,7 @@ packages/library/lint_results.json
 *.tsbuildinfo
 
 # Rust test
-spike-rust-inline/
+rust-lab/
 native-capabilities/
 
 *.zip
