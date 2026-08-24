@@ -1,0 +1,19 @@
+{
+  "id": "react-native-pager-view-v9",
+  "subject": "react-native-pager-view v9",
+  "subject_type": "package",
+  "verdict": "HOLD",
+  "confidence": "high",
+  "category": "navigation",
+  "use_case": "Paged native swipe surfaces",
+  "problem": "Considering a version upgrade without a current bug or required API.",
+  "current_stack": ["react-native-pager-view 8.0.2", "Expo Router", "React Native 0.86"],
+  "compatibility": { "expo": "Expo 57 — not verified", "react_native": "React Native 0.86 — not verified", "new_architecture": "unknown", "web": "partial" },
+  "risks": ["Native compatibility change", "Upgrade churn", "iOS work while iOS is deprioritized"],
+  "alternatives": ["Existing react-native-pager-view 8.0.2", "Expo Router layouts", "Reanimated-based surface"],
+  "evidence": [],
+  "decision": "Keep the installed version. Do not upgrade until a reproducible defect or required API is documented.",
+  "revisit_when": "Pager View 8 fails a required workflow or v9 is explicitly verified against the pinned Expo/RN stack.",
+  "created_at": "2026-08-12T00:00:00.000Z",
+  "updated_at": "2026-08-12T00:00:00.000Z"
+}

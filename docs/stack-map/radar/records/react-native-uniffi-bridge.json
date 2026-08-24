@@ -1,0 +1,19 @@
+{
+  "id": "react-native-uniffi-bridge",
+  "subject": "React Native UniFFI bridge",
+  "subject_type": "package",
+  "verdict": "ASSESS",
+  "confidence": "medium",
+  "category": "native",
+  "use_case": "Expose a specific Rust capability to Android and iOS",
+  "problem": "Captured as a possible native bridge; no concrete capability currently requires it.",
+  "current_stack": ["Expo 57", "React Native 0.86 New Architecture", "react-native-nitro-modules", "spike-rust-inline"],
+  "compatibility": { "expo": "Expo 57 — unverified", "react_native": "React Native 0.86 — unverified", "new_architecture": "unknown", "web": "partial" },
+  "risks": ["Native build complexity", "Android/iOS parity cost", "A third native bridge strategy beside Nitro and existing Rust experiments"],
+  "alternatives": ["Expo module", "Nitro module", "Existing native package"],
+  "evidence": [],
+  "decision": "Do not install. Move to TRIAL only when a concrete Rust capability has a benchmark and native API design.",
+  "revisit_when": "A required native capability cannot be implemented safely with Expo modules, Nitro, or an existing package.",
+  "created_at": "2026-08-12T00:00:00.000Z",
+  "updated_at": "2026-08-12T00:00:00.000Z"
+}

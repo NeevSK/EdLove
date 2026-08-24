@@ -1,0 +1,19 @@
+{
+  "id": "rslint",
+  "subject": "RSLint",
+  "subject_type": "package",
+  "verdict": "HOLD",
+  "confidence": "high",
+  "category": "lint",
+  "use_case": "Fast JavaScript/TypeScript linting",
+  "problem": "Captured as a possible replacement for the current linter stack.",
+  "current_stack": ["Oxlint", "ESLint", "Biome", "React Native accessibility rules"],
+  "compatibility": { "expo": "Not applicable", "react_native": "Not applicable", "new_architecture": "not_applicable", "web": "supported" },
+  "risks": ["Migration cost", "Rule/config parity loss", "Another overlapping quality tool"],
+  "alternatives": ["Oxlint", "ESLint", "Biome"],
+  "evidence": [],
+  "decision": "Do not replace the existing hybrid lint strategy. Improve current diagnostics first.",
+  "revisit_when": "Oxlint plus ESLint cannot meet a measured lint performance or rule-coverage requirement.",
+  "created_at": "2026-08-12T00:00:00.000Z",
+  "updated_at": "2026-08-12T00:00:00.000Z"
+}

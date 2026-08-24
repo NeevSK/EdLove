@@ -121,10 +121,10 @@ To update any of these: discuss with the user first, verify compatibility with E
 
 ## Stack Map (REQUIRED after dependency changes)
 
-- **After adding/removing any workspace package or dependency:** run `pnpm run stack-map:bootstrap` (drafts an entry), review it in `docs/RN Terrain/landscape/stack-map-annotations.yaml`, then run `pnpm run stack-map` to regenerate the docs.
-- `docs/RN Terrain/landscape/stack-map.md` + `catalog/` are **generated** — never hand-edit them; edit the annotations YAML instead.
+- **After adding/removing any workspace package or dependency:** run `pnpm run stack-map:bootstrap` (drafts an entry), review it in `docs/stack-map/landscape/stack-map-annotations.yaml`, then run `pnpm run stack-map` to regenerate the docs.
+- `docs/stack-map/landscape/stack-map.md` + `catalog/` are **generated** — never hand-edit them; edit the annotations YAML instead.
 - The annotations YAML carries: layer (core/ui/domain/tooling/app), summary, overlap verdicts, floating verdicts, upgrade notes.
-- **External deps (npm/SDK/CLI):** `pnpm run stack-map:deps` regenerates `docs/RN Terrain/landscape/dependency-catalog.md` from `dependency-annotations.yaml`. Sacred pins live there — never bump them without user approval.
+- **External deps (npm/SDK/CLI):** `pnpm run stack-map:deps` regenerates `docs/stack-map/landscape/dependency-catalog.md` from `dependency-annotations.yaml`. Sacred pins live there — never bump them without user approval.
 
 ---
 

@@ -3,7 +3,7 @@
  * stack-map.mjs — Stack Map generator for the Polymath monorepo.
  *
  * Usage:
- *   node scripts/stack-map.mjs            -> generate docs/RN Terrain/landscape/stack-map.md + catalog/*.md
+ *   node scripts/stack-map.mjs            -> generate docs/stack-map/landscape/stack-map.md + catalog/*.md
  *   node scripts/stack-map.mjs bootstrap  -> append draft annotation entries for un-curated packages
  *
  * Ownership:
@@ -18,7 +18,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const repoRoot = process.cwd();
-const docsDir = path.join(repoRoot, 'docs', 'RN Terrain', 'landscape');
+const docsDir = path.join(repoRoot, 'docs', 'stack-map', 'landscape');
 const annotationsPath = path.join(docsDir, 'stack-map-annotations.yaml');
 const masterPath = path.join(docsDir, 'stack-map.md');
 const catalogDir = path.join(docsDir, 'catalog');
@@ -1039,6 +1039,19 @@ function main() {
     renderRnTerrainSheet(workspace, annotations),
     'utf8',
   );
+
+  const expected = new Set([
+    ...workspace.filter((x) => x.kind === 'apps').map((x) => `${x.dir}.md`),
+    'rn-terrain.md',
+  ]);
+  let pruned = 0;
+  for (const f of fs.readdirSync(catalogDir)) {
+    if (f.endsWith('.md') && !expected.has(f)) {
+      fs.unlinkSync(path.join(catalogDir, f));
+      pruned++;
+      console.log(`🧹 pruned orphaned catalog sheet: catalog/${f}`);
+    }
+  }
 
   const sheets = 1 + workspace.filter((x) => x.kind === 'apps').length + 1;
   console.log(

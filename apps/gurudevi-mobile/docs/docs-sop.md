@@ -16,7 +16,7 @@ This document establishes the official standard for creating, maintaining, and o
 
 ## 1. Directory Structure
 
-All documentation must be placed in one of the following subdirectories under the respective package or application's `docs/` folder (e.g. `docs/RN Terrain/` or `apps/<name>/docs/`) based on its purpose:
+All documentation must be placed in one of the following subdirectories under the respective package or application's `docs/` folder (e.g. `docs/stack-map/` or `apps/<name>/docs/`) based on its purpose:
 
 ```text
 docs/

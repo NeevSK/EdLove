@@ -1,0 +1,39 @@
+{
+  "id": "legendapp-state",
+  "subject": "@legendapp/state",
+  "subject_type": "package",
+  "verdict": "HOLD",
+  "confidence": "high",
+  "category": "state",
+  "use_case": "Reactive client state and local persistence",
+  "problem": "Captured as a possible state-management solution without a demonstrated gap.",
+  "current_stack": [
+    "Zustand",
+    "TanStack Query",
+    "PowerSync",
+    "Drizzle",
+    "MMKV"
+  ],
+  "compatibility": {
+    "expo": "Expo 57 — unverified",
+    "react_native": "React Native 0.86 — unverified",
+    "new_architecture": "unknown",
+    "web": "unknown"
+  },
+  "risks": [
+    "Duplicate state model",
+    "Migration complexity",
+    "Confusion between server state, synced data, and UI state"
+  ],
+  "alternatives": [
+    "Zustand",
+    "TanStack Query",
+    "PowerSync",
+    "Drizzle"
+  ],
+  "evidence": [],
+  "decision": "Duplicates the current state and local-first stack.",
+  "revisit_when": "A measured state problem cannot be solved cleanly by the existing ownership boundaries.",
+  "created_at": "2026-08-12T00:00:00.000Z",
+  "updated_at": "2026-08-12T16:15:48.517Z"
+}
