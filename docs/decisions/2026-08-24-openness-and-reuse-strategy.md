@@ -26,7 +26,7 @@ The Polymath Platform monorepo mixes three kinds of work:
 3. **Independent projects** — conceived with their own identity from day one:
    - **RN Terrain** (`@rn-terrain/{core,cli,mcp,vscode}` + extensive docs) —
      a React Native ecosystem intelligence tool with its own open-source
-     strategy (`docs/RN Terrain/decisions/2026-06-02-rn-terrain-open-source-strategy.md`).
+     strategy (now in `github.com/NeevSK/rn-terrain`, docs/decisions/).
    - **trube-art** (`@repo/trube-art`) — "Living light surfaces for RN & Skia",
      already excluded from the pnpm workspace (`pnpm-workspace.yaml`) with its
      own lockfile.
@@ -101,5 +101,5 @@ repositories now; revisit full-repo openness later if ever warranted.
 ## References
 
 - License tradeoffs: [2026-08-24-license-tradeoffs.md](./2026-08-24-license-tradeoffs.md)
-- RN Terrain open-source strategy: `docs/RN Terrain/decisions/2026-06-02-rn-terrain-open-source-strategy.md`
+- RN Terrain open-source strategy: lives in `github.com/NeevSK/rn-terrain` (docs/decisions/)
   (moves to the `rn-terrain` repo)
