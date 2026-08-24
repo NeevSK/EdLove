@@ -1,3 +1,13 @@
+---
+title: "Sovereign Development Patterns (2026 Edition) ðŸ›ï¸"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, core]
+---
+
 # Sovereign Development Patterns (2026 Edition) 🏛️
 
 This document outlines the architectural standards and patterns for the Polymath Platform, ensuring high-resilience, hexagonal isolation, and agentic interoperability.

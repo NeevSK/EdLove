@@ -1,3 +1,13 @@
+---
+title: "EDLOVE.ORG â€” 09 DOMAIN VI"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web]
+---
+
 # EDLOVE.ORG — 09 DOMAIN VI
 ## The Epistemic Core | "What is the intellectual foundation?"
 

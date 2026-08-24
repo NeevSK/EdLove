@@ -1,3 +1,13 @@
+---
+title: "Modern Runtime Vision"
+status: "active"
+created: 2026-05-22
+updated: 2026-05-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Modern Runtime Vision
 
 ## Purpose

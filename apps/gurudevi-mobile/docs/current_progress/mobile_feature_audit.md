@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Mobile: Exhaustive Feature Audit (Fine-Grained)"
+status: "active"
+created: 2026-02-28
+updated: 2026-02-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Gurudevi Mobile: Exhaustive Feature Audit (Fine-Grained)
 
 This document provides a comprehensive map of all components, features, and user tasks within Gurudevi Mobile. It is organized into shared core domains (Profile, Library) followed by role-specific deep dives (Self, Classroom, Community).

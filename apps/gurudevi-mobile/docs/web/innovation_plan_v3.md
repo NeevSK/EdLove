@@ -1,3 +1,13 @@
+---
+title: "Architectural Critique: The Universal Web Paradox"
+status: "active"
+created: 2026-03-04
+updated: 2026-03-04
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Architectural Critique: The Universal Web Paradox
 
 Based on the **TAIL_FIN.md** principles and a deep audit of the `@repo/library` and `@repo/ui` packages, I've identified several areas where our "Universal" approach is causing **Aesthetic Decay** on the web.

@@ -1,3 +1,13 @@
+---
+title: "RN Profiling & React Model Reference"
+status: "active"
+created: 2026-08-24
+updated: 2026-08-24
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, engineering]
+---
+
 # RN Profiling & React Model Reference
 
 Third companion doc, alongside `ui-thread-discipline.md` (animation/gesture) and `rn-perf-surface-map.md` (lists, native, jank categories, bundling). This one covers the JS/React-side profiling toolchain and rendering-model techniques — largely sourced from Callstack's *Ultimate Guide to React Native Optimization* (2026 ed.), cited where noted.

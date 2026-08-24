@@ -1,3 +1,13 @@
+---
+title: "State vs. Memory Management (2026 Architecture)"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, ui]
+---
+
 # State vs. Memory Management (2026 Architecture)
 
 ## Executive Summary

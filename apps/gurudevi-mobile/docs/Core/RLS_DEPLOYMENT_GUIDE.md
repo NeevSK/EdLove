@@ -1,3 +1,13 @@
+---
+title: "ðŸš€ RLS DEPLOYMENT GUIDE"
+status: "active"
+created: 2026-02-14
+updated: 2026-02-14
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # 🚀 RLS DEPLOYMENT GUIDE
 **Status**: READY FOR DEPLOYMENT
 **Duration**: 2-3 hours

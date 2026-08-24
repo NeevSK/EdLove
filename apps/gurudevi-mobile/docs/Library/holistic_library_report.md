@@ -1,3 +1,13 @@
+---
+title: "Holistic Library Report: The GuruDevi Epistemic Universe"
+status: "active"
+created: 2026-03-13
+updated: 2026-03-13
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Holistic Library Report: The GuruDevi Epistemic Universe
 
 ## 1. Overview & Vision

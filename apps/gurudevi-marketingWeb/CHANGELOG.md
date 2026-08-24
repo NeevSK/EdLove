@@ -1,3 +1,13 @@
+---
+title: "apps-gurudevi-marketing-web"
+status: "active"
+created: 2026-05-07
+updated: 2026-05-07
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-marketingWeb]
+---
+
 # apps-gurudevi-marketing-web
 
 ## 0.0.2

@@ -1,3 +1,13 @@
+---
+title: "Profile Tab â€” UI Operationalization & Full Arc"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Profile Tab — UI Operationalization & Full Arc
 
 Third application of the method established in `20`, extended through `22`'s full arc (protect → creative synthesis → mechanics → technical guidance). Builds on and corrects parts of `14-profile-domain-exploration.md`.

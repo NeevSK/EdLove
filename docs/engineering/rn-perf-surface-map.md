@@ -1,3 +1,13 @@
+---
+title: "RN Performance Surface Map: Lists, Native Docs, and Overlooked Jank Sources"
+status: "active"
+created: 2026-08-24
+updated: 2026-08-24
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, engineering]
+---
+
 # RN Performance Surface Map: Lists, Native Docs, and Overlooked Jank Sources
 
 Companion to `ui-thread-discipline.md`. That doc covers animation/gesture (UI-thread discipline). This one covers everything *adjacent* to that — lists, document handling, and the categories of jank that discipline alone doesn't fix.

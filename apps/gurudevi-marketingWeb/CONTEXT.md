@@ -1,3 +1,13 @@
+---
+title: "PROJECT CONTEXT: gurudevi-marketingWeb"
+status: "active"
+created: 2026-03-20
+updated: 2026-03-20
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-marketingWeb]
+---
+
 # PROJECT CONTEXT: gurudevi-marketingWeb
 
 ## IDENTITY

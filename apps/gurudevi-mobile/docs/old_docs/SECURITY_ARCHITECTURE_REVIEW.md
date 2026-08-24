@@ -1,4 +1,14 @@
-> **Superseded** � kept for historical reference.
+---
+title: "ðŸ”’ Security & Architecture Review"
+status: "active"
+created: 2026-02-19
+updated: 2026-07-24
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
+> **Superseded** � kept for historical reference.
 > See active docs at docs/INDEX.md.
 # 🔒 Security & Architecture Review
 

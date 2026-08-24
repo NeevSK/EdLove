@@ -1,3 +1,13 @@
+---
+title: "ðŸŽ¯ Next Actions: Implementing Alpha Requirements"
+status: "active"
+created: 2026-02-19
+updated: 2026-02-19
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # 🎯 Next Actions: Implementing Alpha Requirements
 ## Prioritized Task List for Mobile App Team
 

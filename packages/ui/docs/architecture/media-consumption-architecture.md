@@ -1,3 +1,13 @@
+---
+title: "ðŸ›¸ Media Consumption Architecture (2026 Edition)"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, ui]
+---
+
 # 🛸 Media Consumption Architecture (2026 Edition)
 
 ## 📖 Overview

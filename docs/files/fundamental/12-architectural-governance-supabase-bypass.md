@@ -1,3 +1,13 @@
+---
+title: "Architectural Governance â€” The Supabase Bypass Pattern"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Architectural Governance — The Supabase Bypass Pattern
 
 Surfaced while tracing the community domain's comment-fetching path (`11-community-domain-audit.md`), then confirmed repo-wide. This is the single most important finding across the whole code-grounding exploration — a real, evidenced, actionable risk, not a style preference.

@@ -1,3 +1,13 @@
+---
+title: "Gurudevi â€” Web Layout Guide"
+status: "active"
+created: 2026-03-04
+updated: 2026-05-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi — Web Layout Guide
 *Agent rules + frame architecture + top bar + sidebar + responsive*
 

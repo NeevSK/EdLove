@@ -1,3 +1,13 @@
+---
+title: "Spacing, Typography & IA â€” Agent-Ready Specification"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Spacing, Typography & IA — Agent-Ready Specification
 
 **This is the third of three layers.** `17-leverage-pattern-theory.md` covers the general, domain-agnostic theory (leverage points, Pareto Principle vs. Frontier, pattern language, biomimetic leverage). `18-leverage-applied-to-ui.md` translates that theory specifically to UI as a discipline. This doc is where both become concrete, tab-specific numbers — the practical output, not a standalone set of rules invented separately.

@@ -1,3 +1,13 @@
+---
+title: "STRATEGY: THE PASSAGE â€” Curated Intelligence for Educators"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web]
+---
+
 # STRATEGY: THE PASSAGE — Curated Intelligence for Educators
 
 ## 🎯 The Core Concept

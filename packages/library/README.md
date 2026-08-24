@@ -1,3 +1,13 @@
+---
+title: "@repo/library"
+status: "active"
+created: 2026-03-25
+updated: 2026-03-25
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, library]
+---
+
 # @repo/library
 
 ## Purpose

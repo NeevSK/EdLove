@@ -1,3 +1,13 @@
+---
+title: "AI AGENT CONTEXT"
+status: "active"
+created: 2026-02-28
+updated: 2026-02-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # AI AGENT CONTEXT
 ## Instructions for Building Gurudevi
 

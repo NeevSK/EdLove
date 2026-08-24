@@ -1,3 +1,13 @@
+---
+title: "Runbyte Integration Guide"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, platform-mcp]
+---
+
 # Runbyte Integration Guide
 
 ## Recommendation

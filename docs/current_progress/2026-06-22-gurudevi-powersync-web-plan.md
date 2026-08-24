@@ -1,3 +1,13 @@
+---
+title: "Gurudevi â€” PowerSync Web Integration Plan"
+status: "active"
+created: 2026-06-22
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, current_progress, historical]
+---
+
 # Gurudevi — PowerSync Web Integration Plan
 > Draft 1 — June 2026
 > Decision: Option A — one codebase, platform-detected factory

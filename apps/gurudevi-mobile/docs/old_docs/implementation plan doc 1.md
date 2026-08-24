@@ -1,4 +1,14 @@
-> **Superseded** — kept for historical reference.
+---
+title: "Gurudevi Strategic Architecture Plan: Ecology Platform with School-Scoped ERP"
+status: "active"
+created: 2026-03-30
+updated: 2026-07-24
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
+> **Superseded** ï¿½ kept for historical reference.
 > See active docs at docs/INDEX.md.
 # Gurudevi Strategic Architecture Plan: Ecology Platform with School-Scoped ERP
 

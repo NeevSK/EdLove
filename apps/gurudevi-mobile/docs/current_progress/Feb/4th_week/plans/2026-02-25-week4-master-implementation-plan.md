@@ -1,3 +1,13 @@
+---
+title: "Week 4 Tasks â€” gurudevi-mobile Implementation Plan"
+status: "active"
+created: 2026-02-25
+updated: 2026-05-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Week 4 Tasks — gurudevi-mobile Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use `superpowers:executing-plans` to implement this plan task-by-task.

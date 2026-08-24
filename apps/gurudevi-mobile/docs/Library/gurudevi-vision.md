@@ -1,3 +1,13 @@
+---
+title: "Gurudevi"
+status: "active"
+created: 2026-03-02
+updated: 2026-03-02
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi
 ### The Turbid Medium
 

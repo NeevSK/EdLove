@@ -1,3 +1,13 @@
+---
+title: "@repo/ui"
+status: "active"
+created: 2026-03-25
+updated: 2026-04-26
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, ui]
+---
+
 # @repo/ui
 
 ## Purpose

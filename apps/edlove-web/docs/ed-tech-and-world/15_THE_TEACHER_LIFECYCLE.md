@@ -1,3 +1,13 @@
+---
+title: "THE TEACHER'S LIFECYCLE: Global Process Tools"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web]
+---
+
 # THE TEACHER'S LIFECYCLE: Global Process Tools
 
 This document maps the **process of teaching** to the best available digital tools globally. While the *Global Gallery* focuses on country-wide innovations, this document is a functional toolkit for any educator, anywhere.

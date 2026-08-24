@@ -1,3 +1,13 @@
+---
+title: "CURRENT STATE: What Gurudevi Is Right Now"
+status: "active"
+created: 2026-02-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # CURRENT STATE: What Gurudevi Is Right Now
 
 > **Historical snapshot — superseded 2026-07-26.** This March 2026 inventory

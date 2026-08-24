@@ -1,3 +1,13 @@
+---
+title: "Architectural Guide: Protocol-Oriented Authority (POA)"
+status: "active"
+created: 2026-03-30
+updated: 2026-05-22
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Architectural Guide: Protocol-Oriented Authority (POA)
 
 ## Overview

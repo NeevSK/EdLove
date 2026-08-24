@@ -1,3 +1,13 @@
+---
+title: "Decision 011: Legacy-Free Agentic MCP Implementation Plan"
+status: "active"
+created: 2026-05-16
+updated: 2026-05-16
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Decision 011: Legacy-Free Agentic MCP Implementation Plan
 
 ## Status

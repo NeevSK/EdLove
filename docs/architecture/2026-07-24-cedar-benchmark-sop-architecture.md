@@ -1,3 +1,13 @@
+---
+title: "On-Device Cedar Policy Authorization & A/B Benchmarking SOP Architecture"
+status: "active"
+created: 2026-07-24
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, architecture, historical]
+---
+
 # On-Device Cedar Policy Authorization & A/B Benchmarking SOP Architecture
 
 ## Architecture Overview

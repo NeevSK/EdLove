@@ -1,3 +1,13 @@
+---
+title: "RFC: Polymath Agentic Layer (PAL) - Model Context Protocol Strategy"
+status: "active"
+created: 2026-04-18
+updated: 2026-04-18
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # RFC: Polymath Agentic Layer (PAL) - Model Context Protocol Strategy
 
 **Author**: Senior Platform Architect (Antigravity)  

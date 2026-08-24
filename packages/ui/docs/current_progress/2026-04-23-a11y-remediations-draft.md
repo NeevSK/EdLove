@@ -1,3 +1,13 @@
+---
+title: "A11y Remediation Draft (WCAG 2.2 Alignment)"
+status: "active"
+created: 2026-04-23
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, ui, historical]
+---
+
 # A11y Remediation Draft (WCAG 2.2 Alignment)
 
 This draft identifies specific code adjustments needed to hit WCAG 2.2 targets based on the visual audit of the Sanctuary v3 theme.

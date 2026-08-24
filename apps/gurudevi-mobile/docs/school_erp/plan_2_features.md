@@ -1,3 +1,13 @@
+---
+title: "Plan 2: Feature Untangling (Layer 2)"
+status: "active"
+created: 2026-03-25
+updated: 2026-03-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Plan 2: Feature Untangling (Layer 2)
 
 *Objective: Untangle the horizontal "Spaghetti" inside L2 features (Classroom, Admin, People, Community, Profile).*

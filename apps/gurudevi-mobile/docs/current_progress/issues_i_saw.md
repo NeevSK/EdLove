@@ -1,3 +1,13 @@
+---
+title: "issues i saw"
+status: "active"
+created: 2026-02-28
+updated: 2026-03-16
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 this file is for issues i saw while doing manual testing and should complement/integrate with the tasks do in future and update the progress as well)
 (other than not mentioned specifically all changes should apply both mobile and web - web related docs @ "/../docs/web")
 

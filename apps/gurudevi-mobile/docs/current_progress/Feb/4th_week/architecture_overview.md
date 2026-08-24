@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Mobile: The Clockwork Behind the Magic"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Gurudevi Mobile: The Clockwork Behind the Magic
 
 This document provides a comprehensive breakdown of how the `gurudevi-mobile` app and its surrounding ecosystem are structured, how they communicate, and how they transform from "scattered files" into a living application.

@@ -1,3 +1,13 @@
+---
+title: "Profile Domain â€” Exploration & Design Refinement"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Profile Domain — Exploration & Design Refinement
 
 Covers `packages/profile` — structure, the mobile-vs-web divergence, a stated convergence principle, and concrete refinement suggestions grounded in this exploration's own established patterns (biomimicry principles, cognitive-load research, dignity-over-surveillance).

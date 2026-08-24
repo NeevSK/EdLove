@@ -1,3 +1,13 @@
+---
+title: "Local PDP Implementation Plan â€” Staged Build"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, current_progress, historical]
+---
+
 # Local PDP Implementation Plan — Staged Build
 
 Companion to `gurudevi-authz-decision-record.md`. Read that first — this

@@ -1,3 +1,13 @@
+---
+title: "Library & Media Module"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Library & Media Module
 
 A genuinely different domain from everything in `01-data-architecture.md` — that doc's `events` table models **user-generated, append-only activity**. The Library module is **catalog data**: pre-existing, licensed, curated content that users consume and organize, closer in shape to a product catalog than to an event log. Two different tables with two different natures, not a variant of the same pattern.

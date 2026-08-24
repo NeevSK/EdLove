@@ -1,3 +1,13 @@
+---
+title: "Resolution Log: WSL 2 & Docker local EAS Build Issues"
+status: "active"
+created: 2026-08-20
+updated: 2026-08-20
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, infra]
+---
+
 # Resolution Log: WSL 2 & Docker local EAS Build Issues
 
 This document records the exact root causes, lessons learned, and resolutions for each issue encountered while configuring native WSL 2 and containerized local EAS builds.

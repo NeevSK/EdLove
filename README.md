@@ -1,3 +1,13 @@
+---
+title: "Polymath Platform (EdLove / Gurudevi / Intuitui)"
+status: "active"
+created: 2025-11-03
+updated: 2026-08-24
+author: "Naveen"
+scribe: "opencode"
+tags: [platform, monorepo]
+---
+
 # Polymath Platform (EdLove / Gurudevi / Intuitui)
 
 A single monorepo for the EdLove education ecosystem:

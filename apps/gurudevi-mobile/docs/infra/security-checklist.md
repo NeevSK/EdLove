@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Security Checklist"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi Security Checklist
 *MANDATORY review for every pull request touching an endpoint or database schema.*
 

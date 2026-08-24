@@ -1,3 +1,13 @@
+---
+title: "EdLove Web Ecosystem Index"
+status: "active"
+created: 2026-02-12
+updated: 2026-08-24
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, 00_ECOSYSTEM_INDEX.md]
+---
+
 # EdLove Web Ecosystem Index
 
 Welcome to the EdLove ecosystem monorepo.

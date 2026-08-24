@@ -1,3 +1,13 @@
+---
+title: "ðŸ›ï¸ Gurudevi Enterprise Database Bible"
+status: "active"
+created: 2026-04-18
+updated: 2026-08-10
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # 🏛️ Gurudevi Enterprise Database Bible
 *The Official Guide to the Faceted Identity Architecture (v2.0)*
 

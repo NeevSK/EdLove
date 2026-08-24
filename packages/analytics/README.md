@@ -1,3 +1,13 @@
+---
+title: "@repo/analytics"
+status: "active"
+created: 2026-03-25
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, analytics]
+---
+
 # @repo/analytics
 
 Premium analytics engine for polymath-platform providing advanced student performance insights, GPA calculations, and predictive analytics.

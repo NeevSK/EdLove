@@ -1,3 +1,13 @@
+---
+title: "Dependency Upgrade Checklist"
+status: "active"
+created: 2026-05-25
+updated: 2026-06-10
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Dependency Upgrade Checklist
 
 Use this checklist for Expo, React Native, React Navigation, or any other foundation-level upgrade in `gurudevi-mobile`.

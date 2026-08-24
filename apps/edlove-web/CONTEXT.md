@@ -1,3 +1,13 @@
+---
+title: "PROJECT CONTEXT: edlove-web"
+status: "active"
+created: 2026-02-12
+updated: 2026-04-18
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web]
+---
+
 # PROJECT CONTEXT: edlove-web
 
 ## IDENTITY

@@ -1,3 +1,13 @@
+---
+title: "Master Implementation Task List"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Master Implementation Task List
 
 ## Overview

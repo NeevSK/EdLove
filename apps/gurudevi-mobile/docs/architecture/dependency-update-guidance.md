@@ -1,3 +1,13 @@
+---
+title: "Dependency Update Guidance"
+status: "active"
+created: 2026-04-18
+updated: 2026-04-18
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Dependency Update Guidance
 
 This document explains how we should upgrade external dependencies and shared workspace packages in the Gurudevi monorepo without turning every change into a full-stack migration.

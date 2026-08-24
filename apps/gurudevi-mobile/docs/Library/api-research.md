@@ -1,3 +1,13 @@
+---
+title: "ETL Topology: Free-Tier API Strategy"
+status: "active"
+created: 2026-03-04
+updated: 2026-03-04
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # ETL Topology: Free-Tier API Strategy
 
 To keep the "epistemic universe" running with zero or low TCO (Total Cost of Ownership), we can leverage the following free tiers. 

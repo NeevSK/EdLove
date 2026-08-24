@@ -1,3 +1,13 @@
+---
+title: "Package Topology & Web-Native Critique"
+status: "active"
+created: 2026-03-04
+updated: 2026-03-04
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Package Topology & Web-Native Critique
 
 This artifact analyzes the current distribution of packages across Mobile and Web and identifies opportunities for **"UX Vacations"**—areas where we can leverage superior web-native technology instead of settling for mobile-centric shims.

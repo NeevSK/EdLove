@@ -1,4 +1,14 @@
-> **Superseded** — kept for historical reference.
+---
+title: "Implementation Plan: UI Abstraction Layer"
+status: "active"
+created: 2026-02-19
+updated: 2026-07-24
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
+> **Superseded** ï¿½ kept for historical reference.
 > See active docs at docs/INDEX.md.
 # Implementation Plan: UI Abstraction Layer
 

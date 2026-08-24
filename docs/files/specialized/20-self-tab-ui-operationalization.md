@@ -1,3 +1,13 @@
+---
+title: "Self Tab â€” UI Operationalization (Pilot)"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Self Tab — UI Operationalization (Pilot)
 
 The first of five planned per-tab docs connecting `15`/`16`/`17`/`18`'s theory to the actual, composed code — not inferred from file listings, but read directly from the screens that render. This establishes the method; equivalent docs for the remaining tabs would follow the same approach.

@@ -1,3 +1,13 @@
+---
+title: "Navigation Shell Audit"
+status: "active"
+created: 2026-06-13
+updated: 2026-06-13
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Navigation Shell Audit
 
 This note is a file-level audit of the current Expo Router migration surface, focused on why the app can still feel "not quite mobile" on native and "not quite web" in the browser.

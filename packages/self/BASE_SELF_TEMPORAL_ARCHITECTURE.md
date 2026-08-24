@@ -1,3 +1,13 @@
+---
+title: "BASE SELF TEMPORAL ARCHITECTURE"
+status: "active"
+created: 2026-04-08
+updated: 2026-04-08
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, self]
+---
+
 ## BaseSelf Temporal Architecture
 
 ### Problem

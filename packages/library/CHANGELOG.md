@@ -1,3 +1,13 @@
+---
+title: "@repo/library"
+status: "active"
+created: 2026-05-07
+updated: 2026-05-07
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, library]
+---
+
 # @repo/library
 
 ## 1.0.0

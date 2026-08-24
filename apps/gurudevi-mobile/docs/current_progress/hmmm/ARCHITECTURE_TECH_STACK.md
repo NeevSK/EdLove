@@ -1,3 +1,13 @@
+---
+title: "ðŸ—ï¸ Architecture & Tech Stack Reference"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # 🏗️ Architecture & Tech Stack Reference
 **Consolidated Technical Overview**
 

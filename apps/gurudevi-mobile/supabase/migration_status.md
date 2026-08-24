@@ -1,3 +1,13 @@
+---
+title: "Supabase Migration Status Tracker"
+status: "active"
+created: 2026-02-11
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Supabase Migration Status Tracker
 
 > **Last Updated:** 2026-07-26

@@ -1,3 +1,13 @@
+---
+title: "Community Ecosystem: The Social Fabric"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Community Ecosystem: The Social Fabric
 
 This document outlines the design of the **Community** features within the Gurudevi platform. It focuses on the "Hearth" of the school—where connection, vision, and daily interaction happen.

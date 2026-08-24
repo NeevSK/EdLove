@@ -1,3 +1,13 @@
+---
+title: "gurudevi website"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-marketingWeb]
+---
+
 # gurudevi website
 
 Gurudevi website for the official home of gurudevi- Education ecology support system. it might have home page, about page, thuthimal page, stats and stories etc which i ahve not thought much yet we can add later 

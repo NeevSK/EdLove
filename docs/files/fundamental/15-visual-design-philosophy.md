@@ -1,3 +1,13 @@
+---
+title: "Visual Design Philosophy â€” Operationalized"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Visual Design Philosophy — Operationalized
 
 Consolidates a long, exploratory design conversation that was never actually written down despite being offered several times. Structured explicitly as: what the old docs already said, what converged with new research, and what's now concrete enough to build from — versus what's still principle without a mechanism.

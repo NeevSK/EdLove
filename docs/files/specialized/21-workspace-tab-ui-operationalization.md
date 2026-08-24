@@ -1,3 +1,13 @@
+---
+title: "Workspace Tab â€” UI Operationalization"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Workspace Tab — UI Operationalization
 
 Second of the per-tab docs following `20-self-tab-ui-operationalization.md`'s method. Workspace turns out to be architecturally the most complex tab in the app, confirming the instinct that prompted this — but the complexity isn't where `16`'s original tier assignment assumed it was.

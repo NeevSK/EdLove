@@ -1,3 +1,13 @@
+---
+title: "Quick Start Commands"
+status: "active"
+created: 2026-02-11
+updated: 2026-02-11
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Quick Start Commands
 
 > **Copy-paste ready commands** for daily development 🚀

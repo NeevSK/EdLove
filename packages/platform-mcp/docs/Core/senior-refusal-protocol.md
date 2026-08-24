@@ -1,3 +1,13 @@
+---
+title: "ðŸ›¡ï¸ The Senior Refusal Protocol"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, platform-mcp]
+---
+
 # 🛡️ The Senior Refusal Protocol
 ### "I'm sorry, Dave. I'm afraid I can't do that."
 

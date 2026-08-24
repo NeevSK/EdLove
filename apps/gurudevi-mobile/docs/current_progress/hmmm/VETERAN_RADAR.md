@@ -1,3 +1,13 @@
+---
+title: "ðŸ¦… Senior Architect & Veteran Dev's Radar"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # 🦅 Senior Architect & Veteran Dev's Radar
 **Critical Insights for Gurudevi Production Readiness**
 

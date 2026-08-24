@@ -1,3 +1,13 @@
+---
+title: "ADR-006: Storage Strategy"
+status: "active"
+created: 2026-04-23
+updated: 2026-04-23
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # ADR-006: Storage Strategy
 
 ## Status

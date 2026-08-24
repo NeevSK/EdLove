@@ -1,3 +1,13 @@
+---
+title: "Package Layer Definitions (Revised)"
+status: "active"
+created: 2026-03-25
+updated: 2026-03-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Package Layer Definitions (Revised)
 
 Based on the temporal and product reality of the app, we are defining three strict layers. Packages can ONLY import from their own layer or *downward* (e.g., L2 can import L1, L1 CANNOT import L2).

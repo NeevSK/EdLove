@@ -1,3 +1,13 @@
+---
+title: "Package Inventory & Dependency State (Revised)"
+status: "active"
+created: 2026-03-25
+updated: 2026-03-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Package Inventory & Dependency State (Revised)
 
 This document maps out the current state of the workspaces, based on `package.json` vs. actual code imports causing circular spaghetti. *Note: Declared dependencies refer to PNPM workspace structure, while "Actual Code" references the madge circular analysis.*

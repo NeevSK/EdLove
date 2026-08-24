@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Authorization Architecture â€” Decision Record"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, decisions, historical]
+---
+
 # Gurudevi Authorization Architecture — Decision Record
 
 **Status:** Living document. Update in place as decisions change — don't

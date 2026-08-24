@@ -1,3 +1,13 @@
+---
+title: "ðŸ›ï¸ Sovereign Agentic Lifecycle (SAL) & State Quality Standards"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, ui]
+---
+
 # 🏛️ Sovereign Agentic Lifecycle (SAL) & State Quality Standards
 
 This document codifies the **Sovereign Agentic Lifecycle (SAL)** and the **Top 15 UX Killers** for the Polymath platform. We build for a world where humans and AI agents collaborate in real-time across intermittent networks.

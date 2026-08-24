@@ -1,3 +1,13 @@
+---
+title: "Gurudevi â€” Space Specifications"
+status: "active"
+created: 2026-02-27
+updated: 2026-02-27
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi — Space Specifications
 ### Five Clearings in One Living Forest
 *Each space is a different relationship with knowing*

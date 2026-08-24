@@ -1,3 +1,13 @@
+---
+title: "Markdown Platform Routing â€” `react-native-enriched-markdown`"
+status: "active"
+created: 2026-08-08
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, infra]
+---
+
 # Markdown Platform Routing — `react-native-enriched-markdown`
 
 ## Context

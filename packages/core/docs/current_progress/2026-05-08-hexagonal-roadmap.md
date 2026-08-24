@@ -1,3 +1,13 @@
+---
+title: "Sovereign Hexagonal Roadmap: The Final Isolation ðŸ›ï¸"
+status: "active"
+created: 2026-05-08
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, core, historical]
+---
+
 # Sovereign Hexagonal Roadmap: The Final Isolation 🏛️
 
 This document outlines the remaining "leaky" territories in the Polymath Platform and the strategy for creating their respective Ports and Adapters.

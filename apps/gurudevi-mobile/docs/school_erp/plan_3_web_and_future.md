@@ -1,3 +1,13 @@
+---
+title: "Plan 3: The Web Dimension & Future Strategy"
+status: "active"
+created: 2026-03-25
+updated: 2026-03-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Plan 3: The Web Dimension & Future Strategy
 
 *Objective: Establish how `*.web.tsx` files operate across packages without leaking App Shell context, and create the template for future package development.*

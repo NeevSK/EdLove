@@ -1,3 +1,13 @@
+---
+title: "API Module Structure"
+status: "active"
+created: 2026-02-19
+updated: 2026-03-30
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, core]
+---
+
 # API Module Structure
 
 This directory contains the modular API layer for Gurudevi, organized for scalability and maintainability.

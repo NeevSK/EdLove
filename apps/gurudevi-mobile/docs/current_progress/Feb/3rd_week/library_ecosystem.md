@@ -1,3 +1,13 @@
+---
+title: "Library Ecosystem: The Knowledge Sanctuary"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Library Ecosystem: The Knowledge Sanctuary
 
 This document outlines the design of the **Library** feature within the Gurudevi platform. It serves as the "Long-Term Memory" of the educational ecology, where fleeting interactions crystallize into permanent knowledge.

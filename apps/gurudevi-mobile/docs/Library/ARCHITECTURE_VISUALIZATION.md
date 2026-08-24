@@ -1,3 +1,13 @@
+---
+title: "Architecture: Retina Graphics Engine (Multi-Perspective)"
+status: "active"
+created: 2026-03-16
+updated: 2026-03-16
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Architecture: Retina Graphics Engine (Multi-Perspective)
 
 This document defines the high-fidelity visualization strategy for the Gurudevi ecosystem. It transitions from basic "screens" to a standalone, programmable **Retina Graphics Engine**.

@@ -1,3 +1,13 @@
+---
+title: "Identity Contract and Migration Plan"
+status: "active"
+created: 2026-05-16
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, core, historical]
+---
+
 # Identity Contract and Migration Plan
 
 This document defines the long-term identity model for `gurudevi-mobile` and the migration path from the current mixed naming/guest semantics to a cleaner, stable architecture.

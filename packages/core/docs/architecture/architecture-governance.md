@@ -1,3 +1,13 @@
+---
+title: "Architecture Governance: @repo/core"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, core]
+---
+
 # Architecture Governance: @repo/core
 
 This document defines the architectural principles and boundary rules for the `@repo/core` package to ensure platform-agnosticism and modern ESM compatibility.

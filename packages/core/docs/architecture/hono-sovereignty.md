@@ -1,3 +1,13 @@
+---
+title: "Hono Sovereignty: The 2026 API Standard ðŸ›ï¸"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, core]
+---
+
 # Hono Sovereignty: The 2026 API Standard 🏛️
 
 This document outlines the strategic decision to adopt **Hono** as the primary API and Routing engine for the Polymath Platform, succeeding the unmaintained `ts-rest`.

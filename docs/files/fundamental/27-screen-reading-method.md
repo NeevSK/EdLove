@@ -1,3 +1,13 @@
+---
+title: "Screen Reading Method â€” Job-Counting, Not Existence-Checking"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Screen Reading Method — Job-Counting, Not Existence-Checking
 
 A standing method, not scoped to one tab. Every prior per-tab operationalization doc (`20`, `21`, `24`, `25`) used component-enumeration — grep for tag names, list what exists. That method reliably confirms *whether* something exists, but cannot detect redundancy, because redundant elements have different names and different code, and a name-based search never connects them. This doc names the method that does, so it doesn't need re-deriving each time, and so it can be applied retroactively to screens already audited.

@@ -1,3 +1,13 @@
+---
+title: "Universal Web Modal System"
+status: "active"
+created: 2026-03-04
+updated: 2026-03-04
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Universal Web Modal System
 
 The current FAB and Modal implementations rely on Native `Modal` components which are inconsistent or non-functional on the web. This plan outlines the creation of a universal modal system and fixing the library's interactive elements.

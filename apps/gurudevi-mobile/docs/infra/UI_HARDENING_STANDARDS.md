@@ -1,3 +1,13 @@
+---
+title: "Guidance: Sovereign UI Hardening (Sanctuary V3)"
+status: "active"
+created: 2026-04-23
+updated: 2026-04-23
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Guidance: Sovereign UI Hardening (Sanctuary V3)
 
 This document defines the quality and performance gates for all UI components in the Gurudevi Sanctuary.

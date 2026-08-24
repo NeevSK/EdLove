@@ -1,3 +1,13 @@
+---
+title: "Expo File System Migration Plan"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, current_progress, historical]
+---
+
 # Expo File System Migration Plan
 
 ## Overview

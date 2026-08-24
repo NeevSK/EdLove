@@ -1,3 +1,13 @@
+---
+title: "Explaining and configuring rules"
+status: "active"
+created: 2026-06-13
+updated: 2026-06-13
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Explaining and configuring rules
 
 Explain React Doctor rules and edit `doctor.config.*` safely. Use this when a user

@@ -1,3 +1,13 @@
+---
+title: "Expo & EAS: Modern Mobile Workflow"
+status: "active"
+created: 2026-02-17
+updated: 2026-02-17
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Expo & EAS: Modern Mobile Workflow
 
 This document explains why we use **EAS (Expo Application Services)** and how it compares to traditional local builds.

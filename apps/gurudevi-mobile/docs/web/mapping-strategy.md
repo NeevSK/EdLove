@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Library: Mapping Strategy (Social Topology)"
+status: "active"
+created: 2026-03-04
+updated: 2026-03-13
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi Library: Mapping Strategy (Social Topology)
 
 The Map in Gurudevi is not just a UI; it is the **Spatial Epistemology** of the project. We are mapping the invisible connections between knowledge, institutions, and people.

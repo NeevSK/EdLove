@@ -1,3 +1,13 @@
+---
+title: "Gurudevi â€” Design Retina"
+status: "active"
+created: 2026-02-27
+updated: 2026-02-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi — Design Retina
 ### UI Vision Lens for AI Agents
 *The surface that receives Gurudevi's light and converts it into faithful signal*

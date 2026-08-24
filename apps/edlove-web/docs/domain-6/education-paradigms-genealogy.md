@@ -1,3 +1,13 @@
+---
+title: "The Genealogy of Education Transformation"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web]
+---
+
 # The Genealogy of Education Transformation
 
 **A chronological mapping of how education paradigms emerged globally and the divergent explorers who walked transformative paths**

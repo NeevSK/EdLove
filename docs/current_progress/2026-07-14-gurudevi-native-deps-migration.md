@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Native Dependency Migration â€” RNGH v3, Sentry v8, get-random-values v2"
+status: "active"
+created: 2026-07-14
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, current_progress, historical]
+---
+
 # Gurudevi Native Dependency Migration — RNGH v3, Sentry v8, get-random-values v2
 
 **Status:** In progress — dependencies overridden ahead of `expo doctor` recommendations, verified locally, EAS Build not yet run.

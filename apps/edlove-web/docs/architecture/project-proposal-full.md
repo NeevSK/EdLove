@@ -1,3 +1,13 @@
+---
+title: "EDLOVE.ORG â€” FULL PROJECT PROPOSAL"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web]
+---
+
 # EDLOVE.ORG — FULL PROJECT PROPOSAL
 ## Educational Transformation Ecosystem: A Comprehensive Vision
 

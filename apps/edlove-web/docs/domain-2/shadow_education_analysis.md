@@ -1,3 +1,13 @@
+---
+title: "The Shadow Education System: Sri Lanka's Massive Parallel Infrastructure"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web]
+---
+
 # The Shadow Education System: Sri Lanka's Massive Parallel Infrastructure
 
 **The Yin to Government Education's Yang - A Complete System Analysis**

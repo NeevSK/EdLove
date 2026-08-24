@@ -1,3 +1,13 @@
+---
+title: "Agent Resonance: Metacognitive Steering for AI Agents"
+status: "active"
+created: 2026-02-28
+updated: 2026-04-23
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Agent Resonance: Metacognitive Steering for AI Agents
 
 ## 1. Project Overview (Architectural Topology)

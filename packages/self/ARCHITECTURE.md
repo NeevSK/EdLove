@@ -1,3 +1,13 @@
+---
+title: "Self Architecture Recovery"
+status: "active"
+created: 2026-03-30
+updated: 2026-03-30
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, self]
+---
+
 # Self Architecture Recovery
 
 ## Purpose

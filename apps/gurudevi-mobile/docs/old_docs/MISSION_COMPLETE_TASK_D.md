@@ -1,4 +1,14 @@
-> **Superseded** — kept for historical reference.
+---
+title: "Mission Complete: Role-Based Classroom List (Task D)"
+status: "active"
+created: 2026-02-11
+updated: 2026-07-24
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
+> **Superseded** ï¿½ kept for historical reference.
 > See active docs at docs/INDEX.md.
 # Mission Complete: Role-Based Classroom List (Task D)
 

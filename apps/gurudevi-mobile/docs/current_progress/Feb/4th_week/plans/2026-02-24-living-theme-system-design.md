@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Living Theme System â€” Design Document"
+status: "active"
+created: 2026-02-24
+updated: 2026-02-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Gurudevi Living Theme System — Design Document
 
 > **Status:** Approved · Ready for implementation

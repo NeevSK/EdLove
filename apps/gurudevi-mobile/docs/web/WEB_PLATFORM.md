@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Web Platform â€” SSOT"
+status: "active"
+created: 2026-03-04
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi Web Platform — SSOT
 *Last updated: 2026-03-01 | Status: ✅ LIVE — all critical fixes applied, build verified (0 import.meta)*
 

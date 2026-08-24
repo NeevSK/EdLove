@@ -1,3 +1,13 @@
+---
+title: "Vault Strategy: Resource Preservation"
+status: "active"
+created: 2026-03-04
+updated: 2026-03-04
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Vault Strategy: Resource Preservation
 
 The vault strategy ensures that critical community resources (documents, videos, etc.) are permanently preserved by hosting them within Supabase Storage and syncing metadata to the local "Local Seed" database.

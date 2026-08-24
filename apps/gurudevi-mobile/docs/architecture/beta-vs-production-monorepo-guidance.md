@@ -1,3 +1,13 @@
+---
+title: "Beta vs Production Monorepo Guidance"
+status: "active"
+created: 2026-04-18
+updated: 2026-04-18
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Beta vs Production Monorepo Guidance
 
 This guide explains how to keep beta and production versions living in the same monorepo without confusing local development, Git history, or mobile release channels.

@@ -1,3 +1,13 @@
+---
+title: "EDLOVE.ORG"
+status: "active"
+created: 2026-02-02
+updated: 2026-02-09
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web]
+---
+
 # EDLOVE.ORG
 
 > **"The digital sanctuary for educational transformation."**

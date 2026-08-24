@@ -1,3 +1,13 @@
+---
+title: "ADR-005: Offline Strategy â€” V1 Online, V2 Offline-Ready"
+status: "active"
+created: 2026-04-23
+updated: 2026-04-23
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # ADR-005: Offline Strategy — V1 Online, V2 Offline-Ready
 
 ## Status

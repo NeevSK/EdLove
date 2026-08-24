@@ -1,3 +1,13 @@
+---
+title: "Handover: Web Strategy & Architectural Alignment"
+status: "active"
+created: 2026-03-04
+updated: 2026-03-04
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Handover: Web Strategy & Architectural Alignment
 
 ## 1. Context

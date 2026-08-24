@@ -1,3 +1,13 @@
+---
+title: "ðŸ› ï¸ Modern CLI Toolchain Guide"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, platform-mcp]
+---
+
 # 🛠️ Modern CLI Toolchain Guide
 
 Welcome to your new, high-performance terminal experience. These tools are written in **Rust** and designed for extreme speed, smart defaults, and beautiful user interfaces.

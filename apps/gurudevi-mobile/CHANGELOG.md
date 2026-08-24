@@ -1,3 +1,13 @@
+---
+title: "gurudevi-mobile"
+status: "active"
+created: 2026-05-07
+updated: 2026-05-07
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # gurudevi-mobile
 
 ## 1.1.0

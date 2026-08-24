@@ -1,3 +1,13 @@
+---
+title: "ðŸ“± Physical Android Device Deployment Playbook via ADB"
+status: "active"
+created: 2026-07-31
+updated: 2026-07-31
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, infra]
+---
+
 # 📱 Physical Android Device Deployment Playbook via ADB
 
 This playbook serves as the definitive reference guide for running, debugging, and testing **Gurudevi Mobile** on a physical Android device over an ADB (Android Debug Bridge) connection.

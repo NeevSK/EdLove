@@ -1,3 +1,13 @@
+---
+title: "Gurudevi API Implementation Plan"
+status: "active"
+created: 2026-08-14
+updated: 2026-08-14
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, architecture]
+---
+
 # Gurudevi API Implementation Plan
 
 Status: active

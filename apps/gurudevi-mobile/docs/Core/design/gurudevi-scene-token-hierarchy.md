@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Scene Token Hierarchy"
+status: "active"
+created: 2026-03-20
+updated: 2026-03-20
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi Scene Token Hierarchy
 ### One Layer Grammar for Mobile and Web
 *How world, chrome, canvas, surfaces, and readable text stay coherent across themes and phases*

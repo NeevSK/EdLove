@@ -1,3 +1,13 @@
+---
+title: "The Gurudevi Agent Prompt Lens"
+status: "active"
+created: 2026-02-28
+updated: 2026-05-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # The Gurudevi Agent Prompt Lens
 *Version: M36-Final-Alchemist-Optimized*
 ---

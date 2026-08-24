@@ -1,3 +1,13 @@
+---
+title: "Library Evolution: The Complete Knowledge Universe"
+status: "active"
+created: 2026-03-04
+updated: 2026-03-04
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Library Evolution: The Complete Knowledge Universe
 
 We have successfully completed the core infrastructure for the Gurudevi library and map.

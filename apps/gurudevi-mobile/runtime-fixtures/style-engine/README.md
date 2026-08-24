@@ -1,3 +1,13 @@
+---
+title: "Style-engine runtime fixture"
+status: "active"
+created: 2026-08-12
+updated: 2026-08-12
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Style-engine runtime fixture
 
 This entry deliberately avoids Expo Router, Supabase, auth and application providers. It is the

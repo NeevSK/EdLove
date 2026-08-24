@@ -1,3 +1,13 @@
+---
+title: "ðŸ¤ Groups Feature - Complete Guide"
+status: "active"
+created: 2026-02-19
+updated: 2026-02-19
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # 🤝 Groups Feature - Complete Guide
 
 ## Overview

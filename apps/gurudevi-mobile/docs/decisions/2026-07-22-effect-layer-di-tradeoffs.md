@@ -1,3 +1,13 @@
+---
+title: "Effect-TS Layer DI + Tradeoffs Decision"
+status: "active"
+created: 2026-07-22
+updated: 2026-07-24
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Effect-TS Layer DI + Tradeoffs Decision
 
 **Date:** 2026-07-22

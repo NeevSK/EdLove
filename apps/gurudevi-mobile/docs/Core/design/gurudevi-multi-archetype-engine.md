@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Multi-Archetype Engine"
+status: "active"
+created: 2026-04-18
+updated: 2026-04-18
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi Multi-Archetype Engine
 ### The 3D Theme Matrix Architecture
 *Decoupling Identity (Archetype), Time (Phase), and Mode (Luminance)*

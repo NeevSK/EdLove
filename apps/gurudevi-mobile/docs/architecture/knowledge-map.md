@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Platform: Knowledge Map (Foundational Index)"
+status: "active"
+created: 2026-04-25
+updated: 2026-04-27
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi Platform: Knowledge Map (Foundational Index)
 
 This file is a navigation map for learning the entire system: database, API, frontend, backend, information architecture, accessibility, UX, security, performance, and memory. It is intentionally precise and checklist-driven (minimal prose).

@@ -1,3 +1,13 @@
+---
+title: "Citizenship & Identity Architecture"
+status: "active"
+created: 2026-04-18
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Citizenship & Identity Architecture
 
 This document describes the current canonical identity model for `gurudevi-mobile`.

@@ -1,4 +1,14 @@
-> **Superseded** � kept for historical reference.
+---
+title: "ðŸ“œ Gurudevi Strategic Delegation Plan"
+status: "active"
+created: 2026-02-28
+updated: 2026-07-24
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
+> **Superseded** � kept for historical reference.
 > See active docs at docs/INDEX.md.
 # 📜 Gurudevi Strategic Delegation Plan
 ## For "Self" & "Classroom" Development

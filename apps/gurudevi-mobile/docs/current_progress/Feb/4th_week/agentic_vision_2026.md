@@ -1,3 +1,13 @@
+---
+title: "AGENTIC VISION: THE CYBERNETIC SANCTUARY (WEEK 4)"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # AGENTIC VISION: THE CYBERNETIC SANCTUARY (WEEK 4)
 
 ## 1. Gurudevi as an Education Ecology Support System

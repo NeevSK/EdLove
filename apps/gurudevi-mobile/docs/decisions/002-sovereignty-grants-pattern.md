@@ -1,4 +1,14 @@
-﻿# ADR-002: Sovereignty Grants Pattern
+---
+title: "ADR-002: Sovereignty Grants Pattern"
+status: "active"
+created: 2026-04-23
+updated: 2026-07-24
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
+# ADR-002: Sovereignty Grants Pattern
 
 ## Status
 **Superseded by ADR-013 and GrowthBook rollout engine**

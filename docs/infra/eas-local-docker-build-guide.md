@@ -1,3 +1,13 @@
+---
+title: "EAS Local Build with Docker: Windows Guide"
+status: "active"
+created: 2026-08-20
+updated: 2026-08-20
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, infra]
+---
+
 # EAS Local Build with Docker: Windows Guide
 
 This guide documents how to run unlimited **EAS Local Builds** (`eas build --local`) for **Gurudevi Mobile** on a Windows host using **Docker Desktop**, bypassing standard Windows filesystem limitations (such as CMake `MAX_PATH` errors and Ninja file locking issues).

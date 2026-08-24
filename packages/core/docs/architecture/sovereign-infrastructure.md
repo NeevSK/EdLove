@@ -1,3 +1,13 @@
+---
+title: "Sovereign Infrastructure: The Decoupling Map ðŸ—ºï¸"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, core]
+---
+
 # Sovereign Infrastructure: The Decoupling Map 🗺️
 
 To achieve 100% Platform Sovereignty, we must ensure that no external vendor (Supabase, Cloudinary, Inngest) is visible to our **Domain Logic**. This is achieved by enforcing the **Hexagonal Port/Adapter** pattern across all infrastructure boundaries.

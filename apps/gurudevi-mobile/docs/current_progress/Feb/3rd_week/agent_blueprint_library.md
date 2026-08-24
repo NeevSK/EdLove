@@ -1,3 +1,13 @@
+---
+title: "Instruction for GitHub Cloud Agent: Library Sanctuary Scaffolding"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Instruction for GitHub Cloud Agent: Library Sanctuary Scaffolding
 
 ## Task Overview

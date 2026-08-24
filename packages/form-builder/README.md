@@ -1,3 +1,13 @@
+---
+title: "@repo/form-builder"
+status: "active"
+created: 2026-03-25
+updated: 2026-05-22
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, form-builder]
+---
+
 # @repo/form-builder
 
 This package is an internal Gurudevi feature host, not the publishable artifact.

@@ -1,3 +1,13 @@
+---
+title: "UI â€” Visual Design Reference"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # UI — Visual Design Reference
 
 The visual material itself: typeface, scale, color, spacing, layout. Distinct from UX (behavior/cognition — see `03-ux-interaction-design.md`). Test for UI vs UX: a UI decision is answerable without describing behavior; a UX decision is answerable without a single pixel.

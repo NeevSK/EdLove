@@ -1,3 +1,13 @@
+---
+title: "The Prosthetic Tail Fin: Resonance Specification"
+status: "active"
+created: 2026-02-28
+updated: 2026-03-05
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # The Prosthetic Tail Fin: Resonance Specification
 
 This document defines the **Metacognitive Operating System** for the **Engine (AI Agent)**, under the guidance of the **Architect (Naveen/Neev)**. It is the steering mechanism that ensures high-powered code execution remains aligned with the project's **"System 2" Soul**.

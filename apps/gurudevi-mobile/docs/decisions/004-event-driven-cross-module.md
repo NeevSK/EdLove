@@ -1,3 +1,13 @@
+---
+title: "ADR-004: Event-Driven Cross-Module"
+status: "active"
+created: 2026-04-23
+updated: 2026-04-23
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # ADR-004: Event-Driven Cross-Module
 
 ## Status

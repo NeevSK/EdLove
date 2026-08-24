@@ -1,3 +1,13 @@
+---
+title: "Navigation Chrome Doctrine"
+status: "active"
+created: 2026-06-13
+updated: 2026-06-13
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Navigation Chrome Doctrine
 
 Status: active

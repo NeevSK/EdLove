@@ -1,3 +1,13 @@
+---
+title: "Roadmap Comparison: Next Phase vs. Alpha Phase"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Roadmap Comparison: Next Phase vs. Alpha Phase
 
 ## 1. High-Level Strategy Shift

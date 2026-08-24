@@ -1,3 +1,13 @@
+---
+title: "Dependency Update Strategy and Checklist"
+status: "active"
+created: 2026-05-25
+updated: 2026-05-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Dependency Update Strategy and Checklist
 
 Use this document when planning SDK upgrades, runtime upgrades, or dependency refreshes in `gurudevi-mobile`.

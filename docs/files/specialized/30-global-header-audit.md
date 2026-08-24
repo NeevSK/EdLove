@@ -1,3 +1,13 @@
+---
+title: "GlobalHeader â€” Full Skill Audit"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # GlobalHeader — Full Skill Audit
 
 The genuine keystone component of this entire app — 32 confirmed usages across every tab explored so far. Whatever's found here has more real leverage than any single-screen finding in this whole exploration, per `18`'s own keystone-component principle. Audited using `ui-screen-audit`'s full method.

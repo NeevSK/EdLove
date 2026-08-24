@@ -1,3 +1,13 @@
+---
+title: "RN E2E Testing & Free Device Access"
+status: "active"
+created: 2026-08-24
+updated: 2026-08-24
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, engineering]
+---
+
 # RN E2E Testing & Free Device Access
 
 Fourth companion doc. Covers E2E framework choice and where to actually run tests — local emulators/simulators (free, unlimited, your real baseline) up through cloud device farms and their free tiers (limited, useful for real-device/CI coverage beyond what you own).

@@ -1,3 +1,13 @@
+---
+title: "GURUDEVI TECHNICAL ARCHITECTURE v2.0"
+status: "active"
+created: 2026-02-28
+updated: 2026-02-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # GURUDEVI TECHNICAL ARCHITECTURE v2.0
 
 **Document Type**: System Architecture  

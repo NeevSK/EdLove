@@ -1,3 +1,13 @@
+---
+title: "Wellbeing / Self Domain â€” Full Exploration"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Wellbeing / Self Domain — Full Exploration
 
 Complete audit of `packages/self` against `packages/schema/schema.zmodel` and the Supabase migration history. Covers implementation status, real bugs found, the temporal-architecture gap, and concrete feature suggestions grounded in what already exists.

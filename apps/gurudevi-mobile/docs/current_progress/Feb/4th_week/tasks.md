@@ -1,3 +1,13 @@
+---
+title: "Week 4 Task Checklist (Feb 25, 2026)"
+status: "active"
+created: 2026-02-25
+updated: 2026-03-20
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Week 4 Task Checklist (Feb 25, 2026)
 
 ## 📋 Implementation Plans

@@ -1,3 +1,13 @@
+---
+title: "Derived History View â€” Complete UI + Data Implementation"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Derived History View — Complete UI + Data Implementation
 
 The capstone of this whole exploration. `01-data-architecture.md` specified the rolling baseline, decay, and reinforcement patterns at the very start; this doc is the first time they connect to an actual, buildable UI screen. Entry point is already solved (the global "Now"/"History" toggle in `BaseSelfView.tsx`, confirmed real and correct in `26`) — this doc covers the content behind that toggle: one shared, four-layer component, parameterized per feature, replacing the flat list found in `TeachingHistoryTimeline.tsx` and its likely siblings.

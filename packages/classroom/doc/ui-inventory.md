@@ -1,3 +1,13 @@
+---
+title: "Classroom UI Inventory"
+status: "active"
+created: 2026-04-20
+updated: 2026-04-22
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, classroom]
+---
+
 # Classroom UI Inventory
 
 This document is the working source of truth for the Sanctuary V3 healing sweep in `@repo/classroom`.

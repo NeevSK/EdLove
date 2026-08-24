@@ -1,3 +1,13 @@
+---
+title: "@repo/scanner-kit"
+status: "active"
+created: 2026-05-07
+updated: 2026-05-07
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, scanner-kit]
+---
+
 # @repo/scanner-kit
 
 ## 0.0.1

@@ -1,3 +1,13 @@
+---
+title: "GURUDEVI ARCHITECTURE v4.0"
+status: "active"
+created: 2026-02-11
+updated: 2026-05-07
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # GURUDEVI ARCHITECTURE v4.0
 ## *The Complete Technical Blueprint - Single Source of Truth*
 

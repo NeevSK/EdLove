@@ -1,3 +1,13 @@
+---
+title: "Sanctuary Accessibility Guidance (Phase 3)"
+status: "active"
+created: 2026-03-13
+updated: 2026-03-13
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Sanctuary Accessibility Guidance (Phase 3)
 
 ## Infrastructure Overview

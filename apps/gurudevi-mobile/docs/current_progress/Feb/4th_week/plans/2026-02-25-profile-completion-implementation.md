@@ -1,3 +1,13 @@
+---
+title: "Profile Completion System â€” Implementation Plan"
+status: "active"
+created: 2026-02-25
+updated: 2026-05-22
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Profile Completion System — Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use `superpowers:executing-plans` to implement this plan task-by-task.

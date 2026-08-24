@@ -1,3 +1,13 @@
+---
+title: "Architecture Analysis: Permissions, Feature Flags & Entitlements"
+status: "active"
+created: 2026-07-23
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, architecture, historical]
+---
+
 # Architecture Analysis: Permissions, Feature Flags & Entitlements
 
 **Date:** 2026-07-23

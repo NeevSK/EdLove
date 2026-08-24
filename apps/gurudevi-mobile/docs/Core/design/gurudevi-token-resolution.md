@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Token Resolution"
+status: "active"
+created: 2026-03-20
+updated: 2026-03-20
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi Token Resolution
 ### How To Make Living Themes Manageable
 *A complexity-reduction doctrine for world, phase, profile, and readability*

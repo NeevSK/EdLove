@@ -1,3 +1,13 @@
+---
+title: "UI Component Library"
+status: "active"
+created: 2026-02-11
+updated: 2026-02-11
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # UI Component Library
 
 ## Usage Rules

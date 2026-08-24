@@ -1,3 +1,13 @@
+---
+title: "Permission Refactor Review Report"
+status: "active"
+created: 2026-07-24
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, architecture, historical]
+---
+
 # Permission Refactor Review Report
 
 ## Objective

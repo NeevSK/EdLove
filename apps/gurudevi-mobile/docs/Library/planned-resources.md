@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Library: Planned Resource Types"
+status: "active"
+created: 2026-03-04
+updated: 2026-03-04
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi Library: Planned Resource Types
 
 To ensure a diverse and meaningful "epistemic universe," the following resource types are prioritized for ingestion and display.

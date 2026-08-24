@@ -1,3 +1,13 @@
+---
+title: "Gurudevi splash animation contract"
+status: "active"
+created: 2026-08-22
+updated: 2026-08-22
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, splash-animations]
+---
+
 # Gurudevi splash animation contract
 
 This directory is the design source for the Gurudevi startup animation. It is

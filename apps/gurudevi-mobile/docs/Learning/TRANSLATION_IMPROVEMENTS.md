@@ -1,3 +1,13 @@
+---
+title: "Translation Review & Improvements"
+status: "active"
+created: 2026-02-11
+updated: 2026-02-11
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Translation Review & Improvements
 
 > **Making Gurudevi sound natural, not robotic** 🪷

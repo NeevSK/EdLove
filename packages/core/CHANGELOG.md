@@ -1,3 +1,13 @@
+---
+title: "@repo/core"
+status: "active"
+created: 2026-05-07
+updated: 2026-05-07
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, core]
+---
+
 # @repo/core
 
 ## 0.1.0

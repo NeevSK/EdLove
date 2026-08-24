@@ -1,3 +1,13 @@
+---
+title: "The Data Odyssey: Canonical Data Flow"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, core]
+---
+
 # The Data Odyssey: Canonical Data Flow
 
 This document explains how data moves through the platform and where each layer owns truth.

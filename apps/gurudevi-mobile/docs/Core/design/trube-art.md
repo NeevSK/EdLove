@@ -1,3 +1,13 @@
+---
+title: "TrÃ¼be-Art"
+status: "active"
+created: 2026-03-25
+updated: 2026-03-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Trübe-Art
 ## A Living Light Rendering Library
 ### Architecture v0.3 — 2026 Production Ready

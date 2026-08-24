@@ -1,3 +1,13 @@
+---
+title: "Whole-App Architectural Improvements Audit (Senior Dev Review)"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Whole-App Architectural Improvements Audit (Senior Dev Review)
 
 ## Executive Summary

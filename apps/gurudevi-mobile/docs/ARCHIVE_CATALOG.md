@@ -1,3 +1,13 @@
+---
+title: "Archive Catalog"
+status: "active"
+created: 2026-08-24
+updated: 2026-08-24
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Archive Catalog
 
 The former `apps/gurudevi-mobile/archives/` folder (removed from tracking on 2026-08-24)

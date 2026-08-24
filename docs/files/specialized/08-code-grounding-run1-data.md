@@ -1,3 +1,13 @@
+---
+title: "Code Grounding â€” Run 1 (Doc Fidelity): Data Architecture"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Code Grounding — Run 1 (Doc Fidelity): Data Architecture
 
 Compares `01-data-architecture.md` against the actual EdLove/Gurudevi codebase (`expo-57-gluestack-v5-rngh-v3` branch). **Doc-fidelity lens only** — does the code match what the docs intended, and where does it deviate (well or badly). Code-quality/anti-pattern audit (Run 2) is separate and not attempted here, though some quality signal surfaced incidentally and is flagged as belonging to that run.

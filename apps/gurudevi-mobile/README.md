@@ -1,3 +1,13 @@
+---
+title: "ðŸ›ï¸ Gurudevi Mobile"
+status: "active"
+created: 2026-02-05
+updated: 2026-03-20
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # 🏛️ Gurudevi Mobile
 
 **The Operational Engine** - Mobile app for teachers, students, and principals

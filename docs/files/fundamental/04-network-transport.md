@@ -1,3 +1,13 @@
+---
+title: "Network & Transport Layer"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Network & Transport Layer
 
 Two genuinely separate consumer paths sit on top of the same Postgres data, each with its own transport shape, cost model, and design levers. Don't conflate them — a PowerSync optimization does nothing for the direct-API path and vice versa.

@@ -1,3 +1,13 @@
+---
+title: "GURUDEVI BUSINESS MODEL v1.0"
+status: "active"
+created: 2026-02-11
+updated: 2026-02-11
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # GURUDEVI BUSINESS MODEL v1.0
 ## *A Thermodynamically Sound Economic Architecture*
 

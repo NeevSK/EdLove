@@ -1,3 +1,13 @@
+---
+title: "AI Data Generation Guidance: GuruDevi Epistemic Universe"
+status: "active"
+created: 2026-03-13
+updated: 2026-03-13
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # AI Data Generation Guidance: GuruDevi Epistemic Universe
 
 To populate the library with rich, interconnected data using AI, follow this schema and ingestion strategy.

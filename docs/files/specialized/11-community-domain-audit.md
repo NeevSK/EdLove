@@ -1,3 +1,13 @@
+---
+title: "Community Domain â€” Full Exploration"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Community Domain — Full Exploration
 
 Audit of `packages/community` + the real backend (`apps/sanctuary-api` + `packages/core/src/api/handlers`) against the design intent stated directly: feed mostly chronological with some latest/important/urgent surfacing, upward scroll, comments threaded-and-chronological-latest-first, plus DMs and groups.

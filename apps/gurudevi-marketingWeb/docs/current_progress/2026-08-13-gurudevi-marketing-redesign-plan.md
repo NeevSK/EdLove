@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Marketing Web â€” Elegant Launch Redesign"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-marketingWeb, historical]
+---
+
 # Gurudevi Marketing Web — Elegant Launch Redesign
 
 ## Summary

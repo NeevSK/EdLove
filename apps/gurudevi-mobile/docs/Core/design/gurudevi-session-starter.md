@@ -1,3 +1,13 @@
+---
+title: "Gurudevi â€” AI Session Starter"
+status: "active"
+created: 2026-02-27
+updated: 2026-03-20
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi — AI Session Starter
 ### Paste This At The Beginning of Every Agent Session
 

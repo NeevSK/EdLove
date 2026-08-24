@@ -1,3 +1,13 @@
+---
+title: "Sovereign Form Builder: Current State Audit (May 2026)"
+status: "active"
+created: 2026-05-16
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, form-builder, historical]
+---
+
 # Sovereign Form Builder: Current State Audit (May 2026)
 
 ## 1. Folder Structure Map

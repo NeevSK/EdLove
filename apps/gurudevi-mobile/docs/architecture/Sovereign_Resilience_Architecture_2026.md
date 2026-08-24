@@ -1,3 +1,13 @@
+---
+title: "Sovereign Resilience & Hybrid Sync Architecture (May 2026)"
+status: "active"
+created: 2026-05-06
+updated: 2026-07-26
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Sovereign Resilience & Hybrid Sync Architecture (May 2026)
 
 > **Status**: Living Document — Updated 2026-05-05

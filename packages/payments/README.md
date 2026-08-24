@@ -1,3 +1,13 @@
+---
+title: "@repo/payments"
+status: "active"
+created: 2026-03-25
+updated: 2026-03-25
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, payments]
+---
+
 # @repo/payments
 
 ## Purpose

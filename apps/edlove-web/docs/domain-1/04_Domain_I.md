@@ -1,3 +1,13 @@
+---
+title: "EDLOVE.ORG â€” 04 DOMAIN I"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web]
+---
+
 # EDLOVE.ORG — 04 DOMAIN I
 ## The Paradigm Cosmos | "What could education be?"
 

@@ -1,3 +1,13 @@
+---
+title: "GURUDEVI CORE DOCUMENTATION"
+status: "active"
+created: 2026-02-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # GURUDEVI CORE DOCUMENTATION
 *The Source of Truth for the Educational Ecology*
 

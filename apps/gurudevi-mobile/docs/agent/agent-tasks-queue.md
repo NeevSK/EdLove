@@ -1,3 +1,13 @@
+---
+title: "Agent Tasks Queue"
+status: "active"
+created: 2026-04-23
+updated: 2026-04-23
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Agent Tasks Queue
 *Living checkbox list of infrastructure and feature gaps. Updated after every session.*
 

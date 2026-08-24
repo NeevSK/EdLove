@@ -1,3 +1,13 @@
+---
+title: "Zod 4 & ZenStack v3 Research Notes (Updated: 2026-05-01)"
+status: "active"
+created: 2026-05-02
+updated: 2026-05-02
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Zod 4 & ZenStack v3 Research Notes (Updated: 2026-05-01)
 
 ## 1. Zod 4: The Performance & Tree-Shaking Era

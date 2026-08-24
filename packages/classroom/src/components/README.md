@@ -1,3 +1,13 @@
+---
+title: "Classroom Components - MISSION 02: Teacher Workbench"
+status: "active"
+created: 2026-02-19
+updated: 2026-02-19
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, classroom]
+---
+
 # Classroom Components - MISSION 02: Teacher Workbench
 
 This directory (`src/components/classroom`) contains the core components for the Teacher Workbench feature, implementing fast and efficient classroom management tools.

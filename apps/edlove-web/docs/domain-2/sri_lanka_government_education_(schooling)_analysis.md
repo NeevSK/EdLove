@@ -1,3 +1,13 @@
+---
+title: "The Sri Lankan Education System: What It Is and How It Actually Works"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web]
+---
+
 # The Sri Lankan Education System: What It Is and How It Actually Works
 
 **A System-Structural Analysis Based on Ground Truth**

@@ -1,3 +1,13 @@
+---
+title: "tasks"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 ## UI
 ### profile section
 - [ ] logout and delete account modal aligned with theme and content should be modern and premium, Modal shape also should be modern and premium. texts are too long and seems over explaining.

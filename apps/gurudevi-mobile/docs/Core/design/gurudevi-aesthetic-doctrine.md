@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Aesthetic Doctrine"
+status: "active"
+created: 2026-03-20
+updated: 2026-03-20
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi Aesthetic Doctrine
 ### Sacred Clarity, Living Atmosphere
 *How layout, typography, light, material, and detail become one living interface language*

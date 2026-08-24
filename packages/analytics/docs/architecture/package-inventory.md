@@ -1,3 +1,13 @@
+---
+title: "Analytics Package Inventory"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, analytics]
+---
+
 # Analytics Package Inventory
 
 This document is the source of truth for the current shape of `@repo/analytics`.

@@ -1,3 +1,13 @@
+---
+title: "ðŸŒ¿ Community & Library Features - Documentation Index"
+status: "active"
+created: 2026-02-19
+updated: 2026-02-19
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # 🌿 Community & Library Features - Documentation Index
 
 **Welcome to the Educational Ecology Support System documentation!**

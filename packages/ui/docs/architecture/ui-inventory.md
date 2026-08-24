@@ -1,3 +1,13 @@
+---
+title: "`@repo/ui` Inventory SSOT"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, ui]
+---
+
 # `@repo/ui` Inventory SSOT
 
 Last validated against code: 2026-04-22

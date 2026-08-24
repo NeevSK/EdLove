@@ -1,3 +1,13 @@
+---
+title: "Cleanup Plan: Permission Architecture, Feature Registry & Feature Flags"
+status: "active"
+created: 2026-07-23
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, current_progress, historical]
+---
+
 # Cleanup Plan: Permission Architecture, Feature Registry & Feature Flags
 
 **Date:** 2026-07-23

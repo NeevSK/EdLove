@@ -1,3 +1,13 @@
+---
+title: "Gurudevi â€” Library UI Specification"
+status: "active"
+created: 2026-03-02
+updated: 2026-03-02
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi — Library UI Specification
 ### For IDE Agent — Design & Implementation
 

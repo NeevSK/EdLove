@@ -1,3 +1,13 @@
+---
+title: "Agentic Architecture 2026: The Sovereign Strategy"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, platform-mcp]
+---
+
 # Agentic Architecture 2026: The Sovereign Strategy
 
 ## 1. Executive Summary

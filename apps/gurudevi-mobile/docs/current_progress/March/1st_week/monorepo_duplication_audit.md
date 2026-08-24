@@ -1,3 +1,13 @@
+---
+title: "Monorepo Diagnostic: Duplication & Architectural Drift (RESOLVED)"
+status: "active"
+created: 2026-02-26
+updated: 2026-02-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Monorepo Diagnostic: Duplication & Architectural Drift (RESOLVED)
 # Last Audit Update: 2026-02-28
 

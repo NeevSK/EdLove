@@ -1,3 +1,13 @@
+---
+title: "Audit: Accessibility (a11y) and Localization Completeness (`si`, `ta`)"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Audit: Accessibility (a11y) and Localization Completeness (`si`, `ta`)
 
 ## Scope

@@ -1,3 +1,13 @@
+---
+title: "Gurudevi â€” Architecture Decision Record & Solution Spec"
+status: "active"
+created: 2026-06-22
+updated: 2026-08-10
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, architecture, historical]
+---
+
 # Gurudevi — Architecture Decision Record & Solution Spec
 > Draft 1 — June 2026 — first iteration, expect revision
 

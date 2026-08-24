@@ -1,3 +1,13 @@
+---
+title: "Gurudevi â€” Unified Domain Registry Architecture"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, architecture]
+---
+
 # Gurudevi — Unified Domain Registry Architecture
 > Draft 1 — June 2026
 > Companion to: gurudevi-sanctuary-permission-architecture.md

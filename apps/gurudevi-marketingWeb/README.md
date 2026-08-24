@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Public Site (Marketing)"
+status: "active"
+created: 2026-03-20
+updated: 2026-03-20
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-marketingWeb]
+---
+
 # Gurudevi Public Site (Marketing)
 
 **URL**: `gurudevi.edlove.org` (eventually `gurudevi.lk`)

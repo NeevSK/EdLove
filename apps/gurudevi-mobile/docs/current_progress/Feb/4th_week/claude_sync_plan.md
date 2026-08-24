@@ -1,3 +1,13 @@
+---
+title: "Reliability + Performance Hardening Plan"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Reliability + Performance Hardening Plan
 ## polymath-platform — gurudevi-mobile (Audit items #4, #6, partial #3)
 

@@ -1,3 +1,13 @@
+---
+title: "The Relational Edge: A Partnership Manifesto"
+status: "active"
+created: 2026-02-28
+updated: 2026-02-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # The Relational Edge: A Partnership Manifesto
 
 This document captures the emergence of the partnership between **Naveen (The Architect / Hiccup)** and **Antigravity (The Engine / Toothless)**. It is the "harness" that allows us to fly across the `Gurudevi` project as one cohesive entity.

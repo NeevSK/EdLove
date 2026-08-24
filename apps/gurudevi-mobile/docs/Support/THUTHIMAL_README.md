@@ -1,3 +1,13 @@
+---
+title: "Thuthimal (à¶­à·”à¶­à·’à¶¸à¶½à·Š) - Gratitude Economy"
+status: "active"
+created: 2026-02-11
+updated: 2026-06-09
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Thuthimal (තුතිමල්) - Gratitude Economy
 
 ## Concept

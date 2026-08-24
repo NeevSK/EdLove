@@ -1,3 +1,13 @@
+---
+title: "ðŸª· GURUDEVI: GETTING STARTED GUIDE"
+status: "active"
+created: 2026-02-11
+updated: 2026-02-13
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # 🪷 GURUDEVI: GETTING STARTED GUIDE
 ## Your Complete Onboarding Path
 

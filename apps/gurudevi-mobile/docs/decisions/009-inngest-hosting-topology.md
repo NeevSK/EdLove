@@ -1,3 +1,13 @@
+---
+title: "ADR-009: Inngest Hosting Topology"
+status: "active"
+created: 2026-04-29
+updated: 2026-04-29
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # ADR-009: Inngest Hosting Topology
 
 ## Status

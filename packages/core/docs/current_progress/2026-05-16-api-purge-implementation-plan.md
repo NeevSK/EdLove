@@ -1,3 +1,13 @@
+---
+title: "Implementation Plan: Sovereign API Purge (Breaking Migration) ðŸ› ï¸"
+status: "active"
+created: 2026-05-16
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, core, historical]
+---
+
 # Implementation Plan: Sovereign API Purge (Breaking Migration) 🛠️
 
 ## Objective

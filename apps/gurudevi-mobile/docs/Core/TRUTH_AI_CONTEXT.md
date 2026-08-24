@@ -1,3 +1,13 @@
+---
+title: "GURUDEVI AI AGENT CONTEXT (CORE TRUTH)"
+status: "active"
+created: 2026-02-28
+updated: 2026-06-09
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # GURUDEVI AI AGENT CONTEXT (CORE TRUTH)
 *Definitive Directives for Building in the Educational Ecology*
 

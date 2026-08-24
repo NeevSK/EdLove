@@ -1,3 +1,13 @@
+---
+title: "Instruction for GitHub Cloud Agent: Accessibility Refinement Cycle"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Instruction for GitHub Cloud Agent: Accessibility Refinement Cycle
 
 ## Task Overview

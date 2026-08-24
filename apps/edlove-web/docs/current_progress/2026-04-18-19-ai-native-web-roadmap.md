@@ -1,3 +1,13 @@
+---
+title: "AI-NATIVE WEB ROADMAP"
+status: "active"
+created: 2026-04-18
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web, historical]
+---
+
 # AI-NATIVE WEB ROADMAP
 ## A Layered Strategy for EdLove and the Sister Web Properties
 

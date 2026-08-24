@@ -1,3 +1,13 @@
+---
+title: "@intuitui-labs/lk-edu-geo"
+status: "active"
+created: 2026-05-07
+updated: 2026-05-07
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, lk-edu-geo]
+---
+
 # @intuitui-labs/lk-edu-geo
 
 ## 1.0.1

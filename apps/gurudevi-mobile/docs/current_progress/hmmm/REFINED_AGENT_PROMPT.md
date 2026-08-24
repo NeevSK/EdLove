@@ -1,3 +1,13 @@
+---
+title: "Cloud Agent Prompt: Global Boundaries & Environment Engine"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Cloud Agent Prompt: Global Boundaries & Environment Engine
 
 > **Implementation Status**: This document serves as a comprehensive guide and specification for implementing the Environment Engine. Most features described here are **not yet implemented**. Please refer to [task.md](./task.md) for current implementation status.

@@ -1,3 +1,13 @@
+---
+title: "TRIPLE-HELIX BDD: THE GURUDEVI ARCHITECTURAL SOUL"
+status: "active"
+created: 2026-02-11
+updated: 2026-02-11
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # TRIPLE-HELIX BDD: THE GURUDEVI ARCHITECTURAL SOUL
 
 **Version**: 1.0  

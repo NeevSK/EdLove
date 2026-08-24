@@ -1,3 +1,13 @@
+---
+title: "THE GLOBAL GALLERY OF INNOVATION â€” Curation for The Passage"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web]
+---
+
 # THE GLOBAL GALLERY OF INNOVATION — Curation for The Passage
 
 This document is a broad scan of educational and technological beauty/innovation from every corner of the world. It maps **country-specific** transformations and unique local solutions.

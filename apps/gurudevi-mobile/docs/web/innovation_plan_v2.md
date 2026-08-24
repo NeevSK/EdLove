@@ -1,3 +1,13 @@
+---
+title: "Phase 2 Innovation Implementation Plan"
+status: "active"
+created: 2026-03-04
+updated: 2026-03-04
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Phase 2 Innovation Implementation Plan
 
 This document outlines the technical implementation of **Local Seed** and **Community Aura** in the Gurudevi platform.

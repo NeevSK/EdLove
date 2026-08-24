@@ -1,3 +1,13 @@
+---
+title: "ðŸ“Š Gurudevi Mobile Project Status & Documentation Analysis"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # 📊 Gurudevi Mobile Project Status & Documentation Analysis
 
 **Date:** February 10, 2026

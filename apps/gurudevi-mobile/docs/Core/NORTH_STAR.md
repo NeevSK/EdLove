@@ -1,3 +1,13 @@
+---
+title: "GURUDEVI NORTH STAR"
+status: "active"
+created: 2026-02-11
+updated: 2026-02-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # GURUDEVI NORTH STAR
 ## The Unchanging Vision
 

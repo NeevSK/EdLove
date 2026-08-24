@@ -1,3 +1,13 @@
+---
+title: "Agent Briefing Framework: Offline-First vs Offline-Capable Discernment"
+status: "active"
+created: 2026-06-09
+updated: 2026-06-09
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Agent Briefing Framework: Offline-First vs Offline-Capable Discernment
 ## Feature-Level Decision Trees & Guided Implementation Prompts
 

@@ -1,3 +1,13 @@
+---
+title: "Sovereign Identity Fabric: Historical Audit"
+status: "active"
+created: 2026-05-07
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, core, historical]
+---
+
 # Sovereign Identity Fabric: Historical Audit
 
 This document is a historical audit of the older identity and onboarding model.

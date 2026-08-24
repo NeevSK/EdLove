@@ -1,3 +1,13 @@
+---
+title: "Font Setup Guide"
+status: "active"
+created: 2026-02-11
+updated: 2026-02-11
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Font Setup Guide
 
 ## Fonts Needed

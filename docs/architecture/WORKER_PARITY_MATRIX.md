@@ -1,3 +1,13 @@
+---
+title: "Platform Worker Parity Matrix"
+status: "active"
+created: 2026-08-14
+updated: 2026-08-14
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, architecture]
+---
+
 # Platform Worker Parity Matrix
 
 Status: active migration artifact

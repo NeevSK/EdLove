@@ -1,3 +1,13 @@
+---
+title: "Software Mansion Open-Source Audit & Compatibility Report"
+status: "active"
+created: 2026-06-13
+updated: 2026-06-13
+author: "Naveen"
+scribe: "opencode"
+tags: [reports, softwaremansion_audit.md]
+---
+
 # Software Mansion Open-Source Audit & Compatibility Report
 
 This report provides an exhaustive, surgical, and accurate mapping of the packages, developer tools, skills, and capabilities created or maintained by **Software Mansion (SWM)** and **Software Mansion Labs (SWM Labs)**. It details their roles in modern software development and evaluates their coverage/integration within the **Gurudevi Platform (`gurudevi-mobile`)** codebase.

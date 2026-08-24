@@ -1,3 +1,13 @@
+---
+title: "Accessibility Strategy: Gurudevi Mobile"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Accessibility Strategy: Gurudevi Mobile
 
 ## 1. Vision & Standards

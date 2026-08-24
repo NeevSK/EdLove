@@ -1,4 +1,14 @@
-> **Superseded** � kept for historical reference.
+---
+title: "API Refactoring - Before & After Comparison"
+status: "active"
+created: 2026-02-11
+updated: 2026-07-24
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
+> **Superseded** � kept for historical reference.
 > See active docs at docs/INDEX.md.
 > **⚠️ ARCHIVED — Historical Reference Only**
 > This document is preserved for context. It describes the API refactoring that has already been completed. Do not treat it as current guidance. For up-to-date architecture notes, see the main project documentation.

@@ -1,3 +1,13 @@
+---
+title: "GURUDEVI â€” COMPLETE PRODUCT REQUIREMENTS DOCUMENT"
+status: "active"
+created: 2026-02-11
+updated: 2026-02-11
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # GURUDEVI — COMPLETE PRODUCT REQUIREMENTS DOCUMENT
 ## 11 Complete PRD | The Comprehensive Vision & Implementation Guide
 

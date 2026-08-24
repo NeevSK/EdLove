@@ -1,3 +1,13 @@
+---
+title: "Architectural Specification: Temporal Resonance Architecture (TRA) v1.1"
+status: "active"
+created: 2026-03-18
+updated: 2026-03-18
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Architectural Specification: Temporal Resonance Architecture (TRA) v1.1
 ## Status: APPROVED | Senior Developer Implementation Guide
 

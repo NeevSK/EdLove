@@ -1,3 +1,13 @@
+---
+title: "Query Patterns"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Query Patterns
 
 Builds on `04-network-transport.md` (PowerSync vs. direct-API paths) and `05-storage-indexing.md` (index/partition toolbox). This doc covers *how queries are shaped and combined* once they reach either path — the layer that actually determines whether a screen feels instant or sluggish, independent of how well the underlying storage is indexed.

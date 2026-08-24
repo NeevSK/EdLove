@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Design Language"
+status: "active"
+created: 2026-02-27
+updated: 2026-02-27
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi Design Language
 ### A Living Design Constitution
 *Sanctuary born with love. Built with love.*

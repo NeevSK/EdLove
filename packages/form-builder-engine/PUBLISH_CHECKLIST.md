@@ -1,3 +1,13 @@
+---
+title: "Form Builder Engine Publish Checklist"
+status: "active"
+created: 2026-05-22
+updated: 2026-05-22
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, form-builder-engine]
+---
+
 # Form Builder Engine Publish Checklist
 
 Use this before tagging or publishing `@intuitui-labs/form-builder-engine`.

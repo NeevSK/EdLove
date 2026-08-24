@@ -1,3 +1,13 @@
+---
+title: "Local-First Transition Specification: Drizzle ORM & op-sqlite"
+status: "active"
+created: 2026-05-20
+updated: 2026-05-20
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Local-First Transition Specification: Drizzle ORM & op-sqlite
 
 This document defines the formal engineering specification for transitioning the Gurudevi mobile client (`gurudevi-mobile`) to a high-performance, type-safe local-first architecture using **Drizzle ORM** and **op-sqlite** as a modern JSI replacement for the deprecated `react-native-quick-sqlite` library.

@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Web Architecture Guide"
+status: "active"
+created: 2026-03-04
+updated: 2026-03-20
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi Web Architecture Guide
 
 This document clarifies the distinction between the two web environments in the Polymath Platform and provides instructions on how to run them.

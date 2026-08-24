@@ -1,3 +1,13 @@
+---
+title: "Gluestack v3 Migration Audit: Phase 1 (Core & Workspace)"
+status: "active"
+created: 2026-04-18
+updated: 2026-04-18
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gluestack v3 Migration Audit: Phase 1 (Core & Workspace)
 
 ## 📊 1. Monorepo Migration Status (April 2026)

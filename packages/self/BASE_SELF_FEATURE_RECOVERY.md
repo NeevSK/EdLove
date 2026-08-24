@@ -1,3 +1,13 @@
+---
+title: "BaseSelf Feature Recovery"
+status: "active"
+created: 2026-04-08
+updated: 2026-04-08
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, self]
+---
+
 # BaseSelf Feature Recovery
 
 This note captures the richer `Self` feature inventory that existed before the March 2026 slimming and temporal-shell drift.

@@ -1,3 +1,13 @@
+---
+title: "AI & Human Developer Collaboration: The BDD Manifesto"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # AI & Human Developer Collaboration: The BDD Manifesto
 
 > **Last Updated: 2026-02-11**

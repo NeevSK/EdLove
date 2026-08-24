@@ -1,3 +1,13 @@
+---
+title: "UI-Thread Discipline: Architecture Principles for RN Performance"
+status: "active"
+created: 2026-08-24
+updated: 2026-08-24
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, engineering]
+---
+
 # UI-Thread Discipline: Architecture Principles for RN Performance
 
 **Stack:** Reanimated 4.5.x + react-native-worklets 0.11.x, New Architecture (Fabric) only.

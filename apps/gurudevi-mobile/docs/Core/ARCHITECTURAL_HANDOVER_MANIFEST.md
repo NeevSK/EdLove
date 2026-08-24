@@ -1,3 +1,13 @@
+---
+title: "Architectural Handover Manifest: Gurudevi Platform"
+status: "active"
+created: 2026-04-18
+updated: 2026-04-18
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Architectural Handover Manifest: Gurudevi Platform
 
 ## 📅 Session Date: 2026-04-16

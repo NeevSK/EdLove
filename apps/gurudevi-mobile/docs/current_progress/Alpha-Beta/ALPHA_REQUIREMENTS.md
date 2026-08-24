@@ -1,3 +1,13 @@
+---
+title: "ðŸš€ Gurudevi Alpha Requirements Checklist"
+status: "active"
+created: 2026-02-19
+updated: 2026-02-19
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # 🚀 Gurudevi Alpha Requirements Checklist
 ## Based on Complete PRD (February 8, 2026)
 

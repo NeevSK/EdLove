@@ -1,3 +1,13 @@
+---
+title: "ZenStack v3 Migration & Sovereign Siphoning Notes"
+status: "active"
+created: 2026-04-18
+updated: 2026-05-06
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # ZenStack v3 Migration & Sovereign Siphoning Notes
 
 ## 1. Why ZenStack "Failed" (The v2 vs v3 Gap)

@@ -1,3 +1,13 @@
+---
+title: "Version Management"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, infra]
+---
+
 # Version Management
 
 ## Status

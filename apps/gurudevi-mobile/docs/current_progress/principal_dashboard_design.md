@@ -1,3 +1,13 @@
+---
+title: "Principal Dashboard: Strategic Design Blueprint ðŸ›ï¸"
+status: "active"
+created: 2026-03-06
+updated: 2026-03-06
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Principal Dashboard: Strategic Design Blueprint 🏛️
 
 ## Philosophy: HUD vs. Office

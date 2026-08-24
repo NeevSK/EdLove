@@ -1,3 +1,13 @@
+---
+title: "Guest Exploration & Sanctuary Commit Flow"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Guest Exploration & Sanctuary Commit Flow
 
 ## Objective

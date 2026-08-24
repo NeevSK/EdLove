@@ -1,3 +1,13 @@
+---
+title: "ðŸ›¡ï¸ Sovereign Engineering Philosophy"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, platform-mcp]
+---
+
 # 🛡️ Sovereign Engineering Philosophy
 
 ## 1. Zero-Legacy Principle

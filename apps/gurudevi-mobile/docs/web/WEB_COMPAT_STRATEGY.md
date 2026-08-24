@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Web Compatibility â€” Architecture Decision Record"
+status: "active"
+created: 2026-03-04
+updated: 2026-06-13
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi Web Compatibility — Architecture Decision Record
 
 > **Audience:** Any developer, architect, or AI agent working on this codebase.

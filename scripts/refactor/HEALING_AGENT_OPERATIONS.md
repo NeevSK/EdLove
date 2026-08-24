@@ -1,3 +1,13 @@
+---
+title: "Systematic Healing Agent Operations: Gluestack v2 â†’ v3"
+status: "active"
+created: 2026-04-18
+updated: 2026-04-18
+author: "Naveen"
+scribe: "opencode"
+tags: [scripts, refactor]
+---
+
 # Systematic Healing Agent Operations: Gluestack v2 → v3
 
 This document outlines the systematic, automated procedure for "healing" the codebase following the Gluestack v3 / NativeWind migration. Follow these operations to achieve a zero-error build state.

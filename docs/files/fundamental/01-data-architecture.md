@@ -1,3 +1,13 @@
+---
+title: "Temporal Data Architecture â€” Postgres / Supabase / SQLite / PowerSync"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Temporal Data Architecture — Postgres / Supabase / SQLite / PowerSync
 
 Implements the principles in `00-biomimicry-principles.md` in an actual stack. Context: multi-domain (wellbeing, notes, admin) app where any old day should be fully accessible, with weekly/monthly summaries layered on top, offline-first via PowerSync.

@@ -1,3 +1,13 @@
+---
+title: "Library Seed SOP â€” Gurudevi Epistemic Universe"
+status: "active"
+created: 2026-03-13
+updated: 2026-03-14
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Library Seed SOP — Gurudevi Epistemic Universe
 *Standard Operating Procedure for AI-assisted library content seeding*
 

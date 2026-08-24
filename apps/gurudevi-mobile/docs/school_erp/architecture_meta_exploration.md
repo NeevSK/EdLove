@@ -1,3 +1,13 @@
+---
+title: "Architecture Meta-Exploration: The \"Why\" behind the Layers"
+status: "active"
+created: 2026-03-25
+updated: 2026-03-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Architecture Meta-Exploration: The "Why" behind the Layers
 
 This document explains the logic used to decide where a package belongs and how to maintain a future-proof, "Zero Tech Debt" architecture.

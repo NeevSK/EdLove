@@ -1,3 +1,13 @@
+---
+title: "Gurudevi: Sacred Technology for Sri Lankan Teachers"
+status: "active"
+created: 2026-02-11
+updated: 2026-02-11
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi: Sacred Technology for Sri Lankan Teachers
 
 ## 🪷 Project Overview

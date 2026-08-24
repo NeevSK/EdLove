@@ -1,3 +1,13 @@
+---
+title: "Domain Healing Tasks"
+status: "active"
+created: 2026-05-16
+updated: 2026-05-16
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, core]
+---
+
 # Domain Healing Tasks
 
 ## Completed

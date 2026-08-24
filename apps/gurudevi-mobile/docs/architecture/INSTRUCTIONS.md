@@ -1,3 +1,13 @@
+---
+title: "Agent Operational Strictures"
+status: "active"
+created: 2026-04-23
+updated: 2026-04-29
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Agent Operational Strictures
 
 These instructions are mandatory for all AI agents working on the Gurudevi codebase.

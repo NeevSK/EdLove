@@ -1,3 +1,13 @@
+---
+title: "TEANING: THE SACRED SPACE WHERE EDUCATION LIVES"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web]
+---
+
 # TEANING: THE SACRED SPACE WHERE EDUCATION LIVES
 ## *A Relational Framework for Understanding Educational Transformation*
 

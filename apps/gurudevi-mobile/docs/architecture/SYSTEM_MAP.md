@@ -1,3 +1,13 @@
+---
+title: "Gurudevi OS - System Map (April 2026)"
+status: "active"
+created: 2026-04-23
+updated: 2026-04-23
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi OS - System Map (April 2026)
 
 ## From "Backendless" to "Durable"

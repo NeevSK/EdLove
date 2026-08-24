@@ -1,3 +1,13 @@
+---
+title: "tasks"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-marketingWeb, historical]
+---
+
 this file is for the tasks we have to do in apps/gurudevi-marketingWeb
 
 ## 16/03/2026 

@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Library â€” Content Licensing Policy"
+status: "active"
+created: 2026-03-13
+updated: 2026-03-13
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, library]
+---
+
 # Gurudevi Library — Content Licensing Policy
 
 ## Overview

@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Aliveness & Growth Model"
+status: "active"
+created: 2026-02-28
+updated: 2026-02-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi Aliveness & Growth Model
 ## A Nature-Inspired, Non-Addictive Growth Ecosystem
 

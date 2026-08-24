@@ -1,3 +1,13 @@
+---
+title: "@repo/ai"
+status: "active"
+created: 2026-05-07
+updated: 2026-05-07
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, ai]
+---
+
 # @repo/ai
 
 ## 1.0.0

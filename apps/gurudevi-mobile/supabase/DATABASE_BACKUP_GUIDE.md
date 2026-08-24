@@ -1,3 +1,13 @@
+---
+title: "Supabase Database Schema Backup Guide"
+status: "active"
+created: 2026-08-10
+updated: 2026-08-10
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Supabase Database Schema Backup Guide
 
 This guide documents the lightweight database schema backup procedure that extracts the full DDL configuration from the linked Supabase database without requiring local Docker Desktop or standard `pg_dump` binary installations.

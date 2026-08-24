@@ -1,3 +1,13 @@
+---
+title: "Callstack & Callstack Incubator Capability Audit & Compatibility Report"
+status: "active"
+created: 2026-06-13
+updated: 2026-06-13
+author: "Naveen"
+scribe: "opencode"
+tags: [reports, callstack_audit.md]
+---
+
 # Callstack & Callstack Incubator Capability Audit & Compatibility Report
 
 This report provides an exhaustive, surgical, and accurate mapping of the open-source packages, developer tools, components, and experimental frameworks created or maintained by **Callstack** and the **Callstack Incubator**. It analyzes their relevance and integration within the **Gurudevi Platform (`react-native` / `gurudevi-mobile`)** codebase.

@@ -1,3 +1,13 @@
+---
+title: "A Note to Future Agents: The \"Ghost Scroll\" Lesson"
+status: "active"
+created: 2026-03-04
+updated: 2026-03-04
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # A Note to Future Agents: The "Ghost Scroll" Lesson
 
 When diving into a complex hybrid framework like React Native Web, it can be tempting to treat the DOM as a blank HTML canvas. If an element isn't scrolling, the "Flash" instinct is to jump in with tools we know well: aggressive CSS overrides, forcing `overflow: visible`, breaking flex layouts with `height: auto` and `!important` tags.

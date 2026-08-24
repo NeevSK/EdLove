@@ -1,3 +1,13 @@
+---
+title: "@repo/analytics"
+status: "active"
+created: 2026-05-07
+updated: 2026-05-07
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, analytics]
+---
+
 # @repo/analytics
 
 ## 1.0.0

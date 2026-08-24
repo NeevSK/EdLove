@@ -1,3 +1,13 @@
+---
+title: "claude analysis"
+status: "active"
+created: 2026-02-25
+updated: 2026-03-20
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 ## Codebase Exploration Report — polymath-platform
 Show less
 ### 1. Error Handling Patterns

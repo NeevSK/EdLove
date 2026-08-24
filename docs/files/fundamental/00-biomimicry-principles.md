@@ -1,3 +1,13 @@
+---
+title: "Biomimicry Principles â€” Temporal Architecture for Gurudevi"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Biomimicry Principles — Temporal Architecture for Gurudevi
 
 Source material for how biological systems handle time, memory, and information encoding — abstracted into design principles. This file is the shared foundation; `01-data-architecture.md`, `02-ui-visual-design.md`, and `03-ux-interaction-design.md` each reference back to these.

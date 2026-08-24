@@ -1,3 +1,13 @@
+---
+title: "Auth Events and MFA Architecture"
+status: "active"
+created: 2026-05-22
+updated: 2026-05-22
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Auth Events and MFA Architecture
 
 This note captures the current auth-method logging and MFA direction for Gurudevi.

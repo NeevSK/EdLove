@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Developer Reference Guide"
+status: "active"
+created: 2026-02-11
+updated: 2026-02-11
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi Developer Reference Guide
 
 > **For Future You** - Quick answers when you need them 🪷

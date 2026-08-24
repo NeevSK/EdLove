@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Mobile Navigation Architecture"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi Mobile Navigation Architecture
 
 This document is the shared mental model for navigation in `gurudevi-mobile`.

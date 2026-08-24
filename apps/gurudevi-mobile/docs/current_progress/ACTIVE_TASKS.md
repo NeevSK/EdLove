@@ -1,3 +1,13 @@
+---
+title: "ACTIVE TASKS: What Needs Done Right Now"
+status: "active"
+created: 2026-02-28
+updated: 2026-05-07
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # ACTIVE TASKS: What Needs Done Right Now
 
 > Priority-ordered task list applying **first-principles PM + architect thinking**.

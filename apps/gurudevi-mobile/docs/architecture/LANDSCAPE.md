@@ -1,3 +1,13 @@
+---
+title: "Gurudevi National OS - System Philosophy (v4.0)"
+status: "active"
+created: 2026-04-23
+updated: 2026-04-23
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi National OS - System Philosophy (v4.0)
 
 ## Current Paradigm: Intent-Driven & Durable Execution

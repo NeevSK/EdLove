@@ -1,3 +1,13 @@
+---
+title: "GURUDEVI BUILD ORDER"
+status: "active"
+created: 2026-02-28
+updated: 2026-02-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # GURUDEVI BUILD ORDER
 ## Foundation First, Features Second
 

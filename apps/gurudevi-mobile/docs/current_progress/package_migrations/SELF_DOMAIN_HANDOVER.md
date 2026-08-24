@@ -1,3 +1,13 @@
+---
+title: "Handover: Self Domain Migration & Hook Resonance"
+status: "active"
+created: 2026-03-04
+updated: 2026-03-04
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Handover: Self Domain Migration & Hook Resonance
 
 ## 1. Overview

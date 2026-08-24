@@ -1,3 +1,13 @@
+---
+title: "Sovereign Push Notifications"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, core]
+---
+
 # Sovereign Push Notifications
 
 This document outlines the architecture and usage patterns for native push notifications within the Gurudevi platform.

@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Next Phase: Sanctuary Refinement & Growth ðŸŒ¸"
+status: "active"
+created: 2026-02-18
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Gurudevi Next Phase: Sanctuary Refinement & Growth 🌸
 
 ## Vision

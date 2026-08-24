@@ -1,3 +1,13 @@
+---
+title: "Priority Matrix + Skia Dark Overlay Runbook"
+status: "active"
+created: 2026-02-27
+updated: 2026-02-27
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Priority Matrix + Skia Dark Overlay Runbook
 
 Date: 2026-02-27  

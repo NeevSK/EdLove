@@ -1,3 +1,13 @@
+---
+title: "Guidance: Zod Data Governance (SSOT)"
+status: "active"
+created: 2026-04-23
+updated: 2026-04-23
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Guidance: Zod Data Governance (SSOT)
 
 This document establishes the **Single Source of Truth (SSOT)** pattern for all domain entities in the Gurudevi Sanctuary.

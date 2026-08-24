@@ -1,3 +1,13 @@
+---
+title: "GitHub Student Pack toolchain"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, infra]
+---
+
 # GitHub Student Pack toolchain
 
 This is the free-first integration map for Gurudevi Mobile. It deliberately keeps

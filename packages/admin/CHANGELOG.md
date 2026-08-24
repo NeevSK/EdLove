@@ -1,3 +1,13 @@
+---
+title: "@repo/admin"
+status: "active"
+created: 2026-05-07
+updated: 2026-05-07
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, admin]
+---
+
 # @repo/admin
 
 ## 0.0.2

@@ -1,3 +1,13 @@
+---
+title: "AGENTS.md â€” Agent Guardrails for Polymath Platform"
+status: "active"
+created: 2026-08-03
+updated: 2026-08-24
+author: "Naveen"
+scribe: "opencode"
+tags: [AGENTS.md]
+---
+
 # AGENTS.md — Agent Guardrails for Polymath Platform
 
 > **This file exists to prevent agents from making build-breaking mistakes.**

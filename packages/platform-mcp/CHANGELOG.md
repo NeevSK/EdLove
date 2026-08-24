@@ -1,3 +1,13 @@
+---
+title: "@repo/platform-mcp"
+status: "active"
+created: 2026-05-07
+updated: 2026-05-07
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, platform-mcp]
+---
+
 # @repo/platform-mcp
 
 ## 0.1.0

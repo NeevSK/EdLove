@@ -1,3 +1,13 @@
+---
+title: "UX â€” Interaction & Behavioral Design Reference"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # UX — Interaction & Behavioral Design Reference
 
 The person's cognitive/behavioral relationship to the system over time: what they're trying to accomplish, what mental model forms, what decisions the flow enables. Distinct from UI (visual material — see `02-ui-visual-design.md`). Test: a UX decision is answerable without a single pixel.

@@ -1,3 +1,13 @@
+---
+title: "`@repo/graphics` Inventory"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, graphics]
+---
+
 # `@repo/graphics` Inventory
 
 Last updated: 2026-04-22

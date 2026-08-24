@@ -1,3 +1,13 @@
+---
+title: "Sovereign Monorepo: Future-Proof Coding Patterns & Architectural Standards (2026-2030)"
+status: "active"
+created: 2026-05-20
+updated: 2026-05-20
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Sovereign Monorepo: Future-Proof Coding Patterns & Architectural Standards (2026-2030)
 
 This document establishes the definitive, future-proof architectural standards and engineering patterns for the Gurudevi platform. It serves as a continuous reference and engineering contract for building ultra-resilient, local-first applications that function flawlessly in zero-connectivity environments (such as remote Sri Lankan schools) while maintaining absolute data integrity and granular authorization security.

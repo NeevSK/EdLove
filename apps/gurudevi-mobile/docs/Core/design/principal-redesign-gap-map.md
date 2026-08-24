@@ -1,3 +1,13 @@
+---
+title: "Principal Redesign Gap Map"
+status: "active"
+created: 2026-04-18
+updated: 2026-04-18
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Principal Redesign Gap Map
 
 ## Why this exists

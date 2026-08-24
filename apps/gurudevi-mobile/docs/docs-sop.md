@@ -14,6 +14,33 @@ This document establishes the official standard for creating, maintaining, and o
 
 ---
 
+## 0. Scope, Tiers & Exemptions
+
+**In scope:** every tracked `.md` file under `apps/`, `packages/`, `docs/`, and the repository root (`README.md`, `AGENTS.md`).
+
+**Exempt from frontmatter requirement** (third-party or machine-owned files; do not add frontmatter — it will be overwritten or breaks tooling):
+
+| Path | Reason |
+|---|---|
+| `.agents/**` | Vendored agent skills with their own conventions |
+| `.claude/**` | Vendored Claude skills |
+| `.changeset/**` | Changesets tooling boilerplate |
+| `node_modules/**` | Not ours |
+
+### Documentation tiers
+
+Every in-scope document belongs to exactly one tier, decided by deterministic signals (filename date prefix, folder, frontmatter `status`):
+
+| Tier | Signals | Maintenance contract |
+|---|---|---|
+| **Living** | Static kebab-case name; READMEs, guides, SOPs, INDEX, CONTEXT files | Must stay accurate. Audit on every structural repo change; `updated:` reflects last real review. |
+| **Historical** | `YYYY-MM-DD-` prefix, or lives under `current_progress/`, `old_docs/`, `decisions/` | Point-in-time record. Never content-edit after the fact; frontmatter must exist but is allowed to age. |
+| **Generated** | Output of a generator (e.g. `docs/stack-map/landscape/*.md`, `catalog/*.md`) | Exempt from frontmatter. Never hand-edit; regenerate via owning script. The generator's README documents ownership. |
+
+Ambiguous files default to Living. Re-classify by renaming/folder move, never by editing history.
+
+---
+
 ## 1. Directory Structure
 
 All documentation must be placed in one of the following subdirectories under the respective package or application's `docs/` folder (e.g. `docs/stack-map/` or `apps/<name>/docs/`) based on its purpose:

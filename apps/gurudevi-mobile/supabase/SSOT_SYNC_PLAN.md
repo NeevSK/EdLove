@@ -1,3 +1,13 @@
+---
+title: "Supabase Migration SSOT Sync Plan"
+status: "active"
+created: 2026-03-19
+updated: 2026-03-19
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Supabase Migration SSOT Sync Plan
 
 ## Current status

@@ -1,3 +1,13 @@
+---
+title: "EDLOVE.ORG â€” 03 TECH"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web]
+---
+
 # EDLOVE.ORG — 03 TECH
 ## The Build Guide | How We Actually Make This
 

@@ -1,3 +1,13 @@
+---
+title: "ðŸ“… Daily References & Locked Specs"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # 📅 Daily References & Locked Specs
 
 **This folder (`current_progress`) is your daily dashboard.**

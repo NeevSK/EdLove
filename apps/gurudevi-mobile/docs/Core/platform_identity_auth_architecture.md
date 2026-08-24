@@ -1,3 +1,13 @@
+---
+title: "Platform Identity & Authentication Architecture"
+status: "active"
+created: 2026-03-08
+updated: 2026-03-08
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Platform Identity & Authentication Architecture
 
 Version 1.0

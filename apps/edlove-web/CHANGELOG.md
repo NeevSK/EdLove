@@ -1,3 +1,13 @@
+---
+title: "apps-edlove-web"
+status: "active"
+created: 2026-05-07
+updated: 2026-05-07
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web]
+---
+
 # apps-edlove-web
 
 ## 0.0.2

@@ -1,3 +1,13 @@
+---
+title: "API Purge Tasks: The \"Self\" Domain ðŸŒ¸"
+status: "active"
+created: 2026-05-16
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, core, historical]
+---
+
 # API Purge Tasks: The "Self" Domain 🌸
 
 ## Phase 1: Breaking the Foundation

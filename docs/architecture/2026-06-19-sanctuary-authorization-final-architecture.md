@@ -1,3 +1,13 @@
+---
+title: "ADR: Sanctuary Authorization â€” Final Architecture, CASL Retirement, and UI Rendering Strategy"
+status: "active"
+created: 2026-06-19
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, architecture, historical]
+---
+
 # ADR: Sanctuary Authorization — Final Architecture, CASL Retirement, and UI Rendering Strategy
 
 **Date:** 2026-06-19

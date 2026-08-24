@@ -1,3 +1,13 @@
+---
+title: "Guide: SQLite, Drizzle, and PowerSync â€” How Data Actually Moves"
+status: "active"
+created: 2026-06-19
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, architecture, historical]
+---
+
 # Guide: SQLite, Drizzle, and PowerSync — How Data Actually Moves
 
 **Date:** 2026-06-19

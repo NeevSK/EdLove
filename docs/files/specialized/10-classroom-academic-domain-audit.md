@@ -1,3 +1,13 @@
+---
+title: "Classroom / Academic Domain â€” Full Exploration"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Classroom / Academic Domain — Full Exploration
 
 Audit of `packages/classroom` + the `core` attendance projection layer against `schema.zmodel` and migrations. Companion to `09-wellbeing-self-domain-audit.md` — several findings here are best understood as direct comparisons to that domain, since the two turn out to be at genuinely different maturity levels.

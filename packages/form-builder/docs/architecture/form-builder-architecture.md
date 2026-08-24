@@ -1,3 +1,13 @@
+---
+title: "Sovereign Form Builder â€” Architecture"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, form-builder]
+---
+
 # Sovereign Form Builder — Architecture
 
 > Built for Gurudevi. Architected for sovereignty.

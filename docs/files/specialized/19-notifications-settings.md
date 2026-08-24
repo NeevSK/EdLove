@@ -1,3 +1,13 @@
+---
+title: "Notifications & Settings â€” Implementation Guidance"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Notifications & Settings — Implementation Guidance
 
 Covers `packages/core`'s notification infrastructure (`SOVEREIGN_PUSH_NOTIFICATIONS.md`, already excellent) and `packages/ui`'s settings screens. Unlike most domains audited so far, the architecture here is already mature — this doc's job is adding the *behavioral policy* layer (when should something actually interrupt someone) and correcting one false alarm.

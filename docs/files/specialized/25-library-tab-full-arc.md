@@ -1,3 +1,13 @@
+---
+title: "Library Tab â€” UI Operationalization & Full Arc"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Library Tab — UI Operationalization & Full Arc
 
 Fourth application of the method. Library's real persona structure, checked directly rather than assumed: **reader and contributor share one screen; curator has a genuinely separate one.**

@@ -1,3 +1,13 @@
+---
+title: "Understanding Sri Lankan Education: The Complete System"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web]
+---
+
 # Understanding Sri Lankan Education: The Complete System
 
 ## The Reality Behind "Free Education"

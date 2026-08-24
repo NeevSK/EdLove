@@ -1,3 +1,13 @@
+---
+title: "Implementation Plan: Knowledge Dashboard (Premium Web Experience)"
+status: "active"
+created: 2026-03-04
+updated: 2026-03-04
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Implementation Plan: Knowledge Dashboard (Premium Web Experience)
 
 This plan outlines the transformation of the Gurudevi Library from a "stretched mobile" layout to a premium, desktop-native **Knowledge Dashboard** for the web.

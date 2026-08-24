@@ -1,3 +1,13 @@
+---
+title: "Section Ã— Role Gap Matrix"
+status: "active"
+created: 2026-03-01
+updated: 2026-03-01
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Section × Role Gap Matrix
 **Hats worn:** Solution Architect · Product Manager · TAIL_FIN (Zero Fallback Rule)  
 **Date:** 2026-03-01  

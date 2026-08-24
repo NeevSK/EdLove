@@ -1,3 +1,13 @@
+---
+title: "Senior Developer & Architect Audit: Gurudevi Platform"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Senior Developer & Architect Audit: Gurudevi Platform
 
 As an architect looking at this "Clockwork," here is my evaluation of the current state, the rationale behind your screen placement, and the "missing links" that usually separate a good project from a world-class production system.

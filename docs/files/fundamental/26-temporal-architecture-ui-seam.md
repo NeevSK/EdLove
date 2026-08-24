@@ -1,3 +1,13 @@
+---
+title: "The Missing Seam â€” Temporal Architecture Never Landed in the UI"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # The Missing Seam — Temporal Architecture Never Landed in the UI
 
 A cross-cutting finding, not scoped to one tab. Confirms, with a concrete worked example, that the decay/baseline/reinforcement/rollup thinking established across this entire exploration — starting from `00-biomimicry-principles.md` — has nowhere it's actually visible to a user yet. `09-wellbeing-self-domain-audit.md` found this gap at the data layer (flat `LIMIT 30` fetches, raw counts). This confirms the same gap at the presentation layer, using `TeachingHistoryTimeline.tsx` as the first fully-traced example.

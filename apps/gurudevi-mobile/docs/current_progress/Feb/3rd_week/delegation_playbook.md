@@ -1,3 +1,13 @@
+---
+title: "ðŸ¤– Delegation Playbook: Orchestrating Your AI Agents"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # 🤖 Delegation Playbook: Orchestrating Your AI Agents
 
 **Objective**: Maximize velocity by assigning the *right* tasks to the *right* intelligence.

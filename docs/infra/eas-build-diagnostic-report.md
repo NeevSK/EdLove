@@ -1,3 +1,13 @@
+---
+title: "Diagnostic Assessment & Intervention Plan: WSL 2 Networking Timeouts"
+status: "active"
+created: 2026-08-20
+updated: 2026-08-20
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, infra]
+---
+
 # Diagnostic Assessment & Intervention Plan: WSL 2 Networking Timeouts
 
 This document presents a structured diagnostic assessment of your laptop's network environment, compares it to the ideal WSL 2 setup, and outlines a precise intervention plan to resolve the package download timeouts.

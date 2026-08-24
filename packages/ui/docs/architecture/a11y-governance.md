@@ -1,3 +1,13 @@
+---
+title: "Accessibility Governance: Design-First A11y"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, ui]
+---
+
 # Accessibility Governance: Design-First A11y
 
 This document outlines the strategy for achieving **WCAG 2.2** compliance within the Sanctuary v3 design system without compromising its premium aesthetic.

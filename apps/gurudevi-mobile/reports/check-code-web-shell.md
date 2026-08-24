@@ -1,3 +1,13 @@
+---
+title: "Code Check Report"
+status: "active"
+created: 2026-06-08
+updated: 2026-06-08
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Code Check Report
 
 > Scope: web-shell-slice

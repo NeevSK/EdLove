@@ -1,3 +1,13 @@
+---
+title: "EDLOVE.ORG â€” 07 DOMAIN IV"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web]
+---
+
 # EDLOVE.ORG — 07 DOMAIN IV
 ## Resource Ecosystem | "How do we move resources to where they're needed?"
 

@@ -1,3 +1,13 @@
+---
+title: "Code Check Report"
+status: "active"
+created: 2026-06-09
+updated: 2026-06-09
+author: "Naveen"
+scribe: "opencode"
+tags: [reports, check-code.md]
+---
+
 # Code Check Report
 
 > Scope: C:\Users\Naween\projects\polymath-platform

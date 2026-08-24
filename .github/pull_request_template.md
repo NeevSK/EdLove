@@ -1,3 +1,13 @@
+---
+title: "Pull Request - Gurudevi Platform"
+status: "active"
+created: 2026-04-23
+updated: 2026-04-23
+author: "Naveen"
+scribe: "opencode"
+tags: [.github, pull_request_template.md]
+---
+
 # Pull Request - Gurudevi Platform
 
 ## 🏗 Summary

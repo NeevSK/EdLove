@@ -1,3 +1,13 @@
+---
+title: "web issues i saw"
+status: "active"
+created: 2026-03-07
+updated: 2026-03-20
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 this doc is to list issues in web i saw when manual testing.
 
 

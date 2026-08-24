@@ -1,3 +1,13 @@
+---
+title: "Gurudevi real-device runtime validation log"
+status: "active"
+created: 2026-08-14
+updated: 2026-08-14
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Gurudevi real-device runtime validation log
 
 Date: 2026-08-14 (Asia/Colombo)

@@ -1,3 +1,13 @@
+---
+title: "@repo/types-shim"
+status: "active"
+created: 2026-05-07
+updated: 2026-05-07
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, types-shim]
+---
+
 # @repo/types-shim
 
 ## 0.0.2

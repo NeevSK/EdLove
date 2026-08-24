@@ -1,3 +1,13 @@
+---
+title: "Gurudevi â€” Architecture Constitution"
+status: "active"
+created: 2026-02-27
+updated: 2026-03-20
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi — Architecture Constitution
 ### Where Everything Lives and Why
 *For AI agents: read before creating any file*

@@ -1,3 +1,13 @@
+---
+title: "ðŸª· ALPHA RELEASE TRACKER"
+status: "active"
+created: 2026-02-28
+updated: 2026-02-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # 🪷 ALPHA RELEASE TRACKER
 **Goal**: Ship a high-quality, secure, and architecturally sound Alpha version of the Gurudevi School Platform.
 

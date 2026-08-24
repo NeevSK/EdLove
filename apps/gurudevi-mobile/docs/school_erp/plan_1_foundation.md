@@ -1,3 +1,13 @@
+---
+title: "Plan 1: Foundation Healing (Layer 1)"
+status: "active"
+created: 2026-03-25
+updated: 2026-03-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Plan 1: Foundation Healing (Layer 1)
 
 *Objective: Establish a rock-solid, cycle-free Layer 1 (Core, UI, AI, Graphics). If L1 has cycles, the entire monorepo collapses.*

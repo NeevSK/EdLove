@@ -1,3 +1,13 @@
+---
+title: "AI Inference Architecture"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # AI Inference Architecture
 
 New domain, not covered by any of the twelve preceding docs. Covers what's actually built (`apps/sanctuary-api/src/ai`) and what "keeping the door open" for future on-device/local inference genuinely requires — both the small, cheap interface changes worth making now, and the larger, correctly-deferred infrastructure this doc does not recommend building yet.

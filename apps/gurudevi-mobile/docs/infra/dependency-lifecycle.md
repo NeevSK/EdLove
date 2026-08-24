@@ -1,3 +1,13 @@
+---
+title: "Dependency Lifecycle & Maintenance (Expo SDK 55)"
+status: "active"
+created: 2026-04-23
+updated: 2026-04-23
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Dependency Lifecycle & Maintenance (Expo SDK 55)
 
 ## 1. Compliance Strategy: "The Cautious Audit"

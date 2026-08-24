@@ -1,3 +1,13 @@
+---
+title: "API Operationalization: The \"ts-rest Purge\" Roadmap ðŸš€"
+status: "active"
+created: 2026-05-16
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, core, historical]
+---
+
 # API Operationalization: The "ts-rest Purge" Roadmap 🚀
 
 ## 1. Current Position (State of the Monorepo)

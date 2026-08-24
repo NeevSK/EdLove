@@ -1,3 +1,13 @@
+---
+title: "ðŸ“Š Feature Mapping: Current State vs. PRD Requirements"
+status: "active"
+created: 2026-02-19
+updated: 2026-02-19
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # 📊 Feature Mapping: Current State vs. PRD Requirements
 ## Gap Analysis for Gurudevi Mobile App
 

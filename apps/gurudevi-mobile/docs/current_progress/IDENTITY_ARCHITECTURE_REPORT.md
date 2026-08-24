@@ -1,3 +1,13 @@
+---
+title: "Architectural Report: The GuruDevi Identity Sanctuary"
+status: "active"
+created: 2026-03-08
+updated: 2026-03-20
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Architectural Report: The GuruDevi Identity Sanctuary
 
 ## 1. Executive Summary: "The Shift to Internal Sovereignty"

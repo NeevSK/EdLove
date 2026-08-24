@@ -1,3 +1,13 @@
+---
+title: "Workspace Canvas â€” Redesign Synthesis"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Workspace Canvas — Redesign Synthesis
 
 Full synthesis of a multi-round design conversation following `21-workspace-tab-ui-operationalization.md`'s discovery of the canvas/surface paradigm. Structured top-down: what to protect, what to change, then how to actually build it.

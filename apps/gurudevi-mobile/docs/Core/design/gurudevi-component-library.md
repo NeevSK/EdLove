@@ -1,3 +1,13 @@
+---
+title: "Gurudevi â€” Component Library"
+status: "active"
+created: 2026-02-27
+updated: 2026-02-27
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi — Component Library
 ### Living Design Patterns for a Sanctuary
 *For AI agents and human architects alike*

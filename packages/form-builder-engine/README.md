@@ -1,3 +1,13 @@
+---
+title: "@intuitui-labs/form-builder-engine"
+status: "active"
+created: 2026-05-22
+updated: 2026-05-22
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, form-builder-engine]
+---
+
 # @intuitui-labs/form-builder-engine
 
 Headless, hexagonal, offline-first form engine with schema-driven validation and adapter ports.

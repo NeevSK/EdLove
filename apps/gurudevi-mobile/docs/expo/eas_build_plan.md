@@ -1,3 +1,13 @@
+---
+title: "EAS Build Setup for Gurudevi Mobile"
+status: "active"
+created: 2026-02-17
+updated: 2026-02-17
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # EAS Build Setup for Gurudevi Mobile
 
 ## Problem Statement

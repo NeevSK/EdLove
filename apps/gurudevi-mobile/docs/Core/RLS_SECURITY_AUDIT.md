@@ -1,3 +1,13 @@
+---
+title: "ðŸ” RLS SECURITY AUDIT & IMPLEMENTATION GUIDE"
+status: "active"
+created: 2026-02-14
+updated: 2026-02-14
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # 🔐 RLS SECURITY AUDIT & IMPLEMENTATION GUIDE
 **Status**: AUDIT IN PROGRESS
 **Priority**: 🔴 BLOCKING FOR ALPHA

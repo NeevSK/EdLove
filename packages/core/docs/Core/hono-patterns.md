@@ -1,3 +1,13 @@
+---
+title: "hono patterns"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, core]
+---
+
 ## 1. The "Sovereign Port" Pattern (Hexagonal)
 To prevent framework lock-in, we define our API as a **Pure Port** (a framework-agnostic Zod definition). This ensures that if Hono ever hits a bus, the core logic remains untouched.
 

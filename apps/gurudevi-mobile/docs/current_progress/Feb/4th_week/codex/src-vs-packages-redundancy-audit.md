@@ -1,3 +1,13 @@
+---
+title: "Audit: `apps/gurudevi-mobile/src` + `components` vs `packages/*`"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Audit: `apps/gurudevi-mobile/src` + `components` vs `packages/*`
 
 ## Scope

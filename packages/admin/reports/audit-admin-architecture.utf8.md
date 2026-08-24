@@ -1,4 +1,14 @@
-﻿[36m>>> Shiny Auditing Package Architecture: packages/admin[0m
+---
+title: "🏛️ sovereign_audit:architecture - @repo/admin"
+status: "active"
+created: 2026-04-27
+updated: 2026-04-27
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, admin]
+---
+
+[36m>>> Shiny Auditing Package Architecture: packages/admin[0m
 [36m>>> Sovereign Auditing Package Architecture: @repo/admin[0m
 
 [31m>>> Audit Failed: 193 violations found.[0m

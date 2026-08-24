@@ -1,3 +1,13 @@
+---
+title: "@repo/classroom"
+status: "active"
+created: 2026-05-07
+updated: 2026-05-07
+author: "Naveen"
+scribe: "opencode"
+tags: [packages, classroom]
+---
+
 # @repo/classroom
 
 ## 0.0.2

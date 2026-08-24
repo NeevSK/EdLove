@@ -1,3 +1,13 @@
+---
+title: "THE PASSAGE: Sri Lanka Friendly EdTech"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web]
+---
+
 # THE PASSAGE: Sri Lanka Friendly EdTech
 
 This document curates tools that are **globally accessible**, mostly **free or freemium**, and optimized for the **Sri Lankan context** (low bandwidth, mobile-first, and syllabus-aligned).

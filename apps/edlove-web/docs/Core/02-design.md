@@ -1,3 +1,13 @@
+---
+title: "EDLOVE.ORG â€” 02 DESIGN"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web]
+---
+
 # EDLOVE.ORG — 02 DESIGN
 ## The Contextual Design System | How It Looks, Feels, Speaks
 

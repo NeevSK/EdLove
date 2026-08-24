@@ -1,3 +1,13 @@
+---
+title: "EAS Build Quick Reference"
+status: "active"
+created: 2026-02-17
+updated: 2026-05-07
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # EAS Build Quick Reference
 
 ## Prerequisites

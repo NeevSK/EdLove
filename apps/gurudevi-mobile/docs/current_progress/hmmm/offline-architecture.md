@@ -1,3 +1,13 @@
+---
+title: "Offline-First Architecture & Synchronization"
+status: "active"
+created: 2026-02-25
+updated: 2026-02-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # Offline-First Architecture & Synchronization
 **Date:** 2026-02-15
 **Status:** Implemented (Phase 8)

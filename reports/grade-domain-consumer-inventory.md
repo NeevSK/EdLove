@@ -1,3 +1,13 @@
+---
+title: "Grade-domain legacy consumer inventory"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [reports, grade-domain-consumer-inventory.md]
+---
+
 # Grade-domain legacy consumer inventory
 
 Read-only inventory produced for Slice A. No consumer was changed. The target

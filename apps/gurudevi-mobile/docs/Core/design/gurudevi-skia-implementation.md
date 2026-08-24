@@ -1,3 +1,13 @@
+---
+title: "Gurudevi â€” Living Theme Implementation Guide"
+status: "active"
+created: 2026-02-27
+updated: 2026-02-27
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi — Living Theme Implementation Guide
 ### For AI Agents: Complete Implementation Instructions
 *Read entirely before touching a single file.*

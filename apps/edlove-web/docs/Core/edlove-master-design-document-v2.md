@@ -1,3 +1,13 @@
+---
+title: "EDLOVE.ORG MASTER DESIGN DOCUMENT"
+status: "active"
+created: 2026-07-28
+updated: 2026-07-28
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, edlove-web]
+---
+
 # EDLOVE.ORG MASTER DESIGN DOCUMENT
 ## Version 2.0 - Constitutional Blueprint
 

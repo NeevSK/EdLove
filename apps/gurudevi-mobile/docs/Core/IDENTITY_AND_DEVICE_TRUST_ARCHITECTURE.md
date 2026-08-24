@@ -1,3 +1,13 @@
+---
+title: "Gurudevi Sanctuary: Identity, Devices, Trust, Sessions, and Phased Local Protection"
+status: "active"
+created: 2026-04-18
+updated: 2026-05-02
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Gurudevi Sanctuary: Identity, Devices, Trust, Sessions, and Phased Local Protection
 
 This document is the source-of-truth for how Gurudevi should think about devices, shared-device account access, device trust, session visibility, local protection, and future institutional device management.

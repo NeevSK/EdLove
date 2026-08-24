@@ -1,3 +1,13 @@
+---
+title: "ETL Pipeline: Automated Content Ingestion"
+status: "active"
+created: 2026-03-04
+updated: 2026-03-04
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # ETL Pipeline: Automated Content Ingestion
 
 Implementing the "epistemic universe" infrastructure to allow knowledge to flow into Gurudevi from official sources, YouTube, and AI-driven discovery.

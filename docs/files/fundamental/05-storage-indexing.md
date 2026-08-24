@@ -1,3 +1,13 @@
+---
+title: "Storage & Indexing at Scale"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Storage & Indexing at Scale
 
 Builds on `01-data-architecture.md`'s ownership model (`owner_type`/`owner_id`, not tenant-first) and the material-layer type decisions already made there. This doc covers the structures built *on top of* stored data to make it findable, and how the table itself gets physically organized as row counts grow. Sequencing note: index types are relatively fixed, learnable facts independent of Gurudevi's specific queries — learn the toolbox first, then map actual query patterns onto it (next doc).

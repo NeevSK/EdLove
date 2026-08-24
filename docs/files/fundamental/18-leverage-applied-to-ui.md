@@ -1,3 +1,13 @@
+---
+title: "Leverage, Pattern, and Proportion â€” Applied to UI"
+status: "active"
+created: 2026-08-13
+updated: 2026-08-13
+author: "Naveen"
+scribe: "opencode"
+tags: [docs, files]
+---
+
 # Leverage, Pattern, and Proportion — Applied to UI
 
 Translates `17-leverage-pattern-theory.md`'s general theory specifically into UI design as a discipline. Still not tab-specific — `16-agent-ready-spacing-typography-ia.md` is where this becomes concrete Gurudevi practice.

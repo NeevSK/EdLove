@@ -1,3 +1,13 @@
+---
+title: "Architecture: School Climate & Environmental Psychodynamics"
+status: "active"
+created: 2026-04-18
+updated: 2026-04-18
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Architecture: School Climate & Environmental Psychodynamics
 
 **Status**: Draft / Conceptualization  

@@ -1,3 +1,13 @@
+---
+title: "The Gurudevi Master Resonance Protocol"
+status: "active"
+created: 2026-03-05
+updated: 2026-03-05
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # The Gurudevi Master Resonance Protocol
 *The Unified Intelligence Layer for the Sacred Sanctuary*
 

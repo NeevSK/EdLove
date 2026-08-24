@@ -1,3 +1,13 @@
+---
+title: "Supabase Setup & Workflow Guide (Gurudevi Alpha)"
+status: "active"
+created: 2026-02-11
+updated: 2026-02-11
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Supabase Setup & Workflow Guide (Gurudevi Alpha)
 
 This guide documents the "Nuclear Reset" strategy and the transition to professional migration tracking using the Supabase CLI.

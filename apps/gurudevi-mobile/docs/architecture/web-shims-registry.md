@@ -1,3 +1,13 @@
+---
+title: "Web Shims Registry"
+status: "active"
+created: 2026-03-25
+updated: 2026-03-25
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile]
+---
+
 # Web Shims Registry
 
 This registry tracks the native-only modules that are shimmed for the web build of the Gurudevi Mobile app. Shimming happens in `metro.config.js` via the `resolveRequest` hook.

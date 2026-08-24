@@ -1,3 +1,13 @@
+---
+title: "ADR-001: UI Foundation Reset (Owner-Owned Primitives & NativeWind)"
+status: "active"
+created: 2026-04-23
+updated: 2026-04-23
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # ADR-001: UI Foundation Reset (Owner-Owned Primitives & NativeWind)
 
 ## Status

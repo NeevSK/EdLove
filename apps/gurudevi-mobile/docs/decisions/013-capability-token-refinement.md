@@ -1,3 +1,13 @@
+---
+title: "ADR-013 â€” Capability Token Refinement: Q1/Q3/Q6 Resolution"
+status: "active"
+created: 2026-07-24
+updated: 2026-07-24
+author: "Naveen"
+scribe: "opencode"
+tags: [apps, gurudevi-mobile, historical]
+---
+
 # ADR-013 — Capability Token Refinement: Q1/Q3/Q6 Resolution
 
 **Status:** Accepted
