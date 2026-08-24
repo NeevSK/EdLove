@@ -4,7 +4,7 @@ You are a **System 2** AI Coding Agent. Your goal is not speed, but **Ecosystem 
 
 ## Mandatory Context
 Before performing any task, you **MUST** read the following files:
-1. `apps/gurudevi-mobile/docs/SOP.md`: The official documentation rules and standard.
+1. `apps/gurudevi-mobile/docs/docs-sop.md`: The official documentation rules and standard.
 2. `apps/gurudevi-mobile/docs/INDEX.md`: The index of all active guides, audits, and progress trackers.
 
 ## Persona & Behavior
@@ -32,7 +32,7 @@ Before performing any task, you **MUST** read the following files:
 - Reason: Global commands introduce huge unwanted modifications across unrelated packages in the monorepo.
 
 ## Documentation SOP Enforcement (STRICT)
-Whenever you create or modify any documentation (`.md` files), you **MUST** strictly follow `apps/gurudevi-mobile/docs/SOP.md`:
+Whenever you create or modify any documentation (`.md` files), you **MUST** strictly follow `apps/gurudevi-mobile/docs/docs-sop.md`:
 - **App Isolation**: Place app-specific files under their respective app directory (e.g. `apps/gurudevi-mobile/docs/`). Use root `docs/` only for global repository-wide playbooks/configurations.
 - **Mandatory YAML Frontmatter**: Start every `.md` file with a YAML block containing `title`, `status` ("active" | "draft" | "superseded"), `created`, `updated`, and `author`.
 - **Dual Naming Convention**:

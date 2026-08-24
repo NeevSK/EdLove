@@ -1,5 +1,5 @@
 ---
-title: "Polymath Platform (EdLove / Gurudevi / Intuitui)"
+title: "Polymath Platform (EdLove / Gurudevi)"
 status: "active"
 created: 2025-11-03
 updated: 2026-08-24
@@ -8,22 +8,20 @@ scribe: "opencode"
 tags: [platform, monorepo]
 ---
 
-# Polymath Platform (EdLove / Gurudevi / Intuitui)
+# Polymath Platform (EdLove / Gurudevi)
 
 A single monorepo for the EdLove education ecosystem:
 
 - **EdLove**: the umbrella foundation/house for education philosophy + ecosystem coordination.
 - **Gurudevi**: the flagship "Education Ecology Support System" product (mobile-first).
-- **Intuitui Labs**: the technical studio that builds/operates products and infrastructure.
-- **Neevsk**: the creator's personal archive/portfolio site.
+
 
 ## Where to start (internal/dev)
 
 - Ecosystem navigator: [apps/00_ECOSYSTEM_INDEX.md](./apps/00_ECOSYSTEM_INDEX.md)
-- Source-of-truth map: [docs/PROJECT_MAP.md](./docs/PROJECT_MAP.md)
 - Openness/licensing decision: [docs/decisions/2026-08-24-openness-and-reuse-strategy.md](./docs/decisions/2026-08-24-openness-and-reuse-strategy.md) + [docs/decisions/2026-08-24-license-tradeoffs.md](./docs/decisions/2026-08-24-license-tradeoffs.md)
-- Branch pipeline (solo, scalable): [docs/BRANCHING_MODEL.md](./docs/BRANCHING_MODEL.md)
-- Codex skill usage guide: [docs/SKILL_PLAYBOOK.md](./docs/SKILL_PLAYBOOK.md)
+- Branch pipeline (solo, scalable): [docs/infra/git-branching-model.md](./docs/infra/git-branching-model.md)
+- Documentation SOP (frontmatter contract, doc tiers): [apps/gurudevi-mobile/docs/docs-sop.md](./apps/gurudevi-mobile/docs/docs-sop.md)
 - Doppler-centered engineering toolchain: [docs/infra/doppler-toolchain.md](./docs/infra/doppler-toolchain.md)
 
 App contexts (read before working in an app):

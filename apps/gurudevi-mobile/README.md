@@ -1,266 +1,132 @@
 ---
-title: "ðŸ›ï¸ Gurudevi Mobile"
+title: "Gurudevi Mobile"
 status: "active"
 created: 2026-02-05
-updated: 2026-03-20
+updated: 2026-08-24
 author: "Naveen"
 scribe: "opencode"
-tags: [apps, gurudevi-mobile]
+tags: [apps, gurudevi-mobile, expo, offline-first]
 ---
 
-# 🏛️ Gurudevi Mobile
+# Gurudevi Mobile
 
-**The Operational Engine** - Mobile app for teachers, students, and principals
+The operational engine of the Polymath platform: an Expo React Native app for
+teachers, students, and principals, with a full web target built from the same
+codebase (React Native Web).
 
-> **Stack**: Expo SDK 54, React Native 0.81, Gluestack UI, Supabase  
-> **Status**: 6.5/10 - Production-Ready After Critical Fixes (40 hours)
-
----
-
-## Web platform (React Native Web)
-
-The Gurudevi **platform web app** is built from this same codebase (React Native Web via Expo/Metro).
-
-- Local dev: `pnpm web` (or `pnpm --filter gurudevi-mobile web` from repo root)
-- Build export: `pnpm build:web` (outputs to `dist/`)
-- Hosting/domain: `platform.gurudevi.edlove.org` on GitHub Pages
-- CI deploy: `.github/workflows/web-deploy.yml` uploads `apps/gurudevi-mobile/dist/` to Pages
-- Web-specific UI/files: use `*.web.tsx` (and `*.web.ts`) where needed
-
-More details: [docs/web/WEB_GUIDE.md](docs/web/WEB_GUIDE.md)
+> **Stack**: Expo SDK 57 · React Native 0.86 · New Architecture enabled ·
+> TypeScript · pnpm monorepo · PowerSync offline-first · Drizzle ORM ·
+> ZenStack v3 access control · Sovereign Hono API (`@repo/core`)
 
 ---
 
-## Branch flow (solo, pipeline)
-
-Promotion pipeline:
-
-`main-innovate` -> `main-dev` -> `main-QA` -> `main-preview` -> `main`
-
-Guidelines:
-
-- Merge forward only (avoid back-merges from `main` unless it's a critical hotfix sync).
-- Keep each branch buildable so promotion is always possible.
-
-Reference: `docs/BRANCHING_MODEL.md` (repo root)
-
----
-
-## 🚀 Quick Start
+## Quick start
 
 ```bash
-# Install dependencies
-pnpm install
+pnpm install                 # from repo root (workspace install)
 
-# Copy environment template
-cp .env.example .env
-# Edit .env with your Supabase credentials
-
-# Start development server
-pnpm start
-
-# Run on device
-pnpm android  # or pnpm ios
+pnpm --filter gurudevi-mobile setup:env   # pull env from Doppler
+pnpm --filter gurudevi-mobile dev         # Expo dev server
+pnpm --filter gurudevi-mobile android    # native Android dev build
 ```
 
----
+No Doppler locally? Use `dev:no-doppler` and a hand-written `.env`.
+Secrets are **never** committed; `.env*` is gitignored.
 
-## 📚 **NEW: Comprehensive Documentation**
+### Web target
 
-We've completed a full architecture review and analysis. **Start here:**
-
-### 🎯 **[DOCS_INDEX.md](DOCS_INDEX.md)** - Documentation Hub
-**Your starting point for all documentation.**
-
-Quick Links by Role:
-- 👨‍💻 **New Developer?** → [QUICK_REFERENCE.md](QUICK_REFERENCE.md)
-- 🏗️ **Solution Architect?** → [COMPREHENSIVE_APP_ANALYSIS.md](COMPREHENSIVE_APP_ANALYSIS.md)
-- 🔧 **Fixing Issues?** → [ACTION_ITEMS.md](ACTION_ITEMS.md)
-
----
-
-## 📊 Current Assessment
-
-| Category | Score | Status |
-|----------|-------|--------|
-| Architecture | 8/10 | ✅ Excellent |
-| TypeScript | 9/10 | ✅ Excellent |
-| Design System | 9/10 | ✅ Excellent |
-| Features | 7/10 | ✅ Good |
-| **Security** | **5/10** | ⚠️ **Needs Work** |
-| **Accessibility** | **1/10** | 🔴 **Critical** |
-| **Performance** | **4/10** | 🔴 **Issues** |
-| **Overall** | **6.5/10** | ⚠️ **Fix Critical Issues** |
-
----
-
-## 🚨 Critical Issues (Fix This Week)
-
-**6 Production Blockers - 40 hours to fix:**
-
-1. 🔴 **13 TypeScript compilation errors** (4h)
-2. 🔴 **Zero accessibility features** (16h) 
-3. 🔴 **No authorization checks** (8h)
-4. 🔴 **ScrollView performance issues** (3h)
-5. 🔴 **No input validation** (6h)
-6. 🔴 **Missing error boundaries** (3h)
-
-**See [ACTION_ITEMS.md](ACTION_ITEMS.md) for detailed fix strategies.**
-
----
-
-## ✨ What's Been Documented
-
-**4 comprehensive documents (83KB, 3,556 lines):**
-
-### 1. [COMPREHENSIVE_APP_ANALYSIS.md](COMPREHENSIVE_APP_ANALYSIS.md) (42KB)
-- Complete architecture review
-- Feature inventory (7 major areas)
-- API inventory (14 modules, 80+ functions)
-- UI/Design system documentation
-- 21 issues identified with fix strategies
-- Security assessment (5/10)
-- Quality assessment (7/10)
-- 12-week implementation roadmap
-- 15 future feature recommendations
-
-### 2. [QUICK_REFERENCE.md](QUICK_REFERENCE.md) (8KB)
-- Quick start guide
-- Design system cheat sheet
-- API reference with examples
-- Common patterns
-- Debugging tips
-
-### 3. [ACTION_ITEMS.md](ACTION_ITEMS.md) (26KB)
-- 21 issues tracked
-- Step-by-step fixes
-- 50+ code examples
-- Effort estimates
-
-### 4. [DOCS_INDEX.md](DOCS_INDEX.md) (9KB)
-- Navigation hub
-- 4-week learning path
-- Quick links by role
-
----
-
-## 📖 Architecture Overview
-
-```
-src/
-├── screens/          # 5 main tabs + nested views
-├── components/       # 39 components (11 shared + 28 feature)
-├── lib/
-│   ├── api/         # 14 API modules (80+ functions)
-│   └── supabase.ts  # Backend client
-├── navigation/      # Tab navigator
-├── store/          # Zustand state
-├── constants/      # Theme, fonts
-└── i18n/           # Translations
+```bash
+pnpm --filter gurudevi-mobile web        # dev server (RN Web)
+pnpm --filter gurudevi-mobile build:web  # static export -> dist/
 ```
 
-**Tech Stack:**
-- **Expo 54** - Managed platform
-- **React Native 0.81** - Mobile framework
-- **GluestackUI** - Component library
-- **Supabase** - Backend (Auth + PostgreSQL)
-- **React Navigation** - Bottom tabs
-- **Zustand** - State management
-- **TanStack Query** - Data fetching
+Deployed to `platform.gurudevi.edlove.org` via
+`.github/workflows/web-deploy.yml`. Web-specific overrides use `*.web.tsx`.
 
 ---
 
-## 🎨 "Sanctuary" Design System
+## Architecture in one screen
 
-**Primary Colors:**
-- `sanctuarySaffron` #E67E22 - Brand orange
-- `sageGreen` #8FBC8F - Success
-- `emberRed` #FF6347 - Error
-- `voidIndigo` #1A1A2E - Dark background
+| Concern | Owner |
+|---|---|
+| UI primitives + brand system | `packages/ui` (`@repo/ui`) |
+| Domain logic / sovereign API | `packages/core` (`@repo/core`) |
+| Schema + migrations | `packages/schema`, `packages/database` |
+| Offline sync | PowerSync + `packages/database` |
+| AuthZ policies | ZenStack v3 (`.zmodel`) |
+| State | Zustand + TanStack Query |
+| Local storage | MMKV (nitro modules) |
 
-**Usage:**
-```typescript
-import { Theme } from '@/constants/Theme'
+**UI rule:** always import from `@repo/ui`. Never import gluestack directly.
+Branded state components exist for every async surface — see
+[Branded Components guide](../../AGENTS.md) (BrandPulse, ErrorState,
+SuccessCheck/Glow, BrandedEmptyState, skeleton family).
 
-<Box sx={{ backgroundColor: Theme.colors.voidIndigo }}>
-  <Text sx={{ color: Theme.colors.sanctuarySaffron }}>
-    Hello World
-  </Text>
-</Box>
+---
+
+## Native builds & configuration
+
+- `android/` and `ios/` are **generated artifacts** (gitignored) — never edit
+  them. All native config lives in `app.json` + custom plugins in `plugins/`.
+- Several packages are pinned to specific versions for new-architecture
+  compatibility ("sacred versions"). See the table in the repo-root
+  [`AGENTS.md`](../../AGENTS.md) before touching dependencies.
+- Never run `npx expo install --fix` or `expo prebuild --clean`.
+
+```bash
+pnpm --filter gurudevi-mobile build:dev        # EAS development build
+pnpm --filter gurudevi-mobile build:preview    # EAS preview build
+pnpm --filter gurudevi-mobile build:prod       # EAS production build
 ```
 
+Build troubleshooting: [docs/Learning/EXPO_BUILD_RUNBOOK.md](docs/Learning/EXPO_BUILD_RUNBOOK.md)
+and [docs/infra/expo-57-native-gradle-sop.md](docs/infra/expo-57-native-gradle-sop.md).
+
 ---
 
-## 🔌 API Quick Reference
+## Quality gates
 
-```typescript
-import { auth, classroom, attendance, grading, self } from '@/lib/api'
-
-// Authentication
-await auth.signIn(email, password)
-await auth.signOut()
-
-// Classroom Management
-const lessons = await classroom.lessons.getAll(teacherId)
-await attendance.record(classroomId, studentId, 'present', date)
-
-// Grading
-await grading.submitGrade(studentId, classroomId, marks)
-
-// Wellbeing
-await self.logMood(userId, 4, 'Feeling great!')
+```bash
+pnpm --filter gurudevi-mobile lint          # Biome + ESLint
+pnpm --filter gurudevi-mobile check-types   # tsc --build
+pnpm --filter gurudevi-mobile test          # Vitest
+pnpm --filter gurudevi-mobile audit:boundaries
 ```
 
-**See [QUICK_REFERENCE.md](QUICK_REFERENCE.md) for complete API reference.**
+A husky pre-push hook ("sovereign gate") runs commitlint, lint, react-doctor,
+and type checks before pushes are accepted.
 
 ---
 
-## 🎯 Next Steps
+## Branch flow
 
-### For New Developers
-1. Read [QUICK_REFERENCE.md](QUICK_REFERENCE.md)
-2. Set up environment
-3. Pick an issue from [ACTION_ITEMS.md](ACTION_ITEMS.md)
+Promotion is merge-forward only:
 
-### For Architects
-1. Read [COMPREHENSIVE_APP_ANALYSIS.md](COMPREHENSIVE_APP_ANALYSIS.md)
-2. Review security and performance sections
-3. Plan sprint based on implementation roadmap
+```
+feature/* -> main-dev -> main-QA -> main-preview -> main
+```
 
-### For Project Managers
-1. Review [ACTION_ITEMS.md](ACTION_ITEMS.md)
-2. Prioritize critical issues (40 hours)
-3. Schedule security and accessibility reviews
+Default branch: `main-dev`. Experimental work lands on `main-bleeding-edge`;
+exploration on `main-innovate`. No rebase on long-lived branches.
 
 ---
 
-## 🤝 Contributing
+## Documentation map
 
-**Before committing:**
-- [ ] No TypeScript errors (`npx tsc --noEmit`)
-- [ ] No console.log statements
-- [ ] Added accessibility attributes
-- [ ] Tested on device
-- [ ] Updated documentation if needed
+All docs follow [docs/docs-sop.md](docs/docs-sop.md) (frontmatter contract,
+living/historical/generated tiers).
 
-**See [QUICK_REFERENCE.md](QUICK_REFERENCE.md) for full checklist.**
+| Path | Contents |
+|---|---|
+| `docs/INDEX.md` | Chronological changelog + navigation hub |
+| `docs/architecture/` | System design, data engines, security models |
+| `docs/Core/` | Engine details, UI doctrine, coding standards |
+| `docs/decisions/` | ADRs |
+| `docs/current_progress/` | Active plans (finished work moves to `old_docs/`) |
+| `docs/infra/` | Builds, CI, deployment, environment |
+| `docs/web/` | RN Web alignment guides |
+| `docs/Learning/` | Onboarding + build runbooks |
 
----
+## License
 
-## �� Support
-
-- **Documentation:** See [DOCS_INDEX.md](DOCS_INDEX.md)
-- **Issues:** See [ACTION_ITEMS.md](ACTION_ITEMS.md)
-- **Questions:** Ask in team chat
-
----
-
-## 📝 License
-
-Private - All rights reserved
-
----
-
-**Last Updated:** February 5, 2026  
-**Documentation Version:** 1.0  
-**Next Review:** March 5, 2026
+Private — all rights reserved.
