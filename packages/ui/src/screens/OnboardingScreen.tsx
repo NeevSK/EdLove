@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { authAPI, identityAPI, onboardingAPI } from '@repo/core/api/client';
+import { identityAPI, onboardingAPI } from '@repo/core/api/client';
 import { useStore } from '@repo/core/store';
 import type { Capacity } from '@repo/core/types';
 import { ProgressIndicator } from '@repo/ui/components/ProgressIndicator';
@@ -34,10 +34,6 @@ import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// ──────────────────────────────────────────────────────────
-// CONSTANTS
-// ──────────────────────────────────────────────────────────
-
 const JOURNEY_PILLARS = ['Self', 'Classroom', 'Community', 'Library'];
 const TOTAL_STEPS = 7;
 const CAPACITY_OPTIONS = [
@@ -49,10 +45,6 @@ const CAPACITY_OPTIONS = [
     descKey: 'onboarding.roleDesc.principal',
   },
 ] as const;
-
-// ──────────────────────────────────────────────────────────
-// TYPES & REDUCER
-// ──────────────────────────────────────────────────────────
 
 interface OnboardingUIState {
   currentStep: number;
@@ -110,10 +102,6 @@ function onboardingReducer(state: OnboardingUIState, action: OnboardingAction): 
       return state;
   }
 }
-
-// ──────────────────────────────────────────────────────────
-// SUB-COMPONENTS
-// ──────────────────────────────────────────────────────────
 
 const StepShell = memo(
   ({
@@ -309,7 +297,10 @@ const IdentityStep = memo(
               ${isLoading ? 'opacity-50' : ''}
             `}
             >
-              <r.Icon size={30} className={selected ? 'text-phase-accent' : 'text-phase-text-secondary'} />
+              <r.Icon
+                size={30}
+                className={selected ? 'text-phase-accent' : 'text-phase-text-secondary'}
+              />
               <VStack className="flex-1">
                 <Text
                   className={`text-md font-bold ${selected ? 'text-phase-accent' : 'text-phase-text-primary'}`}
@@ -596,10 +587,6 @@ const DevSandboxConsole =
   process.env.EXPO_PUBLIC_ENABLE_DEV_SANDBOX === 'true'
     ? DevSandboxConsoleInner
     : () => null;
-
-// ──────────────────────────────────────────────────────────
-// MAIN COMPONENT
-// ──────────────────────────────────────────────────────────
 
 interface OnboardingScreenProps {
   onComplete: (name: string, capacity: Capacity, isAnonymous?: boolean) => void;

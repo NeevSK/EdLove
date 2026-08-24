@@ -1,6 +1,5 @@
-import type { UserGrowthState } from '@repo/schema/contracts';
-import { mediaAPI } from '@repo/core/api/media';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import { mediaAPI } from '@repo/core/api/media';
 import type {
   CommunityProfile,
   ProfileHistoryEntry,
@@ -14,8 +13,8 @@ import type {
   WhisperedMomentSnapshot,
 } from '@repo/core/logic/domains/profile/ports';
 import { getTemporalRange } from '@repo/core/logic/utils/temporalUtils';
-import type { SocialLink, User } from '@repo/core/types';
-import { APIError } from '@repo/core/types';
+import { APIError, type SocialLink, type User } from '@repo/core/types';
+import type { UserGrowthState } from '@repo/schema/contracts';
 
 const RISING_THRESHOLD = 1.2;
 const FAILING_THRESHOLD = 0.5;
@@ -142,15 +141,14 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
     const viewScale = normalizeTemporalScale(options.viewScale);
 
     if (asOf) {
-      const { data: rewardsVersion, error: rewardsError } =
-        await supabaseClient
-          .from('user_rewards_versions')
-          .select('snapshot')
-          .eq('user_id', userId)
-          .lte('recorded_at', asOf)
-          .order('recorded_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
+      const { data: rewardsVersion, error: rewardsError } = await supabaseClient
+        .from('user_rewards_versions')
+        .select('snapshot')
+        .eq('user_id', userId)
+        .lte('recorded_at', asOf)
+        .order('recorded_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
       if (rewardsError)
         throw new APIError(
           'Failed to fetch historical rewards snapshot',
@@ -158,15 +156,14 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
           rewardsError,
         );
 
-      const { data: growthVersion, error: growthError } =
-        await supabaseClient
-          .from('user_growth_state_versions')
-          .select('snapshot')
-          .eq('user_id', userId)
-          .lte('recorded_at', asOf)
-          .order('recorded_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
+      const { data: growthVersion, error: growthError } = await supabaseClient
+        .from('user_growth_state_versions')
+        .select('snapshot')
+        .eq('user_id', userId)
+        .lte('recorded_at', asOf)
+        .order('recorded_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
       if (growthError)
         throw new APIError(
           'Failed to fetch historical growth snapshot',
@@ -210,16 +207,8 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
       { data: growth, error: growthError },
       { data: whisperedRows, error: whisperedError },
     ] = await Promise.all([
-      supabaseClient
-        .from('user_rewards')
-        .select('*')
-        .eq('user_id', userId)
-        .maybeSingle(),
-      supabaseClient
-        .from('user_growth_state')
-        .select('*')
-        .eq('user_id', userId)
-        .maybeSingle(),
+      supabaseClient.from('user_rewards').select('*').eq('user_id', userId).maybeSingle(),
+      supabaseClient.from('user_growth_state').select('*').eq('user_id', userId).maybeSingle(),
       supabaseClient
         .from('whispered_moments')
         .select('moment_key, moment_name_en, moment_name_si, awarded_at')
@@ -390,16 +379,11 @@ export const createSupabaseProfileRepository = (): ProfileRepository => ({
     return data as SocialLink;
   },
   async deleteSocialLink(linkId) {
-    const { error } = await supabaseClient
-      .from('user_social_links')
-      .delete()
-      .eq('id', linkId);
+    const { error } = await supabaseClient.from('user_social_links').delete().eq('id', linkId);
     if (error) throw new APIError('Failed to delete social link', error.code, error);
   },
   async updateSocialLinksOrder(links) {
-    const { error } = await supabaseClient
-      .from('user_social_links')
-      .upsert(links);
+    const { error } = await supabaseClient.from('user_social_links').upsert(links);
     if (error) throw new APIError('Failed to update social links order', error.code, error);
   },
 

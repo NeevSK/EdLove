@@ -36,11 +36,40 @@ if (extraArgs.length > 0) {
   cmd = `${cmd} ${extraArgs.join(' ')}`;
 }
 
+// Windows PowerShell 5.1 does not support `&&` statement separators.
+// Translate top-level `a && b && c` chains into `a; if ($?) { b; if ($?) { c } }`
+// so short-circuit semantics survive on the stock Windows shell. Quoted
+// segments are respected so embedded strings are not split.
+function splitTopLevelAnds(command) {
+  const parts = [];
+  let current = '';
+  let inQuote = false;
+  for (let i = 0; i < command.length; i++) {
+    const ch = command[i];
+    if (ch === '"') inQuote = !inQuote;
+    if (!inQuote && ch === '&' && command[i + 1] === '&') {
+      parts.push(current.trim());
+      current = '';
+      i++;
+      continue;
+    }
+    current += ch;
+  }
+  parts.push(current.trim());
+  return parts.filter(Boolean);
+}
+
+function toPowerShell51Compatible(command) {
+  if (!command.includes('&&')) return command;
+  const parts = splitTopLevelAnds(command);
+  return parts.reduceRight((acc, part) => `${part}; if ($?) { ${acc} }`);
+}
+
 if (noReport) {
   console.log(`>>> Running command directly (no report): ${cmd}`);
   const shell = process.platform === 'win32' ? 'powershell.exe' : '/bin/sh';
-  const shellArgs = process.platform === 'win32' ? ['-ExecutionPolicy', 'Bypass', '-NoProfile', '-Command', cmd] : ['-c', cmd];
-  
+  const shellArgs = process.platform === 'win32' ? ['-ExecutionPolicy', 'Bypass', '-NoProfile', '-Command', toPowerShell51Compatible(cmd)] : ['-c', cmd];
+
   const child = spawn(shell, shellArgs, {
     cwd,
     stdio: 'inherit',
@@ -70,7 +99,7 @@ if (noReport) {
   let exitCode = 0;
 
   const shell = process.platform === 'win32' ? 'powershell.exe' : '/bin/sh';
-  const shellArgs = process.platform === 'win32' ? ['-ExecutionPolicy', 'Bypass', '-NoProfile', '-Command', `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; ${cmd}`] : ['-c', cmd];
+  const shellArgs = process.platform === 'win32' ? ['-ExecutionPolicy', 'Bypass', '-NoProfile', '-Command', `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; ${toPowerShell51Compatible(cmd)}`] : ['-c', cmd];
 
   const child = spawn(shell, shellArgs, {
     cwd,

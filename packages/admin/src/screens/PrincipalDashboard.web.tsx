@@ -1,4 +1,26 @@
 import {
+  useCurriculumPulse,
+  useMappingTopologyQuery,
+  useOperationalAwareness,
+  useSchoolPulseQuery,
+  useSchoolStatsQuery,
+  useStaffResonance,
+} from '@repo/admin/hooks/useDashboardHooks';
+import type { FeedbackEcho, GradeProgress } from '@repo/admin/insights';
+import type { ResourceNeedSummary } from '@repo/admin/inventory';
+import type { PrincipalObservation } from '@repo/admin/observations';
+import {
+  type PrincipalWorkspaceView,
+  resolvePrincipalWorkspaceView,
+} from '@repo/admin/principal/workspace';
+import { PrincipalWorkspaceContainer } from '@repo/admin/screens/PrincipalWorkspaceContainer';
+import { CyclesDashboard } from '@repo/admin/screens/principal/CyclesDashboard';
+import { HierarchyDashboard } from '@repo/admin/screens/principal/HierarchyDashboard';
+import { InvitesDashboard } from '@repo/admin/screens/principal/InvitesDashboard';
+import { LegacyDashboard } from '@repo/admin/screens/principal/LegacyDashboard';
+import { LogbookDashboard } from '@repo/admin/screens/principal/LogbookDashboard';
+import { type StudentPrincipalPulse, staffOperationsAPI } from '@repo/admin/staff';
+import {
   api,
   type CalendarEvent,
   type StaffLeaveDTO,
@@ -19,7 +41,6 @@ import type {
   SchoolStats,
   User,
 } from '@repo/core/types';
-
 import SandboxBanner from '@repo/ui/components/SandboxBanner';
 import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 import { hapticLight } from '@repo/ui/utils/haptics';
@@ -27,26 +48,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import type React from 'react';
 import { useEffect, useState } from 'react';
-import {
-  useCurriculumPulse,
-  useMappingTopologyQuery,
-  useOperationalAwareness,
-  useSchoolPulseQuery,
-  useSchoolStatsQuery,
-  useStaffResonance,
-} from '@repo/admin/hooks/useDashboardHooks';
-import type { FeedbackEcho, GradeProgress } from '@repo/admin/insights';
-import type { ResourceNeedSummary } from '@repo/admin/inventory';
-import type { PrincipalObservation } from '@repo/admin/observations';
-import type { PrincipalWorkspaceView } from '@repo/admin/principal/workspace';
-import { resolvePrincipalWorkspaceView } from '@repo/admin/principal/workspace';
-import { type StudentPrincipalPulse, staffOperationsAPI } from '@repo/admin/staff';
-import { PrincipalWorkspaceContainer } from '@repo/admin/screens/PrincipalWorkspaceContainer';
-import { CyclesDashboard } from '@repo/admin/screens/principal/CyclesDashboard';
-import { HierarchyDashboard } from '@repo/admin/screens/principal/HierarchyDashboard';
-import { InvitesDashboard } from '@repo/admin/screens/principal/InvitesDashboard';
-import { LegacyDashboard } from '@repo/admin/screens/principal/LegacyDashboard';
-import { LogbookDashboard } from '@repo/admin/screens/principal/LogbookDashboard';
 
 const DEMO_PRINCIPAL_SCHOOL_ID = 'mock-school';
 

@@ -4,7 +4,6 @@ import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { Shield } from '@repo/ui/icons';
 import { HStack, Link, LinkText, Text, VStack } from '@repo/ui/primitives';
 import { EXTERNAL_URLS } from '@repo/ui/utils';
-import React from 'react';
 
 interface PDPAConsentModalProps {
   isOpen: boolean;

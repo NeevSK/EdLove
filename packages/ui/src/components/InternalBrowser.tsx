@@ -14,10 +14,6 @@ export interface InternalBrowserProps {
   showToolbar?: boolean;
 }
 
-// ============================================================================
-// TYPES & REDUCER
-// ============================================================================
-
 interface BrowserState {
   canGoBack: boolean;
   canGoForward: boolean;
@@ -52,10 +48,6 @@ function browserReducer(state: BrowserState, action: BrowserAction): BrowserStat
       return state;
   }
 }
-
-// ============================================================================
-// MAIN COMPONENT
-// ============================================================================
 
 export const InternalBrowser: React.FC<InternalBrowserProps> = ({
   url,

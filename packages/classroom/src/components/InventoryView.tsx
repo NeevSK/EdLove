@@ -1,3 +1,4 @@
+import { useInventory } from '@repo/classroom/hooks/useInventory';
 import { api } from '@repo/core/api/client';
 import { useSafeMutation } from '@repo/core/hooks';
 import { CLASSROOM_RESOURCE_SCOPE } from '@repo/core/lib';
@@ -34,7 +35,6 @@ import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import type React from 'react';
 import { useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useInventory } from '@repo/classroom/hooks/useInventory';
 
 const CATEGORIES: {
   id: InventoryCategory | 'all';
@@ -50,8 +50,6 @@ const CATEGORIES: {
 interface InventoryViewProps {
   classroomId: string;
 }
-
-// ─── Type definitions for Reducer ───────────────────────────────────────────
 
 type InventoryState = {
   selectedCategory: InventoryCategory | 'all';

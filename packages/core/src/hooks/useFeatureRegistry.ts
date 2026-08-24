@@ -1,20 +1,16 @@
-import { useMemo } from 'react';
 import { resolveBondScope } from '@repo/core/logic/permissions/bondScope';
 import {
   type FeaturePresentation,
   resolveFeaturePresentation,
 } from '@repo/core/logic/permissions/featurePresentation';
-import {
-  CITIZENSHIP,
-  type SanctuaryFeatureResult,
-  sanctuaryFeature,
-} from '@repo/core/logic/permissions/sanctuaryFeature';
+import { CITIZENSHIP, sanctuaryFeature } from '@repo/core/logic/permissions/sanctuaryFeature';
 import { resolveFeatureFlagValue } from '@repo/core/logic/registry/featureLifecycleManifest';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';
 import type { DomainFeature } from '@repo/core/types/Workspace';
+import { useMemo } from 'react';
 
 export interface FeatureGatingResult {
   visible: boolean;

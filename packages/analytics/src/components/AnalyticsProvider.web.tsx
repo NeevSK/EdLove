@@ -1,5 +1,5 @@
-import { type ReactNode, useEffect } from 'react';
 import { posthogAnalytics } from '@repo/analytics/engine/PostHogAnalytics.web';
+import { type ReactNode, useEffect } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -17,7 +17,8 @@ export function AnalyticsProvider({ children, apiKey, enabled = true, options }:
   useEffect(() => {
     const isPostHogEnabled = enabled && process.env.EXPO_PUBLIC_POSTHOG_ENABLED !== 'false';
     if (apiKey && isPostHogEnabled) {
-      posthogAnalytics.initialize(apiKey, options);
+      // Effect context cannot await; initialize owns its error handling.
+      void posthogAnalytics.initialize(apiKey, options);
     }
   }, [apiKey, enabled, options]);
 

@@ -3,7 +3,9 @@ import * as Duration from 'effect/Duration';
 import * as Effect from 'effect/Effect';
 import * as Schedule from 'effect/Schedule';
 
-export class OfflineMutationError extends Data.TaggedError('OfflineMutationError')<{}> {}
+export class OfflineMutationError extends Data.TaggedError('OfflineMutationError')<
+  Record<string, never>
+> {}
 
 /** Canonical Effect workflow for online/offline mutation execution. */
 export function executeMutation$<T>(options: {
@@ -17,7 +19,7 @@ export function executeMutation$<T>(options: {
   }).pipe(
     Effect.filterOrFail(
       (connected) => connected,
-      () => new OfflineMutationError(),
+      () => new OfflineMutationError({}),
     ),
     Effect.flatMap(() =>
       Effect.tryPromise({

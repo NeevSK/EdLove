@@ -1,6 +1,6 @@
 import { CreatePostModal } from '@repo/community/feed';
 import { safeBack } from '@repo/ui/utils/navigation';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { useCallback } from 'react';
 
 export default function CreatePostRoute() {

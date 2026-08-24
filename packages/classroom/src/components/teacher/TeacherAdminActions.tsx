@@ -1,12 +1,4 @@
-import {
-  BookOpen,
-  ClipboardList,
-  Database,
-  type LucideIcon,
-  Settings,
-  Shield,
-  Users,
-} from '@repo/ui/icons';
+import { BookOpen, ClipboardList, Database, Settings, Shield, Users } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 
 import type React from 'react';

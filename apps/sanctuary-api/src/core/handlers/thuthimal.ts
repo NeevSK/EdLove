@@ -5,7 +5,8 @@ import { assertDatabase } from '../apiErrors';
 import { implement, type ORPCContext } from '../orpc';
 
 const impl = implement(thuthimalContract).$context<ORPCContext>();
-const iso = (value: unknown) => (value instanceof Date ? value.toISOString() : value ? String(value) : null);
+const iso = (value: unknown) =>
+  value instanceof Date ? value.toISOString() : value ? String(value) : null;
 
 const mapGift = (row: any) => ({
   id: String(row.id),
@@ -59,7 +60,8 @@ export const thuthimalRouter = impl.router({
         where: { id: gift.id, claimed: false },
         data: { claimed: true, claimed_at: new Date(), recipient_id: context.user.id },
       });
-      if (claimed.count !== 1) return { success: false as const, error: 'already_claimed_or_invalid' as const };
+      if (claimed.count !== 1)
+        return { success: false as const, error: 'already_claimed_or_invalid' as const };
 
       await tx.user.update({
         where: { id: context.user.id },
@@ -70,7 +72,11 @@ export const thuthimalRouter = impl.router({
           thuthimal_gifted_at: new Date(),
         },
       });
-      return { success: true as const, gifter_name: gift.gifter_name, recipient_id: context.user.id };
+      return {
+        success: true as const,
+        gifter_name: gift.gifter_name,
+        recipient_id: context.user.id,
+      };
     });
     return result;
   }),

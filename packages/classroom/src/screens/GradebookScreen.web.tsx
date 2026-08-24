@@ -1,5 +1,4 @@
-import type { SortOption } from '@repo/classroom/hooks/useGradebook';
-import { useGradebook } from '@repo/classroom/hooks/useGradebook';
+import { type SortOption, useGradebook } from '@repo/classroom/hooks/useGradebook';
 import { growthSignalsAPI } from '@repo/core/api/client';
 import { useStore } from '@repo/core/logic';
 import { type ClassroomGradingSettings } from '@repo/core/types';

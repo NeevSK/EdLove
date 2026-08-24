@@ -1,8 +1,6 @@
-import { implement } from '../orpc';
 import { ORPCError } from '@orpc/server';
-import { syncContract } from '@repo/core/api/server';
-import { applyPowerSyncBatch } from '@repo/core/api/server';
-import type { ORPCContext } from '../orpc';
+import { applyPowerSyncBatch, syncContract } from '@repo/core/api/server';
+import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 
 const impl = implement(syncContract).$context<ORPCContext>();
@@ -18,11 +16,6 @@ export const syncRouter = impl.router({
       });
     }
 
-    return applyPowerSyncBatch(
-      context.db,
-      input.crud,
-      input.idempotencyKey,
-      context.user.id,
-    );
+    return applyPowerSyncBatch(context.db, input.crud, input.idempotencyKey, context.user.id);
   }),
 });

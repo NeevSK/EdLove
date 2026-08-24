@@ -120,13 +120,13 @@ export function createGuardianAssessmentReadService({
     );
 
     let outcome: GuardianAssessmentReadAuditEvent['outcome'] = 'denied';
-    let reason: GuardianAssessmentReadAuditEvent['reason'] = 'no_relationship';
+    let reason: GuardianAssessmentReadAuditEvent['reason'];
     let results: readonly GuardianAssessmentResult[] = [];
 
-    if (relationship && !isValidRelationship(relationship, guardianId, studentId)) {
-      reason = 'invalid_relationship';
-    } else if (!relationship) {
+    if (!relationship) {
       reason = 'no_relationship';
+    } else if (!isValidRelationship(relationship, guardianId, studentId)) {
+      reason = 'invalid_relationship';
     } else if (!hasExplicitGradeReadPermission(relationship.permissions)) {
       reason = relationship.permissions ? 'permission_denied' : 'permission_missing';
     } else {

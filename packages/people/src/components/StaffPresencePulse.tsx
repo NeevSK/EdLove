@@ -1,3 +1,4 @@
+import { useStaffPresence } from '@repo/people/hooks/useStaffPresence';
 import { Calendar, CircleCheck, Clock, LogIn, LogOut } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Pressable, Spinner, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
@@ -5,7 +6,6 @@ import { format } from 'date-fns';
 import type React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useStaffPresence } from '@repo/people/hooks/useStaffPresence';
 
 interface StaffPresencePulseProps {
   userId: string;
@@ -117,7 +117,10 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
           </HStack>
 
           <Pressable
-            onPress={handleToggleAttendance}
+            onPress={() => {
+              void handleToggleAttendance();
+            }}
+            accessibilityRole="button"
             disabled={actionLoading}
             className={`h-14 rounded-[20px] flex-row items-center justify-center gap-3 shadow-md active:scale-95 transition-all ${
               isCheckedIn ? 'bg-phase-danger' : 'bg-phase-interactive'
@@ -140,7 +143,7 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
       </Box>
 
       <HStack className="gap-4">
-        <Pressable className="flex-1 active:scale-95 transition-all">
+        <Pressable accessibilityRole="button" className="flex-1 active:scale-95 transition-all">
           <Box className="bg-phase-surface p-5 rounded-[24px] border border-phase-border items-center gap-2 shadow-sm">
             <Icon as={Calendar} size="sm" className="text-phase-interactive" />
             <Text className="text-[11px] font-black text-phaseText-primary uppercase tracking-wider">
@@ -148,7 +151,7 @@ export const StaffPresencePulse: React.FC<StaffPresencePulseProps> = ({ userId, 
             </Text>
           </Box>
         </Pressable>
-        <Pressable className="flex-1 active:scale-95 transition-all">
+        <Pressable accessibilityRole="button" className="flex-1 active:scale-95 transition-all">
           <Box className="bg-phase-surface p-5 rounded-[24px] border border-phase-border items-center gap-2 shadow-sm">
             <Icon as={CircleCheck} size="sm" className="text-phase-interactive" />
             <Text className="text-[11px] font-black text-phaseText-primary uppercase tracking-wider">

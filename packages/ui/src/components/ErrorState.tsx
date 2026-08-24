@@ -18,7 +18,7 @@ import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useBreakpoint } from './layout';
-import { duration, easing, nativeEasing } from './motion';
+import { duration, nativeEasing } from './motion';
 
 // Same verified geometry as BrandPulse — see that file for the source trace.
 const PATHS = {
@@ -89,15 +89,17 @@ export function ErrorState({ title, message, children, className, style }: Error
         style={{
           width: size,
           height: size,
-          ...(Animated ? {
-            animationName: {
-              '0%': { opacity: 0 },
-              '100%': { opacity: 1 },
-            },
-            animationDuration: duration.transition,
-            animationTimingFunction: nativeEasing.decelerate,
-            animationFillMode: 'forwards',
-          } as any : {}),
+          ...(Animated
+            ? ({
+                animationName: {
+                  '0%': { opacity: 0 },
+                  '100%': { opacity: 1 },
+                },
+                animationDuration: duration.transition,
+                animationTimingFunction: nativeEasing.decelerate,
+                animationFillMode: 'forwards',
+              } as any)
+            : {}),
         }}
       >
         <Svg width={size} height={size} viewBox="0 0 512 512">

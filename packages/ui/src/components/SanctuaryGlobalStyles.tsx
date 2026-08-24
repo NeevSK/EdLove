@@ -1,7 +1,7 @@
-import React from 'react';
-import { Platform } from 'react-native';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import { hexToRgba } from '@repo/ui/utils/colorUtils';
+import React from 'react';
+import { Platform } from 'react-native';
 
 /**
  * SanctuaryGlobalStyles (Web-only)
@@ -1023,7 +1023,8 @@ const STATIC_CSS = `
 `;
 
 export function SanctuaryGlobalStyles() {
-  if (Platform.OS !== 'web') return null;
+  // Hook order must not depend on platform: hooks always run, bodies no-op off-web.
+  const isWeb = Platform.OS === 'web';
 
   const {
     accent,
@@ -1206,7 +1207,7 @@ export function SanctuaryGlobalStyles() {
   // -- Static CSS: injected once on mount, never re-renders
   const staticInjectedRef = React.useRef(false);
   React.useInsertionEffect(() => {
-    if (staticInjectedRef.current) return;
+    if (!isWeb || staticInjectedRef.current) return;
     staticInjectedRef.current = true;
     let el = document.getElementById('sanctuary-static-css') as HTMLStyleElement | null;
     if (!el) {
@@ -1219,6 +1220,7 @@ export function SanctuaryGlobalStyles() {
 
   // -- Dynamic CSS: only the :root variables block, re-runs on theme change
   React.useInsertionEffect(() => {
+    if (!isWeb) return;
     let el = document.getElementById('sanctuary-dynamic-css') as HTMLStyleElement | null;
     if (!el) {
       el = document.createElement('style');
@@ -1226,7 +1228,7 @@ export function SanctuaryGlobalStyles() {
       document.head.appendChild(el);
     }
     el.textContent = dynamicCss;
-  }, [dynamicCss]);
+  }, [dynamicCss, isWeb]);
 
   return null;
 }

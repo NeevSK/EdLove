@@ -1,14 +1,4 @@
 /* biome-ignore-all lint/suspicious/noArrayIndexKey: shimmer layout is static */
-/**
- * WebScreenShimmer — pure HTML/CSS shimmer skeleton for web Suspense fallbacks.
- *
- * Matches the sanctuary design language: vellum background (#F5EDD6),
- * saffron-tinted shimmer wave. No React Native dependencies — safe to use
- * as a <React.Suspense fallback> inside Tab.Screen renders.
- *
- * The layout mimics a generic "content + cards" page so the transition
- * from loading → loaded feels spatially stable (no jarring layout shifts).
- */
 
 // ── Generic page shimmer ─────────────────────────────────────────────────────
 export default function WebScreenShimmer({

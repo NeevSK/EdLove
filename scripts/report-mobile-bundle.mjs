@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, statSync, writeFileSync } from "node:fs";
 import path from 'node:path';
 
 const [bundlePath, sourcemapPath, reportPath] = process.argv.slice(2);

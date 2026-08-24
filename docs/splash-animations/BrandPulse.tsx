@@ -9,7 +9,6 @@
  * All timing/scale/color comes from motion.ts — nothing here is a magic
  * number, so tuning the breathe rate app-wide means editing one file.
  */
-import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';

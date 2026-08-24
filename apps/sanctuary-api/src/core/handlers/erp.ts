@@ -2,8 +2,7 @@ import { ORPCError } from '@orpc/server';
 import { erpContract } from '@repo/core/api/erp.contract';
 import { SovereignError } from '@repo/core/types/Errors';
 import { assertDatabase } from '../apiErrors';
-import type { ORPCContext } from '../orpc';
-import { implement } from '../orpc';
+import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 
 const impl = implement(erpContract).$context<ORPCContext>();
@@ -84,101 +83,109 @@ export const erpRouter = impl.router({
     return rows.map(mapAccount);
   }),
 
-  getTransactions: impl.getTransactions.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    assertDatabase(context);
-    const rows = await context.db.financialTransaction.findMany({
-      where: {
-        ...(input.accountId ? { entries: { some: { account_id: input.accountId } } } : {}),
-        ...(input.startDate || input.endDate
-          ? {
-              date: {
-                ...(input.startDate ? { gte: new Date(input.startDate) } : {}),
-                ...(input.endDate ? { lte: new Date(input.endDate) } : {}),
-              },
-            }
-          : {}),
-      },
-      include: { entries: true },
-      orderBy: { date: 'desc' },
-    });
-    return rows.map(mapTransaction);
-  }),
-
-  recordTransaction: impl.recordTransaction.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    assertDatabase(context);
-    const debitTotal = input.entries
-      .filter((entry) => entry.side === 'debit')
-      .reduce((sum, entry) => sum + entry.amount, 0);
-    const creditTotal = input.entries
-      .filter((entry) => entry.side === 'credit')
-      .reduce((sum, entry) => sum + entry.amount, 0);
-    if (Math.abs(debitTotal - creditTotal) > 0.000001)
-      throw new ORPCError('BAD_REQUEST', {
-        message: 'Financial transactions must have balanced debit and credit totals.',
-      });
-
-    const row = await context.db.$transaction(async (tx: any) => {
-      const transaction = await tx.financialTransaction.create({
-        data: {
-          date: input.date ? new Date(input.date) : new Date(),
-          description: input.description,
-          reference_no: input.referenceNo ?? null,
-          metadata: input.metadata ?? null,
+  getTransactions: impl.getTransactions
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      assertDatabase(context);
+      const rows = await context.db.financialTransaction.findMany({
+        where: {
+          ...(input.accountId ? { entries: { some: { account_id: input.accountId } } } : {}),
+          ...(input.startDate || input.endDate
+            ? {
+                date: {
+                  ...(input.startDate ? { gte: new Date(input.startDate) } : {}),
+                  ...(input.endDate ? { lte: new Date(input.endDate) } : {}),
+                },
+              }
+            : {}),
         },
-      });
-      await tx.ledgerEntry.createMany({
-        data: input.entries.map((entry) => ({
-          transaction_id: transaction.id,
-          account_id: entry.accountId,
-          amount: entry.amount,
-          side: entry.side,
-          description: entry.description ?? null,
-        })),
-      });
-      return tx.financialTransaction.findUnique({
-        where: { id: transaction.id },
         include: { entries: true },
+        orderBy: { date: 'desc' },
       });
-    });
-    return mapTransaction(row);
-  }),
+      return rows.map(mapTransaction);
+    }),
 
-  createPaymentIntent: impl.createPaymentIntent.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    assertDatabase(context);
-    const metadata = {
-      ...(input.metadata ?? {}),
-      ...(input.idempotencyKey
-        ? { idempotency_key: `${context.user.id}:${input.provider}:${input.idempotencyKey}` }
-        : {}),
-      provider_integration: 'database_intent_only',
-    };
-    const existing = input.idempotencyKey
-      ? await context.db.paymentIntent.findFirst({
-          where: { metadata: { path: ['idempotency_key'], equals: input.idempotencyKey } } as any,
-        })
-      : null;
-    if (existing) return mapPaymentIntent(existing);
-    let row;
-    try {
-      row = await context.db.paymentIntent.create({
-        data: {
-          amount: input.amount,
-          currency: input.currency.toUpperCase(),
-          provider: input.provider,
-          status: 'pending',
-          metadata,
-        },
+  recordTransaction: impl.recordTransaction
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      assertDatabase(context);
+      const debitTotal = input.entries
+        .filter((entry) => entry.side === 'debit')
+        .reduce((sum, entry) => sum + entry.amount, 0);
+      const creditTotal = input.entries
+        .filter((entry) => entry.side === 'credit')
+        .reduce((sum, entry) => sum + entry.amount, 0);
+      if (Math.abs(debitTotal - creditTotal) > 0.000001)
+        throw new ORPCError('BAD_REQUEST', {
+          message: 'Financial transactions must have balanced debit and credit totals.',
+        });
+
+      const row = await context.db.$transaction(async (tx: any) => {
+        const transaction = await tx.financialTransaction.create({
+          data: {
+            date: input.date ? new Date(input.date) : new Date(),
+            description: input.description,
+            reference_no: input.referenceNo ?? null,
+            metadata: input.metadata ?? null,
+          },
+        });
+        await tx.ledgerEntry.createMany({
+          data: input.entries.map((entry) => ({
+            transaction_id: transaction.id,
+            account_id: entry.accountId,
+            amount: entry.amount,
+            side: entry.side,
+            description: entry.description ?? null,
+          })),
+        });
+        return tx.financialTransaction.findUnique({
+          where: { id: transaction.id },
+          include: { entries: true },
+        });
       });
-    } catch (error) {
-      if (!input.idempotencyKey) throw error;
-      const replay = await context.db.paymentIntent.findFirst({
-        where: { metadata: { path: ['idempotency_key'], equals: metadata.idempotency_key } } as any,
-      });
-      if (replay) return mapPaymentIntent(replay);
-      throw SovereignError.conflict('PAYMENT_INTENT_IDEMPOTENCY_CONFLICT');
-    }
-    return mapPaymentIntent(row);
-  }),
+      return mapTransaction(row);
+    }),
+
+  createPaymentIntent: impl.createPaymentIntent
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      assertDatabase(context);
+      const metadata = {
+        ...(input.metadata ?? {}),
+        ...(input.idempotencyKey
+          ? { idempotency_key: `${context.user.id}:${input.provider}:${input.idempotencyKey}` }
+          : {}),
+        provider_integration: 'database_intent_only',
+      };
+      const existing = input.idempotencyKey
+        ? await context.db.paymentIntent.findFirst({
+            where: { metadata: { path: ['idempotency_key'], equals: input.idempotencyKey } } as any,
+          })
+        : null;
+      if (existing) return mapPaymentIntent(existing);
+      let row;
+      try {
+        row = await context.db.paymentIntent.create({
+          data: {
+            amount: input.amount,
+            currency: input.currency.toUpperCase(),
+            provider: input.provider,
+            status: 'pending',
+            metadata,
+          },
+        });
+      } catch (error) {
+        if (!input.idempotencyKey) throw error;
+        const replay = await context.db.paymentIntent.findFirst({
+          where: {
+            metadata: { path: ['idempotency_key'], equals: metadata.idempotency_key },
+          } as any,
+        });
+        if (replay) return mapPaymentIntent(replay);
+        throw SovereignError.conflict('PAYMENT_INTENT_IDEMPOTENCY_CONFLICT');
+      }
+      return mapPaymentIntent(row);
+    }),
 
   getInvoices: impl.getInvoices.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     assertDatabase(context);

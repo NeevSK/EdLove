@@ -1,7 +1,6 @@
 import { ORPCError } from '@orpc/server';
 import { guardianAssessmentORPCContract } from '@repo/core/api/guardian-assessment.orpc.contract';
-import type { ORPCContext } from '../orpc';
-import { implement } from '../orpc';
+import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 import {
   GuardianAssessmentServiceError,

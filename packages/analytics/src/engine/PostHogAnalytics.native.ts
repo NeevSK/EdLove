@@ -19,7 +19,8 @@ export class PostHogAnalytics implements IAnalyticsPort {
     },
   ) {
     if (apiKey) {
-      this.initialize(apiKey, options);
+      // Constructor context cannot await; initialize owns its error handling.
+      void this.initialize(apiKey, options);
     }
   }
 
@@ -84,7 +85,10 @@ export class PostHogAnalytics implements IAnalyticsPort {
     try {
       this.posthog.identify(userId);
       if (userProperties) {
-        this.posthog.register(sanitizeTelemetryData(userProperties));
+        // register() returns a promise; try/catch alone would miss rejections.
+        this.posthog.register(sanitizeTelemetryData(userProperties)).catch((error) => {
+          console.error('Failed to register user properties:', error);
+        });
       }
     } catch (error) {
       console.error('Failed to identify user:', error);
@@ -113,7 +117,9 @@ export class PostHogAnalytics implements IAnalyticsPort {
     }
 
     try {
-      this.posthog.screen(screenName, sanitizeTelemetryData(properties));
+      this.posthog.screen(screenName, sanitizeTelemetryData(properties)).catch((error) => {
+        console.error('Failed to track screen (async):', error);
+      });
     } catch (error) {
       console.error('Failed to track screen:', error);
     }

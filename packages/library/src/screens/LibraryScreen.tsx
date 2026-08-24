@@ -45,7 +45,6 @@ import {
   ImageBackground,
   LinearGradient,
   Pressable,
-  RefreshControl,
   Text,
   useTheme,
   VStack,
@@ -53,7 +52,7 @@ import {
 import { Theme } from '@repo/ui/theme';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { useRouter } from 'expo-router';
-import React, { memo, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, useWindowDimensions } from 'react-native';
 import { FadeInDown } from 'react-native-reanimated';
@@ -168,7 +167,6 @@ export default function LibraryScreen() {
   const { can } = usePermissions();
   const isLibraryManagementEnabled = useDomainRollout('archive');
 
-  // --- 1. STATE MACHINE (Mechanism) ---
   interface LibraryState {
     activeSection: 'browse' | 'collections' | 'contribute';
     searchQuery: string;
@@ -288,7 +286,6 @@ export default function LibraryScreen() {
     dispatch,
   ] = useReducer(libraryReducer, initialState);
 
-  // --- 2. ATOMIC SELECTORS & DERIVATIONS ---
   const isPastView = useTemporalStore((state) => state.isPastView);
   const deskItems = useStore((state) => state.deskItems);
   const user = useStore((state) => state.user);

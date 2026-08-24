@@ -2,10 +2,6 @@ import { requireTeacherAccess } from '@repo/core/lib/authorization';
 import { teacher, teacherInsights } from '@repo/core/logic/managers/factory';
 import type { Task, TeacherNote } from '@repo/core/types';
 
-// ============================================================================
-// TASKS API
-// ============================================================================
-
 export const tasksAPI = {
   /**
    * Get all tasks for a teacher
@@ -48,10 +44,6 @@ export const tasksAPI = {
     return teacher.tasks.delete(id);
   },
 };
-
-// ============================================================================
-// NOTES API (Teacher venting, reflections)
-// ============================================================================
 
 export const notesAPI = {
   /**

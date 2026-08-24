@@ -8,7 +8,7 @@
  * heart-glow treatment. Reach for <SuccessCheck> by default; reach for
  * <SuccessGlow> deliberately, not habitually.
  */
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import { View, StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import Svg, { Path, Circle } from 'react-native-svg';

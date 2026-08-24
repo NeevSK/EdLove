@@ -1,8 +1,8 @@
 import { ORPCError } from '@orpc/server';
+import { SovereignError } from '@repo/core/types/Errors';
 import { check as checkCedar } from '@repo/policies';
 import { evaluateWithRust } from '../authorization/rustEvaluator';
 import { type ORPCContext, o } from './orpc';
-import { SovereignError } from '@repo/core/types/Errors';
 
 function toORPCError(error: unknown): unknown {
   if (!(error instanceof SovereignError)) return error;

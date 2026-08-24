@@ -1,4 +1,3 @@
-import React from 'react';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { Sparkles } from '@repo/ui/icons';
 
@@ -8,7 +7,11 @@ interface UpgradePromptProps {
   onAction?: () => void;
 }
 
-export function UpgradePrompt({ requiredTier = 'PRO', currentTier = 'FREE', onAction }: UpgradePromptProps) {
+export function UpgradePrompt({
+  requiredTier = 'PRO',
+  currentTier = 'FREE',
+  onAction,
+}: UpgradePromptProps) {
   return (
     <PositiveInvitation
       title="Upgrade Required"

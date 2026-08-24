@@ -1,8 +1,3 @@
-// ============================================================================
-// COMMUNITY & SOCIAL TYPES
-// Centralized for platform-wide reuse
-// ============================================================================
-
 import type { Capacity } from '@repo/core/types/Authority';
 import type { Announcement } from '@repo/core/types/School'; // Announcements are in School.ts
 import type { User } from '@repo/core/types/User';
@@ -11,10 +6,6 @@ export interface AnnouncementWithAuthor extends Announcement {
   author_name?: string;
   author_avatar?: string;
 }
-
-// ============================================================================
-// MANIFESTO TYPES
-// ============================================================================
 
 export type ManifestoVibe = 'visionary' | 'supportive' | 'academic' | 'wellbeing';
 export type ManifestoStatus = 'active' | 'archived' | 'fulfilled';
@@ -34,10 +25,6 @@ export interface SanctuaryManifesto {
   endorsement_count?: number;
   has_endorsed?: boolean;
 }
-
-// ============================================================================
-// POLL TYPES
-// ============================================================================
 
 export interface PollOption {
   id: string;
@@ -59,10 +46,6 @@ export interface PollStatus {
   totalVotes: number;
   userVotes: string[];
 }
-
-// ============================================================================
-// COMMUNITY POST TYPES
-// ============================================================================
 
 export type PostType =
   | 'question'
@@ -194,10 +177,6 @@ export interface Comment {
   updated_at: Date;
 }
 
-// ============================================================================
-// NOTIFICATION TYPES
-// ============================================================================
-
 export type NotificationType =
   | 'question_answered'
   | 'comment_reply'
@@ -219,10 +198,6 @@ export interface Notification {
   read_at?: string | null;
   created_at: Date;
 }
-
-// ============================================================================
-// GROUP TYPES
-// ============================================================================
 
 export interface CommunityGroup {
   __typename?: 'CommunityGroup';
@@ -305,10 +280,6 @@ export interface GroupMessage {
   created_at: Date;
 }
 
-// ============================================================================
-// REPORTING & SAFETY TYPES
-// ============================================================================
-
 export type ReportStatus = 'pending' | 'reviewed' | 'resolved';
 
 export interface GroupReport {
@@ -331,10 +302,6 @@ export interface ReportContentInput {
   details?: string;
 }
 
-// ============================================================================
-// ENGAGEMENT TYPES
-// ============================================================================
-
 export interface CommunityReaction {
   id: string;
   target_id: string;
@@ -342,10 +309,6 @@ export interface CommunityReaction {
   user_id: string;
   created_at: Date;
 }
-
-// ============================================================================
-// DIRECT MESSAGING TYPES
-// ============================================================================
 
 export interface DirectConversation {
   id: string;

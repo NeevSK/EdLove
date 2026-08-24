@@ -1,6 +1,5 @@
 import { styled } from 'nativewind';
-import type { ComponentType } from 'react';
-import React from 'react';
+import React, { type ComponentType } from 'react';
 import { type PressableProps, Pressable as RNPressable } from 'react-native';
 
 // NativeWind v5's recursive styled() inference hits TS2590 for Pressable's
@@ -20,11 +19,7 @@ export interface IPressableProps extends PressableProps {
 
 const Pressable = React.forwardRef<any, IPressableProps>(
   ({ className, href, hrefAttrs, ...props }, ref) => (
-    <StyledRNPressable
-      {...props}
-      ref={ref}
-      {...({ className, href, hrefAttrs } as any)}
-    />
+    <StyledRNPressable {...props} ref={ref} {...({ className, href, hrefAttrs } as any)} />
   ),
 );
 

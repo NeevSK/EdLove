@@ -1,4 +1,3 @@
-/** Canonical public destinations used by core deep-link and QR contracts. */
 export const GURUDEVI_PLATFORM_URL =
   (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_GURUDEVI_APP_URL) ||
   'https://platform.gurudevi.edlove.org';

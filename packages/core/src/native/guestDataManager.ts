@@ -77,15 +77,7 @@ export interface GuestStudent {
   notes?: string;
 }
 
-/**
- * Guest Data Manager
- * Handles local storage for anonymous users using MMKV
- * Data is stored locally. Conversion may explicitly migrate it to a durable
- * account after signup; anonymous sessions never enter PowerSync.
- */
 export class GuestDataManager {
-  // ============ Timetable Methods ============
-
   static async getTimetable(dayOfWeek: number): Promise<GuestTimetablePeriod[]> {
     return Effect.runPromise(
       readStorage$(GUEST_TIMETABLE_KEY()).pipe(
@@ -176,8 +168,6 @@ export class GuestDataManager {
     );
   }
 
-  // ============ Mood Log Methods ============
-
   static async getMoodLogs(): Promise<GuestMoodLog[]> {
     return Effect.runPromise(
       readStorage$(GUEST_MOOD_LOGS_KEY()).pipe(
@@ -215,8 +205,6 @@ export class GuestDataManager {
       ),
     );
   }
-
-  // ============ Journal Entry Methods ============
 
   static async getJournalEntries(): Promise<GuestJournalEntry[]> {
     return Effect.runPromise(
@@ -259,8 +247,6 @@ export class GuestDataManager {
     );
   }
 
-  // ============ Student Methods ============
-
   static async getStudents(): Promise<GuestStudent[]> {
     return Effect.runPromise(
       readStorage$(GUEST_STUDENTS_KEY()).pipe(
@@ -294,8 +280,6 @@ export class GuestDataManager {
     );
   }
 
-  // ============ Data Summary & Clearing ============
-
   static async getDataSummary(): Promise<{
     timetablePeriods: number;
     moodLogs: number;
@@ -326,8 +310,6 @@ export class GuestDataManager {
       SafeZustandStorage.removeItem(GUEST_CLASSROOM_DATA_KEY()),
     ]);
   }
-
-  // ============ Data Export (for sync) ============
 
   static async exportAllData(): Promise<{
     timetable: GuestTimetablePeriod[];

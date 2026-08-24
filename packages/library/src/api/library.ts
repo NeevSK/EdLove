@@ -7,7 +7,6 @@ import {
   libraryContract,
 } from '@repo/core/api/client';
 import { libraryAPI as sanctuaryLibraryAPI } from '@repo/core/api/library';
-import { applyTemporalFilter } from '@repo/core/logic';
 
 import { APIError } from '@repo/core/types';
 import { knowledgeDB } from '@repo/library/api/database';
@@ -21,20 +20,11 @@ import type {
   ResourceFilters,
 } from '@repo/library/types';
 
-// ============================================================================
-// HELPERS
-// ============================================================================
 const getTemporalAsOf = (viewDate?: string): string | undefined => {
   if (!viewDate) return undefined;
   return new Date(`${viewDate}T23:59:59.999Z`).toISOString();
 };
-// ============================================================================
-// LIBRARY API - Resource Management for Educational Ecology
-// ============================================================================
 const rawLibraryAPI = {
-  // ========================================================================
-  // RESOURCES
-  // ========================================================================
   async getResourcesCount(): Promise<number> {
     return Number((await sanctuaryLibraryAPI.fetchLibraryCounts()).resource_count ?? 0);
   },
@@ -211,9 +201,6 @@ const rawLibraryAPI = {
   async deleteResource(id: string): Promise<void> {
     await sanctuaryLibraryAPI.deleteResource(id);
   },
-  // ========================================================================
-  // RESOURCE ENGAGEMENT
-  // ========================================================================
   /**
    * @authority create Library
    */
@@ -277,9 +264,6 @@ const rawLibraryAPI = {
       view_date: options.viewDate ? getTemporalAsOf(options.viewDate) : undefined,
     })) as LibraryResource[];
   },
-  // ========================================================================
-  // COLLECTIONS
-  // ========================================================================
   /**
    * @authority read Library
    */

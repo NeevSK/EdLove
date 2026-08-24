@@ -1,13 +1,6 @@
 import React, { createContext, useContext, useEffect, useId, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
-/**
- * Portal Registry System
- *
- * A hardened, non-legacy portal system for layering.
- * Handles multiple portals via a central registry.
- */
-
 type PortalContextType = {
   register: (id: string, children: React.ReactNode) => void;
   unregister: (id: string) => void;
@@ -45,14 +38,27 @@ export const PortalProvider = ({ children }: { children: React.ReactNode }) => {
 export const Portal = ({ children }: { children: React.ReactNode }) => {
   const context = useContext(PortalContext);
   const id = useId();
+  const isWeb = Platform.OS === 'web';
 
-  if (Platform.OS === 'web') {
+  // Hooks are called unconditionally on both platforms; the platform branch
+  // below only decides rendering, never hook order.
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isWeb || !context) {
+      return;
+    }
+    context.register(id, children);
+    return () => {
+      context.unregister(id);
+    };
+  }, [children, context, id, isWeb]);
+
+  if (isWeb) {
     // Avoid SSR hydration mismatch: only mount portal on client side
-    const [mounted, setMounted] = React.useState(false);
-    React.useEffect(() => {
-      setMounted(true);
-    }, []);
-
     if (!mounted) return null;
 
     // Direct DOM escape on web
@@ -64,17 +70,6 @@ export const Portal = ({ children }: { children: React.ReactNode }) => {
       return <View>{children}</View>;
     }
   }
-
-  useEffect(() => {
-    if (context) {
-      context.register(id, children);
-    }
-    return () => {
-      if (context) {
-        context.unregister(id);
-      }
-    };
-  }, [children, context, id]);
 
   if (!context) {
     // Fallback if no provider exists

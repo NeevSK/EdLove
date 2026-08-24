@@ -1,11 +1,7 @@
 import './setup';
-import { describe, expect, it, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { createTestORPCClient } from './orpc-client';
-import {
-  setMockActiveBond,
-  setMockUserData,
-  setMockZenStackDbAvailable,
-} from './setup';
+import { setMockActiveBond, setMockUserData, setMockZenStackDbAvailable } from './setup';
 
 describe('Sanctuary API: oRPC endpoints (Self & Profile)', () => {
   const userId = '123e4567-e89b-12d3-a456-426614174000';
@@ -57,7 +53,9 @@ describe('Sanctuary API: oRPC endpoints (Self & Profile)', () => {
 
   describe('Profile Router', () => {
     it('should retrieve a user profile by ID', async () => {
-      const body = await createTestORPCClient(authenticatedHeaders).profile.getUserProfile({ id: userId });
+      const body = await createTestORPCClient(authenticatedHeaders).profile.getUserProfile({
+        id: userId,
+      });
       expect(body.id).toBe(userId);
       expect(body.username).toBe('testcitizen');
     });
@@ -70,16 +68,26 @@ describe('Sanctuary API: oRPC endpoints (Self & Profile)', () => {
         },
       };
 
-      const body = await createTestORPCClient(authenticatedHeaders).profile.updateProfile(updatePayload);
+      const body =
+        await createTestORPCClient(authenticatedHeaders).profile.updateProfile(updatePayload);
       expect(body.bio).toBe('Inspirational teacher');
     });
 
     it('should manage social links through the native profile contract', async () => {
       const client = createTestORPCClient(authenticatedHeaders).profile;
       expect(await client.getSocialLinks({})).toEqual([]);
-      const link = await client.upsertSocialLink({ platform: 'website', url: 'https://example.com' });
-      expect(link).toMatchObject({ user_id: userId, platform: 'website', url: 'https://example.com' });
-      expect(await client.deleteSocialLink({ id: '423e4567-e89b-12d3-a456-426614174000' })).toEqual({ success: true });
+      const link = await client.upsertSocialLink({
+        platform: 'website',
+        url: 'https://example.com',
+      });
+      expect(link).toMatchObject({
+        user_id: userId,
+        platform: 'website',
+        url: 'https://example.com',
+      });
+      expect(await client.deleteSocialLink({ id: '423e4567-e89b-12d3-a456-426614174000' })).toEqual(
+        { success: true },
+      );
     });
   });
 });

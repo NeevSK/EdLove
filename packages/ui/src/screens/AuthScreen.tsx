@@ -131,7 +131,10 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
     case 'SET_ERRORS':
       return { ...state, errors: action.errors };
     case 'SET_USER':
-      if (state.currentUser === action.user || (state.currentUser?.id && state.currentUser.id === action.user?.id)) {
+      if (
+        state.currentUser === action.user ||
+        (state.currentUser?.id && state.currentUser.id === action.user?.id)
+      ) {
         return state;
       }
       return { ...state, currentUser: action.user };
@@ -189,7 +192,6 @@ const AuthScreen = memo(
       dispatch({ type: 'SET_USER', user: (myProfile as unknown as User) || null });
     }, [myProfile?.id]);
 
-    // ─── Native redirect URI (used by expo-auth-session) ───────────────────────
     const getRedirectUrl = useCallback(() => {
       // Mobile always uses deep link scheme
       return AuthSession.makeRedirectUri({

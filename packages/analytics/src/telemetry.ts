@@ -1,7 +1,7 @@
 // Telemetry and third-party tracking exports (PostHog, Sentry, etc.)
 export * from './engine/PostHogAnalytics';
+
 import { posthogAnalytics } from './engine/PostHogAnalytics';
-export { posthogAnalytics };
 
 export const initPostHog = async (
   apiKey: string,

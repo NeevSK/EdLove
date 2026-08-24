@@ -11,11 +11,11 @@
 // 3. Central Logo (Lotus emoji) enabled by High Error Correction
 // 4. "Scan Me" branding frame
 
+import { Text, View } from '@repo/ui/primitives';
 import QRCode from 'qrcode';
 import { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import Svg, { Circle, G, Rect, Text as SvgText } from 'react-native-svg';
-import { Text, View } from '@repo/ui/primitives';
 
 export interface QRCodeGeneratorProps {
   value: string;
@@ -51,9 +51,9 @@ export default function QRCodeGenerator({
   showFrame = true,
   frameText = 'SCAN ME',
 }: QRCodeGeneratorProps) {
-  if (!value) return null;
-
+  // Hook order must not depend on props: compute defensively, render-null below.
   const matrix = useMemo(() => {
+    if (!value) return null;
     try {
       const qr = QRCode.create(value, { errorCorrectionLevel });
       return qr.modules;
@@ -62,6 +62,8 @@ export default function QRCodeGenerator({
       return null;
     }
   }, [value, errorCorrectionLevel]);
+
+  if (!value) return null;
 
   if (!matrix || matrix.size === 0) {
     return (

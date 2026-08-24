@@ -66,8 +66,6 @@ type EnergySummary = {
   energy_level?: string | number | null;
 };
 
-// --- CROSS-ROLE SECTIONS ---
-
 export const JournalSection: React.FC<{
   entries: JournalEntry[];
   loading?: boolean;
@@ -130,8 +128,6 @@ export const MoodSection: React.FC<{ logs: MoodLog[]; loading?: boolean }> = ({
     )}
   </Box>
 );
-
-// --- TEACHER SECTIONS ---
 
 export const TeacherPulse: React.FC<{
   banyan?: BanyanSummary | null;
@@ -196,8 +192,6 @@ export const BanyanSection: React.FC = () => (
     </Text>
   </Box>
 );
-
-// --- PRINCIPAL SECTIONS ---
 
 export const PrincipalPulse: React.FC<{
   energy?: EnergySummary | null;
@@ -271,8 +265,6 @@ export const DecisionSection: React.FC<{
   </Box>
 );
 
-// --- FOUNDER SECTIONS ---
-
 export const VisionSection: React.FC = () => {
   const { can } = usePermissions();
   if (!can('manage', 'FounderDashboard')) return null;
@@ -330,8 +322,6 @@ export const PhilosophySection: React.FC<{
     </Box>
   );
 };
-
-// --- STUDENT SECTIONS ---
 
 export const GoalSection: React.FC<{ goals: GoalItem[]; loading?: boolean }> = ({
   goals,

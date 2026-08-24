@@ -1,8 +1,12 @@
 import type React from 'react';
-import { Modal } from 'react-native';
-import { Platform } from 'react-native';
+import { Modal, Platform } from 'react-native';
 
-type SupportedOrientation = 'portrait' | 'landscape-left' | 'landscape-right' | 'portrait-upside-down' | 'landscape';
+type SupportedOrientation =
+  | 'portrait'
+  | 'landscape-left'
+  | 'landscape-right'
+  | 'portrait-upside-down'
+  | 'landscape';
 
 export interface UniversalModalProps {
   isOpen: boolean;

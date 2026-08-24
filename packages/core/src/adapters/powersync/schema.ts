@@ -1,4 +1,3 @@
-// ─── Pricing Manifest (Entitlement Source of Truth) ───────────────────────────
 export const pricingManifest = sqliteTable(
   'pricing_manifest',
   {
@@ -33,8 +32,6 @@ export const userEntitlementGrants = sqliteTable(
   ],
 );
 
-// ─── User Preferences ────────────────────────────────────────────────────────
-// Arrays and JSON are serialized by PowerSync into SQLite text columns.
 export const userPreferences = sqliteTable(
   'user_preferences',
   {
@@ -73,9 +70,6 @@ export const userPreferences = sqliteTable(
  */
 import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
-// ─── Offline identity bonds ──────────────────────────────────────────────────
-// Bonds are the local read projection of ReBAC context. They are refreshed by
-// the server and never become an offline authority for privileged mutations.
 export const bonds = sqliteTable(
   'bonds',
   {
@@ -94,8 +88,6 @@ export const bonds = sqliteTable(
   ],
 );
 
-// ─── Offline classroom membership ────────────────────────────────────────────
-// Supports teacher-created shadow students and later account claiming.
 export const classroomStudents = sqliteTable(
   'classroom_students',
   {
@@ -117,7 +109,6 @@ export const classroomStudents = sqliteTable(
   ],
 );
 
-// ─── Offline institutional membership ───────────────────────────────────────
 export const schoolMemberships = sqliteTable(
   'school_memberships',
   {
@@ -143,7 +134,6 @@ export const schoolMemberships = sqliteTable(
   ],
 );
 
-// ─── Attendance ───────────────────────────────────────────────────────────────
 export const attendance = sqliteTable(
   'attendance',
   {
@@ -166,7 +156,6 @@ export const attendance = sqliteTable(
   ],
 );
 
-// ─── Students (People) ────────────────────────────────────────────────────────
 export const students = sqliteTable(
   'students',
   {
@@ -188,7 +177,6 @@ export const students = sqliteTable(
   ],
 );
 
-// ─── Classrooms ───────────────────────────────────────────────────────────────
 export const classrooms = sqliteTable(
   'classrooms',
   {
@@ -209,7 +197,6 @@ export const classrooms = sqliteTable(
   ],
 );
 
-// ─── Moods / Wellbeing ────────────────────────────────────────────────────────
 export const moodLogs = sqliteTable(
   'mood_logs',
   {
@@ -226,7 +213,6 @@ export const moodLogs = sqliteTable(
   ],
 );
 
-// ─── Schools (needed for context) ─────────────────────────────────────────────
 export const schools = sqliteTable('schools', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
@@ -236,7 +222,6 @@ export const schools = sqliteTable('schools', {
   createdAt: text('created_at').notNull(),
 });
 
-// ─── Cedar Policies (Local PDP Distribution) ──────────────────────────────────
 export const cedarPolicies = sqliteTable(
   'cedar_policies',
   {
@@ -248,7 +233,6 @@ export const cedarPolicies = sqliteTable(
   (table) => [index('cedar_policies_name_idx').on(table.name)],
 );
 
-// ─── Cryptographically Signed Permission Snapshots ─────────────────────────────
 export const permissionSnapshots = sqliteTable(
   'permission_snapshots',
   {
@@ -267,14 +251,12 @@ export const permissionSnapshots = sqliteTable(
   (table) => [index('permission_snapshots_user_idx').on(table.userId)],
 );
 
-// ─── Policy Version (Token Invalidation Key, ADR-006) ──────────────────────────
 export const policyVersion = sqliteTable('policy_version', {
   id: text('id').primaryKey(),
   hash: text('hash').notNull(),
   updatedAt: text('updated_at').notNull(),
 });
 
-// ─── Form Templates ───────────────────────────────────────────────────────────
 export const formTemplates = sqliteTable(
   'form_templates',
   {
@@ -295,7 +277,6 @@ export const formTemplates = sqliteTable(
   ],
 );
 
-// ─── Form Responses ───────────────────────────────────────────────────────────
 export const formResponses = sqliteTable(
   'form_responses',
   {
@@ -308,7 +289,6 @@ export const formResponses = sqliteTable(
   (table) => [index('form_responses_template_idx').on(table.templateId)],
 );
 
-// ─── Shared Database Schema Object ────────────────────────────────────────────
 export const AppSchema = {
   bonds,
   classroomStudents,
@@ -328,7 +308,6 @@ export const AppSchema = {
   userPreferences,
 };
 
-// ─── Relational TypeScript Types ──────────────────────────────────────────────
 export type Attendance = typeof attendance.$inferSelect;
 export type InsertAttendance = typeof attendance.$inferInsert;
 

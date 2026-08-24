@@ -1,6 +1,6 @@
 import { flexRender, type Table } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 
 export interface SanctuaryVirtualTableWebProps<TData> {
   table: Table<TData>;

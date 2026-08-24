@@ -6,12 +6,6 @@ import type {
 } from '@repo/core/api/deviceTrust';
 import type { IDeviceSecurityPort } from '@repo/core/logic/ports/deviceSecurity.port';
 
-/**
- * DeviceSecurityManager
- *
- * The Orchestrator for Device Trust.
- * Handles the logic of syncing device state and managing revocations.
- */
 export class DeviceSecurityManager implements IDeviceSecurityPort {
   constructor(private adapter: IDeviceSecurityPort) {}
 

@@ -13,13 +13,12 @@ export class VercelOpenRouterAdapter implements LlmPort {
     const provider = createOpenAI({
       apiKey,
       baseURL: 'https://openrouter.ai/api/v1',
-      headers:
-        process.env.OPENROUTER_SITE_URL
-          ? {
-              'HTTP-Referer': process.env.OPENROUTER_SITE_URL,
-              'X-Title': process.env.OPENROUTER_APP_NAME ?? 'Gurudevi Sanctuary',
-            }
-          : undefined,
+      headers: process.env.OPENROUTER_SITE_URL
+        ? {
+            'HTTP-Referer': process.env.OPENROUTER_SITE_URL,
+            'X-Title': process.env.OPENROUTER_APP_NAME ?? 'Gurudevi Sanctuary',
+          }
+        : undefined,
     });
 
     const result = streamText({

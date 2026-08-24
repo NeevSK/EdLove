@@ -1,6 +1,6 @@
 import { moodLogs } from '@repo/core/adapters/powersync/schema';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
-import { applyTemporalFilter, getTemporalRange } from '@repo/core/logic';
+import { applyTemporalFilter } from '@repo/core/logic';
 import { getDrizzleDB } from '@repo/core/powersync';
 import { selfAPI } from '@repo/self/api/self';
 import type { FireJournalEntry, MoodLog } from '@repo/self/types';

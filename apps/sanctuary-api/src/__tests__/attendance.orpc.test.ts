@@ -10,15 +10,32 @@ describe('Sanctuary API: attendance via native oRPC', () => {
 
   beforeEach(() => {
     setMockZenStackDbAvailable(true);
-    setMockActiveBond({ id: 'bond-attendance', user_id: userId, entity_id: 'school-123', entity_type: 'SCHOOL', capacity: 'teacher', status: 'active' });
+    setMockActiveBond({
+      id: 'bond-attendance',
+      user_id: userId,
+      entity_id: 'school-123',
+      entity_type: 'SCHOOL',
+      capacity: 'teacher',
+      status: 'active',
+    });
   });
 
   it('reads classroom attendance through the real native request path', async () => {
-    const body = await createTestORPCClient(headers).attendance.getByClassroom({ gradeClassId, date: '2026-07-30' });
+    const body = await createTestORPCClient(headers).attendance.getByClassroom({
+      gradeClassId,
+      date: '2026-07-30',
+    });
     expect(body).toEqual([]);
   });
 
   it('rejects malformed attendance input before database execution', async () => {
-    await expect(createTestORPCClient(headers).attendance.record({ gradeClassId: 'bad', studentId: gradeClassId, status: 'present', date: '2026-07-30' } as any)).rejects.toMatchObject({ status: 400 });
+    await expect(
+      createTestORPCClient(headers).attendance.record({
+        gradeClassId: 'bad',
+        studentId: gradeClassId,
+        status: 'present',
+        date: '2026-07-30',
+      } as any),
+    ).rejects.toMatchObject({ status: 400 });
   });
 });

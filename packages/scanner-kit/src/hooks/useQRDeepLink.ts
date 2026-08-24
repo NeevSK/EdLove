@@ -1,15 +1,3 @@
-/**
- * useQRDeepLink — Global listener for incoming gurudevi://qr deep links
- *
- * Call this hook once at the root Expo Router layout when the user is authenticated.
- * Handles two entry points:
- *   1. Cold start: app opened via a QR deep link (getInitialURL)
- *   2. Warm resume: app already open, incoming link event (addEventListener)
- *
- * When no handler is registered yet (pre-auth), stores payload in AsyncStorage
- * under 'pending_qr_action' — redeemed after login via redeemPendingQRAction().
- */
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { resolveQR } from '@repo/core/logic';
 import type { QRPayload } from '@repo/core/types';
@@ -53,7 +41,7 @@ export function useQRDeepLink(onQRAction?: QRDeepLinkHandler) {
     // Web QR routes (/qr path) are handled by Expo Router route files instead.
     Linking.getInitialURL()
       .then((url) => {
-        if (url) dispatchOrStore(url);
+        if (url) void dispatchOrStore(url);
       })
       .catch(() => {
         // Safe to ignore — linking can reject in some environments
@@ -61,7 +49,7 @@ export function useQRDeepLink(onQRAction?: QRDeepLinkHandler) {
 
     // Handle warm-resume URL (app already running, incoming deep link).
     const subscription = Linking.addEventListener('url', ({ url }) => {
-      dispatchOrStore(url);
+      void dispatchOrStore(url);
     });
 
     return () => subscription.remove();

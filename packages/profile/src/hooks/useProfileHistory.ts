@@ -1,6 +1,5 @@
 import { identityAPI, profileAPI } from '@repo/core/api/client';
-import type { ProfileHistoryEntry } from '@repo/core/logic';
-import { handleAPIError } from '@repo/core/logic';
+import { handleAPIError, type ProfileHistoryEntry } from '@repo/core/logic';
 import { useCallback, useEffect, useReducer } from 'react';
 
 type HistoryState = {

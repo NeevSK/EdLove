@@ -1,6 +1,10 @@
 import { profileAPI } from '@repo/core/api/client';
-import type { CommunityProfile } from '@repo/core/logic';
-import { handleAPIError, useStore, useTemporalStore } from '@repo/core/logic';
+import {
+  type CommunityProfile,
+  handleAPIError,
+  useStore,
+  useTemporalStore,
+} from '@repo/core/logic';
 import { useCallback, useEffect, useReducer } from 'react';
 
 type CommunityState = {

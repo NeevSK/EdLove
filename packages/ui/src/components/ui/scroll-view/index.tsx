@@ -1,7 +1,6 @@
-import React from 'react';
-import type { ComponentType } from 'react';
-import { ScrollView as RNScrollView, type ScrollViewProps } from 'react-native';
 import { styled } from 'nativewind';
+import React, { type ComponentType } from 'react';
+import { ScrollView as RNScrollView, type ScrollViewProps } from 'react-native';
 
 const StyledScrollView = styled(RNScrollView as ComponentType<any>, {
   contentContainerClassName: 'contentContainerStyle',
@@ -14,11 +13,7 @@ export interface IScrollViewProps extends ScrollViewProps {
 
 const ScrollView = React.forwardRef<any, IScrollViewProps>(
   ({ className, contentContainerClassName, ...props }, ref) => (
-    <StyledScrollView
-      {...props}
-      ref={ref}
-      {...({ className, contentContainerClassName } as any)}
-    />
+    <StyledScrollView {...props} ref={ref} {...({ className, contentContainerClassName } as any)} />
   ),
 );
 

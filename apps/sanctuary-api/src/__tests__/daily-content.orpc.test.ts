@@ -37,10 +37,11 @@ describe('Sanctuary API: daily content via native oRPC', () => {
   });
 
   it('uses typed date input and returns a list DTO', async () => {
-    const body = await createTestORPCClient(headers).dailyContent.getForDate({ date: '2026-07-30' });
+    const body = await createTestORPCClient(headers).dailyContent.getForDate({
+      date: '2026-07-30',
+    });
 
     expect(body).toHaveLength(1);
     expect(body[0]).toMatchObject({ type: 'motivation', active: true });
   });
 });
-

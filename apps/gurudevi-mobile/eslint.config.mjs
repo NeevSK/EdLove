@@ -1,6 +1,5 @@
 import { config as reactInternalConfig } from '@repo/eslint-config/react-internal';
 import expoConfig from 'eslint-config-expo/flat.js';
-import path from 'node:path';
 import globals from 'globals';
 
 /** @type {import("eslint").Linter.Config[]} */

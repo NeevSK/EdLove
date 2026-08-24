@@ -1,12 +1,11 @@
 import { useBanyanGrowth, useNaturePaths } from '@repo/core/hooks';
 import { usePermissions, useTemporalStore } from '@repo/core/logic';
-
-import { useMemo } from 'react';
 import { useDecisionJournal } from '@repo/self/hooks/useDecisionJournal';
 import { useEnergyForecast } from '@repo/self/hooks/useEnergyForecast';
 import { useJournalEntries } from '@repo/self/hooks/useJournalEntries';
 import { useMoodLogs } from '@repo/self/hooks/useMoodLogs';
 import { useWisdom } from '@repo/self/hooks/useWisdom';
+import { useMemo } from 'react';
 
 export interface JourneyEvent {
   id: string;
@@ -51,7 +50,6 @@ export const useJourneyData = () => {
 
     const events: JourneyEvent[] = [];
 
-    // --- Core: Mood ---
     moodLogs.forEach((log: any) => {
       events.push({
         id: log.id,
@@ -64,7 +62,6 @@ export const useJourneyData = () => {
       });
     });
 
-    // --- Core: Journal ---
     journalEntries.forEach((entry: any) => {
       events.push({
         id: entry.id,
@@ -77,7 +74,6 @@ export const useJourneyData = () => {
       });
     });
 
-    // --- Role-Aware: Student Path ---
     if (can('manage', 'StudentDashboard') && studentPaths) {
       events.push({
         id: `river-${studentPaths.river_stage}`,
@@ -90,7 +86,6 @@ export const useJourneyData = () => {
       });
     }
 
-    // --- Role-Aware: Teacher/Principal Banyan ---
     if (can('manage', 'TeacherDashboard') && banyanGrowth) {
       events.push({
         id: `banyan-${banyanGrowth.banyan_stage}`,
@@ -103,7 +98,6 @@ export const useJourneyData = () => {
       });
     }
 
-    // --- Role-Aware: Principal/Teacher Energy ---
     if (can('manage', 'TeacherDashboard')) {
       energyForecasts.forEach((forecast) => {
         events.push({
@@ -118,7 +112,6 @@ export const useJourneyData = () => {
       });
     }
 
-    // --- Role-Aware: Principal Decisions ---
     if (can('manage', 'PrincipalDashboard')) {
       decisions.forEach((decision) => {
         events.push({
@@ -133,7 +126,6 @@ export const useJourneyData = () => {
       });
     }
 
-    // --- Role-Aware: Founder Wisdom ---
     if (can('manage', 'FounderDashboard')) {
       wisdomNotes.forEach((note) => {
         events.push({
@@ -148,12 +140,10 @@ export const useJourneyData = () => {
       });
     }
 
-    // --- Chronological Sort ---
     const sorted = events.sort(
       (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
     );
 
-    // --- Genesis Node Injection ---
     if (sorted.length === 0) {
       sorted.push({
         id: 'genesis',
@@ -165,7 +155,6 @@ export const useJourneyData = () => {
       });
     }
 
-    // --- Focus Filter ---
     if (timelineFocus === 'all') return sorted;
     return sorted.filter((event) => event.type === timelineFocus);
   }, [

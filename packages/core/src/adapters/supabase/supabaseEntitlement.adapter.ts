@@ -1,4 +1,3 @@
-import { eq } from 'drizzle-orm';
 import { getDrizzleDB } from '@repo/core/adapters/powersync/database';
 import { pricingManifest } from '@repo/core/adapters/powersync/schema';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
@@ -9,6 +8,7 @@ import type {
   IEntitlementPort,
   SubscriptionTier,
 } from '@repo/core/logic/ports/entitlement.port';
+import { eq } from 'drizzle-orm';
 
 async function getUserPricingTier(userId: string): Promise<string> {
   const { data, error } = await supabaseClient
@@ -161,7 +161,9 @@ export class SupabaseEntitlementAdapter implements IEntitlementPort {
         }
       }
     };
-    poll();
+    // Fire-and-forget poller: rejections are swallowed by its internal catch,
+    // and the returned disposer below is what stops the loop.
+    void poll();
     return () => {
       cancelled = true;
     };

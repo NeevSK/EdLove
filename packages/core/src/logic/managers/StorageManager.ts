@@ -7,12 +7,6 @@
 import { MemoryStorageAdapter } from '@repo/core/adapters/MemoryStorageAdapter';
 import type { IStorage } from '@repo/core/logic/interfaces/storage.port';
 
-/**
- * StorageManager - The Sovereign Dispatcher for KV Storage.
- *
- * This class follows the Port/Adapter (Hexagonal) pattern to keep
- * core logic free from native pollution.
- */
 class StorageManager implements IStorage {
   private adapter: IStorage = new MemoryStorageAdapter();
 

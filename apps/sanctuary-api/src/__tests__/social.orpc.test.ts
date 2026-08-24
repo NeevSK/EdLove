@@ -10,14 +10,23 @@ describe('Sanctuary API: notifications and safety via native oRPC', () => {
 
   beforeEach(() => {
     setMockZenStackDbAvailable(true);
-    setMockActiveBond({ id: 'bond-social', user_id: userId, entity_id: 'school-123', entity_type: 'SCHOOL', capacity: 'teacher', status: 'active' });
+    setMockActiveBond({
+      id: 'bond-social',
+      user_id: userId,
+      entity_id: 'school-123',
+      entity_type: 'SCHOOL',
+      capacity: 'teacher',
+      status: 'active',
+    });
   });
 
   it('reads and acknowledges notifications through the native contract', async () => {
     const client = createTestORPCClient(headers).social;
     expect(await client.getNotifications({ limit: 30 })).toEqual([]);
     expect(await client.getUnreadNotificationCount({})).toBe(0);
-    expect(await client.markNotificationRead({ notificationId: '323e4567-e89b-12d3-a456-426614174000' })).toEqual({ success: true });
+    expect(
+      await client.markNotificationRead({ notificationId: '323e4567-e89b-12d3-a456-426614174000' }),
+    ).toEqual({ success: true });
     expect(await client.markAllNotificationsRead({})).toEqual({ success: true });
   });
 

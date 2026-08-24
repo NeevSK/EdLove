@@ -1,6 +1,6 @@
 import { type CoordinationGap, TimetableScheduler } from '@repo/ai/api/agents';
-import { authAPI, identityAPI, moonPhaseAPI, SOVEREIGN_API_URL } from '@repo/core/api/client';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+import { authAPI, identityAPI, moonPhaseAPI, SOVEREIGN_API_URL } from '@repo/core/api/client';
 import { cryptoManager, usePermissions, useStore } from '@repo/core/logic';
 import type { MultimodalContent } from '@tanstack/ai-client';
 import { useChat, xhrHttpStream } from '@tanstack/ai-react';
@@ -12,6 +12,121 @@ export interface Message {
   content: string;
   timestamp: number;
   gap?: CoordinationGap;
+}
+
+type SupabaseClient = typeof supabase;
+
+interface ClassroomRow {
+  id: string;
+  name: string;
+}
+
+/**
+ * Best-effort operational gap detection: unrecorded attendance today and
+ * overdue assignments with ungraded submissions.
+ */
+async function detectAttendanceGaps(
+  db: SupabaseClient,
+  classrooms: ClassroomRow[],
+  today: string,
+): Promise<CoordinationGap[]> {
+  const gaps: CoordinationGap[] = [];
+  const classroomIds = classrooms.map((c) => c.id);
+
+  const { data: markedToday } = await db
+    .from('attendance')
+    .select('classroom_id')
+    .in('classroom_id', classroomIds)
+    .eq('date', today);
+
+  const markedIds = new Set((markedToday ?? []).map((r: any) => r.classroom_id));
+  for (const c of classrooms.filter((c) => !markedIds.has(c.id))) {
+    gaps.push({
+      id: `attendance-${c.id}`,
+      type: 'relief',
+      title: `Attendance pending: ${c.name}`,
+      description: `Today's attendance for ${c.name} has not been recorded yet.`,
+      priority: 'high',
+      suggestedAction: 'Mark attendance now',
+      context: { classroomId: c.id, classroomName: c.name },
+    });
+  }
+
+  return gaps;
+}
+
+async function countUngradedSubmissions(
+  db: SupabaseClient,
+  assignmentIds: string[],
+): Promise<Map<string, number>> {
+  const { data: ungradedSubmissions } = await db
+    .from('submissions')
+    .select('assignment_id')
+    .in('assignment_id', assignmentIds)
+    .is('grade', null);
+
+  const counts = new Map<string, number>();
+  for (const s of (ungradedSubmissions ?? []) as any[]) {
+    const assignmentId = s.assignment_id as string;
+    counts.set(assignmentId, (counts.get(assignmentId) ?? 0) + 1);
+  }
+  return counts;
+}
+
+async function detectGradingGaps(
+  db: SupabaseClient,
+  classrooms: ClassroomRow[],
+  today: string,
+): Promise<CoordinationGap[]> {
+  const gaps: CoordinationGap[] = [];
+  const classroomIds = classrooms.map((c) => c.id);
+  const { data: overdue } = await db
+    .from('assignments')
+    .select('id, title, classroom_id, classrooms(name)')
+    .in('classroom_id', classroomIds)
+    .lte('due_date', today)
+    .limit(5);
+
+  if (!overdue?.length) return gaps;
+
+  const overdueAssignments = overdue as any[];
+  const ungradedCounts = await countUngradedSubmissions(
+    db,
+    overdueAssignments.map((a) => a.id),
+  );
+
+  for (const a of overdueAssignments) {
+    const count = ungradedCounts.get(a.id as string) ?? 0;
+    if (count > 0) {
+      gaps.push({
+        id: `grading-${a.id}`,
+        type: 'resource',
+        title: `${count} ungraded: ${a.title}`,
+        description: `${count} submission${count > 1 ? 's' : ''} awaiting grades in ${(a.classrooms as any)?.name ?? 'your classroom'}.`,
+        priority: count > 5 ? 'high' : 'medium',
+        suggestedAction: 'Open gradebook',
+        context: {
+          assignmentId: a.id,
+          classroomId: a.classroom_id,
+          ungradedCount: count,
+        },
+      });
+    }
+  }
+
+  return gaps;
+}
+
+async function detectCoordinationGaps(
+  db: SupabaseClient,
+  classrooms: ClassroomRow[],
+  today: string,
+): Promise<CoordinationGap[]> {
+  const [attendance, grading] = await Promise.all([
+    detectAttendanceGaps(db, classrooms, today),
+    detectGradingGaps(db, classrooms, today),
+  ]);
+  return [...attendance, ...grading];
 }
 
 /**
@@ -55,7 +170,8 @@ export function useAIAgent() {
         console.warn('Failed to load AI secure store config:', err);
       }
     }
-    loadConfig();
+    // Self-contained try/catch; intentionally not awaited by the effect.
+    void loadConfig();
   }, []);
 
   const setBillingMode = useCallback(async (mode: 'baseline' | 'byok' | 'purchased') => {
@@ -204,10 +320,10 @@ export function useAIAgent() {
       return [];
     }
 
-    const gaps: CoordinationGap[] = [];
-
+    let gaps: CoordinationGap[] = [];
     try {
-      const today = new Date().toISOString().split('T')[0];
+      // noUncheckedIndexedAccess: index [0] is statically optional.
+      const today = new Date().toISOString().split('T')[0] ?? '';
       const { data: classrooms } = await supabase
         .from('classrooms')
         .select('id, name')
@@ -215,75 +331,7 @@ export function useAIAgent() {
         .limit(5);
 
       if (classrooms?.length) {
-        const { data: markedToday } = await supabase
-          .from('attendance')
-          .select('classroom_id')
-          .in(
-            'classroom_id',
-            classrooms.map((c: any) => c.id),
-          )
-          .eq('date', today);
-
-        const markedIds = new Set((markedToday ?? []).map((r: any) => r.classroom_id));
-        classrooms
-          .filter((c: any) => !markedIds.has(c.id))
-          .forEach((c: any) => {
-            gaps.push({
-              id: `attendance-${c.id}`,
-              type: 'relief',
-              title: `Attendance pending: ${c.name}`,
-              description: `Today's attendance for ${c.name} has not been recorded yet.`,
-              priority: 'high',
-              suggestedAction: 'Mark attendance now',
-              context: { classroomId: c.id, classroomName: c.name },
-            });
-          });
-
-        const { data: overdue } = await supabase
-          .from('assignments')
-          .select('id, title, classroom_id, classrooms(name)')
-          .in(
-            'classroom_id',
-            classrooms.map((c: any) => c.id),
-          )
-          .lte('due_date', today)
-          .limit(5);
-
-        if (overdue?.length) {
-          const overdueAssignments = overdue as any[];
-          const overdueIds = overdueAssignments.map((a: any) => a.id);
-
-          const { data: ungradedSubmissions } = await supabase
-            .from('submissions')
-            .select('assignment_id')
-            .in('assignment_id', overdueIds)
-            .is('grade', null);
-
-          const ungradedCounts = new Map<string, number>();
-          for (const s of (ungradedSubmissions ?? []) as any[]) {
-            const assignmentId = s.assignment_id as string;
-            ungradedCounts.set(assignmentId, (ungradedCounts.get(assignmentId) ?? 0) + 1);
-          }
-
-          for (const a of overdueAssignments) {
-            const count = ungradedCounts.get(a.id as string) ?? 0;
-            if (count > 0) {
-              gaps.push({
-                id: `grading-${a.id}`,
-                type: 'resource',
-                title: `${count} ungraded: ${a.title}`,
-                description: `${count} submission${count > 1 ? 's' : ''} awaiting grades in ${(a.classrooms as any)?.name ?? 'your classroom'}.`,
-                priority: count > 5 ? 'high' : 'medium',
-                suggestedAction: 'Open gradebook',
-                context: {
-                  assignmentId: a.id,
-                  classroomId: a.classroom_id,
-                  ungradedCount: count,
-                },
-              });
-            }
-          }
-        }
+        gaps = await detectCoordinationGaps(supabase, classrooms, today);
       }
     } catch {
       // Non-fatal AI context enrichment is best-effort

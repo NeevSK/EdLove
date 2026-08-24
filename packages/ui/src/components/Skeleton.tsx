@@ -17,10 +17,9 @@
  * Platform note: Uses platform-specific animation implementations.
  */
 import { tokens } from '@repo/ui/tokens';
-import React from 'react';
 import { Platform, StyleSheet, View, type ViewStyle } from 'react-native';
 import { useResponsiveGrid } from './layout';
-import { duration, easing, nativeEasing } from './motion';
+import { duration, nativeEasing } from './motion';
 
 // Conditional imports for Reanimated
 let Animated: any = null;
@@ -32,11 +31,6 @@ try {
 
 const AnimatedView = Animated?.createAnimatedComponent(View) || View;
 
-// ---------------------------------------------------------------------------
-// Primitive: one shimmering block. Width accepts a number (px) or a
-// percentage string so it can flex inside whatever container it's placed in
-// — it never assumes phone-sized dimensions.
-// ---------------------------------------------------------------------------
 type ShimmerBlockProps = {
   width?: number | `${number}%`;
   height: number;
@@ -45,7 +39,13 @@ type ShimmerBlockProps = {
   className?: string;
 };
 
-export function ShimmerBlock({ width = '100%', height, radius = 8, style, className }: ShimmerBlockProps) {
+export function ShimmerBlock({
+  width = '100%',
+  height,
+  radius = 8,
+  style,
+  className,
+}: ShimmerBlockProps) {
   // Web implementation using CSS animations
   if (Platform.OS === 'web') {
     const webStyle: any = {
@@ -55,12 +55,9 @@ export function ShimmerBlock({ width = '100%', height, radius = 8, style, classN
       backgroundColor: tokens.colors.skeletonBase,
       ...(style || {}),
     };
-    
+
     return (
-      <div
-        className={className}
-        style={webStyle}
-      >
+      <div className={className} style={webStyle}>
         <style>{`
           @keyframes shimmer-pulse {
             0%, 100% { opacity: 0.55; }
@@ -119,11 +116,6 @@ export function ShimmerBlock({ width = '100%', height, radius = 8, style, classN
   );
 }
 
-// ---------------------------------------------------------------------------
-// One skeleton card — mirrors a generic "thumbnail + two lines" list item.
-// Width is NOT hardcoded; it fills whatever cell SkeletonList/your grid
-// gives it, exactly like the real card should.
-// ---------------------------------------------------------------------------
 export function SkeletonCard({ className, style }: { className?: string; style?: ViewStyle }) {
   return (
     <View style={[styles.card, style]} className={className}>
@@ -136,11 +128,6 @@ export function SkeletonCard({ className, style }: { className?: string; style?:
   );
 }
 
-// ---------------------------------------------------------------------------
-// The grid wrapper — this is where responsiveness actually lives. Column
-// count and max content width come from useResponsiveGrid(), the same hook
-// the real (loaded) list should use for its own layout.
-// ---------------------------------------------------------------------------
 type SkeletonListProps = {
   /** How many cards to show while loading — pick enough to fill one viewport. */
   count?: number;

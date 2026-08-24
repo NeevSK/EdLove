@@ -55,7 +55,7 @@ export function useGeoData(datasetId: string) {
       }
     }
 
-    if (datasetId) fetchGeoData();
+    if (datasetId) void fetchGeoData();
   }, [datasetId]);
 
   return { data, loading, error };

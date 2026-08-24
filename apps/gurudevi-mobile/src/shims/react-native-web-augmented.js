@@ -12,7 +12,6 @@ export { default } from 'react-native-web';
 
 import { View } from 'react-native-web';
 
-// Add missing native utilities used by various libraries
 export const codegenNativeComponent = (_name) => {
   return View || 'div';
 };

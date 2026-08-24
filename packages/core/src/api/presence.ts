@@ -1,6 +1,8 @@
 import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
-import type { PresenceSessionOptions } from '@repo/core/api/presenceRealtime';
-import { startPresenceRealtime } from '@repo/core/api/presenceRealtime';
+import {
+  type PresenceSessionOptions,
+  startPresenceRealtime,
+} from '@repo/core/api/presenceRealtime';
 
 export interface PresenceFallbackCountOptions {
   targetCapacities: string[];

@@ -1,4 +1,4 @@
-import { EventType, toHttpResponse, type StreamChunk } from '@tanstack/ai';
+import { EventType, type StreamChunk, toHttpResponse } from '@tanstack/ai';
 import { describe, expect, it } from 'vitest';
 
 function syntheticStream(): AsyncIterable<StreamChunk> {

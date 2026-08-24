@@ -1,7 +1,6 @@
 import { messagingORPCContract } from '@repo/core/api/messaging.orpc.contract';
 import { SovereignError } from '@repo/core/types/Errors';
-import type { ORPCContext } from '../orpc';
-import { implement } from '../orpc';
+import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 
 const impl = implement(messagingORPCContract).$context<ORPCContext>();

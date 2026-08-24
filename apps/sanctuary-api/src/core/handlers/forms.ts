@@ -1,4 +1,4 @@
-import { formsContract, formResponse, formTemplate } from '@repo/core/api/forms.contract';
+import { formResponse, formsContract, formTemplate } from '@repo/core/api/forms.contract';
 import { SovereignError } from '@repo/core/types/Errors';
 import { executeDatabaseCommand, queryDatabaseRows } from '@repo/database/client';
 import { assertDatabase } from '../apiErrors';
@@ -52,7 +52,15 @@ export const formsRouter = impl.router({
         (owner_id, title, description, config, is_published, slug, category)
        values ($1::uuid, $2, $3, $4::jsonb, $5, $6, $7)
        returning ${templateColumns}`,
-      [context.user.id, body.title, body.description ?? null, JSON.stringify(body.config), body.is_published ?? false, body.slug ?? null, body.category ?? null],
+      [
+        context.user.id,
+        body.title,
+        body.description ?? null,
+        JSON.stringify(body.config),
+        body.is_published ?? false,
+        body.slug ?? null,
+        body.category ?? null,
+      ],
     );
     if (!rows[0]) throw SovereignError.unavailable('FORM_TEMPLATE_CREATE_FAILED');
     return mapTemplate(rows[0]);
@@ -83,7 +91,8 @@ export const formsRouter = impl.router({
 
   getByOwner: impl.getByOwner.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     requireUser(context);
-    if (input.params.ownerId !== context.user.id) throw SovereignError.unauthorized('read', 'form templates');
+    if (input.params.ownerId !== context.user.id)
+      throw SovereignError.unauthorized('read', 'form templates');
     const rows = await queryDatabaseRows<any>(
       `select ${templateColumns} from public.form_templates
        where owner_id = $1::uuid order by created_at desc limit $2 offset $3`,
@@ -102,7 +111,16 @@ export const formsRouter = impl.router({
         slug = coalesce($6, slug), category = coalesce($7, category), updated_at = now()
        where id = $1::uuid and owner_id = $8::uuid
        returning ${templateColumns}`,
-      [input.params.id, body.title ?? null, body.description ?? null, body.config ? JSON.stringify(body.config) : null, body.is_published ?? null, body.slug ?? null, body.category ?? null, context.user.id],
+      [
+        input.params.id,
+        body.title ?? null,
+        body.description ?? null,
+        body.config ? JSON.stringify(body.config) : null,
+        body.is_published ?? null,
+        body.slug ?? null,
+        body.category ?? null,
+        context.user.id,
+      ],
     );
     if (!rows[0]) throw SovereignError.notFound('Owned form template');
     return mapTemplate(rows[0]);
@@ -124,7 +142,11 @@ export const formsRouter = impl.router({
        select $1::uuid, $2::uuid, $3::jsonb
        from public.form_templates where id = $1::uuid and is_published = true
        returning id, template_id, responder_id, data, submitted_at`,
-      [input.body.template_id, context.user.id === 'anonymous' ? null : context.user.id, JSON.stringify(input.body.data)],
+      [
+        input.body.template_id,
+        context.user.id === 'anonymous' ? null : context.user.id,
+        JSON.stringify(input.body.data),
+      ],
     );
     if (!rows[0]) throw SovereignError.notFound('Published form template');
     return mapResponse(rows[0]);

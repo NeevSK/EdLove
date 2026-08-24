@@ -16,10 +16,28 @@ describe('onboarding POA coverage', () => {
     });
   });
 
-  test('onboardingContract has exactly 2 routes', () => {
-    expect(Object.keys(onboardingContract)).toHaveLength(2);
+  test('onboardingContract exposes exactly the expected routes', () => {
+    // Route inventory is asserted exhaustively: adding or removing a route
+    // must update this list so POA coverage is never silently skipped.
+    expect(Object.keys(onboardingContract)).toEqual([
+      'createInitialBond',
+      'completeOnboarding',
+      'createFounderSchoolBond',
+      'revokeSchoolBond',
+    ]);
     expect(onboardingContract.createInitialBond).toBeDefined();
     expect(onboardingContract.completeOnboarding).toBeDefined();
+  });
+
+  test('newer bond routes carry policy metadata', () => {
+    expect(onboardingContract.createFounderSchoolBond.metadata?.policy).toEqual({
+      action: 'update',
+      subject: 'User',
+    });
+    expect(onboardingContract.revokeSchoolBond.metadata?.policy).toEqual({
+      action: 'update',
+      subject: 'User',
+    });
   });
 
   test('createInitialBond route definition is valid', () => {

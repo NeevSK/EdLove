@@ -4,10 +4,6 @@
  * Reusable helper functions for common tasks
  */
 
-// ============================================================================
-// STRING UTILITIES
-// ============================================================================
-
 /**
  * Convert string to URL-friendly slug
  * Example: "Maria Montessori" \u2192 "maria-montessori"
@@ -48,10 +44,6 @@ export function toTitleCase(text: string): string {
     .map((word) => capitalize(word))
     .join(' ');
 }
-
-// ============================================================================
-// DATE & TIME UTILITIES
-// ============================================================================
 
 /**
  * Format date to readable string
@@ -126,10 +118,6 @@ export function calculateReadingTime(text: string): number {
   return Math.ceil(wordCount / wordsPerMinute);
 }
 
-// ============================================================================
-// VALIDATION UTILITIES
-// ============================================================================
-
 /**
  * Validate email format
  */
@@ -156,10 +144,6 @@ export function isValidURL(url: string): boolean {
 export function isEmpty(text: string | null | undefined): boolean {
   return !text || text.trim().length === 0;
 }
-
-// ============================================================================
-// ARRAY UTILITIES
-// ============================================================================
 
 /**
  * Remove duplicates from array
@@ -200,10 +184,6 @@ export function groupBy<T>(array: T[], key: keyof T): Record<string, T[]> {
   );
 }
 
-// ============================================================================
-// STORAGE UTILITIES (Browser)
-// ============================================================================
-
 /**
  * Save to localStorage with type safety
  */
@@ -242,10 +222,6 @@ export function removeFromLocalStorage(key: string): void {
   }
 }
 
-// ============================================================================
-// COLOR UTILITIES
-// ============================================================================
-
 /**
  * Convert hex to RGBA
  * Example: hexToRgba('#2D3561', 0.5) \u2192 'rgba(45, 53, 97, 0.5)'
@@ -261,10 +237,6 @@ export function hexToRgba(hex: string, alpha: number = 1): string {
 
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
-
-// ============================================================================
-// SCROLL UTILITIES
-// ============================================================================
 
 /**
  * Smooth scroll to element
@@ -297,10 +269,6 @@ export function isInViewport(element: HTMLElement): boolean {
   );
 }
 
-// ============================================================================
-// CLIPBOARD UTILITIES
-// ============================================================================
-
 /**
  * Copy text to clipboard
  */
@@ -315,10 +283,6 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     return false;
   }
 }
-
-// ============================================================================
-// DEBOUNCE & THROTTLE
-// ============================================================================
 
 /**
  * Debounce function (wait for pause in calls)
@@ -353,10 +317,6 @@ export function throttle<T extends (...args: any[]) => any>(
   };
 }
 
-// ============================================================================
-// RANDOM UTILITIES
-// ============================================================================
-
 /**
  * Generate random ID
  */
@@ -382,10 +342,6 @@ export function randomItem<T>(array: T[]): T {
 export function randomInRange(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-
-// ============================================================================
-// CLASS NAME UTILITIES (for CSS)
-// ============================================================================
 
 /**
  * Conditionally join class names

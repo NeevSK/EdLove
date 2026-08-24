@@ -1,6 +1,5 @@
 import { type TotalState, useNotifications, usePermissions, useStore } from '@repo/core/logic';
 import NotificationDrawer from '@repo/ui/components/NotificationDrawer';
-import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
 import { Bell, ChevronLeft, Menu, MoreHorizontal, Search, X } from '@repo/ui/icons';

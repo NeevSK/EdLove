@@ -1,7 +1,3 @@
-/**
- * Capacity: The functional capacity within a Bond.
- * Replaces the concept of a "Global Role".
- */
 export type Capacity =
   | 'admin'
   | 'founder'

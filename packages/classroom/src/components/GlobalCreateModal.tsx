@@ -4,8 +4,13 @@ import { handleAPIError } from '@repo/core/logic';
 import type { School } from '@repo/core/types';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
-import type { LucideIcon } from '@repo/ui/icons';
-import { ChevronDown, LayoutGrid, School as SchoolIcon, Users } from '@repo/ui/icons';
+import {
+  ChevronDown,
+  LayoutGrid,
+  type LucideIcon,
+  School as SchoolIcon,
+  Users,
+} from '@repo/ui/icons';
 import {
   Actionsheet,
   ActionsheetBackdrop,

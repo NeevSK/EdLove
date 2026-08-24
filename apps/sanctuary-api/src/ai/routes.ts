@@ -1,6 +1,5 @@
 import { type StreamChunk, toHttpResponse } from '@tanstack/ai';
-import type { ContextVariableMap } from 'hono';
-import { Hono } from 'hono';
+import { type ContextVariableMap, Hono } from 'hono';
 import { AnthropicAdapter } from './adapters/AnthropicAdapter';
 import { DbAiPersistenceAdapter } from './adapters/DbAiPersistenceAdapter';
 import { DbBillingAdapter } from './adapters/DbBillingAdapter';
@@ -87,19 +86,29 @@ async function collectStudentPotentialInsight(
   const orchestrator = new Orchestrator(billingAdapter, (provider) => {
     if (useVercelSdk) {
       switch (provider) {
-        case 'gemini': return new VercelGeminiAdapter();
-        case 'anthropic': return new VercelAnthropicAdapter();
-        case 'deepseek': return new VercelDeepSeekAdapter();
-        case 'openrouter': return new VercelOpenRouterAdapter();
-        default: return new VercelOpenAiAdapter();
+        case 'gemini':
+          return new VercelGeminiAdapter();
+        case 'anthropic':
+          return new VercelAnthropicAdapter();
+        case 'deepseek':
+          return new VercelDeepSeekAdapter();
+        case 'openrouter':
+          return new VercelOpenRouterAdapter();
+        default:
+          return new VercelOpenAiAdapter();
       }
     }
     switch (provider) {
-      case 'gemini': return new GeminiAdapter();
-      case 'anthropic': return new AnthropicAdapter();
-      case 'deepseek': return new DeepSeekAdapter();
-      case 'openrouter': return new OpenRouterAdapter();
-      default: return new OpenAiAdapter();
+      case 'gemini':
+        return new GeminiAdapter();
+      case 'anthropic':
+        return new AnthropicAdapter();
+      case 'deepseek':
+        return new DeepSeekAdapter();
+      case 'openrouter':
+        return new OpenRouterAdapter();
+      default:
+        return new OpenAiAdapter();
     }
   });
   const prompt = [
@@ -127,7 +136,8 @@ async function collectStudentPotentialInsight(
       if (part?.text) reply += part.text;
     }
   }
-  if (!reply) throw new Error(`AI returned no student-potential insight (${textChunkCount} text chunks)`);
+  if (!reply)
+    throw new Error(`AI returned no student-potential insight (${textChunkCount} text chunks)`);
   return reply;
 }
 

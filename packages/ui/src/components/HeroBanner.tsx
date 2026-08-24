@@ -1,9 +1,9 @@
+import { Box } from '@repo/ui/gluestack';
+import { Theme } from '@repo/ui/theme/Theme';
+import { tokens } from '@repo/ui/tokens';
 import type React from 'react';
 import { Dimensions, Image, Pressable, Text, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { Box, HStack, VStack } from '@repo/ui/gluestack';
-import { Theme } from '@repo/ui/theme/Theme';
-import { tokens } from '@repo/ui/tokens';
 
 export interface HeroBannerProps {
   title: string;
@@ -24,13 +24,7 @@ const NETFLIX_TOKENS = {
   accent: '#E50914',
 } as const;
 
-export function HeroBanner({
-  title,
-  subtitle,
-  imageUri,
-  onPress,
-  badge,
-}: HeroBannerProps) {
+export function HeroBanner({ title, subtitle, imageUri, onPress, badge }: HeroBannerProps) {
   return (
     <Animated.View
       entering={FadeIn.duration(600)}
@@ -85,7 +79,9 @@ export function HeroBanner({
               className="bg-phase-danger px-3 py-1 rounded mb-2 self-start"
               style={{ backgroundColor: NETFLIX_TOKENS.accent }}
             >
-              <Text className="text-white" style={tokens.typography.roles.label}>{badge}</Text>
+              <Text className="text-white" style={tokens.typography.roles.label}>
+                {badge}
+              </Text>
             </Box>
           )}
           <Text

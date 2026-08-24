@@ -1,6 +1,5 @@
-import * as Effect from 'effect/Effect';
-import type { Context } from 'hono';
 import { createHash } from 'node:crypto';
+import type { Context } from 'hono';
 
 class SyncTableError {
   readonly _tag = 'SyncTableError';
@@ -89,22 +88,24 @@ type LocalIdempotencyRecord = IdempotencyOutcome & {
   timestamp: number;
 };
 
-/**
- * Only used by database-less unit fixtures. Production requests use the
- * powersync_idempotency_keys table through the transaction connection.
- */
 const localIdempotencyCache = new Map<string, LocalIdempotencyRecord>();
 
 // Clean up cache periodically (e.g. keys older than 10 minutes)
-if (typeof globalThis !== 'undefined' && !(globalThis as any).__powerSyncIdempotencyCleanupInterval) {
-  (globalThis as any).__powerSyncIdempotencyCleanupInterval = setInterval(() => {
-    const now = Date.now();
-    for (const [key, val] of localIdempotencyCache.entries()) {
-      if (now - val.timestamp > 10 * 60 * 1000) {
-        localIdempotencyCache.delete(key);
+if (
+  typeof globalThis !== 'undefined' &&
+  !(globalThis as any).__powerSyncIdempotencyCleanupInterval
+) {
+  (globalThis as any).__powerSyncIdempotencyCleanupInterval = setInterval(
+    () => {
+      const now = Date.now();
+      for (const [key, val] of localIdempotencyCache.entries()) {
+        if (now - val.timestamp > 10 * 60 * 1000) {
+          localIdempotencyCache.delete(key);
+        }
       }
-    }
-  }, 5 * 60 * 1000);
+    },
+    5 * 60 * 1000,
+  );
 }
 
 class IdempotencyConflictError extends Error {
@@ -132,7 +133,11 @@ export async function applyPowerSyncBatch(
   try {
     await db.$transaction(async (tx: any) => {
       if (idempotencyKey) {
-        if (useDurableLedger && typeof tx.$executeRaw === 'function' && typeof tx.$queryRaw === 'function') {
+        if (
+          useDurableLedger &&
+          typeof tx.$executeRaw === 'function' &&
+          typeof tx.$queryRaw === 'function'
+        ) {
           await tx.$executeRaw`
             INSERT INTO powersync_idempotency_keys (principal_id, idempotency_key, payload_hash, status, processed_count)
             VALUES (${principalId}, ${idempotencyKey}, ${payloadHash}, 'processing', 0)
@@ -147,7 +152,9 @@ export async function applyPowerSyncBatch(
           `;
           const record = rows?.[0];
           if (record?.payload_hash !== payloadHash) {
-            throw new IdempotencyConflictError('Idempotency key was reused with a different batch payload');
+            throw new IdempotencyConflictError(
+              'Idempotency key was reused with a different batch payload',
+            );
           }
           if (record?.status === 'completed') {
             throw new IdempotencyReplay(Number(record.processed_count ?? 0));
@@ -156,7 +163,9 @@ export async function applyPowerSyncBatch(
           const cached = localIdempotencyCache.get(scopedKey);
           if (cached) {
             if (cached.payloadHash !== payloadHash) {
-              throw new IdempotencyConflictError('Idempotency key was reused with a different batch payload');
+              throw new IdempotencyConflictError(
+                'Idempotency key was reused with a different batch payload',
+              );
             }
             throw new IdempotencyReplay(cached.processedCount);
           }
@@ -230,7 +239,7 @@ export async function applyPowerSyncBatch(
         ? err.message
         : err?.message || 'Transaction Aborted';
     console.error('[Sync] Transaction processing failed, batch aborted:', err);
-    throw new Error(message);
+    throw new Error(message, { cause: e });
   }
 }
 

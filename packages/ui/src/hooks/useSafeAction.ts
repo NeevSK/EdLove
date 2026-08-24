@@ -1,7 +1,7 @@
 import { SovereignError } from '@repo/core/lib';
-import { useCallback, useState } from 'react';
 import { useErrorResolution } from '@repo/ui/providers/ErrorResolutionProvider';
 import { useToast } from '@repo/ui/providers/ToastProvider';
+import { useCallback, useState } from 'react';
 
 export interface SafeActionProgress {
   message: string;
@@ -16,12 +16,6 @@ interface SafeActionOptions<TResult> {
   onError?: (error: any) => void;
 }
 
-/**
- * Sovereign Action Lifecycle Hook (2026 SAL Standard)
- *
- * Handles idempotency, loading states, and automatic feedback.
- * Now supports real-time progress tracking for Agentic workflows.
- */
 export function useSafeAction<TArgs extends any[], TResult>(
   action: (
     utils: { setProgress: (p: SafeActionProgress) => void },

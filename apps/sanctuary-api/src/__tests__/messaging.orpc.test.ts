@@ -10,7 +10,14 @@ describe('Sanctuary API: direct messaging via native oRPC', () => {
 
   beforeEach(() => {
     setMockZenStackDbAvailable(true);
-    setMockActiveBond({ id: 'bond-messaging', user_id: userId, entity_id: 'school-123', entity_type: 'SCHOOL', capacity: 'teacher', status: 'active' });
+    setMockActiveBond({
+      id: 'bond-messaging',
+      user_id: userId,
+      entity_id: 'school-123',
+      entity_type: 'SCHOOL',
+      capacity: 'teacher',
+      status: 'active',
+    });
   });
 
   it('reads conversations, creates a participant-scoped conversation, reads messages, and sends a message', async () => {
@@ -28,7 +35,11 @@ describe('Sanctuary API: direct messaging via native oRPC', () => {
 
   it('rejects malformed conversation and target identifiers at the contract boundary', async () => {
     const client = createTestORPCClient(headers).messaging;
-    await expect((client.getMessages as any)({ conversationId: 'not-a-uuid' })).rejects.toBeTruthy();
-    await expect((client.getOrCreateConversation as any)({ targetUserId: 'not-a-uuid' })).rejects.toBeTruthy();
+    await expect(
+      (client.getMessages as any)({ conversationId: 'not-a-uuid' }),
+    ).rejects.toBeTruthy();
+    await expect(
+      (client.getOrCreateConversation as any)({ targetUserId: 'not-a-uuid' }),
+    ).rejects.toBeTruthy();
   });
 });

@@ -1,7 +1,6 @@
 /** Web skeletons keep the same anatomy as native while using one restrained
  * material sweep instead of a JS animation loop. */
 import { tokens } from '@repo/ui/tokens';
-import React from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import { useResponsiveGrid } from './layout';
 import { duration } from './motion';

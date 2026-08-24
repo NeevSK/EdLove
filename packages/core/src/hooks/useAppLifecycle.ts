@@ -1,5 +1,5 @@
-import { Platform, AppState, InteractionManager } from 'react-native';
-import { useEffect, useRef, useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { AppState, InteractionManager, Platform } from 'react-native';
 
 /**
  * App Lifecycle Manager
@@ -7,8 +7,6 @@ import { useEffect, useRef, useCallback, useState } from 'react';
  * Centralizes AppState handling, InteractionManager scheduling,
  * and memory leak prevention patterns across the app.
  */
-
-// ─── AppState ─────────────────────────────────────────────────────────────────
 
 type RNAppStateStatus = 'active' | 'background' | 'inactive' | 'extension' | 'unknown';
 
@@ -103,7 +101,7 @@ export const AppLifecycle = {
    * Create a deferred version of a function that runs after interactions.
    */
   deferAfterInteractions: <T extends (...args: any[]) => any>(
-    fn: T
+    fn: T,
   ): ((...args: Parameters<T>) => Promise<ReturnType<T>>) => {
     return (...args: Parameters<T>) => {
       return new Promise((resolve) => {
@@ -136,16 +134,19 @@ export const AppLifecycle = {
  */
 export const runAfterInteractions = (
   callback: () => void,
-  options?: { deadline?: number }
+  options?: { deadline?: number },
 ): Promise<void> => {
   return new Promise((resolve) => {
     if (Platform.OS === 'web') {
       // On web, use requestIdleCallback or setTimeout
       if ('requestIdleCallback' in window) {
-        (window as any).requestIdleCallback(() => {
-          callback();
-          resolve();
-        }, { timeout: options?.deadline ?? 5000 });
+        (window as any).requestIdleCallback(
+          () => {
+            callback();
+            resolve();
+          },
+          { timeout: options?.deadline ?? 5000 },
+        );
       } else {
         setTimeout(() => {
           callback();
@@ -166,7 +167,7 @@ export const runAfterInteractions = (
  * Create a deferred version of a function that runs after interactions.
  */
 export const deferAfterInteractions = <T extends (...args: any[]) => any>(
-  fn: T
+  fn: T,
 ): ((...args: Parameters<T>) => Promise<ReturnType<T>>) => {
   return (...args: Parameters<T>) => {
     return new Promise((resolve) => {
@@ -176,8 +177,6 @@ export const deferAfterInteractions = <T extends (...args: any[]) => any>(
     });
   };
 };
-
-// ─── Memory Leak Prevention ───────────────────────────────────────────────────
 
 /**
  * Create an AbortController tied to a component's lifecycle.
@@ -220,7 +219,7 @@ export function useMountedRef(): { current: boolean } {
  * Safely update state only if component is still mounted.
  */
 export function useSafeState<S>(
-  initialState: S | (() => S)
+  initialState: S | (() => S),
 ): [S, React.Dispatch<React.SetStateAction<S>>] {
   const [state, setState] = useState(initialState);
   const mountedRef = useMountedRef();
@@ -230,7 +229,7 @@ export function useSafeState<S>(
       if (!mountedRef.current) return;
       setState(action);
     },
-    [mountedRef]
+    [mountedRef],
   );
 
   return [state, safeSetState];
@@ -242,7 +241,7 @@ export function useSafeState<S>(
  */
 export function useSubscription<T>(
   subscribe: (callback: (value: T) => void) => (() => void) | { remove: () => void },
-  onValue: (value: T) => void
+  onValue: (value: T) => void,
 ) {
   useEffect(() => {
     let cancelled = false;
@@ -277,8 +276,6 @@ export function useMount(callback: () => void) {
     return () => {};
   }, [callback]);
 }
-
-// ─── Combined Hook ────────────────────────────────────────────────────────────
 
 /**
  * Main hook for app lifecycle awareness in components.

@@ -5,10 +5,6 @@
  * Based on EdLove architecture and content structure
  */
 
-// ============================================================================
-// USER & AUTHENTICATION
-// ============================================================================
-
 export type UserRole = 'admin' | 'user' | 'contributor' | 'guest';
 
 export interface User {
@@ -35,10 +31,6 @@ export interface AuthState {
   loading: boolean;
   error: string | null;
 }
-
-// ============================================================================
-// CONTENT - Paradigms, Thinkers, Guides, Stories, Frameworks
-// ============================================================================
 
 // Common fields for all content types
 export interface BaseContent {
@@ -116,10 +108,6 @@ export interface Framework extends BaseContent {
   related_thinkers: string[]; // Thinker IDs
 }
 
-// ============================================================================
-// SUPPORTING TYPES
-// ============================================================================
-
 export interface Quote {
   text: string;
   source?: string; // Book, speech, etc.
@@ -133,10 +121,6 @@ export interface Resource {
   description?: string;
   author?: string;
 }
-
-// ============================================================================
-// DOMAIN II - SRI LANKA EDUCATION DATA
-// ============================================================================
 
 export interface SchoolData {
   id: string;
@@ -159,10 +143,6 @@ export interface EducationMetric {
   description?: string;
 }
 
-// ============================================================================
-// DOMAIN III - GURUDEVI INTEGRATION
-// ============================================================================
-
 export interface GurudeviUser {
   id: string;
   full_name: string;
@@ -180,10 +160,6 @@ export interface GurudeviInsight {
   created_at: string;
   shared_with_edlove: boolean; // Anonymized sharing opt-in
 }
-
-// ============================================================================
-// DOMAIN V - COMMUNITY / SANGHA
-// ============================================================================
 
 export interface CommunityMember extends User {
   interests: string[];
@@ -217,10 +193,6 @@ export interface Reply {
   created_at: string;
 }
 
-// ============================================================================
-// SEARCH & FILTERING
-// ============================================================================
-
 export interface SearchResult {
   id: string;
   type: 'paradigm' | 'thinker' | 'guide' | 'story' | 'framework' | 'discussion';
@@ -244,10 +216,6 @@ export interface FilterOptions {
   };
 }
 
-// ============================================================================
-// API RESPONSES
-// ============================================================================
-
 export interface APIResponse<T> {
   success: boolean;
   data?: T;
@@ -264,10 +232,6 @@ export interface PaginatedResponse<T> {
     total_pages: number;
   };
 }
-
-// ============================================================================
-// FORMS & INPUTS
-// ============================================================================
 
 export interface NewsletterSubscription {
   email: string;
@@ -293,10 +257,6 @@ export interface ResourceSubmission {
   suggested_tags: string[];
   suggested_paradigms?: string[];
 }
-
-// ============================================================================
-// UI STATE
-// ============================================================================
 
 export interface NavigationState {
   current_domain: string;
@@ -325,10 +285,6 @@ export interface ModalState {
   on_confirm?: () => void;
 }
 
-// ============================================================================
-// ANALYTICS & TRACKING
-// ============================================================================
-
 export interface AnalyticsEvent {
   event_name: string;
   properties?: Record<string, any>;
@@ -345,10 +301,6 @@ export interface PageView {
   timestamp: string;
 }
 
-// ============================================================================
-// ERROR HANDLING
-// ============================================================================
-
 export interface AppError {
   code: string;
   message: string;
@@ -364,10 +316,6 @@ export interface ErrorLog extends AppError {
   context: Record<string, any>;
   user_id?: string;
 }
-
-// ============================================================================
-// UTILITY TYPES
-// ============================================================================
 
 // Make all properties optional (for partial updates)
 export type PartialDeep<T> = {

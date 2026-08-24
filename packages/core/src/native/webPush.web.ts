@@ -1,12 +1,3 @@
-/**
- * Browser Web Push capability adapter.
- *
- * This is intentionally separate from expo-notifications. Web Push uses a
- * ServiceWorker + PushManager subscription, not an ExpoPushToken.
- * Registration should only be called from a user gesture after the product
- * has decided that browser notifications are appropriate.
- */
-
 export interface WebPushSubscription {
   endpoint: string;
   expirationTime: number | null;

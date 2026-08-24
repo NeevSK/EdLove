@@ -221,22 +221,26 @@ export interface SchoolFilter {
   category?: string;
 }
 
+const SCHOOL_FILTER_ACCESSORS: Record<keyof SchoolFilter, (school: School) => unknown> = {
+  provinceId: (s) => s.location.province_id,
+  districtId: (s) => s.location.district_id,
+  zoneId: (s) => s.jurisdiction.zone_id,
+  divisionId: (s) => s.jurisdiction.division_id,
+  dsDivisionId: (s) => s.location.ds_division_id,
+  gnDivisionId: (s) => s.location.gn_division_id,
+  type: (s) => s.type,
+  category: (s) => s.category,
+};
+
 /**
  * Versatile school discovery with multi-vector filtering
  */
 export const getSchools = (filter?: SchoolFilter): School[] => {
   if (!filter) return data.schools;
-  return data.schools.filter((s) => {
-    if (filter.provinceId && s.location.province_id !== filter.provinceId) return false;
-    if (filter.districtId && s.location.district_id !== filter.districtId) return false;
-    if (filter.zoneId && s.jurisdiction.zone_id !== filter.zoneId) return false;
-    if (filter.divisionId && s.jurisdiction.division_id !== filter.divisionId) return false;
-    if (filter.dsDivisionId && s.location.ds_division_id !== filter.dsDivisionId) return false;
-    if (filter.gnDivisionId && s.location.gn_division_id !== filter.gnDivisionId) return false;
-    if (filter.type && s.type !== filter.type) return false;
-    if (filter.category && s.category !== filter.category) return false;
-    return true;
-  });
+  const activeFilters = Object.entries(filter) as [keyof SchoolFilter, unknown][];
+  return data.schools.filter((school) =>
+    activeFilters.every(([field, value]) => SCHOOL_FILTER_ACCESSORS[field](school) === value),
+  );
 };
 
 export const getSchoolByCensusNo = (censusNo: string): School | undefined =>

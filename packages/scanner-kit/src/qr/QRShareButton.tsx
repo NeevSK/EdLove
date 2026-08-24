@@ -1,7 +1,6 @@
-import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
-
-import { useRef } from 'react';
 import QRCodeGenerator from '@repo/scanner-kit/QRCodeGenerator';
+import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
+import { useRef } from 'react';
 
 const optionalImport = async <T = any>(moduleName: string): Promise<T | null> => {
   try {
@@ -135,7 +134,9 @@ export default function QRShareButton({
 
       <HStack className="w-full gap-2">
         <Pressable
-          onPress={handleShareImage}
+          onPress={() => {
+            void handleShareImage();
+          }}
           className="flex-1 border rounded-lg py-[10px] items-center"
           style={{ borderColor: accentColor }}
           accessibilityLabel="Share QR code as image"
@@ -146,7 +147,9 @@ export default function QRShareButton({
         </Pressable>
 
         <Pressable
-          onPress={handleCopyLink}
+          onPress={() => {
+            void handleCopyLink();
+          }}
           className="flex-1 border rounded-lg py-[10px] items-center"
           style={{ borderColor: accentColor }}
           accessibilityLabel="Copy QR link to clipboard"
@@ -157,7 +160,9 @@ export default function QRShareButton({
         </Pressable>
 
         <Pressable
-          onPress={handleSaveToGallery}
+          onPress={() => {
+            void handleSaveToGallery();
+          }}
           className="flex-1 border rounded-lg py-[10px] items-center"
           style={{ borderColor: accentColor }}
           accessibilityLabel="Save QR badge to photo gallery"

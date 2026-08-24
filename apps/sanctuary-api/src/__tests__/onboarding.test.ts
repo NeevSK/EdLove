@@ -1,12 +1,8 @@
 import './setup';
-import { describe, expect, it, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { app } from '../core/app.js';
 import { createTestORPCClient } from './orpc-client';
-import {
-  setMockActiveBond,
-  setMockUserData,
-  setMockZenStackDbAvailable,
-} from './setup';
+import { setMockActiveBond, setMockUserData, setMockZenStackDbAvailable } from './setup';
 
 describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
   const userId = '123e4567-e89b-12d3-a456-426614174000';
@@ -49,7 +45,10 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
     it('should return 200 for a valid onboarding request', async () => {
       setMockUserData(defaultMockUser);
 
-      const body = await createTestORPCClient(authenticatedHeaders).onboarding.createInitialBond(validInitialBondPayload);
+      const body =
+        await createTestORPCClient(authenticatedHeaders).onboarding.createInitialBond(
+          validInitialBondPayload,
+        );
       expect(body.success).toBe(true);
     });
 
@@ -62,7 +61,10 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
         entity_id: 'GLOBAL',
       });
 
-      const body = await createTestORPCClient(authenticatedHeaders).onboarding.createInitialBond(validInitialBondPayload);
+      const body =
+        await createTestORPCClient(authenticatedHeaders).onboarding.createInitialBond(
+          validInitialBondPayload,
+        );
       expect(body.success).toBe(true);
     });
 
@@ -84,7 +86,9 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
       setMockUserData(defaultMockUser);
       setMockActiveBond({ capacity: 'teacher', entity_type: 'PLATFORM', entity_id: 'GLOBAL' });
 
-      const body = await createTestORPCClient(authenticatedHeaders).onboarding.completeOnboarding(validCompleteOnboardingPayload);
+      const body = await createTestORPCClient(authenticatedHeaders).onboarding.completeOnboarding(
+        validCompleteOnboardingPayload,
+      );
       expect(body.success).toBe(true);
     });
 
@@ -92,7 +96,9 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
       setMockUserData({ ...defaultMockUser, capacity: 'teacher' });
       setMockActiveBond(null);
 
-      const body = await createTestORPCClient(authenticatedHeaders).onboarding.completeOnboarding(validCompleteOnboardingPayload);
+      const body = await createTestORPCClient(authenticatedHeaders).onboarding.completeOnboarding(
+        validCompleteOnboardingPayload,
+      );
       expect(body.success).toBe(true);
     });
 
@@ -103,7 +109,7 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
       const res = await app.request('/api/onboarding/completeOnboarding', {
         method: 'POST',
         headers: authenticatedHeaders,
-      body: JSON.stringify({ userId: 42 }),
+        body: JSON.stringify({ userId: 42 }),
       });
 
       expect(res.status).toBe(400);
@@ -119,5 +125,4 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
       expect(res.status).toBe(400);
     });
   });
-
 });

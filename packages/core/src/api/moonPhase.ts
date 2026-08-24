@@ -240,10 +240,6 @@ export const moonPhaseAPI = {
     };
   },
 
-  /**
-   * Get the full school season context for a given date.
-   * Used by the home screen to determine the ambient aesthetic and invitation.
-   */
   getSchoolSeasonContext(now = new Date()): SchoolSeasonContext {
     const moon = this.getCurrentMoonPhase(now);
     const month = now.getMonth() + 1;
@@ -298,11 +294,6 @@ export const moonPhaseAPI = {
     };
   },
 
-  /**
-   * Generate a moon calendar for a given month (year + month, 1-indexed).
-   * Returns the phase for each day of the month.
-   * Used by the principal's Moon Calendar feature.
-   */
   getMonthCalendar(
     year: number,
     month: number,

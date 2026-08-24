@@ -1,4 +1,3 @@
-/* eslint-disable react/react-compiler */
 /**
  * SanctuaryBackground
  *
@@ -13,12 +12,12 @@
 
 'use no memo';
 
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { View } from '@repo/ui/primitives';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import Reanimated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { useTheme } from '@repo/ui/hooks/useTheme';
-import { View } from '@repo/ui/primitives';
 
 export function SanctuaryBackground() {
   'use no memo';
@@ -26,7 +25,7 @@ export function SanctuaryBackground() {
 
   // Two gradient layers for crossfade transition
   const fadeValue = useSharedValue(0);
-  
+
   // Store gradient colors in state to comply with React Compiler immutability rules
   const [colors, setColors] = useState({
     prev: gradientNodes,

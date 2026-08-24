@@ -1,4 +1,3 @@
-import { tokens } from '@repo/ui/tokens';
 import type React from 'react';
 
 export interface UniversalModalProps {
@@ -68,11 +67,7 @@ export const UniversalModal = ({
         }}
         role="presentation"
       >
-        <div
-          className="pointer-events-auto"
-          style={{ pointerEvents: 'auto' }}
-          role="dialog"
-        >
+        <div className="pointer-events-auto" style={{ pointerEvents: 'auto' }} role="dialog">
           {children}
         </div>
       </div>

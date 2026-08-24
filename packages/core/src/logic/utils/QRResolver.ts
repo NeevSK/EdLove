@@ -11,9 +11,8 @@
  * ad-hoc in screens.
  */
 
-import type { QRAction, QRPayload } from '@repo/core/types/QRPayload';
-import { QR_VERSION } from '@repo/core/types/QRPayload';
 import { GURUDEVI_QR_URL } from '@repo/core/config/publicUrls';
+import { QR_VERSION, type QRAction, type QRPayload } from '@repo/core/types/QRPayload';
 
 export type QRResolveResult =
   | { ok: true; payload: QRPayload }
@@ -65,10 +64,7 @@ export function resolveQR(raw: string): QRResolveResult {
   }
 
   // â”€â”€ Canonical: gurudevi://qr or https://platform.gurudevi.edlove.org/qr â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  if (
-    trimmed.startsWith('gurudevi://qr') ||
-    trimmed.startsWith(GURUDEVI_QR_URL)
-  ) {
+  if (trimmed.startsWith('gurudevi://qr') || trimmed.startsWith(GURUDEVI_QR_URL)) {
     try {
       const queryStart = trimmed.indexOf('?');
       if (queryStart === -1) return { ok: false, error: 'invalid', raw };

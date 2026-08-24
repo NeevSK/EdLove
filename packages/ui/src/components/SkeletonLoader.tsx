@@ -1,13 +1,12 @@
 import type React from 'react';
 import { useEffect } from 'react';
 import Animated, {
+  interpolate,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withSequence,
   withTiming,
-  interpolate,
-  Extrapolation,
 } from 'react-native-reanimated';
 
 interface SkeletonProps {
@@ -57,10 +56,7 @@ const SkeletonLoader: React.FC<SkeletonProps> = ({
 
     if (shimmer) {
       shimmerOffset.value = withRepeat(
-        withSequence(
-          withTiming(1, { duration: 1200 }),
-          withTiming(-1, { duration: 1200 }),
-        ),
+        withSequence(withTiming(1, { duration: 1200 }), withTiming(-1, { duration: 1200 })),
         -1,
         true,
       );
@@ -97,10 +93,7 @@ const SkeletonLoader: React.FC<SkeletonProps> = ({
       ]}
     >
       {shimmer && (
-        <Animated.View
-          className="absolute inset-0 bg-white/20 rounded"
-          style={shimmerStyle}
-        />
+        <Animated.View className="absolute inset-0 bg-white/20 rounded" style={shimmerStyle} />
       )}
       {withFlower && (
         <Animated.Text style={[{ fontSize: 24, textAlign: 'center' }, flowerStyle]}>

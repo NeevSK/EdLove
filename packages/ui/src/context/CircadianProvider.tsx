@@ -1,17 +1,10 @@
-import { vars } from 'nativewind';
-import type React from 'react';
-import { createContext, useContext, useMemo } from 'react';
+import { useEnvironment } from '@repo/ui/context/EnvironmentContext';
 import { View } from '@repo/ui/primitives';
 import { colors, phaseMatrix } from '@repo/ui/theme/Theme';
 import { getTextOnBackground } from '@repo/ui/utils/colorUtils';
-import { useEnvironment } from '@repo/ui/context/EnvironmentContext';
-
-/**
- * Circadian Context
- *
- * Manages the dynamic injection of CSS variables based on
- * the current temporal phase.
- */
+import { vars } from 'nativewind';
+import type React from 'react';
+import { createContext, useContext, useMemo } from 'react';
 
 type CircadianContextType = {
   phase: string;

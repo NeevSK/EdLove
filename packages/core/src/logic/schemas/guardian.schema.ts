@@ -1,4 +1,3 @@
-import { makeModelSchema } from '@repo/schema';
 import { z } from 'zod';
 
 export const GuardianContactInfoSchema = z.object({
@@ -51,7 +50,6 @@ export const GuardianIdentitySchema = z.object({
   created_at: z.string().optional(),
   updated_at: z.string().optional(),
 });
-
 
 export const GuardianProfileCreateSchema = z.object({
   userId: z.uuid().optional(),

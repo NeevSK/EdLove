@@ -1,18 +1,9 @@
-// ============================================================================
-// COMMUNITY & LIBRARY TYPES
-// Educational Ecology Support System
-// ============================================================================
-
 import type { Announcement, Capacity, User } from '@repo/core/types';
 
 export interface AnnouncementWithAuthor extends Announcement {
   author_name?: string;
   author_avatar?: string;
 }
-
-// ============================================================================
-// MANIFESTO TYPES
-// ============================================================================
 
 export type ManifestoVibe = 'visionary' | 'supportive' | 'academic' | 'wellbeing';
 export type ManifestoStatus = 'active' | 'archived' | 'fulfilled';
@@ -33,10 +24,6 @@ export interface SanctuaryManifesto {
   has_endorsed?: boolean;
 }
 
-// ============================================================================
-// POLL TYPES
-// ============================================================================
-
 export interface PollOption {
   id: string;
   text: string;
@@ -51,10 +38,6 @@ export interface PollData {
   /** ISO 8601 timestamp after which no more votes are accepted. null = no expiry. */
   ends_at?: string | null;
 }
-
-// ============================================================================
-// COMMUNITY POST TYPES
-// ============================================================================
 
 export type PostType =
   | 'question'
@@ -187,10 +170,6 @@ export interface CreateCommentInput {
   is_anonymous?: boolean;
 }
 
-// ============================================================================
-// CONTRIBUTION & RECOGNITION TYPES
-// ============================================================================
-
 export type ContributionType =
   | 'question_answered'
   | 'resource_shared'
@@ -238,10 +217,6 @@ export interface ContributionSummary {
   total_points: number;
   badges: Badge[];
 }
-
-// ============================================================================
-// ECOSYSTEM HEALTH TYPES
-// ============================================================================
 
 export interface EcosystemMetrics {
   // Time period
@@ -317,10 +292,6 @@ export interface FeedbackPulseResponse {
   created_at: string;
 }
 
-// ============================================================================
-// NOTIFICATION TYPES
-// ============================================================================
-
 export type NotificationType =
   | 'question_answered'
   | 'comment_reply'
@@ -342,10 +313,6 @@ export interface Notification {
   read_at?: string | null;
   created_at: Date;
 }
-
-// ============================================================================
-// GROUP TYPES (Community Groups)
-// ============================================================================
 
 export interface CommunityGroup {
   id: string;
@@ -448,10 +415,6 @@ export interface CreateGroupInput {
   handle?: string;
 }
 
-// ============================================================================
-// GROUP CHAT TYPES
-// ============================================================================
-
 export interface GroupMessage {
   id: string;
   group_id: string;
@@ -460,10 +423,6 @@ export interface GroupMessage {
   created_at: Date;
   author?: { full_name: string; avatar_url?: string };
 }
-
-// ============================================================================
-// DIRECT MESSAGING TYPES
-// ============================================================================
 
 export interface DirectConversation {
   id: string;
@@ -493,10 +452,6 @@ export interface ChatMessage {
   created_at: Date;
   author?: { full_name: string; avatar_url?: string };
 }
-
-// ============================================================================
-// REPORTING & SAFETY TYPES
-// ============================================================================
 
 export type ReportStatus = 'pending' | 'reviewed' | 'resolved';
 

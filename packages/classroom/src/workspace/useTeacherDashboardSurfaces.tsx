@@ -1,3 +1,4 @@
+import { ClassroomList } from '@repo/classroom/components';
 import type { WorkspaceSurfaceDefinition } from '@repo/core/types';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
@@ -16,10 +17,7 @@ import {
 } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
-
-import type { ComponentType, ReactNode } from 'react';
-import { useMemo } from 'react';
-import { ClassroomList } from '@repo/classroom/components';
+import { type ComponentType, type ReactNode, useMemo } from 'react';
 
 export type TeacherDashboardSurfaceId =
   | 'temporal-context'
@@ -46,8 +44,6 @@ export type TeacherDashboardSurface = WorkspaceSurfaceDefinition<
   metadata?: string[];
   content: ReactNode;
 };
-
-// ─── Helper Components ───────────────────────────────────────────────────────
 
 function QuickAction({
   icon: LucideIcon,
@@ -122,8 +118,6 @@ function StatCard({
     </Box>
   );
 }
-
-// ─── Hook Definition ─────────────────────────────────────────────────────────
 
 type Args = {
   isDemoMode: boolean;

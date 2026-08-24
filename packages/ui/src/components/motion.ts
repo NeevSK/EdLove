@@ -14,20 +14,6 @@
  * Platform note: Easing.bezier import is conditional to avoid web bundle issues.
  */
 
-// ---------------------------------------------------------------------------
-// Easing — decelerate is the "arriving, not popping" curve used throughout
-// the splash work: weighted deceleration, no bounce, no overshoot.
-//
-// Stored as raw bezier control points (the actual source of truth), because
-// Reanimated exposes TWO separate animation systems that each want a
-// different shape:
-//   - the CSS Animations/Transitions API (used by BrandPulse) wants a
-//     "cubic-bezier(x1,y1,x2,y2)" string
-//   - the classic worklet API (withTiming, and libraries built on it like
-//     react-native-screen-transitions) wants Easing.bezier(x1,y1,x2,y2)
-// Deriving both from one set of numbers means a curve change here updates
-// every consumer, regardless of which Reanimated API it uses.
-// ---------------------------------------------------------------------------
 const bezierPoints = {
   /** Entrances, reveals, anything settling into place. */
   decelerate: [0.33, 1, 0.42, 0] as const,
@@ -58,17 +44,8 @@ export const nativeEasing = {
   standard: 'ease-in-out',
 } as const;
 
-/**
- * For the classic worklet API — pass straight into Easing.bezier(...args),
- * e.g. Easing.bezier(...easingPoints.decelerate). Used by
- * react-native-screen-transitions and any withTiming() call.
- */
 export const easingPoints = bezierPoints;
 
-// ---------------------------------------------------------------------------
-// Duration — tiered by how often a person will see it. Frequent moments stay
-// fast; rare, meaningful moments are allowed to breathe.
-// ---------------------------------------------------------------------------
 export const duration = {
   /** Toasts, trivial success (a field saved), small state flips. */
   micro: 150,
@@ -82,10 +59,6 @@ export const duration = {
   breathe: 3000,
 } as const;
 
-// ---------------------------------------------------------------------------
-// Scale — entrance/rest values for the "settle in" pattern (never scale from
-// exactly 0 with a bounce; start slightly recessed and ease to rest).
-// ---------------------------------------------------------------------------
 export const scale = {
   enter: 0.98,
   rest: 1,
@@ -94,11 +67,6 @@ export const scale = {
   breatheMax: 1.03,
 } as const;
 
-// ---------------------------------------------------------------------------
-// Color — warm across the board. Skeletons and neutrals lean toward the
-// brand's orange/peach rather than cold blue-gray; caution states use muted
-// amber, never red, so errors stay "paused" rather than "alarmed."
-// ---------------------------------------------------------------------------
 export const color = {
   brand: {
     orange: '#EF841F',
@@ -118,11 +86,6 @@ export const color = {
   },
 } as const;
 
-// ---------------------------------------------------------------------------
-// Convenience: a ready-to-spread CSS-transition config for Reanimated 4's
-// CSS Transitions API, covering the most common "soft crossfade + scale-in"
-// pattern used for screen nav and simple reveals.
-// ---------------------------------------------------------------------------
 export const softEnter = {
   transitionProperty: ['opacity', 'transform'] as const,
   transitionDuration: duration.transition,

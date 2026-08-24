@@ -1,12 +1,5 @@
-import { useEffect, useState, useCallback } from 'react';
-import {
-  AccessibilityInfo,
-  Platform,
-  PixelRatio,
-  Dimensions,
-  useColorScheme,
-  AccessibilityChangeEvent,
-} from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { AccessibilityInfo, Dimensions, PixelRatio, Platform, useColorScheme } from 'react-native';
 
 /**
  * useReducedMotion
@@ -31,7 +24,7 @@ export function useReducedMotion(): boolean {
       'reduceMotionChanged',
       (enabled: boolean) => {
         setReduceMotion(enabled);
-      }
+      },
     );
 
     return () => {
@@ -66,7 +59,7 @@ export function useScreenReader(): boolean {
       'screenReaderChanged',
       (enabled: boolean) => {
         setScreenReader(enabled);
-      }
+      },
     );
 
     return () => {
@@ -100,16 +93,15 @@ export function useHighContrast(): boolean {
     void checkHighContrast();
 
     if (Platform.OS === 'ios') {
-      const listener = AccessibilityInfo.addEventListener(
-        'boldTextChanged',
-        (enabled: boolean) => {
-          setHighContrast(enabled);
-        }
-      );
+      const listener = AccessibilityInfo.addEventListener('boldTextChanged', (enabled: boolean) => {
+        setHighContrast(enabled);
+      });
       return () => listener?.remove?.();
     }
 
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [Platform.OS]);
 
   return highContrast;
@@ -183,12 +175,15 @@ export function useAccessibleColorScheme() {
 let lastAnnouncement = '';
 let announcementTimeout: NodeJS.Timeout | null = null;
 
-export function announceForAccessibility(message: string, options?: {
-  /** Delay before announcement (ms) */
-  delay?: number;
-  /** Whether to deduplicate identical messages */
-  deduplicate?: boolean;
-}): void {
+export function announceForAccessibility(
+  message: string,
+  options?: {
+    /** Delay before announcement (ms) */
+    delay?: number;
+    /** Whether to deduplicate identical messages */
+    deduplicate?: boolean;
+  },
+): void {
   const { delay = 0, deduplicate = true } = options || {};
 
   if (deduplicate && message === lastAnnouncement) return;
@@ -264,8 +259,7 @@ export function getContrastRatio(foreground: string, background: string): number
     const g = parseInt(rgb.slice(2, 4), 16) / 255;
     const b = parseInt(rgb.slice(4, 6), 16) / 255;
 
-    const toLinear = (c: number) =>
-      c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    const toLinear = (c: number) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
 
     const L = 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
     return L;
@@ -287,7 +281,7 @@ export function meetsWCAG(
   foreground: string,
   background: string,
   level: 'AA' | 'AAA' = 'AA',
-  size: 'normal' | 'large' = 'normal'
+  size: 'normal' | 'large' = 'normal',
 ): boolean {
   const ratio = getContrastRatio(foreground, background);
   const requiredRatio = (() => {

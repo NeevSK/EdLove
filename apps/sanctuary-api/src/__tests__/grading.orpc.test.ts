@@ -1,8 +1,8 @@
 import './setup';
+import { gradingContract } from '@repo/core/api/grading.contract';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createTestORPCClient } from './orpc-client';
 import { setMockActiveBond, setMockZenStackDbAvailable } from './setup';
-import { gradingContract } from '@repo/core/api/grading.contract';
 
 describe('Sanctuary API: lifecycle grading via native oRPC', () => {
   const headers = {
@@ -21,7 +21,14 @@ describe('Sanctuary API: lifecycle grading via native oRPC', () => {
 
   beforeEach(() => {
     setMockZenStackDbAvailable(true);
-    setMockActiveBond({ id: 'bond-grading', user_id: ids.studentId, entity_id: ids.schoolId, entity_type: 'SCHOOL', capacity: 'teacher', status: 'active' });
+    setMockActiveBond({
+      id: 'bond-grading',
+      user_id: ids.studentId,
+      entity_id: ids.schoolId,
+      entity_type: 'SCHOOL',
+      capacity: 'teacher',
+      status: 'active',
+    });
   });
 
   it('reads grade marks through the lifecycle grade class scope', async () => {

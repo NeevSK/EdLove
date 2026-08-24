@@ -6,13 +6,23 @@ import { LIBRARY_KEYS, useCollection } from '@repo/library/hooks/useLibrary';
 import type { LibraryCollection, LibraryResource, ResourceVisibility } from '@repo/library/types';
 import { buildLibraryExternalLinkOptions } from '@repo/library/utils/externalLinks';
 import { buildLibraryResourceOpenParams } from '@repo/library/utils/resourceLinks';
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
-import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
-import { ArrowLeft, Globe, Library, Lock, Pen, Plus, RefreshCw, Trash2, Users, X } from '@repo/ui/icons';
+import {
+  ArrowLeft,
+  Globe,
+  Library,
+  Lock,
+  Pen,
+  Plus,
+  RefreshCw,
+  Trash2,
+  Users,
+  X,
+} from '@repo/ui/icons';
 import { Box, HStack, Text, useTheme, VStack } from '@repo/ui/primitives';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { safeBack } from '@repo/ui/utils/navigation';
@@ -20,9 +30,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert } from 'react-native';
 
-// ─── Resource Search Results (inline picker for Add Resources panel) ──────────────────────
 function ResourceSearchResults({
   search,
   existingResourceIds,
@@ -162,7 +170,6 @@ function LoadingState({ tintColor }: { tintColor: string }) {
   );
 }
 
-// ─── Visibility Badge ────────────────────────────────────────────────────────
 function VisibilityBadge({ visibility }: { visibility: ResourceVisibility }) {
   const config = {
     private: { icon: Lock, label: 'Private', color: '#e88c30', bg: 'rgba(232,140,48,0.12)' },
@@ -193,7 +200,6 @@ function VisibilityBadge({ visibility }: { visibility: ResourceVisibility }) {
   );
 }
 
-// ─── Owner Panel ─────────────────────────────────────────────────────────────
 function OwnerPanel({
   collection,
   onVisibilityChange,
@@ -350,7 +356,6 @@ function OwnerPanel({
   );
 }
 
-// ─── Edit Modal ──────────────────────────────────────────────────────────────
 function EditCollectionModal({
   collection,
   onClose,
@@ -509,7 +514,6 @@ function EditCollectionModal({
   );
 }
 
-// ─── Main Screen ─────────────────────────────────────────────────────────────
 /**
  * CollectionDetailScreenWeb  Web-optimized view for library collections.
  * Sanctuary V3: Owner management panel + privacy controls.

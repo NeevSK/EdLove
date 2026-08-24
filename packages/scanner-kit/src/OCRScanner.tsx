@@ -2,6 +2,10 @@
 // Supports Sinhala, Tamil, English handwritten and printed text
 // Provider-agnostic: uses OCRPipeline (MLKit by default, cloud for Pro users)
 
+import { defaultOCRPipeline, type OCRPipeline } from '@repo/scanner-kit/ocr/OCRPipeline';
+import { type ParsedStudent, parseStudents } from '@repo/scanner-kit/ocr/parsers/StudentParser';
+import type { OCRProviderName } from '@repo/scanner-kit/ocr/types';
+import type { ScannedStudent } from '@repo/scanner-kit/types';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,11 +18,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { defaultOCRPipeline, type OCRPipeline } from '@repo/scanner-kit/ocr/OCRPipeline';
-import { type ParsedStudent, parseStudents } from '@repo/scanner-kit/ocr/parsers/StudentParser';
-import type { OCRProviderName } from '@repo/scanner-kit/ocr/types';
-
-import type { ScannedStudent } from '@repo/scanner-kit/types';
 
 interface OCRScannerProps {
   onStudentsScanned: (students: ScannedStudent[]) => void;
@@ -105,7 +104,8 @@ export default function OCRScanner({
 
     if (!result.canceled && result.assets[0]) {
       setImageUri(result.assets[0].uri);
-      processImage(result.assets[0].uri);
+      // Fire-and-forget: processImage owns its error state via try/catch.
+      void processImage(result.assets[0].uri);
     }
   };
 
@@ -119,7 +119,7 @@ export default function OCRScanner({
 
     if (!result.canceled && result.assets[0]) {
       setImageUri(result.assets[0].uri);
-      processImage(result.assets[0].uri);
+      void processImage(result.assets[0].uri);
     }
   };
 
@@ -219,7 +219,9 @@ export default function OCRScanner({
             </Text>
 
             <TouchableOpacity
-              onPress={handleCaptureImage}
+              onPress={() => {
+                void handleCaptureImage();
+              }}
               style={{
                 backgroundColor: colors.accent,
                 padding: 16,
@@ -233,7 +235,9 @@ export default function OCRScanner({
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={handlePickImage}
+              onPress={() => {
+                void handlePickImage();
+              }}
               style={{
                 borderWidth: 1,
                 borderColor: colors.border,

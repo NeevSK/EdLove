@@ -1,6 +1,3 @@
-import { X } from '@repo/ui/icons';
-import type React from 'react';
-import { Platform, Modal as RNModal } from 'react-native';
 import {
   HStack,
   Modal,
@@ -11,7 +8,9 @@ import {
   Text,
   VStack,
 } from '@repo/ui/gluestack';
+import { X } from '@repo/ui/icons';
 import { Pressable } from '@repo/ui/primitives';
+import type React from 'react';
 
 const Heading = ({ children, className }: any) => (
   <Text className={`text-xl font-bold ${className || ''}`}>{children}</Text>
@@ -67,25 +66,28 @@ export default function SanctuaryModal({
       accessibilityElementsHidden: !isOpen,
     }),
     // Native Modal specific props
-    supportedOrientations: ['portrait', 'landscape-left', 'landscape-right', 'portrait-upside-down'] as const,
+    supportedOrientations: [
+      'portrait',
+      'landscape-left',
+      'landscape-right',
+      'portrait-upside-down',
+    ] as const,
     presentationStyle: 'pageSheet' as const,
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      {...modalProps}
-    >
+    <Modal isOpen={isOpen} onClose={onClose} {...modalProps}>
       <ModalContent
         className={`rounded-3xl overflow-hidden shadow-2xl ${className}`}
-        style={{
-          backgroundColor: '#FDFAF3',
-          borderWidth: 1,
-          borderColor: 'rgba(42, 35, 24, 0.18)',
-          boxShadow:
-            '0 25px 50px -12px rgba(20, 16, 11, 0.5), 0 0 0 1px rgba(42, 35, 24, 0.12), 0 10px 20px -5px rgba(0, 0, 0, 0.2)',
-        } as any}
+        style={
+          {
+            backgroundColor: '#FDFAF3',
+            borderWidth: 1,
+            borderColor: 'rgba(42, 35, 24, 0.18)',
+            boxShadow:
+              '0 25px 50px -12px rgba(20, 16, 11, 0.5), 0 0 0 1px rgba(42, 35, 24, 0.12), 0 10px 20px -5px rgba(0, 0, 0, 0.2)',
+          } as any
+        }
         accessibilityRole="dialog"
         accessibilityLabel={title}
       >
@@ -120,10 +122,7 @@ export default function SanctuaryModal({
           )}
         </ModalHeader>
 
-        <ModalBody
-          className="p-6"
-          style={{ backgroundColor: '#FDFAF3' }}
-        >
+        <ModalBody className="p-6" style={{ backgroundColor: '#FDFAF3' }}>
           {children}
         </ModalBody>
 

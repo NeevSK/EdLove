@@ -55,8 +55,6 @@ import type React from 'react';
 import { useEffect, useMemo, useReducer } from 'react';
 import { Platform } from 'react-native';
 
-// ─── Types ──────────────────────────────────────────────────────────────────
-
 interface ClassroomNotesProps {
   classroomId: string;
   isTeacher: boolean;
@@ -66,8 +64,6 @@ type NoteGroup = {
   label: string;
   data: ClassroomNote[];
 };
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
 
 function getRelativeDateLabel(dateIn: string | Date): string {
   const now = new Date();
@@ -109,8 +105,6 @@ function groupNotesByDate(notes: ClassroomNote[]): NoteGroup[] {
   return result;
 }
 
-// ─── Note type metadata ──────────────────────────────────────────────
-
 const NOTE_TYPE_META: Record<
   ClassroomNote['note_type'],
   { label: string; icon: React.ElementType; color: string; teacherOnly: boolean }
@@ -146,8 +140,6 @@ const NOTE_TYPE_META: Record<
     teacherOnly: false,
   },
 };
-
-// ─── Reducer State Management ────────────────────────────────────────────────
 
 type NotesState = {
   notes: ClassroomNote[];
@@ -208,8 +200,6 @@ function notesReducer(state: NotesState, action: NotesAction): NotesState {
       return state;
   }
 }
-
-// ─── Main Component ─────────────────────────────────────────────────────────
 
 export default function ClassroomNotes({ classroomId, isTeacher }: ClassroomNotesProps) {
   const { showToast } = useLotusToast();

@@ -1,14 +1,13 @@
 import './style-engine.css';
 
-import React from 'react';
-import { registerRootComponent } from 'expo';
-import { Text as RNText, View } from 'react-native';
 import { Box } from '@repo/ui/components/ui/box';
-import { FlatList } from '@repo/ui/components/ui/list';
 import { Icon } from '@repo/ui/components/ui/icon';
+import { FlatList } from '@repo/ui/components/ui/list';
 import { Pressable } from '@repo/ui/components/ui/pressable';
 import { Text } from '@repo/ui/components/ui/text';
 import { Search } from '@repo/ui/icons';
+import { registerRootComponent } from 'expo';
+import { Text as RNText, View } from 'react-native';
 
 export default function StyleEngineRuntimeFixture() {
   return (

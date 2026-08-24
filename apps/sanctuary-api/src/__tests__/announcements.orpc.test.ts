@@ -10,13 +10,27 @@ describe('Sanctuary API: announcements via native oRPC', () => {
 
   beforeEach(() => {
     setMockZenStackDbAvailable(true);
-    setMockActiveBond({ id: 'bond-announcement', user_id: userId, entity_id: schoolId, entity_type: 'SCHOOL', capacity: 'teacher', status: 'active' });
+    setMockActiveBond({
+      id: 'bond-announcement',
+      user_id: userId,
+      entity_id: schoolId,
+      entity_type: 'SCHOOL',
+      capacity: 'teacher',
+      status: 'active',
+    });
   });
 
   it('reads and creates school-scoped announcements with server-derived authorship', async () => {
     const client = createTestORPCClient(headers).announcements;
     expect(await client.getAnnouncements({ schoolId })).toEqual([]);
-    expect(await client.createAnnouncement({ schoolId, title: 'Welcome', content: 'Welcome to the new term', isPinned: true })).toMatchObject({
+    expect(
+      await client.createAnnouncement({
+        schoolId,
+        title: 'Welcome',
+        content: 'Welcome to the new term',
+        isPinned: true,
+      }),
+    ).toMatchObject({
       school_id: schoolId,
       author_id: userId,
       title: 'Welcome',
@@ -26,6 +40,10 @@ describe('Sanctuary API: announcements via native oRPC', () => {
   });
 
   it('rejects invalid school identifiers at the contract boundary', async () => {
-    await expect((createTestORPCClient(headers).announcements.getAnnouncements as any)({ schoolId: 'not-a-uuid' })).rejects.toBeTruthy();
+    await expect(
+      (createTestORPCClient(headers).announcements.getAnnouncements as any)({
+        schoolId: 'not-a-uuid',
+      }),
+    ).rejects.toBeTruthy();
   });
 });

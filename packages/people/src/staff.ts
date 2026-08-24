@@ -1,7 +1,5 @@
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
-import type { StaffAttendance, StaffLeave } from '@repo/core/types';
-
-import { APIError } from '@repo/core/types';
+import { APIError, type StaffAttendance, type StaffLeave } from '@repo/core/types';
 
 export const staffAPI = {
   /**

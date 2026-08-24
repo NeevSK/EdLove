@@ -61,12 +61,19 @@ yarn-error.log*
 *.pem
 .claude/settings.local.json
 
+# Anti-slop tooling local state (never committed)
+.aislop/
+.fallow/
+
 ## IDEs
 .vscode/
 .idea/
 .claude/*
 !.claude/skills/
 .devin/
+.opencode
+
+
 ## Generated audit artifacts
 audit-results.json
 report_final.json

@@ -1,7 +1,6 @@
 import { dailyContentContract } from '@repo/core/api/server';
 import { assertDatabase } from '../apiErrors';
-import type { ORPCContext } from '../orpc';
-import { implement } from '../orpc';
+import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 
 const impl = implement(dailyContentContract).$context<ORPCContext>();

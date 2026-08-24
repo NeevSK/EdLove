@@ -5,9 +5,9 @@ import type {
   FormSync,
 } from '@intuitui-labs/form-builder-engine/ports';
 import type { FormResponse, FormSchema } from '@intuitui-labs/form-builder-engine/schema';
-import { eq } from 'drizzle-orm';
 import { getDrizzleDB } from '@repo/core/adapters/powersync/database';
 import { formResponses, formTemplates } from '@repo/core/adapters/powersync/schema';
+import { eq } from 'drizzle-orm';
 
 /**
  * PowerSyncFormsAdapter
@@ -16,8 +16,6 @@ import { formResponses, formTemplates } from '@repo/core/adapters/powersync/sche
  * Provides client-side local-first, sub-millisecond query performance and continuous offline sync.
  */
 export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSync {
-  // ─── FormStorage Port Implementation (Offline-First Local DB) ───────────────
-
   /**
    * Save or update a form schema in the local SQLite database.
    */
@@ -110,8 +108,6 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
     await db.delete(formTemplates).where(eq(formTemplates.id, id));
   }
 
-  // ─── FormAnalytics Port Implementation (Local Response Engine) ──────────────
-
   /**
    * Submit and record a user's form response in the local SQLite database.
    */
@@ -177,8 +173,6 @@ export class PowerSyncFormsAdapter implements FormStorage, FormAnalytics, FormSy
 
     return AnalyticsEngine.toCSV(fields, responses);
   }
-
-  // ─── FormSync Port Implementation (Continuous Synced Tunnel) ───────────────
 
   /**
    * Push schema changes. PowerSync continuous replication engine will automatically stream this.

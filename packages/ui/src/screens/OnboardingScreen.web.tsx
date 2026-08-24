@@ -3,7 +3,7 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { authAPI, identityAPI, onboardingAPI } from '@repo/core/api/client';
+import { identityAPI, onboardingAPI } from '@repo/core/api/client';
 import { isAnonymousIdentity } from '@repo/core/logic';
 import { useStore } from '@repo/core/store';
 import type { Capacity } from '@repo/core/types';
@@ -17,10 +17,6 @@ import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics'
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWindowDimensions } from 'react-native';
-
-// ──────────────────────────────────────────────────────────
-// CONSTANTS
-// ──────────────────────────────────────────────────────────
 
 const PILLARS = [
   { name: 'Self', glyph: 'self' },
@@ -115,10 +111,6 @@ const TRACKED_STEPS = [
   { idx: 2, label: 'Tour' },
 ] as const;
 
-// ──────────────────────────────────────────────────────────
-// TYPES & REDUCER
-// ──────────────────────────────────────────────────────────
-
 interface OnboardingUIState {
   currentStep: number;
   name: string;
@@ -175,10 +167,6 @@ function onboardingReducer(state: OnboardingUIState, action: OnboardingAction): 
       return state;
   }
 }
-
-// ──────────────────────────────────────────────────────────
-// SUB-COMPONENTS
-// ──────────────────────────────────────────────────────────
 
 const ErrorBanner = memo(({ error }: { error: string | null }) => {
   if (!error) return null;
@@ -528,10 +516,6 @@ const DevSandboxConsole =
   process.env.EXPO_PUBLIC_ENABLE_DEV_SANDBOX === 'true'
     ? DevSandboxConsoleInner
     : () => null;
-
-// ──────────────────────────────────────────────────────────
-// MAIN COMPONENT
-// ──────────────────────────────────────────────────────────
 
 interface OnboardingScreenProps {
   onComplete: (name: string, capacity: Capacity, isAnonymous?: boolean) => void;
@@ -1075,10 +1059,6 @@ export default memo(function OnboardingScreenWeb({
     </div>
   );
 });
-
-// ──────────────────────────────────────────────────────────
-// STYLES
-// ──────────────────────────────────────────────────────────
 
 const ONBOARDING_STYLES = `
     .ob-root {

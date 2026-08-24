@@ -1,17 +1,8 @@
 import { profile } from '@repo/core/logic/managers/factory';
 import { useStore } from '@repo/core/store/useStore';
-import type { SocialLink } from '@repo/core/types';
-import { APIError } from '@repo/core/types';
+import { APIError, type SocialLink } from "@repo/core/types";
 import { SovereignError } from '@repo/core/types/Errors';
 import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
-
-/**
- * PROFILE API (Sovereign RPC Proxy)
- *
- * This module siphons Profile requests to the Sanctuary API.
- * It maintains the legacy signature but shifts the transport to RPC,
- * delegating domain actions directly to the sovereign ProfileManager when appropriate.
- */
 
 const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 

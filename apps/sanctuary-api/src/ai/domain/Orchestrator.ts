@@ -1,5 +1,4 @@
-import { type AiProvider } from '../ports/BillingPort';
-import { type BillingPort } from '../ports/BillingPort';
+import { type AiProvider, type BillingPort } from '../ports/BillingPort';
 import { type LlmPort } from '../ports/LlmPort';
 
 interface ActiveGap {

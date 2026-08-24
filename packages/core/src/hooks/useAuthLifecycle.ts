@@ -1,9 +1,7 @@
-import type { Session } from '@supabase/supabase-js';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { authAPI } from '@repo/core/api/auth';
 import { assertHighway } from '@repo/core/api/highways';
 import { identityAPI } from '@repo/core/api/identity';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import type { SchoolType } from '@repo/core/constants/SriLankanSchools';
 import { identifyUser } from '@repo/core/lib/monitoring/posthog';
 import { clearSentryUser, initSentry, setSentryUser } from '@repo/core/lib/monitoring/sentry';
@@ -12,6 +10,8 @@ import { useStore } from '@repo/core/store/useStore';
 import type { User } from '@repo/core/types';
 import { APIError } from '@repo/core/types/API';
 import type { Bond } from '@repo/core/types/Identity';
+import type { Session } from '@supabase/supabase-js';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 /**
  * useAuthLifecycle
@@ -26,9 +26,6 @@ export function useAuthLifecycle() {
   const [isProfileResolving, setIsProfileResolving] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
 
-  // Tracks whether the very first profile load has completed successfully.
-  // After that, subsequent tab-focus/token-refresh fetches run silently
-  // without toggling isProfileLoading, preventing the blank screen on tab switch.
   const hasBootstrappedRef = useRef(false);
 
   const setUser = useStore((state) => state.setUser);
@@ -161,34 +158,32 @@ export function useAuthLifecycle() {
     // 3. Auth State Change Listener
     const {
       data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange(
-      async (event, currentSession) => {
-        setSession(currentSession);
-        setAuthSession(currentSession);
-        setAuthSessionResolved(true);
+    } = supabaseClient.auth.onAuthStateChange(async (event, currentSession) => {
+      setSession(currentSession);
+      setAuthSession(currentSession);
+      setAuthSessionResolved(true);
 
-        const currentMode = getSessionIdentityMode(currentSession);
-        if (currentMode === 'authenticated' || currentMode === 'anonymous') {
-          await fetchAndSetUserProfile();
-        } else if (currentSession?.user) {
-          setUser(null);
-          setPerspective(null);
-          setAvailableBonds([]);
-          setSchoolType(null);
-          setOnboardingCompleted(false);
-        } else if (event === 'SIGNED_OUT') {
-          clearSentryUser();
-          setUser(null);
-          setPerspective(null);
-          setAvailableBonds([]);
-          setSchoolType(null);
-          setOnboardingCompleted(false);
-          setDemoMode(false);
-        } else if (currentSession) {
-          setDemoMode(false);
-        }
-      },
-    );
+      const currentMode = getSessionIdentityMode(currentSession);
+      if (currentMode === 'authenticated' || currentMode === 'anonymous') {
+        await fetchAndSetUserProfile();
+      } else if (currentSession?.user) {
+        setUser(null);
+        setPerspective(null);
+        setAvailableBonds([]);
+        setSchoolType(null);
+        setOnboardingCompleted(false);
+      } else if (event === 'SIGNED_OUT') {
+        clearSentryUser();
+        setUser(null);
+        setPerspective(null);
+        setAvailableBonds([]);
+        setSchoolType(null);
+        setOnboardingCompleted(false);
+        setDemoMode(false);
+      } else if (currentSession) {
+        setDemoMode(false);
+      }
+    });
 
     return () => subscription.unsubscribe();
   }, [

@@ -1,6 +1,5 @@
 import { styled } from 'nativewind';
-import type { ComponentType } from 'react';
-import React from 'react';
+import React, { type ComponentType } from 'react';
 import {
   type FlatListProps,
   type KeyboardAvoidingViewProps,

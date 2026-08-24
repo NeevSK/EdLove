@@ -8,11 +8,16 @@
  *   const { accent, glass, glow, text, gradientNodes, isDark } = useTheme();
  *   const { textOnAccent, textOnReward, accentRgb } = useTheme(); // adaptive text
  */
-import { useMemo } from 'react';
+
 import { useEnvironment } from '@repo/ui/context/EnvironmentContext';
 import type { TemporalPhase, ThemeMode } from '@repo/ui/context/types';
-import { type ResolvedThemeTokens, resolveClassicTokens, resolvePhaseTokens } from '@repo/ui/theme/Theme';
+import {
+  type ResolvedThemeTokens,
+  resolveClassicTokens,
+  resolvePhaseTokens,
+} from '@repo/ui/theme/Theme';
 import { getTextOnBackground, hexToRgbComponents } from '@repo/ui/utils/colorUtils';
+import { useMemo } from 'react';
 
 /** Adaptive color tokens computed from the current accent/reward. */
 export interface AdaptiveTokens {
@@ -84,7 +89,6 @@ export function useTheme(): UseThemeReturn {
     [effectiveFidelity, reality.deviceTier],
   );
 
-  // --- Adaptive text colors (WCAG-computed) ---
   const textOnAccent = useMemo(
     () => getTextOnBackground(tokens.accent.action),
     [tokens.accent.action],
@@ -94,7 +98,6 @@ export function useTheme(): UseThemeReturn {
     [tokens.accent.reward],
   );
 
-  // --- RGB component strings for flexible CSS rgba() usage ---
   const accentRgb = useMemo(() => hexToRgbComponents(tokens.accent.action), [tokens.accent.action]);
   const rewardRgb = useMemo(() => hexToRgbComponents(tokens.accent.reward), [tokens.accent.reward]);
   const surfaceRgb = useMemo(

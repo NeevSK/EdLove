@@ -29,6 +29,9 @@ interface MLKitBarcode {
 }
 let BarcodeScanning: any = null;
 try {
+  // Optional native peer: absent installs must degrade to the JS fallback,
+  // so this stays a guarded runtime require rather than a static import.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   BarcodeScanning = require('@react-native-ml-kit/barcode-scanning').default as any;
 } catch {
   // Not installed or not linked — will fall back gracefully
@@ -152,7 +155,9 @@ export default function ScannerModal({
                 {t('scanner.permission.message')}
               </Text>
               <TouchableOpacity
-                onPress={requestPermission}
+                onPress={() => {
+                  void requestPermission();
+                }}
                 style={[styles.button, { backgroundColor: accentColor }]}
               >
                 <Text style={styles.buttonText}>{t('scanner.permission.grant')}</Text>
@@ -242,7 +247,9 @@ export default function ScannerModal({
 
             <View style={styles.controls}>
               <TouchableOpacity
-                onPress={pickImage}
+                onPress={() => {
+                  void pickImage();
+                }}
                 style={[styles.controlButton, { marginRight: 20 }]}
                 disabled={processing}
               >

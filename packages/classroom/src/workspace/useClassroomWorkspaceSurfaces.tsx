@@ -1,4 +1,8 @@
 import { appendAdminWorkspaceSurfaces } from '@repo/admin';
+import { StudentOnboardingView, TeacherOnboardingView } from '@repo/classroom/components';
+import { CLASSROOM_REGISTRY } from '@repo/classroom/constants/classroomRegistry';
+import StudentDashboard from '@repo/classroom/screens/StudentDashboard';
+import TeacherDashboard from '@repo/classroom/screens/TeacherDashboard';
 import { useFeatureRegistry } from '@repo/core/hooks/useFeatureRegistry';
 import {} from '@repo/core/logic';
 import type {
@@ -14,10 +18,6 @@ import { Wind } from '@repo/ui/icons';
 import { Box } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
 import { useMemo } from 'react';
-import { StudentOnboardingView, TeacherOnboardingView } from '@repo/classroom/components';
-import { CLASSROOM_REGISTRY } from '@repo/classroom/constants/classroomRegistry';
-import StudentDashboard from '@repo/classroom/screens/StudentDashboard';
-import TeacherDashboard from '@repo/classroom/screens/TeacherDashboard';
 
 type UseClassroomWorkspaceSurfacesArgs = {
   can: (action: string, subject: string, field?: string) => boolean;
@@ -189,7 +189,6 @@ export function useClassroomWorkspaceSurfaces({
       userCapabilities,
     });
 
-    // --- Teacher Dashboard ---
     const teacherGate = classroomGated.teacher;
     if (teacherGate?.visible) {
       const teacherContent =
@@ -228,7 +227,6 @@ export function useClassroomWorkspaceSurfaces({
       } as any as ClassroomWorkspaceSurface);
     }
 
-    // --- Student Dashboard ---
     const studentGate = classroomGated.student;
     if (studentGate?.visible) {
       const studentContent =

@@ -1,11 +1,11 @@
-import { useFeatureRegistry } from '@repo/core/hooks/useFeatureRegistry';
-import type { ClassroomWorkspaceSurface, PrincipalInsight } from '@repo/core/types/Workspace';
-import { useRouter } from 'expo-router';
 import { PrincipalOnboardingView } from '@repo/admin/components';
 import { ADMIN_REGISTRY } from '@repo/admin/constants/adminRegistry';
 import GradeHeadDashboard from '@repo/admin/screens/GradeHeadDashboard';
 import PrincipalDashboard from '@repo/admin/screens/PrincipalDashboard';
 import SectionHeadDashboard from '@repo/admin/screens/SectionHeadDashboard';
+import { useFeatureRegistry } from '@repo/core/hooks/useFeatureRegistry';
+import type { ClassroomWorkspaceSurface, PrincipalInsight } from '@repo/core/types/Workspace';
+import { useRouter } from 'expo-router';
 
 export function appendAdminWorkspaceSurfaces(
   surfaces: ClassroomWorkspaceSurface[],
@@ -45,7 +45,6 @@ export function appendAdminWorkspaceSurfaces(
 
   const adminGated = useFeatureRegistry(ADMIN_REGISTRY);
 
-  // --- Principal Dashboard ---
   const principalGate = adminGated.principal;
   if (principalGate?.visible) {
     const principalFeature = ADMIN_REGISTRY.principal!;
@@ -78,7 +77,6 @@ export function appendAdminWorkspaceSurfaces(
     } as unknown as ClassroomWorkspaceSurface);
   }
 
-  // --- Section Head Dashboard ---
   const sectionHeadGate = adminGated['section-head'];
   if (sectionHeadGate?.visible) {
     const sectionHeadFeature = ADMIN_REGISTRY['section-head']!;
@@ -95,7 +93,6 @@ export function appendAdminWorkspaceSurfaces(
     } as unknown as ClassroomWorkspaceSurface);
   }
 
-  // --- Grade Head Dashboard ---
   const gradeHeadGate = adminGated['grade-head'];
   if (gradeHeadGate?.visible) {
     const gradeHeadFeature = ADMIN_REGISTRY['grade-head']!;

@@ -1,9 +1,9 @@
 import { DrizzleAppSchema } from '@powersync/drizzle-driver';
-import * as Crypto from 'expo-crypto';
-import * as SecureStore from 'expo-secure-store';
-import type { IDatabasePort } from '@repo/core/logic/ports/database.port';
 import { SupabasePowerSyncConnector } from '@repo/core/adapters/powersync/SupabasePowerSyncConnector';
 import { AppSchema } from '@repo/core/adapters/powersync/schema';
+import type { IDatabasePort } from '@repo/core/logic/ports/database.port';
+import * as Crypto from 'expo-crypto';
+import * as SecureStore from 'expo-secure-store';
 
 const SQLCIPHER_KEY_STORAGE_KEY = 'gurudevi-sqlite-cipher-key';
 
@@ -24,7 +24,7 @@ async function getOrCreateEncryptionKey(accountId: string): Promise<string> {
     return key;
   } catch (error) {
     console.error('[PowerSync] Unable to access the device encryption key.', error);
-    throw new Error('PowerSync encryption key unavailable');
+    throw new Error('PowerSync encryption key unavailable', { cause: error });
   }
 }
 

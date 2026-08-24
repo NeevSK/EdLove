@@ -5,23 +5,18 @@ import { getSessionIdentityMode, isAnonymousIdentity } from '@repo/core/logic';
 import { storage } from '@repo/core/storage';
 import type { Capacity, User } from '@repo/core/types';
 import { validateForm, validators } from '@repo/core/utils';
-import { Key } from '@repo/ui/icons';
-import { memo, useCallback, useEffect, useMemo, useReducer } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useWindowDimensions } from 'react-native';
-import { BreathAnimation } from '@repo/ui/components/BreathAnimation';
 import { GatewayFooter } from '@repo/ui/components/GatewayFooter.web';
 import { GatewayHeader } from '@repo/ui/components/GatewayHeader.web';
 import { LivingGlow } from '@repo/ui/components/LivingGlow';
 import { SanctuaryBackground } from '@repo/ui/components/SanctuaryBackground';
-import { Box } from '@repo/ui/components/ui/box';
-import { Button, ButtonSpinner, ButtonText } from '@repo/ui/components/ui/button';
-import { HStack } from '@repo/ui/components/ui/hstack';
-import { Input, InputField } from '@repo/ui/components/ui/input';
-import { Heading, Text } from '@repo/ui/components/ui/text';
-import { VStack } from '@repo/ui/components/ui/vstack';
+import { Button } from '@repo/ui/components/ui/button';
+import { Input } from '@repo/ui/components/ui/input';
 import { useTheme } from '@repo/ui/hooks/useTheme';
+import { Key } from '@repo/ui/icons';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import { memo, useCallback, useEffect, useMemo, useReducer } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useWindowDimensions } from 'react-native';
 
 interface AuthScreenProps {
   onContinueAsGuest?: () => void;
@@ -70,7 +65,10 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
     case 'TOGGLE_EMAIL_FORM':
       return { ...state, showEmailForm: action.show, errors: {} };
     case 'SET_USER':
-      if (state.currentUser === action.user || (state.currentUser?.id && state.currentUser.id === action.user?.id)) {
+      if (
+        state.currentUser === action.user ||
+        (state.currentUser?.id && state.currentUser.id === action.user?.id)
+      ) {
         return state;
       }
       return { ...state, currentUser: action.user };
@@ -401,9 +399,7 @@ export const AuthScreenWeb = memo(
                 </div>
 
                 {/* Pillars / Domains */}
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {renderedPillars}
-                </div>
+                <div className="flex flex-wrap gap-2 pt-2">{renderedPillars}</div>
               </div>
 
               {/* Educational Highlight Card */}
@@ -414,7 +410,8 @@ export const AuthScreenWeb = memo(
                       Why this step matters
                     </span>
                     <p className="text-phase-primary leading-relaxed text-sm md:text-base mt-1">
-                      Your account keeps lessons, achievements, and invitations synchronized across all devices in a quiet, distraction-free environment.
+                      Your account keeps lessons, achievements, and invitations synchronized across
+                      all devices in a quiet, distraction-free environment.
                     </p>
                   </div>
 
@@ -426,9 +423,12 @@ export const AuthScreenWeb = memo(
                       </span>
                     </div>
                     <div className="p-3.5 rounded-xl bg-phase-surface/60 border border-phase-border/60 flex flex-col gap-1">
-                      <span className="text-xs font-bold text-phase-primary">Guest & Explorer safe</span>
+                      <span className="text-xs font-bold text-phase-primary">
+                        Guest & Explorer safe
+                      </span>
                       <span className="text-xs text-phase-secondary leading-snug">
-                        Explore as guest first; sync your progress automatically whenever you decide to sign in.
+                        Explore as guest first; sync your progress automatically whenever you decide
+                        to sign in.
                       </span>
                     </div>
                   </div>
@@ -535,7 +535,9 @@ export const AuthScreenWeb = memo(
                   {showEmailForm && (
                     <div className="animate-in fade-in slide-in-from-top-2 duration-200 mt-2 p-5 sm:p-6 rounded-3xl bg-phase-surface/70 border border-phase-border flex flex-col gap-4 shadow-sm">
                       <div className="flex justify-between items-center pb-1 border-b border-phase-border/40">
-                        <span className="font-bold text-sm text-phase-primary">Email Authentication</span>
+                        <span className="font-bold text-sm text-phase-primary">
+                          Email Authentication
+                        </span>
                         <span className="text-xs text-phase-muted">
                           {mode === 'signup' ? 'New Account' : 'Direct Login'}
                         </span>
@@ -543,7 +545,10 @@ export const AuthScreenWeb = memo(
 
                       <div className="flex flex-col gap-3.5">
                         <div className="flex flex-col gap-1.5">
-                          <label className="text-xs font-semibold text-phase-secondary ml-1" htmlFor="web-auth-email">
+                          <label
+                            className="text-xs font-semibold text-phase-secondary ml-1"
+                            htmlFor="web-auth-email"
+                          >
                             Email Address
                           </label>
                           <input
@@ -556,12 +561,17 @@ export const AuthScreenWeb = memo(
                             className="w-full h-[48px] px-4 rounded-xl border border-phase-border bg-phase-surface text-phase-primary text-sm focus:outline-none focus:ring-2 focus:ring-phase-accent transition-all"
                           />
                           {errors.email && (
-                            <span className="text-xs text-rose-500 font-medium ml-1">{errors.email}</span>
+                            <span className="text-xs text-rose-500 font-medium ml-1">
+                              {errors.email}
+                            </span>
                           )}
                         </div>
 
                         <div className="flex flex-col gap-1.5">
-                          <label className="text-xs font-semibold text-phase-secondary ml-1" htmlFor="web-auth-password">
+                          <label
+                            className="text-xs font-semibold text-phase-secondary ml-1"
+                            htmlFor="web-auth-password"
+                          >
                             Password
                           </label>
                           <input
@@ -574,7 +584,9 @@ export const AuthScreenWeb = memo(
                             className="w-full h-[48px] px-4 rounded-xl border border-phase-border bg-phase-surface text-phase-primary text-sm focus:outline-none focus:ring-2 focus:ring-phase-accent transition-all"
                           />
                           {errors.password && (
-                            <span className="text-xs text-rose-500 font-medium ml-1">{errors.password}</span>
+                            <span className="text-xs text-rose-500 font-medium ml-1">
+                              {errors.password}
+                            </span>
                           )}
                         </div>
 

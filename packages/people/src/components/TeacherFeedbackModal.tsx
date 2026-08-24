@@ -1,3 +1,4 @@
+import { teacherFeedbackAPI } from '@repo/people/feedback';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { ChevronDown, CircleCheck, Heart, MessageSquare, TriangleAlert } from '@repo/ui/icons';
 import {
@@ -22,7 +23,6 @@ import {
 } from '@repo/ui/primitives';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { teacherFeedbackAPI } from '@repo/people/feedback';
 
 interface TeacherFeedbackModalProps {
   isOpen: boolean;
@@ -49,27 +49,29 @@ export default function TeacherFeedbackModal({
   teacherId,
 }: TeacherFeedbackModalProps) {
   const { t } = useTranslation();
-  const [category, setCategory] = useState<string>('support');
-  const [content, setContent] = useState('');
-  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
+  const [form, setForm] = useState<{
+    category: string;
+    content: string;
+    priority: 'low' | 'medium' | 'high';
+  }>({ category: 'support', content: '', priority: 'medium' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!content.trim()) return;
+    if (!form.content.trim()) return;
 
     setIsSubmitting(true);
     try {
       const ok = await teacherFeedbackAPI.submitTeacherFeedback({
         schoolId,
         teacherId,
-        category,
-        content,
-        priority,
+        category: form.category,
+        content: form.content,
+        priority: form.priority,
       });
       if (!ok) return;
 
       onClose();
-      setContent('');
+      setForm((f) => ({ ...f, content: '' }));
     } finally {
       setIsSubmitting(false);
     }
@@ -87,10 +89,12 @@ export default function TeacherFeedbackModal({
         </ButtonText>
       </Button>
       <Button
-        onPress={handleSubmit}
-        isDisabled={isSubmitting || !content.trim()}
+        onPress={() => {
+          void handleSubmit();
+        }}
+        isDisabled={isSubmitting || !form.content.trim()}
         className={`flex-[2] rounded-2xl h-14 shadow-lg ${
-          priority === 'high'
+          form.priority === 'high'
             ? 'bg-phase-error shadow-error/20'
             : 'bg-phase-interactive shadow-blue-500/20'
         }`}
@@ -118,7 +122,10 @@ export default function TeacherFeedbackModal({
           <Text className="text-phase-text-tertiary text-[10px] font-black uppercase tracking-[1px] ml-1">
             {t('teacher.feedback.category')}
           </Text>
-          <Select onValueChange={setCategory} value={category}>
+          <Select
+            onValueChange={(v) => setForm((f2) => ({ ...f2, category: v }))}
+            value={form.category}
+          >
             <SelectTrigger className="border-phase-surface/50 bg-phase-surface/20 h-14 rounded-2xl px-4">
               <SelectInput
                 placeholder="Select category"
@@ -149,18 +156,18 @@ export default function TeacherFeedbackModal({
               <Button
                 key={p}
                 size="sm"
-                variant={priority === p ? 'solid' : 'outline'}
+                variant={form.priority === p ? 'solid' : 'outline'}
                 className={`flex-1 rounded-2xl h-11 border-phase-surface ${
-                  priority === p
+                  form.priority === p
                     ? p === 'high'
                       ? 'bg-phase-error'
                       : 'bg-phase-interactive'
                     : 'bg-transparent'
                 }`}
-                onPress={() => setPriority(p)}
+                onPress={() => setForm((f2) => ({ ...f2, priority: p }))}
               >
                 <ButtonText
-                  className={`text-[11px] font-black ${priority === p ? 'text-white' : 'text-phase-text-tertiary'}`}
+                  className={`text-[11px] font-black ${form.priority === p ? 'text-white' : 'text-phase-text-tertiary'}`}
                 >
                   {p.toUpperCase()}
                 </ButtonText>
@@ -177,8 +184,8 @@ export default function TeacherFeedbackModal({
           <Textarea className="bg-phase-surface/20 border-phase-surface/50 min-h-[140px] rounded-[32px] p-2">
             <TextareaInput
               placeholder={t('teacher.feedback.placeholder')}
-              value={content}
-              onChangeText={setContent}
+              value={form.content}
+              onChangeText={(text) => setForm((f2) => ({ ...f2, content: text }))}
               className="text-phase-text-primary px-4 pt-4 font-medium"
             />
           </Textarea>

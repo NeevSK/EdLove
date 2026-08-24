@@ -1,20 +1,21 @@
-import { growthSignalsAPI } from '@repo/core/api/client';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+import { growthSignalsAPI } from '@repo/core/api/client';
 import { handleAPIError } from '@repo/core/logic';
 import type { StaffAttendance, StaffLeave } from '@repo/core/types';
-
-import { useCallback, useEffect, useState } from 'react';
 import { staffAPI } from '@repo/people/staff';
+import { useCallback, useEffect, useId, useState } from 'react';
 
 export function useStaffPresence(userId?: string, schoolId?: string) {
   const [attendance, setAttendance] = useState<StaffAttendance[]>([]);
   const [leaves, setLeaves] = useState<StaffLeave[]>([]);
   const [loading, setLoading] = useState(true);
+  const channelSuffix = useId();
 
   const fetchData = useCallback(async () => {
     if (!userId) return;
     try {
-      setLoading(true);
+      // `loading` starts true and this runs once per mount, so no spinner
+      // reset is needed here (a sync set in the effect cascades renders).
       const [attData, leaveData] = await Promise.all([
         staffAPI.getAttendance(userId),
         staffAPI.getLeaves(userId),
@@ -29,7 +30,7 @@ export function useStaffPresence(userId?: string, schoolId?: string) {
   }, [userId]);
 
   useEffect(() => {
-    fetchData();
+    void fetchData();
   }, [fetchData]);
 
   // Real-time subscription to reflect check-in/out changes immediately
@@ -37,7 +38,7 @@ export function useStaffPresence(userId?: string, schoolId?: string) {
     if (!userId) return;
 
     const channel = supabase
-      .channel(`staff_attendance:${userId}-${Math.random().toString(36).slice(2, 9)}`)
+      .channel(`staff_attendance:${userId}-${channelSuffix}`)
       .on(
         'postgres_changes',
         {
@@ -61,9 +62,9 @@ export function useStaffPresence(userId?: string, schoolId?: string) {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      void supabase.removeChannel(channel);
     };
-  }, [userId]);
+  }, [userId, channelSuffix]);
 
   const checkIn = async (notes?: string) => {
     if (!userId || !schoolId) return { success: false };

@@ -55,7 +55,6 @@ import {
   studentsAPI,
 } from '@repo/core/api/orchestration/educational';
 import { accountingAPI, paymentsAPI } from '@repo/core/api/orchestration/erp';
-// --- Orchestrated APIs (Extracted Domains) ---
 import { identityAPI, profileAPI } from '@repo/core/api/orchestration/identity';
 import {
   attendanceAPI,
@@ -73,7 +72,6 @@ import {
 } from '@repo/core/api/orchestration/specialized';
 
 export * from '@repo/core/api/admin.contract';
-// --- Re-exports (Types & Contracts) ---
 export * from '@repo/core/api/agent.contract';
 export * from '@repo/core/api/announcements';
 export * from '@repo/core/api/circles';
@@ -133,7 +131,9 @@ export * from '@repo/core/api/temporalProxy';
 export * from '@repo/core/api/thuthimal';
 export * from '@repo/core/api/tracking.contract';
 export * from '@repo/core/api/userGrowthState';
-export * from '@repo/core/api/warmMirror';
+// Only the runtime API here — WarmMirrorDataPoints comes from the contract
+// module above; re-exporting both star-exports makes the type ambiguous.
+export { warmMirrorAPI } from '@repo/core/api/warmMirror';
 export * from '@repo/core/api/warmMirror.contract';
 export * from '@repo/core/api/workspaceLayout.contract';
 export type { ClassroomNote } from '@repo/core/types/ClassroomNote';

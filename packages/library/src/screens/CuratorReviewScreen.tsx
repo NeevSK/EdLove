@@ -1,12 +1,12 @@
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { useDomainRollout } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
+import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
-import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
-import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import { Check, RefreshCw, Trash2, X } from '@repo/ui/icons';
 import {
   Box,
@@ -18,10 +18,7 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
-import { router } from 'expo-router';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';
-
-// --- Types & State Machine (Pillar 2: Reducer Pattern) ---
 
 type CuratorTab = 'staging' | 'broken';
 
@@ -80,10 +77,7 @@ export default function CuratorReviewScreen() {
 
   const [state, dispatch] = useReducer(curatorReducer, initialState);
 
-  // --- Permissions Stability ---
   const canManage = can('manage', 'LibraryCuratorDashboard');
-
-  // --- Action Logic (Pillar 2: Stabilized Callbacks) ---
 
   const fetchStaging = useCallback(async () => {
     dispatch({ type: 'START_LOADING' });
@@ -155,14 +149,10 @@ export default function CuratorReviewScreen() {
   const setStagingTab = useCallback(() => dispatch({ type: 'SET_TAB', payload: 'staging' }), []);
   const setBrokenTab = useCallback(() => dispatch({ type: 'SET_TAB', payload: 'broken' }), []);
 
-  // --- Lifecycle ---
   useEffect(() => {
     if (state.activeTab === 'staging') fetchStaging();
     else fetchBroken();
   }, [state.activeTab, fetchStaging, fetchBroken]);
-
-  // --- Item Renderers (Pillar 2: Zero-Allocation Optimization) ---
-  // Using useCallback to ensure these functions are referentially stable
 
   const renderItem = useCallback(
     ({ item }: { item: any }) => (
@@ -246,7 +236,6 @@ export default function CuratorReviewScreen() {
     [theme.accent.danger, handleRepair, handleDeleteResource],
   );
 
-  // --- Derived Config ---
   const activeData = useMemo(
     () => (state.activeTab === 'staging' ? state.stagingItems : state.brokenItems),
     [state.activeTab, state.stagingItems, state.brokenItems],
@@ -310,20 +299,25 @@ export default function CuratorReviewScreen() {
 
       {state.loading ? (
         <Box className="mt-10 items-center">
-          <BrandPulse size={40} tintColor={theme.accent.action} accessibilityLabel="Loading curator queue" />
+          <BrandPulse
+            size={40}
+            tintColor={theme.accent.action}
+            accessibilityLabel="Loading curator queue"
+          />
         </Box>
+      ) : state.error ? (
+        <BrandedErrorState title="Curator queue unavailable" message={state.error}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Retry curator queue"
+            onPress={() =>
+              state.activeTab === 'staging' ? void fetchStaging() : void fetchBroken()
+            }
+          >
+            <Text className="font-bold text-phaseText-primary">Retry</Text>
+          </Pressable>
+        </BrandedErrorState>
       ) : (
-        state.error ? (
-          <BrandedErrorState title="Curator queue unavailable" message={state.error}>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Retry curator queue"
-              onPress={() => (state.activeTab === 'staging' ? void fetchStaging() : void fetchBroken())}
-            >
-              <Text className="font-bold text-phaseText-primary">Retry</Text>
-            </Pressable>
-          </BrandedErrorState>
-        ) : (
         <SanctuaryFlashList
           data={activeData}
           keyExtractor={(item) => item.id}
@@ -331,10 +325,12 @@ export default function CuratorReviewScreen() {
           contentContainerStyle={{ padding: 16 }}
           estimatedItemSize={120}
           ListEmptyComponent={
-            <BrandedEmptyState title="The wisdom stream is quiet" message="There are no items waiting in this queue." />
+            <BrandedEmptyState
+              title="The wisdom stream is quiet"
+              message="There are no items waiting in this queue."
+            />
           }
         />
-        )
       )}
     </ScreenWrapper>
   );

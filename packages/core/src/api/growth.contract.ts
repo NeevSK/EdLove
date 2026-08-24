@@ -1,11 +1,11 @@
-import { z } from 'zod';
+import type { SovereignContract } from '@repo/core/api/contracts';
 import {
   GrowthSignalSchema,
   ImpactRippleSchema,
   SanctuaryManifestoSchema,
   UserGrowthStateSchema,
 } from '@repo/core/logic/schemas/growth.schema';
-import type { SovereignContract } from '@repo/core/api/contracts';
+import { z } from 'zod';
 
 const growthAuthority = (
   action: 'manage' | 'create' | 'read' | 'update' | 'delete' | 'submit' | 'verify',
@@ -16,7 +16,6 @@ const manifestoAuthority = (
 ) => ({ policy: { action, subject: 'Manifesto' } }) as const;
 
 export const growthContract = {
-  // --- MANIFESTOS & MISSIONS ---
   getManifestos: {
     method: 'get',
     path: '/growth/manifestos',
@@ -83,7 +82,6 @@ export const growthContract = {
     metadata: manifestoAuthority('update'),
   },
 
-  // --- SIGNALS & STATE ---
   getGrowthState: {
     method: 'get',
     path: '/growth/state/:userId',
@@ -117,7 +115,6 @@ export const growthContract = {
     metadata: growthAuthority('create'),
   },
 
-  // --- RIPPLES & WELLBEING ---
   getRipples: {
     method: 'get',
     path: '/growth/ripples/:userId',

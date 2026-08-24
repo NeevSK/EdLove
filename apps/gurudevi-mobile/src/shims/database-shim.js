@@ -7,7 +7,6 @@
 const noop = () => {};
 
 const databaseShim = {
-  // Matches packages/database/src/client.ts
   getPool: noop,
   createZenStackDb: () => {
     console.warn(

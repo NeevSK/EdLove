@@ -1,0 +1,38 @@
+{
+  // fallow configuration — Polymath monorepo
+  // Docs: https://fallow.dev
+  // Enables semantic duplication detection + dead code analysis.
+  // Values tuned to avoid overlapping with jscpd (block clones) and Knip
+  // (orphan detection) that already run in this repo.
+
+  "entry": [
+    "apps/gurudevi-mobile/src/app/**",
+    "apps/gurudevi-mobile/src/screens/**",
+    "apps/gurudevi-mobile/src/components/**",
+    "apps/gurudevi-mobile/src/hooks/**",
+    "apps/gurudevi-mobile/src/lib/**",
+    "packages/core/src/**",
+    "packages/ui/src/components/**"
+  ],
+
+  "duplicates": {
+    // Semantic mode catches renamed variants that jscpd misses.
+    "mode": "semantic",
+    "minTokens": 80,
+    "minLines": 6,
+    "minOccurrences": 2
+  },
+
+  "ignorePatterns": [
+    "**/android/**",
+    "**/ios/**",
+    "**/.expo/**",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/generated/**",
+    "**/archives/**",
+    "**/old_docs/**",
+    "**/*.d.ts"
+  ]
+}

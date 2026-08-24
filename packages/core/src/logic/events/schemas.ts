@@ -3,8 +3,7 @@ import { ClassroomSchema } from '@repo/core/logic/schemas/classroom.schema';
 import { StudentGradeSchema } from '@repo/core/logic/schemas/grading.schema';
 import { StudentSchema } from '@repo/core/logic/schemas/student.schema';
 import { UserSchema } from '@repo/core/logic/schemas/user.schema';
-import type { StandardSchemaV1 } from 'inngest';
-import { eventType } from 'inngest';
+import { eventType, type StandardSchemaV1 } from 'inngest';
 import { z } from 'zod';
 
 const withWorkflowMetadata = <TSchema extends z.ZodObject<any>>(schema: TSchema) =>

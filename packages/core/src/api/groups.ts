@@ -1,12 +1,5 @@
-import { APIError } from '@repo/core/types/API';
 import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
-
-/**
- * GROUPS API (Sovereign RPC Proxy)
- *
- * This module siphons Group requests to the Sanctuary API.
- * PURGED: Direct Supabase access.
- */
+import { APIError } from '@repo/core/types/API';
 
 const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
@@ -14,14 +7,16 @@ export const groupsAPI = {
   /**
    * Retrieves all groups for a school.
    */
-  async getAll(filters: {
-    school_id?: string;
-    limit?: number;
-    offset?: number;
-    search?: string;
-    is_public?: boolean;
-    type?: string;
-  } = {}) {
+  async getAll(
+    filters: {
+      school_id?: string;
+      limit?: number;
+      offset?: number;
+      search?: string;
+      is_public?: boolean;
+      type?: string;
+    } = {},
+  ) {
     const res = await (client.api as any).community.groups.$get({
       query: {
         school_id: filters.school_id,

@@ -1,5 +1,4 @@
 import fs from 'node:fs';
-import path from 'node:path';
 
 import { loadDocument } from '@zenstackhq/language';
 import { isDataField, isDataModel, isDataModelAttribute, isEnum, isTypeDef } from '@zenstackhq/language/ast';

@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useMemo, useReducer } from 'react';
-import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
-import { Lock, Shield, Smartphone } from '@repo/ui/icons';
-import { Theme } from '@repo/ui/theme/Theme';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
+import { Lock, Shield, Smartphone } from '@repo/ui/icons';
+import { Theme } from '@repo/ui/theme/Theme';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
 
 export type AccountPinModalMode = 'create' | 'verify' | 'update' | 'remove';
 
@@ -63,10 +63,6 @@ function getCopy(mode: AccountPinModalMode, accountLabel?: string | null) {
   }
 }
 
-// ──────────────────────────────────────────────────────────
-// TYPES & REDUCER
-// ──────────────────────────────────────────────────────────
-
 interface PinState {
   pin: string;
   confirmPin: string;
@@ -97,10 +93,6 @@ function pinReducer(state: PinState, action: PinAction): PinState {
       return state;
   }
 }
-
-// ──────────────────────────────────────────────────────────
-// MAIN COMPONENT
-// ──────────────────────────────────────────────────────────
 
 export default function AccountPinModal({
   isOpen,

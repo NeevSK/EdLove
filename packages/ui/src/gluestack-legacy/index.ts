@@ -20,9 +20,6 @@ import {
  * 4. Documents our actual UI component inventory
  */
 
-// ============================================================================
-// Layout Components - Local Primitives
-// ============================================================================
 import { Box } from '@repo/ui/components-legacy/box';
 import { Button, ButtonText } from '@repo/ui/components-legacy/button';
 import { Center } from '@repo/ui/components-legacy/center';
@@ -50,9 +47,6 @@ export {
   VStack,
 };
 
-// ============================================================================
-// Form Components - Local Primitives
-// ============================================================================
 import {
   FormControlError,
   FormControlErrorIcon,
@@ -80,23 +74,14 @@ import { Input, InputField, InputIcon, InputSlot } from '@repo/ui/components-leg
 
 export { Input, InputField, InputIcon, InputSlot };
 
-// ============================================================================
-// Toast Components - Stubs
-// ============================================================================
 export const Toast = RNView as any;
 export const ToastTitle = RNText as any;
 export const ToastDescription = RNText as any;
 export const useToast = () => ({ show: () => {} }) as any;
 
-// ============================================================================
-// Button Helpers - Stubs
-// ============================================================================
 export const ButtonSpinner = View as any;
 export const ButtonIcon = (_props: any) => null;
 
-// ============================================================================
-// Select Components - Stubs
-// ============================================================================
 export const Select = RNView as any;
 export const SelectTrigger = RNView as any;
 export const SelectInput = RNView as any;
@@ -108,16 +93,10 @@ export const SelectDragIndicatorWrapper = RNView as any;
 export const SelectDragIndicator = RNView as any;
 export const SelectItem = RNView as any;
 
-// ============================================================================
-// Avatar Components - Stubs
-// ============================================================================
 export const Avatar = RNView as any;
 export const AvatarFallbackText = RNText as any;
 export const AvatarImage = RNView as any;
 
-// ============================================================================
-// Feedback & Overlays - Stubs
-// ============================================================================
 export const Actionsheet = RNView as any;
 export const ActionsheetBackdrop = RNView as any;
 export const ActionsheetContent = RNView as any;
@@ -134,9 +113,6 @@ export const ModalBody = RNView as any;
 export const ModalFooter = RNView as any;
 export const ModalCloseButton = RNView as any;
 
-// ============================================================================
-// Data Display & Forms - Stubs
-// ============================================================================
 export const Card = RNView as any;
 export const FlatList = RNFlatList as any;
 export const SectionList = RNSectionList as any;
@@ -172,9 +148,6 @@ export const SliderThumb = RNView as any;
 export const Textarea = RNView as any;
 export const TextareaInput = RNView as any;
 
-// ============================================================================
-// Provider & Configuration
-// ============================================================================
 export const GluestackUIProvider = ({ children }: any) => children;
 
 // Gluestack v3 (NativeWind) doesn't use the legacy createConfig system.
@@ -200,8 +173,3 @@ export const gluestackConfig = {
   },
   aliases: {},
 };
-
-// ============================================================================
-// ADD COMPONENTS AS NEEDED
-// DO NOT PREEMPTIVELY IMPORT UNUSED COMPONENTS
-// ============================================================================

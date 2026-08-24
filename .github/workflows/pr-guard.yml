@@ -41,6 +41,13 @@ jobs:
       - name: Run Linter
         run: pnpm lint
 
+      - name: Anti-slop scan (informational)
+        if: always()
+        continue-on-error: true
+        run: |
+          pnpm run audit:aislop || true
+          pnpm run audit:fallow || true
+
       - name: Observability ownership boundaries
         run: pnpm run check:observability-boundaries
 

@@ -1,13 +1,5 @@
 import pino from 'pino';
 
-/**
- * Shared logger instance for the Gurudevi platform logic layer.
- *
- * 🧱 ARCHITECTURAL BOUNDARY:
- * This util is part of the PURE LOGIC layer. It is platform agnostic.
- * In a web context, it will output to the browser console.
- * In a native context, it will output to the Metro/Logcat/Xcode console.
- */
 export const logger = pino({
   level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
   base: {

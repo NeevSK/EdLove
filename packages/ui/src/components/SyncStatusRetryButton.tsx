@@ -16,12 +16,6 @@ export interface SyncStatusRetryButtonProps {
   retryHint?: string;
 }
 
-/**
- * SyncStatusRetryButton
- *
- * Accessible retry button for failed sync operations.
- * Handles loading state, disabled state, and proper accessibility.
- */
 export function SyncStatusRetryButton({
   isRetrying,
   onRetry,

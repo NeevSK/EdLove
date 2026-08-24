@@ -1,11 +1,11 @@
 ---
-title: "AGENTS.md â€” Agent Guardrails for Polymath Platform"
+title: "AGENTS.md — Agent Guardrails for Polymath Platform"
 status: "active"
 created: 2026-08-03
 updated: 2026-08-24
 author: "Naveen"
 scribe: "opencode"
-tags: [AGENTS.md]
+tags: [AGENTS.md, quality, guardrails]
 ---
 
 # AGENTS.md — Agent Guardrails for Polymath Platform
@@ -128,6 +128,74 @@ To update any of these: discuss with the user first, verify compatibility with E
 - `node_modules/` is gitignored. Do not commit it.
 - Lock files (`pnpm-lock.yaml`) MUST be committed.
 - Feature branches merge forward: feature → main-dev → main. No rebase on long-lived branches.
+
+---
+
+## Quality Regulation — Anti-Slop Rules (apply to ALL code, human or AI)
+
+AI-generated code fails differently from human code: it is *plausible* rather
+than confused, deletes guards quietly, invents APIs, duplicates instead of
+reuses, and weakens tests to make them pass. These rules exist so slop never
+merges. **They apply with extra force to agent-authored changes.**
+
+### The Slop List (patterns banned in this repo)
+
+1. **No restating comments.** `// gets the user` above `getUser()` is noise.
+   A comment must say something the code cannot.
+2. **No dead abstractions.** An interface used once, a factory with one
+   implementation, a wrapper that only forwards arguments — inline them.
+3. **No duplicate utilities.** Before adding any helper, search the workspace
+   (`@repo/core`, `@repo/ui`, `packages/*`). If an equivalent exists,
+   consolidate — never add a near-copy with a different name.
+4. **No defensive noise.** No try/catch that swallows errors silently; no
+   checks for states that cannot occur; no optional chaining on non-optional
+   values.
+5. **No happy-path-only code.** Every network call, parse, or external
+   boundary must answer "what happens when this fails?" — and the answer may
+   not be "the app crashes".
+6. **Never weaken a test to make it pass.** Assertions get looser only with a
+   written justification in the commit message. Deleting/skipping a test
+   requires stating why the behavior no longer exists.
+7. **Never weaken quality gates.** No lint suppressions, skipped CI steps,
+   raised budgets, or `|| true` without an explicit, reviewed reason.
+8. **No scope creep.** A task touching 2 files should not touch 9. Unrelated
+   cleanups go in their own commit (or don't happen).
+9. **Types over assertions.** No `any`, no `as unknown as X`. Model the domain
+   (`UserId`, not `string`) and let signatures be honest.
+
+### Verification discipline (before any change is "done")
+
+- **Run the checks yourself** — `check-types`, `lint`, `test` for touched
+  packages. "Tests pass" is a claim, not evidence.
+- **Read deletions first** in your own diff. Removed guards are where silent
+  regressions live.
+- **Diff test files separately** from implementation; confirm assertion count
+  went up, not sideways.
+- **Generator ≠ verifier.** Code is reviewed in a fresh session/context, never
+  rubber-stamped by the session that wrote it.
+- Small diffs by default. If a change can't be read carefully, split it.
+- **Anti-slop gate before merge.** Run `pnpm run check:anti-slop` on your
+  branch. aislop gates new AI-slop indicators; fallow gates dead code,
+  duplication, and complexity in changed files. Both must exit 0. If a
+  finding is inherited (pre-existing), note it in the PR description — do
+  not suppress the tool to pass.
+
+### TypeScript policy
+
+- `packages/typescript-config/base.json` is the strictness floor:
+  `strict` + `noUncheckedIndexedAccess` are mandatory for all new packages.
+- `exactOptionalPropertyTypes` is the next target (~500-error burn-down;
+  adopt per-package with a dedicated cleanup, do NOT flip repo-wide).
+- New package tsconfigs must extend `packages/typescript-config/base.json`
+  rather than re-declaring options inline.
+
+### When you find slop
+
+Fix it if trivial (<20 lines), otherwise file it as a follow-up task with the
+file:line reference. Every caught pattern that recurs goes into this Slop List
+so agents stop producing it.
+
+---
 
 ## Stack Map (REQUIRED after dependency changes)
 

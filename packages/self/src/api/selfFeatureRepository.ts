@@ -1,7 +1,7 @@
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { decisionJournalAPI } from '@repo/core/api/decisionJournal';
 import { journalEntriesAPI } from '@repo/core/api/journalEntries';
-import { applyTemporalFilter, getTemporalRange } from '@repo/core/logic';
+import { getTemporalRange } from '@repo/core/logic';
 
 import type {
   DailyPrepItem,

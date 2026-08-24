@@ -4,12 +4,6 @@ import type {
   RealtimeSubscriptionOptions,
 } from '@repo/core/logic/ports/realtime.port';
 
-/**
- * RealtimeManager
- *
- * Domain manager for real-time operations.
- * Wraps the Realtime Port to provide a clean API for the platform.
- */
 export class RealtimeManager {
   constructor(private port: IRealtimePort) {}
 

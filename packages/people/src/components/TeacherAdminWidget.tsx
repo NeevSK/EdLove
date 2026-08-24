@@ -6,6 +6,7 @@ import {
   ClipboardList,
   DollarSign,
   FileText,
+  type LucideIcon,
   SquareCheckBig,
 } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
@@ -16,44 +17,67 @@ interface TeacherAdminWidgetProps {
   onAction?: (action: string) => void;
 }
 
+type ActionVariant = 'primary' | 'warning' | 'success' | 'error';
+
+interface AdminActionProps {
+  icon: LucideIcon;
+  label: string;
+  variant?: ActionVariant;
+  onPress?: () => void;
+  onAction?: (action: string) => void;
+}
+
+interface AdminActionDef {
+  icon: LucideIcon;
+  label: string;
+  variant: ActionVariant;
+  visible: boolean;
+}
+
+const ACTION_VARIANT_CLASSES: Record<ActionVariant, string> = {
+  primary: 'text-phase-interactive bg-phase-interactive/5 border-phase-interactive/20',
+  warning: 'text-phase-warning bg-phase-warning/5 border-phase-warning/20',
+  success: 'text-phase-success bg-phase-success/5 border-phase-success/20',
+  error: 'text-phase-error bg-phase-error/5 border-phase-error/20',
+};
+
+function AdminAction({
+  icon: LucideIcon,
+  label,
+  variant = 'primary',
+  onPress,
+  onAction,
+}: AdminActionProps) {
+  const [textColor, bgColor, borderColor] = ACTION_VARIANT_CLASSES[variant].split(' ');
+
+  return (
+    <Pressable
+      onPress={() => {
+        void hapticLight();
+        if (onPress) onPress();
+        if (onAction) onAction(label);
+      }}
+      accessibilityRole="button"
+      className={`flex-1 bg-phase-canvas p-4 rounded-3xl border ${borderColor} items-center justify-center gap-3 min-h-[110px] shadow-sm`}
+    >
+      <Box className={`p-3 rounded-2xl ${bgColor}`}>
+        <Icon as={LucideIcon} size="md" className={textColor} />
+      </Box>
+      <Text className="text-[12px] font-bold text-center text-phase-text-primary uppercase tracking-tight">
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
 export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps) {
   const { t } = useTranslation();
   const { can } = usePermissions();
   const isStaffManagementEnabled = useDomainRollout('staff-management');
   const isAccountingEnabled = useDomainRollout('accounting');
 
-  const AdminAction = ({ icon: LucideIcon, label, variant = 'primary', onPress }: any) => {
-    const colorClasses = {
-      primary: 'text-phase-interactive bg-phase-interactive/5 border-phase-interactive/20',
-      warning: 'text-phase-warning bg-phase-warning/5 border-phase-warning/20',
-      success: 'text-phase-success bg-phase-success/5 border-phase-success/20',
-      error: 'text-phase-error bg-phase-error/5 border-phase-error/20',
-    };
-
-    const activeColor = colorClasses[variant as keyof typeof colorClasses] || colorClasses.primary;
-    const [textColor, bgColor, borderColor] = activeColor.split(' ');
-
-    return (
-      <Pressable
-        onPress={() => {
-          hapticLight();
-          if (onPress) onPress();
-          if (onAction) onAction(label);
-        }}
-        className={`flex-1 bg-phase-canvas p-4 rounded-3xl border ${borderColor} items-center justify-center gap-3 min-h-[110px] shadow-sm`}
-      >
-        <Box className={`p-3 rounded-2xl ${bgColor}`}>
-          <Icon as={LucideIcon} size="md" className={textColor} />
-        </Box>
-        <Text className="text-[12px] font-bold text-center text-phase-text-primary uppercase tracking-tight">
-          {label}
-        </Text>
-      </Pressable>
-    );
-  };
-
   // Define actions with their visibility conditions
-  const actions = [
+  const allActions: AdminActionDef[] = [
     {
       icon: Calendar,
       label: t('teacher.admin.myLeaves') || 'My Leaves',
@@ -90,7 +114,8 @@ export default function TeacherAdminWidget({ onAction }: TeacherAdminWidgetProps
       variant: 'error',
       visible: isStaffManagementEnabled,
     },
-  ].filter((action) => action.visible);
+  ];
+  const actions = allActions.filter((action) => action.visible);
 
   // Group actions into rows of 2
   const rows = [];

@@ -57,7 +57,8 @@ export default function QRCodeGenerator({
       }
     };
 
-    boostBrightness();
+    // Self-contained try/catch; intentionally not awaited by the effect.
+    void boostBrightness();
 
     return () => {
       void Brightness.setBrightnessAsync(originalBrightness).catch((err) => {

@@ -14,10 +14,6 @@ interface GuestDataSyncModalProps {
   onSyncComplete: () => void;
 }
 
-// ============================================================================
-// STATE MACHINE DEFINITION
-// ============================================================================
-
 type SyncStatus = 'idle' | 'loading' | 'ready' | 'confirm_skip' | 'syncing' | 'completed' | 'error';
 
 interface SyncSummary {
@@ -154,10 +150,6 @@ export default function GuestDataSyncModal({
     }
     onClose();
   }, [state.summary.total, state.status, onClose]);
-
-  // ============================================================================
-  // RENDER HELPERS
-  // ============================================================================
 
   const footer =
     state.status !== 'completed' ? (

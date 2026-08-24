@@ -1,4 +1,5 @@
 import { execSync } from 'node:child_process';
+import fs from 'node:fs';
 import path from 'node:path';
 
 const args = process.argv.slice(2);
@@ -10,6 +11,12 @@ let filesToProcess = explicitFiles;
 
 if (filesToProcess.length === 0) {
   try {
+    // Git reports paths relative to the repository root, but this script runs
+    // from the calling package's directory. Resolve every path against the
+    // repo root first, then scope to the calling directory.
+    const gitRoot = execSync('git rev-parse --show-toplevel', { encoding: 'utf8' }).trim();
+    const baseDir = process.env.PNPM_SCRIPT_SRC_DIR || process.cwd();
+
     // Get modified files in git
     const modified = execSync('git diff --name-only', { encoding: 'utf8' }).trim();
     // Get untracked files
@@ -17,24 +24,14 @@ if (filesToProcess.length === 0) {
       encoding: 'utf8',
     }).trim();
 
-    const allFiles = [...modified.split('\n'), ...untracked.split('\n')]
+    filesToProcess = [...modified.split('\n'), ...untracked.split('\n')]
       .map((f) => f.trim())
       .filter(Boolean)
-      .filter((f) => /\.(js|ts|tsx|jsx|json)$/.test(f));
-
-    // If running from a subdirectory (package-level), filter files to only those within the subdirectory
-    const relativeCwd = path.relative(
-      process.env.PNPM_SCRIPT_SRC_DIR || process.cwd(),
-      process.cwd(),
-    );
-    if (relativeCwd) {
-      filesToProcess = allFiles
-        .map((f) => path.resolve(f))
-        .filter((f) => f.startsWith(process.cwd()))
-        .map((f) => path.relative(process.cwd(), f));
-    } else {
-      filesToProcess = allFiles;
-    }
+      .filter((f) => /\.(js|ts|tsx|jsx|json)$/.test(f))
+      .map((f) => path.resolve(gitRoot, f))
+      .filter((abs) => fs.existsSync(abs))
+      .map((f) => path.relative(process.cwd(), f))
+      .filter((rel) => rel && !rel.startsWith('..') && !path.isAbsolute(rel));
   } catch (err) {
     console.error('⚠️ Failed to determine changed files via Git:', err.message);
     process.exit(1);

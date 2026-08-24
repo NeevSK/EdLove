@@ -18,55 +18,59 @@ function toText(text: string, isError?: boolean) {
   };
 }
 
+interface GrepArgs {
+  query: string;
+  isRegex?: boolean;
+  include?: string;
+  target?: string;
+  includeNodeModules?: boolean;
+  summaryOnly?: boolean;
+  context?: number;
+  fileType?: string;
+  richText?: boolean;
+}
+
+function buildRgArgs(args: GrepArgs, target: string): string[] {
+  return [
+    '--line-number',
+    '--column',
+    '--smart-case',
+    '--heading',
+    '--color=never',
+    ...(args.isRegex ? [] : ['--fixed-strings']),
+    ...(args.include ? ['-g', args.include] : []),
+    ...(args.fileType ? ['-t', args.fileType] : []),
+    ...(args.context && args.context > 0 ? ['-C', String(args.context)] : []),
+    ...(!args.includeNodeModules
+      ? [
+          '-g',
+          '!**/node_modules/*',
+          '-g',
+          '!**/dist/*',
+          '-g',
+          '!**/.turbo/*',
+          '-g',
+          '!**/.git/*',
+          '-g',
+          '!**/build/*',
+          '-g',
+          '!**/.expo/*',
+        ]
+      : []),
+    args.query,
+    target,
+  ];
+}
+
 export class DiscoveryService {
   private ingest = new IngestService();
 
-  handleGrepCode(args: {
-    query: string;
-    isRegex?: boolean;
-    include?: string;
-    target?: string;
-    includeNodeModules?: boolean;
-    summaryOnly?: boolean;
-    context?: number;
-    fileType?: string;
-    richText?: boolean;
-  }) {
+  handleGrepCode(args: GrepArgs) {
     const target = normalizeTarget(args.target || '.');
     const context = args.context ?? 0;
     console.error(`Sovereign Grepping: ${args.query} in ${target} (Context: ${context})`);
 
-    const rgArgs = [
-      '--line-number',
-      '--column',
-      '--smart-case',
-      '--heading',
-      '--color=never',
-      ...(args.isRegex ? [] : ['--fixed-strings']),
-      ...(args.include ? ['-g', args.include] : []),
-      ...(args.fileType ? ['-t', args.fileType] : []),
-      ...(context > 0 ? ['-C', String(context)] : []),
-      ...(!args.includeNodeModules
-        ? [
-            '-g',
-            '!**/node_modules/*',
-            '-g',
-            '!**/dist/*',
-            '-g',
-            '!**/.turbo/*',
-            '-g',
-            '!**/.git/*',
-            '-g',
-            '!**/build/*',
-            '-g',
-            '!**/.expo/*',
-          ]
-        : []),
-      args.query,
-      target,
-    ];
-
-    const searchResult = runCommand('rg', rgArgs);
+    const searchResult = runCommand('rg', buildRgArgs(args, target));
     if (!searchResult.ok && searchResult.exitCode !== 1) {
       return toText(`ripgrep failed: ${searchResult.combined}`, true);
     }
@@ -78,27 +82,7 @@ export class DiscoveryService {
       const countResult = runCommand('rg', [
         '--count',
         '--smart-case',
-        ...(args.isRegex ? [] : ['--fixed-strings']),
-        ...(args.include ? ['-g', args.include] : []),
-        ...(args.fileType ? ['-t', args.fileType] : []),
-        ...(!args.includeNodeModules
-          ? [
-              '-g',
-              '!**/node_modules/*',
-              '-g',
-              '!**/dist/*',
-              '-g',
-              '!**/.turbo/*',
-              '-g',
-              '!**/.git/*',
-              '-g',
-              '!**/build/*',
-              '-g',
-              '!**/.expo/*',
-            ]
-          : []),
-        args.query,
-        target,
+        ...buildRgArgs({ ...args, context: 0 }, target),
       ]);
       return toText(`Summary Counts:\n${countResult.stdout || 'No matches found for summary.'}`);
     }

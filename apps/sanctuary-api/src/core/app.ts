@@ -187,8 +187,6 @@ async function sha256Hex(value: string): Promise<string> {
   return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
-// --- 1. Global Middleware ---
-
 // Mount core security and transport optimization middlewares
 app.use('*', secureHeaders());
 app.use('*', compress());
@@ -294,7 +292,6 @@ app.use('/api/*', otelMiddleware());
 
 app.route('/', healthRoutes);
 
-// --- 2. Sovereign Auth & ZenStack (ReBAC) Middleware ---
 app.use('/api/*', async (c, next) => {
   // 1. Resolve User from Header using Authoritative Asymmetric Cryptographic JWT Verification
   const authHeader = c.req.header('Authorization');
@@ -338,7 +335,6 @@ app.use('/api/*', async (c, next) => {
   return await next();
 });
 
-// --- 3. Cedar Server Gate Check Middleware (Dynamic Route-level PEP) ---
 async function getRequestSecurityContext(c: any) {
   const user = c.get('user') || { id: 'anonymous' };
   const db = c.get('db');
@@ -861,7 +857,6 @@ app.route('/', createDurableAgentRoutes());
 
 app.route('/', createPayhereWebhookRoutes({ md5Hex, sha256Hex }, getEnv));
 
-// --- 4. Documentation ---
 app.doc('/doc', {
   openapi: '3.1.0',
   info: {

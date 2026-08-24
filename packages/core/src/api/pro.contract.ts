@@ -1,17 +1,16 @@
-import { z } from 'zod';
+import type { SovereignContract } from '@repo/core/api/contracts';
 import {
   ProClaimResultSchema,
   ProGiftSchema,
   UserEntitlementsSchema,
 } from '@repo/core/logic/schemas/pro.schema';
-import type { SovereignContract } from '@repo/core/api/contracts';
+import { z } from 'zod';
 
 const proAuthority = (
   action: 'manage' | 'create' | 'read' | 'update' | 'delete' | 'submit' | 'verify',
 ) => ({ policy: { action, subject: 'Pro' } }) as const;
 
 export const proContract = {
-  // --- ENTITLEMENTS ---
   getEntitlements: {
     method: 'get',
     path: '/pro/entitlements/:userId',
@@ -45,7 +44,6 @@ export const proContract = {
     metadata: proAuthority('read'),
   },
 
-  // --- THUTHIMAL (GIFTING PRO) ---
   getAllReceivedGifts: {
     method: 'get',
     path: '/pro/gifts/received/:userId',

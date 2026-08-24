@@ -1,28 +1,30 @@
 // Core analytics exports - No UI dependencies to prevent circular dependencies
 export * from '@repo/analytics/engine/GPACalculator';
 // Export database client interface for dependency injection
-export type { DatabaseClient } from '@repo/analytics/engine/PerformanceAnalyzer';
 export * from '@repo/analytics/engine/PerformanceAnalyzer';
 export * from '@repo/analytics/engine/PostHogAnalytics';
 export type { DatabaseClient as PredictorDatabaseClient } from '@repo/analytics/ml/Predictor';
 
 // Factory functions to create instances with database client
-import { type DatabaseClient, PerformanceAnalyzer } from '@repo/analytics/engine/PerformanceAnalyzer';
+import {
+  type DatabaseClient,
+  PerformanceAnalyzer,
+} from '@repo/analytics/engine/PerformanceAnalyzer';
 import { posthogAnalytics } from '@repo/analytics/engine/PostHogAnalytics';
 import { Predictor as ML_Predictor } from '@repo/analytics/ml/Predictor';
 export const createPerformanceAnalyzer = (db: DatabaseClient) => new PerformanceAnalyzer(db);
 export const createPredictor = (db: DatabaseClient) => new ML_Predictor(db);
-export type { ClassroomGradingSettings, StudentGrade } from '@repo/core/types';
 export * from '@repo/analytics/ml/InsightGenerator';
 // ML and prediction exports
-export * from '@repo/analytics/ml/Predictor';
+// (DatabaseClient excluded here: PerformanceAnalyzer's identical interface is
+// the canonical export; Predictor's copy stays module-local.)
+export { Predictor } from '@repo/analytics/ml/Predictor';
 // Types and interfaces
 export * from '@repo/analytics/types';
 // Utility functions
 export * from '@repo/analytics/utils/analyticsHelpers';
 export * from '@repo/analytics/utils/benchmarking';
-// PostHog Universal Helpers
-export { posthogAnalytics };
+export type { ClassroomGradingSettings, StudentGrade } from '@repo/core/types';
 export const initPostHog = async (
   apiKey: string,
   hostOrOptions?:

@@ -10,18 +10,17 @@
  *  - Supabase subscription on 'direct_messages' table
  */
 
-import { socialAPI } from '@repo/core/api/client';
+import { communityAPI } from '@repo/community/api/community';
+import HeaderMoreMenu from '@repo/community/components/HeaderMoreMenu';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
+import { socialAPI } from '@repo/core/api/client';
 import { useStore, useTemporalStore } from '@repo/core/logic';
-
 import { formatTimestamp } from '@repo/ui/utils/dateTimeUtils';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { getInitialsFromName } from '@repo/ui/utils/stringUtils';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { communityAPI } from '@repo/community/api/community';
-import HeaderMoreMenu from '@repo/community/components/HeaderMoreMenu';
 
 interface ChatMessage {
   id: string;
@@ -264,8 +263,14 @@ export default function DirectMessageScreen() {
               gap: '12px',
             }}
           >
-            <div style={{ fontSize: '14px' }}>{isOffline ? 'Reconnect to load this conversation.' : error}</div>
-            <button type="button" className="secondary-button" onClick={() => window.location.reload()}>
+            <div style={{ fontSize: '14px' }}>
+              {isOffline ? 'Reconnect to load this conversation.' : error}
+            </div>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={() => window.location.reload()}
+            >
               Try again
             </button>
           </div>

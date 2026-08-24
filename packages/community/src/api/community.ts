@@ -3,7 +3,6 @@ import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { announcementAPI } from '@repo/core/api/announcements';
 import { communityAPI as coreCommunityAPI, identityAPI } from '@repo/core/api/client';
 import { groupsAPI } from '@repo/core/api/groups';
-import { applyTemporalFilter } from '@repo/core/logic';
 
 /**
  * Community API

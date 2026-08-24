@@ -53,7 +53,6 @@ import { Shield } from '@repo/ui/icons';
 import { Box, Center } from '@repo/ui/primitives';
 import { ToastProvider } from '@repo/ui/providers';
 import { FeatureProvider } from '@repo/ui/providers/FeatureProvider';
-import { sanctuarySaffron } from '@repo/ui/theme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { Stack, usePathname, useRouter } from 'expo-router';

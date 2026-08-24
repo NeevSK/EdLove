@@ -1,8 +1,7 @@
 import { ORPCError } from '@orpc/server';
 import { educationalORPCContract } from '@repo/core/api/educational.orpc.contract';
 import { assertDatabase } from '../apiErrors';
-import type { ORPCContext } from '../orpc';
-import { implement } from '../orpc';
+import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 
 const impl = implement(educationalORPCContract).$context<ORPCContext>();

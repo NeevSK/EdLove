@@ -1,4 +1,3 @@
-import type { User as ZenStackUser } from '@repo/schema/contracts';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import type {
   CommunityProfile,
@@ -16,8 +15,8 @@ import type {
 } from '@repo/core/logic/domains/profile/ports';
 import type { IFileStoragePort } from '@repo/core/logic/ports/storage.port';
 import { getTemporalRange } from '@repo/core/logic/utils/temporalUtils';
-import type { SocialLink, User } from '@repo/core/types';
-import { APIError } from '@repo/core/types';
+import { APIError, type SocialLink, type User } from '@repo/core/types';
+import type { User as ZenStackUser } from '@repo/schema/contracts';
 
 const RISING_THRESHOLD = 1.2;
 const FAILING_THRESHOLD = 0.5;
@@ -144,15 +143,14 @@ export const createZenStackProfileRepository = (
       const viewScale = normalizeTemporalScale(options.viewScale);
 
       if (asOf) {
-        const { data: rewardsVersion, error: rewardsError } =
-          await supabaseClient
-            .from('user_rewards_versions')
-            .select('snapshot')
-            .eq('user_id', userId)
-            .lte('recorded_at', asOf)
-            .order('recorded_at', { ascending: false })
-            .limit(1)
-            .maybeSingle();
+        const { data: rewardsVersion, error: rewardsError } = await supabaseClient
+          .from('user_rewards_versions')
+          .select('snapshot')
+          .eq('user_id', userId)
+          .lte('recorded_at', asOf)
+          .order('recorded_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
         if (rewardsError)
           throw new APIError(
             'Failed to fetch historical rewards snapshot',
@@ -160,15 +158,14 @@ export const createZenStackProfileRepository = (
             rewardsError,
           );
 
-        const { data: growthVersion, error: growthError } =
-          await supabaseClient
-            .from('user_growth_state_versions')
-            .select('snapshot')
-            .eq('user_id', userId)
-            .lte('recorded_at', asOf)
-            .order('recorded_at', { ascending: false })
-            .limit(1)
-            .maybeSingle();
+        const { data: growthVersion, error: growthError } = await supabaseClient
+          .from('user_growth_state_versions')
+          .select('snapshot')
+          .eq('user_id', userId)
+          .lte('recorded_at', asOf)
+          .order('recorded_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
         if (growthError)
           throw new APIError(
             'Failed to fetch historical growth snapshot',
@@ -214,16 +211,8 @@ export const createZenStackProfileRepository = (
         { data: growth, error: growthError },
         { data: whisperedRows, error: whisperedError },
       ] = await Promise.all([
-        supabaseClient
-          .from('user_rewards')
-          .select('*')
-          .eq('user_id', userId)
-          .maybeSingle(),
-        supabaseClient
-          .from('user_growth_state')
-          .select('*')
-          .eq('user_id', userId)
-          .maybeSingle(),
+        supabaseClient.from('user_rewards').select('*').eq('user_id', userId).maybeSingle(),
+        supabaseClient.from('user_growth_state').select('*').eq('user_id', userId).maybeSingle(),
         supabaseClient
           .from('whispered_moments')
           .select('moment_key, moment_name_en, moment_name_si, awarded_at')

@@ -24,6 +24,80 @@ function summarizeCommandFailure(label: string, output: string) {
   return `${label} failed.\n${output}`.trim();
 }
 
+function resolvePackageDir(packageName: string): string {
+  try {
+    const reqCore = createRequire(path.join(ROOT_DIR, 'packages', 'core', 'package.json'));
+    return path.dirname(reqCore.resolve(`${packageName}/package.json`));
+  } catch {
+    try {
+      const reqMcp = createRequire(path.join(ROOT_DIR, 'packages', 'platform-mcp', 'package.json'));
+      return path.dirname(reqMcp.resolve(`${packageName}/package.json`));
+    } catch {
+      return path.join(ROOT_DIR, 'node_modules', packageName);
+    }
+  }
+}
+
+function collectTypeDefinitionFiles(dir: string): string[] {
+  if (!fs.existsSync(dir)) return [];
+  const results: string[] = [];
+  for (const entry of fs.readdirSync(dir)) {
+    const filePath = path.join(dir, entry);
+    if (fs.statSync(filePath).isDirectory()) {
+      results.push(...collectTypeDefinitionFiles(filePath));
+    } else if (
+      filePath.endsWith('.d.ts') ||
+      filePath.endsWith('.d.cts') ||
+      filePath.endsWith('.d.mts')
+    ) {
+      results.push(filePath);
+    }
+  }
+  return results.filter((f) => !path.relative(dir, f).split(path.sep).includes('node_modules'));
+}
+
+function collectDeprecationIssues(
+  content: string,
+  packageName: string,
+  relativeFile: string,
+  issues: AnalysisIssue[],
+) {
+  // Match JSDoc comments containing @deprecated
+  const jsdocRegex = /\/\*\*([\s\S]*?)\*\//g;
+  for (const jsdocMatch of content.matchAll(jsdocRegex)) {
+    const comment = jsdocMatch[1];
+    if (!comment?.includes('@deprecated')) continue;
+
+    // Find the symbol declaration immediately following this JSDoc comment
+    const postIndex = (jsdocMatch.index ?? 0) + jsdocMatch[0].length;
+    const contextText = content.substring(postIndex, postIndex + 200);
+
+    // Extract the first word/identifier following JSDoc to get symbol name
+    const symbolMatch = contextText.match(
+      /(?:export\s+)?(?:declare\s+)?(?:function|const|class|interface|type|enum|namespace|get|set|readonly)?\s*(\w+)/,
+    );
+    const symbol = symbolMatch?.[1] ? symbolMatch[1] : 'unknown';
+
+    // Extract everything after @deprecated in the comment up to next tag or end
+    const depMatch = comment.match(/@deprecated\b([\s\S]*?)(?:\*\/|\* @|\n\s*\*?\s*@|$)/);
+    const message = depMatch?.[1]
+      ? depMatch[1]
+          .split('\n')
+          .map((line) => line.replace(/^\s*\*\s*/, '').trim())
+          .filter(Boolean)
+          .join(' ')
+          .trim()
+      : 'No replacement suggested.';
+
+    issues.push({
+      type: 'DEPRECATED API',
+      file: `${packageName}/${relativeFile.replace(/\\/g, '/')}`,
+      message: `Symbol **${symbol}** is deprecated. ${message}`,
+      severity: 'warning',
+    });
+  }
+}
+
 export class AuditService {
   constructor(private document: DocumentService) {}
 
@@ -421,22 +495,7 @@ export class AuditService {
   handleAuditDeprecations(args: { target?: string; package?: string }) {
     if (args.package) {
       const packageName = args.package.trim();
-      let packageDir = '';
-      try {
-        const reqCore = createRequire(path.join(ROOT_DIR, 'packages', 'core', 'package.json'));
-        const pkgJsonPath = reqCore.resolve(`${packageName}/package.json`);
-        packageDir = path.dirname(pkgJsonPath);
-      } catch (_err) {
-        try {
-          const reqMcp = createRequire(
-            path.join(ROOT_DIR, 'packages', 'platform-mcp', 'package.json'),
-          );
-          const pkgJsonPath = reqMcp.resolve(`${packageName}/package.json`);
-          packageDir = path.dirname(pkgJsonPath);
-        } catch (_err2) {
-          packageDir = path.join(ROOT_DIR, 'node_modules', packageName);
-        }
-      }
+      const packageDir = resolvePackageDir(packageName);
 
       if (!fs.existsSync(packageDir)) {
         return toText(
@@ -447,72 +506,13 @@ export class AuditService {
 
       console.error(`Starting Sovereign Deprecation Audit for package: ${packageName}`);
 
-      const getFilesRecursively = (dir: string): string[] => {
-        let results: string[] = [];
-        if (!fs.existsSync(dir)) return results;
-        const list = fs.readdirSync(dir);
-        for (const file of list) {
-          const filePath = path.join(dir, file);
-          const stat = fs.statSync(filePath);
-          if (stat?.isDirectory()) {
-            results = results.concat(getFilesRecursively(filePath));
-          } else if (
-            filePath.endsWith('.d.ts') ||
-            filePath.endsWith('.d.cts') ||
-            filePath.endsWith('.d.mts')
-          ) {
-            results.push(filePath);
-          }
-        }
-        return results;
-      };
-
-      const typeFiles = getFilesRecursively(packageDir).filter((f) => {
-        const relative = path.relative(packageDir, f);
-        return !relative.split(path.sep).includes('node_modules');
-      });
+      const typeFiles = collectTypeDefinitionFiles(packageDir);
       const issues: AnalysisIssue[] = [];
 
       for (const file of typeFiles) {
         const relativeFile = path.relative(packageDir, file);
         const content = fs.readFileSync(file, 'utf8');
-
-        // Match JSDoc comments containing @deprecated
-        const jsdocRegex = /\/\*\*([\s\S]*?)\*\//g;
-        const matches = Array.from(content.matchAll(jsdocRegex));
-
-        for (const jsdocMatch of matches) {
-          const comment = jsdocMatch[1];
-          if (comment?.includes('@deprecated')) {
-            // Find the symbol declaration immediately following this JSDoc comment
-            const postIndex = (jsdocMatch.index ?? 0) + jsdocMatch[0].length;
-            const contextText = content.substring(postIndex, postIndex + 200);
-
-            // Extract the first word/identifier following JSDoc to get symbol name
-            const symbolMatch = contextText.match(
-              /(?:export\s+)?(?:declare\s+)?(?:function|const|class|interface|type|enum|namespace|get|set|readonly)?\s*(\w+)/,
-            );
-            const symbol = symbolMatch?.[1] ? symbolMatch[1] : 'unknown';
-
-            // Extract everything after @deprecated in the comment up to next tag or end
-            const depMatch = comment.match(/@deprecated\b([\s\S]*?)(?:\*\/|\* @|\n\s*\*?\s*@|$)/);
-            const message = depMatch?.[1]
-              ? depMatch[1]
-                  .split('\n')
-                  .map((line) => line.replace(/^\s*\*\s*/, '').trim())
-                  .filter(Boolean)
-                  .join(' ')
-                  .trim()
-              : 'No replacement suggested.';
-
-            issues.push({
-              type: 'DEPRECATED API',
-              file: `${packageName}/${relativeFile.replace(/\\/g, '/')}`,
-              message: `Symbol **${symbol}** is deprecated. ${message}`,
-              severity: 'warning',
-            });
-          }
-        }
+        collectDeprecationIssues(content, packageName, relativeFile, issues);
       }
 
       const report = this.document.renderReport({

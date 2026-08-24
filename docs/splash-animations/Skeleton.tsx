@@ -14,7 +14,6 @@
  *      for <ShimmerBlock>.
  *   3. Both now move together at every breakpoint by construction.
  */
-import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { duration, easing, color } from './motion';

@@ -1,7 +1,6 @@
 import { socialORPCContract } from '@repo/core/api/social.orpc.contract';
 import { SovereignError } from '@repo/core/types/Errors';
-import type { ORPCContext } from '../orpc';
-import { implement } from '../orpc';
+import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 
 const impl = implement(socialORPCContract).$context<ORPCContext>();

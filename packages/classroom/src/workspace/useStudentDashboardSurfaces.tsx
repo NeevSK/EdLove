@@ -1,3 +1,4 @@
+import { ClassroomList } from '@repo/classroom/components';
 import type { WorkspaceSurfaceDefinition } from '@repo/core/types';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
@@ -11,10 +12,7 @@ import {
   Zap,
 } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-
-import type { ComponentType, ReactNode } from 'react';
-import { useMemo } from 'react';
-import { ClassroomList } from '@repo/classroom/components';
+import { type ComponentType, type ReactNode, useMemo } from 'react';
 
 export type StudentDashboardSurfaceId =
   | 'temporal-context'

@@ -3,9 +3,10 @@ import { type DatabaseClient, PerformanceAnalyzer } from './engine/PerformanceAn
 import { Predictor as ML_Predictor } from './ml/Predictor';
 
 export * from './engine/GPACalculator';
-export { PerformanceAnalyzer, ML_Predictor };
-export type { DatabaseClient };
+// DatabaseClient is exported once via the Predictor wildcard re-export below;
+// its interface is structurally identical to PerformanceAnalyzer's.
 export type { DatabaseClient as PredictorDatabaseClient } from './ml/Predictor';
+export { ML_Predictor, PerformanceAnalyzer };
 export const createPerformanceAnalyzer = (db: DatabaseClient) => new PerformanceAnalyzer(db);
 export const createPredictor = (db: DatabaseClient) => new ML_Predictor(db);
 export type { ClassroomGradingSettings, StudentGrade } from '@repo/core/types';
@@ -16,6 +17,7 @@ export * from './utils/analyticsHelpers';
 export * from './utils/benchmarking';
 
 import { GPACalculator as CoreGPACalculator } from '@repo/core/logic';
+
 const gpaCalculator = new CoreGPACalculator();
 export const marksToGPA = (marks: number) => gpaCalculator.marksToGPA(marks);
 export const calculateRanks = (grades: any[]) => gpaCalculator.calculateRanks(grades);

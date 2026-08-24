@@ -1,39 +1,22 @@
-/**
- * BaseChatScreen
- *
- * Shared chat layout used by GroupChatScreen and (future) DirectMessageScreen.
- * Handles: message list, real-time subscription, optimistic sends, compose bar.
- * Refactored for Sanctuary V3.
- */
-
+import type { ChatMessage } from '@repo/community/types';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { useSafeMutation } from '@repo/core/hooks';
-import { useStore } from '@repo/core/store';
-import { useTemporalStore } from '@repo/core/store';
-import { ChatComposer } from '@repo/ui/components/ChatComposer';
-import GlobalHeader from '@repo/ui/components/GlobalHeader';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { SanctuaryLegendList } from '@repo/ui/components/SanctuaryLegendList';
-import { ChatProvider } from '@repo/ui/context/ChatContext';
-import { UserAvatar } from '@repo/ui/components/UserAvatar';
-import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { useStore, useTemporalStore } from '@repo/core/store';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { ChatComposer } from '@repo/ui/components/ChatComposer';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import GlobalHeader from '@repo/ui/components/GlobalHeader';
+import { SanctuaryLegendList } from '@repo/ui/components/SanctuaryLegendList';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { UserAvatar } from '@repo/ui/components/UserAvatar';
+import { ChatProvider } from '@repo/ui/context/ChatContext';
 import { MessageSquare } from '@repo/ui/icons';
-import {
-  AnimatedView,
-  Box,
-  HStack,
-  Icon,
-  Pressable,
-  Text,
-  VStack,
-} from '@repo/ui/primitives';
+import { AnimatedView, Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import type React from 'react';
 import { useEffect, useOptimistic, useState, useTransition } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 import { FadeInDown } from 'react-native-reanimated';
-import type { ChatMessage } from '@repo/community/types';
 
 let optimisticId = 0;
 
@@ -142,7 +125,8 @@ export default function BaseChatScreen({
           filter: subscription.filter,
         },
         (payload) => {
-          void subscription.fetchById(payload.new.id)
+          void subscription
+            .fetchById(payload.new.id)
             .then((msg) => {
               if (!msg) return;
               setMessages((prev) => {
@@ -275,9 +259,7 @@ export default function BaseChatScreen({
               data={optimisticMessages}
               keyExtractor={(item) => item.id}
               renderItem={renderMessage}
-               contentContainerStyle={
-                 messages.length === 0 ? styles.listCentered : styles.listStart
-               }
+              contentContainerStyle={messages.length === 0 ? styles.listCentered : styles.listStart}
               showsVerticalScrollIndicator={false}
               ListEmptyComponent={
                 <AnimatedView entering={FadeInDown.duration(800).springify()}>

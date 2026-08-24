@@ -61,8 +61,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-// --- Internal Sub-Components ---
-
 interface IdentitySectionProps {
   profile: UserProfile | null;
   navigation: ProfileNavigationCapabilities;
@@ -313,8 +311,6 @@ const DisclosureSection = ({
   );
 };
 
-// --- Main Screen ---
-
 export const ProfileScreen = () => {
   const { t } = useTranslation();
   const navigation = useProfileNavigation();
@@ -345,7 +341,6 @@ export const ProfileScreen = () => {
 
   const triggerBannerShake = () => {
     hapticError();
-    // eslint-disable-next-line react-compiler/react-compiler
     bannerShake.value = withSequence(
       withTiming(-10, { duration: 50 }),
       withRepeat(withTiming(10, { duration: 100 }), 3, true),

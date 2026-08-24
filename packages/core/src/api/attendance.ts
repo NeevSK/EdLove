@@ -1,12 +1,11 @@
+import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import type { StudentAttendancePulse } from '@repo/core/api/staffManagement';
+import { APIError } from '@repo/core/types/API';
 import * as Data from 'effect/Data';
 import * as Duration from 'effect/Duration';
 import * as Effect from 'effect/Effect';
 import { pipe } from 'effect/Function';
 import * as Schedule from 'effect/Schedule';
-import { APIError } from '@repo/core/types/API';
-import type { AppType } from '@repo/core/api/base';
-import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
-import type { StudentAttendancePulse } from '@repo/core/api/staffManagement';
 
 const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
@@ -20,9 +19,7 @@ class AttendanceHttpError extends Data.TaggedError('AttendanceHttpError')<{
   readonly status: string;
 }> {}
 
-function apiEffect<T>(
-  fn: () => Promise<T>,
-): Effect.Effect<T, AttendanceHttpError, never> {
+function apiEffect<T>(fn: () => Promise<T>): Effect.Effect<T, AttendanceHttpError, never> {
   return pipe(
     Effect.tryPromise({
       try: fn,
@@ -47,9 +44,7 @@ function apiEffect<T>(
 
 function toPromise<T>(effect: Effect.Effect<T, AttendanceHttpError, never>): Promise<T> {
   return Effect.runPromise(
-    effect.pipe(
-      Effect.catchAll((e) => Effect.fail(new APIError(e.message, e.status))),
-    ),
+    effect.pipe(Effect.catchAll((e) => Effect.fail(new APIError(e.message, e.status)))),
   );
 }
 
@@ -119,7 +114,12 @@ export const attendanceAPI = {
 };
 
 export const attendanceAPI$ = {
-  upsertAttendanceRecord: (classroom_id: string, student_id: string, status: string, date: string) =>
+  upsertAttendanceRecord: (
+    classroom_id: string,
+    student_id: string,
+    status: string,
+    date: string,
+  ) =>
     apiEffect(() =>
       (client.api as any).attendance.$post({
         json: { classroom_id, student_id, status, date },
@@ -144,7 +144,12 @@ export const attendanceAPI$ = {
       }),
     ) as Effect.Effect<StudentAttendancePulse, AttendanceHttpError, never>,
 
-  getAttendanceReport: (school_id: string, start_date: string, end_date: string, classroom_id?: string) =>
+  getAttendanceReport: (
+    school_id: string,
+    start_date: string,
+    end_date: string,
+    classroom_id?: string,
+  ) =>
     apiEffect(() =>
       (client.api as any).attendance.report.$get({
         query: {

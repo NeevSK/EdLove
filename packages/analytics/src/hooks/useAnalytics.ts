@@ -1,8 +1,8 @@
+import { posthogAnalytics } from '@repo/analytics/engine/PostHogAnalytics';
+import { posthogAnalytics as posthogWeb } from '@repo/analytics/engine/PostHogAnalytics.web';
 import { useActivityPulse } from '@repo/core/logic';
 import { usePostHog } from 'posthog-react-native';
 import { Platform } from 'react-native';
-import { posthogAnalytics } from '@repo/analytics/engine/PostHogAnalytics';
-import { posthogAnalytics as posthogWeb } from '@repo/analytics/engine/PostHogAnalytics.web';
 
 // Use the existing singleton for convenience, but we'll prefer the provider-based approach where possible
 const posthogNative = posthogAnalytics;
@@ -43,9 +43,9 @@ export function useAnalytics() {
       posthogWeb.screen(name, properties);
     } else {
       if (posthog) {
-        posthog.screen(name, properties);
+        void posthog.screen(name, properties);
       } else {
-        posthogNative.screen(name, properties);
+        void posthogNative.screen(name, properties);
       }
     }
   };

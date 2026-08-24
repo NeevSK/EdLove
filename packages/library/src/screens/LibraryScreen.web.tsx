@@ -123,7 +123,6 @@ export default function LibraryScreenWeb() {
   const user = useStore((state) => state.user);
   const showToast = useStore((state) => state.showToast);
 
-  // --- 1. STATE MACHINE (Parity with Native) ---
   interface LibraryState {
     searchQuery: string;
     debouncedSearchQuery: string;

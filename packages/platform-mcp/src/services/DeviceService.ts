@@ -8,79 +8,57 @@ function toMcpText(stdout: string, isError?: boolean) {
   };
 }
 
+type DeviceParams = Record<string, any>;
+
+// agent-device (Callstack): action -> argv fragments
+const AGENT_DEVICE_ACTIONS: Record<string, (params: DeviceParams) => string[]> = {
+  doctor: () => ['doctor'],
+  snapshot: (p) => (p.platform ? ['snapshot', '--platform', p.platform] : ['snapshot']),
+  screenshot: (p) => (p.platform ? ['screenshot', '--platform', p.platform] : ['screenshot']),
+  open_app: (p) => {
+    const args = ['open'];
+    if (p.appId) args.push(p.appId);
+    if (p.platform) args.push('--platform', p.platform);
+    return args;
+  },
+  press: (p) => (p.element ? ['press', p.element] : ['press']),
+  type: (p) => (p.text ? ['type', p.text] : ['type']),
+  scroll: (p) => (p.direction ? ['scroll', p.direction] : ['scroll']),
+  tap: (p) =>
+    p.x !== undefined && p.y !== undefined ? ['tap', String(p.x), String(p.y)] : ['tap'],
+  logs: () => ['logs'],
+};
+
+// argent (SWM): action -> argv fragments; unknown actions fall through to `run`
+function buildArgentArgs(action: string, params: DeviceParams): string[] {
+  const fixed: Record<string, string[]> = {
+    doctor: ['tools'],
+    screenshot: ['screenshot'],
+    logs: ['logs'],
+  };
+  if (fixed[action]) return fixed[action];
+  const extra = params.args && Array.isArray(params.args) ? params.args : [];
+  return ['run', action, ...extra];
+}
+
 export class DeviceService {
-  async handleDeviceAction(action: string, params: Record<string, any> = {}) {
+  async handleDeviceAction(action: string, params: DeviceParams = {}) {
     console.error(`Sovereign Device Action: "${action}" with params`, params);
 
-    // Map action to CLI commands
     const command = 'pnpm';
-    const args: string[] = ['--filter', '@repo/platform-mcp', 'exec'];
+    const base: string[] = ['--filter', '@repo/platform-mcp', 'exec'];
 
     if (params.tool === 'argent') {
-      args.push('argent');
-      switch (action) {
-        case 'doctor':
-          args.push('tools'); // argent tools lists capabilities / verifies connection
-          break;
-        case 'screenshot':
-          args.push('screenshot');
-          break;
-        case 'logs':
-          args.push('logs');
-          break;
-        default:
-          args.push('run', action);
-          if (params.args && Array.isArray(params.args)) {
-            args.push(...params.args);
-          }
-          break;
-      }
-    } else {
-      // Default to agent-device (Callstack)
-      args.push('agent-device');
-      switch (action) {
-        case 'doctor':
-          args.push('doctor');
-          break;
-        case 'snapshot':
-          args.push('snapshot');
-          if (params.platform) args.push('--platform', params.platform);
-          break;
-        case 'screenshot':
-          args.push('screenshot');
-          if (params.platform) args.push('--platform', params.platform);
-          break;
-        case 'open_app':
-          args.push('open');
-          if (params.appId) args.push(params.appId);
-          if (params.platform) args.push('--platform', params.platform);
-          break;
-        case 'press':
-          args.push('press');
-          if (params.element) args.push(params.element);
-          break;
-        case 'type':
-          args.push('type');
-          if (params.text) args.push(params.text);
-          break;
-        case 'scroll':
-          args.push('scroll');
-          if (params.direction) args.push(params.direction);
-          break;
-        case 'tap':
-          args.push('tap');
-          if (params.x !== undefined && params.y !== undefined) {
-            args.push(String(params.x), String(params.y));
-          }
-          break;
-        case 'logs':
-          args.push('logs');
-          break;
-        default:
-          return toMcpText(`Unsupported action "${action}" for agent-device`, true);
-      }
+      return this.execute(command, [...base, 'argent', ...buildArgentArgs(action, params)]);
     }
 
+    // Default to agent-device (Callstack)
+    const builder = AGENT_DEVICE_ACTIONS[action];
+    if (!builder) return toMcpText(`Unsupported action "${action}" for agent-device`, true);
+    return this.execute(command, [...base, 'agent-device', ...builder(params)]);
+  }
+
+  private execute(command: string, args: string[]) {
     try {
       const result = runCommand(command, args, { cwd: ROOT_DIR, shell: true });
       return toMcpText(result.combined, !result.ok);

@@ -1,4 +1,3 @@
-import React from 'react';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
 import { Plus } from '@repo/ui/icons';
 

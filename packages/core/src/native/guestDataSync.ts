@@ -1,6 +1,6 @@
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { authAPI } from '@repo/core/api/auth';
 import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { GuestDataManager } from '@repo/core/native/guestDataManager';
 import { setGuestScope } from '@repo/core/native/guestScope';
 
@@ -15,15 +15,6 @@ export interface SyncProgress {
 
 export type SyncProgressCallback = (progress: SyncProgress) => void;
 
-/**
- * Guest Data Sync Service
- *
- * Handles migration of locally stored guest data to Supabase when a user creates an account.
- * This service ensures seamless data continuity during the guest → authenticated user transition.
- *
- * 2026 Resilient Refactor: Routes all guest migration data in a single transactional
- * RPC payload to Sanctuary API, maintaining absolute double-gate middleware compliance.
- */
 export class GuestDataSync {
   static rememberGuestSession(userId: string): void {
     pendingConversionGuestUserId = userId;

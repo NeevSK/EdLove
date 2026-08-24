@@ -52,8 +52,8 @@
  */
 
 import type { AuthorityTier } from '@repo/core/types';
-import { useMemo, useState } from 'react';
 import type { EnergyForecast, MoodLog } from '@repo/self/types';
+import { useMemo, useState } from 'react';
 
 type OrientationSeeds = {
   depth_breadth: number;
@@ -65,10 +65,6 @@ type OrientationSeeds = {
   last_updated?: string;
 };
 
-// ============================================================================
-// CONSTANTS
-// ============================================================================
-
 /** Minimum unique calendar days before treating a signal as meaningful */
 const MIN_UNIQUE_DAYS = 3;
 /** Minimum total entries before mood is used at all */
@@ -77,10 +73,6 @@ const MOOD_MIN_SAMPLES = 7;
 const ENERGY_MIN_SAMPLES = 5;
 /** Recency half-life in milliseconds (14 days) */
 const HALF_LIFE_MS = 14 * 24 * 60 * 60 * 1000;
-
-// ============================================================================
-// AUTHORITY-BASED DEFAULTS
-// ============================================================================
 
 interface AuthorityDefaults {
   depth_breadth: number;
@@ -142,10 +134,6 @@ function studentGradeAdjustment(
   if (gradeNumber <= 9) return { solo_social: 65, reflect_act: 60, depth_breadth: 58 };
   return { solo_social: 55, reflect_act: 50, depth_breadth: 48 };
 }
-
-// ============================================================================
-// DATA QUALITY HELPERS
-// ============================================================================
 
 /** Count distinct ISO date strings (YYYY-MM-DD) from a list of timestamps. */
 function uniqueDays(timestamps: string[]): number {
@@ -211,10 +199,6 @@ function signalConsistency(values: number[]): number {
   if (cv <= 0.55) return 1.0 - ((cv - 0.3) / 0.25) * 0.7; // falling
   return Math.max(0, 1.0 - (cv - 0.55) / 0.45); // noise floor
 }
-
-// ============================================================================
-// BEHAVIORAL INFERENCE
-// ============================================================================
 
 /** Per-dimension result with its own quality weight */
 interface DimSignal {
@@ -344,10 +328,6 @@ function deriveFromBehavior(
   return { signals, quality };
 }
 
-// ============================================================================
-// MERGE UTILITY
-// ============================================================================
-
 function clamp(v: number): number {
   return Math.max(0, Math.min(100, Math.round(v)));
 }
@@ -420,10 +400,6 @@ function mergeLayers(
     last_updated: new Date().toISOString(),
   };
 }
-
-// ============================================================================
-// HOOK
-// ============================================================================
 
 export interface UseOrientationInferenceInput {
   /** Explicit seeds from onboarding \u2014 null/undefined if skipped */

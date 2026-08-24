@@ -1,12 +1,6 @@
 import { profile, type UserPreferences, useStore } from '@repo/core/logic';
 import { useCallback, useEffect, useState } from 'react';
 
-/**
- * useNotificationPreferences
- *
- * Sovereign hook for managing granular notification settings.
- * Handles fetching, local state updates, and persistence.
- */
 export const useNotificationPreferences = () => {
   const userId = useStore((state) => state.user?.id);
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);

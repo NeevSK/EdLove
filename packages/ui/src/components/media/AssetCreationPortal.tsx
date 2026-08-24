@@ -3,10 +3,6 @@ import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { Box, HStack, Input, InputField, Text, VStack } from '@repo/ui/primitives';
 import { useCallback, useReducer, useState } from 'react';
 
-// ------------------------------------------------------------
-// ASSET CREATION MODAL
-// ------------------------------------------------------------
-
 interface AssetFormState {
   title: string;
   url: string;
@@ -132,10 +128,6 @@ export function AssetCreationModal({
     </SanctuaryModal>
   );
 }
-
-// ------------------------------------------------------------
-// COLLECTION CREATION MODAL
-// ------------------------------------------------------------
 
 interface CollectionState {
   name: string;

@@ -2,7 +2,7 @@ import { useTheme } from '@repo/ui/hooks/useTheme';
 import { Check, Clock, Lock } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { EaseView } from 'react-native-ease';
 import { BrandPulse } from './BrandPulse';

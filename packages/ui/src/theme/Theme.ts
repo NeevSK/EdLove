@@ -12,10 +12,6 @@ import type { TemporalPhase } from '@repo/ui/context/types';
 import { compositeColorOverBackground, getTextOnBackground } from '@repo/ui/utils/colorUtils';
 import { tokens } from '../tokens';
 
-// ============================================================================
-// COLORS - Sanctuary Palette
-// ============================================================================
-
 export const colors = {
   // Primary Actions & Highlights
   // Gurudevi Gold - The Master Thread (Brand)
@@ -169,10 +165,6 @@ export const {
   lotusDeepPink,
 } = colors;
 
-// ============================================================================
-// TYPOGRAPHY - Readable & Respectful
-// ============================================================================
-
 export const typography = {
   // Font Families (will be set after fonts load)
   fontFamily: {
@@ -238,10 +230,6 @@ export const typography = {
   },
 } as const;
 
-// ============================================================================
-// SPACING - 8px Base Grid
-// ============================================================================
-
 export const spacing = {
   small: tokens.spacing.sm, // Alias for sm
   medium: tokens.spacing.md, // Alias for md
@@ -255,10 +243,6 @@ export const spacing = {
   '3xl': 64, // Massive spacing (hero sections)
 };
 
-// ============================================================================
-// CORNER RADIUS - Organic, Never Sharp
-// ============================================================================
-
 export const corners = {
   small: 8, // Alias for tight
   medium: 16, // Alias for comfortable
@@ -268,10 +252,6 @@ export const corners = {
   generous: 24, // Cards, modals
   full: 9999, // Circular (FAB, avatars) - use large number for full rounding
 };
-
-// ============================================================================
-// SHADOWS - Soft & Sanctuary
-// ============================================================================
 
 const shadowDefinitions = {
   none: {
@@ -359,10 +339,6 @@ export const getShadowStyle = (
   return shadow;
 };
 
-// ============================================================================
-// MOTION - Breath-like Timing
-// ============================================================================
-
 export const motion = {
   // Duration (in milliseconds)
   instant: 100, // Rarely used (immediate feedback only)
@@ -398,10 +374,6 @@ export const motion = {
   },
 };
 
-// ============================================================================
-// BORDERS
-// ============================================================================
-
 export const borders = {
   width: {
     none: 0,
@@ -417,10 +389,6 @@ export const borders = {
   },
 };
 
-// ============================================================================
-// OPACITY LEVELS
-// ============================================================================
-
 export const opacity = {
   transparent: 0,
   subtle: 0.1,
@@ -431,10 +399,6 @@ export const opacity = {
   opaque: 1,
 };
 
-// ============================================================================
-// LIST DIMENSIONS - For FlashList Optimization
-// ============================================================================
-
 export const listSizes = {
   resourceRow: 80,
   communityCard: 120,
@@ -442,10 +406,6 @@ export const listSizes = {
   classroomRow: 64,
   groupItem: 72,
 } as const;
-
-// ============================================================================
-// Z-INDEX LAYERS (Stacking Order)
-// ============================================================================
 
 export const zIndex = {
   background: 0,
@@ -458,10 +418,6 @@ export const zIndex = {
   toast: 500, // Toasts, notifications
   tooltip: 600, // Tooltips
 };
-
-// ============================================================================
-// DEFAULT EXPORT - Complete Theme Object
-// ============================================================================
 
 export const Theme = {
   colors,
@@ -479,12 +435,6 @@ export const Theme = {
 };
 
 export default Theme;
-
-// ============================================================================
-// PHASE TOKEN MATRIX \u2014 The Living Theme System
-// ============================================================================
-// These are the ONLY color values that phase-aware components should use.
-// Consume via useTheme() hook, never reference phases directly in components.
 
 export interface GlassTokens {
   surface: { bg: string; opacity: number; blurAmount: number; border: string };
@@ -1234,20 +1184,6 @@ export const phaseMatrix: Record<TemporalPhase, { dark: PhaseTokens; light: Phas
   },
 };
 
-/**
- * Classic static tokens \u2014 fallback when Living Theme System is disabled.
- * Derived from the original Theme.colors palette.
- * Used by useTheme() when enableLivingTheme = false.
- *
- * Color sources from Theme.colors:
- *   accent.action  \u2192 gurudeviBlue   (#3B82F6)
- *   accent.reward  \u2192 sanctuarySaffron (#E67E22)
- *   gradient nodes \u2192 deepIndigo / midnightBlue / twilightBlue area (deep navy)
- *   text.primary   \u2192 sacredWhite    (#F8FAFC)
- *   text.secondary \u2192 pearlGray      (#94A3B8)  / starlightGray
- *   text.inverse   \u2192 deepIndigo     (#0F172A)  / charcoalTruth
- *   text.muted     \u2192 mistGray       (#64748B)
- */
 const CLASSIC_BASE_TOKENS = {
   gradientNodes: ['#F5EDD6', '#FAF7ED', '#E8E2CF'], // Vellum \u2192 Silk \u2192 Linen
   glass: {

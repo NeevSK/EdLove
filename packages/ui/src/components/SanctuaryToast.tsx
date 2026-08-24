@@ -1,7 +1,11 @@
-/* eslint-disable react/react-compiler */
 'use no memo';
 
+import { Box } from '@repo/ui/components/ui/box';
+import { Text } from '@repo/ui/components/ui/text';
+import { useAccessibility } from '@repo/ui/hooks/useAccessibility';
 import { CircleAlert, CircleCheck, Info, X } from '@repo/ui/icons';
+import { Pressable } from '@repo/ui/primitives';
+import { tokens } from '@repo/ui/tokens';
 import { useCallback, useContext, useEffect } from 'react';
 import { Platform } from 'react-native';
 import Animated, {
@@ -10,13 +14,8 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { runOnJS } from 'react-native-worklets';
-import { Pressable } from '@repo/ui/primitives';
-import { Box } from '@repo/ui/components/ui/box';
-import { Text } from '@repo/ui/components/ui/text';
-import { tokens } from '@repo/ui/tokens';
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
-import { useAccessibility } from '@repo/ui/hooks/useAccessibility';
+import { runOnJS } from 'react-native-worklets';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
 
@@ -63,11 +62,13 @@ export default function SanctuaryToast({
 
   const hide = useCallback(() => {
     opacity.value = isReduceMotionEnabled ? 0 : withTiming(0);
-    translateY.value = isReduceMotionEnabled ? -HIDDEN_Y_OFFSET : withTiming(-HIDDEN_Y_OFFSET, {}, (finished) => {
-      if (finished && visible) {
-        runOnJS(onHide)();
-      }
-    });
+    translateY.value = isReduceMotionEnabled
+      ? -HIDDEN_Y_OFFSET
+      : withTiming(-HIDDEN_Y_OFFSET, {}, (finished) => {
+          if (finished && visible) {
+            runOnJS(onHide)();
+          }
+        });
     if (isReduceMotionEnabled && visible) onHide();
   }, [visible, onHide, opacity, translateY, isReduceMotionEnabled]);
 
@@ -127,7 +128,9 @@ export default function SanctuaryToast({
       >
         <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <Icon color={iconColor} size={24} />
-          <Text style={{ color: tokens.colors.toastText, flex: 1, fontSize: 14, fontWeight: '500' }}>
+          <Text
+            style={{ color: tokens.colors.toastText, flex: 1, fontSize: 14, fontWeight: '500' }}
+          >
             {message}
           </Text>
           <Pressable

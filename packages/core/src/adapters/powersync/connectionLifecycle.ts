@@ -1,5 +1,4 @@
-import type { PowerSyncBackendConnector } from '@powersync/common';
-import type { CommonPowerSyncDatabase } from '@powersync/common';
+import type { CommonPowerSyncDatabase, PowerSyncBackendConnector } from '@powersync/common';
 import { sovereignBus } from '@repo/core/lib/sync/eventBus';
 
 type LifecycleDatabase = CommonPowerSyncDatabase & {

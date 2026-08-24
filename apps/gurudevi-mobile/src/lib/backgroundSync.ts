@@ -154,8 +154,6 @@ export async function runBackgroundSyncTask() {
   return drained > 0 || failed > 0 ? BackgroundTaskResult.NewData : BackgroundTaskResult.NoData;
 }
 
-// ─── Registration ─────────────────────────────────────────────────────────────
-
 export async function registerBackgroundSync(): Promise<void> {
   try {
     const status = await coreRuntime.backgroundTask.getStatusAsync();

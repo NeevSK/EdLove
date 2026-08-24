@@ -1,6 +1,7 @@
 // Logic Hooks & Utilities
 
 export * from '@repo/core/api/history';
+export { useAuthLifecycle } from '@repo/core/hooks/useAuthLifecycle';
 export {
   type DeviceAccountRecord,
   useDeviceAccounts,
@@ -11,7 +12,6 @@ export { useManualSnapshot } from '@repo/core/hooks/useManualSnapshot';
 export { useNotifications } from '@repo/core/hooks/useNotifications';
 export { useTemporalHeatmap } from '@repo/core/hooks/useTemporalHeatmap';
 export { accountPin } from '@repo/core/lib/accountPin';
-export { useConsentStore } from '@repo/core/store/useConsentStore';
 export {
   type InviteCodeData,
   incrementInviteCodeUsage,
@@ -102,8 +102,11 @@ export {
   type ProductAnalyticsEventProperties,
   type ProductAnalyticsScalar,
 } from '@repo/core/logic/ports/productAnalytics.port';
-export * from '@repo/core/logic/registry/appCatalog';
-export * from '@repo/core/logic/registry/citizenship';
+// sanctuaryFeature re-exports the four core citizenship symbols, so only the
+// remaining helper is pulled from the registry to avoid duplicate exports.
+export { citizenshipName } from '@repo/core/logic/registry/citizenship';
+// registry/citizenship is re-exported selectively above (line ~72) because
+// sanctuaryFeature already re-exports its four main symbols.
 export * from '@repo/core/logic/registry/domainEntry';
 export * from '@repo/core/logic/registry/featureLifecycleManifest';
 export * from '@repo/core/logic/registry/featureLifecyclePolicy';
@@ -113,10 +116,10 @@ export * from '@repo/core/logic/schemas';
 export * from '@repo/core/logic/store-slices';
 export * from '@repo/core/logic/utils';
 export * from '@repo/core/logic/workspace/index';
-export { useAuthLifecycle } from '@repo/core/hooks/useAuthLifecycle';
 export { useAuth } from '@repo/core/providers/AuthProvider';
 export { GlobalProvider } from '@repo/core/providers/GlobalProvider';
 export { useAuthStore } from '@repo/core/store/useAuthStore';
+export { useConsentStore } from '@repo/core/store/useConsentStore';
 export { useFeatureStore } from '@repo/core/store/useFeatureStore';
 export { type TotalState, useStore } from '@repo/core/store/useStore';
 export { type TemporalScale, useTemporalStore } from '@repo/core/store/useTemporalStore';

@@ -1,6 +1,5 @@
 /* eslint-disable import-x/no-unresolved */
 
-// --- Robust Stdio Protection: Redirect all stdout to stderr during the boot phase ---
 const originalStdoutWrite = process.stdout.write;
 process.stdout.write = function (chunk: any, encoding?: any, callback?: any) {
   return process.stderr.write(chunk, encoding, callback);
@@ -17,7 +16,6 @@ import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
 import * as dotenv from 'dotenv';
 import { z } from 'zod';
 
-// --- Service Imports: The Modular Sovereignty ---
 import { AuditService } from './services/AuditService.js';
 import { DeviceService } from './services/DeviceService.js';
 import { DiscoveryService } from './services/DiscoveryService.js';
@@ -29,6 +27,291 @@ import { ScoutService } from './services/ScoutService.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '..', '.env'), quiet: true });
+
+type Playbook = { sourcePath: string; content: string };
+
+function collectLocalPlaybooks(localSkillsDir: string, playbooks: Map<string, Playbook>) {
+  if (!fs.existsSync(localSkillsDir)) return;
+  for (const skillName of fs.readdirSync(localSkillsDir)) {
+    const skillPath = path.join(localSkillsDir, skillName);
+    if (!fs.statSync(skillPath).isDirectory()) continue;
+
+    const localSkillMdPath = path.join(skillPath, 'skill.md');
+    if (fs.existsSync(localSkillMdPath)) {
+      playbooks.set(skillName, {
+        sourcePath: localSkillMdPath,
+        content: fs.readFileSync(localSkillMdPath, 'utf8'),
+      });
+    }
+  }
+}
+
+function collectGlobalCodexPlaybooks(
+  globalCodexSkillsDir: string,
+  localSkillsDir: string,
+  playbooks: Map<string, Playbook>,
+) {
+  // Global Codex playbooks bootstrap the workspace; local copies always win.
+  if (!fs.existsSync(globalCodexSkillsDir)) return;
+  for (const skillName of fs.readdirSync(globalCodexSkillsDir)) {
+    if (skillName.startsWith('.')) continue;
+
+    const skillPath = path.join(globalCodexSkillsDir, skillName);
+    if (!fs.statSync(skillPath).isDirectory()) continue;
+
+    let codexSkillMdPath = path.join(skillPath, 'SKILL.md');
+    if (!fs.existsSync(codexSkillMdPath)) {
+      codexSkillMdPath = path.join(skillPath, 'skill.md');
+    }
+    if (!fs.existsSync(codexSkillMdPath) || playbooks.has(skillName)) continue;
+
+    const content = fs.readFileSync(codexSkillMdPath, 'utf8');
+    playbooks.set(skillName, { sourcePath: codexSkillMdPath, content });
+
+    // Auto-import global Codex skill to local workspace folder so they are committed and shared!
+    const targetWorkspaceSkillDir = path.join(localSkillsDir, skillName);
+    if (!fs.existsSync(targetWorkspaceSkillDir)) {
+      fs.mkdirSync(targetWorkspaceSkillDir, { recursive: true });
+    }
+    fs.writeFileSync(path.join(targetWorkspaceSkillDir, 'skill.md'), content, 'utf8');
+    console.error(
+      `[Gateway] Dynamic Auto-Import: Global Codex skill "${skillName}" imported into workspace.`,
+    );
+  }
+}
+
+function syncPlaybookToGlobalTargets(
+  skillName: string,
+  details: Playbook,
+  dirs: { globalKiDir: string; globalCodexSkillsDir: string; localSkillsDir: string },
+) {
+  // Sync globally to Gemini/Antigravity KIs
+  const targetSkillDir = path.join(dirs.globalKiDir, skillName);
+  const targetArtifactsDir = path.join(targetSkillDir, 'artifacts');
+
+  if (!fs.existsSync(targetSkillDir)) {
+    fs.mkdirSync(targetSkillDir, { recursive: true });
+  }
+  if (!fs.existsSync(targetArtifactsDir)) {
+    fs.mkdirSync(targetArtifactsDir, { recursive: true });
+  }
+
+  const metadata = {
+    title: `${skillName
+      .split('-')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ')} Skill`,
+    summary: `Workspace-bounded engineering playbook for ${skillName} integrated into the Polymath Platform.`,
+    tags: [skillName, 'sovereign', 'monorepo', 'playbook'],
+    updatedAt: new Date().toISOString(),
+    references: [
+      {
+        title: `Workspace Playbook`,
+        path: path.join(dirs.localSkillsDir, skillName, 'skill.md'),
+      },
+    ],
+  };
+
+  fs.writeFileSync(
+    path.join(targetSkillDir, 'metadata.json'),
+    JSON.stringify(metadata, null, 2),
+    'utf8',
+  );
+
+  fs.writeFileSync(path.join(targetArtifactsDir, 'skill.md'), details.content, 'utf8');
+  console.error(`[Gateway] Synced skill "${skillName}" globally to Antigravity KIs.`);
+
+  // Sync globally back to Codex skills (if Codex directory exists but this skill is missing)
+  if (fs.existsSync(dirs.globalCodexSkillsDir)) {
+    const targetCodexSkillDir = path.join(dirs.globalCodexSkillsDir, skillName);
+    if (!fs.existsSync(targetCodexSkillDir)) {
+      fs.mkdirSync(targetCodexSkillDir, { recursive: true });
+      fs.writeFileSync(path.join(targetCodexSkillDir, 'SKILL.md'), details.content, 'utf8');
+      console.error(
+        `[Gateway] Dynamic Auto-Export: Synced skill "${skillName}" back to global Codex.`,
+      );
+    }
+  }
+}
+
+type DownstreamServerSpec = {
+  name: string;
+  envKey: string;
+  alwaysRun?: boolean;
+  command: string;
+  args: string[];
+};
+
+function proxyScriptPath() {
+  return path.join(__dirname, '..', '..', '..', 'scripts', 'mcp-proxy.mjs');
+}
+
+function buildDownstreamServerSpecs(): DownstreamServerSpec[] {
+  return [
+    {
+      name: 'sequential-thinking',
+      envKey: 'EXPO_TOKEN', // sequential thinking doesn't need specific tokens but we want it always active
+      alwaysRun: true,
+      command: 'node',
+      args: [
+        proxyScriptPath(),
+        'node',
+        path.join(
+          __dirname,
+          '..',
+          'node_modules',
+          '@modelcontextprotocol',
+          'server-sequential-thinking',
+          'dist',
+          'index.js',
+        ),
+      ],
+    },
+    {
+      name: 'jscpd',
+      envKey: 'EXPO_TOKEN',
+      alwaysRun: true,
+      command: 'node',
+      args: [
+        // jscpd is a root devDependency — resolve from monorepo root
+        path.join(__dirname, '..', '..', '..', 'node_modules', 'jscpd', 'run-jscpd.js'),
+        '--mcp',
+        '--directory',
+        'apps/gurudevi-mobile',
+      ],
+    },
+    {
+      name: 'github',
+      envKey: 'GITHUB_PERSONAL_ACCESS_TOKEN',
+      command: 'node',
+      args: [proxyScriptPath(), 'pnpm', 'dlx', '@modelcontextprotocol/server-github'],
+    },
+    {
+      name: 'supabase',
+      envKey: 'SUPABASE_ACCESS_TOKEN',
+      command: 'node',
+      args: [
+        proxyScriptPath(),
+        'node',
+        path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          'node_modules',
+          '@supabase',
+          'mcp-server-supabase',
+          'dist',
+          'transports',
+          'stdio.js',
+        ),
+      ],
+    },
+    {
+      name: 'expo',
+      envKey: 'EXPO_TOKEN',
+      command: 'node',
+      args: [
+        proxyScriptPath(),
+        'node',
+        path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
+        'https://mcp.expo.dev/mcp',
+      ],
+    },
+    {
+      name: 'growthbook',
+      envKey: 'GB_API_KEY',
+      command: 'node',
+      args: [proxyScriptPath(), 'pnpm', 'dlx', '@growthbook/mcp'],
+    },
+    {
+      name: 'context7',
+      envKey: 'CONTEXT7_API_KEY',
+      command: 'node',
+      args: [proxyScriptPath(), 'npx', '-y', '@upstash/context7-mcp'],
+    },
+    {
+      name: 'firecrawl',
+      envKey: 'FIRECRAWL_API_KEY',
+      command: 'node',
+      args: [proxyScriptPath(), 'npx', '-y', '@mendable/firecrawl-mcp-server'],
+    },
+    {
+      name: 'reactnative-solutions',
+      envKey: 'NONE', // No API key required
+      alwaysRun: true,
+      command: 'node',
+      args: [
+        proxyScriptPath(),
+        'node',
+        path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
+        'https://reactnative.solutions/api/mcp',
+      ],
+    },
+    {
+      name: 'cloudflare',
+      envKey: 'CLOUDFLARE_API_TOKEN',
+      command: 'node',
+      args: [
+        proxyScriptPath(),
+        'node',
+        path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
+        'https://mcp.cloudflare.com/mcp',
+      ],
+    },
+  ];
+}
+
+async function probeExpoToken(token: string | undefined) {
+  if (!token) return;
+  try {
+    const checkRes = await fetch('https://mcp.expo.dev/mcp', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'initialize',
+        params: {
+          protocolVersion: '2024-11-05',
+          capabilities: {},
+          clientInfo: { name: 'gateway-probe', version: '1.0.0' },
+        },
+      }),
+    });
+    if (checkRes.status === 401) {
+      console.error(
+        `[Gateway] ⚠️  Warning: The provided EXPO_TOKEN returned 401 Unauthorized. Attempting to launch expo server anyway (it may fall back to cached browser tokens)...`,
+      );
+    }
+  } catch (e: any) {
+    console.error(`[Gateway] Expo token validation probe failed:`, e.message);
+  }
+}
+
+function buildCleanEnv(envKey: string, token: string | undefined): Record<string, string> {
+  const cleanEnv: Record<string, string> = {};
+  for (const [key, value] of Object.entries(process.env)) {
+    if (value !== undefined && key !== 'NODE_OPTIONS') {
+      cleanEnv[key] = value;
+    }
+  }
+  if (token) {
+    cleanEnv[envKey] = token;
+  }
+  return cleanEnv;
+}
+
+function resolveServerArgs(spec: DownstreamServerSpec, token: string | undefined): string[] {
+  // Context7 takes its API key via command line; Firecrawl reads it from the environment.
+  if (spec.name === 'context7' && token) {
+    return [...spec.args, '--api-key', token];
+  }
+  return spec.args;
+}
 
 /**
  * The Polymath Platform MCP Server - MODULAR VERSION
@@ -81,58 +364,10 @@ class PolymathPlatformServer {
       fs.mkdirSync(globalKiDir, { recursive: true });
     }
 
-    // Step 1: Discover all playbooks across the local workspace and the global Codex folders
     const playbooks = new Map<string, { sourcePath: string; content: string }>();
+    collectLocalPlaybooks(localSkillsDir, playbooks);
+    collectGlobalCodexPlaybooks(globalCodexSkillsDir, localSkillsDir, playbooks);
 
-    // A. Read local playbooks committed in the repo
-    if (fs.existsSync(localSkillsDir)) {
-      const localSkills = fs.readdirSync(localSkillsDir);
-      for (const skillName of localSkills) {
-        const skillPath = path.join(localSkillsDir, skillName);
-        if (!fs.statSync(skillPath).isDirectory()) continue;
-
-        const localSkillMdPath = path.join(skillPath, 'skill.md');
-        if (fs.existsSync(localSkillMdPath)) {
-          const content = fs.readFileSync(localSkillMdPath, 'utf8');
-          playbooks.set(skillName, { sourcePath: localSkillMdPath, content });
-        }
-      }
-    }
-
-    // B. Read global Codex playbooks (if installed on this computer) to bootstrap the workspace
-    if (fs.existsSync(globalCodexSkillsDir)) {
-      const globalSkills = fs.readdirSync(globalCodexSkillsDir);
-      for (const skillName of globalSkills) {
-        if (skillName.startsWith('.')) continue;
-
-        const skillPath = path.join(globalCodexSkillsDir, skillName);
-        if (!fs.statSync(skillPath).isDirectory()) continue;
-
-        let codexSkillMdPath = path.join(skillPath, 'SKILL.md');
-        if (!fs.existsSync(codexSkillMdPath)) {
-          codexSkillMdPath = path.join(skillPath, 'skill.md');
-        }
-
-        if (fs.existsSync(codexSkillMdPath)) {
-          if (!playbooks.has(skillName)) {
-            const content = fs.readFileSync(codexSkillMdPath, 'utf8');
-            playbooks.set(skillName, { sourcePath: codexSkillMdPath, content });
-
-            // Auto-import global Codex skill to local workspace folder so they are committed and shared!
-            const targetWorkspaceSkillDir = path.join(localSkillsDir, skillName);
-            if (!fs.existsSync(targetWorkspaceSkillDir)) {
-              fs.mkdirSync(targetWorkspaceSkillDir, { recursive: true });
-            }
-            fs.writeFileSync(path.join(targetWorkspaceSkillDir, 'skill.md'), content, 'utf8');
-            console.error(
-              `[Gateway] Dynamic Auto-Import: Global Codex skill "${skillName}" imported into workspace.`,
-            );
-          }
-        }
-      }
-    }
-
-    // Step 2: Compile & Sync the unified playbooks globally and to .github/
     let consolidatedInstructions = `# Unified Developer Copilot Instructions\n\nGenerated automatically by the Polymath Platform Gateway. Do not edit directly.\n\n`;
 
     // Prepend root .cursorrules if available
@@ -143,54 +378,11 @@ class PolymathPlatformServer {
 
     for (const [skillName, details] of playbooks.entries()) {
       consolidatedInstructions += `\n<!-- START SKILL: ${skillName} -->\n\n${details.content}\n\n<!-- END SKILL: ${skillName} -->\n`;
-
-      // 1. Sync globally to Gemini/Antigravity KIs
-      const targetSkillDir = path.join(globalKiDir, skillName);
-      const targetArtifactsDir = path.join(targetSkillDir, 'artifacts');
-
-      if (!fs.existsSync(targetSkillDir)) {
-        fs.mkdirSync(targetSkillDir, { recursive: true });
-      }
-      if (!fs.existsSync(targetArtifactsDir)) {
-        fs.mkdirSync(targetArtifactsDir, { recursive: true });
-      }
-
-      const metadata = {
-        title: `${skillName
-          .split('-')
-          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-          .join(' ')} Skill`,
-        summary: `Workspace-bounded engineering playbook for ${skillName} integrated into the Polymath Platform.`,
-        tags: [skillName, 'sovereign', 'monorepo', 'playbook'],
-        updatedAt: new Date().toISOString(),
-        references: [
-          {
-            title: `Workspace Playbook`,
-            path: path.join(localSkillsDir, skillName, 'skill.md'),
-          },
-        ],
-      };
-
-      fs.writeFileSync(
-        path.join(targetSkillDir, 'metadata.json'),
-        JSON.stringify(metadata, null, 2),
-        'utf8',
-      );
-
-      fs.writeFileSync(path.join(targetArtifactsDir, 'skill.md'), details.content, 'utf8');
-      console.error(`[Gateway] Synced skill "${skillName}" globally to Antigravity KIs.`);
-
-      // 2. Sync globally back to Codex skills (if Codex directory exists but this skill is missing)
-      if (fs.existsSync(globalCodexSkillsDir)) {
-        const targetCodexSkillDir = path.join(globalCodexSkillsDir, skillName);
-        if (!fs.existsSync(targetCodexSkillDir)) {
-          fs.mkdirSync(targetCodexSkillDir, { recursive: true });
-          fs.writeFileSync(path.join(targetCodexSkillDir, 'SKILL.md'), details.content, 'utf8');
-          console.error(
-            `[Gateway] Dynamic Auto-Export: Synced skill "${skillName}" back to global Codex.`,
-          );
-        }
-      }
+      syncPlaybookToGlobalTargets(skillName, details, {
+        globalKiDir,
+        globalCodexSkillsDir,
+        localSkillsDir,
+      });
     }
 
     // Write the compiled copilot instructions file in .github/
@@ -218,130 +410,7 @@ class PolymathPlatformServer {
       console.error('[Gateway] Skills Sync Warning:', e.message);
     }
 
-    const servers = [
-      {
-        name: 'sequential-thinking',
-        envKey: 'EXPO_TOKEN', // sequential thinking doesn't need specific tokens but we want it always active
-        alwaysRun: true,
-        command: 'node',
-        args: [
-          path.join(__dirname, '..', '..', '..', 'scripts', 'mcp-proxy.mjs'),
-          'node',
-          path.join(
-            __dirname,
-            '..',
-            'node_modules',
-            '@modelcontextprotocol',
-            'server-sequential-thinking',
-            'dist',
-            'index.js',
-          ),
-        ],
-      },
-      {
-        name: 'jscpd',
-        envKey: 'EXPO_TOKEN',
-        alwaysRun: true,
-        command: 'node',
-        args: [
-          // jscpd is a root devDependency — resolve from monorepo root
-          path.join(__dirname, '..', '..', '..', 'node_modules', 'jscpd', 'run-jscpd.js'),
-          '--mcp',
-          '--directory',
-          'apps/gurudevi-mobile',
-        ],
-      },
-      {
-        name: 'github',
-        envKey: 'GITHUB_PERSONAL_ACCESS_TOKEN',
-        command: 'node',
-        args: [
-          'C:\\Users\\Naween\\projects\\polymath-platform\\scripts\\mcp-proxy.mjs',
-          'pnpm',
-          'dlx',
-          '@modelcontextprotocol/server-github',
-        ],
-      },
-      {
-        name: 'supabase',
-        envKey: 'SUPABASE_ACCESS_TOKEN',
-        command: 'node',
-        args: [
-          'C:\\Users\\Naween\\projects\\polymath-platform\\scripts\\mcp-proxy.mjs',
-          'node',
-          'C:\\Users\\Naween\\projects\\polymath-platform\\node_modules\\@supabase\\mcp-server-supabase\\dist\\transports\\stdio.js',
-        ],
-      },
-      {
-        name: 'expo',
-        envKey: 'EXPO_TOKEN',
-        command: 'node',
-        args: [
-          path.join(__dirname, '..', '..', '..', 'scripts', 'mcp-proxy.mjs'),
-          'node',
-          path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
-          'https://mcp.expo.dev/mcp',
-        ],
-      },
-      {
-        name: 'growthbook',
-        envKey: 'GB_API_KEY',
-        command: 'node',
-        args: [
-          path.join(__dirname, '..', '..', '..', 'scripts', 'mcp-proxy.mjs'),
-          'pnpm',
-          'dlx',
-          '@growthbook/mcp',
-        ],
-      },
-      {
-        name: 'context7',
-        envKey: 'CONTEXT7_API_KEY',
-        command: 'node',
-        args: [
-          path.join(__dirname, '..', '..', '..', 'scripts', 'mcp-proxy.mjs'),
-          'npx',
-          '-y',
-          '@upstash/context7-mcp',
-        ],
-      },
-      {
-        name: 'firecrawl',
-        envKey: 'FIRECRAWL_API_KEY',
-        command: 'node',
-        args: [
-          path.join(__dirname, '..', '..', '..', 'scripts', 'mcp-proxy.mjs'),
-          'npx',
-          '-y',
-          '@mendable/firecrawl-mcp-server',
-        ],
-      },
-      {
-        name: 'reactnative-solutions',
-        envKey: 'NONE', // No API key required
-        alwaysRun: true,
-        command: 'node',
-        args: [
-          path.join(__dirname, '..', '..', '..', 'scripts', 'mcp-proxy.mjs'),
-          'node',
-          path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
-          'https://reactnative.solutions/api/mcp',
-        ],
-      },
-      {
-        name: 'cloudflare',
-        envKey: 'CLOUDFLARE_API_TOKEN',
-        command: 'node',
-        args: [
-          path.join(__dirname, '..', '..', '..', 'scripts', 'mcp-proxy.mjs'),
-          'node',
-          path.join(__dirname, '..', 'node_modules', 'mcp-remote', 'dist', 'proxy.js'),
-          'https://mcp.cloudflare.com/mcp',
-        ],
-      },
-    ];
-
-    for (const serverConf of servers) {
+    for (const serverConf of buildDownstreamServerSpecs()) {
       const token = process.env[serverConf.envKey];
       if (!token && !serverConf.alwaysRun) {
         console.error(
@@ -350,53 +419,14 @@ class PolymathPlatformServer {
         continue;
       }
 
-      if (serverConf.name === 'expo' && token) {
-        try {
-          const checkRes = await fetch('https://mcp.expo.dev/mcp', {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              jsonrpc: '2.0',
-              id: 1,
-              method: 'initialize',
-              params: {
-                protocolVersion: '2024-11-05',
-                capabilities: {},
-                clientInfo: { name: 'gateway-probe', version: '1.0.0' },
-              },
-            }),
-          });
-          if (checkRes.status === 401) {
-            console.error(
-              `[Gateway] ⚠️  Warning: The provided EXPO_TOKEN returned 401 Unauthorized. Attempting to launch expo server anyway (it may fall back to cached browser tokens)...`,
-            );
-          }
-        } catch (e: any) {
-          console.error(`[Gateway] Expo token validation probe failed:`, e.message);
-        }
+      if (serverConf.name === 'expo') {
+        await probeExpoToken(token);
       }
 
       try {
         console.error(`[Gateway] Launching downstream client: ${serverConf.name}...`);
-        const cleanEnv: Record<string, string> = {};
-        for (const [key, value] of Object.entries(process.env)) {
-          if (value !== undefined && key !== 'NODE_OPTIONS') {
-            cleanEnv[key] = value;
-          }
-        }
-        if (token) {
-          cleanEnv[serverConf.envKey] = token;
-        }
-
-        // Special handling for Context7 to pass API key via command line
-        let finalArgs = serverConf.args;
-        if (serverConf.name === 'context7' && token) {
-          finalArgs = [...serverConf.args, '--api-key', token];
-        }
-        // Firecrawl uses environment variable for API key (already set in cleanEnv)
+        const cleanEnv = buildCleanEnv(serverConf.envKey, token);
+        const finalArgs = resolveServerArgs(serverConf, token);
 
         const transport = new StdioClientTransport({
           command: serverConf.command,
@@ -424,34 +454,7 @@ class PolymathPlatformServer {
 
         // Register downstream tools with the gateway server
         for (const tool of toolsList) {
-          const toolName = `${serverConf.name}_${tool.name}`;
-          this.server.registerTool(
-            toolName,
-            {
-              description: `[${serverConf.name}] ${tool.description || ''}`,
-              inputSchema: z.object({}).passthrough(), // Accept any input structure
-            },
-            async (args: any) => {
-              try {
-                const downstreamClient = this.downstreamClients.get(serverConf.name);
-                if (!downstreamClient) {
-                  throw new Error(`Downstream client ${serverConf.name} not available`);
-                }
-
-                const result = await downstreamClient.client.callTool({
-                  name: tool.name,
-                  arguments: args,
-                });
-
-                return result;
-              } catch (error: any) {
-                return {
-                  content: [{ type: 'text', text: `Error calling ${toolName}: ${error.message}` }],
-                  isError: true,
-                };
-              }
-            },
-          );
+          this.registerDownstreamTool(serverConf.name, tool);
         }
 
         console.error(
@@ -464,6 +467,35 @@ class PolymathPlatformServer {
         );
       }
     }
+  }
+
+  private registerDownstreamTool(serverName: string, tool: any) {
+    const toolName = `${serverName}_${tool.name}`;
+    this.server.registerTool(
+      toolName,
+      {
+        description: `[${serverName}] ${tool.description || ''}`,
+        inputSchema: z.object({}).passthrough(), // Accept any input structure
+      },
+      async (args: any) => {
+        try {
+          const downstreamClient = this.downstreamClients.get(serverName);
+          if (!downstreamClient) {
+            throw new Error(`Downstream client ${serverName} not available`);
+          }
+
+          return await downstreamClient.client.callTool({
+            name: tool.name,
+            arguments: args,
+          });
+        } catch (error: any) {
+          return {
+            content: [{ type: 'text', text: `Error calling ${toolName}: ${error.message}` }],
+            isError: true,
+          };
+        }
+      },
+    );
   }
 
   private registerPlatformTool<T extends z.ZodObject<any>>(
@@ -501,14 +533,12 @@ class PolymathPlatformServer {
       'heal_codebase',
     ];
 
-    let shouldRegister = false;
-    if (mcpMode === 'GATEWAY') {
-      shouldRegister = gatewayTools.includes(name);
-    } else if (mcpMode === 'LEAN') {
-      shouldRegister = leanTools.includes(name);
-    } else {
-      shouldRegister = true;
-    }
+    const shouldRegister =
+      mcpMode === 'GATEWAY'
+        ? gatewayTools.includes(name)
+        : mcpMode === 'LEAN'
+          ? leanTools.includes(name)
+          : true;
 
     if (shouldRegister) {
       this.server.registerTool(
@@ -532,7 +562,6 @@ class PolymathPlatformServer {
   }
 
   private setupHandlers() {
-    // --- Custom Tools ---
     this.registerPlatformTool(
       'sync_workspace_skills',
       'Surgically syncs active repo-level agent skills into global Antigravity Knowledge Items (KIs) dynamically.',
@@ -550,7 +579,6 @@ class PolymathPlatformServer {
       },
     );
 
-    // --- GATEWAY ROUTING ---
     this.registerPlatformTool(
       'sovereign_device',
       'Unified device interaction and control engine for mobile simulators and emulators.',
@@ -607,60 +635,39 @@ class PolymathPlatformServer {
         params: z.record(z.string(), z.any()).optional(),
       }),
       async ({ action, params = {} }) => {
-        switch (action) {
-          case 'hygiene':
-            return this.audit.handleAuditHygiene();
-          case 'legacy_ui':
-            return this.audit.handleAuditLegacyUI(params as any);
-          case 'architecture':
-            return this.audit.handleAuditPackageArchitecture(params as any);
-          case 'a11y':
-            return this.audit.handleAuditA11y(params as any);
-          case 'dependency_health':
-            return this.maintenance.handleAuditDependencyHealth();
-          case 'taze':
-            return this.maintenance.handleTazeAudit(params as any);
-          case 'i18n':
-            return this.audit.handleAuditI18n();
-          case 'colors':
-            return this.audit.handleCheckContrast(params as any);
-          case 'boundaries':
-            return this.audit.handleCheckClassroomBoundaries();
-          case 'features':
-            return this.audit.handleAuditFeatureFidelity(params as any);
-          case 'exports':
-            return this.audit.handleAuditExportIntegrity();
-          case 'design_tokens':
-            return this.audit.handleAuditColors();
-          case 'stale_flags':
-            return this.audit.handleAuditFeatureFlags();
-          case 'load_report':
-            return this.audit.handleReportCognitiveLoad(params as any);
-          case 'bundle_leak':
-            return this.audit.handleAuditBundleLeak();
-          case 'lint':
-            return this.audit.handleLintPackage(params as any);
-          case 'biome_lint':
-            return this.audit.handleBiomeLint(params as any);
-          case 'check':
-            return this.audit.handleBiomeCheck(params as any);
-          case 'syncpack_fix':
-            return this.audit.handleSyncpackFix();
-          case 'types':
-            return this.audit.handleCheckTypes(params as any);
-          case 'hooks':
-            return this.audit.handleAuditHookViolations(params as any);
-          case 'deprecations':
-            return this.audit.handleAuditDeprecations(params as any);
-          case 'memory_sinks':
-            return this.audit.handleCheckMemorySinks();
-          case 'cognitive_load':
-            return this.audit.handleReportCognitiveLoad(params as any);
-          case 'push_audit':
-            return this.audit.handlePushAudit();
-          default:
-            throw new Error(`Unknown audit action: ${action}`);
+        const auditHandlers: Record<string, (p: Record<string, any>) => unknown> = {
+          hygiene: () => this.audit.handleAuditHygiene(),
+          legacy_ui: (p) => this.audit.handleAuditLegacyUI(p as any),
+          architecture: (p) => this.audit.handleAuditPackageArchitecture(p as any),
+          a11y: (p) => this.audit.handleAuditA11y(p as any),
+          dependency_health: () => this.maintenance.handleAuditDependencyHealth(),
+          taze: (p) => this.maintenance.handleTazeAudit(p as any),
+          i18n: () => this.audit.handleAuditI18n(),
+          colors: (p) => this.audit.handleCheckContrast(p as any),
+          boundaries: () => this.audit.handleCheckClassroomBoundaries(),
+          features: (p) => this.audit.handleAuditFeatureFidelity(p as any),
+          exports: () => this.audit.handleAuditExportIntegrity(),
+          design_tokens: () => this.audit.handleAuditColors(),
+          stale_flags: () => this.audit.handleAuditFeatureFlags(),
+          load_report: (p) => this.audit.handleReportCognitiveLoad(p as any),
+          bundle_leak: () => this.audit.handleAuditBundleLeak(),
+          lint: (p) => this.audit.handleLintPackage(p as any),
+          biome_lint: (p) => this.audit.handleBiomeLint(p as any),
+          check: (p) => this.audit.handleBiomeCheck(p as any),
+          syncpack_fix: () => this.audit.handleSyncpackFix(),
+          types: (p) => this.audit.handleCheckTypes(p as any),
+          hooks: (p) => this.audit.handleAuditHookViolations(p as any),
+          deprecations: (p) => this.audit.handleAuditDeprecations(p as any),
+          memory_sinks: () => this.audit.handleCheckMemorySinks(),
+          cognitive_load: (p) => this.audit.handleReportCognitiveLoad(p as any),
+          push_audit: () => this.audit.handlePushAudit(),
+        };
+
+        const handler = auditHandlers[action];
+        if (!handler) {
+          throw new Error(`Unknown audit action: ${action}`);
         }
+        return handler(params);
       },
     );
 
@@ -867,7 +874,6 @@ class PolymathPlatformServer {
       },
     );
 
-    // --- LEGACY MODES (Retained for migration/full options) ---
     this.registerPlatformTool(
       'audit_monorepo_hygiene',
       'Runs corporate-scale hygiene checks (circular deps, unused code, boundary violations).',

@@ -1,9 +1,5 @@
 import { createSovereignClient as createSovereignClientRaw } from '@repo/core/api/clientRuntime';
 
-/**
- * AppType - The shared type definition for the entire Sovereign API.
- * This is used by the Hono Client (hc) for end-to-end type safety.
- */
 export type AppType = unknown;
 
 /**

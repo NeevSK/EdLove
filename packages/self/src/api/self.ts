@@ -21,12 +21,6 @@ function assertAuthenticated() {
   }
 }
 
-/**
- * SELF API (Sovereign Hono Proxy)
- *
- * This module no longer talks to Supabase directly.
- * It acts as a lightweight RPC proxy to the Sanctuary API on Railway.
- */
 export const selfAPI = {
   /**
    * Log a new mood signal via the Remote API.

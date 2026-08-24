@@ -1,4 +1,7 @@
-import * as Effect from 'effect/Effect';
+import { communityAPI } from '@repo/core/api/community';
+import { groupsAPI } from '@repo/core/api/groups';
+import { growthSignalsAPI } from '@repo/core/api/growthSignals';
+import { identityAPI } from '@repo/core/api/identity';
 import {
   CommunityGroupSchema,
   GroupMemberSchema,
@@ -7,10 +10,6 @@ import {
 import type { TemporalScale } from '@repo/core/store/useTemporalStore';
 import type { Group } from '@repo/core/types';
 import { APIError } from '@repo/core/types/API';
-import { growthSignalsAPI } from '@repo/core/api/growthSignals';
-import { identityAPI } from '@repo/core/api/identity';
-import { groupsAPI } from '@repo/core/api/groups';
-import { communityAPI } from '@repo/core/api/community';
 
 /**
  * Circles API (formerly Groups)

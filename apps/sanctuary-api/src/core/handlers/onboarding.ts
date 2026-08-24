@@ -206,7 +206,12 @@ export const onboardingRouter = impl.router({
     if (user?.is_anonymous) throw SovereignError.unauthorized('establish', 'school founder bond');
 
     const existingBond = await context.db.bond.findFirst({
-      where: { user_id: userId, entity_id: input.schoolId, entity_type: 'SCHOOL', capacity: 'principal' },
+      where: {
+        user_id: userId,
+        entity_id: input.schoolId,
+        entity_type: 'SCHOOL',
+        capacity: 'principal',
+      },
     });
     if (existingBond) return { success: true, bondId: existingBond.id };
 

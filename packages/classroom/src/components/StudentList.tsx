@@ -1,12 +1,11 @@
+import { AddStudentModal } from '@repo/classroom/components/AddStudentModal';
 import { studentsAPI } from '@repo/core/api/client';
 import type { Student } from '@repo/core/types';
-
 import { QRCodeGenerator } from '@repo/scanner-kit';
 import { BrandPulse } from '@repo/ui';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { Pen, Plus, QrCode, Sparkles, Trash2 } from '@repo/ui/icons';
 import {
-  Spinner as ActivityIndicator,
   Box,
   Button,
   ButtonText,
@@ -20,11 +19,9 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
-
 import * as Clipboard from 'expo-clipboard';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AddStudentModal } from '@repo/classroom/components/AddStudentModal';
 
 interface StudentListProps {
   classroomId: string;
@@ -144,7 +141,9 @@ export default function StudentList({
                 onPress={() => setStudentForQr(null)}
                 className="bg-sanctuary-surface-tertiary w-full rounded-full h-12"
               >
-                <ButtonText className="text-sanctuary-text">{t('common.close') || 'Close'}</ButtonText>
+                <ButtonText className="text-sanctuary-text">
+                  {t('common.close') || 'Close'}
+                </ButtonText>
               </Button>
             }
           >

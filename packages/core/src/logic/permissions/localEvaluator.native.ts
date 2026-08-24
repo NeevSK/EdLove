@@ -1,11 +1,15 @@
-import { and, eq } from 'drizzle-orm';
 import { getDrizzleDB, registerPermissionValidator } from '@repo/core/adapters/powersync/database';
-import { cedarPolicies, permissionSnapshots, policyVersion } from '@repo/core/adapters/powersync/schema';
+import {
+  cedarPolicies,
+  permissionSnapshots,
+  policyVersion,
+} from '@repo/core/adapters/powersync/schema';
 import { evaluateShape2 } from '@repo/core/logic/permissions/cedarClientEvaluator';
 import { getLocalResourceAttributes } from '@repo/core/logic/permissions/localEvaluator';
 import { verifySnapshotSignature } from '@repo/core/logic/permissions/signature';
 import type { UserContext } from '@repo/core/logic/schemas/user.schema';
 import type { Action, Subject } from '@repo/core/types/authorization';
+import { and, eq } from 'drizzle-orm';
 
 /**
  * checkLocalPermission (.native implementation)
@@ -27,7 +31,6 @@ export async function checkLocalPermission(params: {
 }): Promise<boolean> {
   const legacyContext = params.userContext as Record<string, unknown>;
 
-  // --- Step A: Optional dynamic Cedar mode (never the default authority) ---
   if (process.env.EXPO_PUBLIC_LOCAL_DYNAMIC_CEDAR === 'true') {
     try {
       const db = getDrizzleDB();
@@ -87,7 +90,6 @@ export async function checkLocalPermission(params: {
     }
   }
 
-  // --- Step B: Signed snapshot evaluation (the default offline authority) ---
   try {
     const db = getDrizzleDB();
     const activeBondId =

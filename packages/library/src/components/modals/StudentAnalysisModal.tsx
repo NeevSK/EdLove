@@ -49,7 +49,6 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
 }) => {
   const theme = useTheme();
   const { width } = useResponsive();
-  // --- State Machine (10 Pillars: Reducer Pattern) ---
   type AnalysisState = {
     loading: boolean;
     saving: boolean;
@@ -132,7 +131,6 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
     }
   };
   const [state, dispatch] = useReducer(analysisReducer, initialState);
-  // --- Action Logic (Stabilized Callbacks) ---
   const loadAnalysis = useCallback(async () => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
@@ -220,8 +218,6 @@ export const StudentAnalysisModal: React.FC<StudentAnalysisModalProps> = ({
       void loadAnalysis();
     }
   }, [visible, studentId, classroomId, loadAnalysis]);
-  // Delete legacy un-memoized handlers
-  // --- Referential Stability (10 Pillars: Memoization) ---
   const radarNode = useMemo(
     () => ({
       id: studentId,

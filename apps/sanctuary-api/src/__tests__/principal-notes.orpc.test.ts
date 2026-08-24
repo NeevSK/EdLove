@@ -10,18 +10,34 @@ describe('Sanctuary API: principal notes via native oRPC', () => {
 
   beforeEach(() => {
     setMockZenStackDbAvailable(true);
-    setMockUserData({ id: userId, is_anonymous: false, full_name: 'Principal', capacity: 'principal' });
-    setMockActiveBond({ id: 'b23e4567-e89b-12d3-a456-426614174000', entity_id: schoolId, entity_type: 'SCHOOL', capacity: 'principal' });
+    setMockUserData({
+      id: userId,
+      is_anonymous: false,
+      full_name: 'Principal',
+      capacity: 'principal',
+    });
+    setMockActiveBond({
+      id: 'b23e4567-e89b-12d3-a456-426614174000',
+      entity_id: schoolId,
+      entity_type: 'SCHOOL',
+      capacity: 'principal',
+    });
   });
 
   it('reads only the authenticated principal note stream', async () => {
     expect(await createTestORPCClient(headers).principalNotes.getAll({ schoolId })).toEqual([]);
-    expect(await createTestORPCClient(headers).principalNotes.getRecent({ schoolId, limit: 3 })).toEqual([]);
+    expect(
+      await createTestORPCClient(headers).principalNotes.getRecent({ schoolId, limit: 3 }),
+    ).toEqual([]);
   });
 
   it('creates, updates, and deletes notes through typed procedures', async () => {
     const client = createTestORPCClient(headers);
-    const created = await client.principalNotes.create({ schoolId, content: 'Review staffing', noteType: 'todo' });
+    const created = await client.principalNotes.create({
+      schoolId,
+      content: 'Review staffing',
+      noteType: 'todo',
+    });
     expect(created.author_id).toBe(userId);
     expect(created.note_type).toBe('todo');
 
@@ -31,6 +47,8 @@ describe('Sanctuary API: principal notes via native oRPC', () => {
   });
 
   it('rejects malformed school identifiers before handler execution', async () => {
-    await expect(createTestORPCClient(headers).principalNotes.getAll({ schoolId: 'not-a-uuid' })).rejects.toMatchObject({ status: 400 });
+    await expect(
+      createTestORPCClient(headers).principalNotes.getAll({ schoolId: 'not-a-uuid' }),
+    ).rejects.toMatchObject({ status: 400 });
   });
 });

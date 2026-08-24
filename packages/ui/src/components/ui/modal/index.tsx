@@ -1,13 +1,11 @@
+import { Box } from '@repo/ui/components/ui/box';
+import { Overlay } from '@repo/ui/components/ui/overlay';
+import { Portal } from '@repo/ui/components/ui/portal';
+import { AnimatedView, View } from '@repo/ui/components/ui/view';
 import type React from 'react';
 import { createContext, useContext, useEffect, useMemo } from 'react';
 import { Platform, type ViewProps } from 'react-native';
 import { ZoomIn, ZoomOut } from 'react-native-reanimated';
-import { Box } from '@repo/ui/components/ui/box';
-import { Overlay } from '@repo/ui/components/ui/overlay';
-import { Portal } from '@repo/ui/components/ui/portal';
-import { View } from '@repo/ui/components/ui/view';
-import { AnimatedView } from '@repo/ui/components/ui/view';
-
 
 /**
  * Modal Component
@@ -129,11 +127,12 @@ export const ModalContent = ({ children, className, style }: any) => {
       boxShadow:
         '0 25px 50px -12px rgba(20, 16, 11, 0.5), 0 0 0 1px rgba(42, 35, 24, 0.12), 0 10px 20px -5px rgba(0, 0, 0, 0.2)',
     } as any,
-    Platform.OS === 'web' && ({
-      backdropFilter: 'blur(24px) saturate(1.4)',
-      WebkitBackdropFilter: 'blur(24px) saturate(1.4)',
-      animation: 'sanctuary-modal-in 280ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
-    } as any),
+    Platform.OS === 'web' &&
+      ({
+        backdropFilter: 'blur(24px) saturate(1.4)',
+        WebkitBackdropFilter: 'blur(24px) saturate(1.4)',
+        animation: 'sanctuary-modal-in 280ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+      } as any),
     style,
   ];
 
@@ -187,4 +186,3 @@ ModalHeader.displayName = 'ModalHeader';
 ModalFooter.displayName = 'ModalFooter';
 
 export { Modal as default };
-

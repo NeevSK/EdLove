@@ -8,10 +8,6 @@
  * Like a Terrence Malick film - precise AND emotional.
  */
 
-// ============================================================================
-// COLORS - The Cinematic Palette
-// ============================================================================
-
 export const colors = {
   // PRIMARY - The Core
   deepIndigo: '#2D3561', // Wisdom, depth. Primary text on light.
@@ -45,10 +41,6 @@ export const colors = {
   overlayLight: 'rgba(245, 241, 232, 0.95)', // Light overlay
   overlayDark: 'rgba(29, 28, 46, 0.8)', // Dark overlay
 };
-
-// ============================================================================
-// TYPOGRAPHY - Literary & Modern
-// ============================================================================
 
 export const typography = {
   // Font Families (Remember to load these!)
@@ -97,10 +89,6 @@ export const typography = {
   },
 };
 
-// ============================================================================
-// SPACING - 8px Base Grid
-// ============================================================================
-
 export const spacing = {
   xs: 4, // Tight internal spacing (icon + label)
   sm: 8, // Small gaps (between related items)
@@ -111,20 +99,12 @@ export const spacing = {
   '3xl': 192, // Full-page breathing moments
 };
 
-// ============================================================================
-// BORDER RADIUS - Organic, Never Sharp
-// ============================================================================
-
 export const corners = {
   sm: 4, // Subtle - buttons, inputs
   md: 8, // Cards, containers
   lg: 16, // Feature cards, modals
   full: 9999, // Pills, avatars, circular
 };
-
-// ============================================================================
-// SHADOWS - Soft, Layered
-// ============================================================================
 
 export const shadows = {
   none: {
@@ -152,10 +132,6 @@ export const shadows = {
   },
 };
 
-// ============================================================================
-// MOTION - Contemplative Pacing
-// ============================================================================
-
 export const motion = {
   // Duration (milliseconds)
   fast: 200, // Quick interactions (hover, focus)
@@ -172,10 +148,6 @@ export const motion = {
     linear: 'linear', // Avoid - feels robotic
   },
 };
-
-// ============================================================================
-// BORDERS
-// ============================================================================
 
 export const borders = {
   width: {
@@ -197,10 +169,6 @@ export const borders = {
   focus: `1.5px solid ${colors.warmGold}`, // Focus state border
 };
 
-// ============================================================================
-// OPACITY LEVELS
-// ============================================================================
-
 export const opacity = {
   transparent: 0,
   subtle: 0.08,
@@ -210,10 +178,6 @@ export const opacity = {
   heavy: 0.8,
   opaque: 1,
 };
-
-// ============================================================================
-// Z-INDEX LAYERS (Stacking Order)
-// ============================================================================
 
 export const zIndex = {
   background: 0,
@@ -225,10 +189,6 @@ export const zIndex = {
   toast: 500, // Toasts, notifications
   tooltip: 600, // Tooltips
 };
-
-// ============================================================================
-// BREAKPOINTS - Responsive Design
-// ============================================================================
 
 export const breakpoints = {
   mobile: 375, // iPhone SE width (minimum)
@@ -244,10 +204,6 @@ export const breakpoints = {
     wide: '@media (min-width: 1440px)',
   },
 };
-
-// ============================================================================
-// COMPONENT PRESETS - Common Patterns
-// ============================================================================
 
 export const components = {
   // Button Styles
@@ -320,10 +276,6 @@ export const components = {
   },
 };
 
-// ============================================================================
-// ACCESSIBILITY - WCAG AA Compliance
-// ============================================================================
-
 export const accessibility = {
   // Minimum contrast ratios (WCAG AA)
   contrast: {
@@ -350,10 +302,6 @@ export const accessibility = {
     borderWidth: '0',
   },
 };
-
-// ============================================================================
-// DEFAULT EXPORT - Complete Theme Object
-// ============================================================================
 
 export const Theme = {
   colors,

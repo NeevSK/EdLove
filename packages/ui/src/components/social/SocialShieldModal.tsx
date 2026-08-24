@@ -1,8 +1,8 @@
-import React, { useCallback, useMemo } from 'react';
-import { LifeBuoy, ShieldCheck, ShieldOff, TriangleAlert, UserX } from '@repo/ui/icons';
-import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
+import { LifeBuoy, ShieldCheck, ShieldOff, TriangleAlert, UserX } from '@repo/ui/icons';
+import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import React, { useCallback, useMemo } from 'react';
 
 export type ReportTarget = 'teacher' | 'principal' | 'platform';
 export type ModalStep = 'reason' | 'target';
@@ -63,8 +63,6 @@ const TARGET_OPTIONS: {
     description: 'For technical abuse or violations of platform rules.',
   },
 ];
-
-// --- Sub-components for Zero-Allocation Renders ---
 
 const ReportReasonItem = React.memo(
   ({
