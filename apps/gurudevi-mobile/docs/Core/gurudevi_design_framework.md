@@ -54,8 +54,8 @@ In Gurudevi:
 ```
 Bottom Navigation (WhatsApp-style 5 tabs):
 
-🧘 Self          🏫 Classroom     🌸 Community     📚 Library       👤 Profile
-(Sanctuary)     (Teaching)       (Connection)     (Knowledge)     (Identity)
+🧘 Self          🏫 Workspace     🌸 Community     📚 Library       👤 Profile
+(Sanctuary)     (Role-Specific)  (Connection)     (Knowledge)     (Identity)
 ```
 
 ### 1. 🧘 Self (Sanctuary)
@@ -70,16 +70,20 @@ Bottom Navigation (WhatsApp-style 5 tabs):
 - Wellness tracker (sacred geometry visualization)
 - Meditation/breathing exercises (firefly guides rhythm)
 
-### 2. 🏫 Classroom (Teaching Space)
+### 2. 🏫 Workspace (Role-Specific Space)
 **Essence**: Your active workspace  
 **Feeling**: Organized, alive, purposeful  
-**Purpose**: Lesson planning, student tracking, class management  
+**Purpose**: Personalized task management, tracking, and collaboration per role:
+- **Classroom Workspace** (Teachers): lesson planning, student tracking, class management
+- **School Workspace** (Principals/Stewards): administrative visibility, scheduling, community support
+- **Learning Studio** (Students): active learning, resources, practice, personal roadmap
+- **Family Space** (Guardians): dignified progress visibility, family-school bridge  
 **Interaction**: Efficient but warm, like a craftsperson's studio  
 
 **Features**:
 - Weekly planner (traditional calendar meets modern grid)
 - Lesson templates (illustrated with cultural motifs)
-- Student notes (quick capture, lotus petal assistant offers suggestions)
+- Workspace notes (quick capture, lotus petal assistant offers suggestions)
 - Resources quick-access (batik pattern organization)
 
 ### 3. 🌸 Community (Cathedral)

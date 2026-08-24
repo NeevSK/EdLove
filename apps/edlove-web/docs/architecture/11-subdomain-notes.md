@@ -1,8 +1,8 @@
 ---
-title: "EDLOVE.ORG â€” 11 SUBDOMAIN NOTES"
+title: "EDLOVE.ORG — 11 SUBDOMAIN NOTES"
 status: "active"
 created: 2026-07-28
-updated: 2026-07-28
+updated: 2026-08-24
 author: "Naveen"
 scribe: "opencode"
 tags: [apps, edlove-web]
@@ -12,7 +12,7 @@ tags: [apps, edlove-web]
 ## Ecosystem Context | The Three Satellite Sites
 
 **Role in Constellation**: Brief context on the subdomains. Full docs created when building begins.  
-**Last Updated**: February 7, 2026
+**Last Updated**: August 24, 2026
 
 ---
 
@@ -20,12 +20,12 @@ tags: [apps, edlove-web]
 
 EdLove.org is the main house — six domains, fully documented in this constellation.
 
-Three additional sites exist as **temporary subdomains** within edlove.org:
+Sites that exist as **temporary subdomains** within edlove.org:
 
 ### 1. gurudevi.edlove.org
 **Purpose**: Teacher sanctuary web companion  
 **What it is**: Full web presence for Gurudevi (the mobile app's web counterpart)  
-**Five Pillars**: SELF, CLASSROOM, LIBRARY, COMMUNITY, PROFILE  
+**Five Pillars**: SELF, WORKSPACE, LIBRARY, COMMUNITY, PROFILE  
 **Aesthetic**: Lotus, teal/gold, breathing animations, sanctuary feel  
 **Future**: Migrates to `gurudevi.lk` when funding allows  
 **Status**: To be built (Phase 2-3)  
@@ -34,25 +34,13 @@ Three additional sites exist as **temporary subdomains** within edlove.org:
 
 ---
 
-### 2. intuitui.edlove.org
-**Purpose**: Systems intelligence studio / professional practice  
-**What it is**: Neev's portfolio, services, case studies, client work  
-**Aesthetic**: Professional, systems-thinking, clean, credible  
-**Future**: Migrates to `intuituilabs.lk` when funding allows  
-**Status**: To be built (Phase 2-3)  
+### Extracted from the ecosystem (2026-08-24)
 
-**Documentation**: Full strategy doc created when ready to build.
+The following planned subdomain projects were extracted from this monorepo into
+their own standalone private repositories and are no longer part of it:
 
----
-
-### 3. neevsk.edlove.org
-**Purpose**: Personal portfolio, writing, CV, reflections  
-**What it is**: Neev's own space — philosophical, personal, anything/everything/nothing  
-**Aesthetic**: Personal, intimate, essayistic  
-**Future**: Migrates to `neevsk.lk` or stays as subdomain  
-**Status**: To be built (Phase 2-3 or later)  
-
-**Documentation**: Full strategy doc created when ready to build.
+- **intuitui.edlove.org** → [NeevSK/intuitui-web](https://github.com/NeevSK/intuitui-web) (systems intelligence studio / professional practice; target `intuituilabs.lk`)
+- **neevsk.edlove.org** → [NeevSK/neevsk-web](https://github.com/NeevSK/neevsk-web) (personal portfolio, writing, reflections; target `neevsk.lk` or stays a subdomain)
 
 ---
 
@@ -94,5 +82,5 @@ Three additional sites exist as **temporary subdomains** within edlove.org:
 
 *"Build the main house first. The satellites can orbit when they're ready."*
 
-**Last Updated**: February 7, 2026  
+**Last Updated**: August 24, 2026  
 **Status**: Placeholder. Full docs created when building begins.

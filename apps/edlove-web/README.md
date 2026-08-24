@@ -2,7 +2,7 @@
 title: "EDLOVE.ORG"
 status: "active"
 created: 2026-02-02
-updated: 2026-02-09
+updated: 2026-08-24
 author: "Naveen"
 scribe: "opencode"
 tags: [apps, edlove-web]
@@ -12,11 +12,11 @@ tags: [apps, edlove-web]
 
 > **"The digital sanctuary for educational transformation."**
 
-This is the codebase for **edlove.org** — the public face of the EdLove ecosystem. It is built to be not just a website, but an experience that embodies "Education as Care Work."
+This is the codebase for **edlove.org** â€” the public face of the EdLove ecosystem. It is built to be not just a website, but an experience that embodies "Education as Care Work."
 
 ---
 
-## 🌟 The Philosophy
+## ðŸŒŸ The Philosophy
 
 This project is driven by a deep philosophical commitment. Before contributing, please read the core documents:
 
@@ -26,7 +26,7 @@ This project is driven by a deep philosophical commitment. Before contributing, 
 
 ---
 
-## 🗺️ Documentation Constellation
+## ðŸ—ºï¸ Documentation Constellation
 
 All documentation for this project lives in the `Docs/` directory.
 
@@ -43,9 +43,9 @@ All documentation for this project lives in the `Docs/` directory.
 
 ---
 
-## 🛠️ Development
+## ðŸ› ï¸ Development
 
-This project is built with **Astro**, **Svelte**, and **Tailwind CSS**.
+This project is built with **Astro**, **Svelte 5**, and **Tailwind CSS v4**.
 
 ### Prerequisites
 
@@ -65,18 +65,18 @@ Run these from the `apps/edlove-web` directory:
 
 ---
 
-## 🏗️ Project Structure
+## ðŸ—ï¸ Project Structure
 
 ```text
 /
-├── public/           # Static assets
-├── src/
-│   ├── assets/       # Processed assets (images, fonts)
-│   ├── components/   # Reusable UI components (Astro/Svelte)
-│   ├── layouts/      # Page layouts
-│   └── pages/        # File-based routing
-├── Docs/             # 📖 The Constellation (Documentation)
-└── package.json
+â”œâ”€â”€ public/           # Static assets
+â”œâ”€â”€ src/
+â”‚   â”œâ”€â”€ assets/       # Processed assets (images, fonts)
+â”‚   â”œâ”€â”€ components/   # Reusable UI components (Astro/Svelte)
+â”‚   â”œâ”€â”€ layouts/      # Page layouts
+â”‚   â””â”€â”€ pages/        # File-based routing
+â”œâ”€â”€ Docs/             # ðŸ“– The Constellation (Documentation)
+â””â”€â”€ package.json
 ```
 
 ---

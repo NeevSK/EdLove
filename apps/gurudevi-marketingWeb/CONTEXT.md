@@ -20,7 +20,7 @@ Gurudevi is an "Education Ecology Support System".
 It is more than an LMS; it is a sanctuary for teachers and anyone else too.
 
 - **Philosophy**: "Teaning" (mending/supporting the teaching-learning impedance match).
-- **Five Pillars**: SELF, CLASSROOM, LIBRARY, COMMUNITY, PROFILE.
+- **Five Pillars**: SELF, WORKSPACE (role-specific: Classroom/School/Learning Studio/Family Space), LIBRARY, COMMUNITY, PROFILE.
 
 ## AESTHETICS & DESIGN
 **Theme**: Sanctuary / Lotus
@@ -32,7 +32,7 @@ It is more than an LMS; it is a sanctuary for teachers and anyone else too.
 
 ## TECH STACK
 - **Framework**: Astro
-- **Styling**: Tailwind CSS (presumed, check config)
+- **Styling**: Tailwind CSS v4
 
 ## RELEVANT DOCS
 - EdLove Subdomain Notes: [edlove-web/Docs/11_SUBDOMAIN_NOTES.md#gurudevi-marketingWeb](../edlove-web/Docs/11_SUBDOMAIN_NOTES.md#gurudevi-marketingWeb)

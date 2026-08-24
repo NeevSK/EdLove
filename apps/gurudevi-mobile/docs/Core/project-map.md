@@ -2,9 +2,9 @@
 title: "Internal Project Map (Polymath / EdLove / Gurudevi)"
 status: "active"
 created: 2026-03-20
-updated: 2026-03-20
-author: "Naween"
-tags: [reorganized]
+updated: 2026-08-24
+author: "Naveen"
+tags: [reorganized, project-map]
 ---
 
 # Internal Project Map (Polymath / EdLove / Gurudevi)
@@ -26,17 +26,13 @@ flowchart TB
   GurudeviMobile["gurudevi-mobile\nPrimary product (Expo RN)"]:::app
   GurudeviPlatform["gurudevi-mobile (web)\nPlatform web app (React Native Web)"]:::app
   GurudeviMarketing["gurudevi-marketingWeb\nPublic site (marketing)"]:::app
-  IntuituiWeb["intuitui-web\nStudio site"]:::app
-  NeevskWeb["neevsk-web\nPersonal archive site"]:::app
 
   Neev --> EdLove
   Neev --> Intuitui
-  Neev --> NeevskWeb
 
   EdLove --> EdLoveWeb
   EdLove --> Gurudevi
   EdLove --> GurudeviMarketing
-  EdLove --> IntuituiWeb
 
   Intuitui -. "builds/operates" .-> GurudeviMobile
   Intuitui -. "builds/operates" .-> GurudeviPlatform
@@ -61,11 +57,14 @@ Owner for all apps is currently **Neevsk** (single-person build); "built/operate
 | App | Folder | Purpose | Status | Current domain | Target domain |
 |---|---|---|---|---|---|
 | EdLove Web | `apps/edlove-web` | Main "House" / central hub site | Phase 1 active construction | `edlove.org` (TBD) | `edlove.org` |
-| Gurudevi Mobile | `apps/gurudevi-mobile` | Primary product (teachers/principals/students) | Active dev; "production-ready after critical fixes" | App stores / EAS builds (TBD) | Play Store / App Store (TBD) |
+| Gurudevi Mobile | `apps/gurudevi-mobile` | Primary product (teachers/principals/students) | Active dev | App stores / EAS builds (TBD) | Play Store / App Store (TBD) |
 | Gurudevi Platform (Web App) | `apps/gurudevi-mobile` | The "real app" on web (React Native Web via Expo/Metro) | Active dev | `platform.gurudevi.edlove.org` (GitHub Pages) | `platform.gurudevi.edlove.org` (TBD) |
 | Gurudevi Public Site | `apps/gurudevi-marketingWeb` | Public landing/marketing/information site | Phase 2/3 build | `gurudevi.edlove.org` | `gurudevi.lk` |
-| Intuitui Web | `apps/intuitui-web` | Studio site (services/portfolio/gateway) | Phase 2/3 build | `intuitui.edlove.org` | `intuituilabs.lk` |
-| Neevsk Web | `apps/neevsk-web` | Personal archive / portfolio | Phase 2/3 build | `neevsk.edlove.org` | `neevsk.edlove.org` (TBD) |
+
+> Note: Intuitui Web (`apps/intuitui-web`) and Neevsk Web (`apps/neevsk-web`)
+> were extracted on 2026-08-24 into standalone private repositories
+> ([NeevSK/intuitui-web](https://github.com/NeevSK/intuitui-web),
+> [NeevSK/neevsk-web](https://github.com/NeevSK/neevsk-web)).
 
 ## Gurudevi pillars (domain packages)
 
@@ -74,7 +73,7 @@ Gurudevi's product surface is organized around **five pillars**, and the monorep
 | Pillar | Package | Primary surfaces |
 |---|---|---|
 | SELF | `packages/self` | Mobile + web platform (`*.web.tsx` where needed) |
-| CLASSROOM | `packages/classroom` | Mobile tab + classroom workflows |
+| WORKSPACE | `packages/classroom` | Role-specific workspaces: Classroom (teachers), School (principals), Learning Studio (students), Family Space (guardians) |
 | LIBRARY | `packages/library` | Mobile + web platform (web-native screens in `*.web.tsx`) |
 | COMMUNITY | `packages/community` | Mobile tab + community features |
 | PROFILE | `packages/profile` | Mobile tab + identity/profile features |
