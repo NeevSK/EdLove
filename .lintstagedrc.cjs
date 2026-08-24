@@ -10,8 +10,6 @@ module.exports = {
   '*.{js,ts,tsx}': (files) => {
     const filteredFiles = files.filter(
       (file) =>
-        !file.includes('/archives/') &&
-        !file.includes('\\archives\\') &&
         !file.includes('/archive/') &&
         !file.includes('\\archive\\') &&
         !file.includes('/.astro/') &&

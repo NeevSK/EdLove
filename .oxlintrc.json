@@ -82,7 +82,6 @@
     "**/*.cjs",
     "scripts",
     "eslint.config.js",
-    "**/archives/**",
     "**/archive/**",
     "**/plugins/**"
   ]

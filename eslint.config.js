@@ -13,7 +13,6 @@ export default [
       '**/legacy/**',
       '**/*-legacy/**',
       '**/*_archive/**',
-      'apps/gurudevi-mobile/archives/**',
       'docs/archive/**',
       '**/*.mjs',
       '**/*.cjs',

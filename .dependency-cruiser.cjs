@@ -39,7 +39,6 @@ module.exports = {
           '\\.test\\.ts$',
           '\\.spec\\.ts$',
           '__tests__/',
-          'archives/',
           'shims/',
           'jest-native-setup\\.js$',
           'bundle_root\\.js$',
@@ -229,7 +228,7 @@ module.exports = {
   ],
   options: {
     exclude: {
-      path: ['\\.vercel', 'node_modules', 'dist', '\\.turbo', 'archives/'],
+      path: ['\\.vercel', 'node_modules', 'dist', '\\.turbo'],
     },
     doNotFollow: {
       path: ['node_modules', 'dist', '.turbo', '\\.vercel'],

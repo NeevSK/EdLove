@@ -31,7 +31,6 @@ export default [
       'web-build/**',
       'coverage/**',
       'public/sw.js',
-      'archives/**',
       'supabase/**',
       'tests/e2e/**',
       'vitest*',
