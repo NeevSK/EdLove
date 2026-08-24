@@ -2,7 +2,7 @@
 title: "Agent Resonance: Metacognitive Steering for AI Agents"
 status: "active"
 created: 2026-02-28
-updated: 2026-04-23
+updated: 2026-08-24
 author: "Naveen"
 scribe: "opencode"
 tags: [apps, gurudevi-mobile]
@@ -15,7 +15,7 @@ tags: [apps, gurudevi-mobile]
 This is a **Turbo Monorepo** using **pnpm** as the package manager. It is designed around the principle of **"Library First"** (see `docs/TAIL_FIN.md`).
 
 ### Core Hierarchy
-- **Primary Operational Engine**: `apps/gurudevi-mobile` (Expo SDK 54 / React Native 0.81).
+- **Primary Operational Engine**: `apps/gurudevi-mobile` (Expo SDK 57 / React Native 0.86).
 - **Public Portal**: `apps/edlove-web` (Astro / Svelte).
 - **The Brain (Shared Packages)**: `packages/*`
   - `@repo/ui`: Shared UI components (Sanctuary Design System).

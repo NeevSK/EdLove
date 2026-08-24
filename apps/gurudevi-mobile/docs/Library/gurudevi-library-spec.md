@@ -1,14 +1,14 @@
 ---
-title: "Gurudevi â€” Library Feature"
+title: "Gurudevi Ã¢â‚¬â€ Library Feature"
 status: "active"
 created: 2026-03-02
-updated: 2026-05-25
+updated: 2026-08-24
 author: "Naveen"
 scribe: "opencode"
 tags: [apps, gurudevi-mobile]
 ---
 
-# Gurudevi — Library Feature
+# Gurudevi â€” Library Feature
 ### Product & Technical Specification for IDE Agent
 
 ---
@@ -19,7 +19,7 @@ The Library is one of five sections in Gurudevi.
 Bottom nav: Community | Classroom | Library | Profile | (5th)
 
 The Library is not a content list.
-It is a **navigable epistemic universe** —
+It is a **navigable epistemic universe** â€”
 a living map of knowledge for Sri Lankan teachers,
 students, and principals.
 
@@ -61,23 +61,23 @@ DOES NOT EXIST:
 ```
 Gurudevi/
   apps/
-    gurudevi-mobile/     ← Expo 55, RN 0.83
+    gurudevi-mobile/     â† Expo 55, RN 0.83
                             iOS + Android
                             React Navigation / Metro web
-    gurudevi-marketingWeb/        ← separate web app or web shell
+    gurudevi-marketingWeb/        â† separate web app or web shell
                             OR React + Vite (TBD)
                             keep components compatible
   packages/
-    library/             ← @repo/library
+    library/             â† @repo/library
                             shared between mobile + web
                             THIS is the primary build target
-    core/                ← @repo/core
-    ui/                  ← @repo/ui
-    community/           ← @repo/community
-    classroom/           ← @repo/classroom
-    profile/             ← @repo/profile
-    scanner-kit/         ← @repo/scanner-kit
-    self/                ← @repo/self
+    core/                â† @repo/core
+    ui/                  â† @repo/ui
+    community/           â† @repo/community
+    classroom/           â† @repo/classroom
+    profile/             â† @repo/profile
+    scanner-kit/         â† @repo/scanner-kit
+    self/                â† @repo/self
 ```
 
 ---
@@ -86,37 +86,37 @@ Gurudevi/
 
 ```
 RUNTIME
-  React Native 0.83.2
-  Expo SDK 55
+  React Native 0.86.2
+  Expo SDK 57
   React Navigation (navigation)
   New Architecture enabled (both iOS + Android)
   Hermes engine
 
 STATE
-  Zustand — global state
-  React Query (@tanstack/react-query) — server state
-  MMKV (react-native-mmkv) — persistent cache
+  Zustand â€” global state
+  React Query (@tanstack/react-query) â€” server state
+  MMKV (react-native-mmkv) â€” persistent cache
 
 BACKEND
-  Supabase — database + auth + realtime
-  pgvector — semantic search + embeddings
-  Supabase Edge Functions — serverless processing
+  Supabase â€” database + auth + realtime
+  pgvector â€” semantic search + embeddings
+  Supabase Edge Functions â€” serverless processing
 
 STORAGE
-  Cloudinary — media files (images, PDFs, video metadata)
+  Cloudinary â€” media files (images, PDFs, video metadata)
 
 UI
-  @gluestack-ui/themed — component library
-  react-native-svg — map rendering
-  expo-image — optimized image loading
-  FlashList (@shopify/flash-list) — virtualized lists
-  react-native-reanimated — animations
-  react-native-gesture-handler — gestures
+  @gluestack-ui/themed â€” component library
+  react-native-svg â€” map rendering
+  expo-image â€” optimized image loading
+  FlashList (@shopify/flash-list) â€” virtualized lists
+  react-native-reanimated â€” animations
+  react-native-gesture-handler â€” gestures
 
 PERFORMANCE
   React Compiler (enable if not already)
-  expo-updates — OTA with bytecode diffing
-  MMKV — offline first cache
+  expo-updates â€” OTA with bytecode diffing
+  MMKV â€” offline first cache
 
 MONOREPO
   pnpm workspaces
@@ -129,11 +129,11 @@ MONOREPO
 ## Database Schema
 
 Build or extend these tables in Supabase.
-Existing tables are flexible — extend don't break.
+Existing tables are flexible â€” extend don't break.
 
 ```sql
 -- KNOWLEDGE NODES
--- Everything is a node — concepts AND content
+-- Everything is a node â€” concepts AND content
 create table if not exists nodes (
   id uuid primary key default gen_random_uuid(),
   type text check (type in (
@@ -320,40 +320,40 @@ Build this package. It is consumed by both mobile and web.
 packages/library/
   src/
     types/
-      index.ts           ← all TypeScript types
+      index.ts           â† all TypeScript types
       node.types.ts
       resource.types.ts
       collection.types.ts
       journey.types.ts
       
     api/
-      nodes.api.ts       ← Supabase node queries
-      resources.api.ts   ← resource queries
-      collections.api.ts ← collection queries
-      search.api.ts      ← semantic + text search
-      journeys.api.ts    ← journey recording
-      map.api.ts         ← map data queries
+      nodes.api.ts       â† Supabase node queries
+      resources.api.ts   â† resource queries
+      collections.api.ts â† collection queries
+      search.api.ts      â† semantic + text search
+      journeys.api.ts    â† journey recording
+      map.api.ts         â† map data queries
       
     hooks/
-      useLibrary.ts      ← main library hook
-      useNode.ts         ← single node
-      useSearch.ts       ← search with debounce
-      useCollections.ts  ← collections list
-      useMap.ts          ← map neighbourhood
-      useJourney.ts      ← record user journey
-      useMapAccess.ts    ← unlock state
+      useLibrary.ts      â† main library hook
+      useNode.ts         â† single node
+      useSearch.ts       â† search with debounce
+      useCollections.ts  â† collections list
+      useMap.ts          â† map neighbourhood
+      useJourney.ts      â† record user journey
+      useMapAccess.ts    â† unlock state
       
     store/
-      library.store.ts   ← Zustand store
+      library.store.ts   â† Zustand store
       
     cache/
-      library.cache.ts   ← MMKV cache layer
+      library.cache.ts   â† MMKV cache layer
       
     utils/
-      language.utils.ts  ← si/ta/en helpers
-      content.utils.ts   ← type helpers
+      language.utils.ts  â† si/ta/en helpers
+      content.utils.ts   â† type helpers
       
-  index.ts               ← public exports
+  index.ts               â† public exports
 ```
 
 ---
@@ -478,7 +478,7 @@ interface LibraryStore {
   activeNodeId: string | null
   setActiveNodeId: (id: string | null) => void
   
-  // View mode — door open for AB testing
+  // View mode â€” door open for AB testing
   viewMode: 'list' | 'map' | 'collection'
   setViewMode: (mode: 'list' | 'map' | 'collection') => void
   
@@ -513,7 +513,7 @@ const KEYS = {
 }
 
 // Strategy:
-// 1. Read from cache immediately — zero wait
+// 1. Read from cache immediately â€” zero wait
 // 2. Fetch fresh in background
 // 3. Update cache silently
 // 4. User always sees something instantly
@@ -537,34 +537,34 @@ Door open for AB testing or user preference.
 
 ```
 LibraryScreen
-  ├── LibraryHeader
-  │     ├── SearchBar (functional, debounced)
-  │     └── FilterSheet (bottom sheet)
-  │
-  ├── ViewToggle (list | map | collections)
-  │     └── subtle — not primary UI
-  │
-  ├── [viewMode === 'list']
-  │     └── ResourceList (FlashList)
-  │           └── ResourceCard
-  │                 ├── Thumbnail (expo-image)
-  │                 ├── Title (localized)
-  │                 ├── ContentTypeBadge
-  │                 ├── LanguageBadge
-  │                 └── SaveButton
-  │
-  ├── [viewMode === 'collections']
-  │     └── CollectionList (FlashList)
-  │           └── CollectionCard
-  │
-  └── [viewMode === 'map']
-        └── MapView (react-native-svg)
-              ├── MapCanvas (pan + zoom)
-              ├── EdgeLayer (SVG paths)
-              ├── NodeLayer (SVG circles)
-              ├── FogOfWarLayer (SVG opacity)
-              └── MapDoorButton
-                    └── appears when unlocked
+  â”œâ”€â”€ LibraryHeader
+  â”‚     â”œâ”€â”€ SearchBar (functional, debounced)
+  â”‚     â””â”€â”€ FilterSheet (bottom sheet)
+  â”‚
+  â”œâ”€â”€ ViewToggle (list | map | collections)
+  â”‚     â””â”€â”€ subtle â€” not primary UI
+  â”‚
+  â”œâ”€â”€ [viewMode === 'list']
+  â”‚     â””â”€â”€ ResourceList (FlashList)
+  â”‚           â””â”€â”€ ResourceCard
+  â”‚                 â”œâ”€â”€ Thumbnail (expo-image)
+  â”‚                 â”œâ”€â”€ Title (localized)
+  â”‚                 â”œâ”€â”€ ContentTypeBadge
+  â”‚                 â”œâ”€â”€ LanguageBadge
+  â”‚                 â””â”€â”€ SaveButton
+  â”‚
+  â”œâ”€â”€ [viewMode === 'collections']
+  â”‚     â””â”€â”€ CollectionList (FlashList)
+  â”‚           â””â”€â”€ CollectionCard
+  â”‚
+  â””â”€â”€ [viewMode === 'map']
+        â””â”€â”€ MapView (react-native-svg)
+              â”œâ”€â”€ MapCanvas (pan + zoom)
+              â”œâ”€â”€ EdgeLayer (SVG paths)
+              â”œâ”€â”€ NodeLayer (SVG circles)
+              â”œâ”€â”€ FogOfWarLayer (SVG opacity)
+              â””â”€â”€ MapDoorButton
+                    â””â”€â”€ appears when unlocked
 ```
 
 ---
@@ -578,7 +578,7 @@ RENDERING
   No WebGL on mobile
   D3 force layout computed SERVER SIDE
   Coordinates stored in nodes.map_x / map_y
-  Client only renders — never computes layout
+  Client only renders â€” never computes layout
 
 MAX NODES RENDERED
   30 nodes maximum at any time
@@ -596,14 +596,14 @@ MAP UNLOCK
   (viewed for > 30 seconds each)
   On unlock: subtle animation, no fanfare
   Door appears in library as island on horizon
-  Tap door → transition to map view
+  Tap door â†’ transition to map view
   
 NODE STATES
-  unexplored   → dim circle, fog overlay
-  visited      → full color, glowing edge
-  saved        → bookmark indicator
-  recommended  → gentle pulse animation
-  wrong_path   → different texture/color
+  unexplored   â†’ dim circle, fog overlay
+  visited      â†’ full color, glowing edge
+  saved        â†’ bookmark indicator
+  recommended  â†’ gentle pulse animation
+  wrong_path   â†’ different texture/color
                  "many came here first"
                  honest, not shameful
 ```
@@ -622,7 +622,7 @@ Text search (fast, always works offline):
 
 Semantic search (when online):
   pgvector cosine similarity
-  User query → embedding → nearest nodes
+  User query â†’ embedding â†’ nearest nodes
   Falls back to text search if offline
   
 DEBOUNCE: 300ms
@@ -702,14 +702,14 @@ The @repo/library package must work on:
 
 Rules for shared components:
   - No react-native-svg on web
-    → use regular SVG elements
+    â†’ use regular SVG elements
   - No MMKV on web
-    → use localStorage or memory
+    â†’ use localStorage or memory
   - No FlashList on web  
-    → use windowed list or virtual scroll
-  - expo-image works on web ✅
-  - Zustand works everywhere ✅
-  - React Query works everywhere ✅
+    â†’ use windowed list or virtual scroll
+  - expo-image works on web âœ…
+  - Zustand works everywhere âœ…
+  - React Query works everywhere âœ…
 
 Strategy:
   Platform checks where needed:
@@ -723,13 +723,13 @@ Strategy:
 
 ---
 
-## FAB — Add Resource
+## FAB â€” Add Resource
 
 ```
 Existing FAB to add resources.
-For now — simple manual entry form.
-Later — ETL pipeline feeds staging.
-Admin reviews staging → publishes to library.
+For now â€” simple manual entry form.
+Later â€” ETL pipeline feeds staging.
+Admin reviews staging â†’ publishes to library.
 
 FAB opens bottom sheet with:
   - URL input (auto-fetches metadata)
@@ -739,7 +739,7 @@ FAB opens bottom sheet with:
   - Grade level multi-select
   - Subject multi-select
   - Target roles multi-select
-  - Submit → goes to staging table
+  - Submit â†’ goes to staging table
              not directly to production
 ```
 
@@ -774,23 +774,23 @@ KEEP DOOR OPEN FOR:
 Library feature is complete when:
 
 ```
-✓ @repo/library package builds cleanly
-✓ TypeScript types complete, no any
-✓ Supabase tables created with RLS policies
-✓ Search works (text, debounced, cached)
-✓ Filters work (content type, language, grade)
-✓ FlashList renders resources smoothly
-✓ expo-image loads with blurhash placeholder
-✓ Collections display correctly
-✓ Offline shows cached content instantly
-✓ Map view renders with SVG (30 nodes max)
-✓ Map unlock works after 5 explored nodes
-✓ Journey recording works silently
-✓ FAB opens add resource sheet
-✓ Localization helper works (si/ta/en)
-✓ Works on Android 2GB RAM device
-✓ Web builds without errors
-✓ No FlatList, no Image, no Skia for map
+âœ“ @repo/library package builds cleanly
+âœ“ TypeScript types complete, no any
+âœ“ Supabase tables created with RLS policies
+âœ“ Search works (text, debounced, cached)
+âœ“ Filters work (content type, language, grade)
+âœ“ FlashList renders resources smoothly
+âœ“ expo-image loads with blurhash placeholder
+âœ“ Collections display correctly
+âœ“ Offline shows cached content instantly
+âœ“ Map view renders with SVG (30 nodes max)
+âœ“ Map unlock works after 5 explored nodes
+âœ“ Journey recording works silently
+âœ“ FAB opens add resource sheet
+âœ“ Localization helper works (si/ta/en)
+âœ“ Works on Android 2GB RAM device
+âœ“ Web builds without errors
+âœ“ No FlatList, no Image, no Skia for map
 ```
 
 ---
@@ -798,16 +798,16 @@ Library feature is complete when:
 ## Seed Data
 
 Add at least 10 real resources before testing UI.
-Without real content the Trübe doesn't work.
+Without real content the TrÃ¼be doesn't work.
 
 Suggested seed sources (all free and legal):
-- NIE Sri Lanka (nie.lk) — curriculum documents
-- Ministry of Education Sri Lanka — circulars
+- NIE Sri Lanka (nie.lk) â€” curriculum documents
+- Ministry of Education Sri Lanka â€” circulars
 - UNESCO open educational resources
-- Internet Archive — Sri Lanka education texts
+- Internet Archive â€” Sri Lanka education texts
 
 ---
 
 *The library is not a feature.*
-*It is the Trübe made navigable.*
+*It is the TrÃ¼be made navigable.*
 *Build it accordingly.*

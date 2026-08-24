@@ -2,7 +2,7 @@
 title: "Expo & EAS: Modern Mobile Workflow"
 status: "active"
 created: 2026-02-17
-updated: 2026-02-17
+updated: 2026-08-24
 author: "Naveen"
 scribe: "opencode"
 tags: [apps, gurudevi-mobile]
@@ -65,7 +65,7 @@ npx expo install --check
 This will automatically fix package versions that are incompatible with your current Expo SDK.
 
 ### Handling "Doctor" Failures
-This project uses a bleeding-edge setup (**React 19** and **React Native 0.81**) via pnpm overrides. `expo-doctor` may report errors because it expects standard Expo 54 versions (React 18).
+This project uses a bleeding-edge setup (**React 19** and **React Native 0.86**) via pnpm overrides. `expo-doctor` may report errors because it expects standard Expo 54 versions (React 18).
 
 If EAS Build fails due to dependency validation:
 1.  **Skip Validation**: You can force the build to proceed by adding an env variable in `eas.json` or your build command:

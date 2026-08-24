@@ -1,14 +1,20 @@
 ---
-title: "UI Component Library"
-status: "active"
+title: "UI Component Library (SUPERSEDED — use @repo/ui)"
+status: "superseded"
+superseded_by: "packages/ui/README.md"
 created: 2026-02-11
-updated: 2026-02-11
+updated: 2026-08-24
 author: "Naveen"
 scribe: "opencode"
-tags: [apps, gurudevi-mobile]
+tags: [apps, gurudevi-mobile, historical]
 ---
 
 # UI Component Library
+
+> **⚠️ SUPERSEDED (2026-08-24):** the in-app `src/ui` abstraction layer has been
+> replaced by the shared workspace package **`@repo/ui`**. Import branded
+> components from `@repo/ui`; never import gluestack directly. This file is kept
+> only as a historical record of the earlier abstraction layer.
 
 ## Usage Rules
 

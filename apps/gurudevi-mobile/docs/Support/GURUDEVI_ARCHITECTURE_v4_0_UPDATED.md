@@ -1,12 +1,14 @@
 ---
 title: "GURUDEVI ARCHITECTURE v4.0"
-status: "active"
+status: "superseded"
 created: 2026-02-11
 updated: 2026-05-07
 author: "Naveen"
 scribe: "opencode"
-tags: [apps, gurudevi-mobile]
+tags: [apps, gurudevi-mobile, historical]
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
 
 # GURUDEVI ARCHITECTURE v4.0
 ## *The Complete Technical Blueprint - Single Source of Truth*
@@ -22,21 +24,23 @@ tags: [apps, gurudevi-mobile]
 **Document Purpose**: The definitive architecture for Gurudevi - an education ecology support system for Sri Lankan schools with sanctuary aesthetics.
 
 **What Changed in v4.0**:
-- ✅ Unified 5-tab navigation (all roles, same structure)
-- ✅ UUID strategy clarified (offline-first ready)
-- ✅ Multi-tenant architecture confirmed (one database, all schools)
-- ✅ Role-based data windows (same reality, different views)
-- ✅ Community v0.1: Announcements with posting (principals) + read receipts (aligned with STACK v3.0)
-- ✅ Library v0.1: Basic upload/view (teachers upload, students view) (aligned with STACK v3.0)
-- ✅ **NEW**: Rewards System added (v0.5) - points, streaks, levels, badges, leaderboards
-- ✅ **NEW**: FAB implementation added (v0.5) - context-aware floating action button
-- ✅ **NEW**: Maps integration added (v0.5) - school locations, field trips
+- âœ… Unified 5-tab navigation (all roles, same structure)
+- âœ… UUID strategy clarified (offline-first ready)
+- âœ… Multi-tenant architecture confirmed (one database, all schools)
+- âœ… Role-based data windows (same reality, different views)
+- âœ… Community v0.1: Announcements with posting (principals) + read receipts (aligned with STACK v3.0)
+- âœ… Library v0.1: Basic upload/view (teachers upload, students view) (aligned with STACK v3.0)
+- âœ… **NEW**: Rewards System added (v0.5) - points, streaks, levels, badges, leaderboards
+- âœ… **NEW**: FAB implementation added (v0.5) - context-aware floating action button
+- âœ… **NEW**: Maps integration added (v0.5) - school locations, field trips
 
 **Version**: 4.0 (Production Foundation + Architectural Decisions)  
 **Last Updated**: February 1, 2026  
 **Status**: Ready to build
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
 
 # TABLE OF CONTENTS
 
@@ -46,12 +50,14 @@ tags: [apps, gurudevi-mobile]
 **PART 4**: Multi-Tenant Database Architecture  
 **PART 5**: UUID Strategy & Offline Readiness  
 **PART 6**: Role-Based Data Windows (RLS)  
-**PART 7**: Feature Roadmap (v0.1 → v1.0)  
+**PART 7**: Feature Roadmap (v0.1 â†’ v1.0)  
 **PART 8**: Security & Privacy  
 **PART 9**: Implementation Patterns  
 **PART 10**: Quick Start Guide  
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
 
 # PART 1: CORE PHILOSOPHY & PRODUCT IDENTITY
 
@@ -61,7 +67,7 @@ tags: [apps, gurudevi-mobile]
 School platform with sanctuary aesthetics - NOT a meditation/temple app
 
 **Core Value Proposition**:
-- Teachers share content → Students learn → Principals monitor
+- Teachers share content â†’ Students learn â†’ Principals monitor
 - All wrapped in calm, nurturing, focused environment (sanctuary feel)
 - Built specifically for Sri Lankan schools (Sinhala/Tamil/English)
 - Mobile-first, data-conscious, locally relevant
@@ -70,11 +76,11 @@ School platform with sanctuary aesthetics - NOT a meditation/temple app
 
 **From Design Framework v1**:
 ```
-🪷 Lotus as Metaphor:
-- Rooted in mud → Acknowledging difficult conditions
-- Rising through water → Journey of growth
-- Hydrophobic surface → Protecting dignity
-- Blooming above → Achieving enlightenment
+ðŸª· Lotus as Metaphor:
+- Rooted in mud â†’ Acknowledging difficult conditions
+- Rising through water â†’ Journey of growth
+- Hydrophobic surface â†’ Protecting dignity
+- Blooming above â†’ Achieving enlightenment
 ```
 
 **How It Manifests**:
@@ -88,9 +94,9 @@ School platform with sanctuary aesthetics - NOT a meditation/temple app
 ## 1.3 Market Position
 
 **Not Competing With**:
-- International LMS (Moodle, Canvas) → Too complex, desktop-first
-- School Management Systems (local) → Admin-focused, not learning-focused
-- Google Classroom → No Sri Lankan context, no sanctuary feel
+- International LMS (Moodle, Canvas) â†’ Too complex, desktop-first
+- School Management Systems (local) â†’ Admin-focused, not learning-focused
+- Google Classroom â†’ No Sri Lankan context, no sanctuary feel
 
 **Blue Ocean**:
 ```
@@ -104,6 +110,8 @@ Gurudevi = LMS + Sanctuary + Sri Lanka Context + Mobile-First + Wellbeing
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
+
 # PART 2: THE UNIFIED 5-TAB ARCHITECTURE
 
 ## 2.1 The Sacred Structure (Never Changes)
@@ -111,7 +119,7 @@ Gurudevi = LMS + Sanctuary + Sri Lanka Context + Mobile-First + Wellbeing
 ```
 Bottom Navigation (WhatsApp-style):
 
-🧘 Self    |    🏫 Classroom    |    🌸 Community    |    📚 Library    |    👤 Profile
+ðŸ§˜ Self    |    ðŸ« Classroom    |    ðŸŒ¸ Community    |    ðŸ“š Library    |    ðŸ‘¤ Profile
 ```
 
 **Philosophy**:
@@ -122,7 +130,7 @@ Bottom Navigation (WhatsApp-style):
 
 ## 2.2 Tab Definitions (Universal)
 
-### 🧘 **SELF** (Sanctuary)
+### ðŸ§˜ **SELF** (Sanctuary)
 **Essence**: Personal refuge, wellbeing, reflection  
 **Available**: v0.1 (all roles)  
 
@@ -146,7 +154,9 @@ Bottom Navigation (WhatsApp-style):
 
 ---
 
-### 🏫 **CLASSROOM** (Active Space)
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
+
+### ðŸ« **CLASSROOM** (Active Space)
 **Essence**: Where work happens  
 **Available**: v0.1 (all roles)
 
@@ -170,7 +180,9 @@ Bottom Navigation (WhatsApp-style):
 
 ---
 
-### 🌸 **COMMUNITY** (Cathedral)
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
+
+### ðŸŒ¸ **COMMUNITY** (Cathedral)
 **Essence**: Gathering space, collective wisdom  
 **Available**: v0.1 (minimal), v0.5 (full)
 
@@ -205,7 +217,9 @@ Bottom Navigation (WhatsApp-style):
 
 ---
 
-### 📚 **LIBRARY** (Knowledge Repository)
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
+
+### ðŸ“š **LIBRARY** (Knowledge Repository)
 **Essence**: Curated resources, learning materials  
 **Available**: v0.1 (basic upload/view), v0.5 (full)
 
@@ -241,7 +255,9 @@ Bottom Navigation (WhatsApp-style):
 
 ---
 
-### 👤 **PROFILE** (Identity)
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
+
+### ðŸ‘¤ **PROFILE** (Identity)
 **Essence**: Personal journey, achievements, settings  
 **Available**: v0.1 (all roles)
 
@@ -265,6 +281,8 @@ Bottom Navigation (WhatsApp-style):
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
+
 ## 2.3 Implementation Pattern
 
 ### **Navigation Component** (Role-Agnostic):
@@ -274,35 +292,35 @@ export const TABS = [
   { 
     id: 'self',
     icon: 'lotus',
-    label: { si: 'ස්වයං', ta: 'சுய', en: 'Self' },
+    label: { si: 'à·ƒà·Šà·€à¶ºà¶‚', ta: 'à®šà¯à®¯', en: 'Self' },
     color: 'sanctuary500',
     availableFrom: 'v0.1'
   },
   { 
     id: 'classroom',
     icon: 'school',
-    label: { si: 'පන්ති', ta: 'வகுப்பு', en: 'Classroom' },
+    label: { si: 'à¶´à¶±à·Šà¶­à·’', ta: 'à®µà®•à¯à®ªà¯à®ªà¯', en: 'Classroom' },
     color: 'sage500',
     availableFrom: 'v0.1'
   },
   { 
     id: 'community',
     icon: 'users',
-    label: { si: 'ප්‍රජාව', ta: 'சமூகம்', en: 'Community' },
+    label: { si: 'à¶´à·Šâ€à¶»à¶¢à·à·€', ta: 'à®šà®®à¯‚à®•à®®à¯', en: 'Community' },
     color: 'sky500',
     availableFrom: 'v0.1'  // Minimal feature
   },
   { 
     id: 'library',
     icon: 'book-open',
-    label: { si: 'පුස්තකාලය', ta: 'நூலகம்', en: 'Library' },
+    label: { si: 'à¶´à·”à·ƒà·Šà¶­à¶šà·à¶½à¶º', ta: 'à®¨à¯‚à®²à®•à®®à¯', en: 'Library' },
     color: 'ember500',
     availableFrom: 'v0.1'  // Minimal feature
   },
   { 
     id: 'profile',
     icon: 'user',
-    label: { si: 'පැතිකඩ', ta: 'சுயவிவரம்', en: 'Profile' },
+    label: { si: 'à¶´à·à¶­à·’à¶šà¶©', ta: 'à®šà¯à®¯à®µà®¿à®µà®°à®®à¯', en: 'Profile' },
     color: 'sanctuary900',
     availableFrom: 'v0.1'
   }
@@ -364,6 +382,8 @@ const ClassroomScreen = () => {
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
+
 # PART 3: TECHNICAL STACK (BATTLE-TESTED)
 
 ## 3.1 Core Framework
@@ -384,10 +404,10 @@ const ClassroomScreen = () => {
 - New Architecture ENABLED (mandatory for React 19)
 
 **Battle Scars**: 4 failed builds before success
-- Build 1: Cloud rejected React 19 → Added `.npmrc` with `legacy-peer-deps=true`
-- Build 2: Gradle crash (New Arch vs Reanimated 3) → Disabled New Arch temporarily
-- Build 3: Reanimated 3 incompatible → Upgraded to Reanimated 4
-- Build 4: ✅ SUCCESS (all aligned)
+- Build 1: Cloud rejected React 19 â†’ Added `.npmrc` with `legacy-peer-deps=true`
+- Build 2: Gradle crash (New Arch vs Reanimated 3) â†’ Disabled New Arch temporarily
+- Build 3: Reanimated 3 incompatible â†’ Upgraded to Reanimated 4
+- Build 4: âœ… SUCCESS (all aligned)
 
 ## 3.2 Complete Dependencies
 
@@ -546,6 +566,8 @@ module.exports = function(api) {
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
+
 # PART 4: MULTI-TENANT DATABASE ARCHITECTURE
 
 ## 4.1 The Decision: One Database, All Schools
@@ -554,7 +576,7 @@ module.exports = function(api) {
 
 **Why NOT Separate Databases per School**:
 
-| Aspect | Separate DBs | Multi-Tenant ✅ |
+| Aspect | Separate DBs | Multi-Tenant âœ… |
 |--------|-------------|-----------------|
 | Cost (10 schools) | $250/month | $25/month |
 | Cost (50 schools) | $1,250/month | $25/month |
@@ -713,6 +735,8 @@ CREATE INDEX idx_announcements_created_at ON announcements(created_at DESC);
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
+
 # PART 5: UUID STRATEGY & OFFLINE READINESS
 
 ## 5.1 Why UUID (Not Integer IDs)
@@ -743,16 +767,16 @@ await supabase.from('reflections').insert(reflection);
 
 **With auto-increment integers, this is IMPOSSIBLE**:
 ```sql
--- ❌ Collision problem
+-- âŒ Collision problem
 Device offline creates: id = 1, 2, 3
 Server already has: id = 1, 2, 3
-Sync → CONFLICT! 💥
+Sync â†’ CONFLICT! ðŸ’¥
 ```
 
 **2. Security (No Enumeration)**:
 ```
-❌ Integer IDs: GET /api/students/1, /2, /3 (attacker guesses all IDs)
-✅ UUIDs: GET /api/students/550e8400-... (impossible to guess)
+âŒ Integer IDs: GET /api/students/1, /2, /3 (attacker guesses all IDs)
+âœ… UUIDs: GET /api/students/550e8400-... (impossible to guess)
 ```
 
 **3. Distributed Systems**:
@@ -763,7 +787,7 @@ NO coordination needed, NO collisions (probabilistically impossible)
 
 **4. Mergers & Migrations**:
 ```
-School A database + School B database → Merged
+School A database + School B database â†’ Merged
 With UUIDs: Zero conflicts
 With integers: Must renumber everything
 ```
@@ -838,12 +862,12 @@ for (const item of syncQueue) {
 
 **Use consistently throughout codebase**:
 ```typescript
-✅ user_id: UUID
-✅ school_id: UUID
-✅ classroom_id: UUID
-✅ id: UUID
+âœ… user_id: UUID
+âœ… school_id: UUID
+âœ… classroom_id: UUID
+âœ… id: UUID
 
-❌ Avoid mixing: user_uid, school_uuid (confusing)
+âŒ Avoid mixing: user_uid, school_uuid (confusing)
 ```
 
 **In RLS policies**:
@@ -856,6 +880,8 @@ USING (user_id = auth.uid());  -- Both are UUIDs
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
+
 # PART 6: ROLE-BASED DATA WINDOWS (RLS)
 
 ## 6.1 The Core Concept
@@ -863,13 +889,13 @@ USING (user_id = auth.uid());  -- Both are UUIDs
 **Same Reality, Different Windows**:
 
 ```
-        🏫 REALITY (Database)
-             ↓
+        ðŸ« REALITY (Database)
+             â†“
     [Announcement: "Sports Day Feb 10"]
-             ↓
-    ┌────────┴────────┬────────────┐
-    │                 │            │
-🧑‍🎓 Student      👨‍🏫 Teacher    👔 Principal
+             â†“
+    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+    â”‚                 â”‚            â”‚
+ðŸ§‘â€ðŸŽ“ Student      ðŸ‘¨â€ðŸ« Teacher    ðŸ‘” Principal
 "School event"  "Coordinate   "Track attendance
                 with PE dept"  & budget"
 ```
@@ -1136,7 +1162,7 @@ const GradesScreen = () => {
 **Even if app has a bug, RLS protects**:
 
 ```typescript
-// ❌ Hypothetical bug in app code
+// âŒ Hypothetical bug in app code
 // Student's phone somehow sends principal's ID in request
 const maliciousRequest = {
   user_id: 'principal-789',  // Trying to impersonate principal
@@ -1153,7 +1179,9 @@ const maliciousRequest = {
 
 ---
 
-# PART 7: FEATURE ROADMAP (V0.1 → V1.0)
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
+
+# PART 7: FEATURE ROADMAP (V0.1 â†’ V1.0)
 
 ## 7.1 Version Strategy
 
@@ -1161,11 +1189,11 @@ const maliciousRequest = {
 
 ```
 v0.1 (Months 1-3): Seed
-  ↓ Validate adoption
+  â†“ Validate adoption
 v0.5 (Months 4-6): Growth
-  ↓ Validate revenue
+  â†“ Validate revenue
 v1.0 (Months 7-12): Power
-  ↓ Compete with international platforms
+  â†“ Compete with international platforms
 ```
 
 ## 7.2 v0.1 - MVP (3 Months)
@@ -1179,48 +1207,48 @@ v1.0 (Months 7-12): Power
 
 **Features**:
 
-### **🧘 Self (Full)**:
-- ✅ Daily mood check-in (lotus petals opening based on mood)
-- ✅ Reflection journal (text + voice notes)
-- ✅ Breathing exercises (guided with animation)
-- ✅ Weekly reflection prompts
+### **ðŸ§˜ Self (Full)**:
+- âœ… Daily mood check-in (lotus petals opening based on mood)
+- âœ… Reflection journal (text + voice notes)
+- âœ… Breathing exercises (guided with animation)
+- âœ… Weekly reflection prompts
 
-### **🏫 Classroom (Core)**:
-- ✅ Create classrooms
-- ✅ Enroll students (via join code)
-- ✅ Upload content (PDF, video, audio)
-- ✅ View assigned lessons (students)
-- ✅ Basic progress tracking
+### **ðŸ« Classroom (Core)**:
+- âœ… Create classrooms
+- âœ… Enroll students (via join code)
+- âœ… Upload content (PDF, video, audio)
+- âœ… View assigned lessons (students)
+- âœ… Basic progress tracking
 
-### **🌸 Community (Basic)**:
-- ✅ School announcements (principal can post, all can view)
-- ✅ Text announcements with realtime updates
-- ✅ Read receipts (track who has seen announcements)
-- ❌ No replies (v0.5)
-- ❌ No forums (v0.5)
+### **ðŸŒ¸ Community (Basic)**:
+- âœ… School announcements (principal can post, all can view)
+- âœ… Text announcements with realtime updates
+- âœ… Read receipts (track who has seen announcements)
+- âŒ No replies (v0.5)
+- âŒ No forums (v0.5)
 
-### **📚 Library (Basic Upload/View)**:
-- ✅ Teachers upload content (PDF, video)
-- ✅ Students view content (filtered by their classrooms)
-- ✅ Basic categories (grade, subject)
-- ✅ 20 pre-curated public resources (seed content)
-- ❌ No advanced search (v0.5)
-- ❌ No quizzes (v0.5)
+### **ðŸ“š Library (Basic Upload/View)**:
+- âœ… Teachers upload content (PDF, video)
+- âœ… Students view content (filtered by their classrooms)
+- âœ… Basic categories (grade, subject)
+- âœ… 20 pre-curated public resources (seed content)
+- âŒ No advanced search (v0.5)
+- âŒ No quizzes (v0.5)
 
-### **👤 Profile (Basic)**:
-- ✅ View profile info
-- ✅ Edit name, language
-- ✅ Data saver mode toggle
-- ✅ Logout
+### **ðŸ‘¤ Profile (Basic)**:
+- âœ… View profile info
+- âœ… Edit name, language
+- âœ… Data saver mode toggle
+- âœ… Logout
 
 **NOT in v0.1**:
-- ❌ Payments (all free)
-- ❌ AI assistant
-- ❌ OCR (Sinhala/Tamil text recognition)
-- ❌ Forms/polls in announcements
-- ❌ Quizzes (auto-graded)
-- ❌ Offline mode
-- ❌ Video calls
+- âŒ Payments (all free)
+- âŒ AI assistant
+- âŒ OCR (Sinhala/Tamil text recognition)
+- âŒ Forms/polls in announcements
+- âŒ Quizzes (auto-graded)
+- âŒ Offline mode
+- âŒ Video calls
 
 **Tech Stack (v0.1)**:
 - React 19 + Expo 54
@@ -1273,42 +1301,42 @@ Premium (LKR 3,000/month):
 ```
 
 ### **Payment Integration**:
-- ✅ PayHere (Sri Lankan gateway)
-- ✅ QR gift codes (buy in-store, redeem in app)
-- ✅ School-wide subscriptions (principal pays for all teachers)
+- âœ… PayHere (Sri Lankan gateway)
+- âœ… QR gift codes (buy in-store, redeem in app)
+- âœ… School-wide subscriptions (principal pays for all teachers)
 
 ### **Rewards System** (NEW):
-- ✅ Points for actions (upload content, complete reflection, help students)
-- ✅ Streaks (consecutive days active)
-- ✅ Levels (bronze → silver → gold → platinum)
-- ✅ Badges (achievements: "First Upload", "30-Day Streak", "Mentor")
-- ✅ Leaderboards (school-wide, friendly competition)
-- ✅ Unlockable features (e.g., custom themes at level 5)
+- âœ… Points for actions (upload content, complete reflection, help students)
+- âœ… Streaks (consecutive days active)
+- âœ… Levels (bronze â†’ silver â†’ gold â†’ platinum)
+- âœ… Badges (achievements: "First Upload", "30-Day Streak", "Mentor")
+- âœ… Leaderboards (school-wide, friendly competition)
+- âœ… Unlockable features (e.g., custom themes at level 5)
 
 ### **Community (Full)**:
-- ✅ Discussion forums (threaded)
-- ✅ Replies + reactions
-- ✅ Teacher mentorship matching
-- ✅ Study groups (students)
+- âœ… Discussion forums (threaded)
+- âœ… Replies + reactions
+- âœ… Teacher mentorship matching
+- âœ… Study groups (students)
 
 ### **Library (Full)**:
-- ✅ Advanced search (full-text, filters)
-- ✅ Filter by grade, subject, type
-- ✅ Download for offline
+- âœ… Advanced search (full-text, filters)
+- âœ… Filter by grade, subject, type
+- âœ… Download for offline
 
 ### **New Features**:
-- ✅ OCR: Scan Sinhala/Tamil text → Digital (expo-ocr)
-- ✅ Forms/Polls in announcements
-- ✅ Quizzes with auto-grading
-- ✅ PDF certificate generation
-- ✅ Teacher analytics dashboard
-- ✅ FAB (Floating Action Button) - WhatsApp-style quick actions
-- ✅ Maps (school locations, field trip planning)
+- âœ… OCR: Scan Sinhala/Tamil text â†’ Digital (expo-ocr)
+- âœ… Forms/Polls in announcements
+- âœ… Quizzes with auto-grading
+- âœ… PDF certificate generation
+- âœ… Teacher analytics dashboard
+- âœ… FAB (Floating Action Button) - WhatsApp-style quick actions
+- âœ… Maps (school locations, field trip planning)
 
 **NOT in v0.5**:
-- ❌ AI assistant (v1.0)
-- ❌ Offline mode (v1.0)
-- ❌ Video calls (v1.0)
+- âŒ AI assistant (v1.0)
+- âŒ Offline mode (v1.0)
+- âŒ Video calls (v1.0)
 
 ## 7.4 v1.0 - Power Platform (Months 7-12)
 
@@ -1349,13 +1377,15 @@ const AIAssistant = () => {
 ```
 
 ### **Advanced Features**:
-- ✅ Interactive lessons (H5P-like)
-- ✅ Video conferencing (1-on-1 mentorship, Agora.io)
-- ✅ Principal dashboard (school-wide analytics)
-- ✅ API integrations (Zapier, Google Classroom import)
-- ✅ Mobile app sharing (students share progress with parents)
+- âœ… Interactive lessons (H5P-like)
+- âœ… Video conferencing (1-on-1 mentorship, Agora.io)
+- âœ… Principal dashboard (school-wide analytics)
+- âœ… API integrations (Zapier, Google Classroom import)
+- âœ… Mobile app sharing (students share progress with parents)
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
 
 ## 7.5 Rewards System Implementation (v0.5)
 
@@ -1457,7 +1487,7 @@ const BADGES = {
     id: 'first_upload',
     name: 'First Steps',
     description: 'Upload your first content',
-    icon: '🌱',
+    icon: 'ðŸŒ±',
     condition: (stats) => stats.uploads >= 1
   },
   
@@ -1465,7 +1495,7 @@ const BADGES = {
     id: 'streak_7',
     name: 'Week Warrior',
     description: '7-day activity streak',
-    icon: '🔥',
+    icon: 'ðŸ”¥',
     condition: (stats) => stats.current_streak >= 7
   },
   
@@ -1473,7 +1503,7 @@ const BADGES = {
     id: 'streak_30',
     name: 'Month Master',
     description: '30-day activity streak',
-    icon: '⭐',
+    icon: 'â­',
     condition: (stats) => stats.current_streak >= 30
   },
   
@@ -1481,7 +1511,7 @@ const BADGES = {
     id: 'helpful_teacher',
     name: 'Helping Hand',
     description: 'Answer 50 student questions',
-    icon: '🤝',
+    icon: 'ðŸ¤',
     condition: (stats) => stats.questions_answered >= 50
   },
   
@@ -1489,7 +1519,7 @@ const BADGES = {
     id: 'mentor',
     name: 'Mentor',
     description: 'Complete 10 mentorship sessions',
-    icon: '👨‍🏫',
+    icon: 'ðŸ‘¨â€ðŸ«',
     condition: (stats) => stats.mentor_sessions >= 10
   },
   
@@ -1497,7 +1527,7 @@ const BADGES = {
     id: 'content_creator',
     name: 'Content Creator',
     description: 'Upload 100 pieces of content',
-    icon: '📚',
+    icon: 'ðŸ“š',
     condition: (stats) => stats.uploads >= 100
   },
   
@@ -1506,7 +1536,7 @@ const BADGES = {
     id: 'level_5',
     name: 'Grove Guardian',
     description: 'Reach level 5',
-    icon: '🌳',
+    icon: 'ðŸŒ³',
     condition: (stats) => stats.level >= 5
   },
   
@@ -1514,7 +1544,7 @@ const BADGES = {
     id: 'level_10',
     name: 'Sacred Teacher',
     description: 'Reach level 10',
-    icon: '🪷',
+    icon: 'ðŸª·',
     condition: (stats) => stats.level >= 10
   }
 };
@@ -1644,10 +1674,10 @@ const LeaderboardScreen = () => {
   
   return (
     <ScrollView>
-      <Heading>පාසල් ප්‍රමුඛ මණ්ඩලය</Heading>
+      <Heading>à¶´à·à·ƒà¶½à·Š à¶´à·Šâ€à¶»à¶¸à·”à¶› à¶¸à¶«à·Šà¶©à¶½à¶º</Heading>
       
       <SegmentedControl
-        values={['සතියේ', 'මාසික', 'සර්වකාලීන']}
+        values={['à·ƒà¶­à·’à¶ºà·š', 'à¶¸à·à·ƒà·’à¶š', 'à·ƒà¶»à·Šà·€à¶šà·à¶½à·“à¶±']}
         selectedIndex={period === 'weekly' ? 0 : period === 'monthly' ? 1 : 2}
         onChange={(e) => {
           const periods = ['weekly', 'monthly', 'alltime'];
@@ -1702,6 +1732,8 @@ const checkUnlockables = (userLevel: number) => {
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
+
 ## 7.6 FAB Implementation (v0.5)
 
 **Goal**: Compete with international platforms
@@ -1741,13 +1773,15 @@ const AIAssistant = () => {
 ```
 
 ### **Advanced Features**:
-- ✅ Interactive lessons (H5P-like)
-- ✅ Video conferencing (1-on-1 mentorship, Agora.io)
-- ✅ Principal dashboard (school-wide analytics)
-- ✅ API integrations (Zapier, Google Classroom import)
-- ✅ Mobile app sharing (students share progress with parents)
+- âœ… Interactive lessons (H5P-like)
+- âœ… Video conferencing (1-on-1 mentorship, Agora.io)
+- âœ… Principal dashboard (school-wide analytics)
+- âœ… API integrations (Zapier, Google Classroom import)
+- âœ… Mobile app sharing (students share progress with parents)
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
 
 ## 7.7 Maps Implementation (v0.5)
 
@@ -1832,9 +1866,11 @@ CREATE INDEX idx_schools_location ON schools(latitude, longitude);
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
+
 ## 7.8 Migration Path
 
-**v0.1 → v0.5**:
+**v0.1 â†’ v0.5**:
 ```sql
 -- Add subscription tables
 CREATE TABLE subscriptions (
@@ -1860,7 +1896,7 @@ ALTER TABLE users ADD COLUMN tier TEXT DEFAULT 'free';
 ALTER TABLE users ADD COLUMN subscription_id UUID REFERENCES subscriptions(id);
 ```
 
-**v0.5 → v1.0**:
+**v0.5 â†’ v1.0**:
 ```sql
 -- Add offline sync
 ALTER TABLE content_items ADD COLUMN sync_version INTEGER DEFAULT 1;
@@ -1887,45 +1923,47 @@ CREATE TABLE ai_usage (
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
+
 # PART 8: SECURITY & PRIVACY
 
 ## 8.1 Security Layers
 
 ```
-┌────────────────────────────────────────────┐
-│  LAYER 1: Transport Security               │
-│  • HTTPS/TLS 1.3 (all connections)        │
-│  • Certificate pinning (prevent MITM)      │
-└────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  LAYER 1: Transport Security               â”‚
+â”‚  â€¢ HTTPS/TLS 1.3 (all connections)        â”‚
+â”‚  â€¢ Certificate pinning (prevent MITM)      â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 
-┌────────────────────────────────────────────┐
-│  LAYER 2: Authentication                   │
-│  • Supabase Auth (JWT tokens)             │
-│  • Password requirements (min 8 char)      │
-│  • Optional MFA (v0.5)                     │
-└────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  LAYER 2: Authentication                   â”‚
+â”‚  â€¢ Supabase Auth (JWT tokens)             â”‚
+â”‚  â€¢ Password requirements (min 8 char)      â”‚
+â”‚  â€¢ Optional MFA (v0.5)                     â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 
-┌────────────────────────────────────────────┐
-│  LAYER 3: Authorization                    │
-│  • Supabase RLS (row-level security)      │
-│  • Users can only access own school data  │
-│  • Role-based permissions                  │
-└────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  LAYER 3: Authorization                    â”‚
+â”‚  â€¢ Supabase RLS (row-level security)      â”‚
+â”‚  â€¢ Users can only access own school data  â”‚
+â”‚  â€¢ Role-based permissions                  â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 
-┌────────────────────────────────────────────┐
-│  LAYER 4: Data Encryption                 │
-│  • At rest: PostgreSQL encryption          │
-│  • In transit: TLS                         │
-│  • Sensitive data: AES-256                 │
-└────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  LAYER 4: Data Encryption                 â”‚
+â”‚  â€¢ At rest: PostgreSQL encryption          â”‚
+â”‚  â€¢ In transit: TLS                         â”‚
+â”‚  â€¢ Sensitive data: AES-256                 â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 
-┌────────────────────────────────────────────┐
-│  LAYER 5: Application Security             │
-│  • Input validation (XSS prevention)       │
-│  • SQL injection prevention (parameterized)│
-│  • Rate limiting (100 req/hour/user)      │
-│  • Audit logging (sensitive actions)       │
-└────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  LAYER 5: Application Security             â”‚
+â”‚  â€¢ Input validation (XSS prevention)       â”‚
+â”‚  â€¢ SQL injection prevention (parameterized)â”‚
+â”‚  â€¢ Rate limiting (100 req/hour/user)      â”‚
+â”‚  â€¢ Audit logging (sensitive actions)       â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ## 8.2 Child Safety (Critical)
@@ -1973,9 +2011,9 @@ USING (
 ```typescript
 // No DMs between students
 // Only:
-// - Teachers → Students (feedback on assignments)
-// - Students → Teachers (questions)
-// - Principals → Everyone (announcements)
+// - Teachers â†’ Students (feedback on assignments)
+// - Students â†’ Teachers (questions)
+// - Principals â†’ Everyone (announcements)
 
 // v0.5+: Study groups (teacher-supervised)
 ```
@@ -2109,6 +2147,8 @@ CREATE TRIGGER audit_grade_changes
 ```
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
 
 # PART 9: IMPLEMENTATION PATTERNS
 
@@ -2269,23 +2309,23 @@ export default i18n;
 // i18n/locales/si.json
 {
   "common": {
-    "welcome": "ආයුබෝවන්",
-    "login": "පිවිසෙන්න",
-    "logout": "පිටවීම",
-    "save": "සුරකින්න",
-    "cancel": "අවලංගු කරන්න"
+    "welcome": "à¶†à¶ºà·”à¶¶à·à·€à¶±à·Š",
+    "login": "à¶´à·’à·€à·’à·ƒà·™à¶±à·Šà¶±",
+    "logout": "à¶´à·’à¶§à·€à·“à¶¸",
+    "save": "à·ƒà·”à¶»à¶šà·’à¶±à·Šà¶±",
+    "cancel": "à¶…à·€à¶½à¶‚à¶œà·” à¶šà¶»à¶±à·Šà¶±"
   },
   "tabs": {
-    "self": "ස්වයං",
-    "classroom": "පන්තිය",
-    "community": "ප්‍රජාව",
-    "library": "පුස්තකාලය",
-    "profile": "පැතිකඩ"
+    "self": "à·ƒà·Šà·€à¶ºà¶‚",
+    "classroom": "à¶´à¶±à·Šà¶­à·’à¶º",
+    "community": "à¶´à·Šâ€à¶»à¶¢à·à·€",
+    "library": "à¶´à·”à·ƒà·Šà¶­à¶šà·à¶½à¶º",
+    "profile": "à¶´à·à¶­à·’à¶šà¶©"
   },
   "roles": {
-    "student": "ශිෂ්‍යා",
-    "teacher": "ගුරුවරයා",
-    "principal": "විදුහල්පති"
+    "student": "à·à·’à·‚à·Šâ€à¶ºà·",
+    "teacher": "à¶œà·”à¶»à·”à·€à¶»à¶ºà·",
+    "principal": "à·€à·’à¶¯à·”à·„à¶½à·Šà¶´à¶­à·’"
   }
 }
 ```
@@ -2499,6 +2539,8 @@ export const naturalTransition = (value: number, duration = SANCTUARY_TIMING.nat
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
+
 # PART 10: QUICK START GUIDE
 
 ## 10.1 Day 1: Project Setup
@@ -2686,45 +2728,45 @@ export default function App() {
 **Project structure**:
 ```
 gurudevi/
-├── app/                    # Expo Router (or screens/)
-│   ├── (tabs)/            # Bottom tab screens
-│   │   ├── self.tsx
-│   │   ├── classroom.tsx
-│   │   ├── community.tsx
-│   │   ├── library.tsx
-│   │   └── profile.tsx
-│   ├── auth/
-│   │   ├── login.tsx
-│   │   └── signup.tsx
-│   └── _layout.tsx
-├── components/            # Reusable components
-│   ├── LotusPetal.tsx
-│   ├── SanctuaryCard.tsx
-│   └── ...
-├── constants/
-│   ├── theme.ts
-│   └── navigation.ts
-├── hooks/
-│   ├── useGrades.ts
-│   ├── useClassrooms.ts
-│   └── ...
-├── i18n/
-│   ├── config.ts
-│   └── locales/
-│       ├── si.json
-│       ├── ta.json
-│       └── en.json
-├── lib/
-│   └── supabase.ts
-├── stores/
-│   └── useUserStore.ts
-├── utils/
-│   └── animations.ts
-├── app.json
-├── babel.config.js
-├── eas.json
-├── package.json
-└── tsconfig.json
+â”œâ”€â”€ app/                    # Expo Router (or screens/)
+â”‚   â”œâ”€â”€ (tabs)/            # Bottom tab screens
+â”‚   â”‚   â”œâ”€â”€ self.tsx
+â”‚   â”‚   â”œâ”€â”€ classroom.tsx
+â”‚   â”‚   â”œâ”€â”€ community.tsx
+â”‚   â”‚   â”œâ”€â”€ library.tsx
+â”‚   â”‚   â””â”€â”€ profile.tsx
+â”‚   â”œâ”€â”€ auth/
+â”‚   â”‚   â”œâ”€â”€ login.tsx
+â”‚   â”‚   â””â”€â”€ signup.tsx
+â”‚   â””â”€â”€ _layout.tsx
+â”œâ”€â”€ components/            # Reusable components
+â”‚   â”œâ”€â”€ LotusPetal.tsx
+â”‚   â”œâ”€â”€ SanctuaryCard.tsx
+â”‚   â””â”€â”€ ...
+â”œâ”€â”€ constants/
+â”‚   â”œâ”€â”€ theme.ts
+â”‚   â””â”€â”€ navigation.ts
+â”œâ”€â”€ hooks/
+â”‚   â”œâ”€â”€ useGrades.ts
+â”‚   â”œâ”€â”€ useClassrooms.ts
+â”‚   â””â”€â”€ ...
+â”œâ”€â”€ i18n/
+â”‚   â”œâ”€â”€ config.ts
+â”‚   â””â”€â”€ locales/
+â”‚       â”œâ”€â”€ si.json
+â”‚       â”œâ”€â”€ ta.json
+â”‚       â””â”€â”€ en.json
+â”œâ”€â”€ lib/
+â”‚   â””â”€â”€ supabase.ts
+â”œâ”€â”€ stores/
+â”‚   â””â”€â”€ useUserStore.ts
+â”œâ”€â”€ utils/
+â”‚   â””â”€â”€ animations.ts
+â”œâ”€â”€ app.json
+â”œâ”€â”€ babel.config.js
+â”œâ”€â”€ eas.json
+â”œâ”€â”€ package.json
+â””â”€â”€ tsconfig.json
 ```
 
 ## 10.6 Testing Checklist
@@ -2745,40 +2787,44 @@ gurudevi/
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
+
 # CONCLUSION
 
 ## What This Architecture Enables
 
 **For v0.1** (3 months):
-- ✅ Build quickly (proven stack, good docs, battle-tested)
-- ✅ Works cloud-first (faster to ship than offline-first)
-- ✅ Scales to 10 schools without changes
-- ✅ Multi-tenant from day 1 (one database, all schools)
-- ✅ Secure foundation (RLS, UUID, audit logging)
-- ✅ Sri Lanka-optimized (Si/Ta/En, data saver, PayHere-ready)
+- âœ… Build quickly (proven stack, good docs, battle-tested)
+- âœ… Works cloud-first (faster to ship than offline-first)
+- âœ… Scales to 10 schools without changes
+- âœ… Multi-tenant from day 1 (one database, all schools)
+- âœ… Secure foundation (RLS, UUID, audit logging)
+- âœ… Sri Lanka-optimized (Si/Ta/En, data saver, PayHere-ready)
 
 **For v0.5** (6 months):
-- ✅ Add revenue (pricing tiers, PayHere integration)
-- ✅ Unlock Community + Library (full features)
-- ✅ OCR for Sinhala/Tamil (expo-ocr)
-- ✅ Advanced features (quizzes, forms, analytics)
-- ✅ Same database, same architecture (no rearchitecture)
+- âœ… Add revenue (pricing tiers, PayHere integration)
+- âœ… Unlock Community + Library (full features)
+- âœ… OCR for Sinhala/Tamil (expo-ocr)
+- âœ… Advanced features (quizzes, forms, analytics)
+- âœ… Same database, same architecture (no rearchitecture)
 
 **For v1.0** (12 months):
-- ✅ Add offline mode (SQLite + sync, UUIDs enable this)
-- ✅ AI assistant (Claude API, Pro/Premium only)
-- ✅ Advanced features (video calls, interactive lessons)
-- ✅ Scales to 1000+ students, 50+ schools
-- ✅ Platform agnostic (Supabase self-hostable if needed)
+- âœ… Add offline mode (SQLite + sync, UUIDs enable this)
+- âœ… AI assistant (Claude API, Pro/Premium only)
+- âœ… Advanced features (video calls, interactive lessons)
+- âœ… Scales to 1000+ students, 50+ schools
+- âœ… Platform agnostic (Supabase self-hostable if needed)
 
 **For the Cathedral** (years):
-- ✅ Extensible (spiral development, grow without breaking)
-- ✅ Debuggable (Sentry, audit logs, clear patterns)
-- ✅ Evolvable (migrations documented, versioned)
-- ✅ Ownable (no vendor lock-in, multi-tenant flexible)
-- ✅ Sanctuary (aesthetics preserved through all versions)
+- âœ… Extensible (spiral development, grow without breaking)
+- âœ… Debuggable (Sentry, audit logs, clear patterns)
+- âœ… Evolvable (migrations documented, versioned)
+- âœ… Ownable (no vendor lock-in, multi-tenant flexible)
+- âœ… Sanctuary (aesthetics preserved through all versions)
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
 
 ## Critical Decisions Documented
 
@@ -2803,6 +2849,8 @@ gurudevi/
 **10. AI**: v1.0 only, Pro/Premium tier - NOT v0.1, NOT free tier
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
 
 ## Next Steps
 
@@ -2845,19 +2893,21 @@ gurudevi/
 
 ---
 
-**The seed contains the cathedral's DNA.** 🌱
+**The seed contains the cathedral's DNA.** ðŸŒ±
 
-**This architecture will grow with you.** 🌳
+**This architecture will grow with you.** ðŸŒ³
 
-**From 1 teacher to 1,000 schools.** 🪷
+**From 1 teacher to 1,000 schools.** ðŸª·
 
 ---
 
-*ජයවේව* (Jayawewa - May you be victorious!)
+*à¶¢à¶ºà·€à·šà·€* (Jayawewa - May you be victorious!)
 
 **END OF GURUDEVI ARCHITECTURE v4.0**
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current — see apps/gurudevi-mobile/README.md for the live stack.
 
 ## Document Metadata
 

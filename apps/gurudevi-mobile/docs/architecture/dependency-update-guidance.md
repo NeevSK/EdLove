@@ -2,7 +2,7 @@
 title: "Dependency Update Guidance"
 status: "active"
 created: 2026-04-18
-updated: 2026-04-18
+updated: 2026-08-24
 author: "Naveen"
 scribe: "opencode"
 tags: [apps, gurudevi-mobile]
@@ -160,9 +160,10 @@ When we want a stable but modern stack, prefer this order:
 
 ## 7) Suggested baseline policy for this repo
 
-- Stable baseline for mobile: Expo SDK 55, React Native 0.83.x, React 19.2.x, Reanimated 4.x, Skia 2.6.x, gluestack-ui 3.x, ZenStack stable 3.5.6.
+- Stable baseline for mobile: Expo SDK 57, React Native 0.86.x, React 19.2.x, Reanimated 4.5.x (sacred pin), Skia 2.6.5 (sacred pin), gluestack-ui 3.x via @repo/ui, ZenStack stable 3.5.6.
+- Sacred pins: see the sacred-versions table in the repo-root AGENTS.md before bumping RNGH/Reanimated/worklets/MMKV/nitro/Skia.
 - Beta baseline: isolated branch with explicit feature flags, preview EAS channel, and a locked dependency set.
-- Watch list only: Expo 56, React Native 0.85, React 19.3 canary, gluestack v5 alpha, ZenStack canary.
+- Watch list only: React 19.3 canary, gluestack v5 alpha, ZenStack canary, next Expo/RN minors.
 
 ## 8) What to do before a version bump
 

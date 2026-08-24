@@ -2,7 +2,7 @@
 title: "The Gurudevi Agent Prompt Lens"
 status: "active"
 created: 2026-02-28
-updated: 2026-05-25
+updated: 2026-08-24
 author: "Naveen"
 scribe: "opencode"
 tags: [apps, gurudevi-mobile]
@@ -11,10 +11,10 @@ tags: [apps, gurudevi-mobile]
 # The Gurudevi Agent Prompt Lens
 *Version: M36-Final-Alchemist-Optimized*
 ---
-## 🛑 MANDATORY INSTRUCTIONS FOR AI ASSISTANT 🛑
+## ðŸ›‘ MANDATORY INSTRUCTIONS FOR AI ASSISTANT ðŸ›‘
 
 **CRITICAL RULE: YOU ARE FORBIDDEN FROM WRITING OR MODIFYING ANY IMPLEMENTATION CODE UNTIL A PLAN IS APPROVED AND THE "RESONANCE CASCADE" IN `MASTER_PROTOCOL.md` IS SATISFIED.**
-You are an advanced software engineering agent specializing in "Resonance Engineering." Your goal is to build the 'Gurudevi' ecosystem—a sacred space for teachers. You must prioritize system health and visual "Fine UI" elegance over quick task completion.
+You are an advanced software engineering agent specializing in "Resonance Engineering." Your goal is to build the 'Gurudevi' ecosystemâ€”a sacred space for teachers. You must prioritize system health and visual "Fine UI" elegance over quick task completion.
 
 ### 1. HOW WE THINK (The Dimensional Analysis)
 Before proposing a solution, evaluate the feature across these three dimensions:
@@ -32,11 +32,11 @@ Adhere to these tokens strictly. Do not invent hex codes.
 1. **The Palette:** Background: `#F5EDD6` (Vellum). Text: `#2A2318` (Ink). Primary: Saffron (`#D4843A`). Secondary: Dalu Green (`#8BBF7A`).
 2. **The Shadows:** NEVER use grey or black. Use `rgba(107, 100, 128, x)` (Shadow Violet).
 3. **The Rhythm:** Use `FadeInDown` (500ms) for entries. Stagger children. Use Bezier easing for "organic" movement.
-4. **The Glass Boundary:** For Blurs, use values ≤12 or ≥36. Avoid the "Muddled Middle" (16-28).
+4. **The Glass Boundary:** For Blurs, use values â‰¤12 or â‰¥36. Avoid the "Muddled Middle" (16-28).
 
 ---
 
-## 📝 REQUIRED PRE-COMPILATION OUTPUT FORMAT
+## ðŸ“ REQUIRED PRE-COMPILATION OUTPUT FORMAT
 *You must fill this out and wait for the user to say "Approved" before writing any implementation code.*
 
 ### 1. The Horizontal Flow (User Journey)
@@ -61,7 +61,7 @@ Adhere to these tokens strictly. Do not invent hex codes.
 
 ---
 
-## 📚 DEEP CONTEXT REGISTRY
+## ðŸ“š DEEP CONTEXT REGISTRY
 Reference these files in `apps/gurudevi-mobile/docs/agent/` for all technical and philosophical truths:
 - `MASTER_PROTOCOL.md`: The Unified Intelligence Layer and mandatory sequence of awareness.
 - `gurudevi-design-retina.md`: The Source of Truth for all tokens.
@@ -70,13 +70,13 @@ Reference these files in `apps/gurudevi-mobile/docs/agent/` for all technical an
 
 ---
 
-## 🌐 WEB PLATFORM INVARIANTS
-Critical truths about this codebase's web support (Expo SDK 55 / Metro):
+## ðŸŒ WEB PLATFORM INVARIANTS
+Critical truths about this codebase's web support (Expo SDK 57 / Metro):
 
 ### Entry Point Architecture
 This app uses **`registerRootComponent(App)`** (classic Expo entry via `index.ts`), NOT expo-router's file-based routing.
-- `package.json` → `"main": "index.ts"` → `App.tsx` via `registerRootComponent`.
-- `expo-router` is intentionally **NOT** listed as an `app.json` plugin. Adding it will silently break web by hijacking Metro to look for an `app/` directory that does not exist → blank page.
+- `package.json` â†’ `"main": "index.ts"` â†’ `App.tsx` via `registerRootComponent`.
+- `expo-router` is intentionally **NOT** listed as an `app.json` plugin. Adding it will silently break web by hijacking Metro to look for an `app/` directory that does not exist â†’ blank page.
 - Nested layouts, section shells, and responsive web/mobile variants should be built with React Navigation stacks/tabs plus `.web.tsx` screen variants, not Expo Router file conventions.
 - If a screen needs different structure on web, prefer platform files, conditional rendering, or nested navigators inside `App.tsx` rather than moving the whole app to file-based routing.
 
@@ -90,74 +90,74 @@ This app uses **`registerRootComponent(App)`** (classic Expo entry via `index.ts
 
 Metro selects the most-specific file for the target platform. Use this to isolate native-only code without touching shared source.
 
-**Pattern A — Platform-specific file pair** (`*.web.tsx` alongside `*.tsx`)
+**Pattern A â€” Platform-specific file pair** (`*.web.tsx` alongside `*.tsx`)
 Best for: component files you own that import native-only packages.
 ```
-SanctuaryFlashList.tsx       ← imported on native (uses @shopify/flash-list)
-SanctuaryFlashList.web.tsx   ← imported on web   (uses React Native FlatList)
+SanctuaryFlashList.tsx       â† imported on native (uses @shopify/flash-list)
+SanctuaryFlashList.web.tsx   â† imported on web   (uses React Native FlatList)
 
-LivingCard.tsx       ← native Skia canvas
-LivingCard.web.tsx   ← plain View with background colour
+LivingCard.tsx       â† native Skia canvas
+LivingCard.web.tsx   â† plain View with background colour
 
-TemporalGlass.tsx    ← native Skia border
-TemporalGlass.web.tsx ← CSS border via borderColor
+TemporalGlass.tsx    â† native Skia border
+TemporalGlass.web.tsx â† CSS border via borderColor
 
-NoiseOverlay.tsx     ← native Skia grain
-NoiseOverlay.web.tsx ← returns null (decorative, not needed on web)
+NoiseOverlay.tsx     â† native Skia grain
+NoiseOverlay.web.tsx â† returns null (decorative, not needed on web)
 ```
 
-**Pattern B — Metro `resolveRequest` shim** (in `metro.config.js`)
+**Pattern B â€” Metro `resolveRequest` shim** (in `metro.config.js`)
 Best for: third-party packages imported by files you DON'T want to modify
 (e.g. `App.tsx`, `packages/core/src/lib/monitoring/*.ts`).
 ```js
-// metro.config.js — WEB_SHIMS map
-'@sentry/react-native'  → src/shims/sentry-web.js   (no-op init/wrap/captureException)
-'posthog-react-native'  → src/shims/posthog-web.js  (no-op PostHog class + pass-through PostHogProvider)
+// metro.config.js â€” WEB_SHIMS map
+'@sentry/react-native'  â†’ src/shims/sentry-web.js   (no-op init/wrap/captureException)
+'posthog-react-native'  â†’ src/shims/posthog-web.js  (no-op PostHog class + pass-through PostHogProvider)
 ```
 **Rule:** every entry in `WEB_SHIMS` must mirror the exported API used in this codebase.
 If you add a new call-site for a shimmed package, update the shim file.
 
-**Pattern C — `Platform.OS` guard** (in-source, inline)
+**Pattern C â€” `Platform.OS` guard** (in-source, inline)
 Best for: third-party APIs called conditionally inside a shared source file.
 ```ts
-// storage.ts — skip MMKV on web; fall through to AsyncStorage
+// storage.ts â€” skip MMKV on web; fall through to AsyncStorage
 if (isExpoGo || Platform.OS === 'web') { ... }
 
-// AvatarDisplay.tsx — skip expo-file-system/legacy (no web impl) via lazy require
+// AvatarDisplay.tsx â€” skip expo-file-system/legacy (no web impl) via lazy require
 let FileSystem = Platform.OS !== 'web' ? require('expo-file-system/legacy') : null;
 ```
 
 ### Quick Reference: Web Compatibility Map
 | Package | Status on web | Fix applied |
 |---|---|---|
-| `@sentry/react-native` | ❌ No web | Shim (Pattern B) |
-| `posthog-react-native` | ❌ No web | Shim (Pattern B) |
-| `react-native-mmkv` | ❌ No web | Platform guard (Pattern C) → falls back to AsyncStorage |
-| `@shopify/flash-list` | ⚠ Unreliable | `.web.tsx` fallback using FlatList (Pattern A) |
-| `@shopify/react-native-skia` | ⚠ Needs WASM setup | `.web.tsx` fallbacks for LivingCard, TemporalGlass, NoiseOverlay (Pattern A) |
-| `expo-file-system/legacy` | ❌ No web | Platform guard in AvatarDisplay (Pattern C); web uses `fetch+arrayBuffer` |
-| `expo-haptics` | ✅ No-op on web | No change needed |
-| `expo-blur` | ✅ Works on web | No change needed |
-| `expo-image-picker` | ✅ Works on web | No change needed |
-| `expo-image-manipulator` | ✅ Works on web | No change needed |
-| `expo-device` | ✅ Returns null safely | `Device.totalMemory ?? 0` guard already in DeviceUtils |
-| `expo-clipboard` | ✅ Works on web | No change needed |
-| `@react-native-community/netinfo` | ✅ Works on web | No change needed |
-| `expo-audio` | ⚠ Playback OK; recording limited | Guard `AudioModule.requestRecordingPermissionsAsync` + `setAudioModeAsync` with `Platform.OS !== 'web'` |
-| `@react-native-ml-kit/text-recognition` | ❌ No web | Scanner feature unavailable on web (camera-based OCR) |
-| `expo-camera` | ❌ No web | `ScannerModal.web.tsx` fallback (Pattern A) |
-| **`zustand@5`** | ⚠ Uses `import.meta.env.MODE` | `unstable_transformImportMeta: true` in `babel.config.js` rewrites `import.meta` → `globalThis.__ExpoImportMetaRegistry`; without this the web bundle throws `SyntaxError: Cannot use 'import.meta' outside a module` |
+| `@sentry/react-native` | âŒ No web | Shim (Pattern B) |
+| `posthog-react-native` | âŒ No web | Shim (Pattern B) |
+| `react-native-mmkv` | âŒ No web | Platform guard (Pattern C) â†’ falls back to AsyncStorage |
+| `@shopify/flash-list` | âš  Unreliable | `.web.tsx` fallback using FlatList (Pattern A) |
+| `@shopify/react-native-skia` | âš  Needs WASM setup | `.web.tsx` fallbacks for LivingCard, TemporalGlass, NoiseOverlay (Pattern A) |
+| `expo-file-system/legacy` | âŒ No web | Platform guard in AvatarDisplay (Pattern C); web uses `fetch+arrayBuffer` |
+| `expo-haptics` | âœ… No-op on web | No change needed |
+| `expo-blur` | âœ… Works on web | No change needed |
+| `expo-image-picker` | âœ… Works on web | No change needed |
+| `expo-image-manipulator` | âœ… Works on web | No change needed |
+| `expo-device` | âœ… Returns null safely | `Device.totalMemory ?? 0` guard already in DeviceUtils |
+| `expo-clipboard` | âœ… Works on web | No change needed |
+| `@react-native-community/netinfo` | âœ… Works on web | No change needed |
+| `expo-audio` | âš  Playback OK; recording limited | Guard `AudioModule.requestRecordingPermissionsAsync` + `setAudioModeAsync` with `Platform.OS !== 'web'` |
+| `@react-native-ml-kit/text-recognition` | âŒ No web | Scanner feature unavailable on web (camera-based OCR) |
+| `expo-camera` | âŒ No web | `ScannerModal.web.tsx` fallback (Pattern A) |
+| **`zustand@5`** | âš  Uses `import.meta.env.MODE` | `unstable_transformImportMeta: true` in `babel.config.js` rewrites `import.meta` â†’ `globalThis.__ExpoImportMetaRegistry`; without this the web bundle throws `SyntaxError: Cannot use 'import.meta' outside a module` |
 
 ---
 
-## 🚀 WEB DEPLOYMENT STRATEGY
+## ðŸš€ WEB DEPLOYMENT STRATEGY
 
 ### Build
 ```bash
 cd apps/gurudevi-mobile
 pnpm build:web          # runs: expo export -p web --output-dir dist
 ```
-Produces a static site in `apps/gurudevi-mobile/dist/` — serves from any static host.
+Produces a static site in `apps/gurudevi-mobile/dist/` â€” serves from any static host.
 
 ### Environment Variables (required at build time)
 Set these as GitHub Secrets or in your hosting platform's dashboard:
@@ -174,8 +174,8 @@ Set these as GitHub Secrets or in your hosting platform's dashboard:
 | **GitHub Pages** | Add `gh-pages` deploy step to the web-deploy workflow |
 | **Firebase Hosting** | `firebase deploy --only hosting` pointing to `apps/gurudevi-mobile/dist` |
 
-### Supabase Auth — Required Steps
-1. In your Supabase project → **Authentication → URL Configuration → Site URL**: set to your deployed domain (e.g. `https://gurudevi.vercel.app`).
+### Supabase Auth â€” Required Steps
+1. In your Supabase project â†’ **Authentication â†’ URL Configuration â†’ Site URL**: set to your deployed domain (e.g. `https://gurudevi.vercel.app`).
 2. Add the same URL to the **Redirect URLs** allowlist.
 3. For Google OAuth: ensure `https://your-domain.com` is in the allowed origins in Google Cloud Console.
 

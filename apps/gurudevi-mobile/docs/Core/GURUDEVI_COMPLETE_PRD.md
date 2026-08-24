@@ -1,14 +1,16 @@
 ---
-title: "GURUDEVI â€” COMPLETE PRODUCT REQUIREMENTS DOCUMENT"
-status: "active"
+title: "Gurudevi Complete Product Requirements Document (Feb 2026 snapshot)"
+status: "superseded"
 created: 2026-02-11
 updated: 2026-02-11
 author: "Naveen"
 scribe: "opencode"
-tags: [apps, gurudevi-mobile]
+tags: [apps, gurudevi-mobile, historical]
 ---
 
-# GURUDEVI — COMPLETE PRODUCT REQUIREMENTS DOCUMENT
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
+# Gurudevi — Complete Product Requirements Document
 ## 11 Complete PRD | The Comprehensive Vision & Implementation Guide
 
 **Role in Constellation**: Complete product specification for Gurudevi application  
@@ -17,6 +19,8 @@ tags: [apps, gurudevi-mobile]
 **Last Updated**: February 8, 2026
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
 
 ## IMPORTANT NOTE
 
@@ -30,6 +34,8 @@ This document is **complementary and additive** to all existing documentation in
 **Integration principle**: Where this document adds new concepts (Thuthimal, Five-Section Architecture), they enhance and deepen existing work. Where concepts overlap, both perspectives are valid and generative.
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
 
 ## 1. CORE PHILOSOPHY & ARCHITECTURE
 
@@ -75,7 +81,9 @@ Education contains unavoidable complexity. The system must respond to diverse si
 
 ---
 
-### 1.2 Thuthimal (තුතිමල්) — The Gratitude Economy
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
+### 1.2 Thuthimal (Ã Â¶Â­Ã Â·â€Ã Â¶Â­Ã Â·â€™Ã Â¶Â¸Ã Â¶Â½Ã Â·Å ) Ã¢â‚¬â€ The Gratitude Economy
 
 **NEW CONCEPT**: A unique feature that embeds gratitude and recognition into the platform's economic model.
 
@@ -84,11 +92,11 @@ Education contains unavoidable complexity. The system must respond to diverse si
 - Anyone can gift/donate Pro subscriptions to teachers
 - Past students, old boys' associations, alumni can honor their teachers
 - Recognizes teaching as sacred work deserving reciprocal care across time
-- Not just a payment model — a gratitude economy embedded in the platform
+- Not just a payment model Ã¢â‚¬â€ a gratitude economy embedded in the platform
 
 **Visibility**
 - Teachers with Thuthimal support see badge/indicator in their profile
-- Recognition: "Your Pro subscription is a gift of gratitude (තුතිමල්) from [name/anonymous]"
+- Recognition: "Your Pro subscription is a gift of gratitude (Ã Â¶Â­Ã Â·â€Ã Â¶Â­Ã Â·â€™Ã Â¶Â¸Ã Â¶Â½Ã Â·Å ) from [name/anonymous]"
 - Creates honor and acknowledgment for educators
 
 **Implementation Phases**
@@ -107,54 +115,58 @@ Education contains unavoidable complexity. The system must respond to diverse si
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 1.3 Five-Section Architecture (Stable Ecological Zones)
 
 **NEW ARCHITECTURAL PATTERN**: The platform has **five stable sections** that exist for all users. The *meaning* of each section adapts based on role, but the structure remains constant.
 
 This replaces traditional navigation patterns with an ecological, role-adaptive structure.
 
-#### 1️⃣ **Self — The Inner Ecology**
+#### 1Ã¯Â¸ÂÃ¢Æ’Â£ **Self Ã¢â‚¬â€ The Inner Ecology**
 
 **Purpose:** Support the individual's inner world and personal practice
 
 **What lives here:**
-- Reflection and journaling (✅ Already implemented: Fire Journal, Wisdom Seeds)
-- Personal notes and tasks (✅ Already implemented: Tomorrow's Prep)
-- Private signals (mood, confidence, energy) (✅ Already implemented: Mood Lotus, Energy Forecast)
-- Personal growth tracking (✅ Already implemented: Joy Jar, Gratitude Glimmers)
-- Daily motivation quotes (⚠️ Needs implementation)
-- "Did you know?" educational facts (⚠️ Needs implementation)
+- Reflection and journaling (Ã¢Å“â€¦ Already implemented: Fire Journal, Wisdom Seeds)
+- Personal notes and tasks (Ã¢Å“â€¦ Already implemented: Tomorrow's Prep)
+- Private signals (mood, confidence, energy) (Ã¢Å“â€¦ Already implemented: Mood Lotus, Energy Forecast)
+- Personal growth tracking (Ã¢Å“â€¦ Already implemented: Joy Jar, Gratitude Glimmers)
+- Daily motivation quotes (Ã¢Å¡Â Ã¯Â¸Â Needs implementation)
+- "Did you know?" educational facts (Ã¢Å¡Â Ã¯Â¸Â Needs implementation)
 
 **Design principle:**
 - Private, non-judgmental, non-comparative
 - Nothing visible to others unless explicitly shared
 - Always personal, regardless of role
 
-**Current Status**: ✅ Strong foundation exists, needs daily content features
+**Current Status**: Ã¢Å“â€¦ Strong foundation exists, needs daily content features
 
 ---
 
-#### 2️⃣ **Classroom — The Immediate Operational Ecology**
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
+#### 2Ã¯Â¸ÂÃ¢Æ’Â£ **Classroom Ã¢â‚¬â€ The Immediate Operational Ecology**
 
 **Purpose:** Support the user's closest sphere of responsibility
 
 **The meaning of "Classroom" adapts by role:**
-- **Teacher** → their class (✅ Implemented)
-- **Student** → their learning space (✅ Implemented)
-- **Principal** → their school (⚠️ Partially implemented)
-- **Section Head** → their section/subject (⚠️ Needs implementation)
-- **Grade Head** → their grade (⚠️ Needs implementation)
+- **Teacher** Ã¢â€ â€™ their class (Ã¢Å“â€¦ Implemented)
+- **Student** Ã¢â€ â€™ their learning space (Ã¢Å“â€¦ Implemented)
+- **Principal** Ã¢â€ â€™ their school (Ã¢Å¡Â Ã¯Â¸Â Partially implemented)
+- **Section Head** Ã¢â€ â€™ their section/subject (Ã¢Å¡Â Ã¯Â¸Â Needs implementation)
+- **Grade Head** Ã¢â€ â€™ their grade (Ã¢Å¡Â Ã¯Â¸Â Needs implementation)
 
 **Core domains (max 4-5):**
-- People (✅ Student profiles, enrollment)
-- Practice (✅ Lessons, assignments)
-- Resources (✅ Library materials, lesson attachments)
-- Signals (✅ Attendance, mood logs)
-- Coordination (⚠️ Scheduling, announcements partially done)
+- People (Ã¢Å“â€¦ Student profiles, enrollment)
+- Practice (Ã¢Å“â€¦ Lessons, assignments)
+- Resources (Ã¢Å“â€¦ Library materials, lesson attachments)
+- Signals (Ã¢Å“â€¦ Attendance, mood logs)
+- Coordination (Ã¢Å¡Â Ã¯Â¸Â Scheduling, announcements partially done)
 
 **What lives here (role-dependent):**
 
-*Already Implemented (✅):*
+*Already Implemented (Ã¢Å“â€¦):*
 - Student profiles (individual creation)
 - Student notes (private to teacher)
 - Attendance (student attendance marking)
@@ -162,7 +174,7 @@ This replaces traditional navigation patterns with an ecological, role-adaptive 
 - Grading
 - Classroom artifacts (through library system)
 
-*Needs Implementation (⚠️):*
+*Needs Implementation (Ã¢Å¡Â Ã¯Â¸Â):*
 - Bulk student creation (input total number, create all at once)
 - Student note sharing (to class context or library with consent)
 - Photo uploads with principal sharing option
@@ -174,17 +186,19 @@ This replaces traditional navigation patterns with an ecological, role-adaptive 
 - Action-oriented, calm, role-appropriate
 - Complexity exists inside, not on surface
 
-**Current Status**: ✅ Teacher and Student views strong, needs Principal/Head views
+**Current Status**: Ã¢Å“â€¦ Teacher and Student views strong, needs Principal/Head views
 
 ---
 
-#### 3️⃣ **Community — The Relational Ecology**
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
+#### 3Ã¯Â¸ÂÃ¢Æ’Â£ **Community Ã¢â‚¬â€ The Relational Ecology**
 
 **Purpose:** Enable peer connection and collective sense-making
 
 **What lives here:**
-- Teacher communities (✅ Groups implemented)
-- Peer discussion spaces (✅ Posts implemented)
+- Teacher communities (Ã¢Å“â€¦ Groups implemented)
+- Peer discussion spaces (Ã¢Å“â€¦ Posts implemented)
 - Shared challenges and practices
 - Horizontal feedback
 
@@ -192,60 +206,66 @@ This replaces traditional navigation patterns with an ecological, role-adaptive 
 - Reduce isolation, repair lateral feedback loops
 - Not noise or competition
 
-**Status:** ✅ Beta (functional, needs critical mass and content)
+**Status:** Ã¢Å“â€¦ Beta (functional, needs critical mass and content)
 
 ---
 
-#### 4️⃣ **Library — The Knowledge Ecology**
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
+#### 4Ã¯Â¸ÂÃ¢Æ’Â£ **Library Ã¢â‚¬â€ The Knowledge Ecology**
 
 **Purpose:** Provide access to shared knowledge and collective memory
 
 **What lives here:**
-- Teaching and learning resources (✅ Library items implemented)
-- Research and references (✅ Collections implemented)
+- Teaching and learning resources (Ã¢Å“â€¦ Library items implemented)
+- Research and references (Ã¢Å“â€¦ Collections implemented)
 - Global educator contributions
 - Free-giving and shared materials
-- Teacher-generated notes shared to community (⚠️ Sharing mechanism needs work)
+- Teacher-generated notes shared to community (Ã¢Å¡Â Ã¯Â¸Â Sharing mechanism needs work)
 
 **Design principle:**
 - Exploratory and non-linear
 - Browsing and discovery encouraged
 
-**Status:** ✅ Beta (infrastructure exists, needs content seeding and discovery UX)
+**Status:** Ã¢Å“â€¦ Beta (infrastructure exists, needs content seeding and discovery UX)
 
 ---
 
-#### 5️⃣ **Profile — Identity & Boundaries**
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
+#### 5Ã¯Â¸ÂÃ¢Æ’Â£ **Profile Ã¢â‚¬â€ Identity & Boundaries**
 
 **Purpose:** Manage identity, role, and system boundaries
 
 **What lives here:**
-- Role selection and permissions (✅ Implemented)
-- Preferences and settings (✅ Implemented via user_preferences)
+- Role selection and permissions (Ã¢Å“â€¦ Implemented)
+- Preferences and settings (Ã¢Å“â€¦ Implemented via user_preferences)
 - About the app
-- Pricing / donations (⚠️ Needs UI)
-- Thuthimal badge/status (⚠️ Needs implementation)
-- Onboarding and transitions (✅ Partially implemented)
-- Profile completion progress (⚠️ Needs implementation)
+- Pricing / donations (Ã¢Å¡Â Ã¯Â¸Â Needs UI)
+- Thuthimal badge/status (Ã¢Å¡Â Ã¯Â¸Â Needs implementation)
+- Onboarding and transitions (Ã¢Å“â€¦ Partially implemented)
+- Profile completion progress (Ã¢Å¡Â Ã¯Â¸Â Needs implementation)
 
 **Design principle:**
 - Profile defines from where you see the system, not what you control
 
-**Current Status:** ✅ Core functionality exists, needs Thuthimal and completion tracking
+**Current Status:** Ã¢Å“â€¦ Core functionality exists, needs Thuthimal and completion tracking
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
 
 ### 1.4 Role-Based View System
 
 **Before interacting with sections, users enter through a role-based view.**
 
 **Available Roles:**
-- Teacher (✅ Implemented)
-- Student (✅ Implemented)
-- Principal (✅ Implemented)
-- Section Head (⚠️ Needs implementation)
-- Grade Head (⚠️ Needs implementation)
-- Personal User (non-institutional) (⚠️ Needs consideration)
+- Teacher (Ã¢Å“â€¦ Implemented)
+- Student (Ã¢Å“â€¦ Implemented)
+- Principal (Ã¢Å“â€¦ Implemented)
+- Section Head (Ã¢Å¡Â Ã¯Â¸Â Needs implementation)
+- Grade Head (Ã¢Å¡Â Ã¯Â¸Â Needs implementation)
+- Personal User (non-institutional) (Ã¢Å¡Â Ã¯Â¸Â Needs consideration)
 
 **Role Principles:**
 - Roles define lens, not hierarchy
@@ -263,9 +283,11 @@ The reality: In small schools, one person may be Teacher + Grade Head + Section 
 - Seamless interface, scope adjusts based on responsibilities
 - One reality, not fragmented role-switching
 
-**Current Status:** ✅ Single role per user implemented, ⚠️ multiple roles need architecture
+**Current Status:** Ã¢Å“â€¦ Single role per user implemented, Ã¢Å¡Â Ã¯Â¸Â multiple roles need architecture
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
 
 ## 2. ALPHA REQUIREMENTS (5-Day Build)
 
@@ -274,19 +296,21 @@ The reality: In small schools, one person may be Teacher + Grade Head + Section 
 **Version:** Alpha 0.1.0  
 **Timeline:** 5 days from February 8, 2026  
 **Distribution:** Invite-only, closed testing  
-**Target users:** Principals → Teachers (max 3 invites per principal initially)
+**Target users:** Principals Ã¢â€ â€™ Teachers (max 3 invites per principal initially)
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 2.2 Authentication & Signup
 
-**Current Status:** ✅ IMPLEMENTED
+**Current Status:** Ã¢Å“â€¦ IMPLEMENTED
 
 What exists:
-- Email/password authentication ✅
-- Google OAuth ready ✅
-- Session management ✅
-- User profiles ✅
+- Email/password authentication Ã¢Å“â€¦
+- Google OAuth ready Ã¢Å“â€¦
+- Session management Ã¢Å“â€¦
+- User profiles Ã¢Å“â€¦
 
 **Needs refinement:**
 - QR code auto-fill of invitation code (infrastructure exists, needs testing)
@@ -294,26 +318,28 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 2.3 Onboarding Journey
 
-**Current Status:** ⚠️ PARTIALLY IMPLEMENTED
+**Current Status:** Ã¢Å¡Â Ã¯Â¸Â PARTIALLY IMPLEMENTED
 
-**Screen 1-2 (MANDATORY — Cannot Skip):**
-1. **Name** (required) - ✅ Exists in signup
-2. **Role Selection** (required) - ✅ Exists in signup
+**Screen 1-2 (MANDATORY Ã¢â‚¬â€ Cannot Skip):**
+1. **Name** (required) - Ã¢Å“â€¦ Exists in signup
+2. **Role Selection** (required) - Ã¢Å“â€¦ Exists in signup
 
-*App cannot proceed without name + role — no default view exists*
+*App cannot proceed without name + role Ã¢â‚¬â€ no default view exists*
 
 **Screen 3+ (SKIPPABLE but Encouraged):**
 
-**Philosophy/Welcome Screens:** (⚠️ Needs implementation)
+**Philosophy/Welcome Screens:** (Ã¢Å¡Â Ã¯Â¸Â Needs implementation)
 - Introduce Gurudevi's vision
 - Explain five sections (Self, Classroom, Community, Library, Profile)
 - Share ecological thinking
 - "This is not surveillance, this is support"
 - Beautiful, calm, inspiring
 
-**Profile Completion Screens:** (⚠️ Needs implementation)
+**Profile Completion Screens:** (Ã¢Å¡Â Ã¯Â¸Â Needs implementation)
 - School/Institution (optional)
 - Grade (students) / Subjects taught (teachers) / Department (optional)
 - Profile photo (optional)
@@ -323,38 +349,42 @@ What exists:
 - One question or concept per screen
 - Progress indicator visible
 - "Skip" button always present (except screens 1-2)
-- Profile completion percentage shown in Profile section (⚠️ Needs implementation)
+- Profile completion percentage shown in Profile section (Ã¢Å¡Â Ã¯Â¸Â Needs implementation)
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 2.4 Invitation System
 
-**Current Status:** ✅ STRONG FOUNDATION, ⚠️ Needs Alpha limits
+**Current Status:** Ã¢Å“â€¦ STRONG FOUNDATION, Ã¢Å¡Â Ã¯Â¸Â Needs Alpha limits
 
-**QR-Based Invitations:** ✅ IMPLEMENTED
+**QR-Based Invitations:** Ã¢Å“â€¦ IMPLEMENTED
 - Each user can generate QR codes to invite others
 - QR code includes invitation code
-- Auto-generated contextual text (⚠️ Needs implementation: e.g., "Join Royal College teachers on Gurudevi")
+- Auto-generated contextual text (Ã¢Å¡Â Ã¯Â¸Â Needs implementation: e.g., "Join Royal College teachers on Gurudevi")
 - Institutional context (school name)
 
-**Invitation Limits (Alpha):** ⚠️ NEEDS IMPLEMENTATION
+**Invitation Limits (Alpha):** Ã¢Å¡Â Ã¯Â¸Â NEEDS IMPLEMENTATION
 - Principals can invite max 3 teachers (needs limit enforcement)
 - Teachers cannot invite in Alpha (needs disable)
 
-**Traceability:** ✅ IMPLEMENTED
+**Traceability:** Ã¢Å“â€¦ IMPLEMENTED
 - Full genealogy tracking (who invited whom)
 - Creates community accountability and relational mapping
 
-**Auto-Generated QR Text:** ⚠️ NEEDS IMPLEMENTATION
+**Auto-Generated QR Text:** Ã¢Å¡Â Ã¯Â¸Â NEEDS IMPLEMENTATION
 - Like Instagram/Threads bio
 - Personalizes per school/institution
 - Example: "Join [School Name] teachers on Gurudevi"
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 2.5 Price Tiers & Thuthimal Framework
 
-**Current Status:** ❌ NOT IMPLEMENTED
+**Current Status:** Ã¢ÂÅ’ NOT IMPLEMENTED
 
 **Tiers:**
 - **Free:** Basic access
@@ -362,13 +392,13 @@ What exists:
 
 **Thuthimal (Alpha Implementation):**
 
-**In-App:** ⚠️ NEEDS IMPLEMENTATION
+**In-App:** Ã¢Å¡Â Ã¯Â¸Â NEEDS IMPLEMENTATION
 - Account has `is_thuthimal: boolean` flag (needs database field)
 - Account has `thuthimal_gifter: string` (name or "anonymous") (needs database field)
 - Profile/Self section shows Thuthimal badge if true (needs UI)
-- Display: "Your Pro subscription is a gift of gratitude (තුතිමල්) from [name]" (needs UI)
+- Display: "Your Pro subscription is a gift of gratitude (Ã Â¶Â­Ã Â·â€Ã Â¶Â­Ã Â·â€™Ã Â¶Â¸Ã Â¶Â½Ã Â·Å ) from [name]" (needs UI)
 
-**Outside App (Manual for Alpha):** ⚠️ NEEDS CREATION
+**Outside App (Manual for Alpha):** Ã¢Å¡Â Ã¯Â¸Â NEEDS CREATION
 - Simple webpage: "Gift Gurudevi Pro to a Teacher"
 - Collect: teacher email/phone, gifter's name, message (optional)
 - Admin manually flags teacher's account as `is_thuthimal: true` + `pro: true`
@@ -381,11 +411,13 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 2.6 Student Profile Management (Teacher View)
 
-**Current Status:** ✅ INDIVIDUAL CREATION, ⚠️ Needs bulk creation
+**Current Status:** Ã¢Å“â€¦ INDIVIDUAL CREATION, Ã¢Å¡Â Ã¯Â¸Â Needs bulk creation
 
-**Bulk Student Creation:** ⚠️ NEEDS IMPLEMENTATION
+**Bulk Student Creation:** Ã¢Å¡Â Ã¯Â¸Â NEEDS IMPLEMENTATION
 1. Teacher creates/selects class
 2. Input total number of students
 3. For each student profile:
@@ -393,18 +425,18 @@ What exists:
    - **Index number** (required)
    - **Notes** (optional, ongoing)
 
-**Individual Student Creation:** ✅ IMPLEMENTED
+**Individual Student Creation:** Ã¢Å“â€¦ IMPLEMENTED
 - Teacher can add students one by one
 - Same fields: Name, Index, Notes
 
-**Notes on Students:** ✅ PARTIALLY IMPLEMENTED
-- Private to teacher by default ✅
-- **Shareable to:** ⚠️ NEEDS IMPLEMENTATION
-  - Class context (visible to other teachers of same class? — TBD)
+**Notes on Students:** Ã¢Å“â€¦ PARTIALLY IMPLEMENTED
+- Private to teacher by default Ã¢Å“â€¦
+- **Shareable to:** Ã¢Å¡Â Ã¯Â¸Â NEEDS IMPLEMENTATION
+  - Class context (visible to other teachers of same class? Ã¢â‚¬â€ TBD)
   - Library (becomes community knowledge, attributed or anonymous)
 - Sharing is explicit, consent-based
 
-**Student Profile Linking (When Student Joins Later):** ⚠️ NEEDS IMPLEMENTATION
+**Student Profile Linking (When Student Joins Later):** Ã¢Å¡Â Ã¯Â¸Â NEEDS IMPLEMENTATION
 - Student creates their own account
 - System detects match (by name, index, school context)
 - Prompts: "Link to existing profile created by [Teacher Name]?"
@@ -415,44 +447,48 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 2.7 Student Attendance (Alpha Priority)
 
-**Current Status:** ✅ STRONG IMPLEMENTATION
+**Current Status:** Ã¢Å“â€¦ STRONG IMPLEMENTATION
 
-**Teacher Interface:** ✅ IMPLEMENTED
+**Teacher Interface:** Ã¢Å“â€¦ IMPLEMENTED
 - Daily attendance marking per class
 - List of students
 - Mark: Present / Absent / Late / Excused
 - Quick, simple interface
 
-**Student View:** ✅ IMPLEMENTED
+**Student View:** Ã¢Å“â€¦ IMPLEMENTED
 - Student can see their own attendance record
 - Calendar view or list view
 - Transparency
 
-**Principal View (Aggregated):** ⚠️ NEEDS IMPLEMENTATION
+**Principal View (Aggregated):** Ã¢Å¡Â Ã¯Â¸Â NEEDS IMPLEMENTATION
 - Overall attendance % for school
 - Per-class aggregates
 - Per-grade aggregates
 - **NOT individual student names** (privacy-preserving)
 - Pattern recognition: which classes/grades have attendance issues?
 
-**Data Structure:** ✅ IMPLEMENTED
+**Data Structure:** Ã¢Å“â€¦ IMPLEMENTED
 - Attendance records: date, student_id, class_id, status
 - Aggregation queries for principal dashboard (needs API endpoints)
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 2.8 Photo Management & Sharing
 
-**Current Status:** ⚠️ INFRASTRUCTURE EXISTS, Needs UI
+**Current Status:** Ã¢Å¡Â Ã¯Â¸Â INFRASTRUCTURE EXISTS, Needs UI
 
-**Classroom/Teaching Photos:** ⚠️ NEEDS IMPLEMENTATION
+**Classroom/Teaching Photos:** Ã¢Å¡Â Ã¯Â¸Â NEEDS IMPLEMENTATION
 - Teacher uploads photos to Classroom section
 - Photos of: teaching moments, classroom activities, student work (with consent)
 - Stored in teacher's Classroom
 
-**Sharing to Principal:** ⚠️ NEEDS IMPLEMENTATION
+**Sharing to Principal:** Ã¢Å¡Â Ã¯Â¸Â NEEDS IMPLEMENTATION
 - **Optional:** Teacher can share photos to principal
 - Interface: Checkbox "Share with principal" when uploading OR share after upload
 - Principal sees shared photos in their view (aggregated or per-teacher)
@@ -466,26 +502,28 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 2.9 Principal Dashboard (Alpha)
 
-**Current Status:** ⚠️ PARTIALLY IMPLEMENTED, Needs aggregation views
+**Current Status:** Ã¢Å¡Â Ã¯Â¸Â PARTIALLY IMPLEMENTED, Needs aggregation views
 
 **What Principal Sees:**
 
-**Aggregated Attendance:** ⚠️ NEEDS IMPLEMENTATION
+**Aggregated Attendance:** Ã¢Å¡Â Ã¯Â¸Â NEEDS IMPLEMENTATION
 - School-wide attendance %
 - Per-class attendance trends
 - Per-grade attendance patterns
 - No individual student details unless explicitly shared
 
-**Resources/Support Requests:** ⚠️ NEEDS IMPLEMENTATION
+**Resources/Support Requests:** Ã¢Å¡Â Ã¯Â¸Â NEEDS IMPLEMENTATION
 - **Simple Implementation (Alpha):**
   - Teacher profile has text field: "Support/Resources Needed"
   - Principal can view this in teacher list
-  - No fancy request system — just visibility
+  - No fancy request system Ã¢â‚¬â€ just visibility
 - **Beta:** Full request/ticket system
 
-**Classroom Photos (Shared):** ⚠️ NEEDS IMPLEMENTATION
+**Classroom Photos (Shared):** Ã¢Å¡Â Ã¯Â¸Â NEEDS IMPLEMENTATION
 - Photos that teachers opted to share
 - Gallery or list view
 - Organized by teacher or class
@@ -497,30 +535,34 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 2.10 Self Section (Alpha)
 
-**Current Status:** ✅ STRONG WELLBEING FEATURES, ⚠️ Needs daily content
+**Current Status:** Ã¢Å“â€¦ STRONG WELLBEING FEATURES, Ã¢Å¡Â Ã¯Â¸Â Needs daily content
 
-**Daily Motivation:** ⚠️ NEEDS IMPLEMENTATION
+**Daily Motivation:** Ã¢Å¡Â Ã¯Â¸Â NEEDS IMPLEMENTATION
 - One motivational quote per day
 - Changes daily
 - Educational, inspirational, teacher-focused
 
-**"Did You Know?":** ⚠️ NEEDS IMPLEMENTATION
+**"Did You Know?":** Ã¢Å¡Â Ã¯Â¸Â NEEDS IMPLEMENTATION
 - One random educational fact per day
 - Changes daily
 - Interesting, surprising, relevant to teaching/learning
 
-**Personal Space:** ✅ IMPLEMENTED
-- Private notes (Fire Journal ✅)
-- Reflection prompts (Mood Lotus, Energy Forecast ✅)
-- Gratitude, Joy moments, Wisdom seeds ✅
+**Personal Space:** Ã¢Å“â€¦ IMPLEMENTED
+- Private notes (Fire Journal Ã¢Å“â€¦)
+- Reflection prompts (Mood Lotus, Energy Forecast Ã¢Å“â€¦)
+- Gratitude, Joy moments, Wisdom seeds Ã¢Å“â€¦
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 2.11 Notifications (Alpha)
 
-**Current Status:** ⚠️ NEEDS IMPLEMENTATION
+**Current Status:** Ã¢Å¡Â Ã¯Â¸Â NEEDS IMPLEMENTATION
 
 **In-App Notifications Only** (no push, no email for alpha)
 
@@ -538,17 +580,21 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 2.12 Five Sections (Alpha Status)
 
 | Section | Status | Notes |
 |---------|--------|-------|
-| **Self** | ✅ Functional | Wellbeing features strong, needs daily content |
-| **Classroom** | ✅ Functional | Teacher/Student views strong, needs Principal aggregations |
-| **Community** | ✅ Skeleton | Functional but needs content/users |
-| **Library** | ✅ Skeleton | Functional but needs discovery UX |
-| **Profile** | ✅ Functional | Needs Thuthimal badge, completion progress |
+| **Self** | Ã¢Å“â€¦ Functional | Wellbeing features strong, needs daily content |
+| **Classroom** | Ã¢Å“â€¦ Functional | Teacher/Student views strong, needs Principal aggregations |
+| **Community** | Ã¢Å“â€¦ Skeleton | Functional but needs content/users |
+| **Library** | Ã¢Å“â€¦ Skeleton | Functional but needs discovery UX |
+| **Profile** | Ã¢Å“â€¦ Functional | Needs Thuthimal badge, completion progress |
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
 
 ## 3. BETA REQUIREMENTS (Post-Alpha)
 
@@ -572,15 +618,17 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 3.2 Grading
 
-**Current Status:** ✅ IMPLEMENTED (marks, GPA, feedback)
+**Current Status:** Ã¢Å“â€¦ IMPLEMENTED (marks, GPA, feedback)
 
 **Features:**
-- Assignment grading ✅
-- Exam grading ✅
-- Grade entry and calculation ✅
-- Grade visibility (students, parents, principal) ✅
+- Assignment grading Ã¢Å“â€¦
+- Exam grading Ã¢Å“â€¦
+- Grade entry and calculation Ã¢Å“â€¦
+- Grade visibility (students, parents, principal) Ã¢Å“â€¦
 
 **Beta Enhancements:**
 - Report card generation
@@ -589,17 +637,19 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 3.3 Lessons & Assignments
 
-**Current Status:** ✅ IMPLEMENTED
+**Current Status:** Ã¢Å“â€¦ IMPLEMENTED
 
-**Lessons:** ✅
+**Lessons:** Ã¢Å“â€¦
 - Lesson planning
 - Lesson notes
 - Curriculum mapping
-- Sharing to Library (⚠️ needs sharing mechanism)
+- Sharing to Library (Ã¢Å¡Â Ã¯Â¸Â needs sharing mechanism)
 
-**Assignments:** ✅
+**Assignments:** Ã¢Å“â€¦
 - Create assignments
 - Distribute to students
 - Collect submissions
@@ -612,6 +662,8 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 3.4 Polls
 
 **Quick Feedback:**
@@ -621,6 +673,8 @@ What exists:
 - Anonymous or attributed (teacher choice)
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
 
 ### 3.5 Reports & Letters
 
@@ -636,12 +690,14 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 3.6 News & Circulars
 
-**Current Status:** ✅ Announcements implemented
+**Current Status:** Ã¢Å“â€¦ Announcements implemented
 
 **School Announcements:**
-- Principal publishes news/circulars ✅
+- Principal publishes news/circulars Ã¢Å“â€¦
 - Visible to all teachers, students
 - Role-based visibility (some for teachers only, some for all)
 
@@ -652,9 +708,11 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 3.7 Resource Management
 
-**Materials:** ✅ IMPLEMENTED
+**Materials:** Ã¢Å“â€¦ IMPLEMENTED
 - Upload teaching resources
 - Categorize by subject, grade
 - Share within school or to Library
@@ -665,12 +723,14 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 3.8 Sharing (Internal & External)
 
 **Internal Sharing:**
-- Teacher → Teacher (resources, notes, strategies) ✅ Partially
-- Teacher → Library (community knowledge) ⚠️ Needs mechanism
-- Teacher → Principal (reports, photos, requests) ⚠️ Needs implementation
+- Teacher Ã¢â€ â€™ Teacher (resources, notes, strategies) Ã¢Å“â€¦ Partially
+- Teacher Ã¢â€ â€™ Library (community knowledge) Ã¢Å¡Â Ã¯Â¸Â Needs mechanism
+- Teacher Ã¢â€ â€™ Principal (reports, photos, requests) Ã¢Å¡Â Ã¯Â¸Â Needs implementation
 
 **External Sharing:**
 - Export data
@@ -684,6 +744,8 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 3.9 Google Meet Integration
 
 **Virtual Classes:**
@@ -693,21 +755,25 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 3.10 Community & Library (Full Build-Out)
 
-**Community:** ✅ Foundation exists
+**Community:** Ã¢Å“â€¦ Foundation exists
 - Teacher discussion forums
 - Peer support groups
 - Challenge sharing
 - Horizontal learning
 
-**Library:** ✅ Foundation exists
+**Library:** Ã¢Å“â€¦ Foundation exists
 - Curated teaching resources
 - Global educator contributions
 - Free-giving ethos
 - Searchable, categorized
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
 
 ### 3.11 Payment Gateway (Thuthimal)
 
@@ -718,6 +784,8 @@ What exists:
 - Recipient notification
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
 
 ## 4. FUTURE FEATURES (Post-Beta)
 
@@ -737,6 +805,8 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 4.2 Advanced Analytics
 
 **Institutional Insights:**
@@ -752,6 +822,8 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 4.3 Global Educator Network
 
 **Free-Giving Platform:**
@@ -761,6 +833,8 @@ What exists:
 - Cultural exchange
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
 
 ## 5. TECHNICAL SPECIFICATIONS
 
@@ -802,7 +876,7 @@ What exists:
 }
 ```
 
-**Attendance:** ✅ EXISTS
+**Attendance:** Ã¢Å“â€¦ EXISTS
 ```typescript
 {
   id: uuid,
@@ -815,7 +889,7 @@ What exists:
 }
 ```
 
-**Invitation:** ✅ EXISTS (as classroom_students.invite_code)
+**Invitation:** Ã¢Å“â€¦ EXISTS (as classroom_students.invite_code)
 ```typescript
 {
   id: uuid,
@@ -872,31 +946,35 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 5.2 Tech Stack (Current Implementation)
 
 **Backend:**
-- Framework: Supabase (PostgreSQL + Auth + Storage) ✅
-- Authentication: Email/password + OAuth (Google) ✅
-- Authorization: Row Level Security (RLS) ✅
-- File Storage: Supabase Storage ✅
+- Framework: Supabase (PostgreSQL + Auth + Storage) Ã¢Å“â€¦
+- Authentication: Email/password + OAuth (Google) Ã¢Å“â€¦
+- Authorization: Row Level Security (RLS) Ã¢Å“â€¦
+- File Storage: Supabase Storage Ã¢Å“â€¦
 
 **Frontend:**
-- Framework: React Native 0.81 ✅
-- Platform: Expo SDK 54 ✅
-- UI Library: GluestackUI ✅
-- Navigation: React Navigation (Bottom tabs) ✅
-- State Management: Zustand ✅
-- Data Fetching: TanStack Query ✅
+- Framework: React Native 0.81 Ã¢Å“â€¦
+- Platform: Expo SDK 54 Ã¢Å“â€¦
+- UI Library: GluestackUI Ã¢Å“â€¦
+- Navigation: React Navigation (Bottom tabs) Ã¢Å“â€¦
+- State Management: Zustand Ã¢Å“â€¦
+- Data Fetching: TanStack Query Ã¢Å“â€¦
 
 **Infrastructure:**
-- Hosting: Supabase Cloud ✅
+- Hosting: Supabase Cloud Ã¢Å“â€¦
 - Monitoring: (Needs: Sentry for error tracking)
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 5.3 QR Code Generation
 
-**Library:** `expo-barcode-scanner` (already in use) ✅
+**Library:** `expo-barcode-scanner` (already in use) Ã¢Å“â€¦
 
 **Format:**
 ```typescript
@@ -909,14 +987,16 @@ What exists:
 
 **QR displays as URL:** `https://gurudevi.app/invite/GURU-ABC123-TEACH`
 
-**Auto-generated text:** ⚠️ NEEDS IMPLEMENTATION
-- "Join [School Name] teachers on Gurudevi — invited by [Inviter Name]"
+**Auto-generated text:** Ã¢Å¡Â Ã¯Â¸Â NEEDS IMPLEMENTATION
+- "Join [School Name] teachers on Gurudevi Ã¢â‚¬â€ invited by [Inviter Name]"
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 5.4 Profile Linking Algorithm
 
-**When student creates account:** ⚠️ NEEDS IMPLEMENTATION
+**When student creates account:** Ã¢Å¡Â Ã¯Â¸Â NEEDS IMPLEMENTATION
 1. Capture: name, school, grade
 2. Query StudentProfile table for matches:
    - Same school
@@ -929,6 +1009,8 @@ What exists:
    - Enable consent-based note sharing
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
 
 ## 6. DESIGN PRINCIPLES (UI/UX)
 
@@ -952,15 +1034,17 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 6.2 Interaction Design
 
 **Navigation:**
-- Bottom tab bar (5 sections: Self, Classroom, Community, Library, Profile) ✅ CURRENT
+- Bottom tab bar (5 sections: Self, Classroom, Community, Library, Profile) Ã¢Å“â€¦ CURRENT
 - Persistent across app
 - Section-specific sub-navigation as needed
 
 **Progressive Disclosure:**
-- Complexity in depth, not surface ✅ CURRENT PATTERN
+- Complexity in depth, not surface Ã¢Å“â€¦ CURRENT PATTERN
 - Empty states guide next action
 - Contextual help, not tutorial hell
 
@@ -969,11 +1053,13 @@ What exists:
 - Gentle notifications, not intrusive
 
 **Skippability:**
-- User can skip most onboarding flows ⚠️ NEEDS IMPLEMENTATION
-- Profile completion encouraged but not forced ⚠️ NEEDS IMPLEMENTATION
+- User can skip most onboarding flows Ã¢Å¡Â Ã¯Â¸Â NEEDS IMPLEMENTATION
+- Profile completion encouraged but not forced Ã¢Å¡Â Ã¯Â¸Â NEEDS IMPLEMENTATION
 - Exploration over instruction
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
 
 ### 6.3 Copy & Tone
 
@@ -984,13 +1070,15 @@ What exists:
 - Clear, not jargon-heavy
 
 **Examples:**
-- ❌ "Complete your profile now!"
-- ✅ "Add a few more details when you're ready"
+- Ã¢ÂÅ’ "Complete your profile now!"
+- Ã¢Å“â€¦ "Add a few more details when you're ready"
 
-- ❌ "You haven't logged attendance today"
-- ✅ "Attendance for today is open"
+- Ã¢ÂÅ’ "You haven't logged attendance today"
+- Ã¢Å“â€¦ "Attendance for today is open"
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
 
 ## 7. OPEN QUESTIONS & DECISIONS NEEDED
 
@@ -1005,6 +1093,8 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 7.2 Student Access (Alpha vs Beta)
 
 **Question:** Are students given app access in Alpha or only Beta?
@@ -1014,6 +1104,8 @@ What exists:
 **Recommendation:** Students CAN access in Alpha (infrastructure exists), but marketing focuses on teachers/principals.
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
 
 ### 7.3 Payment for Thuthimal (Beta)
 
@@ -1031,6 +1123,8 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 7.4 Multiple Roles Per User
 
 **Question:** How to handle teachers who are also grade heads or principals?
@@ -1043,6 +1137,8 @@ What exists:
 **Decision needed before Beta.**
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
 
 ## 8. SUCCESS METRICS (How to Measure Alpha Success)
 
@@ -1068,6 +1164,8 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### 8.2 Qualitative Metrics
 
 **Feedback:**
@@ -1087,6 +1185,8 @@ What exists:
 - Do they understand the philosophy?
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
 
 ## 9. ALPHA LAUNCH CHECKLIST
 
@@ -1125,6 +1225,8 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### Launch Day
 
 - [ ] Deploy to production environment
@@ -1135,6 +1237,8 @@ What exists:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ### Post-Launch (First Week)
 
 - [ ] Daily check-in with users
@@ -1144,6 +1248,8 @@ What exists:
 - [ ] Document learnings for Beta planning
 
 ---
+
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
 
 ## 10. LONG-TERM VISION
 
@@ -1157,7 +1263,7 @@ It is:
 
 **Success looks like:**
 - Teachers feel genuinely supported, not monitored
-- Feedback loops are repaired (teacher ↔ student, teacher ↔ principal, teacher ↔ community)
+- Feedback loops are repaired (teacher Ã¢â€ â€ student, teacher Ã¢â€ â€ principal, teacher Ã¢â€ â€ community)
 - Complexity is managed without overwhelming users
 - The ecology becomes self-sustaining (teachers contribute to Library, community thrives)
 - Thuthimal creates a culture of honoring educators
@@ -1169,21 +1275,23 @@ It is:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ## 11. IMPLEMENTATION PRIORITIES
 
 ### IMMEDIATE (Alpha - Week 1)
-1. ⚠️ Bulk student creation UI
-2. ⚠️ Thuthimal database fields + badge UI
-3. ⚠️ Daily motivation + "Did you know?" content system
-4. ⚠️ Profile completion progress tracker
-5. ⚠️ Onboarding philosophy screens (skippable)
+1. Ã¢Å¡Â Ã¯Â¸Â Bulk student creation UI
+2. Ã¢Å¡Â Ã¯Â¸Â Thuthimal database fields + badge UI
+3. Ã¢Å¡Â Ã¯Â¸Â Daily motivation + "Did you know?" content system
+4. Ã¢Å¡Â Ã¯Â¸Â Profile completion progress tracker
+5. Ã¢Å¡Â Ã¯Â¸Â Onboarding philosophy screens (skippable)
 
 ### URGENT (Alpha - Week 2)
-6. ⚠️ Invitation limits (principal max 3)
-7. ⚠️ Photo upload to classroom with principal sharing
-8. ⚠️ Principal aggregated attendance dashboard
-9. ⚠️ In-app notifications system
-10. ⚠️ Auto-generated QR context text
+6. Ã¢Å¡Â Ã¯Â¸Â Invitation limits (principal max 3)
+7. Ã¢Å¡Â Ã¯Â¸Â Photo upload to classroom with principal sharing
+8. Ã¢Å¡Â Ã¯Â¸Â Principal aggregated attendance dashboard
+9. Ã¢Å¡Â Ã¯Â¸Â In-app notifications system
+10. Ã¢Å¡Â Ã¯Â¸Â Auto-generated QR context text
 
 ### IMPORTANT (Beta - Month 2)
 11. Student profile linking algorithm
@@ -1201,6 +1309,8 @@ It is:
 
 ---
 
+> **NOTE (2026-08-24):** point-in-time snapshot. Stack/version facts reflect its writing date (early 2026) and are NOT current â€” see apps/gurudevi-mobile/README.md for the live stack.
+
 ## 12. DOCUMENTATION INTEGRATION
 
 This document integrates with existing constellation:
@@ -1213,10 +1323,10 @@ This document integrates with existing constellation:
 - 03_TECH.md: Add new data models
 
 **Philosophy alignment:**
-- ✅ Education as Care Work (01_PHILOSOPHY) → operationalized as Thuthimal
-- ✅ Ecological thinking → operationalized as Five-Section Architecture
-- ✅ Privacy-first → no surveillance, consent-based sharing
-- ✅ Beauty and purpose → calm, uncluttered interface
+- Ã¢Å“â€¦ Education as Care Work (01_PHILOSOPHY) Ã¢â€ â€™ operationalized as Thuthimal
+- Ã¢Å“â€¦ Ecological thinking Ã¢â€ â€™ operationalized as Five-Section Architecture
+- Ã¢Å“â€¦ Privacy-first Ã¢â€ â€™ no surveillance, consent-based sharing
+- Ã¢Å“â€¦ Beauty and purpose Ã¢â€ â€™ calm, uncluttered interface
 
 ---
 
