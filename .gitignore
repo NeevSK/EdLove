@@ -112,3 +112,7 @@ scan-viewer.html
 # Stray nested pnpm lockfiles (root lockfile is canonical)
 **/pnpm-lock.yaml
 !/pnpm-lock.yaml
+
+# Stray tool outputs
+/tsc-*.txt
+/style-stack-audit.txt

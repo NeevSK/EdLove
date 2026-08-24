@@ -3,14 +3,14 @@
     "platform": {
       "command": "pnpm.cmd",
       "args": ["--filter", "@repo/platform-mcp", "start"],
-      "cwd": "C:\\Users\\Naween\\projects\\polymath-platform"
+      "cwd": "C:\\x"
     },
     "filesystem": {
       "command": "npx.cmd",
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "C:\\Users\\Naween\\projects\\polymath-platform"
+        "C:\\x"
       ]
     }
   }

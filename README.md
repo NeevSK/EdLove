@@ -21,6 +21,7 @@ A single monorepo for the EdLove education ecosystem:
 - Ecosystem navigator: [apps/00_ECOSYSTEM_INDEX.md](./apps/00_ECOSYSTEM_INDEX.md)
 - Openness/licensing decision: [docs/decisions/2026-08-24-openness-and-reuse-strategy.md](./docs/decisions/2026-08-24-openness-and-reuse-strategy.md) + [docs/decisions/2026-08-24-license-tradeoffs.md](./docs/decisions/2026-08-24-license-tradeoffs.md)
 - Branch pipeline (solo, scalable): [docs/infra/git-branching-model.md](./docs/infra/git-branching-model.md)
+- Root configuration map (what every root config file does): [docs/engineering/root-configuration-map.md](./docs/engineering/root-configuration-map.md)
 - Documentation SOP (frontmatter contract, doc tiers): [apps/gurudevi-mobile/docs/docs-sop.md](./apps/gurudevi-mobile/docs/docs-sop.md)
 - Doppler-centered engineering toolchain: [docs/infra/doppler-toolchain.md](./docs/infra/doppler-toolchain.md)
 
