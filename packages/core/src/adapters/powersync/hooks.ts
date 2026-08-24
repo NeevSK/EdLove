@@ -10,7 +10,7 @@
 
 import { and, desc, eq, type Query } from 'drizzle-orm';
 import { toCompilableQuery } from '@powersync/drizzle-driver';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   getActivePowerSyncDB,
   getDrizzleDB,
@@ -55,7 +55,8 @@ export function usePowerSyncQuery<T = Record<string, unknown>>(
  * Provides absolute compile-time type safety from the DB to the UI render tree.
  */
 export function useDrizzleQuery<T>(query: { execute: () => Promise<T | T[]>; toSQL: () => Query }): T[] {
-  const { data } = useQuery<T>(toCompilableQuery<T>(query));
+  const compilableQuery = useMemo(() => toCompilableQuery<T>(query), [query]);
+  const { data } = useQuery<T>(compilableQuery);
   return data;
 }
 
@@ -157,9 +158,14 @@ export function usePolicyVersion(): PolicyVersion | null {
   ) {
     return null;
   }
-  const query = db.select().from(policyVersion).limit(1);
+  const query = useMemo(
+    () => (db && typeof db.select === 'function' ? db.select().from(policyVersion).limit(1) : null),
+    [db],
+  );
 
-  const rows = useDrizzleQuery<PolicyVersion>(query);
+  const rows = useDrizzleQuery<PolicyVersion>(
+    query ?? ({ execute: async () => [], toSQL: () => ({ sql: '', params: [] }) } as any),
+  );
   return rows[0] || null;
 }
 

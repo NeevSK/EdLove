@@ -3,7 +3,7 @@ import { Box, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
 
-import { useGuardianWorkspaceData } from '@repo/admin/guardian';
+import { useGuardianWorkspaceData } from '@repo/admin/guardian/useGuardianWorkspaceData';
 import { GuardianRoomShell } from '@repo/admin/screens/guardian/GuardianRoomShell';
 
 export default function GuardianEventsScreen() {

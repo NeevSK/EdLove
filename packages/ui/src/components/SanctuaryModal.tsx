@@ -78,11 +78,25 @@ export default function SanctuaryModal({
       {...modalProps}
     >
       <ModalContent
-        className={`bg-phase-elevated border-phase-surface shadow-2xl ${className}`}
+        className={`rounded-3xl overflow-hidden shadow-2xl ${className}`}
+        style={{
+          backgroundColor: '#FDFAF3',
+          borderWidth: 1,
+          borderColor: 'rgba(42, 35, 24, 0.18)',
+          boxShadow:
+            '0 25px 50px -12px rgba(20, 16, 11, 0.5), 0 0 0 1px rgba(42, 35, 24, 0.12), 0 10px 20px -5px rgba(0, 0, 0, 0.2)',
+        } as any}
         accessibilityRole="dialog"
         accessibilityLabel={title}
       >
-        <ModalHeader className="border-b-0">
+        <ModalHeader
+          className="border-b"
+          style={{
+            borderBottomWidth: 1,
+            borderBottomColor: 'rgba(42, 35, 24, 0.10)',
+            backgroundColor: '#F7F2E7',
+          }}
+        >
           <HStack className="items-center flex-1 gap-3">
             {icon && icon}
             <VStack className="flex-1">
@@ -106,9 +120,25 @@ export default function SanctuaryModal({
           )}
         </ModalHeader>
 
-        <ModalBody className="py-2">{children}</ModalBody>
+        <ModalBody
+          className="p-6"
+          style={{ backgroundColor: '#FDFAF3' }}
+        >
+          {children}
+        </ModalBody>
 
-        {footer ? <ModalFooter className="border-t-0">{footer}</ModalFooter> : null}
+        {footer ? (
+          <ModalFooter
+            className="border-t"
+            style={{
+              borderTopWidth: 1,
+              borderTopColor: 'rgba(42, 35, 24, 0.10)',
+              backgroundColor: '#F7F2E7',
+            }}
+          >
+            {footer}
+          </ModalFooter>
+        ) : null}
       </ModalContent>
     </Modal>
   );

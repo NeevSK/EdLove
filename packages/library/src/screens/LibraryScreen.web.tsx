@@ -120,10 +120,8 @@ export default function LibraryScreenWeb() {
   const { isPastView } = useTemporalStore();
 
   const pending = usePendingGateAction();
-  const { user, showToast } = useStore((state) => ({
-    user: state.user,
-    showToast: state.showToast,
-  }));
+  const user = useStore((state) => state.user);
+  const showToast = useStore((state) => state.showToast);
 
   // --- 1. STATE MACHINE (Parity with Native) ---
   interface LibraryState {

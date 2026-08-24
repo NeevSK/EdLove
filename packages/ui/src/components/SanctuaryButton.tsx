@@ -117,6 +117,8 @@ export function SanctuaryButton({
                 active:opacity-80
                 ${className}
             `}
+      variant={variant === 'link' ? 'ghost' : variant}
+      action={action === 'negative' ? 'negative' : action === 'positive' ? 'positive' : action}
       isDisabled={isDisabled || isLoading}
       onPress={onPress}
       style={style}

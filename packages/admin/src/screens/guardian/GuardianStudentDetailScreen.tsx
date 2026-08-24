@@ -4,7 +4,7 @@ import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { useMemo } from 'react';
-import { useGuardianWorkspaceData } from '@repo/admin/guardian';
+import { useGuardianWorkspaceData } from '@repo/admin/guardian/useGuardianWorkspaceData';
 import { GuardianRoomShell } from '@repo/admin/screens/guardian/GuardianRoomShell';
 
 export default function GuardianStudentDetailScreen() {

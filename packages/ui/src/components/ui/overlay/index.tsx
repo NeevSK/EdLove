@@ -12,38 +12,46 @@ import { tokens } from '@repo/ui/tokens';
  * Blocks interactions and provides a dimming layer.
  */
 export const Overlay = React.forwardRef<View, any>(
-  ({ className, isOpen, blur = true, ...props }, ref) => {
-  if (!isOpen) return null;
+  ({ className, isOpen, ...props }, ref) => {
+    if (!isOpen) return null;
 
-  return (
-    <Animated.View
-      entering={FadeIn.duration(200)}
-      exiting={FadeOut.duration(200)}
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 1000,
-      }}
-    >
-      {Platform.OS !== 'web' && blur ? (
-        <BlurView
-          intensity={tokens.performance.maxBlurRadius}
-          tint="dark"
-          style={{ flex: 1, backgroundColor: tokens.colors.overlay }}
-        >
-          <Pressable
-            {...props}
-            ref={ref}
-            accessibilityRole="button"
-            accessibilityLabel="backdrop"
-            accessibilityHint="Double tap to dismiss"
-            className={`flex-1 ${className || ''}`}
-          />
-        </BlurView>
-      ) : (
+    if (Platform.OS === 'web') {
+      return (
+        <div
+          {...props}
+          ref={ref as any}
+          role="button"
+          aria-label="backdrop"
+          className={className}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1000,
+            backgroundColor: 'rgba(26, 22, 16, 0.82)',
+            backdropFilter: 'blur(4px) saturate(1.1)',
+            WebkitBackdropFilter: 'blur(4px) saturate(1.1)',
+            cursor: 'pointer',
+          }}
+        />
+      );
+    }
+
+    return (
+      <Animated.View
+        entering={FadeIn.duration(200)}
+        exiting={FadeOut.duration(200)}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 1000,
+        }}
+      >
         <Pressable
           {...props}
           ref={ref}
@@ -51,11 +59,10 @@ export const Overlay = React.forwardRef<View, any>(
           accessibilityLabel="backdrop"
           accessibilityHint="Double tap to dismiss"
           className={`flex-1 ${className || ''}`}
-          style={Platform.OS === 'web' ? ({ backgroundColor: tokens.colors.overlay, backdropFilter: blur ? 'blur(8px)' : undefined } as any) : { backgroundColor: tokens.colors.overlayFallback }}
+          style={{ backgroundColor: tokens.colors.overlayFallback }}
         />
-      )}
-    </Animated.View>
-  );
+      </Animated.View>
+    );
   },
 );
 

@@ -134,7 +134,7 @@ export const SelectBackdrop = ({ className }: { className?: string }) => {
     <Pressable
       accessibilityRole="button"
       onPress={() => setIsOpen(false)}
-      className={`absolute inset-0 bg-black/60 ${className || ''}`}
+      className={`absolute inset-0 bg-phase-scrim ${className || ''}`}
     />
   );
 };
@@ -143,7 +143,7 @@ export const SelectContent = ({ children, className }: any) => (
   <Animated.View
     entering={SlideInDown.duration(300).springify().damping(20)}
     exiting={SlideOutDown.duration(200)}
-    className={`bg-phase-elevated rounded-t-3xl overflow-hidden shadow-2xl border-t border-phase-interactive/10 p-4 pb-12 ${className || ''}`}
+    className={`bg-phase-modal-card rounded-t-3xl overflow-hidden shadow-2xl border-t border-phase-modal-border p-4 pb-12 ${className || ''}`}
   >
     {children}
   </Animated.View>
@@ -154,7 +154,7 @@ export const SelectDragIndicatorWrapper = ({ children, className }: any) => (
 );
 
 export const SelectDragIndicator = ({ className }: any) => (
-  <View className={`w-12 h-1.5 bg-phase-interactive/20 rounded-full ${className || ''}`} />
+  <View className={`w-12 h-1.5 bg-phase-text-primary/25 rounded-full ${className || ''}`} />
 );
 
 export const SelectItem = ({ label, value: itemValue, className, ...props }: any) => {

@@ -140,4 +140,23 @@ describe('SupabaseAuthAdapter', () => {
     });
     expect(result.user?.id).toBe('user-1');
   });
+
+  it('signs in anonymously through Supabase auth API', async () => {
+    mockAuth.signInAnonymously.mockResolvedValue({
+      data: {
+        user: { id: 'anon-1', is_anonymous: true },
+        session: { access_token: 'tok_anon', refresh_token: 'ref_anon' },
+      },
+      error: null,
+    });
+
+    const resultWithoutOptions = await adapter.signInAnonymously();
+    expect(mockAuth.signInAnonymously).toHaveBeenCalledWith(undefined);
+    expect(resultWithoutOptions.user?.id).toBe('anon-1');
+
+    const resultWithOptions = await adapter.signInAnonymously({ data: { role: 'guest' } });
+    expect(mockAuth.signInAnonymously).toHaveBeenCalledWith({ options: { data: { role: 'guest' } } });
+    expect(resultWithOptions.user?.id).toBe('anon-1');
+  });
 });
+

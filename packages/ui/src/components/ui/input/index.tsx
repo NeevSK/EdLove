@@ -50,8 +50,8 @@ const Input = React.forwardRef<React.ElementRef<typeof View>, IInputProps>(
           accessibilityState={{
             disabled: !!isDisabled,
           }}
-          className={`flex-row items-center border rounded-xl px-3 min-h-[48px] bg-phase-canvas transition-colors duration-200
-            ${isInvalid ? 'border-phase-danger' : isFocused ? 'border-phase-accent ring-2 ring-phase-accent/20' : 'border-phase-interactive/20'} 
+          className={`flex-row items-center border rounded-xl px-3 min-h-[48px] bg-phase-surface transition-colors duration-200
+            ${isInvalid ? 'border-phase-danger' : isFocused ? 'border-phase-accent' : 'border-phase-interactive/30'} 
             ${isDisabled ? 'opacity-40' : ''} 
             ${className || ''}`}
         >

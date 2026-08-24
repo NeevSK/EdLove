@@ -23,21 +23,56 @@ export const UniversalModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-0 left-0 right-0 bottom-0 z-[9999] flex justify-center items-center">
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 9999,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       {hasBackdrop && (
         <div
-          className="absolute top-0 left-0 right-0 bottom-0"
-          style={{ backgroundColor: tokens.colors.overlay, backdropFilter: 'blur(8px)' }}
+          className="absolute inset-0"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(20, 16, 11, 0.70)',
+          }}
           onClick={onClose}
           role="button"
           aria-label="Close modal"
         />
       )}
       <div
-        className="z-[10000] w-full h-full flex justify-center items-center pointer-events-none"
+        className="relative z-[10000] w-full h-full flex items-center justify-center pointer-events-none p-4"
+        style={{
+          position: 'relative',
+          zIndex: 10000,
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          pointerEvents: 'none',
+          padding: '1rem',
+        }}
         role="presentation"
       >
-        <div className="pointer-events-auto" role="dialog">
+        <div
+          className="pointer-events-auto"
+          style={{ pointerEvents: 'auto' }}
+          role="dialog"
+        >
           {children}
         </div>
       </div>

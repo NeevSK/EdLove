@@ -1,7 +1,8 @@
 import { useConsentStore } from '@repo/core/logic';
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 import { Shield } from '@repo/ui/icons';
-import { Button, ButtonText, HStack, Link, LinkText, Text, VStack } from '@repo/ui/primitives';
+import { HStack, Link, LinkText, Text, VStack } from '@repo/ui/primitives';
 import { EXTERNAL_URLS } from '@repo/ui/utils';
 import React from 'react';
 
@@ -51,12 +52,12 @@ export default function PDPAConsentModal({ isOpen, onClose }: PDPAConsentModalPr
           before choosing.
         </Text>
         <HStack className="gap-3 justify-end mt-4">
-          <Button variant="outline" action="secondary" onPress={handleDecline} size="sm">
-            <ButtonText>Decline</ButtonText>
-          </Button>
-          <Button action="primary" onPress={handleAccept} size="sm">
-            <ButtonText>Accept</ButtonText>
-          </Button>
+          <SanctuaryButton variant="outline" action="secondary" onPress={handleDecline} size="sm">
+            Decline
+          </SanctuaryButton>
+          <SanctuaryButton action="primary" onPress={handleAccept} size="sm">
+            Accept
+          </SanctuaryButton>
         </HStack>
       </VStack>
     </SanctuaryModal>

@@ -64,26 +64,55 @@ export const Modal = ({
     <ModalContext.Provider value={contextValue}>
       <Portal>
         <Overlay isOpen={isOpen} onPress={closeOnBackdropPress ? onClose : undefined} />
-        <View
-          className="absolute inset-0 items-center justify-center p-4"
-          pointerEvents="box-none"
-          style={{ zIndex: 1001 }}
-          {...props}
-        >
-          <AnimatedView
-            entering={enteringAnimation}
-            exiting={exitingAnimation}
-            className="w-full max-w-[500px]"
-            accessibilityRole="dialog"
-            accessibilityLabel={accessibilityLabel}
-            accessibilityViewIsModal={trapFocus}
-            accessible={true}
+        {Platform.OS === 'web' ? (
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={accessibilityLabel}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 1001,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '1rem',
+              pointerEvents: 'none',
+            }}
           >
-            <Box className="bg-phase-elevated rounded-3xl overflow-hidden shadow-2xl border border-phase-interactive/10">
+            <div
+              style={{
+                width: '100%',
+                maxWidth: 500,
+                pointerEvents: 'auto',
+              }}
+            >
               {children}
-            </Box>
-          </AnimatedView>
-        </View>
+            </div>
+          </div>
+        ) : (
+          <View
+            className="absolute inset-0 items-center justify-center p-4"
+            pointerEvents="box-none"
+            style={{ zIndex: 1001 }}
+            {...props}
+          >
+            <AnimatedView
+              entering={enteringAnimation}
+              exiting={exitingAnimation}
+              className="w-full max-w-[500px]"
+              accessibilityRole="dialog"
+              accessibilityLabel={accessibilityLabel}
+              accessibilityViewIsModal={trapFocus}
+              accessible={true}
+            >
+              {children}
+            </AnimatedView>
+          </View>
+        )}
       </Portal>
     </ModalContext.Provider>
   );
@@ -91,9 +120,32 @@ export const Modal = ({
 
 export const ModalBackdrop = Overlay;
 
-export const ModalContent = ({ children, className }: any) => (
-  <Box className={className}>{children}</Box>
-);
+export const ModalContent = ({ children, className, style }: any) => {
+  const contentStyle = [
+    {
+      backgroundColor: '#FDFAF3',
+      borderWidth: 1,
+      borderColor: 'rgba(42, 35, 24, 0.18)',
+      boxShadow:
+        '0 25px 50px -12px rgba(20, 16, 11, 0.5), 0 0 0 1px rgba(42, 35, 24, 0.12), 0 10px 20px -5px rgba(0, 0, 0, 0.2)',
+    } as any,
+    Platform.OS === 'web' && ({
+      backdropFilter: 'blur(24px) saturate(1.4)',
+      WebkitBackdropFilter: 'blur(24px) saturate(1.4)',
+      animation: 'sanctuary-modal-in 280ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+    } as any),
+    style,
+  ];
+
+  return (
+    <Box
+      className={`bg-phase-modal-card rounded-3xl overflow-hidden shadow-2xl border border-phase-modal-border ${className || ''}`}
+      style={contentStyle}
+    >
+      {children}
+    </Box>
+  );
+};
 
 export const ModalHeader = ({ children, className }: any) => (
   <Box

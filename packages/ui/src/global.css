@@ -1,9 +1,23 @@
-/* NativeWind v5/Tailwind v4 only consumes a JavaScript config when it is
- * explicitly referenced. This preserves the existing phase token contract
- * while the design system transitions to CSS-first theme declarations. */
 @config "../../../apps/gurudevi-mobile/tailwind.config.js";
 
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/preflight.css" layer(base);
 @import "tailwindcss/utilities.css";
 @import "nativewind/theme";
+
+@theme {
+  --color-phase-modal-card: var(--phase-modal-card);
+  --color-phase-scrim: var(--phase-scrim);
+  --color-phase-modal-border: var(--phase-modal-border);
+}
+
+:root {
+  --phase-modal-card: #FDFAF3;
+  --phase-scrim: rgba(26, 22, 16, 0.82);
+  --phase-modal-border: rgba(42, 35, 24, 0.12);
+  --phase-text-primary: #2A2318;
+  --phase-text-secondary: #72695E;
+  --phase-interactive: rgba(232, 226, 207, 0.50);
+  --phase-accent: #D4843A;
+}
+

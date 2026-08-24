@@ -105,14 +105,24 @@ const MethodItem = React.memo(({ method, isSelected, onSelect }: MethodItemProps
     <GSPressable
       accessibilityRole="button"
       onPress={handlePress}
-      className={`p-4 border rounded-xl flex-row items-center gap-3 ${isSelected ? 'border-phase-accent bg-phase-accent/10' : 'border-white/10 bg-phase-surface'}`}
+      className="p-4 rounded-xl flex-row items-center gap-3"
+      style={{
+        backgroundColor: isSelected ? '#FAF2DE' : '#F5EFE0',
+        borderWidth: 1.5,
+        borderColor: isSelected ? '#C47020' : 'rgba(42, 35, 24, 0.15)',
+      }}
     >
       <Box
-        className={`w-5 h-5 rounded-full border-[1.5px] items-center justify-center ${isSelected ? 'border-phase-accent bg-phase-accent' : 'border-white/20'}`}
+        className="w-5 h-5 rounded-full items-center justify-center"
+        style={{
+          borderWidth: 1.5,
+          borderColor: isSelected ? '#C47020' : 'rgba(42, 35, 24, 0.3)',
+          backgroundColor: isSelected ? '#C47020' : 'transparent',
+        }}
       >
         {isSelected ? (
           <Box className="text-white">
-            <Check size={10} />
+            <Check size={10} color="#FFFFFF" />
           </Box>
         ) : null}
       </Box>
@@ -254,7 +264,14 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
       >
         {pendingRequest && (
           <VStack className="gap-4">
-            <Box className="bg-phase-surface border border-white/10 rounded-xl p-4">
+            <Box
+              className="rounded-xl p-4"
+              style={{
+                backgroundColor: '#F5EFE0',
+                borderWidth: 1,
+                borderColor: 'rgba(42, 35, 24, 0.15)',
+              }}
+            >
               <HStack className="gap-2 items-center mb-1">
                 <Box
                   className={
@@ -297,10 +314,15 @@ export function ExternalLinkProvider({ children }: { children: React.ReactNode }
             <GSPressable
               accessibilityRole="button"
               onPress={handleToggleRememberChoice}
-              className="flex-row items-center gap-3 border border-white/10 rounded-xl p-4"
+              className="flex-row items-center gap-3 rounded-xl p-4"
+              style={{
+                backgroundColor: '#F5EFE0',
+                borderWidth: 1,
+                borderColor: 'rgba(42, 35, 24, 0.15)',
+              }}
             >
               <Box
-                className={`w-5 h-5 rounded-md border-[1.5px] items-center justify-center ${rememberChoice ? 'border-phase-accent bg-phase-accent' : 'border-white/20'}`}
+                className={`w-5 h-5 rounded-md border-[1.5px] items-center justify-center ${rememberChoice ? 'border-phase-accent bg-phase-accent' : 'border-phase-interactive/30'}`}
               >
                 {rememberChoice ? (
                   <Box className="text-white">

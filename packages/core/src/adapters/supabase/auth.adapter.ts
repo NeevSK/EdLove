@@ -253,7 +253,9 @@ export class SupabaseAuthAdapter implements IAuthPort {
   }
 
   async signInAnonymously(options?: { data?: Record<string, any> }) {
-    const { data, error } = await this.client.auth.signInAnonymously({ options });
+    const { data, error } = await this.client.auth.signInAnonymously(
+      options ? { options } : undefined,
+    );
     if (error) throw new APIError('Failed to create anonymous session', error.code, error);
     return data as any;
   }

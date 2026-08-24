@@ -154,7 +154,7 @@ export default function DailyRhythm() {
       {/* Add period form */}
       {showForm && (
         <VStack className="p-8 bg-shroud rounded-3xl border border-white/10 gap-6 shadow-2xl">
-          <Box className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-6">
             <VStack className="gap-2">
               <Text className="text-[10px] font-black text-mistGray/40 uppercase tracking-widest px-1">
                 Identity
@@ -209,7 +209,7 @@ export default function DailyRhythm() {
                 <Icon as={Clock} size={14} className="text-mistGray/20 ml-2" />
               </Input>
             </VStack>
-          </Box>
+          </div>
           <VStack className="gap-2">
             <Text className="text-[10px] font-black text-mistGray/40 uppercase tracking-widest px-1">
               Resonance Type

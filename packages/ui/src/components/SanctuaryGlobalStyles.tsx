@@ -7,17 +7,17 @@ import { hexToRgba } from '@repo/ui/utils/colorUtils';
  * SanctuaryGlobalStyles (Web-only)
  *
  * Injects global CSS for the web platform.  Consumes the full adaptive
- * token set from useTheme() \u2014 including WCAG-computed textOnAccent /
- * textOnReward \u2014 so that text colors automatically adapt whenever the
- * temporal phase changes the active accent (Saffron \u2192 Sage \u2192 Blue \u2192 Gold).
+ * token set from useTheme() — including WCAG-computed textOnAccent /
+ * textOnReward — so that text colors automatically adapt whenever the
+ * temporal phase changes the active accent (Saffron → Sage → Blue → Gold).
  */
 const STATIC_CSS = `
-    /* \u2500\u2500 RESET \u2500\u2500 */
+    /* ── RESET ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; outline: none !important; }
     body {
       font-family: var(--font-body); 
       color: var(--ink); 
-      /* overflow: clip (not hidden) \u2014 doesn't create a scroll container,
+      /* overflow: clip (not hidden) — doesn't create a scroll container,
          so browser scroll restoration and URL-hash navigation work correctly.
          All actual scrolling is handled by .sanctuary-screen (overflow-y: auto). */
       overflow: clip; 
@@ -31,7 +31,19 @@ const STATIC_CSS = `
     }
     button { background: none; border: none; cursor: pointer; font-family: inherit; transition: var(--transition-snap); }
 
-    /* \u2500\u2500 APP SHELL (Flexbox Architecture) \u2500\u2500 */
+    /* Web modal animations */
+    @keyframes sanctuary-modal-in {
+      0% {
+        transform: scale(0.94);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* ── APP SHELL (Flexbox Architecture) ── */
     .vellum-app-shell {
       display: flex;
       flex-direction: column;
@@ -1049,6 +1061,21 @@ export function SanctuaryGlobalStyles() {
       --scene-elevated-border: ${scene.elevated.border};
       --scene-interactive: ${scene.interactive.bg};
       --scene-interactive-border: ${scene.interactive.border};
+
+      /* Modal and Elevation Layer */
+      --phase-modal-card: ${isDark ? '#302920' : '#FDFAF3'};
+      --phase-scrim: ${isDark ? 'rgba(17, 20, 27, 0.88)' : 'rgba(26, 22, 16, 0.82)'};
+      --phase-modal-border: ${isDark ? 'rgba(232, 235, 255, 0.12)' : 'rgba(42, 35, 24, 0.12)'};
+      --phase-surface: ${scene.surface.bg};
+      --phase-elevated: ${scene.elevated.bg};
+      --phase-interactive: ${scene.interactive.bg};
+      --phase-accent: ${accent.action};
+      --phase-reward: ${accent.reward};
+      --phase-danger: #FF6347;
+      --phase-text-primary: ${text.primary};
+      --phase-text-secondary: ${text.secondary};
+      --phase-text-inverse: ${text.inverse};
+      --phase-text-on-accent: ${textOnAccent};
 
       /* High-Fidelity Design Palette (Vellum/Ink) */
       --water:       #3a7a9a;

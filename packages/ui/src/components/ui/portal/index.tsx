@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useId, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 /**
  * Portal Registry System
@@ -45,6 +45,25 @@ export const PortalProvider = ({ children }: { children: React.ReactNode }) => {
 export const Portal = ({ children }: { children: React.ReactNode }) => {
   const context = useContext(PortalContext);
   const id = useId();
+
+  if (Platform.OS === 'web') {
+    // Avoid SSR hydration mismatch: only mount portal on client side
+    const [mounted, setMounted] = React.useState(false);
+    React.useEffect(() => {
+      setMounted(true);
+    }, []);
+
+    if (!mounted) return null;
+
+    // Direct DOM escape on web
+    try {
+      const ReactDOM = require('react-dom');
+      return ReactDOM.createPortal(children, document.body);
+    } catch {
+      // Fallback if react-dom is not available
+      return <View>{children}</View>;
+    }
+  }
 
   useEffect(() => {
     if (context) {

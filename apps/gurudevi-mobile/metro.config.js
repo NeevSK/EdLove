@@ -72,8 +72,13 @@ process.once('exit', () => {
 // Add support for WASM files (required by expo-sqlite on web)
 config.resolver.assetExts.push('wasm');
 
-// 1. Watch all files in the monorepo
-config.watchFolders = [...(config.watchFolders || []), workspaceRoot];
+// 1. Disable watchman and clear watchFolders to avoid monorepo crawling and watch errors
+config.watchFolders = [];
+config.watchman = false;
+
+
+
+
 
 // 2. Resolve node_modules from the app root first, then workspace root.
 //    This ensures a SINGLE copy of react/react-native is used.

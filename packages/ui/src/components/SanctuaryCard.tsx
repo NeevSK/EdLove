@@ -50,9 +50,9 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
       transition={(onPress || href) ? { type: 'spring', damping: 15, stiffness: 150 } : undefined}
       style={style}
       className={`
-                bg-phase-surface border border-white/5 rounded-3xl overflow-hidden
-                ${elevated ? 'shadow-xl shadow-black/20' : ''}
-                ${hovered && Platform.OS === 'web' ? 'opacity-90 scale-[1.01]' : ''}
+                bg-phase-surface border border-phase-interactive/20 rounded-3xl overflow-hidden
+                ${elevated ? 'shadow-xl' : ''}
+                ${hovered && Platform.OS === 'web' ? 'opacity-95' : ''}
                 ${className || ''}
             `}
     >

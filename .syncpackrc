@@ -12,7 +12,7 @@
   ],
   "versionGroups": [
     {
-      "dependencies": ["@repo/*"],
+      "dependencies": ["@repo/*", "@types/react-native"],
       "packages": ["**"],
       "label": "Internal Workspace Packages"
     }

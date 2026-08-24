@@ -9,11 +9,31 @@
       "import": "./src/index.ts",
       "default": "./src/index.ts"
     },
-    "./founder": { "types": "./src/founder.ts", "import": "./src/founder.ts", "default": "./src/founder.ts" },
-    "./principal": { "types": "./src/principal.ts", "import": "./src/principal.ts", "default": "./src/principal.ts" },
-    "./guardian": { "types": "./src/guardian.ts", "import": "./src/guardian.ts", "default": "./src/guardian.ts" },
-    "./school-operations": { "types": "./src/school-operations.ts", "import": "./src/school-operations.ts", "default": "./src/school-operations.ts" },
-    "./api": { "types": "./src/api.ts", "import": "./src/api.ts", "default": "./src/api.ts" },
+    "./founder": {
+      "types": "./src/founder.ts",
+      "import": "./src/founder.ts",
+      "default": "./src/founder.ts"
+    },
+    "./principal": {
+      "types": "./src/principal.ts",
+      "import": "./src/principal.ts",
+      "default": "./src/principal.ts"
+    },
+    "./guardian": {
+      "types": "./src/guardian/index.ts",
+      "import": "./src/guardian/index.ts",
+      "default": "./src/guardian/index.ts"
+    },
+    "./school-operations": {
+      "types": "./src/school-operations.ts",
+      "import": "./src/school-operations.ts",
+      "default": "./src/school-operations.ts"
+    },
+    "./api": {
+      "types": "./src/api.ts",
+      "import": "./src/api.ts",
+      "default": "./src/api.ts"
+    },
     "./screens/FounderDashboard": {
       "types": "./src/screens/FounderDashboard.tsx",
       "import": "./src/screens/FounderDashboard.tsx",
@@ -84,7 +104,12 @@
       "import": "./src/*.js",
       "default": "./src/*.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./guardian/*": {
+      "types": "./src/guardian/*.ts",
+      "import": "./src/guardian/*.ts",
+      "default": "./src/guardian/*.ts"
+    }
   },
   "scripts": {
     "lint": "node ../../scripts/run-and-report.mjs --cmd \"pnpm run lint:biome && pnpm run lint:eslint\" --name \"packages_admin-lint\"",

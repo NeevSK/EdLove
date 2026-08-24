@@ -25,11 +25,9 @@ export default function ClassroomScreen() {
   const canForWorkspace = (action: string, subject: string, _field?: string) =>
     can(action as Parameters<typeof can>[0], subject as Parameters<typeof can>[1]);
   const isGuest = useIsGuest();
-  const { schoolId: storeSchoolId, userId: storeUserId } = useStore((state) => ({
-    schoolId: state.user?.school_id,
-    userId: state.user?.id,
-  }));
-  const { setBreathingOpen } = useStore();
+  const storeSchoolId = useStore((state) => state.user?.school_id);
+  const storeUserId = useStore((state) => state.user?.id);
+  const setBreathingOpen = useStore((state) => state.setBreathingOpen);
   const [refreshTrigger, _setRefreshTrigger] = useState(0);
   const { data: classroomData, loading, fetchRoleData } = useClassroomRoleData(refreshTrigger);
   const [isCreateSchoolOpen, setIsCreateSchoolOpen] = useState(false);

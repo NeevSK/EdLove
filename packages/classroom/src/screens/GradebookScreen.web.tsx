@@ -347,7 +347,7 @@ export default function GradebookScreenWeb() {
         ) : (
           <VStack className="gap-6">
             {/* Stats Grid */}
-            <Box className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Box className="bg-phase-surface p-5 rounded-[24px] border border-phase-border/40 shadow-sm">
                 <HStack className="items-center gap-2 mb-3">
                   <Icon as={Users} size="xs" className="text-phase-interactive" />
@@ -384,7 +384,7 @@ export default function GradebookScreenWeb() {
                   {gradingSettings?.grading_mode ?? 'marks'}
                 </Text>
               </Box>
-            </Box>
+            </div>
 
             {/* Sorting */}
             <HStack className="gap-2 flex-wrap">
@@ -409,7 +409,7 @@ export default function GradebookScreenWeb() {
 
             {/* Grade Table */}
             <Box className="bg-phase-surface rounded-[32px] border border-phase-border/40 shadow-xl overflow-hidden">
-              <Box className="grid grid-cols-5 gap-4 p-5 border-bottom border-phase-border/20 bg-phase-surface-secondary/30">
+              <div className="grid grid-cols-5 gap-4 p-5 border-bottom border-phase-border/20 bg-phase-surface-secondary/30">
                 <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-[1px]">
                   Rank
                 </Text>
@@ -425,14 +425,14 @@ export default function GradebookScreenWeb() {
                 <Text className="text-[10px] font-black text-phaseText-muted uppercase tracking-[1px]">
                   Action
                 </Text>
-              </Box>
+              </div>
 
               <VStack>
                 {sortedGrades.map((grade) => {
                   const marks = grade.marks ?? 0;
                   const isPassing = marks >= passingMarks;
                   return (
-                    <Box
+                    <div
                       key={grade.student_id}
                       className="grid grid-cols-5 gap-4 p-6 border-bottom border-phase-border/10 items-center hover:bg-phase-interactive/5 transition-all"
                     >
@@ -488,7 +488,7 @@ export default function GradebookScreenWeb() {
                           </SanctuaryButton>
                         )}
                       </HStack>
-                    </Box>
+                    </div>
                   );
                 })}
               </VStack>

@@ -69,7 +69,7 @@ export const ActionsheetContent = ({ children, className }: any) => (
     accessibilityRole="menu"
   >
     <Box
-      className={`bg-phase-elevated rounded-t-[32px] overflow-hidden shadow-2xl border-t border-phase-interactive/10 pb-8 ${className || ''}`}
+      className={`bg-phase-modal-card rounded-t-[32px] overflow-hidden shadow-2xl border-t border-phase-modal-border pb-8 ${className || ''}`}
     >
       <ActionsheetDragIndicatorWrapper>
         <ActionsheetDragIndicator />
@@ -92,7 +92,7 @@ export const ActionsheetItem = ({ children, onPress, isDisabled, className, ...p
       disabled={isDisabled}
       accessibilityRole="menuitem"
       accessibilityState={{ disabled: !!isDisabled }}
-      className={`px-5 py-4 flex-row items-center active:bg-phase-interactive/5 rounded-2xl mx-3 my-0.5 ${isDisabled ? 'opacity-40' : ''} ${className || ''}`}
+      className={`px-5 py-4 flex-row items-center active:bg-phase-interactive/10 rounded-2xl mx-3 my-0.5 ${isDisabled ? 'opacity-40' : ''} ${className || ''}`}
     >
       {children}
     </Pressable>
@@ -112,7 +112,7 @@ export const ActionsheetDragIndicatorWrapper = ({ children, className }: any) =>
 );
 
 export const ActionsheetDragIndicator = () => (
-  <Box className="w-12 h-1.5 bg-phase-interactive/20 rounded-full" />
+  <Box className="w-12 h-1.5 bg-phase-text-primary/25 rounded-full" />
 );
 
 export const ActionsheetIcon = ({ children, className }: any) => (

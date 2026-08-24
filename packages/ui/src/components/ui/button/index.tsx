@@ -61,18 +61,18 @@ const Button = React.forwardRef<View, IButtonProps>(
 
     const variants = {
       solid: {
-        primary: 'bg-phase-accent active:bg-phase-accent/90',
-        secondary: 'bg-phase-interactive active:bg-phase-interactive/90',
-        positive: 'bg-phase-reward active:bg-phase-reward/90',
-        negative: 'bg-phase-danger active:bg-phase-danger/90',
-        default: 'bg-phase-surface active:bg-phase-surface/90',
+        primary: 'bg-phase-accent border border-phase-accent active:opacity-90 shadow-sm',
+        secondary: 'bg-phase-interactive border border-phase-interactive/30 active:opacity-90 shadow-sm',
+        positive: 'bg-phase-reward border border-phase-reward active:opacity-90 shadow-sm',
+        negative: 'bg-phase-danger border border-phase-danger active:opacity-90 shadow-sm',
+        default: 'bg-phase-surface border border-phase-interactive/20 active:opacity-90 shadow-sm',
       },
       outline: {
-        primary: 'bg-transparent border border-phase-accent active:bg-phase-accent/5',
-        secondary: 'bg-transparent border border-phase-interactive active:bg-phase-interactive/5',
-        positive: 'bg-transparent border border-phase-reward active:bg-phase-reward/5',
-        negative: 'bg-transparent border border-phase-danger active:bg-phase-danger/5',
-        default: 'bg-transparent border border-phase-interactive/20 active:bg-phase-interactive/5',
+        primary: 'bg-transparent border-2 border-phase-accent active:bg-phase-accent/10',
+        secondary: 'bg-transparent border-2 border-phase-interactive/40 active:bg-phase-interactive/10',
+        positive: 'bg-transparent border-2 border-phase-reward active:bg-phase-reward/10',
+        negative: 'bg-transparent border-2 border-phase-danger active:bg-phase-danger/10',
+        default: 'bg-transparent border-2 border-phase-interactive/30 active:bg-phase-interactive/10',
       },
       ghost: {
         primary: 'bg-transparent active:bg-phase-accent/10',
@@ -112,17 +112,29 @@ export const ButtonText = React.forwardRef<RNText, TextProps & { className?: str
   ({ className, children, ...props }, ref) => {
     const { variant, action } = useButton();
     const textColors = {
-      solid: 'text-white',
+      solid: {
+        primary: 'text-phase-text-on-accent',
+        secondary: 'text-phase-text-primary',
+        positive: 'text-phase-text-on-accent',
+        negative: 'text-white',
+        default: 'text-phase-text-primary',
+      },
       outline: {
-        primary: 'text-phase-accent', secondary: 'text-phase-interactive', positive: 'text-phase-reward',
-        negative: 'text-phase-danger', default: 'text-phase-text-primary',
+        primary: 'text-phase-accent',
+        secondary: 'text-phase-text-primary',
+        positive: 'text-phase-reward',
+        negative: 'text-phase-danger',
+        default: 'text-phase-text-primary',
       },
       ghost: {
-        primary: 'text-phase-accent', secondary: 'text-phase-interactive', positive: 'text-phase-reward',
-        negative: 'text-phase-danger', default: 'text-phase-text-primary',
+        primary: 'text-phase-accent',
+        secondary: 'text-phase-text-primary',
+        positive: 'text-phase-reward',
+        negative: 'text-phase-danger',
+        default: 'text-phase-text-primary',
       },
     };
-    const colorStyle = variant === 'solid' ? textColors.solid : textColors[variant!][action!];
+    const colorStyle = textColors[variant!][action!];
     return (
       <Text {...props} ref={ref} className={`font-bold text-center tracking-tight ${colorStyle} ${className || ''}`}>
         {children}

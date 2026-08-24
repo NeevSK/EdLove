@@ -5,7 +5,7 @@ import { GuardianEvents } from '@repo/admin/components/guardian/GuardianEvents';
 import { GuardianNotifications } from '@repo/admin/components/guardian/GuardianNotifications';
 import { GuardianChildrenList } from '@repo/admin/components/poa/GuardianChildrenList';
 import { GuardianHeader } from '@repo/admin/components/poa/GuardianHeader';
-import type { StudentOverview } from '@repo/admin/guardian';
+import type { StudentOverview } from '@repo/admin/guardian/types';
 import { useGuardianWorkspaceData } from '@repo/admin/guardian/useGuardianWorkspaceData';
 
 interface GuardianDashboardScreenProps {

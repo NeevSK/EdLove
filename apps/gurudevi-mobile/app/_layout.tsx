@@ -59,7 +59,7 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import { Stack, usePathname, useRouter } from 'expo-router';
 import * as ScreenCapture from 'expo-screen-capture';
 import * as SplashScreen from 'expo-splash-screen';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   AppState,
   AppStateStatus,
@@ -146,7 +146,8 @@ function FullScreenFallback({ error, onRetry }: { error?: Error; onRetry?: () =>
 function BootstrapSideEffects() {
   const currentUser = useStore((state) => state.user);
   const analyticsEnabled = useFeatureStore((state) => state.flags.isAnalyticsEnabled);
-  const { hasDecidedConsent, analyticsConsentGranted } = useConsentStore();
+  const hasDecidedConsent = useConsentStore((state) => state.hasDecidedConsent);
+  const analyticsConsentGranted = useConsentStore((state) => state.analyticsConsentGranted);
 
   useEffect(() => {
     // Revocation check: if consent has been decided, but it is false
@@ -240,7 +241,7 @@ function AppContent() {
   const activeBondScopeId = useStore((state) => state.activeBond?.id ?? null);
   const clearCedarDecisions = useCedarDecisionStore((state) => state.clearDecisions);
   usePolicyVersionInvalidation(clearCedarDecisions);
-  const { hasDecidedConsent } = useConsentStore();
+  const hasDecidedConsent = useConsentStore((state) => state.hasDecidedConsent);
   const toast = useStore((state) => state.toast);
   const hideToast = useStore((state) => state.hideToast);
 
@@ -250,11 +251,17 @@ function AppContent() {
     showPinUnlock: false,
   }));
   const { isUnlocked, hasPinCode, showPinUnlock } = lockState;
-  const entitlementSnapshot = useEntitlementStore((state) => ({
-    manifestLoaded: state.manifestLoaded,
-    readiness: state.readiness,
-    snapshotUserId: state.snapshotUserId,
-  }));
+  const manifestLoaded = useEntitlementStore((state) => state.manifestLoaded);
+  const readiness = useEntitlementStore((state) => state.readiness);
+  const snapshotUserId = useEntitlementStore((state) => state.snapshotUserId);
+  const entitlementSnapshot = useMemo(
+    () => ({
+      manifestLoaded,
+      readiness,
+      snapshotUserId,
+    }),
+    [manifestLoaded, readiness, snapshotUserId],
+  );
   // Session restoration is local; identity and fresh capabilities may require
   // the network. An offline return is permitted only from a verified, local,
   // user-scoped entitlement snapshot — never just a stale profile object.

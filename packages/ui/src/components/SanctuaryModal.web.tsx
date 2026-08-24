@@ -1,7 +1,7 @@
 import { X } from '@repo/ui/icons';
 import type React from 'react';
 import { Dimensions } from 'react-native';
-import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
+import { Box, HStack, ScrollView, Text, VStack } from '@repo/ui/gluestack';
 import { Pressable } from '@repo/ui/primitives';
 import { UniversalModal } from '@repo/ui/components/UniversalModal';
 
@@ -46,13 +46,24 @@ export default function SanctuaryModal({
   return (
     <UniversalModal isOpen={isOpen} onClose={onClose}>
       <Box
-        className={`bg-phase-elevated border border-phase-surface rounded-generous shadow-2xl overflow-hidden max-w-[95vw] ${sizeClasses[size]} ${className}`}
+        className={`rounded-2xl overflow-hidden max-w-[95vw] ${sizeClasses[size]} ${className}`}
         style={{
-          boxShadow: '0 10px 20px rgba(107, 100, 128, 0.3)',
-        }}
+          backgroundColor: '#FDFAF3',
+          borderWidth: 1,
+          borderColor: 'rgba(42, 35, 24, 0.18)',
+          boxShadow:
+            '0 25px 50px -12px rgba(20, 16, 11, 0.5), 0 0 0 1px rgba(42, 35, 24, 0.12), 0 10px 20px -5px rgba(0, 0, 0, 0.2)',
+        } as any}
       >
         {/* Header */}
-        <HStack className="p-6 border-b border-phase-surface items-center justify-between">
+        <HStack
+          className="p-6 items-center justify-between"
+          style={{
+            borderBottomWidth: 1,
+            borderBottomColor: 'rgba(42, 35, 24, 0.10)',
+            backgroundColor: '#F7F2E7',
+          }}
+        >
           <HStack className="gap-3 items-center flex-1">
             {icon && icon}
             <VStack className="flex-1">
@@ -73,13 +84,29 @@ export default function SanctuaryModal({
         </HStack>
 
         {/* Body */}
-        <Box className="p-6" style={{ maxHeight: Dimensions.get('window').height * 0.7 }}>
+        <ScrollView
+          className="p-6"
+          style={{
+            backgroundColor: '#FDFAF3',
+            maxHeight: Dimensions.get('window').height * 0.7,
+            overflow: 'auto',
+          } as any}
+        >
           {children}
-        </Box>
+        </ScrollView>
 
         {/* Footer */}
         {footer && (
-          <Box className="p-6 bg-phase-interactive/5 border-t border-phase-surface">{footer}</Box>
+          <Box
+            className="p-6"
+            style={{
+              backgroundColor: '#F7F2E7',
+              borderTopWidth: 1,
+              borderTopColor: 'rgba(42, 35, 24, 0.10)',
+            }}
+          >
+            {footer}
+          </Box>
         )}
       </Box>
     </UniversalModal>

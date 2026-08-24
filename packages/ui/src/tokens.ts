@@ -53,8 +53,10 @@ export const tokens = {
 
     // Shared transient layers. Keep these semantic so web/native primitives
     // resolve to the same visual language without sharing layout mechanics.
-    overlay: 'rgba(42, 35, 24, 0.62)',
-    overlayFallback: 'rgba(42, 35, 24, 0.78)',
+    overlay: 'rgba(26, 22, 16, 0.82)',
+    overlayFallback: 'rgba(26, 22, 16, 0.90)',
+    modalCard: '#FDFAF3',
+    modalBorder: 'rgba(42, 35, 24, 0.12)',
     toastSurface: 'rgba(42, 35, 24, 0.94)',
     toastBorder: 'rgba(252, 249, 242, 0.18)',
     toastText: '#FCF9F2',

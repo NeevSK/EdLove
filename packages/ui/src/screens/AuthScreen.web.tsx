@@ -8,6 +8,7 @@ import { validateForm, validators } from '@repo/core/utils';
 import { Key } from '@repo/ui/icons';
 import { memo, useCallback, useEffect, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useWindowDimensions } from 'react-native';
 import { BreathAnimation } from '@repo/ui/components/BreathAnimation';
 import { GatewayFooter } from '@repo/ui/components/GatewayFooter.web';
 import { GatewayHeader } from '@repo/ui/components/GatewayHeader.web';
@@ -69,6 +70,9 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
     case 'TOGGLE_EMAIL_FORM':
       return { ...state, showEmailForm: action.show, errors: {} };
     case 'SET_USER':
+      if (state.currentUser === action.user || (state.currentUser?.id && state.currentUser.id === action.user?.id)) {
+        return state;
+      }
       return { ...state, currentUser: action.user };
     default:
       return state;
@@ -85,6 +89,8 @@ export const AuthScreenWeb = memo(
     const { accent } = useTheme();
     const { showToast } = useSanctuaryToast();
     const { profile: myProfile } = useIdentity();
+    const { width } = useWindowDimensions();
+    const isNarrow = width < 1024;
 
     const [state, dispatch] = useReducer(authReducer, {
       mode: initialMode === 'login' ? 'login' : 'signup',
@@ -100,7 +106,7 @@ export const AuthScreenWeb = memo(
 
     useEffect(() => {
       dispatch({ type: 'SET_USER', user: (myProfile as unknown as User) || null });
-    }, [myProfile]);
+    }, [myProfile?.id]);
 
     const applyPendingInvite = useCallback(
       async (successMessage: string) => {
@@ -333,289 +339,288 @@ export const AuthScreenWeb = memo(
     const renderedPillars = useMemo(
       () =>
         ENTRY_PILLARS.map((pillar) => (
-          <Box
+          <span
             key={pillar}
-            className="px-4 py-2 rounded-full border border-phase-border bg-phase-surface/60"
+            className="px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide border border-phase-border/70 bg-phase-surface/80 text-phase-secondary backdrop-blur-sm"
           >
-            <Text className="text-[12px] font-bold tracking-wider text-phase-secondary">
-              {pillar}
-            </Text>
-          </Box>
+            {pillar}
+          </span>
         )),
       [],
     );
 
     return (
-      <Box className="flex flex-col min-h-screen justify-between relative overflow-y-auto bg-phase-world">
+      <div className="flex flex-col min-h-screen justify-between relative overflow-x-hidden bg-phase-world selection:bg-phase-accent/20">
         <GatewayHeader />
         <SanctuaryBackground />
 
-        <Box className="flex-1 z-10 w-full max-w-[1180px] mx-auto p-8 lg:p-12">
-          <Box className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-7 items-stretch min-h-[calc(100vh-120px)]">
-            {/* Story Section */}
-            <Box className="rounded-[40px] border border-phase-border bg-phase-surface/40 overflow-hidden relative">
-              <VStack className="h-full p-8 lg:p-12 justify-between gap-8">
-                <VStack className="gap-8">
-                  <Box className="px-4 py-2 rounded-full border border-phase-border bg-phase-surface/60 w-fit">
-                    <Text className="text-[12px] font-bold tracking-[0.08em] uppercase text-phase-secondary">
-                      Gurudevi Sanctuary
-                    </Text>
-                  </Box>
+        {/* Ambient decorative glowing orbs */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-24 -left-24 w-[380px] h-[380px] rounded-full blur-3xl opacity-30 bg-amber-500/20"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute top-1/3 -right-28 w-[420px] h-[420px] rounded-full blur-3xl opacity-20 bg-blue-500/20"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -bottom-20 left-1/4 w-[360px] h-[360px] rounded-full blur-3xl opacity-25 bg-violet-500/20"
+        />
 
-                  <VStack className="gap-6">
-                    <LivingGlow active size={132} className="items-center justify-center p-0">
-                      <Box className="w-[76px] h-[76px] rounded-[24px] bg-phase-surface items-center justify-center shadow-lg border border-phase-border">
-                        <Text className="text-3xl text-phase-primary">✦</Text>
-                      </Box>
-                    </LivingGlow>
+        <main className="flex-1 z-10 w-full max-w-[1240px] mx-auto px-4 sm:px-6 md:px-8 py-6 md:py-10 lg:py-14 flex items-center justify-center">
+          <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
+            {/* Story / Hero Section */}
+            <div className="lg:col-span-6 xl:col-span-7 flex flex-col justify-between p-6 sm:p-8 md:p-10 lg:p-12 rounded-[32px] md:rounded-[40px] border border-phase-border/80 bg-phase-surface/40 backdrop-blur-xl shadow-xl relative overflow-hidden">
+              <div className="flex flex-col gap-6 md:gap-8">
+                <div className="inline-flex items-center gap-2 self-start px-4 py-1.5 rounded-full border border-phase-border bg-phase-surface/80 shadow-sm backdrop-blur-md">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[11px] font-bold tracking-[0.08em] uppercase text-phase-secondary">
+                    Gurudevi Sanctuary · Sovereign Education
+                  </span>
+                </div>
 
-                    <VStack className="gap-4">
-                      <Text className="text-[12px] font-extrabold tracking-[0.12em] uppercase text-phase-secondary">
-                        {modeCopy.eyebrow}
-                      </Text>
-                      <Heading className="text-5xl lg:text-7xl font-bold tracking-[-0.07em] text-phase-primary leading-[0.95]">
-                        {modeCopy.title}
-                      </Heading>
-                      <Text className="text-lg text-phase-secondary max-w-md leading-relaxed">
-                        {modeCopy.subtitle}
-                      </Text>
-                    </VStack>
-                  </VStack>
+                <div className="flex flex-col gap-6">
+                  <LivingGlow active size={108} className="items-start justify-start p-0">
+                    <div className="w-[72px] h-[72px] rounded-[22px] bg-phase-surface/90 flex items-center justify-center shadow-lg border border-phase-border/80 backdrop-blur-md">
+                      <span className="text-3xl text-phase-primary">🪷</span>
+                    </div>
+                  </LivingGlow>
 
-                  <HStack className="gap-2 flex-wrap">{renderedPillars}</HStack>
-                </VStack>
+                  <div className="flex flex-col gap-3">
+                    <span className="text-[11px] font-extrabold tracking-[0.14em] uppercase text-phase-secondary">
+                      {modeCopy.eyebrow}
+                    </span>
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-phase-primary leading-[1.05]">
+                      {modeCopy.title}
+                    </h1>
+                    <p className="text-base sm:text-lg text-phase-secondary max-w-lg leading-relaxed mt-1 font-normal">
+                      {modeCopy.subtitle}
+                    </p>
+                  </div>
+                </div>
 
-                <Box className="rounded-3xl border border-phase-border bg-phase-surface/80 p-8">
-                  <VStack className="gap-6">
-                    <VStack className="gap-2">
-                      <Text className="text-[11px] font-extrabold tracking-[0.12em] uppercase text-phase-muted">
-                        Why this step matters
-                      </Text>
-                      <Text className="text-phase-primary leading-relaxed text-base">
-                        Your account keeps learning, invitations, and profile presence gathered into
-                        one living place without changing how you use the app.
-                      </Text>
-                    </VStack>
-                    <Box className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <VStack className="p-4 rounded-2xl bg-phase-surface/50 border border-phase-border gap-1">
-                        <Text className="font-bold text-phase-primary">Gentle entry</Text>
-                        <Text className="text-sm text-phase-secondary">
-                          Start with Google or email.
-                        </Text>
-                        <Text className="text-xs text-phase-secondary/75 leading-5">
-                          Shared devices can keep separate accounts. Use account switching plus a
-                          local PIN or biometric lock for protected identities.
-                        </Text>
-                      </VStack>
-                      <VStack className="p-4 rounded-2xl bg-phase-surface/50 border border-phase-border gap-1">
-                        <Text className="font-bold text-phase-primary">Guest-safe</Text>
-                        <Text className="text-sm text-phase-secondary">
-                          Browse first when logging in later feels better.
-                        </Text>
-                      </VStack>
-                    </Box>
-                  </VStack>
-                </Box>
-              </VStack>
-            </Box>
+                {/* Pillars / Domains */}
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {renderedPillars}
+                </div>
+              </div>
 
-            {/* Panel Section */}
-            <Box className="rounded-[40px] border border-phase-border bg-phase-surface/80 shadow-2xl overflow-hidden relative">
-              <VStack className="h-full p-8 lg:p-12 justify-center gap-8">
+              {/* Educational Highlight Card */}
+              <div className="mt-8 rounded-2xl md:rounded-3xl border border-phase-border/60 bg-phase-surface/70 p-5 sm:p-6 backdrop-blur-md">
+                <div className="flex flex-col gap-4">
+                  <div>
+                    <span className="text-[10px] font-extrabold tracking-[0.14em] uppercase text-phase-muted">
+                      Why this step matters
+                    </span>
+                    <p className="text-phase-primary leading-relaxed text-sm md:text-base mt-1">
+                      Your account keeps lessons, achievements, and invitations synchronized across all devices in a quiet, distraction-free environment.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                    <div className="p-3.5 rounded-xl bg-phase-surface/60 border border-phase-border/60 flex flex-col gap-1">
+                      <span className="text-xs font-bold text-phase-primary">Gentle entry</span>
+                      <span className="text-xs text-phase-secondary leading-snug">
+                        Use Google, Passkey, or email. Switch roles or classrooms smoothly anytime.
+                      </span>
+                    </div>
+                    <div className="p-3.5 rounded-xl bg-phase-surface/60 border border-phase-border/60 flex flex-col gap-1">
+                      <span className="text-xs font-bold text-phase-primary">Guest & Explorer safe</span>
+                      <span className="text-xs text-phase-secondary leading-snug">
+                        Explore as guest first; sync your progress automatically whenever you decide to sign in.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Auth Form / Action Panel */}
+            <div className="lg:col-span-6 xl:col-span-5 flex flex-col justify-center p-6 sm:p-8 md:p-10 lg:p-12 rounded-[32px] md:rounded-[40px] border border-phase-border/90 bg-phase-surface/85 backdrop-blur-2xl shadow-2xl relative overflow-hidden">
+              <div className="flex flex-col gap-6 w-full max-w-md mx-auto">
                 {onBack && (
-                  <Button variant="ghost" onPress={onBack} className="self-start pl-0">
-                    <HStack className="gap-2 items-center">
-                      <Text className="text-phase-secondary text-lg">←</Text>
-                      <ButtonText className="text-phase-secondary">Back</ButtonText>
-                    </HStack>
-                  </Button>
+                  <button
+                    type="button"
+                    onClick={onBack}
+                    className="self-start flex items-center gap-2 text-sm font-medium text-phase-secondary hover:text-phase-primary transition-colors cursor-pointer -ml-1 py-1"
+                  >
+                    <span>←</span>
+                    <span>Back to Welcome</span>
+                  </button>
                 )}
 
-                <VStack className="gap-6">
-                  <VStack className="gap-2">
-                    <Text className="text-[11px] font-extrabold tracking-[0.12em] uppercase text-phase-secondary">
-                      {mode === 'signup' ? 'Identity' : 'Return'}
-                    </Text>
+                <div className="flex flex-col gap-5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-extrabold tracking-[0.14em] uppercase text-phase-secondary">
+                      {mode === 'signup' ? 'Create Account' : 'Returning User'}
+                    </span>
 
-                    <HStack className="p-1 rounded-full bg-phase-surface/50 border border-phase-border w-fit">
-                      <Button
-                        variant="ghost"
-                        className={`px-6 py-2 rounded-full h-auto ${mode === 'signup' ? 'bg-phase-world' : ''}`}
-                        onPress={switchToSignup}
+                    {/* Mode Toggle Switch */}
+                    <div className="flex p-1 rounded-full bg-phase-surface/80 border border-phase-border shadow-inner">
+                      <button
+                        type="button"
+                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                          mode === 'signup'
+                            ? 'bg-phase-primary text-phase-world shadow-sm'
+                            : 'text-phase-secondary hover:text-phase-primary'
+                        }`}
+                        onClick={switchToSignup}
                       >
-                        <ButtonText
-                          className={`text-sm font-bold ${mode === 'signup' ? 'text-phase-primary' : 'text-phase-secondary'}`}
-                        >
-                          Sign Up
-                        </ButtonText>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        className={`px-6 py-2 rounded-full h-auto ${mode === 'login' ? 'bg-phase-world' : ''}`}
-                        onPress={switchToLogin}
+                        Sign Up
+                      </button>
+                      <button
+                        type="button"
+                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                          mode === 'login'
+                            ? 'bg-phase-primary text-phase-world shadow-sm'
+                            : 'text-phase-secondary hover:text-phase-primary'
+                        }`}
+                        onClick={switchToLogin}
                       >
-                        <ButtonText
-                          className={`text-sm font-bold ${mode === 'login' ? 'text-phase-primary' : 'text-phase-secondary'}`}
-                        >
-                          Log In
-                        </ButtonText>
-                      </Button>
-                    </HStack>
-                  </VStack>
+                        Log In
+                      </button>
+                    </div>
+                  </div>
 
-                  <VStack className="gap-3">
-                    <Heading className="text-3xl lg:text-4xl font-bold tracking-tight text-phase-primary">
+                  <div>
+                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-phase-primary">
                       {mode === 'signup' ? 'Choose your path in' : 'Reconnect with'} Gurudevi
-                    </Heading>
-                    <Text className="text-phase-secondary leading-relaxed">
+                    </h2>
+                    <p className="text-sm text-phase-secondary leading-relaxed mt-1.5">
                       {mode === 'signup'
                         ? 'Create a held, cross-device identity when you are ready.'
-                        : 'Use the path that already belongs to you.'}
-                    </Text>
-                  </VStack>
-                </VStack>
+                        : 'Use the credentials that belong to your sanctuary profile.'}
+                    </p>
+                  </div>
+                </div>
 
-                <VStack className="gap-4 w-full">
-                  <Button
-                    size="lg"
-                    onPress={handleGooglePress}
-                    isDisabled={loading}
-                    className="h-[60px] rounded-2xl bg-phase-primary shadow-xl hover:translate-y-[-1px] transition-transform"
+                {/* Primary Action Buttons */}
+                <div className="flex flex-col gap-3.5 w-full pt-1">
+                  <button
+                    type="button"
+                    onClick={handleGooglePress}
+                    disabled={loading}
+                    className="w-full h-[56px] px-5 rounded-2xl bg-phase-primary text-phase-world font-bold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:translate-y-[-1px] active:translate-y-[0px] transition-all cursor-pointer disabled:opacity-50"
                   >
-                    <HStack className="gap-3 items-center">
-                      <Box className="w-7 h-7 rounded-full bg-white items-center justify-center">
-                        <Text className="text-[#4285F4] font-black">G</Text>
-                      </Box>
-                      <ButtonText className="text-phase-world font-bold">
-                        {modeCopy.google}
-                      </ButtonText>
-                    </HStack>
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    onPress={handlePasskeyPress}
-                    isDisabled={loading}
-                    className="h-[60px] rounded-2xl border-phase-border bg-phase-surface/50"
-                  >
-                    <HStack className="gap-3 items-center">
-                      <Box className="w-7 h-7 rounded-full bg-phase-primary/10 items-center justify-center">
-                        <Key size={16} color={accent.action} />
-                      </Box>
-                      <ButtonText className="text-phase-primary font-bold">Use Passkey</ButtonText>
-                    </HStack>
-                  </Button>
+                    <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-sm">
+                      <span className="text-[#4285F4] font-black text-sm">G</span>
+                    </div>
+                    <span>{modeCopy.google}</span>
+                  </button>
 
-                  <Text className="text-center text-xs text-phase-secondary/75 leading-5">
-                    Social login stays the main path. Passkeys are available as a faster,
-                    phishing-resistant option.
-                  </Text>
+                  <button
+                    type="button"
+                    onClick={handlePasskeyPress}
+                    disabled={loading}
+                    className="w-full h-[54px] px-5 rounded-2xl border border-phase-border bg-phase-surface/60 hover:bg-phase-surface text-phase-primary font-bold flex items-center justify-center gap-3 shadow-sm hover:border-phase-border/80 transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    <div className="w-7 h-7 rounded-full bg-phase-primary/10 flex items-center justify-center">
+                      <Key size={15} color={accent.action} />
+                    </div>
+                    <span>Use Passkey (Fast & Phishing-resistant)</span>
+                  </button>
 
                   {!showEmailForm && (
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      onPress={toggleEmailForm}
-                      className="h-[60px] rounded-2xl border-phase-border bg-phase-surface/50"
+                    <button
+                      type="button"
+                      onClick={toggleEmailForm}
+                      className="w-full h-[54px] px-5 rounded-2xl border border-phase-border/80 bg-phase-surface/40 hover:bg-phase-surface/80 text-phase-primary font-medium flex items-center justify-center shadow-sm transition-all cursor-pointer"
                     >
-                      <ButtonText className="text-phase-primary">{modeCopy.email}</ButtonText>
-                    </Button>
+                      <span>{modeCopy.email}</span>
+                    </button>
                   )}
 
+                  {/* Email & Password Input Section */}
                   {showEmailForm && (
-                    <BreathAnimation delay={100}>
-                      <VStack className="p-6 rounded-3xl bg-phase-surface/50 border border-phase-border gap-6">
-                        <HStack className="justify-between items-baseline">
-                          <Text className="font-bold text-phase-primary">Email path</Text>
-                          <Text className="text-sm text-phase-muted">
-                            {mode === 'signup' ? 'Create calmly' : 'Enter directly'}
-                          </Text>
-                        </HStack>
+                    <div className="animate-in fade-in slide-in-from-top-2 duration-200 mt-2 p-5 sm:p-6 rounded-3xl bg-phase-surface/70 border border-phase-border flex flex-col gap-4 shadow-sm">
+                      <div className="flex justify-between items-center pb-1 border-b border-phase-border/40">
+                        <span className="font-bold text-sm text-phase-primary">Email Authentication</span>
+                        <span className="text-xs text-phase-muted">
+                          {mode === 'signup' ? 'New Account' : 'Direct Login'}
+                        </span>
+                      </div>
 
-                        <VStack className="gap-4">
-                          <VStack className="gap-2">
-                            <Text className="text-sm font-semibold text-phase-primary ml-1">
-                              Email
-                            </Text>
-                            <Input className="rounded-2xl border-phase-border bg-phase-surface/80 h-[52px]">
-                              <InputField
-                                placeholder="you@example.com"
-                                value={email}
-                                onChangeText={handleEmailChange}
-                                className="text-phase-primary"
-                                autoComplete="email"
-                              />
-                            </Input>
-                            {errors.email && (
-                              <Text className="text-xs text-phase-error ml-1">{errors.email}</Text>
-                            )}
-                          </VStack>
+                      <div className="flex flex-col gap-3.5">
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-semibold text-phase-secondary ml-1" htmlFor="web-auth-email">
+                            Email Address
+                          </label>
+                          <input
+                            id="web-auth-email"
+                            type="email"
+                            placeholder="you@school.edu.lk"
+                            value={email}
+                            onChange={(e) => handleEmailChange(e.target.value)}
+                            autoComplete="email"
+                            className="w-full h-[48px] px-4 rounded-xl border border-phase-border bg-phase-surface text-phase-primary text-sm focus:outline-none focus:ring-2 focus:ring-phase-accent transition-all"
+                          />
+                          {errors.email && (
+                            <span className="text-xs text-rose-500 font-medium ml-1">{errors.email}</span>
+                          )}
+                        </div>
 
-                          <VStack className="gap-2">
-                            <Text className="text-sm font-semibold text-phase-primary ml-1">
-                              Password
-                            </Text>
-                            <Input className="rounded-2xl border-phase-border bg-phase-surface/80 h-[52px]">
-                              <InputField
-                                placeholder="Your password"
-                                value={password}
-                                onChangeText={handlePasswordChange}
-                                secureTextEntry
-                                className="text-phase-primary"
-                              />
-                            </Input>
-                            {errors.password && (
-                              <Text className="text-xs text-phase-error ml-1">
-                                {errors.password}
-                              </Text>
-                            )}
-                          </VStack>
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-semibold text-phase-secondary ml-1" htmlFor="web-auth-password">
+                            Password
+                          </label>
+                          <input
+                            id="web-auth-password"
+                            type="password"
+                            placeholder="••••••••"
+                            value={password}
+                            onChange={(e) => handlePasswordChange(e.target.value)}
+                            autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                            className="w-full h-[48px] px-4 rounded-xl border border-phase-border bg-phase-surface text-phase-primary text-sm focus:outline-none focus:ring-2 focus:ring-phase-accent transition-all"
+                          />
+                          {errors.password && (
+                            <span className="text-xs text-rose-500 font-medium ml-1">{errors.password}</span>
+                          )}
+                        </div>
 
-                          <Button
-                            size="lg"
-                            onPress={handleEmailPress}
-                            isDisabled={loading}
-                            className="h-[56px] rounded-2xl bg-phase-primary mt-2"
-                          >
-                            {loading ? (
-                              <ButtonSpinner className="text-phase-world" />
-                            ) : (
-                              <ButtonText className="text-phase-world font-bold">
-                                {modeCopy.primary}
-                              </ButtonText>
-                            )}
-                          </Button>
+                        <button
+                          type="button"
+                          onClick={handleEmailPress}
+                          disabled={loading}
+                          className="w-full h-[50px] mt-2 rounded-xl bg-phase-primary text-phase-world font-bold flex items-center justify-center shadow-md hover:bg-phase-primary/90 transition-all cursor-pointer disabled:opacity-50"
+                        >
+                          {loading ? 'Processing...' : modeCopy.primary}
+                        </button>
 
-                          <Button variant="ghost" onPress={backToGoogle} className="self-center">
-                            <ButtonText className="text-phase-secondary text-sm underline">
-                              Back to Google
-                            </ButtonText>
-                          </Button>
-                        </VStack>
-                      </VStack>
-                    </BreathAnimation>
+                        <button
+                          type="button"
+                          onClick={backToGoogle}
+                          className="text-xs text-phase-secondary hover:text-phase-primary text-center underline cursor-pointer py-1"
+                        >
+                          Cancel email form & return
+                        </button>
+                      </div>
+                    </div>
                   )}
 
                   {mode === 'login' && !showEmailForm && (
-                    <Button variant="ghost" onPress={handleGuestPress} className="h-auto py-2">
-                      <ButtonText className="text-phase-secondary font-medium">
-                        Continue as Guest
-                      </ButtonText>
-                    </Button>
+                    <button
+                      type="button"
+                      onClick={handleGuestPress}
+                      className="text-sm font-medium text-phase-secondary hover:text-phase-primary text-center py-2 transition-colors cursor-pointer"
+                    >
+                      Continue as Guest Explorer
+                    </button>
                   )}
-                </VStack>
+                </div>
 
                 {errors._form && (
-                  <Box className="p-4 rounded-xl border border-phase-error/20 bg-phase-error/5">
-                    <Text className="text-phase-error text-center text-sm">{errors._form}</Text>
-                  </Box>
+                  <div className="p-3.5 rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-600 dark:text-rose-400 text-center text-xs font-medium">
+                    {errors._form}
+                  </div>
                 )}
-              </VStack>
-            </Box>
-          </Box>
-        </Box>
+              </div>
+            </div>
+          </div>
+        </main>
+
         <GatewayFooter />
-      </Box>
+      </div>
     );
   },
 );
