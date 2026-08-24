@@ -101,3 +101,11 @@ apps/gurudevi-mobile/web-runtime-smoke.png
 apps/gurudevi-mobile/web-smoke.png
 docs/RN Terrain/radar/
 reports/playwright/
+
+# Backup and one-off artifacts
+*.bak
+profile.*
+scan.json
+scan-viewer.html
+.viewer.html
+.shell.html

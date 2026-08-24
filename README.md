@@ -21,8 +21,6 @@ App contexts (read before working in an app):
 - [apps/edlove-web/CONTEXT.md](./apps/edlove-web/CONTEXT.md)
 - [apps/gurudevi-mobile/README.md](./apps/gurudevi-mobile/README.md)
 - [apps/gurudevi-marketingWeb/CONTEXT.md](./apps/gurudevi-marketingWeb/CONTEXT.md)
-- [apps/intuitui-web/CONTEXT.md](./apps/intuitui-web/CONTEXT.md)
-- [apps/neevsk-web/CONTEXT.md](./apps/neevsk-web/CONTEXT.md)
 
 ## Gurudevi: two web environments
 

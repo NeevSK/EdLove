@@ -2,8 +2,12 @@
 # Update this file (or agents add entries), then regenerate.
 
 metadata:
-  updated: 2026-08-22
+  updated: 2026-08-24
   convention: "1) bootstrap drafts new entries  2) curate summary/layer/floating  3) pnpm run stack-map"
+extracted_trube_art: "github.com/NeevSK/trube-art (2026-08-24, see docs/decisions/2026-08-24-openness-and-reuse-strategy.md)"
+extracted_rn_terrain: "github.com/NeevSK/rn-terrain (2026-08-24)"
+extracted_intuitui_web: "github.com/NeevSK/intuitui-web (2026-08-24)"
+extracted_neevsk_web: "github.com/NeevSK/neevsk-web (2026-08-24)"
 
 package_entries:
   @intuitui-labs/form-builder-engine:
@@ -102,10 +106,6 @@ package_entries:
     layer: domain
     summary: "Personal sanctuary — inner-life, growth, journaling, wellbeing, role-shaped self-work."
     floating: undecided
-  @repo/trube-art:
-    layer: domain
-    summary: "Living-surface engine for RN built on Skia (excluded from pnpm workspace — open-source release path)."
-    floating: standalone-tool
   @repo/types-shim:
     layer: core
     summary: "Type shim satisfying legacy @types/react-native peer deps — avoids install-time conflicts."
@@ -122,22 +122,6 @@ package_entries:
     layer: domain
     summary: "Future non-academic & job-structure domain — school-wide operations beyond classrooms."
     floating: undecided
-  @rn-terrain/cli:
-    layer: tooling
-    summary: "rn-eval CLI — render RN Terrain vitality verdicts for any package from the terminal."
-    floating: "standalone-tool (bin artifact)"
-  @rn-terrain/core:
-    layer: tooling
-    summary: "RN Terrain intelligence core — vitality scoring, versions, vendor signals (Supabase-backed)."
-    floating: undecided
-  @rn-terrain/mcp:
-    layer: tooling
-    summary: "MCP server exposing terrain intelligence to AI coding agents."
-    floating: standalone-tool
-  @rn-terrain/vscode:
-    layer: tooling
-    summary: "VS Code extension — package intelligence/compat hover cards straight in package.json."
-    floating: standalone-tool
   apps-edlove-web:
     layer: "app (web)"
     summary: "edlove.org — public face of the EdLove ecosystem ('education as care work')."
@@ -146,14 +130,6 @@ package_entries:
     layer: "app (web)"
     summary: "Gurudevi marketing site (gurudevi.edlove.org) — landings, forms, analytics."
     floating: undecided
-  apps-intuitui-web:
-    layer: "app (web)"
-    summary: "Intuitui Labs studio site — systems intelligence & humane innovation studio presence."
-    floating: undecided
-  apps-neevsk-web:
-    layer: "app (web)"
-    summary: "Personal digital archive & portfolio ('the soul behind the machine')."
-    floating: personal-site
   gurudevi-mobile:
     layer: "app (mobile)"
     summary: "The Operational Engine — Expo 57 / RN 0.86 mobile app for teachers, students, principals."
@@ -164,9 +140,6 @@ overlap_verdicts:
   naming-intuitui-labsform-builder-engine-vs-repoform-builder:
     verdict: watch
     note: "Feature host vs headless engine — keep host thin; engine is the publishable unit."
-  naming-repoplatform-mcp-vs-rn-terrainmcp:
-    verdict: false-alarm
-    note: "Both MCP servers but different scopes: repo control plane vs ecosystem intelligence."
 
 usecase_notes:
   @repo/sanctuary-api:
@@ -178,12 +151,6 @@ usecase_notes:
   apps-gurudevi-marketing-web:
     summary: "Marketing web (gurudevi.edlove.org) — forms, analytics, landings."
     coupling: "Consumer shell: core + ui + analytics + form-builder. Must stay a thin site, never absorb domain logic."
-  apps-intuitui-web:
-    summary: "Intuitui Labs studio — systems intelligence studio presence."
-    coupling: "Editorial-site class: only config deps by design. Zero domain coupling."
-  apps-neevsk-web:
-    summary: "Personal archive & portfolio — 'everything I want to show to the world.'"
-    coupling: "Personal-site class: only config deps by design. Zero domain coupling."
   gurudevi-mobile:
     summary: "The Operational Engine — mobile app for teachers, students, and principals. Largest consumer in the workspace."
     coupling: "Pulls 14 domain packages (ai, classroom, payments, people, profile, self, scanner-kit...). Most fragile: sacred native pins + new-arch only; any domain change ripples here."

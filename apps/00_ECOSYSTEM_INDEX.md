@@ -39,19 +39,10 @@ Each application is independent but philosophically connected.
 - Context: [gurudevi-mobile/README.md](./gurudevi-mobile/README.md)
 - Relation: Primary product; pillar packages live under `../packages/*`.
 
-#### Intuitui Web
-
-- App: `intuitui-web`
-- Identity: Systems Intelligence Studio
-- Context: [intuitui-web/CONTEXT.md](./intuitui-web/CONTEXT.md)
-- Relation: The professional practice of the architect (Neev).
-
-#### Neevsk Web
-
-- App: `neevsk-web`
-- Identity: Personal Digital Archive
-- Context: [neevsk-web/CONTEXT.md](./neevsk-web/CONTEXT.md)
-- Relation: Personal/philosophical space of the creator.
+> `intuitui-web` (Systems Intelligence Studio) and `neevsk-web` (Personal Digital
+> Archive) were extracted into standalone private repos:
+> [NeevSK/intuitui-web](https://github.com/NeevSK/intuitui-web),
+> [NeevSK/neevsk-web](https://github.com/NeevSK/neevsk-web).
 
 ---
 

@@ -9,7 +9,7 @@ tags: [testing, performance, react-native, playwright, maestro, doppler]
 
 # Gurudevi Testing and Performance Toolchain
 
-The source notes in [`docs/sort these/`](../../docs/sort%20these/) are retained as
+The source notes in [`docs/engineering/`](../engineering/) are retained as
 research material. This page turns their recommendations into operational lanes.
 
 ## Current lanes
@@ -67,7 +67,7 @@ block every pull request.
 
 ## Source research
 
-- [RN E2E testing and free device access](../../docs/sort%20these/rn-e2e-testing.md)
-- [RN JS and React profiling](../../docs/sort%20these/rn-js-react-profiling.md)
-- [RN performance surface map](../../docs/sort%20these/rn-perf-surface-map.md)
-- [UI-thread discipline](../../docs/sort%20these/ui-thread-discipline.md)
+- [RN E2E testing and free device access](../engineering/rn-e2e-testing.md)
+- [RN JS and React profiling](../engineering/rn-js-react-profiling.md)
+- [RN performance surface map](../engineering/rn-perf-surface-map.md)
+- [UI-thread discipline](../engineering/ui-thread-discipline.md)
