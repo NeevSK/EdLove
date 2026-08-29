@@ -16,6 +16,23 @@ export const WORKSPACE_CANVAS_ZONES = [
 /** Keep the canvas's high-attention layer within the dense-workspace limit. */
 export const MAX_PINNED_WORKSPACE_SURFACES = 4;
 
+export const PER_WORKSPACE_PIN_CAP: Record<string, number> = {
+  'teacher-dashboard': 4,
+  'student-dashboard': 2,
+  'principal-workspace': 4,
+  'founder-workspace': 4,
+  'guardian-workspace': 2,
+  'admin-workspace': 4,
+  self: 2,
+  library: 2,
+  community: 0,
+  profile: 3,
+};
+
+export function getMaxPinnedForWorkspace(workspaceId: string): number {
+  return PER_WORKSPACE_PIN_CAP[workspaceId] ?? MAX_PINNED_WORKSPACE_SURFACES;
+}
+
 export type WorkspaceCanvasZoneId = (typeof WORKSPACE_CANVAS_ZONES)[number];
 
 export interface WorkspaceZoneLayoutGroup<
@@ -82,6 +99,8 @@ export function createDefaultWorkspaceLayout<
     hidden,
     pinned: [],
     zoneBySurface,
+    isDefault: true,
+    surfaceMetadata: {},
     updatedAt,
   };
 }
@@ -91,6 +110,9 @@ export function normalizeWorkspaceLayout<TSurfaceId extends string, TCapabilityK
   surfaces: WorkspaceSurfaceDefinition<TSurfaceId, TCapabilityKey>[],
   updatedAt = layout.updatedAt,
 ): WorkspaceLayout<TSurfaceId> {
+  // v1 -> v2 migration: backfill isDefault / surfaceMetadata if missing
+  const migratedIsDefault = (layout as unknown as { isDefault?: boolean }).isDefault ?? true;
+  const migratedMetadata = (layout as unknown as { surfaceMetadata?: Record<string, unknown> }).surfaceMetadata ?? {};
   const surfaceMap = toSurfaceMap(surfaces);
   const defaultOrder = sortSurfaceIdsByDefault(surfaces);
   const remainingSurfaceIds = new Set(defaultOrder);
@@ -115,7 +137,7 @@ export function normalizeWorkspaceLayout<TSurfaceId extends string, TCapabilityK
 
   const pinned = unique(layout.pinned)
     .filter((surfaceId) => surfaceMap.has(surfaceId))
-    .slice(0, MAX_PINNED_WORKSPACE_SURFACES);
+    .slice(0, getMaxPinnedForWorkspace(layout.workspaceId));
 
   const zoneBySurface = defaultOrder.reduce<Partial<Record<TSurfaceId, WorkspaceZoneId>>>(
     (zones, surfaceId) => {
@@ -135,6 +157,8 @@ export function normalizeWorkspaceLayout<TSurfaceId extends string, TCapabilityK
     hidden,
     pinned,
     zoneBySurface,
+    isDefault: migratedIsDefault,
+    surfaceMetadata: migratedMetadata,
     updatedAt,
   };
 }
@@ -221,6 +245,7 @@ export function setWorkspaceSurfaceOrder<TSurfaceId extends string>(
   return {
     ...layout,
     order: unique(order),
+    isDefault: false,
     updatedAt,
   };
 }
@@ -236,6 +261,7 @@ export function setWorkspaceSurfaceHidden<TSurfaceId extends string>(
     hidden: hidden
       ? unique([...layout.hidden, surfaceId])
       : layout.hidden.filter((candidate) => candidate !== surfaceId),
+    isDefault: false,
     updatedAt,
   };
 }
@@ -248,10 +274,11 @@ export function setWorkspaceSurfacePinned<TSurfaceId extends string>(
 ): WorkspaceLayout<TSurfaceId> {
   const currentPinned = unique(layout.pinned);
   if (pinned && !currentPinned.includes(surfaceId)) {
-    if (currentPinned.length >= MAX_PINNED_WORKSPACE_SURFACES) return layout;
+    if (currentPinned.length >= getMaxPinnedForWorkspace(layout.workspaceId)) return layout;
     return {
       ...layout,
       pinned: [...currentPinned, surfaceId],
+      isDefault: false,
       updatedAt,
     };
   }
@@ -261,6 +288,7 @@ export function setWorkspaceSurfacePinned<TSurfaceId extends string>(
     pinned: pinned
       ? currentPinned
       : currentPinned.filter((candidate) => candidate !== surfaceId),
+    isDefault: false,
     updatedAt,
   };
 }
@@ -277,6 +305,14 @@ export function setWorkspaceSurfaceZone<TSurfaceId extends string>(
       ...layout.zoneBySurface,
       [surfaceId]: zone,
     },
+    isDefault: false,
     updatedAt,
   };
+}
+
+export function resetWorkspaceLayoutToDefault<TSurfaceId extends string>(
+  layout: WorkspaceLayout<TSurfaceId>,
+  updatedAt = new Date().toISOString(),
+): WorkspaceLayout<TSurfaceId> {
+  return { ...layout, isDefault: true, updatedAt };
 }

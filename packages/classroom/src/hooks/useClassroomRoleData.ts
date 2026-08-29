@@ -1,5 +1,6 @@
 import { api } from '@repo/core/api/client';
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useAuthStore, useTenantStore } from '@repo/core/store';
 
 import { useCallback, useEffect, useState } from 'react';
 
@@ -33,8 +34,10 @@ const toSyncableLocalUser = (user: unknown): SyncableLocalUser => {
 export function useClassroomRoleData(_refreshTrigger: number = 0) {
   const { context } = usePermissions();
   const { userId, schoolId } = context;
-  const syncedLocalUser = toSyncableLocalUser(useStore((state) => state.user));
-  const { realClassCount: storeClassCount, setRealClassCount, setUser } = useStore();
+  const syncedLocalUser = toSyncableLocalUser(useAuthStore((state) => state.user));
+  const realClassCount = useTenantStore((state) => state.realClassCount);
+  const setRealClassCount = useTenantStore((state) => state.setRealClassCount);
+  const setUser = useAuthStore((state) => state.setUser);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<ClassroomRoleData | null>(null);
 
@@ -48,8 +51,7 @@ export function useClassroomRoleData(_refreshTrigger: number = 0) {
 
     // Set initial data immediately so UI doesn't wait
     setData((prev) => {
-      const currentClassCount =
-        storeClassCount !== null ? storeClassCount : prev?.realClassCount || 0;
+      const currentClassCount = realClassCount != null ? realClassCount : prev?.realClassCount || 0;
 
       if (
         prev &&
@@ -73,7 +75,7 @@ export function useClassroomRoleData(_refreshTrigger: number = 0) {
       // 2. Background Sync: Fetch from the core API boundary
       const summary = await api.identity.getClassroomCapacitySummary(userId);
       const profileCheck = { data: summary.profile };
-      const realClassCount = summary.realClassCount;
+      const fetchedClassCount = summary.realClassCount;
 
       // Update store if server data is newer/different (Convergence)
       if (profileCheck.data) {
@@ -99,22 +101,22 @@ export function useClassroomRoleData(_refreshTrigger: number = 0) {
       }
 
       // Sync class count back to store if different
-      if (realClassCount !== storeClassCount) {
-        setRealClassCount(realClassCount);
+      if (fetchedClassCount !== realClassCount) {
+        setRealClassCount(fetchedClassCount);
       }
 
       setData({
         userId,
         schoolId: summary.schoolId || schoolId,
         profileCompleted: summary.profileCompleted,
-        realClassCount,
+        realClassCount: fetchedClassCount,
       });
     } catch (error) {
       console.error('Error syncing classroom role data:', error);
     } finally {
       setLoading(false);
     }
-  }, [userId, schoolId, setUser, setRealClassCount, storeClassCount, syncedLocalUser]);
+  }, [userId, schoolId, setUser, setRealClassCount, realClassCount, syncedLocalUser]);
 
   useEffect(() => {
     fetchData();

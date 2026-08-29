@@ -10,6 +10,7 @@ export interface WorkspaceCanvasProps<
 > {
   surfaces: WorkspaceSurfaceDefinition<TSurfaceId, TCapabilityKey>[];
   layout: WorkspaceLayout<TSurfaceId>;
+  workspaceId?: string;
   title?: string;
   subtitle?: string;
   emptyMessage?: string;

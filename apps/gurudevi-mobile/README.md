@@ -14,6 +14,8 @@ The operational engine of the Polymath platform: an Expo React Native app for
 teachers, students, and principals, with a full web target built from the same
 codebase (React Native Web).
 
+> **Transparent Hosted — MIT open source, hosted production.** `platform.gurudevi.edlove.org` is the recommended way to get community + curated library network benefits. Code is public for audit; self-host is dev-only/edge-case (isolated DB). See ADR [`2026-08-25-transparent-hosted-oss`](../../docs/decisions/2026-08-25-transparent-hosted-oss.md).
+
 > **Stack**: Expo SDK 57 · React Native 0.86 · New Architecture enabled ·
 > TypeScript · pnpm monorepo · PowerSync offline-first · Drizzle ORM ·
 > ZenStack v3 access control · Sovereign Hono API (`@repo/core`)
@@ -25,13 +27,24 @@ codebase (React Native Web).
 ```bash
 pnpm install                 # from repo root (workspace install)
 
-pnpm --filter gurudevi-mobile setup:env   # pull env from Doppler
-pnpm --filter gurudevi-mobile dev         # Expo dev server
+pnpm --filter gurudevi-mobile setup:env   # pull env from Doppler (team)
+pnpm --filter gurudevi-mobile dev         # Expo dev server (Doppler-injected)
 pnpm --filter gurudevi-mobile android    # native Android dev build
 ```
 
-No Doppler locally? Use `dev:no-doppler` and a hand-written `.env`.
-Secrets are **never** committed; `.env*` is gitignored.
+No Doppler locally? Use `dev:no-doppler` and a hand-written `.env` — this is also the
+edge-case self-host dev loop (see ADR `2026-08-25-transparent-hosted-oss.md`):
+
+```bash
+supabase start   # optional — local Postgres 17 + API on 54321 (supabase/config.toml)
+supabase status  # copy API URL + publishable key into .env.local
+cp .env.example .env.local   # then pnpm --filter gurudevi-mobile dev:no-doppler
+```
+
+Secrets are **never** committed; `.env*` is gitignored. `.env.example` is the contract
+(`config/doppler-secrets.json`); `EXPO_PUBLIC_POWERSYNC_URL=""` means Message Bus only.
+`EXPO_PUBLIC_LIBRARY_UPSTREAM_URL` (empty by default) is reserved for future Hub Pull
+federation — leave empty unless you implement it.
 
 ### Web target
 
@@ -129,4 +142,4 @@ living/historical/generated tiers).
 
 ## License
 
-Private — all rights reserved.
+MIT — see root [`LICENSE`](../../LICENSE). Transparent Hosted: code is open, production is hosted at `platform.gurudevi.edlove.org` (community/library network benefits require the hosted stack).

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import { BrandPulse } from './BrandPulse';
-import { Actionsheet } from '@repo/ui/gluestack';
+import { Actionsheet } from '@repo/ui/primitives';
 import { ChevronDown, EyeOff, Lock, Send, Shield, ThumbsUp, Trash2 } from '@repo/ui/icons';
 import {
   Box,

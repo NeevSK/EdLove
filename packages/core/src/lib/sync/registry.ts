@@ -1,5 +1,5 @@
-import { api } from '@repo/core/api/client';
 import { createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { api } from '@repo/core/api/client';
 import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
 
 const client = createSovereignClient(SOVEREIGN_API_URL);
@@ -102,6 +102,42 @@ export const MUTATION_REGISTRY: Record<string, MutationFunction> = {
     if (!res.ok) {
       const error = (await res.json()) as any;
       throw new Error(error.message || 'Failed to sync burned journal entry');
+    }
+    return true;
+  },
+  saveThoughtRecord: async (vars) => {
+    const res = await (client.api as any).self.thoughtRecord.$post({
+      json: {
+        thought: vars.thought,
+        situation: vars.situation,
+        emotion: vars.emotion,
+        trap_ids: vars.trap_ids,
+        evidence_for: vars.evidence_for,
+        evidence_against: vars.evidence_against,
+        reframe: vars.reframe,
+        mood_before: vars.mood_before,
+        mood_after: vars.mood_after,
+        post_outcome: vars.post_outcome,
+        follow_up: vars.follow_up,
+      },
+    });
+    if (!res.ok) {
+      const error = (await res.json()) as any;
+      throw new Error(error.message || 'Failed to sync thought record');
+    }
+    return true;
+  },
+  completeThoughtRecordFollowUp: async (vars) => {
+    const res = await (client.api as any).self.thoughtRecord[':id'].$patch({
+      param: { id: vars.id },
+      json: {
+        post_outcome: vars.post_outcome,
+        follow_up: vars.follow_up,
+      },
+    });
+    if (!res.ok) {
+      const error = (await res.json()) as any;
+      throw new Error(error.message || 'Failed to sync thought record follow-up');
     }
     return true;
   },

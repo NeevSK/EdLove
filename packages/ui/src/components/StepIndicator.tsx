@@ -1,4 +1,5 @@
-import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
+import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
+import { cn } from '@repo/ui/utils/classNames';
 
 interface StepIndicatorProps {
   currentStep: number;
@@ -17,9 +18,11 @@ export default function StepIndicator({ currentStep, totalSteps, stepLabels }: S
           return (
             <Box
               key={`step-${index}`}
-              className={`flex-1 h-1 rounded-full ${
-                isCompleted || isActive ? 'bg-phase-accent' : 'bg-phase-surface'
-              } ${isActive ? 'opacity-100' : isCompleted ? 'opacity-80' : 'opacity-30'}`}
+              className={cn(
+                'flex-1 h-1 rounded-full',
+                isCompleted || isActive ? 'bg-phase-accent' : 'bg-phase-surface',
+                isActive ? 'opacity-100' : isCompleted ? 'opacity-80' : 'opacity-30',
+              )}
             />
           );
         })}

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { SelfViewFeature } from '@repo/self/components/BaseSelfView.types';
 import { useFeatureActivity } from '@repo/self/hooks/useFeatureActivity';
 
@@ -14,11 +14,18 @@ import { useFeatureActivity } from '@repo/self/hooks/useFeatureActivity';
 export function useDynamicSelfFeatures(features: SelfViewFeature[]) {
   const { getStats, getPinnedFeatures } = useFeatureActivity();
 
+  // Wall-clock time lives in state (refreshed each minute) so scoring stays
+  // pure during render; recency weight does not need per-render freshness.
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
   const sortedFeatures = useMemo(() => {
     const stats = getStats();
     const pinned = getPinnedFeatures();
-    const now = Date.now();
-    const currentHour = new Date().getHours();
+    const currentHour = new Date(now).getHours();
 
     // Determine current phase
     let phase: 'morning' | 'afternoon' | 'night' = 'afternoon';
@@ -30,7 +37,7 @@ export function useDynamicSelfFeatures(features: SelfViewFeature[]) {
       const scoreB = calculateScore(b, stats[b.id], pinned.includes(b.id), now, phase);
       return scoreB - scoreA;
     });
-  }, [features, getStats, getPinnedFeatures]);
+  }, [features, getStats, getPinnedFeatures, now]);
 
   const topItems = useMemo(() => sortedFeatures.slice(0, 10), [sortedFeatures]);
   const remainingItems = useMemo(() => sortedFeatures.slice(10), [sortedFeatures]);

@@ -71,6 +71,8 @@ model User {
   ai_messages AiMessage[]
   mood_logs MoodLog[]
   journal_entries FireJournalEntry[]
+  thought_records ThoughtRecord[]
+  learning_reflections LearningReflection[]
   preferences UserPreferences?
   personal_classrooms PersonalClassroom[]
   notifications Notification[]
@@ -937,6 +939,56 @@ model FireJournalEntry {
 
   @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
   @@map("fire_journal")
+}
+
+model ThoughtRecord {
+  id               String    @id @default(uuid())
+  user_id          String
+  thought          String
+  situation        String?
+  emotion          Json?
+  trap_ids         Json?
+  evidence_for     String?
+  evidence_against String?
+  reframe          String?
+  mood_before      Int?
+  mood_after       Int?
+  post_outcome     String?
+  follow_up        Json?
+  idempotency_key  String?   @unique
+  created_at       DateTime  @default(now())
+  user             User      @relation(fields: [user_id], references: [id])
+  @@index([user_id, created_at])
+
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("thought_records")
+}
+
+model LearningReflection {
+  id               String    @id @default(uuid())
+  user_id          String
+  classroom_id     String?
+  assignment_id    String?
+  thought          String
+  situation        String?
+  emotion          Json?
+  trap_ids         Json?
+  evidence_for     String?
+  evidence_against String?
+  reframe          String?
+  mood_before      Int?
+  mood_after       Int?
+  post_outcome     String?
+  follow_up        Json?
+  idempotency_key  String?   @unique
+  created_at       DateTime  @default(now())
+  user             User      @relation(fields: [user_id], references: [id])
+
+  @@index([user_id, created_at])
+  @@index([classroom_id, created_at])
+
+  @@allow('all', auth() != null && (auth().id == user_id || auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM']))
+  @@map("learning_reflections")
 }
 
 model DecisionJournal {

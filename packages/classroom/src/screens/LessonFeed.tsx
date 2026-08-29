@@ -1,7 +1,16 @@
 import { api } from '@repo/core/api/client';
 import type { Assignment, Lesson, LessonMaterial } from '@repo/core/types';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
-import { ChevronDown, ChevronUp, CircleCheck, FileText, Pen, Plus, Trash2 } from '@repo/ui/icons';
+import {
+  ChevronDown,
+  ChevronUp,
+  CircleCheck,
+  FileText,
+  NotebookPen,
+  Pen,
+  Plus,
+  Trash2,
+} from '@repo/ui/icons';
 import {
   AnimatedView,
   Box,
@@ -26,6 +35,7 @@ interface LessonFeedProps {
   onOpenLesson?: (lessonId: string) => void;
   onOpenAssignment?: (assignmentId: string) => void;
   onOpenAssignmentRecord?: (assignment: Assignment) => void;
+  onOpenReflect?: (assignment: Assignment) => void;
   onOpenMaterial?: (material: LessonMaterial) => void;
   onAddMaterial?: (lessonId: string) => void;
   onAddAssignment?: (lessonId: string) => void;
@@ -48,6 +58,7 @@ export default function LessonFeed({
   isTeacher = false,
   onOpenAssignment,
   onOpenAssignmentRecord,
+  onOpenReflect,
   onOpenMaterial,
   onAddMaterial,
   onAddAssignment,
@@ -270,14 +281,27 @@ export default function LessonFeed({
             </HStack>
           )}
 
-          {!isTeacher && !isSubmitted && onOpenAssignmentRecord && (
-            <Button
-              size="sm"
-              className="bg-phase-reward rounded-comfortable px-4"
-              onPress={() => onOpenAssignmentRecord(assignment)}
-            >
-              <ButtonText className="text-sacredWhite font-bold">Turn In</ButtonText>
-            </Button>
+          {!isTeacher && (
+            <HStack className="gap-2 items-center">
+              {onOpenReflect && (
+                <Pressable
+                  onPress={() => onOpenReflect(assignment)}
+                  className="flex-row items-center gap-1.5 rounded-full border border-phase-border/60 px-3 py-2"
+                >
+                  <Icon as={NotebookPen} size="xs" className="text-phase-accent" />
+                  <Text className="text-xs font-bold text-phase-accent">Reflect</Text>
+                </Pressable>
+              )}
+              {!isSubmitted && onOpenAssignmentRecord && (
+                <Button
+                  size="sm"
+                  className="bg-phase-reward rounded-comfortable px-4"
+                  onPress={() => onOpenAssignmentRecord(assignment)}
+                >
+                  <ButtonText className="text-sacredWhite font-bold">Turn In</ButtonText>
+                </Button>
+              )}
+            </HStack>
           )}
         </HStack>
       </Box>

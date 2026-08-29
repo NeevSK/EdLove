@@ -1,8 +1,9 @@
 import type { WorkspaceZoneLayoutGroup } from '@repo/core/logic/workspace/canvas';
 import type { ResolvedWorkspaceSurface } from '@repo/core/types';
-import type React from 'react';
+import React from 'react';
+import { Platform } from 'react-native';
 import { type StyleProp, StyleSheet, type ViewStyle } from 'react-native';
-import { Text } from '@repo/ui/gluestack';
+import { Text } from '@repo/ui/primitives';
 import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
 import { View } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
@@ -54,6 +55,7 @@ export interface CanvasZoneColumnProps<
   emptyMessage?: string;
   compact?: boolean;
   style?: StyleProp<ViewStyle>;
+  onMeasureZone?: (zone: string, y: number, h: number) => void;
 }
 
 const ZONE_TITLES: Record<string, string> = {
@@ -98,13 +100,23 @@ export function CanvasZoneColumn<
   emptyMessage = 'No visible surfaces in this zone yet.',
   compact = false,
   style,
+  onMeasureZone,
 }: CanvasZoneColumnProps<TSurfaceId, TCapabilityKey>) {
   const colors = useThemedColors();
   const styles = createStyles(colors);
   const canReorder = Boolean(onReorder);
+  const cardHeightsRef = React.useRef<Record<string, number>>({});
 
   return (
-    <View style={[styles.column, compact ? styles.columnCompact : null, style]}>
+    <View
+      style={[styles.column, compact ? styles.columnCompact : null, style]}
+      onLayout={(e) => {
+        if (onMeasureZone) {
+          const { y, height } = e.nativeEvent.layout;
+          onMeasureZone(group.zone, y, height);
+        }
+      }}
+    >
       <View accessibilityRole="header" style={styles.header}>
         <View style={styles.headerRow}>
           <Text style={styles.title}>{title ?? ZONE_TITLES[group.zone] ?? group.zone}</Text>
@@ -125,10 +137,8 @@ export function CanvasZoneColumn<
               dragAxis={dragAxis}
               enabled={canReorder && dragEnabled}
               onDragEnd={(id, translation) => {
-                // Logic to calculate new index based on vertical translation
-                // For now, we'll assume a simple vertical stack reorder
-                const cardHeight = 180; // approximate
-                const shift = Math.round(translation.y / cardHeight);
+                const measured = cardHeightsRef.current[id as string] ?? 180;
+                const shift = Math.round(translation.y / measured);
                 if (shift !== 0 && onReorder) {
                   const currentIndex = group.surfaces.findIndex((s) => s.surfaceId === id);
                   const nextIndex = clampReorderIndex(currentIndex, shift, group.surfaces.length);
@@ -136,52 +146,63 @@ export function CanvasZoneColumn<
                 }
               }}
             >
-              <CanvasSurfaceCard
-                surface={surface}
-                title={getSurfaceTitle?.(surface)}
-                subtitle={getSurfaceSubtitle?.(surface)}
-                summary={getSurfaceSummary?.(surface)}
-                snapshot={getSurfaceSnapshot?.(surface)}
-                temporalLabel={getSurfaceTemporalLabel?.(surface)}
-                temporalTone={getSurfaceTemporalTone?.(surface)}
-                metadata={getSurfaceMetadata?.(surface)}
-                content={renderSurfaceContent?.(surface)}
-                actions={renderSurfaceActions?.(surface)}
-                onPress={onSurfacePress}
-                onPressInfo={onPressSurfaceInfo}
-                onToggleHidden={onToggleHidden}
-                reorderEnabled={canReorder}
-                dragEnabled={dragEnabled}
-                reorderHint={reorderHint}
-                reorderControls={
-                  canReorder
-                    ? {
-                        canMoveUp: group.surfaces.findIndex((item) => item.surfaceId === surface.surfaceId) > 0,
-                        canMoveDown:
-                          group.surfaces.findIndex((item) => item.surfaceId === surface.surfaceId) <
-                          group.surfaces.length - 1,
-                        onMoveUp: () => {
-                          const currentIndex = group.surfaces.findIndex(
-                            (item) => item.surfaceId === surface.surfaceId,
-                          );
-                          onReorder?.(
-                            surface.surfaceId as TSurfaceId,
-                            resolveReorderTarget(currentIndex, -1, group.surfaces.length),
-                          );
-                        },
-                        onMoveDown: () => {
-                          const currentIndex = group.surfaces.findIndex(
-                            (item) => item.surfaceId === surface.surfaceId,
-                          );
-                          onReorder?.(
-                            surface.surfaceId as TSurfaceId,
-                            resolveReorderTarget(currentIndex, 1, group.surfaces.length),
-                          );
-                        },
-                      }
-                    : undefined
-                }
-              />
+              <View
+                onLayout={(e) => {
+                  cardHeightsRef.current[surface.surfaceId as string] = e.nativeEvent.layout.height;
+                }}
+              >
+                <CanvasSurfaceCard
+                  surface={surface}
+                  title={getSurfaceTitle?.(surface)}
+                  subtitle={getSurfaceSubtitle?.(surface)}
+                  summary={getSurfaceSummary?.(surface)}
+                  snapshot={getSurfaceSnapshot?.(surface)}
+                  temporalLabel={getSurfaceTemporalLabel?.(surface)}
+                  temporalTone={getSurfaceTemporalTone?.(surface)}
+                  metadata={getSurfaceMetadata?.(surface)}
+                  content={renderSurfaceContent?.(surface)}
+                  actions={renderSurfaceActions?.(surface)}
+                  onPress={onSurfacePress}
+                  onPressInfo={onPressSurfaceInfo}
+                  onToggleHidden={onToggleHidden}
+                  reorderEnabled={canReorder}
+                  dragEnabled={dragEnabled}
+                  reorderHint={reorderHint}
+                  reorderControls={
+                    canReorder
+                      ? {
+                          canMoveUp:
+                            group.surfaces.findIndex(
+                              (item) => item.surfaceId === surface.surfaceId,
+                            ) > 0,
+                          canMoveDown:
+                            group.surfaces.findIndex(
+                              (item) => item.surfaceId === surface.surfaceId,
+                            ) <
+                            group.surfaces.length - 1,
+                          onMoveUp: () => {
+                            const currentIndex = group.surfaces.findIndex(
+                              (item) => item.surfaceId === surface.surfaceId,
+                            );
+                            onReorder?.(
+                              surface.surfaceId as TSurfaceId,
+                              resolveReorderTarget(currentIndex, -1, group.surfaces.length),
+                            );
+                          },
+                          onMoveDown: () => {
+                            const currentIndex = group.surfaces.findIndex(
+                              (item) => item.surfaceId === surface.surfaceId,
+                            );
+                            onReorder?.(
+                              surface.surfaceId as TSurfaceId,
+                              resolveReorderTarget(currentIndex, 1, group.surfaces.length),
+                            );
+                          },
+                        }
+                      : undefined
+                  }
+                />
+              </View>
             </DraggableCanvasSurface>
           ))
         ) : (

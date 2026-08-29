@@ -1,8 +1,9 @@
 import { Text, View } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 import { getInitialsFromName } from '@repo/ui/utils/stringUtils';
+import { Image } from 'expo-image';
 import type React from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export interface UserAvatarProps {
   avatarUrl?: string | null;
@@ -62,7 +63,10 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
         accessibilityRole="image"
         accessibilityIgnoresInvertColors={true}
         style={[styles.base, { width: size, height: size, borderRadius: radius }, style as any]}
-        resizeMode="cover"
+        contentFit="cover"
+        cachePolicy="memory-disk"
+        transition={250}
+        recyclingKey={avatarUrl}
       />
     );
   }

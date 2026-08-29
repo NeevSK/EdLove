@@ -1,7 +1,7 @@
-import React from 'react';
+import { canonicalSelfFeatureId } from '@repo/self/constants/selfRegistry';
 import EmptyState from '@repo/ui/components/EmptyState';
 import { Sparkles } from '@repo/ui/icons';
-import { canonicalSelfFeatureId } from '@repo/self/constants/selfRegistry';
+import React from 'react';
 
 // Lazy-loaded components for better performance
 const MoodLotus = React.lazy(() => import('./MoodLotus'));
@@ -13,6 +13,7 @@ const JoyJar = React.lazy(() => import('./JoyJar'));
 const TomorrowPrep = React.lazy(() => import('./TomorrowPrep'));
 const VoiceJournaling = React.lazy(() => import('./VoiceJournaling'));
 const RemindersManager = React.lazy(() => import('./RemindersManager'));
+const ReframeWizard = React.lazy(() => import('./ReframeWizard'));
 
 /**
  * FeatureRegistry - The central hub for mapping feature IDs to their actual UI components.
@@ -32,6 +33,7 @@ export const FEATURE_COMPONENT_MAP: Record<
   tomorrow_prep: (props) => <TomorrowPrep {...props} />,
   voice_journal: (props) => <VoiceJournaling {...props} />,
   reminders: (props) => <RemindersManager {...props} />,
+  reframe: (props) => <ReframeWizard {...props} />,
 };
 
 /**

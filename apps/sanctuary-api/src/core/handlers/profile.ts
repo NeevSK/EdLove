@@ -1,10 +1,10 @@
-import { profileContract } from '@repo/core/api/server';
+import { profileORPCContract } from '@repo/core/api/profile.orpc.contract';
 import { SovereignError } from '@repo/core/types/Errors';
 import { assertDatabase } from '../apiErrors';
 import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 
-const impl = implement(profileContract).$context<ORPCContext>();
+const impl = implement(profileORPCContract).$context<ORPCContext>();
 const mapSocialLink = (row: any) => ({
   id: String(row.id),
   user_id: String(row.user_id),

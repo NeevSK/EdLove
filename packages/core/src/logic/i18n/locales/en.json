@@ -1,4 +1,71 @@
 {
+  "learningReflection": {
+    "title": "Learning Reflection",
+    "subtitle": "Take a thought about a grade or feedback apart, and turn the reframe into your next step.",
+    "classroomLabel": "Classroom",
+    "commitmentNote": "Your reframe becomes your next-step commitment.",
+    "reflectAction": "Reflect on a grade"
+  },
+  "reframe": {
+    "title": "Reframe",
+    "subtitle": "Take a heavy thought apart and put it back together in balance.",
+    "checkupPrompt": "Where are you right now?",
+    "preNotePlaceholder": "Optional: what is going on? (one line)",
+    "thoughtPrompt": "What is the automatic thought repeating in your head?",
+    "thoughtPlaceholder": "The thought, as it actually shows up...",
+    "feelingPrompt": "Which feeling is attached to it?",
+    "intensityPrompt": "How strong is that feeling?",
+    "trapsPrompt": "Which thinking trap is this thought leaning on? Pick any that fit.",
+    "trapsGeneral": "Everyone's traps",
+    "trapsLearning": "Study and classroom traps",
+    "customTrapPlaceholder": "Or describe your own pattern... (optional)",
+    "evidenceForPrompt": "Let's weigh the evidence, not fight it. What actually supports the thought?",
+    "evidenceForPlaceholder": "Evidence for the thought...",
+    "evidenceAgainstPrompt": "And what argues against it? What would you tell a friend in the same spot?",
+    "evidenceAgainstPlaceholder": "Evidence against the thought...",
+    "reframePrompt": "Now write a fair, evidence-backed version of the thought.",
+    "reframePlaceholder": "A balanced sentence that the evidence actually supports...",
+    "recheckPrompt": "Sit with the reframe for a moment.",
+    "postMoodPrompt": "How do you feel now?",
+    "recheckIn": "Re-check in",
+    "hours6": "6 hours",
+    "hours24": "1 day",
+    "hours72": "3 days",
+    "back": "Back",
+    "next": "Next",
+    "save": "Save reframe",
+    "saving": "Saving...",
+    "savedTitle": "Thought recorded and reframed.",
+    "savedBefore": "Before",
+    "savedAfter": "After",
+    "savedShift": "Shift",
+    "savedRecheckDue": "A re-check will be due in {{hours}} hour(s).",
+    "startAnother": "Start another",
+    "dueTitle": "Re-checks waiting",
+    "saveFailed": "We could not save this thought record. Please try again.",
+    "moodHeavy": "Heavy",
+    "moodLow": "Low",
+    "moodNeutral": "Neutral",
+    "moodGood": "Good",
+    "moodRadiant": "Radiant",
+    "emotion": {
+      "anxious": "Anxious",
+      "overwhelmed": "Overwhelmed",
+      "frustrated": "Frustrated",
+      "angry": "Angry",
+      "sad": "Sad",
+      "guilty": "Guilty",
+      "focused": "Focused",
+      "calm": "Calm",
+      "relaxed": "Relaxed",
+      "happy": "Happy"
+    },
+    "outcome": {
+      "worse": "Worse",
+      "same": "Same",
+      "better": "Better"
+    }
+  },
   "common": {
     "skip": "Skip",
     "save": "Save",
@@ -241,14 +308,14 @@
     "capacityToday": "How's your capacity today?",
     "energyReminder": "Remember: Your energy naturally fluctuates. This helps you plan accordingly.",
     "exampleStudent": "Maya, Arjun...",
-    "startCapturing": "Start capturing those breakthrough moments \u2728",
-    "whatSmiledToday": "What made you smile today? \uD83D\uDcab",
-    "yourPedagogyJournal": "Your personal pedagogy journal \uD83D\uDCDD",
+    "startCapturing": "Start capturing those breakthrough moments ✨",
+    "whatSmiledToday": "What made you smile today? 💫",
+    "yourPedagogyJournal": "Your personal pedagogy journal 📝",
     "exampleInsights": "Example insights:",
     "needInspiration": "Need inspiration? Try:",
-    "threeGentleThings": "What 3 things would make tomorrow gentler? \uD83C\uDF19",
+    "threeGentleThings": "What 3 things would make tomorrow gentler? 🌙",
     "insightPlaceholder": "What teaching insight did you discover today?",
-    "momentDescriptionPlaceholder": "Maya finally understood fractions today! \uD83C\uDF89",
+    "momentDescriptionPlaceholder": "Maya finally understood fractions today! 🎉",
     "dailyRhythm": "Daily Rhythm",
     "noClasses": "No classes scheduled",
     "addLesson": "Tap the + button to add a lesson.",
@@ -272,7 +339,7 @@
     "rest": "Rest...",
     "startBreathing": "Start Breathing",
     "stop": "Stop",
-    "breathHero": "1 minute of breath for an hour of calm \uD83C\uDF38",
+    "breathHero": "1 minute of breath for an hour of calm 🌸",
     "cycleCount": "Cycle {{current}} of {{total}}",
     "dailyMotivation": "Daily Motivation",
     "didYouKnow": "Did You Know?",
@@ -342,8 +409,8 @@
     },
     "quickActions": "Quick Actions",
     "actions": {
-      "manageHierarchy": "\uD83C\uDFEB Manage School Hierarchy",
-      "inviteStaff": "\u2709\ufe0f Invite Staff & Students"
+      "manageHierarchy": "🏫 Manage School Hierarchy",
+      "inviteStaff": "✉️ Invite Staff & Students"
     },
     "ia": {
       "scope": {
@@ -370,11 +437,11 @@
     "resources": {
       "title": "Resource Needs",
       "subtitle": "Support your teachers with what they need",
-      "emptyState": "\u2728 All resource needs are currently met!",
+      "emptyState": "✨ All resource needs are currently met!",
       "emptyStateDesc": "Your teachers have what they need to succeed",
       "needUnit": "{{count}} teachers need",
-      "urgent": "\uD83D\uDD25 Urgent priority",
-      "philosophy": "\uD83D\uDCA1 This dashboard focuses on empowering teachers, not monitoring performance"
+      "urgent": "🔥 Urgent priority",
+      "philosophy": "💡 This dashboard focuses on empowering teachers, not monitoring performance"
     },
     "hierarchy": {
       "title": "School Hierarchy",
@@ -395,10 +462,10 @@
     "invites": {
       "title": "Invite Codes",
       "description": "Generate invite codes for teachers and students to join your school.",
-      "generateTeacher": "\uD83D\uDC68\u200d\uD83C\uDFEB Generate Teacher Code",
+      "generateTeacher": "👨‍🏫 Generate Teacher Code",
       "generateSectionHead": "+ Section Head",
       "generateGradeHead": "+ Grade Head",
-      "generateStudent": "\uD83D\uDC68\u200d\uD83C\uDF93 Generate Student Code",
+      "generateStudent": "👨‍🎓 Generate Student Code",
       "activeCodesTitle": "Active Invite Codes",
       "used": "Used",
       "active": "Active",
@@ -608,7 +675,7 @@
       "tapToChange": "Tap to change",
       "addPhotoOptional": "Add a photo (optional)",
       "groupName": "Circle Name",
-      "groupNamePlaceholder": "e.g. Science Explorers, Reading Circle\u2026",
+      "groupNamePlaceholder": "e.g. Science Explorers, Reading Circle…",
       "description": "Description",
       "optional": "optional",
       "descriptionPlaceholder": "What is this circle about?",
@@ -656,7 +723,7 @@
       "endorsements": "Endorsements",
       "noContactsYet": "No contacts yet",
       "badgesComingSoon": "Badges\ncoming soon",
-      "privacyNote": "\uD83D\uDD12 Only public contributions are shown. Wellbeing data, grades, and private content remain private.",
+      "privacyNote": "🔒 Only public contributions are shown. Wellbeing data, grades, and private content remain private.",
       "aspiration": "Aspiration",
       "recentReflections": "Recent Reflections",
       "philosophyDeepDive": "PHILOSOPHY DEEP-DIVE",
@@ -1064,7 +1131,7 @@
     "navigationContent": "Use the Lotus Petal at the bottom for quick actions, and the tabs to navigate your sanctuary.",
     "philosophyTitle": "Sanctuary Philosophy",
     "philosophySubtitle": "Education is a living ecology.",
-    "philosophyContent": "Gurudevi is built on the Sanatana principles of learning\u2014where wisdom is nurtured, not just knowledge transferred.",
+    "philosophyContent": "Gurudevi is built on the Sanatana principles of learning—where wisdom is nurtured, not just knowledge transferred.",
     "sectionsContent": "Self for reflecting, Classroom for teaching, Community for sharing, and Library for discovering.",
     "ecologyContent": "Manage the energetic health of your classroom. Track relations, wellbeing, and the subtle nuances of learning.",
     "privacyContent": "We don't track you. Your insights and student records are private, secure, and for your eyes only.",
@@ -1211,7 +1278,7 @@
     "alreadyBloomedDesc": "This Thuthimal gift has already been received by someone.\nEach flower of gratitude blooms only once.",
     "errorTitle": "Something went wrong",
     "errorDesc": "We couldn't process this gift. Please try again or contact support.",
-    "flowerTitle": "\u0DAD\u0DD4\u0DAD\u0DD2\u0DB8\u0DBD\u0DCA",
+    "flowerTitle": "තුතිමල්",
     "giftHeading": "A Flower of Gratitude",
     "giftFrom": "Your Pro subscription is a gift of gratitude from",
     "giftRecognition": "A recognition of your sacred work as an educator.",
@@ -1251,8 +1318,8 @@
     "placeholder": "Write what you need to release...",
     "burn": "Burn",
     "burning": "Burning...",
-    "released": "\u2728 Released into the fire",
-    "privacy": "\uD83D\uDD25 What you burn is transformed, not stored",
+    "released": "✨ Released into the fire",
+    "privacy": "🔥 What you burn is transformed, not stored",
     "guidance": "Sometimes the act of naming is enough to release it",
     "pastRecord": "What was released on this day.",
     "noPastRecord": "No burdens were released on this day.",
@@ -1327,9 +1394,9 @@
   },
   "thuthimalBadge": {
     "title": "Thuthimal",
-    "sinhala": "\u0DAD\u0DD4\u0DAD\u0DD2\u0DB8\u0DBD\u0DCA",
+    "sinhala": "තුතිමල්",
     "giftedBy": "Your Pro subscription is a gift of gratitude from:",
-    "meaning": "\u0DAD\u0DD4\u0DAD\u0DD2\u0DB8\u0DBD\u0DCA (Thuthimal) means \"Flower of Gratitude\" \u2014 honoring the sacred work of teaching",
+    "meaning": "තුතිමල් (Thuthimal) means \"Flower of Gratitude\" — honoring the sacred work of teaching",
     "giftedOn": "Gifted on {{date}}"
   },
   "socialSanctuary": {
@@ -1473,7 +1540,7 @@
       "closeScanner": "Close scanner",
       "cameraMessage": "Camera scanning is available in the\nGurudevi mobile app.",
       "desktopHint": "On desktop, paste the QR code value below.",
-      "pasteCode": "Paste QR code value here\u2026",
+      "pasteCode": "Paste QR code value here…",
       "submitCode": "Submit Code",
       "title": "Enter QR Code"
     },
@@ -1482,17 +1549,19 @@
     "instructions": "Point camera at QR code\nor select from gallery"
   },
   "ocr": {
-    "permission": {
-      "title": "Camera Permission",
-      "description": "We need camera permission to scan student registers."
+    "title": "OCR Text",
+    "emptyHint": "Open an image to extract its text.",
+    "language": "Language",
+    "langs": {
+      "eng": "English",
+      "sin": "Sinhala",
+      "tam": "Tamil"
     },
-    "title": "Scan Student Register",
-    "captureDescription": "Take a photo of your student register. Works with Sinhala, Tamil, and English text.",
-    "takePhoto": "Take Photo",
-    "chooseFromGallery": "Choose from Gallery",
-    "tipsTitle": "Tips for best results:",
-    "scanning": "Scanning and analyzing text...",
-    "tryAgain": "Try Again"
+    "run": "Extract text",
+    "result": "Extracted text",
+    "confidence": "{{percent}}% confidence",
+    "noText": "No text detected",
+    "export": "Export as text"
   },
   "notifications": {
     "stream": "Echoes of the Sanctuary",
@@ -1542,5 +1611,110 @@
     "progress": "Progress",
     "completed": "Completed",
     "noGoals": "No Goals"
+  },
+  "reader": {
+    "loading": "Loading document…",
+    "highlight": "Highlight",
+    "addNote": "Add Note",
+    "notePlaceholder": "Write your note here…",
+    "save": "Save",
+    "goBack": "Go Back"
+  },
+  "tools": {
+    "title": "Document Tools",
+    "subtitle": "Convert, edit and export documents offline-first",
+    "spreadsheet": {
+      "name": "Spreadsheet",
+      "description": "View, search and re-export spreadsheet files"
+    },
+    "pdfEditor": {
+      "name": "PDF Editor",
+      "description": "Reorder, rotate, watermark and split PDFs"
+    },
+    "ocr": {
+      "name": "OCR Text",
+      "description": "Extract text from images in English, Sinhala or Tamil"
+    },
+    "imageToPdf": {
+      "name": "Images to PDF",
+      "description": "Combine images into a single PDF document"
+    },
+    "cloudExport": {
+      "name": "Cloud Export",
+      "description": "Upload documents to Google Drive or OneDrive"
+    },
+    "importAction": "Import file"
+  },
+  "spreadsheet": {
+    "title": "Spreadsheet",
+    "emptyHint": "Open a spreadsheet from the library or import a file to view it here.",
+    "searchPlaceholder": "Search rows…",
+    "dimensions": "{{rows}} rows × {{cols}} columns",
+    "exportCsv": "Export CSV",
+    "exportXlsx": "Export XLSX"
+  },
+  "pdfEditor": {
+    "title": "PDF Editor",
+    "emptyHint": "Open a PDF from the library to start editing.",
+    "pageCount": "{{count}} pages",
+    "pages": "Pages",
+    "pageLabel": "Page {{number}}",
+    "addPage": "Add blank page",
+    "watermark": "Watermark",
+    "watermarkPlaceholder": "Watermark text…",
+    "pageNumbers": "Page numbers",
+    "extract": "Extract pages",
+    "extractPlaceholder": "e.g. 1-3, 5, 8-10",
+    "apply": "Apply",
+    "export": "Export",
+    "save": "Save edited PDF",
+    "saved": "Done"
+  },
+  "imageToPdf": {
+    "title": "Images to PDF",
+    "emptyHint": "Open images from the library to combine them into a PDF.",
+    "imageCount": "{{count}} images",
+    "fitMode": "Fit mode",
+    "fits": {
+      "contain": "Contain",
+      "cover": "Cover",
+      "fill": "Fill",
+      "width": "Width",
+      "height": "Height"
+    },
+    "pageSize": "Page size",
+    "pages": {
+      "letter": "Letter",
+      "a4": "A4"
+    },
+    "convert": "Create PDF",
+    "result": "PDF created",
+    "resultDetails": "{{pages}} pages · {{size}} KB",
+    "save": "Save PDF"
+  },
+  "cloudExport": {
+    "title": "Cloud Export",
+    "emptyHint": "Open a document to upload it to cloud storage.",
+    "provider": "Provider",
+    "providers": {
+      "google": "Google Drive",
+      "microsoft": "OneDrive"
+    },
+    "config": "Provider configuration",
+    "tenantId": "Tenant ID (optional)",
+    "saveConfig": "Save configuration",
+    "connect": "Connection",
+    "notConnected": "Not connected",
+    "connected": "Connected",
+    "openAuth": "Open auth page",
+    "codePlaceholder": "Paste authorization code…",
+    "exchange": "Exchange",
+    "uploadCard": "Upload document",
+    "untitled": "Untitled document",
+    "upload": "Upload",
+    "openLink": "Open in browser",
+    "saveLocal": "Save a local copy instead",
+    "configured": "Configuration saved",
+    "uploaded": "Upload complete"
   }
 }

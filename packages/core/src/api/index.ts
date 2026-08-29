@@ -40,6 +40,7 @@ import { studentPotentialAPI } from '@repo/core/api/studentPotential';
 import { tasksAPI } from '@repo/core/api/teacher';
 import { trackingAPI } from '@repo/core/api/tracking';
 import { warmMirrorAPI } from '@repo/core/api/warmMirror';
+import { orpcClient, orpc, type ORPCClient, type ORPCUtils } from '@repo/core/api/orpcClient';
 
 export * from '@repo/core/api/base';
 
@@ -186,7 +187,10 @@ export {
   studentsAPI,
   tasksAPI,
   writeLocalFirst,
+  orpcClient,
+  orpc,
 };
+export type { ORPCClient, ORPCUtils };
 
 /**
  * Unified API Object (Sovereign Orchestration)
@@ -261,6 +265,8 @@ export const api: Record<string, any> = {
   profile: profileAPI,
   media: mediaAPI,
   library: libraryAPI,
+  orpcClient,
+  orpc,
 };
 
 export default api;

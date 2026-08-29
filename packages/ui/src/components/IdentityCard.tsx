@@ -10,7 +10,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { Box, Center, HStack, Pressable, Text, VStack } from '@repo/ui/gluestack';
+import { Box, Center, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { QRBuilder, QRCodeGenerator } from '@repo/ui/qr';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';

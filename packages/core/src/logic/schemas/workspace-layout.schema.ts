@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const WorkspaceLayoutVersionSchema = z.literal(1);
+export const WorkspaceLayoutVersionSchema = z.union([z.literal(1), z.literal(2)]);
 
 export const WorkspaceLayoutTargetSchema = z.enum(['shared', 'web', 'mobile']);
 
@@ -23,7 +23,9 @@ export const WorkspaceLayoutRecordSchema = z.object({
   zone_by_surface: z
     .record(z.string(), z.union([WorkspaceLayoutZoneSchema, z.string(), z.number()]))
     .default({}),
-  layout_version: WorkspaceLayoutVersionSchema.default(1),
+  is_default: z.boolean().default(true),
+  surface_metadata: z.record(z.string(), z.unknown()).default({}),
+  layout_version: WorkspaceLayoutVersionSchema.default(2),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -38,7 +40,9 @@ export const WorkspaceLayoutUpsertSchema = z.object({
   zoneBySurface: z
     .record(z.string(), z.union([WorkspaceLayoutZoneSchema, z.string(), z.number()]))
     .default({}),
-  layoutVersion: WorkspaceLayoutVersionSchema.default(1),
+  isDefault: z.boolean().default(true),
+  surfaceMetadata: z.record(z.string(), z.unknown()).default({}),
+  layoutVersion: WorkspaceLayoutVersionSchema.default(2),
   updatedAt: z.string().min(1),
 });
 

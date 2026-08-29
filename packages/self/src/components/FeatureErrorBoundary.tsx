@@ -1,6 +1,12 @@
-import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { BrandedEmptyState, BrandedErrorState } from '@repo/ui';
 import { Pressable, Text } from '@repo/ui/primitives';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
+
+function isMissingTableError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') return false;
+  const e = error as { code?: string; message?: string };
+  return e.code === '42P01' || (typeof e.message === 'string' && e.message.includes('does not exist'));
+}
 
 interface Props {
   children: ReactNode;
@@ -10,6 +16,7 @@ interface Props {
 
 interface State {
   hasError: boolean;
+  error?: Error;
 }
 
 /**
@@ -21,8 +28,8 @@ export class FeatureErrorBoundary extends Component<Props, State> {
     hasError: false,
   };
 
-  public static getDerivedStateFromError(_: Error): State {
-    return { hasError: true };
+  public static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
   }
 
   public override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
@@ -36,13 +43,22 @@ export class FeatureErrorBoundary extends Component<Props, State> {
 
   public override render() {
     if (this.state.hasError) {
+      if (isMissingTableError(this.state.error)) {
+        return (
+          <BrandedEmptyState
+            title={`${this.props.featureName} hasn't bloomed yet`}
+            message="This sanctuary space is being prepared. Your other spaces are still available."
+            subtle
+          />
+        );
+      }
       return (
         <BrandedErrorState
           title={`${this.props.featureName} is taking a pause`}
           message="This space could not be shown. Your other Self spaces are still available."
         >
           <Pressable
-            onPress={() => this.setState({ hasError: false })}
+            onPress={() => this.setState({ hasError: false, error: undefined })}
             accessibilityRole="button"
             accessibilityLabel={`Try ${this.props.featureName} again`}
             className="rounded-full bg-phase-action px-4 py-2"

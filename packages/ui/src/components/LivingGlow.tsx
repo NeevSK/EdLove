@@ -1,8 +1,8 @@
 import type React from 'react';
 import { useMemo } from 'react';
 import type { ViewProps } from 'react-native';
-import { EaseView } from 'react-native-ease';
-import { Box } from '@repo/ui/gluestack';
+import { EaseView } from '@repo/ui/components/EaseView';
+import { Box } from '@repo/ui/primitives';
 
 interface LivingGlowProps extends ViewProps {
   children?: React.ReactNode;
@@ -42,7 +42,12 @@ export function LivingGlow({
   const transitionProps = useMemo(
     () =>
       active
-        ? { type: 'timing' as const, duration, easing: 'easeInOut' as const, loop: 'reverse' as const }
+        ? {
+            type: 'timing' as const,
+            duration,
+            easing: 'easeInOut' as const,
+            loop: 'reverse' as const,
+          }
         : { type: 'timing' as const, duration: 200 },
     [active, duration],
   );

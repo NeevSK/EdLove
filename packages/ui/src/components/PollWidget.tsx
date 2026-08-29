@@ -4,7 +4,7 @@ import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives'
 import { Theme } from '@repo/ui/theme/Theme';
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { EaseView } from 'react-native-ease';
+import { EaseView } from '@repo/ui/components/EaseView';
 import { BrandPulse } from './BrandPulse';
 
 export interface PollOption {

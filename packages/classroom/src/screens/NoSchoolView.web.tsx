@@ -2,9 +2,9 @@ import { api, communityAPI, onboardingAPI, schoolAPI } from '@repo/core/api/clie
 import {
   incrementInviteCodeUsage,
   usePermissions,
-  useStore,
   validateInviteCode,
 } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 import type { School } from '@repo/core/types';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
@@ -158,7 +158,7 @@ const SCHOOL_TYPES = [
 // -- subcomponents -------------------------------------------
 
 function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
-  const { user } = useStore();
+  const user = useAuthStore((state) => state.user);
   const [state, dispatch] = useReducer(createSchoolReducer, {
     step: 'details',
     name: '',
@@ -199,7 +199,7 @@ function PrincipalCreateSchool({ onSuccess }: { onSuccess: () => void }) {
         /* non-fatal */
       }
       dispatch({ type: 'CREATE_SUCCESS', schoolName: school.name });
-      useStore.getState().setUser({ ...user, school_id: school.id });
+      useAuthStore.getState().setUser({ ...user, school_id: school.id });
     } catch (e: unknown) {
       dispatch({
         type: 'CREATE_FAILURE',
@@ -376,7 +376,7 @@ const joinSchoolReducer = (
 };
 
 function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void }) {
-  const { user } = useStore();
+  const user = useAuthStore((state) => state.user);
   const { context } = usePermissions();
   const [state, dispatch] = useReducer(joinSchoolReducer, {
     method: 'code',
@@ -434,7 +434,7 @@ function TeacherJoinSchool({ onJoined }: { onJoined: (schoolId: string) => void 
       const schoolId = capacitySummary.schoolId || capacitySummary.profile.school_id || null;
 
       if (schoolId) {
-        useStore.getState().setUser({ ...user, school_id: schoolId });
+        useAuthStore.getState().setUser({ ...user, school_id: schoolId });
         onJoined(schoolId);
       } else {
         dispatch({ type: 'CODE_SUCCESS', reqSent: true });

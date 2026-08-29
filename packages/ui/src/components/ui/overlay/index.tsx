@@ -1,5 +1,6 @@
 import { Pressable } from '@repo/ui/components/ui/view';
 import { tokens } from '@repo/ui/tokens';
+import { cn } from '@repo/ui/utils/classNames';
 import React from 'react';
 import { Platform, type View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
@@ -28,7 +29,7 @@ export const Overlay = React.forwardRef<View, any>(({ className, isOpen, ...prop
           right: 0,
           bottom: 0,
           zIndex: 1000,
-          backgroundColor: 'rgba(26, 22, 16, 0.82)',
+          backgroundColor: tokens.colors.overlay,
           backdropFilter: 'blur(4px) saturate(1.1)',
           WebkitBackdropFilter: 'blur(4px) saturate(1.1)',
           cursor: 'pointer',
@@ -56,7 +57,7 @@ export const Overlay = React.forwardRef<View, any>(({ className, isOpen, ...prop
         accessibilityRole="button"
         accessibilityLabel="backdrop"
         accessibilityHint="Double tap to dismiss"
-        className={`flex-1 ${className || ''}`}
+        className={cn('flex-1', className)}
         style={{ backgroundColor: tokens.colors.overlayFallback }}
       />
     </Animated.View>

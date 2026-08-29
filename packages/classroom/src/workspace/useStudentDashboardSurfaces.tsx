@@ -6,6 +6,7 @@ import {
   BookOpen,
   ClipboardCheck,
   MessageSquare,
+  NotebookPen,
   PanelsTopLeft,
   Star,
   Wind,
@@ -76,6 +77,7 @@ type Args = {
   onOpenRewards: () => void;
   onOpenTimetable: () => void;
   onOpenBreathing: () => void;
+  onOpenReflect: () => void;
   onOpenClassroom: (classroom: { id: string; name: string }) => void;
   onOpenGuestAuth: () => void;
 };
@@ -100,7 +102,7 @@ function QuickAction({
         disabled={disabled}
         className="active:scale-95 transition-transform"
       >
-        <Box className="w-[60px] h-[60px] rounded-[20px] bg-phase-surface border border-phase-border items-center justify-center shadow-sm">
+        <Box className="w-[52px] h-[52px] rounded-[16px] bg-phase-surface border border-phase-border items-center justify-center shadow-sm">
           <Icon as={LucideIcon} className={iconColorClass} size="md" />
         </Box>
       </Pressable>
@@ -149,6 +151,7 @@ export function useStudentDashboardSurfaces({
   onOpenRewards,
   onOpenTimetable,
   onOpenBreathing,
+  onOpenReflect,
   onOpenClassroom,
   onOpenGuestAuth,
 }: Args) {
@@ -161,6 +164,9 @@ export function useStudentDashboardSurfaces({
         ownerPackage: 'classroom',
         defaultZone: 'today',
         defaultOrder: 10,
+        kind: 'widget',
+        domain: 'temporal',
+        groupId: 'today',
         mobileSupport: true,
         webSupport: true,
         title: 'Move with the day',
@@ -177,6 +183,9 @@ export function useStudentDashboardSurfaces({
         ownerPackage: 'classroom',
         defaultZone: 'work',
         defaultOrder: 20,
+        kind: 'widget',
+        domain: 'actions',
+        groupId: 'work',
         mobileSupport: true,
         webSupport: true,
         title: 'Learning shortcuts',
@@ -185,7 +194,7 @@ export function useStudentDashboardSurfaces({
         temporalLabel: isPastView ? 'Past view' : 'Ready',
         metadata: ['Library', 'Sanctuaries', 'Breathing'],
         content: (
-          <HStack className="gap-3 justify-between p-1">
+          <HStack className="gap-2 justify-between p-1">
             <QuickAction
               icon={BookOpen}
               label="Library"
@@ -198,6 +207,13 @@ export function useStudentDashboardSurfaces({
               label="Sanctuary"
               onPress={onOpenCommunity}
               iconColorClass="text-phase-interactive"
+              disabled={isPastView}
+            />
+            <QuickAction
+              icon={NotebookPen}
+              label="Reflect"
+              onPress={onOpenReflect}
+              iconColorClass="text-phase-accent"
               disabled={isPastView}
             />
             <QuickAction
@@ -231,6 +247,9 @@ export function useStudentDashboardSurfaces({
         ownerPackage: 'classroom',
         defaultZone: 'today',
         defaultOrder: 30,
+        kind: 'widget',
+        domain: 'pulse',
+        groupId: 'today',
         mobileSupport: true,
         webSupport: true,
         title: 'Learning pulse',
@@ -266,6 +285,9 @@ export function useStudentDashboardSurfaces({
         ownerPackage: 'classroom',
         defaultZone: 'work',
         defaultOrder: 40,
+        kind: 'section',
+        domain: 'registry',
+        groupId: 'work',
         mobileSupport: true,
         webSupport: true,
         title: 'Your sanctuaries',
@@ -311,6 +333,9 @@ export function useStudentDashboardSurfaces({
         ownerPackage: 'classroom',
         defaultZone: 'outlook',
         defaultOrder: 50,
+        kind: 'widget',
+        domain: 'assignments',
+        groupId: 'outlook',
         mobileSupport: true,
         webSupport: true,
         hiddenByDefault: !isDemoExperience,
@@ -349,6 +374,9 @@ export function useStudentDashboardSurfaces({
         ownerPackage: 'classroom',
         defaultZone: 'private',
         defaultOrder: 60,
+        kind: 'widget',
+        domain: 'goals',
+        groupId: 'private',
         mobileSupport: true,
         webSupport: true,
         hiddenByDefault: !isDemoExperience,
@@ -398,6 +426,7 @@ export function useStudentDashboardSurfaces({
       onOpenRewards,
       onOpenTimetable,
       onOpenBreathing,
+      onOpenReflect,
       onOpenClassroom,
       onOpenGuestAuth,
     ],

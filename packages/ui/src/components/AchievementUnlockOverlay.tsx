@@ -2,13 +2,13 @@ import { Trophy } from '@repo/ui/icons';
 import { useCallback, useEffect } from 'react';
 import { Dimensions } from 'react-native';
 import Animated, {
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { Box, Center, Text, VStack } from '@repo/ui/gluestack';
+import { runOnJS } from 'react-native-worklets';
+import { Box, Center, Text, VStack } from '@repo/ui/primitives';
 
 const { width } = Dimensions.get('window');
 

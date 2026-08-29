@@ -51,7 +51,17 @@ jobs:
       - name: Observability ownership boundaries
         run: pnpm run check:observability-boundaries
 
+      - name: Sanctuary experience contract
+        run: pnpm run check:sanctuary-experience
+
       - name: Check Types
         env:
           NODE_OPTIONS: --max-old-space-size=8192
         run: pnpm check-types
+
+      - name: OTA safety check (informational)
+        if: always()
+        continue-on-error: true
+        run: |
+          echo "Checking OTA safety..."
+          pnpm run check:ota-safety || echo "⚠️ OTA fingerprint drift detected — binary build required before OTA"

@@ -1,5 +1,7 @@
 import type React from 'react';
+import type { StyleProp, ViewStyle } from 'react-native';
 import { Button, ButtonIcon, ButtonSpinner, ButtonText } from '@repo/ui/components/ui/button';
+import { cn } from '@repo/ui/utils/classNames';
 
 interface SanctuaryButtonProps {
   onPress?: () => void;
@@ -12,11 +14,11 @@ interface SanctuaryButtonProps {
   size?: 'xs' | 'sm' | 'md' | 'lg';
   fullWidth?: boolean;
   action?: 'primary' | 'secondary' | 'negative' | 'positive';
-  style?: any;
+  style?: StyleProp<ViewStyle>;
   accessibilityLabel?: string;
   accessibilityHint?: string;
   className?: string;
-  iconProps?: any;
+  iconProps?: Record<string, string | number | boolean>;
 }
 
 export function SanctuaryButton({
@@ -107,16 +109,16 @@ export function SanctuaryButton({
 
   return (
     <Button
-      className={`
-                ${fullWidth ? 'w-full' : 'w-auto'}
-                ${getBgClass()}
-                ${getBorderClass()}
-                ${variant === 'outline' ? 'border' : 'border-0'}
-                ${sizeClasses[size]}
-                ${isDisabled || isLoading ? 'opacity-40' : 'opacity-100'}
-                active:opacity-80
-                ${className}
-            `}
+      className={cn(
+        fullWidth ? 'w-full' : 'w-auto',
+        getBgClass(),
+        getBorderClass(),
+        variant === 'outline' ? 'border' : 'border-0',
+        sizeClasses[size],
+        isDisabled || isLoading ? 'opacity-40' : 'opacity-100',
+        'active:opacity-80',
+        className,
+      )}
       variant={variant === 'link' ? 'ghost' : variant}
       action={action === 'negative' ? 'negative' : action === 'positive' ? 'positive' : action}
       isDisabled={isDisabled || isLoading}

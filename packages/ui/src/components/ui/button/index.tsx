@@ -11,6 +11,7 @@ import { Pressable } from '@repo/ui/components/ui/pressable';
 import { Spinner } from '@repo/ui/components/ui/spinner';
 import { Text } from '@repo/ui/components/ui/text';
 import { View as StyledView } from '@repo/ui/components/ui/view';
+import { cn } from '@repo/ui/utils/classNames';
 
 interface ButtonContextType {
   variant?: 'solid' | 'outline' | 'ghost';
@@ -46,6 +47,7 @@ const Button = React.forwardRef<View, IButtonProps>(
       size = 'md',
       isDisabled,
       isLoading,
+      disabled,
       sx,
       children,
       onPress,
@@ -54,9 +56,10 @@ const Button = React.forwardRef<View, IButtonProps>(
     },
     ref,
   ) => {
+    const resolvedDisabled = disabled || isDisabled || isLoading;
     const contextValue = useMemo(
-      () => ({ variant, action, size, isDisabled: isDisabled || isLoading }),
-      [variant, action, size, isDisabled, isLoading],
+      () => ({ variant, action, size, isDisabled: resolvedDisabled }),
+      [variant, action, size, resolvedDisabled],
     );
 
     const variants = {
@@ -92,11 +95,17 @@ const Button = React.forwardRef<View, IButtonProps>(
         <Pressable
           {...props}
           ref={ref as any}
-          disabled={isDisabled || isLoading}
+          disabled={resolvedDisabled}
           onPress={onPress}
           accessibilityRole="button"
-          accessibilityState={{ disabled: !!(isDisabled || isLoading), busy: !!isLoading }}
-          className={`${baseStyle} ${variantStyle} ${sizeStyle} ${isDisabled || isLoading ? 'opacity-40' : ''} ${className || ''}`}
+          accessibilityState={{ disabled: !!resolvedDisabled, busy: !!isLoading }}
+          className={cn(
+            baseStyle,
+            variantStyle,
+            sizeStyle,
+            resolvedDisabled ? 'opacity-40' : undefined,
+            className,
+          )}
           style={typeof style === 'function' ? (state) => [sx, style(state)] : [sx, style]}
         >
           {isLoading ? <ButtonSpinner color={variant === 'solid' ? '#FFFFFF' : undefined} /> : children}
@@ -136,7 +145,7 @@ export const ButtonText = React.forwardRef<RNText, TextProps & { className?: str
     };
     const colorStyle = textColors[variant!][action!];
     return (
-      <Text {...props} ref={ref} className={`font-bold text-center tracking-tight ${colorStyle} ${className || ''}`}>
+      <Text {...props} ref={ref} className={cn('font-bold text-center tracking-tight', colorStyle, className)}>
         {children}
       </Text>
     );

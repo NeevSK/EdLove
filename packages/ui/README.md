@@ -2,44 +2,55 @@
 title: "@repo/ui"
 status: "active"
 created: 2026-03-25
-updated: 2026-04-26
+updated: 2026-08-29
 author: "Naveen"
 scribe: "opencode"
-tags: [packages, ui]
+tags: [packages, ui, design-system, nativewind]
 ---
 
 # @repo/ui
 
-## Purpose
-`@repo/ui` is the shared sanctuary design system and shell primitive layer for Gurudevi.
+`@repo/ui` is Gurudevi's source-owned, NativeWind-aware design system for Expo, React Native, and web. It owns the visual language and reusable interaction surfaces; product packages compose those surfaces into domain workflows.
 
-## Owns
-- design tokens, surfaces, layout primitives, modals, headers, and shared interaction components
-- global style systems and reusable shell primitives
-- cross-domain UI that is not owned by one business package
+## Architecture
 
-## Does Not Own
-- domain-specific workflows
-- product orchestration or feature data loading
-- route registration and app navigation policy
+The package is organized as a small ownership hierarchy:
 
-## Collaborates With
-- every product package
-- `apps/gurudevi-mobile` for shell composition and root providers
+1. **Tokens** — semantic colors, typography, spacing, geometry, motion, and responsive behavior.
+2. **Primitives** — `Box`, `Text`, `Heading`, `VStack`, `HStack`, `Pressable`, `Input`, `Icon`, and related neutral building blocks.
+3. **Compounds** — `Button`, `FormField`, `Tabs`, `Command`, `Combobox`, `Popover`, `Dialog`, `Sheet`, and other reusable interaction contracts.
+4. **Brand components** — Gurudevi-specific feedback, loading, empty, success, and shell components.
+5. **Product components** — cross-domain UI intentionally shared by multiple product packages.
 
-## Web Placement
-`*.web.tsx` files are appropriate here for shared presentation primitives, browser-only shell helpers, and cross-domain components reused by multiple domains.
+Prefer `@repo/ui/primitives` for neutral building blocks and explicit `@repo/ui/components/*` paths for larger components. Components should accept `className` where styling is part of the public contract and derive colors and behavior from semantic tokens.
 
-## Architectural Governance (Zero-Legacy)
+## Third-party UI policy
 
-To maintain the **100/100 Architectural Maturity** of this package, the following rules are strictly enforced:
+Third-party libraries may provide behavior references, accessibility patterns, or native capability adapters. They are not the package's styling authority. Wrap or re-implement them behind an `@repo/ui` façade when they become part of the product surface, so consumers receive consistent tokens, NativeWind styling, dark mode, platform behavior, and accessibility semantics.
 
-1.  **Platform Sovereignty**: NO direct imports from `react-native`, `expo-*`, or any platform-specific binary libraries are allowed in `.tsx` files (unless it is a `.web.tsx` or `.native.tsx` shim).
-2.  **Runtime Mediation**: All native capabilities (Haptics, Storage, Location, etc.) MUST be accessed via the `coreRuntime` registry provided by `@repo/core`.
-3.  **Atomic UI Design**: Raw React Native primitives (e.g., `<View>`, `<Text>`, `StyleSheet`) are forbidden. Use Sanctuary V3 primitives (`Box`, `VStack`, `HStack`, `Heading`, `Text`, `Pressable`) and NativeWind utility classes.
-4.  **Isomorphism**: All components should be designed to run on Web and Mobile without modification, utilizing the `nativeRuntimeEnvironment` adapter for platform-specific bridge logic.
+The compatibility layer in `@repo/ui/gluestack` is retained for migration only. New consumers must use the source-owned primitives and compounds.
 
-5.  **State Excellence**: Every provider MUST be referentially stable. Use `useReducer` for complex logic and `useMemo` for context values. Follow the [State vs. Memory Management Guide](./docs/state-management-guide.md).
+## Platform boundaries
 
-Failure to follow these rules will lower the package's maturity score and trigger architectural audit warnings.
+Shared components should work across native and web where practical. Use `.native.tsx` and `.web.tsx` variants when platform behavior genuinely differs; keep the public contract aligned across variants. React Native imports are appropriate inside primitive implementations and platform adapters. Native capabilities such as storage, haptics, location, and sync belong behind the relevant `@repo/core` runtime boundary.
 
+## Showcase and documentation
+
+- [Source-owned NativeWind architecture](./docs/architecture/source-owned-nativewind-ui.md)
+- [Implementation roadmap](./docs/architecture/source-owned-nativewind-ui-roadmap.md)
+- [Semantic token guide](./docs/architecture/semantic-tokens.md)
+- [Component inventory](./docs/architecture/component-inventory.yaml)
+- [Documentation index](./docs/INDEX.md)
+- Development showcase route: `/ui-showcase` in `apps/gurudevi-mobile` (development builds only)
+
+## Verification
+
+From the repository root:
+
+```bash
+node node_modules/typescript/bin/tsc --build packages/ui/tsconfig.json --noEmit --pretty false
+pnpm --filter @repo/ui exec jest --runInBand --watchman=false
+pnpm --filter @repo/ui run lint:biome
+```
+
+Keep tests focused on public interaction contracts—keyboard and pointer behavior, accessibility state, controlled open/close state, form validation, and platform parity. Do not weaken assertions to accommodate implementation details.

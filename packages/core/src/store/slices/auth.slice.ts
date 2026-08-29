@@ -2,6 +2,7 @@ import type { Session } from '@supabase/supabase-js';
 import type { StateCreator } from 'zustand';
 import type { User } from '@repo/core/types';
 import type { Bond, Perspective } from '@repo/core/types/Identity';
+import { leaveBreadcrumb } from '@repo/core/monitoring';
 
 export interface AuthSlice {
   // Sovereign Identity (ReBAC)
@@ -87,13 +88,19 @@ export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set)
   userName: 'Gurudevi',
   setUserName: (name) => set({ userName: name }),
   user: null,
-  setUser: (user) => set({ user }),
+  setUser: (user) => {
+    leaveBreadcrumb('auth', user ? `User set: ${user.id}` : 'User cleared', 'info');
+    set({ user });
+  },
   authSession: null,
   authSessionResolved: false,
   setAuthSession: (authSession) => set({ authSession }),
   setAuthSessionResolved: (authSessionResolved) => set({ authSessionResolved }),
   onboardingCompleted: false,
-  setOnboardingCompleted: (completed) => set({ onboardingCompleted: completed }),
+  setOnboardingCompleted: (completed) => {
+    leaveBreadcrumb('journey', completed ? 'Onboarding completed' : 'Onboarding reset', 'info');
+    set({ onboardingCompleted: completed });
+  },
   justFinishedOnboarding: false,
   setJustFinishedOnboarding: (justFinished) => set({ justFinishedOnboarding: justFinished }),
   isDemoMode: false,
@@ -114,10 +121,16 @@ export const createAuthSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set)
     })),
   clearDemoLogs: () => set({ demoLogs: [] }),
   isOnline: true,
-  setIsOnline: (isOnline) => set({ isOnline }),
+  setIsOnline: (isOnline) => {
+    leaveBreadcrumb('network', isOnline ? 'Online' : 'Offline', isOnline ? 'info' : 'warning');
+    set({ isOnline });
+  },
   toast: null,
   showToast: (message, type, duration = 3000) => set({ toast: { message, type, duration } }),
   hideToast: () => set({ toast: null }),
   isStoreHydrated: false,
-  setStoreHydrated: (hydrated) => set({ isStoreHydrated: hydrated }),
+  setStoreHydrated: (hydrated) => {
+    if (hydrated) leaveBreadcrumb('bootstrap', 'Auth store hydrated', 'info');
+    set({ isStoreHydrated: hydrated });
+  },
 });

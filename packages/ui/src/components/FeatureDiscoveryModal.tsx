@@ -1,5 +1,5 @@
 import { Info } from '@repo/ui/icons';
-import { Box, Heading, Text, VStack } from '@repo/ui/gluestack';
+import { Box, Heading, Text, VStack } from '@repo/ui/primitives';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
 
 export interface FeatureDiscoveryModalProps {

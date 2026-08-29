@@ -1,6 +1,6 @@
 import type { EntityDefinition, EntityInstance, EntityMode } from '@repo/core/logic';
 import type React from 'react';
-import { HStack, Text, VStack } from '@repo/ui/gluestack';
+import { HStack, Text, VStack } from '@repo/ui/primitives';
 import { SkeletonTextLine } from '@repo/ui/components/SkeletonLoader';
 
 export interface EntityViewProps {

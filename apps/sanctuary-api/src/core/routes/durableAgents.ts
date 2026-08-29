@@ -11,16 +11,89 @@ const requireUser = (c: any) => {
   return null;
 };
 
-async function schoolScope(c: any) {
-  const headerSchoolId = c.get('schoolId');
-  if (headerSchoolId) return headerSchoolId;
-  const user = getUser(c);
-  if (!user || user.id === 'anonymous') return null;
-  const rows = await queryDatabaseRows<{ school_id: string | null }>(
-    'select school_id from public.users where id = $1::uuid limit 1',
-    [user.id],
+type AuthorizedClassroomScope = {
+  schoolId: string;
+  classroomId: string;
+  teacherId: string | null;
+};
+
+const schoolAdministratorCapacities = ['principal', 'section_head', 'grade_head'];
+
+/**
+ * Resolves scope from authoritative classroom/bond relationships. Request
+ * headers and bodies are deliberately not authority sources.
+ */
+async function resolveAuthorizedClassroomScope(
+  actorId: string,
+  classroomId: string,
+  studentId?: string,
+): Promise<AuthorizedClassroomScope | null> {
+  const rows = await queryDatabaseRows<AuthorizedClassroomScope>(
+    `
+      select classroom.school_id as "schoolId", classroom.id as "classroomId",
+        classroom.teacher_id as "teacherId"
+      from public.classrooms classroom
+      where classroom.id = $1::uuid
+        and classroom.school_id is not null
+        and (
+          classroom.teacher_id = $2::uuid
+          or exists (
+            select 1 from public.bonds bond
+            where bond.user_id = $2::uuid
+              and (
+                (bond.entity_type = 'PLATFORM' and bond.capacity = 'admin')
+                or (
+                  bond.entity_type = 'SCHOOL'
+                  and bond.entity_id = classroom.school_id::text
+                  and bond.capacity = any($3::text[])
+                )
+              )
+          )
+        )
+        and (
+          $4::uuid is null
+          or exists (
+            select 1 from public.classroom_students enrollment
+            where enrollment.classroom_id = classroom.id
+              and enrollment.student_id = $4::uuid
+              and enrollment.status = 'active'
+          )
+        )
+      limit 1
+    `,
+    [classroomId, actorId, schoolAdministratorCapacities, studentId ?? null],
   );
-  return rows[0]?.school_id ?? null;
+  return rows[0] ?? null;
+}
+
+async function canReadRun(actorId: string, runId: string): Promise<boolean> {
+  const rows = await queryDatabaseRows<{ allowed: boolean }>(
+    `
+      select exists(
+        select 1
+        from public.durable_agent_runs run
+        where run.id = $1::uuid
+          and (
+            run.requested_by = $2::uuid
+            or run.teacher_id = $2::uuid
+            or exists (
+              select 1 from public.bonds bond
+              where bond.user_id = $2::uuid
+                and (
+                  (bond.entity_type = 'PLATFORM' and bond.capacity = 'admin')
+                  or (
+                    bond.entity_type = 'SCHOOL'
+                    and bond.entity_id = run.school_id::text
+                    and bond.capacity = any($3::text[])
+                  )
+                )
+            )
+          )
+      ) as allowed
+    `,
+    [runId, actorId, schoolAdministratorCapacities],
+  );
+  return rows[0]?.allowed === true;
 }
 
 async function enqueue(c: any, capability: 'student-support' | 'teacher-summary') {
@@ -32,29 +105,19 @@ async function enqueue(c: any, capability: 'student-support' | 'teacher-summary'
   if (capability === 'student-support' && !parsed.data.studentId)
     return c.json({ error: 'studentId is required for student support.' }, 400);
   const actor = getUser(c)!;
-  const authorization = await queryDatabaseRows<{ allowed: boolean }>(
-    `
-      select exists(
-        select 1
-        from public.classrooms classroom
-        join public.users viewer on viewer.id = $2::uuid
-        where classroom.id = $1::uuid
-          and classroom.school_id = $3::uuid
-          and (
-            classroom.teacher_id = $2::uuid
-            or coalesce(viewer.role, '') in ('founder', 'developer', 'admin', 'principal', 'assistant_principal', 'assistantPrincipal', 'section_head', 'grade_head')
-          )
-      ) as allowed
-    `,
-    [parsed.data.classroomId, actor.id, parsed.data.schoolId],
+  const scope = await resolveAuthorizedClassroomScope(
+    actor.id,
+    parsed.data.classroomId,
+    parsed.data.studentId,
   );
-  if (!authorization[0]?.allowed)
+  if (!scope)
     return c.json({ error: 'You are not authorized for this classroom.' }, 403);
   const runId = crypto.randomUUID();
   const requestedAt = new Date().toISOString();
   const payload: any = {
     ...parsed.data,
-    teacherId: parsed.data.teacherId ?? actor.id,
+    schoolId: scope.schoolId,
+    teacherId: scope.teacherId ?? actor.id,
     requestedBy: actor.id,
     runId,
     requestedAt,
@@ -110,22 +173,44 @@ export function createDurableAgentRoutes() {
     const denied = requireUser(c);
     if (denied) return denied;
     const limit = Math.min(Math.max(Number(c.req.query('limit') ?? 8) || 8, 1), 25);
-    const schoolId = await schoolScope(c);
-    if (!schoolId) return c.json({ error: 'A school scope is required.' }, 403);
+    const actor = getUser(c)!;
     const rows = await queryDatabaseRows<any>(
-      `select event_type as action, created_at, run_id as entity_id, school_id, metadata from public.durable_agent_run_events where school_id = $1::uuid order by created_at desc limit $2`,
-      [schoolId, limit * 8],
+      `
+        select event.event_type as action, event.created_at, event.run_id as entity_id,
+          event.school_id, event.metadata
+        from public.durable_agent_run_events event
+        join public.durable_agent_runs run on run.id = event.run_id
+        where run.requested_by = $1::uuid
+          or run.teacher_id = $1::uuid
+          or exists (
+            select 1 from public.bonds bond
+            where bond.user_id = $1::uuid
+              and (
+                (bond.entity_type = 'PLATFORM' and bond.capacity = 'admin')
+                or (
+                  bond.entity_type = 'SCHOOL'
+                  and bond.entity_id = run.school_id::text
+                  and bond.capacity = any($3::text[])
+                )
+              )
+          )
+        order by event.created_at desc
+        limit $2
+      `,
+      [actor.id, limit * 8, schoolAdministratorCapacities],
     );
     return c.json({ runs: materialize(rows).slice(0, limit) });
   });
   routes.get('/api/durable-agents/runs/:runId', async (c: any) => {
     const denied = requireUser(c);
     if (denied) return denied;
-    const schoolId = await schoolScope(c);
-    if (!schoolId) return c.json({ error: 'A school scope is required.' }, 403);
+    const actor = getUser(c)!;
+    const runId = c.req.param('runId');
+    if (!(await canReadRun(actor.id, runId))) return c.json({ error: 'Run not found.' }, 404);
     const rows = await queryDatabaseRows<any>(
-      `select event_type as action, created_at, run_id as entity_id, school_id, metadata from public.durable_agent_run_events where run_id = $1::uuid and school_id = $2::uuid order by created_at asc`,
-      [c.req.param('runId'), schoolId],
+      `select event_type as action, created_at, run_id as entity_id, school_id, metadata
+       from public.durable_agent_run_events where run_id = $1::uuid order by created_at asc`,
+      [runId],
     );
     const run = materialize(rows)[0];
     return run ? c.json(run) : c.json({ error: 'Run not found.' }, 404);
@@ -134,11 +219,13 @@ export function createDurableAgentRoutes() {
     const denied = requireUser(c);
     if (denied) return denied;
     const runId = c.req.param('runId');
-    const schoolId = await schoolScope(c);
-    if (!schoolId) return c.json({ error: 'A school scope is required.' }, 403);
+    const actor = getUser(c)!;
+    if (!(await canReadRun(actor.id, runId))) return c.json({ error: 'Run not found.' }, 404);
     const rows = await queryDatabaseRows<any>(
-      `select metadata from public.durable_agent_run_events where run_id = $1::uuid and event_type = 'durable_agent_completed' and school_id = $2::uuid order by created_at desc limit 1`,
-      [runId, schoolId],
+      `select metadata from public.durable_agent_run_events
+       where run_id = $1::uuid and event_type = 'durable_agent_completed'
+       order by created_at desc limit 1`,
+      [runId],
     );
     const metadata = rows[0]?.metadata;
     if (!metadata?.summaryDraft)
@@ -156,8 +243,7 @@ export function createDurableAgentRoutes() {
         status: 'promoted',
       });
     }
-    const actor = getUser(c)?.id;
-    if (metadata.mode !== 'demo' && actor !== metadata.teacherId)
+    if (metadata.mode !== 'demo' && actor.id !== metadata.teacherId)
       return c.json({ error: 'Only the assigned teacher can promote this draft.' }, 403);
     if (metadata.mode === 'demo') {
       const teacherNoteId = `demo-note-${runId.slice(0, 8)}`;

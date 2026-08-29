@@ -1,16 +1,38 @@
+import { createContext, useContext, useMemo } from 'react';
 import {
   groupResolvedWorkspaceSurfacesByZone,
   resolveWorkspaceSurfaceLayout,
+  getMaxPinnedForWorkspace,
+  MAX_PINNED_WORKSPACE_SURFACES,
 } from '@repo/core/logic';
 import type { WorkspaceRendererConfig } from '@repo/core/types';
 import { LayoutGrid, Pin } from '@repo/ui/icons';
-import { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { Text } from '@repo/ui/gluestack';
+import { Text } from '@repo/ui/primitives';
 import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
 import { View } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 import type { WorkspaceCanvasProps } from '@repo/ui/components/workspace/types';
+
+export interface WorkspaceRendererContextType {
+  runtimePlatform: 'mobile' | 'tablet' | 'web';
+  width: number;
+  height: number;
+  isNative: boolean;
+  isResizing: boolean;
+}
+
+export const WorkspaceRendererContext = createContext<WorkspaceRendererContextType | null>(null);
+
+export function useWorkspaceRendererContext() {
+  const context = useContext(WorkspaceRendererContext);
+  if (!context) {
+    throw new Error(
+      'useWorkspaceRendererContext must be used within WorkspaceRendererContext.Provider',
+    );
+  }
+  return context;
+}
 
 export function useWorkspaceCanvasData<
   TSurfaceId extends string = string,
@@ -54,15 +76,20 @@ export function WorkspaceCanvasHero({
   visibleCount,
   pinnedCount,
   renderer,
+  workspaceId,
 }: {
   title: string;
   subtitle: string;
   visibleCount: number;
   pinnedCount: number;
   renderer: WorkspaceRendererConfig;
+  workspaceId?: string;
 }) {
   const colors = useThemedColors();
   const styles = createStyles(colors);
+  const maxPinned = workspaceId
+    ? getMaxPinnedForWorkspace(workspaceId)
+    : MAX_PINNED_WORKSPACE_SURFACES;
 
   return (
     <View style={styles.hero}>
@@ -80,7 +107,9 @@ export function WorkspaceCanvasHero({
           </View>
           <View style={styles.metricPillMuted}>
             <Pin size={14} color={colors.textSecondary} />
-            <Text style={styles.metricTextMuted}>{pinnedCount} pinned · max 4</Text>
+            <Text style={styles.metricTextMuted}>
+              {pinnedCount} pinned · max {maxPinned}
+            </Text>
           </View>
           <View style={styles.rendererPill}>
             <Text style={styles.rendererText}>

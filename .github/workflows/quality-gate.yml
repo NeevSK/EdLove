@@ -80,6 +80,9 @@ jobs:
       - name: 🔭 Observability ownership boundaries
         run: pnpm run check:observability-boundaries
 
+      - name: 🧭 Sanctuary experience contract
+        run: pnpm run check:sanctuary-experience
+
       - name: 🩺 React Doctor
         run: pnpm run audit:react-doctor
 
@@ -90,6 +93,13 @@ jobs:
 
       - name: ♻️ Feature lifecycle contract
         run: pnpm run audit:feature-lifecycle
+
+      - name: 📱 OTA safety check (informational)
+        if: always()
+        continue-on-error: true
+        run: |
+          echo "Checking OTA safety..."
+          pnpm run check:ota-safety || echo "⚠️ OTA fingerprint drift detected — binary build required before OTA"
 
       - name: 🔐 ZenStack and Cedar authorization parity
         run: pnpm run audit:authorization-parity

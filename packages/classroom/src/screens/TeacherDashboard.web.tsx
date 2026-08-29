@@ -113,7 +113,7 @@ export default function TeacherDashboardWeb({
     workspaceId: 'teacher-dashboard',
     userId: userId || 'teacher-dashboard-web-guest',
     surfaces: dashboardSurfaces,
-    enableRemoteSync: false,
+    enableRemoteSync: true,
   });
 
   if (!layout) {

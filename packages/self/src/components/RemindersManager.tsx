@@ -26,8 +26,10 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { hapticLight, hapticMedium } from '@repo/ui/utils/haptics';
+import * as Notifications from 'expo-notifications';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Platform } from 'react-native';
 import {
   createReminder,
   fetchReminders as fetchReminderRecords,
@@ -55,6 +57,59 @@ const ICON_MAP: Record<string, any> = {
   clock: Clock,
 };
 
+async function ensureNotificationPermission(): Promise<boolean> {
+  if (Platform.OS === 'web') return false;
+  try {
+    const { status } = await Notifications.getPermissionsAsync();
+    if (status === 'granted') return true;
+    const { status: next } = await Notifications.requestPermissionsAsync();
+    return next === 'granted';
+  } catch {
+    return false;
+  }
+}
+
+async function scheduleReminderNotification(reminder: Reminder) {
+  if (Platform.OS === 'web' || !reminder.is_active) return;
+  if (!(await ensureNotificationPermission())) return;
+  try {
+    await Notifications.cancelScheduledNotificationAsync(reminder.id).catch(() => {});
+    await Notifications.scheduleNotificationAsync({
+      identifier: reminder.id,
+      content: {
+        title: reminder.title,
+        body: reminder.description || 'Gentle nudge for self-care',
+        sound: false,
+      },
+      trigger: {
+        seconds: 60 * 60 * 2,
+        repeats: true,
+      } as unknown as Notifications.NotificationTriggerInput,
+    });
+  } catch {}
+}
+
+async function cancelReminderNotification(reminderId: string) {
+  if (Platform.OS === 'web') return;
+  try {
+    await Notifications.cancelScheduledNotificationAsync(reminderId);
+  } catch {}
+}
+
+if (Platform.OS !== 'web') {
+  try {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+        shouldShowBanner: true,
+        shouldShowList: true,
+      }),
+    } as any);
+  } catch {}
+}
+
 export default function RemindersManager({ userId }: RemindersManagerProps) {
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -76,6 +131,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
         is_active: true,
       });
       setReminders([data]);
+      void scheduleReminderNotification(data);
     } catch (error) {
       console.error('Error creating default reminder:', error);
     }
@@ -86,6 +142,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
       if (!userId) return;
       const data = await fetchReminderRecords(userId);
       setReminders(data || []);
+      for (const r of data || []) if (r.is_active) void scheduleReminderNotification(r);
 
       if (!data || data.length === 0) {
         await createDefaultReminder();
@@ -163,11 +220,14 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
   const toggleReminder = async (reminder: Reminder) => {
     hapticLight();
 
+    const nextActive = !reminder.is_active;
     try {
-      await updateReminder(reminder.id, { is_active: !reminder.is_active });
+      await updateReminder(reminder.id, { is_active: nextActive });
       setReminders(
-        reminders.map((r) => (r.id === reminder.id ? { ...r, is_active: !r.is_active } : r)),
+        reminders.map((r) => (r.id === reminder.id ? { ...r, is_active: nextActive } : r)),
       );
+      if (nextActive) void scheduleReminderNotification({ ...reminder, is_active: true });
+      else void cancelReminderNotification(reminder.id);
     } catch (error) {
       console.error('Error toggling reminder:', error);
     }
@@ -179,6 +239,7 @@ export default function RemindersManager({ userId }: RemindersManagerProps) {
     try {
       await removeReminderRecord(reminderId);
       setReminders(reminders.filter((r) => r.id !== reminderId));
+      void cancelReminderNotification(reminderId);
     } catch (error) {
       console.error('Error deleting reminder:', error);
     }

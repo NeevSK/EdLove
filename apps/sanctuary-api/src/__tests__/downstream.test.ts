@@ -150,6 +150,7 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
 
     await expect(
       createTestORPCClient().sync.uploadBatch({
+        idempotencyKey: 'test-idempotency-key',
         crud: [
           { id: 'mutation-1', op: 'PATCH', table: 'users', opData: { display_name: 'Parent One' } },
         ],

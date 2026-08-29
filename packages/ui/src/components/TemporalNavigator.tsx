@@ -3,8 +3,7 @@ import { Calendar, ChevronLeft, ChevronRight, RotateCcw } from '@repo/ui/icons';
 import { useState } from 'react';
 import { Platform } from 'react-native';
 import Animated, { FadeIn, Layout } from 'react-native-reanimated';
-import { Box, HStack, Text } from '@repo/ui/gluestack';
-import { Pressable } from '@repo/ui/primitives';
+import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
 
 /**
  * TemporalNavigator

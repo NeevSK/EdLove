@@ -87,7 +87,7 @@
     "plugins": [
       "expo-font",
       "./plugins/withNdkVersion",
-      "./plugins/withAndroidCruncherDisabled",
+      // "./plugins/withAndroidCruncherDisabled",
       "./plugins/withGradleProperties",
       "expo-localization",
       "expo-asset",
@@ -101,9 +101,9 @@
           "organization": "intuitui-labs",
           "uploadNativeSymbols": false,
           "autoUploadNativeSymbols": false,
-          "autoUpload": false,
-          "uploadSourceMaps": false,
-          "disableAutoUpload": true
+          "autoUpload": true,
+          "uploadSourceMaps": true,
+          "disableAutoUpload": false
         }
       ],
       "expo-web-browser",

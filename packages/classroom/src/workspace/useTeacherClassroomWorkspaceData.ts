@@ -74,10 +74,10 @@ export function useTeacherClassroomWorkspaceData(classroomId: string) {
         order: newOrder,
         hidden: layout.hidden,
         pinned: layout.pinned,
-        zoneBySurface: layout.zone_by_surface,
-        layoutVersion: layout.layout_version,
+        zoneBySurface: layout.zone_by_surface as Record<string, string | number>,
+        layoutVersion: layout.layout_version as 1,
         updatedAt: new Date().toISOString(),
-      });
+      } as unknown as Parameters<typeof workspaceLayoutServices.upsertLayout>[0]);
 
       setLayout(updated);
     },

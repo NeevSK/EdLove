@@ -3,9 +3,13 @@ import { type PressableProps, type TextInputProps, type ViewProps } from 'react-
 import { Pressable } from '@repo/ui/components/ui/pressable';
 import { TextInput } from '@repo/ui/components/ui/text-input';
 import { View } from '@repo/ui/components/ui/view';
+import { useFormControlContext } from '@repo/ui/components/ui/form-control';
+import { useTheme } from '@repo/ui/hooks/useTheme';
+import { cn } from '@repo/ui/utils/classNames';
 
 // --- Context ---
 interface InputContextType {
+  id?: string;
   isDisabled?: boolean;
   isInvalid?: boolean;
   isFocused: boolean;
@@ -31,15 +35,20 @@ export interface IInputProps extends ViewProps {
 const Input = React.forwardRef<React.ElementRef<typeof View>, IInputProps>(
   ({ className, isDisabled, isInvalid, children, ...props }, ref) => {
     const [isFocused, setIsFocused] = useState(false);
+    const formControl = useFormControlContext();
+    const resolvedId = props.nativeID ?? formControl.id;
+    const resolvedDisabled = isDisabled ?? formControl.isDisabled;
+    const resolvedInvalid = isInvalid ?? formControl.isInvalid;
 
     const contextValue = useMemo(
       () => ({
-        isDisabled,
-        isInvalid,
+        id: resolvedId,
+        isDisabled: resolvedDisabled,
+        isInvalid: resolvedInvalid,
         isFocused,
         setIsFocused,
       }),
-      [isDisabled, isInvalid, isFocused],
+      [resolvedDisabled, resolvedInvalid, resolvedId, isFocused],
     );
 
     return (
@@ -47,13 +56,16 @@ const Input = React.forwardRef<React.ElementRef<typeof View>, IInputProps>(
         <View
           {...props}
           ref={ref}
+          nativeID={resolvedId}
           accessibilityState={{
-            disabled: !!isDisabled,
+            disabled: !!resolvedDisabled,
           }}
-          className={`flex-row items-center border rounded-xl px-3 min-h-[48px] bg-phase-surface transition-colors duration-200
-            ${isInvalid ? 'border-phase-danger' : isFocused ? 'border-phase-accent' : 'border-phase-interactive/30'} 
-            ${isDisabled ? 'opacity-40' : ''} 
-            ${className || ''}`}
+          className={cn(
+            'flex-row items-center border rounded-xl px-3 min-h-[48px] bg-phase-surface transition-colors duration-200',
+            resolvedInvalid ? 'border-phase-danger' : isFocused ? 'border-phase-accent' : 'border-phase-interactive/30',
+            resolvedDisabled ? 'opacity-40' : undefined,
+            className,
+          )}
         >
           {children}
         </View>
@@ -68,7 +80,8 @@ export const InputField = React.forwardRef<
   React.ElementRef<typeof TextInput>,
   TextInputProps & { className?: string; type?: 'text' | 'password' | 'number' }
 >(({ className, type, onFocus, onBlur, ...props }, ref) => {
-  const { isDisabled, setIsFocused } = useInput();
+  const { id, isDisabled, isInvalid, setIsFocused } = useInput();
+  const theme = useTheme();
 
   return (
     <TextInput
@@ -76,9 +89,11 @@ export const InputField = React.forwardRef<
       ref={ref}
       editable={!isDisabled}
       accessibilityState={{ disabled: isDisabled }}
+      aria-invalid={isInvalid || undefined}
+      accessibilityLabelledBy={id ? `${id}-label` : undefined}
       secureTextEntry={type === 'password'}
       keyboardType={type === 'number' ? 'numeric' : props.keyboardType}
-      placeholderTextColor="#8B8599"
+      placeholderTextColor={theme.text.muted}
       onFocus={(e) => {
         setIsFocused(true);
         onFocus?.(e);
@@ -87,7 +102,7 @@ export const InputField = React.forwardRef<
         setIsFocused(false);
         onBlur?.(e);
       }}
-      className={`flex-1 text-phase-text-primary text-base py-2 pl-1 ${className || ''}`}
+      className={cn('flex-1 text-phase-text-primary text-base py-2 pl-1', className)}
     />
   );
 });
@@ -101,7 +116,7 @@ export const InputSlot = ({
 }: PressableProps & { className?: string; children?: React.ReactNode }) => (
   <Pressable
     {...props}
-    className={`px-2 py-1 justify-center items-center active:opacity-60 ${className || ''}`}
+    className={cn('px-2 py-1 justify-center items-center active:opacity-60', className)}
   >
     {children}
   </Pressable>
@@ -109,9 +124,7 @@ export const InputSlot = ({
 
 export const InputIcon = ({ as: Icon, className, color, size, ...props }: any) => {
   if (!Icon) return null;
-  return (
-    <Icon {...props} size={size || 18} color={color} className={`text-phase-text-secondary ${className || ''}`} />
-  );
+  return <Icon {...props} size={size || 18} color={color} className={cn('text-phase-text-secondary', className)} />;
 };
 
 export { Input };

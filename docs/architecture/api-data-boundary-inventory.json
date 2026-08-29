@@ -115,32 +115,32 @@
   "firstPartyPackageApis": [
     {
       "file": "packages\\admin\\src\\api\\staff.ts",
-      "line": 11,
+      "line": 9,
       "text": "const { data, error } = await supabase"
     },
     {
       "file": "packages\\admin\\src\\api\\staff.ts",
-      "line": 34,
+      "line": 32,
       "text": "const { data: latest, error: fetchError } = await supabase"
     },
     {
       "file": "packages\\admin\\src\\api\\staff.ts",
-      "line": 47,
+      "line": 45,
       "text": "const { data, error } = await supabase"
     },
     {
       "file": "packages\\admin\\src\\api\\staff.ts",
-      "line": 65,
+      "line": 63,
       "text": "const { data, error } = await supabase"
     },
     {
       "file": "packages\\admin\\src\\api\\staff.ts",
-      "line": 82,
+      "line": 80,
       "text": "const { data, error } = await supabase.from('staff_leaves').insert(leave).select().single();"
     },
     {
       "file": "packages\\admin\\src\\api\\staff.ts",
-      "line": 95,
+      "line": 93,
       "text": "const { data, error } = await supabase"
     },
     {
@@ -175,32 +175,32 @@
     },
     {
       "file": "packages\\community\\src\\api\\community.ts",
-      "line": 170,
+      "line": 169,
       "text": "const { data, error } = await supabase"
     },
     {
       "file": "packages\\community\\src\\api\\community.ts",
-      "line": 189,
+      "line": 188,
       "text": "const { error } = await supabase"
     },
     {
       "file": "packages\\community\\src\\api\\community.ts",
-      "line": 231,
+      "line": 230,
       "text": "const { data: existing } = await supabase"
     },
     {
       "file": "packages\\community\\src\\api\\community.ts",
-      "line": 239,
+      "line": 238,
       "text": "await supabase"
     },
     {
       "file": "packages\\community\\src\\api\\community.ts",
-      "line": 247,
+      "line": 246,
       "text": "await supabase"
     },
     {
       "file": "packages\\community\\src\\api\\community.ts",
-      "line": 255,
+      "line": 254,
       "text": "const { data } = await supabase"
     },
     {
@@ -215,17 +215,17 @@
     },
     {
       "file": "packages\\library\\src\\api\\library.ts",
-      "line": 77,
+      "line": 67,
       "text": "const { data, error } = await supabase.rpc('search_map_universe', {"
     },
     {
       "file": "packages\\library\\src\\api\\library.ts",
-      "line": 95,
+      "line": 85,
       "text": "const { data, error } = await supabase"
     },
     {
       "file": "packages\\library\\src\\api\\library.ts",
-      "line": 406,
+      "line": 390,
       "text": "const { data: schools, error } = await supabase"
     },
     {
@@ -240,42 +240,27 @@
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 38,
+      "line": 45,
       "text": "const { data, error } = await supabase"
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 52,
+      "line": 65,
       "text": "const { data, error } = await supabase"
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 74,
+      "line": 102,
       "text": "const { error } = await supabase.from('reminders').update(updates).eq('id', reminderId);"
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 80,
+      "line": 114,
       "text": "const { error } = await supabase.from('reminders').delete().eq('id', reminderId);"
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 86,
-      "text": "const { data, error } = await supabase"
-    },
-    {
-      "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 101,
-      "text": "const { data, error } = await supabase"
-    },
-    {
-      "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 116,
-      "text": "const { data, error } = await supabase"
-    },
-    {
-      "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 131,
+      "line": 126,
       "text": "const { data, error } = await supabase"
     },
     {
@@ -285,23 +270,18 @@
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 162,
+      "line": 173,
       "text": "const { data, error } = await supabase"
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 180,
-      "text": "let query = supabase.from('student_goals').select('*').eq('user_id', userId);"
-    },
-    {
-      "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 194,
+      "line": 188,
       "text": "const { data, error } = await supabase"
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 213,
-      "text": "const { error } = await supabase.from('student_goals').update(updates).eq('id', goalId);"
+      "line": 204,
+      "text": "const { data, error } = await supabase"
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
@@ -310,57 +290,77 @@
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 235,
+      "line": 237,
+      "text": "let query = supabase.from('student_goals').select('*').eq('user_id', userId);"
+    },
+    {
+      "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
+      "line": 257,
       "text": "const { data, error } = await supabase"
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 254,
+      "line": 289,
+      "text": "const { error } = await supabase.from('student_goals').update(updates).eq('id', goalId);"
+    },
+    {
+      "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
+      "line": 301,
+      "text": "const { data, error } = await supabase"
+    },
+    {
+      "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
+      "line": 317,
+      "text": "const { data, error } = await supabase"
+    },
+    {
+      "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
+      "line": 336,
       "text": "const { error } = await supabase.from('daily_prep_items').update(updates).eq('id', itemId);"
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 260,
+      "line": 342,
       "text": "const { error } = await supabase.from('daily_prep_items').delete().eq('id', itemId);"
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 273,
+      "line": 355,
       "text": "const { error } = await supabase.from('wind_down_rituals').insert({"
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 302,
+      "line": 390,
       "text": "const { error } = await supabase.from('voice_journals').insert({"
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 331,
+      "line": 428,
       "text": "const { data, error } = await supabase"
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 345,
+      "line": 448,
       "text": "const { data, error } = await supabase"
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 356,
+      "line": 465,
       "text": "const { error } = await supabase.from('timetable').update(updates).eq('id', id);"
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 361,
+      "line": 476,
       "text": "const { error } = await supabase.from('timetable').delete().eq('id', id);"
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 369,
+      "line": 490,
       "text": "let query = supabase.from('wisdom_notes').select('*').eq('user_id', userId);"
     },
     {
       "file": "packages\\self\\src\\api\\selfFeatureRepository.ts",
-      "line": 384,
+      "line": 513,
       "text": "const { data, error } = await supabase"
     },
     {

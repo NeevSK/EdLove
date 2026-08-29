@@ -145,10 +145,10 @@ allowBuilds:
   react-native-nitro-modules: true
   sharp: true
   supabase: true
+  tesseract.js: true
   tree-sitter: true
   tree-sitter-javascript: true
   tree-sitter-typescript: true
   turbo: true
   unrs-resolver: true
   vd-tool: true
-  yarn: set this to true or false

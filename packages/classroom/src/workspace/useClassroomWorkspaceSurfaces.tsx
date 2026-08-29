@@ -1,21 +1,13 @@
 import { appendAdminWorkspaceSurfaces } from '@repo/admin';
-import { StudentOnboardingView, TeacherOnboardingView } from '@repo/classroom/components';
 import { CLASSROOM_REGISTRY } from '@repo/classroom/constants/classroomRegistry';
-import StudentDashboard from '@repo/classroom/screens/StudentDashboard';
-import TeacherDashboard from '@repo/classroom/screens/TeacherDashboard';
 import { useFeatureRegistry } from '@repo/core/hooks/useFeatureRegistry';
-import {} from '@repo/core/logic';
 import type {
   ClassroomWorkspaceSurface,
   ClassroomWorkspaceSurfaceId,
 } from '@repo/core/types/Workspace';
 import { SanctuaryGuard } from '@repo/ui';
-import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import { SanctuaryNudge } from '@repo/ui/components/SanctuaryNudge';
-import SandboxBanner from '@repo/ui/components/SandboxBanner';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Wind } from '@repo/ui/icons';
-import { Box } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
 import { useMemo } from 'react';
 
@@ -163,7 +155,7 @@ export function useClassroomWorkspaceSurfaces({
     );
   };
 
-  return useMemo<ClassroomWorkspaceSurface[]>(() => {
+  const surfaces = useMemo<ClassroomWorkspaceSurface[]>(() => {
     if (!classroomData) return [];
 
     const surfaces: ClassroomWorkspaceSurface[] = [];
@@ -191,29 +183,6 @@ export function useClassroomWorkspaceSurfaces({
 
     const teacherGate = classroomGated.teacher;
     if (teacherGate?.visible) {
-      const teacherContent =
-        classroomData.realClassCount === 0 && !isDemoModeTriggered ? (
-          <TeacherOnboardingView
-            isGuest={isGuest}
-            onTryDemo={() => setIsDemoModeTriggered(true)}
-            onCreateClassroom={() => setIsCreateClassroomOpen(true)}
-            onJoinSchool={() => router.push('/welcome')}
-          />
-        ) : (
-          <ScreenWrapper scroll={false} noTopInset={true}>
-            <Box className="flex-1">
-              <GlobalHeader title="Classroom" subtitle={undefined} />
-              {renderNudge()}
-              {isDemoModeTriggered && <SandboxBanner />}
-              <TeacherDashboard
-                schoolId={schoolIdToUse || undefined}
-                userId={classroomData.userId}
-                onRefresh={fetchRoleData}
-              />
-            </Box>
-          </ScreenWrapper>
-        );
-
       surfaces.push({
         ...CLASSROOM_REGISTRY.teacher!,
         title: CLASSROOM_REGISTRY.teacher!.label,
@@ -223,38 +192,11 @@ export function useClassroomWorkspaceSurfaces({
           'Assignments, lessons, attendance, grading, and teacher-owned pedagogical signals.',
         temporalLabel: surfaceInsights?.teacher?.temporalLabel ?? 'Daily Work',
         metadata: surfaceInsights?.teacher?.metadata ?? ['Academic', 'Write owner'],
-        content: teacherContent,
       } as any as ClassroomWorkspaceSurface);
     }
 
     const studentGate = classroomGated.student;
     if (studentGate?.visible) {
-      const studentContent =
-        classroomData.realClassCount === 0 && !isDemoModeTriggered ? (
-          <StudentOnboardingView
-            isGuest={isGuest}
-            onTryDemo={() => setIsDemoModeTriggered(true)}
-            onJoinClass={() => setIsClaimInviteOpen(true)}
-            onFindSchool={() => router.push('/welcome')}
-          />
-        ) : (
-          <ScreenWrapper scroll={false} noTopInset={true}>
-            <Box className="flex-1">
-              <GlobalHeader
-                title={t('classroom.mySanctuaries') || 'My Sanctuaries'}
-                subtitle={undefined}
-              />
-              {renderNudge()}
-              {isDemoModeTriggered && <SandboxBanner />}
-              <StudentDashboard
-                schoolId={schoolIdToUse || undefined}
-                userId={classroomData.userId}
-                onRefresh={fetchRoleData}
-              />
-            </Box>
-          </ScreenWrapper>
-        );
-
       surfaces.push({
         ...CLASSROOM_REGISTRY.student!,
         title: CLASSROOM_REGISTRY.student!.label,
@@ -264,24 +206,19 @@ export function useClassroomWorkspaceSurfaces({
           'Student-facing classroom flow across lessons, assignments, notes, and longitudinal story.',
         temporalLabel: surfaceInsights?.student?.temporalLabel ?? 'Journey',
         metadata: surfaceInsights?.student?.metadata ?? ['Academic', 'Student-owned'],
-        content: studentContent,
       } as any as ClassroomWorkspaceSurface);
     }
 
     return surfaces;
   }, [
     can,
-    t,
     isGuest,
     classroomData,
     schoolIdToUse,
     isDemoModeTriggered,
     setIsDemoModeTriggered,
     setIsCreateSchoolOpen,
-    setIsCreateClassroomOpen,
-    setIsClaimInviteOpen,
     fetchRoleData,
-    renderNudge,
     surfaceInsights,
     isPro,
     userCapabilities,
@@ -289,4 +226,6 @@ export function useClassroomWorkspaceSurfaces({
     classroomGated.teacher,
     citizenship,
   ]);
+
+  return { surfaces, renderNudge };
 }

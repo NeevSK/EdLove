@@ -4,6 +4,7 @@ import type { FeatureRolloutSnapshot } from '@repo/core/logic/ports/featureRollo
 import { FEATURE_FLAG_MANIFEST } from '@repo/core/logic/registry/featureLifecycleManifest';
 import type { UserContext } from '@repo/core/logic/schemas/user.schema';
 import { DEFAULT_FEATURE_FLAGS, type FeatureFlags } from '@repo/core/store/types/featureFlags';
+import { leaveBreadcrumb } from '@repo/core/monitoring/breadcrumbs';
 
 export interface FeatureSlice {
   flags: FeatureFlags;
@@ -58,6 +59,9 @@ function applyFeatureFlags(
 export const createFeatureSlice: StateCreator<FeatureSlice> = (set) => {
   const applySnapshot = (snapshot: FeatureRolloutSnapshot) => {
     const normalizedSnapshot = normalizeFeatureRolloutSnapshot(snapshot);
+    leaveBreadcrumb('flags', 'Feature flags applied', 'info', {
+      flagCount: Object.keys(snapshot.flags).length,
+    });
     set({
       snapshot: normalizedSnapshot,
       flags: applyFeatureFlags(DEFAULT_FEATURE_FLAGS, normalizedSnapshot.flags),
@@ -69,6 +73,7 @@ export const createFeatureSlice: StateCreator<FeatureSlice> = (set) => {
     snapshot: null,
     applySnapshot,
     recomputeFlags: (context) => {
+      leaveBreadcrumb('flags', 'Recomputing feature flags', 'info');
       featureFlags
         .resolveFlags(context)
         .then((snapshot) => {
@@ -76,6 +81,7 @@ export const createFeatureSlice: StateCreator<FeatureSlice> = (set) => {
         })
         .catch((err) => {
           console.warn('[FeatureSlice] resolveFlags failed, keeping defaults:', err);
+          leaveBreadcrumb('flags', 'Recompute failed', 'error', { error: String(err) });
         });
     },
   };

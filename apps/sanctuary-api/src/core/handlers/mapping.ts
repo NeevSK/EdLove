@@ -1,10 +1,10 @@
 import { randomBytes } from 'node:crypto';
-import { mappingContract } from '@repo/core/api/mapping.contract';
+import { mappingORPCContract } from '@repo/core/api/mapping.orpc.contract';
 import { SovereignError } from '@repo/core/types/Errors';
 import { assertDatabase } from '../apiErrors';
 import { implement, type ORPCContext } from '../orpc';
 
-const impl = implement(mappingContract).$context<ORPCContext>();
+const impl = implement(mappingORPCContract).$context<ORPCContext>();
 const iso = (value: unknown) =>
   value instanceof Date ? value.toISOString() : value ? String(value) : null;
 

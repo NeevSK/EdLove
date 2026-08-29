@@ -1,7 +1,7 @@
 import { LogIn, Plus, Sparkles } from '@repo/ui/icons';
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Center, Heading, Text, VStack } from '@repo/ui/gluestack';
+import { Box, Center, Heading, Text, VStack } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 

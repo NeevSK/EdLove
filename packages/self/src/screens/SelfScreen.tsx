@@ -1,5 +1,6 @@
 import { useTracking } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
+import { useFeatureStore } from '@repo/core/store/useFeatureStore';
 
 import { useEffect } from 'react';
 import {
@@ -11,18 +12,27 @@ import {
   TeacherSelfView,
 } from '@repo/self/screens/self';
 import { resolveSelfViewRole } from '@repo/self/screens/self/roleResolution';
+import SelfScreenUnified from '@repo/self/screens/SelfScreen.unified';
 
 /**
  * SelfScreen  declarative entry point for the user's sanctuary.
  * Capability-driven (POA) instead of registry-intent based.
+ * Unified canvas behind flag `canvas.self.unified` — enables multi-role + user prioritization.
+ * Fallback preserves existing role views until rollout completes.
  */
 export default function SelfScreen() {
   const { discoverFeature } = useTracking();
   const { can, context } = usePermissions();
+  const flags = useFeatureStore((s) => s.flags as unknown as Record<string, unknown>);
+  const unifiedEnabled = flags['canvas.self.unified'] === true;
 
   useEffect(() => {
     void discoverFeature('section_self');
   }, [discoverFeature]);
+
+  if (unifiedEnabled) {
+    return <SelfScreenUnified />;
+  }
 
   const role = resolveSelfViewRole(context.capacity, can);
 

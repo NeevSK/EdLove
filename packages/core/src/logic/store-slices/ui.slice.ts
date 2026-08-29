@@ -1,37 +1,14 @@
-import type { StateCreator } from 'zustand';
-import type { ResourceType } from '@repo/core/types/Resource';
-
-export interface DeskItem {
-  id: string;
-  title: string;
-  type: ResourceType;
-  url: string;
-  thumbnailUrl?: string;
-  addedAt: string;
-}
-
-export interface UISlice {
-  isSidebarCollapsed: boolean;
-  setSidebarCollapsed: (collapsed: boolean) => void;
-  theme: 'light' | 'dark' | 'system';
-  setTheme: (theme: 'light' | 'dark' | 'system') => void;
-  themeMode?: 'light' | 'dark' | 'system';
-  dismissedSampleIds?: string[];
-  deskItems?: DeskItem[];
-  isBreathingOpen: boolean;
-  setBreathingOpen: (open: boolean) => void;
-  addToDesk: (item: DeskItem) => void;
-}
-
-export const createUISlice: StateCreator<UISlice, [], [], UISlice> = (set) => ({
-  isSidebarCollapsed: false,
-  setSidebarCollapsed: (collapsed) => set({ isSidebarCollapsed: collapsed }),
-  theme: 'system',
-  setTheme: (theme) => set({ theme }),
-  themeMode: 'system',
-  dismissedSampleIds: [],
-  deskItems: [],
-  isBreathingOpen: false,
-  setBreathingOpen: (isBreathingOpen) => set({ isBreathingOpen }),
-  addToDesk: (item) => set((state) => ({ deskItems: [...(state.deskItems || []), item] })),
-});
+/**
+ * @deprecated
+ * ⚠️ This file is a legacy shim.
+ *
+ * The canonical implementation lives at:
+ *   `@repo/core/store` → `slices/ui.slice`
+ *
+ * Migration: Replace all imports of this path with:
+ *   import { createUISlice, UISlice } from '@repo/core/store/slices/ui.slice';
+ *
+ * This shim will be removed in a future cleanup sprint.
+ * DO NOT add new consumers of this path.
+ */
+export * from '@repo/core/store/slices/ui.slice';

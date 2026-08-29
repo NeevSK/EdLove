@@ -187,7 +187,7 @@ export const classrooms = sqliteTable(
     sectionId: text('section_id'),
     teacherId: text('teacher_id'),
     academicYear: text('academic_year').notNull(),
-    isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+    isArchived: integer('is_archived', { mode: 'boolean' }).notNull().default(false),
     createdAt: text('created_at').notNull(),
     updatedAt: text('updated_at').notNull(),
   },
@@ -210,6 +210,57 @@ export const moodLogs = sqliteTable(
   (table) => [
     index('mood_logs_user_idx').on(table.userId),
     index('mood_logs_created_idx').on(table.createdAt),
+  ],
+);
+
+export const thoughtRecords = sqliteTable(
+  'thought_records',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    thought: text('thought').notNull(),
+    situation: text('situation'),
+    emotion: text('emotion'), // JSON
+    trapIds: text('trap_ids'), // JSON array of trap ids
+    evidenceFor: text('evidence_for'),
+    evidenceAgainst: text('evidence_against'),
+    reframe: text('reframe'),
+    moodBefore: integer('mood_before'),
+    moodAfter: integer('mood_after'),
+    postOutcome: text('post_outcome'),
+    followUp: text('follow_up'), // JSON
+    createdAt: text('created_at').notNull(),
+  },
+  (table) => [
+    index('thought_records_user_idx').on(table.userId),
+    index('thought_records_created_idx').on(table.createdAt),
+  ],
+);
+
+export const learningReflections = sqliteTable(
+  'learning_reflections',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id').notNull(),
+    classroomId: text('classroom_id'),
+    assignmentId: text('assignment_id'),
+    thought: text('thought').notNull(),
+    situation: text('situation'),
+    emotion: text('emotion'), // JSON
+    trapIds: text('trap_ids'), // JSON array of trap ids
+    evidenceFor: text('evidence_for'),
+    evidenceAgainst: text('evidence_against'),
+    reframe: text('reframe'),
+    moodBefore: integer('mood_before'),
+    moodAfter: integer('mood_after'),
+    postOutcome: text('post_outcome'),
+    followUp: text('follow_up'), // JSON
+    createdAt: text('created_at').notNull(),
+  },
+  (table) => [
+    index('learning_reflections_user_idx').on(table.userId),
+    index('learning_reflections_classroom_idx').on(table.classroomId),
+    index('learning_reflections_created_idx').on(table.createdAt),
   ],
 );
 
@@ -297,6 +348,7 @@ export const AppSchema = {
   students,
   classrooms,
   moodLogs,
+  thoughtRecords,
   schools,
   cedarPolicies,
   permissionSnapshots,
@@ -307,6 +359,31 @@ export const AppSchema = {
   userEntitlementGrants,
   userPreferences,
 };
+
+// Tables that are NOT in the PowerSync publication scope (20260812000000_powersync_publication.sql).
+// These exist in the local SQLite file as caches / derived state and are never replicated
+// from Postgres. The server-side upload handler (sync.ts tableToModelMap) excludes these
+// tables from CRUD processing to prevent bloat in the ps_crud queue.
+export const LOCAL_ONLY_TABLES = new Set([
+  'pricingManifest',
+  'userEntitlementGrants',
+  'userPreferences',
+  'attendance',
+  'students',
+  'moodLogs',
+  'thoughtRecords',
+  'schools',
+  'cedarPolicies',
+  'permissionSnapshots',
+  'policyVersion',
+  'formTemplates',
+  'formResponses',
+]);
+
+/** Returns true if the given table name is outside the PowerSync publication scope. */
+export function isLocalOnlyTable(table: string): boolean {
+  return LOCAL_ONLY_TABLES.has(table);
+}
 
 export type Attendance = typeof attendance.$inferSelect;
 export type InsertAttendance = typeof attendance.$inferInsert;
@@ -328,6 +405,9 @@ export type InsertClassroom = typeof classrooms.$inferInsert;
 
 export type MoodLog = typeof moodLogs.$inferSelect;
 export type InsertMoodLog = typeof moodLogs.$inferInsert;
+
+export type ThoughtRecord = typeof thoughtRecords.$inferSelect;
+export type InsertThoughtRecord = typeof thoughtRecords.$inferInsert;
 
 export type School = typeof schools.$inferSelect;
 export type InsertSchool = typeof schools.$inferInsert;

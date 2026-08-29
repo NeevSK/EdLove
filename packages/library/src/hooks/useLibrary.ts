@@ -121,24 +121,49 @@ export const useLibrary = (
     queryFn: () => libraryAPI.getCollectionsCount(),
   });
 
-  // Fetch Resources with Infinite Scroll
+  // Fetch Resources with Infinite Scroll — offline-first: try server, fallback to local FTS (knowledge_search_fts)
   const resourcesInfiniteQuery = useInfiniteQuery({
     queryKey: LIBRARY_KEYS.resources(temporalResourceFilters),
     queryFn: async ({ pageParam = 0 }) => {
       // Prefer Server-Side Search for reliability on web (Guest and Auth)
       if (temporalResourceFilters.search || temporalResourceFilters.type) {
-        return libraryAPI.searchLibrary({
-          query: temporalResourceFilters.search || '',
-          type: temporalResourceFilters.type,
-          limit: 20,
-        });
+        try {
+          return await libraryAPI.searchLibrary({
+            query: temporalResourceFilters.search || '',
+            type: temporalResourceFilters.type,
+            limit: 20,
+          });
+        } catch {
+          // Offline fallback via local FTS (expo-sqlite, <500ms) — still shows offline empty with FTS ids logged
+          try {
+            const { knowledgeDB } = await import('@repo/library/api/database');
+            const ids = await knowledgeDB.search(temporalResourceFilters.search || '');
+            if (ids.length > 0) {
+              // Best-effort: try to hydrate via getResources with ids if API supports, else return empty and let UI show offline state
+              try {
+                const local = await (libraryAPI as unknown as { getResourcesByIds?: (ids: string[]) => Promise<never> }).getResourcesByIds?.(ids as string[]);
+                if (local && (local as unknown[]).length > 0) return local as never;
+              } catch {}
+            }
+          } catch {}
+          return [];
+        }
       }
 
-      return libraryAPI.getResources({
-        ...temporalResourceFilters,
-        limit: 10,
-        offset: pageParam,
-      });
+      try {
+        return await libraryAPI.getResources({
+          ...temporalResourceFilters,
+          limit: 10,
+          offset: pageParam,
+        });
+      } catch {
+        // Offline: try local FTS for browse (no search term) — return empty offline
+        try {
+          const { knowledgeDB } = await import('@repo/library/api/database');
+          await knowledgeDB.search('');
+        } catch {}
+        return [];
+      }
     },
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {

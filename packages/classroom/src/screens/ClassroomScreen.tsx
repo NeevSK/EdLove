@@ -50,7 +50,7 @@ export default function ClassroomScreen() {
     }, [fetchRoleData]),
   );
 
-  const workspaceSurfaces = useClassroomWorkspaceSurfaces({
+  const { surfaces: workspaceSurfaces, renderNudge } = useClassroomWorkspaceSurfaces({
     can: canForWorkspace,
     t,
     isGuest,
@@ -100,6 +100,16 @@ export default function ClassroomScreen() {
                 onToggleHidden={setSurfaceHidden}
                 onTogglePinned={setSurfacePinned}
                 onMoveToNextZone={setSurfaceZone}
+                isGuest={isGuest}
+                classroomData={classroomData}
+                schoolIdToUse={classroomData?.schoolId || storeSchoolId}
+                isDemoModeTriggered={isDemoModeTriggered}
+                setIsDemoModeTriggered={setIsDemoModeTriggered}
+                setIsCreateClassroomOpen={setIsCreateClassroomOpen}
+                setIsClaimInviteOpen={setIsClaimInviteOpen}
+                fetchRoleData={fetchRoleData}
+                renderNudge={renderNudge}
+                t={t}
               />
             </Box>
           </ScreenWrapper>

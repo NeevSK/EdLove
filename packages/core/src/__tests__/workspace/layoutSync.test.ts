@@ -33,7 +33,9 @@ describe('workspace layout sync helpers', () => {
       hidden: [],
       pinned: ['principal'],
       zone_by_surface: { principal: 'institution' },
-      layout_version: 1,
+      is_default: false,
+      surface_metadata: {},
+      layout_version: 2,
       created_at: '2026-03-28T10:00:00.000Z',
       updated_at: '2026-03-28T10:05:00.000Z',
     });

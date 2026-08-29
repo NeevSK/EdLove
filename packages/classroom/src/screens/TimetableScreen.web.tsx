@@ -9,7 +9,8 @@
  */
 
 import { TimetableScheduler } from '@repo/ai';
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -29,7 +30,7 @@ const DAY_SHORT: Record<string, string> = {
 export default function TimetableScreen() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { user } = useStore();
+  const user = useAuthStore((state) => state.user);
   const { context } = usePermissions();
   const _hasBonds = context.bonds.length > 0;
 

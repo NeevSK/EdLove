@@ -1,10 +1,10 @@
-import { identityContract } from '@repo/core/api/server';
+import { identityORPCContract } from '@repo/core/api/identity.orpc.contract';
 import { SovereignError } from '@repo/core/types/Errors';
 import { assertDatabase } from '../apiErrors';
 import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 
-const impl = implement(identityContract).$context<ORPCContext>();
+const impl = implement(identityORPCContract).$context<ORPCContext>();
 
 const mapToIdentityPayload = (user: any) => {
   const dbBonds = user.bonds || [];

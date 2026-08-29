@@ -8,6 +8,7 @@ import { Portal } from '@repo/ui/components/ui/portal';
 import { Pressable } from '@repo/ui/components/ui/pressable';
 import { Text } from '@repo/ui/components/ui/text';
 import { View } from '@repo/ui/components/ui/view';
+import { cn } from '@repo/ui/utils/classNames';
 
 /**
  * Actionsheet Component
@@ -66,10 +67,14 @@ export const ActionsheetContent = ({ children, className }: any) => (
     entering={SlideInDown.duration(300).springify().damping(20)}
     exiting={SlideOutDown.duration(200)}
     className="w-full"
+    accessible
     accessibilityRole="menu"
   >
     <Box
-      className={`bg-phase-modal-card rounded-t-[32px] overflow-hidden shadow-2xl border-t border-phase-modal-border pb-8 ${className || ''}`}
+      className={cn(
+        'bg-phase-modal-card rounded-t-[32px] overflow-hidden shadow-2xl border-t border-phase-modal-border pb-8',
+        className,
+      )}
     >
       <ActionsheetDragIndicatorWrapper>
         <ActionsheetDragIndicator />
@@ -79,20 +84,32 @@ export const ActionsheetContent = ({ children, className }: any) => (
   </Animated.View>
 );
 
-export const ActionsheetItem = ({ children, onPress, isDisabled, className, ...props }: any) => {
+export const ActionsheetItem = ({
+  children,
+  onPress,
+  isDisabled,
+  disabled,
+  className,
+  ...props
+}: any) => {
   const { onClose } = useActionsheet();
+  const resolvedDisabled = disabled || isDisabled;
 
   return (
     <Pressable
       {...props}
       onPress={() => {
-        if (isDisabled) return;
+        if (resolvedDisabled) return;
         onPress?.();
       }}
-      disabled={isDisabled}
+      disabled={resolvedDisabled}
       accessibilityRole="menuitem"
-      accessibilityState={{ disabled: !!isDisabled }}
-      className={`px-5 py-4 flex-row items-center active:bg-phase-interactive/10 rounded-2xl mx-3 my-0.5 ${isDisabled ? 'opacity-40' : ''} ${className || ''}`}
+      accessibilityState={{ disabled: !!resolvedDisabled }}
+      className={cn(
+        'px-5 py-4 flex-row items-center active:bg-phase-interactive/10 rounded-2xl mx-3 my-0.5',
+        resolvedDisabled ? 'opacity-40' : undefined,
+        className,
+      )}
     >
       {children}
     </Pressable>
@@ -100,15 +117,13 @@ export const ActionsheetItem = ({ children, onPress, isDisabled, className, ...p
 };
 
 export const ActionsheetItemText = ({ children, className }: any) => (
-  <Text
-    className={`text-phase-text-primary text-base font-semibold tracking-tight ${className || ''}`}
-  >
+  <Text className={cn('text-phase-text-primary text-base font-semibold tracking-tight', className)}>
     {children}
   </Text>
 );
 
 export const ActionsheetDragIndicatorWrapper = ({ children, className }: any) => (
-  <Box className={`w-full items-center py-4 ${className || ''}`}>{children}</Box>
+  <Box className={cn('w-full items-center py-4', className)}>{children}</Box>
 );
 
 export const ActionsheetDragIndicator = () => (
@@ -116,7 +131,7 @@ export const ActionsheetDragIndicator = () => (
 );
 
 export const ActionsheetIcon = ({ children, className }: any) => (
-  <Box className={`mr-3 ${className || ''}`}>{children}</Box>
+  <Box className={cn('mr-3', className)}>{children}</Box>
 );
 
 Actionsheet.displayName = 'Actionsheet';
@@ -124,4 +139,3 @@ ActionsheetContent.displayName = 'ActionsheetContent';
 ActionsheetItem.displayName = 'ActionsheetItem';
 
 export { Actionsheet as default };
-

@@ -120,6 +120,22 @@ scan-viewer.html
 **/pnpm-lock.yaml
 !/pnpm-lock.yaml
 
+# JS shadow files are NEVER the source of truth in this repo.
+# All source is TypeScript (.ts / .tsx). Plain .js files next to .ts
+# are either:
+#   (a) AI-agent "I'll strip types so Node can run it" pollution, or
+#   (b) Expo Router ephemeral build twins.
+# Both must be invisible to git. Use .mjs for Node-runnable ESM scripts.
+apps/gurudevi-mobile/app/**/*.js
+apps/gurudevi-mobile/src/**/*.js
+packages/**/src/**/*.js
+packages/**/*.config.js
+apps/sanctuary-api/src/**/*.js
+apps/edlove-web/src/**/*.js
+apps/gurudevi-marketingWeb/src/**/*.js
+# scripts/ uses .mjs for Node scripts — plain .js is always phantom
+scripts/*.js
+
 # Stray tool outputs
 /tsc-*.txt
 /style-stack-audit.txt

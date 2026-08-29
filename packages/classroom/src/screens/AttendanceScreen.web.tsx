@@ -1,5 +1,6 @@
 import { api, growthSignalsAPI } from '@repo/core/api/client';
-import { type StudentAttendance, useStore } from '@repo/core/logic';
+import { type StudentAttendance } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 import type { AttendanceRecord } from '@repo/core/types';
 import { generateIdempotencyKey } from '@repo/core/utils';
 
@@ -113,7 +114,7 @@ export default function AttendanceScreenWeb() {
     classroomId?: string;
     classroomName?: string;
   }>();
-  const { user } = useStore();
+  const user = useAuthStore((state) => state.user);
 
   const [state, dispatch] = useReducer(attendanceReducer, initialState);
 

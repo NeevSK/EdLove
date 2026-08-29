@@ -4,7 +4,8 @@ import { WifiOff } from '@repo/ui/icons';
 import { Platform } from 'react-native';
 import Animated, { SlideInUp, SlideOutUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Box, HStack, Text } from '@repo/ui/gluestack';
+import { Box, HStack, Text } from '@repo/ui/primitives';
+import { cn } from '@repo/ui/utils/classNames';
 
 /**
  * NetworkStatusBanner
@@ -34,7 +35,7 @@ export default function NetworkStatusBanner() {
       }}
     >
       <Box
-        className={`${isOffline ? 'bg-phase-danger' : 'bg-phase-accent'} py-2 px-4 items-center`}
+        className={cn(isOffline ? 'bg-phase-danger' : 'bg-phase-accent', 'py-2 px-4 items-center')}
       >
         <HStack space="sm" className="items-center">
           {isOffline ? (

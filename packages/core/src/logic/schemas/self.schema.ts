@@ -14,6 +14,12 @@ export const MoodLogSchema = makeModelSchema('MoodLog');
 export const FireJournalEntrySchema = makeModelSchema('FireJournalEntry');
 
 /**
+ * ThoughtRecordSchema - A structured CBT-style thought record.
+ * Derived from ZenStack ThoughtRecord model.
+ */
+export const ThoughtRecordSchema = makeModelSchema('ThoughtRecord');
+
+/**
  * UserPreferencesSchema - Customizing the sanctuary experience.
  * Derived from ZenStack UserPreferences model.
  */
@@ -21,4 +27,5 @@ export const UserPreferencesSchema = makeModelSchema('UserPreferences');
 
 export type MoodLog = z.infer<typeof MoodLogSchema>;
 export type FireJournalEntry = z.infer<typeof FireJournalEntrySchema>;
+export type ThoughtRecord = z.infer<typeof ThoughtRecordSchema>;
 export type SelfUserPreferences = z.infer<typeof UserPreferencesSchema>;

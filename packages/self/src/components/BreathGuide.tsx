@@ -6,8 +6,9 @@
 
 import { Wind } from '@repo/ui/icons';
 import { Box, Button, ButtonText, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { Canvas, Circle, Blur } from '@shopify/react-native-skia';
 import * as Haptics from 'expo-haptics';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 
@@ -139,6 +140,14 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
   return (
     <VStack className="items-center p-lg gap-lg">
       <Box className="items-center justify-center min-h-[250px]">
+        {Platform.OS !== 'web' ? (
+          <Canvas style={{ width: 170, height: 170, position: 'absolute' }}>
+            <Circle cx={85} cy={85} r={75 * scale} color={isActive ? '#8B5CF6' : '#7C3AED'} opacity={opacity * 0.3}>
+              <Blur blur={12} />
+            </Circle>
+            <Circle cx={85} cy={85} r={60 * scale} color="#8B5CF6" opacity={opacity * 0.15} />
+          </Canvas>
+        ) : null}
         <Box
           className="w-[150px] h-[150px] rounded-full bg-gurudeviViolet items-center justify-center shadow-xl shadow-gurudeviViolet/60"
           style={{

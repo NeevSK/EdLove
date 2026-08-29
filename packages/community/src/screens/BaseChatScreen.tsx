@@ -1,6 +1,7 @@
 import type { ChatMessage } from '@repo/community/types';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { useSafeMutation } from '@repo/core/hooks';
+import { storage } from '@repo/core/native';
 import { useStore, useTemporalStore } from '@repo/core/store';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { ChatComposer } from '@repo/ui/components/ChatComposer';
@@ -13,7 +14,7 @@ import { ChatProvider } from '@repo/ui/context/ChatContext';
 import { MessageSquare } from '@repo/ui/icons';
 import { AnimatedView, Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import type React from 'react';
-import { useEffect, useOptimistic, useState, useTransition } from 'react';
+import { useCallback, useEffect, useOptimistic, useState, useTransition } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 import { FadeInDown } from 'react-native-reanimated';
@@ -70,8 +71,11 @@ export default function BaseChatScreen({
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [failedMessage, setFailedMessage] = useState<string | null>(null);
+  const [queuedMessage, setQueuedMessage] = useState<string | null>(null);
+  const [queueError, setQueueError] = useState<string | null>(null);
   const [retryNonce, setRetryNonce] = useState(0);
   const [draft, setDraft] = useState('');
+  const [typingUsers, setTypingUsers] = useState<string[]>([]);
   const [isPending, startTransition] = useTransition();
 
   const [optimisticMessages, addOptimisticMessage] = useOptimistic(
@@ -98,6 +102,8 @@ export default function BaseChatScreen({
   // sanctioned fetch-then-setState pattern for this repo's set-state-in-effect rule.
   useEffect(() => {
     async function load() {
+      setLoading(true);
+      setLoadError(null);
       try {
         const data = await fetchMessages();
         setMessages(data);
@@ -146,7 +152,80 @@ export default function BaseChatScreen({
     };
   }, [channelKey, subscription]);
 
-  // Send
+  // Typing indicator via Supabase broadcast
+  useEffect(() => {
+    const typingChannel = supabase
+      .channel(`typing:${channelKey}`)
+      .on('broadcast', { event: 'typing' }, ({ payload }) => {
+        const name = (payload as { userId?: string; userName?: string })?.userName;
+        const uid = (payload as { userId?: string })?.userId;
+        if (!name || uid === user?.id) return;
+        setTypingUsers((prev) => (prev.includes(name) ? prev : [...prev, name]));
+        setTimeout(() => setTypingUsers((prev) => prev.filter((n) => n !== name)), 3000);
+      })
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(typingChannel);
+    };
+  }, [channelKey, user?.id]);
+
+  const handleTyping = (text: string) => {
+    setDraft(text);
+    if (text.length > 0 && text.length % 5 === 0) {
+      void supabase
+        .channel(`typing:${channelKey}`)
+        .send({ type: 'broadcast', event: 'typing', payload: { userId: user?.id, userName: user?.full_name || 'Someone' } });
+    }
+  };
+
+  const queueMessage = useCallback(
+    (content: string) => {
+      try {
+        const key = `chat_queue:${channelKey}`;
+        const raw = storage.getString(key);
+        const queued: string[] = raw ? JSON.parse(raw) : [];
+        queued.push(content);
+        storage.set(key, JSON.stringify(queued));
+        setQueueError(null);
+        return true;
+      } catch (error) {
+        console.error('[BaseChatScreen] could not persist queued message', error);
+        setQueueError('This message could not be saved for retry. Restore the draft and try again.');
+        return false;
+      }
+    },
+    [channelKey],
+  );
+
+  // Offline queue: persist failed sends and retry when online
+  useEffect(() => {
+    if (isOffline) return;
+    try {
+      const key = `chat_queue:${channelKey}`;
+      const raw = storage.getString(key);
+      if (!raw) return;
+      const queued: string[] = JSON.parse(raw);
+      if (queued.length === 0) return;
+      // send oldest first
+      const next = queued[0];
+      if (next) {
+        void sendMessage(next).then(() => {
+          const remaining = queued.slice(1);
+          if (remaining.length === 0) storage.delete(key);
+          else storage.set(key, JSON.stringify(remaining));
+          setQueuedMessage(null);
+        }).catch((error: unknown) => {
+          console.error('[BaseChatScreen] queued send error', error);
+          setQueueError('A queued message could not send yet. It will be retried after reconnection.');
+        });
+      }
+    } catch (error) {
+      console.error('[BaseChatScreen] could not read queued messages', error);
+      setQueueError('Queued messages are temporarily unavailable. Your current draft is still safe.');
+    }
+  }, [isOffline, channelKey, sendMessage]);
+
+  // Send — offline queue via MMKV + backgroundSync
   const handleSend = async () => {
     const content = draft.trim();
     if (!content || !user) return;
@@ -166,11 +245,28 @@ export default function BaseChatScreen({
 
       addOptimisticMessage(optimistic);
 
+      // If offline, queue immediately and keep optimistic
+      if (isOffline) {
+        if (queueMessage(content)) {
+          setQueuedMessage(content);
+        } else {
+          setDraft(content);
+          setFailedMessage(content);
+        }
+        return;
+      }
+
       try {
         await sendMessage(content);
       } catch (err) {
         console.error('[BaseChatScreen] send error', err);
-        setDraft(content);
+        if (queueMessage(content)) {
+          setFailedMessage(null);
+          setQueuedMessage(content);
+        } else {
+          setDraft(content);
+          setFailedMessage(content);
+        }
       }
     });
   };
@@ -285,10 +381,28 @@ export default function BaseChatScreen({
                 </Text>
               </Box>
             ) : null}
+            {queuedMessage ? (
+              <Box
+                className="mb-3 rounded-xl border border-phase-warning/30 bg-phase-warning/10 px-3 py-2"
+                accessibilityRole="status"
+              >
+                <Text className="text-phase-warning text-[11px] font-semibold">
+                  Message queued securely. It will send when the connection returns.
+                </Text>
+              </Box>
+            ) : null}
+            {queueError ? (
+              <Box
+                className="mb-3 rounded-xl border border-phase-danger/30 bg-phase-danger/10 px-3 py-2"
+                accessibilityRole="alert"
+              >
+                <Text className="text-phase-danger text-[11px] font-semibold">{queueError}</Text>
+              </Box>
+            ) : null}
             {failedMessage ? (
               <Box className="mb-3 rounded-xl border border-phase-warning/30 bg-phase-warning/10 px-3 py-2 flex-row items-center justify-between">
                 <Text className="text-phase-warning text-[11px] font-semibold">
-                  Message failed to send.
+                  Message could not be sent or queued.
                 </Text>
                 <Pressable
                   onPress={() => {
@@ -296,7 +410,7 @@ export default function BaseChatScreen({
                     setFailedMessage(null);
                   }}
                 >
-                  <Text className="text-phase-interactive text-[11px] font-bold">Retry</Text>
+                  <Text className="text-phase-interactive text-[11px] font-bold">Restore draft</Text>
                 </Pressable>
               </Box>
             ) : null}
@@ -313,13 +427,20 @@ export default function BaseChatScreen({
                 </Text>
               </Box>
             ) : (
-              <ChatComposer
-                value={draft}
-                onChangeText={setDraft}
-                onSend={() => void handleSend()}
-                isSending={isPending}
-                placeholder={t('chat.placeholder')}
-              />
+              <>
+                <ChatComposer
+                  value={draft}
+                  onChangeText={handleTyping}
+                  onSend={() => void handleSend()}
+                  isSending={isPending}
+                  placeholder={t('chat.placeholder')}
+                />
+                {typingUsers.length > 0 ? (
+                  <Text className="text-[11px] text-ink/40 italic mt-2 px-1">
+                    {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing…
+                  </Text>
+                ) : null}
+              </>
             )}
           </Box>
         </Box>

@@ -1,4 +1,5 @@
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 import { StaffPresencePulse } from '@repo/people';
 import { AddSocialLinkModal } from '@repo/profile/components/AddSocialLinkModal';
 import { AvatarDisplay } from '@repo/profile/components/AvatarDisplay';
@@ -39,7 +40,7 @@ export default function FullProfileScreenWeb() {
 
   const { t } = useTranslation();
   const _colors = useThemedColors();
-  const { user: currentUser } = useStore();
+  const currentUser = useAuthStore((state) => state.user);
   const { context } = usePermissions();
 
   const {

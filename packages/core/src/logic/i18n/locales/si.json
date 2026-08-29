@@ -1,4 +1,71 @@
 {
+  "learningReflection": {
+    "title": "ඉගෙනුම් පරාවර්තනය",
+    "subtitle": "ලකුණක් හෝ ප්‍රතිචාරයක් ගැන සිතුවිල්ලක් කොටස් කර, නැවත රාමු කළ දේ ඔබේ ඊළඟ පියවර කර ගන්න.",
+    "classroomLabel": "පන්ති කාමරය",
+    "commitmentNote": "ඔබේ නව රාමුව ඔබේ ඊළඟ පියවරේ ප්‍රතිඥාවයි.",
+    "reflectAction": "ලකුණක් ගැන පරාවර්තනය වන්න"
+  },
+  "reframe": {
+    "title": "නැවත හැඩගැසීම",
+    "subtitle": "බරක් දැනෙන සිතුවිල්ලක් කොටස් කර, එය සමබර කර ගනිමු.",
+    "checkupPrompt": "ඔබ දැන් සිටින තැන කොහේද?",
+    "preNotePlaceholder": "අවශ්‍ය නම්: දැන් සිදුවන දේ (පේළියකින්)",
+    "thoughtPrompt": "ඔබේ හිස තුළ නිතරම පුනරාවර්තනය වන ස්වයං සිතුවිල්ල කුමක්ද?",
+    "thoughtPlaceholder": "සිතුවිල්ල, එය ඇත්තටම පෙනෙන ආකාරයට...",
+    "feelingPrompt": "එයට බැඳුණු හැඟීම කුමක්ද?",
+    "intensityPrompt": "එම හැඟීම කෙතරම් ප්‍රබලද?",
+    "trapsPrompt": "මෙම සිතුවිල්ල පිහිටන්නේ කුමන චින්තන උගුලක මද? ගැලපෙන ඒවා තෝරන්න.",
+    "trapsGeneral": "සැමට අදාළ උගුල්",
+    "trapsLearning": "අධ්‍යයන උගුල්",
+    "customTrapPlaceholder": "නැතහොත් ඔබේම රටාවක් විස්තර කරන්න... (අවශ්‍ය නම්)",
+    "evidenceForPrompt": "සාක්ෂි කිරා බලමු, එයට එරෙහි නොවී. සිතුවිල්ලට ඇත්තෙන්ම අනුබල දෙන දේ කුමක්ද?",
+    "evidenceForPlaceholder": "සිතුවිල්ලට අනුබල දෙන සාක්ෂි...",
+    "evidenceAgainstPrompt": "එයට එරෙහි තර්ක මොනවාද? එම තැනේදී මිතුරෙකුට ඔබ කියන්නේ කුමක්ද?",
+    "evidenceAgainstPlaceholder": "සිතුවිල්ලට එරෙහි සාක්ෂි...",
+    "reframePrompt": "දැන්, සාක්ෂි මත පදනම් වූ සාධාරණ අනුවාදයක් ලියන්න.",
+    "reframePlaceholder": "සාක්ෂි ඇත්තටම අනුබල දෙන සමබර වාක්‍යයක්...",
+    "recheckPrompt": "යළි රාමු කළ සිතුවිල්ල සමඟ මොහොතක් රැඳී සිටින්න.",
+    "postMoodPrompt": "දැන් ඔබට දැනෙන්නේ කෙසේද?",
+    "recheckIn": "යළි පරීක්ෂාව",
+    "hours6": "පැය 6",
+    "hours24": "දින 1",
+    "hours72": "දින 3",
+    "back": "ආපසු",
+    "next": "ඊළඟ",
+    "save": "රාමුව සුරකින්න",
+    "saving": "සුරකිමින්...",
+    "savedTitle": "සිතුවිල්ල වාර්තා කර නැවත රාමු කරන ලදී.",
+    "savedBefore": "පෙර",
+    "savedAfter": "පසු",
+    "savedShift": "වෙනස",
+    "savedRecheckDue": "පැය {{hours}}කින් යළි පරීක්ෂාවක් නියමිතය.",
+    "startAnother": "තවත් එකක් අරඹන්න",
+    "dueTitle": "යළි පරීක්ෂා බලා සිටී",
+    "saveFailed": "මෙම සිතුවිලි වාර්තාව සුරැකීමට නොහැකි විය. කරුණාකර නැවත උත්සාහ කරන්න.",
+    "moodHeavy": "බර",
+    "moodLow": "පහළ",
+    "moodNeutral": "සාමාන්‍ය",
+    "moodGood": "හොඳ",
+    "moodRadiant": "දීප්තිමත්",
+    "emotion": {
+      "anxious": "කනස්සල්ල",
+      "overwhelmed": "පීඩාව",
+      "frustrated": "කලකිරීම",
+      "angry": "කෝපය",
+      "sad": "දුක",
+      "guilty": "වරදකාරී",
+      "focused": "අවධානය",
+      "calm": "සන්සුන්",
+      "relaxed": "ලිහිල්",
+      "happy": "සතුට"
+    },
+    "outcome": {
+      "worse": "නරකයි",
+      "same": "එසේමය",
+      "better": "හොඳයි"
+    }
+  },
   "common": {
     "save": "සුරකින්න",
     "cancel": "අවලංගු කරන්න",
@@ -1250,5 +1317,125 @@
     "progress": "Progress",
     "completed": "Completed",
     "noGoals": "No Goals"
+  },
+  "reader": {
+    "loading": "ලේඛනය ලෝඩ් කරමින්...",
+    "highlight": "හයිලයිට්",
+    "addNote": "සටහන් එකතු කරන්න",
+    "notePlaceholder": "ඔබේ සට�4න් මෙහි ලියන්න...",
+    "save": "සුරකින්න",
+    "goBack": "ආපසු යන්න"
+  },
+  "tools": {
+    "title": "ලේඛන මෙවලම්",
+    "subtitle": "ලේඛන හැරවීම, සංස්කරණය සහ අපනයනය - සම්බන්ධතාවය නැතිවම",
+    "spreadsheet": {
+      "name": "පැතුරුම්පත්",
+      "description": "පැතුරුම්පත් ගොනු බලන්න, සොයන්න සහ නැවත අපනයනය කරන්න"
+    },
+    "pdfEditor": {
+      "name": "PDF සංස්කාරකය",
+      "description": "PDF ගොනු නැවත අනුපිළිවෙලට, කරකවන්න, ජල සලකුණු සහ වෙන් කරන්න"
+    },
+    "ocr": {
+      "name": "OCR පාඨය",
+      "description": "ඉංග්රීසි, සිංහල හෝ දෙමළෙන් රූපවලින් පාඨය උපුටා ගන්න"
+    },
+    "imageToPdf": {
+      "name": "රූප PDF බවට",
+      "description": "රූප එක් PDF ලේඛනයකට ඒකාබද්ධ කරන්න"
+    },
+    "cloudExport": {
+      "name": "Cloud අපනයනය",
+      "description": "ලේඛන Google Drive හෝ OneDrive වෙත උඩුගත කරන්න"
+    },
+    "importAction": "ගොණුවක් ආයාත කරන්න"
+  },
+  "spreadsheet": {
+    "title": "පැතුරුම්පත්",
+    "emptyHint": "පැතුරුම්පතක් පුස්තකාලයෙන් විවෘත කරන්න හෝ මෙහි බැලීමට ගොනුවක් ආනයනය කරන්න.",
+    "searchPlaceholder": "පේළි සොයන්න...",
+    "dimensions": "{{rows}} පේළි × {{cols}} තීරු",
+    "exportCsv": "CSV අපනයනය",
+    "exportXlsx": "XLSX අපනයනය"
+  },
+  "pdfEditor": {
+    "title": "PDF සංස්කාරකය",
+    "emptyHint": "සංස්කරණය ආරම්භ කිරීමට පුස්තකාලයෙන් PDF එකක් විවෘත කරන්න.",
+    "pageCount": "{{count}} පිටු",
+    "pages": "පිටු",
+    "pageLabel": "පිටුව {{number}}",
+    "addPage": "හිස් පිටුවක් එක් කරන්න",
+    "watermark": "ජල සලකුණ",
+    "watermarkPlaceholder": "ජල සලකුණු පාඨය...",
+    "pageNumbers": "පිටු අංක",
+    "extract": "පිටු උපුටා ගන්න",
+    "extractPlaceholder": "උදා: 1-3, 5, 8-10",
+    "apply": "යොදන්න",
+    "export": "අපනයනය",
+    "save": "සංස්කරණය කළ PDF සුරකින්න",
+    "saved": "අවසන්"
+  },
+  "ocr": {
+    "title": "OCR පාඨය",
+    "emptyHint": "පාඨය උපුටා ගැනීමට රූපයක් විවෘත කරන්න.",
+    "language": "භාෂාව",
+    "langs": {
+      "eng": "ඉංග්රීසි",
+      "sin": "සිංහල",
+      "tam": "දෙමළ"
+    },
+    "run": "පාඨය උපුටා ගන්න",
+    "result": "උපුටාගත් පාඨය",
+    "confidence": "{{percent}}% විශ්වාසය",
+    "noText": "පාඨ හමු නොවීය",
+    "export": "පාඨය ලෙස අපනයනය කරන්න"
+  },
+  "imageToPdf": {
+    "title": "රූප PDF බවට",
+    "emptyHint": "PDF එකකට ඒකාබද්ධ කිරීමට පුස්තකාලයෙන් රූප විවෘත කරන්න.",
+    "imageCount": "රූප {{count}}",
+    "fitMode": "ගැළපුම් ආකාරය",
+    "fits": {
+      "contain": "ඇතුළට",
+      "cover": "ආවරණය",
+      "fill": "පිරවීම",
+      "width": "පළල",
+      "height": "උස"
+    },
+    "pageSize": "පිටු ප්රමාණය",
+    "pages": {
+      "letter": "ලිපිය",
+      "a4": "A4"
+    },
+    "convert": "PDF සාදන්න",
+    "result": "PDF සාදන ලදී",
+    "resultDetails": "පිටු {{pages}} · {{size}} KB",
+    "save": "PDF සුරකින්න"
+  },
+  "cloudExport": {
+    "title": "Cloud අපනයනය",
+    "emptyHint": "Cloud ගබඩාවට උඩුගත කිරීමට ලේඛනයක් විවෘත කරන්න.",
+    "provider": "සැපයුම්කරු",
+    "providers": {
+      "google": "Google Drive",
+      "microsoft": "OneDrive"
+    },
+    "config": "සැපයුම්කරු වින්යාසය",
+    "tenantId": "Tenant ID (විකල්ප)",
+    "saveConfig": "වින්යාසය සුරකින්න",
+    "connect": "සම්බන්ධතාවය",
+    "notConnected": "සම්බන්ධ නොවීය",
+    "connected": "සම්බන්ධයි",
+    "openAuth": "පිවිසුම් පිටුව විවෘත කරන්න",
+    "codePlaceholder": "අවසර කේතය අලවන්න...",
+    "exchange": "හුවමාරුව",
+    "uploadCard": "ලේඛනය උඩුගත කරන්න",
+    "untitled": "නම් නොකළ ලේඛනය",
+    "upload": "උඩුගත කරන්න",
+    "openLink": "බ්රවුසරයේ විවෘත කරන්න",
+    "saveLocal": "ඒ වෙනුවට ප්රාදේශීය පිටපතක් සුරකින්න",
+    "configured": "වින්යාසය සුරකින ලදී",
+    "uploaded": "උඩුගත කිරීම අවසන්"
   }
 }

@@ -361,5 +361,44 @@ export function useAIAgent() {
     privacyMode,
     setPrivacyMode,
     error,
+    // Workspace-aware quick actions for teacher workflow
+    quickActions: {
+      // Mark attendance for a classroom
+      markAttendance: async (classroomId: string) => {
+        const response = await fetch(`${SOVEREIGN_API_URL}/api/ai/action`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` },
+          body: JSON.stringify({ action: 'mark_attendance', classroomId }),
+        });
+        return response.json();
+      },
+      // Create assignment for a classroom
+      createAssignment: async (classroomId: string, title: string, dueDate: string) => {
+        const response = await fetch(`${SOVEREIGN_API_URL}/api/ai/action`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` },
+          body: JSON.stringify({ action: 'create_assignment', classroomId, title, dueDate }),
+        });
+        return response.json();
+      },
+      // Generate gradebook summary
+      generateGradebookSummary: async (classroomId: string) => {
+        const response = await fetch(`${SOVEREIGN_API_URL}/api/ai/action`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` },
+          body: JSON.stringify({ action: 'gradebook_summary', classroomId }),
+        });
+        return response.json();
+      },
+      // Get attendance summary for principal/founder
+      getAttendanceSummary: async (schoolId: string) => {
+        const response = await fetch(`${SOVEREIGN_API_URL}/api/ai/action`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` },
+          body: JSON.stringify({ action: 'attendance_summary', schoolId }),
+        });
+        return response.json();
+      },
+    },
   };
 }

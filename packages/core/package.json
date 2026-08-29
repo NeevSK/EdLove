@@ -89,11 +89,21 @@
       "import": "./src/logic/schemas/*.ts",
       "default": "./src/logic/schemas/*.ts"
     },
-    "./logic/events/*": {
-      "types": "./src/logic/events/*.ts",
-      "import": "./src/logic/events/*.ts",
-      "default": "./src/logic/events/*.ts"
-    },
+"./logic/events/*": {
+                               "types": "./src/logic/events/*.ts",
+                               "import": "./src/logic/events/*.ts",
+                               "default": "./src/logic/events/*.ts"
+                           },
+    "./logic/reflection": {
+                               "types": "./src/logic/reflection/index.ts",
+                               "import": "./src/logic/reflection/index.ts",
+                               "default": "./src/logic/reflection/index.ts"
+                           },
+    "./logic/reflection/*": {
+                               "types": "./src/logic/reflection/*.ts",
+                               "import": "./src/logic/reflection/*.ts",
+                               "default": "./src/logic/reflection/*.ts"
+                           },
     "./zen": {
       "types": "./src/logic/generated/index.ts",
       "import": "./src/logic/generated/index.ts",
@@ -273,6 +283,16 @@
       "import": "./src/logic/entities/*.ts",
       "default": "./src/logic/entities/*.ts"
     },
+    "./logic/ports/*": {
+      "types": "./src/logic/ports/*.ts",
+      "import": "./src/logic/ports/*.ts",
+      "default": "./src/logic/ports/*.ts"
+    },
+    "./logic/utils/*": {
+      "types": "./src/logic/utils/*.ts",
+      "import": "./src/logic/utils/*.ts",
+      "default": "./src/logic/utils/*.ts"
+    },
     "./package.json": "./package.json",
     "./*": {
       "types": "./src/*.ts",
@@ -346,6 +366,10 @@
     "@growthbook/growthbook": "^1.6.5",
     "@hono/zod-openapi": "^1.4.0",
     "@intuitui-labs/form-builder-engine": "workspace:*",
+    "@orpc/client": "1.15.0",
+    "@orpc/contract": "1.15.0",
+    "@orpc/server": "1.15.0",
+    "@orpc/tanstack-query": "1.15.0",
     "@paralleldrive/cuid2": "^2.2.2",
     "@powersync/common": "^2.0.0",
     "@powersync/drizzle-driver": "^0.8.0",

@@ -11,6 +11,8 @@ import { LibraryThumbnailCard } from '@repo/library/components/LibraryThumbnailC
 import { ResourceList } from '@repo/library/components/ResourceList';
 import { getOrderedShelfDefs } from '@repo/library/constants/shelf';
 import { useBookmarkedResources, useLibrary } from '@repo/library/hooks/useLibrary';
+import { useLibraryWorkspaceSurfaces } from '@repo/library/workspace/useLibraryWorkspaceSurfaces';
+import { useWorkspaceLayoutSync } from '@repo/core/native';
 import type { CreateResourceInput, LibraryResource, ResourceType } from '@repo/library/types';
 import { buildLibraryExternalLinkOptions } from '@repo/library/utils/externalLinks';
 import { buildLibraryResourceOpenParams } from '@repo/library/utils/resourceLinks';
@@ -34,6 +36,7 @@ import {
   Library,
   List,
   Map as MapIcon,
+  FileSpreadsheet,
   Play,
   Plus,
 } from '@repo/ui/icons';
@@ -329,6 +332,16 @@ export default function LibraryScreen() {
     [isSearchMode, resourceTypeFilter, debouncedSearchQuery, selectedSort],
   );
 
+  // Hybrid canvas: 6 configurable sections with isDefault persistence + cross-device sync
+  const librarySurfaces = useLibraryWorkspaceSurfaces();
+  const { layout: libraryLayout, surfaces: resolvedSurfaces } = useWorkspaceLayoutSync({
+    workspaceId: 'library',
+    userId: user?.id ?? null,
+    surfaces: librarySurfaces,
+    enableRemoteSync: true,
+  });
+  const resolvedLibrarySurfaces = resolvedSurfaces;
+
   const orientationSeeds = user?.orientation_seeds ?? null;
   const orderedShelfDefs = useMemo(() => getOrderedShelfDefs(orientationSeeds), [orientationSeeds]);
 
@@ -526,6 +539,35 @@ export default function LibraryScreen() {
     newArrivals,
   ]);
 
+  // Order configurable shelves by canvas layout (isDefault = opinionated defaults, else codified order)
+  const orderedShelfData = useMemo(() => {
+    if (!resolvedSurfaces.length) return shelfData;
+    const hidden = new Set(resolvedSurfaces.filter((s) => s.hidden).map((s) => s.surfaceId));
+    const orderMap = new Map(resolvedSurfaces.map((s) => [s.surfaceId as string, s.order]));
+    const surfaceIdForRow = (row: { type: string; id: string }): string | null => {
+      if (row.type === 'CONTINUE_LEARNING') return 'continue_learning';
+      if (row.type === 'BOOKMARKS') return 'bookmarks';
+      if (row.type === 'CATEGORIES') return 'categories';
+      if (row.type === 'COLLECTIONS') return 'collections';
+      if (row.id === 'shelf-trending') return 'trending';
+      if (row.id === 'shelf-new') return 'new_arrivals';
+      return null;
+    };
+    const fixed = shelfData.filter((r) => !surfaceIdForRow(r as { type: string; id: string }));
+    const configurable = shelfData
+      .filter((r) => surfaceIdForRow(r as { type: string; id: string }))
+      .filter((r) => {
+        const sid = surfaceIdForRow(r as { type: string; id: string });
+        return sid ? !hidden.has(sid as never) : true;
+      })
+      .sort((a, b) => {
+        const aId = surfaceIdForRow(a as { type: string; id: string })!;
+        const bId = surfaceIdForRow(b as { type: string; id: string })!;
+        return (orderMap.get(aId) ?? 99) - (orderMap.get(bId) ?? 99);
+      });
+    return [...fixed, ...configurable];
+  }, [shelfData, resolvedSurfaces]);
+
   const handleOpenResource = useCallback(
     (resource: LibraryResource) => {
       if (!resource.url) return;
@@ -599,7 +641,9 @@ export default function LibraryScreen() {
       } catch (error) {
         const message = getLibraryCreateErrorMessage(error);
         showToast(message, 'error');
-        throw new Error(message);
+        const err = new Error(message);
+      (err as { cause?: unknown }).cause = error;
+      throw err;
       }
     },
     [
@@ -779,6 +823,10 @@ export default function LibraryScreen() {
 
   const handleNavigateToCuratorReview = useCallback(() => {
     router.push('/library/review');
+  }, [router]);
+
+  const handleNavigateToTools = useCallback(() => {
+    router.push('/library/tools');
   }, [router]);
 
   const handleRetry = useCallback(() => {
@@ -1098,13 +1146,22 @@ export default function LibraryScreen() {
                 <Box className="w-2 h-2 rounded-full bg-phase-accent" />
               </AnimatedView>
             )}
+            <Pressable
+              onPress={handleNavigateToTools}
+              accessibilityRole="button"
+              accessibilityLabel="Open document tools"
+              accessibilityHint="Convert, edit and export documents"
+              className="min-w-11 min-h-11 p-2 rounded-xl bg-phase-interactive/10 border border-phase-interactive/15 mr-1 justify-center items-center"
+            >
+              <Icon as={FileSpreadsheet} size={20} color={theme.text.primary} />
+            </Pressable>
             {activeSection === 'browse' && (
               <Pressable
                 onPress={handleNavigateToMap}
                 accessibilityRole="button"
                 accessibilityLabel="Open knowledge map"
                 accessibilityHint="Explore relationships between library resources"
-                className="min-w-11 min-h-11 p-2 rounded-xl bg-phase-interactive/10 border border-phase-interactive/15 mr-1 justify-center items-center"
+                className="min-w-11 min-h-11 p-2 rounded-xl bg-phase-interactive/10 border border-phase-interactive/15 justify-center items-center"
               >
                 <Icon as={MapIcon} size={20} color={theme.text.primary} />
               </Pressable>
@@ -1339,7 +1396,7 @@ export default function LibraryScreen() {
                 {viewMode === 'shelf' && !isSearchMode ? (
                   <Box className="flex-1">
                     <SanctuaryFlashList
-                      data={shelfData}
+                      data={orderedShelfData}
                       keyExtractor={keyExtractor}
                       renderItem={renderFlatListItem}
                       estimatedItemSize={280}

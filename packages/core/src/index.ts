@@ -126,9 +126,7 @@ export { AuthorityLifecycleProvider } from '@repo/core/providers/AuthorityLifecy
 export { AuthProvider, useAuth } from '@repo/core/providers/AuthProvider';
 export { GlobalProvider } from '@repo/core/providers/GlobalProvider';
 export type { FeatureSlice } from '@repo/core/store/slices/feature.slice';
-export { useAuthStore } from '@repo/core/store/useAuthStore';
-export { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
-export { useFeatureStore } from '@repo/core/store/useFeatureStore';
+export { useResponsiveRenderer } from '@repo/core/platform/useResponsiveRenderer';
 // 2. Logic State & Storage (Zustand & Supabase)
 export { type TotalState, useStore } from '@repo/core/store/useStore';
 export { type TemporalScale, useTemporalStore } from '@repo/core/store/useTemporalStore';

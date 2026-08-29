@@ -15,4 +15,17 @@ export {
   type ResourceLanguage,
   type ResourceType,
   type ResourceVisibility,
+  // P2 Reader Annotations
+  type TextHighlight,
+  type TextNote,
+  type ReadingProgress,
+  type Bookmark,
+  type ReaderSettings,
+  type ReaderState,
+  type AnnotationColor,
+  // Database row types (for internal use)
+  type TextHighlightRow,
+  type TextNoteRow,
+  type ReadingProgressRow,
+  type BookmarkRow,
 } from '@repo/library/types/Library';

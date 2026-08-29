@@ -5,6 +5,7 @@ import { Theme } from '@repo/ui/theme/Theme';
 import { CanvasZoneColumn } from '@repo/ui/components/workspace/CanvasZoneColumn';
 import { useWorkspaceCanvasData, WorkspaceCanvasEmptyState, WorkspaceCanvasHero } from '@repo/ui/components/workspace/shared';
 import type { WorkspaceCanvasProps } from '@repo/ui/components/workspace/types';
+import React from 'react';
 
 export interface WebWorkspaceCanvasProps<
   TSurfaceId extends string = string,
@@ -24,6 +25,10 @@ export function WebWorkspaceCanvas<
   ...props
 }: WebWorkspaceCanvasProps<TSurfaceId, TCapabilityKey>) {
   const { groups, visibleCount, pinnedCount } = useWorkspaceCanvasData(props);
+  const zoneRectsRef = React.useRef<Record<string, { y: number; h: number }>>({});
+  const onMeasureZone = React.useCallback((zone: string, y: number, h: number) => {
+    zoneRectsRef.current[zone] = { y, h };
+  }, []);
 
   return (
     <View style={styles.shell}>
@@ -33,15 +38,12 @@ export function WebWorkspaceCanvas<
         visibleCount={visibleCount}
         pinnedCount={pinnedCount}
         renderer={renderer}
+        workspaceId={props.workspaceId}
       />
       {visibleCount === 0 ? (
         <WorkspaceCanvasEmptyState emptyMessage={emptyMessage} />
       ) : (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.columns}
-        >
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.columns}>
           {groups.map((group) => (
             <CanvasZoneColumn
               key={group.zone}
@@ -59,9 +61,10 @@ export function WebWorkspaceCanvas<
               onPressSurfaceInfo={props.onPressSurfaceInfo}
               onToggleHidden={props.onToggleHidden}
               onReorder={props.onReorder}
-              dragEnabled={false}
-              reorderHint="Use the move controls to reorder this surface"
+              dragEnabled={Boolean(props.onReorder)}
+              reorderHint="Drag to reorder — or use move controls"
               style={styles.webColumn}
+              onMeasureZone={onMeasureZone as never}
             />
           ))}
         </ScrollView>
@@ -71,17 +74,9 @@ export function WebWorkspaceCanvas<
 }
 
 const styles = StyleSheet.create({
-  shell: {
-    gap: Theme.spacing.lg,
-  },
-  columns: {
-    gap: Theme.spacing.lg,
-    paddingBottom: Theme.spacing.sm,
-  },
-  webColumn: {
-    minWidth: 360,
-    maxWidth: 440,
-  },
+  shell: { gap: Theme.spacing.lg },
+  columns: { gap: Theme.spacing.lg, paddingBottom: Theme.spacing.sm },
+  webColumn: { minWidth: 360, maxWidth: 440 },
 });
 
 export default WebWorkspaceCanvas;

@@ -33,6 +33,24 @@ const mapPreferences = (row: any, userId: string) => ({
   created_at: asIsoString(row.created_at),
 });
 
+const mapThoughtRecord = (row: any) => ({
+  id: String(row.id),
+  user_id: String(row.user_id),
+  thought: String(row.thought),
+  situation: row.situation ?? null,
+  emotion: row.emotion ?? null,
+  trap_ids: row.trap_ids ?? null,
+  evidence_for: row.evidence_for ?? null,
+  evidence_against: row.evidence_against ?? null,
+  reframe: row.reframe ?? null,
+  mood_before: row.mood_before ?? null,
+  mood_after: row.mood_after ?? null,
+  post_outcome: row.post_outcome ?? null,
+  follow_up: row.follow_up ?? null,
+  idempotency_key: row.idempotency_key ?? null,
+  created_at: asIsoString(row.created_at),
+});
+
 export const selfRouter = impl.router({
   logMood: impl.logMood.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     assertDatabase(context);
@@ -124,6 +142,45 @@ export const selfRouter = impl.router({
     });
     return row ? mapMoodLog(row) : null;
   }),
+
+  saveThoughtRecord: impl.saveThoughtRecord
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      assertDatabase(context);
+      const row = await context.db.thoughtRecord.create({
+        data: {
+          ...input,
+          user_id: context.user.id,
+        },
+      });
+      return mapThoughtRecord(row);
+    }),
+
+  getThoughtRecords: impl.getThoughtRecords
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      assertDatabase(context);
+      const rows = await context.db.thoughtRecord.findMany({
+        where: { user_id: context.user.id },
+        take: input.limit ?? 10,
+        orderBy: { created_at: 'desc' },
+      });
+      return rows.map(mapThoughtRecord);
+    }),
+
+  completeThoughtRecordFollowUp: impl.completeThoughtRecordFollowUp
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      assertDatabase(context);
+      const row = await context.db.thoughtRecord.update({
+        where: { id: input.params.id },
+        data: {
+          post_outcome: input.body.post_outcome,
+          follow_up: input.body.follow_up,
+        },
+      });
+      return mapThoughtRecord(row);
+    }),
 
   getPreferences: impl.getPreferences.use(doubleGateMiddleware).handler(async ({ context }) => {
     assertDatabase(context);

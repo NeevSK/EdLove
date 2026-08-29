@@ -1,4 +1,5 @@
 export * from '@repo/classroom/analytics';
+export * from '@repo/classroom/api';
 export * from '@repo/classroom/components';
 export { default as RoleInitialState } from '@repo/classroom/components/IdentityInitialState';
 export { default as QuickAnalytics } from '@repo/classroom/components/QuickAnalytics';
@@ -16,6 +17,7 @@ export { default as ContentLibrary } from '@repo/classroom/screens/ContentLibrar
 export { default as DemoPlaygroundPanel } from '@repo/classroom/screens/DemoPlaygroundPanel.web';
 export { default as GradebookScreen } from '@repo/classroom/screens/GradebookScreen';
 export { default as GradebookScreenWeb } from '@repo/classroom/screens/GradebookScreen.web';
+export { default as LearningReflectionScreen } from '@repo/classroom/screens/LearningReflectionScreen';
 export { default as LessonFeed } from '@repo/classroom/screens/LessonFeed';
 export { default as NoSchoolView } from '@repo/classroom/screens/NoSchoolView.web';
 export { default as StudentClassroomDashboard } from '@repo/classroom/screens/StudentClassroomDashboard';

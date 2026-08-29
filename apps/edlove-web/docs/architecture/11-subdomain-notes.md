@@ -39,7 +39,7 @@ Sites that exist as **temporary subdomains** within edlove.org:
 The following planned subdomain projects were extracted from this monorepo into
 their own standalone private repositories and are no longer part of it:
 
-- **intuitui.edlove.org** → [NeevSK/intuitui-web](https://github.com/NeevSK/intuitui-web) (systems intelligence studio / professional practice; target `intuituilabs.lk`)
+- **intuituilabs.edlove.org** → [NeevSK/intuitui-web](https://github.com/NeevSK/intuitui-web) (systems intelligence studio / professional practice; target `intuituilabs.lk`)
 - **neevsk.edlove.org** → [NeevSK/neevsk-web](https://github.com/NeevSK/neevsk-web) (personal portfolio, writing, reflections; target `neevsk.lk` or stays a subdomain)
 
 ---

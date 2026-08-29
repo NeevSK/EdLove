@@ -5,15 +5,16 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Pressable,
   Text,
   VStack,
-} from '@repo/ui/gluestack';
+} from '@repo/ui/primitives';
 import { X } from '@repo/ui/icons';
-import { Pressable } from '@repo/ui/primitives';
 import type React from 'react';
+import { cn } from '@repo/ui/utils/classNames';
 
-const Heading = ({ children, className }: any) => (
-  <Text className={`text-xl font-bold ${className || ''}`}>{children}</Text>
+const Heading = ({ children, className }: { children: React.ReactNode; className?: string }) => (
+  <Text className={cn('text-xl font-bold', className)}>{children}</Text>
 );
 
 export interface SanctuaryModalProps {

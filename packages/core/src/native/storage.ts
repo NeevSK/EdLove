@@ -10,6 +10,9 @@ interface StorageInterface {
   delete: (key: string) => void;
   clearAll: () => void;
   contains: (key: string) => boolean;
+  // MMKV v4 hygiene extensions
+  byteSize?: () => Record<string, number>;
+  trim?: () => void;
 }
 
 /**
@@ -31,7 +34,6 @@ class RobustAsyncStorage implements StorageInterface {
       const pairs = await AsyncStorage.multiGet(keys);
       pairs.forEach(([key, value]) => {
         if (value !== null) {
-          // Try to parse number/boolean
           if (value === 'true') this.cache.set(key, true);
           else if (value === 'false') this.cache.set(key, false);
           else if (!Number.isNaN(Number(value)) && value.trim() !== '')
@@ -76,19 +78,33 @@ class RobustAsyncStorage implements StorageInterface {
   delete(key: string) {
     this.cache.delete(key);
     AsyncStorage.removeItem(key).catch((e) => {
-      console.error(`📦 Storage: Failed to delete ${key}`, e);
+      console.error(`\uD83D\uDCE6 Storage: Failed to delete ${key}`, e);
     });
   }
 
   clearAll() {
     this.cache.clear();
     AsyncStorage.clear().catch((e) => {
-      console.error('📦 Storage: Failed to clear all', e);
+      console.error('\uD83D\uDCE6 Storage: Failed to clear all', e);
     });
   }
 
   contains(key: string) {
     return this.cache.has(key);
+  }
+
+  // MMKV v4 hygiene extensions (AsyncStorage fallback implementations)
+  byteSize(): Record<string, number> {
+    const sizes: Record<string, number> = {};
+    this.cache.forEach((value, key) => {
+      sizes[key] = JSON.stringify(value).length;
+    });
+    return sizes;
+  }
+
+  trim(): void {
+    // For AsyncStorage, clearAll is the only option - but we only call this on account removal
+    // which already calls clearAll()
   }
 }
 
@@ -143,7 +159,12 @@ function createStorage(): StorageInterface {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { createMMKV } = require('react-native-mmkv');
-    const mmkv = createMMKV({ id: 'gurudevi-store' });
+    
+    // Create MMKV instance with compareBeforeSet for write reduction on hot keys
+    const mmkv = createMMKV({ 
+      id: 'gurudevi-store',
+      compareBeforeSet: true, // Skip disk write if value unchanged (hot keys: flags, localSeq)
+    });
 
     // Probe: verify the native instance actually works before committing.
     const PROBE_KEY = '__mmkv_probe__';
@@ -153,7 +174,7 @@ function createStorage(): StorageInterface {
 
     if (probeResult !== '1') throw new Error('MMKV probe read/write mismatch');
 
-    if (__DEV__) console.log('📦 Storage: MMKV v4 (NitroModules) initialized ✓');
+    if (__DEV__) console.log('\uD83D\uDCE6 Storage: MMKV v4 (NitroModules) initialized ✓');
 
     // Wrap native MMKV instance to satisfy StorageInterface fully.
     return {
@@ -165,6 +186,21 @@ function createStorage(): StorageInterface {
       delete: (key) => mmkv.remove(key),
       clearAll: () => mmkv.clearAll(),
       contains: (key) => mmkv.contains(key),
+      // MMKV v4 hygiene extensions
+      byteSize: () => {
+        try {
+          return mmkv.byteSize; // Returns Record<string, number> per-account
+        } catch {
+          return {};
+        }
+      },
+      trim: () => {
+        try {
+          mmkv.trim(); // Clear unused keys + memory cache
+        } catch {
+          // Silently ignore
+        }
+      },
     };
   } catch (e) {
     if (__DEV__) {

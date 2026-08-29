@@ -8,9 +8,7 @@
  * @see https://docs.powersync.com/usage/use-case-examples/drizzle
  */
 
-import { and, desc, eq, type Query } from 'drizzle-orm';
 import { toCompilableQuery } from '@powersync/drizzle-driver';
-import { useEffect, useMemo } from 'react';
 import {
   getActivePowerSyncDB,
   getDrizzleDB,
@@ -32,6 +30,8 @@ import {
   schools,
   students,
 } from '@repo/core/adapters/powersync/schema';
+import { and, desc, eq, type Query } from 'drizzle-orm';
+import { useEffect, useMemo } from 'react';
 
 // ─── Generic Reactive Query Hooks ────────────────────────────────────────────
 
@@ -54,7 +54,10 @@ export function usePowerSyncQuery<T = Record<string, unknown>>(
  *
  * Provides absolute compile-time type safety from the DB to the UI render tree.
  */
-export function useDrizzleQuery<T>(query: { execute: () => Promise<T | T[]>; toSQL: () => Query }): T[] {
+export function useDrizzleQuery<T>(query: {
+  execute: () => Promise<T | T[]>;
+  toSQL: () => Query;
+}): T[] {
   const compilableQuery = useMemo(() => toCompilableQuery<T>(query), [query]);
   const { data } = useQuery<T>(compilableQuery);
   return data;
@@ -123,7 +126,7 @@ export function useClassroomsForSchool(schoolId: string): Classroom[] {
   const query = db
     .select()
     .from(classrooms)
-    .where(and(eq(classrooms.schoolId, schoolId), eq(classrooms.isActive, true)))
+    .where(and(eq(classrooms.schoolId, schoolId), eq(classrooms.isArchived, false)))
     .orderBy(classrooms.name);
 
   return useDrizzleQuery<Classroom>(query);
@@ -151,11 +154,7 @@ export function usePolicyVersion(): PolicyVersion | null {
   // The browser runtime can be active before its Drizzle query facade is
   // ready (or can be intentionally disabled while offline). Do not let that
   // transient state crash the application shell.
-  if (
-    !db ||
-    typeof db.select !== 'function' ||
-    typeof db.select()?.from !== 'function'
-  ) {
+  if (!db || typeof db.select !== 'function' || typeof db.select()?.from !== 'function') {
     return null;
   }
   const query = useMemo(

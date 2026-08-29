@@ -1,7 +1,9 @@
 import { usePermissions } from '@repo/core/logic';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
-import { Center, Heading, Text } from '@repo/ui/primitives';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { Center, Heading, Pressable, Text } from '@repo/ui/primitives';
+import { resolveBlockingScreenState } from '@repo/ui/state/screenState';
 import { Redirect, useLocalSearchParams } from 'expo-router';
 
 export default function WorkspaceDispatcher() {
@@ -10,12 +12,45 @@ export default function WorkspaceDispatcher() {
     classroomId?: string;
     classroomName?: string;
   }>();
-  const loading = useCedarDecisionStore((state: any) => state.isLoading);
+  const loading = useCedarDecisionStore((state) => state.isLoading);
+  const permissionError = useCedarDecisionStore((state) => state.error);
+  const loadDecisions = useCedarDecisionStore((state) => state.loadDecisions);
 
-  if (loading) {
+  const retryPermissionResolution = () => {
+    if (!context.userId) return;
+    void loadDecisions(context.userId, context.activeBond?.id);
+  };
+  const screenState = resolveBlockingScreenState({
+    hasContent: false,
+    isLoading: loading,
+    error: permissionError,
+  });
+
+  if (screenState === 'loading') {
     return (
       <Center className="flex-1 bg-phase-canvas">
         <BrandPulse size={32} accessibilityLabel="Loading workspace" />
+      </Center>
+    );
+  }
+
+  if (screenState === 'error') {
+    return (
+      <Center className="flex-1 bg-phase-canvas">
+        <BrandedErrorState
+          title="Workspace access needs attention"
+          message="We could not restore the permissions for this workspace. Your local data is safe."
+        >
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Retry workspace access"
+            accessibilityHint="Retries restoring permissions for the current workspace"
+            onPress={retryPermissionResolution}
+            className="rounded-full bg-phase-primary px-5 py-3"
+          >
+            <Text className="font-semibold text-phase-world">Try again</Text>
+          </Pressable>
+        </BrandedErrorState>
       </Center>
     );
   }

@@ -307,6 +307,18 @@ export class SchemaType implements SchemaDef {
                     array: true,
                     relation: { opposite: "user" }
                 },
+                thought_records: {
+                    name: "thought_records",
+                    type: "ThoughtRecord",
+                    array: true,
+                    relation: { opposite: "user" }
+                },
+                learning_reflections: {
+                    name: "learning_reflections",
+                    type: "LearningReflection",
+                    array: true,
+                    relation: { opposite: "user" }
+                },
                 preferences: {
                     name: "preferences",
                     type: "UserPreferences",
@@ -3514,6 +3526,221 @@ export class SchemaType implements SchemaDef {
             idFields: ["id"],
             uniqueFields: {
                 id: { type: "String" }
+            }
+        },
+        ThoughtRecord: {
+            name: "ThoughtRecord",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                user_id: {
+                    name: "user_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "user"
+                    ] as readonly string[]
+                },
+                thought: {
+                    name: "thought",
+                    type: "String"
+                },
+                situation: {
+                    name: "situation",
+                    type: "String",
+                    optional: true
+                },
+                emotion: {
+                    name: "emotion",
+                    type: "Json",
+                    optional: true
+                },
+                trap_ids: {
+                    name: "trap_ids",
+                    type: "Json",
+                    optional: true
+                },
+                evidence_for: {
+                    name: "evidence_for",
+                    type: "String",
+                    optional: true
+                },
+                evidence_against: {
+                    name: "evidence_against",
+                    type: "String",
+                    optional: true
+                },
+                reframe: {
+                    name: "reframe",
+                    type: "String",
+                    optional: true
+                },
+                mood_before: {
+                    name: "mood_before",
+                    type: "Int",
+                    optional: true
+                },
+                mood_after: {
+                    name: "mood_after",
+                    type: "Int",
+                    optional: true
+                },
+                post_outcome: {
+                    name: "post_outcome",
+                    type: "String",
+                    optional: true
+                },
+                follow_up: {
+                    name: "follow_up",
+                    type: "Json",
+                    optional: true
+                },
+                idempotency_key: {
+                    name: "idempotency_key",
+                    type: "String",
+                    unique: true,
+                    optional: true,
+                    attributes: [{ name: "@unique" }] as readonly AttributeApplication[]
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                user: {
+                    name: "user",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "thought_records", fields: ["user_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id"), ExpressionUtils.field("created_at")]) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("user_id")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM")))))) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("thought_records") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                idempotency_key: { type: "String" }
+            }
+        },
+        LearningReflection: {
+            name: "LearningReflection",
+            fields: {
+                id: {
+                    name: "id",
+                    type: "String",
+                    id: true,
+                    attributes: [{ name: "@id" }, { name: "@default", args: [{ name: "value", value: ExpressionUtils.call("uuid") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("uuid") as FieldDefault
+                },
+                user_id: {
+                    name: "user_id",
+                    type: "String",
+                    foreignKeyFor: [
+                        "user"
+                    ] as readonly string[]
+                },
+                classroom_id: {
+                    name: "classroom_id",
+                    type: "String",
+                    optional: true
+                },
+                assignment_id: {
+                    name: "assignment_id",
+                    type: "String",
+                    optional: true
+                },
+                thought: {
+                    name: "thought",
+                    type: "String"
+                },
+                situation: {
+                    name: "situation",
+                    type: "String",
+                    optional: true
+                },
+                emotion: {
+                    name: "emotion",
+                    type: "Json",
+                    optional: true
+                },
+                trap_ids: {
+                    name: "trap_ids",
+                    type: "Json",
+                    optional: true
+                },
+                evidence_for: {
+                    name: "evidence_for",
+                    type: "String",
+                    optional: true
+                },
+                evidence_against: {
+                    name: "evidence_against",
+                    type: "String",
+                    optional: true
+                },
+                reframe: {
+                    name: "reframe",
+                    type: "String",
+                    optional: true
+                },
+                mood_before: {
+                    name: "mood_before",
+                    type: "Int",
+                    optional: true
+                },
+                mood_after: {
+                    name: "mood_after",
+                    type: "Int",
+                    optional: true
+                },
+                post_outcome: {
+                    name: "post_outcome",
+                    type: "String",
+                    optional: true
+                },
+                follow_up: {
+                    name: "follow_up",
+                    type: "Json",
+                    optional: true
+                },
+                idempotency_key: {
+                    name: "idempotency_key",
+                    type: "String",
+                    unique: true,
+                    optional: true,
+                    attributes: [{ name: "@unique" }] as readonly AttributeApplication[]
+                },
+                created_at: {
+                    name: "created_at",
+                    type: "DateTime",
+                    attributes: [{ name: "@default", args: [{ name: "value", value: ExpressionUtils.call("now") }] }] as readonly AttributeApplication[],
+                    default: ExpressionUtils.call("now") as FieldDefault
+                },
+                user: {
+                    name: "user",
+                    type: "User",
+                    attributes: [{ name: "@relation", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id")]) }, { name: "references", value: ExpressionUtils.array("String", [ExpressionUtils.field("id")]) }] }] as readonly AttributeApplication[],
+                    relation: { opposite: "learning_reflections", fields: ["user_id"], references: ["id"] }
+                }
+            },
+            attributes: [
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("user_id"), ExpressionUtils.field("created_at")]) }] },
+                { name: "@@index", args: [{ name: "fields", value: ExpressionUtils.array("String", [ExpressionUtils.field("classroom_id"), ExpressionUtils.field("created_at")]) }] },
+                { name: "@@allow", args: [{ name: "operation", value: ExpressionUtils.literal("all") }, { name: "condition", value: ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.call("auth"), "!=", ExpressionUtils._null()), "&&", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["id"]), "==", ExpressionUtils.field("user_id")), "||", ExpressionUtils.binary(ExpressionUtils.member(ExpressionUtils.call("auth"), ["bonds"]), "?", ExpressionUtils.binary(ExpressionUtils.binary(ExpressionUtils.field("capacity"), "==", ExpressionUtils.literal("admin")), "&&", ExpressionUtils.binary(ExpressionUtils.field("entity_type"), "==", ExpressionUtils.literal("PLATFORM")))))) }] },
+                { name: "@@map", args: [{ name: "name", value: ExpressionUtils.literal("learning_reflections") }] }
+            ] as readonly AttributeApplication[],
+            idFields: ["id"],
+            uniqueFields: {
+                id: { type: "String" },
+                idempotency_key: { type: "String" }
             }
         },
         DecisionJournal: {

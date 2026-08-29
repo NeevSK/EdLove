@@ -16,8 +16,8 @@ export const initSentry = () => {
     dsn,
     environment: process.env.EXPO_PUBLIC_SENTRY_ENVIRONMENT || 'production',
     release: process.env.EXPO_PUBLIC_SENTRY_RELEASE,
-    tracesSampleRate: 0.1,
-    profilesSampleRate: 0.1,
+    tracesSampleRate: 0.5,
+    profilesSampleRate: 0.5,
     enableTracing: true,
   });
 };

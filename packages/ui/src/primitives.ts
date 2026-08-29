@@ -20,8 +20,12 @@ export * from '@repo/ui/components/ui/box';
 export * from '@repo/ui/components/ui/button';
 export * from '@repo/ui/components/ui/center';
 export * from '@repo/ui/components/ui/checkbox';
+export * from '@repo/ui/components/ui/combobox';
+export * from '@repo/ui/components/ui/command';
 export * from '@repo/ui/components/ui/divider';
+export * from '@repo/ui/components/ui/dialog';
 export * from '@repo/ui/components/ui/form-control';
+export * from '@repo/ui/components/ui/form-field';
 export * from '@repo/ui/components/ui/hstack';
 export * from '@repo/ui/components/ui/icon';
 export * from '@repo/ui/components/ui/image';
@@ -31,16 +35,21 @@ export * from '@repo/ui/components/ui/linear-gradient';
 export * from '@repo/ui/components/ui/link';
 export * from '@repo/ui/components/ui/modal';
 export { Pressable } from '@repo/ui/components/ui/pressable';
+export * from '@repo/ui/components/ui/popover';
 export * from '@repo/ui/components/ui/progress';
+export * from '@repo/ui/components/ui/portal';
 export * from '@repo/ui/components/ui/radio';
 export * from '@repo/ui/components/ui/select';
+export * from '@repo/ui/components/ui/sheet';
 export * from '@repo/ui/components/ui/slider';
 export * from '@repo/ui/components/ui/spinner';
 export * from '@repo/ui/components/ui/switch';
+export * from '@repo/ui/components/ui/tabs';
 export * from '@repo/ui/components/ui/text';
 export * from '@repo/ui/components/ui/text-input';
 export * from '@repo/ui/components/ui/textarea';
 export * from '@repo/ui/components/ui/toast';
+export * from '@repo/ui/components/ui/vstack';
 export {
   AnimatedView,
   FlatList,

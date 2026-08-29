@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { EaseView } from 'react-native-ease';
+import { EaseView } from '@repo/ui/components/EaseView';
 import { BrandPulse } from '../BrandPulse';
 import { Users, WifiOff } from '@repo/ui/icons';
 import { Box, Heading, HStack, Icon, Text, View, VStack } from '@repo/ui/primitives';

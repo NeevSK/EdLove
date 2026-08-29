@@ -4,6 +4,7 @@ import eslintPluginOxlint from 'eslint-plugin-oxlint';
 import pluginSonarjs from 'eslint-plugin-sonarjs';
 import turboPlugin from 'eslint-plugin-turbo';
 import tseslint from 'typescript-eslint';
+import banUseStore from './rules/ban-use-store.js';
 
 /**
  * A shared ESLint configuration for the repository.
@@ -28,12 +29,14 @@ export const config = [
     plugins: {
       turbo: turboPlugin,
       sonarjs: pluginSonarjs,
+      'polymath/ban-use-store': { rules: { 'ban-use-store': banUseStore } },
     },
     rules: {
       'turbo/no-undeclared-env-vars': 'warn',
       'no-unused-vars': 'off',
       'import-x/no-cycle': ['error', { maxDepth: 5 }],
       'sonarjs/cognitive-complexity': ['error', 15],
+      'polymath/ban-use-store/ban-use-store': 'warn',
     },
   },
   {
@@ -53,6 +56,8 @@ export const config = [
   {
     ignores: [
       'dist/**',
+      '**/.vercel/**',
+      '**/.next/**',
       '**/*.config.js',
       '**/*.config.mjs',
       '**/*.config.ts',

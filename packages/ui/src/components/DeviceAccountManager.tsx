@@ -7,7 +7,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useMemo, useReducer } from 'react';
 import { StyleSheet } from 'react-native';
-import { Box, Button, ButtonText, Heading, HStack, Text, VStack } from '@repo/ui/gluestack';
+import { Box, Button, ButtonText, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
 import { Key, UserMinus, Users } from '@repo/ui/icons';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';

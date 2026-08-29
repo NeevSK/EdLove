@@ -1,6 +1,18 @@
+import {
+  AttendanceView,
+  ClassroomAccessState,
+  ClassroomEchoSection,
+  ClassroomHolisticInsights,
+  ResourcesView,
+  SubmissionModal,
+} from '@repo/classroom/components';
+import ClassroomNotes from '@repo/classroom/components/ClassroomNotes';
+import { StudentGradesOverview } from '@repo/classroom/components/student/StudentGradesOverview';
+import LessonFeed from '@repo/classroom/screens/LessonFeed';
+import { useStudentClassroomWorkspaceData } from '@repo/classroom/workspace/useStudentClassroomWorkspaceData';
 import { api } from '@repo/core/api/client';
+import { usePermissions } from '@repo/core/logic';
 import type { Assignment } from '@repo/core/types';
-
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 import { SkeletonCard } from '@repo/ui/components/SkeletonLoader';
@@ -27,17 +39,7 @@ import { hapticLight } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import {
-  AttendanceView,
-  ClassroomAccessState,
-  ClassroomEchoSection,
-  ClassroomHolisticInsights,
-  ResourcesView,
-  SubmissionModal,
-} from '@repo/classroom/components';
-import ClassroomNotes from '@repo/classroom/components/ClassroomNotes';
-import { useStudentClassroomWorkspaceData } from '@repo/classroom/workspace/useStudentClassroomWorkspaceData';
-import LessonFeed from '@repo/classroom/screens/LessonFeed';
+import { useTranslation } from 'react-i18next';
 
 type FeatureId =
   | 'insights'
@@ -69,6 +71,16 @@ export default function StudentClassroomDashboard() {
   const bottomPadding = useBottomTabPadding();
   const workspace = useStudentClassroomWorkspaceData(classroomId);
   const classroom = workspace.classroom;
+  const { context } = usePermissions();
+  const { t } = useTranslation();
+
+  const openLearningReflection = () => {
+    hapticLight();
+    router.push({
+      pathname: '/workspace/classroom/reflect',
+      params: { classroomId, classroomName },
+    });
+  };
 
   const renderFeatureContent = () => {
     switch (activeFeature) {
@@ -80,9 +92,20 @@ export default function StudentClassroomDashboard() {
         return <AttendanceView classroomId={classroomId} />;
       case 'gradebook':
         return (
-          <Box className="p-4">
-            <Text className="text-phase-text-tertiary">My Grade Performance</Text>
-          </Box>
+          <VStack className="gap-4 p-4">
+            <StudentGradesOverview userId={context.userId ?? undefined} />
+            <Pressable
+              onPress={openLearningReflection}
+              className="flex-row items-center gap-3 rounded-2xl border border-phase-border bg-obsidian p-4 active:bg-obsidian/80"
+            >
+              <Box className="w-9 h-9 rounded-lg bg-phase-accent/10 items-center justify-center">
+                <Icon as={NotebookPenIcon} size="sm" className="text-sanctuary-info" />
+              </Box>
+              <Text className="flex-1 text-sm font-bold text-templeGold tracking-tight">
+                {t('learningReflection.reflectAction')}
+              </Text>
+            </Pressable>
+          </VStack>
         );
       case 'lessons':
         return (
@@ -92,6 +115,7 @@ export default function StudentClassroomDashboard() {
             onOpenLesson={(id: string) => console.log('Open Lesson', id)}
             onOpenAssignment={(id: string) => console.log('Open Assignment', id)}
             onOpenAssignmentRecord={(assignment: Assignment) => setSubmissionModal(assignment)}
+            onOpenReflect={openLearningReflection}
             submittedAssignmentIds={workspace.submittedAssignmentIds}
           />
         );

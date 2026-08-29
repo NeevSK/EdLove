@@ -4,7 +4,8 @@ import PrincipalDashboardWebSurface from '@repo/classroom/screens/PrincipalDashb
 // Direct imports for sub-views
 import StudentDashboardWeb from '@repo/classroom/screens/StudentDashboard.web';
 import TeacherDashboardWeb from '@repo/classroom/screens/TeacherDashboard.web';
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 import { ArrowRight, School } from '@repo/ui/icons';
@@ -20,7 +21,7 @@ import { useRouter } from 'expo-router';
  */
 export default function ClassroomScreenWeb() {
   const { can, context } = usePermissions();
-  const { user } = useStore();
+  const user = useAuthStore((state) => state.user);
   const router = useRouter();
 
   const hasSchoolId = !!user?.school_id && user.school_id !== 'mock-school';

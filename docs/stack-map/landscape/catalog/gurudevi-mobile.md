@@ -22,8 +22,10 @@ The Operational Engine — mobile app for teachers, students, and principals. La
 | [@repo/self](../stack-map.md#repoself) | domain | Personal sanctuary — inner-life, growth, journaling, wellbeing, role-shaped self-work. |
 | [@repo/ui](../stack-map.md#repoui) | ui | Shared design system & shell primitives for the whole product family. |
 | [@repo/workforce](../stack-map.md#repoworkforce) | domain | Future non-academic & job-structure domain — school-wide operations beyond classrooms. |
+| [@repo/payments](../stack-map.md#repopayments) | domain | Fees, invoices, receipts & payment-orchestration domain for Gurudevi. |
+| [@repo/accounting](../stack-map.md#repoaccounting) | domain | Financial records & ledger domain for future Gurudevi ERP expansion. |
 
-## External deps (179 direct)
+## External deps (177 direct)
 
 ```text
 @azure/core-asynciterator-polyfill
@@ -66,8 +68,6 @@ The Operational Engine — mobile app for teachers, students, and principals. La
 @zenstackhq/schema
 @zenstackhq/zod
 apca-w3
-base64-js
-buffer
 color-name
 culori
 date-fns
@@ -120,6 +120,7 @@ expo-mesh-gradient
 expo-navigation-bar
 expo-network
 expo-notifications
+expo-observe
 expo-print
 expo-router
 expo-screen-capture
@@ -170,7 +171,6 @@ react-native-avoid-softinput
 react-native-css
 react-native-css-interop
 react-native-custom-pull-refresh
-react-native-ease
 react-native-enriched-markdown
 react-native-fast-shimmer
 react-native-gesture-handler

@@ -1,7 +1,7 @@
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryInput from '@repo/ui/components/SanctuaryInput';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
-import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
+import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 import { Lock, Shield, Smartphone } from '@repo/ui/icons';
 import { Theme } from '@repo/ui/theme/Theme';
 import { useCallback, useEffect, useMemo, useReducer } from 'react';

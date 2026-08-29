@@ -1,7 +1,7 @@
 import { useAuthStore, useDeviceSecurity } from '@repo/core/logic';
 import DeviceAccountManager from '@repo/ui/components/DeviceAccountManager';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
-import { Box, Button, ButtonText, Heading, HStack, Text, VStack } from '@repo/ui/gluestack';
+import { Box, Button, ButtonText, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
 import {
   Activity,
   Clock3,

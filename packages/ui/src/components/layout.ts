@@ -68,6 +68,24 @@ export const columns: Record<Breakpoint, number> = {
 };
 
 /**
+ * Unified canvas breakpoint — single source for device variation.
+ * Mobile stack <768, tablet grid 768-1023, desktop/kanban >=1024.
+ * Web compact (<920 per shell) still resolves to mobile stack when width <768,
+ * ensuring web-on-mobile gives true mobile layout. See responsiveShell.ts.
+ */
+export const canvasBreakpoints = {
+  mobileMax: 767,
+  tabletMin: 768,
+  desktopMin: 1024,
+  webCompactMax: 920,
+  webTabletMax: 1280,
+} as const;
+
+export function isMobileLayout(width: number): boolean {
+  return width <= canvasBreakpoints.mobileMax;
+}
+
+/**
  * Caps content width on wider surfaces so text/cards don't stretch
  * edge-to-edge in a desktop browser window or a landscape tablet — this
  * applies to real content too, not just skeletons, so loading and loaded

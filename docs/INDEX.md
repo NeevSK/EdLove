@@ -2,7 +2,7 @@
 title: "Documentation Index"
 status: "active"
 created: 2026-06-26
-updated: 2026-08-13
+updated: 2026-08-29
 author: "Naveen"
 scribe: "Antigravity"
 tags: [docs, index, changelog]
@@ -68,6 +68,8 @@ These files outline security models, data lifecycle policies, platform topologie
 | [Core/agent-observability-contract.md](Core/agent-observability-contract.md) | Agent-queryable observability contract: signal-by-destination, single-line-JSON log events, correlation flow, enforcement boundaries |
 | [files/README.md](files/README.md) | Preserved imported exploration evidence archive and reading boundary |
 | [architecture/production-software-landscape.md](architecture/production-software-landscape.md) | Full-stack mental map of production web + mobile software — for non-coders |
+| [architecture/2026-08-29-sanctuary-api-future-readiness-audit.md](architecture/2026-08-29-sanctuary-api-future-readiness-audit.md) | Comparative implementation, contract, documentation, and future-readiness audit for Sanctuary API |
+| [architecture/2026-08-29-sanctuary-api-adversarial-security-audit.md](architecture/2026-08-29-sanctuary-api-adversarial-security-audit.md) | Stop-ship authorization, payment, contract, AI, and verification audit of Sanctuary API |
 
 ---
 
@@ -82,6 +84,9 @@ Records documenting the rationale behind core design and architecture choices.
 | [decisions/2026-07-28-gurudevi-authz-decision-record.md](decisions/2026-07-28-gurudevi-authz-decision-record.md) | ADR for mobile client authorization rules and PDP configuration |
 | [decisions/2026-08-09-doppler-secrets-management-adoption.md](decisions/2026-08-09-doppler-secrets-management-adoption.md) | ADR for adopting Doppler as centralized secrets management across dev/staging/prod/next environments |
 | [decisions/2026-08-13-expo-orchestrator-agent-toolchain-adr.md](decisions/2026-08-13-expo-orchestrator-agent-toolchain-adr.md) | ADR for the Expo orchestrator agent toolchain: typed agent API surface, MCP + Doppler routing, visual editing (OSS primary / custom fallback), Inngest + Eve orchestration layering |
+| [decisions/2026-08-24-openness-and-reuse-strategy.md](decisions/2026-08-24-openness-and-reuse-strategy.md) | ADR — extracted-project openness (rn-terrain/trube-art); superseded for monorepo by 2026-08-25 |
+| [decisions/2026-08-24-license-tradeoffs.md](decisions/2026-08-24-license-tradeoffs.md) | ADR — MIT vs Apache/MPL/GPL/CC-BY tradeoffs (monorepo MIT, rn-terrain MIT+CC-BY) |
+| [decisions/2026-08-25-transparent-hosted-oss.md](decisions/2026-08-25-transparent-hosted-oss.md) | **ADR — Transparent Hosted OSS** (supersedes 2026-08-24 for monorepo): MIT public, hosted production, dev-only self-host seams |
 
 ---
 
@@ -103,6 +108,7 @@ Checklists, active feature roadmaps, migration paths, and lint configuration pla
 | [current_progress/2026-08-10-gurudevi-edlove-exploration-integration-plan.md](current_progress/2026-08-10-gurudevi-edlove-exploration-integration-plan.md) | Gurudevi-first phased program for integrating the imported exploration corpus into the Edlove platform |
 | [current_progress/2026-08-10-live-supabase-inspection.md](current_progress/2026-08-10-live-supabase-inspection.md) | Read-only linked Supabase structural, RLS, grants, and advisor inspection |
 | [current_progress/2026-08-13-expo-orchestrator-production-setup-plan.md](current_progress/2026-08-13-expo-orchestrator-production-setup-plan.md) | 7-phase production setup plan for the Expo 57 app orchestrator: foundation contracts, agent tooling/MCP, visual editing, Inngest+Eve orchestration, ship pipeline, Doppler-first secrets |
+| [current_progress/2026-08-29-sanctuary-api-future-readiness-plan.md](current_progress/2026-08-29-sanctuary-api-future-readiness-plan.md) | Active, phased implementation plan for Sanctuary API contract, error, AI-tool, composition, and operations readiness |
 
 ---
 
@@ -130,6 +136,12 @@ CI/CD setups, developer workflow scripts, versioning plans, and build diagnostic
 ---
 
 ## Changelog
+
+### 2026-08-29
+
+- **Added**: `architecture/2026-08-29-sanctuary-api-future-readiness-audit.md` — comparative source, contract, documentation, and modern-practice audit for Sanctuary API.
+- **Added**: `current_progress/2026-08-29-sanctuary-api-future-readiness-plan.md` — staged remediation plan with verification gates and dependency policy.
+- **Added**: `architecture/2026-08-29-sanctuary-api-adversarial-security-audit.md` — source-grounded stop-ship security audit of authorization, workers, payments, contracts, and AI boundaries.
 
 ### 2026-08-15
 

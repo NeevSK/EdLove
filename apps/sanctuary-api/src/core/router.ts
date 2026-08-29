@@ -22,6 +22,12 @@ export async function parseORPCContext(req: Request, env: any, requestId: string
   const dbUrl = env?.DATABASE_URL || process.env.DATABASE_URL;
   const db = canUseZenStackDb(dbUrl) ? createZenStackDb(user, dbUrl) : undefined;
 
+  if (user.id !== 'anonymous' && !db) {
+    throw new ORPCError('SERVICE_UNAVAILABLE', {
+      message: 'Authorization context is temporarily unavailable. Please retry shortly.',
+    });
+  }
+
   // Resolve headers matching request security context
   const clientHeaderSchoolId = req.headers.get('x-school-id') || '';
   const clientHeaderActiveBondId = req.headers.get('x-active-bond-id') || null;
@@ -94,6 +100,12 @@ export async function buildORPCContextFromHono(c: any): Promise<ORPCContext> {
   const user = c.get('user') || { id: 'anonymous' };
   const db = c.get('db');
   const requestId = c.get('requestId') || 'unknown';
+
+  if (user.id !== 'anonymous' && !db) {
+    throw new ORPCError('SERVICE_UNAVAILABLE', {
+      message: 'Authorization context is temporarily unavailable. Please retry shortly.',
+    });
+  }
 
   let schoolId = c.get('schoolId') || c.req.header('x-school-id') || '';
   const requestedCapacity = c.req.header('x-capacity') || null;
@@ -206,9 +218,11 @@ import { presenceRouter } from './handlers/presence';
 import { principalNotesRouter } from './handlers/principalNotes';
 import { privacyRouter } from './handlers/privacy';
 import { profileRouter } from './handlers/profile';
+import { rewardsRouter } from './handlers/rewards';
 import { sacredMissionsRouter } from './handlers/sacredMissions';
 import { schoolForestRouter } from './handlers/schoolForest';
 import { selfRouter } from './handlers/self';
+import { learningReflectionsRouter } from './handlers/learningReflections';
 import { socialRouter } from './handlers/social';
 import { studentPotentialRouter } from './handlers/studentPotential';
 import { syncRouter } from './handlers/sync';
@@ -219,6 +233,7 @@ import { warmMirrorRouter } from './handlers/warmMirror';
 // Root Router initialization
 export const router = o.router({
   self: selfRouter,
+  learningReflections: learningReflectionsRouter,
   profile: profileRouter,
   identity: identityRouter,
   onboarding: onboardingRouter,
@@ -251,6 +266,7 @@ export const router = o.router({
   warmMirror: warmMirrorRouter,
   presence: presenceRouter,
   privacy: privacyRouter,
+  rewards: rewardsRouter,
   echoes: echoRouter,
   studentPotential: studentPotentialRouter,
   forms: formsRouter,

@@ -1,4 +1,5 @@
 export * from '@repo/ui/utils/a11yUtils';
+export * from '@repo/ui/utils/classNames';
 export * from '@repo/ui/utils/colorUtils';
 export * from '@repo/ui/utils/DeviceUtils';
 export * from '@repo/ui/utils/dateTimeUtils';

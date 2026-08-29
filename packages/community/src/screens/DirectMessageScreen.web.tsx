@@ -14,7 +14,8 @@ import { communityAPI } from '@repo/community/api/community';
 import HeaderMoreMenu from '@repo/community/components/HeaderMoreMenu';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { socialAPI } from '@repo/core/api/client';
-import { useStore, useTemporalStore } from '@repo/core/logic';
+import { useTemporalStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 import { formatTimestamp } from '@repo/ui/utils/dateTimeUtils';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { getInitialsFromName } from '@repo/ui/utils/stringUtils';
@@ -36,7 +37,7 @@ export default function DirectMessageScreen() {
     ? params.conversationId[0]
     : params.conversationId;
   const userName = Array.isArray(params.userName) ? params.userName[0] : params.userName;
-  const { user } = useStore();
+  const user = useAuthStore((state) => state.user);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);

@@ -5,10 +5,15 @@
  * Refactored for Sanctuary V3.
  */
 
-import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
-import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { communityAPI } from '@repo/community/api/community';
+import { directMessageRoute } from '@repo/community/navigation/communityRoutes';
+import type { DirectConversation } from '@repo/community/types';
+import { usePermissions } from '@repo/core/logic';
+import { useTemporalStore } from '@repo/core/store';
 import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
 import { ChevronRight } from '@repo/ui/icons';
 import { Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
@@ -16,42 +21,62 @@ import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { communityAPI } from '@repo/community/api/community';
-import type { DirectConversation } from '@repo/community/types';
-import { directMessageRoute } from '@repo/community/navigation/communityRoutes';
-import { usePermissions } from '@repo/core/logic';
-import { useTemporalStore } from '@repo/core/store';
 
-export default function DirectMessagesListScreen() {
+interface DirectMessagesListScreenProps {
+  /** Supplying the data makes the host screen the single source of request state. */
+  conversations?: DirectConversation[];
+  loading?: boolean;
+  error?: string | null;
+  onRetry?: () => void;
+}
+
+export default function DirectMessagesListScreen({
+  conversations: controlledConversations,
+  loading: controlledLoading,
+  error: controlledError,
+  onRetry,
+}: DirectMessagesListScreenProps) {
   const { t } = useTranslation();
-  const [conversations, setConversations] = useState<DirectConversation[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [localConversations, setLocalConversations] = useState<DirectConversation[]>([]);
+  const [localLoading, setLocalLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
   const { can } = usePermissions();
   const isOffline = useTemporalStore((state) => state.isOffline);
 
+  const isControlled = controlledConversations !== undefined;
+  const conversations = controlledConversations ?? localConversations;
+  const loading = controlledLoading ?? localLoading;
+  const error = controlledError ?? localError;
+
   const load = useCallback(async () => {
-    setError(null);
+    setLocalLoading(true);
+    setLocalError(null);
     try {
       const data = await communityAPI.getDirectConversations();
-      setConversations(data as DirectConversation[]);
+      setLocalConversations(data as DirectConversation[]);
     } catch (err) {
       console.error('[DirectMessagesListScreen] load error', err);
-      setError(err instanceof Error ? err.message : 'Direct messages could not be loaded.');
+      setLocalError(err instanceof Error ? err.message : 'Direct messages could not be loaded.');
     } finally {
-      setLoading(false);
+      setLocalLoading(false);
       setRefreshing(false);
     }
   }, []);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    if (!isControlled) {
+      void load();
+    }
+  }, [isControlled, load]);
 
   const onRefresh = () => {
+    if (isControlled) {
+      onRetry?.();
+      return;
+    }
     setRefreshing(true);
-    load();
+    void load();
   };
 
   if (!can('read', 'DirectMessages')) {
@@ -78,7 +103,7 @@ export default function DirectMessagesListScreen() {
     return (
       <BrandedErrorState title="The conversation list could not settle" message={error}>
         <Pressable
-          onPress={() => void load()}
+          onPress={() => (isControlled ? onRetry?.() : void load())}
           accessibilityRole="button"
           accessibilityLabel="Try loading conversations again"
         >
@@ -99,9 +124,7 @@ export default function DirectMessagesListScreen() {
     return (
       <Animated.View entering={FadeInDown.delay(index * 100).springify()}>
         <Pressable
-          onPress={() =>
-            router.push(directMessageRoute(item.id, name))
-          }
+          onPress={() => router.push(directMessageRoute(item.id, name))}
           className="mx-5 mb-3"
           accessibilityRole="button"
           accessibilityLabel={`Open conversation with ${name}`}
@@ -147,8 +170,25 @@ export default function DirectMessagesListScreen() {
         estimatedItemSize={80}
         renderItem={renderItem}
         onRefresh={onRefresh}
-        refreshing={refreshing}
+        refreshing={isControlled ? loading : refreshing}
         contentContainerStyle={{ paddingTop: 20, paddingBottom: 100 }}
+        ListHeaderComponent={
+          error ? (
+            <Box className="mx-5 mb-4 rounded-2xl border border-phase-warning/30 bg-phase-warning/10 p-4">
+              <Text className="text-phase-warning text-sm font-semibold">
+                {isOffline ? 'Messages will refresh when you reconnect.' : error}
+              </Text>
+              <Pressable
+                onPress={onRefresh}
+                accessibilityRole="button"
+                accessibilityLabel="Try refreshing conversations again"
+                className="mt-3 self-start"
+              >
+                <Text className="text-phase-interactive font-bold">Try again</Text>
+              </Pressable>
+            </Box>
+          ) : null
+        }
         ListEmptyComponent={
           <BrandedEmptyState
             title={t('chat.noConversationsTitle') || 'Quiet Sanctuary'}

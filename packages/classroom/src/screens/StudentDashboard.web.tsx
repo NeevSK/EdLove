@@ -1,3 +1,5 @@
+import { useStudentDashboardSurfaces } from '@repo/classroom/workspace/useStudentDashboardSurfaces';
+import { useStudentWorkspaceData } from '@repo/classroom/workspace/useStudentWorkspaceData';
 import { useIsGuest } from '@repo/core/hooks';
 import { useStore, useTemporalStore } from '@repo/core/logic';
 import { useWorkspaceLayoutSync } from '@repo/core/native';
@@ -11,8 +13,6 @@ import { hapticLight } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { useStudentDashboardSurfaces } from '@repo/classroom/workspace/useStudentDashboardSurfaces';
-import { useStudentWorkspaceData } from '@repo/classroom/workspace/useStudentWorkspaceData';
 
 interface StudentDashboardProps {
   onRefresh?: () => void;
@@ -55,6 +55,10 @@ export default function StudentDashboardWeb({ forceDemo, userId }: StudentDashbo
       const { setBreathingOpen } = useStore.getState();
       setBreathingOpen(true);
     },
+    onOpenReflect: () => {
+      hapticLight();
+      router.push('/workspace/classroom/reflect');
+    },
     onOpenClassroom: (classroom) => {
       hapticLight();
       router.push({
@@ -76,7 +80,7 @@ export default function StudentDashboardWeb({ forceDemo, userId }: StudentDashbo
       workspaceId: 'student-dashboard',
       userId: userId || 'student-dashboard-web-guest',
       surfaces: dashboardSurfaces,
-      enableRemoteSync: false,
+      enableRemoteSync: true,
     });
 
   const findSurfaceDefinition = (surfaceId: string) =>

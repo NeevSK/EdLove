@@ -3,8 +3,16 @@ import { useStore } from '@repo/core/logic';
 import { useWindowDimensions } from 'react-native';
 import Animated, { Easing, SlideInLeft, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Box, Heading, HStack, Portal, Pressable, Text, VStack } from '@repo/ui/gluestack';
-import { ScrollView } from '@repo/ui/primitives';
+import {
+  Box,
+  HStack,
+  Heading,
+  Portal,
+  Pressable,
+  ScrollView,
+  Text,
+  VStack,
+} from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { SkeletonAvatar, SkeletonTextLine } from '@repo/ui/components/SkeletonLoader';
 

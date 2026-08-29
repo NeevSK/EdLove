@@ -41,6 +41,7 @@ describe('workspace classroom domain slice contracts', () => {
     expect(attendanceSheet).not.toContain('Anura Kumara');
     expect(attendanceSheet).not.toContain('api.attendance.record');
     expect(attendanceScreen).toContain('api.attendance.batchRecord');
-    expect(attendanceScreen).toContain('idempotencyKey: generateIdempotencyKey');
+    expect(attendanceScreen).toContain('generateIdempotencyKey');
+    expect(attendanceScreen).toContain('idempotencyKey');
   });
 });

@@ -6,7 +6,6 @@ try {
 } catch (e) {
   // If the CDN request fails (offline/CSP/CDN outage), Workbox will not be available.
   // The service worker should still install; we'll guard all Workbox usage below.
-  // eslint-disable-next-line no-console
   console.warn('Workbox CDN import failed in service worker:', e);
 }
 
@@ -62,7 +61,6 @@ if (typeof workbox !== 'undefined' && workbox && workbox.core) {
   );
 } else {
   // Workbox failed to load; service worker will install without Workbox-powered caching.
-  // eslint-disable-next-line no-console
   console.warn(
     'Workbox is not available in the service worker; skipping Workbox routing configuration.',
   );

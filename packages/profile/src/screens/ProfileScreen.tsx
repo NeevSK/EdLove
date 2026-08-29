@@ -20,6 +20,8 @@ import IdentityCard from '@repo/ui/components/IdentityCard';
 import LogoutModal from '@repo/ui/components/LogoutModal';
 import { NotificationSettingsPanel } from '@repo/ui/components/NotificationSettingsPanel';
 import { SanctuaryProgressBar } from '@repo/ui/components/SanctuaryProgressBar';
+import { useProfileWorkspaceSurfaces } from '@repo/profile/workspace/useProfileWorkspaceSurfaces';
+import { useWorkspaceLayoutSync } from '@repo/core/native';
 import ScreenWrapper, { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import {
@@ -315,6 +317,15 @@ export const ProfileScreen = () => {
   const { t } = useTranslation();
   const navigation = useProfileNavigation();
   const { profile, error, loading, refreshing, refresh, logout } = useProfile();
+  const user = useStore((state) => state.user);
+  const profileSurfaces = useProfileWorkspaceSurfaces();
+  const { surfaces: resolvedSurfaces } = useWorkspaceLayoutSync({
+    workspaceId: 'profile',
+    userId: user?.id ?? null,
+    surfaces: profileSurfaces,
+    enableRemoteSync: true,
+  });
+  const resolvedProfileSurfaces = resolvedSurfaces;
 
   const { context } = usePermissions();
   const capacity = context.activeBond?.capacity || context.primaryCapacity || 'member';
@@ -591,106 +602,123 @@ export const ProfileScreen = () => {
               <StatsSection profile={profile} role={capacity} />
             </Animated.View>
 
-            <DisclosureSection
-              title={t('profile.toolsTitle', 'Profile tools')}
-              description={t(
-                'profile.toolsDescription',
-                'Manage your settings, privacy record, and public view.',
-              )}
-              cardWidth={cardWidth}
-            >
-              <Animated.View entering={FadeInDown.delay(400).duration(500)}>
-                <ProfileListItem
-                  icon={Settings}
-                  label={t('settings.title')}
-                  onPress={() => navigation.openSettings?.()}
-                />
-              </Animated.View>
-              <Animated.View entering={FadeInDown.delay(475).duration(500)}>
-                <ProfileListItem
-                  icon={Info}
-                  label={t('profile.privacyLedgerTitle')}
-                  onPress={() => navigation.openPrivacyLedger?.()}
-                />
-              </Animated.View>
-              <Animated.View entering={FadeInDown.delay(500).duration(500)}>
-                <ProfileListItem
-                  icon={Eye}
-                  label={t('profile.publicPreviewTitle')}
-                  onPress={() =>
-                    profile?.id
-                      ? navigation.openPublicProfile?.({
-                          id: profile.id,
-                          type: 'user',
-                        })
-                      : undefined
-                  }
-                />
-              </Animated.View>
-            </DisclosureSection>
-
-            <DisclosureSection
-              title={t('profile.careTitle', 'Care & preferences')}
-              description={t(
-                'profile.careDescription',
-                'Support, notifications, and device security stay close at hand.',
-              )}
-              cardWidth={cardWidth}
-            >
-              <Animated.View entering={FadeInDown.delay(550).duration(500)}>
-                <SupportSection t={t} cardWidth={cardWidth} />
-              </Animated.View>
-              <Animated.View entering={FadeInDown.delay(600).duration(500)}>
-                <AppExperienceSection t={t} cardWidth={cardWidth} />
-              </Animated.View>
-              <Animated.View entering={FadeInDown.delay(650).duration(500)}>
-                <NotificationSettingsPanel />
-              </Animated.View>
-              <Animated.View entering={FadeInDown.delay(700).duration(500)}>
-                <DeviceSecurityCenter />
-              </Animated.View>
-            </DisclosureSection>
-
-            <DisclosureSection
-              title={t('profile.account.actions', 'Account actions')}
-              description={t(
-                'profile.account.actionsDescription',
-                'Sign out or begin the protected account deletion flow.',
-              )}
-              cardWidth={cardWidth}
-            >
-              <Animated.View entering={FadeInDown.delay(750).duration(500)}>
-                <VStack
-                  space="md"
-                  className="p-4 bg-phase-surface rounded-3xl border border-phase-surface"
-                >
-                  <Pressable
-                    onPress={handleLogout}
-                    accessible={true}
-                    accessibilityRole="button"
-                    accessibilityLabel={t('profile.logout')}
-                    accessibilityHint="Logs you out of your account"
-                    className="flex-row items-center justify-center p-4 bg-phase-canvas rounded-2xl border border-phase-surface"
+            {/* Profile canvas — boundary groups (SettingsGroup pattern) with isDefault + cross-device sync */}
+            {resolvedProfileSurfaces
+              .filter((s) => ['tools', 'care', 'account'].includes(s.surfaceId))
+              .filter((s) => !s.hidden)
+              .map((surface) => {
+                if (surface.surfaceId === 'tools') {
+                  return (
+                    <DisclosureSection
+                      key={surface.surfaceId}
+                      title={t('profile.toolsTitle', 'Profile tools')}
+                      description={t(
+                        'profile.toolsDescription',
+                        'Manage your settings, privacy record, and public view.',
+                      )}
+                      cardWidth={cardWidth}
+                    >
+                      <Animated.View entering={FadeInDown.delay(400).duration(500)}>
+                        <ProfileListItem
+                          icon={Settings}
+                          label={t('settings.title')}
+                          onPress={() => navigation.openSettings?.()}
+                        />
+                      </Animated.View>
+                      <Animated.View entering={FadeInDown.delay(475).duration(500)}>
+                        <ProfileListItem
+                          icon={Info}
+                          label={t('profile.privacyLedgerTitle')}
+                          onPress={() => navigation.openPrivacyLedger?.()}
+                        />
+                      </Animated.View>
+                      <Animated.View entering={FadeInDown.delay(500).duration(500)}>
+                        <ProfileListItem
+                          icon={Eye}
+                          label={t('profile.publicPreviewTitle')}
+                          onPress={() =>
+                            profile?.id
+                              ? navigation.openPublicProfile?.({
+                                  id: profile.id,
+                                  type: 'user',
+                                })
+                              : undefined
+                          }
+                        />
+                      </Animated.View>
+                    </DisclosureSection>
+                  );
+                }
+                if (surface.surfaceId === 'care') {
+                  return (
+                    <DisclosureSection
+                      key={surface.surfaceId}
+                      title={t('profile.careTitle', 'Care & preferences')}
+                      description={t(
+                        'profile.careDescription',
+                        'Support, notifications, and device security stay close at hand.',
+                      )}
+                      cardWidth={cardWidth}
+                    >
+                      <Animated.View entering={FadeInDown.delay(550).duration(500)}>
+                        <SupportSection t={t} cardWidth={cardWidth} />
+                      </Animated.View>
+                      <Animated.View entering={FadeInDown.delay(600).duration(500)}>
+                        <AppExperienceSection t={t} cardWidth={cardWidth} />
+                      </Animated.View>
+                      <Animated.View entering={FadeInDown.delay(650).duration(500)}>
+                        <NotificationSettingsPanel />
+                      </Animated.View>
+                      <Animated.View entering={FadeInDown.delay(700).duration(500)}>
+                        <DeviceSecurityCenter />
+                      </Animated.View>
+                    </DisclosureSection>
+                  );
+                }
+                return (
+                  <DisclosureSection
+                    key={surface.surfaceId}
+                    title={t('profile.account.actions', 'Account actions')}
+                    description={t(
+                      'profile.account.actionsDescription',
+                      'Sign out or begin the protected account deletion flow.',
+                    )}
+                    cardWidth={cardWidth}
                   >
-                    <Icon as={LogOut} size={20} className="mr-2 text-phase-error" />
-                    <Text className="text-phase-error font-bold">{t('profile.logout')}</Text>
-                  </Pressable>
-                  <Pressable
-                    onPress={handleDeleteAccount}
-                    accessible={true}
-                    accessibilityRole="button"
-                    accessibilityLabel={t('profile.deleteAccount')}
-                    accessibilityHint="Opens the account deletion modal"
-                    className="flex-row items-center justify-center p-1"
-                  >
-                    <Icon as={Trash2} size={16} className="mr-1.5 text-phase-text-tertiary" />
-                    <Text className="text-phase-text-tertiary text-xs">
-                      {t('profile.deleteAccount')}
-                    </Text>
-                  </Pressable>
-                </VStack>
-              </Animated.View>
-            </DisclosureSection>
+                    <Animated.View entering={FadeInDown.delay(750).duration(500)}>
+                      <VStack
+                        space="md"
+                        className="p-4 bg-phase-surface rounded-3xl border border-phase-surface"
+                      >
+                        <Pressable
+                          onPress={handleLogout}
+                          accessible={true}
+                          accessibilityRole="button"
+                          accessibilityLabel={t('profile.logout')}
+                          accessibilityHint="Logs you out of your account"
+                          className="flex-row items-center justify-center p-4 bg-phase-canvas rounded-2xl border border-phase-surface"
+                        >
+                          <Icon as={LogOut} size={20} className="mr-2 text-phase-error" />
+                          <Text className="text-phase-error font-bold">{t('profile.logout')}</Text>
+                        </Pressable>
+                        <Pressable
+                          onPress={handleDeleteAccount}
+                          accessible={true}
+                          accessibilityRole="button"
+                          accessibilityLabel={t('profile.deleteAccount')}
+                          accessibilityHint="Opens the account deletion modal"
+                          className="flex-row items-center justify-center p-1"
+                        >
+                          <Icon as={Trash2} size={16} className="mr-1.5 text-phase-text-tertiary" />
+                          <Text className="text-phase-text-tertiary text-xs">
+                            {t('profile.deleteAccount')}
+                          </Text>
+                        </Pressable>
+                      </VStack>
+                    </Animated.View>
+                  </DisclosureSection>
+                );
+              })}
           </VStack>
         </ScrollView>
       </Box>

@@ -1,6 +1,7 @@
 import type { LucideIcon } from '@repo/ui/icons';
-import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
+import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 import { SanctuaryCard } from '@repo/ui/components/SanctuaryCard';
+import { cn } from '@repo/ui/utils/classNames';
 
 interface DailyResonanceCardProps {
   title: string;
@@ -28,10 +29,10 @@ export const DailyResonanceCard = ({
       <VStack className="gap-4">
         <HStack className="items-center gap-3">
           <Box
-            className={`
-                            p-2 rounded-xl
-                            ${type === 'motivation' ? 'bg-phase-accent/15' : 'bg-phase-accent/10'}
-                        `}
+            className={cn(
+              'p-2 rounded-xl',
+              type === 'motivation' ? 'bg-phase-accent/15' : 'bg-phase-accent/10',
+            )}
           >
             <Icon size={20} className="text-phase-accent" />
           </Box>

@@ -1,7 +1,13 @@
+export { deriveReframeOutcome, isFollowUpDue } from '@repo/core/logic/reflection';
 export * from '@repo/self/api';
 export * from '@repo/self/components';
 export * from '@repo/self/constants/selfRegistry';
+export * from '@repo/self/constants/trapCatalog';
 export * from '@repo/self/constants/wellbeing';
+export * from '@repo/self/features/accessPolicy';
+export * from '@repo/self/features/featureCatalog';
+export * from '@repo/self/features/featureResolver';
+export * from '@repo/self/features/userPreferences';
 export * from '@repo/self/hooks';
 export { useWisdom } from '@repo/self/hooks/useWisdom';
 export * from '@repo/self/screens';

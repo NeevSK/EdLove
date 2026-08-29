@@ -1,12 +1,14 @@
 import { useAuth } from '@repo/core/providers';
 import { useStore } from '@repo/core/store';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import OnboardingScreen from '@repo/ui/screens/OnboardingScreen';
+import { CelebrationOverlay } from '@repo/ui/components/CelebrationOverlay';
 
 export function OnboardingWrapper() {
   const { session, refreshProfile } = useAuth();
   const storeUser = useStore((state) => state.user);
   const showToast = useStore((state) => state.showToast);
+  const [celebrate, setCelebrate] = useState(false);
 
   const handleComplete = useCallback(
     (_name: string, _capacity: any) => {
@@ -20,6 +22,8 @@ export function OnboardingWrapper() {
             console.log('⚠️ [Onboarding] Store did not auto-update, forcing completion flag.');
             state.setOnboardingCompleted(true);
           }
+
+          setCelebrate(true);
         } catch (err) {
           console.error('Failed to refresh profile after onboarding:', err);
           showToast(
@@ -33,13 +37,20 @@ export function OnboardingWrapper() {
   );
 
   return (
-    <OnboardingScreen
-      userId={session?.user?.id}
-      isAnonymous={
-        storeUser?.is_anonymous === true ||
-        session?.user?.is_anonymous === true
-      }
-      onComplete={handleComplete}
-    />
+    <>
+      <OnboardingScreen
+        userId={session?.user?.id}
+        isAnonymous={
+          storeUser?.is_anonymous === true ||
+          session?.user?.is_anonymous === true
+        }
+        onComplete={handleComplete}
+      />
+      <CelebrationOverlay
+        trigger={celebrate}
+        count={150}
+        onAnimationEnd={() => setCelebrate(false)}
+      />
+    </>
   );
 }

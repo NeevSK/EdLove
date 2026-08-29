@@ -71,6 +71,64 @@ try {
 }
 
 /**
+ * Reinitialize Cedar schema and policies from disk.
+ * Test helper to pick up schema/policy changes without process restart.
+ */
+export function reinitializeCedar(): void {
+  try {
+    const schemaPath = join(srcDir, 'schema', 'schema.cedarschema');
+    const rawSchemaText = readFileSync(schemaPath, 'utf8');
+    const schemaParse = schemaToJson(rawSchemaText);
+    if (schemaParse.type === 'success') {
+      schemaJson = schemaParse.json;
+    } else {
+      throw new Error('Failed to parse Cedar schema: ' + JSON.stringify(schemaParse.errors));
+    }
+
+    const policyFiles = [
+      'platform/admin.cedar',
+      'school/principal.cedar',
+      'school/assistantPrincipal.cedar',
+      'school/teacher.cedar',
+      'school/gradeHead.cedar',
+      'school/sectionHead.cedar',
+      'school/student.cedar',
+      'school/parent.cedar',
+      'school/staff.cedar',
+      'guest/personal.cedar',
+      'platform/dataBoundaries.cedar',
+    ];
+
+    const policyTexts: string[] = [];
+
+    for (const file of policyFiles) {
+      const filePath = join(srcDir, 'policies', file);
+      const content = readFileSync(filePath, 'utf8');
+      policyTexts.push(content);
+
+      const actorName = file.split('/').pop()?.replace('.cedar', '');
+      if (actorName) {
+        const gaps: string[] = [];
+        const lines = content.split('\n');
+        for (const line of lines) {
+          if (line.includes('GAP:')) {
+            const gapComment = line.substring(line.indexOf('GAP:')).trim();
+            gaps.push(gapComment);
+          }
+        }
+        if (gaps.length > 0) {
+          gapsMap[actorName] = gaps;
+        }
+      }
+    }
+
+    concatenatedPolicies = policyTexts.join('\n\n');
+  } catch (error) {
+    console.error('CRITICAL: Failed to reinitialize Cedar policy engine:', error);
+  }
+}
+
+/**
  * Clean check() function. Runs a request against the cached Cedar engine.
  * Log denied decisions at WARN level for audit trail.
  */

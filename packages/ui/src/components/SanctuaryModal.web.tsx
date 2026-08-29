@@ -1,8 +1,7 @@
 import { X } from '@repo/ui/icons';
 import type React from 'react';
 import { Dimensions } from 'react-native';
-import { Box, HStack, ScrollView, Text, VStack } from '@repo/ui/gluestack';
-import { Pressable } from '@repo/ui/primitives';
+import { Box, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { UniversalModal } from '@repo/ui/components/UniversalModal';
 
 export interface SanctuaryModalProps {
@@ -53,7 +52,7 @@ export default function SanctuaryModal({
           borderColor: 'rgba(42, 35, 24, 0.18)',
           boxShadow:
             '0 25px 50px -12px rgba(20, 16, 11, 0.5), 0 0 0 1px rgba(42, 35, 24, 0.12), 0 10px 20px -5px rgba(0, 0, 0, 0.2)',
-        } as any}
+        }}
       >
         {/* Header */}
         <HStack
@@ -89,8 +88,8 @@ export default function SanctuaryModal({
           style={{
             backgroundColor: '#FDFAF3',
             maxHeight: Dimensions.get('window').height * 0.7,
-            overflow: 'auto',
-          } as any}
+            overflow: 'scroll',
+          }}
         >
           {children}
         </ScrollView>

@@ -1,4 +1,5 @@
-import { coreRuntime, useStore } from '@repo/core/logic';
+import { coreRuntime } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 import { libraryAPI } from '@repo/library/api/library';
 import { ResourceShareQRModal } from '@repo/library/components/ResourceShareQRModal';
 import type { LibraryResource } from '@repo/library/types';
@@ -151,7 +152,8 @@ function RelatedResourceCard({
 export default function ResourceHubScreen() {
   const router = useRouter();
   const colors = useThemedColors();
-  const { user, isOnline } = useStore();
+  const user = useAuthStore((state) => state.user);
+  const isOnline = useAuthStore((state) => state.isOnline);
   const [qrVisible, setQrVisible] = useState(false);
 
   const { resourceId } = useLocalSearchParams<{ resourceId?: string }>();

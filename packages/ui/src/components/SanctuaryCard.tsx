@@ -1,18 +1,19 @@
-import { type FC, useState } from 'react';
-import { Platform } from 'react-native';
-import { EaseView } from 'react-native-ease';
-import { Box, Pressable, Text, VStack } from '@repo/ui/gluestack';
+import { type FC, type ReactNode, useState } from 'react';
+import { Platform, type StyleProp, type ViewStyle } from 'react-native';
+import { EaseView } from '@repo/ui/components/EaseView';
+import { Box, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { cn } from '@repo/ui/utils/classNames';
 
 interface SanctuaryCardProps {
   title?: string;
-  children: any;
-  footer?: any;
+  children: ReactNode;
+  footer?: ReactNode;
   onPress?: () => void;
   onLongPress?: () => void;
   href?: string;
   target?: '_blank' | '_self';
   elevated?: boolean;
-  style?: any;
+  style?: StyleProp<ViewStyle>;
   accessibilityLabel?: string;
   className?: string;
 }
@@ -46,15 +47,17 @@ const SanctuaryCard: FC<SanctuaryCardProps> = ({
 
   const content = (
     <EaseView
-      animate={(onPress || href) ? { scale: pressed ? LIFT_SCALE_PRESSED : LIFT_SCALE_NORMAL } : undefined}
-      transition={(onPress || href) ? { type: 'spring', damping: 15, stiffness: 150 } : undefined}
+      animate={
+        onPress || href ? { scale: pressed ? LIFT_SCALE_PRESSED : LIFT_SCALE_NORMAL } : undefined
+      }
+      transition={onPress || href ? { type: 'spring', damping: 15, stiffness: 150 } : undefined}
       style={style}
-      className={`
-                bg-phase-surface border border-phase-interactive/20 rounded-3xl overflow-hidden
-                ${elevated ? 'shadow-xl' : ''}
-                ${hovered && Platform.OS === 'web' ? 'opacity-95' : ''}
-                ${className || ''}
-            `}
+      className={cn(
+        'bg-phase-surface border border-phase-interactive/20 rounded-3xl overflow-hidden',
+        elevated ? 'shadow-xl' : undefined,
+        hovered && Platform.OS === 'web' ? 'opacity-95' : undefined,
+        className,
+      )}
     >
       <VStack className="p-6">
         {title && <Text className="text-xl font-bold text-phase-text-primary mb-4">{title}</Text>}

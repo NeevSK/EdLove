@@ -43,6 +43,7 @@ export const SELF_FEATURE_IDS = {
   reminders: 'reminders',
   decisions: 'decisions',
   professionalHistory: 'professional_history',
+  reframe: 'reframe',
 } as const;
 
 /**
@@ -173,7 +174,7 @@ export const SELF_REGISTRY: Record<string, DomainEntry> = {
   reflection: {
     id: 'reflection',
     label: 'Reflection Tools',
-    description: 'Voice and fire journaling',
+    description: 'Voice, fire journaling and thought reframing',
     ownerPackage: 'self',
     mobileSupport: true,
     webSupport: true,
@@ -183,7 +184,7 @@ export const SELF_REGISTRY: Record<string, DomainEntry> = {
       title: 'Reflection Tools',
       accentColor: '#F59E0B',
       energyVibe: ['#FFFBEB', '#FEF3C7'],
-      featureIds: ['fire_journal', 'voice_journal', 'tomorrow_prep'],
+      featureIds: ['fire_journal', 'voice_journal', 'tomorrow_prep', 'reframe'],
     },
     citizenshipRequired: 3,
     capabilityRequirement: { action: 'read', subject: 'SelfReflection' },
@@ -273,6 +274,7 @@ export const FEATURE_EMOJIS: Record<string, string> = {
   joy_jar: '🏺',
   sleep_tracker: '💤',
   gratitude_glimmers: '✨',
+  reframe: '💡',
 };
 
 /**
@@ -302,5 +304,9 @@ export const FEATURE_DISCOVERY_DATA: Record<string, { whatIsIt: string; whereToF
   decisions: {
     whatIsIt: 'A structured space to track and reflect on institutional choices.',
     whereToFind: 'Found in your professional working layer.',
+  },
+  reframe: {
+    whatIsIt: 'A guided thought record that turns automatic thoughts around by weighing evidence.',
+    whereToFind: 'Under the Reflection Tools domain on your Self screen.',
   },
 };

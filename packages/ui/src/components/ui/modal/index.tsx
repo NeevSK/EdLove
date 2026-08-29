@@ -6,6 +6,7 @@ import type React from 'react';
 import { createContext, useContext, useEffect, useMemo } from 'react';
 import { Platform, type ViewProps } from 'react-native';
 import { ZoomIn, ZoomOut } from 'react-native-reanimated';
+import { cn } from '@repo/ui/utils/classNames';
 
 /**
  * Modal Component
@@ -120,13 +121,6 @@ export const ModalBackdrop = Overlay;
 
 export const ModalContent = ({ children, className, style }: any) => {
   const contentStyle = [
-    {
-      backgroundColor: '#FDFAF3',
-      borderWidth: 1,
-      borderColor: 'rgba(42, 35, 24, 0.18)',
-      boxShadow:
-        '0 25px 50px -12px rgba(20, 16, 11, 0.5), 0 0 0 1px rgba(42, 35, 24, 0.12), 0 10px 20px -5px rgba(0, 0, 0, 0.2)',
-    } as any,
     Platform.OS === 'web' &&
       ({
         backdropFilter: 'blur(24px) saturate(1.4)',
@@ -138,7 +132,7 @@ export const ModalContent = ({ children, className, style }: any) => {
 
   return (
     <Box
-      className={`bg-phase-modal-card rounded-3xl overflow-hidden shadow-2xl border border-phase-modal-border ${className || ''}`}
+      className={cn('bg-phase-modal-card rounded-3xl overflow-hidden shadow-2xl border border-phase-modal-border', className)}
       style={contentStyle}
     >
       {children}
@@ -148,19 +142,19 @@ export const ModalContent = ({ children, className, style }: any) => {
 
 export const ModalHeader = ({ children, className }: any) => (
   <Box
-    className={`px-6 py-5 flex-row items-center justify-between border-b border-phase-interactive/5 ${className || ''}`}
+    className={cn('px-6 py-5 flex-row items-center justify-between border-b border-phase-interactive/5', className)}
   >
     {children}
   </Box>
 );
 
 export const ModalBody = ({ children, className }: any) => (
-  <Box className={`px-6 py-5 ${className || ''}`}>{children}</Box>
+  <Box className={cn('px-6 py-5', className)}>{children}</Box>
 );
 
 export const ModalFooter = ({ children, className }: any) => (
   <Box
-    className={`px-6 py-5 border-t border-phase-interactive/5 flex-row justify-end gap-4 ${className || ''}`}
+    className={cn('px-6 py-5 border-t border-phase-interactive/5 flex-row justify-end gap-4', className)}
   >
     {children}
   </Box>

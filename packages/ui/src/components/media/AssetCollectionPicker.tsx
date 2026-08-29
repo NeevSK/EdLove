@@ -13,13 +13,13 @@ import {
   Pressable,
   Text,
   VStack,
-} from '@repo/ui/gluestack';
+} from '@repo/ui/primitives';
 
 export interface PickerItem {
   id: string;
   name: string;
   visibility?: 'private' | 'public' | 'shared';
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }
 
 export interface AssetCollectionPickerProps {
@@ -72,8 +72,8 @@ export const AssetCollectionPicker: React.FC<AssetCollectionPickerProps> = ({
         <ModalBody className="p-0">
           <FlatList
             data={items}
-            keyExtractor={(item: any) => item.id}
-            renderItem={({ item }: { item: any }) => (
+            keyExtractor={(item: PickerItem) => item.id}
+            renderItem={({ item }: { item: PickerItem }) => (
               <Pressable
                 accessibilityRole="button"
                 className="flex-row items-center p-6 border-b border-phase-border active:bg-phase-accent/5"

@@ -274,9 +274,157 @@ export interface KnowledgeTopology {
   };
 }
 // ============================================================================
-// GRAPH & JOURNEY TYPES
+// READER ANNOTATIONS (P2)
 // ============================================================================
-export type NodeRelationship = LinkRelationship;
+export type AnnotationColor = 'yellow' | 'green' | 'blue' | 'pink' | 'orange' | 'purple';
+
+export interface TextHighlight {
+  id: string;
+  resourceId: string;
+  userId: string;
+  // PDF text selection
+  cfiRange?: string; // EPUB CFI
+  pdfSelection?: {
+    pageIndex: number;
+    rects: { x: number; y: number; width: number; height: number }[];
+    text: string;
+  };
+  // Common
+  color: AnnotationColor;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TextNote {
+  id: string;
+  resourceId: string;
+  userId: string;
+  // Anchor (can attach to highlight or standalone position)
+  highlightId?: string;
+  cfiPosition?: string;
+  pdfPosition?: { pageIndex: number; x: number; y: number };
+  content: string;
+  // Metadata
+  isPrivate: boolean;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ReadingProgress {
+  id: string;
+  resourceId: string;
+  userId: string;
+  // Position
+  cfiProgress?: string; // EPUB
+  pdfProgress?: {
+    pageIndex: number;
+    scrollY: number;
+    totalPages: number;
+  };
+  // Metadata
+  timeSpentMs: number;
+  completedAt?: string;
+  lastReadAt: string;
+}
+
+export interface Bookmark {
+  id: string;
+  resourceId: string;
+  userId: string;
+  // Position
+  cfiPosition?: string;
+  pdfPosition?: { pageIndex: number; scrollY: number };
+  title?: string;
+  note?: string;
+  createdAt: string;
+}
+
+// ============================================================================
+// READER STATE (ephemeral, for in-memory reader state)
+// ============================================================================
+export interface ReaderSettings {
+  fontSize: number;
+  fontFamily: 'serif' | 'sans' | 'mono';
+  theme: 'light' | 'dark' | 'sepia';
+  lineHeight: number;
+  margin: 'narrow' | 'normal' | 'wide';
+  scrollMode: 'paginated' | 'scroll';
+  twoPageSpread: boolean;
+}
+
+export interface ReaderState {
+  resourceId: string;
+  currentLocation: {
+    cfi?: string;
+    pdfPageIndex?: number;
+    pdfScrollY?: number;
+  };
+  highlights: TextHighlight[];
+  notes: TextNote[];
+  progress: ReadingProgress | null;
+  bookmarks: Bookmark[];
+  settings: ReaderSettings;
+}
+
+// ============================================================================
+// DATABASE ROW TYPES (for internal use)
+// ============================================================================
+export interface TextHighlightRow {
+  id: string;
+  resource_id: string;
+  user_id: string;
+  cfi_range: string | null;
+  pdf_page_index: number | null;
+  pdf_rects: string | null;
+  pdf_text: string | null;
+  color: string;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface TextNoteRow {
+  id: string;
+  resource_id: string;
+  user_id: string;
+  highlight_id: string | null;
+  cfi_position: string | null;
+  pdf_page_index: number | null;
+  pdf_x: number | null;
+  pdf_y: number | null;
+  content: string;
+  is_private: number;
+  tags: string | null;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface ReadingProgressRow {
+  id: string;
+  resource_id: string;
+  user_id: string;
+  cfi_progress: string | null;
+  pdf_page_index: number | null;
+  pdf_scroll_y: number | null;
+  pdf_total_pages: number | null;
+  time_spent_ms: number;
+  completed_at: number | null;
+  last_read_at: number;
+}
+
+export interface BookmarkRow {
+  id: string;
+  resource_id: string;
+  user_id: string;
+  cfi_position: string | null;
+  pdf_page_index: number | null;
+  pdf_scroll_y: number | null;
+  title: string | null;
+  note: string | null;
+  created_at: number;
+}
+
+// ============================================================================
 export interface LibraryEdge {
   id: string;
   from_node_id: string;
@@ -302,3 +450,8 @@ export interface UserJourney {
   progress_score: number;
   last_accessed_at: string;
 }
+
+// ============================================================================
+// GRAPH & JOURNEY TYPES
+// ============================================================================
+export type NodeRelationship = LinkRelationship;

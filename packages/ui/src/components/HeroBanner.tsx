@@ -1,4 +1,4 @@
-import { Box } from '@repo/ui/gluestack';
+import { Box } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 import { tokens } from '@repo/ui/tokens';
 import type React from 'react';

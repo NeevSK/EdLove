@@ -28,7 +28,6 @@ export default defineConfig({
       'src/__tests__/architecture/AppPerformance.test.tsx',
       'src/__tests__/architecture/classroom-surface-entrypoints.test.ts',
       'src/__tests__/architecture/founder-stack-boundaries.test.ts',
-      'src/__tests__/architecture/profile-route-capabilities.test.ts',
     ],
     passWithNoTests: true,
     server: {

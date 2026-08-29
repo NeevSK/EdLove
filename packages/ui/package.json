@@ -773,6 +773,11 @@
       "import": "./src/screens/WorkspaceCanvasDemo.tsx",
       "default": "./src/screens/WorkspaceCanvasDemo.tsx"
     },
+    "./screens/ComponentShowcaseScreen": {
+      "types": "./src/screens/ComponentShowcaseScreen.tsx",
+      "import": "./src/screens/ComponentShowcaseScreen.tsx",
+      "default": "./src/screens/ComponentShowcaseScreen.tsx"
+    },
     "./svelte/*": {
       "svelte": "./src/svelte/*.svelte",
       "default": "./src/svelte/*.svelte"
@@ -838,6 +843,9 @@
     "clean": "node ../../scripts/run-and-report.mjs --cmd \"rm -rf .turbo node_modules dist\" --name \"packages_ui-clean\""
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@react-native-community/slider": "5.2.0",
     "@repo/core": "workspace:*",
     "@shopify/react-native-skia": "2.6.5",
@@ -852,18 +860,20 @@
     "expo-clipboard": "~57.0.1",
     "expo-device": "~57.0.1",
     "expo-file-system": "~57.0.2",
+    "expo-image": "~57.0.3",
     "expo-local-authentication": "~57.0.2",
     "expo-router": "~57.0.12",
     "expo-screen-capture": "~57.0.1",
     "expo-sharing": "~57.0.11",
     "expo-video": "~57.0.2",
     "expo-web-browser": "~57.0.2",
-    "lucide-react-native": "^1.24.0",
+    "lucide-react-native": "^1.33.0",
     "nativewind": "5.0.0-preview.4",
     "qrcode": "^1.5.4",
     "react-native-css": "3.0.7",
     "react-native-css-interop": "0.1.22",
-    "react-native-ease": "^0.7.3",
+    "react-native-external-keyboard": "^1.1.0",
+    "react-native-fast-confetti": "^2.0.2",
     "react-native-reanimated": "^4.5.0",
     "react-native-reanimated-carousel": "^5.1.1",
     "react-native-safe-area-context": "^5.7.0",

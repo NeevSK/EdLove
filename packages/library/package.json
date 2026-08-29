@@ -39,6 +39,11 @@
       "import": "./src/entrypoints/map.ts",
       "default": "./src/entrypoints/map.ts"
     },
+    "./tools": {
+      "types": "./src/entrypoints/tools.ts",
+      "import": "./src/entrypoints/tools.ts",
+      "default": "./src/entrypoints/tools.ts"
+    },
     "./screens/LibraryScreen": {
       "import": "./src/screens/LibraryScreen.tsx",
       "browser": "./src/screens/LibraryScreen.web.tsx",
@@ -136,17 +141,26 @@
     "@supabase/postgrest-js": "2.102.1",
     "@supabase/supabase-js": "2.102.1",
     "@tanstack/react-query": "^5.101.0",
+    "@zip.js/zip.js": "^2.7.5",
     "d3": "^7.9.0",
     "expo-blur": "~57.0.2",
+    "expo-image-manipulator": "~12.0.0",
     "expo-linear-gradient": "~57.0.1",
     "expo-router": "~57.0.12",
+    "fflate": "^0.8.2",
     "nativewind": "5.0.0-preview.4",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^6.2.108",
     "react-i18next": "^17.0.8",
     "react-native-gesture-handler": "3.0.2",
     "react-native-gifted-charts": "^1.4.77",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-maps": "^1.27.2",
-    "react-native-svg": "15.15.4"
+    "react-native-svg": "15.15.4",
+    "sheetjs": "^2.0.0",
+    "tesseract.js": "^5.1.0",
+    "uuid": "^14.0.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",

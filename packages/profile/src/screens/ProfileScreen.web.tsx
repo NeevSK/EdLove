@@ -1,4 +1,5 @@
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 import { StaffPresencePulse } from '@repo/people';
 import { AvatarDisplay } from '@repo/profile/components/AvatarDisplay';
 import { ContactLinktree } from '@repo/profile/components/ContactLinktree';
@@ -38,7 +39,7 @@ export default function ProfileScreenWeb({
   const navigation = useProfileNavigation();
   const { can, context } = usePermissions();
   const authority = context.activeBond?.capacity;
-  const { user } = useStore();
+  const user = useAuthStore((state) => state.user);
   const {
     profile,
     error,

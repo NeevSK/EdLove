@@ -1,15 +1,12 @@
 import { useState } from 'react';
 import ErrorMessage from '@repo/ui/components/ErrorMessage';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { Heading, ScrollView, Text, VStack } from '@repo/ui/gluestack';
-import { useTheme } from '@repo/ui/hooks/useTheme';
+import { Heading, ScrollView, Text, VStack } from '@repo/ui/primitives';
 
 export default function ErrorMessageDemo() {
   const [showGentle, setShowGentle] = useState(true);
   const [showWarning, setShowWarning] = useState(true);
   const [showSevere, setShowSevere] = useState(true);
-  const { text } = useTheme();
-
   return (
     <ScreenWrapper>
       <ScrollView className="flex-1">

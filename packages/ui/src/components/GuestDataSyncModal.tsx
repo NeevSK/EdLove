@@ -1,7 +1,7 @@
 import { GuestDataSync } from '@repo/core/native';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
-import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
+import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 import { Check, CircleAlert, TriangleAlert } from '@repo/ui/icons';
 import { useCallback, useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';

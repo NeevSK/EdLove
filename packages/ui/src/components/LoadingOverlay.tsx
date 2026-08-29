@@ -1,6 +1,6 @@
 import type React from 'react';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
-import { Center, Modal } from '@repo/ui/gluestack';
+import { Center, Modal } from '@repo/ui/primitives';
 
 interface LoadingOverlayProps {
   visible: boolean;

@@ -149,6 +149,17 @@ export function useWorkspaceLayoutSync<
     [userId, workspaceId, surfaces],
   );
 
+  const layoutRef = useRef(layout);
+  useEffect(() => {
+    layoutRef.current = layout;
+  }, [layout]);
+
+  const surfacesHash = useMemo(() => {
+    return surfaces.map((s) => `${s.surfaceId}:${s.defaultZone}:${s.defaultOrder}`).join('|');
+  }, [surfaces]);
+
+  const lastReconciledSurfacesRef = useRef('');
+
   const setLayout = useCallback(
     (next: WorkspaceLayout<TSurfaceId>) => {
       setLayoutState(normalizeWorkspaceLayout(next, surfaces));
@@ -167,7 +178,7 @@ export function useWorkspaceLayoutSync<
 
       const normalizedRemote = normalizeWorkspaceLayout(remote, surfaces);
       const preferred = choosePreferredWorkspaceLayout({
-        local: layout,
+        local: layoutRef.current,
         remote: normalizedRemote,
       });
 
@@ -180,7 +191,7 @@ export function useWorkspaceLayoutSync<
     } finally {
       setIsSyncing(false);
     }
-  }, [userId, enableRemoteSync, workspaceId, layoutTarget, surfaces, layout]);
+  }, [userId, enableRemoteSync, workspaceId, layoutTarget, surfaces]);
 
   useEffect(() => {
     let isMounted = true;
@@ -219,12 +230,14 @@ export function useWorkspaceLayoutSync<
 
         setLayoutState(preferred);
         lastSyncedLayoutRef.current = serializeLayout(preferred);
+        lastReconciledSurfacesRef.current = surfacesHash;
       } catch (error) {
         if (!isMounted) return;
 
         setSyncError(error as Error);
         setLayoutState(defaultLayout);
         lastSyncedLayoutRef.current = serializeLayout(defaultLayout);
+        lastReconciledSurfacesRef.current = surfacesHash;
       } finally {
         if (isMounted) {
           setIsHydrated(true);
@@ -237,7 +250,7 @@ export function useWorkspaceLayoutSync<
     return () => {
       isMounted = false;
     };
-  }, [userId, workspaceId, layoutTarget, storageKey, defaultLayout, surfaces, enableRemoteSync]);
+  }, [userId, workspaceId, layoutTarget, storageKey, defaultLayout, surfaces, enableRemoteSync, surfacesHash]);
 
   useEffect(() => {
     if (!layout || !storageKey || !isHydrated) return;
@@ -252,50 +265,55 @@ export function useWorkspaceLayoutSync<
 
     let isCancelled = false;
 
-    const syncRemote = async () => {
-      setIsSyncing(true);
-      setSyncError(null);
+    const timer = setTimeout(() => {
+      const syncRemote = async () => {
+        setIsSyncing(true);
+        setSyncError(null);
 
-      try {
-        await workspaceLayoutAPI.upsertWorkspaceLayout(
-          toWorkspaceLayoutUpsert(layout, {
-            userId,
-            workspaceId,
-            layoutTarget,
-          }),
-        );
+        try {
+          await workspaceLayoutAPI.upsertWorkspaceLayout(
+            toWorkspaceLayoutUpsert(layout, {
+              userId,
+              workspaceId,
+              layoutTarget,
+            }),
+          );
 
-        if (!isCancelled) {
-          lastSyncedLayoutRef.current = serialized;
+          if (!isCancelled) {
+            lastSyncedLayoutRef.current = serialized;
+          }
+        } catch (error) {
+          if (!isCancelled) {
+            setSyncError(error as Error);
+          }
+        } finally {
+          if (!isCancelled) {
+            setIsSyncing(false);
+          }
         }
-      } catch (error) {
-        if (!isCancelled) {
-          setSyncError(error as Error);
-        }
-      } finally {
-        if (!isCancelled) {
-          setIsSyncing(false);
-        }
-      }
-    };
+      };
 
-    void syncRemote();
+      void syncRemote();
+    }, 1200);
 
     return () => {
       isCancelled = true;
+      clearTimeout(timer);
     };
   }, [layout, userId, workspaceId, layoutTarget, isHydrated, enableRemoteSync]);
 
   useEffect(() => {
     if (!layout || !surfaces.length) return;
+    if (lastReconciledSurfacesRef.current === surfacesHash) return;
 
     setLayoutState((current: WorkspaceLayout<TSurfaceId> | null) => {
       if (!current) return defaultLayout;
 
       const normalized = normalizeWorkspaceLayout(current, surfaces);
+      lastReconciledSurfacesRef.current = surfacesHash;
       return serializeLayout(normalized) === serializeLayout(current) ? current : normalized;
     });
-  }, [surfaces, defaultLayout, layout]);
+  }, [surfaces, defaultLayout, surfacesHash]);
 
   const resolvedSurfaces = useMemo(
     () => (layout ? resolveWorkspaceSurfaceLayout(surfaces, layout) : []),

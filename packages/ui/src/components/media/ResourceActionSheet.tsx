@@ -2,21 +2,21 @@ import type { BaseResource } from '@repo/core/types';
 import { Bookmark, CirclePlay, FileText, FolderPlus, Info, Share2 } from '@repo/ui/icons';
 import type React from 'react';
 import {
-  Actionsheet,
-  ActionsheetBackdrop,
-  ActionsheetContent,
-  ActionsheetDragIndicator,
-  ActionsheetDragIndicatorWrapper,
-  ActionsheetIcon,
-  ActionsheetItem,
-  ActionsheetItemText,
+  Sheet,
+  SheetBackdrop,
+  SheetContent,
+  SheetDragIndicator,
+  SheetDragIndicatorWrapper,
+  SheetIcon,
+  SheetItem,
+  SheetItemText,
   Box,
   HStack,
   Pressable,
   ScrollView,
   Text,
   VStack,
-} from '@repo/ui/gluestack';
+} from '@repo/ui/primitives';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 
 export interface ResourceActionSheetProps {
@@ -46,12 +46,12 @@ export const ResourceActionSheet: React.FC<ResourceActionSheetProps> = ({
   if (!resource) return null;
 
   return (
-    <Actionsheet isOpen={visible} onClose={onClose}>
-      <ActionsheetBackdrop />
-      <ActionsheetContent className="pb-10 px-4">
-        <ActionsheetDragIndicatorWrapper>
-          <ActionsheetDragIndicator />
-        </ActionsheetDragIndicatorWrapper>
+    <Sheet open={visible} onOpenChange={(open) => !open && onClose()}>
+      <SheetBackdrop />
+      <SheetContent className="pb-10 px-4">
+        <SheetDragIndicatorWrapper>
+          <SheetDragIndicator />
+        </SheetDragIndicatorWrapper>
 
         <HStack className="items-center py-4 border-b border-phase-border mb-2 gap-3 w-full">
           <Box className="w-12 h-12 items-center justify-center rounded-xl bg-phase-accent/10">
@@ -73,68 +73,66 @@ export const ResourceActionSheet: React.FC<ResourceActionSheetProps> = ({
 
         <ScrollView className="w-full mb-4">
           {onViewDetails && (
-            <ActionsheetItem
+            <SheetItem
               onPress={() => {
                 onViewDetails();
                 onClose();
               }}
               className="rounded-2xl"
             >
-              <ActionsheetIcon>
+              <SheetIcon>
                 <Info size={22} color={theme.text.secondary} />
-              </ActionsheetIcon>
-              <ActionsheetItemText>View Details</ActionsheetItemText>
-            </ActionsheetItem>
+              </SheetIcon>
+              <SheetItemText>View Details</SheetItemText>
+            </SheetItem>
           )}
 
-          <ActionsheetItem
+          <SheetItem
             onPress={() => {
               onBookmark();
               onClose();
             }}
             className="rounded-2xl"
           >
-            <ActionsheetIcon>
+            <SheetIcon>
               <Bookmark
                 size={22}
                 color={resource.has_bookmarked ? theme.accent.action : theme.text.secondary}
                 fill={resource.has_bookmarked ? theme.accent.action : 'transparent'}
               />
-            </ActionsheetIcon>
-            <ActionsheetItemText
-              className={resource.has_bookmarked ? 'text-phase-accent font-bold' : ''}
-            >
+            </SheetIcon>
+            <SheetItemText className={resource.has_bookmarked ? 'text-phase-accent font-bold' : ''}>
               {resource.has_bookmarked ? 'Bookmarked' : 'Bookmark'}
-            </ActionsheetItemText>
-          </ActionsheetItem>
+            </SheetItemText>
+          </SheetItem>
 
           {onAddToCollection && (
-            <ActionsheetItem
+            <SheetItem
               onPress={() => {
                 onAddToCollection();
                 onClose();
               }}
               className="rounded-2xl"
             >
-              <ActionsheetIcon>
+              <SheetIcon>
                 <FolderPlus size={22} color={theme.text.secondary} />
-              </ActionsheetIcon>
-              <ActionsheetItemText>Add to Collection</ActionsheetItemText>
-            </ActionsheetItem>
+              </SheetIcon>
+              <SheetItemText>Add to Collection</SheetItemText>
+            </SheetItem>
           )}
 
-          <ActionsheetItem
+          <SheetItem
             onPress={() => {
               onShare();
               onClose();
             }}
             className="rounded-2xl"
           >
-            <ActionsheetIcon>
+            <SheetIcon>
               <Share2 size={22} color={theme.text.secondary} />
-            </ActionsheetIcon>
-            <ActionsheetItemText>Share Resource</ActionsheetItemText>
-          </ActionsheetItem>
+            </SheetIcon>
+            <SheetItemText>Share Resource</SheetItemText>
+          </SheetItem>
         </ScrollView>
 
         <Pressable
@@ -144,8 +142,8 @@ export const ResourceActionSheet: React.FC<ResourceActionSheetProps> = ({
         >
           <Text className="text-base font-bold text-red-500">Cancel</Text>
         </Pressable>
-      </ActionsheetContent>
-    </Actionsheet>
+      </SheetContent>
+    </Sheet>
   );
 };
 

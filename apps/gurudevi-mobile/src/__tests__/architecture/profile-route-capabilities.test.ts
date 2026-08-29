@@ -9,8 +9,10 @@ const __dirname = path.dirname(__filename);
 const APP_ROOT = path.resolve(__dirname, '../../..');
 const WORKSPACE_ROOT = path.resolve(APP_ROOT, '..', '..');
 
-const PROFILE_STACK_NATIVE = path.join(APP_ROOT, 'src', 'navigation', 'ProfileStackNavigator.tsx');
-const PROFILE_STACK_WEB = path.join(APP_ROOT, 'src', 'navigation', 'ProfileStackNavigator.web.tsx');
+const PROFILE_ROUTE_ROOT = path.join(APP_ROOT, 'app', '(tabs)', 'profile');
+const PROFILE_ROUTE_INDEX = path.join(PROFILE_ROUTE_ROOT, 'index.tsx');
+const FULL_PROFILE_ROUTE = path.join(PROFILE_ROUTE_ROOT, 'full', '[id].tsx');
+const PRIVACY_LEDGER_ROUTE = path.join(PROFILE_ROUTE_ROOT, 'privacy-ledger.tsx');
 const PROFILE_SCREEN_NATIVE = path.join(
   WORKSPACE_ROOT,
   'packages',
@@ -61,14 +63,15 @@ const MUTE_HUB_SCREEN = path.join(
 );
 
 describe('Profile route capabilities', () => {
-  it('registers the shared profile capability routes on both native and web stacks', () => {
-    const nativeSource = fs.readFileSync(PROFILE_STACK_NATIVE, 'utf8');
-    const webSource = fs.readFileSync(PROFILE_STACK_WEB, 'utf8');
+  it('exposes the current Expo Router profile capability entrypoints', () => {
+    const indexSource = fs.readFileSync(PROFILE_ROUTE_INDEX, 'utf8');
+    const fullProfileSource = fs.readFileSync(FULL_PROFILE_ROUTE, 'utf8');
+    const privacyLedgerSource = fs.readFileSync(PRIVACY_LEDGER_ROUTE, 'utf8');
 
-    for (const route of ['ProfileMain', 'FullProfile', 'PrivacyLedger']) {
-      expect(nativeSource.includes(`name="${route}"`)).toBe(true);
-      expect(webSource.includes(`name="${route}"`)).toBe(true);
-    }
+    expect(indexSource).toContain("from '@repo/profile/own'");
+    expect(fullProfileSource).toContain("from '@repo/profile/own'");
+    expect(fullProfileSource).toContain('Platform.OS');
+    expect(privacyLedgerSource).toContain("from '@repo/self/privacy'");
   });
 
   it('profile surfaces use the host navigation capability hook instead of hardcoded navigator imports', () => {

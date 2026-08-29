@@ -3,7 +3,7 @@ import { Calendar, PanelsTopLeft as LayoutIcon, Search, Wifi, WifiOff, Zap } fro
 import type React from 'react';
 import { useState } from 'react';
 import { Modal } from 'react-native';
-import { Box, HStack, Text } from '@repo/ui/gluestack';
+import { Box, HStack, Text } from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 import { TemporalScrubber } from '@repo/ui/components/TemporalScrubber';
 

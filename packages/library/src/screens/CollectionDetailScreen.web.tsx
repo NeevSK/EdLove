@@ -1,5 +1,5 @@
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
-import { useStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 import { libraryAPI } from '@repo/library/api/library';
 import { LibraryThumbnailCard } from '@repo/library/components/LibraryThumbnailCard';
 import { LIBRARY_KEYS, useCollection } from '@repo/library/hooks/useLibrary';
@@ -522,7 +522,7 @@ export default function CollectionDetailScreenWeb() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  const { user } = useStore();
+  const user = useAuthStore((state) => state.user);
   const theme = useTheme();
   const { t } = useTranslation();
   const queryClient = useQueryClient();

@@ -63,7 +63,9 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
 
   async uploadData(database: CommonPowerSyncDatabase): Promise<void> {
     const accountId = this.accountId;
-    await runEffect(
+    let startTime = 0;
+    
+    return runEffect(
       Effect.gen(function* () {
         const batch = yield* tryPromise(() => database.getCrudBatch(200));
         if (!batch || batch.crud.length === 0) return;
@@ -85,6 +87,9 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
           idempotencyKey,
         };
 
+        const startTime = Date.now();
+        const uploadCount = batch.crud.length;
+        
         yield* tryPromise(() =>
           (client.api as any).powersync.upload.$post(
             { json: body },
@@ -121,13 +126,16 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
           }),
         );
 
+        const latencyMs = Date.now() - startTime;
+        const tablesAffected = Array.from(new Set(batch.crud.map((c) => c.table)));
+        
         yield* tryPromise(() => batch.complete());
 
-        const tablesAffected = Array.from(new Set(batch.crud.map((c) => c.table)));
         sovereignBus.emit('powersync:sync_complete', { tablesAffected });
       }).pipe(
         Effect.catchAll((error) =>
           Effect.sync(() => {
+            const isAccountChanged = error instanceof PowerSyncAccountChangedError;
             sovereignBus.emit('powersync:unavailable', {
               reason: error instanceof PowerSyncAccountChangedError ? 'account_switched' : 'service_down',
             });

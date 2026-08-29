@@ -1,0 +1,1 @@
+export { OCRScreen as default } from '@repo/library/tools';

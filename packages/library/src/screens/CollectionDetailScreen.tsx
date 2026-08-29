@@ -1,4 +1,4 @@
-import { useStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 import { libraryAPI } from '@repo/library/api/library';
 import { LibraryThumbnailCard } from '@repo/library/components/LibraryThumbnailCard';
 import { LIBRARY_KEYS, useCollection } from '@repo/library/hooks/useLibrary';
@@ -47,7 +47,7 @@ const VISIBILITY_OPTIONS: {
 export default function CollectionDetailScreen() {
   const router = useRouter();
   const colors = useThemedColors();
-  const { user } = useStore();
+  const user = useAuthStore((state) => state.user);
   const queryClient = useQueryClient();
   const { id } = useLocalSearchParams<{ id: string }>();
 

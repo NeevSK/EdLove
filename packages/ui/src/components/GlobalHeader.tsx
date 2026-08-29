@@ -1,7 +1,7 @@
 import { type TotalState, useNotifications, usePermissions, useStore } from '@repo/core/logic';
 import NotificationDrawer from '@repo/ui/components/NotificationDrawer';
 import { UserAvatar } from '@repo/ui/components/UserAvatar';
-import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
+import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 import { Bell, ChevronLeft, Menu, MoreHorizontal, Search, X } from '@repo/ui/icons';
 import { Pressable } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';

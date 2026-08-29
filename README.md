@@ -10,6 +10,8 @@ tags: [platform, monorepo]
 
 # Polymath Platform (EdLove / Gurudevi)
 
+> **Transparent Hosted — MIT open source, hosted production.** Code is public for audit at this repo (`LICENSE` MIT). Production runs hosted at `platform.gurudevi.edlove.org` (Expo 57 + Supabase Cloud + PowerSync Cloud + EAS `1701dfb9…`). Self-host is dev-only/edge-case — you get community + curated library network benefits on our hosted stack. See ADR [2026-08-25-transparent-hosted-oss.md](./docs/decisions/2026-08-25-transparent-hosted-oss.md).
+
 A single monorepo for the EdLove education ecosystem:
 
 - **EdLove**: the umbrella foundation/house for education philosophy + ecosystem coordination.
@@ -19,7 +21,7 @@ A single monorepo for the EdLove education ecosystem:
 ## Where to start (internal/dev)
 
 - Ecosystem navigator: [apps/00_ECOSYSTEM_INDEX.md](./apps/00_ECOSYSTEM_INDEX.md)
-- Openness/licensing decision: [docs/decisions/2026-08-24-openness-and-reuse-strategy.md](./docs/decisions/2026-08-24-openness-and-reuse-strategy.md) + [docs/decisions/2026-08-24-license-tradeoffs.md](./docs/decisions/2026-08-24-license-tradeoffs.md)
+- Openness/licensing decision: [2026-08-25-transparent-hosted-oss.md](./docs/decisions/2026-08-25-transparent-hosted-oss.md) (supersedes [2026-08-24-openness](./docs/decisions/2026-08-24-openness-and-reuse-strategy.md)) + [license-tradeoffs](./docs/decisions/2026-08-24-license-tradeoffs.md)
 - Branch pipeline (solo, scalable): [docs/infra/git-branching-model.md](./docs/infra/git-branching-model.md)
 - Root configuration map (what every root config file does): [docs/engineering/root-configuration-map.md](./docs/engineering/root-configuration-map.md)
 - Documentation SOP (frontmatter contract, doc tiers): [apps/gurudevi-mobile/docs/docs-sop.md](./apps/gurudevi-mobile/docs/docs-sop.md)
@@ -49,12 +51,22 @@ Web guide: [apps/gurudevi-mobile/docs/web/WEB_GUIDE.md](./apps/gurudevi-mobile/d
 
 ```bash
 pnpm install
-pnpm dev
+pnpm dev                  # Doppler-injected (team)
 pnpm build
 pnpm lint
 pnpm check-types
 pnpm audit:secrets
 ```
 
+Without Doppler (contributors / edge-case self-host dev):
+
+```bash
+cp apps/gurudevi-mobile/.env.example apps/gurudevi-mobile/.env.local
+# fill EXPO_PUBLIC_SUPABASE_URL + EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+# → for local DB: `supabase start` then paste API URL + publishable key (supabase/config.toml:54321)
+pnpm --filter gurudevi-mobile dev:no-doppler
+```
+
 This repo uses `pnpm` workspaces + `turbo` to orchestrate tasks across apps/packages.
+Contributing: [CONTRIBUTING.md](./CONTRIBUTING.md) · Security: [SECURITY.md](./SECURITY.md) · License: [LICENSE](./LICENSE).
 

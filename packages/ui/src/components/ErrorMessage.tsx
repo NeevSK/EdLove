@@ -5,7 +5,8 @@
 
 import { CircleAlert, Info, TriangleAlert, X } from '@repo/ui/icons';
 import type { FC } from 'react';
-import { HStack, Pressable, Text, View } from '@repo/ui/gluestack';
+import { HStack, Pressable, Text, View } from '@repo/ui/primitives';
+import { cn } from '@repo/ui/utils/classNames';
 
 interface ErrorMessageProps {
   message: string;
@@ -40,13 +41,13 @@ const ErrorMessage: FC<ErrorMessageProps> = ({ message, type = 'gentle', onDismi
   const { containerClass, textClass, Icon } = getTypeConfig();
 
   return (
-    <View className={`p-4 rounded-xl mb-4 ${containerClass}`}>
+    <View className={cn('p-4 rounded-xl mb-4', containerClass)}>
       <HStack space="md" className="items-center">
         {/* Icon */}
         <Icon color="currentColor" className={textClass} size={20} />
 
         {/* Message Text */}
-        <Text className={`flex-1 text-base leading-6 ${textClass}`}>{message}</Text>
+        <Text className={cn('flex-1 text-base leading-6', textClass)}>{message}</Text>
 
         {/* Dismiss Button (X) */}
         {onDismiss && (

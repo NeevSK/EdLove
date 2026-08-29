@@ -4,6 +4,7 @@ import { type ViewProps } from 'react-native';
 import { Box } from '@repo/ui/components/ui/box';
 import { Text } from '@repo/ui/components/ui/text';
 import { tokens } from '@repo/ui/tokens';
+import { cn } from '@repo/ui/utils/classNames';
 
 
 /**
@@ -52,7 +53,7 @@ export const Toast = ({
   return (
     <ToastContext.Provider value={contextValue}>
       <Box
-        className={`p-4 rounded-2xl flex-row items-center gap-3 ${variantStyles} ${className || ''}`}
+        className={cn('p-4 rounded-2xl flex-row items-center gap-3', variantStyles, className)}
         style={{
           backgroundColor: tokens.colors.toastSurface,
           borderColor: accentColor,
@@ -78,7 +79,7 @@ export const ToastTitle = ({
 }) => {
   return (
     <Text
-      className={`font-bold text-base tracking-tight ${className || ''}`}
+      className={cn('font-bold text-base tracking-tight', className)}
       style={{ color: tokens.colors.toastText }}
     >
       {children}
@@ -95,7 +96,7 @@ export const ToastDescription = ({
 }) => {
   return (
     <Text
-      className={`text-sm font-medium leading-tight ${className || ''}`}
+      className={cn('text-sm font-medium leading-tight', className)}
       style={{ color: tokens.colors.toastTextMuted }}
     >
       {children}

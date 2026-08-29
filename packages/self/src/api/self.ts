@@ -5,6 +5,7 @@ import {
   SOVEREIGN_API_URL,
 } from '@repo/core/api/client';
 import { useStore } from '@repo/core/logic';
+import type { ThoughtRecord } from '@repo/core/logic/schemas/self.schema';
 import { APIError } from '@repo/core/types';
 import type { FireJournalEntry, MoodLog } from '@repo/self/types';
 
@@ -133,5 +134,100 @@ export const selfAPI = {
     }
 
     return (await res.json()) as MoodLog;
+  },
+
+  /**
+   * Save a completed thought record via the Remote API.
+   */
+  async saveThoughtRecord(
+    input: Omit<ThoughtRecord, 'id' | 'created_at' | 'user_id'>,
+  ): Promise<ThoughtRecord> {
+    assertAuthenticated();
+    const res = await client.api.self.thoughtRecord.$post({
+      json: {
+        thought: input.thought,
+        situation: input.situation,
+        emotion: input.emotion,
+        trap_ids: input.trap_ids,
+        evidence_for: input.evidence_for,
+        evidence_against: input.evidence_against,
+        reframe: input.reframe,
+        mood_before: input.mood_before,
+        mood_after: input.mood_after,
+        post_outcome: input.post_outcome,
+        follow_up: input.follow_up,
+      },
+    });
+
+    if (!res.ok) {
+      const error = (await res.json()) as any;
+      throw new APIError(error.message || 'Failed to save thought record', res.status.toString());
+    }
+
+    const saved = (await res.json()) as ThoughtRecord;
+
+    growthSignalsAPI.emitSilent({
+      user_id: saved.user_id,
+      event_type: 'reframe_recorded',
+      event_metadata: {
+        mood_before: saved.mood_before,
+        mood_after: saved.mood_after,
+        post_outcome: saved.post_outcome,
+      },
+    });
+
+    return saved;
+  },
+
+  /**
+   * Complete (or reschedule) the follow-up on a thought record.
+   */
+  async completeThoughtRecordFollowUp(
+    id: string,
+    input: { post_outcome?: ThoughtRecord['post_outcome']; follow_up?: ThoughtRecord['follow_up'] },
+  ): Promise<ThoughtRecord> {
+    assertAuthenticated();
+    const res = await client.api.self.thoughtRecord[':id'].$patch({
+      param: { id },
+      json: {
+        post_outcome: input.post_outcome,
+        follow_up: input.follow_up,
+      },
+    });
+
+    if (!res.ok) {
+      const error = (await res.json()) as any;
+      throw new APIError(error.message || 'Failed to update thought record', res.status.toString());
+    }
+
+    const updated = (await res.json()) as ThoughtRecord;
+
+    growthSignalsAPI.emitSilent({
+      user_id: updated.user_id,
+      event_type: 'reframe_follow_up_completed',
+      event_metadata: { post_outcome: updated.post_outcome },
+    });
+
+    return updated;
+  },
+
+  /**
+   * Retrieve thought record history.
+   */
+  async getThoughtRecords(
+    userId: string,
+    limit: number = 30,
+    viewDate?: string,
+  ): Promise<ThoughtRecord[]> {
+    assertAuthenticated();
+    const res = await client.api.self.thoughtRecord.$get({
+      query: { userId, limit: limit.toString(), viewDate },
+    });
+
+    if (!res.ok) {
+      throw new APIError('Failed to fetch thought records', res.status.toString());
+    }
+
+    return (await res.json()) as ThoughtRecord[];
   },
 };

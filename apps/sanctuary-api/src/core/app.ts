@@ -24,6 +24,10 @@ import { secureHeaders } from 'hono/secure-headers';
 import { timeout } from 'hono/timeout';
 import { endTime, startTime, timing } from 'hono/timing';
 import { z } from 'zod';
+import pino from 'pino';
+import * as Sentry from '@sentry/node';
+import { PostHog } from 'posthog-node';
+import { GrowthBook } from '@growthbook/growthbook';
 import { aiRouter } from '../ai/routes';
 import { evaluateWithRust, RustEvaluatorUnavailableError } from '../authorization/rustEvaluator';
 import { verifySupabaseJwt } from '../jwt';
@@ -33,6 +37,66 @@ import { createDurableAgentRoutes } from './routes/durableAgents';
 import { healthRoutes } from './routes/health';
 import { registerNativeORPCRoutes } from './routes/orpc';
 import { createPayhereWebhookRoutes } from './routes/payhereWebhook';
+import { type ORPCContext } from './orpc';
+import { idempotencyHeaderMiddleware } from '@repo/core/lib/idempotency';
+import { correlationIdMiddleware, extractCorrelationIdMiddleware } from './middleware/correlation';
+
+// Initialize Sentry
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || 'development',
+    tracesSampleRate: 0.1,
+    profilesSampleRate: 0.1,
+    // Attach trace context to errors
+    beforeSend(event, hint) {
+      const traceId = getCurrentTraceId?.();
+      if (traceId) {
+        event.tags = { ...event.tags, traceId };
+      }
+      return event;
+    },
+  });
+}
+
+// Initialize PostHog
+let posthog: PostHog | null = null;
+if (process.env.POSTHOG_API_KEY && process.env.POSTHOG_HOST) {
+  posthog = new PostHog(process.env.POSTHOG_API_KEY, {
+    host: process.env.POSTHOG_HOST,
+    flushAt: 1,
+    flushInterval: 10000,
+  });
+}
+
+// Initialize GrowthBook
+let growthbook: GrowthBook | null = null;
+if (process.env.GROWTHBOOK_API_HOST && process.env.GROWTHBOOK_CLIENT_KEY) {
+  growthbook = new GrowthBook({
+    apiHost: process.env.GROWTHBOOK_API_HOST,
+    clientKey: process.env.GROWTHBOOK_CLIENT_KEY,
+    enableDevMode: process.env.NODE_ENV !== 'production',
+    // Track feature usage
+    trackingCallback: (experiment, result) => {
+      posthog?.capture({
+        distinctId: experiment.key,
+        event: 'experiment_viewed',
+        properties: {
+          experiment_id: experiment.key,
+          variation_id: result.variationId,
+          value: result.value,
+        },
+      });
+    },
+  });
+  // Load features on startup
+  growthbook.loadFeatures().catch(console.error);
+}
+
+const loggerInstance = pino({
+  level: process.env.LOG_LEVEL || 'info',
+  transport: process.env.NODE_ENV !== 'production' ? { target: 'pino-pretty' } : undefined,
+});
 
 interface Env {
   Variables: {
@@ -68,6 +132,13 @@ app.onError((err, c) => {
     `[${requestId}] [trace=${getCurrentTraceId() || 'unknown'}] UNCAUGHT:`,
     sovereign.details,
   );
+  // Capture to Sentry with trace context
+  if (process.env.SENTRY_DSN) {
+    Sentry.captureException(err, {
+      extra: { requestId, traceId: getCurrentTraceId() },
+      tags: { component: 'sanctuary-api' },
+    });
+  }
   return c.json(sovereign.details, sovereign.details.status as any);
 });
 
@@ -288,7 +359,38 @@ app.use('*', logger());
 
 // Request ID (built-in — available via c.get('requestId'))
 app.use('*', requestId());
+
+// Correlation ID propagation (W3C traceparent/tracestate)
+app.use('/api/*', extractCorrelationIdMiddleware());
+
 app.use('/api/*', otelMiddleware());
+
+// Sentry tracing middleware (captures request context)
+if (process.env.SENTRY_DSN) {
+  app.use('/api/*', async (c, next) => {
+    const transaction = Sentry.startInactiveSpan({
+      name: `${c.req.method} ${c.req.path}`,
+      op: 'http.server',
+      attributes: {
+        'http.method': c.req.method,
+        'http.route': c.req.path,
+        'http.request_id': c.get('requestId'),
+        'otel.trace_id': getCurrentTraceId(),
+      },
+    });
+    try {
+      await next();
+      transaction.setAttribute('http.response.status_code', c.res.status);
+      transaction.setStatus({ code: c.res.status >= 500 ? 2 : 1 }); // 2=error, 1=ok
+    } catch (error) {
+      transaction.setStatus({ code: 2 });
+      transaction.recordException(error as Error);
+      throw error;
+    } finally {
+      transaction.end();
+    }
+  });
+}
 
 app.route('/', healthRoutes);
 
@@ -339,6 +441,12 @@ async function getRequestSecurityContext(c: any) {
   const user = c.get('user') || { id: 'anonymous' };
   const db = c.get('db');
   const isAnonymousUser = user.id === 'anonymous';
+
+  if (!isAnonymousUser && !db) {
+    // A client header is never an authority source. Continuing without the
+    // server-side relationship store would turn an outage into tenant escape.
+    throw new Error('AuthoritativeScopeUnavailable');
+  }
 
   let school_id = '';
   let capacity: string | null = null;
@@ -479,6 +587,11 @@ function poa(route: SovereignRoute) {
     try {
       securityContext = await getRequestSecurityContext(c);
     } catch (err: any) {
+      if (err.message === 'AuthoritativeScopeUnavailable') {
+        throw new HTTPException(503, {
+          message: 'Authorization context is temporarily unavailable. Please retry shortly.',
+        });
+      }
       if (err.message === 'PrivilegeEscalation') {
         throw new HTTPException(403, {
           message: 'Authoritative database policy rejects the requested administrative capability.',
@@ -606,7 +719,9 @@ function poa(route: SovereignRoute) {
               resourceType === 'FireJournal' ||
               resourceType === 'JoyMoments' ||
               resourceType === 'GratitudeEntries' ||
-              resourceType === 'EnergyForecasts') && { user_id: user.id }),
+              resourceType === 'EnergyForecasts' ||
+              resourceType === 'UserRewards' ||
+              resourceType === 'WhisperedMoment') && { user_id: user.id }),
           },
         },
         context,
@@ -781,8 +896,25 @@ function featureFlagGateForKey(flagKey: FeatureFlagKey, routePath: string) {
       isAnonymous: user.id === 'anonymous',
     };
 
-    const resolved = await featureFlags.resolveFlags(userContext as any);
-    const isEnabled = resolveFeatureFlagValue(resolved.flags, flagKey);
+    // Check GrowthBook first (if configured)
+    let isEnabled: boolean | undefined;
+    if (growthbook) {
+      try {
+        // GrowthBook uses feature keys directly
+        const gbResult = growthbook.getFeatureValue(flagKey, undefined);
+        if (gbResult !== undefined) {
+          isEnabled = gbResult as boolean;
+        }
+      } catch (e) {
+        console.warn(`[Feature Gate] GrowthBook check failed for ${flagKey}:`, e);
+      }
+    }
+
+    // Fall back to internal feature flags
+    if (isEnabled === undefined) {
+      const resolved = await featureFlags.resolveFlags(userContext as any);
+      isEnabled = resolveFeatureFlagValue(resolved.flags, flagKey);
+    }
 
     if (isEnabled === false) {
       console.warn(
@@ -812,24 +944,27 @@ function featureFlagGate(route: SovereignRoute) {
 
 import { OpenAPIHandler } from '@orpc/openapi/fetch';
 import { RPCHandler } from '@orpc/server/fetch';
+import { BatchHandlerPlugin, CORSPlugin } from '@orpc/server/plugins';
+import type { Router } from '@orpc/server';
 import { buildORPCContextFromHono, router as orpcRouter } from './router';
 
-const rpcHandler = new RPCHandler(orpcRouter);
-const openapiHandler = new OpenAPIHandler(orpcRouter, {
-  filter: ({ contract }) => {
-    const policy = (contract['~orpc'].meta as any)?.policy;
-    return (
-      policy?.action === 'read' &&
-      [
-        'Classroom',
-        'Material',
-        'Assignment',
-        'AssignmentSubmission',
-        'Group',
-        'Post',
-        'School',
-      ].includes(policy.subject)
-    );
+const rpcHandler = new RPCHandler(orpcRouter as Router<any, ORPCContext>, {
+  plugins: [
+    new BatchHandlerPlugin(),
+    new CORSPlugin({
+      allowHeaders: ['orpc-batch'],
+    }),
+  ],
+});
+const openapiHandler = new OpenAPIHandler(orpcRouter as any, {
+  // Only include read procedures (GET-like) for OpenAPI adapter
+  // Mutations (create*, update*, delete*, mutate*) should not be exposed via OpenAPI
+  filter: (procedure) => {
+    const path = typeof procedure?.path === 'string' ? procedure.path : '';
+    // RPC path format: "namespace.procedureName" (e.g., "educational.createAssignment")
+    const name = path.split('.').pop() || path.split('/').pop() || '';
+    const isMutation = /^(create|update|delete|mutate|upsert|insert|remove|patch|post)/i.test(name);
+    return !isMutation;
   },
 });
 

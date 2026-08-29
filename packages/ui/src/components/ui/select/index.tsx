@@ -6,6 +6,7 @@ import { Portal } from '@repo/ui/components/ui/portal';
 import { Pressable } from '@repo/ui/components/ui/pressable';
 import { Text } from '@repo/ui/components/ui/text';
 import { View } from '@repo/ui/components/ui/view';
+import { cn } from '@repo/ui/utils/classNames';
 
 
 // --- Context ---
@@ -19,7 +20,7 @@ interface SelectContextType {
 
 const SelectContext = createContext<SelectContextType | undefined>(undefined);
 
-function useSelect() {
+export function useSelect() {
   const context = useContext(SelectContext);
   if (!context) throw new Error('useSelect must be used within a Select component');
   return context;
@@ -80,7 +81,11 @@ export const SelectTrigger = React.forwardRef<
           disabled: isDisabled,
           expanded: isOpen,
         }}
-        className={`flex-row items-center justify-between p-4 border rounded-xl bg-phase-canvas border-phase-interactive/10 ${isDisabled ? 'opacity-50' : 'active:opacity-80'} ${className || ''}`}
+      className={cn(
+        'flex-row items-center justify-between p-4 border rounded-xl bg-phase-canvas border-phase-interactive/10',
+        isDisabled ? 'opacity-50' : 'active:opacity-80',
+        className,
+      )}
       >
         {children}
       </Pressable>
@@ -94,7 +99,7 @@ export const SelectInput = ({ className, placeholder, value: propValue, ...props
 
   return (
     <Text
-      className={`text-phaseText-primary flex-1 ${!displayValue ? 'opacity-40' : ''} ${className || ''}`}
+      className={cn('text-phase-text-primary flex-1', !displayValue ? 'opacity-40' : undefined, className)}
       {...props}
     >
       {displayValue || placeholder}
@@ -105,7 +110,7 @@ export const SelectInput = ({ className, placeholder, value: propValue, ...props
 export const SelectIcon = ({ as: Icon, className, size = 18, ...props }: any) => {
   if (!Icon) return null;
   return (
-    <Icon {...props} size={size} className={`text-phaseText-secondary ml-2 ${className || ''}`} />
+    <Icon {...props} size={size} className={cn('text-phase-text-secondary ml-2', className)} />
   );
 };
 
@@ -134,7 +139,7 @@ export const SelectBackdrop = ({ className }: { className?: string }) => {
     <Pressable
       accessibilityRole="button"
       onPress={() => setIsOpen(false)}
-      className={`absolute inset-0 bg-phase-scrim ${className || ''}`}
+      className={cn('absolute inset-0 bg-phase-scrim', className)}
     />
   );
 };
@@ -143,18 +148,21 @@ export const SelectContent = ({ children, className }: any) => (
   <Animated.View
     entering={SlideInDown.duration(300).springify().damping(20)}
     exiting={SlideOutDown.duration(200)}
-    className={`bg-phase-modal-card rounded-t-3xl overflow-hidden shadow-2xl border-t border-phase-modal-border p-4 pb-12 ${className || ''}`}
+    className={cn(
+      'bg-phase-modal-card rounded-t-3xl overflow-hidden shadow-2xl border-t border-phase-modal-border p-4 pb-12',
+      className,
+    )}
   >
     {children}
   </Animated.View>
 );
 
 export const SelectDragIndicatorWrapper = ({ children, className }: any) => (
-  <View className={`items-center py-4 ${className || ''}`}>{children}</View>
+  <View className={cn('items-center py-4', className)}>{children}</View>
 );
 
 export const SelectDragIndicator = ({ className }: any) => (
-  <View className={`w-12 h-1.5 bg-phase-text-primary/25 rounded-full ${className || ''}`} />
+  <View className={cn('w-12 h-1.5 bg-phase-text-primary/25 rounded-full', className)} />
 );
 
 export const SelectItem = ({ label, value: itemValue, className, ...props }: any) => {
@@ -163,7 +171,11 @@ export const SelectItem = ({ label, value: itemValue, className, ...props }: any
 
   return (
     <Pressable
-      className={`py-4 px-2 border-b border-phase-interactive/5 flex-row items-center justify-between active:bg-phase-interactive/5 rounded-lg ${isSelected ? 'bg-primary/5' : ''} ${className || ''}`}
+      className={cn(
+        'py-4 px-2 border-b border-phase-interactive/5 flex-row items-center justify-between active:bg-phase-interactive/5 rounded-lg',
+        isSelected ? 'bg-primary/5' : undefined,
+        className,
+      )}
       onPress={() => {
         onValueChange(itemValue);
         setIsOpen(false);
@@ -175,7 +187,10 @@ export const SelectItem = ({ label, value: itemValue, className, ...props }: any
       {...props}
     >
       <Text
-        className={`text-lg ${isSelected ? 'text-primary font-bold' : 'text-phaseText-primary font-medium'}`}
+        className={cn(
+          'text-lg',
+          isSelected ? 'text-primary font-bold' : 'text-phase-text-primary font-medium',
+        )}
       >
         {label}
       </Text>

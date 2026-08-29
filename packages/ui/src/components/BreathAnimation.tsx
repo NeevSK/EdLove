@@ -1,5 +1,5 @@
 import React from 'react';
-import { EaseView } from 'react-native-ease';
+import { EaseView } from '@repo/ui/components/EaseView';
 import { View } from '@repo/ui/primitives';
 
 interface BreathAnimationProps {

@@ -1,4 +1,5 @@
-import { useNotifications, useStore } from '@repo/core/logic';
+import { useNotifications } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 import type { AppNotification } from '@repo/core/types';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
@@ -165,8 +166,8 @@ const NotificationRow = memo(
 
 export default memo(function NotificationsScreenWeb() {
   const { t } = useTranslation();
-  const { user } = useStore();
-  const isOnline = useStore((state) => state.isOnline);
+  const user = useAuthStore((state) => state.user);
+  const isOnline = useAuthStore((state) => state.isOnline);
   const { gutter, maxWidth } = useResponsiveGrid();
   const {
     notifications,

@@ -14,6 +14,10 @@ module.exports = ({ config }) => ({
       ...(config.extra?.publicRuntime || {}),
       supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL || undefined,
       supabasePublishableKey: process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY || undefined,
+      // Reserved for future Hub Pull federation (Tier 1) — leave empty unless
+      // you implement GET hub/api/library/nodes → local nodes upsert.
+      // ADR: docs/decisions/2026-08-25-transparent-hosted-oss.md Seam C.
+      libraryUpstreamUrl: process.env.EXPO_PUBLIC_LIBRARY_UPSTREAM_URL || undefined,
     },
   },
 });

@@ -18,8 +18,10 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
+import { Canvas, Path, Skia } from '@shopify/react-native-skia';
+import { Platform } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface GradebookScreenProps {
@@ -49,6 +51,43 @@ export default function GradebookScreen({ classroomId }: GradebookScreenProps) {
   const [showSettings, setShowSettings] = useState(false);
   // studentId of the student whose grade entry form is open, or null when closed
   const [gradingStudentId, setGradingStudentId] = useState<string | null>(null);
+
+  // GPA analytics (Sri Lankan scale) + Skia micro-chart
+  const gpaStats = useMemo(() => {
+    if (!grades || grades.length === 0) return { avgGPA: 0, distribution: { A: 0, B: 0, C: 0, S: 0, F: 0 } };
+    const toGPA = (m: number) => (m >= 75 ? 4 : m >= 65 ? 3 : m >= 50 ? 2 : m >= 35 ? 1 : 0);
+    let sum = 0;
+    const dist = { A: 0, B: 0, C: 0, S: 0, F: 0 } as Record<string, number>;
+    for (const g of grades as { marks: number }[]) {
+      const grade = g.marks >= 75 ? 'A' : g.marks >= 65 ? 'B' : g.marks >= 50 ? 'C' : g.marks >= 35 ? 'S' : 'F';
+      dist[grade] = (dist[grade] ?? 0) + 1;
+      sum += toGPA(g.marks);
+    }
+    return { avgGPA: sum / grades.length, distribution: dist };
+  }, [grades]);
+
+  const chartPath = useMemo(() => {
+    if (Platform.OS === 'web' || !grades || grades.length < 2) return null;
+    try {
+      const w = 200;
+      const h = 40;
+      const pad = 4;
+      const points = (grades as { marks: number }[]).slice(0, 20).map((g) => g.marks);
+      const min = Math.min(...points);
+      const max = Math.max(...points);
+      const range = max - min || 1;
+      const path = Skia.Path.Make();
+      points.forEach((m, i) => {
+        const x = pad + (i / (points.length - 1)) * (w - pad * 2);
+        const y = h - pad - ((m - min) / range) * (h - pad * 2);
+        if (i === 0) path.moveTo(x, y);
+        else path.lineTo(x, y);
+      });
+      return path;
+    } catch {
+      return null;
+    }
+  }, [grades]);
 
   const handleSaveSettings = async (settings: any) => {
     try {
@@ -133,6 +172,28 @@ export default function GradebookScreen({ classroomId }: GradebookScreenProps) {
               </Text>
             </VStack>
           </HStack>
+
+          {/* GPA Analytics (Skia micro-chart) */}
+          <Box className="p-md bg-phase-surface rounded-comfortable gap-3">
+            <HStack className="justify-between items-center">
+              <VStack>
+                <Text className="text-sm text-phaseText-secondary">Average GPA (SL)</Text>
+                <Text className="text-xl font-bold text-templeGold">{gpaStats.avgGPA.toFixed(2)} / 4.0</Text>
+                <Text className="text-[11px] text-phaseText-secondary">
+                  A:{gpaStats.distribution.A} B:{gpaStats.distribution.B} C:{gpaStats.distribution.C} S:{gpaStats.distribution.S} F:
+                  {gpaStats.distribution.F}
+                </Text>
+              </VStack>
+              {Platform.OS !== 'web' && chartPath ? (
+                <Canvas style={{ width: 200, height: 40 }}>
+                  <Path path={chartPath} color="#D4843A" style="stroke" strokeWidth={2} strokeCap="round" strokeJoin="round" />
+                </Canvas>
+              ) : (
+                <Text className="text-xs text-phaseText-secondary">Trend chart on device</Text>
+              )}
+            </HStack>
+            <Text className="text-[11px] text-phaseText-secondary">Sri Lankan scale: A 75+ (4.0) · B 65+ (3.0) · C 50+ (2.0) · S 35+ (1.0) · F &lt;35</Text>
+          </Box>
 
           {/* Sort Options */}
           <HStack className="flex-wrap gap-2 items-center">

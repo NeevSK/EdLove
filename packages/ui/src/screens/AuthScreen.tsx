@@ -22,7 +22,7 @@ import {
   InputField,
   Text,
   VStack,
-} from '@repo/ui/gluestack';
+} from '@repo/ui/primitives';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import { Mail, Shield } from '@repo/ui/icons';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';

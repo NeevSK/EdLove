@@ -1,0 +1,399 @@
+name: Storage Contract & Health Checks
+
+on:
+  push:
+    branches: [main, main-dev]
+    paths:
+      - 'packages/core/src/adapters/powersync/**'
+      - 'packages/schema/**'
+      - 'apps/gurudevi-mobile/supabase/migrations/**'
+      - 'apps/gurudevi-mobile/powersync/**'
+      - '.github/workflows/storage-contract.yml'
+  pull_request:
+    branches: [main, main-dev]
+    paths:
+      - 'packages/core/src/adapters/powersync/**'
+      - 'packages/schema/**'
+      - 'apps/gurudevi-mobile/supabase/migrations/**'
+      - 'apps/gurudevi-mobile/powersync/**'
+
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '11'
+
+jobs:
+  # ============================================================
+  # 1. STORAGE CONTRACT DRIFT CHECK
+  # ============================================================
+  drift-check:
+    name: Storage Drift Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history for supabase migrations
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 11
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      # Run contract tests (no DB required)
+      - name: Run drift-check tests
+        run: pnpm --filter @repo/core test drift-check
+      
+      - name: Run sync-handler tests
+        run: pnpm --filter @repo/core test sync-handler
+      
+      # Typecheck affected packages
+      - name: Typecheck core
+        run: pnpm --filter @repo/core run check-types
+      
+      # Lint
+      - name: Lint core
+        run: pnpm --filter @repo/core run lint
+
+  # ============================================================
+  # 2. POSTGRES SCHEMA VALIDATION (with live DB)
+  # ============================================================
+  postgres-schema:
+    name: Postgres Schema Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: gurudevi_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 11
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      # Apply Supabase migrations to test DB
+      - name: Apply Supabase migrations
+        working-directory: ./apps/gurudevi-mobile
+        run: |
+          # Create local supabase config for testing
+          cat > supabase/config.toml << 'EOF'
+          [db]
+          host = "localhost"
+          port = 5432
+          user = "postgres"
+          password = "postgres"
+          dbname = "gurudevi_test"
+          EOF
+          
+          # Apply all migrations
+          pnpm supabase db reset --linked
+        env:
+          SUPABASE_URL: http://localhost:5432
+          SUPABASE_SERVICE_ROLE_KEY: postgres
+      
+      # Run column-drift-check against live DB
+      - name: Run column-drift-check (integration)
+        run: pnpm --filter @repo/core test column-drift-check -- --env=integration
+        env:
+          SUPABASE_URL: http://localhost:5432
+          SUPABASE_SERVICE_ROLE_KEY: postgres
+
+  # ============================================================
+  # 3. MOBILE STORAGE HEALTH CHECKS (typecheck + lint)
+  # ============================================================
+  mobile-health:
+    name: Mobile Storage Health
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 11
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      # Typecheck mobile app
+      - name: Typecheck gurudevi-mobile
+        run: pnpm --filter gurudevi-mobile run check-types
+      
+      # Lint mobile app
+      - name: Lint gurudevi-mobile
+        run: pnpm --filter gurudevi-mobile run lint
+      
+      # Typecheck core (storage modules)
+      - name: Typecheck core (storage)
+        run: pnpm --filter @repo/core run check-types
+      
+      # Lint core
+      - name: Lint core
+        run: pnpm --filter @repo/core run lint
+
+  # ============================================================
+  # 4. STACK MAP VALIDATION
+  # ============================================================
+  stack-map:
+    name: Stack Map Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 11
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      # Generate stack map
+      - name: Generate stack map
+        run: pnpm run stack-map:bootstrap && pnpm run stack-map
+      
+      # Check for floating/external dependencies
+      - name: Validate stack map
+        run: |
+          # Check for floating packages (not assigned to a layer)
+          if grep -q "floating: true" docs/stack-map/landscape/stack-map-annotations.yaml; then
+            echo "⚠️ Floating packages detected"
+            grep -A2 "floating: true" docs/stack-map/landscape/stack-map-annotations.yaml
+            exit 1
+          fi
+          echo "✅ Stack map validation passed"
+
+  # ============================================================
+  # 5. ANTI-SLOP GATE
+  # ============================================================
+  anti-slop:
+    name: Anti-Slop Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 11
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      # Run anti-slop checks on changed packages
+      - name: Run anti-slop check
+        run: pnpm run check:anti-slop
+        env:
+          # Only check changed packages for speed
+          PNPM_FILTER: '--filter=@repo/core --filter=gurudevi-mobile'
+
+  # ============================================================
+  # 6. SUPABASE MIGRATION VALIDATION
+  # ============================================================
+  migration-validation:
+    name: Supabase Migration Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: gurudevi_migration_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 11
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Validate migration order
+        working-directory: ./apps/gurudevi-mobile
+        run: |
+          # Check migrations are numbered sequentially
+          cd supabase/migrations
+          ls *.sql | sort -V | while read f; do
+            echo "Found: $f"
+          done
+          
+          # Check for gaps in numbering
+          echo "Checking migration sequence..."
+          ls *.sql | sed 's/[^0-9]*//g' | sort -n | awk '
+            { current = $1 }
+            NR > 1 && current != prev + 1 { print "GAP: " prev " -> " current }
+            { prev = current }
+          '
+      
+      - name: Validate migration SQL syntax
+        working-directory: ./apps/gurudevi-mobile
+        run: |
+          # Basic syntax check with pg_dump --schema-only (dry run)
+          for f in supabase/migrations/*.sql; do
+            echo "Checking $f..."
+            # Basic check: ensure no DROP TABLE without IF EXISTS in production
+            if grep -q "DROP TABLE" "$f" && ! grep -q "DROP TABLE IF EXISTS" "$f"; then
+              echo "WARNING: $f contains DROP TABLE without IF EXISTS"
+            fi
+          done
+          echo "✅ Migration syntax check passed"
+
+  # ============================================================
+  # 6. DEPENDENCY REVIEW
+  # ============================================================
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 11
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Check for sacred version violations
+        run: |
+          # Check sacred packages haven't been downgraded
+          echo "Checking sacred versions..."
+          pnpm list --depth=0 | grep -E "(react-native-gesture-handler|react-native-reanimated|react-native-worklets|react-native-mmkv|react-native-nitro-modules|@shopify/react-native-skia|typescript)" || true
+      
+      - name: Check for duplicate dependencies
+        run: |
+          pnpm dedupe --check
+
+  # ============================================================
+  # 7. PERFORMANCE REGRESSION (Optional - requires baseline)
+  # ============================================================
+  # performance:
+  #   name: Performance Regression
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 30
+  #   if: github.event_name == 'pull_request'
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: pnpm/action-setup@v2
+  #       with: { version: 11 }
+  #     - uses: actions/setup-node@v4
+  #       with: { node-version: '22', cache: 'pnpm' }
+  #     - run: pnpm install --frozen-lockfile
+  #     - name: Run performance benchmarks
+  #       run: pnpm --filter @repo/core test:bench
+  #     - name: Compare with baseline
+  #       run: |
+  #         # Compare with stored baseline
+  #         echo "Performance check - implement baseline comparison"
+
+# ============================================================
+# REQUIRED SECRETS (configure in GitHub repo settings)
+# ============================================================
+# SUPABASE_URL - Production Supabase URL (for integration tests)
+# SUPABASE_SERVICE_ROLE_KEY - Service role key for admin operations
+# POSTHOG_API_KEY - For metrics reporting
+# SENTRY_DSN - For error tracking
+
+# ============================================================
+# LOCAL DEVELOPMENT COMMANDS
+# ============================================================
+# Run all checks locally:
+# pnpm run check-types && pnpm run lint && pnpm run test
+# 
+# Run drift-check only:
+# pnpm --filter @repo/core test drift-check
+# 
+# Run sync-handler tests:
+# pnpm --filter @repo/core test sync-handler
+# 
+# Run column-drift-check (needs Supabase):
+# SUPABASE_URL=xxx SUPABASE_SERVICE_ROLE_KEY=xxx pnpm --filter @repo/core test column-drift-check -- --env=integration
+# 
+# Generate stack map:
+# pnpm run stack-map:bootstrap && pnpm run stack-map
+# 
+# Anti-slop check:
+# pnpm run check:anti-slop

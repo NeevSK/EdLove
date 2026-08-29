@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
-import { EaseView } from 'react-native-ease';
+import { EaseView } from '@repo/ui/components/EaseView';
 import { useAccessibility } from '@repo/ui/hooks/useAccessibility';
 import { Theme } from '@repo/ui/theme/Theme';
 

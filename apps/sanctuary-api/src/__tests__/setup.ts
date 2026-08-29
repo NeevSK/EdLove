@@ -6,6 +6,7 @@ import { coreRuntime } from '../../../../packages/core/src/logic/runtimeRegistry
 let mockZenStackDbAvailable = true;
 let mockActiveBond: any = null;
 let mockUserData: any = null;
+let mockUsers: any[] = [];
 let mockDailyContentRows: any[] = [];
 let mockQueryRowsQueue: any[][] = [];
 let mockLibraryCollectionRead: any = null;
@@ -13,6 +14,22 @@ let mockLibraryCollections: any[] = [];
 let mockLibraryCollectionFindManyArgs: any = null;
 let mockLibraryResources: any[] = [];
 let mockCollectionNodeEvents: any[] = [];
+
+// Self handler mocks
+let mockMoodLogs: any[] = [];
+let mockFireJournalEntries: any[] = [];
+let mockThoughtRecords: any[] = [];
+let mockUserPreferences: any = null;
+
+// History handler mocks
+
+// Rewards handler mocks
+let mockUserRewards: any = null;
+let mockUserRewardsVersions: any[] = [];
+let mockWhisperedMoments: any[] = [];
+
+// Classroom note mock
+let mockClassroomNotes: any[] = [];
 
 export function setMockZenStackDbAvailable(available: boolean) {
   mockZenStackDbAvailable = available;
@@ -24,6 +41,10 @@ export function setMockActiveBond(bond: any) {
 
 export function setMockUserData(data: any) {
   mockUserData = data;
+}
+
+export function setMockUsers(rows: any[]) {
+  mockUsers = rows;
 }
 
 export function setMockDailyContentRows(rows: any[]) {
@@ -51,6 +72,42 @@ export function setMockLibraryTemporalRead({
 export function setMockLibraryCollections(rows: any[]) {
   mockLibraryCollections = rows;
   mockLibraryCollectionFindManyArgs = null;
+}
+
+export function setMockMoodLogs(rows: any[]) {
+  mockMoodLogs = rows;
+}
+
+export function setMockFireJournalEntries(rows: any[]) {
+  mockFireJournalEntries = rows;
+}
+
+export function setMockThoughtRecords(rows: any[]) {
+  mockThoughtRecords = rows;
+}
+
+export function setMockUserPreferences(data: any) {
+  mockUserPreferences = data;
+}
+
+export function setMockCollectionNodeEvents(rows: any[]) {
+  mockCollectionNodeEvents = rows;
+}
+
+export function setMockUserRewards(data: any) {
+  mockUserRewards = data;
+}
+
+export function setMockUserRewardsVersions(rows: any[]) {
+  mockUserRewardsVersions = rows;
+}
+
+export function setMockWhisperedMoments(rows: any[]) {
+  mockWhisperedMoments = rows;
+}
+
+export function setMockClassroomNotes(rows: any[]) {
+  mockClassroomNotes = rows;
 }
 
 export function getMockLibraryCollectionFindManyArgs() {
@@ -93,23 +150,161 @@ function createMockDelegate(name: string): any {
             };
           }
           if (name === 'userPreferences') {
-            return async (args: any = {}) => ({
-              id: 'preferences-mock-id',
-              user_id: args?.where?.user_id ?? 'mock-user-id',
-              favorite_features: [],
-              hidden_features: [],
-              morning_check_time: null,
-              afternoon_check_time: null,
-              evening_wind_down_time: null,
-              enable_contextual_prompts: true,
-              enable_usage_tracking: true,
-              notification_settings: null,
-              updated_at: new Date(),
-              created_at: new Date(),
-            });
+            return async (args: any = {}) => {
+              if (mockUserPreferences) return mockUserPreferences;
+              return {
+                id: 'preferences-mock-id',
+                user_id: args?.where?.user_id ?? 'mock-user-id',
+                favorite_features: [],
+                hidden_features: [],
+                morning_check_time: null,
+                afternoon_check_time: null,
+                evening_wind_down_time: null,
+                enable_contextual_prompts: true,
+                enable_usage_tracking: true,
+                notification_settings: null,
+                updated_at: new Date(),
+                created_at: new Date(),
+              };
+            };
           }
           if (name === 'libraryCollection' && mockLibraryCollectionRead) {
             return async () => mockLibraryCollectionRead;
+          }
+          if (name === 'userRewards') {
+            return async (args: any = {}) => {
+              const where = args?.where;
+              if (where?.user_id && mockUserRewards && mockUserRewards.user_id === where.user_id) {
+                return mockUserRewards;
+              }
+              return mockUserRewards;
+            };
+          }
+          if (name === 'moodLog') {
+            return async (args: any = {}) => {
+              const where = args?.where;
+              if (where?.user_id) {
+                const userLogs = mockMoodLogs.filter((l: any) => l.user_id === where.user_id);
+                if (where?.created_at?.gte) {
+                  const cutoff = new Date(where.created_at.gte);
+                  return userLogs.find((l: any) => new Date(l.created_at) >= cutoff) || null;
+                }
+                return userLogs[0] || null;
+              }
+              return mockMoodLogs[0] || null;
+            };
+          }
+          if (name === 'fireJournalEntry') {
+            return async (args: any = {}) => {
+              const where = args?.where;
+              if (where?.user_id) {
+                return mockFireJournalEntries.find((e: any) => e.user_id === where.user_id) || null;
+              }
+              return mockFireJournalEntries[0] || null;
+            };
+          }
+          if (name === 'thoughtRecord') {
+            return async (args: any = {}) => {
+              const where = args?.where;
+              if (where?.id) {
+                return mockThoughtRecords.find((t: any) => t.id === where.id) || null;
+              }
+              if (where?.user_id) {
+                return mockThoughtRecords.find((t: any) => t.user_id === where.user_id) || null;
+              }
+              return mockThoughtRecords[0] || null;
+            };
+          }
+          if (name === 'collectionNodeEvent') {
+            return async (args: any = {}) => {
+              const where = args?.where;
+              let results = mockCollectionNodeEvents;
+              if (where?.collection_id) {
+                results = results.filter((e: any) => e.collection_id === where.collection_id);
+              }
+              if (where?.node_id) {
+                results = results.filter((e: any) => e.node_id === where.node_id);
+              }
+              if (where?.event_type) {
+                results = results.filter((e: any) => e.event_type === where.event_type);
+              }
+              if (where?.actor_id) {
+                results = results.filter((e: any) => e.actor_id === where.actor_id);
+              }
+              if (where?.occurred_at?.lte) {
+                const cutoff = new Date(where.occurred_at.lte);
+                results = results.filter((e: any) => new Date(e.occurred_at) <= cutoff);
+              }
+              if (where?.occurred_at?.gte) {
+                const cutoff = new Date(where.occurred_at.gte);
+                results = results.filter((e: any) => new Date(e.occurred_at) >= cutoff);
+              }
+              if (args?.orderBy?.occurred_at === 'desc') {
+                results = [...results].sort((a, b) => new Date(b.occurred_at).getTime() - new Date(a.occurred_at).getTime());
+              } else if (args?.orderBy?.occurred_at === 'asc') {
+                results = [...results].sort((a, b) => new Date(a.occurred_at).getTime() - new Date(b.occurred_at).getTime());
+              }
+              if (args?.take) {
+                results = results.slice(0, args.take);
+              }
+              return results;
+            };
+          }
+          if (name === 'userRewards') {
+            return async (args: any = {}) => {
+              const where = args?.where;
+              if (where?.user_id && mockUserRewards && mockUserRewards.user_id === where.user_id) {
+                return mockUserRewards;
+              }
+              return mockUserRewards;
+            };
+          }
+          if (name === 'userRewardsVersions') {
+            return async (args: any = {}) => {
+              const where = args?.where;
+              let results = mockUserRewardsVersions;
+              if (where?.user_id) {
+                results = results.filter((v: any) => v.user_id === where.user_id);
+              }
+              if (where?.recorded_at?.lte) {
+                const cutoff = new Date(where.recorded_at.lte);
+                results = results.filter((v: any) => new Date(v.recorded_at) <= cutoff);
+              }
+              if (args?.orderBy?.recorded_at === 'desc') {
+                results = [...results].sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime());
+              } else if (args?.orderBy?.recorded_at === 'asc') {
+                results = [...results].sort((a, b) => new Date(a.recorded_at).getTime() - new Date(b.recorded_at).getTime());
+              }
+              if (args?.take) {
+                results = results.slice(0, args.take);
+              }
+              return results;
+            };
+          }
+          if (name === 'whisperedMoment') {
+            return async (args: any = {}) => {
+              const where = args?.where;
+              let results = mockWhisperedMoments;
+              if (where?.user_id) {
+                results = results.filter((w: any) => w.user_id === where.user_id);
+              }
+              if (args?.orderBy?.created_at === 'desc') {
+                results = [...results].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+              }
+              if (args?.take) {
+                results = results.slice(0, args.take);
+              }
+              return results;
+            };
+          }
+          if (name === 'classroomNote') {
+            return async (args: any = {}) => {
+              const where = args?.where;
+              if (where?.id) {
+                return mockClassroomNotes.find((n: any) => n.id === where.id) || null;
+              }
+              return mockClassroomNotes[0] || null;
+            };
           }
           return async (args: any = {}) => ({
             id: args?.where?.id ?? `${name}-mock-id`,
@@ -219,6 +414,134 @@ function createMockDelegate(name: string): any {
               nodes: [],
             });
           }
+          if (name === 'moodLog' && prop === 'create') {
+            return async (args: any = {}) => {
+              const newLog = {
+                id: `mood-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+                user_id: args?.data?.user_id ?? 'mock-user-id',
+                mood_score: args?.data?.mood_score ?? 0,
+                mood: args?.data?.mood ?? null,
+                note: args?.data?.note ?? null,
+                created_at: new Date(),
+              };
+              mockMoodLogs.unshift(newLog);
+              return newLog;
+            };
+          }
+          if (name === 'fireJournalEntry' && prop === 'create') {
+            return async (args: any = {}) => {
+              const content = args?.data?.content_preview ?? '';
+              const newEntry = {
+                id: `journal-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+                user_id: args?.data?.user_id ?? 'mock-user-id',
+                content_preview: content.substring(0, 50),
+                is_burned: true,
+                created_at: new Date(),
+              };
+              mockFireJournalEntries.unshift(newEntry);
+              return newEntry;
+            };
+          }
+          if (name === 'thoughtRecord' && prop === 'create') {
+            return async (args: any = {}) => {
+              const newRecord = {
+                id: `thought-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+                user_id: args?.data?.user_id ?? 'mock-user-id',
+                ...args?.data,
+                created_at: new Date(),
+              };
+              mockThoughtRecords.unshift(newRecord);
+              return newRecord;
+            };
+          }
+          if (name === 'thoughtRecord' && prop === 'update') {
+            return async (args: any = {}) => {
+              const where = args?.where;
+              const index = mockThoughtRecords.findIndex((t: any) => t.id === where?.id);
+              if (index >= 0) {
+                mockThoughtRecords[index] = { ...mockThoughtRecords[index], ...args?.data };
+                return mockThoughtRecords[index];
+              }
+              return null;
+            };
+          }
+          if (name === 'userPreferences' && (prop === 'create' || prop === 'update')) {
+            return async (args: any = {}) => {
+              const updated = {
+                ...mockUserPreferences,
+                ...args?.data,
+                updated_at: new Date(),
+              };
+              mockUserPreferences = updated;
+              return updated;
+            };
+          }
+          if (name === 'userRewards' && (prop === 'create' || prop === 'update')) {
+            return async (args: any = {}) => {
+              const updated = {
+                id: mockUserRewards?.id ?? '823e4567-e89b-12d3-a456-426614174000',
+                ...mockUserRewards,
+                ...args?.data,
+                created_at: mockUserRewards?.created_at ?? new Date(),
+                updated_at: new Date(),
+              };
+              mockUserRewards = updated;
+              return updated;
+            };
+          }
+          if (name === 'userRewardsVersions' && prop === 'create') {
+            return async (args: any = {}) => {
+              const newVersion = {
+                id: `vr-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+                user_id: args?.data?.user_id ?? 'mock-user-id',
+                ...args?.data,
+                recorded_at: new Date(),
+              };
+              mockUserRewardsVersions.unshift(newVersion);
+              return newVersion;
+            };
+          }
+          if (name === 'whisperedMoment' && prop === 'create') {
+            return async (args: any = {}) => {
+              const newMoment = {
+                id: `wm-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+                user_id: args?.data?.user_id ?? 'mock-user-id',
+                ...args?.data,
+                created_at: new Date(),
+              };
+              mockWhisperedMoments.unshift(newMoment);
+              return newMoment;
+            };
+          }
+          if (name === 'classroomNote' && (prop === 'create' || prop === 'update')) {
+            return async (args: any = {}) => {
+              const where = args?.where;
+              const index = mockClassroomNotes.findIndex((n: any) => n.id === where?.id);
+              if (prop === 'create' || index < 0) {
+                const newNote = {
+                  id: `cn-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+                  ...args?.data,
+                  created_at: new Date(),
+                  updated_at: new Date(),
+                };
+                mockClassroomNotes.unshift(newNote);
+                return newNote;
+              }
+              mockClassroomNotes[index] = { ...mockClassroomNotes[index], ...args?.data, updated_at: new Date() };
+              return mockClassroomNotes[index];
+            };
+          }
+          if (name === 'collectionNodeEvent' && prop === 'create') {
+            return async (args: any = {}) => {
+              const newEvent = {
+                id: `cne-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+                ...args?.data,
+                occurred_at: new Date(),
+              };
+              mockCollectionNodeEvents.unshift(newEvent);
+              return newEvent;
+            };
+          }
           if (name === 'bond' && prop === 'create') {
             return async (args: any = {}) => ({
               id: 'b23e4567-e89b-12d3-a456-426614174000',
@@ -263,13 +586,194 @@ function createMockDelegate(name: string): any {
 
         if (prop === 'findMany') {
           if (name === 'bond') return async () => (mockActiveBond ? [mockActiveBond] : []);
+          if (name === 'user')
+            return async (args: any = {}) => {
+              const where = args?.where;
+              let results = mockUsers.length > 0 ? mockUsers : (mockUserData ? [mockUserData] : []);
+              if (where?.id?.in) {
+                results = results.filter((u: any) => where.id.in.includes(u.id));
+              }
+              if (args?.select) {
+                results = results.map((u: any) => {
+                  const selected: any = {};
+                  for (const key of Object.keys(args.select)) {
+                    selected[key] = u[key];
+                  }
+                  return selected;
+                });
+              }
+              return results;
+            };
+          if (name === 'moodLog')
+            return async (args: any = {}) => {
+              const where = args?.where;
+              let results = mockMoodLogs;
+              if (where?.user_id) {
+                results = results.filter((l: any) => l.user_id === where.user_id);
+              }
+              if (where?.created_at?.gte) {
+                const cutoff = new Date(where.created_at.gte);
+                results = results.filter((l: any) => new Date(l.created_at) >= cutoff);
+              }
+              if (where?.created_at?.lt) {
+                const cutoff = new Date(where.created_at.lt);
+                results = results.filter((l: any) => new Date(l.created_at) < cutoff);
+              }
+              if (args?.orderBy?.created_at === 'desc') {
+                results = [...results].sort(
+                  (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+                );
+              }
+              if (args?.take) {
+                results = results.slice(0, args.take);
+              }
+              return results;
+            };
+          if (name === 'fireJournalEntry')
+            return async (args: any = {}) => {
+              const where = args?.where;
+              let results = mockFireJournalEntries;
+              if (where?.user_id) {
+                results = results.filter((e: any) => e.user_id === where.user_id);
+              }
+              if (where?.created_at?.gte) {
+                const cutoff = new Date(where.created_at.gte);
+                results = results.filter((e: any) => new Date(e.created_at) >= cutoff);
+              }
+              if (where?.created_at?.lt) {
+                const cutoff = new Date(where.created_at.lt);
+                results = results.filter((e: any) => new Date(e.created_at) < cutoff);
+              }
+              if (args?.orderBy?.created_at === 'desc') {
+                results = [...results].sort(
+                  (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+                );
+              }
+              if (args?.take) {
+                results = results.slice(0, args.take);
+              }
+              return results;
+            };
+          if (name === 'thoughtRecord')
+            return async (args: any = {}) => {
+              const where = args?.where;
+              let results = mockThoughtRecords;
+              if (where?.user_id) {
+                results = results.filter((t: any) => t.user_id === where.user_id);
+              }
+              if (args?.orderBy?.created_at === 'desc') {
+                results = [...results].sort(
+                  (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+                );
+              }
+              if (args?.take) {
+                results = results.slice(0, args.take);
+              }
+              return results;
+            };
           if (name === 'libraryCollection')
             return async (args: any = {}) => {
               mockLibraryCollectionFindManyArgs = args;
               return mockLibraryCollections;
             };
           if (name === 'libraryResource') return async () => mockLibraryResources;
-          if (name === 'collectionNodeEvent') return async () => mockCollectionNodeEvents;
+          if (name === 'collectionNodeEvent')
+            return async (args: any = {}) => {
+              const where = args?.where;
+              let results = mockCollectionNodeEvents;
+              if (where?.collection_id) {
+                results = results.filter((e: any) => e.collection_id === where.collection_id);
+              }
+              if (where?.node_id) {
+                results = results.filter((e: any) => e.node_id === where.node_id);
+              }
+              if (where?.event_type) {
+                results = results.filter((e: any) => e.event_type === where.event_type);
+              }
+              if (where?.actor_id) {
+                results = results.filter((e: any) => e.actor_id === where.actor_id);
+              }
+              if (where?.occurred_at?.lte) {
+                const cutoff = new Date(where.occurred_at.lte);
+                results = results.filter((e: any) => new Date(e.occurred_at) <= cutoff);
+              }
+              if (where?.occurred_at?.gte) {
+                const cutoff = new Date(where.occurred_at.gte);
+                results = results.filter((e: any) => new Date(e.occurred_at) >= cutoff);
+              }
+              if (args?.orderBy?.occurred_at === 'desc') {
+                results = [...results].sort((a, b) => new Date(b.occurred_at).getTime() - new Date(a.occurred_at).getTime());
+              } else if (args?.orderBy?.occurred_at === 'asc') {
+                results = [...results].sort((a, b) => new Date(a.occurred_at).getTime() - new Date(b.occurred_at).getTime());
+              }
+              if (args?.take) {
+                results = results.slice(0, args.take);
+              }
+              return results;
+            };
+          if (name === 'userRewards')
+            return async (args: any = {}) => {
+              const where = args?.where;
+              let results = mockUserRewards ? [mockUserRewards] : [];
+              if (where?.user_id) {
+                results = results.filter((r: any) => r.user_id === where.user_id);
+              }
+              return results;
+            };
+          if (name === 'userRewardsVersions')
+            return async (args: any = {}) => {
+              const where = args?.where;
+              let results = mockUserRewardsVersions;
+              if (where?.user_id) {
+                results = results.filter((v: any) => v.user_id === where.user_id);
+              }
+              if (where?.recorded_at?.lte) {
+                const cutoff = new Date(where.recorded_at.lte);
+                results = results.filter((v: any) => new Date(v.recorded_at) <= cutoff);
+              }
+              if (where?.recorded_at?.gte) {
+                const cutoff = new Date(where.recorded_at.gte);
+                results = results.filter((v: any) => new Date(v.recorded_at) >= cutoff);
+              }
+              if (args?.orderBy?.recorded_at === 'desc') {
+                results = [...results].sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime());
+              } else if (args?.orderBy?.recorded_at === 'asc') {
+                results = [...results].sort((a, b) => new Date(a.recorded_at).getTime() - new Date(b.recorded_at).getTime());
+              }
+              if (args?.take) {
+                results = results.slice(0, args.take);
+              }
+              return results;
+            };
+          if (name === 'whisperedMoment')
+            return async (args: any = {}) => {
+              const where = args?.where;
+              let results = mockWhisperedMoments;
+              if (where?.user_id) {
+                results = results.filter((w: any) => w.user_id === where.user_id);
+              }
+              if (args?.orderBy?.created_at === 'desc') {
+                results = [...results].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+              }
+              if (args?.take) {
+                results = results.slice(0, args.take);
+              }
+              return results;
+            };
+          if (name === 'classroomNote')
+            return async (args: any = {}) => {
+              const where = args?.where;
+              let results = mockClassroomNotes;
+              if (where?.id) {
+                results = results.filter((n: any) => n.id === where.id);
+              }
+              return results;
+            };
+          if (name === 'libraryCollection')
+            return async (args: any = {}) => {
+              mockLibraryCollectionFindManyArgs = args;
+              return mockLibraryCollections;
+            };
           return async () => [];
         }
         if (prop === 'findFirst') {
@@ -285,7 +789,43 @@ function createMockDelegate(name: string): any {
               return mockActiveBond;
             };
           }
+          if (name === 'moodLog') {
+            return async (args: any = {}) => {
+              const where = args?.where;
+              let results = mockMoodLogs;
+              if (where?.user_id) {
+                results = results.filter((l: any) => l.user_id === where.user_id);
+              }
+              if (where?.created_at?.gte) {
+                const cutoff = new Date(where.created_at.gte);
+                results = results.filter((l: any) => new Date(l.created_at) >= cutoff);
+              }
+              if (args?.orderBy?.created_at === 'desc') {
+                results = [...results].sort(
+                  (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+                );
+              }
+              return results[0] || null;
+            };
+          }
           if (name === 'communityPollVote') return async () => null;
+          if (name === 'userRewardsVersions') {
+            return async (args: any = {}) => {
+              const where = args?.where;
+              let results = mockUserRewardsVersions;
+              if (where?.user_id) {
+                results = results.filter((v: any) => v.user_id === where.user_id);
+              }
+              if (where?.recorded_at?.lte) {
+                const cutoff = new Date(where.recorded_at.lte);
+                results = results.filter((v: any) => new Date(v.recorded_at) <= cutoff);
+              }
+              if (args?.orderBy?.recorded_at === 'desc') {
+                results = [...results].sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime());
+              }
+              return results[0] || null;
+            };
+          }
           return async () => null;
         }
 

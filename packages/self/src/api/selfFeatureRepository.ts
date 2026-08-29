@@ -2,6 +2,7 @@ import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { decisionJournalAPI } from '@repo/core/api/decisionJournal';
 import { journalEntriesAPI } from '@repo/core/api/journalEntries';
 import { getTemporalRange } from '@repo/core/logic';
+import { indexVoiceJournals, indexWisdomNotes } from '@repo/self/lib/selfFts';
 
 import type {
   DailyPrepItem,
@@ -14,6 +15,12 @@ import type {
   SleepLog,
   WisdomNote,
 } from '@repo/self/types';
+
+function isMissingTable(error: unknown): boolean {
+  if (!error || typeof error !== 'object') return false;
+  const e = error as { code?: string; message?: string };
+  return e.code === '42P01' || (typeof e.message === 'string' && e.message.includes('does not exist'));
+}
 
 export interface ReminderRecord {
   id: string;
@@ -41,7 +48,13 @@ export async function fetchReminders(userId: string): Promise<ReminderRecord[]> 
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    if (isMissingTable(error)) {
+      console.warn('[self] reminders table not yet migrated — returning empty', { code: (error as { code?: string }).code });
+      return [];
+    }
+    throw error;
+  }
   return data ?? [];
 }
 
@@ -63,7 +76,22 @@ export async function createReminder(
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    if (isMissingTable(error)) {
+      console.warn('[self] reminders table not yet migrated — creating ephemeral record', { code: (error as { code?: string }).code });
+      return {
+        id: `local_${Date.now()}`,
+        user_id: userId,
+        title: input.title,
+        description: input.description,
+        icon_type: input.icon_type,
+        is_default: input.is_default ?? false,
+        is_active: input.is_active ?? true,
+        created_at: new Date().toISOString(),
+      };
+    }
+    throw error;
+  }
   return data;
 }
 
@@ -73,13 +101,25 @@ export async function updateReminder(
 ): Promise<void> {
   const { error } = await supabase.from('reminders').update(updates).eq('id', reminderId);
 
-  if (error) throw error;
+  if (error) {
+    if (isMissingTable(error)) {
+      console.warn('[self] reminders table not yet migrated — skipping update', { code: (error as { code?: string }).code });
+      return;
+    }
+    throw error;
+  }
 }
 
 export async function deleteReminder(reminderId: string): Promise<void> {
   const { error } = await supabase.from('reminders').delete().eq('id', reminderId);
 
-  if (error) throw error;
+  if (error) {
+    if (isMissingTable(error)) {
+      console.warn('[self] reminders table not yet migrated — skipping delete', { code: (error as { code?: string }).code });
+      return;
+    }
+    throw error;
+  }
 }
 
 export async function fetchSleepLogs(userId: string): Promise<SleepLog[]> {
@@ -90,7 +130,13 @@ export async function fetchSleepLogs(userId: string): Promise<SleepLog[]> {
     .order('created_at', { ascending: false })
     .limit(7);
 
-  if (error) throw error;
+  if (error) {
+    if (isMissingTable(error)) {
+      console.warn('[self] sleep_logs table not yet migrated — returning empty', { code: (error as { code?: string }).code });
+      return [];
+    }
+    throw error;
+  }
   return data ?? [];
 }
 
@@ -108,7 +154,18 @@ export async function createSleepLog(
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    if (isMissingTable(error)) {
+      console.warn('[self] sleep_logs table not yet migrated — creating ephemeral record', { code: (error as { code?: string }).code });
+      return {
+        id: `local_${Date.now()}`,
+        user_id: userId,
+        quality,
+        created_at: new Date().toISOString(),
+      } as SleepLog;
+    }
+    throw error;
+  }
   return data;
 }
 
@@ -186,7 +243,13 @@ export async function fetchStudentGoalsForView(
 
   const { data, error } = await query.order('created_at', { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    if (isMissingTable(error)) {
+      console.warn('[self] student_goals table not yet migrated — returning empty', { code: (error as { code?: string }).code });
+      return [];
+    }
+    throw error;
+  }
   return data ?? [];
 }
 
@@ -202,7 +265,20 @@ export async function createStudentGoal(userId: string, text: string): Promise<G
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    if (isMissingTable(error)) {
+      console.warn('[self] student_goals table not yet migrated — creating ephemeral record', { code: (error as { code?: string }).code });
+      return {
+        id: `local_${Date.now()}`,
+        user_id: userId,
+        text,
+        progress: 0,
+        is_completed: false,
+        created_at: new Date().toISOString(),
+      } as unknown as Goal;
+    }
+    throw error;
+  }
   return data;
 }
 
@@ -212,7 +288,13 @@ export async function updateStudentGoal(
 ): Promise<void> {
   const { error } = await supabase.from('student_goals').update(updates).eq('id', goalId);
 
-  if (error) throw error;
+  if (error) {
+    if (isMissingTable(error)) {
+      console.warn('[self] student_goals table not yet migrated — skipping update', { code: (error as { code?: string }).code });
+      return;
+    }
+    throw error;
+  }
 }
 
 export async function fetchTomorrowPrepItems(userId: string): Promise<DailyPrepItem[]> {
@@ -276,7 +358,13 @@ export async function saveWindDownRitual(
     completed_at: new Date().toISOString(),
   });
 
-  if (error) throw error;
+  if (error) {
+    if (isMissingTable(error)) {
+      console.warn('[self] wind_down_rituals table not yet migrated — skipping insert', { code: (error as { code?: string }).code });
+      return;
+    }
+    throw error;
+  }
 }
 
 export async function saveVoiceJournalRecord(
@@ -305,7 +393,16 @@ export async function saveVoiceJournalRecord(
     created_at: new Date().toISOString(),
   });
 
-  if (error) throw error;
+  if (error) {
+    if (isMissingTable(error)) {
+      console.warn('[self] voice_journals table not yet migrated — skipping insert', { code: (error as { code?: string }).code });
+      // still index locally for offline search
+      void indexVoiceJournals([{ id: `local_${Date.now()}`, duration_seconds: payload.durationSeconds }]).catch(() => {});
+      return;
+    }
+    throw error;
+  }
+  void indexVoiceJournals([{ id: `local_${Date.now()}`, duration_seconds: payload.durationSeconds }]).catch(() => {});
 }
 
 export async function fetchDecisionLogs(
@@ -334,7 +431,13 @@ export async function fetchTimetablePeriods(activeDay: number): Promise<Period[]
     .eq('day_of_week', activeDay)
     .order('start_time', { ascending: true });
 
-  if (error) throw error;
+  if (error) {
+    if (isMissingTable(error)) {
+      console.warn('[self] timetable table not yet migrated — returning empty', { code: (error as { code?: string }).code });
+      return [];
+    }
+    throw error;
+  }
   return data ?? [];
 }
 
@@ -348,18 +451,36 @@ export async function createTimetablePeriod(
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    if (isMissingTable(error)) {
+      console.warn('[self] timetable table not yet migrated — creating ephemeral record', { code: (error as { code?: string }).code });
+      return { id: `local_${Date.now()}`, user_id: userId, ...period } as Period;
+    }
+    throw error;
+  }
   return data;
 }
 
 export async function updateTimetablePeriod(id: string, updates: Partial<Period>): Promise<void> {
   const { error } = await supabase.from('timetable').update(updates).eq('id', id);
-  if (error) throw error;
+  if (error) {
+    if (isMissingTable(error)) {
+      console.warn('[self] timetable table not yet migrated — skipping update', { code: (error as { code?: string }).code });
+      return;
+    }
+    throw error;
+  }
 }
 
 export async function deleteTimetablePeriod(id: string): Promise<void> {
   const { error } = await supabase.from('timetable').delete().eq('id', id);
-  if (error) throw error;
+  if (error) {
+    if (isMissingTable(error)) {
+      console.warn('[self] timetable table not yet migrated — skipping delete', { code: (error as { code?: string }).code });
+      return;
+    }
+    throw error;
+  }
 }
 
 export async function fetchWisdomNotes(
@@ -376,8 +497,16 @@ export async function fetchWisdomNotes(
   }
 
   const { data, error } = await query;
-  if (error) throw error;
-  return data ?? [];
+  if (error) {
+    if (isMissingTable(error)) {
+      console.warn('[self] wisdom_notes table not yet migrated — returning empty', { code: (error as { code?: string }).code });
+      return [];
+    }
+    throw error;
+  }
+  const rows = data ?? [];
+  void indexWisdomNotes(rows.map((r) => ({ id: (r as { id: string }).id, insight: (r as { insight: string }).insight }))).catch(() => {});
+  return rows;
 }
 
 export async function createWisdomNote(userId: string, insight: string): Promise<WisdomNote> {

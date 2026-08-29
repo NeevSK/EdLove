@@ -120,7 +120,9 @@ permit(
     resource is JoyMoments ||
     resource is GratitudeEntries ||
     resource is EnergyForecasts ||
-    resource is Wellbeing
+    resource is Wellbeing ||
+    resource is UserRewards ||
+    resource is WhisperedMoment
   ) &&
   resource has user_id &&
   resource.user_id == principal.id

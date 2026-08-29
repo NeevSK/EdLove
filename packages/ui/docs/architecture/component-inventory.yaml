@@ -1,0 +1,88 @@
+# Source-owned UI inventory. Keep this focused on reusable public surfaces.
+# Product/domain components belong in their owning package.
+components:
+  - name: button
+    path: src/components/ui/button
+    layer: ui
+    status: stable
+    platforms: [ios, android, web]
+    behavior: pressable
+    tests: src/__tests__/Button.test.tsx
+
+  - name: popover
+    path: src/components/ui/popover
+    layer: ui
+    status: experimental
+    platforms: [ios, android, web]
+    behavior: anchored-surface
+    tests: src/__tests__/Popover.test.tsx
+
+  - name: dialog
+    path: src/components/ui/dialog
+    layer: ui
+    status: experimental
+    platforms: [ios, android, web]
+    behavior: modal
+    tests: src/__tests__/Dialog.test.tsx
+
+  - name: modal
+    path: src/components/ui/modal
+    layer: ui
+    status: stable
+    platforms: [ios, android, web]
+    behavior: portal-overlay
+    tests: src/__tests__/Modal.test.tsx
+
+  - name: tabs
+    path: src/components/ui/tabs
+    layer: ui
+    status: experimental
+    platforms: [ios, android, web]
+    behavior: controlled-selection
+    tests: src/__tests__/Tabs.test.tsx
+
+  - name: sheet
+    path: src/components/ui/sheet
+    layer: ui
+    status: experimental
+    platforms: [ios, android, web]
+    behavior: actionsheet
+    tests: src/__tests__/Sheet.test.tsx
+
+  - name: command
+    path: src/components/ui/command
+    layer: ui
+    status: experimental
+    platforms: [ios, android, web]
+    behavior: filtered-selection
+    tests: src/__tests__/Command.test.tsx
+
+  - name: combobox
+    path: src/components/ui/combobox
+    layer: ui
+    status: experimental
+    platforms: [ios, android, web]
+    behavior: searchable-selection
+    tests: src/__tests__/Combobox.test.tsx
+
+  - name: form-field
+    path: src/components/ui/form-field
+    layer: ui
+    status: experimental
+    platforms: [ios, android, web]
+    behavior: labelled-validation
+    tests: src/__tests__/FormField.test.tsx
+
+  - name: branded-feedback
+    path: src/components/{BrandPulse,BrandedEmptyState,ErrorState,Success,Skeleton}.tsx
+    layer: brand
+    status: stable
+    platforms: [ios, android, web]
+    behavior: state-feedback
+
+  - name: gluestack-compatibility
+    path: src/gluestack-legacy
+    layer: adapter
+    status: migration-only
+    platforms: [ios, android, web]
+    behavior: legacy-facade

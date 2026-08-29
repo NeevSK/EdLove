@@ -7,6 +7,7 @@ import type {
   ClassroomWorkspaceSurface,
   ClassroomWorkspaceSurfaceId,
 } from '@repo/classroom/types/workspace';
+import { CLASSROOM_SURFACE_REGISTRY } from './surfaceRegistry';
 
 type ClassroomResolvedSurface = ClassroomWorkspaceSurface &
   ResolvedWorkspaceSurface<ClassroomWorkspaceSurfaceId, ClassroomWorkspaceCapabilityKey>;
@@ -25,6 +26,21 @@ type Props = {
   onToggleHidden: (id: ClassroomWorkspaceSurfaceId, hidden: boolean) => void;
   onTogglePinned: (id: ClassroomWorkspaceSurfaceId, pinned: boolean) => void;
   onMoveToNextZone: (id: ClassroomWorkspaceSurfaceId, zone: WorkspaceZoneId) => void;
+  isGuest: boolean;
+  classroomData: {
+    userId: string;
+    schoolId: string | null;
+    profileCompleted: boolean;
+    realClassCount: number;
+  };
+  schoolIdToUse: string | null | undefined;
+  isDemoModeTriggered: boolean;
+  setIsDemoModeTriggered: (val: boolean) => void;
+  setIsCreateClassroomOpen: (val: boolean) => void;
+  setIsClaimInviteOpen: (val: boolean) => void;
+  fetchRoleData: () => void | Promise<void>;
+  renderNudge: () => React.ReactNode;
+  t: (key: string) => string;
 };
 
 const getNextZone = (zone: WorkspaceZoneId): WorkspaceZoneId => {
@@ -39,6 +55,16 @@ export function ClassroomWorkspaceCanvas({
   onToggleHidden,
   onTogglePinned,
   onMoveToNextZone,
+  isGuest,
+  classroomData,
+  schoolIdToUse,
+  isDemoModeTriggered,
+  setIsDemoModeTriggered,
+  setIsCreateClassroomOpen,
+  setIsClaimInviteOpen,
+  fetchRoleData,
+  renderNudge,
+  t,
 }: Props) {
   if (!layout) return null;
 
@@ -46,12 +72,30 @@ export function ClassroomWorkspaceCanvas({
     <WorkspaceCanvas
       surfaces={surfaces}
       layout={layout as any}
+      workspaceId="classroom"
       title="Classroom Work Canvas"
       subtitle="Capability-driven workspace for academic, mixed-role, and institutional surfaces."
       emptyMessage="No workspace surfaces are available for this user yet."
       renderSurfaceContent={(surface) => {
         const typedSurface = surface as ClassroomResolvedSurface;
-        return <Box className="flex-1">{typedSurface.content}</Box>;
+        const Component = CLASSROOM_SURFACE_REGISTRY[typedSurface.surfaceId];
+        if (!Component) return null;
+        return (
+          <Box className="flex-1">
+            <Component
+              isGuest={isGuest}
+              classroomData={classroomData}
+              schoolIdToUse={schoolIdToUse}
+              isDemoModeTriggered={isDemoModeTriggered}
+              setIsDemoModeTriggered={setIsDemoModeTriggered}
+              setIsCreateClassroomOpen={setIsCreateClassroomOpen}
+              setIsClaimInviteOpen={setIsClaimInviteOpen}
+              fetchRoleData={fetchRoleData}
+              renderNudge={renderNudge}
+              t={t}
+            />
+          </Box>
+        );
       }}
       getSurfaceSubtitle={(surface) => (surface as ClassroomResolvedSurface).subtitle}
       getSurfaceSummary={(surface) => (surface as ClassroomResolvedSurface).summary}

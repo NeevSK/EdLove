@@ -17,7 +17,7 @@ import {
 } from '@repo/ui/primitives';
 import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Easing,
@@ -29,19 +29,11 @@ import {
   withTiming,
 } from 'react-native-reanimated';
 
-// Mock audio controller for now
-const audioController = {
-  start: async () => {
-    console.log('Recording started');
-  },
-  stop: async () => {
-    console.log('Recording stopped');
-    return { uri: 'mock-uri', duration: 5000 };
-  },
-  play: async (uri: string) => {
-    console.log('Playing', uri);
-  },
-};
+import { AudioModule } from 'expo-audio';
+import * as FileSystem from 'expo-file-system/legacy';
+import { Platform } from 'react-native';
+import { saveVoiceJournalRecord } from '@repo/self/api/selfFeatureRepository';
+import { Observe } from 'expo-observe';
 
 interface VoiceJournalingProps {
   userId?: string;
@@ -52,15 +44,27 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
   const { t } = useTranslation();
   const [recordingState, setRecordingState] = useState<'idle' | 'recording' | 'finished'>('idle');
   const [duration, setDuration] = useState(0);
+  const [recordedUri, setRecordedUri] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const recorderRef = useRef<InstanceType<typeof AudioModule.AudioRecorder> | null>(null);
 
   // Animation shared values
   const pulseScale = useSharedValue(1);
-  const audioGraph = [
+  const [graph0, graph1, graph2, graph3, graph4] = [
     useSharedValue(10),
     useSharedValue(25),
     useSharedValue(40),
     useSharedValue(20),
     useSharedValue(35),
+  ];
+
+  // One animated style per waveform bar; hooks stay unconditional and top-level.
+  const audioGraphStyles = [
+    useAnimatedStyle(() => ({ height: graph0.value })),
+    useAnimatedStyle(() => ({ height: graph1.value })),
+    useAnimatedStyle(() => ({ height: graph2.value })),
+    useAnimatedStyle(() => ({ height: graph3.value })),
+    useAnimatedStyle(() => ({ height: graph4.value })),
   ];
 
   useEffect(() => {
@@ -72,7 +76,7 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
       );
 
       // Random-ish animation for the wave
-      audioGraph.forEach((val, i) => {
+      for (const [i, val] of [graph0, graph1, graph2, graph3, graph4].entries()) {
         val.value = withRepeat(
           withTiming(15 + Math.random() * 40, {
             duration: 400 + i * 100,
@@ -81,7 +85,7 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
           -1,
           true,
         );
-      });
+      }
 
       const interval = setInterval(() => {
         setDuration((prev) => prev + 1);
@@ -89,10 +93,12 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
       return () => clearInterval(interval);
     } else {
       pulseScale.value = withTiming(1);
-      audioGraph.forEach((val) => (val.value = withTiming(4)));
+      for (const val of [graph0, graph1, graph2, graph3, graph4]) {
+        val.value = withTiming(4);
+      }
     }
     return;
-  }, [recordingState, pulseScale, audioGraph]);
+  }, [recordingState, pulseScale, graph0, graph1, graph2, graph3, graph4]);
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -102,26 +108,103 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
 
   const handleStart = async () => {
     hapticLight();
-    setRecordingState('recording');
-    setDuration(0);
-    await audioController.start();
+    if (Platform.OS === 'web') {
+      setRecordingState('recording');
+      setDuration(0);
+      return;
+    }
+    try {
+      const { status } = await AudioModule.requestRecordingPermissionsAsync();
+      if (status !== 'granted') return;
+      const rec: InstanceType<typeof AudioModule.AudioRecorder> = new (AudioModule.AudioRecorder as unknown as { new (opts?: unknown): InstanceType<typeof AudioModule.AudioRecorder> })({
+        extension: '.m4a',
+        sampleRate: 44100,
+        numberOfChannels: 1,
+        bitRate: 128000,
+      } as unknown as never);
+      await rec.prepareToRecordAsync();
+      recorderRef.current = rec;
+      rec.record();
+      setRecordingState('recording');
+      setDuration(0);
+    } catch (e) {
+      console.warn('[voice] start failed', e);
+      setRecordingState('idle');
+    }
   };
 
   const handleStop = async () => {
     hapticLight();
-    setRecordingState('finished');
-    await audioController.stop();
+    if (Platform.OS === 'web') {
+      setRecordingState('finished');
+      return;
+    }
+    try {
+      const rec = recorderRef.current;
+      if (!rec) {
+        setRecordingState('finished');
+        return;
+      }
+      await rec.stop();
+      const uri = (rec as unknown as { uri: string | null }).uri ?? null;
+      setRecordedUri(uri);
+      setRecordingState('finished');
+      if (uri) {
+        try {
+          const dir = `${FileSystem.documentDirectory}voice-journals/`;
+          await FileSystem.makeDirectoryAsync(dir, { intermediates: true }).catch(() => {});
+          const dest = `${dir}voice_${Date.now()}.m4a`;
+          await FileSystem.copyAsync({ from: uri, to: dest }).catch(() => {});
+        } catch {}
+      }
+    } catch (e) {
+      console.warn('[voice] stop failed', e);
+      setRecordingState('finished');
+    }
   };
 
   const handleReset = () => {
     hapticLight();
     setRecordingState('idle');
     setDuration(0);
+    setRecordedUri(null);
+    recorderRef.current = null;
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     hapticSuccess();
-    onFinished?.('mock-uri');
+    if (isSaving) return;
+    setIsSaving(true);
+    try {
+      if (userId) {
+        let blob: Blob | undefined;
+        if (recordedUri && Platform.OS !== 'web') {
+          try {
+            const base64 = await FileSystem.readAsStringAsync(recordedUri, {
+              encoding: FileSystem.EncodingType.Base64,
+            });
+            const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+            blob = new Blob([bytes], { type: 'audio/m4a' });
+          } catch {}
+        }
+        await saveVoiceJournalRecord(userId, {
+          durationSeconds: duration,
+          blob,
+          extension: 'm4a',
+          contentType: 'audio/m4a',
+        });
+        try {
+          (Observe as unknown as { logEvent: (n: string, o?: unknown) => void }).logEvent('self_voice_recorded', {
+            attributes: { durationSeconds: duration, hasBlob: !!blob },
+          } as unknown as never);
+        } catch {}
+      }
+    } catch (e) {
+      console.warn('[voice] save failed', e);
+    } finally {
+      setIsSaving(false);
+    }
+    onFinished?.(recordedUri ?? 'mock-uri');
     handleReset();
   };
 
@@ -173,10 +256,10 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
       <VStack className="items-center gap-4 w-full">
         {recordingState === 'recording' && (
           <HStack className="items-center gap-1.5 h-12">
-            {audioGraph.map((val, i) => (
+            {audioGraphStyles.map((style, i) => (
               <AnimatedView
                 key={i}
-                style={useAnimatedStyle(() => ({ height: val.value }))}
+                style={style}
                 className="w-1 bg-sanctuarySaffron rounded-full"
               />
             ))}

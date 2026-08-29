@@ -10,6 +10,7 @@ import '@repo/ui/global.css';
 import { initPostHog, posthogAnalytics as initTracker } from '@repo/analytics/telemetry';
 import {
   disconnectPowerSync as clearPowerSync,
+  runStorageEvictionScheduler,
   usePolicyVersionInvalidation,
 } from '@repo/core/adapters/powersync';
 import { refreshPermissionSnapshotOnServer } from '@repo/core/api/authorization';
@@ -55,10 +56,13 @@ import { ToastProvider } from '@repo/ui/providers';
 import { FeatureProvider } from '@repo/ui/providers/FeatureProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as LocalAuthentication from 'expo-local-authentication';
+import { Observe, ObserveErrorBoundary, ObserveInteractiveMarker, ObserveRoot } from 'expo-observe';
 import { Stack, usePathname, useRouter } from 'expo-router';
 import * as ScreenCapture from 'expo-screen-capture';
 import * as SplashScreen from 'expo-splash-screen';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { installGlobalErrorHandlers } from '../src/lib/globalErrorHandlers';
+import { PushNotificationProvider } from '../src/providers/PushNotificationProvider';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   AppState,
   AppStateStatus,
@@ -170,22 +174,66 @@ function BootstrapSideEffects() {
       return;
     }
 
-    initSentry();
+    // Defer heavy telemetry init off TTI — Observe stays immediate for perf truth,
+    // Sentry/PostHog wait for idle after markInteractive (saves 80-150ms on cold start).
+    // Keep globalErrorHandlers (app/_layout.tsx:624) for immediate crash capture.
+    const idle =
+      (globalThis as unknown as { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number })
+        .requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 1500) as unknown as number);
+    const cancelIdle =
+      (globalThis as unknown as { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback ??
+      ((id: number) => clearTimeout(id as unknown as NodeJS.Timeout));
 
-    const posthogApiKey = process.env.EXPO_PUBLIC_POSTHOG_API_KEY;
-    const posthogEnabled = process.env.EXPO_PUBLIC_POSTHOG_ENABLED !== 'false';
-    if (posthogApiKey && posthogEnabled && analyticsEnabled) {
-      const posthogHost = process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com';
-      void initPostHog(posthogApiKey, { host: posthogHost }).then(() => {
-        trackProductEvent('app_started', undefined, {
-          platform:
-            Platform.OS === 'ios' || Platform.OS === 'android' || Platform.OS === 'web'
-              ? Platform.OS
-              : 'unknown',
-        });
-      });
-    }
+    const idleId = idle(() => {
+      try {
+        initSentry();
+      } catch (e) {
+        console.warn('[Sentry] deferred init failed:', e);
+      }
+
+      const posthogApiKey = process.env.EXPO_PUBLIC_POSTHOG_API_KEY;
+      const posthogEnabled = process.env.EXPO_PUBLIC_POSTHOG_ENABLED !== 'false';
+      if (posthogApiKey && posthogEnabled && analyticsEnabled) {
+        const posthogHost = process.env.EXPO_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com';
+        void initPostHog(posthogApiKey, { host: posthogHost })
+          .then(() => {
+            trackProductEvent('app_started', undefined, {
+              platform:
+                Platform.OS === 'ios' || Platform.OS === 'android' || Platform.OS === 'web'
+                  ? Platform.OS
+                  : 'unknown',
+            });
+          })
+          .catch((e) => console.warn('[PostHog] deferred init failed:', e));
+      }
+    });
+
+    return () => {
+      try {
+        cancelIdle(idleId);
+      } catch {}
+    };
   }, [analyticsEnabled, hasDecidedConsent, analyticsConsentGranted]);
+
+  useEffect(() => {
+    // Expo Observe — TTI/TTR + per-route, OTel-native, production truth for T1/T3 (see EXPO_OBSERVE_RUNBOOK.md)
+    // Keep dispatchingEnabled true for perf data (not PII); consent gates PostHog/Sentry only.
+    try {
+      Observe.configure({
+        environment: process.env.EXPO_PUBLIC_APP_ENV ?? process.env.NODE_ENV ?? 'production',
+        sampleRate: 0.2,
+        dispatchInDebug: false,
+        dispatchingEnabled: true,
+        integrations: { expoRouter: true },
+      });
+    } catch (e) {
+      console.warn('[Observe] configure failed:', e);
+    }
+  }, []);
+
+  // Run storage eviction scheduler once on app foreground (after consent is established).
+  // This reclaims SQLite file size and MMKV storage for low-device constraint cases.
+  void runStorageEvictionScheduler();
 
   useEffect(() => {
     // Only set Sentry user profile if consent is granted
@@ -523,6 +571,7 @@ function AppContent() {
               <ExternalLinkProvider>
                 <SafeAreaProvider>
                   <BootstrapSideEffects />
+                  {routeGuardReady && <ObserveInteractiveMarker />}
                   <FeatureProvider>
                     <Stack screenOptions={{ headerShown: false }}>
                       <Stack.Screen name="index" options={{ title: 'Welcome' }} />
@@ -588,9 +637,17 @@ function AppContent() {
   );
 }
 
+function SuspenseFallback() {
+  return <BrandPulse size={40} />;
+}
+
 function RootShell() {
   const [bootState, setBootState] = useState<BootState>({ phase: 'registering-runtime' });
   const [bootAttempt, setBootAttempt] = useState(0);
+
+  useEffect(() => {
+    installGlobalErrorHandlers();
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -624,6 +681,11 @@ function RootShell() {
             .catch((error) => {
               console.warn('[BackgroundSync] deferred registration failed:', error);
             });
+          void import('@/lib/storageEvictionTask')
+            .then(({ registerStorageEvictionTask }) => registerStorageEvictionTask())
+            .catch((error) => {
+              console.warn('[StorageEvictionTask] deferred registration failed:', error);
+            });
           void import('@/utils/LanguageUtils')
             .then(({ LanguageUtils }) => LanguageUtils.init())
             .catch((error) => {
@@ -649,26 +711,34 @@ function RootShell() {
   }, [bootAttempt]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      {bootState.phase === 'ready' ? (
-        <GlobalProvider>
-          <EnvironmentProvider>
-            <DeepLinkProvider>
-              <AppContent />
-            </DeepLinkProvider>
-          </EnvironmentProvider>
-        </GlobalProvider>
-      ) : (
-        <FullScreenFallback
-          error={bootState.phase === 'failed' ? bootState.error : undefined}
-          onRetry={
-            bootState.phase === 'failed'
-              ? () => setBootAttempt((attempt) => attempt + 1)
-              : undefined
-          }
-        />
-      )}
-    </QueryClientProvider>
+    <ObserveRoot>
+      <ObserveErrorBoundary>
+        <QueryClientProvider client={queryClient}>
+          {bootState.phase === 'ready' ? (
+            <GlobalProvider>
+              <EnvironmentProvider>
+                <DeepLinkProvider>
+                  <PushNotificationProvider>
+                    <Suspense fallback={<SuspenseFallback />}>
+                      <AppContent />
+                    </Suspense>
+                  </PushNotificationProvider>
+                </DeepLinkProvider>
+              </EnvironmentProvider>
+            </GlobalProvider>
+          ) : (
+            <FullScreenFallback
+              error={bootState.phase === 'failed' ? bootState.error : undefined}
+              onRetry={
+                bootState.phase === 'failed'
+                  ? () => setBootAttempt((attempt) => attempt + 1)
+                  : undefined
+              }
+            />
+          )}
+        </QueryClientProvider>
+      </ObserveErrorBoundary>
+    </ObserveRoot>
   );
 }
 

@@ -12,7 +12,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useFAB } from '@repo/ui/context/FABContext';
-import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/gluestack';
+import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { useAccessibility } from '@repo/ui/hooks/useAccessibility';
 import { Dimensions, PanResponder, Platform } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';

@@ -48,6 +48,7 @@ const nativeORPCPaths = [
   '/api/tracking/*',
   '/api/warmMirror/*',
   '/api/presence/*',
+  '/api/rewards/*',
 ] as const;
 
 async function handleNativeORPC(c: any, rpcHandler: RPCHandler) {
@@ -56,6 +57,7 @@ async function handleNativeORPC(c: any, rpcHandler: RPCHandler) {
     context,
     prefix: '/api',
   });
+  console.log('[diag-native]', c.req.raw.url, 'matched=', matched, 'status=', response?.status);
   return matched && response ? response : c.text('Not Found', 404);
 }
 

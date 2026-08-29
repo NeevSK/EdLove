@@ -2,12 +2,8 @@ import { z } from 'zod';
 
 export const durableAgentRequestSchema = z.object({
   mode: z.enum(['demo', 'live']),
-  schoolId: z.uuid(),
   classroomId: z.uuid(),
-  teacherId: z.uuid().nullable().optional(),
-  requestedBy: z.string().nullable().optional(),
   studentId: z.uuid().optional(),
-  studentName: z.string().min(1).max(120).optional(),
   demoScenario: z.string().optional(),
   focusPrompt: z.string().min(1).max(500).optional(),
   evidenceScopes: z.array(z.string()).min(1).max(4),

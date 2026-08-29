@@ -179,59 +179,13 @@ export function toORPCContract(contract: any, prefix = ''): any {
         return builder;
       }
 
-      // Fallback for missing keys in mock contract definitions
+      // Contracts are a security boundary. A missing member must fail during
+      // composition rather than becoming a guessed, schema-less route.
       if (!val) {
-        let action = 'read';
-        if (
-          key.startsWith('create') ||
-          key.startsWith('submit') ||
-          key.startsWith('add') ||
-          key.startsWith('send') ||
-          key.startsWith('join') ||
-          key.startsWith('record') ||
-          key.startsWith('engage')
-        ) {
-          action = 'create';
-        } else if (
-          key.startsWith('update') ||
-          key.startsWith('patch') ||
-          key.startsWith('put') ||
-          key.startsWith('edit') ||
-          key.startsWith('grade') ||
-          key.startsWith('approve')
-        ) {
-          action = 'update';
-        } else if (
-          key.startsWith('delete') ||
-          key.startsWith('remove') ||
-          key.startsWith('revoke')
-        ) {
-          action = 'delete';
-        }
-
-        let subject = 'Classroom';
-        const lowerPrefix = inferred.toLowerCase();
-        if (lowerPrefix.includes('library')) subject = 'Library';
-        else if (lowerPrefix.includes('profile') || lowerPrefix.includes('self')) subject = 'User';
-        else if (lowerPrefix.includes('community')) subject = 'Post';
-
-        if (key.includes('Material')) subject = 'Material';
-        else if (key.includes('Submission') || key === 'submitAssignment')
-          subject = 'AssignmentSubmission';
-        else if (key.includes('Assignment')) subject = 'Assignment';
-        else if (key.includes('Group')) subject = 'Group';
-        else if (key.includes('Post')) subject = 'Post';
-        else if (key.includes('School')) subject = 'School';
-
-        const policy = { action, subject };
-
-        const routePath = (inferred ? `${inferred}/${key}` : `/${key}`) as `/${string}`;
-        let builder = oc.route({
-          method: 'POST',
-          path: routePath,
-        });
-        builder = builder.meta({ policy });
-        return builder;
+        throw new Error(
+          `oRPC contract member "${key}" is missing under "${inferred || '/'}". ` +
+            'Declare an explicit contract with input, output, and policy metadata.',
+        );
       }
 
       // Recursively wrap sub-routers:

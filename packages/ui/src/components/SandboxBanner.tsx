@@ -1,8 +1,8 @@
-import { useStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 import { X, Zap } from '@repo/ui/icons';
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, HStack, Pressable, Text } from '@repo/ui/gluestack';
+import { Box, HStack, Pressable, Text } from '@repo/ui/primitives';
 import { hapticLight } from '@repo/ui/utils/haptics';
 
 interface SandboxBannerProps {
@@ -10,7 +10,7 @@ interface SandboxBannerProps {
 }
 
 const SandboxBanner: React.FC<SandboxBannerProps> = ({ onExit }) => {
-  const { isDemoMode } = useStore();
+  const isDemoMode = useAuthStore((state) => state.isDemoMode);
   const { t } = useTranslation();
 
   if (!isDemoMode) return null;

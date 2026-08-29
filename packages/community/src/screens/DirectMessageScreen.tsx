@@ -7,7 +7,8 @@
 
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 
-import { useStore, useTemporalStore } from '@repo/core/store';
+import { useTemporalStore } from '@repo/core/store';
+import { useAuthStore } from '@repo/core/store';
 import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { communityAPI } from '@repo/community/api/community';
@@ -21,7 +22,7 @@ export default function DirectMessageScreen() {
     ? params.conversationId[0]
     : params.conversationId;
   const userName = Array.isArray(params.userName) ? params.userName[0] : params.userName;
-  const { user } = useStore();
+  const user = useAuthStore((state) => state.user);
   const [targetUserId, setTargetUserId] = React.useState<string | undefined>();
   const [isBlocked, setIsBlocked] = React.useState(false);
   const { viewDate, isPastView } = useTemporalStore();

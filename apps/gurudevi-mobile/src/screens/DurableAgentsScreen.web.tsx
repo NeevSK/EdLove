@@ -3,6 +3,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, 
 
 type Capability = 'teacher-summary' | 'student-support';
 type Mode = 'demo' | 'live';
+
 type Run = {
   runId: string;
   status: string;
@@ -10,13 +11,96 @@ type Run = {
   summaryDraft?: string | null;
   error?: string | null;
   promotedTeacherNoteId?: string | null;
+  mode?: string | null;
+  scenario?: string | null;
+  classroomId?: string | null;
+  studentId?: string | null;
+  studentName?: string | null;
+  teacherId?: string | null;
+  requestedBy?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  timeline?: Array<{ action: string; createdAt: string }>;
 };
 
-const API_BASE = (process.env.EXPO_PUBLIC_DURABLE_AGENT_API_URL || process.env.EXPO_PUBLIC_API_URL || '').replace(/\/$/, '');
 const SCENARIOS: Record<Capability, string[]> = {
   'teacher-summary': ['attendance-dip', 'steady-growth', 'wellbeing-watch'],
   'student-support': ['quiet-struggle', 'resilient-improver', 'wellbeing-watch'],
 };
+
+function createApiClient() {
+  const baseUrl = (process.env.EXPO_PUBLIC_DURABLE_AGENT_API_URL || process.env.EXPO_PUBLIC_API_URL || '').replace(/\/$/, '');
+
+  return {
+    async getRuns(limit = 8): Promise<Run[]> {
+      if (!baseUrl) return [];
+      try {
+        const response = await fetch(`${baseUrl}/api/durable-agents/runs?limit=${limit}`, {
+          headers: { 'Content-Type': 'application/json' },
+        });
+        if (!response.ok) return [];
+        const data = await response.json();
+        return (data.runs ?? []) as Run[];
+      } catch {
+        return [];
+      }
+    },
+
+    async startRun(body: {
+      mode: Mode;
+      demoScenario: string;
+      schoolId: string;
+      classroomId: string;
+      teacherId: string;
+      requestedBy: string;
+      studentId?: string;
+      studentName?: string;
+      focusPrompt?: string;
+      evidenceScopes: string[];
+      reviewMode: 'draft_only';
+    }): Promise<{ runId: string; status: string; mode: string; reviewMode: string }> {
+      if (!baseUrl) throw new Error('API URL not configured');
+      const capability = body.evidenceScopes.includes('assignments') ? 'teacher-summary' : 'student-support';
+      const response = await fetch(`${baseUrl}/api/durable-agents/${capability}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.runId) {
+        throw new Error(data.error || 'Unable to queue run.');
+      }
+      return data;
+    },
+
+    async getRun(runId: string): Promise<Run | null> {
+      if (!baseUrl) return null;
+      try {
+        const response = await fetch(`${baseUrl}/api/durable-agents/runs/${runId}`);
+        if (!response.ok) return null;
+        return (await response.json()) as Run;
+      } catch {
+        return null;
+      }
+    },
+
+    async promoteRun(runId: string, actorId: string): Promise<{ runId: string; teacherNoteId?: string; alreadyPromoted?: boolean; promotionMode?: string; status: string }> {
+      if (!baseUrl) throw new Error('API URL not configured');
+      const response = await fetch(`${baseUrl}/api/durable-agents/runs/${runId}/promote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ actorId }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Promotion failed.');
+      }
+      return data;
+    },
+  };
+}
+
+const apiClient = createApiClient();
 
 export default function DurableAgentsScreenWeb() {
   const [capability, setCapability] = useState<Capability>('teacher-summary');
@@ -33,16 +117,10 @@ export default function DurableAgentsScreenWeb() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
 
-  const endpoint = useMemo(
-    () => `${API_BASE}/api/durable-agents/${capability === 'teacher-summary' ? 'teacher-summary' : 'student-support'}`,
-    [capability],
-  );
-
   const loadRuns = useCallback(async () => {
-    if (!API_BASE) return;
     try {
-      const response = await fetch(`${API_BASE}/api/durable-agents/runs?limit=8`);
-      if (response.ok) setRuns(((await response.json()) as { runs?: Run[] }).runs ?? []);
+      const loadedRuns = await apiClient.getRuns(8);
+      setRuns(loadedRuns);
     } catch {
       // The empty state remains useful when the worker is not running locally.
     }
@@ -53,7 +131,8 @@ export default function DurableAgentsScreenWeb() {
   }, [loadRuns]);
 
   const startRun = async () => {
-    if (!API_BASE) {
+    const baseUrl = (process.env.EXPO_PUBLIC_DURABLE_AGENT_API_URL || process.env.EXPO_PUBLIC_API_URL || '').replace(/\/$/, '');
+    if (!baseUrl) {
       setMessage('The review worker is not configured for this environment yet.');
       return;
     }
@@ -70,24 +149,16 @@ export default function DurableAgentsScreenWeb() {
       studentName,
       focusPrompt: focusPrompt || undefined,
       evidenceScopes: capability === 'teacher-summary' ? ['attendance', 'grades', 'wellbeing', 'assignments'] : ['attendance', 'grades', 'wellbeing'],
-      reviewMode: 'draft_only',
+      reviewMode: 'draft_only' as const,
     };
     try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      const data = (await response.json()) as { runId?: string; error?: string };
-      if (!response.ok || !data.runId) throw new Error(data.error || 'Unable to queue run.');
+      const data = await apiClient.startRun(body);
       setActiveRun({ runId: data.runId, status: 'queued' });
       for (let attempt = 0; attempt < 20; attempt += 1) {
         await new Promise((resolve) => setTimeout(resolve, 1500));
-        const statusResponse = await fetch(`${API_BASE}/api/durable-agents/runs/${data.runId}`);
-        if (!statusResponse.ok) continue;
-        const run = (await statusResponse.json()) as Run;
-        setActiveRun(run);
-        if (run.status === 'completed' || run.status === 'failed') break;
+        const run = await apiClient.getRun(data.runId);
+        if (run) { setActiveRun(run); }
+        if (run?.status === 'completed' || run?.status === 'failed') break;
       }
       await loadRuns();
       setMessage('Draft updated. Review the output before promoting anything.');
@@ -99,16 +170,10 @@ export default function DurableAgentsScreenWeb() {
   };
 
   const promoteRun = async () => {
-    if (!activeRun?.runId || !API_BASE) return;
+    if (!activeRun?.runId) return;
     setBusy(true);
     try {
-      const response = await fetch(`${API_BASE}/api/durable-agents/runs/${activeRun.runId}/promote`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ actorId: teacherId }),
-      });
-      const data = (await response.json()) as { error?: string; teacherNoteId?: string };
-      if (!response.ok) throw new Error(data.error || 'Promotion failed.');
+      const data = await apiClient.promoteRun(activeRun.runId, teacherId);
       setMessage(`Promoted for teacher review: ${data.teacherNoteId ?? 'complete'}`);
       await loadRuns();
     } catch (error) {

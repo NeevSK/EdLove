@@ -15,6 +15,7 @@ import { VercelOpenRouterAdapter } from './adapters/VercelOpenRouterAdapter';
 import { Orchestrator } from './domain/Orchestrator';
 import { rateLimit } from './middleware/rateLimit';
 import { type AiPersistencePort, type AiPrivacyMode } from './ports/AiPersistencePort';
+import { CircuitBreaker } from '@repo/core/lib/circuit-breaker';
 
 type AiEnv = {
   Variables: {
@@ -201,6 +202,16 @@ aiRouter.post('/chat', rateLimit, async (c) => {
       }
     });
 
+    // Circuit breaker for AI service
+    const aiCircuitBreaker = new CircuitBreaker({
+      failureThreshold: 5,
+      resetTimeout: 60_000,
+      successThreshold: 2,
+      onOpen: () => console.warn('[CircuitBreaker] AI service circuit opened'),
+      onClose: () => console.info('[CircuitBreaker] AI service circuit closed'),
+      onHalfOpen: () => console.info('[CircuitBreaker] AI service circuit half-open, testing recovery'),
+    });
+
     // 3. Resolve billing info beforehand for logging accuracy
     const billingInfo = await billingAdapter
       .resolveBilling(user.id, context.billingMode ?? 'baseline', {
@@ -215,11 +226,13 @@ aiRouter.post('/chat', rateLimit, async (c) => {
 
     // 4. Process chat — the last user message is the current turn
     const lastUser = [...history].reverse().find((m) => m.role === 'user');
-    const rawStream = await orchestrator.processChat(
-      user.id,
-      lastUser?.content ?? '',
-      history,
-      context,
+    const rawStream = await aiCircuitBreaker.execute(() =>
+      orchestrator.processChat(
+        user.id,
+        lastUser?.content ?? '',
+        history,
+        context,
+      )
     );
 
     // 5. Wrap the chunk stream to record the audit log on completion

@@ -4,6 +4,7 @@ export * from '@repo/classroom/hooks/useClassroomRoleData';
 export * from '@repo/classroom/hooks/useEcosystemStats';
 export * from '@repo/classroom/hooks/useGradebook';
 export * from '@repo/classroom/hooks/useInventory';
+export * from '@repo/classroom/hooks/useLearningReflections';
 export * from '@repo/classroom/hooks/usePrincipalObservations';
 export * from '@repo/classroom/hooks/useResources';
 export * from '@repo/classroom/hooks/useSchoolInvites';

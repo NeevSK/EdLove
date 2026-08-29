@@ -1,4 +1,5 @@
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 // Local Package Imports
 import { StaffPresencePulse } from '@repo/people';
 import { AddSocialLinkModal } from '@repo/profile/components/AddSocialLinkModal';
@@ -66,7 +67,7 @@ export const FullProfileScreen = () => {
   );
 
   const { t } = useTranslation();
-  const { user: currentUser } = useStore();
+  const currentUser = useAuthStore((state) => state.user);
   const { context } = usePermissions();
   const bottomPadding = useBottomTabPadding();
   const { width: windowWidth } = useWindowDimensions();

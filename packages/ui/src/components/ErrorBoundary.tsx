@@ -7,7 +7,7 @@ import {
   Heading,
   Text,
   VStack,
-} from '@repo/ui/gluestack';
+} from '@repo/ui/primitives';
 import { RefreshCw, TriangleAlert } from '@repo/ui/icons';
 import { View } from '@repo/ui/primitives';
 import { Component, type ErrorInfo, type ReactNode } from 'react';

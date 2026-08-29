@@ -1,6 +1,11 @@
 import { Search } from '@repo/ui/icons';
 import { fireEvent, render } from '@testing-library/react-native';
 import { Input, InputField, InputIcon, InputSlot } from '../components/ui/input';
+import { FormControl, FormControlLabel, FormControlLabelText } from '../components/ui/form-control';
+
+jest.mock('@repo/ui/hooks/useTheme', () => ({
+  useTheme: () => ({ text: { muted: '#8A8175' } }),
+}));
 
 describe('Input Component (Robustness)', () => {
   it('renders correctly with default props', async () => {
@@ -47,6 +52,23 @@ describe('Input Component (Robustness)', () => {
     );
 
     expect(getByPlaceholderText('Enter name').props.accessibilityState?.disabled).toBe(true);
+  });
+
+  it('inherits form control state and label identity', async () => {
+    const { getByTestId } = await render(
+      <FormControl id="email-field" isDisabled isInvalid>
+        <FormControlLabel>
+          <FormControlLabelText>Email</FormControlLabelText>
+        </FormControlLabel>
+        <Input testID="email-input">
+          <InputField placeholder="Email address" />
+        </Input>
+      </FormControl>,
+    );
+
+    const input = getByTestId('email-input');
+    expect(input.props.accessibilityState?.disabled).toBe(true);
+    expect(input.props.nativeID).toBe('email-field');
   });
 
   it('supports icons in slots', async () => {

@@ -1,4 +1,5 @@
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -23,7 +24,7 @@ export const WebScreenHeader: React.FC<WebScreenHeaderProps> = ({
 }) => {
   const { t } = useTranslation();
   const { context, can } = usePermissions();
-  const { user } = useStore();
+  const user = useAuthStore((state) => state.user);
 
   // Determine greeting based on time of day (DRY from GlobalHeader)
   const getGreetingDetails = () => {

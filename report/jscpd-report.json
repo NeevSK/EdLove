@@ -1,0 +1,261 @@
+{
+  "duplicates": [
+    {
+      "firstFile": {
+        "end": 34,
+        "endLoc": {
+          "column": 1,
+          "line": 34,
+          "position": 766
+        },
+        "name": "",
+        "start": 23,
+        "startLoc": {
+          "column": 0,
+          "line": 23,
+          "position": 495
+        }
+      },
+      "format": "typescript",
+      "fragment": "",
+      "lines": 12,
+      "secondFile": {
+        "end": 384,
+        "endLoc": {
+          "column": 1,
+          "line": 384,
+          "position": 10562
+        },
+        "name": "",
+        "start": 373,
+        "startLoc": {
+          "column": 7,
+          "line": 373,
+          "position": 10299
+        }
+      },
+      "tokens": 52
+    },
+    {
+      "firstFile": {
+        "end": 50,
+        "endLoc": {
+          "column": 1,
+          "line": 50,
+          "position": 1108
+        },
+        "name": "",
+        "start": 36,
+        "startLoc": {
+          "column": 0,
+          "line": 36,
+          "position": 768
+        }
+      },
+      "format": "typescript",
+      "fragment": "",
+      "lines": 15,
+      "secondFile": {
+        "end": 400,
+        "endLoc": {
+          "column": 1,
+          "line": 400,
+          "position": 10903
+        },
+        "name": "",
+        "start": 386,
+        "startLoc": {
+          "column": 7,
+          "line": 386,
+          "position": 10571
+        }
+      },
+      "tokens": 68
+    },
+    {
+      "firstFile": {
+        "end": 63,
+        "endLoc": {
+          "column": 1,
+          "line": 63,
+          "position": 1407
+        },
+        "name": "",
+        "start": 52,
+        "startLoc": {
+          "column": 0,
+          "line": 52,
+          "position": 1110
+        }
+      },
+      "format": "typescript",
+      "fragment": "",
+      "lines": 12,
+      "secondFile": {
+        "end": 413,
+        "endLoc": {
+          "column": 1,
+          "line": 413,
+          "position": 11209
+        },
+        "name": "",
+        "start": 402,
+        "startLoc": {
+          "column": 7,
+          "line": 402,
+          "position": 10912
+        }
+      },
+      "tokens": 54
+    },
+    {
+      "firstFile": {
+        "end": 81,
+        "endLoc": {
+          "column": 6,
+          "line": 81,
+          "position": 1778
+        },
+        "name": "",
+        "start": 65,
+        "startLoc": {
+          "column": 0,
+          "line": 65,
+          "position": 1409
+        }
+      },
+      "format": "typescript",
+      "fragment": "",
+      "lines": 17,
+      "secondFile": {
+        "end": 428,
+        "endLoc": {
+          "column": 6,
+          "line": 428,
+          "position": 11551
+        },
+        "name": "",
+        "start": 415,
+        "startLoc": {
+          "column": 7,
+          "line": 415,
+          "position": 11218
+        }
+      },
+      "tokens": 51
+    },
+    {
+      "firstFile": {
+        "end": 300,
+        "endLoc": {
+          "column": 3,
+          "line": 300,
+          "position": 9339
+        },
+        "name": "",
+        "start": 280,
+        "startLoc": {
+          "column": 46,
+          "line": 280,
+          "position": 8780
+        }
+      },
+      "format": "tsx",
+      "fragment": "",
+      "lines": 21,
+      "secondFile": {
+        "end": 332,
+        "endLoc": {
+          "column": 3,
+          "line": 332,
+          "position": 10309
+        },
+        "name": "",
+        "start": 312,
+        "startLoc": {
+          "column": 3,
+          "line": 312,
+          "position": 9750
+        }
+      },
+      "tokens": 119
+    },
+    {
+      "firstFile": {
+        "end": 473,
+        "endLoc": {
+          "column": 15,
+          "line": 473,
+          "position": 16339
+        },
+        "name": "",
+        "start": 465,
+        "startLoc": {
+          "column": 69,
+          "line": 465,
+          "position": 16071
+        }
+      },
+      "format": "tsx",
+      "fragment": "",
+      "lines": 9,
+      "secondFile": {
+        "end": 484,
+        "endLoc": {
+          "column": 15,
+          "line": 484,
+          "position": 16814
+        },
+        "name": "",
+        "start": 476,
+        "startLoc": {
+          "column": 70,
+          "line": 476,
+          "position": 16546
+        }
+      },
+      "tokens": 55
+    }
+  ],
+  "statistics": {
+    "detectionDate": "2026-08-27T20:12:42.564Z",
+    "formats": {
+      "tsx": {
+        "clones": 2,
+        "duplicatedLines": 28,
+        "duplicatedTokens": 174,
+        "lines": 1161,
+        "newClones": 0,
+        "newDuplicatedLines": 0,
+        "percentage": 2.4117140396210166,
+        "percentageTokens": 2.492122600973933,
+        "sources": 2,
+        "tokens": 6982
+      },
+      "typescript": {
+        "clones": 4,
+        "duplicatedLines": 52,
+        "duplicatedTokens": 225,
+        "lines": 2607,
+        "newClones": 0,
+        "newDuplicatedLines": 0,
+        "percentage": 1.9946298427311087,
+        "percentageTokens": 1.7793594306049825,
+        "sources": 13,
+        "tokens": 12645
+      }
+    },
+    "total": {
+      "clones": 6,
+      "duplicatedLines": 80,
+      "duplicatedTokens": 399,
+      "lines": 3768,
+      "newClones": 0,
+      "newDuplicatedLines": 0,
+      "percentage": 2.1231422505307855,
+      "percentageTokens": 2.032913843175218,
+      "sources": 15,
+      "tokens": 19627
+    }
+  }
+}

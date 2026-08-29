@@ -1,7 +1,7 @@
 import { Flower } from '@repo/ui/icons';
 import { BrandPulse } from './BrandPulse';
-import { EaseView } from 'react-native-ease';
-import { Center, Text, VStack } from '@repo/ui/gluestack';
+import { EaseView } from '@repo/ui/components/EaseView';
+import { Center, Text, VStack } from '@repo/ui/primitives';
 
 interface LotusLoaderProps {
   size?: 'sm' | 'md' | 'lg';

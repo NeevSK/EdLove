@@ -98,7 +98,10 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
     'GratitudeEntries',
     'EnergyForecasts',
     'Wellbeing',
+    'UserRewards',
+    'WhisperedMoment',
   ]).has(resourceType);
+  console.log('[ORPC MIDDLEWARE DEBUG] resourceType:', resourceType, 'selfScopedResource:', selfScopedResource, 'context.user.id:', context.user.id);
   const request = {
     principal: context.principal,
     action: cedarAction,
@@ -200,6 +203,7 @@ export const doubleGateMiddleware = o.middleware(async ({ next, procedure, conte
       ? await evaluateWithRust(request as any, context.requestId)
       : checkCedar(request as any);
   context.timing?.end('cedar');
+  console.log('[CEDAR RESULT]', { permitted: authResult.permitted, reason: authResult.reason, gaps: authResult.gaps });
 
   if (!authResult.permitted) {
     throw new ORPCError('FORBIDDEN', {

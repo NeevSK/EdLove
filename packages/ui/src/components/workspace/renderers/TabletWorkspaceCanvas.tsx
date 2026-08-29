@@ -38,6 +38,7 @@ export function TabletWorkspaceCanvas<
         visibleCount={visibleCount}
         pinnedCount={pinnedCount}
         renderer={renderer}
+        workspaceId={props.workspaceId}
       />
       {visibleCount === 0 ? (
         <WorkspaceCanvasEmptyState emptyMessage={emptyMessage} />

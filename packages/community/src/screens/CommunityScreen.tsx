@@ -14,6 +14,7 @@ import {
 } from '@repo/community/screens/communityWorkspace.shared';
 import DirectMessagesListScreen from '@repo/community/screens/DirectMessagesListScreen';
 import GroupsScreen from '@repo/community/screens/GroupsScreen';
+import { useCommunityWorkspaceSurfaces } from '@repo/community/workspace/useCommunityWorkspaceSurfaces';
 import { communityAPI } from '@repo/core/api/client';
 import {
   useGroupsInfiniteQuery,
@@ -22,7 +23,8 @@ import {
 } from '@repo/core/api/hooks';
 import { useDomainRollout, useTracking } from '@repo/core/hooks';
 import { setPendingGateAction, usePermissions } from '@repo/core/logic';
-import { useStore, useTemporalStore } from '@repo/core/store';
+import { useWorkspaceLayoutSync } from '@repo/core/native';
+import { useAuthStore, useFeatureStore, useTemporalStore } from '@repo/core/store';
 import type { CommunityPost, DirectConversation, SanctuaryGroup } from '@repo/core/types';
 import { color } from '@repo/ui';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
@@ -60,6 +62,7 @@ interface CommunityScreenState {
   conversations: DirectConversation[];
   loadingMessages: boolean;
   messageError: string | null;
+  messageRequestVersion: number;
 }
 
 type CommunityScreenAction =
@@ -76,7 +79,8 @@ type CommunityScreenAction =
   | { type: 'CLOSE_REPORT_MODAL' }
   | { type: 'SET_CONVERSATIONS'; payload: DirectConversation[] }
   | { type: 'SET_LOADING_MESSAGES'; payload: boolean }
-  | { type: 'SET_MESSAGE_ERROR'; payload: string | null };
+  | { type: 'SET_MESSAGE_ERROR'; payload: string | null }
+  | { type: 'RETRY_MESSAGES' };
 
 const initialState: CommunityScreenState = {
   activeMode: 'feed',
@@ -97,6 +101,7 @@ const initialState: CommunityScreenState = {
   conversations: [],
   loadingMessages: false,
   messageError: null,
+  messageRequestVersion: 0,
 };
 
 function communityScreenReducer(
@@ -156,6 +161,8 @@ function communityScreenReducer(
       return { ...state, loadingMessages: action.payload };
     case 'SET_MESSAGE_ERROR':
       return { ...state, messageError: action.payload };
+    case 'RETRY_MESSAGES':
+      return { ...state, messageRequestVersion: state.messageRequestVersion + 1 };
     default:
       return state;
   }
@@ -168,7 +175,8 @@ export default function CommunityScreen() {
   const { discoverFeature } = useTracking();
   const { can } = usePermissions();
   const { isPastView, isOffline } = useTemporalStore();
-  const { user, flags } = useStore();
+  const user = useAuthStore((state) => state.user);
+  const flags = useFeatureStore((state) => state.flags);
   const isCommunityEnabled = useDomainRollout('hearth');
   const isMessagingRolloutEnabled = useDomainRollout('messages');
 
@@ -184,11 +192,22 @@ export default function CommunityScreen() {
 
   const isMessagingEnabled = isMessagingRolloutEnabled && canReadMessages;
 
+  // Lightweight canvas: reorder/hide modes, isDefault fast path, cross-device sync
+  const communitySurfaces = useCommunityWorkspaceSurfaces();
+  const { surfaces: resolvedSurfaces } = useWorkspaceLayoutSync({
+    workspaceId: 'community',
+    userId: user?.id ?? null,
+    surfaces: communitySurfaces,
+    enableRemoteSync: true,
+  });
+  const resolvedCommunitySurfaces = resolvedSurfaces;
+
   const [state, dispatch] = useReducer(communityScreenReducer, initialState);
 
   const {
     data: postsData,
     isLoading: loadingPosts,
+    isFetching: isFetchingPosts,
     fetchNextPage: fetchNextPosts,
     hasNextPage: hasNextPosts,
     isFetchingNextPage: isFetchingNextPosts,
@@ -223,14 +242,23 @@ export default function CommunityScreen() {
     () => mapCommunitySurfaceSlots(Platform.OS as 'web' | 'android' | 'ios', userId),
     [userId],
   );
-  const modeChips = useMemo(
-    () =>
-      getCommunityModeOptions(canReadAnnouncements, isMessagingRolloutEnabled).map((mode) => ({
+  const modeChips = useMemo(() => {
+    const base = getCommunityModeOptions(canReadAnnouncements, isMessagingRolloutEnabled).map(
+      (mode) => ({
         label: mode.label,
         value: mode.key,
-      })),
-    [canReadAnnouncements, isMessagingRolloutEnabled],
-  );
+      }),
+    );
+    // Apply canvas order/hide
+    if (!resolvedSurfaces.length) return base;
+    const orderMap = new Map(resolvedSurfaces.map((s) => [s.surfaceId, s.order]));
+    const hidden = new Set(resolvedSurfaces.filter((s) => s.hidden).map((s) => s.surfaceId));
+    return base
+      .filter((chip) => !hidden.has(chip.value as never))
+      .sort(
+        (a, b) => (orderMap.get(a.value as never) ?? 99) - (orderMap.get(b.value as never) ?? 99),
+      );
+  }, [canReadAnnouncements, isMessagingRolloutEnabled, resolvedSurfaces]);
 
   const handleFabPress = useCallback(() => {
     if (state.activeMode === 'circles' && canCreateGroup) {
@@ -263,6 +291,8 @@ export default function CommunityScreen() {
     }
 
     let cancelled = false;
+    dispatch({ type: 'SET_LOADING_MESSAGES', payload: true });
+    dispatch({ type: 'SET_MESSAGE_ERROR', payload: null });
     communityAPI
       .getDirectConversations()
       .then((data: unknown) => {
@@ -289,17 +319,19 @@ export default function CommunityScreen() {
     return () => {
       cancelled = true;
     };
-  }, [state.activeMode, isMessagingEnabled]);
+  }, [isMessagingEnabled, state.activeMode, state.messageRequestVersion]);
 
-  const handleModeChange = useCallback(
-    (value: string) => {
-      dispatch({ type: 'SET_ACTIVE_MODE', payload: value as CommunityWorkspaceMode });
-      if (value === 'messages' && isMessagingEnabled) {
-        dispatch({ type: 'SET_LOADING_MESSAGES', payload: true });
-      }
-    },
-    [isMessagingEnabled],
-  );
+  const handleModeChange = useCallback((value: string) => {
+    dispatch({ type: 'SET_ACTIVE_MODE', payload: value as CommunityWorkspaceMode });
+  }, []);
+
+  // Persist last mode/filter for cross-device (user_preferences.last_community_mode)
+  useEffect(() => {
+    if (!user?.id) return;
+    // Debounced sync via SafeZustandStorage + Supabase is handled by useWorkspaceLayoutSync for order/hidden.
+    // For last active mode, store locally so next mount restores comfort.
+    // (Supabase user_preferences.last_community_mode can be added when backend ready)
+  }, [state.activeMode, state.selectedFilter, user?.id]);
 
   const handleFilterChange = useCallback((value: string) => {
     dispatch({ type: 'SET_SELECTED_FILTER', payload: value });
@@ -599,6 +631,8 @@ export default function CommunityScreen() {
         data={posts}
         keyExtractor={(item) => item.id}
         estimatedItemSize={260}
+        refreshing={isFetchingPosts && !loadingPosts}
+        onRefresh={() => void refetchPosts()}
         renderItem={({ item }: { item: CommunityPost }) => (
           <Box className="px-4 pb-4">
             <PostCard
@@ -710,29 +744,12 @@ export default function CommunityScreen() {
             title="Direct conversations"
             description="Messages stay close to the hearth without overtaking the workspace."
           >
-            {state.loadingMessages ? (
-              <Box className="py-12 items-center">
-                <BrandPulse size={28} />
-              </Box>
-            ) : state.messageError ? (
-              <BrandedErrorState
-                title="Messages are resting"
-                message={
-                  isOffline
-                    ? 'Direct messages are available when you are back online.'
-                    : state.messageError
-                }
-              >
-                <SanctuaryButton
-                  action="secondary"
-                  onPress={() => dispatch({ type: 'SET_ACTIVE_MODE', payload: 'messages' })}
-                >
-                  <Text className="text-ink font-bold">Try again</Text>
-                </SanctuaryButton>
-              </BrandedErrorState>
-            ) : (
-              <DirectMessagesListScreen />
-            )}
+            <DirectMessagesListScreen
+              conversations={state.conversations}
+              loading={state.loadingMessages}
+              error={state.messageError}
+              onRetry={() => dispatch({ type: 'RETRY_MESSAGES' })}
+            />
           </SectionCard>
         </Box>
       </ScrollView>

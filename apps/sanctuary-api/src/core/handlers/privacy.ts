@@ -1,11 +1,11 @@
-import { type PrivacyLedgerEntry, privacyContract } from '@repo/core/api/privacy.contract';
+import { type PrivacyLedgerEntry, privacyORPCContract } from '@repo/core/api/privacy.orpc.contract';
 import { SovereignError } from '@repo/core/types/Errors';
 import { queryDatabaseRows } from '@repo/database/client';
 import { assertDatabase } from '../apiErrors';
 import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 
-const impl = implement(privacyContract).$context<ORPCContext>();
+const impl = implement(privacyORPCContract).$context<ORPCContext>();
 
 const requireUser = (context: ORPCContext) => {
   assertDatabase(context);

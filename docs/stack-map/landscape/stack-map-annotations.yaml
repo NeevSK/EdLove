@@ -2,12 +2,8 @@
 # Update this file (or agents add entries), then regenerate.
 
 metadata:
-  updated: 2026-08-24
+  updated: 2026-08-29
   convention: "1) bootstrap drafts new entries  2) curate summary/layer/floating  3) pnpm run stack-map"
-extracted_trube_art: "github.com/NeevSK/trube-art (2026-08-24, see docs/decisions/2026-08-24-openness-and-reuse-strategy.md)"
-extracted_rn_terrain: "github.com/NeevSK/rn-terrain (2026-08-24)"
-extracted_intuitui_web: "github.com/NeevSK/intuitui-web (2026-08-24)"
-extracted_neevsk_web: "github.com/NeevSK/neevsk-web (2026-08-24)"
 
 package_entries:
   @intuitui-labs/form-builder-engine:

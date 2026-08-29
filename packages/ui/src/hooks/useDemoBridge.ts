@@ -1,9 +1,9 @@
 import { api } from '@repo/core/api/client';
-import { useStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
+import { hapticSuccess, hapticWarning } from '@repo/ui/utils/haptics';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Platform } from 'react-native';
-import { hapticSuccess, hapticWarning } from '@repo/ui/utils/haptics';
 
 /**
  * Hook to handle the "Bridge to Reality" flow when exiting Demo Mode.
@@ -11,7 +11,9 @@ import { hapticSuccess, hapticWarning } from '@repo/ui/utils/haptics';
  */
 export function useDemoBridge() {
   const { t } = useTranslation();
-  const { demoLogs, clearDemoLogs, setDemoMode } = useStore();
+  const demoLogs = useAuthStore((state) => state.demoLogs);
+  const clearDemoLogs = useAuthStore((state) => state.clearDemoLogs);
+  const setDemoMode = useAuthStore((state) => state.setDemoMode);
 
   /**
    * Processes the shadow logs and executes real API calls.
@@ -62,7 +64,7 @@ export function useDemoBridge() {
         }),
       );
       if (save) {
-        const { setBridging } = useStore.getState();
+        const setBridging = useAuthStore.getState().setBridging;
         try {
           setBridging(true);
           await processDemoLogs(demoLogs);
@@ -98,7 +100,7 @@ export function useDemoBridge() {
           text: t('demoMode.bridgeSave'),
           onPress: () => {
             void (async () => {
-              const { setBridging } = useStore.getState();
+              const setBridging = useAuthStore.getState().setBridging;
               try {
                 // Enable bridging mode to bypass API interception
                 setBridging(true);

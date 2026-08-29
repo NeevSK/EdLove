@@ -158,6 +158,32 @@ async function liveStudent(request: SupportRequest) {
   return result;
 }
 
+/** Re-check queued scope before reading sensitive evidence. */
+async function assertWorkerScope(request: SupportRequest | SummaryRequest): Promise<void> {
+  const rows = await queryDatabaseRows<{ valid: boolean }>(
+    `
+      select exists(
+        select 1
+        from public.classrooms classroom
+        where classroom.id = $1::uuid
+          and classroom.school_id = $2::uuid
+          and ($3::uuid is null or classroom.teacher_id = $3::uuid)
+          and (
+            $4::uuid is null
+            or exists (
+              select 1 from public.classroom_students enrollment
+              where enrollment.classroom_id = classroom.id
+                and enrollment.student_id = $4::uuid
+                and enrollment.status = 'active'
+            )
+          )
+      ) as valid
+    `,
+    [request.classroomId, request.schoolId, request.teacherId ?? null, 'studentId' in request ? request.studentId : null],
+  );
+  if (!rows[0]?.valid) throw new Error('Durable agent scope is no longer authorized.');
+}
+
 function draft(evidence: any, focusPrompt?: string) {
   const name = evidence.student.studentName;
   const lines = [`Student support snapshot for ${name} in ${evidence.student.classroomName}.`];
@@ -305,6 +331,7 @@ async function runStudentSupport(request: SupportRequest) {
     reviewMode: request.reviewMode,
   });
   try {
+    await assertWorkerScope(request);
     const evidence = request.mode === 'demo' ? demoStudent(request) : await liveStudent(request);
     const synthesis = await synthesize(evidence, request.focusPrompt);
     const governor = {
@@ -344,6 +371,7 @@ async function runTeacherSummary(request: SummaryRequest) {
     reviewMode: request.reviewMode,
   });
   try {
+    await assertWorkerScope(request);
     const classroomRows = await queryDatabaseRows<any>(
       'select id, name, school_id, teacher_id from public.classrooms where id = $1::uuid limit 1',
       [request.classroomId],

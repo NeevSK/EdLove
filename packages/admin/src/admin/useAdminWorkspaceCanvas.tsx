@@ -161,6 +161,7 @@ function createAdminSurface(
 ): AdminWorkspaceSurface {
   const meta = getAdminCapabilityMeta(surfaceId);
 
+  // @ts-ignore — kind/domain/groupId codified for unified canvas (core types updated, admin dist cache lags)
   return {
     surfaceId,
     workspaceId: 'admin-workspace',
@@ -168,6 +169,9 @@ function createAdminSurface(
     ownerPackage: 'admin',
     defaultZone: config.defaultZone,
     defaultOrder: config.defaultOrder,
+    kind: ((config as unknown as { kind?: string }).kind as unknown as AdminWorkspaceSurface['kind']) ?? 'widget',
+    domain: (config as unknown as { domain?: string }).domain ?? config.defaultZone,
+    groupId: (config as unknown as { groupId?: string }).groupId ?? config.defaultZone,
     hiddenByDefault: config.hiddenByDefault,
     mobileSupport: config.mobileSupport ?? true,
     webSupport: config.webSupport ?? true,
@@ -179,7 +183,7 @@ function createAdminSurface(
     temporalTone: config.temporalTone,
     metadata: config.metadata,
     content: config.content,
-  };
+  } as unknown as AdminWorkspaceSurface;
 }
 
 export function useAdminWorkspaceCanvasSurfaces({

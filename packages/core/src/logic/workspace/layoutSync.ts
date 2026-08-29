@@ -54,6 +54,8 @@ export function toWorkspaceLayoutRecord<TSurfaceId extends string = string>(
     zoneBySurface: record.zone_by_surface as Partial<
       Record<TSurfaceId, WorkspaceLayout<TSurfaceId>['zoneBySurface'][TSurfaceId]>
     >,
+    isDefault: record.is_default ?? true,
+    surfaceMetadata: (record.surface_metadata as WorkspaceLayout<TSurfaceId>['surfaceMetadata']) ?? {},
     updatedAt: record.updated_at,
   };
 }
@@ -73,7 +75,9 @@ export function toWorkspaceLayoutUpsert<TSurfaceId extends string = string>(
       string,
       'today' | 'work' | 'institution' | 'outlook' | 'private'
     >,
-    layoutVersion: 1,
+    isDefault: layout.isDefault ?? true,
+    surfaceMetadata: (layout.surfaceMetadata as Record<string, unknown>) ?? {},
+    layoutVersion: 2,
     updatedAt: layout.updatedAt,
   };
 }

@@ -76,7 +76,6 @@ export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
   });
 
   const dragGesture = usePanGesture({
-    manualActivation: true,
     onUpdate: (event) => {
       'worklet';
       if (!isDragging.value) return;

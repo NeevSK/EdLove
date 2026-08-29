@@ -91,6 +91,16 @@
       "description": "User wrote a reflection"
     },
     {
+      "id": "reframe_recorded",
+      "dimension": "witnessing",
+      "description": "User completed a structured thought record"
+    },
+    {
+      "id": "reframe_follow_up_completed",
+      "dimension": "witnessing",
+      "description": "User completed a scheduled thought-record re-check"
+    },
+    {
       "id": "goal_set",
       "dimension": "witnessing",
       "description": "User set a goal"

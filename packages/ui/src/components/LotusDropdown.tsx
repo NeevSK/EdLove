@@ -1,16 +1,16 @@
 import { ChevronDown, CircleAlert } from '@repo/ui/icons';
 import { useState } from 'react';
 import {
-  Actionsheet,
-  ActionsheetContent,
-  ActionsheetDragIndicator,
-  ActionsheetDragIndicatorWrapper,
-  ActionsheetItem,
-  ActionsheetItemText,
+  Sheet,
+  SheetContent,
+  SheetDragIndicator,
+  SheetDragIndicatorWrapper,
+  SheetItem,
+  SheetItemText,
   HStack,
   Text,
   VStack,
-} from '@repo/ui/gluestack';
+} from '@repo/ui/primitives';
 import { Pressable } from '@repo/ui/primitives';
 
 interface LotusDropdownProps {
@@ -73,15 +73,15 @@ export default function LotusDropdown({
         </HStack>
       )}
 
-      <Actionsheet isOpen={showActionsheet} onClose={handleClose}>
-        <ActionsheetContent className="bg-phase-elevated border-t border-phase-surface pb-8">
-          <ActionsheetDragIndicatorWrapper>
-            <ActionsheetDragIndicator />
-          </ActionsheetDragIndicatorWrapper>
+      <Sheet open={showActionsheet} onOpenChange={setShowActionsheet}>
+        <SheetContent className="bg-phase-elevated border-t border-phase-surface pb-8">
+          <SheetDragIndicatorWrapper>
+            <SheetDragIndicator />
+          </SheetDragIndicatorWrapper>
 
           <VStack className="w-full p-2">
             {options.map((option) => (
-              <ActionsheetItem
+              <SheetItem
                 key={option.value}
                 onPress={() => {
                   onChange(option.value);
@@ -89,16 +89,16 @@ export default function LotusDropdown({
                 }}
                 className={`rounded-xl mb-1 ${value === option.value ? 'bg-phase-accent/10 border border-phase-accent/20' : 'active:bg-phase-surface'}`}
               >
-                <ActionsheetItemText
+                <SheetItemText
                   className={`text-base ${value === option.value ? 'text-phase-accent font-bold' : 'text-phase-text-primary'}`}
                 >
                   {option.label}
-                </ActionsheetItemText>
-              </ActionsheetItem>
+                </SheetItemText>
+              </SheetItem>
             ))}
           </VStack>
-        </ActionsheetContent>
-      </Actionsheet>
+        </SheetContent>
+      </Sheet>
     </VStack>
   );
 }

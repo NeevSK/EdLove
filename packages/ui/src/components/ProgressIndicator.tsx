@@ -1,5 +1,6 @@
 import type React from 'react';
-import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
+import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
+import { cn } from '@repo/ui/utils/classNames';
 
 interface ProgressIndicatorProps {
   currentStep: number;
@@ -30,11 +31,15 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
             <Box
               key={`dot-${index}`}
               testID={`progress-dot-${index}`}
-              className={`
-                                h-2 rounded-full
-                                ${isActive ? 'w-6 bg-phase-accent' : 'w-2'}
-                                ${isPast ? 'bg-phase-text-secondary opacity-60' : !isActive ? 'bg-phase-surface opacity-30' : ''}
-                            `}
+              className={cn(
+                'h-2 rounded-full',
+                isActive ? 'w-6 bg-phase-accent' : 'w-2',
+                isPast
+                  ? 'bg-phase-text-secondary opacity-60'
+                  : !isActive
+                    ? 'bg-phase-surface opacity-30'
+                    : undefined,
+              )}
             />
           );
         })}

@@ -2,6 +2,7 @@ import type { SovereignContract } from '@repo/core/api/contracts';
 import {
   FireJournalEntrySchema,
   MoodLogSchema,
+  ThoughtRecordSchema,
   UserPreferencesSchema,
 } from '@repo/core/logic/schemas/self.schema';
 import { z } from 'zod';
@@ -101,6 +102,67 @@ export const selfContract = {
       },
     },
     metadata: wellbeingAuthority('read'),
+  },
+
+  saveThoughtRecord: {
+    method: 'post',
+    path: '/self/thought-record',
+    request: {
+      body: ThoughtRecordSchema.omit({ id: true, created_at: true, user_id: true }),
+    },
+    responses: {
+      201: {
+        schema: ThoughtRecordSchema,
+        description: 'Thought record saved successfully',
+      },
+    },
+    metadata: wellbeingAuthority('create'),
+  },
+
+  getThoughtRecords: {
+    method: 'get',
+    path: '/self/thought-record',
+    request: {
+      query: z.strictObject({
+        userId: z.uuid().optional(),
+        limit: z.coerce.number().optional(),
+        viewDate: z.string().datetime().optional(),
+      }),
+    },
+    responses: {
+      200: {
+        schema: z.array(ThoughtRecordSchema),
+        description: 'Retrieve thought records',
+      },
+    },
+    metadata: wellbeingAuthority('read'),
+  },
+
+  completeThoughtRecordFollowUp: {
+    method: 'patch',
+    path: '/self/thought-record/:id',
+    request: {
+      params: z.strictObject({ id: z.string().min(1) }),
+      body: z.strictObject({
+        post_outcome: z.enum(['better', 'same', 'worse']).optional(),
+        follow_up: z
+          .object({
+            due_at: z.string().datetime(),
+            completed_at: z.string().datetime().optional(),
+            outcome: z.enum(['better', 'same', 'worse']).optional(),
+            reflection: z.string().optional(),
+          })
+          .partial()
+          .optional(),
+      }),
+    },
+    responses: {
+      200: {
+        schema: ThoughtRecordSchema,
+        description: 'Thought record follow-up updated',
+      },
+    },
+    metadata: wellbeingAuthority('update'),
   },
 
   getPreferences: {

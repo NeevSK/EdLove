@@ -143,6 +143,18 @@ entity FireJournal {
   user_id?: String
 };
 
+entity UserRewards {
+  id: String,
+  school_id?: String,
+  user_id?: String
+};
+
+entity WhisperedMoment {
+  id: String,
+  school_id?: String,
+  user_id?: String
+};
+
 entity InventoryItem {
   id: String,
   school_id?: String,
@@ -342,6 +354,7 @@ action "read", "create", "update", "delete", "use_ai" appliesTo {
     User, Student, GratitudeGift, School, Classroom, AttendanceRecord, DailyAttendance, AttendanceSession, Grade, GradeMark, Assignment, Lesson, Material,
     StaffLeave, MoodLog, FireJournal, InventoryItem, InventoryRequest, Group, Post, Ledger, Accounting, Payments, MappingTopology,
     Guardian, SentinelAuditLog, JoyMoments, GratitudeEntries, EnergyForecasts,
+    UserRewards, WhisperedMoment,
     PersonalClassroom, AIAssistant, ClassroomNote, Library, Wellbeing, Staff, DailyContent, DecisionJournal,
     Manifesto, ManifestoEndorsement, AssignmentSubmission, Calendar, Notification, PrincipalNote, Announcement,
     UserBlock, DirectConversation, DirectMessage

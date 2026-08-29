@@ -29,7 +29,6 @@ export function useTeacherWorkspaceShell(_onRefresh?: () => void) {
     isCreateModalOpen: false,
     isFeedbackModalOpen: false,
     isAdminModalOpen: false,
-    isBreathingOpen: false,
     showEchoHistory: false,
     isScannerOpen: false,
     modalMode: 'create' as 'create' | 'join',
@@ -69,6 +68,9 @@ export function useTeacherWorkspaceShell(_onRefresh?: () => void) {
       totalStudents: loadedClassrooms.reduce((acc, curr) => acc + (curr.student_count || 0), 0),
     });
   }, []);
+
+  const setBreathingOpen = useStore((state) => state.setBreathingOpen ?? (() => {}));
+  const isGlobalBreathingOpen = useStore((state) => state.isBreathingOpen ?? false);
 
   const handleScan = useCallback(
     async (data: string) => {
@@ -149,7 +151,7 @@ export function useTeacherWorkspaceShell(_onRefresh?: () => void) {
     isCreateModalOpen: uiState.isCreateModalOpen,
     isFeedbackModalOpen: uiState.isFeedbackModalOpen,
     isAdminModalOpen: uiState.isAdminModalOpen,
-    isBreathingOpen: uiState.isBreathingOpen,
+    isBreathingOpen: isGlobalBreathingOpen,
     showEchoHistory: uiState.showEchoHistory,
     isScannerOpen: uiState.isScannerOpen,
     openCreateFlow,
@@ -159,8 +161,7 @@ export function useTeacherWorkspaceShell(_onRefresh?: () => void) {
       setUiState((prev) => ({ ...prev, isFeedbackModalOpen: value })),
     setIsAdminModalOpen: (value: boolean) =>
       setUiState((prev) => ({ ...prev, isAdminModalOpen: value })),
-    setIsBreathingOpen: (value: boolean) =>
-      setUiState((prev) => ({ ...prev, isBreathingOpen: value })),
+    setIsBreathingOpen: setBreathingOpen,
     setShowEchoHistory: (value: boolean) =>
       setUiState((prev) => ({ ...prev, showEchoHistory: value })),
     setIsScannerOpen,
@@ -172,7 +173,7 @@ export function useTeacherWorkspaceShell(_onRefresh?: () => void) {
         message: 'Well done. Take this peace into your next class.',
         type: 'success',
       });
-      setUiState((prev) => ({ ...prev, isBreathingOpen: false }));
+      setBreathingOpen(false);
     },
     bumpRefresh,
     hapticLight,

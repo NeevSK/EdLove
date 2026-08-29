@@ -1,10 +1,10 @@
 import { ORPCError } from '@orpc/server';
-import { libraryContract } from '@repo/core/api/server';
+import { libraryORPCContract } from '@repo/core/api/library.orpc.contract';
 import { assertDatabase } from '../apiErrors';
 import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
 
-const impl = implement(libraryContract).$context<ORPCContext>();
+const impl = implement(libraryORPCContract).$context<ORPCContext>();
 const iso = (value: unknown) => (value instanceof Date ? value.toISOString() : String(value ?? ''));
 
 const mapResource = (row: any) => ({

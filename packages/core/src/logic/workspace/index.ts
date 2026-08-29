@@ -9,6 +9,7 @@ export {
   setWorkspaceSurfaceZone,
   MAX_PINNED_WORKSPACE_SURFACES,
   WORKSPACE_CANVAS_ZONES,
+  getMaxPinnedForWorkspace,
 } from '@repo/core/logic/workspace/canvas';
 export {
   buildWorkspaceLayoutStorageKey,

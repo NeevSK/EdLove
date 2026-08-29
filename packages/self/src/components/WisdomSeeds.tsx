@@ -170,12 +170,14 @@ export default function WisdomSeeds({ userId }: WisdomSeedsProps) {
                       >
                         {note.insight}
                       </Text>
-                      <Text className="text-mistGray/30 text-[9px] font-black uppercase tracking-widest">
-                        {new Date(note.created_at || Date.now()).toLocaleDateString(undefined, {
-                          month: 'short',
-                          day: 'numeric',
-                        })}
-                      </Text>
+                      {note.created_at ? (
+                        <Text className="text-mistGray/30 text-[9px] font-black uppercase tracking-widest">
+                          {new Date(note.created_at).toLocaleDateString(undefined, {
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                        </Text>
+                      ) : null}
                     </VStack>
                     <Icon as={ChevronRight} size={14} className="text-mistGray/20" />
                   </HStack>

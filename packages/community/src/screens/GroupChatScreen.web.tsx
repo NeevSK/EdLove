@@ -14,7 +14,8 @@
 import { communityAPI } from '@repo/community/api/community';
 import HeaderMoreMenu from '@repo/community/components/HeaderMoreMenu';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
-import { useStore, useTemporalStore } from '@repo/core/logic';
+import { useTemporalStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 import { MessageCircle } from '@repo/ui/icons';
 import { formatTimestamp } from '@repo/ui/utils/dateTimeUtils';
 import { safeBack } from '@repo/ui/utils/navigation';
@@ -37,7 +38,7 @@ export default function GroupChatScreen() {
     ? params.conversationId[0]
     : params.conversationId;
   const groupName = Array.isArray(params.groupName) ? params.groupName[0] : params.groupName;
-  const { user } = useStore();
+  const user = useAuthStore((state) => state.user);
   const { viewDate, viewScale, isPastView } = useTemporalStore();
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);

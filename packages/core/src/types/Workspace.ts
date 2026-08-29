@@ -58,6 +58,9 @@ export interface WorkspaceSurfaceDefinition<
   hiddenByDefault?: boolean;
   mobileSupport?: boolean;
   webSupport?: boolean;
+  kind?: 'widget' | 'section' | 'mode' | 'shortcut' | 'tool' | 'group';
+  domain?: string;
+  groupId?: string;
 }
 
 export interface WorkspaceLayout<TSurfaceId extends string = string> {
@@ -67,6 +70,8 @@ export interface WorkspaceLayout<TSurfaceId extends string = string> {
   hidden: TSurfaceId[];
   pinned: TSurfaceId[];
   zoneBySurface: Partial<Record<TSurfaceId, WorkspaceZoneId>>;
+  isDefault?: boolean;
+  surfaceMetadata?: Record<string, unknown>;
   updatedAt: string;
 }
 
@@ -93,7 +98,6 @@ export interface ResolvedWorkspaceSurface<
   hidden: boolean;
   zone: WorkspaceZoneId;
   order: number;
-  content?: React.ReactNode;
   subtitle?: string;
   summary?: string;
   temporalLabel?: string;
@@ -120,7 +124,6 @@ export type ClassroomWorkspaceSurface = WorkspaceSurfaceDefinition<
   ClassroomWorkspaceSurfaceId,
   ClassroomWorkspaceCapabilityKey
 > & {
-  content: React.ReactNode;
   title: string;
   subtitle?: string;
   summary?: string;

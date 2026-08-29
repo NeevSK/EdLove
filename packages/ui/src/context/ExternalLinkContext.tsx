@@ -9,7 +9,7 @@ import {
 import React, { useEffect, useMemo, useState } from 'react';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 import SanctuaryModal from '@repo/ui/components/SanctuaryModal';
-import { Box, Pressable as GSPressable, HStack, Text, VStack } from '@repo/ui/gluestack';
+import { Box, HStack, Pressable as GSPressable, Text, VStack } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import {
   clearStoredExternalOpenPreference,

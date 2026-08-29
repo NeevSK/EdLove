@@ -1,5 +1,5 @@
 import { Trophy } from '@repo/ui/icons';
-import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
+import { Box, HStack, Text, VStack } from '@repo/ui/primitives';
 import { SanctuaryProgressBar } from '@repo/ui/components/SanctuaryProgressBar';
 
 export interface SanctuaryStatsItem {

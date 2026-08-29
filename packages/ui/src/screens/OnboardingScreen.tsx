@@ -16,7 +16,7 @@ import {
   Pressable,
   Text,
   VStack,
-} from '@repo/ui/gluestack';
+} from '@repo/ui/primitives';
 import { BookOpen, Compass, Flower2, GraduationCap, Lock, School, Sprout } from '@repo/ui/icons';
 import {} from '@repo/ui/screens/devOnboardingFastTrack';
 import {

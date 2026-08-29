@@ -13,7 +13,8 @@
  */
 
 import { useAIAgent } from '@repo/ai/hooks/useAIAgent';
-import { usePermissions, useStore } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 import { formatTimestamp } from '@repo/ui/utils/dateTimeUtils';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -26,7 +27,7 @@ export default function AIAssistantScreen() {
   const params = useLocalSearchParams<{ initialMessage?: string }>();
   const { t } = useTranslation();
   const { context } = usePermissions();
-  const { user } = useStore();
+  const user = useAuthStore((state) => state.user);
   const userId = context.userId;
   const {
     messages,

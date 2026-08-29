@@ -27,6 +27,8 @@ import {
   CollectionCreationModal,
 } from '@repo/ui/components/media/AssetCreationPortal';
 import { ResourceActionSheet } from '@repo/ui/components/media/ResourceActionSheet';
+import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
 import SanctuaryFlashList from '@repo/ui/components/SanctuaryFlashList';
 import { SmartShelf } from '@repo/ui/components/SmartShelf';
 import { UniversalPerspective } from '@repo/ui/components/visualization';
@@ -53,6 +55,7 @@ import {
   Users,
 } from '@repo/ui/icons';
 import { Box } from '@repo/ui/primitives';
+import { resolveBlockingScreenState } from '@repo/ui/state/screenState';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
@@ -64,8 +67,11 @@ function StackFallback() {
   return (
     <div
       className="sanctuary-card"
+      role="status"
+      aria-live="polite"
       style={{ padding: '48px 32px', display: 'grid', placeItems: 'center', gap: '12px' }}
     >
+      <BrandPulse size={32} accessibilityLabel={t('library.loadingSanctuary', 'Loading the sanctuary')} />
       <span>{t('library.loadingSanctuary', 'Loading the sanctuary...')}</span>
     </div>
   );
@@ -140,6 +146,7 @@ export default function LibraryScreenWeb() {
     isCollectionCreationVisible: boolean;
     isAssetCreationVisible: boolean;
     isAddingToCollection: boolean;
+    syncError: string | null;
   }
 
   const initialState: LibraryState = {
@@ -159,6 +166,7 @@ export default function LibraryScreenWeb() {
     isCollectionCreationVisible: false,
     isAssetCreationVisible: false,
     isAddingToCollection: false,
+    syncError: null,
   };
 
   type LibraryAction =
@@ -168,6 +176,7 @@ export default function LibraryScreenWeb() {
     | { type: 'SET_SORT'; sort: LibraryState['selectedSort'] }
     | { type: 'SET_VIEW_MODE'; mode: LibraryState['viewMode'] }
     | { type: 'SET_SYNCING'; isSyncing: boolean }
+    | { type: 'SET_SYNC_ERROR'; error: string | null }
     | { type: 'SET_REFRESHING'; refreshing: boolean }
     | { type: 'SET_FETCHING_PUBLIC'; isFetching: boolean }
     | { type: 'SET_PUBLIC_COLLECTIONS'; collections: LibraryCollection[] }
@@ -194,6 +203,8 @@ export default function LibraryScreenWeb() {
         return { ...state, viewMode: action.mode };
       case 'SET_SYNCING':
         return { ...state, isSyncing: action.isSyncing };
+      case 'SET_SYNC_ERROR':
+        return { ...state, syncError: action.error };
       case 'SET_REFRESHING':
         return { ...state, refreshing: action.refreshing };
       case 'SET_FETCHING_PUBLIC':
@@ -228,6 +239,7 @@ export default function LibraryScreenWeb() {
       viewMode,
       refreshing: _refreshing,
       isSyncing: _isSyncing,
+      syncError,
       fallbackAttempted,
       isFetchingPublic: _isFetchingPublic,
       publicCollections,
@@ -317,10 +329,23 @@ export default function LibraryScreenWeb() {
   // Sync Library on mount (Parity)
   useEffect(() => {
     dispatch({ type: 'SET_SYNCING', isSyncing: true });
+    dispatch({ type: 'SET_SYNC_ERROR', error: null });
     syncLibrary()
-      .catch((err: Error) => console.error('Library sync failed:', err))
+      .catch((err: unknown) => {
+        const message = err instanceof Error ? err.message : 'The library could not sync.';
+        console.error('Library sync failed:', err);
+        dispatch({ type: 'SET_SYNC_ERROR', error: message });
+      })
       .finally(() => dispatch({ type: 'SET_SYNCING', isSyncing: false }));
   }, [syncLibrary]);
+
+  const retryLibraryLoad = useCallback(() => {
+    dispatch({ type: 'SET_SYNC_ERROR', error: null });
+    void Promise.all([fetchResources(), syncLibrary()]).catch((err: unknown) => {
+      const message = err instanceof Error ? err.message : 'The library could not refresh.';
+      dispatch({ type: 'SET_SYNC_ERROR', error: message });
+    });
+  }, [fetchResources, syncLibrary]);
 
   // Public Collection Fallback (Parity)
   const isFetchingPublicRef = useRef(false);
@@ -367,6 +392,11 @@ export default function LibraryScreenWeb() {
     () => (rawCollections.length > 0 ? rawCollections : publicCollections),
     [rawCollections, publicCollections],
   );
+  const blockingScreenState = resolveBlockingScreenState({
+    hasContent: resources.length > 0 || collections.length > 0,
+    isLoading: loading,
+    error: libraryError,
+  });
 
   const handleEndReached = useCallback(() => {
     if (hasNextResources && !isFetchingNextResources) {
@@ -973,7 +1003,19 @@ export default function LibraryScreenWeb() {
         </div>
 
         {/* 3. CONTENT AREA */}
-        {loading && resources.length === 0 ? (
+        {blockingScreenState === 'error' ? (
+          <BrandedErrorState
+            title={t('library.loadFailedTitle', 'Library unavailable')}
+            message={t(
+              'library.loadFailedMessage',
+              'We could not load your library. Please check your connection and try again.',
+            )}
+          >
+            <button type="button" className="premium-button" onClick={retryLibraryLoad}>
+              {t('common.tryAgain', 'Try again')}
+            </button>
+          </BrandedErrorState>
+        ) : blockingScreenState === 'loading' ? (
           <StackFallback />
         ) : (
           <div
@@ -984,6 +1026,24 @@ export default function LibraryScreenWeb() {
               paddingBottom: '60px',
             }}
           >
+            {syncError ? (
+              <div
+                role="status"
+                aria-live="polite"
+                className="sanctuary-card"
+                style={{ padding: '14px 16px', display: 'flex', gap: '12px', alignItems: 'center' }}
+              >
+                <span style={{ flex: 1, color: 'var(--ink-soft)', fontSize: '14px' }}>
+                  {t(
+                    'library.syncFailedMessage',
+                    'Your latest library changes have not synced yet. You can keep browsing saved content.',
+                  )}
+                </span>
+                <button type="button" className="secondary-button" onClick={retryLibraryLoad}>
+                  {t('common.retry', 'Retry')}
+                </button>
+              </div>
+            ) : null}
             {!isSearchMode && heroResource && (
               <HeroBanner
                 resource={heroResource}

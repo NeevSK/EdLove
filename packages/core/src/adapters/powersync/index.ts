@@ -5,18 +5,15 @@
  * Tree-shaking will eliminate unused exports.
  */
 
+export { connectPowerSyncRuntime } from '@repo/core/adapters/powersync/connectionLifecycle';
 export {
   clearPowerSyncAccount,
   disconnectPowerSync,
-  getDrizzleDB,
   getActivePowerSyncDB,
+  getDrizzleDB,
   getPowerSyncDB,
   injectNativePowerSyncDB,
 } from '@repo/core/adapters/powersync/database';
-export {
-  SingleActivePowerSyncRuntime,
-} from '@repo/core/adapters/powersync/singleActivePowerSyncRuntime';
-export { connectPowerSyncRuntime } from '@repo/core/adapters/powersync/connectionLifecycle';
 export {
   useAttendanceForClassroom,
   useDrizzleQuery,
@@ -35,4 +32,9 @@ export type {
   School,
   Student,
 } from '@repo/core/adapters/powersync/schema';
-export { AppSchema } from '@repo/core/adapters/powersync/schema';
+export {
+  AppSchema,
+  isLocalOnlyTable,
+  LOCAL_ONLY_TABLES,
+} from '@repo/core/adapters/powersync/schema';
+export { SingleActivePowerSyncRuntime } from '@repo/core/adapters/powersync/singleActivePowerSyncRuntime';

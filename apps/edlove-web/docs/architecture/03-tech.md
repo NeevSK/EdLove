@@ -125,7 +125,7 @@ Three additional sites exist as **subdomains** temporarily:
 | Subdomain | Purpose | Future Home |
 |-----------|---------|-------------|
 | gurudevi.edlove.org | Teacher sanctuary web companion | gurudevi.lk (when funded) |
-| intuitui.edlove.org | Systems intelligence studio | intuituilabs.lk (when funded) |
+| intuituilabs.edlove.org | Systems intelligence studio | intuituilabs.lk (when funded) |
 | neevsk.edlove.org | Personal portfolio/writing | neevsk.lk or stays subdomain |
 
 ### Why Subdomains (Temporarily)
@@ -148,7 +148,7 @@ Three additional sites exist as **subdomains** temporarily:
 /apps
   /edlove-web → deploys to edlove.org
   /gurudevi-marketingWeb → deploys to gurudevi.edlove.org  
-  /intuitui-web → deploys to intuitui.edlove.org
+  /intuitui-web → deploys to intuituilabs.edlove.org
   /neevsk-web → deploys to neevsk.edlove.org
 ```
 
@@ -161,7 +161,7 @@ Three additional sites exist as **subdomains** temporarily:
 ```
 A record: edlove.org → Hosting IP
 CNAME: gurudevi.edlove.org → hosting-provider.com
-CNAME: intuitui.edlove.org → hosting-provider.com
+CNAME: intuituilabs.edlove.org → hosting-provider.com
 CNAME: neevsk.edlove.org → hosting-provider.com
 ```
 

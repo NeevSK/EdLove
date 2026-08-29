@@ -3,7 +3,7 @@ import type { WorkspaceLayout, WorkspaceSurfaceDefinition } from '@repo/core/typ
 import { useMemo, useState } from 'react';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { WorkspaceCanvas } from '@repo/ui/components/workspace';
-import { Box, Heading, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/gluestack';
+import { Box, Heading, HStack, Pressable, ScrollView, Text, VStack } from '@repo/ui/primitives';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 
 type DemoRole = 'teacher' | 'principal' | 'founder';

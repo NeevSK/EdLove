@@ -14,8 +14,8 @@
 import { BadgeCheck, Bookmark, BookOpen } from '@repo/ui/icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ImageBackground } from 'react-native';
-import { Box, HStack, Text, VStack } from '@repo/ui/gluestack';
-import { Pressable } from '@repo/ui/primitives';
+import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
+import { cn } from '@repo/ui/utils/classNames';
 
 // ============================================================================
 // CONSTANTS
@@ -60,7 +60,7 @@ export function CollectionCard<T = any>({
   const cardContent = (
     <Box
       style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}
-      className={`rounded-3xl overflow-hidden bg-phase-surface shadow-md ${className || ''}`}
+      className={cn('rounded-3xl overflow-hidden bg-phase-surface shadow-md', className)}
     >
       {thumbnailUrl ? (
         <ImageBackground source={{ uri: thumbnailUrl }} className="flex-1" resizeMode="cover">
@@ -128,12 +128,7 @@ function CardOverlay({
   absolute = false,
 }: OverlayProps) {
   return (
-    <VStack
-      className={`
-                flex-1 justify-between p-3
-                ${absolute ? 'absolute inset-0' : ''}
-            `}
-    >
+    <VStack className={cn('flex-1 justify-between p-3', absolute ? 'absolute inset-0' : undefined)}>
       {/* Top Row */}
       <HStack className="items-center justify-between">
         <Box className="bg-phase-accent px-2 py-1 rounded-md">

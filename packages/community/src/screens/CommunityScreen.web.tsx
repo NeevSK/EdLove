@@ -19,7 +19,8 @@ import type { CommunityPost, DirectConversation } from '@repo/community/types';
 import { communityAPI } from '@repo/core/api/client';
 import { useManifestoHooks, useNotificationHooks } from '@repo/core/api/hooks';
 import { useDomainRollout, usePendingGateAction } from '@repo/core/hooks';
-import { setPendingGateAction, usePermissions, useStore } from '@repo/core/logic';
+import { setPendingGateAction, usePermissions } from '@repo/core/logic';
+import { useAuthStore, useFeatureStore } from '@repo/core/store';
 import { useTemporalStore } from '@repo/core/store';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import PositiveInvitation from '@repo/ui/components/PositiveInvitation';
@@ -119,7 +120,8 @@ const initialState: CommunityState = {
 
 export default function CommunityScreenWeb() {
   const { can } = usePermissions();
-  const { user, flags } = useStore();
+  const user = useAuthStore((state) => state.user);
+  const flags = useFeatureStore((state) => state.flags);
   const isCommunityEnabled = useDomainRollout('hearth');
   const isMessagingRolloutEnabled = useDomainRollout('messages');
   const { isSocialShieldEnabled } = flags;

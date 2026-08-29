@@ -1,6 +1,6 @@
 import { type SortOption, useGradebook } from '@repo/classroom/hooks/useGradebook';
 import { growthSignalsAPI } from '@repo/core/api/client';
-import { useStore } from '@repo/core/logic';
+import { useAuthStore } from '@repo/core/store';
 import { type ClassroomGradingSettings } from '@repo/core/types';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
 import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
@@ -248,7 +248,7 @@ export default function GradebookScreenWeb() {
     classroomId?: string;
     classroomName?: string;
   }>();
-  const { user } = useStore();
+  const user = useAuthStore((state) => state.user);
 
   const {
     sortedGrades,

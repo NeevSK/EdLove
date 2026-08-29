@@ -1,6 +1,7 @@
 import { StyleSheet, type ViewStyle } from 'react-native';
-import { EaseView } from 'react-native-ease';
-import { Box, HStack, VStack } from '@repo/ui/gluestack';
+import { EaseView } from '@repo/ui/components/EaseView';
+import { Box, HStack, VStack } from '@repo/ui/primitives';
+import { cn } from '@repo/ui/utils/classNames';
 import { Text } from '@repo/ui/primitives';
 
 export interface SanctuaryProgressBarProps {
@@ -30,7 +31,10 @@ export function SanctuaryProgressBar({
             Profile Completion
           </Text>
           <Text
-            className={`text-[13px] font-bold ${isComplete ? 'text-phase-reward' : 'text-phase-text-primary'}`}
+            className={cn(
+              'text-[13px] font-bold',
+              isComplete ? 'text-phase-reward' : 'text-phase-text-primary',
+            )}
           >
             {percentage}%
           </Text>

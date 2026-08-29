@@ -13,6 +13,7 @@ export * from '@repo/self/hooks/useProgressTree';
 export * from '@repo/self/hooks/useSleepTracker';
 export * from '@repo/self/hooks/useStudentGoals';
 export * from '@repo/self/hooks/useStudentGrades';
+export * from '@repo/self/hooks/useThoughtRecords';
 export * from '@repo/self/hooks/useTimetable';
 export * from '@repo/self/hooks/useTomorrowPrep';
 export * from '@repo/self/hooks/useWellbeingEnrichment';

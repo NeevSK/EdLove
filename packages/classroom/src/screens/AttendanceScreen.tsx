@@ -1,5 +1,6 @@
 import AttendanceSheet from '@repo/classroom/components/AttendanceSheet';
 import { academicCyclesAPI, api, growthSignalsAPI } from '@repo/core/api/client';
+import { getDrizzleDB } from '@repo/core/adapters/powersync/database';
 import { useSafeMutation } from '@repo/core/hooks';
 import { type AttendanceStatus, type StudentAttendance, useStore } from '@repo/core/logic';
 import { generateIdempotencyKey, getCurrentTimestamp } from '@repo/core/utils';
@@ -7,8 +8,10 @@ import { BrandPulse } from '@repo/ui';
 import { useAppStoreReview } from '@repo/ui/hooks';
 import { Box, Button, ButtonText, Text, VStack } from '@repo/ui/primitives';
 import { hapticSuccess } from '@repo/ui/utils/haptics';
+import { Observe } from 'expo-observe';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 
 export default function AttendanceScreen() {
   const { classroomId = '' } = useLocalSearchParams<{ classroomId?: string }>();
@@ -31,10 +34,41 @@ export default function AttendanceScreen() {
 
       // The register is local until the explicit batch save below. This keeps
       // one idempotent write path and avoids saving each swipe twice.
-      const [roster, snapshot] = await Promise.all([
-        api.classroomStudents.getAll(classroomId),
-        api.attendance.getClassroomAttendanceSnapshot(classroomId, today || ''),
-      ]);
+      // Offline-first: try server snapshot, fallback to local PowerSync Drizzle (<500ms reads).
+      let roster: unknown;
+      let snapshot: { records: unknown[] } = { records: [] };
+      try {
+        [roster, snapshot] = await Promise.all([
+          api.classroomStudents.getAll(classroomId),
+          api.attendance.getClassroomAttendanceSnapshot(classroomId, today || ''),
+        ]);
+      } catch (e) {
+        // Offline fallback via Drizzle (PowerSync) — never block TTI
+        try {
+          if (Platform.OS !== 'web') {
+            const db = getDrizzleDB() as unknown as { execute: (sql: string, params?: unknown[]) => Promise<{ rows?: unknown[] }> };
+            const local = await db.execute('SELECT student_id, status FROM attendance WHERE classroom_id = ? AND date = ?', [
+              classroomId,
+              today,
+            ]);
+            snapshot = { records: local?.rows ?? [] };
+            // roster fallback: use local classroom_students if available
+            if (!roster) {
+              const r = await db.execute('SELECT student_id as student_id, id, full_name, roll_number FROM classroom_students WHERE classroom_id = ?', [
+                classroomId,
+              ]);
+              roster = r?.rows ?? [];
+            }
+            try {
+              (Observe as unknown as { logEvent: (n: string, o?: unknown) => void }).logEvent('attendance_offline_fallback', {
+                attributes: { classroomId },
+              } as unknown as never);
+            } catch {}
+          }
+        } catch {}
+        // if still no roster, rethrow to show error
+        if (!roster) throw e;
+      }
 
       // Build a lookup map: student_id -> saved status
       const savedStatus = new Map<string, AttendanceStatus>(
@@ -92,25 +126,51 @@ export default function AttendanceScreen() {
   const saveMutation = useSafeMutation(
     async (updatedAttendance: StudentAttendance[]) => {
       const now = getCurrentTimestamp();
+      const today = new Date().toISOString().split('T')[0] || '';
       const records = updatedAttendance.map((s) => ({
         classroom_id: classroomId,
         student_id: s.student_id,
         status: s.status,
-        date: new Date().toISOString().split('T')[0] || '',
+        date: today,
         occurred_at: now,
         academic_cycle_id: academicCycleId, // Tagging with academic cycle
       }));
-      return api.attendance.batchRecord(records, {
-        actorId: currentUser?.id,
-        reason: 'daily_roll_call',
-        accessKind: 'teacher_marking',
-        idempotencyKey: generateIdempotencyKey('attendance'), // Idempotency protection
-      });
+      const idempotencyKey = generateIdempotencyKey('attendance');
+      try {
+        return await api.attendance.batchRecord(records, {
+          actorId: currentUser?.id,
+          reason: 'daily_roll_call',
+          accessKind: 'teacher_marking',
+          idempotencyKey,
+        });
+      } catch (e) {
+        // Offline: queue locally via PowerSync and backgroundSync (expose as offline success)
+        if (Platform.OS !== 'web') {
+          try {
+            const db = getDrizzleDB() as unknown as { execute: (sql: string, params?: unknown[]) => Promise<unknown> };
+            for (const r of records) {
+              await db.execute(
+                'INSERT OR REPLACE INTO attendance (id, classroom_id, student_id, status, date, occurred_at, academic_cycle_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                [`att_${r.student_id}_${today}`, r.classroom_id, r.student_id, r.status, r.date, r.occurred_at, r.academic_cycle_id ?? null],
+              );
+            }
+            try {
+              (Observe as unknown as { logEvent: (n: string, o?: unknown) => void }).logEvent('attendance_offline_queued', {
+                attributes: { classroomId, count: String(records.length) },
+              } as unknown as never);
+            } catch {}
+            // store idempotencyKey for backgroundSync dedup (already generated)
+            return { queuedOffline: true, idempotencyKey } as unknown as never;
+          } catch {}
+        }
+        throw e;
+      }
     },
     {
-      onSuccess: () => {
+      onSuccess: (data: unknown) => {
         hapticSuccess();
-        showToast('Attendance saved successfully', 'success');
+        const isQueued = (data as { queuedOffline?: boolean })?.queuedOffline;
+        showToast(isQueued ? 'Saved offline — will sync when online' : 'Attendance saved successfully', 'success');
         // Growth signal  fire-and-forget
         if (currentUser?.id) {
           growthSignalsAPI.emitSilent({

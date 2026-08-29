@@ -1,9 +1,18 @@
 import type { ResolvedWorkspaceSurface } from '@repo/core/types';
-import { ChevronDown, ChevronUp, EyeOff, GripVertical, Info, Lock, Pin, Sparkles } from '@repo/ui/icons';
+import {
+  ChevronDown,
+  ChevronUp,
+  EyeOff,
+  GripVertical,
+  Info,
+  Lock,
+  Pin,
+  Sparkles,
+} from '@repo/ui/icons';
 import type React from 'react';
 import { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
-import { Text } from '@repo/ui/gluestack';
+import { Text } from '@repo/ui/primitives';
 import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
 import { Pressable, View } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
@@ -107,7 +116,7 @@ export function CanvasSurfaceCard<
           <Text style={cardStyles.title}>{title ?? surface.title}</Text>
           <Text style={cardStyles.subtitle}>{subtitle ?? surface.subtitle}</Text>
         </View>
-          <View style={cardStyles.badges}>
+        <View style={cardStyles.badges}>
           {temporalLabel ? (
             <View
               style={[cardStyles.badge, cardStyles.temporalBadge, temporalToneStyles[temporalTone]]}
@@ -189,7 +198,10 @@ export function CanvasSurfaceCard<
             </View>
           ) : null}
           {reorderControls ? (
-            <View accessibilityLabel="Keyboard and pointer reorder controls" style={cardStyles.reorderControls}>
+            <View
+              accessibilityLabel="Keyboard and pointer reorder controls"
+              style={cardStyles.reorderControls}
+            >
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={`Move ${title ?? surface.title} earlier`}

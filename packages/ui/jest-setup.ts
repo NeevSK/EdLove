@@ -52,6 +52,8 @@ jest.mock('react-native-reanimated', () => {
       if (cb) cb(true);
       return toValue;
     },
+    withSequence: (...args: any[]) => args[args.length - 1],
+    withRepeat: (animation: any, numberOfReps: number, reverse?: boolean) => animation,
     cancelAnimation: jest.fn(),
     createAnimatedComponent: (Component: any) => Component,
     interpolate: (val: number, input: number[], output: number[]) => output[0],
@@ -65,6 +67,14 @@ jest.mock('react-native-reanimated', () => {
     ZoomIn: dummyAnimation,
     ZoomOut: dummyAnimation,
     Layout: dummyAnimation,
+    Easing: {
+      linear: (t: number) => t,
+      ease: (t: number) => t,
+      in: (fn: any) => fn,
+      out: (fn: any) => fn,
+      inOut: (fn: any) => fn,
+      bezier: () => (t: number) => t,
+    },
     View: require('react-native').View,
     Text: require('react-native').Text,
     ScrollView: require('react-native').ScrollView,
@@ -89,7 +99,42 @@ jest.mock('@shopify/react-native-skia', () => ({
 }));
 
 // Mock Sentry
-jest.mock('@sentry/react-native', () => ({
-  init: jest.fn(),
-  captureException: jest.fn(),
-}));
+jest.mock(
+  '@sentry/react-native',
+  () => ({
+    init: jest.fn(),
+    captureException: jest.fn(),
+  }),
+  { virtual: true },
+);
+
+// Mock react-native-external-keyboard (used by FocusRing)
+jest.mock('react-native-external-keyboard', () => {
+  const React = require('react');
+  return {
+    K: {
+      Pressable: React.forwardRef((props: any, ref: any) =>
+        React.createElement('Pressable', { ...props, ref }),
+      ),
+    },
+    Keyboard: {
+      addListener: jest.fn(() => ({ remove: jest.fn() })),
+      removeListener: jest.fn(),
+    },
+    useKeyboardHandler: jest.fn(() => {}),
+  };
+});
+
+// Mock react-native-fast-confetti (used by CelebrationOverlay)
+jest.mock('react-native-fast-confetti', () => {
+  const React = require('react');
+  return {
+    __esModule: true,
+    default: React.forwardRef((props: any, ref: any) =>
+      React.createElement('Confetti', { ...props, ref }),
+    ),
+    Confetti: React.forwardRef((props: any, ref: any) =>
+      React.createElement('Confetti', { ...props, ref }),
+    ),
+  };
+});
