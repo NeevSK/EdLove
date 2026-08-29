@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Image } from 'react-native';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useTheme } from '@repo/ui/hooks/useTheme';
+import { SkiaGlowAura } from '@repo/ui/components/SkiaGlowAura';
+import { PressableScale } from '@repo/ui/components/PressableScale';
 import {
   Box,
   Button,
@@ -202,16 +204,18 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
             </Box>
 
             <VStack className="gap-4">
-              <Box className="w-[156px] h-[156px] rounded-[40px] self-center bg-phase-surface justify-center items-center border border-phase-border shadow-xl">
-                <Box className="absolute inset-2.5 rounded-[32px] bg-phase-accent/5" />
-                <Image
-                  source={LOGO}
-                  style={{ width: 96, height: 96, borderRadius: 18 }}
-                  accessible={true}
-                  accessibilityHint={t('accessibility.appLogoHint') || 'Gurudevi Sanctuary Icon'}
-                  accessibilityIgnoresInvertColors={true}
-                />
-              </Box>
+              <SkiaGlowAura size={200} blurRadius={30} color={`${accent.action}55`}>
+                <Box className="w-[156px] h-[156px] rounded-[40px] self-center bg-phase-surface justify-center items-center border border-phase-border shadow-xl relative">
+                  <Box className="absolute inset-2.5 rounded-[32px] bg-phase-accent/5" />
+                  <Image
+                    source={LOGO}
+                    style={{ width: 96, height: 96, borderRadius: 18 }}
+                    accessible={true}
+                    accessibilityHint={t('accessibility.appLogoHint') || 'Gurudevi Sanctuary Icon'}
+                    accessibilityIgnoresInvertColors={true}
+                  />
+                </Box>
+              </SkiaGlowAura>
 
               <VStack className="gap-2 items-center">
                 <Heading className="text-phase-text-primary text-4xl text-center font-bold tracking-[-1.8px]">
@@ -280,29 +284,33 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
                 </HStack>
 
                 <VStack className="gap-3">
-                  <Button
-                    onPress={handleStartExploringPress}
-                    isDisabled={isConnecting || !acceptedTerms}
-                    className={`h-[64px] rounded-2xl shadow-md ${acceptedTerms ? 'bg-phase-accent' : 'bg-phase-text-secondary opacity-50'}`}
-                  >
-                    {isConnecting ? (
-                      <Spinner color="white" />
-                    ) : (
-                      <ButtonText className="text-white font-bold text-lg">
-                        {t('welcome.exploreAsGuest')}
-                      </ButtonText>
-                    )}
-                  </Button>
+                  <PressableScale onPress={handleStartExploringPress} disabled={isConnecting || !acceptedTerms}>
+                    <Button
+                      onPress={handleStartExploringPress}
+                      isDisabled={isConnecting || !acceptedTerms}
+                      className={`h-[64px] rounded-2xl shadow-md w-full ${acceptedTerms ? 'bg-phase-accent' : 'bg-phase-text-secondary opacity-50'}`}
+                    >
+                      {isConnecting ? (
+                        <Spinner color="white" />
+                      ) : (
+                        <ButtonText className="text-white font-bold text-lg">
+                          {t('welcome.exploreAsGuest')}
+                        </ButtonText>
+                      )}
+                    </Button>
+                  </PressableScale>
 
-                  <Button
-                    variant="outline"
-                    onPress={handleLogin}
-                    className="h-[54px] rounded-2xl border-phase-border bg-transparent"
-                  >
-                    <ButtonText className="text-phase-text-secondary font-medium">
-                      {t('welcome.login')}
-                    </ButtonText>
-                  </Button>
+                  <PressableScale onPress={handleLogin} disabled={!acceptedTerms}>
+                    <Button
+                      variant="outline"
+                      onPress={handleLogin}
+                      className="h-[54px] rounded-2xl border-phase-border bg-transparent w-full"
+                    >
+                      <ButtonText className="text-phase-text-secondary font-medium">
+                        {t('welcome.login')}
+                      </ButtonText>
+                    </Button>
+                  </PressableScale>
                 </VStack>
               </VStack>
 

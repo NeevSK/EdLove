@@ -302,7 +302,7 @@ const DisclosureSection = ({
             </VStack>
             <ChevronDown
               size={20}
-              className="text-phase-interactive"
+              color="var(--phase-interactive)"
               style={{ transform: [{ rotate: expanded ? '180deg' : '0deg' }] }}
             />
           </HStack>
@@ -373,8 +373,10 @@ export const ProfileScreen = () => {
     try {
       await logout();
       setLogoutModalVisible(false);
-    } catch {
+    } catch (error) {
+      console.error('[ProfileScreen] logout failed', error);
       hapticError();
+      showToast(t('profile.logoutFailed', 'Could not log out. Please try again.'), 'error');
     } finally {
       setLoggingOut(false);
     }
@@ -390,7 +392,8 @@ export const ProfileScreen = () => {
       await deleteAccount();
       hapticSuccess();
       setDeleteModalVisible(false);
-    } catch {
+    } catch (error) {
+      console.error('[ProfileScreen] account deletion failed', error);
       hapticError();
       if (Platform.OS === 'web') {
         showToast(t('profile.deleteFailedTitle'), 'error');

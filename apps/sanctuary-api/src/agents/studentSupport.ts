@@ -179,7 +179,12 @@ async function assertWorkerScope(request: SupportRequest | SummaryRequest): Prom
           )
       ) as valid
     `,
-    [request.classroomId, request.schoolId, request.teacherId ?? null, 'studentId' in request ? request.studentId : null],
+    [
+      request.classroomId,
+      request.schoolId,
+      request.teacherId ?? null,
+      'studentId' in request ? request.studentId : null,
+    ],
   );
   if (!rows[0]?.valid) throw new Error('Durable agent scope is no longer authorized.');
 }

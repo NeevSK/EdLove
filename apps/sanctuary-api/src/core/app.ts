@@ -155,6 +155,16 @@ function getEnv(key: string): string | undefined {
 
 function assertProductionTransportConfiguration() {
   if (getEnv('NODE_ENV') !== 'production') return;
+  if (!getEnv('SUPABASE_JWT_ISSUER') || !getEnv('SUPABASE_JWT_AUDIENCE')) {
+    throw new Error(
+      'Production requires SUPABASE_JWT_ISSUER and SUPABASE_JWT_AUDIENCE for JWT claim verification.',
+    );
+  }
+  if (!getEnv('SUPABASE_URL') && !getEnv('SUPABASE_JWT_PUBLIC_KEY')) {
+    throw new Error(
+      'Production requires SUPABASE_URL or SUPABASE_JWT_PUBLIC_KEY for JWT signature verification.',
+    );
+  }
   if (getEnv('RATE_LIMIT_STORE') !== 'postgres') {
     throw new Error('Production requires RATE_LIMIT_STORE=postgres for shared rate limiting.');
   }
@@ -453,28 +463,15 @@ async function getRequestSecurityContext(c: any) {
   let activeBondId: string | null = null;
   let activeEntityId: string | null = null;
   let activeEntityType: string | null = null;
-  let grade_id: string | undefined;
-  let section_id: string | undefined;
-  let classroom_ids: string[];
-  let child_student_ids: string[];
+  const grade_id: string | undefined = undefined;
+  const section_id: string | undefined = undefined;
+  const classroom_ids: string[] = [];
+  const child_student_ids: string[] = [];
 
-  const clientHeaderSchoolId = c.req.header('x-school-id') || '';
-  const clientHeaderCapacity = c.req.header('x-capacity') || null;
   const clientHeaderActiveBondId = c.req.header('x-active-bond-id') || null;
   const isOnboardingBootstrapRoute =
     c.req.path.includes('/identity/initial-bond') ||
     c.req.path.includes('/identity/complete-onboarding');
-  const clientHeaderGradeId = c.req.header('x-grade-id') || undefined;
-  const clientHeaderSectionId = c.req.header('x-section-id') || undefined;
-
-  const xClassroomIds = c.req.header('x-classroom-ids');
-  const clientHeaderClassroomIds = xClassroomIds
-    ? xClassroomIds.split(',').map((id: string) => id.trim())
-    : [];
-
-  const xChildIds = c.req.header('x-child-student-ids');
-  const clientHeaderChildIds = xChildIds ? xChildIds.split(',').map((id: string) => id.trim()) : [];
-
   let hydratedFromDb = false;
   if (!isAnonymousUser && db) {
     try {
@@ -508,33 +505,22 @@ async function getRequestSecurityContext(c: any) {
     }
   }
 
-  if (!hydratedFromDb) {
-    school_id = clientHeaderSchoolId;
-    capacity = isAnonymousUser ? 'wanderer' : clientHeaderCapacity;
-    grade_id = clientHeaderGradeId;
-    section_id = clientHeaderSectionId;
-    classroom_ids = clientHeaderClassroomIds;
-    child_student_ids = clientHeaderChildIds;
-  } else {
-    if (clientHeaderCapacity === 'admin' && capacity !== 'admin') {
-      console.warn(
-        `[SENTINEL SECURITY ALERT] Blocked header privilege escalation attempt by user "${user.id}"`,
-      );
-      throw new Error('PrivilegeEscalation');
-    }
-    grade_id = clientHeaderGradeId;
-    section_id = clientHeaderSectionId;
-    classroom_ids = clientHeaderClassroomIds;
-    child_student_ids = clientHeaderChildIds;
+  if (!hydratedFromDb && !isAnonymousUser) {
+    throw new Error('MissingActiveCapacity');
+  }
+
+  if (isAnonymousUser) {
+    capacity = 'wanderer';
   }
 
   if (!isAnonymousUser && !capacity && !isOnboardingBootstrapRoute) {
     throw new Error('MissingActiveCapacity');
   }
 
-  const deviceTrust =
-    c.req.header('x-device-trust') || c.req.header('x-device-status') || 'standard';
-  const networkZone = c.req.header('x-network-zone') || 'trusted';
+  // Request headers are user-controlled. Device attestation and network zone
+  // must be injected by a verified gateway before they can affect policy.
+  const deviceTrust = 'standard';
+  const networkZone = 'untrusted';
 
   return {
     user,

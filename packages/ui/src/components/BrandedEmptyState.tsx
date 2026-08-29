@@ -17,6 +17,7 @@ import { tokens } from '@repo/ui/tokens';
 import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
+import { FireflyMascot } from './FireflyMascot';
 import { useBreakpoint } from './layout';
 import { duration, nativeEasing } from './motion';
 
@@ -52,31 +53,7 @@ export function BrandedEmptyState({
   const breakpoint = useBreakpoint();
   const size = breakpoint === 'phone' ? 120 : breakpoint === 'tablet' ? 150 : 170;
 
-  const illustration = (
-    <Svg width={size} height={size} viewBox="0 0 512 512">
-      <Path
-        d={PATHS.outer}
-        fill="none"
-        stroke={tokens.colors.emptyIllustration}
-        strokeWidth={9}
-        strokeLinejoin="round"
-      />
-      <Path
-        d={PATHS.teacherSide}
-        fill="none"
-        stroke={tokens.colors.emptyIllustration}
-        strokeWidth={9}
-        strokeLinecap="round"
-      />
-      <Path
-        d={PATHS.studentSide}
-        fill="none"
-        stroke={tokens.colors.emptyIllustration}
-        strokeWidth={9}
-        strokeLinecap="round"
-      />
-    </Svg>
-  );
+  const illustration = <FireflyMascot size={size} mode={subtle ? 'glowing' : 'resting'} />;
 
   // Web implementation with subtle animation
   if (Platform.OS === 'web' && subtle) {

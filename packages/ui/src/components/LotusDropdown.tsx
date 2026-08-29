@@ -1,5 +1,6 @@
 import { ChevronDown, CircleAlert } from '@repo/ui/icons';
 import { useState } from 'react';
+import { Platform } from 'react-native';
 import {
   Sheet,
   SheetContent,
@@ -7,11 +8,13 @@ import {
   SheetDragIndicatorWrapper,
   SheetItem,
   SheetItemText,
+  Box,
   HStack,
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { Pressable } from '@repo/ui/primitives';
+import { PressableScale } from '@repo/ui/components/PressableScale';
+import { NativeDropdownMenu } from '@repo/ui/native-menu';
 
 interface LotusDropdownProps {
   label?: string;
@@ -21,13 +24,15 @@ interface LotusDropdownProps {
   error?: string;
   placeholder?: string;
   isDisabled?: boolean;
+  useNativeMenu?: boolean;
 }
 
 /**
  * LotusDropdown
  *
  * A hardened, phase-aware dropdown component.
- * Uses Actionsheet for a premium mobile experience.
+ * Supports true native OS dropdown menus (via Zeego native primitives)
+ * with graceful fallback to Actionsheet on non-supporting platforms.
  */
 export default function LotusDropdown({
   label,
@@ -37,6 +42,7 @@ export default function LotusDropdown({
   error,
   placeholder = 'Select an option',
   isDisabled = false,
+  useNativeMenu = true,
 }: LotusDropdownProps) {
   const [showActionsheet, setShowActionsheet] = useState(false);
 
@@ -45,18 +51,28 @@ export default function LotusDropdown({
 
   const handleClose = () => setShowActionsheet(false);
 
-  return (
-    <VStack className="w-full gap-2">
-      {label && <Text className="text-phase-text-primary font-medium tracking-wide">{label}</Text>}
+  const zeegoItems = options.map((opt) => ({
+    id: opt.value,
+    label: opt.label,
+    onSelect: () => onChange(opt.value),
+  }));
 
-      <Pressable
-        accessibilityRole="button"
-        onPress={() => !isDisabled && setShowActionsheet(true)}
+  const renderTrigger = () => (
+    <PressableScale
+      onPress={() => {
+        if (!isDisabled && (!useNativeMenu || Platform.OS === 'web')) {
+          setShowActionsheet(true);
+        }
+      }}
+      disabled={isDisabled}
+      accessibilityLabel={label || placeholder}
+    >
+      <Box
         className={`
-                    flex-row items-center justify-between h-12 px-4 rounded-xl border
-                    ${isDisabled ? 'opacity-50' : 'active:opacity-70'}
-                    ${hasError ? 'border-phase-danger bg-phase-danger/5' : 'border-phase-surface bg-phase-surface'}
-                `}
+          flex-row items-center justify-between h-12 px-4 rounded-xl border
+          ${isDisabled ? 'opacity-50' : ''}
+          ${hasError ? 'border-phase-danger bg-phase-danger/5' : 'border-phase-surface bg-phase-surface'}
+        `}
       >
         <Text
           className={`text-base ${selectedOption ? 'text-phase-text-primary' : 'text-phase-text-secondary'}`}
@@ -64,7 +80,21 @@ export default function LotusDropdown({
           {selectedOption ? selectedOption.label : placeholder}
         </Text>
         <ChevronDown size={20} className="text-phase-text-secondary" />
-      </Pressable>
+      </Box>
+    </PressableScale>
+  );
+
+  return (
+    <VStack className="w-full gap-2">
+      {label && <Text className="text-phase-text-primary font-medium tracking-wide">{label}</Text>}
+
+      {useNativeMenu && Platform.OS !== 'web' ? (
+        <NativeDropdownMenu title={label || placeholder} items={zeegoItems}>
+          {renderTrigger()}
+        </NativeDropdownMenu>
+      ) : (
+        renderTrigger()
+      )}
 
       {hasError && (
         <HStack className="items-center gap-1.5 px-1">
@@ -73,32 +103,34 @@ export default function LotusDropdown({
         </HStack>
       )}
 
-      <Sheet open={showActionsheet} onOpenChange={setShowActionsheet}>
-        <SheetContent className="bg-phase-elevated border-t border-phase-surface pb-8">
-          <SheetDragIndicatorWrapper>
-            <SheetDragIndicator />
-          </SheetDragIndicatorWrapper>
+      {(!useNativeMenu || Platform.OS === 'web') && (
+        <Sheet open={showActionsheet} onOpenChange={setShowActionsheet}>
+          <SheetContent className="bg-phase-elevated border-t border-phase-surface pb-8">
+            <SheetDragIndicatorWrapper>
+              <SheetDragIndicator />
+            </SheetDragIndicatorWrapper>
 
-          <VStack className="w-full p-2">
-            {options.map((option) => (
-              <SheetItem
-                key={option.value}
-                onPress={() => {
-                  onChange(option.value);
-                  handleClose();
-                }}
-                className={`rounded-xl mb-1 ${value === option.value ? 'bg-phase-accent/10 border border-phase-accent/20' : 'active:bg-phase-surface'}`}
-              >
-                <SheetItemText
-                  className={`text-base ${value === option.value ? 'text-phase-accent font-bold' : 'text-phase-text-primary'}`}
+            <VStack className="w-full p-2">
+              {options.map((option) => (
+                <SheetItem
+                  key={option.value}
+                  onPress={() => {
+                    onChange(option.value);
+                    handleClose();
+                  }}
+                  className={`rounded-xl mb-1 ${value === option.value ? 'bg-phase-accent/10 border border-phase-accent/20' : 'active:bg-phase-surface'}`}
                 >
-                  {option.label}
-                </SheetItemText>
-              </SheetItem>
-            ))}
-          </VStack>
-        </SheetContent>
-      </Sheet>
+                  <SheetItemText
+                    className={`text-base ${value === option.value ? 'text-phase-accent font-bold' : 'text-phase-text-primary'}`}
+                  >
+                    {option.label}
+                  </SheetItemText>
+                </SheetItem>
+              ))}
+            </VStack>
+          </SheetContent>
+        </Sheet>
+      )}
     </VStack>
   );
 }

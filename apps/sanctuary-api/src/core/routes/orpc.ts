@@ -1,4 +1,5 @@
 import { buildORPCContextFromHono } from '../router';
+import { nativeORPCPaths } from './nativeORPCPaths';
 
 type RouteRegistrar = {
   all: (path: string, handler: (context: any) => Promise<Response>) => unknown;
@@ -7,49 +8,6 @@ type RouteRegistrar = {
 type RPCHandler = {
   handle: (...args: any[]) => Promise<{ matched: boolean; response?: Response }>;
 };
-
-const nativeORPCPaths = [
-  '/api/self/*',
-  '/api/profile/*',
-  '/api/identity/*',
-  '/api/onboarding/*',
-  '/api/community/*',
-  '/api/messaging/*',
-  '/api/social/*',
-  '/api/announcements/*',
-  '/api/principalNotes/*',
-  '/api/admin/*',
-  '/api/sync/*',
-  '/api/dailyContent/*',
-  '/api/decisionJournal/*',
-  '/api/journalEntries/*',
-  '/api/sacredMissions/*',
-  '/api/library/*',
-  '/api/authorization/*',
-  '/api/educational/*',
-  '/api/grading/*',
-  '/api/attendance/*',
-  '/api/guardianAssessment/*',
-  '/api/agent/*',
-  '/api/thuthimal/*',
-  '/api/erp/*',
-  '/api/mapping/*',
-  '/api/inventory/*',
-  '/api/history/*',
-  '/api/longitudinal/*',
-  '/api/school-forest/*',
-  // RPCLink uses the router's camel-case namespace; keep this explicit
-  // compatibility mount alongside the kebab-case contract path.
-  '/api/schoolForest/*',
-  '/api/privacy/*',
-  '/api/echoes/*',
-  '/api/studentPotential/*',
-  '/api/forms/*',
-  '/api/tracking/*',
-  '/api/warmMirror/*',
-  '/api/presence/*',
-  '/api/rewards/*',
-] as const;
 
 async function handleNativeORPC(c: any, rpcHandler: RPCHandler) {
   const context = await buildORPCContextFromHono(c);

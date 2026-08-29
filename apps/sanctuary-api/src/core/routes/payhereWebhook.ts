@@ -1,4 +1,4 @@
-import { createZenStackDb, executeDatabaseCommand, queryDatabaseRows } from '@repo/database/client';
+import { executeDatabaseCommand, queryDatabaseRows } from '@repo/database/client';
 import { Hono } from 'hono';
 
 type Hashers = {
@@ -7,6 +7,31 @@ type Hashers = {
 };
 
 type Environment = (key: string) => string | undefined;
+
+type PaymentOwnerRecord = {
+  owner_id: string;
+};
+
+type PaymentIntentRecord = {
+  amount: number;
+  currency: string;
+  provider: string;
+  status: string;
+  metadata: unknown;
+};
+
+function matchesMoney(amount: number, callbackAmount: string): boolean {
+  const parsed = Number(callbackAmount);
+  return Number.isFinite(parsed) && Math.round(amount * 100) === Math.round(parsed * 100);
+}
+
+function paymentOwner(metadata: unknown): string | null {
+  if (!metadata || typeof metadata !== 'object') return null;
+  const ownerId = (metadata as Record<string, unknown>).owner_id;
+  return typeof ownerId === 'string' && /^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(ownerId)
+    ? ownerId
+    : null;
+}
 
 export function createPayhereWebhookRoutes(hashers: Hashers, getEnv: Environment) {
   const routes = new Hono();
@@ -27,10 +52,13 @@ export function createPayhereWebhookRoutes(hashers: Hashers, getEnv: Environment
     }
 
     const merchantSecret = getEnv('PAYHERE_MERCHANT_SECRET');
-    if (!merchantSecret) {
-      console.error('PAYHERE_MERCHANT_SECRET is not set in environment variables');
+    const expectedMerchantId = getEnv('PAYHERE_MERCHANT_ID');
+    if (!merchantSecret || !expectedMerchantId) {
+      console.error('PayHere webhook configuration is incomplete');
       return c.text('Configuration Error', 500);
     }
+
+    if (merchant_id !== expectedMerchantId) return c.text('Unauthorized', 401);
 
     const secretHash = (await hashers.md5Hex(merchantSecret)).toUpperCase();
     const rawString = `${merchant_id}${order_id}${payhere_amount}${payhere_currency}${status_code}${secretHash}`;
@@ -69,11 +97,57 @@ export function createPayhereWebhookRoutes(hashers: Hashers, getEnv: Environment
 
     try {
       if (status_code === '2') {
-        const systemDb = createZenStackDb({ id: 'system-payment-service' });
-        const user = await systemDb.user.findUnique({ where: { id: order_id } });
+        const newlyPaid = await queryDatabaseRows<PaymentOwnerRecord>(
+          `UPDATE public.payment_intents
+           SET status = 'paid', updated_at = now(),
+             metadata = coalesce(metadata, '{}'::jsonb) || jsonb_build_object(
+               'payhere_merchant_id', $2,
+               'payhere_status_code', $3,
+               'payhere_paid_amount', $4,
+               'payhere_paid_currency', $5
+             )
+           WHERE id = $1::uuid
+             AND provider = 'payhere'
+             AND status = 'pending'
+             AND upper(currency) = upper($5)
+             AND round(amount::numeric, 2) = round($4::numeric, 2)
+             AND metadata ? 'owner_id'
+             AND metadata->>'owner_id' ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+           RETURNING metadata->>'owner_id' AS owner_id`,
+          [order_id, merchant_id, status_code, payhere_amount, payhere_currency],
+        );
 
-        if (user) {
-          await systemDb.user.update({ where: { id: order_id }, data: { pricing_tier: 'PRO' } });
+        const ownerId = newlyPaid[0]?.owner_id;
+        if (ownerId) {
+          await executeDatabaseCommand(
+            `UPDATE public.users SET pricing_tier = 'PRO' WHERE id = $1::uuid`,
+            [ownerId],
+          );
+        } else {
+          const intents = await queryDatabaseRows<PaymentIntentRecord>(
+            `select amount, currency, provider, status, metadata
+             from public.payment_intents where id = $1::uuid`,
+            [order_id],
+          );
+          const intent = intents[0];
+          const existingOwnerId = intent ? paymentOwner(intent.metadata) : null;
+          if (
+            !intent ||
+            !existingOwnerId ||
+            intent.provider !== 'payhere' ||
+            intent.currency.toUpperCase() !== payhere_currency.toUpperCase() ||
+            !matchesMoney(intent.amount, payhere_amount) ||
+            !['pending', 'paid'].includes(intent.status)
+          ) {
+            await executeDatabaseCommand(
+              `UPDATE payment_webhook_events
+             SET status = 'rejected', processed_at = now(), locked_until = NULL,
+               last_error = 'payment_intent_verification_failed'
+             WHERE event_key = $1`,
+              [eventKey],
+            );
+            return c.text('Unauthorized', 401);
+          }
         }
       }
 

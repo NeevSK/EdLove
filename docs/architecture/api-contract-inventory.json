@@ -111,6 +111,24 @@
       "clientFiles": []
     },
     {
+      "name": "journalEntries",
+      "contractFile": "journalEntries.contract.ts",
+      "handlerFile": "journalEntries.ts",
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/journalEntries.ts"
+      ]
+    },
+    {
+      "name": "learningReflections",
+      "contractFile": "learningReflections.contract.ts",
+      "handlerFile": "learningReflections.ts",
+      "protocol": "server-only",
+      "clientStatus": "server-only",
+      "clientFiles": []
+    },
+    {
       "name": "sacredMissions",
       "contractFile": "sacredMissions.contract.ts",
       "handlerFile": "sacredMissions.ts",
@@ -341,6 +359,16 @@
       "clientStatus": "mapped",
       "clientFiles": [
         "packages/core/src/api/studentPotential.ts"
+      ]
+    },
+    {
+      "name": "rewards",
+      "contractFile": "rewards.orpc.contract.ts",
+      "handlerFile": "rewards.ts",
+      "protocol": "direct-supabase",
+      "clientStatus": "legacy-direct",
+      "clientFiles": [
+        "packages/core/src/api/rewards.ts"
       ]
     },
     {
@@ -1185,6 +1213,91 @@
       "policy": {
         "action": "update",
         "subject": "DecisionJournal"
+      },
+      "protocol": "server-only",
+      "clientStatus": "server-only",
+      "clientFiles": [],
+      "clientCalls": [],
+      "hasResponses": true
+    },
+    {
+      "source": "journalEntries",
+      "procedure": "list",
+      "method": "get",
+      "path": "/journalEntries",
+      "policy": {
+        "action": "read",
+        "subject": "FireJournal"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/journalEntries.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).journalEntries.create.$post",
+        "client.api as any).journalEntries.list.$post"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "journalEntries",
+      "procedure": "create",
+      "method": "post",
+      "path": "/journalEntries",
+      "policy": {
+        "action": "create",
+        "subject": "FireJournal"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/journalEntries.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).journalEntries.create.$post",
+        "client.api as any).journalEntries.list.$post"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "learningReflections",
+      "procedure": "saveLearningReflection",
+      "method": "post",
+      "path": "/classroom/learning-reflections",
+      "policy": {
+        "action": "create",
+        "subject": "LearningReflection"
+      },
+      "protocol": "server-only",
+      "clientStatus": "server-only",
+      "clientFiles": [],
+      "clientCalls": [],
+      "hasResponses": true
+    },
+    {
+      "source": "learningReflections",
+      "procedure": "getLearningReflections",
+      "method": "get",
+      "path": "/classroom/learning-reflections",
+      "policy": {
+        "action": "read",
+        "subject": "LearningReflection"
+      },
+      "protocol": "server-only",
+      "clientStatus": "server-only",
+      "clientFiles": [],
+      "clientCalls": [],
+      "hasResponses": true
+    },
+    {
+      "source": "learningReflections",
+      "procedure": "completeLearningReflectionFollowUp",
+      "method": "patch",
+      "path": "/classroom/learning-reflections/:id/follow-up",
+      "policy": {
+        "action": "update",
+        "subject": "LearningReflection"
       },
       "protocol": "server-only",
       "clientStatus": "server-only",
@@ -2748,6 +2861,816 @@
       "path": "/educational/classroom-students/:id",
       "policy": {
         "action": "delete",
+        "subject": "Classroom"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/classroom.ts",
+        "packages/core/src/api/classrooms.ts",
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/resources.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get",
+        "client.api as any).educational.classrooms.$post",
+        "client.api as any).educational.classrooms.stats.teacher[':id'].$get",
+        "client.api as any).educational.classrooms[':classroomId'].resources.$get",
+        "client.api as any).educational.classrooms[':classroomId'].students.$get",
+        "client.api as any).educational.classrooms[':id'].$delete",
+        "client.api as any).educational.classrooms[':id'].$get",
+        "client.api as any).educational.classrooms[':id'].$patch",
+        "client.api as any).educational.classrooms['by-student'].$get",
+        "client.api as any).educational.classrooms['by-teacher'].$get",
+        "client.api as any).educational.lessons.$post",
+        "client.api as any).educational['classroom-students'][':id'].$delete",
+        "client.api as any).educational['classroom-students'][':id'].$patch"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "educational",
+      "procedure": "claimShadowStudent",
+      "method": "post",
+      "path": "/educational/classroom-students/claim",
+      "policy": {
+        "action": "create",
+        "subject": "Classroom"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/classroom.ts",
+        "packages/core/src/api/classrooms.ts",
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/resources.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get",
+        "client.api as any).educational.classrooms.$post",
+        "client.api as any).educational.classrooms.stats.teacher[':id'].$get",
+        "client.api as any).educational.classrooms[':classroomId'].resources.$get",
+        "client.api as any).educational.classrooms[':classroomId'].students.$get",
+        "client.api as any).educational.classrooms[':id'].$delete",
+        "client.api as any).educational.classrooms[':id'].$get",
+        "client.api as any).educational.classrooms[':id'].$patch",
+        "client.api as any).educational.classrooms['by-student'].$get",
+        "client.api as any).educational.classrooms['by-teacher'].$get",
+        "client.api as any).educational.lessons.$post",
+        "client.api as any).educational['classroom-students'][':id'].$delete",
+        "client.api as any).educational['classroom-students'][':id'].$patch"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "educational",
+      "procedure": "getMaterials",
+      "method": "get",
+      "path": "/educational/classrooms/:classroomId/materials",
+      "policy": {
+        "action": "read",
+        "subject": "Classroom"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/classroom.ts",
+        "packages/core/src/api/classrooms.ts",
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/resources.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get",
+        "client.api as any).educational.classrooms.$post",
+        "client.api as any).educational.classrooms.stats.teacher[':id'].$get",
+        "client.api as any).educational.classrooms[':classroomId'].resources.$get",
+        "client.api as any).educational.classrooms[':classroomId'].students.$get",
+        "client.api as any).educational.classrooms[':id'].$delete",
+        "client.api as any).educational.classrooms[':id'].$get",
+        "client.api as any).educational.classrooms[':id'].$patch",
+        "client.api as any).educational.classrooms['by-student'].$get",
+        "client.api as any).educational.classrooms['by-teacher'].$get",
+        "client.api as any).educational.lessons.$post",
+        "client.api as any).educational['classroom-students'][':id'].$delete",
+        "client.api as any).educational['classroom-students'][':id'].$patch"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "educational",
+      "procedure": "getLessonMaterials",
+      "method": "get",
+      "path": "/educational/lessons/:lessonId/materials",
+      "policy": {
+        "action": "read",
+        "subject": "Lesson"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/classroom.ts",
+        "packages/core/src/api/classrooms.ts",
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/resources.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get",
+        "client.api as any).educational.classrooms.$post",
+        "client.api as any).educational.classrooms.stats.teacher[':id'].$get",
+        "client.api as any).educational.classrooms[':classroomId'].resources.$get",
+        "client.api as any).educational.classrooms[':classroomId'].students.$get",
+        "client.api as any).educational.classrooms[':id'].$delete",
+        "client.api as any).educational.classrooms[':id'].$get",
+        "client.api as any).educational.classrooms[':id'].$patch",
+        "client.api as any).educational.classrooms['by-student'].$get",
+        "client.api as any).educational.classrooms['by-teacher'].$get",
+        "client.api as any).educational.lessons.$post",
+        "client.api as any).educational['classroom-students'][':id'].$delete",
+        "client.api as any).educational['classroom-students'][':id'].$patch"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "educational",
+      "procedure": "createMaterial",
+      "method": "post",
+      "path": "/educational/materials",
+      "policy": {
+        "action": "create",
+        "subject": "Classroom"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/classroom.ts",
+        "packages/core/src/api/classrooms.ts",
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/resources.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get",
+        "client.api as any).educational.classrooms.$post",
+        "client.api as any).educational.classrooms.stats.teacher[':id'].$get",
+        "client.api as any).educational.classrooms[':classroomId'].resources.$get",
+        "client.api as any).educational.classrooms[':classroomId'].students.$get",
+        "client.api as any).educational.classrooms[':id'].$delete",
+        "client.api as any).educational.classrooms[':id'].$get",
+        "client.api as any).educational.classrooms[':id'].$patch",
+        "client.api as any).educational.classrooms['by-student'].$get",
+        "client.api as any).educational.classrooms['by-teacher'].$get",
+        "client.api as any).educational.lessons.$post",
+        "client.api as any).educational['classroom-students'][':id'].$delete",
+        "client.api as any).educational['classroom-students'][':id'].$patch"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "educational",
+      "procedure": "updateMaterial",
+      "method": "patch",
+      "path": "/educational/materials/:id",
+      "policy": {
+        "action": "update",
+        "subject": "Classroom"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/classroom.ts",
+        "packages/core/src/api/classrooms.ts",
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/resources.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get",
+        "client.api as any).educational.classrooms.$post",
+        "client.api as any).educational.classrooms.stats.teacher[':id'].$get",
+        "client.api as any).educational.classrooms[':classroomId'].resources.$get",
+        "client.api as any).educational.classrooms[':classroomId'].students.$get",
+        "client.api as any).educational.classrooms[':id'].$delete",
+        "client.api as any).educational.classrooms[':id'].$get",
+        "client.api as any).educational.classrooms[':id'].$patch",
+        "client.api as any).educational.classrooms['by-student'].$get",
+        "client.api as any).educational.classrooms['by-teacher'].$get",
+        "client.api as any).educational.lessons.$post",
+        "client.api as any).educational['classroom-students'][':id'].$delete",
+        "client.api as any).educational['classroom-students'][':id'].$patch"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "educational",
+      "procedure": "deleteMaterial",
+      "method": "delete",
+      "path": "/educational/materials/:id",
+      "policy": {
+        "action": "delete",
+        "subject": "Classroom"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/classroom.ts",
+        "packages/core/src/api/classrooms.ts",
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/resources.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get",
+        "client.api as any).educational.classrooms.$post",
+        "client.api as any).educational.classrooms.stats.teacher[':id'].$get",
+        "client.api as any).educational.classrooms[':classroomId'].resources.$get",
+        "client.api as any).educational.classrooms[':classroomId'].students.$get",
+        "client.api as any).educational.classrooms[':id'].$delete",
+        "client.api as any).educational.classrooms[':id'].$get",
+        "client.api as any).educational.classrooms[':id'].$patch",
+        "client.api as any).educational.classrooms['by-student'].$get",
+        "client.api as any).educational.classrooms['by-teacher'].$get",
+        "client.api as any).educational.lessons.$post",
+        "client.api as any).educational['classroom-students'][':id'].$delete",
+        "client.api as any).educational['classroom-students'][':id'].$patch"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "educational",
+      "procedure": "getAssignments",
+      "method": "get",
+      "path": "/educational/classrooms/:classroomId/assignments",
+      "policy": {
+        "action": "read",
+        "subject": "Classroom"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/classroom.ts",
+        "packages/core/src/api/classrooms.ts",
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/resources.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get",
+        "client.api as any).educational.classrooms.$post",
+        "client.api as any).educational.classrooms.stats.teacher[':id'].$get",
+        "client.api as any).educational.classrooms[':classroomId'].resources.$get",
+        "client.api as any).educational.classrooms[':classroomId'].students.$get",
+        "client.api as any).educational.classrooms[':id'].$delete",
+        "client.api as any).educational.classrooms[':id'].$get",
+        "client.api as any).educational.classrooms[':id'].$patch",
+        "client.api as any).educational.classrooms['by-student'].$get",
+        "client.api as any).educational.classrooms['by-teacher'].$get",
+        "client.api as any).educational.lessons.$post",
+        "client.api as any).educational['classroom-students'][':id'].$delete",
+        "client.api as any).educational['classroom-students'][':id'].$patch"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "educational",
+      "procedure": "getLessonAssignments",
+      "method": "get",
+      "path": "/educational/lessons/:lessonId/assignments",
+      "policy": {
+        "action": "read",
+        "subject": "Lesson"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/classroom.ts",
+        "packages/core/src/api/classrooms.ts",
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/resources.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get",
+        "client.api as any).educational.classrooms.$post",
+        "client.api as any).educational.classrooms.stats.teacher[':id'].$get",
+        "client.api as any).educational.classrooms[':classroomId'].resources.$get",
+        "client.api as any).educational.classrooms[':classroomId'].students.$get",
+        "client.api as any).educational.classrooms[':id'].$delete",
+        "client.api as any).educational.classrooms[':id'].$get",
+        "client.api as any).educational.classrooms[':id'].$patch",
+        "client.api as any).educational.classrooms['by-student'].$get",
+        "client.api as any).educational.classrooms['by-teacher'].$get",
+        "client.api as any).educational.lessons.$post",
+        "client.api as any).educational['classroom-students'][':id'].$delete",
+        "client.api as any).educational['classroom-students'][':id'].$patch"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "educational",
+      "procedure": "createAssignment",
+      "method": "post",
+      "path": "/educational/assignments",
+      "policy": {
+        "action": "create",
+        "subject": "Classroom"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/classroom.ts",
+        "packages/core/src/api/classrooms.ts",
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/resources.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get",
+        "client.api as any).educational.classrooms.$post",
+        "client.api as any).educational.classrooms.stats.teacher[':id'].$get",
+        "client.api as any).educational.classrooms[':classroomId'].resources.$get",
+        "client.api as any).educational.classrooms[':classroomId'].students.$get",
+        "client.api as any).educational.classrooms[':id'].$delete",
+        "client.api as any).educational.classrooms[':id'].$get",
+        "client.api as any).educational.classrooms[':id'].$patch",
+        "client.api as any).educational.classrooms['by-student'].$get",
+        "client.api as any).educational.classrooms['by-teacher'].$get",
+        "client.api as any).educational.lessons.$post",
+        "client.api as any).educational['classroom-students'][':id'].$delete",
+        "client.api as any).educational['classroom-students'][':id'].$patch"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "educational",
+      "procedure": "updateAssignment",
+      "method": "patch",
+      "path": "/educational/assignments/:id",
+      "policy": {
+        "action": "update",
+        "subject": "Classroom"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/classroom.ts",
+        "packages/core/src/api/classrooms.ts",
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/resources.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get",
+        "client.api as any).educational.classrooms.$post",
+        "client.api as any).educational.classrooms.stats.teacher[':id'].$get",
+        "client.api as any).educational.classrooms[':classroomId'].resources.$get",
+        "client.api as any).educational.classrooms[':classroomId'].students.$get",
+        "client.api as any).educational.classrooms[':id'].$delete",
+        "client.api as any).educational.classrooms[':id'].$get",
+        "client.api as any).educational.classrooms[':id'].$patch",
+        "client.api as any).educational.classrooms['by-student'].$get",
+        "client.api as any).educational.classrooms['by-teacher'].$get",
+        "client.api as any).educational.lessons.$post",
+        "client.api as any).educational['classroom-students'][':id'].$delete",
+        "client.api as any).educational['classroom-students'][':id'].$patch"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "educational",
+      "procedure": "deleteAssignment",
+      "method": "delete",
+      "path": "/educational/assignments/:id",
+      "policy": {
+        "action": "delete",
+        "subject": "Classroom"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/classroom.ts",
+        "packages/core/src/api/classrooms.ts",
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/resources.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get",
+        "client.api as any).educational.classrooms.$post",
+        "client.api as any).educational.classrooms.stats.teacher[':id'].$get",
+        "client.api as any).educational.classrooms[':classroomId'].resources.$get",
+        "client.api as any).educational.classrooms[':classroomId'].students.$get",
+        "client.api as any).educational.classrooms[':id'].$delete",
+        "client.api as any).educational.classrooms[':id'].$get",
+        "client.api as any).educational.classrooms[':id'].$patch",
+        "client.api as any).educational.classrooms['by-student'].$get",
+        "client.api as any).educational.classrooms['by-teacher'].$get",
+        "client.api as any).educational.lessons.$post",
+        "client.api as any).educational['classroom-students'][':id'].$delete",
+        "client.api as any).educational['classroom-students'][':id'].$patch"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "educational",
+      "procedure": "getStudentSubmissions",
+      "method": "get",
+      "path": "/educational/students/:studentId/submissions",
+      "policy": {
+        "action": "read",
+        "subject": "Classroom"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/classroom.ts",
+        "packages/core/src/api/classrooms.ts",
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/resources.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get",
+        "client.api as any).educational.classrooms.$post",
+        "client.api as any).educational.classrooms.stats.teacher[':id'].$get",
+        "client.api as any).educational.classrooms[':classroomId'].resources.$get",
+        "client.api as any).educational.classrooms[':classroomId'].students.$get",
+        "client.api as any).educational.classrooms[':id'].$delete",
+        "client.api as any).educational.classrooms[':id'].$get",
+        "client.api as any).educational.classrooms[':id'].$patch",
+        "client.api as any).educational.classrooms['by-student'].$get",
+        "client.api as any).educational.classrooms['by-teacher'].$get",
+        "client.api as any).educational.lessons.$post",
+        "client.api as any).educational['classroom-students'][':id'].$delete",
+        "client.api as any).educational['classroom-students'][':id'].$patch"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "educational",
+      "procedure": "getUpcomingAssignments",
+      "method": "get",
+      "path": "/educational/students/:studentId/assignments/upcoming",
+      "policy": {
+        "action": "read",
+        "subject": "Classroom"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/classroom.ts",
+        "packages/core/src/api/classrooms.ts",
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/resources.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get",
+        "client.api as any).educational.classrooms.$post",
+        "client.api as any).educational.classrooms.stats.teacher[':id'].$get",
+        "client.api as any).educational.classrooms[':classroomId'].resources.$get",
+        "client.api as any).educational.classrooms[':classroomId'].students.$get",
+        "client.api as any).educational.classrooms[':id'].$delete",
+        "client.api as any).educational.classrooms[':id'].$get",
+        "client.api as any).educational.classrooms[':id'].$patch",
+        "client.api as any).educational.classrooms['by-student'].$get",
+        "client.api as any).educational.classrooms['by-teacher'].$get",
+        "client.api as any).educational.lessons.$post",
+        "client.api as any).educational['classroom-students'][':id'].$delete",
+        "client.api as any).educational['classroom-students'][':id'].$patch"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "educational",
+      "procedure": "submitAssignment",
+      "method": "post",
+      "path": "/educational/assignments/:assignmentId/submissions",
+      "policy": {
+        "action": "create",
+        "subject": "Classroom"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/classroom.ts",
+        "packages/core/src/api/classrooms.ts",
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/resources.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get",
+        "client.api as any).educational.classrooms.$post",
+        "client.api as any).educational.classrooms.stats.teacher[':id'].$get",
+        "client.api as any).educational.classrooms[':classroomId'].resources.$get",
+        "client.api as any).educational.classrooms[':classroomId'].students.$get",
+        "client.api as any).educational.classrooms[':id'].$delete",
+        "client.api as any).educational.classrooms[':id'].$get",
+        "client.api as any).educational.classrooms[':id'].$patch",
+        "client.api as any).educational.classrooms['by-student'].$get",
+        "client.api as any).educational.classrooms['by-teacher'].$get",
+        "client.api as any).educational.lessons.$post",
+        "client.api as any).educational['classroom-students'][':id'].$delete",
+        "client.api as any).educational['classroom-students'][':id'].$patch"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "educational",
+      "procedure": "gradeAssignmentSubmission",
+      "method": "patch",
+      "path": "/educational/submissions/:id/grade",
+      "policy": {
+        "action": "update",
         "subject": "Classroom"
       },
       "protocol": "native-orpc",
@@ -4468,6 +5391,50 @@
       "hasResponses": true
     },
     {
+      "source": "community",
+      "procedure": "getReactionStatus",
+      "method": "get",
+      "path": "/community/posts/:postId/reaction",
+      "policy": {
+        "action": "read",
+        "subject": "Post"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/groups.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups.$get",
+        "client.api as any).community.groups.$post",
+        "client.api as any).community.groups[':groupId'].$get",
+        "client.api as any).community.groups[':groupId'].join.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get"
+      ],
+      "hasResponses": true
+    },
+    {
       "source": "admin",
       "procedure": "getStaffPresence",
       "method": "get",
@@ -6046,6 +7013,159 @@
       "hasResponses": true
     },
     {
+      "source": "rewards",
+      "procedure": "getRewards",
+      "method": "get",
+      "path": "/rewards",
+      "policy": {
+        "action": "read",
+        "subject": "UserRewards"
+      },
+      "protocol": "direct-supabase",
+      "clientStatus": "legacy-direct",
+      "clientFiles": [
+        "packages/core/src/api/rewards.ts"
+      ],
+      "clientCalls": [],
+      "hasResponses": true
+    },
+    {
+      "source": "rewards",
+      "procedure": "getRewardsHistory",
+      "method": "get",
+      "path": "/rewards/history",
+      "policy": {
+        "action": "read",
+        "subject": "UserRewards"
+      },
+      "protocol": "direct-supabase",
+      "clientStatus": "legacy-direct",
+      "clientFiles": [
+        "packages/core/src/api/rewards.ts"
+      ],
+      "clientCalls": [],
+      "hasResponses": true
+    },
+    {
+      "source": "rewards",
+      "procedure": "getRewardsAsOf",
+      "method": "get",
+      "path": "/rewards/as-of",
+      "policy": {
+        "action": "read",
+        "subject": "UserRewards"
+      },
+      "protocol": "direct-supabase",
+      "clientStatus": "legacy-direct",
+      "clientFiles": [
+        "packages/core/src/api/rewards.ts"
+      ],
+      "clientCalls": [],
+      "hasResponses": true
+    },
+    {
+      "source": "rewards",
+      "procedure": "getRewardsRangeHistory",
+      "method": "get",
+      "path": "/rewards/range-history",
+      "policy": {
+        "action": "read",
+        "subject": "UserRewards"
+      },
+      "protocol": "direct-supabase",
+      "clientStatus": "legacy-direct",
+      "clientFiles": [
+        "packages/core/src/api/rewards.ts"
+      ],
+      "clientCalls": [],
+      "hasResponses": true
+    },
+    {
+      "source": "rewards",
+      "procedure": "initializeRewards",
+      "method": "post",
+      "path": "/rewards/initialize",
+      "policy": {
+        "action": "create",
+        "subject": "UserRewards"
+      },
+      "protocol": "direct-supabase",
+      "clientStatus": "legacy-direct",
+      "clientFiles": [
+        "packages/core/src/api/rewards.ts"
+      ],
+      "clientCalls": [],
+      "hasResponses": true
+    },
+    {
+      "source": "rewards",
+      "procedure": "addPoints",
+      "method": "post",
+      "path": "/rewards/add-points",
+      "policy": {
+        "action": "update",
+        "subject": "UserRewards"
+      },
+      "protocol": "direct-supabase",
+      "clientStatus": "legacy-direct",
+      "clientFiles": [
+        "packages/core/src/api/rewards.ts"
+      ],
+      "clientCalls": [],
+      "hasResponses": true
+    },
+    {
+      "source": "rewards",
+      "procedure": "awardBadge",
+      "method": "post",
+      "path": "/rewards/award-badge",
+      "policy": {
+        "action": "update",
+        "subject": "UserRewards"
+      },
+      "protocol": "direct-supabase",
+      "clientStatus": "legacy-direct",
+      "clientFiles": [
+        "packages/core/src/api/rewards.ts"
+      ],
+      "clientCalls": [],
+      "hasResponses": true
+    },
+    {
+      "source": "rewards",
+      "procedure": "checkAndAwardAchievements",
+      "method": "post",
+      "path": "/rewards/check-achievements",
+      "policy": {
+        "action": "update",
+        "subject": "UserRewards"
+      },
+      "protocol": "direct-supabase",
+      "clientStatus": "legacy-direct",
+      "clientFiles": [
+        "packages/core/src/api/rewards.ts"
+      ],
+      "clientCalls": [],
+      "hasResponses": true
+    },
+    {
+      "source": "rewards",
+      "procedure": "getWhisperedMoments",
+      "method": "get",
+      "path": "/rewards/whispered-moments",
+      "policy": {
+        "action": "read",
+        "subject": "WhisperedMoment"
+      },
+      "protocol": "direct-supabase",
+      "clientStatus": "legacy-direct",
+      "clientFiles": [
+        "packages/core/src/api/rewards.ts"
+      ],
+      "clientCalls": [],
+      "hasResponses": true
+    },
+    {
       "source": "echoes",
       "procedure": "sendEcho",
       "method": "post",
@@ -6190,5 +7310,13 @@
       "hasResponses": true
     }
   ],
-  "findings": []
+  "findings": [
+    {
+      "severity": "warning",
+      "code": "LEGACY_DIRECT_CLIENT",
+      "source": "rewards",
+      "procedure": "*",
+      "message": "First-party client surface still bypasses the active API contract through a legacy/direct adapter; migrate it before treating this domain as production-complete."
+    }
+  ]
 }

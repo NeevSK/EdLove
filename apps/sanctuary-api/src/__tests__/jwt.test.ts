@@ -141,6 +141,37 @@ describe('Asymmetric JWT Verification Engine', () => {
     expect(verified).toBeNull();
   });
 
+  it('rejects a correctly signed token from an unexpected issuer or audience', async () => {
+    await setTestPublicKey(kidRsa, rsaPublicKey);
+    const payload = {
+      sub: 'user-123',
+      exp: Math.floor(Date.now() / 1000) + 3600,
+      iss: 'https://unexpected.example/auth/v1',
+      aud: ['other-audience'],
+    };
+    const token = signToken(payload, rsaPrivateKey, kidRsa, 'RS256');
+
+    const verified = await verifySupabaseJwt(token, {
+      NODE_ENV: 'production',
+      SUPABASE_JWT_ISSUER: 'https://sanctuary.example/auth/v1',
+      SUPABASE_JWT_AUDIENCE: 'authenticated',
+    });
+
+    expect(verified).toBeNull();
+  });
+
+  it('requires issuer and audience configuration in production', async () => {
+    await setTestPublicKey(kidRsa, rsaPublicKey);
+    const token = signToken(
+      { sub: 'user-123', exp: Math.floor(Date.now() / 1000) + 3600 },
+      rsaPrivateKey,
+      kidRsa,
+      'RS256',
+    );
+
+    await expect(verifySupabaseJwt(token, { NODE_ENV: 'production' })).resolves.toBeNull();
+  });
+
   it('should reject tokens with modified/tampered signatures', async () => {
     setTestPublicKey(kidRsa, rsaPublicKey);
 

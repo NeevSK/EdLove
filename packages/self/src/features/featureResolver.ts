@@ -1,4 +1,5 @@
 import type { AccessibleFeature } from '@repo/self/features/accessPolicy';
+import type { SelfFeatureZone } from '@repo/self/features/userPreferences';
 
 export type FeatureZone = 'today' | 'private' | 'shared';
 export type ResolverCategory = AccessibleFeature['category'];
@@ -15,7 +16,15 @@ export interface ResolverPreferences {
   selectedIds: string[];
   customOrder: string[];
   hiddenIds: string[];
+  zoneOverrides?: Partial<Record<string, FeatureZone>>;
   roleWeights?: Record<string, number>;
+}
+
+export function resolveFeatureZone(
+  feature: AccessibleFeature,
+  zoneOverrides: Partial<Record<string, SelfFeatureZone>> = {},
+): FeatureZone {
+  return zoneOverrides[feature.id] ?? (feature.defaultZone as FeatureZone);
 }
 
 export interface ScoringStrategy {
@@ -68,7 +77,7 @@ export function resolveFeatureSet(
   accessible: AccessibleFeature[],
   preferences: ResolverPreferences,
 ): ResolvedFeatureSet {
-  const { selectedIds, customOrder, hiddenIds, roleWeights = {} } = preferences;
+  const { selectedIds, customOrder, hiddenIds, roleWeights = {}, zoneOverrides = {} } = preferences;
 
   const visible = accessible.filter((f) => !hiddenIds.includes(f.id));
 
@@ -80,7 +89,10 @@ export function resolveFeatureSet(
   const discoverableRaw = visible.filter((f) => !selected.some((s) => s.id === f.id));
   const discoverable = sortDiscoverable(discoverableRaw, roleWeights);
 
-  const byZone = groupBy(visible, (f) => f.defaultZone as FeatureZone) as Record<FeatureZone, AccessibleFeature[]>;
+  const byZone = groupBy(visible, (feature) => resolveFeatureZone(feature, zoneOverrides)) as Record<
+    FeatureZone,
+    AccessibleFeature[]
+  >;
   const byCategory = groupBy(visible, (f) => f.category as ResolverCategory) as Record<ResolverCategory, AccessibleFeature[]>;
 
   // Ensure all zones present

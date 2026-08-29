@@ -23,7 +23,7 @@ export interface PressableScaleProps {
   onPress?: () => void;
   onLongPress?: () => void;
   disabled?: boolean;
-  accessibilityLabel: string;
+  accessibilityLabel?: string;
   accessibilityHint?: string;
   style?: StyleProp<ViewStyle>;
   children: React.ReactNode;

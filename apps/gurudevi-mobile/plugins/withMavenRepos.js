@@ -1,4 +1,4 @@
-const { withProjectBuildGradle, createRunOncePlugin } = require('@expo/config-plugins');
+const { withProjectBuildGradle, createRunOncePlugin } = require('expo/config-plugins');
 const { EXPO_MAVEN_URL } = require('./lib/buildGradleBlock');
 
 /**

@@ -24,6 +24,7 @@ export const AUTHORIZATION_RESOURCES = [
   'StaffLeave',
   'MoodLog',
   'FireJournal',
+  'LearningReflection',
   'InventoryItem',
   'Group',
   'Post',
@@ -55,6 +56,8 @@ export const AUTHORIZATION_RESOURCES = [
   'DirectMessage',
   'Manifesto',
   'ManifestoEndorsement',
+  'UserRewards',
+  'WhisperedMoment',
 ] as const;
 
 export const BOND_ENTITY_TYPES = [

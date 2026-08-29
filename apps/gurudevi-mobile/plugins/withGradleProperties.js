@@ -2,7 +2,7 @@ const {
   withGradleProperties,
   withAppBuildGradle,
   createRunOncePlugin,
-} = require('@expo/config-plugins');
+} = require('expo/config-plugins');
 const { ensureAndroidBlockSnippets, replaceIfFound } = require('./lib/buildGradleBlock');
 
 /**

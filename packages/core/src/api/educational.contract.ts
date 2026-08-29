@@ -45,6 +45,44 @@ const classroomStudent = z.object({
   class_id: z.uuid().optional(),
 });
 
+const material = z.object({
+  id: z.uuid(),
+  classroom_id: z.uuid(),
+  lesson_id: z.uuid().nullable(),
+  title: z.string(),
+  type: z.string(),
+  url: z.string().nullable(),
+  content: z.string().nullable(),
+  is_pinned: z.boolean(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
+const assignment = z.object({
+  id: z.uuid(),
+  classroom_id: z.uuid(),
+  lesson_id: z.uuid().nullable(),
+  title: z.string(),
+  description: z.string().nullable(),
+  due_date: z.string().nullable(),
+  max_points: z.number().int().positive(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
+const submission = z.object({
+  id: z.uuid(),
+  assignment_id: z.uuid(),
+  student_id: z.uuid(),
+  classroom_id: z.uuid(),
+  content: z.string().nullable(),
+  submitted_at: z.string(),
+  grade: z.number().int().nullable(),
+  feedback: z.string().nullable(),
+  graded_at: z.string().nullable(),
+  idempotency_key: z.string().nullable(),
+});
+
 /**
  * Educational Port (Sovereign RPC)
  * Framework-agnostic definition of the Educational API.
@@ -272,6 +310,196 @@ export const educationalContract = {
       },
     },
     metadata: classroomAuthority('delete'),
+  },
+
+  claimShadowStudent: {
+    method: 'post',
+    path: '/educational/classroom-students/claim',
+    request: {
+      body: z.strictObject({ inviteCode: z.string().trim().min(8).max(128) }),
+    },
+    responses: { 200: { schema: classroomStudent, description: 'Claimed classroom student' } },
+    metadata: classroomAuthority('create'),
+  },
+
+  getMaterials: {
+    method: 'get',
+    path: '/educational/classrooms/:classroomId/materials',
+    request: { query: z.strictObject({ classroomId: z.uuid() }) },
+    responses: { 200: { schema: z.array(material), description: 'Classroom materials' } },
+    metadata: classroomAuthority('read'),
+  },
+
+  getLessonMaterials: {
+    method: 'get',
+    path: '/educational/lessons/:lessonId/materials',
+    request: { query: z.strictObject({ lessonId: z.uuid() }) },
+    responses: { 200: { schema: z.array(material), description: 'Lesson materials' } },
+    metadata: lessonAuthority('read'),
+  },
+
+  createMaterial: {
+    method: 'post',
+    path: '/educational/materials',
+    request: {
+      body: z.strictObject({
+        classroomId: z.uuid(),
+        lessonId: z.uuid().nullable().optional(),
+        title: z.string().trim().min(1).max(240),
+        type: z.string().trim().min(1).max(80),
+        url: z.url().nullable().optional(),
+        content: z.string().max(100_000).nullable().optional(),
+        isPinned: z.boolean().optional(),
+      }),
+    },
+    responses: { 201: { schema: material, description: 'Created material' } },
+    metadata: classroomAuthority('create'),
+  },
+
+  updateMaterial: {
+    method: 'patch',
+    path: '/educational/materials/:id',
+    request: {
+      params: z.strictObject({ id: z.uuid() }),
+      body: z
+        .strictObject({
+          title: z.string().trim().min(1).max(240).optional(),
+          type: z.string().trim().min(1).max(80).optional(),
+          url: z.url().nullable().optional(),
+          content: z.string().max(100_000).nullable().optional(),
+          isPinned: z.boolean().optional(),
+        })
+        .refine((value) => Object.keys(value).length > 0, 'At least one field is required'),
+    },
+    responses: { 200: { schema: material, description: 'Updated material' } },
+    metadata: classroomAuthority('update'),
+  },
+
+  deleteMaterial: {
+    method: 'delete',
+    path: '/educational/materials/:id',
+    request: { params: z.strictObject({ id: z.uuid() }) },
+    responses: {
+      200: { schema: z.object({ success: z.literal(true) }), description: 'Deleted material' },
+    },
+    metadata: classroomAuthority('delete'),
+  },
+
+  getAssignments: {
+    method: 'get',
+    path: '/educational/classrooms/:classroomId/assignments',
+    request: { query: z.strictObject({ classroomId: z.uuid() }) },
+    responses: { 200: { schema: z.array(assignment), description: 'Classroom assignments' } },
+    metadata: classroomAuthority('read'),
+  },
+
+  getLessonAssignments: {
+    method: 'get',
+    path: '/educational/lessons/:lessonId/assignments',
+    request: { query: z.strictObject({ lessonId: z.uuid() }) },
+    responses: { 200: { schema: z.array(assignment), description: 'Lesson assignments' } },
+    metadata: lessonAuthority('read'),
+  },
+
+  createAssignment: {
+    method: 'post',
+    path: '/educational/assignments',
+    request: {
+      body: z.strictObject({
+        classroomId: z.uuid(),
+        lessonId: z.uuid().nullable().optional(),
+        title: z.string().trim().min(1).max(240),
+        description: z.string().max(20_000).nullable().optional(),
+        dueDate: z.string().datetime().nullable().optional(),
+        maxPoints: z.number().int().positive().max(10_000).optional(),
+      }),
+    },
+    responses: { 201: { schema: assignment, description: 'Created assignment' } },
+    metadata: classroomAuthority('create'),
+  },
+
+  updateAssignment: {
+    method: 'patch',
+    path: '/educational/assignments/:id',
+    request: {
+      params: z.strictObject({ id: z.uuid() }),
+      body: z
+        .strictObject({
+          title: z.string().trim().min(1).max(240).optional(),
+          description: z.string().max(20_000).nullable().optional(),
+          dueDate: z.string().datetime().nullable().optional(),
+          maxPoints: z.number().int().positive().max(10_000).optional(),
+        })
+        .refine((value) => Object.keys(value).length > 0, 'At least one field is required'),
+    },
+    responses: { 200: { schema: assignment, description: 'Updated assignment' } },
+    metadata: classroomAuthority('update'),
+  },
+
+  deleteAssignment: {
+    method: 'delete',
+    path: '/educational/assignments/:id',
+    request: { params: z.strictObject({ id: z.uuid() }) },
+    responses: {
+      200: { schema: z.object({ success: z.literal(true) }), description: 'Deleted assignment' },
+    },
+    metadata: classroomAuthority('delete'),
+  },
+
+  getStudentSubmissions: {
+    method: 'get',
+    path: '/educational/students/:studentId/submissions',
+    request: { query: z.strictObject({ studentId: z.uuid(), classroomId: z.uuid().optional() }) },
+    responses: { 200: { schema: z.array(submission), description: 'Student submissions' } },
+    metadata: classroomAuthority('read'),
+  },
+
+  getUpcomingAssignments: {
+    method: 'get',
+    path: '/educational/students/:studentId/assignments/upcoming',
+    request: {
+      query: z.strictObject({
+        studentId: z.uuid(),
+        limit: z.coerce.number().int().min(1).max(24).optional(),
+      }),
+    },
+    responses: {
+      200: {
+        schema: z.array(
+          assignment.extend({ classroom: z.string().nullable(), submitted: z.boolean() }),
+        ),
+        description: 'Upcoming assignments',
+      },
+    },
+    metadata: classroomAuthority('read'),
+  },
+
+  submitAssignment: {
+    method: 'post',
+    path: '/educational/assignments/:assignmentId/submissions',
+    request: {
+      body: z.strictObject({
+        assignmentId: z.uuid(),
+        content: z.string().max(100_000).nullable().optional(),
+        idempotencyKey: z.uuid().optional(),
+      }),
+    },
+    responses: { 201: { schema: submission, description: 'Submitted assignment' } },
+    metadata: classroomAuthority('create'),
+  },
+
+  gradeAssignmentSubmission: {
+    method: 'patch',
+    path: '/educational/submissions/:id/grade',
+    request: {
+      body: z.strictObject({
+        id: z.uuid(),
+        grade: z.number().int().min(0).max(10_000).nullable(),
+        feedback: z.string().max(20_000).nullable().optional(),
+      }),
+    },
+    responses: { 200: { schema: submission, description: 'Graded submission' } },
+    metadata: classroomAuthority('update'),
   },
 
   // Classroom Notes

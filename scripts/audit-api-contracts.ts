@@ -38,6 +38,10 @@ import { thuthimalContract } from '@repo/core/api/thuthimal.contract';
 import { trackingContract } from '@repo/core/api/tracking.contract';
 import { warmMirrorContract } from '@repo/core/api/warmMirror.contract';
 import { AUTHORIZATION_RESOURCES } from '@repo/policies/authorizationRegistry';
+import { nativeORPCPaths } from '../apps/sanctuary-api/src/core/routes/nativeORPCPaths';
+import { journalEntriesContract } from '../packages/core/src/api/journalEntries.contract';
+import { learningReflectionsContract } from '../packages/core/src/api/learningReflections.contract';
+import { rewardsORPCContract } from '../packages/core/src/api/rewards.orpc.contract';
 
 type ContractRoute = {
   method: string;
@@ -156,6 +160,22 @@ const sources: ContractSource[] = [
     contractFile: 'decisionJournal.contract.ts',
     handlerFile: 'decisionJournal.ts',
     contract: decisionJournalContract,
+    clientStatus: 'server-only',
+    clientFiles: [],
+  },
+  {
+    name: 'journalEntries',
+    contractFile: 'journalEntries.contract.ts',
+    handlerFile: 'journalEntries.ts',
+    contract: journalEntriesContract,
+    clientStatus: 'mapped',
+    clientFiles: ['packages/core/src/api/journalEntries.ts'],
+  },
+  {
+    name: 'learningReflections',
+    contractFile: 'learningReflections.contract.ts',
+    handlerFile: 'learningReflections.ts',
+    contract: learningReflectionsContract,
     clientStatus: 'server-only',
     clientFiles: [],
   },
@@ -349,6 +369,14 @@ const sources: ContractSource[] = [
     clientFiles: ['packages/core/src/api/studentPotential.ts'],
   },
   {
+    name: 'rewards',
+    contractFile: 'rewards.orpc.contract.ts',
+    handlerFile: 'rewards.ts',
+    contract: rewardsORPCContract,
+    clientStatus: 'legacy-direct',
+    clientFiles: ['packages/core/src/api/rewards.ts'],
+  },
+  {
     name: 'echoes',
     contractFile: 'echo.contract.ts',
     handlerFile: 'echo.ts',
@@ -514,6 +542,22 @@ function audit(): {
           procedure,
           path: route.path,
           message: 'Contract paths must begin with /',
+        });
+      }
+
+      const runtimePath = `/api${route.path}`;
+      const isMounted = nativeORPCPaths.some((mount) => {
+        const prefix = mount.slice(0, -2);
+        return runtimePath === prefix || runtimePath.startsWith(`${prefix}/`);
+      });
+      if (!isMounted) {
+        findings.push({
+          severity: 'error',
+          code: 'NATIVE_MOUNT_MISSING',
+          source: source.name,
+          procedure,
+          path: route.path,
+          message: `No native oRPC Hono mount covers ${runtimePath}.`,
         });
       }
 

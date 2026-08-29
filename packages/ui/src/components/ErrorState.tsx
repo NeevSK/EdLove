@@ -16,7 +16,7 @@
 import { tokens } from '@repo/ui/tokens';
 import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import { FireflyMascot } from './FireflyMascot';
 import { useBreakpoint } from './layout';
 import { duration, nativeEasing } from './motion';
 
@@ -59,11 +59,7 @@ export function ErrorState({ title, message, children, className, style }: Error
             }
           `}</style>
           <div className="error-icon-animated">
-            <Svg width={size} height={size} viewBox="0 0 512 512">
-              <Path d={PATHS.top} fill={tokens.colors.warning} />
-              <Path d={PATHS.bl} fill={tokens.colors.warning} />
-              <Path d={PATHS.br} fill={tokens.colors.warning} />
-            </Svg>
+            <FireflyMascot size={size} mode="offline" />
           </div>
         </div>
         <Text style={styles.title}>{title}</Text>
@@ -102,11 +98,7 @@ export function ErrorState({ title, message, children, className, style }: Error
             : {}),
         }}
       >
-        <Svg width={size} height={size} viewBox="0 0 512 512">
-          <Path d={PATHS.top} fill={tokens.colors.warning} />
-          <Path d={PATHS.bl} fill={tokens.colors.warning} />
-          <Path d={PATHS.br} fill={tokens.colors.warning} />
-        </Svg>
+        <FireflyMascot size={size} mode="offline" />
       </AnimatedView>
       <Text style={styles.title}>{title}</Text>
       {message ? <Text style={styles.message}>{message}</Text> : null}

@@ -80,13 +80,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const setThemeMode = useCallback(
-    (mode: ThemeMode) => {
-      if (typeof setStoredThemeMode === 'function') {
-        setStoredThemeMode(mode);
-      } else {
-        console.warn('[ThemeProvider] setThemeMode store action is unavailable');
-      }
-      if (mode === 'auto') setTemporalPhase(getTemporalPhase());
+    async (mode: ThemeMode, transitionType?: import('../theme/nitroThemeTransition.types').ThemeTransitionType) => {
+      const applyChange = () => {
+        if (typeof setStoredThemeMode === 'function') {
+          setStoredThemeMode(mode);
+        } else {
+          console.warn('[ThemeProvider] setThemeMode store action is unavailable');
+        }
+        if (mode === 'auto') setTemporalPhase(getTemporalPhase());
+      };
+
+      const { startThemeTransition } = await import('../theme/nitroThemeTransition');
+      await startThemeTransition(applyChange, { type: transitionType || 'circularReveal' });
     },
     [setStoredThemeMode],
   );

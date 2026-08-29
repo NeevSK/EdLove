@@ -19,13 +19,22 @@ export function generateSnapshot(user: UserContext, secret?: string): Permission
     Classroom: ['school_id', 'teacher_id', 'grade_id', 'section_id'],
     AttendanceRecord: ['school_id', 'classroom_id', 'student_id', 'grade_id', 'section_id'],
     Grade: ['school_id', 'classroom_id', 'student_id', 'graded_by'],
-    GradeMark: ['school_id', 'academic_cycle_id', 'grade_class_id', 'term_id', 'subject_id', 'student_id', 'graded_by'],
+    GradeMark: [
+      'school_id',
+      'academic_cycle_id',
+      'grade_class_id',
+      'term_id',
+      'subject_id',
+      'student_id',
+      'graded_by',
+    ],
     Assignment: ['school_id', 'classroom_id', 'teacher_id'],
     Lesson: ['school_id', 'classroom_id', 'teacher_id'],
     Material: ['school_id', 'classroom_id', 'teacher_id'],
     StaffLeave: ['school_id', 'user_id'],
     MoodLog: ['school_id', 'user_id'],
     FireJournal: ['school_id', 'user_id'],
+    LearningReflection: ['school_id', 'user_id', 'classroom_id'],
     InventoryItem: ['school_id', 'classroom_id', 'teacher_id'],
     Group: ['school_id', 'creator_id'],
     Post: ['school_id', 'author_id'],
@@ -36,6 +45,8 @@ export function generateSnapshot(user: UserContext, secret?: string): Permission
     GratitudeEntries: ['school_id', 'user_id'],
     EnergyForecasts: ['school_id', 'user_id'],
     AIAssistant: ['school_id'],
+    UserRewards: ['school_id', 'user_id'],
+    WhisperedMoment: ['school_id', 'user_id'],
   };
 
   const allPossibleAttributes: Record<string, any> = {

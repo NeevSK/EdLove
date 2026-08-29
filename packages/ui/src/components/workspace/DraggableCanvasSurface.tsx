@@ -20,6 +20,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { runOnJS } from 'react-native-worklets';
+import { hapticMedium } from '@repo/ui/utils/haptics';
 import { resolveDragTranslation } from './reorder';
 
 interface DraggableCanvasSurfaceProps {
@@ -71,6 +72,7 @@ export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
       isDragging.value = true;
       scale.value = withSpring(1.05);
       zIndex.value = 100;
+      runOnJS(hapticMedium)();
       if (onDragStart) runOnJS(onDragStart)();
     },
   });

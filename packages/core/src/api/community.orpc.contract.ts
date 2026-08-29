@@ -39,7 +39,11 @@ export const communityORPCContract = {
     path: '/community/groups/:groupId/members/status',
     request: {
       params: z.object({ groupId: z.string().uuid() }),
-      body: z.object({ groupId: z.string().uuid(), userId: z.string().uuid(), status: z.enum(['active', 'rejected', 'pending']) }),
+      body: z.object({
+        groupId: z.string().uuid(),
+        userId: z.string().uuid(),
+        status: z.enum(['active', 'rejected', 'pending']),
+      }),
     },
     metadata: { policy: { action: 'update', subject: 'Group' } },
     responses: { 200: { schema: groupMember, description: 'Updated group member status' } },
@@ -193,6 +197,15 @@ export const communityORPCContract = {
     },
     metadata: communityPolicy('delete', 'Post'),
     responses: { 200: { schema: success, description: 'Deleted community post' } },
+  },
+  getReactionStatus: {
+    method: 'get',
+    path: '/community/posts/:postId/reaction',
+    request: { query: z.object({ postId: z.string().uuid() }) },
+    metadata: communityPolicy('read', 'Post'),
+    responses: {
+      200: { schema: z.object({ active: z.boolean() }), description: 'Current reaction state' },
+    },
   },
   reportContent: {
     method: 'post',

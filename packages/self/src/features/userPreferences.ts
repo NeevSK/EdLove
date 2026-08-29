@@ -2,6 +2,8 @@ import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import type { SelfViewRole } from '@repo/self/screens/self/roleResolution';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+export type SelfFeatureZone = 'today' | 'private' | 'shared';
+
 export interface SelfCanvasPreferences {
   layout: {
     version: 2;
@@ -13,6 +15,7 @@ export interface SelfCanvasPreferences {
     selectedIds: string[];
     customOrder: string[];
     hiddenIds: string[];
+    zoneOverrides: Partial<Record<string, SelfFeatureZone>>;
     roleWeights: Partial<Record<SelfViewRole, number>>;
   };
   viewMode: 'carousel' | 'tiled';
@@ -23,7 +26,7 @@ const STORAGE_KEY = (userId?: string | null) => `self:canvas-preferences:${userI
 
 export const DEFAULT_SELF_PREFERENCES: SelfCanvasPreferences = {
   layout: { version: 2, isDefault: true, hiddenIds: [], order: [] },
-  features: { selectedIds: [], customOrder: [], hiddenIds: [], roleWeights: {} },
+  features: { selectedIds: [], customOrder: [], hiddenIds: [], zoneOverrides: {}, roleWeights: {} },
   viewMode: 'tiled',
   lastSyncedAt: 0,
 };

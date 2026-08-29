@@ -46,9 +46,18 @@ if (fs.existsSync(publicRuntimePath)) {
   fs.rmSync(publicRuntimePath, { force: true });
 }
 if (!publicRuntime?.supabaseUrl || !publicRuntime?.supabasePublishableKey) {
-  throw new Error(
-    'Missing public Supabase runtime config during Metro setup. Run the app/export through Doppler with EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY.',
-  );
+  // expo-doctor evaluates this config statically without Doppler env vars.
+  // Only block actual Metro bundle/serve runs, not the doctor health check.
+  const isExpoDoctor = process.argv.some((arg) => arg.includes('expo-doctor'));
+  if (isExpoDoctor) {
+    console.warn(
+      '[metro.config] Supabase runtime config missing — expected when running expo-doctor without Doppler. Skipping env rehydration.',
+    );
+  } else {
+    throw new Error(
+      'Missing public Supabase runtime config during Metro setup. Run the app/export through Doppler with EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY.',
+    );
+  }
 }
 process.env.EXPO_PUBLIC_SUPABASE_URL = publicRuntime.supabaseUrl;
 process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY = publicRuntime.supabasePublishableKey;

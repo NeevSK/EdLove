@@ -2,7 +2,7 @@
 title: "Sanctuary API Adversarial Security Audit"
 status: "active"
 created: 2026-08-29
-updated: 2026-08-29
+updated: 2026-08-30
 author: "Naveen"
 scribe: "Codex"
 tags: [api, security, authorization, ai, audit, sanctuary]
@@ -19,6 +19,37 @@ The findings below are confirmed from the currently checked-out source and are
 not downgraded because a local audit script or mock-based test passes.
 
 ## Stop-ship findings
+
+## Remediation status (2026-08-30)
+
+The following source-level fixes have been applied and have focused adversarial
+tests. They are not release sign-off: integration tests against real tenant
+data, reconciliation, and the remaining verification items below are still
+required.
+
+- Durable-agent enqueue derives school, teacher, requester, and student scope
+  from relationship queries; the worker rechecks classroom/student membership;
+  run reads require the requester, classroom teacher, authorized school leader,
+  or platform administrator.
+- Missing oRPC contract members now fail composition rather than receiving an
+  inferred POST route and inferred policy. The missing community, educational,
+  and profile contracts surfaced by that change were declared explicitly.
+- JWT verification now requires issuer and audience configuration in production,
+  validates both claims, removes the embedded JWKS project fallback, and no
+  longer logs decoded token material after signature failure.
+- PayHere callbacks consume a matching pending payment intent atomically before
+  an entitlement update. The intent stores the server-selected owner rather
+  than treating `order_id` as a user ID.
+- The request security context no longer accepts school, capacity, classroom,
+  child-membership, device-trust, or network-zone headers as authority. Until a
+  verified attestation/gateway source is introduced, device trust defaults to
+  `standard` and network zone to `untrusted`.
+
+Still open: durable results need a minimized/redacted read model; payment
+provider transaction IDs and reconciliation are not implemented; classroom and
+guardian relationship attributes need authoritative hydration instead of the
+current deny-by-default empty sets; and the runtime/OpenAPI/client inventories
+remain divergent.
 
 ### Critical — durable-agent tenant boundary bypass
 

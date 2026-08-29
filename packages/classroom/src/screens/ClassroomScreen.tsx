@@ -74,6 +74,7 @@ export default function ClassroomScreen() {
     setSurfaceHidden,
     setSurfacePinned,
     setSurfaceZone,
+    setSurfaceOrder,
   } = useClassroomWorkspaceLayout(classroomData?.userId, workspaceSurfaces);
 
   const renderContent = () => {
@@ -100,6 +101,7 @@ export default function ClassroomScreen() {
                 onToggleHidden={setSurfaceHidden}
                 onTogglePinned={setSurfacePinned}
                 onMoveToNextZone={setSurfaceZone}
+                onReorder={setSurfaceOrder}
                 isGuest={isGuest}
                 classroomData={classroomData}
                 schoolIdToUse={classroomData?.schoolId || storeSchoolId}

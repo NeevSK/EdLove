@@ -1,4 +1,4 @@
-const { withDangerousMod, createRunOncePlugin } = require('@expo/config-plugins');
+const { withDangerousMod, createRunOncePlugin } = require('expo/config-plugins');
 const fs = require('node:fs');
 const path = require('node:path');
 

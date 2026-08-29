@@ -29,6 +29,22 @@ Acceptance:
 
 **Community message-list slice (2026-08-29):** the Community workspace is now the single owner of its embedded direct-conversation request. Its initial load enters pending state, retry increments a request version so it always refetches, and the embedded list receives controlled data rather than starting a duplicate request. The list preserves cached conversations during refresh/failure and renders an inline retry status. `directMessagesOwnership.test.ts` guards that ownership boundary; it is a structural regression check, not a substitute for device-level send/reconnect validation.
 
+**Community delivery slice (2026-08-29):** Base chat now treats offline delivery as queued rather than falsely failed, acknowledges the queue visibly, and reports queue persistence/read/background-send failures with an accessible recovery state. When a message cannot be queued, its draft is restored. `baseChatDeliveryRecovery.test.ts` prevents those paths returning to silent catches. This does not prove full outbox idempotency, server reconciliation, haptics, or device-level reconnect behavior.
+
+**Profile web save slice (2026-08-29):** profile fields still use the existing sequential API boundary, but the UI now preserves the edit form and names fields saved before a later field fails; retry therefore completes the remaining fields rather than overwriting or concealing a partial result. Clipboard failures are also explicit. `profileSaveRecovery.test.ts` guards this disclosure contract. A true transactional/batched server mutation remains the required end state.
+
+**Self zone slice (2026-08-29):** the previously no-op zone setting now writes a persisted `zoneOverrides` map. The pure feature resolver applies it after hydration, so settings and rendered zones agree. The default empty map makes existing saved preferences forward-compatible. `featureResolver.zoneOverrides.test.ts` proves the override changes a rendered zone. The flag-gated unified screen and store remain type-debt work; this is not a rollout approval.
+
+**Typecheck baseline repair (2026-08-29):** Profile native icon props and Self picker input props now use each component's typed style/color API. Both package-level typechecks pass again. The unified Self screen and canvas store have also shed their `@ts-nocheck` bypasses; typed Zustand updater callbacks now compile. Remaining Self work is behavioral (permission/error/offline recovery and mounted validation), not a compiler bypass.
+
+**Self permission recovery slice (2026-08-29):** a failing capability check now produces a branded, accessible retry state instead of silently omitting spaces. The retry recomputes the capability set without rehydrating or discarding the user's canvas preferences. Mounted flag-on/off and offline validation remain required before rollout.
+
+**Classroom reorder slice (2026-08-29):** the generic Classroom canvas now supplies the existing layout-sync order setter to `WorkspaceCanvas`. Zone-local drag or accessible move actions produce the corresponding persisted global order. `reorderClassroomSurface.test.ts` covers upward and downward moves. This reconnects the already-shared renderer and avoids a second DnD/persistence path; device verification and rejected-write recovery are still required.
+
+**Drag feedback slice (2026-08-29):** shared mobile drag activation now uses a medium haptic in addition to the existing visible lift, shadow, snap-back, and accessible move controls. The haptic is progressive enhancement through the runtime adapter; it is never the sole confirmation. UI package typechecking passes, and serial Jest execution confirms the four workspace-canvas interaction assertions for drag axis and reorder fallback behavior.
+
+**Profile session recovery slice (2026-08-29):** a failed native logout now logs the error and gives haptic plus visible toast feedback while retaining the confirmation modal for retry. Account-deletion failures now log as well, alongside their existing visible error state. Neither action silently leaves the user in an uncertain session state.
+
 ### 1. Make navigation and route state reliable
 
 Keep the five mobile tabs. Improve the web rail/topbar to use route-aware link semantics, replace-on-select/idempotent behavior, visible compact-nav overflow behavior, and selected-state accessibility. Decide which Community/Library modes are URL state and implement only those.

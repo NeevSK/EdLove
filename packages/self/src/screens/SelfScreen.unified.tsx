@@ -1,4 +1,3 @@
-// @ts-nocheck — elegant store wiring, implicit any for callbacks, platform parity
 import { usePermissions } from '@repo/core/logic';
 import { useStore } from '@repo/core/store/useStore';
 import { useTracking } from '@repo/core/hooks';
@@ -13,9 +12,10 @@ import { useFeatureActivity } from '@repo/self/hooks/useFeatureActivity';
 import { WorkspaceSettingsSurface } from '@repo/ui/components/workspace/WorkspaceSettingsSurface';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { Box, Text } from '@repo/ui/primitives';
+import { Box, Pressable, Text } from '@repo/ui/primitives';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
-import React, { useEffect, useMemo, useCallback } from 'react';
+import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 function getSubtitle(roles: string[]): string {
   if (roles.length === 0) return 'Personal Sanctuary';
@@ -23,9 +23,15 @@ function getSubtitle(roles: string[]): string {
   return roles.join(' + ') + ' sanctuary';
 }
 
+type PermissionResolution = {
+  capabilities: string[];
+  error: string | null;
+};
+
 export default function SelfScreenUnified() {
   const { discoverFeature } = useTracking();
   const { can, context } = usePermissions();
+  const [permissionRetryNonce, setPermissionRetryNonce] = useState(0);
   const userId = (context as unknown as { userId?: string | null }).userId ?? useStore((s) => s.user?.id) ?? null;
 
   useEffect(() => {
@@ -37,7 +43,7 @@ export default function SelfScreenUnified() {
     void store.hydrate(userId);
   }, [userId, store.hydrate]);
 
-  const capabilities: string[] = useMemo(() => {
+  const permissionResolution = useMemo<PermissionResolution>(() => {
     const caps: string[] = [];
     const checks: Array<[string, string]> = [
       ['manage', 'AdminDashboard'],
@@ -57,12 +63,19 @@ export default function SelfScreenUnified() {
     for (const [action, subject] of checks) {
       try {
         if (can(action as never, subject as never)) caps.push(`${action}:${subject}`);
-      } catch {}
+      } catch (error) {
+        return {
+          capabilities: [],
+          error: error instanceof Error ? error.message : 'Your sanctuary permissions could not be resolved.',
+        };
+      }
     }
     const capacities: string[] = (context as unknown as { capacities?: string[] }).capacities ?? [];
     for (const cap of capacities) caps.push(`manage:${cap}`);
-    return caps;
-  }, [can, context]);
+    return { capabilities: caps, error: null };
+  }, [can, context, permissionRetryNonce]);
+
+  const capabilities = permissionResolution.capabilities;
 
   const roles = useMemo(() => deriveRolesFromCapabilities(capabilities), [capabilities]);
 
@@ -92,6 +105,7 @@ export default function SelfScreenUnified() {
         selectedIds: store.features.selectedIds,
         customOrder: store.features.customOrder,
         hiddenIds: store.features.hiddenIds,
+        zoneOverrides: store.features.zoneOverrides,
         roleWeights: store.features.roleWeights as Record<string, number>,
       }),
     [accessible, store.features.selectedIds, store.features.customOrder, store.features.hiddenIds, store.features.roleWeights],
@@ -117,6 +131,25 @@ export default function SelfScreenUnified() {
           <BrandPulse size={28} />
           <Text className="text-xs font-semibold text-ink/50">Gathering your spaces…</Text>
         </Box>
+      </ScreenWrapper>
+    );
+  }
+
+  if (permissionResolution.error) {
+    return (
+      <ScreenWrapper>
+        <BrandedErrorState
+          title="Your sanctuary permissions could not settle"
+          message={permissionResolution.error}
+        >
+          <Pressable
+            onPress={() => setPermissionRetryNonce((value) => value + 1)}
+            accessibilityRole="button"
+            accessibilityLabel="Try resolving sanctuary permissions again"
+          >
+            <Text className="text-phase-interactive font-bold">Try again</Text>
+          </Pressable>
+        </BrandedErrorState>
       </ScreenWrapper>
     );
   }
@@ -157,13 +190,14 @@ export default function SelfScreenUnified() {
         <RoleWeightEditor roles={roles as never} weights={store.features.roleWeights as never} onChange={(w) => store.setRoleWeights(w as never)} />
         <WorkspaceSettingsSurface
           hiddenIds={store.features.hiddenIds}
-          allIds={accessible.map((f) => ({ id: f.id, label: f.label, zone: f.defaultZone }))}
+          allIds={accessible.map((feature) => ({
+            id: feature.id,
+            label: feature.label,
+            zone: store.features.zoneOverrides[feature.id] ?? feature.defaultZone,
+          }))}
           zones={['today', 'private', 'shared']}
           onToggleHidden={handleToggleHidden}
-          onChangeZone={(id, zone) => {
-            if (store.features.hiddenIds.includes(id)) handleToggleHidden(id, false);
-            void zone;
-          }}
+          onChangeZone={(id, zone) => store.setZone(id, zone as 'today' | 'private' | 'shared')}
           onReset={() => store.reset()}
           pinnedIds={pinnedIds}
         />

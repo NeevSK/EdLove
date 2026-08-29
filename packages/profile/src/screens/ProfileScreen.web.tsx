@@ -58,6 +58,7 @@ export default function ProfileScreenWeb({
   } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [copyError, setCopyError] = useState<string | null>(null);
 
   const isOwnProfile = !userId || userId === user?.id;
   const { links: socialLinks } = useSocialLinks(userId || user?.id);
@@ -72,11 +73,30 @@ export default function ProfileScreenWeb({
 
   const cancelEdit = () => setEditForm(null);
 
+  const copyProfileLink = async () => {
+    if (!profilePublicUrl || !navigator.clipboard?.writeText) {
+      setCopyError(t('profile.copyUnavailable', 'Copy is not available in this browser.'));
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(profilePublicUrl);
+      setCopyError(null);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    } catch (copyFailure) {
+      console.error('[ProfileScreenWeb] could not copy profile link', copyFailure);
+      setCopyError(t('profile.copyFailed', 'The profile link could not be copied.'));
+    }
+  };
+
   const saveEdit = async () => {
     if (!editForm || !profile) return;
     setIsSaving(true);
     setSaveError(null);
+    const savedFields: string[] = [];
     let pendingMessage: string | null = null;
+    let failureMessage: string | null = null;
     try {
       const updates = [
         ['display_name', editForm.display_name, profile.display_name],
@@ -89,10 +109,22 @@ export default function ProfileScreenWeb({
         if (value === previousValue) continue;
         const result = await updateField(field, value);
         if (!result.success) {
-          throw new Error(result.error || t('profile.updateFailed', 'Profile update failed'));
+          failureMessage = result.error || t('profile.updateFailed', 'Profile update failed');
+          break;
         }
+        savedFields.push(field.replace('_', ' '));
         if (result.pending) pendingMessage = result.error || 'Profile update is waiting to sync.';
       }
+
+      if (failureMessage) {
+        const savedPrefix =
+          savedFields.length > 0
+            ? `Saved ${savedFields.join(', ')}. `
+            : '';
+        setSaveError(`${savedPrefix}${failureMessage} Try saving again to finish the remaining fields.`);
+        return;
+      }
+
       setEditForm(null);
       refresh?.();
       if (pendingMessage) setSaveError(pendingMessage);
@@ -551,18 +583,15 @@ export default function ProfileScreenWeb({
                     fontFamily: 'var(--font-body)',
                     transition: 'color 0.2s',
                   }}
-                  onClick={() => {
-                    navigator.clipboard
-                      ?.writeText(profilePublicUrl)
-                      .then(() => {
-                        setCopiedLink(true);
-                        setTimeout(() => setCopiedLink(false), 2000);
-                      })
-                      .catch(() => {});
-                  }}
+                  onClick={() => void copyProfileLink()}
                 >
                   {copiedLink ? t('profile.copied', 'Copied!') : t('profile.copyLink', 'Copy link')}
                 </button>
+                {copyError ? (
+                  <p role="alert" aria-live="assertive" style={{ margin: 0, color: 'var(--warning)' }}>
+                    {copyError}
+                  </p>
+                ) : null}
               </div>
             )}
           </div>

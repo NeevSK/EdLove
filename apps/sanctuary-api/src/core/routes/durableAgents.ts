@@ -110,8 +110,7 @@ async function enqueue(c: any, capability: 'student-support' | 'teacher-summary'
     parsed.data.classroomId,
     parsed.data.studentId,
   );
-  if (!scope)
-    return c.json({ error: 'You are not authorized for this classroom.' }, 403);
+  if (!scope) return c.json({ error: 'You are not authorized for this classroom.' }, 403);
   const runId = crypto.randomUUID();
   const requestedAt = new Date().toISOString();
   const payload: any = {
@@ -165,7 +164,7 @@ async function enqueue(c: any, capability: 'student-support' | 'teacher-summary'
   );
 }
 
-export function createDurableAgentRoutes() {
+export function createDurableAgentRoutes(options: { includeInngest?: boolean } = {}) {
   const routes = new Hono();
   routes.post('/api/durable-agents/student-support', (c: any) => enqueue(c, 'student-support'));
   routes.post('/api/durable-agents/teacher-summary', (c: any) => enqueue(c, 'teacher-summary'));
@@ -308,11 +307,13 @@ export function createDurableAgentRoutes() {
       status: 'promoted',
     });
   });
-  const inngestHandler = serve({
-    client: sanctuaryInngest,
-    functions: [...durableAgentFunctions, ...platformEventFunctions] as any,
-  });
-  routes.all('/api/inngest', (c: any) => inngestHandler(c));
+  if (options.includeInngest !== false) {
+    const inngestHandler = serve({
+      client: sanctuaryInngest,
+      functions: [...durableAgentFunctions, ...platformEventFunctions] as any,
+    });
+    routes.all('/api/inngest', (c: any) => inngestHandler(c));
+  }
   return routes;
 }
 

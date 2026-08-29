@@ -1,11 +1,14 @@
-// @ts-nocheck — persist uses dynamic Supabase import + circuit-breaker, store is runtime LWW
 import { create } from 'zustand';
 import { SafeZustandStorage } from '@repo/core/lib/storageWrapper';
 import { circuitBreakerRegistry } from '@repo/core/lib/circuit-breaker';
 import { generateIdempotencyKey } from '@repo/core/lib/idempotency';
 import { withResilience } from '@repo/core/offline/resilience';
 import type { SelfViewRole } from '@repo/self/screens/self/roleResolution';
-import { DEFAULT_SELF_PREFERENCES, type SelfCanvasPreferences } from '@repo/self/features/userPreferences';
+import {
+  DEFAULT_SELF_PREFERENCES,
+  type SelfCanvasPreferences,
+  type SelfFeatureZone,
+} from '@repo/self/features/userPreferences';
 import { captureException, logBreadcrumb } from '@repo/core/lib/monitoring/sentry';
 import { trackEvent } from '@repo/core/lib/monitoring/posthog';
 
@@ -15,6 +18,7 @@ type StoreState = SelfCanvasPreferences & {
   lastIdempotencyKey: string | null;
   hydrate: (userId?: string | null) => Promise<void>;
   setHidden: (featureId: string, hidden: boolean) => void;
+  setZone: (featureId: string, zone: SelfFeatureZone) => void;
   setOrder: (order: string[]) => void;
   setSelected: (selectedIds: string[]) => void;
   setRoleWeights: (weights: Partial<Record<SelfViewRole, number>>) => void;
@@ -49,11 +53,11 @@ async function flushToSupabase(userId: string | null, state: SelfCanvasPreferenc
 
   try {
     await breaker.execute(() => withResilience(attempt, { retries: 3, backoff: 'exponential', timeout: 8000 } as never));
-    logBreadcrumb({ message: 'self:canvas persisted', data: { userId, isDefault: state.layout.isDefault } });
+    logBreadcrumb('self:canvas persisted');
     trackEvent('self_canvas_persisted', { userId: userId ?? 'guest', isDefault: state.layout.isDefault, orderLength: state.layout.order.length });
   } catch (e) {
     captureException(e as Error, { tags: { feature: 'self:canvas' } });
-    logBreadcrumb({ message: 'self:canvas persist failed, queued locally', data: { userId } });
+    logBreadcrumb('self:canvas persist failed, queued locally');
   }
 }
 
@@ -78,7 +82,7 @@ function persistLocal(userId: string | null | undefined, state: SelfCanvasPrefer
   schedulePersist(userId ?? null, next, idempotencyKey);
 }
 
-export const useSelfCanvasStore = create<StoreState>((set: any, get: any) => ({
+export const useSelfCanvasStore = create<StoreState>((set) => ({
   ...DEFAULT_SELF_PREFERENCES,
   userId: null,
   isHydrated: false,
@@ -145,6 +149,20 @@ export const useSelfCanvasStore = create<StoreState>((set: any, get: any) => ({
       };
       persistLocal(s.userId, next, key);
       trackEvent('self_canvas_toggle_hidden', { featureId, hidden });
+      return { ...next, lastIdempotencyKey: key } as Partial<StoreState>;
+    }),
+  setZone: (featureId, zone) =>
+    set((s) => {
+      const key = generateIdempotencyKey();
+      const zoneOverrides = { ...s.features.zoneOverrides, [featureId]: zone };
+      const next: SelfCanvasPreferences = {
+        layout: { ...s.layout, isDefault: false },
+        features: { ...s.features, zoneOverrides },
+        viewMode: s.viewMode,
+        lastSyncedAt: Date.now(),
+      };
+      persistLocal(s.userId, next, key);
+      trackEvent('self_canvas_change_zone', { featureId, zone });
       return { ...next, lastIdempotencyKey: key } as Partial<StoreState>;
     }),
   setOrder: (order) =>

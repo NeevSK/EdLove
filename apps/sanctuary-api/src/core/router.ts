@@ -28,37 +28,43 @@ export async function parseORPCContext(req: Request, env: any, requestId: string
     });
   }
 
-  // Resolve headers matching request security context
-  const clientHeaderSchoolId = req.headers.get('x-school-id') || '';
   const clientHeaderActiveBondId = req.headers.get('x-active-bond-id') || null;
-  const clientHeaderCapacity = req.headers.get('x-capacity') || null;
 
-  let schoolId = clientHeaderSchoolId;
-  let capacity = clientHeaderCapacity;
+  let schoolId = '';
+  let capacity: string | null = null;
   let activeBondId = clientHeaderActiveBondId;
   let activeEntityId: string | null = null;
   let activeEntityType: string | null = null;
 
-  if (user.id !== 'anonymous' && db && activeBondId) {
+  if (user.id !== 'anonymous' && db) {
     try {
-      const activeBond = await db.bond.findFirst({
-        where: { id: activeBondId, user_id: user.id },
-      });
-      if (activeBond) {
-        const bondScope = resolveBondScope(activeBond as any);
-        activeBondId = bondScope.activeBondId;
-        activeEntityId = bondScope.activeEntityId;
-        activeEntityType = bondScope.activeEntityType;
-        capacity = (activeBond as any).capacity;
-        schoolId = bondScope.schoolId || '';
+      const activeBond = await db.bond.findFirst(
+        activeBondId
+          ? { where: { id: activeBondId, user_id: user.id } }
+          : { where: { user_id: user.id } },
+      );
+      if (!activeBond) {
+        throw new ORPCError('FORBIDDEN', {
+          message: 'An active capacity is required before accessing this resource.',
+        });
       }
+      const bondScope = resolveBondScope(activeBond as any);
+      activeBondId = bondScope.activeBondId;
+      activeEntityId = bondScope.activeEntityId;
+      activeEntityType = bondScope.activeEntityType;
+      capacity = (activeBond as any).capacity;
+      schoolId = bondScope.schoolId || '';
     } catch (err) {
+      if (err instanceof ORPCError) throw err;
       console.warn('Failed resolving active bond in oRPC context:', err);
+      throw new ORPCError('SERVICE_UNAVAILABLE', {
+        message: 'Authorization context is temporarily unavailable. Please retry shortly.',
+      });
     }
   }
 
-  const deviceTrust = req.headers.get('x-device-trust') || 'standard';
-  const networkZone = req.headers.get('x-network-zone') || 'trusted';
+  const deviceTrust = 'standard';
+  const networkZone = 'untrusted';
 
   return {
     db,
@@ -107,50 +113,30 @@ export async function buildORPCContextFromHono(c: any): Promise<ORPCContext> {
     });
   }
 
-  let schoolId = c.get('schoolId') || c.req.header('x-school-id') || '';
-  const requestedCapacity = c.req.header('x-capacity') || null;
-  let capacity = c.get('capacity') || requestedCapacity;
-  let activeBondId = c.get('activeBondId') || c.req.header('x-active-bond-id') || null;
-  let activeEntityId = c.get('activeEntityId') || null;
-  let activeEntityType = c.get('activeEntityType') || null;
+  let schoolId = '';
+  let capacity: string | null = null;
+  let activeBondId = c.req.header('x-active-bond-id') || null;
+  let activeEntityId: string | null = null;
+  let activeEntityType: string | null = null;
 
-  if (user.id !== 'anonymous' && db && !activeBondId) {
-    const activeBond = await db.bond.findFirst({ where: { user_id: user.id } });
-    if (activeBond) {
-      const scope = resolveBondScope(activeBond);
-      activeBondId = scope.activeBondId;
-      activeEntityId = scope.activeEntityId;
-      activeEntityType = scope.activeEntityType;
-      schoolId = scope.schoolId || schoolId;
-      capacity = activeBond.capacity;
-      if (requestedCapacity === 'admin' && capacity !== 'admin') {
-        throw new ORPCError('FORBIDDEN', {
-          message: 'Authoritative database policy rejects the requested administrative capability.',
-        });
-      }
+  if (user.id !== 'anonymous' && db) {
+    const activeBond = await db.bond.findFirst(
+      activeBondId
+        ? { where: { id: activeBondId, user_id: user.id } }
+        : { where: { user_id: user.id } },
+    );
+    if (!activeBond) {
+      throw new ORPCError('FORBIDDEN', {
+        message: 'An active capacity is required before accessing this resource.',
+      });
     }
-  } else if (user.id !== 'anonymous' && db && activeBondId) {
-    const activeBond = await db.bond.findFirst({
-      where: { id: activeBondId, user_id: user.id },
-    });
-    if (activeBond) {
-      const scope = resolveBondScope(activeBond);
-      activeBondId = scope.activeBondId;
-      activeEntityId = scope.activeEntityId;
-      activeEntityType = scope.activeEntityType;
-      schoolId = scope.schoolId || schoolId;
-      capacity = activeBond.capacity;
-    }
+    const scope = resolveBondScope(activeBond);
+    activeBondId = scope.activeBondId;
+    activeEntityId = scope.activeEntityId;
+    activeEntityType = scope.activeEntityType;
+    schoolId = scope.schoolId || '';
+    capacity = activeBond.capacity;
   }
-
-  const classroomIds = (c.req.header('x-classroom-ids') || '')
-    .split(',')
-    .map((value: string) => value.trim())
-    .filter(Boolean);
-  const childStudentIds = (c.req.header('x-child-student-ids') || '')
-    .split(',')
-    .map((value: string) => value.trim())
-    .filter(Boolean);
 
   return {
     db,
@@ -172,15 +158,13 @@ export async function buildORPCContextFromHono(c: any): Promise<ORPCContext> {
         active_entity_id: activeEntityId ?? '',
         active_entity_type: activeEntityType ?? '',
         capacity: capacity ?? '',
-        grade_id: c.req.header('x-grade-id') || undefined,
-        section_id: c.req.header('x-section-id') || undefined,
-        classroom_ids: classroomIds,
-        child_student_ids: childStudentIds,
+        classroom_ids: [],
+        child_student_ids: [],
       },
     },
     securityContext: {
-      device_trust: c.req.header('x-device-trust') || 'standard',
-      network_zone: c.req.header('x-network-zone') || 'trusted',
+      device_trust: 'standard',
+      network_zone: 'untrusted',
     },
     timing: {
       start: (name: string) => startTime(c, name, name),
@@ -208,6 +192,7 @@ import { historyRouter } from './handlers/history';
 import { identityRouter } from './handlers/identity';
 import { inventoryRouter } from './handlers/inventory';
 import { journalEntriesRouter } from './handlers/journalEntries';
+import { learningReflectionsRouter } from './handlers/learningReflections';
 import { libraryRouter } from './handlers/library';
 import { longitudinalRouter } from './handlers/longitudinal';
 import { mappingRouter } from './handlers/mapping';
@@ -222,7 +207,6 @@ import { rewardsRouter } from './handlers/rewards';
 import { sacredMissionsRouter } from './handlers/sacredMissions';
 import { schoolForestRouter } from './handlers/schoolForest';
 import { selfRouter } from './handlers/self';
-import { learningReflectionsRouter } from './handlers/learningReflections';
 import { socialRouter } from './handlers/social';
 import { studentPotentialRouter } from './handlers/studentPotential';
 import { syncRouter } from './handlers/sync';

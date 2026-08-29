@@ -110,6 +110,7 @@ permit(
     (
       resource is MoodLog ||
       resource is FireJournal ||
+      resource is LearningReflection ||
       resource is JoyMoments ||
       resource is GratitudeEntries ||
       resource is EnergyForecasts ||

@@ -63,15 +63,15 @@ dependency_entries:
   react-native-reanimated:
     category: animation
     purpose: "Animation engine (v4, new arch)"
-    sacred: "4.5.0"
+    sacred: "4.6.0"
   react-native-worklets:
     category: animation
     purpose: "Worklet thread runtime required by Reanimated 4"
-    sacred: "0.11.1"
+    sacred: "0.12.1"
   react-native-gesture-handler:
     category: ui-kit
     purpose: "Gesture system (v3, new arch)"
-    sacred: "3.0.2"
+    sacred: "3.2.1"
   react-native-mmkv:
     category: storage
     purpose: "High-performance key-value store (Nitro v4)"
@@ -79,11 +79,11 @@ dependency_entries:
   react-native-nitro-modules:
     category: native
     purpose: "Nitro module bridge (new arch native modules)"
-    sacred: "0.36.1"
+    sacred: "0.37.1"
   "@shopify/react-native-skia":
     category: graphics
     purpose: "GPU graphics engine for RN (new arch)"
-    sacred: "2.6.5"
+    sacred: "2.11.1"
   typescript:
     category: tooling
     purpose: "Compiler — sacred 7.0.2 (latest stable)"

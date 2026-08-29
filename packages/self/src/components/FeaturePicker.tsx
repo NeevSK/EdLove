@@ -32,8 +32,7 @@ export function FeaturePicker({ catalog, selectedIds, hiddenIds, onToggleSelecte
             onChangeText={setQuery}
             placeholder="Search spaces, e.g. pulse, rhythm, journey"
             accessibilityLabel="Search spaces"
-            className="text-sm text-ink"
-            style={{ paddingVertical: 4 }}
+            style={{ color: '#1f1b16', fontSize: 14, paddingVertical: 4 }}
           />
         </Box>
         {filtered.map((feature) => {

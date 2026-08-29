@@ -139,8 +139,7 @@
     "date-fns": "^4.4.0",
     "expo-clipboard": "~57.0.1",
     "expo-router": "~57.0.12",
-    "react-i18next": "^17.0.8",
-    "react-native-reanimated": "4.3.1"
+    "react-i18next": "^17.0.8"
   },
   "devDependencies": {
     "@jest/globals": "^30.4.1",
@@ -155,7 +154,8 @@
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-reanimated": ">=4.6.0"
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",

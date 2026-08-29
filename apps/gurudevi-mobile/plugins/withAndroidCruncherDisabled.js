@@ -1,4 +1,4 @@
-const { withAppBuildGradle, createRunOncePlugin } = require('@expo/config-plugins');
+const { withAppBuildGradle, createRunOncePlugin } = require('expo/config-plugins');
 const { ensureAndroidBlockSnippets } = require('./lib/buildGradleBlock');
 
 /**

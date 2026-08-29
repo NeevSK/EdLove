@@ -63,12 +63,12 @@ These packages are pinned to specific versions for new-architecture compatibilit
 
 | Package | Sacred version | Why |
 |---|---|---|
-| `react-native-gesture-handler` | 3.0.2 | RNGH v3 for new arch |
-| `react-native-reanimated` | 4.5.0 | Reanimated 4 for new arch |
-| `react-native-worklets` | 0.11.1 | Required by reanimated 4 |
+| `react-native-gesture-handler` | 3.2.1 | RNGH v3 for new arch |
+| `react-native-reanimated` | 4.6.0 | Reanimated 4 for new arch |
+| `react-native-worklets` | 0.12.1 | Required by reanimated 4 |
 | `react-native-mmkv` | 4.3.2 | Nitro modules v4 |
-| `react-native-nitro-modules` | 0.36.1 | Required by mmkv 4 |
-| `@shopify/react-native-skia` | 2.6.5 | New arch Skia |
+| `react-native-nitro-modules` | 0.37.1 | Required by mmkv 4 / Nitro v0.37 |
+| `@shopify/react-native-skia` | 2.11.1 | New arch Skia |
 | `typescript` | 7.0.2 | Latest stable |
 
 To update any of these: discuss with the user first, verify compatibility with Expo 57, and test on a physical device.

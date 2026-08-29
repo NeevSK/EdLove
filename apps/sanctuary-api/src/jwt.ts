@@ -131,10 +131,13 @@ async function getPublicKeyFromJwks(
     if (!activeJwksFetch) {
       activeJwksFetch = (async () => {
         try {
-          const supabaseUrl =
-            getEnv('EXPO_PUBLIC_SUPABASE_URL', envOverrides) ||
-            getEnv('SUPABASE_URL', envOverrides) ||
-            'https://qzoawolfkuwiuyaoiybz.supabase.co';
+          const supabaseUrl = getEnv('SUPABASE_URL', envOverrides);
+          if (!supabaseUrl) {
+            console.warn(
+              '[JWT] JWKS verification is unavailable because SUPABASE_URL is not configured.',
+            );
+            return;
+          }
           const jwksUrl = `${supabaseUrl}/auth/v1/.well-known/jwks.json`;
 
           console.log(`[JWT] 🌐 Fetching JWKS from authoritative gateway (Coalesced): ${jwksUrl}`);
@@ -183,6 +186,38 @@ async function getPublicKeyFromJwks(
   return jwkCache.get(kid) ?? null;
 }
 
+function hasExpectedClaims(
+  payload: Record<string, unknown>,
+  envOverrides?: Record<string, string>,
+): boolean {
+  const expectedIssuer = getEnv('SUPABASE_JWT_ISSUER', envOverrides);
+  const expectedAudience = getEnv('SUPABASE_JWT_AUDIENCE', envOverrides);
+  const isProduction = getEnv('NODE_ENV', envOverrides) === 'production';
+
+  if (isProduction && (!expectedIssuer || !expectedAudience)) {
+    console.error('[JWT] JWT issuer and audience configuration is required in production.');
+    return false;
+  }
+
+  if (expectedIssuer && payload.iss !== expectedIssuer) {
+    console.warn('[JWT] Rejected token with an unexpected issuer.');
+    return false;
+  }
+
+  if (expectedAudience) {
+    const audience = payload.aud;
+    const hasExpectedAudience =
+      audience === expectedAudience ||
+      (Array.isArray(audience) && audience.some((value) => value === expectedAudience));
+    if (!hasExpectedAudience) {
+      console.warn('[JWT] Rejected token with an unexpected audience.');
+      return false;
+    }
+  }
+
+  return true;
+}
+
 /**
  * Robust asymmetric RS256/ES256 cryptographic verification of Supabase JWT tokens.
  * Verifies authenticity, integrity, and standard claims (exp, nbf, aud).
@@ -212,7 +247,10 @@ export async function verifySupabaseJwt(
   const cachedResult = tokenVerificationCache.get(tokenHash);
   if (cachedResult && cachedResult.expiresAt > Date.now()) {
     const nowSec = Math.floor(Date.now() / 1000);
-    if (!cachedResult.payload.exp || cachedResult.payload.exp > nowSec) {
+    if (
+      (!cachedResult.payload.exp || cachedResult.payload.exp > nowSec) &&
+      hasExpectedClaims(cachedResult.payload, envOverrides)
+    ) {
       return cachedResult.payload;
     }
     tokenVerificationCache.delete(tokenHash);
@@ -231,6 +269,10 @@ export async function verifySupabaseJwt(
 
     const header = JSON.parse(headerJson);
     const payload = JSON.parse(payloadJson);
+
+    if (!hasExpectedClaims(payload, envOverrides)) {
+      return null;
+    }
 
     // Assert authentic cryptographic algorithms (RS256 or ES256)
     if (header.alg !== 'RS256' && header.alg !== 'ES256') {
@@ -347,13 +389,7 @@ export async function verifySupabaseJwt(
     );
 
     if (!isVerified) {
-      console.warn(
-        '[JWT] ❌ Asymmetric signature verification failed. Cryptographic identity spoofing suspected.',
-        '\nHeader:',
-        JSON.stringify(header),
-        '\nPayload:',
-        JSON.stringify(payload),
-      );
+      console.warn('[JWT] Asymmetric signature verification failed.');
       return null;
     }
 

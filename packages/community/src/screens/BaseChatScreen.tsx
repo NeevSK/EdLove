@@ -172,9 +172,11 @@ export default function BaseChatScreen({
   const handleTyping = (text: string) => {
     setDraft(text);
     if (text.length > 0 && text.length % 5 === 0) {
-      void supabase
-        .channel(`typing:${channelKey}`)
-        .send({ type: 'broadcast', event: 'typing', payload: { userId: user?.id, userName: user?.full_name || 'Someone' } });
+      void supabase.channel(`typing:${channelKey}`).send({
+        type: 'broadcast',
+        event: 'typing',
+        payload: { userId: user?.id, userName: user?.full_name || 'Someone' },
+      });
     }
   };
 
@@ -190,7 +192,9 @@ export default function BaseChatScreen({
         return true;
       } catch (error) {
         console.error('[BaseChatScreen] could not persist queued message', error);
-        setQueueError('This message could not be saved for retry. Restore the draft and try again.');
+        setQueueError(
+          'This message could not be saved for retry. Restore the draft and try again.',
+        );
         return false;
       }
     },
@@ -209,19 +213,25 @@ export default function BaseChatScreen({
       // send oldest first
       const next = queued[0];
       if (next) {
-        void sendMessage(next).then(() => {
-          const remaining = queued.slice(1);
-          if (remaining.length === 0) storage.delete(key);
-          else storage.set(key, JSON.stringify(remaining));
-          setQueuedMessage(null);
-        }).catch((error: unknown) => {
-          console.error('[BaseChatScreen] queued send error', error);
-          setQueueError('A queued message could not send yet. It will be retried after reconnection.');
-        });
+        void sendMessage(next)
+          .then(() => {
+            const remaining = queued.slice(1);
+            if (remaining.length === 0) storage.delete(key);
+            else storage.set(key, JSON.stringify(remaining));
+            setQueuedMessage(null);
+          })
+          .catch((error: unknown) => {
+            console.error('[BaseChatScreen] queued send error', error);
+            setQueueError(
+              'A queued message could not send yet. It will be retried after reconnection.',
+            );
+          });
       }
     } catch (error) {
       console.error('[BaseChatScreen] could not read queued messages', error);
-      setQueueError('Queued messages are temporarily unavailable. Your current draft is still safe.');
+      setQueueError(
+        'Queued messages are temporarily unavailable. Your current draft is still safe.',
+      );
     }
   }, [isOffline, channelKey, sendMessage]);
 
@@ -384,7 +394,7 @@ export default function BaseChatScreen({
             {queuedMessage ? (
               <Box
                 className="mb-3 rounded-xl border border-phase-warning/30 bg-phase-warning/10 px-3 py-2"
-                accessibilityRole="status"
+                accessibilityLiveRegion="polite"
               >
                 <Text className="text-phase-warning text-[11px] font-semibold">
                   Message queued securely. It will send when the connection returns.
@@ -410,7 +420,9 @@ export default function BaseChatScreen({
                     setFailedMessage(null);
                   }}
                 >
-                  <Text className="text-phase-interactive text-[11px] font-bold">Restore draft</Text>
+                  <Text className="text-phase-interactive text-[11px] font-bold">
+                    Restore draft
+                  </Text>
                 </Pressable>
               </Box>
             ) : null}

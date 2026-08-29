@@ -1,4 +1,4 @@
-const { withAppBuildGradle, createRunOncePlugin } = require('@expo/config-plugins');
+const { withAppBuildGradle, createRunOncePlugin } = require('expo/config-plugins');
 
 const withSentryGradleDisabled = (config) => {
   return withAppBuildGradle(config, (config) => {

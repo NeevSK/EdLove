@@ -1,0 +1,17 @@
+export type ThemeTransitionType =
+  | 'circularReveal'
+  | 'inverseCircularReveal'
+  | 'iris'
+  | 'wipe'
+  | 'split'
+  | 'barnDoor'
+  | 'blinds'
+  | 'fade'
+  | 'zoom'
+  | 'blur'
+  | 'liquidGlass'
+  | 'pixelize'
+  | 'dissolve'
+  | 'stripes'
+  | 'ripple'
+  | 'shatter';

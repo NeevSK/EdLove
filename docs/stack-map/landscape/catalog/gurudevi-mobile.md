@@ -8,6 +8,7 @@ The Operational Engine — mobile app for teachers, students, and principals. La
 
 | Package | Layer | Purpose |
 | :--- | :--- | :--- |
+| [@repo/accounting](../stack-map.md#repoaccounting) | domain | Financial records & ledger domain for future Gurudevi ERP expansion. |
 | [@repo/admin](../stack-map.md#repoadmin) | domain | Institutional governance & official-ops domain — the school as an institution, not a classroom cell. |
 | [@repo/ai](../stack-map.md#repoai) | domain | AI domain — TanStack AI agent/model wiring + UI affordances (reanimated, lucide, expo-router). |
 | [@repo/analytics](../stack-map.md#repoanalytics) | domain | Premium analytics engine — student performance insights, GPA calculations, predictive analytics. |
@@ -16,16 +17,15 @@ The Operational Engine — mobile app for teachers, students, and principals. La
 | [@repo/core](../stack-map.md#repocore) | core | Platform spine — shared contracts & infrastructure every domain relies on. |
 | [@repo/form-builder](../stack-map.md#repoform-builder) | domain | Feature host for forms (build + render flows) — the app-side shell, not the engine. |
 | [@repo/library](../stack-map.md#repolibrary) | domain | Knowledge sanctuary — library browsing, collections, resource consumption, maps, contribution flows. |
+| [@repo/payments](../stack-map.md#repopayments) | domain | Fees, invoices, receipts & payment-orchestration domain for Gurudevi. |
 | [@repo/people](../stack-map.md#repopeople) | domain | Human identity & human-administration — who belongs, where, with which staff-facing processes. |
 | [@repo/profile](../stack-map.md#repoprofile) | domain | Identity-expression for people & school presence — profiles, social presentation, completion. |
 | [@repo/scanner-kit](../stack-map.md#reposcanner-kit) | domain | Scanning, QR, OCR & code-based capture features reusable across platform surfaces. |
 | [@repo/self](../stack-map.md#repoself) | domain | Personal sanctuary — inner-life, growth, journaling, wellbeing, role-shaped self-work. |
 | [@repo/ui](../stack-map.md#repoui) | ui | Shared design system & shell primitives for the whole product family. |
 | [@repo/workforce](../stack-map.md#repoworkforce) | domain | Future non-academic & job-structure domain — school-wide operations beyond classrooms. |
-| [@repo/payments](../stack-map.md#repopayments) | domain | Fees, invoices, receipts & payment-orchestration domain for Gurudevi. |
-| [@repo/accounting](../stack-map.md#repoaccounting) | domain | Financial records & ledger domain for future Gurudevi ERP expansion. |
 
-## External deps (177 direct)
+## External deps (182 direct)
 
 ```text
 @azure/core-asynciterator-polyfill
@@ -182,10 +182,12 @@ react-native-mmkv
 react-native-nano-icons
 react-native-nitro-google-signin
 react-native-nitro-modules
+react-native-nitro-theme-transition
 react-native-pager-view
 react-native-reanimated
 react-native-reanimated-carousel
 react-native-reanimated-skeleton
+react-native-redash
 react-native-safe-area-context
 react-native-screens
 react-native-shared-hero
@@ -196,13 +198,16 @@ react-native-url-polyfill
 react-native-webview
 react-native-worklets
 scheduler
+sonner-native
 styleq
 tailwindcss
 use-latest-callback
 use-sync-external-store
 uuid
+victory-native
 voltra
 xstate
+zeego
 zod
 zustand
 ```

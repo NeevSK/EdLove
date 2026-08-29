@@ -152,6 +152,7 @@ export const erpRouter = impl.router({
       assertDatabase(context);
       const metadata = {
         ...(input.metadata ?? {}),
+        owner_id: context.user.id,
         ...(input.idempotencyKey
           ? { idempotency_key: `${context.user.id}:${input.provider}:${input.idempotencyKey}` }
           : {}),

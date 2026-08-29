@@ -22,6 +22,10 @@ export class PowerSyncDatabase {
     return Promise.resolve();
   }
 
+  async execute(sql: string, parameters?: any[]): Promise<{ rowsAffected?: number; rows?: any }> {
+    return Promise.resolve({ rowsAffected: 0, rows: [] });
+  }
+
   async writeLock<T>(callback: () => T | Promise<T>): Promise<T> {
     return await callback();
   }

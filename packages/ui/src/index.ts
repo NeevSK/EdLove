@@ -36,6 +36,10 @@ export { ErrorState as BrandedErrorState } from './components/ErrorState';
 export { JourneyErrorBoundary } from './components/JourneyErrorBoundary';
 export type { FocusRingProps } from './components/FocusRing';
 export { FocusRing } from './components/FocusRing';
+export type { FireflyMascotProps } from './components/FireflyMascot';
+export { FireflyMascot } from './components/FireflyMascot';
+export type { SkiaGlowAuraProps } from './components/SkiaGlowAura';
+export { SkiaGlowAura } from './components/SkiaGlowAura';
 export type { PageFrame } from './components/layout';
 export { useBreakpoint, usePageFrame, useResponsiveGrid } from './components/layout';
 export { color, duration, easing, scale } from './components/motion';
@@ -50,4 +54,5 @@ export {
 } from './components/Skeleton';
 export { SuccessCheck, SuccessGlow } from './components/Success';
 export { sharedTransitionTiming, softCrossfadeScale } from './components/screenTransitions';
+export { NativeContextMenu, NativeDropdownMenu } from './native-menu';
 export { WorkspaceRenderer } from './components/workspace/WorkspaceRenderer';

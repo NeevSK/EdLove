@@ -135,7 +135,16 @@ export function toORPCContract(contract: any, prefix = ''): any {
         return Reflect.get(target, key);
       }
 
-      if (key === 'then' || key === 'constructor') {
+      // oRPC's implementer probes these control members before its outer
+      // proxy supplies the implementation API. They are not contract routes.
+      if (
+        key === 'then' ||
+        key === 'constructor' ||
+        key === '$context' ||
+        key === '$config' ||
+        key === 'router' ||
+        key === 'lazy'
+      ) {
         return undefined;
       }
 

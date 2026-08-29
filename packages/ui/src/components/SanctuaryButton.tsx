@@ -1,6 +1,7 @@
 import type React from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { Button, ButtonIcon, ButtonSpinner, ButtonText } from '@repo/ui/components/ui/button';
+import { PressableScale } from '@repo/ui/components/PressableScale';
 import { cn } from '@repo/ui/utils/classNames';
 
 interface SanctuaryButtonProps {
@@ -107,7 +108,7 @@ export function SanctuaryButton({
     lg: 'h-14 px-8',
   };
 
-  return (
+  const buttonContent = (
     <Button
       className={cn(
         fullWidth ? 'w-full' : 'w-auto',
@@ -116,7 +117,6 @@ export function SanctuaryButton({
         variant === 'outline' ? 'border' : 'border-0',
         sizeClasses[size],
         isDisabled || isLoading ? 'opacity-40' : 'opacity-100',
-        'active:opacity-80',
         className,
       )}
       variant={variant === 'link' ? 'ghost' : variant}
@@ -145,5 +145,16 @@ export function SanctuaryButton({
         <ButtonIcon as={rightIcon} className={`ml-2 ${getTextClass()}`} {...iconProps} />
       )}
     </Button>
+  );
+
+  return (
+    <PressableScale
+      onPress={onPress}
+      disabled={isDisabled || isLoading}
+      accessibilityLabel={accessibilityLabel || (typeof children === 'string' ? children : 'Button')}
+      accessibilityHint={accessibilityHint}
+    >
+      {buttonContent}
+    </PressableScale>
   );
 }

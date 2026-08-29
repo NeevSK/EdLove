@@ -8,6 +8,7 @@ import type {
   ClassroomWorkspaceSurfaceId,
 } from '@repo/classroom/types/workspace';
 import { CLASSROOM_SURFACE_REGISTRY } from './surfaceRegistry';
+import { reorderClassroomSurface } from './reorderClassroomSurface';
 
 type ClassroomResolvedSurface = ClassroomWorkspaceSurface &
   ResolvedWorkspaceSurface<ClassroomWorkspaceSurfaceId, ClassroomWorkspaceCapabilityKey>;
@@ -26,6 +27,7 @@ type Props = {
   onToggleHidden: (id: ClassroomWorkspaceSurfaceId, hidden: boolean) => void;
   onTogglePinned: (id: ClassroomWorkspaceSurfaceId, pinned: boolean) => void;
   onMoveToNextZone: (id: ClassroomWorkspaceSurfaceId, zone: WorkspaceZoneId) => void;
+  onReorder: (order: ClassroomWorkspaceSurfaceId[]) => void;
   isGuest: boolean;
   classroomData: {
     userId: string;
@@ -55,6 +57,7 @@ export function ClassroomWorkspaceCanvas({
   onToggleHidden,
   onTogglePinned,
   onMoveToNextZone,
+  onReorder,
   isGuest,
   classroomData,
   schoolIdToUse,
@@ -130,6 +133,20 @@ export function ClassroomWorkspaceCanvas({
         );
       }}
       onToggleHidden={(surface) => onToggleHidden(surface.surfaceId, !surface.hidden)}
+      onReorder={(surfaceId, newIndex) => {
+        const surface = surfaces.find((candidate) => candidate.surfaceId === surfaceId);
+        if (!surface) return;
+
+        const zoneOrder = surfaces
+          .filter((candidate) => candidate.zone === surface.zone)
+          .sort((left, right) => left.order - right.order)
+          .map((candidate) => candidate.surfaceId);
+        const currentIndex = zoneOrder.indexOf(surfaceId);
+        const targetId = zoneOrder[newIndex];
+        if (currentIndex === -1 || !targetId || currentIndex === newIndex) return;
+
+        onReorder(reorderClassroomSurface(layout.order, surfaceId, targetId));
+      }}
     />
   );
 }

@@ -1,4 +1,4 @@
-const { createRunOncePlugin, withAppBuildGradle } = require('@expo/config-plugins');
+const { createRunOncePlugin, withAppBuildGradle } = require('expo/config-plugins');
 
 /**
  * Keeps generated C++ object paths below CMake's Windows-safe limit.

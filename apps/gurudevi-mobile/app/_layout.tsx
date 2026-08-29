@@ -41,7 +41,7 @@ import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';
 import { SyncManager } from '@repo/core/sync';
 import { useQRDeepLink } from '@repo/scanner-kit';
-import { BrandPulse } from '@repo/ui';
+import { BrandPulse, softCrossfadeScale } from '@repo/ui';
 import AccountPinModal from '@repo/ui/components/AccountPinModal';
 import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 import NetworkStatusBanner from '@repo/ui/components/NetworkStatusBanner';
@@ -573,7 +573,7 @@ function AppContent() {
                   <BootstrapSideEffects />
                   {routeGuardReady && <ObserveInteractiveMarker />}
                   <FeatureProvider>
-                    <Stack screenOptions={{ headerShown: false }}>
+                    <Stack screenOptions={{ headerShown: false, ...softCrossfadeScale }}>
                       <Stack.Screen name="index" options={{ title: 'Welcome' }} />
                       <Stack.Screen name="welcome" options={{ title: 'Welcome' }} />
                       <Stack.Screen name="auth" options={{ title: 'Sign In' }} />
