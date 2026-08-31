@@ -1,3 +1,3 @@
-import DemoFeeScreen from '@/features/payments/DemoFeeScreen';
+import DemoFeeScreen from '@/screens/DemoFeeScreen';
 
 export default DemoFeeScreen;

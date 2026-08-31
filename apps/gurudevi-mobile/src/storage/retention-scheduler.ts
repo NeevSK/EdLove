@@ -29,7 +29,14 @@
  */
 
 import { getPowerSyncDB } from '@repo/core/adapters/powersync/database';
+import {
+  CRITICAL_FREE_DISK_BYTES,
+  LOW_BATTERY_LEVEL,
+  evaluateEfficiency,
+  normalizeNetworkConditions,
+} from '@repo/core/efficiency';
 import { storage } from '@repo/core/native/storage';
+import { AppState, Platform } from 'react-native';
 
 // In-file stubs for graceful degradation & storage metrics
 const storageDegradation = {
@@ -108,9 +115,35 @@ async function shouldRunCompaction(): Promise<{ allowed: boolean; reason?: strin
     const isMetered = (networkState as any)?.isMetered ?? false;
     const diskFree = typeof diskInfo === 'number' ? diskInfo : ((diskInfo as any)?.freeSpace ?? 0);
     const diskTotal = typeof diskInfo === 'number' ? 0 : ((diskInfo as any)?.totalSpace ?? 0);
+    const normalizedNetwork = normalizeNetworkConditions(networkState as any);
+
+    const decision = evaluateEfficiency('storage-maintenance', {
+      appState: AppState.currentState === 'active' ? 'active' : 'background',
+      network: normalizedNetwork.type,
+      isMetered: normalizedNetwork.isMetered,
+      batteryLevel,
+      isCharging,
+      freeDiskBytes: diskFree,
+    });
+
+    if (decision.action === 'defer') {
+      return {
+        allowed: false,
+        reason: decision.reason,
+        config: { runVacuum: false, runIncrementalVacuum: false, incrementalPages: 0, runOptimize: false },
+      };
+    }
+
+    if (decision.action === 'reduce') {
+      return {
+        allowed: true,
+        reason: decision.reason,
+        config: { runVacuum: false, runIncrementalVacuum: true, incrementalPages: 25, runOptimize: true },
+      };
+    }
     
     // Disk critical check
-    if (diskFree < 100 * 1024 * 1024) { // < 100MB
+    if (diskFree < CRITICAL_FREE_DISK_BYTES) { // < 100MB
       return { 
         allowed: false, 
         reason: 'disk_critical', 
@@ -119,7 +152,7 @@ async function shouldRunCompaction(): Promise<{ allowed: boolean; reason?: strin
     }
     
     // Battery check
-    if (!isCharging && batteryLevel < 0.2) {
+    if (!isCharging && batteryLevel < LOW_BATTERY_LEVEL) {
       return { 
         allowed: false, 
         reason: `battery_low_${Math.round(batteryLevel * 100)}%`, 
@@ -143,11 +176,11 @@ async function shouldRunCompaction(): Promise<{ allowed: boolean; reason?: strin
       config: { runVacuum: true, runIncrementalVacuum: true, incrementalPages: 100, runOptimize: true }
     };
   } catch {
-    // If we can't check, assume safe to run (fail open)
+    // Unknown device state must not trigger a potentially expensive full compaction.
     return { 
-      allowed: true, 
+      allowed: false, 
       reason: 'unknown_device_state',
-      config: { runVacuum: true, runIncrementalVacuum: true, incrementalPages: 100, runOptimize: true }
+      config: { runVacuum: false, runIncrementalVacuum: false, incrementalPages: 0, runOptimize: false }
     };
   }
 }
@@ -293,6 +326,19 @@ async function reportAndTrimStorage(): Promise<void> {
  */
 export async function runStorageEvictionScheduler(accountId?: string): Promise<PruneResult> {
   const startTime = Date.now();
+
+  // SQLite compaction and PowerSync pruning are native mobile operations
+  if (Platform.OS === 'web') {
+    return {
+      freedBytes: 0,
+      rowsDeleted: {},
+      compactionConfig: { runVacuum: false, runIncrementalVacuum: false, incrementalPages: 0, runOptimize: false },
+      deviceContext: { batteryLevel: 1, isCharging: true, isMeteredNetwork: false, diskFreeBytes: 0 },
+      durationMs: Date.now() - startTime,
+      skipped: true,
+      skipReason: 'web_platform_unsupported',
+    };
+  }
   
   // Set account for metrics
   if (accountId) {

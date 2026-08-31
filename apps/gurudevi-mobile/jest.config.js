@@ -1,5 +1,6 @@
 // https://docs.expo.dev/guides/testing-with-jest/
 module.exports = {
+  watchman: false,
   // jest-expo/web uses react-native-web which avoids Expo SDK 55's winter runtime
   // (installGlobal.ts / runtime.native.ts) that breaks with Jest's CJS dynamic-import restrictions.
   preset: 'jest-expo/web',

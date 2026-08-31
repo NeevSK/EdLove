@@ -1,7 +1,11 @@
 import { BrandPulse } from '@repo/ui';
+import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Center } from '@repo/ui/primitives';
 import { OnboardingWrapper } from '@repo/ui/screens/OnboardingWrapper';
 import { Suspense } from 'react';
+import { fireflyProductArtwork } from '@/brand/mascotArtwork';
+
+export { RouteErrorBoundary as ErrorBoundary };
 
 function Fallback() {
   return (
@@ -13,8 +17,10 @@ function Fallback() {
 
 export default function OnboardingRoute() {
   return (
-    <Suspense fallback={<Fallback />}>
-      <OnboardingWrapper />
-    </Suspense>
+    <ErrorBoundary name="OnboardingRoute">
+      <Suspense fallback={<Fallback />}>
+        <OnboardingWrapper onboardingArtwork={fireflyProductArtwork.onboarding} />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

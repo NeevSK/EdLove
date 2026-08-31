@@ -81,9 +81,18 @@ process.once('exit', () => {
 // Add support for WASM files (required by expo-sqlite on web)
 config.resolver.assetExts.push('wasm');
 
-// 1. Disable watchman and clear watchFolders to avoid monorepo crawling and watch errors
-config.watchFolders = [];
-config.watchman = false;
+// 1. Watchman + workspace watchFolders so edits to internal packages
+//    (@repo/ui, @repo/core, ...) trigger Metro's incremental fast refresh
+//    instead of forcing a full rebuild. Watchman is healthy on this machine
+//    (see `watchman watch-list`); Metro fell back to Node's fs.watch() here,
+//    which is unreliable on Windows + Node 22 and silently dropped package
+//    file changes — that is why containers had to be rebuilt from scratch.
+config.watchman = true;
+// Watch every internal workspace package. The app project root is already a
+// watch root by default; this adds the shared packages dir on top.
+config.watchFolders = [path.resolve(workspaceRoot, 'packages')];
+config.resetCache = false;
+config.maxWorkers = 2;
 
 
 
@@ -124,6 +133,16 @@ const SINGLETON_OVERRIDES = {
   'react-dom': path.resolve(projectRoot, 'node_modules/react-dom'),
   '@babel/runtime': path.resolve(projectRoot, 'node_modules/@babel/runtime'),
   'react-native-web': path.resolve(projectRoot, 'node_modules/react-native-web'),
+  // These packages are a coordinated runtime. Pin their Metro resolution to
+  // the app dependency graph so the pnpm fallback scan cannot select a stale
+  // transitive Worklets/Reanimated copy during a web bundle.
+  'react-native-gesture-handler': path.resolve(
+    projectRoot,
+    'node_modules/react-native-gesture-handler',
+  ),
+  'react-native-reanimated': path.resolve(projectRoot, 'node_modules/react-native-reanimated'),
+  'react-native-worklets': path.resolve(projectRoot, 'node_modules/react-native-worklets'),
+  'react-native-screens': path.resolve(projectRoot, 'node_modules/react-native-screens'),
   '@react-navigation/core': path.resolve(projectRoot, 'node_modules/@react-navigation/core'),
   '@react-native-async-storage/async-storage': path.resolve(
     projectRoot,
@@ -254,7 +273,7 @@ const isWeb =
 if (isWeb) {
   SINGLETON_OVERRIDES['react-native'] = path.resolve(projectRoot, 'node_modules/react-native-web');
 } else {
-  SINGLETON_OVERRIDES['react-native'] = path.resolve(projectRoot, 'node_modules/react-native');
+  delete SINGLETON_OVERRIDES['react-native'];
 }
 
 config.resolver.extraNodeModules = {
@@ -265,6 +284,7 @@ config.resolver.extraNodeModules = {
 
 // 6. Platform Firewall & Deterministic Resolver
 const WEB_SHIMS = {
+  '@stripe/stripe-react-native': path.resolve(projectRoot, 'src/shims/stripe-web.js'),
   '@sentry/react-native': path.resolve(projectRoot, 'src/shims/sentry-web.js'),
   'posthog-react-native': path.resolve(projectRoot, 'src/shims/posthog-web.js'),
   'react-native-get-random-values': path.resolve(projectRoot, 'src/shims/get-random-values-web.js'),
@@ -293,10 +313,6 @@ const WEB_SHIMS = {
   'expo-image-manipulator': path.resolve(projectRoot, 'src/shims/expo-image-manipulator-web.js'),
   'react-native-mmkv': path.resolve(projectRoot, 'src/shims/mmkv-web.js'),
   'react-native-nitro-modules': path.resolve(projectRoot, 'src/shims/nitro-modules-web.js'),
-  'react-native-worklets': path.resolve(projectRoot, 'src/shims/worklets-web.js'),
-  'react-native-reanimated': path.resolve(projectRoot, 'src/shims/reanimated-web.js'),
-  'react-native-gesture-handler': path.resolve(projectRoot, 'src/shims/gesture-handler-web.js'),
-  'react-native-screens': path.resolve(projectRoot, 'src/shims/screens-web.js'),
   'react-native-svg': path.resolve(projectRoot, 'src/shims/svg-web.js'),
   'lucide-react-native': path.resolve(projectRoot, 'src/shims/lucide-react-native-web.js'),
   '@shopify/react-native-skia': path.resolve(projectRoot, 'src/shims/skia-web.js'),
@@ -397,6 +413,10 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   }
 
   // D. Web-Only Shims
+  // NOTE: react-native -> react-native-web is handled via SINGLETON_OVERRIDES in
+  // extraNodeModules (type:'package' resolution that follows the main field).
+  // Do NOT intercept 'react-native' here with type:'sourceFile' pointing at a directory —
+  // that causes Metro to try to SHA-1 hash a directory, crashing the bundler.
   if (platform === 'web') {
     for (const shimKey in WEB_SHIMS) {
       if (moduleName === shimKey || moduleName.startsWith(`${shimKey}/`)) {

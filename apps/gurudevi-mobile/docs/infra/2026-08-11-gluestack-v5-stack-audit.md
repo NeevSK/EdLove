@@ -2,7 +2,7 @@
 title: "Gluestack UI v5 and NativeWind v5 Stack Audit"
 status: "active"
 created: 2026-08-11
-updated: 2026-08-12
+updated: 2026-09-01
 author: "Naveen"
 scribe: "Codex"
 tags: [mobile, gluestack, nativewind, tailwind, migration, audit]
@@ -15,6 +15,14 @@ Research snapshot: 2026-08-11. This is the current source of truth for the Glues
 ## Executive answer
 
 The governing implementation decision is recorded in [UI Facade and Styling Engine Decision](../decisions/2026-08-12-ui-facade-and-styling-engine-decision.md). That decision supersedes any wording in this audit that could be read as a commitment to official Gluestack v5 runtime components.
+
+### Runtime correction — 2026-09-01
+
+The root application no longer mounts the historical `GluestackUIProvider` facade. Its only live behavior was the product-owned `PortalProvider`, which is now mounted directly in `app/_layout.tsx`; overlay behavior remains explicit and does not depend on a Gluestack-named abstraction.
+
+The lockfile must resolve `react-native-reanimated@4.6.x` with `react-native-worklets@0.12.1`. Reanimated's official compatibility table marks Worklets `0.12.x` as the compatible line for Reanimated `4.6.x`; the former workspace-wide `^0.11.4` override silently forced an unsupported pair. Do not widen this override or update either package independently. Verify the installed graph, run the focused web/browser suite, and rebuild native clients before accepting a native runtime change.
+
+The web platform policy is now explicit: do not globally replace `react-native-gesture-handler`, `react-native-reanimated`, `react-native-worklets`, or `react-native-screens` with no-op web shims. Those libraries have real web support or framework fallbacks. Use platform-specific adapters only for interactions that need different web semantics, and retain shims solely for truly native-only feature modules.
 
 ### Corrected source-provenance verdict (2026-08-12)
 

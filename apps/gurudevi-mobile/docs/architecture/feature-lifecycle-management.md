@@ -2,7 +2,7 @@
 title: "Gurudevi Feature Lifecycle Management"
 status: "active"
 created: 2026-07-26
-updated: 2026-08-04
+updated: 2026-08-31
 author: "Codex"
 tags: [feature-management, app-catalog, growthbook, lifecycle, governance]
 ---
@@ -59,6 +59,73 @@ Protected operations follow `initialization → authentication → Cedar authori
 The eight package registries currently assemble 27 catalog entries into AppCatalog. Self-domain presentation metadata is stored in the canonical self registry; the former `SANCTUARY_DOMAINS` availability registry is no longer consumed. Live catalog entries no longer carry temporary release flags; controlled development and beta capabilities remain explicitly mapped to GrowthBook keys, while only justified operational controls remain outside the catalog rollout lifecycle. The mounted mobile `FeatureProvider` is the single runtime synchronization boundary: it resolves the current context, subscribes to GrowthBook updates, and writes only resolved snapshots into the local store.
 
 The admin feature registry observes that same store reactively and exposes snapshot source, stale status, and refresh time to operators; it never edits local rollout state or impersonates the GrowthBook control plane.
+
+## Integration audit status — 2026-08-31
+
+The flag integration is structurally aligned, but the capability integration is
+not yet complete across every consumer. The authoritative source-level audit is
+the [2026-08-31 registry implementation audit](../../../../docs/current_progress/2026-08-31-gurudevi-registry-implementation-audit.md).
+
+| Boundary | Current assessment | Required discipline |
+|---|---|---|
+| AppCatalog → GrowthBook | Aligned for entries with `flagKey`; boot validation checks manifest existence and flag class. | Every beta/development rollout key must map to exactly one catalog owner and one manifest record. |
+| AppCatalog → Cedar | Aligned through `useDomainFeature` for migrated domain consumers. | Do not add role/capacity/bond combinations to flags; Cedar evaluates the active relationship and entity. |
+| AppCatalog → Entitlements | Declarative fields exist and the entitlement port evaluates scope/tier/module. | Test individual versus `active_bond`/`active_entity` access independently from authorization. |
+| AppCatalog → Routing/rendering | Incomplete. Some screens use `useDomainRollout`, but registry presence does not prove a renderer or reachable route. | Add renderer, route, analytics, and platform evidence to the registry audit. |
+| Leaf feature catalog → Self renderer | Incomplete. Self has 20 leaf definitions and known canvas/web integration gaps. | Validate every `featureIds` join against a real renderer and platform composition. |
+| Legacy `FeatureFlags` store → domain catalog | Valid as a safe runtime snapshot boundary, but it is not the product inventory. | Do not add new product capabilities only to `FeatureFlags`; use the catalog and manifest. |
+| Docs → implementation | Partially aligned; older documents remain historical and the dated audit records current gaps. | Update the current audit whenever a registry, flag, route, or gate changes. |
+
+This distinction is deliberate: mature feature-management systems treat flags as
+temporary or operational rollout controls, not as the entire product catalog.
+LaunchDarkly recommends code-reference checks, temporary/permanent classification,
+regular reviews, and removal/archival when a rollout is complete
+([flag lifecycle and technical debt guidance](https://launchdarkly.com/docs/guides/flags/technical-debt)).
+GrowthBook remains the rollout implementation for Gurudevi; this is a governance
+comparison, not a recommendation to introduce another flag provider.
+
+Authorization should remain relationship-aware. OpenFGA describes roles as
+relationships that can be assigned more than once and supports contextual and
+parent-child authorization models ([roles and permissions](https://openfga.dev/docs/modeling/roles-and-permissions),
+[authorization concepts](https://openfga.dev/docs/authorization-concepts)). Cedar likewise
+evaluates a request using policies plus entities and context
+([Cedar entities and context](https://docs.cedarpolicy.com/auth/entities-syntax.html)).
+That supports Gurudevi's active-bond model: the registry declares the operation,
+while the active capacity/bond context determines whether the operation is
+authorized.
+
+## Recommended target pattern
+
+Use a small control-plane record per capability, with references rather than
+embedded policy:
+
+```text
+CapabilityCatalogEntry
+  id, owner, domain, lifecycle, platformSupport
+  action + subject
+  entitlement reference
+  optional rollout reference
+  renderer/route references
+  analytics identity
+```
+
+Keep these evaluators separate:
+
+```text
+catalog      → what exists
+router       → where it can be reached
+renderer     → how it appears
+Cedar        → whether this active relationship may act
+entitlement  → whether commercial access exists
+GrowthBook   → whether this cohort receives it now
+analytics    → what happened, never whether it is allowed
+```
+
+The most valuable next improvement is therefore not more flags. It is a
+read-only contract checker that joins these references and reports missing
+implementation, renderer, route, gate, analytics, and test evidence. It should
+fail CI for unsafe live/beta drift, while allowing intentionally hidden
+`development` entries.
 
 ## Capability lifecycle
 
@@ -120,7 +187,7 @@ The repository must continuously check:
 
 The quality workflow runs the strict audit on pull requests and on a weekly schedule, so overdue review dates are detected even when no code change is being proposed.
 
-The focused local verification command is `pnpm test:feature-lifecycle`; it covers the GrowthBook adapter, lifecycle policy and control-plane contract, Sanctuary composition, and stale snapshot behavior.
+The focused local verification command is `pnpm test:feature-lifecycle`; it covers the GrowthBook adapter, lifecycle policy and control-plane contract, Sanctuary composition, and stale snapshot behavior. These are unit/contract tests, not proof of route reachability or production registry wiring; the adversarial test review and required integration evidence are tracked in the [registry implementation audit](../../../../docs/current_progress/2026-08-31-gurudevi-registry-implementation-audit.md).
 
 The audit is report-only by default. Deletion and archival are deliberate migration actions, not automatic cleanup.
 

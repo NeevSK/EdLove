@@ -17,6 +17,8 @@ This file tracks which migration files have been applied to your Supabase databa
 
 ## Migration Status
 
+| `20260831090000_editorial_control_plane.sql` | ⏳ | - | Pending: server-owned editorial works, versions, authors, rights agreements, events, distribution deliveries, and private contributor submissions. Apply only after API persistence and production backup review. |
+
 | `20260726000000_feature_access_snapshot_contract.sql` | ⏳ | - | Adds the server-owned `permission_snapshots` and `policy_version` tables bound to the authenticated user and active bond. Apply before enabling scoped offline snapshots. |
 | `20260726000001_entity_scoped_permission_snapshots.sql` | ⏳ | - | Makes school context optional because active bonds may represent personal, classroom, community, or group entities. |
 | `20260726000002_canonicalize_citizenship_default.sql` | ⏳ | - | Migrates legacy WANDERER values to THIRD_CLASS and changes the database default for authenticated users. |

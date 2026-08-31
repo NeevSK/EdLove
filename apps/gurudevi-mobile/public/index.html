@@ -96,10 +96,9 @@
     <!-- Expo root element reset -->
     <style id="expo-reset">
       html, body { height: 100%; margin: 0; padding: 0; }
-      /* overflow:clip (not hidden) \u2014 avoids creating a scroll container so
-         hash navigation and browser scroll restoration work correctly. */
-      body { overflow: clip; }
-      #root { display: flex; height: 100%; flex: 1; flex-direction: column; }
+      /* Changed from overflow:clip to overflow:hidden - clip was blocking pointer events */
+      body { overflow: hidden; pointer-events: auto; }
+      #root { display: flex; height: 100%; flex: 1; flex-direction: column; pointer-events: auto; }
     </style>
 
     <!--
@@ -144,7 +143,7 @@
         position: absolute;
         top: -100px;
         left: 16px;
-        z-index: 9999;
+        z-index: 50;
         padding: 8px 16px;
         background: #D4843A;
         color: #F5EDD6;

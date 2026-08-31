@@ -10,7 +10,6 @@ import '@repo/ui/global.css';
 import { initPostHog, posthogAnalytics as initTracker } from '@repo/analytics/telemetry';
 import {
   disconnectPowerSync as clearPowerSync,
-  runStorageEvictionScheduler,
   usePolicyVersionInvalidation,
 } from '@repo/core/adapters/powersync';
 import { refreshPermissionSnapshotOnServer } from '@repo/core/api/authorization';
@@ -41,20 +40,20 @@ import { useEntitlementStore } from '@repo/core/store/useEntitlementStore';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';
 import { SyncManager } from '@repo/core/sync';
 import { useQRDeepLink } from '@repo/scanner-kit';
-import { BrandPulse, softCrossfadeScale } from '@repo/ui';
+import { BrandPulse, MascotProvider, softCrossfadeScale } from '@repo/ui';
 import AccountPinModal from '@repo/ui/components/AccountPinModal';
-import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
+import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import NetworkStatusBanner from '@repo/ui/components/NetworkStatusBanner';
 import { SanctuaryGlobalStyles } from '@repo/ui/components/SanctuaryGlobalStyles';
 import SanctuaryToast from '@repo/ui/components/SanctuaryToast';
 import { EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';
 import { FABProvider } from '@repo/ui/context/FABContext';
-import { GluestackUIProvider } from '@repo/ui/gluestack';
 import { Shield } from '@repo/ui/icons';
-import { Box, Center } from '@repo/ui/primitives';
+import { Box, Center, PortalProvider } from '@repo/ui/primitives';
 import { ToastProvider } from '@repo/ui/providers';
 import { FeatureProvider } from '@repo/ui/providers/FeatureProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Image as ExpoImage } from 'expo-image';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { Observe, ObserveErrorBoundary, ObserveInteractiveMarker, ObserveRoot } from 'expo-observe';
 import { Stack, usePathname, useRouter } from 'expo-router';
@@ -72,13 +71,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { scheduleNativeSplashHandoff } from '@/boot/nativeSplashHandoff';
+import { SoundFeedbackProvider } from '@/interaction/soundFeedback';
 import {
   getSessionRouteReadiness,
   hasUsableOfflineCapabilitySnapshot,
 } from '@/boot/sessionRouteReadiness';
 import { completeEssentialStartup } from '@/boot/startupCoordinator';
+import { fireflyArtworkByRole, fireflyArtworkByState, fireflyGuideArtwork } from '@/brand/mascotArtwork';
 import PDPAConsentModal from '@/components/PDPAConsentModal';
 import { PWAInstallBanner } from '@/components/web/PWAInstallBanner';
 import { fontAssets } from '@/constants/Fonts';
@@ -87,6 +89,7 @@ import {
   installMobileWorkflowEventBridge,
 } from '@/lib/inngestEvents';
 import { DeepLinkProvider } from '@/providers/DeepLinkProvider';
+import { runStorageEvictionScheduler } from '@/storage/retention-scheduler';
 
 void SplashScreen.preventAutoHideAsync().catch(() => {
   // Native splash is best-effort; the in-app fallback covers slow boots.
@@ -233,7 +236,11 @@ function BootstrapSideEffects() {
 
   // Run storage eviction scheduler once on app foreground (after consent is established).
   // This reclaims SQLite file size and MMKV storage for low-device constraint cases.
-  void runStorageEvictionScheduler();
+  useEffect(() => {
+    void runStorageEvictionScheduler().catch((err) => {
+      console.warn('[storage] eviction scheduler failed:', err);
+    });
+  }, []);
 
   useEffect(() => {
     // Only set Sentry user profile if consent is granted
@@ -403,6 +410,14 @@ function AppContent() {
     }
 
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      if (nextAppState === 'background') {
+        // Google Play's new bitmap metric samples background memory too. Once
+        // the UI is hidden, decoded image data is disposable and can be
+        // reloaded from expo-image's disk cache when the app returns.
+        void ExpoImage.clearMemoryCache().catch((error: unknown) => {
+          console.warn('[Memory] Unable to clear image memory cache:', error);
+        });
+      }
       if (nextAppState === 'active' && storage.getBoolean('require_biometrics')) {
         setIsUnlocked(false);
         void authenticateBiometrics();
@@ -505,8 +520,8 @@ function AppContent() {
 
   if (!isUnlocked) {
     return (
-      <SafeAreaProvider>
-        <GluestackUIProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider>
           <Center className="flex-1 bg-obsidian gap-6 p-6">
             <Center className="w-20 h-20 rounded-full bg-slate-900 border border-slate-800 items-center justify-center">
               <Shield size={40} color="#E0E7FF" />
@@ -555,21 +570,22 @@ function AppContent() {
                 allowClose={true}
               />
             )}
-          </Center>
-        </GluestackUIProvider>
-      </SafeAreaProvider>
+            </Center>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
     );
   }
 
   return (
-    <ErrorBoundary name="Root Shell">
-      <GluestackUIProvider>
-        <SanctuaryGlobalStyles />
-        <FABProvider>
-          <Box className="flex-1">
-            <ToastProvider>
-              <ExternalLinkProvider>
-                <SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ErrorBoundary name="Root Shell">
+        <>
+          <SanctuaryGlobalStyles />
+          <FABProvider>
+            <Box className="flex-1">
+              <ToastProvider>
+                <ExternalLinkProvider>
+                  <SafeAreaProvider>
                   <BootstrapSideEffects />
                   {routeGuardReady && <ObserveInteractiveMarker />}
                   <FeatureProvider>
@@ -627,13 +643,14 @@ function AppContent() {
                       onHide={hideToast}
                     />
                   )}
-                </SafeAreaProvider>
-              </ExternalLinkProvider>
-            </ToastProvider>
-          </Box>
-        </FABProvider>
-      </GluestackUIProvider>
-    </ErrorBoundary>
+                  </SafeAreaProvider>
+                </ExternalLinkProvider>
+              </ToastProvider>
+            </Box>
+          </FABProvider>
+        </>
+      </ErrorBoundary>
+    </GestureHandlerRootView>
   );
 }
 
@@ -713,33 +730,52 @@ function RootShell() {
   return (
     <ObserveRoot>
       <ObserveErrorBoundary>
-        <QueryClientProvider client={queryClient}>
-          {bootState.phase === 'ready' ? (
-            <GlobalProvider>
-              <EnvironmentProvider>
-                <DeepLinkProvider>
-                  <PushNotificationProvider>
-                    <Suspense fallback={<SuspenseFallback />}>
-                      <AppContent />
-                    </Suspense>
-                  </PushNotificationProvider>
-                </DeepLinkProvider>
-              </EnvironmentProvider>
-            </GlobalProvider>
-          ) : (
-            <FullScreenFallback
-              error={bootState.phase === 'failed' ? bootState.error : undefined}
-              onRetry={
-                bootState.phase === 'failed'
-                  ? () => setBootAttempt((attempt) => attempt + 1)
-                  : undefined
-              }
-            />
-          )}
-        </QueryClientProvider>
+        <PortalProvider>
+          <ErrorBoundary name="RootShell">
+            <QueryClientProvider client={queryClient}>
+            {bootState.phase === 'ready' ? (
+              <GlobalProvider>
+                <EnvironmentProvider>
+                  <SoundFeedbackProvider>
+                    <DeepLinkProvider>
+                      <PushNotificationProvider>
+                        <Suspense fallback={<SuspenseFallback />}>
+                          <MascotProvider
+                            config={{
+                              id: 'firefly',
+                              name: 'Gurudevi firefly guide',
+                              role: 'guide',
+                              theme: 'light',
+                              artwork: fireflyGuideArtwork,
+                              artworkByState: fireflyArtworkByState,
+                              artworkByRole: fireflyArtworkByRole,
+                            }}
+                          >
+                            <AppContent />
+                          </MascotProvider>
+                        </Suspense>
+                      </PushNotificationProvider>
+                    </DeepLinkProvider>
+                  </SoundFeedbackProvider>
+                </EnvironmentProvider>
+              </GlobalProvider>
+            ) : (
+              <FullScreenFallback
+                error={bootState.phase === 'failed' ? bootState.error : undefined}
+                onRetry={
+                  bootState.phase === 'failed'
+                    ? () => setBootAttempt((attempt) => attempt + 1)
+                    : undefined
+                }
+              />
+            )}
+            </QueryClientProvider>
+          </ErrorBoundary>
+        </PortalProvider>
       </ObserveErrorBoundary>
     </ObserveRoot>
   );
 }
 
+export { RouteErrorBoundary as ErrorBoundary };
 export default RootShell;

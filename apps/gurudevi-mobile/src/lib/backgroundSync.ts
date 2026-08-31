@@ -9,6 +9,7 @@
  * - Foreground sync coordination
  */
 
+import { evaluateEfficiency, normalizeNetworkConditions } from '@repo/core/efficiency';
 import { coreRuntime, useMutationQueue } from '@repo/core/logic';
 import { MUTATION_REGISTRY, sovereignBus } from '@repo/core/sync';
 import { BackgroundTaskResult, BackgroundTaskStatus } from '@repo/core/types';
@@ -29,6 +30,32 @@ const SYNC_CONFIG = {
 // ─── Dead Letter Queue Storage ────────────────────────────────────────────────
 
 const DEAD_LETTER_KEY = 'gurudevi:dead-letter-queue';
+
+async function getBackgroundSyncDecision() {
+  try {
+    const [{ getBatteryLevelAsync, getBatteryStateAsync }, NetInfo] = await Promise.all([
+      import('expo-battery'),
+      import('@react-native-community/netinfo'),
+    ]);
+    const [batteryLevel, batteryState, networkState] = await Promise.all([
+      getBatteryLevelAsync(),
+      getBatteryStateAsync(),
+      NetInfo.default.fetch(),
+    ]);
+
+    const normalizedNetwork = normalizeNetworkConditions(networkState as any);
+    return evaluateEfficiency('background-sync', {
+      appState: 'background',
+      network: normalizedNetwork.type,
+      isMetered: normalizedNetwork.isMetered,
+      batteryLevel,
+      isCharging: batteryState === 2,
+      freeDiskBytes: null,
+    });
+  } catch {
+    return { action: 'defer' as const, reason: 'device_state_unavailable' };
+  }
+}
 
 async function getDeadLetterQueue(): Promise<any[]> {
   try {
@@ -88,6 +115,12 @@ function calculateBackoff(retryCount: number): number {
 // ─── Task Definition ──────────────────────────────────────────────────────────
 
 export async function runBackgroundSyncTask() {
+  const decision = await getBackgroundSyncDecision();
+  if (decision.action === 'defer') {
+    console.log(`[BackgroundSync] Deferred by efficiency policy: ${decision.reason}`);
+    return BackgroundTaskResult.NoData;
+  }
+
   const { queue, removeFromQueue, setSyncing, updateMutation } = useMutationQueue.getState();
 
   if (queue.length === 0) {

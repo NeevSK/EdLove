@@ -1,7 +1,10 @@
 import { QRHandlerScreen } from '@repo/scanner-kit';
 import { BrandPulse } from '@repo/ui';
+import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Center } from '@repo/ui/primitives';
 import { Suspense } from 'react';
+
+export { RouteErrorBoundary as ErrorBoundary };
 
 function Fallback() {
   return (
@@ -13,8 +16,10 @@ function Fallback() {
 
 export default function QRRoute() {
   return (
-    <Suspense fallback={<Fallback />}>
-      <QRHandlerScreen />
-    </Suspense>
+    <ErrorBoundary name="QRRoute">
+      <Suspense fallback={<Fallback />}>
+        <QRHandlerScreen />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

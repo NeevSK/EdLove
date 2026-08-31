@@ -1,10 +1,14 @@
+import { authAPI } from '@repo/core/api/client';
 import { identityAPI } from '@repo/core/api/identity';
 import { BrandPulse } from '@repo/ui';
+import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Center } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
 import { useRouter } from 'expo-router';
 import { Suspense, useCallback } from 'react';
 import AuthScreen from '../src/screens/AuthScreen';
+
+export { RouteErrorBoundary as ErrorBoundary };
 
 function Fallback() {
   return (
@@ -35,9 +39,16 @@ export default function AuthRoute() {
     safeBack('/welcome');
   }, []);
 
+  const handleGuest = useCallback(async () => {
+    await authAPI.signInAnonymously();
+    router.replace('/onboarding');
+  }, [router]);
+
   return (
-    <Suspense fallback={<Fallback />}>
-      <AuthScreen onSuccess={handleSuccess} onBack={handleBack} />
-    </Suspense>
+    <ErrorBoundary name="AuthRoute">
+      <Suspense fallback={<Fallback />}>
+        <AuthScreen onSuccess={handleSuccess} onBack={handleBack} onContinueAsGuest={handleGuest} />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

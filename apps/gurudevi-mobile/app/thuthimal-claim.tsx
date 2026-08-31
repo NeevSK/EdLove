@@ -1,7 +1,10 @@
 import { ThuthimalClaimScreen } from '@repo/profile/own';
 import { BrandPulse } from '@repo/ui';
+import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Center } from '@repo/ui/primitives';
 import { Suspense } from 'react';
+
+export { RouteErrorBoundary as ErrorBoundary };
 
 function Fallback() {
   return (
@@ -13,8 +16,10 @@ function Fallback() {
 
 export default function ThuthimalClaimRoute() {
   return (
-    <Suspense fallback={<Fallback />}>
-      <ThuthimalClaimScreen />
-    </Suspense>
+    <ErrorBoundary name="ThuthimalClaimRoute">
+      <Suspense fallback={<Fallback />}>
+        <ThuthimalClaimScreen />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

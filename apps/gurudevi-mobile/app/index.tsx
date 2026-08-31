@@ -1,9 +1,12 @@
 import { BrandPulse } from '@repo/ui';
+import { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Center } from '@repo/ui/primitives';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef } from 'react';
 import { Platform } from 'react-native';
 import { LottieSplashScreen } from '@/components/LottieSplashScreen';
+
+export { RouteErrorBoundary as ErrorBoundary };
 
 export default function IndexRoute() {
   const router = useRouter();

@@ -1,8 +1,12 @@
 import { BrandPulse } from '@repo/ui';
+import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Center } from '@repo/ui/primitives';
 import WelcomeScreen from '@repo/ui/screens/WelcomeScreen';
 import { useRouter } from 'expo-router';
 import { Suspense, useCallback } from 'react';
+import { fireflyProductArtwork } from '@/brand/mascotArtwork';
+
+export { RouteErrorBoundary as ErrorBoundary };
 
 function Fallback() {
   return (
@@ -24,8 +28,14 @@ export default function WelcomeRoute() {
   }, [router]);
 
   return (
-    <Suspense fallback={<Fallback />}>
-      <WelcomeScreen onLogin={handleLogin} onGuest={handleGuest} />
-    </Suspense>
+    <ErrorBoundary name="WelcomeRoute">
+      <Suspense fallback={<Fallback />}>
+        <WelcomeScreen
+          exploreArtwork={fireflyProductArtwork.explore}
+          onLogin={handleLogin}
+          onGuest={handleGuest}
+        />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

@@ -5,6 +5,7 @@ import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverl
 import type { LucideIcon } from '@repo/ui/icons';
 import {
   Bell,
+  FileText,
   Heart,
   Library,
   Menu,
@@ -21,35 +22,43 @@ import { router, Slot, usePathname } from 'expo-router';
 import type React from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, type TextStyle, useWindowDimensions, type ViewStyle } from 'react-native';
+import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
+
+export { RouteErrorBoundary as ErrorBoundary };
 import {
   getResponsiveShellConfig,
   resolveResponsiveShellMode,
   webShellTokens,
 } from '@/lib/responsiveShell';
+import {
+  appNavigation,
+  getNavigationTitle,
+  isNavigationRouteActive,
+  type NavigationIconKey,
+} from '@/lib/navigation/appNavigation';
 import { PowerSyncProvider } from '@/providers/PowerSyncProvider';
 
-type NavItem = {
-  href: string;
-  icon: LucideIcon;
-  label: string;
-  group?: 'primary' | 'utility';
-  badge?: number;
-};
+type NavItem = (typeof appNavigation)[number] & { badge?: number };
 
-const PRIMARY_NAV: NavItem[] = [
-  { href: '/self', icon: Heart, label: 'Self' },
-  { href: '/workspace', icon: School, label: 'Workspace' },
-  { href: '/community', icon: Users, label: 'Community' },
-  { href: '/library', icon: Library, label: 'Library' },
-  { href: '/profile', icon: User, label: 'Profile' },
-  { href: '/durable-agents', icon: Sparkles, label: 'Agent Lab', group: 'utility' },
-];
+const navigationIcons: Record<NavigationIconKey, LucideIcon> = {
+  heart: Heart,
+  school: School,
+  'file-text': FileText,
+  users: Users,
+  library: Library,
+  user: User,
+  sparkles: Sparkles,
+  bell: Bell,
+  settings: Settings,
+};
 
 export default function WebTabsLayout() {
   return (
-    <PowerSyncProvider>
-      <WebTabsLayoutContent />
-    </PowerSyncProvider>
+    <ErrorBoundary name="WebTabsLayout">
+      <PowerSyncProvider>
+        <WebTabsLayoutContent />
+      </PowerSyncProvider>
+    </ErrorBoundary>
   );
 }
 
@@ -73,15 +82,9 @@ function WebTabsLayoutContent() {
 
   const navItems = useMemo<NavItem[]>(
     () => [
-      ...PRIMARY_NAV,
-      {
-        href: '/notifications',
-        icon: Bell,
-        label: 'Notifications',
-        group: 'utility',
-        badge: unreadCount,
-      },
-      { href: '/settings', icon: Settings, label: 'Settings', group: 'utility' },
+      ...appNavigation.map((item) =>
+        item.id === 'notifications' ? { ...item, badge: unreadCount } : item,
+      ),
     ],
     [unreadCount],
   );
@@ -94,7 +97,7 @@ function WebTabsLayoutContent() {
     router.push(href);
   }, []);
 
-  const pageTitle = getPageTitle(pathname);
+  const pageTitle = getNavigationTitle(pathname);
   const userLabel = user?.display_name || user?.email || 'Guest';
 
   useEffect(() => {
@@ -242,18 +245,18 @@ function WebNavigation({
 }: WebNavigationProps) {
   const labelsVisible = shell.navigation.labelsVisible;
   const isCompact = shell.navigation.layout === 'topbar';
-  const primaryItems = items.filter((item) => item.group !== 'utility');
-  const utilityItems = items.filter((item) => item.group === 'utility');
+  const primaryItems = items.filter((item) => item.surface === 'tab');
+  const utilityItems = items.filter((item) => item.surface === 'utility');
 
   const renderItem = (item: NavItem) => (
     <WebNavItemButton
       key={item.href}
-      active={isRouteActive(pathname, item.href)}
+      active={isNavigationRouteActive(pathname, item.href)}
       badge={item.badge}
       expanded={isCompact || labelsVisible}
       href={item.href}
-      icon={item.icon}
-      label={item.label}
+      icon={navigationIcons[item.iconKey]}
+      label={item.title}
       onNavigate={onNavigate}
     />
   );
@@ -436,21 +439,6 @@ function WebNavItemButton({
       )}
     </Pressable>
   );
-}
-
-function getPageTitle(pathname: string) {
-  if (pathname.startsWith('/notifications')) return 'Notifications';
-  if (pathname.startsWith('/settings')) return 'Settings';
-  if (pathname.startsWith('/community')) return 'Community';
-  if (pathname.startsWith('/workspace')) return 'Workspace';
-  if (pathname.startsWith('/library')) return 'Library';
-  if (pathname.startsWith('/profile')) return 'Profile';
-  if (pathname.startsWith('/durable-agents')) return 'Agent Lab';
-  return 'Self';
-}
-
-function isRouteActive(pathname: string, href: string) {
-  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 function getCanvasStyle(mode: ReturnType<typeof resolveResponsiveShellMode>): ViewStyle {

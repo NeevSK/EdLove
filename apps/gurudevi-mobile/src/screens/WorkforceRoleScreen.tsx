@@ -1,15 +1,13 @@
 import { Button, ButtonText, Heading, Input, InputField, Text, VStack } from '@repo/ui/primitives';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { workforceRegistry, WorkforceJobFamily } from '@repo/workforce';
+import type { WorkforceJobFamily } from '@repo/workforce';
 
 export function WorkforceRoleScreen() {
   const { t } = useTranslation();
   const [selectedFamily, setSelectedFamily] = useState<WorkforceJobFamily>('academic');
   const [employeeName, setEmployeeName] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const families = Object.values(WorkforceJobFamily);
+  const [loading] = useState(false);
 
   const handleAssign = useCallback(async () => {
     if (!employeeName.trim()) return;
@@ -43,7 +41,7 @@ export function WorkforceRoleScreen() {
           <Input className="bg-ink border-obsidian">
             <InputField
               value={selectedFamily}
-              onChangeText={setSelectedFamily}
+              onChangeText={(text) => setSelectedFamily(text as WorkforceJobFamily)}
               placeholder="Select job family"
               className="text-ink"
             />

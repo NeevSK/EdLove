@@ -1,7 +1,10 @@
 import { PublicFormScreenWeb } from '@repo/form-builder';
 import { BrandPulse } from '@repo/ui';
+import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Center } from '@repo/ui/primitives';
 import { Suspense } from 'react';
+
+export { RouteErrorBoundary as ErrorBoundary };
 
 function Fallback() {
   return (
@@ -13,8 +16,10 @@ function Fallback() {
 
 export default function PublicFormRoute() {
   return (
-    <Suspense fallback={<Fallback />}>
-      <PublicFormScreenWeb />
-    </Suspense>
+    <ErrorBoundary name="PublicFormRoute">
+      <Suspense fallback={<Fallback />}>
+        <PublicFormScreenWeb />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

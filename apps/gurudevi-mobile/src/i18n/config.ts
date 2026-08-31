@@ -9,7 +9,7 @@ import ta from '@/i18n/locales/ta.json';
 
 function deviceLanguage(): string {
   const code = getLocales()[0]?.languageCode;
-  return code && SUPPORTED_LNGS.includes(code) ? code : 'en';
+  return code && SUPPORTED_LNGS.includes(code as any) ? code : 'en';
 }
 
 // i18n configuration

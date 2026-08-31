@@ -2,6 +2,7 @@ import { useAuth } from '@repo/core/logic';
 import { useAuthStore } from '@repo/core/store';
 import { SyncManager } from '@repo/core/sync';
 import { registerTokenResolver, registerActiveBondIdResolver } from '@repo/core/api/clientRuntime';
+import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { SanctuaryGlobalStyles } from '@repo/ui/components/SanctuaryGlobalStyles';
 import { BrandPulse } from '@repo/ui';
 import { EnvironmentProvider, ExternalLinkProvider } from '@repo/ui/context';
@@ -59,12 +60,12 @@ export function SanctuaryProvider({ children }: SanctuaryProviderProps) {
   // Register oRPC client resolvers for automatic auth header injection
   React.useEffect(() => {
     registerTokenResolver(async () => {
-      const { session } = await useAuth().getAuthSession();
-      return session?.access_token ?? null;
+      const { data } = await supabaseClient.auth.getSession();
+      return data.session?.access_token ?? null;
     });
 
     registerActiveBondIdResolver(async () => {
-      return useAuthStore.getState().activeBondId ?? null;
+      return useAuthStore.getState().activeBond?.id ?? null;
     });
   }, []);
 

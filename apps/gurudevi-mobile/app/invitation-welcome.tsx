@@ -1,7 +1,10 @@
 import { InvitationWelcomeScreen } from '@repo/community/onboarding';
 import { BrandPulse } from '@repo/ui';
+import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Center } from '@repo/ui/primitives';
 import { Suspense } from 'react';
+
+export { RouteErrorBoundary as ErrorBoundary };
 
 function Fallback() {
   return (
@@ -13,8 +16,10 @@ function Fallback() {
 
 export default function InvitationWelcomeRoute() {
   return (
-    <Suspense fallback={<Fallback />}>
-      <InvitationWelcomeScreen />
-    </Suspense>
+    <ErrorBoundary name="InvitationWelcomeRoute">
+      <Suspense fallback={<Fallback />}>
+        <InvitationWelcomeScreen />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

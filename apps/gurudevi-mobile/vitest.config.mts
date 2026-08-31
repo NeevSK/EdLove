@@ -10,13 +10,17 @@ export default defineConfig({
     // Keeping this here avoids a separate vite-tsconfig-paths plugin and its
     // config-loader warning while preserving the mobile test import contract.
     tsconfigPaths: true,
-    alias: {
-      'react-native': resolve(import.meta.dirname, './vitest-react-native-mock.ts'),
-      'expo-sqlite': resolve(import.meta.dirname, './vitest-sqlite-mock.ts'),
-      'expo-modules-core': resolve(import.meta.dirname, './vitest-expo-modules-core-mock.ts'),
-      'expo-constants': resolve(import.meta.dirname, './vitest-expo-constants-mock.ts'),
-      '@cedar-policy/cedar-wasm/web': resolve(import.meta.dirname, './vitest-cedar-web-mock.ts'),
-    },
+    alias: [
+      {
+        find: /^@repo\/([^/]+)(\/.*)?$/,
+        replacement: `${resolve(import.meta.dirname, '../../packages')}/$1/src$2`,
+      },
+      { find: 'react-native', replacement: resolve(import.meta.dirname, './vitest-react-native-mock.ts') },
+      { find: 'expo-sqlite', replacement: resolve(import.meta.dirname, './vitest-sqlite-mock.ts') },
+      { find: 'expo-modules-core', replacement: resolve(import.meta.dirname, './vitest-expo-modules-core-mock.ts') },
+      { find: 'expo-constants', replacement: resolve(import.meta.dirname, './vitest-expo-constants-mock.ts') },
+      { find: '@cedar-policy/cedar-wasm/web', replacement: resolve(import.meta.dirname, './vitest-cedar-web-mock.ts') },
+    ],
   },
   test: {
     globals: true,

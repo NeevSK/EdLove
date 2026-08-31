@@ -10,7 +10,7 @@
  */
 
 import { coreRuntime } from '@repo/core/logic';
-import { BackgroundTaskResult } from '@repo/core/types/runtime';
+import { BackgroundTaskResult, BackgroundTaskStatus } from '@repo/core/types/runtime';
 
 export const STORAGE_EVICTION_TASK = 'gurudevi-storage-eviction';
 
@@ -34,7 +34,7 @@ export async function registerStorageEvictionTask(): Promise<void> {
   try {
     const status = await coreRuntime.backgroundTask.getStatusAsync();
 
-    if (status === 'restricted' || status === 'denied') {
+    if (status === BackgroundTaskStatus.Restricted || status === BackgroundTaskStatus.Denied) {
       console.warn(
         '[StorageEvictionTask] OS has restricted background tasks. Scheduler will run on foreground only.',
       );

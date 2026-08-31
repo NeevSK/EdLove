@@ -1,5 +1,12 @@
+import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { NotificationsScreen } from '@repo/ui/screens';
 
+export { RouteErrorBoundary as ErrorBoundary };
+
 export default function NotificationsRoute() {
-  return <NotificationsScreen />;
+  return (
+    <ErrorBoundary name="NotificationsScreen">
+      <NotificationsScreen />
+    </ErrorBoundary>
+  );
 }

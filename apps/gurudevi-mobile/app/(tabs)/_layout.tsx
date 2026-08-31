@@ -2,8 +2,9 @@ import { useNotifications, useRewards } from '@repo/core/hooks';
 import { usePermissions, useStore } from '@repo/core/logic';
 import { BreathGuide } from '@repo/self/wellbeing';
 import AchievementUnlockOverlay from '@repo/ui/components/AchievementUnlockOverlay';
+import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
-import { Bell, Heart, Library, School, Settings, User, Users, X } from '@repo/ui/icons';
+import { Bell, FileText, Heart, Library, School, Settings, User, Users, X } from '@repo/ui/icons';
 import { Box, Modal, ModalContent, Pressable, Text } from '@repo/ui/primitives';
 import { tokens } from '@repo/ui/tokens';
 import { router, Tabs, usePathname } from 'expo-router';
@@ -11,13 +12,18 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getNativeShellConfig } from '@/lib/responsiveShell';
+import { getNavigationTitle } from '@/lib/navigation/appNavigation';
 import { PowerSyncProvider } from '@/providers/PowerSyncProvider';
+
+export { RouteErrorBoundary as ErrorBoundary };
 
 export default function TabsLayout() {
   return (
-    <PowerSyncProvider>
-      <TabsLayoutContent />
-    </PowerSyncProvider>
+    <ErrorBoundary name="TabsLayout">
+      <PowerSyncProvider>
+        <TabsLayoutContent />
+      </PowerSyncProvider>
+    </ErrorBoundary>
   );
 }
 
@@ -41,16 +47,7 @@ function TabsLayoutContent() {
   const isBreathingOpen = useStore((state) => state.isBreathingOpen ?? false);
   const setBreathingOpen = useStore((state) => state.setBreathingOpen ?? (() => {}));
 
-  const title = useMemo(() => {
-    if (pathname.startsWith('/workspace')) return 'Workspace';
-    if (pathname.startsWith('/community')) return 'Community';
-    if (pathname.startsWith('/library')) return 'Library';
-    if (pathname.startsWith('/profile')) return 'Profile';
-    if (pathname.startsWith('/settings')) return 'Settings';
-    if (pathname.startsWith('/notifications')) return 'Notifications';
-    if (pathname.startsWith('/durable-agents')) return 'Agent Lab';
-    return 'Self';
-  }, [pathname]);
+  const title = getNavigationTitle(pathname);
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
@@ -104,6 +101,24 @@ function TabsLayoutContent() {
                     paddingHorizontal: shell.header.horizontalPadding - tokens.spacing.md,
                   }}
                 >
+                  {pathname.startsWith('/workspace') ? (
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel="Open editorial workspace"
+                      accessibilityHint="Write or review editorial submissions"
+                      onPress={() => router.push('/workspace/editorial')}
+                      style={{
+                        width: tokens.interaction.minTouchTarget,
+                        height: tokens.interaction.minTouchTarget,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: tokens.radii.full,
+                        backgroundColor: tokens.semantic.surface.interactive,
+                      }}
+                    >
+                      <FileText size={18} color={tokens.semantic.text.primary} />
+                    </Pressable>
+                  ) : null}
                   <Pressable
                     accessibilityRole="button"
                     accessibilityLabel="Open notifications"
