@@ -1,0 +1,945 @@
+{
+  "generatedAt": "2026-08-30T19:48:57.614Z",
+  "entryCount": 27,
+  "counts": {
+    "evidence": 18,
+    "development-by-contract": 5,
+    "unverified": 4
+  },
+  "entries": [
+    {
+      "registry": "ADMIN_REGISTRY",
+      "key": "principal",
+      "id": "principal",
+      "ownerPackage": "admin",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/admin/src/approvals.ts",
+        "packages/admin/src/bridge/founderWorkspace.ts",
+        "packages/admin/src/bridge/PrincipalNativeDashboardShell.tsx",
+        "packages/admin/src/bridge/principalWorkspaceShell.tsx",
+        "packages/admin/src/calendar.ts",
+        "packages/admin/src/components/index.ts",
+        "packages/admin/src/components/onboarding/PrincipalOnboardingView.tsx",
+        "packages/admin/src/components/principal/CurriculumPulse.tsx"
+      ],
+      "consumerEvidence": [
+        "packages/admin/src/hooks/useAdminWorkspaceSurfaces.tsx"
+      ],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/demo-fee.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/founder.tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/admin/src/constants/adminRegistry.ts",
+      "verdict": "evidence"
+    },
+    {
+      "registry": "ADMIN_REGISTRY",
+      "key": "section-head",
+      "id": "section-head",
+      "ownerPackage": "admin",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/admin/src/hooks/useAdminWorkspaceSurfaces.tsx"
+      ],
+      "consumerEvidence": [
+        "packages/admin/src/hooks/useAdminWorkspaceSurfaces.tsx"
+      ],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/demo-fee.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/founder.tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/admin/src/constants/adminRegistry.ts",
+      "verdict": "evidence"
+    },
+    {
+      "registry": "ADMIN_REGISTRY",
+      "key": "grade-head",
+      "id": "grade-head",
+      "ownerPackage": "admin",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/admin/src/hooks/useAdminWorkspaceSurfaces.tsx"
+      ],
+      "consumerEvidence": [
+        "packages/admin/src/hooks/useAdminWorkspaceSurfaces.tsx"
+      ],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/demo-fee.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/founder.tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/admin/src/constants/adminRegistry.ts",
+      "verdict": "evidence"
+    },
+    {
+      "registry": "ADMIN_REGISTRY",
+      "key": "staff-management",
+      "id": "staff-management",
+      "ownerPackage": "admin",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/admin/src/screens/AdminDashboard.tsx"
+      ],
+      "consumerEvidence": [
+        "packages/admin/src/screens/AdminDashboard.tsx"
+      ],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/demo-fee.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/founder.tsx"
+      ],
+      "mobileSupport": false,
+      "webSupport": true,
+      "registryFile": "packages/admin/src/constants/adminRegistry.ts",
+      "verdict": "evidence"
+    },
+    {
+      "registry": "ADMIN_REGISTRY",
+      "key": "guardian-workspace",
+      "id": "guardian-workspace",
+      "ownerPackage": "admin",
+      "state": "beta",
+      "flagKey": "isGuardianWorkspaceEnabled",
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/admin/src/guardian/useGuardianWorkspaceCanvas.tsx",
+        "packages/admin/src/screens/GuardianDashboard.tsx"
+      ],
+      "consumerEvidence": [
+        "packages/admin/src/screens/GuardianDashboard.tsx"
+      ],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/demo-fee.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/founder.tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/admin/src/constants/adminRegistry.ts",
+      "verdict": "evidence"
+    },
+    {
+      "registry": "ADMIN_REGISTRY",
+      "key": "inventory",
+      "id": "inventory",
+      "ownerPackage": "admin",
+      "state": "development",
+      "flagKey": "isInventoryEnabled",
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/admin/src/admin/adminRepository.ts",
+        "packages/admin/src/admin/useAdminWorkspaceCanvas.tsx",
+        "packages/admin/src/admin/useAdminWorkspaceData.ts",
+        "packages/admin/src/bridge/founderWorkspace.ts",
+        "packages/admin/src/components/principal/PrincipalModuleAtlas.tsx",
+        "packages/admin/src/components/principal/ResourceNeedsDashboard.tsx",
+        "packages/admin/src/founder/useFounderWorkspaceCanvas.tsx",
+        "packages/admin/src/founder/workspace.ts"
+      ],
+      "consumerEvidence": [
+        "packages/admin/src/founder/useFounderWorkspaceCanvas.tsx"
+      ],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/demo-fee.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/founder.tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/admin/src/constants/adminRegistry.ts",
+      "verdict": "development-by-contract"
+    },
+    {
+      "registry": "ADMIN_REGISTRY",
+      "key": "accounting",
+      "id": "accounting",
+      "ownerPackage": "admin",
+      "state": "development",
+      "flagKey": "isAccountingEnabled",
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/admin/src/components/principal/PrincipalModuleAtlas.tsx",
+        "packages/admin/src/principal/workspace.ts"
+      ],
+      "consumerEvidence": [],
+      "route": "tab-only",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/demo-fee.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/founder.tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/admin/src/constants/adminRegistry.ts",
+      "verdict": "development-by-contract"
+    },
+    {
+      "registry": "ADMIN_REGISTRY",
+      "key": "workspace-shell",
+      "id": "workspace-shell",
+      "ownerPackage": "admin",
+      "state": "development",
+      "flagKey": "isDevelopingWorkspace",
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/admin/src/bridge/PrincipalNativeDashboardShell.tsx"
+      ],
+      "consumerEvidence": [
+        "packages/admin/src/bridge/PrincipalNativeDashboardShell.tsx"
+      ],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/demo-fee.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/founder.tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/admin/src/constants/adminRegistry.ts",
+      "verdict": "development-by-contract"
+    },
+    {
+      "registry": "AI_REGISTRY",
+      "key": "ai-assistant",
+      "id": "ai-assistant",
+      "ownerPackage": "ai",
+      "state": "beta",
+      "flagKey": "isAIAssistantEnabled",
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/ai/src/screens/AIAssistantScreen.tsx",
+        "packages/ai/src/screens/AIAssistantScreen.web.tsx"
+      ],
+      "consumerEvidence": [
+        "packages/ai/src/screens/AIAssistantScreen.tsx"
+      ],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/demo-fee.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/founder.tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/ai/src/constants/aiRegistry.ts",
+      "verdict": "evidence"
+    },
+    {
+      "registry": "CLASSROOM_REGISTRY",
+      "key": "teacher",
+      "id": "teacher",
+      "ownerPackage": "classroom",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/classroom/src/components/ClaimInviteModal.tsx",
+        "packages/classroom/src/components/ClassroomEchoSection.tsx",
+        "packages/classroom/src/components/ClassroomHolisticInsights.tsx",
+        "packages/classroom/src/components/ClassroomList.tsx",
+        "packages/classroom/src/components/ClassroomNotes.tsx",
+        "packages/classroom/src/components/CreateClassroomModal.tsx",
+        "packages/classroom/src/components/grading/GradeEntryForm.tsx",
+        "packages/classroom/src/components/grading/ReportCard.tsx"
+      ],
+      "consumerEvidence": [
+        "packages/classroom/src/workspace/useClassroomWorkspaceSurfaces.tsx"
+      ],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/demo-fee.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/founder.tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/classroom/src/constants/classroomRegistry.ts",
+      "verdict": "evidence"
+    },
+    {
+      "registry": "CLASSROOM_REGISTRY",
+      "key": "student",
+      "id": "student",
+      "ownerPackage": "classroom",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/classroom/src/analytics.ts",
+        "packages/classroom/src/components/AddStudentModal.tsx",
+        "packages/classroom/src/components/AttendanceSheet.tsx",
+        "packages/classroom/src/components/AttendanceView.tsx",
+        "packages/classroom/src/components/BulkStudentCreation.tsx",
+        "packages/classroom/src/components/ClaimInviteModal.tsx",
+        "packages/classroom/src/components/ClassroomEchoSection.tsx",
+        "packages/classroom/src/components/ClassroomHolisticInsights.tsx"
+      ],
+      "consumerEvidence": [
+        "packages/classroom/src/workspace/useClassroomWorkspaceSurfaces.tsx"
+      ],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/demo-fee.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/founder.tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/classroom/src/constants/classroomRegistry.ts",
+      "verdict": "evidence"
+    },
+    {
+      "registry": "COMMUNITY_REGISTRY",
+      "key": "hearth",
+      "id": "hearth",
+      "ownerPackage": "community",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/community/src/components/CommentSheet.tsx",
+        "packages/community/src/components/CommunityHearth.tsx",
+        "packages/community/src/components/CreatePostModal.tsx",
+        "packages/community/src/components/index.ts",
+        "packages/community/src/screens/CommunityScreen.tsx",
+        "packages/community/src/screens/CommunityScreen.web.tsx",
+        "packages/community/src/screens/communityWorkspace.shared.ts",
+        "packages/community/src/screens/GroupsScreen.tsx"
+      ],
+      "consumerEvidence": [
+        "packages/community/src/components/CommentSheet.tsx",
+        "packages/community/src/components/CreatePostModal.tsx",
+        "packages/community/src/screens/CommunityScreen.tsx",
+        "packages/community/src/screens/CommunityScreen.web.tsx",
+        "packages/community/src/screens/GroupsScreen.tsx"
+      ],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/community/chat/[conversationId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/direct-messages/[conversationId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/direct-messages.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/groups/[groupId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/profile/[id].tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/community/src/constants/communityRegistry.ts",
+      "verdict": "evidence"
+    },
+    {
+      "registry": "COMMUNITY_REGISTRY",
+      "key": "circles",
+      "id": "circles",
+      "ownerPackage": "community",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/community/src/screens/CommunityScreen.tsx",
+        "packages/community/src/screens/CommunityScreen.web.tsx",
+        "packages/community/src/screens/communityWorkspace.shared.ts",
+        "packages/community/src/screens/GroupsScreen.tsx",
+        "packages/community/src/workspace/useCommunityWorkspaceSurfaces.js",
+        "packages/community/src/workspace/useCommunityWorkspaceSurfaces.ts"
+      ],
+      "consumerEvidence": [
+        "packages/community/src/workspace/useCommunityWorkspaceSurfaces.js",
+        "packages/community/src/workspace/useCommunityWorkspaceSurfaces.ts"
+      ],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/community/chat/[conversationId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/direct-messages/[conversationId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/direct-messages.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/groups/[groupId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/profile/[id].tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/community/src/constants/communityRegistry.ts",
+      "verdict": "evidence"
+    },
+    {
+      "registry": "COMMUNITY_REGISTRY",
+      "key": "messages",
+      "id": "messages",
+      "ownerPackage": "community",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/community/src/api/community.ts",
+        "packages/community/src/chat.ts",
+        "packages/community/src/index.ts",
+        "packages/community/src/navigation/communityRoutes.test.ts",
+        "packages/community/src/navigation/communityRoutes.ts",
+        "packages/community/src/screens/BaseChatScreen.tsx",
+        "packages/community/src/screens/CommunityScreen.tsx",
+        "packages/community/src/screens/CommunityScreen.web.tsx"
+      ],
+      "consumerEvidence": [
+        "packages/community/src/screens/CommunityScreen.tsx",
+        "packages/community/src/screens/CommunityScreen.web.tsx",
+        "packages/community/src/screens/UserPublicProfileScreen.tsx",
+        "packages/community/src/workspace/useCommunityWorkspaceSurfaces.js",
+        "packages/community/src/workspace/useCommunityWorkspaceSurfaces.ts"
+      ],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/community/chat/[conversationId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/direct-messages/[conversationId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/direct-messages.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/groups/[groupId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/profile/[id].tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/community/src/constants/communityRegistry.ts",
+      "verdict": "evidence"
+    },
+    {
+      "registry": "COMMUNITY_REGISTRY",
+      "key": "trust",
+      "id": "trust",
+      "ownerPackage": "community",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/community/src/screens/CommunityScreen.web.tsx",
+        "packages/community/src/screens/communityWorkspace.shared.ts"
+      ],
+      "consumerEvidence": [],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/community/chat/[conversationId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/direct-messages/[conversationId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/direct-messages.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/groups/[groupId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/community/profile/[id].tsx",
+        "apps/gurudevi-mobile/app/icon-lab.tsx",
+        "apps/gurudevi-mobile/app/icon-lab.web.tsx"
+      ],
+      "mobileSupport": false,
+      "webSupport": true,
+      "registryFile": "packages/community/src/constants/communityRegistry.ts",
+      "verdict": "evidence"
+    },
+    {
+      "registry": "FORM_BUILDER_REGISTRY",
+      "key": "form-builder",
+      "id": "form-builder",
+      "ownerPackage": "form-builder",
+      "state": "development",
+      "flagKey": "isDevelopingFormBuilder",
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/form-builder/src/apps/index.ts",
+        "packages/form-builder/src/apps/resilience-sensing-schema.ts",
+        "packages/form-builder/src/components/index.ts",
+        "packages/form-builder/src/DynamicFormDemo.tsx",
+        "packages/form-builder/src/engine/index.ts",
+        "packages/form-builder/src/FormBuilder.tsx",
+        "packages/form-builder/src/index.ts",
+        "packages/form-builder/src/NativeForm.tsx"
+      ],
+      "consumerEvidence": [
+        "packages/form-builder/src/FormBuilder.tsx"
+      ],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/demo-fee.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/founder.tsx"
+      ],
+      "mobileSupport": false,
+      "webSupport": true,
+      "registryFile": "packages/form-builder/src/constants/formBuilderRegistry.ts",
+      "verdict": "development-by-contract"
+    },
+    {
+      "registry": "LIBRARY_REGISTRY",
+      "key": "archive",
+      "id": "archive",
+      "ownerPackage": "library",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/library/src/screens/CuratorReviewScreen.tsx",
+        "packages/library/src/screens/LibraryScreen.tsx"
+      ],
+      "consumerEvidence": [
+        "packages/library/src/screens/CuratorReviewScreen.tsx",
+        "packages/library/src/screens/LibraryScreen.tsx"
+      ],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/library/collections/[id].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/document/[resourceId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/document-scanner.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/map.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/resource/[resourceId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/review.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/tools/cloud-export.tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/library/src/constants/libraryRegistry.ts",
+      "verdict": "evidence"
+    },
+    {
+      "registry": "LIBRARY_REGISTRY",
+      "key": "hub",
+      "id": "hub",
+      "ownerPackage": "library",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/library/src/entrypoints/browse.ts",
+        "packages/library/src/entrypoints/tools.ts",
+        "packages/library/src/screens/index.ts",
+        "packages/library/src/screens/LibraryScreen.web.tsx",
+        "packages/library/src/screens/ResourceHubScreen.tsx",
+        "packages/library/src/screens/ToolsHubScreen.tsx"
+      ],
+      "consumerEvidence": [],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/library/collections/[id].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/document/[resourceId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/document-scanner.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/map.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/resource/[resourceId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/review.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/tools/cloud-export.tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/library/src/constants/libraryRegistry.ts",
+      "verdict": "evidence"
+    },
+    {
+      "registry": "LIBRARY_REGISTRY",
+      "key": "curator",
+      "id": "curator",
+      "ownerPackage": "library",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/library/src/components/ResourceList.tsx",
+        "packages/library/src/entrypoints/curation.ts",
+        "packages/library/src/screens/CuratorReviewScreen.tsx",
+        "packages/library/src/screens/index.ts",
+        "packages/library/src/screens/LibraryScreen.tsx",
+        "packages/library/src/screens/LibraryScreen.web.tsx"
+      ],
+      "consumerEvidence": [],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/library/collections/[id].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/document/[resourceId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/document-scanner.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/map.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/resource/[resourceId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/review.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/library/tools/cloud-export.tsx"
+      ],
+      "mobileSupport": false,
+      "webSupport": true,
+      "registryFile": "packages/library/src/constants/libraryRegistry.ts",
+      "verdict": "evidence"
+    },
+    {
+      "registry": "SELF_REGISTRY",
+      "key": "journey",
+      "id": "journey",
+      "ownerPackage": "self",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/self/src/components/AcademicHistoryTimeline.tsx",
+        "packages/self/src/components/BaseSelfView.tsx",
+        "packages/self/src/components/FeaturePicker.tsx",
+        "packages/self/src/components/GenesisNode.tsx",
+        "packages/self/src/components/OrientationCaptureStep.tsx",
+        "packages/self/src/components/ProgressTree.tsx",
+        "packages/self/src/components/ProgressTree.web.tsx",
+        "packages/self/src/components/ResonanceTimeline.tsx"
+      ],
+      "consumerEvidence": [],
+      "route": "tab-only",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/self/ai-assistant.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/self/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/self/wisdom/[id].tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/self/src/constants/selfRegistry.ts",
+      "verdict": "unverified"
+    },
+    {
+      "registry": "SELF_REGISTRY",
+      "key": "pulse",
+      "id": "pulse",
+      "ownerPackage": "self",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/self/src/components/archive/ShadowAgentDrawer.web.tsx",
+        "packages/self/src/components/BaseSelfView.tsx",
+        "packages/self/src/components/BreathGuide.web.tsx",
+        "packages/self/src/components/CommunityPresence.tsx",
+        "packages/self/src/components/CommunityPresence.web.tsx",
+        "packages/self/src/components/DailyContentCard.web.tsx",
+        "packages/self/src/components/DailyRhythm.web.tsx",
+        "packages/self/src/components/EnergyBarChart.tsx"
+      ],
+      "consumerEvidence": [],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/self/ai-assistant.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/self/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/self/wisdom/[id].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/principal.tsx",
+        "apps/gurudevi-mobile/app/a-i-assistant.tsx",
+        "apps/gurudevi-mobile/app/auth.tsx",
+        "apps/gurudevi-mobile/app/index.tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/self/src/constants/selfRegistry.ts",
+      "verdict": "evidence"
+    },
+    {
+      "registry": "SELF_REGISTRY",
+      "key": "growth",
+      "id": "growth",
+      "ownerPackage": "self",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/self/src/api/self.ts",
+        "packages/self/src/api/thoughtRecordRepository.ts",
+        "packages/self/src/components/AcademicHistoryTimeline.tsx",
+        "packages/self/src/components/archive/ShadowAgentDrawer.tsx",
+        "packages/self/src/components/GovernanceHistoryTimeline.tsx",
+        "packages/self/src/components/MyGradesView.web.tsx",
+        "packages/self/src/components/ProgressTree.tsx",
+        "packages/self/src/components/ProgressTree.web.tsx"
+      ],
+      "consumerEvidence": [],
+      "route": "tab-only",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/self/ai-assistant.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/self/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/self/wisdom/[id].tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/self/src/constants/selfRegistry.ts",
+      "verdict": "unverified"
+    },
+    {
+      "registry": "SELF_REGISTRY",
+      "key": "care",
+      "id": "care",
+      "ownerPackage": "self",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/self/src/components/RemindersManager.tsx",
+        "packages/self/src/components/SleepTracker.tsx",
+        "packages/self/src/features/featureCatalog.ts",
+        "packages/self/src/features/__tests__/accessPolicy.test.ts",
+        "packages/self/src/screens/self/GuardianSelfView.tsx",
+        "packages/self/src/screens/self/GuardianSelfView.web.tsx",
+        "packages/self/src/screens/SelfScreen.unified.tsx"
+      ],
+      "consumerEvidence": [],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/self/ai-assistant.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/self/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/self/wisdom/[id].tsx",
+        "apps/gurudevi-mobile/app/icon-lab.tsx",
+        "apps/gurudevi-mobile/app/icon-lab.web.tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/self/src/constants/selfRegistry.ts",
+      "verdict": "evidence"
+    },
+    {
+      "registry": "SELF_REGISTRY",
+      "key": "reflection",
+      "id": "reflection",
+      "ownerPackage": "self",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/self/src/api/thoughtRecordRepository.ts",
+        "packages/self/src/components/archive/ShadowAgentDrawer.tsx",
+        "packages/self/src/components/archive/ShadowAgentDrawer.web.tsx",
+        "packages/self/src/components/BaseSelfView.tsx",
+        "packages/self/src/components/BaseSelfView.web.tsx",
+        "packages/self/src/components/GratitudeGlimmers.tsx",
+        "packages/self/src/components/MoodPickerCard.tsx",
+        "packages/self/src/components/ProgressTree.tsx"
+      ],
+      "consumerEvidence": [],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/self/ai-assistant.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/self/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/self/wisdom/[id].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/self/src/constants/selfRegistry.ts",
+      "verdict": "evidence"
+    },
+    {
+      "registry": "SELF_REGISTRY",
+      "key": "working",
+      "id": "working",
+      "ownerPackage": "self",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/self/src/features/featureCatalog.ts",
+        "packages/self/src/screens/self/AdminSelfView.tsx",
+        "packages/self/src/screens/self/PrincipalSelfView.tsx",
+        "packages/self/src/screens/self/PrincipalSelfView.web.tsx",
+        "packages/self/src/screens/self/roleResolution.ts",
+        "packages/self/src/screens/self/TeacherSelfView.tsx",
+        "packages/self/src/screens/self/TeacherSelfView.web.tsx"
+      ],
+      "consumerEvidence": [],
+      "route": "tab-only",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/self/ai-assistant.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/self/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/self/wisdom/[id].tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/self/src/constants/selfRegistry.ts",
+      "verdict": "unverified"
+    },
+    {
+      "registry": "SELF_REGISTRY",
+      "key": "leadership",
+      "id": "leadership",
+      "ownerPackage": "self",
+      "state": "live",
+      "flagKey": null,
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/self/src/components/CommunityPresence.tsx",
+        "packages/self/src/components/GovernanceHistoryTimeline.tsx",
+        "packages/self/src/components/SchoolLegacyTimeline.tsx",
+        "packages/self/src/features/featureCatalog.ts",
+        "packages/self/src/screens/self/PrincipalSelfView.tsx",
+        "packages/self/src/screens/self/PrincipalSelfView.web.tsx"
+      ],
+      "consumerEvidence": [],
+      "route": "tab-only",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/self/ai-assistant.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/self/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/self/wisdom/[id].tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/self/src/constants/selfRegistry.ts",
+      "verdict": "unverified"
+    },
+    {
+      "registry": "WORKFORCE_REGISTRY",
+      "key": "workforce",
+      "id": "workforce",
+      "ownerPackage": "workforce",
+      "state": "development",
+      "flagKey": "isDevelopingWorkforce",
+      "lifecycle": "valid",
+      "flagMapping": "valid",
+      "implementation": "evidence",
+      "implementationEvidence": [
+        "packages/workforce/src/index.ts",
+        "packages/workforce/src/WorkforceShell.tsx"
+      ],
+      "consumerEvidence": [
+        "packages/workforce/src/WorkforceShell.tsx"
+      ],
+      "route": "evidence",
+      "routeEvidence": [
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/reflect.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/student/[classroomId].tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/attendance.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/gradebook.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/classroom/[classroomId]/index.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/demo-fee.tsx",
+        "apps/gurudevi-mobile/app/(tabs)/workspace/founder.tsx"
+      ],
+      "mobileSupport": true,
+      "webSupport": true,
+      "registryFile": "packages/workforce/src/constants/workforceRegistry.ts",
+      "verdict": "development-by-contract"
+    }
+  ]
+}

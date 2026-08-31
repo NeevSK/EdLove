@@ -31,6 +31,9 @@ required.
   from relationship queries; the worker rechecks classroom/student membership;
   run reads require the requester, classroom teacher, authorized school leader,
   or platform administrator.
+  The worker now also rechecks the original requester's current classroom or
+  school/platform authority immediately before reading evidence, closing the
+  enqueue-to-execution revocation window.
 - Missing oRPC contract members now fail composition rather than receiving an
   inferred POST route and inferred policy. The missing community, educational,
   and profile contracts surfaced by that change were declared explicitly.
@@ -44,12 +47,38 @@ required.
   child-membership, device-trust, or network-zone headers as authority. Until a
   verified attestation/gateway source is introduced, device trust defaults to
   `standard` and network zone to `untrusted`.
+- The contract audit now imports the native Hono mount inventory and includes
+  `journalEntries`, `learningReflections`, and `rewards`. It found and closed
+  the missing mount aliases before becoming a gate (224 contract routes / 38
+  sources / 0 errors / 0 warnings after the rewards client migration).
+- Rewards authorization now binds nested `query.userId` and `body.userId` to
+  the Cedar resource rather than authorizing the caller and then querying an
+  arbitrary user. Direct points and badge grants additionally require a
+  platform administrator; self-service rewards mutations remain limited to
+  server-derived achievement evaluation.
 
 Still open: durable results need a minimized/redacted read model; payment
 provider transaction IDs and reconciliation are not implemented; classroom and
 guardian relationship attributes need authoritative hydration instead of the
 current deny-by-default empty sets; and the runtime/OpenAPI/client inventories
 remain divergent.
+
+### Dependency integrity blocker (2026-08-30)
+
+The installed AI family was internally incompatible: `@tanstack/ai-anthropic`
+0.16.9 declared a peer on `@tanstack/ai` ^0.47.1 while the workspace resolved
+core 0.43.1. Importing the Anthropic adapter failed because
+`assertUniqueToolNames` was absent from the installed core package.
+
+The workspace now resolves one compatible family: core 0.52.0, Anthropic
+0.18.3, Gemini 0.26.4, and OpenAI 0.22.3. The Anthropic adapter import was
+verified after the update. The lockfile's two-document form is produced by the
+pnpm 12 package-manager dependency mechanism; it must remain reproducible with
+the repository's declared pnpm version and should not be manually trimmed.
+
+This does not establish release confidence. The focused rewards Vitest command
+starts but does not reach its first test in this environment, so the test
+runtime/harness remains a separate stop-ship verification problem.
 
 ### Critical — durable-agent tenant boundary bypass
 
@@ -140,9 +169,9 @@ reconciliation/audit record before changing entitlements.
 - `learningReflections` is registered in the router and claimed as mounted in
   a feature plan, while its client calls `/api/classroom/learning-reflections`;
   the native mount registry contains neither path and there is no route test.
-- The contract audit's explicit source list omits live `journalEntries` and
-  `rewards` router domains, so “194 routes / 0 findings” is incomplete rather
-  than a full API coverage assertion.
+- The contract audit verifies the rewards migration to the oRPC client, but it
+  does not yet prove every client call in every domain is runtime-reachable or
+  authenticated against a real deployment.
 - The checked-in OpenAPI snapshot advertises 15 paths under namespaces without
   a matching native mount, creating phantom external API coverage and likely
   404s for documented operations.

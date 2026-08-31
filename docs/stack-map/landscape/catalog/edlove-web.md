@@ -6,7 +6,9 @@ edlove.org — public face of the EdLove ecosystem.
 
 ## Workspace packages used
 
-_None (no workspace deps)._
+| Package | Layer | Purpose |
+| :--- | :--- | :--- |
+| [@repo/editorial](../stack-map.md#repoeditorial) | domain | Provider-neutral editorial publishing contracts and distribution ledger |
 
 ## External deps (10 direct)
 

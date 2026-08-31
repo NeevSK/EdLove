@@ -365,8 +365,8 @@
       "name": "rewards",
       "contractFile": "rewards.orpc.contract.ts",
       "handlerFile": "rewards.ts",
-      "protocol": "direct-supabase",
-      "clientStatus": "legacy-direct",
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
       "clientFiles": [
         "packages/core/src/api/rewards.ts"
       ]
@@ -716,10 +716,10 @@
         "packages/core/src/api/identity.ts"
       ],
       "clientCalls": [
-        "client.api as any).identity.profile[':id'].$get",
-        "client.api as any).identity.profile[':id'].$patch",
-        "client.api as any).identity.resolveIdentity.$get",
-        "client.api as any).identity['classroom-capacity-summary'][':id'].$get"
+        "orpcClient.identity.fetchUserProfile",
+        "orpcClient.identity.identifyActiveCitizen",
+        "orpcClient.identity.modifyUserProfile",
+        "orpcClient.identity.resolveWorkspaceContext"
       ],
       "hasResponses": true
     },
@@ -738,10 +738,10 @@
         "packages/core/src/api/identity.ts"
       ],
       "clientCalls": [
-        "client.api as any).identity.profile[':id'].$get",
-        "client.api as any).identity.profile[':id'].$patch",
-        "client.api as any).identity.resolveIdentity.$get",
-        "client.api as any).identity['classroom-capacity-summary'][':id'].$get"
+        "orpcClient.identity.fetchUserProfile",
+        "orpcClient.identity.identifyActiveCitizen",
+        "orpcClient.identity.modifyUserProfile",
+        "orpcClient.identity.resolveWorkspaceContext"
       ],
       "hasResponses": true
     },
@@ -760,10 +760,10 @@
         "packages/core/src/api/identity.ts"
       ],
       "clientCalls": [
-        "client.api as any).identity.profile[':id'].$get",
-        "client.api as any).identity.profile[':id'].$patch",
-        "client.api as any).identity.resolveIdentity.$get",
-        "client.api as any).identity['classroom-capacity-summary'][':id'].$get"
+        "orpcClient.identity.fetchUserProfile",
+        "orpcClient.identity.identifyActiveCitizen",
+        "orpcClient.identity.modifyUserProfile",
+        "orpcClient.identity.resolveWorkspaceContext"
       ],
       "hasResponses": true
     },
@@ -782,10 +782,10 @@
         "packages/core/src/api/identity.ts"
       ],
       "clientCalls": [
-        "client.api as any).identity.profile[':id'].$get",
-        "client.api as any).identity.profile[':id'].$patch",
-        "client.api as any).identity.resolveIdentity.$get",
-        "client.api as any).identity['classroom-capacity-summary'][':id'].$get"
+        "orpcClient.identity.fetchUserProfile",
+        "orpcClient.identity.identifyActiveCitizen",
+        "orpcClient.identity.modifyUserProfile",
+        "orpcClient.identity.resolveWorkspaceContext"
       ],
       "hasResponses": true
     },
@@ -888,11 +888,11 @@
         "packages/core/src/api/principalNotes.ts"
       ],
       "clientCalls": [
-        "client.api as any)['principal-notes'].$get",
-        "client.api as any)['principal-notes'].$post",
-        "client.api as any)['principal-notes'].recent.$get",
-        "client.api as any)['principal-notes'][':id'].$delete",
-        "client.api as any)['principal-notes'][':id'].$patch"
+        "orpcClient.principalNotes.create",
+        "orpcClient.principalNotes.delete",
+        "orpcClient.principalNotes.getAll",
+        "orpcClient.principalNotes.getRecent",
+        "orpcClient.principalNotes.update"
       ],
       "hasResponses": true
     },
@@ -911,11 +911,11 @@
         "packages/core/src/api/principalNotes.ts"
       ],
       "clientCalls": [
-        "client.api as any)['principal-notes'].$get",
-        "client.api as any)['principal-notes'].$post",
-        "client.api as any)['principal-notes'].recent.$get",
-        "client.api as any)['principal-notes'][':id'].$delete",
-        "client.api as any)['principal-notes'][':id'].$patch"
+        "orpcClient.principalNotes.create",
+        "orpcClient.principalNotes.delete",
+        "orpcClient.principalNotes.getAll",
+        "orpcClient.principalNotes.getRecent",
+        "orpcClient.principalNotes.update"
       ],
       "hasResponses": true
     },
@@ -934,11 +934,11 @@
         "packages/core/src/api/principalNotes.ts"
       ],
       "clientCalls": [
-        "client.api as any)['principal-notes'].$get",
-        "client.api as any)['principal-notes'].$post",
-        "client.api as any)['principal-notes'].recent.$get",
-        "client.api as any)['principal-notes'][':id'].$delete",
-        "client.api as any)['principal-notes'][':id'].$patch"
+        "orpcClient.principalNotes.create",
+        "orpcClient.principalNotes.delete",
+        "orpcClient.principalNotes.getAll",
+        "orpcClient.principalNotes.getRecent",
+        "orpcClient.principalNotes.update"
       ],
       "hasResponses": true
     },
@@ -957,11 +957,11 @@
         "packages/core/src/api/principalNotes.ts"
       ],
       "clientCalls": [
-        "client.api as any)['principal-notes'].$get",
-        "client.api as any)['principal-notes'].$post",
-        "client.api as any)['principal-notes'].recent.$get",
-        "client.api as any)['principal-notes'][':id'].$delete",
-        "client.api as any)['principal-notes'][':id'].$patch"
+        "orpcClient.principalNotes.create",
+        "orpcClient.principalNotes.delete",
+        "orpcClient.principalNotes.getAll",
+        "orpcClient.principalNotes.getRecent",
+        "orpcClient.principalNotes.update"
       ],
       "hasResponses": true
     },
@@ -980,11 +980,11 @@
         "packages/core/src/api/principalNotes.ts"
       ],
       "clientCalls": [
-        "client.api as any)['principal-notes'].$get",
-        "client.api as any)['principal-notes'].$post",
-        "client.api as any)['principal-notes'].recent.$get",
-        "client.api as any)['principal-notes'][':id'].$delete",
-        "client.api as any)['principal-notes'][':id'].$patch"
+        "orpcClient.principalNotes.create",
+        "orpcClient.principalNotes.delete",
+        "orpcClient.principalNotes.getAll",
+        "orpcClient.principalNotes.getRecent",
+        "orpcClient.principalNotes.update"
       ],
       "hasResponses": true
     },
@@ -1235,8 +1235,8 @@
         "packages/core/src/api/journalEntries.ts"
       ],
       "clientCalls": [
-        "client.api as any).journalEntries.create.$post",
-        "client.api as any).journalEntries.list.$post"
+        "orpcClient.journalEntries.create",
+        "orpcClient.journalEntries.list"
       ],
       "hasResponses": true
     },
@@ -1255,8 +1255,8 @@
         "packages/core/src/api/journalEntries.ts"
       ],
       "clientCalls": [
-        "client.api as any).journalEntries.create.$post",
-        "client.api as any).journalEntries.list.$post"
+        "orpcClient.journalEntries.create",
+        "orpcClient.journalEntries.list"
       ],
       "hasResponses": true
     },
@@ -1320,10 +1320,10 @@
         "packages/core/src/api/sacredMissions.ts"
       ],
       "clientCalls": [
-        "client.api as any).sacredMissions.create.$post",
-        "client.api as any).sacredMissions.endorse.$post",
-        "client.api as any).sacredMissions.list.$post",
-        "client.api as any).sacredMissions.unendorse.$post"
+        "orpcClient.sacredMissions.create",
+        "orpcClient.sacredMissions.endorse",
+        "orpcClient.sacredMissions.list",
+        "orpcClient.sacredMissions.unendorse"
       ],
       "hasResponses": true
     },
@@ -1342,10 +1342,10 @@
         "packages/core/src/api/sacredMissions.ts"
       ],
       "clientCalls": [
-        "client.api as any).sacredMissions.create.$post",
-        "client.api as any).sacredMissions.endorse.$post",
-        "client.api as any).sacredMissions.list.$post",
-        "client.api as any).sacredMissions.unendorse.$post"
+        "orpcClient.sacredMissions.create",
+        "orpcClient.sacredMissions.endorse",
+        "orpcClient.sacredMissions.list",
+        "orpcClient.sacredMissions.unendorse"
       ],
       "hasResponses": true
     },
@@ -1364,10 +1364,10 @@
         "packages/core/src/api/sacredMissions.ts"
       ],
       "clientCalls": [
-        "client.api as any).sacredMissions.create.$post",
-        "client.api as any).sacredMissions.endorse.$post",
-        "client.api as any).sacredMissions.list.$post",
-        "client.api as any).sacredMissions.unendorse.$post"
+        "orpcClient.sacredMissions.create",
+        "orpcClient.sacredMissions.endorse",
+        "orpcClient.sacredMissions.list",
+        "orpcClient.sacredMissions.unendorse"
       ],
       "hasResponses": true
     },
@@ -1386,10 +1386,10 @@
         "packages/core/src/api/sacredMissions.ts"
       ],
       "clientCalls": [
-        "client.api as any).sacredMissions.create.$post",
-        "client.api as any).sacredMissions.endorse.$post",
-        "client.api as any).sacredMissions.list.$post",
-        "client.api as any).sacredMissions.unendorse.$post"
+        "orpcClient.sacredMissions.create",
+        "orpcClient.sacredMissions.endorse",
+        "orpcClient.sacredMissions.list",
+        "orpcClient.sacredMissions.unendorse"
       ],
       "hasResponses": true
     },
@@ -1408,25 +1408,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -1445,25 +1446,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -1482,25 +1484,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -1519,25 +1522,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -1556,25 +1560,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -1593,25 +1598,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -1630,25 +1636,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -1667,25 +1674,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -1704,25 +1712,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -1741,25 +1750,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -1778,25 +1788,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -1815,25 +1826,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -1852,25 +1864,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -1889,25 +1902,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -1926,25 +1940,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -1963,25 +1978,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -2000,25 +2016,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -2037,25 +2054,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -2074,25 +2092,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -2111,25 +2130,26 @@
         "packages/core/src/api/library.ts"
       ],
       "clientCalls": [
-        "client.api as any).library.collections.$get",
-        "client.api as any).library.collections.$post",
-        "client.api as any).library.collections[':id'].$delete",
-        "client.api as any).library.collections[':id'].$get",
-        "client.api as any).library.collections[':id'].$put",
-        "client.api as any).library.collections[':id'].fork.$post",
-        "client.api as any).library.collections[':id'].resources.$post",
-        "client.api as any).library.counts.$get",
-        "client.api as any).library.map.topology.$get",
-        "client.api as any).library.resources.$get",
-        "client.api as any).library.resources.$post",
-        "client.api as any).library.resources.bookmarked.$get",
-        "client.api as any).library.resources.search.$post",
-        "client.api as any).library.resources[':id'].$delete",
-        "client.api as any).library.resources[':id'].$get",
-        "client.api as any).library.resources[':id'].$put",
-        "client.api as any).library.resources[':id'].engage.$post",
-        "client.api as any).library.resources[':id'].verify.$post",
-        "client.api as any).library.resources[':id']['broken-link'].$post"
+        "client.api as any).library.resources[':id']['broken-link'].$post",
+        "orpcClient.library.addToCollection",
+        "orpcClient.library.createCollection",
+        "orpcClient.library.createResource",
+        "orpcClient.library.deleteCollection",
+        "orpcClient.library.deleteResource",
+        "orpcClient.library.engage",
+        "orpcClient.library.forkCollection",
+        "orpcClient.library.getBookmarkedResources",
+        "orpcClient.library.getCollection",
+        "orpcClient.library.getCollections",
+        "orpcClient.library.getCounts",
+        "orpcClient.library.getMapTopology",
+        "orpcClient.library.getResource",
+        "orpcClient.library.getResources",
+        "orpcClient.library.removeFromCollection",
+        "orpcClient.library.searchLibrary",
+        "orpcClient.library.updateCollection",
+        "orpcClient.library.updateResource",
+        "orpcClient.library.verifyResource"
       ],
       "hasResponses": true
     },
@@ -3617,7 +3637,7 @@
       "path": "/educational/assignments/:assignmentId/submissions",
       "policy": {
         "action": "create",
-        "subject": "Classroom"
+        "subject": "AssignmentSubmission"
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
@@ -4057,11 +4077,12 @@
         "packages/core/src/api/grading.ts"
       ],
       "clientCalls": [
-        "client.api as any).grading.$post",
-        "client.api as any).grading.classroom.$get",
-        "client.api as any).grading.classrooms[':classroomId'].settings.$put",
-        "client.api as any).grading[':id'].publish.$post",
-        "client.api as any).grading['report-card'].$get"
+        "orpcClient.grading.getClassroomGrades",
+        "orpcClient.grading.getGradingSettings",
+        "orpcClient.grading.getReportCard",
+        "orpcClient.grading.publishGrade",
+        "orpcClient.grading.submitGrade",
+        "orpcClient.grading.updateGradingSettings"
       ],
       "hasResponses": true
     },
@@ -4080,11 +4101,12 @@
         "packages/core/src/api/grading.ts"
       ],
       "clientCalls": [
-        "client.api as any).grading.$post",
-        "client.api as any).grading.classroom.$get",
-        "client.api as any).grading.classrooms[':classroomId'].settings.$put",
-        "client.api as any).grading[':id'].publish.$post",
-        "client.api as any).grading['report-card'].$get"
+        "orpcClient.grading.getClassroomGrades",
+        "orpcClient.grading.getGradingSettings",
+        "orpcClient.grading.getReportCard",
+        "orpcClient.grading.publishGrade",
+        "orpcClient.grading.submitGrade",
+        "orpcClient.grading.updateGradingSettings"
       ],
       "hasResponses": true
     },
@@ -4103,11 +4125,12 @@
         "packages/core/src/api/grading.ts"
       ],
       "clientCalls": [
-        "client.api as any).grading.$post",
-        "client.api as any).grading.classroom.$get",
-        "client.api as any).grading.classrooms[':classroomId'].settings.$put",
-        "client.api as any).grading[':id'].publish.$post",
-        "client.api as any).grading['report-card'].$get"
+        "orpcClient.grading.getClassroomGrades",
+        "orpcClient.grading.getGradingSettings",
+        "orpcClient.grading.getReportCard",
+        "orpcClient.grading.publishGrade",
+        "orpcClient.grading.submitGrade",
+        "orpcClient.grading.updateGradingSettings"
       ],
       "hasResponses": true
     },
@@ -4126,11 +4149,12 @@
         "packages/core/src/api/grading.ts"
       ],
       "clientCalls": [
-        "client.api as any).grading.$post",
-        "client.api as any).grading.classroom.$get",
-        "client.api as any).grading.classrooms[':classroomId'].settings.$put",
-        "client.api as any).grading[':id'].publish.$post",
-        "client.api as any).grading['report-card'].$get"
+        "orpcClient.grading.getClassroomGrades",
+        "orpcClient.grading.getGradingSettings",
+        "orpcClient.grading.getReportCard",
+        "orpcClient.grading.publishGrade",
+        "orpcClient.grading.submitGrade",
+        "orpcClient.grading.updateGradingSettings"
       ],
       "hasResponses": true
     },
@@ -4149,11 +4173,12 @@
         "packages/core/src/api/grading.ts"
       ],
       "clientCalls": [
-        "client.api as any).grading.$post",
-        "client.api as any).grading.classroom.$get",
-        "client.api as any).grading.classrooms[':classroomId'].settings.$put",
-        "client.api as any).grading[':id'].publish.$post",
-        "client.api as any).grading['report-card'].$get"
+        "orpcClient.grading.getClassroomGrades",
+        "orpcClient.grading.getGradingSettings",
+        "orpcClient.grading.getReportCard",
+        "orpcClient.grading.publishGrade",
+        "orpcClient.grading.submitGrade",
+        "orpcClient.grading.updateGradingSettings"
       ],
       "hasResponses": true
     },
@@ -4172,11 +4197,12 @@
         "packages/core/src/api/grading.ts"
       ],
       "clientCalls": [
-        "client.api as any).grading.$post",
-        "client.api as any).grading.classroom.$get",
-        "client.api as any).grading.classrooms[':classroomId'].settings.$put",
-        "client.api as any).grading[':id'].publish.$post",
-        "client.api as any).grading['report-card'].$get"
+        "orpcClient.grading.getClassroomGrades",
+        "orpcClient.grading.getGradingSettings",
+        "orpcClient.grading.getReportCard",
+        "orpcClient.grading.publishGrade",
+        "orpcClient.grading.submitGrade",
+        "orpcClient.grading.updateGradingSettings"
       ],
       "hasResponses": true
     },
@@ -4195,10 +4221,10 @@
         "packages/core/src/api/attendance.ts"
       ],
       "clientCalls": [
-        "client.api as any).attendance.$get",
-        "client.api as any).attendance.$post",
-        "client.api as any).attendance.pulse.$get",
-        "client.api as any).attendance.report.$get"
+        "orpcClient.attendance.getByClassroom",
+        "orpcClient.attendance.getReport",
+        "orpcClient.attendance.getSchoolPulse",
+        "orpcClient.attendance.record"
       ],
       "hasResponses": true
     },
@@ -4217,10 +4243,10 @@
         "packages/core/src/api/attendance.ts"
       ],
       "clientCalls": [
-        "client.api as any).attendance.$get",
-        "client.api as any).attendance.$post",
-        "client.api as any).attendance.pulse.$get",
-        "client.api as any).attendance.report.$get"
+        "orpcClient.attendance.getByClassroom",
+        "orpcClient.attendance.getReport",
+        "orpcClient.attendance.getSchoolPulse",
+        "orpcClient.attendance.record"
       ],
       "hasResponses": true
     },
@@ -4239,10 +4265,10 @@
         "packages/core/src/api/attendance.ts"
       ],
       "clientCalls": [
-        "client.api as any).attendance.$get",
-        "client.api as any).attendance.$post",
-        "client.api as any).attendance.pulse.$get",
-        "client.api as any).attendance.report.$get"
+        "orpcClient.attendance.getByClassroom",
+        "orpcClient.attendance.getReport",
+        "orpcClient.attendance.getSchoolPulse",
+        "orpcClient.attendance.record"
       ],
       "hasResponses": true
     },
@@ -4261,10 +4287,10 @@
         "packages/core/src/api/attendance.ts"
       ],
       "clientCalls": [
-        "client.api as any).attendance.$get",
-        "client.api as any).attendance.$post",
-        "client.api as any).attendance.pulse.$get",
-        "client.api as any).attendance.report.$get"
+        "orpcClient.attendance.getByClassroom",
+        "orpcClient.attendance.getReport",
+        "orpcClient.attendance.getSchoolPulse",
+        "orpcClient.attendance.record"
       ],
       "hasResponses": true
     },
@@ -4283,10 +4309,10 @@
         "packages/core/src/api/attendance.ts"
       ],
       "clientCalls": [
-        "client.api as any).attendance.$get",
-        "client.api as any).attendance.$post",
-        "client.api as any).attendance.pulse.$get",
-        "client.api as any).attendance.report.$get"
+        "orpcClient.attendance.getByClassroom",
+        "orpcClient.attendance.getReport",
+        "orpcClient.attendance.getSchoolPulse",
+        "orpcClient.attendance.record"
       ],
       "hasResponses": true
     },
@@ -4732,6 +4758,226 @@
     },
     {
       "source": "community",
+      "procedure": "updateMemberStatus",
+      "method": "patch",
+      "path": "/community/groups/:groupId/members/status",
+      "policy": {
+        "action": "update",
+        "subject": "Group"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/groups.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups.$get",
+        "client.api as any).community.groups.$post",
+        "client.api as any).community.groups[':groupId'].$get",
+        "client.api as any).community.groups[':groupId'].join.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "community",
+      "procedure": "updateGroupPolicy",
+      "method": "patch",
+      "path": "/community/groups/:groupId/policy",
+      "policy": {
+        "action": "update",
+        "subject": "Group"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/groups.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups.$get",
+        "client.api as any).community.groups.$post",
+        "client.api as any).community.groups[':groupId'].$get",
+        "client.api as any).community.groups[':groupId'].join.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "community",
+      "procedure": "getGroupMembers",
+      "method": "get",
+      "path": "/community/groups/:groupId/members",
+      "policy": {
+        "action": "read",
+        "subject": "Group"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/groups.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups.$get",
+        "client.api as any).community.groups.$post",
+        "client.api as any).community.groups[':groupId'].$get",
+        "client.api as any).community.groups[':groupId'].join.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "community",
+      "procedure": "updateMemberRole",
+      "method": "patch",
+      "path": "/community/groups/:groupId/members/role",
+      "policy": {
+        "action": "update",
+        "subject": "Group"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/groups.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups.$get",
+        "client.api as any).community.groups.$post",
+        "client.api as any).community.groups[':groupId'].$get",
+        "client.api as any).community.groups[':groupId'].join.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "community",
+      "procedure": "approveAllMembers",
+      "method": "post",
+      "path": "/community/groups/:groupId/members/approve-all",
+      "policy": {
+        "action": "update",
+        "subject": "Group"
+      },
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
+      "clientFiles": [
+        "packages/core/src/api/community.ts",
+        "packages/core/src/api/groups.ts"
+      ],
+      "clientCalls": [
+        "client.api as any).community.comments[':commentId'].$delete",
+        "client.api as any).community.comments[':commentId'].official.$post",
+        "client.api as any).community.comments[':commentId'].upvote.$post",
+        "client.api as any).community.groups.$get",
+        "client.api as any).community.groups.$post",
+        "client.api as any).community.groups[':groupId'].$get",
+        "client.api as any).community.groups[':groupId'].join.$post",
+        "client.api as any).community.groups[':groupId'].members.$get",
+        "client.api as any).community.groups[':groupId'].members.role.$patch",
+        "client.api as any).community.groups[':groupId'].members.status.$patch",
+        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
+        "client.api as any).community.groups[':groupId'].messages.$get",
+        "client.api as any).community.groups[':groupId'].messages.$post",
+        "client.api as any).community.groups[':groupId'].policy.$patch",
+        "client.api as any).community.polls[':postId'].$get",
+        "client.api as any).community.polls[':postId'].vote.$post",
+        "client.api as any).community.posts.$get",
+        "client.api as any).community.posts.$post",
+        "client.api as any).community.posts[':postId'].$delete",
+        "client.api as any).community.posts[':postId'].$patch",
+        "client.api as any).community.posts[':postId'].comments.$get",
+        "client.api as any).community.posts[':postId'].comments.$post",
+        "client.api as any).community.posts[':postId'].reactions.$post",
+        "client.api as any).community.report.$post",
+        "client.api as any).community.resonance[':userId'].$get"
+      ],
+      "hasResponses": true
+    },
+    {
+      "source": "community",
       "procedure": "getComments",
       "method": "get",
       "path": "/community/posts/:postId/comments",
@@ -4954,7 +5200,7 @@
       "source": "community",
       "procedure": "getPollStatus",
       "method": "get",
-      "path": "/community/posts/:postId/poll",
+      "path": "/community/polls/:postId",
       "policy": {
         "action": "read",
         "subject": "Post"
@@ -4998,230 +5244,10 @@
       "source": "community",
       "procedure": "voteInPoll",
       "method": "post",
-      "path": "/community/posts/:postId/poll/vote",
+      "path": "/community/polls/:postId/vote",
       "policy": {
         "action": "create",
         "subject": "Post"
-      },
-      "protocol": "native-orpc",
-      "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
-      "clientCalls": [
-        "client.api as any).community.comments[':commentId'].$delete",
-        "client.api as any).community.comments[':commentId'].official.$post",
-        "client.api as any).community.comments[':commentId'].upvote.$post",
-        "client.api as any).community.groups.$get",
-        "client.api as any).community.groups.$post",
-        "client.api as any).community.groups[':groupId'].$get",
-        "client.api as any).community.groups[':groupId'].join.$post",
-        "client.api as any).community.groups[':groupId'].members.$get",
-        "client.api as any).community.groups[':groupId'].members.role.$patch",
-        "client.api as any).community.groups[':groupId'].members.status.$patch",
-        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
-        "client.api as any).community.groups[':groupId'].messages.$get",
-        "client.api as any).community.groups[':groupId'].messages.$post",
-        "client.api as any).community.groups[':groupId'].policy.$patch",
-        "client.api as any).community.polls[':postId'].$get",
-        "client.api as any).community.polls[':postId'].vote.$post",
-        "client.api as any).community.posts.$get",
-        "client.api as any).community.posts.$post",
-        "client.api as any).community.posts[':postId'].$delete",
-        "client.api as any).community.posts[':postId'].$patch",
-        "client.api as any).community.posts[':postId'].comments.$get",
-        "client.api as any).community.posts[':postId'].comments.$post",
-        "client.api as any).community.posts[':postId'].reactions.$post",
-        "client.api as any).community.report.$post",
-        "client.api as any).community.resonance[':userId'].$get"
-      ],
-      "hasResponses": true
-    },
-    {
-      "source": "community",
-      "procedure": "updateMemberStatus",
-      "method": "patch",
-      "path": "/community/groups/:groupId/members/status",
-      "policy": {
-        "action": "update",
-        "subject": "Group"
-      },
-      "protocol": "native-orpc",
-      "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
-      "clientCalls": [
-        "client.api as any).community.comments[':commentId'].$delete",
-        "client.api as any).community.comments[':commentId'].official.$post",
-        "client.api as any).community.comments[':commentId'].upvote.$post",
-        "client.api as any).community.groups.$get",
-        "client.api as any).community.groups.$post",
-        "client.api as any).community.groups[':groupId'].$get",
-        "client.api as any).community.groups[':groupId'].join.$post",
-        "client.api as any).community.groups[':groupId'].members.$get",
-        "client.api as any).community.groups[':groupId'].members.role.$patch",
-        "client.api as any).community.groups[':groupId'].members.status.$patch",
-        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
-        "client.api as any).community.groups[':groupId'].messages.$get",
-        "client.api as any).community.groups[':groupId'].messages.$post",
-        "client.api as any).community.groups[':groupId'].policy.$patch",
-        "client.api as any).community.polls[':postId'].$get",
-        "client.api as any).community.polls[':postId'].vote.$post",
-        "client.api as any).community.posts.$get",
-        "client.api as any).community.posts.$post",
-        "client.api as any).community.posts[':postId'].$delete",
-        "client.api as any).community.posts[':postId'].$patch",
-        "client.api as any).community.posts[':postId'].comments.$get",
-        "client.api as any).community.posts[':postId'].comments.$post",
-        "client.api as any).community.posts[':postId'].reactions.$post",
-        "client.api as any).community.report.$post",
-        "client.api as any).community.resonance[':userId'].$get"
-      ],
-      "hasResponses": true
-    },
-    {
-      "source": "community",
-      "procedure": "updateGroupPolicy",
-      "method": "patch",
-      "path": "/community/groups/:groupId/policy",
-      "policy": {
-        "action": "update",
-        "subject": "Group"
-      },
-      "protocol": "native-orpc",
-      "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
-      "clientCalls": [
-        "client.api as any).community.comments[':commentId'].$delete",
-        "client.api as any).community.comments[':commentId'].official.$post",
-        "client.api as any).community.comments[':commentId'].upvote.$post",
-        "client.api as any).community.groups.$get",
-        "client.api as any).community.groups.$post",
-        "client.api as any).community.groups[':groupId'].$get",
-        "client.api as any).community.groups[':groupId'].join.$post",
-        "client.api as any).community.groups[':groupId'].members.$get",
-        "client.api as any).community.groups[':groupId'].members.role.$patch",
-        "client.api as any).community.groups[':groupId'].members.status.$patch",
-        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
-        "client.api as any).community.groups[':groupId'].messages.$get",
-        "client.api as any).community.groups[':groupId'].messages.$post",
-        "client.api as any).community.groups[':groupId'].policy.$patch",
-        "client.api as any).community.polls[':postId'].$get",
-        "client.api as any).community.polls[':postId'].vote.$post",
-        "client.api as any).community.posts.$get",
-        "client.api as any).community.posts.$post",
-        "client.api as any).community.posts[':postId'].$delete",
-        "client.api as any).community.posts[':postId'].$patch",
-        "client.api as any).community.posts[':postId'].comments.$get",
-        "client.api as any).community.posts[':postId'].comments.$post",
-        "client.api as any).community.posts[':postId'].reactions.$post",
-        "client.api as any).community.report.$post",
-        "client.api as any).community.resonance[':userId'].$get"
-      ],
-      "hasResponses": true
-    },
-    {
-      "source": "community",
-      "procedure": "getGroupMembers",
-      "method": "get",
-      "path": "/community/groups/:groupId/members",
-      "policy": {
-        "action": "read",
-        "subject": "Group"
-      },
-      "protocol": "native-orpc",
-      "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
-      "clientCalls": [
-        "client.api as any).community.comments[':commentId'].$delete",
-        "client.api as any).community.comments[':commentId'].official.$post",
-        "client.api as any).community.comments[':commentId'].upvote.$post",
-        "client.api as any).community.groups.$get",
-        "client.api as any).community.groups.$post",
-        "client.api as any).community.groups[':groupId'].$get",
-        "client.api as any).community.groups[':groupId'].join.$post",
-        "client.api as any).community.groups[':groupId'].members.$get",
-        "client.api as any).community.groups[':groupId'].members.role.$patch",
-        "client.api as any).community.groups[':groupId'].members.status.$patch",
-        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
-        "client.api as any).community.groups[':groupId'].messages.$get",
-        "client.api as any).community.groups[':groupId'].messages.$post",
-        "client.api as any).community.groups[':groupId'].policy.$patch",
-        "client.api as any).community.polls[':postId'].$get",
-        "client.api as any).community.polls[':postId'].vote.$post",
-        "client.api as any).community.posts.$get",
-        "client.api as any).community.posts.$post",
-        "client.api as any).community.posts[':postId'].$delete",
-        "client.api as any).community.posts[':postId'].$patch",
-        "client.api as any).community.posts[':postId'].comments.$get",
-        "client.api as any).community.posts[':postId'].comments.$post",
-        "client.api as any).community.posts[':postId'].reactions.$post",
-        "client.api as any).community.report.$post",
-        "client.api as any).community.resonance[':userId'].$get"
-      ],
-      "hasResponses": true
-    },
-    {
-      "source": "community",
-      "procedure": "updateMemberRole",
-      "method": "patch",
-      "path": "/community/groups/:groupId/members/role",
-      "policy": {
-        "action": "update",
-        "subject": "Group"
-      },
-      "protocol": "native-orpc",
-      "clientStatus": "mapped",
-      "clientFiles": [
-        "packages/core/src/api/community.ts",
-        "packages/core/src/api/groups.ts"
-      ],
-      "clientCalls": [
-        "client.api as any).community.comments[':commentId'].$delete",
-        "client.api as any).community.comments[':commentId'].official.$post",
-        "client.api as any).community.comments[':commentId'].upvote.$post",
-        "client.api as any).community.groups.$get",
-        "client.api as any).community.groups.$post",
-        "client.api as any).community.groups[':groupId'].$get",
-        "client.api as any).community.groups[':groupId'].join.$post",
-        "client.api as any).community.groups[':groupId'].members.$get",
-        "client.api as any).community.groups[':groupId'].members.role.$patch",
-        "client.api as any).community.groups[':groupId'].members.status.$patch",
-        "client.api as any).community.groups[':groupId'].members['approve-all'].$post",
-        "client.api as any).community.groups[':groupId'].messages.$get",
-        "client.api as any).community.groups[':groupId'].messages.$post",
-        "client.api as any).community.groups[':groupId'].policy.$patch",
-        "client.api as any).community.polls[':postId'].$get",
-        "client.api as any).community.polls[':postId'].vote.$post",
-        "client.api as any).community.posts.$get",
-        "client.api as any).community.posts.$post",
-        "client.api as any).community.posts[':postId'].$delete",
-        "client.api as any).community.posts[':postId'].$patch",
-        "client.api as any).community.posts[':postId'].comments.$get",
-        "client.api as any).community.posts[':postId'].comments.$post",
-        "client.api as any).community.posts[':postId'].reactions.$post",
-        "client.api as any).community.report.$post",
-        "client.api as any).community.resonance[':userId'].$get"
-      ],
-      "hasResponses": true
-    },
-    {
-      "source": "community",
-      "procedure": "approveAllMembers",
-      "method": "post",
-      "path": "/community/groups/:groupId/members/approve-all",
-      "policy": {
-        "action": "update",
-        "subject": "Group"
       },
       "protocol": "native-orpc",
       "clientStatus": "mapped",
@@ -5348,11 +5374,11 @@
     },
     {
       "source": "community",
-      "procedure": "reportContent",
-      "method": "post",
-      "path": "/community/posts/:postId/report",
+      "procedure": "getReactionStatus",
+      "method": "get",
+      "path": "/community/posts/:postId/reaction",
       "policy": {
-        "action": "create",
+        "action": "read",
         "subject": "Post"
       },
       "protocol": "native-orpc",
@@ -5392,11 +5418,11 @@
     },
     {
       "source": "community",
-      "procedure": "getReactionStatus",
-      "method": "get",
-      "path": "/community/posts/:postId/reaction",
+      "procedure": "reportContent",
+      "method": "post",
+      "path": "/community/report",
       "policy": {
-        "action": "read",
+        "action": "create",
         "subject": "Post"
       },
       "protocol": "native-orpc",
@@ -5449,13 +5475,13 @@
         "packages/core/src/api/staffManagement.ts"
       ],
       "clientCalls": [
-        "client.api as any).admin.leaves.$post",
-        "client.api as any).admin.leaves[':leaveId'].approve.$post",
-        "client.api as any).admin.schools[':schoolId']['calendar-events'].$get",
-        "client.api as any).admin.schools[':schoolId']['calendar-events'].$post",
-        "client.api as any).admin.schools[':schoolId']['pending-leaves'].$get",
-        "client.api as any).admin.schools[':schoolId']['staff-presence'].$get",
-        "client.api as any).admin.schools[':schoolId']['teacher-carousel'].$get"
+        "orpcClient.admin.approveLeave",
+        "orpcClient.admin.createCalendarEvent",
+        "orpcClient.admin.getPendingLeaves",
+        "orpcClient.admin.getStaffPresence",
+        "orpcClient.admin.getTeacherCarousel",
+        "orpcClient.admin.getUpcomingCalendarEvents",
+        "orpcClient.admin.submitLeave"
       ],
       "hasResponses": true
     },
@@ -5474,13 +5500,13 @@
         "packages/core/src/api/staffManagement.ts"
       ],
       "clientCalls": [
-        "client.api as any).admin.leaves.$post",
-        "client.api as any).admin.leaves[':leaveId'].approve.$post",
-        "client.api as any).admin.schools[':schoolId']['calendar-events'].$get",
-        "client.api as any).admin.schools[':schoolId']['calendar-events'].$post",
-        "client.api as any).admin.schools[':schoolId']['pending-leaves'].$get",
-        "client.api as any).admin.schools[':schoolId']['staff-presence'].$get",
-        "client.api as any).admin.schools[':schoolId']['teacher-carousel'].$get"
+        "orpcClient.admin.approveLeave",
+        "orpcClient.admin.createCalendarEvent",
+        "orpcClient.admin.getPendingLeaves",
+        "orpcClient.admin.getStaffPresence",
+        "orpcClient.admin.getTeacherCarousel",
+        "orpcClient.admin.getUpcomingCalendarEvents",
+        "orpcClient.admin.submitLeave"
       ],
       "hasResponses": true
     },
@@ -5499,13 +5525,13 @@
         "packages/core/src/api/staffManagement.ts"
       ],
       "clientCalls": [
-        "client.api as any).admin.leaves.$post",
-        "client.api as any).admin.leaves[':leaveId'].approve.$post",
-        "client.api as any).admin.schools[':schoolId']['calendar-events'].$get",
-        "client.api as any).admin.schools[':schoolId']['calendar-events'].$post",
-        "client.api as any).admin.schools[':schoolId']['pending-leaves'].$get",
-        "client.api as any).admin.schools[':schoolId']['staff-presence'].$get",
-        "client.api as any).admin.schools[':schoolId']['teacher-carousel'].$get"
+        "orpcClient.admin.approveLeave",
+        "orpcClient.admin.createCalendarEvent",
+        "orpcClient.admin.getPendingLeaves",
+        "orpcClient.admin.getStaffPresence",
+        "orpcClient.admin.getTeacherCarousel",
+        "orpcClient.admin.getUpcomingCalendarEvents",
+        "orpcClient.admin.submitLeave"
       ],
       "hasResponses": true
     },
@@ -5524,13 +5550,13 @@
         "packages/core/src/api/staffManagement.ts"
       ],
       "clientCalls": [
-        "client.api as any).admin.leaves.$post",
-        "client.api as any).admin.leaves[':leaveId'].approve.$post",
-        "client.api as any).admin.schools[':schoolId']['calendar-events'].$get",
-        "client.api as any).admin.schools[':schoolId']['calendar-events'].$post",
-        "client.api as any).admin.schools[':schoolId']['pending-leaves'].$get",
-        "client.api as any).admin.schools[':schoolId']['staff-presence'].$get",
-        "client.api as any).admin.schools[':schoolId']['teacher-carousel'].$get"
+        "orpcClient.admin.approveLeave",
+        "orpcClient.admin.createCalendarEvent",
+        "orpcClient.admin.getPendingLeaves",
+        "orpcClient.admin.getStaffPresence",
+        "orpcClient.admin.getTeacherCarousel",
+        "orpcClient.admin.getUpcomingCalendarEvents",
+        "orpcClient.admin.submitLeave"
       ],
       "hasResponses": true
     },
@@ -5549,13 +5575,13 @@
         "packages/core/src/api/staffManagement.ts"
       ],
       "clientCalls": [
-        "client.api as any).admin.leaves.$post",
-        "client.api as any).admin.leaves[':leaveId'].approve.$post",
-        "client.api as any).admin.schools[':schoolId']['calendar-events'].$get",
-        "client.api as any).admin.schools[':schoolId']['calendar-events'].$post",
-        "client.api as any).admin.schools[':schoolId']['pending-leaves'].$get",
-        "client.api as any).admin.schools[':schoolId']['staff-presence'].$get",
-        "client.api as any).admin.schools[':schoolId']['teacher-carousel'].$get"
+        "orpcClient.admin.approveLeave",
+        "orpcClient.admin.createCalendarEvent",
+        "orpcClient.admin.getPendingLeaves",
+        "orpcClient.admin.getStaffPresence",
+        "orpcClient.admin.getTeacherCarousel",
+        "orpcClient.admin.getUpcomingCalendarEvents",
+        "orpcClient.admin.submitLeave"
       ],
       "hasResponses": true
     },
@@ -5574,13 +5600,13 @@
         "packages/core/src/api/staffManagement.ts"
       ],
       "clientCalls": [
-        "client.api as any).admin.leaves.$post",
-        "client.api as any).admin.leaves[':leaveId'].approve.$post",
-        "client.api as any).admin.schools[':schoolId']['calendar-events'].$get",
-        "client.api as any).admin.schools[':schoolId']['calendar-events'].$post",
-        "client.api as any).admin.schools[':schoolId']['pending-leaves'].$get",
-        "client.api as any).admin.schools[':schoolId']['staff-presence'].$get",
-        "client.api as any).admin.schools[':schoolId']['teacher-carousel'].$get"
+        "orpcClient.admin.approveLeave",
+        "orpcClient.admin.createCalendarEvent",
+        "orpcClient.admin.getPendingLeaves",
+        "orpcClient.admin.getStaffPresence",
+        "orpcClient.admin.getTeacherCarousel",
+        "orpcClient.admin.getUpcomingCalendarEvents",
+        "orpcClient.admin.submitLeave"
       ],
       "hasResponses": true
     },
@@ -5599,13 +5625,13 @@
         "packages/core/src/api/staffManagement.ts"
       ],
       "clientCalls": [
-        "client.api as any).admin.leaves.$post",
-        "client.api as any).admin.leaves[':leaveId'].approve.$post",
-        "client.api as any).admin.schools[':schoolId']['calendar-events'].$get",
-        "client.api as any).admin.schools[':schoolId']['calendar-events'].$post",
-        "client.api as any).admin.schools[':schoolId']['pending-leaves'].$get",
-        "client.api as any).admin.schools[':schoolId']['staff-presence'].$get",
-        "client.api as any).admin.schools[':schoolId']['teacher-carousel'].$get"
+        "orpcClient.admin.approveLeave",
+        "orpcClient.admin.createCalendarEvent",
+        "orpcClient.admin.getPendingLeaves",
+        "orpcClient.admin.getStaffPresence",
+        "orpcClient.admin.getTeacherCarousel",
+        "orpcClient.admin.getUpcomingCalendarEvents",
+        "orpcClient.admin.submitLeave"
       ],
       "hasResponses": true
     },
@@ -5624,13 +5650,13 @@
         "packages/core/src/api/staffManagement.ts"
       ],
       "clientCalls": [
-        "client.api as any).admin.leaves.$post",
-        "client.api as any).admin.leaves[':leaveId'].approve.$post",
-        "client.api as any).admin.schools[':schoolId']['calendar-events'].$get",
-        "client.api as any).admin.schools[':schoolId']['calendar-events'].$post",
-        "client.api as any).admin.schools[':schoolId']['pending-leaves'].$get",
-        "client.api as any).admin.schools[':schoolId']['staff-presence'].$get",
-        "client.api as any).admin.schools[':schoolId']['teacher-carousel'].$get"
+        "orpcClient.admin.approveLeave",
+        "orpcClient.admin.createCalendarEvent",
+        "orpcClient.admin.getPendingLeaves",
+        "orpcClient.admin.getStaffPresence",
+        "orpcClient.admin.getTeacherCarousel",
+        "orpcClient.admin.getUpcomingCalendarEvents",
+        "orpcClient.admin.submitLeave"
       ],
       "hasResponses": true
     },
@@ -5649,10 +5675,10 @@
         "packages/core/src/api/messaging.ts"
       ],
       "clientCalls": [
-        "client.api as any).messaging.conversations.$get",
-        "client.api as any).messaging.conversations.$post",
-        "client.api as any).messaging.messages.$get",
-        "client.api as any).messaging.messages.$post"
+        "orpcClient.messaging.getConversations",
+        "orpcClient.messaging.getMessages",
+        "orpcClient.messaging.getOrCreateConversation",
+        "orpcClient.messaging.sendMessage"
       ],
       "hasResponses": true
     },
@@ -5671,10 +5697,10 @@
         "packages/core/src/api/messaging.ts"
       ],
       "clientCalls": [
-        "client.api as any).messaging.conversations.$get",
-        "client.api as any).messaging.conversations.$post",
-        "client.api as any).messaging.messages.$get",
-        "client.api as any).messaging.messages.$post"
+        "orpcClient.messaging.getConversations",
+        "orpcClient.messaging.getMessages",
+        "orpcClient.messaging.getOrCreateConversation",
+        "orpcClient.messaging.sendMessage"
       ],
       "hasResponses": true
     },
@@ -5693,10 +5719,10 @@
         "packages/core/src/api/messaging.ts"
       ],
       "clientCalls": [
-        "client.api as any).messaging.conversations.$get",
-        "client.api as any).messaging.conversations.$post",
-        "client.api as any).messaging.messages.$get",
-        "client.api as any).messaging.messages.$post"
+        "orpcClient.messaging.getConversations",
+        "orpcClient.messaging.getMessages",
+        "orpcClient.messaging.getOrCreateConversation",
+        "orpcClient.messaging.sendMessage"
       ],
       "hasResponses": true
     },
@@ -5715,10 +5741,10 @@
         "packages/core/src/api/messaging.ts"
       ],
       "clientCalls": [
-        "client.api as any).messaging.conversations.$get",
-        "client.api as any).messaging.conversations.$post",
-        "client.api as any).messaging.messages.$get",
-        "client.api as any).messaging.messages.$post"
+        "orpcClient.messaging.getConversations",
+        "orpcClient.messaging.getMessages",
+        "orpcClient.messaging.getOrCreateConversation",
+        "orpcClient.messaging.sendMessage"
       ],
       "hasResponses": true
     },
@@ -5738,14 +5764,14 @@
         "packages/core/src/hooks/useNotifications.ts"
       ],
       "clientCalls": [
-        "client.api as any).social.block.$post",
-        "client.api as any).social.block.active.$get",
-        "client.api as any).social.block.list.$get",
-        "client.api as any).social.notifications.$get",
-        "client.api as any).social.notifications.read.$post",
-        "client.api as any).social.notifications['read-all'].$post",
-        "client.api as any).social.notifications['unread-count'].$get",
-        "client.api as any).social.unblock.$post"
+        "orpcClient.social.blockUser",
+        "orpcClient.social.getBlockedUsers",
+        "orpcClient.social.getNotifications",
+        "orpcClient.social.getUnreadNotificationCount",
+        "orpcClient.social.isBlockingActive",
+        "orpcClient.social.markAllNotificationsRead",
+        "orpcClient.social.markNotificationRead",
+        "orpcClient.social.unblockUser"
       ],
       "hasResponses": true
     },
@@ -5765,14 +5791,14 @@
         "packages/core/src/hooks/useNotifications.ts"
       ],
       "clientCalls": [
-        "client.api as any).social.block.$post",
-        "client.api as any).social.block.active.$get",
-        "client.api as any).social.block.list.$get",
-        "client.api as any).social.notifications.$get",
-        "client.api as any).social.notifications.read.$post",
-        "client.api as any).social.notifications['read-all'].$post",
-        "client.api as any).social.notifications['unread-count'].$get",
-        "client.api as any).social.unblock.$post"
+        "orpcClient.social.blockUser",
+        "orpcClient.social.getBlockedUsers",
+        "orpcClient.social.getNotifications",
+        "orpcClient.social.getUnreadNotificationCount",
+        "orpcClient.social.isBlockingActive",
+        "orpcClient.social.markAllNotificationsRead",
+        "orpcClient.social.markNotificationRead",
+        "orpcClient.social.unblockUser"
       ],
       "hasResponses": true
     },
@@ -5792,14 +5818,14 @@
         "packages/core/src/hooks/useNotifications.ts"
       ],
       "clientCalls": [
-        "client.api as any).social.block.$post",
-        "client.api as any).social.block.active.$get",
-        "client.api as any).social.block.list.$get",
-        "client.api as any).social.notifications.$get",
-        "client.api as any).social.notifications.read.$post",
-        "client.api as any).social.notifications['read-all'].$post",
-        "client.api as any).social.notifications['unread-count'].$get",
-        "client.api as any).social.unblock.$post"
+        "orpcClient.social.blockUser",
+        "orpcClient.social.getBlockedUsers",
+        "orpcClient.social.getNotifications",
+        "orpcClient.social.getUnreadNotificationCount",
+        "orpcClient.social.isBlockingActive",
+        "orpcClient.social.markAllNotificationsRead",
+        "orpcClient.social.markNotificationRead",
+        "orpcClient.social.unblockUser"
       ],
       "hasResponses": true
     },
@@ -5819,14 +5845,14 @@
         "packages/core/src/hooks/useNotifications.ts"
       ],
       "clientCalls": [
-        "client.api as any).social.block.$post",
-        "client.api as any).social.block.active.$get",
-        "client.api as any).social.block.list.$get",
-        "client.api as any).social.notifications.$get",
-        "client.api as any).social.notifications.read.$post",
-        "client.api as any).social.notifications['read-all'].$post",
-        "client.api as any).social.notifications['unread-count'].$get",
-        "client.api as any).social.unblock.$post"
+        "orpcClient.social.blockUser",
+        "orpcClient.social.getBlockedUsers",
+        "orpcClient.social.getNotifications",
+        "orpcClient.social.getUnreadNotificationCount",
+        "orpcClient.social.isBlockingActive",
+        "orpcClient.social.markAllNotificationsRead",
+        "orpcClient.social.markNotificationRead",
+        "orpcClient.social.unblockUser"
       ],
       "hasResponses": true
     },
@@ -5846,14 +5872,14 @@
         "packages/core/src/hooks/useNotifications.ts"
       ],
       "clientCalls": [
-        "client.api as any).social.block.$post",
-        "client.api as any).social.block.active.$get",
-        "client.api as any).social.block.list.$get",
-        "client.api as any).social.notifications.$get",
-        "client.api as any).social.notifications.read.$post",
-        "client.api as any).social.notifications['read-all'].$post",
-        "client.api as any).social.notifications['unread-count'].$get",
-        "client.api as any).social.unblock.$post"
+        "orpcClient.social.blockUser",
+        "orpcClient.social.getBlockedUsers",
+        "orpcClient.social.getNotifications",
+        "orpcClient.social.getUnreadNotificationCount",
+        "orpcClient.social.isBlockingActive",
+        "orpcClient.social.markAllNotificationsRead",
+        "orpcClient.social.markNotificationRead",
+        "orpcClient.social.unblockUser"
       ],
       "hasResponses": true
     },
@@ -5873,14 +5899,14 @@
         "packages/core/src/hooks/useNotifications.ts"
       ],
       "clientCalls": [
-        "client.api as any).social.block.$post",
-        "client.api as any).social.block.active.$get",
-        "client.api as any).social.block.list.$get",
-        "client.api as any).social.notifications.$get",
-        "client.api as any).social.notifications.read.$post",
-        "client.api as any).social.notifications['read-all'].$post",
-        "client.api as any).social.notifications['unread-count'].$get",
-        "client.api as any).social.unblock.$post"
+        "orpcClient.social.blockUser",
+        "orpcClient.social.getBlockedUsers",
+        "orpcClient.social.getNotifications",
+        "orpcClient.social.getUnreadNotificationCount",
+        "orpcClient.social.isBlockingActive",
+        "orpcClient.social.markAllNotificationsRead",
+        "orpcClient.social.markNotificationRead",
+        "orpcClient.social.unblockUser"
       ],
       "hasResponses": true
     },
@@ -5900,14 +5926,14 @@
         "packages/core/src/hooks/useNotifications.ts"
       ],
       "clientCalls": [
-        "client.api as any).social.block.$post",
-        "client.api as any).social.block.active.$get",
-        "client.api as any).social.block.list.$get",
-        "client.api as any).social.notifications.$get",
-        "client.api as any).social.notifications.read.$post",
-        "client.api as any).social.notifications['read-all'].$post",
-        "client.api as any).social.notifications['unread-count'].$get",
-        "client.api as any).social.unblock.$post"
+        "orpcClient.social.blockUser",
+        "orpcClient.social.getBlockedUsers",
+        "orpcClient.social.getNotifications",
+        "orpcClient.social.getUnreadNotificationCount",
+        "orpcClient.social.isBlockingActive",
+        "orpcClient.social.markAllNotificationsRead",
+        "orpcClient.social.markNotificationRead",
+        "orpcClient.social.unblockUser"
       ],
       "hasResponses": true
     },
@@ -5927,14 +5953,14 @@
         "packages/core/src/hooks/useNotifications.ts"
       ],
       "clientCalls": [
-        "client.api as any).social.block.$post",
-        "client.api as any).social.block.active.$get",
-        "client.api as any).social.block.list.$get",
-        "client.api as any).social.notifications.$get",
-        "client.api as any).social.notifications.read.$post",
-        "client.api as any).social.notifications['read-all'].$post",
-        "client.api as any).social.notifications['unread-count'].$get",
-        "client.api as any).social.unblock.$post"
+        "orpcClient.social.blockUser",
+        "orpcClient.social.getBlockedUsers",
+        "orpcClient.social.getNotifications",
+        "orpcClient.social.getUnreadNotificationCount",
+        "orpcClient.social.isBlockingActive",
+        "orpcClient.social.markAllNotificationsRead",
+        "orpcClient.social.markNotificationRead",
+        "orpcClient.social.unblockUser"
       ],
       "hasResponses": true
     },
@@ -5953,8 +5979,8 @@
         "packages/core/src/api/announcements.ts"
       ],
       "clientCalls": [
-        "client.api as any).announcements.$get",
-        "client.api as any).announcements.$post"
+        "orpcClient.announcements.createAnnouncement",
+        "orpcClient.announcements.getAnnouncements"
       ],
       "hasResponses": true
     },
@@ -5973,8 +5999,8 @@
         "packages/core/src/api/announcements.ts"
       ],
       "clientCalls": [
-        "client.api as any).announcements.$get",
-        "client.api as any).announcements.$post"
+        "orpcClient.announcements.createAnnouncement",
+        "orpcClient.announcements.getAnnouncements"
       ],
       "hasResponses": true
     },
@@ -6027,10 +6053,10 @@
         "packages/core/src/api/thuthimal.ts"
       ],
       "clientCalls": [
-        "client.api as any).thuthimal.gifts.$get",
-        "client.api as any).thuthimal.gifts.$post",
-        "client.api as any).thuthimal.gifts.claim.$post",
-        "client.api as any).thuthimal.gifts[':giftToken'].preview.$get"
+        "orpcClient.thuthimal.claimGift",
+        "orpcClient.thuthimal.createGift",
+        "orpcClient.thuthimal.getMyGifts",
+        "orpcClient.thuthimal.previewGift"
       ],
       "hasResponses": true
     },
@@ -6049,10 +6075,10 @@
         "packages/core/src/api/thuthimal.ts"
       ],
       "clientCalls": [
-        "client.api as any).thuthimal.gifts.$get",
-        "client.api as any).thuthimal.gifts.$post",
-        "client.api as any).thuthimal.gifts.claim.$post",
-        "client.api as any).thuthimal.gifts[':giftToken'].preview.$get"
+        "orpcClient.thuthimal.claimGift",
+        "orpcClient.thuthimal.createGift",
+        "orpcClient.thuthimal.getMyGifts",
+        "orpcClient.thuthimal.previewGift"
       ],
       "hasResponses": true
     },
@@ -6071,10 +6097,10 @@
         "packages/core/src/api/thuthimal.ts"
       ],
       "clientCalls": [
-        "client.api as any).thuthimal.gifts.$get",
-        "client.api as any).thuthimal.gifts.$post",
-        "client.api as any).thuthimal.gifts.claim.$post",
-        "client.api as any).thuthimal.gifts[':giftToken'].preview.$get"
+        "orpcClient.thuthimal.claimGift",
+        "orpcClient.thuthimal.createGift",
+        "orpcClient.thuthimal.getMyGifts",
+        "orpcClient.thuthimal.previewGift"
       ],
       "hasResponses": true
     },
@@ -6093,10 +6119,10 @@
         "packages/core/src/api/thuthimal.ts"
       ],
       "clientCalls": [
-        "client.api as any).thuthimal.gifts.$get",
-        "client.api as any).thuthimal.gifts.$post",
-        "client.api as any).thuthimal.gifts.claim.$post",
-        "client.api as any).thuthimal.gifts[':giftToken'].preview.$get"
+        "orpcClient.thuthimal.claimGift",
+        "orpcClient.thuthimal.createGift",
+        "orpcClient.thuthimal.getMyGifts",
+        "orpcClient.thuthimal.previewGift"
       ],
       "hasResponses": true
     },
@@ -6115,11 +6141,11 @@
         "packages/core/src/api/erp.ts"
       ],
       "clientCalls": [
-        "client.api as any).erp.accounts.$get",
-        "client.api as any).erp.invoices.$get",
-        "client.api as any).erp.payments.intent.$post",
-        "client.api as any).erp.receipts[':id'].$get",
-        "client.api as any).erp.transactions.$post"
+        "orpcClient.erp.createPaymentIntent",
+        "orpcClient.erp.getAccounts",
+        "orpcClient.erp.getInvoices",
+        "orpcClient.erp.getReceipt",
+        "orpcClient.erp.recordTransaction"
       ],
       "hasResponses": true
     },
@@ -6138,11 +6164,11 @@
         "packages/core/src/api/erp.ts"
       ],
       "clientCalls": [
-        "client.api as any).erp.accounts.$get",
-        "client.api as any).erp.invoices.$get",
-        "client.api as any).erp.payments.intent.$post",
-        "client.api as any).erp.receipts[':id'].$get",
-        "client.api as any).erp.transactions.$post"
+        "orpcClient.erp.createPaymentIntent",
+        "orpcClient.erp.getAccounts",
+        "orpcClient.erp.getInvoices",
+        "orpcClient.erp.getReceipt",
+        "orpcClient.erp.recordTransaction"
       ],
       "hasResponses": true
     },
@@ -6161,11 +6187,11 @@
         "packages/core/src/api/erp.ts"
       ],
       "clientCalls": [
-        "client.api as any).erp.accounts.$get",
-        "client.api as any).erp.invoices.$get",
-        "client.api as any).erp.payments.intent.$post",
-        "client.api as any).erp.receipts[':id'].$get",
-        "client.api as any).erp.transactions.$post"
+        "orpcClient.erp.createPaymentIntent",
+        "orpcClient.erp.getAccounts",
+        "orpcClient.erp.getInvoices",
+        "orpcClient.erp.getReceipt",
+        "orpcClient.erp.recordTransaction"
       ],
       "hasResponses": true
     },
@@ -6184,11 +6210,11 @@
         "packages/core/src/api/erp.ts"
       ],
       "clientCalls": [
-        "client.api as any).erp.accounts.$get",
-        "client.api as any).erp.invoices.$get",
-        "client.api as any).erp.payments.intent.$post",
-        "client.api as any).erp.receipts[':id'].$get",
-        "client.api as any).erp.transactions.$post"
+        "orpcClient.erp.createPaymentIntent",
+        "orpcClient.erp.getAccounts",
+        "orpcClient.erp.getInvoices",
+        "orpcClient.erp.getReceipt",
+        "orpcClient.erp.recordTransaction"
       ],
       "hasResponses": true
     },
@@ -6207,11 +6233,11 @@
         "packages/core/src/api/erp.ts"
       ],
       "clientCalls": [
-        "client.api as any).erp.accounts.$get",
-        "client.api as any).erp.invoices.$get",
-        "client.api as any).erp.payments.intent.$post",
-        "client.api as any).erp.receipts[':id'].$get",
-        "client.api as any).erp.transactions.$post"
+        "orpcClient.erp.createPaymentIntent",
+        "orpcClient.erp.getAccounts",
+        "orpcClient.erp.getInvoices",
+        "orpcClient.erp.getReceipt",
+        "orpcClient.erp.recordTransaction"
       ],
       "hasResponses": true
     },
@@ -6230,11 +6256,11 @@
         "packages/core/src/api/erp.ts"
       ],
       "clientCalls": [
-        "client.api as any).erp.accounts.$get",
-        "client.api as any).erp.invoices.$get",
-        "client.api as any).erp.payments.intent.$post",
-        "client.api as any).erp.receipts[':id'].$get",
-        "client.api as any).erp.transactions.$post"
+        "orpcClient.erp.createPaymentIntent",
+        "orpcClient.erp.getAccounts",
+        "orpcClient.erp.getInvoices",
+        "orpcClient.erp.getReceipt",
+        "orpcClient.erp.recordTransaction"
       ],
       "hasResponses": true
     },
@@ -6965,8 +6991,9 @@
       ],
       "clientCalls": [
         "client.api as any).ai['student-potential'].$post",
-        "client.api as any).studentPotential.students[':studentId'].$get",
-        "client.api as any).studentPotential.students[':studentId'].$put"
+        "orpcClient.studentPotential.getForClassroom",
+        "orpcClient.studentPotential.listForStudent",
+        "orpcClient.studentPotential.upsert"
       ],
       "hasResponses": true
     },
@@ -6986,8 +7013,9 @@
       ],
       "clientCalls": [
         "client.api as any).ai['student-potential'].$post",
-        "client.api as any).studentPotential.students[':studentId'].$get",
-        "client.api as any).studentPotential.students[':studentId'].$put"
+        "orpcClient.studentPotential.getForClassroom",
+        "orpcClient.studentPotential.listForStudent",
+        "orpcClient.studentPotential.upsert"
       ],
       "hasResponses": true
     },
@@ -7007,8 +7035,9 @@
       ],
       "clientCalls": [
         "client.api as any).ai['student-potential'].$post",
-        "client.api as any).studentPotential.students[':studentId'].$get",
-        "client.api as any).studentPotential.students[':studentId'].$put"
+        "orpcClient.studentPotential.getForClassroom",
+        "orpcClient.studentPotential.listForStudent",
+        "orpcClient.studentPotential.upsert"
       ],
       "hasResponses": true
     },
@@ -7021,12 +7050,21 @@
         "action": "read",
         "subject": "UserRewards"
       },
-      "protocol": "direct-supabase",
-      "clientStatus": "legacy-direct",
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
       "clientFiles": [
         "packages/core/src/api/rewards.ts"
       ],
-      "clientCalls": [],
+      "clientCalls": [
+        "orpcClient.rewards.addPoints",
+        "orpcClient.rewards.awardBadge",
+        "orpcClient.rewards.checkAndAwardAchievements",
+        "orpcClient.rewards.getRewards",
+        "orpcClient.rewards.getRewardsAsOf",
+        "orpcClient.rewards.getRewardsHistory",
+        "orpcClient.rewards.getRewardsRangeHistory",
+        "orpcClient.rewards.initializeRewards"
+      ],
       "hasResponses": true
     },
     {
@@ -7038,12 +7076,21 @@
         "action": "read",
         "subject": "UserRewards"
       },
-      "protocol": "direct-supabase",
-      "clientStatus": "legacy-direct",
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
       "clientFiles": [
         "packages/core/src/api/rewards.ts"
       ],
-      "clientCalls": [],
+      "clientCalls": [
+        "orpcClient.rewards.addPoints",
+        "orpcClient.rewards.awardBadge",
+        "orpcClient.rewards.checkAndAwardAchievements",
+        "orpcClient.rewards.getRewards",
+        "orpcClient.rewards.getRewardsAsOf",
+        "orpcClient.rewards.getRewardsHistory",
+        "orpcClient.rewards.getRewardsRangeHistory",
+        "orpcClient.rewards.initializeRewards"
+      ],
       "hasResponses": true
     },
     {
@@ -7055,12 +7102,21 @@
         "action": "read",
         "subject": "UserRewards"
       },
-      "protocol": "direct-supabase",
-      "clientStatus": "legacy-direct",
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
       "clientFiles": [
         "packages/core/src/api/rewards.ts"
       ],
-      "clientCalls": [],
+      "clientCalls": [
+        "orpcClient.rewards.addPoints",
+        "orpcClient.rewards.awardBadge",
+        "orpcClient.rewards.checkAndAwardAchievements",
+        "orpcClient.rewards.getRewards",
+        "orpcClient.rewards.getRewardsAsOf",
+        "orpcClient.rewards.getRewardsHistory",
+        "orpcClient.rewards.getRewardsRangeHistory",
+        "orpcClient.rewards.initializeRewards"
+      ],
       "hasResponses": true
     },
     {
@@ -7072,12 +7128,21 @@
         "action": "read",
         "subject": "UserRewards"
       },
-      "protocol": "direct-supabase",
-      "clientStatus": "legacy-direct",
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
       "clientFiles": [
         "packages/core/src/api/rewards.ts"
       ],
-      "clientCalls": [],
+      "clientCalls": [
+        "orpcClient.rewards.addPoints",
+        "orpcClient.rewards.awardBadge",
+        "orpcClient.rewards.checkAndAwardAchievements",
+        "orpcClient.rewards.getRewards",
+        "orpcClient.rewards.getRewardsAsOf",
+        "orpcClient.rewards.getRewardsHistory",
+        "orpcClient.rewards.getRewardsRangeHistory",
+        "orpcClient.rewards.initializeRewards"
+      ],
       "hasResponses": true
     },
     {
@@ -7089,12 +7154,21 @@
         "action": "create",
         "subject": "UserRewards"
       },
-      "protocol": "direct-supabase",
-      "clientStatus": "legacy-direct",
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
       "clientFiles": [
         "packages/core/src/api/rewards.ts"
       ],
-      "clientCalls": [],
+      "clientCalls": [
+        "orpcClient.rewards.addPoints",
+        "orpcClient.rewards.awardBadge",
+        "orpcClient.rewards.checkAndAwardAchievements",
+        "orpcClient.rewards.getRewards",
+        "orpcClient.rewards.getRewardsAsOf",
+        "orpcClient.rewards.getRewardsHistory",
+        "orpcClient.rewards.getRewardsRangeHistory",
+        "orpcClient.rewards.initializeRewards"
+      ],
       "hasResponses": true
     },
     {
@@ -7106,12 +7180,21 @@
         "action": "update",
         "subject": "UserRewards"
       },
-      "protocol": "direct-supabase",
-      "clientStatus": "legacy-direct",
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
       "clientFiles": [
         "packages/core/src/api/rewards.ts"
       ],
-      "clientCalls": [],
+      "clientCalls": [
+        "orpcClient.rewards.addPoints",
+        "orpcClient.rewards.awardBadge",
+        "orpcClient.rewards.checkAndAwardAchievements",
+        "orpcClient.rewards.getRewards",
+        "orpcClient.rewards.getRewardsAsOf",
+        "orpcClient.rewards.getRewardsHistory",
+        "orpcClient.rewards.getRewardsRangeHistory",
+        "orpcClient.rewards.initializeRewards"
+      ],
       "hasResponses": true
     },
     {
@@ -7123,12 +7206,21 @@
         "action": "update",
         "subject": "UserRewards"
       },
-      "protocol": "direct-supabase",
-      "clientStatus": "legacy-direct",
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
       "clientFiles": [
         "packages/core/src/api/rewards.ts"
       ],
-      "clientCalls": [],
+      "clientCalls": [
+        "orpcClient.rewards.addPoints",
+        "orpcClient.rewards.awardBadge",
+        "orpcClient.rewards.checkAndAwardAchievements",
+        "orpcClient.rewards.getRewards",
+        "orpcClient.rewards.getRewardsAsOf",
+        "orpcClient.rewards.getRewardsHistory",
+        "orpcClient.rewards.getRewardsRangeHistory",
+        "orpcClient.rewards.initializeRewards"
+      ],
       "hasResponses": true
     },
     {
@@ -7140,12 +7232,21 @@
         "action": "update",
         "subject": "UserRewards"
       },
-      "protocol": "direct-supabase",
-      "clientStatus": "legacy-direct",
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
       "clientFiles": [
         "packages/core/src/api/rewards.ts"
       ],
-      "clientCalls": [],
+      "clientCalls": [
+        "orpcClient.rewards.addPoints",
+        "orpcClient.rewards.awardBadge",
+        "orpcClient.rewards.checkAndAwardAchievements",
+        "orpcClient.rewards.getRewards",
+        "orpcClient.rewards.getRewardsAsOf",
+        "orpcClient.rewards.getRewardsHistory",
+        "orpcClient.rewards.getRewardsRangeHistory",
+        "orpcClient.rewards.initializeRewards"
+      ],
       "hasResponses": true
     },
     {
@@ -7157,12 +7258,21 @@
         "action": "read",
         "subject": "WhisperedMoment"
       },
-      "protocol": "direct-supabase",
-      "clientStatus": "legacy-direct",
+      "protocol": "native-orpc",
+      "clientStatus": "mapped",
       "clientFiles": [
         "packages/core/src/api/rewards.ts"
       ],
-      "clientCalls": [],
+      "clientCalls": [
+        "orpcClient.rewards.addPoints",
+        "orpcClient.rewards.awardBadge",
+        "orpcClient.rewards.checkAndAwardAchievements",
+        "orpcClient.rewards.getRewards",
+        "orpcClient.rewards.getRewardsAsOf",
+        "orpcClient.rewards.getRewardsHistory",
+        "orpcClient.rewards.getRewardsRangeHistory",
+        "orpcClient.rewards.initializeRewards"
+      ],
       "hasResponses": true
     },
     {
@@ -7310,13 +7420,5 @@
       "hasResponses": true
     }
   ],
-  "findings": [
-    {
-      "severity": "warning",
-      "code": "LEGACY_DIRECT_CLIENT",
-      "source": "rewards",
-      "procedure": "*",
-      "message": "First-party client surface still bypasses the active API contract through a legacy/direct adapter; migrate it before treating this domain as production-complete."
-    }
-  ]
+  "findings": []
 }

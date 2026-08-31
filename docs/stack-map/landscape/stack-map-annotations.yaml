@@ -2,7 +2,7 @@
 # Update this file (or agents add entries), then regenerate.
 
 metadata:
-  updated: 2026-08-29
+  updated: 2026-08-30
   convention: "1) bootstrap drafts new entries  2) curate summary/layer/floating  3) pnpm run stack-map"
 
 package_entries:
@@ -48,6 +48,10 @@ package_entries:
     summary: "Data-access layer — ZenStack ORM + Postgres, schema-driven queries."
     floating: undecided
     upgrade_notes: "pin zenstack aligns with overrides in pnpm-workspace.yaml."
+  @repo/editorial:
+    layer: domain
+    summary: "Provider-neutral editorial publishing contracts and distribution ledger"
+    floating: undecided
   @repo/eslint-config:
     layer: core
     summary: "Internal eslint configuration set used across the workspace."

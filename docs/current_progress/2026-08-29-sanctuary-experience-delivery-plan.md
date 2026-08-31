@@ -2,6 +2,7 @@
 
 **Companion:** [parity audit](../architecture/2026-08-29-sanctuary-experience-parity-audit.md)  
 **Engineering baseline:** [Sanctuary experience engineering standard](../architecture/sanctuary-experience-engineering-standard.md)  
+**Active handoff:** [2026-08-31 sanctuary experience and Firefly feedback handoff](2026-08-31-sanctuary-experience-firefly-handoff.md)
 **Goal:** make the five sanctuary spaces configurable without making behavior, recovery, or platform affordances inconsistent.
 
 ## Non-negotiable invariants

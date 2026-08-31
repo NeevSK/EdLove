@@ -2,7 +2,7 @@
 title: "Documentation Index"
 status: "active"
 created: 2026-06-26
-updated: 2026-08-29
+updated: 2026-08-31
 author: "Naveen"
 scribe: "Antigravity"
 tags: [docs, index, changelog]
@@ -38,8 +38,11 @@ These files document core logic, user journeys, developer playbooks, and executi
 | [Core/onboarding.md](Core/onboarding.md) | Onboarding API contracts, route onboarding definitions, and testing |
 | [Core/local-first-architecture-principles.md](Core/local-first-architecture-principles.md) | Event-sourcing as source of truth, Cynefin classification, boundary-condition design |
 | [Core/gurudevi-sanctuary-your-guide.md](Core/gurudevi-sanctuary-your-guide.md) | Developer onboarding guide and setup checklist for Gurudevi Sanctuary |
+| [Core/editorial-publishing-vision.md](Core/editorial-publishing-vision.md) | Vision and principles for the EdLove and GuruDevi publications |
+| [Core/editorial-publishing-future-directions.md](Core/editorial-publishing-future-directions.md) | Future direction for distribution, translation, curation, and contributors |
 | [current_progress/old_docs/gurudevi-registry-agent-execution-guide.md](current_progress/old_docs/gurudevi-registry-agent-execution-guide.md) | Archived — registry refactor execution guide (superseded) |
 | [current_progress/old_docs/gurudevi-sanctuary-agent-execution-guide.md](current_progress/old_docs/gurudevi-sanctuary-agent-execution-guide.md) | Archived — sanctuary permission refactor execution guide (superseded) |
+| [current_progress/2026-08-30-sanctuary-api-implementation-handoff.md](current_progress/2026-08-30-sanctuary-api-implementation-handoff.md) | Current Sanctuary API implementation status, release blockers, and next-agent handoff |
 
 ---
 
@@ -55,6 +58,8 @@ These files outline security models, data lifecycle policies, platform topologie
 | [architecture/zenstack-schema-architecture.md](architecture/zenstack-schema-architecture.md) | ZenStack v3 patterns, schema/database split, runtime Zod validation |
 | [architecture/gurudevi-data-state-lifecycle.md](architecture/gurudevi-data-state-lifecycle.md) | State management lifecycle, offline-first syncing, caching flow |
 | [architecture/gurudevi-registry-architecture.md](architecture/gurudevi-registry-architecture.md) | Technical architecture of the Gurudevi package registry |
+| [architecture/gurudevi-repository-registry-boundary.md](architecture/gurudevi-repository-registry-boundary.md) | Canonical distinction between implementation repositories and capability registries |
+| [current_progress/2026-08-31-gurudevi-registry-implementation-audit.md](current_progress/2026-08-31-gurudevi-registry-implementation-audit.md) | Entry-by-entry registry implementation, rendering, routing, and evidence audit |
 | [architecture/gurudevi-sanctuary-permission-architecture.md](architecture/gurudevi-sanctuary-permission-architecture.md) | Security blueprint, access control rules, policy enforcement points (superseded — see identity-app-device-lifecycle) |
 | [architecture/2026-06-19-sanctuary-authorization-final-architecture.md](architecture/2026-06-19-sanctuary-authorization-final-architecture.md) | Final architecture spec for the Sanctuary authorization framework |
 | [architecture/2026-06-19-sqlite-drizzle-powersync-mechanics-guide.md](architecture/2026-06-19-sqlite-drizzle-powersync-mechanics-guide.md) | Mechanics guide for PowerSync local sync state engine |
@@ -70,6 +75,8 @@ These files outline security models, data lifecycle policies, platform topologie
 | [architecture/production-software-landscape.md](architecture/production-software-landscape.md) | Full-stack mental map of production web + mobile software — for non-coders |
 | [architecture/2026-08-29-sanctuary-api-future-readiness-audit.md](architecture/2026-08-29-sanctuary-api-future-readiness-audit.md) | Comparative implementation, contract, documentation, and future-readiness audit for Sanctuary API |
 | [architecture/2026-08-29-sanctuary-api-adversarial-security-audit.md](architecture/2026-08-29-sanctuary-api-adversarial-security-audit.md) | Stop-ship authorization, payment, contract, AI, and verification audit of Sanctuary API |
+| [architecture/negentropy-reward-economy-and-ad-center-vision.md](architecture/negentropy-reward-economy-and-ad-center-vision.md) | Vision, philosophy, tokenomics, and strategy nuances for the Negentropy Reward Economy & Ad Center |
+| [architecture/editorial-platform-architecture.md](architecture/editorial-platform-architecture.md) | Technical model, metadata, events, and migration path for editorial publishing |
 
 ---
 
@@ -87,6 +94,8 @@ Records documenting the rationale behind core design and architecture choices.
 | [decisions/2026-08-24-openness-and-reuse-strategy.md](decisions/2026-08-24-openness-and-reuse-strategy.md) | ADR — extracted-project openness (rn-terrain/trube-art); superseded for monorepo by 2026-08-25 |
 | [decisions/2026-08-24-license-tradeoffs.md](decisions/2026-08-24-license-tradeoffs.md) | ADR — MIT vs Apache/MPL/GPL/CC-BY tradeoffs (monorepo MIT, rn-terrain MIT+CC-BY) |
 | [decisions/2026-08-25-transparent-hosted-oss.md](decisions/2026-08-25-transparent-hosted-oss.md) | **ADR — Transparent Hosted OSS** (supersedes 2026-08-24 for monorepo): MIT public, hosted production, dev-only self-host seams |
+| [decisions/2026-08-31-rewarded-ad-center-policy-and-compliance.md](decisions/2026-08-31-rewarded-ad-center-policy-and-compliance.md) | ADR — Rewarded Ad Center compliance, app store policies, COPPA gating, ATT consent, and SSV cryptographic security governance |
+| [decisions/2026-08-31-editorial-platform-topology.md](decisions/2026-08-31-editorial-platform-topology.md) | ADR for shared editorial infrastructure and separate EdLove/GuruDevi publications |
 
 ---
 
@@ -107,8 +116,10 @@ Checklists, active feature roadmaps, migration paths, and lint configuration pla
 | [current_progress/2026-08-09-doppler-implementation-plan.md](current_progress/2026-08-09-doppler-implementation-plan.md) | 6-phase implementation plan for Doppler secrets management integration across dev/staging/prod/next environments |
 | [current_progress/2026-08-10-gurudevi-edlove-exploration-integration-plan.md](current_progress/2026-08-10-gurudevi-edlove-exploration-integration-plan.md) | Gurudevi-first phased program for integrating the imported exploration corpus into the Edlove platform |
 | [current_progress/2026-08-10-live-supabase-inspection.md](current_progress/2026-08-10-live-supabase-inspection.md) | Read-only linked Supabase structural, RLS, grants, and advisor inspection |
-| [current_progress/2026-08-13-expo-orchestrator-production-setup-plan.md](current_progress/2026-08-13-expo-orchestrator-production-setup-plan.md) | 7-phase production setup plan for the Expo 57 app orchestrator: foundation contracts, agent tooling/MCP, visual editing, Inngest+Eve orchestration, ship pipeline, Doppler-first secrets |
+| [current_progress/2026-08-13-expo-orchestrator-production-setup-plan.md](current_progress/2026-08-13-expo-orchestrator-production-setup-plan.md) | 7-phase production setup plan for the Expo 57 app orchestrator: foundation contracts, agent tooling/MCP, visual editing with OSS-primary/custom-fallback, Inngest + Eve orchestration, ship pipeline, Doppler-first secrets |
 | [current_progress/2026-08-29-sanctuary-api-future-readiness-plan.md](current_progress/2026-08-29-sanctuary-api-future-readiness-plan.md) | Active, phased implementation plan for Sanctuary API contract, error, AI-tool, composition, and operations readiness |
+| [current_progress/2026-08-31-ad-center-phased-implementation-plan.md](current_progress/2026-08-31-ad-center-phased-implementation-plan.md) | 5-phase execution plan for the Negentropy Ad Center (database schema, AdMob SSV webhook, native plugins, domain hooks, and profile UI) |
+| [current_progress/2026-08-31-editorial-publishing-implementation-plan.md](current_progress/2026-08-31-editorial-publishing-implementation-plan.md) | Phased implementation plan for EdLove and GuruDevi journal foundations, distribution, translations, rights, and contributors |
 
 ---
 
@@ -125,17 +136,29 @@ CI/CD setups, developer workflow scripts, versioning plans, and build diagnostic
 | [infra/code-quality-workflow.md](infra/code-quality-workflow.md) | Pre-commit/pre-push hooks setup, commitlint standards |
 | [infra/code-checkers.md](infra/code-checkers.md) | Code quality scripts catalog and run flags |
 | [infra/2026-07-24-physical-device-deployment-log.md](infra/2026-07-24-physical-device-deployment-log.md) | Live runlog for physical hardware builds and USB debugging |
-| [infra/doppler-secrets-management-guide.md](infra/doppler-secrets-management-guide.md) | Comprehensive guide for Doppler secrets management integration across dev/staging/prod/next environments |
+| [infra/doppler-secrets-management-guide.md](infra/doppler-secrets-management-guide.md) | Comprehensive guide for Doppler secrets management integration across dev/staging/prod/next environments, including CLI setup, CI/CD integration, and app-specific configuration patterns. |
 | [infra/production-readiness-program.md](infra/production-readiness-program.md) | Cross-platform production-readiness checklist for mobile, API, web, data, sync, security, and operations |
 | [infra/release-environments-runbook.md](infra/release-environments-runbook.md) | Dev/preview/staging/production promotion, Doppler, Android, iOS posture, and rollback |
 | [infra/critical-infra-vs-use-cases.md](infra/critical-infra-vs-use-cases.md) | Which capabilities must be foundational and which can be added by use case |
 | [infra/doppler-day-to-day-usage-guide.md](infra/doppler-day-to-day-usage-guide.md) | Daily usage reference for Doppler CLI commands, workflows, troubleshooting, and best practices |
 | [infra/android-local-and-cloud-build-guide.md](infra/android-local-and-cloud-build-guide.md) | Android local/cloud build runbook, zero-quota APK generation, and native C++ compilation explanation |
 | [infra/2026-08-15-android-build-log.md](infra/2026-08-15-android-build-log.md) | Execution chronicle and diagnostics log for local and cloud Android builds |
+| [infra/editorial-operations-guide.md](infra/editorial-operations-guide.md) | Editorial lifecycle, rights, translation, social, and correction guidance |
 
 ---
 
 ## Changelog
+
+### 2026-08-31
+
+- **Added**: `decisions/2026-08-31-rewarded-ad-center-policy-and-compliance.md` — ADR for Rewarded Ad Center compliance, app store policies, COPPA gating, ATT consent, and SSV cryptographic security governance.
+- **Added**: `architecture/negentropy-reward-economy-and-ad-center-vision.md` — Vision, philosophy, tokenomics, and strategy nuances for the Negentropy Reward Economy & Ad Center.
+- **Added**: `current_progress/2026-08-31-ad-center-phased-implementation-plan.md` — 5-phase execution plan for the Negentropy Ad Center (database schema, AdMob SSV webhook, native plugins, domain hooks, and profile UI).
+- **Added**: `Core/editorial-publishing-vision.md` and `Core/editorial-publishing-future-directions.md` — Editorial vision and future direction for EdLove and GuruDevi.
+- **Added**: `architecture/editorial-platform-architecture.md` — Shared editorial contract, publication model, metadata, and publishing events.
+- **Added**: `infra/editorial-operations-guide.md` — Editorial lifecycle, rights, translation, social distribution, and correction guidance.
+- **Added**: `decisions/2026-08-31-editorial-platform-topology.md` — ADR for shared infrastructure with separate publications.
+- **Added**: `current_progress/2026-08-31-editorial-publishing-implementation-plan.md` — Phased implementation plan for implementing the editorial platform.
 
 ### 2026-08-29
 
