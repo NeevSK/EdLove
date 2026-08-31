@@ -67,7 +67,7 @@ export const studentPotentialRouter = {
           order by spa.updated_at desc, spa.created_at desc
           limit 1
         `,
-        [input.studentId, input.classroomId, context.user.id],
+        [input.params.studentId, input.params.classroomId, context.user.id],
       );
       return rows[0] ? mapAnalysis(rows[0]) : null;
     }),
@@ -102,12 +102,15 @@ export const studentPotentialRouter = {
             )
           order by spa.updated_at desc, spa.created_at desc
         `,
-        [input.studentId, context.user.id],
+        [input.params.studentId, context.user.id],
       );
       return rows.map(mapAnalysis);
     }),
   upsert: impl.upsert.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     requireUser(context);
+    if (input.body.student_id !== input.params.studentId) {
+      throw SovereignError.invalidInput('student_id must match the route studentId');
+    }
     const authorized = await queryDatabaseRows<{ allowed: boolean }>(
       `
           select exists(
@@ -120,7 +123,7 @@ export const studentPotentialRouter = {
               )
           ) as allowed
         `,
-      [input.classroom_id, context.user.id, input.studentId],
+      [input.body.classroom_id, context.user.id, input.params.studentId],
     );
     if (!authorized[0]?.allowed) throw SovereignError.unauthorized('update', 'student potential');
 
@@ -132,14 +135,14 @@ export const studentPotentialRouter = {
           ) as result
         `,
       [
-        input.studentId,
-        input.classroom_id,
-        input.cognitive_flow,
-        input.emotional_resonance,
-        input.social_weaving,
-        input.creative_spark,
-        input.practical_mastery,
-        input.silver_lining ?? null,
+        input.params.studentId,
+        input.body.classroom_id,
+        input.body.cognitive_flow,
+        input.body.emotional_resonance,
+        input.body.social_weaving,
+        input.body.creative_spark,
+        input.body.practical_mastery,
+        input.body.silver_lining ?? null,
         context.requestId,
       ],
     );

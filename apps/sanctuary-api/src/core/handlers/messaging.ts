@@ -31,6 +31,19 @@ const mapMessage = (row: any) => ({
   author_avatar_url: row.author?.avatar_url ?? null,
 });
 
+async function requireConversationParticipant(context: ORPCContext, conversationId: string) {
+  const conversation = await (context.db as any).directConversation.findUnique({
+    where: { id: conversationId },
+    select: { user1_id: true, user2_id: true },
+  });
+  if (
+    !conversation ||
+    (conversation.user1_id !== context.user.id && conversation.user2_id !== context.user.id)
+  ) {
+    throw SovereignError.notFound('Conversation');
+  }
+}
+
 export const messagingRouter = impl.router({
   getConversations: impl.getConversations.use(doubleGateMiddleware).handler(async ({ context }) => {
     const rows = await (context.db as any).directConversation.findMany({
@@ -43,10 +56,10 @@ export const messagingRouter = impl.router({
   getOrCreateConversation: impl.getOrCreateConversation
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      if (input.targetUserId === context.user.id) {
+      if (input.body.targetUserId === context.user.id) {
         throw SovereignError.invalidInput('Cannot create a conversation with yourself.');
       }
-      const [user1_id, user2_id] = [context.user.id, input.targetUserId].sort();
+      const [user1_id, user2_id] = [context.user.id, input.body.targetUserId].sort();
       const db = context.db as any;
       const existing = await db.directConversation.findUnique({
         where: { user1_id_user2_id: { user1_id, user2_id } },
@@ -56,23 +69,25 @@ export const messagingRouter = impl.router({
       return String(row.id);
     }),
   getMessages: impl.getMessages.use(doubleGateMiddleware).handler(async ({ input, context }) => {
+    await requireConversationParticipant(context, input.query.conversationId);
     const rows = await (context.db as any).directMessage.findMany({
       where: {
-        conversation_id: input.conversationId,
-        created_at: input.viewDate ? { lte: new Date(input.viewDate) } : undefined,
+        conversation_id: input.query.conversationId,
+        created_at: input.query.viewDate ? { lte: new Date(input.query.viewDate) } : undefined,
       },
-      take: input.limit ?? 60,
+      take: input.query.limit ?? 60,
       orderBy: { created_at: 'asc' },
       include: { author: { select: { full_name: true, avatar_url: true } } },
     });
     return rows.map(mapMessage);
   }),
   sendMessage: impl.sendMessage.use(doubleGateMiddleware).handler(async ({ input, context }) => {
+    await requireConversationParticipant(context, input.body.conversationId);
     const row = await (context.db as any).directMessage.create({
       data: {
-        conversation_id: input.conversationId,
+        conversation_id: input.body.conversationId,
         author_id: context.user.id,
-        content: input.content,
+        content: input.body.content.trim(),
       },
       include: { author: { select: { full_name: true, avatar_url: true } } },
     });

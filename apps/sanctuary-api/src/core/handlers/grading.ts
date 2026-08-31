@@ -58,9 +58,11 @@ export const gradingRouter = impl.router({
     .handler(async ({ input, context }) => {
       assertDatabase(context);
       const row = await (context.db as any).classroomGradingSettings.findUnique({
-        where: { classroom_id: input.classroomId },
+        where: { classroom_id: input.params.classroomId },
       });
-      return row ?? { classroom_id: input.classroomId, grading_mode: 'both', show_ranks: true };
+      return (
+        row ?? { classroom_id: input.params.classroomId, grading_mode: 'both', show_ranks: true }
+      );
     }),
 
   updateGradingSettings: impl.updateGradingSettings
@@ -68,15 +70,17 @@ export const gradingRouter = impl.router({
     .handler(async ({ input, context }) => {
       assertDatabase(context);
       return (context.db as any).classroomGradingSettings.upsert({
-        where: { classroom_id: input.classroomId },
+        where: { classroom_id: input.params.classroomId },
         create: {
-          classroom_id: input.classroomId,
-          grading_mode: input.grading_mode ?? 'both',
-          show_ranks: input.show_ranks ?? true,
+          classroom_id: input.params.classroomId,
+          grading_mode: input.body.grading_mode ?? 'both',
+          show_ranks: input.body.show_ranks ?? true,
         },
         update: {
-          ...(input.grading_mode !== undefined ? { grading_mode: input.grading_mode } : {}),
-          ...(input.show_ranks !== undefined ? { show_ranks: input.show_ranks } : {}),
+          ...(input.body.grading_mode !== undefined
+            ? { grading_mode: input.body.grading_mode }
+            : {}),
+          ...(input.body.show_ranks !== undefined ? { show_ranks: input.body.show_ranks } : {}),
         },
       });
     }),
@@ -86,10 +90,10 @@ export const gradingRouter = impl.router({
     .handler(async ({ input, context }) => {
       assertDatabase(context);
       const rows = await (context.db as any).gradeMark.findMany({
-        where: lifecycleWhere(input, {
-          student_id: input.studentId,
-          ...(input.termId ? { term_id: input.termId } : {}),
-          ...(input.subjectId ? { subject_id: input.subjectId } : {}),
+        where: lifecycleWhere(input.query, {
+          student_id: input.query.studentId,
+          ...(input.query.termId ? { term_id: input.query.termId } : {}),
+          ...(input.query.subjectId ? { subject_id: input.query.subjectId } : {}),
         }),
         orderBy: [{ term_id: 'asc' }, { subject_id: 'asc' }, { created_at: 'desc' }],
       });
@@ -101,10 +105,10 @@ export const gradingRouter = impl.router({
     .handler(async ({ input, context }) => {
       assertDatabase(context);
       const rows = await (context.db as any).gradeMark.findMany({
-        where: lifecycleWhere(input, {
-          grade_class_id: input.gradeClassId,
-          ...(input.termId ? { term_id: input.termId } : {}),
-          ...(input.subjectId ? { subject_id: input.subjectId } : {}),
+        where: lifecycleWhere(input.query, {
+          grade_class_id: input.query.gradeClassId,
+          ...(input.query.termId ? { term_id: input.query.termId } : {}),
+          ...(input.query.subjectId ? { subject_id: input.query.subjectId } : {}),
         }),
         orderBy: [{ student_id: 'asc' }, { created_at: 'desc' }],
       });
@@ -113,25 +117,28 @@ export const gradingRouter = impl.router({
 
   submitGrade: impl.submitGrade.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     assertDatabase(context);
-    const percentage = (input.marksEarned / input.maxPoints) * 100;
+    if (input.body.schoolId !== context.schoolId) {
+      throw new ORPCError('FORBIDDEN', { message: 'Grade scope is outside the active school.' });
+    }
+    const percentage = (input.body.marksEarned / input.body.maxPoints) * 100;
     const db = context.db as any;
     const gradeMark = await db.gradeMark.create({
       data: {
-        student_id: input.studentId,
-        school_id: input.schoolId,
-        academic_cycle_id: input.academicCycleId,
-        grade_class_id: input.gradeClassId,
-        term_id: input.termId,
-        subject_id: input.subjectId,
-        marks_earned: input.marksEarned,
-        max_points: input.maxPoints,
+        student_id: input.body.studentId,
+        school_id: input.body.schoolId,
+        academic_cycle_id: input.body.academicCycleId,
+        grade_class_id: input.body.gradeClassId,
+        term_id: input.body.termId,
+        subject_id: input.body.subjectId,
+        marks_earned: input.body.marksEarned,
+        max_points: input.body.maxPoints,
         percentage,
         gpa: percentage / 25,
         letter_grade: letterGrade(percentage),
-        assignment_id: input.assignmentId,
-        submission_id: input.submissionId,
-        feedback: input.feedback,
-        idempotency_key: input.idempotencyKey,
+        assignment_id: input.body.assignmentId,
+        submission_id: input.body.submissionId,
+        feedback: input.body.feedback,
+        idempotency_key: input.body.idempotencyKey,
         graded_by: context.user.id,
         graded_at: new Date(),
       },
@@ -142,7 +149,7 @@ export const gradingRouter = impl.router({
         entity_id: gradeMark.id,
         entity_type: 'grade_mark',
         executor_id: context.user.id,
-        metadata: input,
+        metadata: input.body,
       },
     });
     return mapGradeMark(gradeMark);
@@ -152,7 +159,7 @@ export const gradingRouter = impl.router({
     assertDatabase(context);
     const db = context.db as any;
     const gradeMark = await db.gradeMark.update({
-      where: { id: input.id },
+      where: { id: input.params.id },
       data: {
         publication_state: 'published',
         published_at: new Date(),
@@ -163,7 +170,7 @@ export const gradingRouter = impl.router({
     await db.sentinelAuditLog.create({
       data: {
         action: 'grade_mark_published',
-        entity_id: input.id,
+        entity_id: input.params.id,
         entity_type: 'grade_mark',
         executor_id: context.user.id,
         metadata: { publication_state: 'published' },

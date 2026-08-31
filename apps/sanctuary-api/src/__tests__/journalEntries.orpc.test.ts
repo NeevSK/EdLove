@@ -32,8 +32,7 @@ describe('Sanctuary API: self journal entries', () => {
     ]);
 
     const response = await createTestORPCClient(headers).journalEntries.list({
-      limit: 50,
-      view_date: '2026-08-14T12:00:00.000Z',
+      query: { limit: 50, view_date: '2026-08-14T12:00:00.000Z' },
     });
     expect(response).toEqual([
       {
@@ -58,12 +57,20 @@ describe('Sanctuary API: self journal entries', () => {
     ]);
 
     const response = await createTestORPCClient(headers).journalEntries.create({
-      content: 'A new reflection',
+      body: { content: 'A new reflection' },
     });
     expect(response).toMatchObject({ user_id: userId, content: 'A new reflection' });
   });
 
   it('requires authentication', async () => {
-    await expect(createTestORPCClient().journalEntries.list({ limit: 50 })).rejects.toBeTruthy();
+    await expect(
+      createTestORPCClient().journalEntries.list({ query: { limit: 50 } }),
+    ).rejects.toBeTruthy();
+  });
+
+  it('rejects the former flattened request shape', async () => {
+    await expect(
+      (createTestORPCClient(headers).journalEntries.list as any)({ limit: 50 }),
+    ).rejects.toMatchObject({ status: 400 });
   });
 });

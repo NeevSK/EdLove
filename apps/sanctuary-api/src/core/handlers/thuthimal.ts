@@ -3,6 +3,7 @@ import { thuthimalContract } from '@repo/core/api/thuthimal.contract';
 import { SovereignError } from '@repo/core/types/Errors';
 import { assertDatabase } from '../apiErrors';
 import { implement, type ORPCContext } from '../orpc';
+import { doubleGateMiddleware } from '../orpcMiddleware';
 
 const impl = implement(thuthimalContract).$context<ORPCContext>();
 const iso = (value: unknown) =>
@@ -23,33 +24,33 @@ const mapGift = (row: any) => ({
 });
 
 export const thuthimalRouter = impl.router({
-  createGift: impl.createGift.handler(async ({ input, context }) => {
+  createGift: impl.createGift.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     assertDatabase(context);
     if (context.user.id === 'anonymous') throw SovereignError.authenticationRequired();
-    if (input.recipientId === context.user.id)
+    if (input.body.recipientId === context.user.id)
       throw SovereignError.invalidInput('A gratitude gift cannot be addressed to its creator.');
 
     const row = await context.db.thuthimalGift.create({
       data: {
         gifter_id: context.user.id,
-        gifter_name: input.gifterName.trim(),
-        recipient_role: input.recipientTier,
-        recipient_id: input.recipientId ?? null,
-        expires_at: input.expiresAt ? new Date(input.expiresAt) : null,
-        gift_message: input.message ?? null,
+        gifter_name: input.body.gifterName.trim(),
+        recipient_role: input.body.recipientTier,
+        recipient_id: input.body.recipientId ?? null,
+        expires_at: input.body.expiresAt ? new Date(input.body.expiresAt) : null,
+        gift_message: input.body.message ?? null,
       },
     });
     return { gift_token: String(row.gift_token) };
   }),
 
-  claimGift: impl.claimGift.handler(async ({ input, context }) => {
+  claimGift: impl.claimGift.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     assertDatabase(context);
     if (context.user.id === 'anonymous') throw SovereignError.authenticationRequired();
 
     const result = await context.db.$transaction(async (tx: any) => {
       const gift = await tx.thuthimalGift.findFirst({
         where: {
-          gift_token: input.giftToken,
+          gift_token: input.body.giftToken,
           claimed: false,
           OR: [{ expires_at: null }, { expires_at: { gt: new Date() } }],
         },
@@ -81,7 +82,7 @@ export const thuthimalRouter = impl.router({
     return result;
   }),
 
-  getMyGifts: impl.getMyGifts.handler(async ({ context }) => {
+  getMyGifts: impl.getMyGifts.use(doubleGateMiddleware).handler(async ({ context }) => {
     assertDatabase(context);
     if (context.user.id === 'anonymous') throw SovereignError.authenticationRequired();
     const rows = await context.db.thuthimalGift.findMany({
@@ -91,12 +92,12 @@ export const thuthimalRouter = impl.router({
     return rows.map(mapGift);
   }),
 
-  previewGift: impl.previewGift.handler(async ({ input, context }) => {
+  previewGift: impl.previewGift.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     assertDatabase(context);
     if (context.user.id === 'anonymous') throw SovereignError.authenticationRequired();
     const row = await context.db.thuthimalGift.findFirst({
       where: {
-        gift_token: input.giftToken,
+        gift_token: input.params.giftToken,
         claimed: false,
         OR: [{ expires_at: null }, { expires_at: { gt: new Date() } }],
       },

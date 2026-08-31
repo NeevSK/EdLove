@@ -167,14 +167,30 @@ async function assertWorkerScope(request: SupportRequest | SummaryRequest): Prom
         from public.classrooms classroom
         where classroom.id = $1::uuid
           and classroom.school_id = $2::uuid
-          and ($3::uuid is null or classroom.teacher_id = $3::uuid)
+          and classroom.teacher_id is not distinct from $3::uuid
           and (
             $4::uuid is null
             or exists (
               select 1 from public.classroom_students enrollment
               where enrollment.classroom_id = classroom.id
                 and enrollment.student_id = $4::uuid
-                and enrollment.status = 'active'
+              and enrollment.status = 'active'
+            )
+          )
+          and $5::uuid is not null
+          and (
+            classroom.teacher_id = $5::uuid
+            or exists (
+              select 1 from public.bonds bond
+              where bond.user_id = $5::uuid
+                and (
+                  (bond.entity_type = 'PLATFORM' and bond.capacity = 'admin')
+                  or (
+                    bond.entity_type = 'SCHOOL'
+                    and bond.entity_id = classroom.school_id::text
+                    and bond.capacity = any($6::text[])
+                  )
+                )
             )
           )
       ) as valid
@@ -184,6 +200,8 @@ async function assertWorkerScope(request: SupportRequest | SummaryRequest): Prom
       request.schoolId,
       request.teacherId ?? null,
       'studentId' in request ? request.studentId : null,
+      request.requestedBy ?? null,
+      ['principal', 'section_head', 'grade_head'],
     ],
   );
   if (!rows[0]?.valid) throw new Error('Durable agent scope is no longer authorized.');

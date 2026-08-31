@@ -168,21 +168,27 @@ export function toORPCContract(contract: any, prefix = ''): any {
 
         builder = builder.meta(route.metadata);
 
-        const schemas = [route.request?.params, route.request?.query, route.request?.body].filter(
-          Boolean,
-        );
-
-        if (schemas.length > 0) {
-          let combined = schemas[0];
-          for (let i = 1; i < schemas.length; i++) {
-            if (combined instanceof z.ZodObject && schemas[i] instanceof z.ZodObject) {
-              combined = combined.merge(schemas[i]);
-            } else {
-              combined = z.intersection(combined, schemas[i]);
+        const request = route.request as
+          | {
+              params?: z.ZodTypeAny;
+              query?: z.ZodTypeAny;
+              body?: z.ZodTypeAny;
             }
+          | undefined;
+        if (request) {
+          const envelope: Record<string, z.ZodTypeAny> = {};
+          for (const key of ['params', 'query', 'body'] as const) {
+            const schema = request[key];
+            if (!schema) continue;
+            const transformed = transformSchema(schema);
+            // A declared transport channel is always explicit. Making an
+            // all-optional query/body schema optional lets flattened input
+            // bypass the canonical envelope and reach handlers as undefined.
+            envelope[key] = transformed;
           }
-          combined = transformSchema(combined);
-          return builder.input(combined) as any;
+          if (Object.keys(envelope).length > 0) {
+            return builder.input(z.object(envelope)) as any;
+          }
         }
 
         return builder;

@@ -36,7 +36,7 @@ export const learningReflectionsRouter = impl.router({
       assertDatabase(context);
       const row = await context.db.learningReflection.create({
         data: {
-          ...input,
+          ...input.body,
           user_id: context.user.id,
         },
       });
@@ -48,12 +48,12 @@ export const learningReflectionsRouter = impl.router({
     .handler(async ({ input, context }) => {
       assertDatabase(context);
       const where: Record<string, unknown> = { user_id: context.user.id };
-      if (input.classroom_id) where.classroom_id = input.classroom_id;
-      if (input.assignment_id) where.assignment_id = input.assignment_id;
+      if (input.query.classroom_id) where.classroom_id = input.query.classroom_id;
+      if (input.query.assignment_id) where.assignment_id = input.query.assignment_id;
 
       const rows = await context.db.learningReflection.findMany({
         where,
-        take: input.limit ?? 30,
+        take: input.query.limit ?? 30,
         orderBy: { created_at: 'desc' },
       });
       return rows.map(mapLearningReflection);

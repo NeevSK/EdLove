@@ -5,6 +5,7 @@
  */
 export const nativeORPCPaths = [
   '/api/self/*',
+  '/api/learningReflections/*',
   '/api/profile/*',
   '/api/identity/*',
   '/api/onboarding/*',

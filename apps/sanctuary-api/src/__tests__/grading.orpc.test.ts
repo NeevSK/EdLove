@@ -2,7 +2,11 @@ import './setup';
 import { gradingContract } from '@repo/core/api/grading.contract';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createTestORPCClient } from './orpc-client';
-import { setMockActiveBond, setMockZenStackDbAvailable } from './setup';
+import {
+  setMockActiveBond,
+  setMockClassroomRelationships,
+  setMockZenStackDbAvailable,
+} from './setup';
 
 describe('Sanctuary API: lifecycle grading via native oRPC', () => {
   const headers = {
@@ -21,6 +25,10 @@ describe('Sanctuary API: lifecycle grading via native oRPC', () => {
 
   beforeEach(() => {
     setMockZenStackDbAvailable(true);
+    setMockClassroomRelationships({
+      classrooms: [{ id: ids.gradeClassId, school_id: ids.schoolId, teacher_id: ids.studentId }],
+      students: [{ id: ids.studentId, classroom_id: ids.gradeClassId }],
+    });
     setMockActiveBond({
       id: 'bond-grading',
       user_id: ids.studentId,
@@ -33,11 +41,13 @@ describe('Sanctuary API: lifecycle grading via native oRPC', () => {
 
   it('reads grade marks through the lifecycle grade class scope', async () => {
     const body = await createTestORPCClient(headers).grading.getClassroomGrades({
-      schoolId: ids.schoolId,
-      academicCycleId: ids.academicCycleId,
-      gradeClassId: ids.gradeClassId,
-      termId: ids.termId,
-      subjectId: ids.subjectId,
+      query: {
+        schoolId: ids.schoolId,
+        academicCycleId: ids.academicCycleId,
+        gradeClassId: ids.gradeClassId,
+        termId: ids.termId,
+        subjectId: ids.subjectId,
+      },
     });
     expect(body).toEqual([]);
   });
@@ -60,5 +70,28 @@ describe('Sanctuary API: lifecycle grading via native oRPC', () => {
       maxPoints: 100,
     });
     expect(result.success).toBe(false);
+  });
+
+  it('rejects legacy flattened envelopes before handler execution', async () => {
+    await expect(
+      createTestORPCClient(headers).grading.getClassroomGrades({
+        schoolId: ids.schoolId,
+        academicCycleId: ids.academicCycleId,
+        gradeClassId: ids.gradeClassId,
+      } as never),
+    ).rejects.toBeTruthy();
+  });
+
+  it('rejects writes targeting a school outside the active bond', async () => {
+    await expect(
+      createTestORPCClient(headers).grading.submitGrade({
+        body: {
+          ...ids,
+          schoolId: '523e4567-e89b-12d3-a456-426614174000',
+          marksEarned: 75,
+          maxPoints: 100,
+        },
+      }),
+    ).rejects.toMatchObject({ status: 403 });
   });
 });

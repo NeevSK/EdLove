@@ -24,7 +24,7 @@ export const profileRouter = impl.router({
       assertDatabase(context);
 
       const user = await context.db.user.findUnique({
-        where: { id: input.id },
+        where: { id: input.params.id },
         select: {
           id: true,
           full_name: true,
@@ -54,7 +54,7 @@ export const profileRouter = impl.router({
 
       // ZenStack will automatically enforce ReBAC permissions for updates
       const updated = await context.db.user.update({
-        where: { id: input.id },
+        where: { id: input.params.id },
         data: input.body as any,
       });
 
@@ -67,9 +67,9 @@ export const profileRouter = impl.router({
       assertDatabase(context);
 
       const [growthState, moments] = await Promise.all([
-        context.db.userGrowthState.findUnique({ where: { user_id: input.id } }),
+        context.db.userGrowthState.findUnique({ where: { user_id: input.params.id } }),
         context.db.whisperedMoment.findMany({
-          where: { user_id: input.id },
+          where: { user_id: input.params.id },
           orderBy: { awarded_at: 'desc' },
           take: 5,
         }),
@@ -110,26 +110,26 @@ export const profileRouter = impl.router({
       assertDatabase(context);
       const db = context.db as any;
       const existing = await db.userSocialLink.findFirst({
-        where: { user_id: context.user.id, platform: input.platform },
+        where: { user_id: context.user.id, platform: input.body.platform },
       });
       const row = existing
         ? await db.userSocialLink.update({
             where: { id: existing.id },
             data: {
-              url: input.url,
-              is_public: input.is_public,
-              privacy_level: input.privacy_level,
-              order_index: input.order_index,
+              url: input.body.url,
+              is_public: input.body.is_public,
+              privacy_level: input.body.privacy_level,
+              order_index: input.body.order_index,
             },
           })
         : await db.userSocialLink.create({
             data: {
               user_id: context.user.id,
-              platform: input.platform,
-              url: input.url,
-              is_public: input.is_public ?? true,
-              privacy_level: input.privacy_level ?? 'public',
-              order_index: input.order_index ?? 0,
+              platform: input.body.platform,
+              url: input.body.url,
+              is_public: input.body.is_public ?? true,
+              privacy_level: input.body.privacy_level ?? 'public',
+              order_index: input.body.order_index ?? 0,
             },
           });
       return mapSocialLink(row);
@@ -138,7 +138,7 @@ export const profileRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       assertDatabase(context);
-      await (context.db as any).userSocialLink.delete({ where: { id: input.id } });
+      await (context.db as any).userSocialLink.delete({ where: { id: input.params.id } });
       return { success: true };
     }),
 });

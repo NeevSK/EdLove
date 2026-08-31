@@ -54,7 +54,7 @@ describe('Sanctuary API: Student Potential', () => {
     setMockQueryRowsQueue([[row]]);
 
     const result = await createTestORPCClient(headers).studentPotential.listForStudent({
-      studentId,
+      params: { studentId },
     });
 
     expect(result).toHaveLength(1);
@@ -71,15 +71,17 @@ describe('Sanctuary API: Student Potential', () => {
 
     await expect(
       createTestORPCClient(headers).studentPotential.upsert({
-        studentId,
-        classroom_id: classroomId,
-        cognitive_flow: 4,
-        emotional_resonance: 3,
-        social_weaving: 5,
-        creative_spark: 4,
-        practical_mastery: 3,
-        silver_lining: null,
-        potential_notes: [],
+        params: { studentId },
+        body: {
+          student_id: studentId,
+          classroom_id: classroomId,
+          cognitive_flow: 4,
+          emotional_resonance: 3,
+          social_weaving: 5,
+          creative_spark: 4,
+          practical_mastery: 3,
+          silver_lining: null,
+        },
       }),
     ).rejects.toMatchObject({ status: 403 });
   });
@@ -88,15 +90,17 @@ describe('Sanctuary API: Student Potential', () => {
     setMockQueryRowsQueue([[{ allowed: true }], [{ result: row }]]);
 
     const result = await createTestORPCClient(headers).studentPotential.upsert({
-      studentId,
-      classroom_id: classroomId,
-      cognitive_flow: 4,
-      emotional_resonance: 3,
-      social_weaving: 5,
-      creative_spark: 4,
-      practical_mastery: 3,
-      silver_lining: 'Consistent curiosity',
-      potential_notes: ['Ask a deeper question'],
+      params: { studentId },
+      body: {
+        student_id: studentId,
+        classroom_id: classroomId,
+        cognitive_flow: 4,
+        emotional_resonance: 3,
+        social_weaving: 5,
+        creative_spark: 4,
+        practical_mastery: 3,
+        silver_lining: 'Consistent curiosity',
+      },
     });
 
     expect(result.audit).toEqual({
@@ -109,7 +113,32 @@ describe('Sanctuary API: Student Potential', () => {
 
   it('rejects malformed identifiers before the handler can query the database', async () => {
     await expect(
-      createTestORPCClient(headers).studentPotential.listForStudent({ studentId: 'not-a-uuid' }),
+      createTestORPCClient(headers).studentPotential.listForStudent({
+        params: { studentId: 'not-a-uuid' },
+      }),
     ).rejects.toMatchObject({ status: 400 });
+  });
+
+  it('rejects a body student identity that differs from the route identity', async () => {
+    await expect(
+      createTestORPCClient(headers).studentPotential.upsert({
+        params: { studentId },
+        body: {
+          student_id: teacherId,
+          classroom_id: classroomId,
+          cognitive_flow: 4,
+          emotional_resonance: 3,
+          social_weaving: 5,
+          creative_spark: 4,
+          practical_mastery: 3,
+        },
+      }),
+    ).rejects.toMatchObject({ status: 400 });
+  });
+
+  it('rejects legacy flattened envelopes', async () => {
+    await expect(
+      createTestORPCClient(headers).studentPotential.listForStudent({ studentId } as never),
+    ).rejects.toBeTruthy();
   });
 });

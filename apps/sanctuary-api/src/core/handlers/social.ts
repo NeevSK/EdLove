@@ -25,9 +25,9 @@ export const socialRouter = impl.router({
       const rows = await (context.db as any).notification.findMany({
         where: {
           user_id: context.user.id,
-          created_at: input.viewDate ? { lte: new Date(input.viewDate) } : undefined,
+          created_at: input.query.viewDate ? { lte: new Date(input.query.viewDate) } : undefined,
         },
-        take: input.limit ?? 30,
+        take: input.query.limit ?? 30,
         orderBy: { created_at: 'desc' },
       });
       return rows.map(mapNotification);
@@ -45,7 +45,7 @@ export const socialRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       await (context.db as any).notification.updateMany({
-        where: { id: input.notificationId, user_id: context.user.id },
+        where: { id: input.body.notificationId, user_id: context.user.id },
         data: { is_read: true },
       });
       return { success: true };
@@ -60,24 +60,24 @@ export const socialRouter = impl.router({
       return { success: true };
     }),
   blockUser: impl.blockUser.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    if (input.targetUserId === context.user.id) {
+    if (input.body.targetUserId === context.user.id) {
       throw SovereignError.invalidInput('Cannot block yourself.');
     }
     const db = context.db as any;
     const existing = await db.userBlock.findUnique({
       where: {
-        blocker_id_blocked_id: { blocker_id: context.user.id, blocked_id: input.targetUserId },
+        blocker_id_blocked_id: { blocker_id: context.user.id, blocked_id: input.body.targetUserId },
       },
     });
     if (!existing)
       await db.userBlock.create({
-        data: { blocker_id: context.user.id, blocked_id: input.targetUserId },
+        data: { blocker_id: context.user.id, blocked_id: input.body.targetUserId },
       });
     return { success: true };
   }),
   unblockUser: impl.unblockUser.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     await (context.db as any).userBlock.deleteMany({
-      where: { blocker_id: context.user.id, blocked_id: input.targetUserId },
+      where: { blocker_id: context.user.id, blocked_id: input.body.targetUserId },
     });
     return { success: true };
   }),
@@ -88,8 +88,8 @@ export const socialRouter = impl.router({
       const row = await db.userBlock.findFirst({
         where: {
           OR: [
-            { blocker_id: context.user.id, blocked_id: input.targetUserId },
-            { blocker_id: input.targetUserId, blocked_id: context.user.id },
+            { blocker_id: context.user.id, blocked_id: input.query.targetUserId },
+            { blocker_id: input.query.targetUserId, blocked_id: context.user.id },
           ],
         },
       });

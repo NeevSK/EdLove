@@ -42,13 +42,13 @@ export const dailyContentRouter = impl.router({
   }),
   getForDate: impl.getForDate.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     assertDatabase(context);
-    return fetchRows(context.db, input.date);
+    return fetchRows(context.db, input.params.date);
   }),
   getRecent: impl.getRecent.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     assertDatabase(context);
-    const startDate = new Date(Date.now() - input.days * 24 * 60 * 60 * 1000)
+    const startDate = new Date(Date.now() - input.params.days * 24 * 60 * 60 * 1000)
       .toISOString()
       .slice(0, 10);
-    return fetchRows(context.db, startDate, input.days);
+    return fetchRows(context.db, startDate, input.params.days);
   }),
 });

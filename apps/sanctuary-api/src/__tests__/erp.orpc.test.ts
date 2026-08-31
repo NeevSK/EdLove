@@ -26,12 +26,23 @@ describe('Sanctuary API: ERP via native oRPC', () => {
   it('rejects an unbalanced ledger transaction before persistence', async () => {
     await expect(
       createTestORPCClient(headers).erp.recordTransaction({
-        description: 'Unbalanced transaction',
-        entries: [
-          { accountId: '123e4567-e89b-12d3-a456-426614174001', amount: 100, side: 'debit' },
-          { accountId: '123e4567-e89b-12d3-a456-426614174002', amount: 90, side: 'credit' },
-        ],
+        body: {
+          description: 'Unbalanced transaction',
+          entries: [
+            { accountId: '123e4567-e89b-12d3-a456-426614174001', amount: 100, side: 'debit' },
+            { accountId: '123e4567-e89b-12d3-a456-426614174002', amount: 90, side: 'credit' },
+          ],
+        },
       }),
     ).rejects.toMatchObject({ status: 400 });
+  });
+
+  it('rejects legacy flattened accounting envelopes', async () => {
+    await expect(
+      createTestORPCClient(headers).erp.recordTransaction({
+        description: 'Flattened',
+        entries: [],
+      } as never),
+    ).rejects.toBeTruthy();
   });
 });

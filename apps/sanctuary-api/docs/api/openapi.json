@@ -1,136 +1,13 @@
 {
   "info": {
-    "title": "Sanctuary API",
-    "version": "2026.1.0",
-    "description": "Sovereign API Gateway (ZenStack v3.6.4 + Zod v4 + oRPC)"
+    "title": "API Reference",
+    "version": "0.0.0"
   },
-  "servers": [
-    {
-      "url": "http://localhost:3000",
-      "description": "Local development"
-    },
-    {
-      "url": "https://api.gurudevi.edlove.org",
-      "description": "Production"
-    }
-  ],
-  "tags": [
-    {
-      "name": "self",
-      "description": "Personal wellbeing & profile"
-    },
-    {
-      "name": "identity",
-      "description": "Authentication & onboarding"
-    },
-    {
-      "name": "library",
-      "description": "Content library & resources"
-    },
-    {
-      "name": "educational",
-      "description": "Classrooms, assignments, materials"
-    },
-    {
-      "name": "community",
-      "description": "Groups, posts, comments, polls"
-    },
-    {
-      "name": "attendance",
-      "description": "Attendance tracking"
-    },
-    {
-      "name": "grading",
-      "description": "Grades & assessments"
-    },
-    {
-      "name": "dailyContent",
-      "description": "Daily content delivery"
-    },
-    {
-      "name": "mapping",
-      "description": "Knowledge topology & school pulse"
-    },
-    {
-      "name": "rewards",
-      "description": "Growth signals & whispered moments"
-    },
-    {
-      "name": "privacy",
-      "description": "Privacy ledger & consent"
-    },
-    {
-      "name": "sync",
-      "description": "PowerSync offline-first sync"
-    },
-    {
-      "name": "ai",
-      "description": "AI Assistant (SSE streaming)"
-    },
-    {
-      "name": "admin",
-      "description": "Platform administration"
-    },
-    {
-      "name": "erp",
-      "description": "Inventory, accounting, payments"
-    },
-    {
-      "name": "tracking",
-      "description": "Feature usage analytics"
-    },
-    {
-      "name": "agent",
-      "description": "Durable agents & system status"
-    }
-  ],
   "openapi": "3.1.1",
   "paths": {
     "/self/mood": {
-      "post": {
-        "operationId": "self.logMood",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
       "get": {
         "operationId": "self.getMoodHistory",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/self/journal/burn": {
-      "post": {
-        "operationId": "self.burnJournal",
         "responses": {
           "200": {
             "description": "OK",
@@ -195,50 +72,8 @@
       }
     },
     "/self/thought-record": {
-      "post": {
-        "operationId": "self.saveThoughtRecord",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
       "get": {
         "operationId": "self.getThoughtRecords",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/self/thought-record/:id": {
-      "patch": {
-        "operationId": "self.completeThoughtRecordFollowUp",
         "responses": {
           "200": {
             "description": "OK",
@@ -278,9 +113,11 @@
             }
           }
         }
-      },
-      "patch": {
-        "operationId": "self.updatePreferences",
+      }
+    },
+    "/classroom/learning-reflections": {
+      "get": {
+        "operationId": "learningReflections.getLearningReflections",
         "responses": {
           "200": {
             "description": "OK",
@@ -303,26 +140,6 @@
     "/profile/users/:id": {
       "get": {
         "operationId": "profile.getUserProfile",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "patch": {
-        "operationId": "profile.updateProfile",
         "responses": {
           "200": {
             "description": "OK",
@@ -386,53 +203,9 @@
         }
       }
     },
-    "/profile/getSocialLinks": {
-      "post": {
+    "/profile/social-links": {
+      "get": {
         "operationId": "profile.getSocialLinks",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/profile/upsertSocialLink": {
-      "post": {
-        "operationId": "profile.upsertSocialLink",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/profile/deleteSocialLink": {
-      "post": {
-        "operationId": "profile.deleteSocialLink",
         "responses": {
           "200": {
             "description": "OK",
@@ -494,119 +267,11 @@
             }
           }
         }
-      },
-      "patch": {
-        "operationId": "identity.modifyUserProfile",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/identity/classroom-capacity-summary/:id": {
       "get": {
         "operationId": "identity.resolveWorkspaceContext",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/identity/initial-bond": {
-      "post": {
-        "operationId": "onboarding.createInitialBond",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/identity/complete-onboarding": {
-      "post": {
-        "operationId": "onboarding.completeOnboarding",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/identity/school-founder-bond": {
-      "post": {
-        "operationId": "onboarding.createFounderSchoolBond",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/identity/school-bond/:schoolId": {
-      "delete": {
-        "operationId": "onboarding.revokeSchoolBond",
         "responses": {
           "200": {
             "description": "OK",
@@ -646,95 +311,11 @@
             }
           }
         }
-      },
-      "post": {
-        "operationId": "principalNotes.create",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/principal-notes/recent": {
       "get": {
         "operationId": "principalNotes.getRecent",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/principal-notes/:id": {
-      "patch": {
-        "operationId": "principalNotes.update",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "principalNotes.delete",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/powersync/upload": {
-      "post": {
-        "operationId": "sync.uploadBatch",
         "responses": {
           "200": {
             "description": "OK",
@@ -840,48 +421,6 @@
             }
           }
         }
-      },
-      "post": {
-        "operationId": "decisionJournal.create",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/decisionJournal/logs/:id/reviewed": {
-      "patch": {
-        "operationId": "decisionJournal.markReviewed",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/journalEntries": {
@@ -904,93 +443,11 @@
             }
           }
         }
-      },
-      "post": {
-        "operationId": "journalEntries.create",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/sacredMissions/manifestos": {
       "get": {
         "operationId": "sacredMissions.list",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "operationId": "sacredMissions.create",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/sacredMissions/manifestos/:manifestoId/endorse": {
-      "post": {
-        "operationId": "sacredMissions.endorse",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "sacredMissions.unendorse",
         "responses": {
           "200": {
             "description": "OK",
@@ -1052,71 +509,11 @@
             }
           }
         }
-      },
-      "post": {
-        "operationId": "library.createResource",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/library/resources/:id": {
       "get": {
         "operationId": "library.getResource",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "operationId": "library.updateResource",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "library.deleteResource",
         "responses": {
           "200": {
             "description": "OK",
@@ -1158,115 +555,7 @@
         }
       }
     },
-    "/library/resources/search": {
-      "post": {
-        "operationId": "library.searchLibrary",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/library/resources/:id/verify": {
-      "post": {
-        "operationId": "library.verifyResource",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/library/resources/:id/broken-link": {
-      "post": {
-        "operationId": "library.reportBrokenLink",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/library/resources/:id/engage": {
-      "post": {
-        "operationId": "library.engage",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/library/collections": {
-      "post": {
-        "operationId": "library.createCollection",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
       "get": {
         "operationId": "library.getCollections",
         "responses": {
@@ -1288,115 +577,9 @@
         }
       }
     },
-    "/library/collections/:id/resources": {
-      "post": {
-        "operationId": "library.addToCollection",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/library/collections/:id/resources/:resourceId": {
-      "delete": {
-        "operationId": "library.removeFromCollection",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/library/collections/:id": {
-      "put": {
-        "operationId": "library.updateCollection",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "library.deleteCollection",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
       "get": {
         "operationId": "library.getCollection",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/library/collections/:id/fork": {
-      "post": {
-        "operationId": "library.forkCollection",
         "responses": {
           "200": {
             "description": "OK",
@@ -1419,28 +602,6 @@
     "/library/map/topology": {
       "get": {
         "operationId": "library.getMapTopology",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/authorization/refresh": {
-      "post": {
-        "operationId": "authorization.refresh",
         "responses": {
           "200": {
             "description": "OK",
@@ -1546,68 +707,6 @@
             }
           }
         }
-      },
-      "patch": {
-        "operationId": "educational.updateClassroom",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "educational.deleteClassroom",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/educational/classrooms": {
-      "post": {
-        "operationId": "educational.createClassroom",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/educational/classrooms/:classroomId/resources": {
@@ -1632,139 +731,9 @@
         }
       }
     },
-    "/educational/lessons": {
-      "post": {
-        "operationId": "educational.createLesson",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/educational/classrooms/:classroomId/students": {
       "get": {
         "operationId": "educational.getClassroomStudents",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/educational/classrooms/:classroomId/students/enroll": {
-      "post": {
-        "operationId": "educational.enrollStudent",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/educational/classrooms/:classroomId/students/shadow": {
-      "post": {
-        "operationId": "educational.addShadowStudent",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/educational/classroom-students/:id": {
-      "patch": {
-        "operationId": "educational.updateClassroomStudent",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "educational.removeClassroomStudent",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/educational/claimShadowStudent": {
-      "post": {
-        "operationId": "educational.claimShadowStudent",
         "responses": {
           "200": {
             "description": "OK",
@@ -1850,72 +819,8 @@
         }
       }
     },
-    "/educational/notes": {
-      "post": {
-        "operationId": "educational.createClassroomNote",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/educational/notes/:id": {
-      "patch": {
-        "operationId": "educational.updateClassroomNote",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "educational.deleteClassroomNote",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/educational/getMaterials": {
-      "post": {
+    "/educational/classrooms/:classroomId/materials": {
+      "get": {
         "operationId": "educational.getMaterials",
         "responses": {
           "200": {
@@ -1936,8 +841,8 @@
         }
       }
     },
-    "/educational/getLessonMaterials": {
-      "post": {
+    "/educational/lessons/:lessonId/materials": {
+      "get": {
         "operationId": "educational.getLessonMaterials",
         "responses": {
           "200": {
@@ -1958,74 +863,8 @@
         }
       }
     },
-    "/educational/createMaterial": {
-      "post": {
-        "operationId": "educational.createMaterial",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/educational/updateMaterial": {
-      "post": {
-        "operationId": "educational.updateMaterial",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/educational/deleteMaterial": {
-      "post": {
-        "operationId": "educational.deleteMaterial",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/educational/getAssignments": {
-      "post": {
+    "/educational/classrooms/:classroomId/assignments": {
+      "get": {
         "operationId": "educational.getAssignments",
         "responses": {
           "200": {
@@ -2046,8 +885,8 @@
         }
       }
     },
-    "/educational/getLessonAssignments": {
-      "post": {
+    "/educational/lessons/:lessonId/assignments": {
+      "get": {
         "operationId": "educational.getLessonAssignments",
         "responses": {
           "200": {
@@ -2068,74 +907,8 @@
         }
       }
     },
-    "/educational/createAssignment": {
-      "post": {
-        "operationId": "educational.createAssignment",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/educational/updateAssignment": {
-      "post": {
-        "operationId": "educational.updateAssignment",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/educational/deleteAssignment": {
-      "post": {
-        "operationId": "educational.deleteAssignment",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/educational/getStudentSubmissions": {
-      "post": {
+    "/educational/students/:studentId/submissions": {
+      "get": {
         "operationId": "educational.getStudentSubmissions",
         "responses": {
           "200": {
@@ -2156,53 +929,9 @@
         }
       }
     },
-    "/educational/getUpcomingAssignments": {
-      "post": {
+    "/educational/students/:studentId/assignments/upcoming": {
+      "get": {
         "operationId": "educational.getUpcomingAssignments",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/educational/submitAssignment": {
-      "post": {
-        "operationId": "educational.submitAssignment",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/educational/gradeAssignmentSubmission": {
-      "post": {
-        "operationId": "educational.gradeAssignmentSubmission",
         "responses": {
           "200": {
             "description": "OK",
@@ -2225,26 +954,6 @@
     "/grades/classrooms/:classroomId/settings": {
       "get": {
         "operationId": "grading.getGradingSettings",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "operationId": "grading.updateGradingSettings",
         "responses": {
           "200": {
             "description": "OK",
@@ -2308,97 +1017,9 @@
         }
       }
     },
-    "/grades": {
-      "post": {
-        "operationId": "grading.submitGrade",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/grades/:id/publish": {
-      "post": {
-        "operationId": "grading.publishGrade",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/attendance/classroom": {
       "get": {
         "operationId": "attendance.getByClassroom",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/attendance/record": {
-      "post": {
-        "operationId": "attendance.record",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/attendance/batch-record": {
-      "post": {
-        "operationId": "attendance.batchRecord",
         "responses": {
           "200": {
             "description": "OK",
@@ -2482,97 +1103,11 @@
             }
           }
         }
-      },
-      "post": {
-        "operationId": "community.createGroup",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/community/groups/:groupId": {
       "get": {
         "operationId": "community.getGroup",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/community/groups/:groupId/join": {
-      "post": {
-        "operationId": "community.joinGroup",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/community/groups/:groupId/members/status": {
-      "patch": {
-        "operationId": "community.updateMemberStatus",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/community/groups/:groupId/policy": {
-      "patch": {
-        "operationId": "community.updateGroupPolicy",
         "responses": {
           "200": {
             "description": "OK",
@@ -2614,73 +1149,9 @@
         }
       }
     },
-    "/community/groups/:groupId/members/role": {
-      "patch": {
-        "operationId": "community.updateMemberRole",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/community/groups/:groupId/members/approve-all": {
-      "post": {
-        "operationId": "community.approveAllMembers",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/community/posts": {
       "get": {
         "operationId": "community.getPosts",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "operationId": "community.createPost",
         "responses": {
           "200": {
             "description": "OK",
@@ -2722,50 +1193,8 @@
         }
       }
     },
-    "/community/posts/:postId": {
-      "patch": {
-        "operationId": "community.updatePost",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "community.deletePost",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/community/getReactionStatus": {
-      "post": {
+    "/community/posts/:postId/reaction": {
+      "get": {
         "operationId": "community.getReactionStatus",
         "responses": {
           "200": {
@@ -2806,48 +1235,6 @@
             }
           }
         }
-      },
-      "post": {
-        "operationId": "community.sendGroupMessage",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/community/posts/:postId/reactions": {
-      "post": {
-        "operationId": "community.toggleReaction",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/community/posts/:postId/comments": {
@@ -2870,141 +1257,11 @@
             }
           }
         }
-      },
-      "post": {
-        "operationId": "community.createComment",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/community/comments/:commentId": {
-      "delete": {
-        "operationId": "community.deleteComment",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/community/comments/:commentId/upvote": {
-      "post": {
-        "operationId": "community.toggleCommentUpvote",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/community/comments/:commentId/official": {
-      "post": {
-        "operationId": "community.markOfficialAnswer",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/community/posts/:postId/poll": {
       "get": {
         "operationId": "community.getPollStatus",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/community/posts/:postId/poll/vote": {
-      "post": {
-        "operationId": "community.voteInPoll",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/community/posts/:postId/report": {
-      "post": {
-        "operationId": "community.reportContent",
         "responses": {
           "200": {
             "description": "OK",
@@ -3068,28 +1325,6 @@
         }
       }
     },
-    "/admin/leaves": {
-      "post": {
-        "operationId": "admin.submitLeave",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/admin/schools/:id": {
       "get": {
         "operationId": "admin.getSchool",
@@ -3134,51 +1369,9 @@
         }
       }
     },
-    "/admin/leaves/:leaveId/approve": {
-      "post": {
-        "operationId": "admin.approveLeave",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/admin/schools/:schoolId/calendar-events": {
       "get": {
         "operationId": "admin.getUpcomingCalendarEvents",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "operationId": "admin.createCalendarEvent",
         "responses": {
           "200": {
             "description": "OK",
@@ -3218,51 +1411,11 @@
             }
           }
         }
-      },
-      "post": {
-        "operationId": "messaging.getOrCreateConversation",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/messaging/messages": {
       "get": {
         "operationId": "messaging.getMessages",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "operationId": "messaging.sendMessage",
         "responses": {
           "200": {
             "description": "OK",
@@ -3307,94 +1460,6 @@
     "/social/notifications/unread-count": {
       "get": {
         "operationId": "social.getUnreadNotificationCount",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/social/notifications/read": {
-      "post": {
-        "operationId": "social.markNotificationRead",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/social/notifications/read-all": {
-      "post": {
-        "operationId": "social.markAllNotificationsRead",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/social/block": {
-      "post": {
-        "operationId": "social.blockUser",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/social/unblock": {
-      "post": {
-        "operationId": "social.unblockUser",
         "responses": {
           "200": {
             "description": "OK",
@@ -3478,26 +1543,6 @@
             }
           }
         }
-      },
-      "post": {
-        "operationId": "announcements.createAnnouncement",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/guardian/students/:studentId/assessments": {
@@ -3545,50 +1590,8 @@
       }
     },
     "/thuthimal/gifts": {
-      "post": {
-        "operationId": "thuthimal.createGift",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
       "get": {
         "operationId": "thuthimal.getMyGifts",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/thuthimal/gifts/claim": {
-      "post": {
-        "operationId": "thuthimal.claimGift",
         "responses": {
           "200": {
             "description": "OK",
@@ -3672,48 +1675,6 @@
             }
           }
         }
-      },
-      "post": {
-        "operationId": "erp.recordTransaction",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/erp/payments/intent": {
-      "post": {
-        "operationId": "erp.createPaymentIntent",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/erp/invoices": {
@@ -3780,53 +1741,11 @@
             }
           }
         }
-      },
-      "put": {
-        "operationId": "mapping.upsert",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/mapping/schools/:schoolId/pulse": {
       "get": {
         "operationId": "mapping.getSchoolPulse",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/mapping/topologies/:id/share": {
-      "post": {
-        "operationId": "mapping.createShareLink",
         "responses": {
           "200": {
             "description": "OK",
@@ -3868,53 +1787,9 @@
         }
       }
     },
-    "/inventory/items/:id": {
-      "patch": {
-        "operationId": "inventory.update",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/inventory/schools/:schoolId/resource-needs": {
       "get": {
         "operationId": "inventory.getSchoolResourceNeeds",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/inventory/requests": {
-      "post": {
-        "operationId": "inventory.createRequest",
         "responses": {
           "200": {
             "description": "OK",
@@ -4154,28 +2029,6 @@
         }
       }
     },
-    "/school-forest/gifts": {
-      "post": {
-        "operationId": "schoolForest.sendGratitudeGift",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/school-forest/gifts/pending/:recipientUserId": {
       "get": {
         "operationId": "schoolForest.getPendingGifts",
@@ -4198,51 +2051,9 @@
         }
       }
     },
-    "/school-forest/gifts/:giftId/deliver": {
-      "patch": {
-        "operationId": "schoolForest.markGiftDelivered",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/tracking/features": {
       "get": {
         "operationId": "tracking.listExploredFeatures",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "operationId": "tracking.logFeatureUsage",
         "responses": {
           "200": {
             "description": "OK",
@@ -4306,53 +2117,9 @@
         }
       }
     },
-    "/presence/seen": {
-      "post": {
-        "operationId": "presence.markSeen",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/privacy/ledger": {
       "get": {
         "operationId": "privacy.getPrivacyLedger",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/privacy/ledger/events": {
-      "post": {
-        "operationId": "privacy.logPrivacyEvent",
         "responses": {
           "200": {
             "description": "OK",
@@ -4460,119 +2227,9 @@
         }
       }
     },
-    "/rewards/initialize": {
-      "post": {
-        "operationId": "rewards.initializeRewards",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/rewards/add-points": {
-      "post": {
-        "operationId": "rewards.addPoints",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/rewards/award-badge": {
-      "post": {
-        "operationId": "rewards.awardBadge",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/rewards/check-achievements": {
-      "post": {
-        "operationId": "rewards.checkAndAwardAchievements",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/rewards/whispered-moments": {
       "get": {
         "operationId": "rewards.getWhisperedMoments",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/echoes": {
-      "post": {
-        "operationId": "echoes.sendEcho",
         "responses": {
           "200": {
             "description": "OK",
@@ -4658,50 +2315,6 @@
         }
       }
     },
-    "/echoes/:echoId/response": {
-      "patch": {
-        "operationId": "echoes.respondToEcho",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/echoes/:echoId/read": {
-      "patch": {
-        "operationId": "echoes.markAsRead",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/student-potential/students/:studentId/classrooms/:classroomId": {
       "get": {
         "operationId": "studentPotential.getForClassroom",
@@ -4744,93 +2357,11 @@
             }
           }
         }
-      },
-      "put": {
-        "operationId": "studentPotential.upsert",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/forms/templates": {
-      "post": {
-        "operationId": "forms.create",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/forms/templates/:id": {
       "get": {
         "operationId": "forms.getById",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "patch": {
-        "operationId": "forms.update",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "forms.delete",
         "responses": {
           "200": {
             "description": "OK",
@@ -4875,28 +2406,6 @@
     "/forms/owners/:ownerId/templates": {
       "get": {
         "operationId": "forms.getByOwner",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {},
-                    {
-                      "not": {}
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/forms/responses": {
-      "post": {
-        "operationId": "forms.submitResponse",
         "responses": {
           "200": {
             "description": "OK",

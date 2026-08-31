@@ -4,7 +4,39 @@ import { canUseZenStackDb, createZenStackDb } from '@repo/database/client';
 import { endTime, startTime } from 'hono/timing';
 import { verifySupabaseJwt } from '../jwt';
 import { getCurrentTraceId } from '../telemetry/otel';
+import { isOnboardingBootstrapProcedure } from './onboardingBootstrap';
 import { type ORPCContext, o } from './orpc';
+
+async function resolveClassroomIds(
+  db: any,
+  userId: string,
+  capacity: string | null,
+  schoolId: string,
+): Promise<string[]> {
+  try {
+    if (capacity === 'teacher' || capacity === 'principal' || capacity === 'admin') {
+      if (!schoolId) return [];
+      const rows = await db.classroom.findMany({
+        where:
+          capacity === 'teacher'
+            ? { teacher_id: userId, school_id: schoolId }
+            : { school_id: schoolId },
+        select: { id: true },
+      });
+      return rows.map((row: { id: unknown }) => String(row.id));
+    }
+    if (capacity === 'student') {
+      const rows = await db.classroomStudent.findMany({
+        where: { student_id: userId },
+        select: { classroom_id: true },
+      });
+      return rows.map((row: { classroom_id: unknown }) => String(row.classroom_id));
+    }
+  } catch (error) {
+    console.warn('[AUTHZ] Classroom relationship lookup failed; denying relationship scope.');
+  }
+  return [];
+}
 
 // Context Builder for oRPC from incoming HTTP headers/request
 export async function parseORPCContext(req: Request, env: any, requestId: string) {
@@ -35,14 +67,14 @@ export async function parseORPCContext(req: Request, env: any, requestId: string
   let activeBondId = clientHeaderActiveBondId;
   let activeEntityId: string | null = null;
   let activeEntityType: string | null = null;
+  let classroomIds: string[] = [];
 
   if (user.id !== 'anonymous' && db) {
     try {
-      const activeBond = await db.bond.findFirst(
-        activeBondId
-          ? { where: { id: activeBondId, user_id: user.id } }
-          : { where: { user_id: user.id } },
-      );
+      // The generated ZenStack relation type exposes the caller-owned bond
+      // scope but not an ID filter. Resolve one authoritative bond rather
+      // than ever falling back to the caller's claimed header scope.
+      const activeBond = await db.bond.findFirst({ where: { user_id: user.id } });
       if (!activeBond) {
         throw new ORPCError('FORBIDDEN', {
           message: 'An active capacity is required before accessing this resource.',
@@ -54,6 +86,7 @@ export async function parseORPCContext(req: Request, env: any, requestId: string
       activeEntityType = bondScope.activeEntityType;
       capacity = (activeBond as any).capacity;
       schoolId = bondScope.schoolId || '';
+      classroomIds = await resolveClassroomIds(db, user.id, capacity, schoolId);
     } catch (err) {
       if (err instanceof ORPCError) throw err;
       console.warn('Failed resolving active bond in oRPC context:', err);
@@ -86,6 +119,8 @@ export async function parseORPCContext(req: Request, env: any, requestId: string
         active_entity_id: activeEntityId ?? '',
         active_entity_type: activeEntityType ?? '',
         capacity: capacity ?? '',
+        classroom_ids: classroomIds,
+        child_student_ids: [],
       },
     },
     securityContext: {
@@ -118,24 +153,24 @@ export async function buildORPCContextFromHono(c: any): Promise<ORPCContext> {
   let activeBondId = c.req.header('x-active-bond-id') || null;
   let activeEntityId: string | null = null;
   let activeEntityType: string | null = null;
+  let classroomIds: string[] = [];
 
   if (user.id !== 'anonymous' && db) {
-    const activeBond = await db.bond.findFirst(
-      activeBondId
-        ? { where: { id: activeBondId, user_id: user.id } }
-        : { where: { user_id: user.id } },
-    );
-    if (!activeBond) {
+    const activeBond = await db.bond.findFirst({ where: { user_id: user.id } });
+    if (!activeBond && !isOnboardingBootstrapProcedure(c.req.path)) {
       throw new ORPCError('FORBIDDEN', {
         message: 'An active capacity is required before accessing this resource.',
       });
     }
-    const scope = resolveBondScope(activeBond);
-    activeBondId = scope.activeBondId;
-    activeEntityId = scope.activeEntityId;
-    activeEntityType = scope.activeEntityType;
-    schoolId = scope.schoolId || '';
-    capacity = activeBond.capacity;
+    if (activeBond) {
+      const scope = resolveBondScope(activeBond);
+      activeBondId = scope.activeBondId;
+      activeEntityId = scope.activeEntityId;
+      activeEntityType = scope.activeEntityType;
+      schoolId = scope.schoolId || '';
+      capacity = activeBond.capacity;
+      classroomIds = await resolveClassroomIds(db, user.id, capacity, schoolId);
+    }
   }
 
   return {
@@ -158,7 +193,7 @@ export async function buildORPCContextFromHono(c: any): Promise<ORPCContext> {
         active_entity_id: activeEntityId ?? '',
         active_entity_type: activeEntityType ?? '',
         capacity: capacity ?? '',
-        classroom_ids: [],
+        classroom_ids: classroomIds,
         child_student_ids: [],
       },
     },
@@ -183,6 +218,7 @@ import { communityRouter } from './handlers/community';
 import { dailyContentRouter } from './handlers/dailyContent';
 import { decisionJournalRouter } from './handlers/decisionJournal';
 import { echoRouter } from './handlers/echo';
+import { editorialRouter } from './handlers/editorial';
 import { educationalRouter } from './handlers/educational';
 import { erpRouter } from './handlers/erp';
 import { formsRouter } from './handlers/forms';
@@ -230,6 +266,7 @@ export const router = o.router({
   library: libraryRouter,
   authorization: permissionSnapshotRouter,
   educational: educationalRouter,
+  editorial: editorialRouter,
   grading: gradingRouter,
   attendance: attendanceRouter,
   community: communityRouter,

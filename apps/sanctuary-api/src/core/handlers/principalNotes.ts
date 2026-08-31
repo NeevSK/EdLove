@@ -27,7 +27,7 @@ export const principalNotesRouter = impl.router({
   getAll: impl.getAll.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     assertDatabase(context);
     const rows = await (context.db as any).principalNote.findMany({
-      where: { school_id: input.schoolId, author_id: context.user.id },
+      where: { school_id: input.query.schoolId, author_id: context.user.id },
       orderBy: [{ is_pinned: 'desc' }, { created_at: 'desc' }],
     });
     return rows.map(mapNote);
@@ -35,9 +35,9 @@ export const principalNotesRouter = impl.router({
   getRecent: impl.getRecent.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     assertDatabase(context);
     const rows = await (context.db as any).principalNote.findMany({
-      where: { school_id: input.schoolId, author_id: context.user.id, is_done: false },
+      where: { school_id: input.query.schoolId, author_id: context.user.id, is_done: false },
       orderBy: [{ is_pinned: 'desc' }, { created_at: 'desc' }],
-      take: input.limit ?? 3,
+      take: input.query.limit ?? 3,
     });
     return rows.map(mapNote);
   }),
@@ -45,15 +45,15 @@ export const principalNotesRouter = impl.router({
     assertDatabase(context);
     const row = await (context.db as any).principalNote.create({
       data: {
-        school_id: input.schoolId,
+        school_id: input.body.schoolId,
         author_id: context.user.id,
-        content: input.content,
-        note_type: input.noteType,
+        content: input.body.content,
+        note_type: input.body.noteType,
         is_pinned: false,
         is_done: false,
-        context_teacher_id: input.contextTeacherId ?? null,
-        context_classroom_id: input.contextClassroomId ?? null,
-        target_date: input.targetDate ?? null,
+        context_teacher_id: input.body.contextTeacherId ?? null,
+        context_classroom_id: input.body.contextClassroomId ?? null,
+        target_date: input.body.targetDate ?? null,
       },
     });
     return mapNote(row);
@@ -61,18 +61,18 @@ export const principalNotesRouter = impl.router({
   update: impl.update.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     assertDatabase(context);
     const row = await (context.db as any).principalNote.update({
-      where: { id: input.id },
+      where: { id: input.params.id },
       data: {
-        ...(input.content !== undefined ? { content: input.content } : {}),
-        ...(input.isPinned !== undefined ? { is_pinned: input.isPinned } : {}),
-        ...(input.isDone !== undefined ? { is_done: input.isDone } : {}),
+        ...(input.body.content !== undefined ? { content: input.body.content } : {}),
+        ...(input.body.isPinned !== undefined ? { is_pinned: input.body.isPinned } : {}),
+        ...(input.body.isDone !== undefined ? { is_done: input.body.isDone } : {}),
       },
     });
     return mapNote(row);
   }),
   delete: impl.delete.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     assertDatabase(context);
-    await (context.db as any).principalNote.delete({ where: { id: input.id } });
+    await (context.db as any).principalNote.delete({ where: { id: input.params.id } });
     return { success: true };
   }),
 });

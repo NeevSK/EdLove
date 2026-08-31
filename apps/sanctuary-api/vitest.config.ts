@@ -1,7 +1,8 @@
 import path from 'node:path';
 import { defineConfig } from 'vitest/config';
 
-const shimPath = path.resolve(__dirname, './src/__tests__/dummyShim.ts');
+const configDirectory = import.meta.dirname;
+const shimPath = path.resolve(configDirectory, './src/__tests__/dummyShim.ts');
 
 export default defineConfig({
   define: {
@@ -11,9 +12,12 @@ export default defineConfig({
     alias: [
       {
         find: /^@\/generated\/orm\/(.+)$/,
-        replacement: path.resolve(__dirname, '../../packages/schema/src/generated/orm/$1'),
+        replacement: path.resolve(configDirectory, '../../packages/schema/src/generated/orm/$1'),
       },
-      { find: /^@\/(.+)$/, replacement: path.resolve(__dirname, '../../packages/core/src/$1') },
+      {
+        find: /^@\/(.+)$/,
+        replacement: path.resolve(configDirectory, '../../packages/core/src/$1'),
+      },
       { find: /^react-native$/, replacement: shimPath },
       { find: /^react-native\/.+$/, replacement: shimPath },
       { find: /^@sentry\/react-native$/, replacement: shimPath },
@@ -43,9 +47,12 @@ export default defineConfig({
     alias: [
       {
         find: /^@\/generated\/orm\/(.+)$/,
-        replacement: path.resolve(__dirname, '../../packages/schema/src/generated/orm/$1'),
+        replacement: path.resolve(configDirectory, '../../packages/schema/src/generated/orm/$1'),
       },
-      { find: /^@\/(.+)$/, replacement: path.resolve(__dirname, '../../packages/core/src/$1') },
+      {
+        find: /^@\/(.+)$/,
+        replacement: path.resolve(configDirectory, '../../packages/core/src/$1'),
+      },
       { find: /^react-native$/, replacement: shimPath },
       { find: /^react-native\/.+$/, replacement: shimPath },
       { find: /^@sentry\/react-native$/, replacement: shimPath },
@@ -108,6 +115,6 @@ export default defineConfig({
         statements: 50,
       },
     },
-    setupFiles: [path.resolve(__dirname, './src/__tests__/setup.ts')],
+    setupFiles: [path.resolve(configDirectory, './src/__tests__/setup.ts')],
   },
 });

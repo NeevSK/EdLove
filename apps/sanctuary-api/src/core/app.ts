@@ -1,3 +1,4 @@
+import { GrowthBook } from '@growthbook/growthbook';
 import { swaggerUI } from '@hono/swagger-ui';
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { type SovereignRoute } from '@repo/core/api/server';
@@ -11,6 +12,7 @@ import { normalizeError } from '@repo/core/logic/utils/errorNormalizer';
 import { canUseZenStackDb, createZenStackDb, queryDatabaseRows } from '@repo/database/client';
 import { check as checkCedar } from '@repo/policies';
 import { apiReference } from '@scalar/hono-api-reference';
+import * as Sentry from '@sentry/node';
 import { bodyLimit } from 'hono/body-limit';
 import { compress } from 'hono/compress';
 import { cors } from 'hono/cors';
@@ -23,23 +25,22 @@ import { requestId } from 'hono/request-id';
 import { secureHeaders } from 'hono/secure-headers';
 import { timeout } from 'hono/timeout';
 import { endTime, startTime, timing } from 'hono/timing';
-import { z } from 'zod';
 import pino from 'pino';
-import * as Sentry from '@sentry/node';
 import { PostHog } from 'posthog-node';
-import { GrowthBook } from '@growthbook/growthbook';
+import { z } from 'zod';
 import { aiRouter } from '../ai/routes';
 import { evaluateWithRust, RustEvaluatorUnavailableError } from '../authorization/rustEvaluator';
 import { verifySupabaseJwt } from '../jwt';
 import { getCurrentTraceId, otelMiddleware } from '../telemetry/otel';
+import { correlationIdMiddleware, extractCorrelationIdMiddleware } from './middleware/correlation';
+import { isOnboardingBootstrapProcedure } from './onboardingBootstrap';
+import { type ORPCContext } from './orpc';
 import { createConfiguredRateLimitStore, createRateLimitMiddleware } from './rateLimit';
+import { createAdRewardRoutes } from './routes/adRewards';
 import { createDurableAgentRoutes } from './routes/durableAgents';
 import { healthRoutes } from './routes/health';
 import { registerNativeORPCRoutes } from './routes/orpc';
 import { createPayhereWebhookRoutes } from './routes/payhereWebhook';
-import { type ORPCContext } from './orpc';
-import { idempotencyHeaderMiddleware } from '@repo/core/lib/idempotency';
-import { correlationIdMiddleware, extractCorrelationIdMiddleware } from './middleware/correlation';
 
 // Initialize Sentry
 if (process.env.SENTRY_DSN) {
@@ -115,31 +116,39 @@ export const app = new OpenAPIHono<Env>();
 const factory = createFactory<Env>();
 
 app.onError((err, c) => {
+  const requestId = c.get('requestId') || 'unknown';
+  const traceId = getCurrentTraceId() || undefined;
+  const sovereign = normalizeError(err, requestId);
+  const headers = new Headers(c.res?.headers);
+
   if (err instanceof HTTPException) {
     const res = err.getResponse();
-    if (c.res) {
-      for (const [key, value] of c.res.headers.entries()) {
-        if (!res.headers.has(key)) {
-          res.headers.set(key, value);
-        }
+    for (const [key, value] of res.headers.entries()) {
+      if (!headers.has(key)) {
+        headers.set(key, value);
       }
     }
-    return res;
   }
-  const requestId = c.get('requestId') || 'unknown';
-  const sovereign = normalizeError(err, requestId);
-  console.error(
-    `[${requestId}] [trace=${getCurrentTraceId() || 'unknown'}] UNCAUGHT:`,
-    sovereign.details,
+  // The HTTPException response body is intentionally replaced by the problem
+  // document below, so its content length must not be retained.
+  headers.delete('Content-Length');
+  headers.set('Content-Type', 'application/problem+json; charset=utf-8');
+
+  loggerInstance.error(
+    { err, requestId, traceId, status: sovereign.details.status, code: sovereign.details.code },
+    'Sanctuary API request failed',
   );
   // Capture to Sentry with trace context
   if (process.env.SENTRY_DSN) {
     Sentry.captureException(err, {
-      extra: { requestId, traceId: getCurrentTraceId() },
+      extra: { requestId, traceId },
       tags: { component: 'sanctuary-api' },
     });
   }
-  return c.json(sovereign.details, sovereign.details.status as any);
+  return new Response(JSON.stringify(sovereign.details), {
+    status: sovereign.details.status,
+    headers,
+  });
 });
 
 // Helper to retrieve environment variables safely across runtimes.
@@ -469,9 +478,7 @@ async function getRequestSecurityContext(c: any) {
   const child_student_ids: string[] = [];
 
   const clientHeaderActiveBondId = c.req.header('x-active-bond-id') || null;
-  const isOnboardingBootstrapRoute =
-    c.req.path.includes('/identity/initial-bond') ||
-    c.req.path.includes('/identity/complete-onboarding');
+  const isOnboardingBootstrapRoute = isOnboardingBootstrapProcedure(c.req.path);
   let hydratedFromDb = false;
   if (!isAnonymousUser && db) {
     try {
@@ -561,8 +568,7 @@ function poa(route: SovereignRoute) {
     if (
       c.req.path.includes('/identity/resolveIdentity') ||
       c.req.path.includes('/identity/classroom-capacity-summary/anonymous') ||
-      c.req.path.includes('/identity/initial-bond') ||
-      c.req.path.includes('/identity/complete-onboarding')
+      isOnboardingBootstrapProcedure(c.req.path)
     ) {
       // These routes establish the first personal bond and onboarding state;
       // they cannot require the active-bond Cedar context they create.
@@ -929,9 +935,10 @@ function featureFlagGate(route: SovereignRoute) {
 }
 
 import { OpenAPIHandler } from '@orpc/openapi/fetch';
+import type { Router } from '@orpc/server';
 import { RPCHandler } from '@orpc/server/fetch';
 import { BatchHandlerPlugin, CORSPlugin } from '@orpc/server/plugins';
-import type { Router } from '@orpc/server';
+import { isReadOnlyOpenApiProcedure } from './openapiReadOnly';
 import { buildORPCContextFromHono, router as orpcRouter } from './router';
 
 const rpcHandler = new RPCHandler(orpcRouter as Router<any, ORPCContext>, {
@@ -943,15 +950,7 @@ const rpcHandler = new RPCHandler(orpcRouter as Router<any, ORPCContext>, {
   ],
 });
 const openapiHandler = new OpenAPIHandler(orpcRouter as any, {
-  // Only include read procedures (GET-like) for OpenAPI adapter
-  // Mutations (create*, update*, delete*, mutate*) should not be exposed via OpenAPI
-  filter: (procedure) => {
-    const path = typeof procedure?.path === 'string' ? procedure.path : '';
-    // RPC path format: "namespace.procedureName" (e.g., "educational.createAssignment")
-    const name = path.split('.').pop() || path.split('/').pop() || '';
-    const isMutation = /^(create|update|delete|mutate|upsert|insert|remove|patch|post)/i.test(name);
-    return !isMutation;
-  },
+  filter: isReadOnlyOpenApiProcedure,
 });
 
 app.all('/api/openapi/*', async (c) => {
@@ -962,6 +961,8 @@ app.all('/api/openapi/*', async (c) => {
   });
   return matched && response ? response : c.text('Not Found', 404);
 });
+
+app.route('/api', createAdRewardRoutes(getEnv));
 
 registerNativeORPCRoutes(app, rpcHandler);
 const aiPolicyRoute: SovereignRoute = {

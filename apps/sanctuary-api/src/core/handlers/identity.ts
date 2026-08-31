@@ -69,7 +69,7 @@ export const identityRouter = impl.router({
       assertDatabase(context);
 
       const profile = await context.db.user.findUnique({
-        where: { id: input.id },
+        where: { id: input.params.id },
         include: {
           bonds: true,
         },
@@ -81,9 +81,9 @@ export const identityRouter = impl.router({
 
   // Bypasses doubleGateMiddleware as this checks classroom workspaces before active bond contexts are set up
   resolveWorkspaceContext: impl.resolveWorkspaceContext.handler(async ({ input, context }) => {
-    if (!context.db || input.id === 'anonymous') {
+    if (!context.db || input.params.id === 'anonymous') {
       return {
-        user_id: input.id,
+        user_id: input.params.id,
         school_id: null,
         profile_completed: false,
         onboarding_completed: false,
@@ -94,9 +94,9 @@ export const identityRouter = impl.router({
     }
 
     const [user, classrooms] = await Promise.all([
-      context.db.user.findUnique({ where: { id: input.id } }),
+      context.db.user.findUnique({ where: { id: input.params.id } }),
       context.db.classroom.findMany({
-        where: { teacher_id: input.id },
+        where: { teacher_id: input.params.id },
         select: { id: true },
       }),
     ]);
@@ -104,7 +104,7 @@ export const identityRouter = impl.router({
     if (!user) throw SovereignError.notFound('User');
 
     return {
-      user_id: input.id,
+      user_id: input.params.id,
       school_id: null,
       profile_completed: !!user.full_name,
       onboarding_completed: !!user.onboarding_completed,
@@ -125,7 +125,7 @@ export const identityRouter = impl.router({
       }
 
       const updated = await context.db.user.update({
-        where: { id: input.id },
+        where: { id: input.params.id },
         data: body as any,
         include: {
           bonds: true,

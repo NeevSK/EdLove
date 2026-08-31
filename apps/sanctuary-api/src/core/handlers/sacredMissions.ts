@@ -40,11 +40,11 @@ const schoolFor = (context: ORPCContext, requested?: string) => {
 export const sacredMissionsRouter = impl.router({
   list: impl.list.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     requireUser(context);
-    const schoolId = schoolFor(context, input.school_id);
+    const schoolId = schoolFor(context, input.query.school_id);
     const rows = await (context.db as any).sanctuaryManifesto.findMany({
-      where: { school_id: schoolId, status: input.status },
+      where: { school_id: schoolId, status: input.query.status },
       orderBy: { created_at: 'desc' },
-      take: input.limit,
+      take: input.query.limit,
       include: {
         endorsements: { where: { user_id: context.user.id }, select: { user_id: true } },
         _count: { select: { endorsements: true } },
@@ -55,16 +55,16 @@ export const sacredMissionsRouter = impl.router({
 
   create: impl.create.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     requireUser(context);
-    const schoolId = schoolFor(context, input.school_id);
+    const schoolId = schoolFor(context, input.body.school_id);
     const row = await (context.db as any).sanctuaryManifesto.create({
       data: {
         school_id: schoolId,
         creator_id: context.user.id,
-        title: input.title,
-        content: input.content,
-        vibe: input.vibe,
+        title: input.body.title,
+        content: input.body.content,
+        vibe: input.body.vibe,
         status: 'active',
-        target_date: input.target_date ? new Date(input.target_date) : null,
+        target_date: input.body.target_date ? new Date(input.body.target_date) : null,
         metadata: {},
       },
       include: {
@@ -78,7 +78,7 @@ export const sacredMissionsRouter = impl.router({
   endorse: impl.endorse.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     requireUser(context);
     const manifestoRow = await (context.db as any).sanctuaryManifesto.findUnique({
-      where: { id: input.manifestoId },
+      where: { id: input.params.manifestoId },
       select: { id: true, school_id: true },
     });
     if (!manifestoRow || manifestoRow.school_id !== schoolFor(context)) {
@@ -86,22 +86,29 @@ export const sacredMissionsRouter = impl.router({
     }
     await (context.db as any).manifestoEndorsement.upsert({
       where: {
-        manifesto_id_user_id: { manifesto_id: input.manifestoId, user_id: context.user.id },
+        manifesto_id_user_id: { manifesto_id: input.params.manifestoId, user_id: context.user.id },
       },
       create: {
-        manifesto_id: input.manifestoId,
+        manifesto_id: input.params.manifestoId,
         user_id: context.user.id,
-        commitment_text: input.commitment_text ?? null,
+        commitment_text: input.body.commitment_text ?? null,
       },
-      update: { commitment_text: input.commitment_text ?? null },
+      update: { commitment_text: input.body.commitment_text ?? null },
     });
     return { success: true };
   }),
 
   unendorse: impl.unendorse.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     requireUser(context);
+    const manifestoRow = await (context.db as any).sanctuaryManifesto.findUnique({
+      where: { id: input.params.manifestoId },
+      select: { id: true, school_id: true },
+    });
+    if (!manifestoRow || manifestoRow.school_id !== schoolFor(context)) {
+      throw SovereignError.notFound('Sacred mission');
+    }
     await (context.db as any).manifestoEndorsement.deleteMany({
-      where: { manifesto_id: input.manifestoId, user_id: context.user.id },
+      where: { manifesto_id: input.params.manifestoId, user_id: context.user.id },
     });
     return { success: true };
   }),

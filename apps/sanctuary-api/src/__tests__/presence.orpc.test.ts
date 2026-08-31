@@ -22,7 +22,9 @@ describe('presence API', () => {
 
   describe('getFallbackCount', () => {
     it('requires authentication', async () => {
-      await expect(createTestORPCClient().presence.getFallbackCount()).rejects.toMatchObject({
+      await expect(
+        createTestORPCClient().presence.getFallbackCount({ query: {} }),
+      ).rejects.toMatchObject({
         status: 403,
       });
     });
@@ -68,7 +70,9 @@ describe('presence API', () => {
 
   describe('markSeen', () => {
     it('requires authentication', async () => {
-      await expect(createTestORPCClient().presence.markSeen({})).rejects.toMatchObject({
+      await expect(
+        createTestORPCClient().presence.markSeen({ body: {} }),
+      ).rejects.toMatchObject({
         status: 403,
       });
     });
@@ -76,7 +80,7 @@ describe('presence API', () => {
     it('updates last_seen_at and returns timestamp', async () => {
       setMockQueryRowsQueue([[{ last_seen_at: '2026-08-14T10:00:00.000Z' }]]);
 
-      const response = await createTestORPCClient(headers).presence.markSeen({});
+      const response = await createTestORPCClient(headers).presence.markSeen({ body: {} });
 
       expect(response).toHaveProperty('seenAt');
       expect(new Date(response.seenAt).toISOString()).toBe('2026-08-14T10:00:00.000Z');

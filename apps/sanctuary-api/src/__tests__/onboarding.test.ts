@@ -1,5 +1,6 @@
 import './setup';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { onboardingORPCContract } from '@repo/core/api/onboarding.orpc.contract';
 import { app } from '../core/app.js';
 import { createTestORPCClient } from './orpc-client';
 import { setMockActiveBond, setMockUserData, setMockZenStackDbAvailable } from './setup';
@@ -24,8 +25,6 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
     },
   };
 
-  const validCompleteOnboardingPayload = { userId };
-
   const defaultMockUser = {
     id: userId,
     is_anonymous: false,
@@ -45,10 +44,9 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
     it('should return 200 for a valid onboarding request', async () => {
       setMockUserData(defaultMockUser);
 
-      const body =
-        await createTestORPCClient(authenticatedHeaders).onboarding.createInitialBond(
-          validInitialBondPayload,
-        );
+      const body = await createTestORPCClient(authenticatedHeaders).onboarding.createInitialBond({
+        body: validInitialBondPayload,
+      });
       expect(body.success).toBe(true);
     });
 
@@ -61,10 +59,9 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
         entity_id: 'GLOBAL',
       });
 
-      const body =
-        await createTestORPCClient(authenticatedHeaders).onboarding.createInitialBond(
-          validInitialBondPayload,
-        );
+      const body = await createTestORPCClient(authenticatedHeaders).onboarding.createInitialBond({
+        body: validInitialBondPayload,
+      });
       expect(body.success).toBe(true);
     });
 
@@ -87,7 +84,7 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
       setMockActiveBond({ capacity: 'teacher', entity_type: 'PLATFORM', entity_id: 'GLOBAL' });
 
       const body = await createTestORPCClient(authenticatedHeaders).onboarding.completeOnboarding(
-        validCompleteOnboardingPayload,
+        {},
       );
       expect(body.success).toBe(true);
     });
@@ -97,7 +94,7 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
       setMockActiveBond(null);
 
       const body = await createTestORPCClient(authenticatedHeaders).onboarding.completeOnboarding(
-        validCompleteOnboardingPayload,
+        {},
       );
       expect(body.success).toBe(true);
     });
@@ -106,23 +103,13 @@ describe('Sanctuary API: Onboarding Endpoints via oRPC', () => {
       setMockUserData({ ...defaultMockUser, capacity: null });
       setMockActiveBond(null);
 
-      const res = await app.request('/api/onboarding/completeOnboarding', {
-        method: 'POST',
-        headers: authenticatedHeaders,
-        body: JSON.stringify({ userId: 42 }),
-      });
-
-      expect(res.status).toBe(400);
+      await expect(
+        createTestORPCClient(authenticatedHeaders).onboarding.completeOnboarding({}),
+      ).rejects.toMatchObject({ status: 400 });
     });
 
-    it('should return 400 for invalid request body', async () => {
-      const res = await app.request('/api/onboarding/completeOnboarding', {
-        method: 'POST',
-        headers: authenticatedHeaders,
-        body: JSON.stringify({}),
-      });
-
-      expect(res.status).toBe(400);
+    it('does not accept a caller-selected identity in the completion contract', () => {
+      expect(onboardingORPCContract.completeOnboarding.request).toBeUndefined();
     });
   });
 });

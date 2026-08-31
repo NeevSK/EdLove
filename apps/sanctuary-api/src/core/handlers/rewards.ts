@@ -1,4 +1,9 @@
-import { rewardsORPCContract, type UserRewards, type UserRewardsHistory, type WhisperedMoment } from '@repo/core/api/rewards.orpc.contract';
+import {
+  rewardsORPCContract,
+  type UserRewards,
+  type UserRewardsHistory,
+  type WhisperedMoment,
+} from '@repo/core/api/rewards.orpc.contract';
 import { SovereignError } from '@repo/core/types/Errors';
 import { queryDatabaseRows } from '@repo/database/client';
 import { assertDatabase } from '../apiErrors';
@@ -20,6 +25,12 @@ function isAbortError(error: any): boolean {
 const requireUser = (context: ORPCContext) => {
   assertDatabase(context);
   if (context.user.id === 'anonymous') throw SovereignError.authenticationRequired();
+};
+
+const requirePlatformAdmin = (context: ORPCContext) => {
+  if (context.capacity !== 'admin') {
+    throw SovereignError.unauthorized('manage', 'rewards');
+  }
 };
 
 const mapRewards = (row: any): UserRewards => ({
@@ -53,7 +64,7 @@ const mapWhisperedMoment = (row: any): WhisperedMoment => ({
 export const rewardsRouter = impl.router({
   getRewards: impl.getRewards.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     requireUser(context);
-    const userId = input.query.userId ?? context.user.id;
+    const userId = input.query?.userId ?? context.user.id;
     try {
       const row = await context.db.userRewards.findUnique({
         where: { user_id: userId },
@@ -68,115 +79,140 @@ export const rewardsRouter = impl.router({
     }
   }),
 
-  getRewardsHistory: impl.getRewardsHistory.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    requireUser(context);
-    const userId = input.query.userId ?? context.user.id;
-    const limit = input.query.limit ?? 50;
-    try {
-      const rows = await context.db.userRewardsVersions.findMany({
-        where: { user_id: userId },
-        orderBy: { recorded_at: 'desc' },
-        take: limit,
-      });
-      return rows.map(mapHistory);
-    } catch (error) {
-      if (isAbortError(error)) {
-        console.warn('[Rewards Handler] Suppressing abort/lock-steal error during history fetch:', error);
-        return [];
+  getRewardsHistory: impl.getRewardsHistory
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      requireUser(context);
+      const userId = input.query.userId ?? context.user.id;
+      const limit = input.query.limit ?? 50;
+      try {
+        const rows = await context.db.userRewardsVersions.findMany({
+          where: { user_id: userId },
+          orderBy: { recorded_at: 'desc' },
+          take: limit,
+        });
+        return rows.map(mapHistory);
+      } catch (error) {
+        if (isAbortError(error)) {
+          console.warn(
+            '[Rewards Handler] Suppressing abort/lock-steal error during history fetch:',
+            error,
+          );
+          return [];
+        }
+        throw error;
       }
-      throw error;
-    }
-  }),
+    }),
 
-  getRewardsAsOf: impl.getRewardsAsOf.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    requireUser(context);
-    const userId = input.query.userId ?? context.user.id;
-    try {
-      const row = await context.db.userRewardsVersions.findFirst({
-        where: { user_id: userId, recorded_at: { lte: new Date(input.query.asOf) } },
-        orderBy: { recorded_at: 'desc' },
-      });
-      return row ? (row.snapshot as unknown as UserRewards) : null;
-    } catch (error) {
-      if (isAbortError(error)) {
-        console.warn('[Rewards Handler] Suppressing abort/lock-steal error during as-of fetch:', error);
-        return null;
+  getRewardsAsOf: impl.getRewardsAsOf
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      requireUser(context);
+      const userId = input.query.userId ?? context.user.id;
+      try {
+        const row = await context.db.userRewardsVersions.findFirst({
+          where: { user_id: userId, recorded_at: { lte: new Date(input.query.asOf) } },
+          orderBy: { recorded_at: 'desc' },
+        });
+        return row ? (row.snapshot as unknown as UserRewards) : null;
+      } catch (error) {
+        if (isAbortError(error)) {
+          console.warn(
+            '[Rewards Handler] Suppressing abort/lock-steal error during as-of fetch:',
+            error,
+          );
+          return null;
+        }
+        throw error;
       }
-      throw error;
-    }
-  }),
+    }),
 
-  getRewardsRangeHistory: impl.getRewardsRangeHistory.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    requireUser(context);
-    const userId = input.query.userId ?? context.user.id;
-    try {
-      const viewScale = input.query.viewScale ?? 'day';
-      const viewDate = new Date(input.query.viewDate);
-      let start: Date, end: Date;
-      
-      switch (viewScale) {
-        case 'day':
-          start = new Date(viewDate);
-          start.setHours(0, 0, 0, 0);
-          end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
-          break;
-        case 'week':
-          start = new Date(viewDate);
-          start.setDate(start.getDate() - start.getDay());
-          start.setHours(0, 0, 0, 0);
-          end = new Date(start.getTime() + 7 * 24 * 60 * 60 * 1000);
-          break;
-        case 'month':
-          start = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1);
-          end = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1);
-          break;
-        case 'year':
-          start = new Date(viewDate.getFullYear(), 0, 1);
-          end = new Date(viewDate.getFullYear() + 1, 0, 1);
-          break;
-        default:
-          start = new Date(viewDate);
-          start.setHours(0, 0, 0, 0);
-          end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
-      }
-      
-      const rows = await context.db.userRewardsVersions.findMany({
-        where: { user_id: userId, recorded_at: { gte: start, lte: end } },
-        orderBy: { recorded_at: 'desc' },
-      });
-      return rows.map(mapHistory);
-    } catch (error) {
-      if (isAbortError(error)) {
-        console.warn('[Rewards Handler] Suppressing abort/lock-steal error during range history fetch:', error);
-        return [];
-      }
-      throw error;
-    }
-  }),
+  getRewardsRangeHistory: impl.getRewardsRangeHistory
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      requireUser(context);
+      const userId = input.query.userId ?? context.user.id;
+      try {
+        const viewScale = input.query.viewScale ?? 'day';
+        const viewDate = new Date(input.query.viewDate);
+        let start: Date, end: Date;
 
-  initializeRewards: impl.initializeRewards.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    requireUser(context);
-    try {
-      const existing = await context.db.userRewards.findUnique({ where: { user_id: input.body.userId } });
-      if (existing) return mapRewards(existing);
-      
-      const row = await context.db.userRewards.create({
-        data: { user_id: input.body.userId, points: 0, badges: [] },
-      });
-      return mapRewards(row);
-    } catch (error) {
-      if (isAbortError(error)) {
-        console.warn('[Rewards Handler] Suppressing abort/lock-steal error during initialization:', error);
-        return null;
+        switch (viewScale) {
+          case 'day':
+            start = new Date(viewDate);
+            start.setHours(0, 0, 0, 0);
+            end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
+            break;
+          case 'week':
+            start = new Date(viewDate);
+            start.setDate(start.getDate() - start.getDay());
+            start.setHours(0, 0, 0, 0);
+            end = new Date(start.getTime() + 7 * 24 * 60 * 60 * 1000);
+            break;
+          case 'month':
+            start = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1);
+            end = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1);
+            break;
+          case 'year':
+            start = new Date(viewDate.getFullYear(), 0, 1);
+            end = new Date(viewDate.getFullYear() + 1, 0, 1);
+            break;
+          default:
+            start = new Date(viewDate);
+            start.setHours(0, 0, 0, 0);
+            end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
+        }
+
+        const rows = await context.db.userRewardsVersions.findMany({
+          where: { user_id: userId, recorded_at: { gte: start, lte: end } },
+          orderBy: { recorded_at: 'desc' },
+        });
+        return rows.map(mapHistory);
+      } catch (error) {
+        if (isAbortError(error)) {
+          console.warn(
+            '[Rewards Handler] Suppressing abort/lock-steal error during range history fetch:',
+            error,
+          );
+          return [];
+        }
+        throw error;
       }
-      throw error;
-    }
-  }),
+    }),
+
+  initializeRewards: impl.initializeRewards
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      requireUser(context);
+      try {
+        const existing = await context.db.userRewards.findUnique({
+          where: { user_id: input.body.userId },
+        });
+        if (existing) return mapRewards(existing);
+
+        const row = await context.db.userRewards.create({
+          data: { user_id: input.body.userId, points: 0, badges: [] },
+        });
+        return mapRewards(row);
+      } catch (error) {
+        if (isAbortError(error)) {
+          console.warn(
+            '[Rewards Handler] Suppressing abort/lock-steal error during initialization:',
+            error,
+          );
+          return null;
+        }
+        throw error;
+      }
+    }),
 
   addPoints: impl.addPoints.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     requireUser(context);
+    requirePlatformAdmin(context);
     try {
-      const existing = await context.db.userRewards.findUnique({ where: { user_id: input.body.userId } });
+      const existing = await context.db.userRewards.findUnique({
+        where: { user_id: input.body.userId },
+      });
       if (!existing) {
         const row = await context.db.userRewards.create({
           data: { user_id: input.body.userId, points: input.body.points, badges: [] },
@@ -190,7 +226,10 @@ export const rewardsRouter = impl.router({
       return mapRewards(row);
     } catch (error) {
       if (isAbortError(error)) {
-        console.warn('[Rewards Handler] Suppressing abort/lock-steal error during add points:', error);
+        console.warn(
+          '[Rewards Handler] Suppressing abort/lock-steal error during add points:',
+          error,
+        );
         throw error;
       }
       throw error;
@@ -199,11 +238,14 @@ export const rewardsRouter = impl.router({
 
   awardBadge: impl.awardBadge.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     requireUser(context);
+    requirePlatformAdmin(context);
     try {
-      const existing = await context.db.userRewards.findUnique({ where: { user_id: input.body.userId } });
+      const existing = await context.db.userRewards.findUnique({
+        where: { user_id: input.body.userId },
+      });
       const currentBadges = existing?.badges ?? [];
       if (currentBadges.includes(input.body.badge)) return existing ? mapRewards(existing) : null;
-      
+
       const updatedBadges = [...currentBadges, input.body.badge];
       if (!existing) {
         const row = await context.db.userRewards.create({
@@ -218,72 +260,99 @@ export const rewardsRouter = impl.router({
       return mapRewards(row);
     } catch (error) {
       if (isAbortError(error)) {
-        console.warn('[Rewards Handler] Suppressing abort/lock-steal error during award badge:', error);
+        console.warn(
+          '[Rewards Handler] Suppressing abort/lock-steal error during award badge:',
+          error,
+        );
         throw error;
       }
       throw error;
     }
   }),
 
-  checkAndAwardAchievements: impl.checkAndAwardAchievements.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    requireUser(context);
-    try {
-      // Fetch feature usage
-      const usage = await queryDatabaseRows<{ feature_name: string }>(
-        'SELECT feature_name FROM feature_usage_log WHERE user_id = $1::uuid',
-        [input.body.userId],
-      );
-      const features = usage.map((u) => u.feature_name);
-      
-      const existing = await context.db.userRewards.findUnique({ where: { user_id: input.body.userId } });
-      const badges = existing?.badges ?? [];
-      const newBadges: string[] = [];
+  checkAndAwardAchievements: impl.checkAndAwardAchievements
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      requireUser(context);
+      try {
+        // Fetch feature usage
+        const usage = await queryDatabaseRows<{ feature_name: string }>(
+          'SELECT feature_name FROM feature_usage_log WHERE user_id = $1::uuid',
+          [input.body.userId],
+        );
+        const features = usage.map((u) => u.feature_name);
 
-      // Sanctuary Seeker: Visit all 4 main sections
-      const mainSections = ['section_self', 'section_community', 'section_library', 'section_profile'];
-      if (mainSections.every((s) => features.includes(s)) && !badges.includes('Sanctuary Seeker')) {
-        newBadges.push('Sanctuary Seeker');
-      }
+        const existing = await context.db.userRewards.findUnique({
+          where: { user_id: input.body.userId },
+        });
+        const badges = existing?.badges ?? [];
+        const newBadges: string[] = [];
 
-      if (newBadges.length > 0) {
-        const updatedBadges = [...badges, ...newBadges];
-        const pointsToAdd = newBadges.length * 50;
-        const row = existing
-          ? await context.db.userRewards.update({
-              where: { user_id: input.body.userId },
-              data: { badges: updatedBadges, points: (existing.points ?? 0) + pointsToAdd, updated_at: new Date() },
-            })
-          : await context.db.userRewards.create({
-              data: { user_id: input.body.userId, points: pointsToAdd, badges: updatedBadges },
-            });
-        return { updatedRewards: mapRewards(row), newAchievements: newBadges };
-      }
+        // Sanctuary Seeker: Visit all 4 main sections
+        const mainSections = [
+          'section_self',
+          'section_community',
+          'section_library',
+          'section_profile',
+        ];
+        if (
+          mainSections.every((s) => features.includes(s)) &&
+          !badges.includes('Sanctuary Seeker')
+        ) {
+          newBadges.push('Sanctuary Seeker');
+        }
 
-      return { updatedRewards: existing ? mapRewards(existing) : null, newAchievements: [] };
-    } catch (error) {
-      if (isAbortError(error)) {
-        console.warn('[Rewards Handler] Suppressing abort/lock-steal error during check achievements:', error);
-        return { updatedRewards: null, newAchievements: [] };
-      }
-      throw error;
-    }
-  }),
+        if (newBadges.length > 0) {
+          const updatedBadges = [...badges, ...newBadges];
+          const pointsToAdd = newBadges.length * 50;
+          const row = existing
+            ? await context.db.userRewards.update({
+                where: { user_id: input.body.userId },
+                data: {
+                  badges: updatedBadges,
+                  points: (existing.points ?? 0) + pointsToAdd,
+                  updated_at: new Date(),
+                },
+              })
+            : await context.db.userRewards.create({
+                data: { user_id: input.body.userId, points: pointsToAdd, badges: updatedBadges },
+              });
+          return { updatedRewards: mapRewards(row), newAchievements: newBadges };
+        }
 
-  getWhisperedMoments: impl.getWhisperedMoments.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    requireUser(context);
-    const userId = input.query.userId ?? context.user.id;
-    try {
-      const rows = await context.db.whisperedMoment.findMany({
-        where: { user_id: userId },
-        orderBy: { created_at: 'desc' },
-      });
-      return rows.map(mapWhisperedMoment);
-    } catch (error) {
-      if (isAbortError(error)) {
-        console.warn('[Rewards Handler] Suppressing abort/lock-steal error during whispered moments fetch:', error);
-        return [];
+        return { updatedRewards: existing ? mapRewards(existing) : null, newAchievements: [] };
+      } catch (error) {
+        if (isAbortError(error)) {
+          console.warn(
+            '[Rewards Handler] Suppressing abort/lock-steal error during check achievements:',
+            error,
+          );
+          return { updatedRewards: null, newAchievements: [] };
+        }
+        throw error;
       }
-      throw error;
-    }
-  }),
+    }),
+
+  getWhisperedMoments: impl.getWhisperedMoments
+    .use(doubleGateMiddleware)
+    .handler(async ({ input, context }) => {
+      requireUser(context);
+      const userId = input.query.userId ?? context.user.id;
+      try {
+        const rows = await context.db.whisperedMoment.findMany({
+          where: { user_id: userId },
+          orderBy: { created_at: 'desc' },
+        });
+        return rows.map(mapWhisperedMoment);
+      } catch (error) {
+        if (isAbortError(error)) {
+          console.warn(
+            '[Rewards Handler] Suppressing abort/lock-steal error during whispered moments fetch:',
+            error,
+          );
+          return [];
+        }
+        throw error;
+      }
+    }),
 });

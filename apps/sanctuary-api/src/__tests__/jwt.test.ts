@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { clearJwkCache, setTestPublicKey, verifySupabaseJwt } from '../jwt';
 
 describe('Asymmetric JWT Verification Engine', () => {
@@ -185,6 +185,16 @@ describe('Asymmetric JWT Verification Engine', () => {
     const verified = await verifySupabaseJwt(tamperedToken);
 
     expect(verified).toBeNull();
+  });
+
+  it('does not write a malformed token to logs', async () => {
+    const token = 'secret-token-value-that-must-not-be-logged';
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    await expect(verifySupabaseJwt(token)).resolves.toBeNull();
+
+    expect(warn.mock.calls.flat().join(' ')).not.toContain(token);
+    warn.mockRestore();
   });
 
   it('should fallback to SUPABASE_JWT_PUBLIC_KEY env variable override', async () => {

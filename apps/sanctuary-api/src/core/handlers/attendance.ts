@@ -40,31 +40,31 @@ const mapAttendance = (row: any) => ({
   })),
 });
 
-const dailyWhere = (input: { gradeClassId: string; studentId: string; date: string }) => ({
+const dailyWhere = (record: { gradeClassId: string; studentId: string; date: string }) => ({
   student_id_grade_class_id_attendance_date: {
-    student_id: input.studentId,
-    grade_class_id: input.gradeClassId,
-    attendance_date: input.date,
+    student_id: record.studentId,
+    grade_class_id: record.gradeClassId,
+    attendance_date: record.date,
   },
 });
 
-async function loadDaily(context: ORPCContext, input: RecordInput, db = context.db as any) {
+async function loadDaily(context: ORPCContext, record: RecordInput, db = context.db as any) {
   const gradeClass = await db.gradeClass.findUnique({
-    where: { id: input.gradeClassId },
+    where: { id: record.gradeClassId },
     select: { id: true, school_id: true, academic_cycle_id: true },
   });
   if (!gradeClass) throw new ORPCError('NOT_FOUND', { message: 'Grade class not found' });
 
   const row = await db.dailyAttendance.upsert({
-    where: dailyWhere(input),
-    update: { status: input.status, recorded_by: context.user.id },
+    where: dailyWhere(record),
+    update: { status: record.status, recorded_by: context.user.id },
     create: {
-      student_id: input.studentId,
+      student_id: record.studentId,
       school_id: gradeClass.school_id,
       academic_cycle_id: gradeClass.academic_cycle_id,
-      grade_class_id: input.gradeClassId,
-      attendance_date: input.date,
-      status: input.status,
+      grade_class_id: record.gradeClassId,
+      attendance_date: record.date,
+      status: record.status,
       recorded_by: context.user.id,
     },
     include: {
@@ -73,20 +73,20 @@ async function loadDaily(context: ORPCContext, input: RecordInput, db = context.
     },
   });
 
-  if (input.sessionKind) {
+  if (record.sessionKind) {
     await db.attendanceSession.create({
       data: {
         daily_attendance_id: row.id,
         school_id: gradeClass.school_id,
         academic_cycle_id: gradeClass.academic_cycle_id,
-        grade_class_id: input.gradeClassId,
-        term_id: input.termId ?? null,
-        student_id: input.studentId,
-        teacher_id: input.teacherId ?? null,
-        subject_id: input.subjectId ?? null,
-        session_kind: input.sessionKind,
-        session_at: input.sessionAt ?? `${input.date}T00:00:00.000Z`,
-        status: input.status,
+        grade_class_id: record.gradeClassId,
+        term_id: record.termId ?? null,
+        student_id: record.studentId,
+        teacher_id: record.teacherId ?? null,
+        subject_id: record.subjectId ?? null,
+        session_kind: record.sessionKind,
+        session_at: record.sessionAt ?? `${record.date}T00:00:00.000Z`,
+        status: record.status,
         recorded_by: context.user.id,
       },
     });
@@ -106,7 +106,10 @@ export const attendanceRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const rows = await (context.db as any).dailyAttendance.findMany({
-        where: { grade_class_id: input.gradeClassId, attendance_date: input.date || undefined },
+        where: {
+          grade_class_id: input.query.gradeClassId,
+          attendance_date: input.query.date || undefined,
+        },
         orderBy: [{ attendance_date: 'desc' }, { created_at: 'desc' }],
         include: {
           student: { select: { full_name: true, avatar_url: true } },
@@ -117,13 +120,12 @@ export const attendanceRouter = impl.router({
     }),
   record: impl.record
     .use(doubleGateMiddleware)
-    .handler(async ({ input, context }) => mapAttendance(await loadDaily(context, input))),
+    .handler(async ({ input, context }) => mapAttendance(await loadDaily(context, input.body))),
   batchRecord: impl.batchRecord.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     try {
       return await (context.db as any).$transaction(async (tx: any) => {
         const rows = [];
-        for (const item of input as RecordInput[])
-          rows.push(mapAttendance(await loadDaily(context, item, tx)));
+        for (const item of input.body) rows.push(mapAttendance(await loadDaily(context, item, tx)));
         return rows;
       });
     } catch {
@@ -135,9 +137,9 @@ export const attendanceRouter = impl.router({
     .handler(async ({ input, context }) => {
       const rows = await (context.db as any).dailyAttendance.findMany({
         where: {
-          school_id: input.schoolId,
-          grade_class_id: input.gradeClassId || undefined,
-          attendance_date: input.viewDate || undefined,
+          school_id: input.query.schoolId,
+          grade_class_id: input.query.gradeClassId || undefined,
+          attendance_date: input.query.viewDate || undefined,
         },
         select: { status: true },
       });
@@ -151,9 +153,9 @@ export const attendanceRouter = impl.router({
   getReport: impl.getReport.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     const rows = await (context.db as any).dailyAttendance.findMany({
       where: {
-        school_id: input.schoolId,
-        grade_class_id: input.gradeClassId || undefined,
-        attendance_date: { gte: input.startDate, lte: input.endDate },
+        school_id: input.query.schoolId,
+        grade_class_id: input.query.gradeClassId || undefined,
+        attendance_date: { gte: input.query.startDate, lte: input.query.endDate },
       },
       select: { attendance_date: true, status: true },
       orderBy: { attendance_date: 'asc' },

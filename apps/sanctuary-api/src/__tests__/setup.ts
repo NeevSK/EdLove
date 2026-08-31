@@ -30,6 +30,8 @@ let mockWhisperedMoments: any[] = [];
 
 // Classroom note mock
 let mockClassroomNotes: any[] = [];
+let mockClassrooms: any[] = [];
+let mockClassroomStudents: any[] = [];
 
 export function setMockZenStackDbAvailable(available: boolean) {
   mockZenStackDbAvailable = available;
@@ -110,6 +112,17 @@ export function setMockClassroomNotes(rows: any[]) {
   mockClassroomNotes = rows;
 }
 
+export function setMockClassroomRelationships({
+  classrooms,
+  students,
+}: {
+  classrooms: any[];
+  students?: any[];
+}) {
+  mockClassrooms = classrooms;
+  mockClassroomStudents = students ?? [];
+}
+
 export function getMockLibraryCollectionFindManyArgs() {
   return mockLibraryCollectionFindManyArgs;
 }
@@ -128,7 +141,40 @@ function createMockDelegate(name: string): any {
           }
           if (name === 'communityCommentUpvote') return async () => null;
           if (name === 'assignmentSubmission') return async () => null;
-          if (name === 'directConversation') return async () => null;
+          if (name === 'classroomNote')
+            return async (args: any = {}) => ({
+              id: args?.where?.id ?? 'mock-note-id',
+              classroom_id: '123e4567-e89b-12d3-a456-426614174001',
+              school_id: 'school-123',
+              author_id: '123e4567-e89b-12d3-a456-426614174000',
+            });
+          if (name === 'assignment')
+            return async () => ({
+              id: '923e4567-e89b-12d3-a456-426614174000',
+              classroom_id: '123e4567-e89b-12d3-a456-426614174001',
+              school_id: 'school-123',
+            });
+          if (name === 'principalNote')
+            return async (args: any = {}) => ({
+              id: args?.where?.id ?? 'principal-note-mock-id',
+              school_id: '923e4567-e89b-12d3-a456-426614174000',
+              author_id: '123e4567-e89b-12d3-a456-426614174000',
+              content: 'Mock note',
+              note_type: 'todo',
+              is_pinned: false,
+              is_done: false,
+              created_at: new Date(),
+              updated_at: new Date(),
+            });
+          if (name === 'directConversation')
+            return async (args: any = {}) =>
+              args?.where?.id
+                ? {
+                    id: args.where.id,
+                    user1_id: '123e4567-e89b-12d3-a456-426614174000',
+                    user2_id: '223e4567-e89b-12d3-a456-426614174000',
+                  }
+                : null;
           if (name === 'school') {
             return async () => ({
               id: 'mock-school',
@@ -220,7 +266,9 @@ function createMockDelegate(name: string): any {
               const where = args?.where;
               let results = mockCollectionNodeEvents;
               if (where?.collection_id) {
-                results = results.filter((e: any) => e.collection_id === where.collection_id);
+                results = where.collection_id.in
+                  ? results.filter((e: any) => where.collection_id.in.includes(e.collection_id))
+                  : results.filter((e: any) => e.collection_id === where.collection_id);
               }
               if (where?.node_id) {
                 results = results.filter((e: any) => e.node_id === where.node_id);
@@ -240,9 +288,13 @@ function createMockDelegate(name: string): any {
                 results = results.filter((e: any) => new Date(e.occurred_at) >= cutoff);
               }
               if (args?.orderBy?.occurred_at === 'desc') {
-                results = [...results].sort((a, b) => new Date(b.occurred_at).getTime() - new Date(a.occurred_at).getTime());
+                results = [...results].sort(
+                  (a, b) => new Date(b.occurred_at).getTime() - new Date(a.occurred_at).getTime(),
+                );
               } else if (args?.orderBy?.occurred_at === 'asc') {
-                results = [...results].sort((a, b) => new Date(a.occurred_at).getTime() - new Date(b.occurred_at).getTime());
+                results = [...results].sort(
+                  (a, b) => new Date(a.occurred_at).getTime() - new Date(b.occurred_at).getTime(),
+                );
               }
               if (args?.take) {
                 results = results.slice(0, args.take);
@@ -271,9 +323,13 @@ function createMockDelegate(name: string): any {
                 results = results.filter((v: any) => new Date(v.recorded_at) <= cutoff);
               }
               if (args?.orderBy?.recorded_at === 'desc') {
-                results = [...results].sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime());
+                results = [...results].sort(
+                  (a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime(),
+                );
               } else if (args?.orderBy?.recorded_at === 'asc') {
-                results = [...results].sort((a, b) => new Date(a.recorded_at).getTime() - new Date(b.recorded_at).getTime());
+                results = [...results].sort(
+                  (a, b) => new Date(a.recorded_at).getTime() - new Date(b.recorded_at).getTime(),
+                );
               }
               if (args?.take) {
                 results = results.slice(0, args.take);
@@ -289,7 +345,9 @@ function createMockDelegate(name: string): any {
                 results = results.filter((w: any) => w.user_id === where.user_id);
               }
               if (args?.orderBy?.created_at === 'desc') {
-                results = [...results].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+                results = [...results].sort(
+                  (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+                );
               }
               if (args?.take) {
                 results = results.slice(0, args.take);
@@ -367,6 +425,7 @@ function createMockDelegate(name: string): any {
             return async (args: any = {}) => ({
               id: '823e4567-e89b-12d3-a456-426614174000',
               created_at: new Date(),
+              author: { full_name: 'Mock User', avatar_url: null },
               ...(args?.data ?? {}),
             });
           }
@@ -527,7 +586,11 @@ function createMockDelegate(name: string): any {
                 mockClassroomNotes.unshift(newNote);
                 return newNote;
               }
-              mockClassroomNotes[index] = { ...mockClassroomNotes[index], ...args?.data, updated_at: new Date() };
+              mockClassroomNotes[index] = {
+                ...mockClassroomNotes[index],
+                ...args?.data,
+                updated_at: new Date(),
+              };
               return mockClassroomNotes[index];
             };
           }
@@ -586,10 +649,41 @@ function createMockDelegate(name: string): any {
 
         if (prop === 'findMany') {
           if (name === 'bond') return async () => (mockActiveBond ? [mockActiveBond] : []);
+          if (name === 'classroom')
+            return async (args: any = {}) => {
+              const where = args?.where ?? {};
+              let results = mockClassrooms;
+              if (where.teacher_id)
+                results = results.filter((row) => row.teacher_id === where.teacher_id);
+              if (where.school_id)
+                results = results.filter((row) => row.school_id === where.school_id);
+              if (args?.select) {
+                results = results.map((row) => {
+                  const selected: any = {};
+                  for (const key of Object.keys(args.select)) selected[key] = row[key];
+                  return selected;
+                });
+              }
+              return results;
+            };
+          if (name === 'classroomStudent')
+            return async (args: any = {}) => {
+              const where = args?.where ?? {};
+              let results = mockClassroomStudents;
+              if (where.student_id)
+                results = results.filter((row) => row.student_id === where.student_id);
+              return args?.select
+                ? results.map((row) => {
+                    const selected: any = {};
+                    for (const key of Object.keys(args.select)) selected[key] = row[key];
+                    return selected;
+                  })
+                : results;
+            };
           if (name === 'user')
             return async (args: any = {}) => {
               const where = args?.where;
-              let results = mockUsers.length > 0 ? mockUsers : (mockUserData ? [mockUserData] : []);
+              let results = mockUsers.length > 0 ? mockUsers : mockUserData ? [mockUserData] : [];
               if (where?.id?.in) {
                 results = results.filter((u: any) => where.id.in.includes(u.id));
               }
@@ -682,7 +776,9 @@ function createMockDelegate(name: string): any {
               const where = args?.where;
               let results = mockCollectionNodeEvents;
               if (where?.collection_id) {
-                results = results.filter((e: any) => e.collection_id === where.collection_id);
+                results = where.collection_id.in
+                  ? results.filter((e: any) => where.collection_id.in.includes(e.collection_id))
+                  : results.filter((e: any) => e.collection_id === where.collection_id);
               }
               if (where?.node_id) {
                 results = results.filter((e: any) => e.node_id === where.node_id);
@@ -702,9 +798,13 @@ function createMockDelegate(name: string): any {
                 results = results.filter((e: any) => new Date(e.occurred_at) >= cutoff);
               }
               if (args?.orderBy?.occurred_at === 'desc') {
-                results = [...results].sort((a, b) => new Date(b.occurred_at).getTime() - new Date(a.occurred_at).getTime());
+                results = [...results].sort(
+                  (a, b) => new Date(b.occurred_at).getTime() - new Date(a.occurred_at).getTime(),
+                );
               } else if (args?.orderBy?.occurred_at === 'asc') {
-                results = [...results].sort((a, b) => new Date(a.occurred_at).getTime() - new Date(b.occurred_at).getTime());
+                results = [...results].sort(
+                  (a, b) => new Date(a.occurred_at).getTime() - new Date(b.occurred_at).getTime(),
+                );
               }
               if (args?.take) {
                 results = results.slice(0, args.take);
@@ -736,9 +836,13 @@ function createMockDelegate(name: string): any {
                 results = results.filter((v: any) => new Date(v.recorded_at) >= cutoff);
               }
               if (args?.orderBy?.recorded_at === 'desc') {
-                results = [...results].sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime());
+                results = [...results].sort(
+                  (a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime(),
+                );
               } else if (args?.orderBy?.recorded_at === 'asc') {
-                results = [...results].sort((a, b) => new Date(a.recorded_at).getTime() - new Date(b.recorded_at).getTime());
+                results = [...results].sort(
+                  (a, b) => new Date(a.recorded_at).getTime() - new Date(b.recorded_at).getTime(),
+                );
               }
               if (args?.take) {
                 results = results.slice(0, args.take);
@@ -753,7 +857,9 @@ function createMockDelegate(name: string): any {
                 results = results.filter((w: any) => w.user_id === where.user_id);
               }
               if (args?.orderBy?.created_at === 'desc') {
-                results = [...results].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+                results = [...results].sort(
+                  (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+                );
               }
               if (args?.take) {
                 results = results.slice(0, args.take);
@@ -821,7 +927,9 @@ function createMockDelegate(name: string): any {
                 results = results.filter((v: any) => new Date(v.recorded_at) <= cutoff);
               }
               if (args?.orderBy?.recorded_at === 'desc') {
-                results = [...results].sort((a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime());
+                results = [...results].sort(
+                  (a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime(),
+                );
               }
               return results[0] || null;
             };

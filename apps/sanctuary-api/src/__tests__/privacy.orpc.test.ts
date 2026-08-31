@@ -12,4 +12,14 @@ describe('privacy ledger API', () => {
       }),
     ).rejects.toMatchObject({ status: 400 });
   });
+
+  it('rejects the former flattened privacy event envelope', async () => {
+    await expect(
+      (createTestORPCClient().privacy.logPrivacyEvent as any)({
+        activity_type: 'view',
+        resource_name: 'profile',
+        description: 'Viewed profile',
+      }),
+    ).rejects.toBeTruthy();
+  });
 });

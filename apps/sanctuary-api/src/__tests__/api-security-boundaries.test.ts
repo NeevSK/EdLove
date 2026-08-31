@@ -13,6 +13,7 @@ describe('Sanctuary API security boundaries', () => {
     });
 
     expect([401, 403]).toContain(response.status);
+    expect(response.headers.get('content-type')).toContain('application/problem+json');
     const text = await response.text();
     expect(text).not.toMatch(/stack|sql|database|secret/i);
   });

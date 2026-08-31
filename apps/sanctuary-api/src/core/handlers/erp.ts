@@ -89,12 +89,14 @@ export const erpRouter = impl.router({
       assertDatabase(context);
       const rows = await context.db.financialTransaction.findMany({
         where: {
-          ...(input.accountId ? { entries: { some: { account_id: input.accountId } } } : {}),
-          ...(input.startDate || input.endDate
+          ...(input.query.accountId
+            ? { entries: { some: { account_id: input.query.accountId } } }
+            : {}),
+          ...(input.query.startDate || input.query.endDate
             ? {
                 date: {
-                  ...(input.startDate ? { gte: new Date(input.startDate) } : {}),
-                  ...(input.endDate ? { lte: new Date(input.endDate) } : {}),
+                  ...(input.query.startDate ? { gte: new Date(input.query.startDate) } : {}),
+                  ...(input.query.endDate ? { lte: new Date(input.query.endDate) } : {}),
                 },
               }
             : {}),
@@ -109,10 +111,10 @@ export const erpRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       assertDatabase(context);
-      const debitTotal = input.entries
+      const debitTotal = input.body.entries
         .filter((entry) => entry.side === 'debit')
         .reduce((sum, entry) => sum + entry.amount, 0);
-      const creditTotal = input.entries
+      const creditTotal = input.body.entries
         .filter((entry) => entry.side === 'credit')
         .reduce((sum, entry) => sum + entry.amount, 0);
       if (Math.abs(debitTotal - creditTotal) > 0.000001)
@@ -123,14 +125,14 @@ export const erpRouter = impl.router({
       const row = await context.db.$transaction(async (tx: any) => {
         const transaction = await tx.financialTransaction.create({
           data: {
-            date: input.date ? new Date(input.date) : new Date(),
-            description: input.description,
-            reference_no: input.referenceNo ?? null,
-            metadata: input.metadata ?? null,
+            date: input.body.date ? new Date(input.body.date) : new Date(),
+            description: input.body.description,
+            reference_no: input.body.referenceNo ?? null,
+            metadata: input.body.metadata ?? null,
           },
         });
         await tx.ledgerEntry.createMany({
-          data: input.entries.map((entry) => ({
+          data: input.body.entries.map((entry) => ({
             transaction_id: transaction.id,
             account_id: entry.accountId,
             amount: entry.amount,
@@ -151,16 +153,20 @@ export const erpRouter = impl.router({
     .handler(async ({ input, context }) => {
       assertDatabase(context);
       const metadata = {
-        ...(input.metadata ?? {}),
+        ...(input.body.metadata ?? {}),
         owner_id: context.user.id,
-        ...(input.idempotencyKey
-          ? { idempotency_key: `${context.user.id}:${input.provider}:${input.idempotencyKey}` }
+        ...(input.body.idempotencyKey
+          ? {
+              idempotency_key: `${context.user.id}:${input.body.provider}:${input.body.idempotencyKey}`,
+            }
           : {}),
         provider_integration: 'database_intent_only',
       };
-      const existing = input.idempotencyKey
+      const existing = input.body.idempotencyKey
         ? await context.db.paymentIntent.findFirst({
-            where: { metadata: { path: ['idempotency_key'], equals: input.idempotencyKey } } as any,
+            where: {
+              metadata: { path: ['idempotency_key'], equals: metadata.idempotency_key },
+            } as any,
           })
         : null;
       if (existing) return mapPaymentIntent(existing);
@@ -168,15 +174,15 @@ export const erpRouter = impl.router({
       try {
         row = await context.db.paymentIntent.create({
           data: {
-            amount: input.amount,
-            currency: input.currency.toUpperCase(),
-            provider: input.provider,
+            amount: input.body.amount,
+            currency: input.body.currency.toUpperCase(),
+            provider: input.body.provider,
             status: 'pending',
             metadata,
           },
         });
       } catch (error) {
-        if (!input.idempotencyKey) throw error;
+        if (!input.body.idempotencyKey) throw error;
         const replay = await context.db.paymentIntent.findFirst({
           where: {
             metadata: { path: ['idempotency_key'], equals: metadata.idempotency_key },
@@ -192,8 +198,8 @@ export const erpRouter = impl.router({
     assertDatabase(context);
     const rows = await context.db.invoice.findMany({
       where: {
-        ...(input.customerId ? { customer_id: input.customerId } : {}),
-        ...(input.status ? { status: input.status } : {}),
+        ...(input.query.customerId ? { customer_id: input.query.customerId } : {}),
+        ...(input.query.status ? { status: input.query.status } : {}),
       },
       orderBy: { created_at: 'desc' },
     });
@@ -202,7 +208,7 @@ export const erpRouter = impl.router({
 
   getReceipt: impl.getReceipt.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     assertDatabase(context);
-    const row = await context.db.receipt.findUnique({ where: { id: input.id } });
+    const row = await context.db.receipt.findUnique({ where: { id: input.params.id } });
     if (!row) throw SovereignError.notFound('Receipt');
     return mapReceipt(row);
   }),

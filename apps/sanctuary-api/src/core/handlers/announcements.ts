@@ -21,7 +21,7 @@ export const announcementsRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const rows = await (context.db as any).announcement.findMany({
-        where: { school_id: input.schoolId },
+        where: { school_id: input.query.schoolId },
         orderBy: [{ is_pinned: 'desc' }, { created_at: 'desc' }],
         include: { author: { select: { full_name: true, avatar_url: true } } },
       });
@@ -32,11 +32,11 @@ export const announcementsRouter = impl.router({
     .handler(async ({ input, context }) => {
       const row = await (context.db as any).announcement.create({
         data: {
-          school_id: input.schoolId,
+          school_id: input.body.schoolId,
           author_id: context.user.id,
-          title: input.title ?? '',
-          content: input.content,
-          is_pinned: input.isPinned === true,
+          title: input.body.title ?? '',
+          content: input.body.content,
+          is_pinned: input.body.isPinned === true,
         },
         include: { author: { select: { full_name: true, avatar_url: true } } },
       });

@@ -475,13 +475,13 @@ function createTestORPCClient(headers: Record<string, string> = {}) {
   const { RPCLink } = require('@orpc/client/fetch');
   const app = getApp();
   
-  const link = new RPCLink<any>({
+  const link = new RPCLink({
     url: 'http://sanctuary.test/api',
     headers,
     fetch: async (request: Request, init: RequestInit) => app.fetch(new Request(request, init)),
   });
   
-  return createORPCClient<any>(link);
+  return createORPCClient(link);
 }
 
 // -----------------------------------------------------------------------------

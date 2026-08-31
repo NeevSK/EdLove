@@ -1,5 +1,7 @@
 import { defineConfig } from 'vitest/config';
-import path from 'path';
+import path from 'node:path';
+
+const configDirectory = import.meta.dirname;
 
 export default defineConfig({
   test: {
@@ -11,11 +13,7 @@ export default defineConfig({
     setupFiles: ['src/__tests__/integration-setup.ts'],
     globals: true,
     pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: true,
-      },
-    },
+    singleFork: true,
     reporters: ['verbose'],
     coverage: {
       enabled: false,
@@ -23,9 +21,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@repo/core': path.resolve(__dirname, '../../packages/core/src'),
-      '@repo/database': path.resolve(__dirname, '../../packages/database/src'),
-      '@repo/policies': path.resolve(__dirname, '../../packages/policies/src'),
+      '@repo/core': path.resolve(configDirectory, '../../packages/core/src'),
+      '@repo/database': path.resolve(configDirectory, '../../packages/database/src'),
+      '@repo/policies': path.resolve(configDirectory, '../../packages/policies/src'),
     },
   },
 });

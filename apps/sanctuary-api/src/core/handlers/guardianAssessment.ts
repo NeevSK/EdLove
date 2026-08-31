@@ -25,9 +25,9 @@ export const guardianAssessmentRouter = impl.router({
       try {
         return await readGuardianPublishedAssessmentSummary(context.db as any, {
           guardianId: context.user.id,
-          studentId: input.studentId,
-          limit: input.limit,
-          cursor: input.cursor,
+          studentId: input.params.studentId,
+          limit: input.query.limit,
+          cursor: input.query.cursor,
           requestId: context.requestId,
         });
       } catch (error) {

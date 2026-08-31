@@ -128,9 +128,9 @@ export const educationalRouter = impl.router({
   getByTeacher: impl.getByTeacher.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     assertDatabase(context);
     const rows = await (context.db as any).classroom.findMany({
-      where: { teacher_id: input.teacherId },
-      take: input.limit ?? 20,
-      skip: input.offset ?? 0,
+      where: { teacher_id: input.query.teacher_id },
+      take: input.query.limit ?? 20,
+      skip: input.query.offset ?? 0,
       orderBy: { created_at: 'desc' },
       include: { school: { select: { name: true, avatar_url: true } } },
     });
@@ -139,7 +139,7 @@ export const educationalRouter = impl.router({
   getByStudent: impl.getByStudent.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     assertDatabase(context);
     const rows = await (context.db as any).classroom.findMany({
-      where: { students: { some: { student_id: input.studentId } } },
+      where: { students: { some: { student_id: input.query.student_id } } },
       orderBy: { created_at: 'desc' },
       include: { teacher: { select: { full_name: true } } },
     });
@@ -150,7 +150,7 @@ export const educationalRouter = impl.router({
     .handler(async ({ input, context }) => {
       assertDatabase(context);
       const rows = await (context.db as any).classroom.findMany({
-        where: { teacher_id: input.id },
+        where: { teacher_id: input.params.id },
         include: { students: true },
       });
       return {
@@ -165,7 +165,7 @@ export const educationalRouter = impl.router({
   getById: impl.getById.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     assertDatabase(context);
     const row = await (context.db as any).classroom.findUnique({
-      where: { id: input.id },
+      where: { id: input.params.id },
       include: {
         teacher: { select: { full_name: true, avatar_url: true } },
         _count: { select: { students: true, lessons: true } },
@@ -180,16 +180,16 @@ export const educationalRouter = impl.router({
       assertDatabase(context);
       const row = await (context.db as any).classroom.create({
         data: {
-          name: input.name.trim(),
-          teacher_id: input.teacherId,
-          school_id: input.schoolId,
-          grade_id: input.gradeId,
-          section_id: input.sectionId,
-          subject: input.subject,
-          description: input.description,
-          handle: input.handle,
-          color_theme: input.colorTheme,
-          academic_year: input.academicYear ?? String(new Date().getUTCFullYear()),
+          name: input.body.name.trim(),
+          teacher_id: input.body.teacherId,
+          school_id: input.body.schoolId,
+          grade_id: input.body.gradeId,
+          section_id: input.body.sectionId,
+          subject: input.body.subject,
+          description: input.body.description,
+          handle: input.body.handle,
+          color_theme: input.body.colorTheme,
+          academic_year: input.body.academicYear ?? String(new Date().getUTCFullYear()),
         },
         include: {
           teacher: { select: { full_name: true, avatar_url: true } },
@@ -202,7 +202,8 @@ export const educationalRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       assertDatabase(context);
-      const { id, ...updates } = input;
+      const id = input.params.id;
+      const updates = input.body;
       const row = await (context.db as any).classroom.update({
         where: { id },
         data: {
@@ -228,7 +229,7 @@ export const educationalRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       assertDatabase(context);
-      await (context.db as any).classroom.delete({ where: { id: input.id } });
+      await (context.db as any).classroom.delete({ where: { id: input.params.id } });
       return { success: true };
     }),
   getClassroomResources: impl.getClassroomResources
@@ -236,7 +237,7 @@ export const educationalRouter = impl.router({
     .handler(async ({ input, context }) => {
       assertDatabase(context);
       const rows = await (context.db as any).classroomResource.findMany({
-        where: { classroom_id: input.classroomId },
+        where: { classroom_id: input.params.classroomId },
         orderBy: [{ is_pinned: 'desc' }, { created_at: 'desc' }],
       });
       return rows.map((row: any) => ({
@@ -253,7 +254,10 @@ export const educationalRouter = impl.router({
   createLesson: impl.createLesson.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     assertDatabase(context);
     const row = await (context.db as any).lesson.create({
-      data: { ...input, published_at: input.published_at ? new Date(input.published_at) : null },
+      data: {
+        ...input.body,
+        published_at: input.body.published_at ? new Date(input.body.published_at) : null,
+      },
     });
     return {
       id: String(row.id),
@@ -270,7 +274,7 @@ export const educationalRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const rows = await (context.db as any).classroomStudent.findMany({
-        where: { classroom_id: input.classroomId },
+        where: { classroom_id: input.params.classroomId },
         orderBy: [{ roll_number: 'asc' }, { enrolled_at: 'asc' }],
       });
       return rows.map(mapClassroomStudent);
@@ -280,18 +284,18 @@ export const educationalRouter = impl.router({
     .handler(async ({ input, context }) => {
       const db = context.db as any;
       const existing = await db.classroomStudent.findFirst({
-        where: { classroom_id: input.classroomId, student_id: input.studentId },
+        where: { classroom_id: input.params.classroomId, student_id: input.body.studentId },
       });
       const row = existing
         ? await db.classroomStudent.update({
             where: { id: existing.id },
-            data: { roll_number: input.rollNumber },
+            data: { roll_number: input.body.rollNumber },
           })
         : await db.classroomStudent.create({
             data: {
-              classroom_id: input.classroomId,
-              student_id: input.studentId,
-              roll_number: input.rollNumber,
+              classroom_id: input.params.classroomId,
+              student_id: input.body.studentId,
+              roll_number: input.body.rollNumber,
             },
           });
       return mapClassroomStudent(row);
@@ -301,9 +305,9 @@ export const educationalRouter = impl.router({
     .handler(async ({ input, context }) => {
       const row = await (context.db as any).classroomStudent.create({
         data: {
-          classroom_id: input.classroomId,
-          full_name: input.fullName.trim(),
-          roll_number: input.rollNumber,
+          classroom_id: input.params.classroomId,
+          full_name: input.body.fullName.trim(),
+          roll_number: input.body.rollNumber,
         },
       });
       return mapClassroomStudent(row);
@@ -312,15 +316,15 @@ export const educationalRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const row = await (context.db as any).classroomStudent.update({
-        where: { id: input.id },
-        data: { full_name: input.fullName?.trim(), roll_number: input.rollNumber },
+        where: { id: input.params.id },
+        data: { full_name: input.body.fullName?.trim(), roll_number: input.body.rollNumber },
       });
       return mapClassroomStudent(row);
     }),
   removeClassroomStudent: impl.removeClassroomStudent
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      await (context.db as any).classroomStudent.delete({ where: { id: input.id } });
+      await (context.db as any).classroomStudent.delete({ where: { id: input.params.id } });
       return { success: true };
     }),
   claimShadowStudent: impl.claimShadowStudent
@@ -328,7 +332,7 @@ export const educationalRouter = impl.router({
     .handler(async ({ input, context }) => {
       const db = context.db as any;
       const row = await db.classroomStudent.findUnique({
-        where: { invite_code: input.inviteCode },
+        where: { invite_code: input.body.inviteCode },
       });
       if (!row) throw new ORPCError('NOT_FOUND', { message: 'Invite code not found' });
       const claimed = await db.classroomStudent.update({
@@ -342,8 +346,7 @@ export const educationalRouter = impl.router({
     .handler(async ({ input, context }) => {
       const rows = await (context.db as any).classroomNote.findMany({
         where: {
-          classroom_id: input.classroomId,
-          created_at: input.viewDate ? { lte: new Date(input.viewDate) } : undefined,
+          classroom_id: input.params.classroomId,
         },
         orderBy: [{ is_pinned: 'desc' }, { created_at: 'desc' }],
         include: { author: { select: { full_name: true } } },
@@ -354,7 +357,10 @@ export const educationalRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const events = await (context.db as any).classroomNoteEvent.findMany({
-        where: { classroom_id: input.classroomId, occurred_at: { lte: new Date(input.viewDate) } },
+        where: {
+          classroom_id: input.params.classroomId,
+          occurred_at: { lte: new Date(input.query.view_date) },
+        },
         orderBy: [{ occurred_at: 'desc' }, { recorded_at: 'desc' }],
       });
       const latest = new Map<string, any>();
@@ -369,7 +375,7 @@ export const educationalRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const events = await (context.db as any).classroomNoteEvent.findMany({
-        where: { note_id: input.id, classroom_id: input.classroomId },
+        where: { note_id: input.params.id },
         orderBy: [{ occurred_at: 'desc' }, { recorded_at: 'desc' }],
       });
       return events.map(mapClassroomNoteEvent);
@@ -380,11 +386,11 @@ export const educationalRouter = impl.router({
       const db = context.db as any;
       const row = await db.classroomNote.create({
         data: {
-          classroom_id: input.classroomId,
+          classroom_id: input.body.classroom_id,
           author_id: context.user.id,
-          content: input.content.trim(),
-          note_type: input.noteType ?? 'note',
-          visibility: input.visibility ?? 'private',
+          content: input.body.content.trim(),
+          note_type: input.body.note_type ?? 'note',
+          visibility: input.body.visibility ?? 'private',
         },
         include: { author: { select: { full_name: true } } },
       });
@@ -396,11 +402,11 @@ export const educationalRouter = impl.router({
     .handler(async ({ input, context }) => {
       const db = context.db as any;
       const row = await db.classroomNote.update({
-        where: { id: input.id },
+        where: { id: input.params.id },
         data: {
-          content: input.content?.trim(),
-          is_pinned: input.isPinned,
-          visibility: input.visibility,
+          content: input.body.content?.trim(),
+          is_pinned: input.body.is_pinned,
+          visibility: input.body.visibility,
         },
         include: { author: { select: { full_name: true } } },
       });
@@ -412,10 +418,10 @@ export const educationalRouter = impl.router({
     .handler(async ({ input, context }) => {
       const db = context.db as any;
       const row = await db.classroomNote.findUnique({
-        where: { id: input.id },
+        where: { id: input.params.id },
         include: { author: { select: { full_name: true } } },
       });
-      await db.classroomNote.delete({ where: { id: input.id } });
+      await db.classroomNote.delete({ where: { id: input.params.id } });
       if (row)
         await db.classroomNoteEvent.create({
           data: { ...noteEventData(row, 'delete', context.user.id), effective_to: new Date() },
@@ -424,7 +430,7 @@ export const educationalRouter = impl.router({
     }),
   getMaterials: impl.getMaterials.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     const rows = await (context.db as any).material.findMany({
-      where: { classroom_id: input.classroomId },
+      where: { classroom_id: input.query.classroomId },
       orderBy: [{ is_pinned: 'desc' }, { created_at: 'desc' }],
     });
     return rows.map(mapMaterial);
@@ -433,7 +439,7 @@ export const educationalRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const rows = await (context.db as any).material.findMany({
-        where: { lesson_id: input.lessonId },
+        where: { lesson_id: input.query.lessonId },
         orderBy: [{ is_pinned: 'desc' }, { created_at: 'desc' }],
       });
       return rows.map(mapMaterial);
@@ -443,13 +449,13 @@ export const educationalRouter = impl.router({
     .handler(async ({ input, context }) => {
       const row = await (context.db as any).material.create({
         data: {
-          classroom_id: input.classroomId,
-          lesson_id: input.lessonId,
-          title: input.title.trim(),
-          type: input.type,
-          url: input.url,
-          content: input.content,
-          is_pinned: input.isPinned ?? false,
+          classroom_id: input.body.classroomId,
+          lesson_id: input.body.lessonId,
+          title: input.body.title.trim(),
+          type: input.body.type,
+          url: input.body.url,
+          content: input.body.content,
+          is_pinned: input.body.isPinned ?? false,
         },
       });
       return mapMaterial(row);
@@ -458,13 +464,13 @@ export const educationalRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const row = await (context.db as any).material.update({
-        where: { id: input.id },
+        where: { id: input.params.id },
         data: {
-          title: input.title?.trim(),
-          type: input.type,
-          url: input.url,
-          content: input.content,
-          is_pinned: input.isPinned,
+          title: input.body.title?.trim(),
+          type: input.body.type,
+          url: input.body.url,
+          content: input.body.content,
+          is_pinned: input.body.isPinned,
         },
       });
       return mapMaterial(row);
@@ -472,14 +478,14 @@ export const educationalRouter = impl.router({
   deleteMaterial: impl.deleteMaterial
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      await (context.db as any).material.delete({ where: { id: input.id } });
+      await (context.db as any).material.delete({ where: { id: input.params.id } });
       return { success: true };
     }),
   getAssignments: impl.getAssignments
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const rows = await (context.db as any).assignment.findMany({
-        where: { classroom_id: input.classroomId },
+        where: { classroom_id: input.query.classroomId },
         orderBy: [{ due_date: 'asc' }, { created_at: 'desc' }],
       });
       return rows.map(mapAssignment);
@@ -488,7 +494,7 @@ export const educationalRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const rows = await (context.db as any).assignment.findMany({
-        where: { lesson_id: input.lessonId },
+        where: { lesson_id: input.query.lessonId },
         orderBy: [{ due_date: 'asc' }, { created_at: 'desc' }],
       });
       return rows.map(mapAssignment);
@@ -498,12 +504,12 @@ export const educationalRouter = impl.router({
     .handler(async ({ input, context }) => {
       const row = await (context.db as any).assignment.create({
         data: {
-          classroom_id: input.classroomId,
-          lesson_id: input.lessonId,
-          title: input.title.trim(),
-          description: input.description,
-          due_date: input.dueDate ? new Date(input.dueDate) : null,
-          max_points: input.maxPoints ?? 100,
+          classroom_id: input.body.classroomId,
+          lesson_id: input.body.lessonId,
+          title: input.body.title.trim(),
+          description: input.body.description,
+          due_date: input.body.dueDate ? new Date(input.body.dueDate) : null,
+          max_points: input.body.maxPoints ?? 100,
         },
       });
       return mapAssignment(row);
@@ -512,17 +518,17 @@ export const educationalRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const row = await (context.db as any).assignment.update({
-        where: { id: input.id },
+        where: { id: input.params.id },
         data: {
-          title: input.title?.trim(),
-          description: input.description,
+          title: input.body.title?.trim(),
+          description: input.body.description,
           due_date:
-            input.dueDate === undefined
+            input.body.dueDate === undefined
               ? undefined
-              : input.dueDate
-                ? new Date(input.dueDate)
+              : input.body.dueDate
+                ? new Date(input.body.dueDate)
                 : null,
-          max_points: input.maxPoints,
+          max_points: input.body.maxPoints,
         },
       });
       return mapAssignment(row);
@@ -530,7 +536,7 @@ export const educationalRouter = impl.router({
   deleteAssignment: impl.deleteAssignment
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      await (context.db as any).assignment.delete({ where: { id: input.id } });
+      await (context.db as any).assignment.delete({ where: { id: input.params.id } });
       return { success: true };
     }),
   getStudentSubmissions: impl.getStudentSubmissions
@@ -538,8 +544,10 @@ export const educationalRouter = impl.router({
     .handler(async ({ input, context }) => {
       const rows = await (context.db as any).assignmentSubmission.findMany({
         where: {
-          student_id: input.studentId,
-          assignment: input.classroomId ? { classroom_id: input.classroomId } : undefined,
+          student_id: input.query.studentId,
+          assignment: input.query.classroomId
+            ? { classroom_id: input.query.classroomId }
+            : undefined,
         },
         orderBy: { submitted_at: 'desc' },
         take: 24,
@@ -552,14 +560,14 @@ export const educationalRouter = impl.router({
     .handler(async ({ input, context }) => {
       const rows = await (context.db as any).assignment.findMany({
         where: {
-          classroom: { students: { some: { student_id: input.studentId } } },
+          classroom: { students: { some: { student_id: input.query.studentId } } },
           due_date: { gte: new Date() },
         },
         orderBy: { due_date: 'asc' },
-        take: input.limit ?? 6,
+        take: input.query.limit ?? 6,
         include: {
           classroom: { select: { name: true } },
-          submissions: { where: { student_id: input.studentId }, select: { id: true } },
+          submissions: { where: { student_id: input.query.studentId }, select: { id: true } },
         },
       });
       return rows.map((row: any) => ({
@@ -572,11 +580,11 @@ export const educationalRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const db = context.db as any;
-      const where = input.idempotencyKey
-        ? { idempotency_key: input.idempotencyKey }
+      const where = input.body.idempotencyKey
+        ? { idempotency_key: input.body.idempotencyKey }
         : {
             assignment_id_student_id: {
-              assignment_id: input.assignmentId,
+              assignment_id: input.body.assignmentId,
               student_id: context.user.id,
             },
           };
@@ -584,10 +592,10 @@ export const educationalRouter = impl.router({
       if (existing) return mapSubmission(existing);
       const row = await db.assignmentSubmission.create({
         data: {
-          assignment_id: input.assignmentId,
+          assignment_id: input.body.assignmentId,
           student_id: context.user.id,
-          content: input.content,
-          idempotency_key: input.idempotencyKey,
+          content: input.body.content,
+          idempotency_key: input.body.idempotencyKey,
         },
         include: { assignment: { select: { classroom_id: true } } },
       });
@@ -597,11 +605,11 @@ export const educationalRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const row = await (context.db as any).assignmentSubmission.update({
-        where: { id: input.id },
+        where: { id: input.body.id },
         data: {
-          grade: input.grade,
-          feedback: input.feedback,
-          graded_at: input.grade == null ? null : new Date(),
+          grade: input.body.grade,
+          feedback: input.body.feedback,
+          graded_at: input.body.grade == null ? null : new Date(),
         },
         include: { assignment: { select: { classroom_id: true } } },
       });

@@ -33,10 +33,7 @@ describe('Sanctuary API: self via native oRPC', () => {
   describe('logMood', () => {
     it('logs a mood entry and returns the created record', async () => {
       const response = await createTestORPCClient(headers).self.logMood({
-        user_id: userId,
-        mood_score: 8,
-        mood: 'happy',
-        note: 'Feeling great',
+        body: { user_id: userId, mood_score: 8, mood: 'happy', note: 'Feeling great' },
       });
 
       expect(response).toMatchObject({
@@ -51,10 +48,7 @@ describe('Sanctuary API: self via native oRPC', () => {
 
     it('logs a mood with minimal fields', async () => {
       const response = await createTestORPCClient(headers).self.logMood({
-        user_id: userId,
-        mood_score: 0,
-        mood: null,
-        note: null,
+        body: { user_id: userId, mood_score: 0, mood: null, note: null },
       });
       expect(response.mood_score).toBe(0);
       expect(response.mood).toBeNull();
@@ -63,7 +57,7 @@ describe('Sanctuary API: self via native oRPC', () => {
 
     it('requires authentication', async () => {
       await expect(
-        createTestORPCClient().self.logMood({ user_id: userId, mood_score: 5 }),
+        createTestORPCClient().self.logMood({ body: { user_id: userId, mood_score: 5 } }),
       ).rejects.toBeTruthy();
     });
   });
@@ -89,7 +83,9 @@ describe('Sanctuary API: self via native oRPC', () => {
         },
       ]);
 
-      const response = await createTestORPCClient(headers).self.getMoodHistory({ limit: 10 });
+      const response = await createTestORPCClient(headers).self.getMoodHistory({
+        query: { limit: 10 },
+      });
 
       expect(response).toHaveLength(2);
       expect(response[0]).toMatchObject({ mood_score: 8, mood: 'happy' });
@@ -114,12 +110,16 @@ describe('Sanctuary API: self via native oRPC', () => {
         },
       ]);
 
-      const response = await createTestORPCClient(headers).self.getMoodHistory({ limit: 1 });
+      const response = await createTestORPCClient(headers).self.getMoodHistory({
+        query: { limit: 1 },
+      });
       expect(response).toHaveLength(1);
     });
 
     it('returns empty array when no mood logs exist', async () => {
-      const response = await createTestORPCClient(headers).self.getMoodHistory({ limit: 10 });
+      const response = await createTestORPCClient(headers).self.getMoodHistory({
+        query: { limit: 10 },
+      });
       expect(response).toEqual([]);
     });
   });
@@ -128,7 +128,7 @@ describe('Sanctuary API: self via native oRPC', () => {
     it('burns a journal entry and returns the created record', async () => {
       const content = 'This is a test journal entry that will be burned';
 
-      const response = await createTestORPCClient(headers).self.burnJournal({ content });
+      const response = await createTestORPCClient(headers).self.burnJournal({ body: { content } });
 
       expect(response).toMatchObject({
         user_id: userId,
@@ -142,7 +142,7 @@ describe('Sanctuary API: self via native oRPC', () => {
     it('truncates content preview to 50 chars', async () => {
       const content = 'x'.repeat(80);
 
-      const response = await createTestORPCClient(headers).self.burnJournal({ content });
+      const response = await createTestORPCClient(headers).self.burnJournal({ body: { content } });
 
       expect(response.content_preview).toHaveLength(50);
       expect(response.content_preview).toBe('x'.repeat(50));
@@ -150,7 +150,7 @@ describe('Sanctuary API: self via native oRPC', () => {
 
     it('requires authentication', async () => {
       await expect(
-        createTestORPCClient().self.burnJournal({ content: 'test' }),
+        createTestORPCClient().self.burnJournal({ body: { content: 'test' } }),
       ).rejects.toBeTruthy();
     });
   });
@@ -174,7 +174,9 @@ describe('Sanctuary API: self via native oRPC', () => {
         },
       ]);
 
-      const response = await createTestORPCClient(headers).self.getJournalHistory({ limit: 10 });
+      const response = await createTestORPCClient(headers).self.getJournalHistory({
+        query: { limit: 10 },
+      });
 
       expect(response).toHaveLength(2);
       expect(response[0]).toMatchObject({ content_preview: 'Entry 1', is_burned: true });
@@ -200,8 +202,7 @@ describe('Sanctuary API: self via native oRPC', () => {
       ]);
 
       const response = await createTestORPCClient(headers).self.getJournalHistory({
-        limit: 10,
-        viewDate: new Date('2026-08-14T12:00:00.000Z').toISOString(),
+        query: { limit: 10, viewDate: new Date('2026-08-14T12:00:00.000Z').toISOString() },
       });
 
       expect(response).toHaveLength(1);
@@ -222,13 +223,13 @@ describe('Sanctuary API: self via native oRPC', () => {
         },
       ]);
 
-      const response = await createTestORPCClient(headers).self.getTodayMood({});
+      const response = await createTestORPCClient(headers).self.getTodayMood({ query: {} });
 
       expect(response).toMatchObject({ mood_score: 8, mood: 'happy', note: 'Today mood' });
     });
 
     it('returns null when no mood logged today', async () => {
-      const response = await createTestORPCClient(headers).self.getTodayMood({});
+      const response = await createTestORPCClient(headers).self.getTodayMood({ query: {} });
       expect(response).toBeNull();
     });
   });
@@ -236,16 +237,18 @@ describe('Sanctuary API: self via native oRPC', () => {
   describe('saveThoughtRecord', () => {
     it('saves a thought record and returns the created record', async () => {
       const response = await createTestORPCClient(headers).self.saveThoughtRecord({
-        thought: 'I am not good enough',
-        situation: 'Presentation at work',
-        emotion: 'anxious',
-        trap_ids: ['catastrophizing'],
-        evidence_for: 'I made a mistake once',
-        evidence_against: 'I have succeeded many times',
-        reframe: 'I can prepare and do well',
-        mood_before: 3,
-        mood_after: 6,
-        idempotency_key: 'key-1',
+        body: {
+          thought: 'I am not good enough',
+          situation: 'Presentation at work',
+          emotion: 'anxious',
+          trap_ids: ['catastrophizing'],
+          evidence_for: 'I made a mistake once',
+          evidence_against: 'I have succeeded many times',
+          reframe: 'I can prepare and do well',
+          mood_before: 3,
+          mood_after: 6,
+          idempotency_key: 'key-1',
+        },
       });
 
       expect(response).toMatchObject({
@@ -277,7 +280,9 @@ describe('Sanctuary API: self via native oRPC', () => {
         },
       ]);
 
-      const response = await createTestORPCClient(headers).self.getThoughtRecords({ limit: 10 });
+      const response = await createTestORPCClient(headers).self.getThoughtRecords({
+        query: { limit: 10 },
+      });
 
       expect(response).toHaveLength(2);
       expect(response[0].thought).toBe('Thought 1');
@@ -341,15 +346,23 @@ describe('Sanctuary API: self via native oRPC', () => {
       });
 
       const response = await createTestORPCClient(headers).self.updatePreferences({
-        favorite_features: ['mood', 'journal', 'thoughts'],
-        hidden_features: [],
-        morning_check_time: '07:00',
-        enable_contextual_prompts: false,
+        body: {
+          favorite_features: ['mood', 'journal', 'thoughts'],
+          hidden_features: [],
+          morning_check_time: '07:00',
+          enable_contextual_prompts: false,
+        },
       });
 
       expect(response.favorite_features).toEqual(['mood', 'journal', 'thoughts']);
       expect(response.morning_check_time).toBe('07:00');
       expect(response.enable_contextual_prompts).toBe(false);
     });
+  });
+
+  it('rejects a flattened personal-data mutation shape', async () => {
+    await expect(
+      (createTestORPCClient(headers).self.logMood as any)({ user_id: userId, mood_score: 5 }),
+    ).rejects.toMatchObject({ status: 400 });
   });
 });

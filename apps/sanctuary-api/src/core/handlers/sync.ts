@@ -16,6 +16,11 @@ export const syncRouter = impl.router({
       });
     }
 
-    return applyPowerSyncBatch(context.db, input.crud, input.idempotencyKey, context.user.id);
+    return applyPowerSyncBatch(
+      context.db,
+      input.body.crud,
+      input.body.idempotencyKey,
+      context.user.id,
+    );
   }),
 });

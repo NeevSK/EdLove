@@ -72,35 +72,37 @@ const mapGroupMember = (row: any) => ({
 
 export const communityRouter = impl.router({
   getGroups: impl.getGroups.use(doubleGateMiddleware).handler(async ({ input, context }) => {
+    const query = input.query;
     const rows = await (context.db as any).group.findMany({
       where: {
-        school_id: input.schoolId || context.schoolId,
-        is_public: input.isPublic,
-        group_type: input.type,
-        name: input.search ? { contains: input.search, mode: 'insensitive' } : undefined,
+        school_id: query.schoolId || context.schoolId,
+        is_public: query.isPublic,
+        group_type: query.type,
+        name: query.search ? { contains: query.search, mode: 'insensitive' } : undefined,
       },
-      take: input.limit ?? 20,
-      skip: input.offset ?? 0,
+      take: query.limit ?? 20,
+      skip: query.offset ?? 0,
       orderBy: { created_at: 'desc' },
     });
     return rows.map(mapGroup);
   }),
   getGroup: impl.getGroup.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     const row = await (context.db as any).group.findUnique({
-      where: { id: input.groupId },
+      where: { id: input.params.groupId },
       include: { members: { take: 5 } },
     });
     return row ? mapGroup(row) : null;
   }),
   createGroup: impl.createGroup.use(doubleGateMiddleware).handler(async ({ input, context }) => {
+    const body = input.body;
     const row = await (context.db as any).group.create({
       data: {
-        name: input.name,
-        description: input.description,
-        school_id: input.schoolId || context.schoolId,
+        name: body.name,
+        description: body.description,
+        school_id: body.schoolId || context.schoolId,
         created_by: context.user.id,
-        group_type: input.type,
-        join_policy: input.visibility,
+        group_type: body.type,
+        join_policy: body.visibility,
       },
     });
     return mapGroup(row);
@@ -108,9 +110,9 @@ export const communityRouter = impl.router({
   joinGroup: impl.joinGroup.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     const row = await (context.db as any).groupMember.create({
       data: {
-        group_id: input.groupId,
+        group_id: input.params.groupId,
         user_id: context.user.id,
-        role: input.capacity || 'member',
+        role: 'member',
         status: 'active',
       },
     });
@@ -125,9 +127,11 @@ export const communityRouter = impl.router({
   updateMemberStatus: impl.updateMemberStatus
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
+      const { groupId } = input.params;
+      const { userId, status } = input.body;
       const row = await (context.db as any).groupMember.update({
-        where: { group_id_user_id: { group_id: input.groupId, user_id: input.userId } },
-        data: { status: input.status },
+        where: { group_id_user_id: { group_id: groupId, user_id: userId } },
+        data: { status },
       });
       return {
         id: String(row.id),
@@ -140,17 +144,19 @@ export const communityRouter = impl.router({
   updateGroupPolicy: impl.updateGroupPolicy
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
+      const { groupId } = input.params;
       const row = await (context.db as any).group.update({
-        where: { id: input.groupId },
-        data: { join_policy: input.joinPolicy },
+        where: { id: groupId },
+        data: { join_policy: input.body.joinPolicy },
       });
       return mapGroup(row);
     }),
   getGroupMembers: impl.getGroupMembers
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
+      const { groupId } = input.params;
       const rows = await (context.db as any).groupMember.findMany({
-        where: { group_id: input.groupId, status: input.status },
+        where: { group_id: groupId, status: input.query.status },
         orderBy: { joined_at: 'asc' },
         include: { user: { select: { full_name: true, capacity: true, avatar_url: true } } },
       });
@@ -159,9 +165,11 @@ export const communityRouter = impl.router({
   updateMemberRole: impl.updateMemberRole
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
+      const { groupId } = input.params;
+      const { userId, role } = input.body;
       const row = await (context.db as any).groupMember.update({
-        where: { group_id_user_id: { group_id: input.groupId, user_id: input.userId } },
-        data: { role: input.role },
+        where: { group_id_user_id: { group_id: groupId, user_id: userId } },
+        data: { role },
         include: { user: { select: { full_name: true, capacity: true, avatar_url: true } } },
       });
       return mapGroupMember(row);
@@ -170,19 +178,20 @@ export const communityRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       await (context.db as any).groupMember.updateMany({
-        where: { group_id: input.groupId, status: 'pending' },
+        where: { group_id: input.params.groupId, status: 'pending' },
         data: { status: 'active' },
       });
       return { success: true };
     }),
   getPosts: impl.getPosts.use(doubleGateMiddleware).handler(async ({ input, context }) => {
+    const query = input.query;
     const rows = await (context.db as any).post.findMany({
       where: {
-        group_id: input.groupId,
-        created_at: input.viewDate ? { lte: new Date(input.viewDate) } : undefined,
+        group_id: query.groupId,
+        created_at: query.viewDate ? { lte: new Date(query.viewDate) } : undefined,
       },
-      take: input.limit ?? 20,
-      skip: input.offset ?? 0,
+      take: query.limit ?? 20,
+      skip: query.offset ?? 0,
       orderBy: { created_at: 'desc' },
       include: { author: { select: { full_name: true } }, reactions: true },
     });
@@ -191,10 +200,12 @@ export const communityRouter = impl.router({
   getCommunityResonance: impl.getCommunityResonance
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
+      const { userId } = input.params;
+      const { viewDate } = input.query;
       const rows = await (context.db as any).post.findMany({
         where: {
-          author_id: input.userId,
-          created_at: input.viewDate ? { lte: new Date(input.viewDate) } : undefined,
+          author_id: userId,
+          created_at: viewDate ? { lte: new Date(viewDate) } : undefined,
         },
         include: { reactions: true, comments: true },
       });
@@ -213,47 +224,50 @@ export const communityRouter = impl.router({
       };
     }),
   createPost: impl.createPost.use(doubleGateMiddleware).handler(async ({ input, context }) => {
+    const body = input.body;
     const row = await (context.db as any).post.create({
       data: {
-        group_id: input.groupId,
+        group_id: body.groupId,
         author_id: context.user.id,
         school_id: context.schoolId,
-        content: input.content,
-        post_type: input.postType,
-        author_role: input.authorRole,
+        content: body.content,
+        post_type: body.postType,
+        author_role: body.authorTier,
       },
     });
     return mapPost(row);
   }),
   updatePost: impl.updatePost.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     const row = await (context.db as any).post.update({
-      where: { id: input.postId },
-      data: { content: input.content.trim() },
+      where: { id: input.params.postId },
+      data: { content: input.body.content.trim() },
       include: { author: { select: { full_name: true } }, reactions: true },
     });
     return mapPost(row);
   }),
   deletePost: impl.deletePost.use(doubleGateMiddleware).handler(async ({ input, context }) => {
-    await (context.db as any).post.delete({ where: { id: input.postId } });
+    await (context.db as any).post.delete({ where: { id: input.params.postId } });
     return { success: true };
   }),
   getReactionStatus: impl.getReactionStatus
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const row = await (context.db as any).communityReaction.findUnique({
-        where: { post_id_user_id: { post_id: input.postId, user_id: context.user.id } },
+        where: { post_id_user_id: { post_id: input.params.postId, user_id: context.user.id } },
       });
       return { active: Boolean(row) };
     }),
   getGroupMessages: impl.getGroupMessages
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
+      const { groupId } = input.params;
+      const { viewDate, limit } = input.query;
       const rows = await (context.db as any).groupMessage.findMany({
         where: {
-          group_id: input.groupId,
-          created_at: input.viewDate ? { lte: new Date(input.viewDate) } : undefined,
+          group_id: groupId,
+          created_at: viewDate ? { lte: new Date(viewDate) } : undefined,
         },
-        take: input.limit ?? 60,
+        take: limit ?? 60,
         orderBy: { created_at: 'asc' },
         include: { author: { select: { full_name: true, avatar_url: true } } },
       });
@@ -264,9 +278,9 @@ export const communityRouter = impl.router({
     .handler(async ({ input, context }) => {
       const row = await (context.db as any).groupMessage.create({
         data: {
-          group_id: input.groupId,
+          group_id: input.params.groupId,
           author_id: context.user.id,
-          content: input.content.trim(),
+          content: input.body.content.trim(),
         },
         include: { author: { select: { full_name: true, avatar_url: true } } },
       });
@@ -277,21 +291,25 @@ export const communityRouter = impl.router({
     .handler(async ({ input, context }) => {
       const db = context.db as any;
       const existing = await db.communityReaction.findUnique({
-        where: { post_id_user_id: { post_id: input.postId, user_id: context.user.id } },
+        where: { post_id_user_id: { post_id: input.params.postId, user_id: context.user.id } },
       });
       if (existing) {
         await db.communityReaction.delete({ where: { id: existing.id } });
         return { active: false };
       }
       await db.communityReaction.create({
-        data: { post_id: input.postId, user_id: context.user.id, emoji: input.emoji || '❤️' },
+        data: {
+          post_id: input.params.postId,
+          user_id: context.user.id,
+          emoji: input.body.emoji || '❤️',
+        },
       });
       return { active: true };
     }),
   getComments: impl.getComments.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     const rows = await (context.db as any).communityComment.findMany({
-      where: { post_id: input.postId },
-      take: input.limit ?? 60,
+      where: { post_id: input.params.postId },
+      take: input.query.limit ?? 60,
       orderBy: { created_at: 'asc' },
       include: { author: { select: { full_name: true } } },
     });
@@ -302,10 +320,10 @@ export const communityRouter = impl.router({
     .handler(async ({ input, context }) => {
       const row = await (context.db as any).communityComment.create({
         data: {
-          post_id: input.postId,
+          post_id: input.params.postId,
           author_id: context.user.id,
-          content: input.content.trim(),
-          is_anonymous: input.isAnonymous === true,
+          content: input.body.content.trim(),
+          is_anonymous: input.body.isAnonymous === true,
         },
         include: { author: { select: { full_name: true } } },
       });
@@ -314,7 +332,7 @@ export const communityRouter = impl.router({
   deleteComment: impl.deleteComment
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      await (context.db as any).communityComment.delete({ where: { id: input.commentId } });
+      await (context.db as any).communityComment.delete({ where: { id: input.params.commentId } });
       return { success: true };
     }),
   toggleCommentUpvote: impl.toggleCommentUpvote
@@ -322,7 +340,7 @@ export const communityRouter = impl.router({
     .handler(async ({ input, context }) => {
       const db = context.db as any;
       const where = {
-        comment_id_user_id: { comment_id: input.commentId, user_id: context.user.id },
+        comment_id_user_id: { comment_id: input.params.commentId, user_id: context.user.id },
       };
       const existing = await db.communityCommentUpvote.findUnique({ where });
       if (existing) {
@@ -330,7 +348,7 @@ export const communityRouter = impl.router({
         return { active: false };
       }
       await db.communityCommentUpvote.create({
-        data: { comment_id: input.commentId, user_id: context.user.id },
+        data: { comment_id: input.params.commentId, user_id: context.user.id },
       });
       return { active: true };
     }),
@@ -338,8 +356,8 @@ export const communityRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       await (context.db as any).communityComment.update({
-        where: { id: input.commentId },
-        data: { is_official_answer: input.isOfficial !== false },
+        where: { id: input.params.commentId },
+        data: { is_official_answer: true },
       });
       return { success: true };
     }),
@@ -347,7 +365,7 @@ export const communityRouter = impl.router({
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
       const rows = await (context.db as any).communityPollVote.findMany({
-        where: { post_id: input.postId },
+        where: { post_id: input.params.postId },
       });
       const counts: Record<string, number> = {};
       for (const row of rows)
@@ -362,21 +380,24 @@ export const communityRouter = impl.router({
     }),
   voteInPoll: impl.voteInPoll.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     const db = context.db as any;
+    const { postId } = input.params;
+    const { optionId, allowMultiple } = input.body;
     const existing = await db.communityPollVote.findFirst({
-      where: { post_id: input.postId, user_id: context.user.id, option_id: input.optionId },
+      where: { post_id: postId, user_id: context.user.id, option_id: optionId },
     });
     if (existing) await db.communityPollVote.delete({ where: { id: existing.id } });
     else {
-      if (input.allowMultiple !== true)
+      if (allowMultiple !== true) {
         await db.communityPollVote.deleteMany({
-          where: { post_id: input.postId, user_id: context.user.id },
+          where: { post_id: postId, user_id: context.user.id },
         });
+      }
       await db.communityPollVote.create({
-        data: { post_id: input.postId, user_id: context.user.id, option_id: input.optionId },
+        data: { post_id: postId, user_id: context.user.id, option_id: optionId },
       });
     }
     const selected = await db.communityPollVote.findMany({
-      where: { post_id: input.postId, user_id: context.user.id },
+      where: { post_id: postId, user_id: context.user.id },
     });
     return { selectedOptionIds: selected.map((row: any) => String(row.option_id)) };
   }),
@@ -385,12 +406,12 @@ export const communityRouter = impl.router({
     .handler(async ({ input, context }) => {
       await (context.db as any).groupReport.create({
         data: {
-          group_id: input.groupId,
+          group_id: input.body.groupId,
           reporter_id: context.user.id,
-          target_user_id: input.targetUserId,
-          post_id: input.postId,
-          reason: input.reason,
-          details: input.details,
+          target_user_id: input.body.targetUserId,
+          post_id: input.body.postId,
+          reason: input.body.reason,
+          details: input.body.details,
           status: 'pending',
         },
       });

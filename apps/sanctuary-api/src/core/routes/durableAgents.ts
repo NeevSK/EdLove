@@ -1,4 +1,5 @@
 import { durableAgentRequestSchema } from '@repo/core/api/durableAgents.contract';
+import { SovereignError } from '@repo/core/types/Errors';
 import { queryDatabaseRows } from '@repo/database/client';
 import { Hono } from 'hono';
 import { serve } from 'inngest/hono';
@@ -7,14 +8,21 @@ import { durableAgentFunctions, platformEventFunctions, sanctuaryInngest } from 
 const getUser = (c: any) => c.get('user') as { id: string } | undefined;
 const requireUser = (c: any) => {
   const user = getUser(c);
-  if (!user || user.id === 'anonymous') return c.json({ error: 'Authentication required.' }, 401);
-  return null;
+  if (!user || user.id === 'anonymous') throw SovereignError.authenticationRequired();
+  return user;
 };
 
 type AuthorizedClassroomScope = {
   schoolId: string;
   classroomId: string;
   teacherId: string | null;
+};
+
+type ExistingRun = {
+  id: string;
+  status: string;
+  mode: string;
+  request_payload: { requestFingerprint?: string; reviewMode?: string };
 };
 
 const schoolAdministratorCapacities = ['principal', 'section_head', 'grade_head'];
@@ -96,37 +104,69 @@ async function canReadRun(actorId: string, runId: string): Promise<boolean> {
   return rows[0]?.allowed === true;
 }
 
+async function fingerprintRequest(value: Record<string, unknown>): Promise<string> {
+  const canonical = JSON.stringify(
+    Object.fromEntries(Object.entries(value).sort(([left], [right]) => left.localeCompare(right))),
+  );
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(canonical));
+  return `sha256:${Array.from(new Uint8Array(digest), (value) =>
+    value.toString(16).padStart(2, '0'),
+  ).join('')}`;
+}
+
 async function enqueue(c: any, capability: 'student-support' | 'teacher-summary') {
-  const denied = requireUser(c);
-  if (denied) return denied;
+  const actor = requireUser(c);
   const parsed = durableAgentRequestSchema.safeParse(await c.req.json().catch(() => null));
   if (!parsed.success)
-    return c.json({ error: 'Invalid durable-agent request.', issues: parsed.error.issues }, 400);
+    throw SovereignError.validation(
+      'One or more durable-agent fields are invalid.',
+      parsed.error.format(),
+    );
   if (capability === 'student-support' && !parsed.data.studentId)
-    return c.json({ error: 'studentId is required for student support.' }, 400);
-  const actor = getUser(c)!;
+    throw SovereignError.invalidInput('A student is required for student support.');
   const scope = await resolveAuthorizedClassroomScope(
     actor.id,
     parsed.data.classroomId,
     parsed.data.studentId,
   );
-  if (!scope) return c.json({ error: 'You are not authorized for this classroom.' }, 403);
+  if (!scope) throw SovereignError.unauthorized('use', 'classroom');
+  const suppliedKey = c.req.header('Idempotency-Key');
+  if (suppliedKey && (suppliedKey.length < 8 || suppliedKey.length > 255)) {
+    throw SovereignError.invalidInput(
+      'The Idempotency-Key header must be between 8 and 255 characters.',
+    );
+  }
+  const requestFingerprint = await fingerprintRequest({
+    capability,
+    actorId: actor.id,
+    classroomId: parsed.data.classroomId,
+    studentId: parsed.data.studentId ?? null,
+    mode: parsed.data.mode,
+    reviewMode: parsed.data.reviewMode,
+    evidenceScopes: parsed.data.evidenceScopes,
+    demoScenario: parsed.data.demoScenario ?? null,
+    focusPrompt: parsed.data.focusPrompt ?? null,
+  });
+  const idempotencyKey = suppliedKey
+    ? `durable-agent:${actor.id}:${capability}:${suppliedKey}`
+    : `durable-agent:${crypto.randomUUID()}:run`;
   const runId = crypto.randomUUID();
   const requestedAt = new Date().toISOString();
   const payload: any = {
     ...parsed.data,
     schoolId: scope.schoolId,
-    teacherId: scope.teacherId ?? actor.id,
+    teacherId: scope.teacherId,
     requestedBy: actor.id,
     runId,
     requestedAt,
     correlationId: runId,
     causationId: runId,
+    requestFingerprint,
   };
   const runType =
     capability === 'student-support' ? 'student_support_snapshot' : 'teacher_summary_draft';
-  await queryDatabaseRows(
-    `insert into public.durable_agent_runs (id, school_id, run_type, mode, classroom_id, student_id, teacher_id, requested_by, scenario, request_payload, idempotency_key) values ($1::uuid, $2::uuid, $3, $4, $5::uuid, $6::uuid, $7::uuid, $8::uuid, $9, $10::jsonb, $11) on conflict (idempotency_key) do nothing returning id`,
+  const written = await queryDatabaseRows<ExistingRun>(
+    `insert into public.durable_agent_runs (id, school_id, run_type, mode, classroom_id, student_id, teacher_id, requested_by, scenario, request_payload, idempotency_key) values ($1::uuid, $2::uuid, $3, $4, $5::uuid, $6::uuid, $7::uuid, $8::uuid, $9, $10::jsonb, $11) on conflict (idempotency_key) do nothing returning id, status, mode, request_payload`,
     [
       runId,
       payload.schoolId,
@@ -138,9 +178,34 @@ async function enqueue(c: any, capability: 'student-support' | 'teacher-summary'
       payload.requestedBy ?? null,
       payload.demoScenario ?? null,
       JSON.stringify(payload),
-      `durable-agent:${runId}:run`,
+      idempotencyKey,
     ],
   );
+  const persisted =
+    written[0] ??
+    (
+      await queryDatabaseRows<ExistingRun>(
+        `select id, status, mode, request_payload
+         from public.durable_agent_runs where idempotency_key = $1 limit 1`,
+        [idempotencyKey],
+      )
+    )[0];
+  if (!persisted) throw SovereignError.unavailable('DURABLE_AGENT_LEDGER_UNAVAILABLE');
+  if (persisted.request_payload?.requestFingerprint !== requestFingerprint) {
+    throw SovereignError.conflict('IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_REQUEST');
+  }
+  if (persisted.id !== runId) {
+    return c.json(
+      {
+        runId: persisted.id,
+        status: persisted.status,
+        mode: persisted.mode,
+        reviewMode: persisted.request_payload?.reviewMode ?? null,
+        replayed: true,
+      },
+      202,
+    );
+  }
   await queryDatabaseRows(
     `insert into public.durable_agent_run_events (id, run_id, event_type, school_id, idempotency_key, metadata) values ($1::uuid, $2::uuid, 'durable_agent_requested', $3::uuid, $4, $5::jsonb) on conflict (idempotency_key) do nothing returning id`,
     [
@@ -169,10 +234,8 @@ export function createDurableAgentRoutes(options: { includeInngest?: boolean } =
   routes.post('/api/durable-agents/student-support', (c: any) => enqueue(c, 'student-support'));
   routes.post('/api/durable-agents/teacher-summary', (c: any) => enqueue(c, 'teacher-summary'));
   routes.get('/api/durable-agents/runs', async (c: any) => {
-    const denied = requireUser(c);
-    if (denied) return denied;
+    const actor = requireUser(c);
     const limit = Math.min(Math.max(Number(c.req.query('limit') ?? 8) || 8, 1), 25);
-    const actor = getUser(c)!;
     const rows = await queryDatabaseRows<any>(
       `
         select event.event_type as action, event.created_at, event.run_id as entity_id,
@@ -198,28 +261,26 @@ export function createDurableAgentRoutes(options: { includeInngest?: boolean } =
       `,
       [actor.id, limit * 8, schoolAdministratorCapacities],
     );
-    return c.json({ runs: materialize(rows).slice(0, limit) });
+    return c.json({ runs: materialize(rows, { includeSensitiveResult: false }).slice(0, limit) });
   });
   routes.get('/api/durable-agents/runs/:runId', async (c: any) => {
-    const denied = requireUser(c);
-    if (denied) return denied;
-    const actor = getUser(c)!;
+    const actor = requireUser(c);
     const runId = c.req.param('runId');
-    if (!(await canReadRun(actor.id, runId))) return c.json({ error: 'Run not found.' }, 404);
+    if (!(await canReadRun(actor.id, runId))) throw SovereignError.notFound('Run');
     const rows = await queryDatabaseRows<any>(
       `select event_type as action, created_at, run_id as entity_id, school_id, metadata
        from public.durable_agent_run_events where run_id = $1::uuid order by created_at asc`,
       [runId],
     );
-    const run = materialize(rows)[0];
-    return run ? c.json(run) : c.json({ error: 'Run not found.' }, 404);
+    const run = materialize(rows, { includeSensitiveResult: true })[0];
+    if (!run) throw SovereignError.notFound('Run');
+    return c.json(run);
   });
   routes.post('/api/durable-agents/runs/:runId/promote', async (c: any) => {
-    const denied = requireUser(c);
-    if (denied) return denied;
+    requireUser(c);
     const runId = c.req.param('runId');
     const actor = getUser(c)!;
-    if (!(await canReadRun(actor.id, runId))) return c.json({ error: 'Run not found.' }, 404);
+    if (!(await canReadRun(actor.id, runId))) throw SovereignError.notFound('Run');
     const rows = await queryDatabaseRows<any>(
       `select metadata from public.durable_agent_run_events
        where run_id = $1::uuid and event_type = 'durable_agent_completed'
@@ -227,8 +288,7 @@ export function createDurableAgentRoutes(options: { includeInngest?: boolean } =
       [runId],
     );
     const metadata = rows[0]?.metadata;
-    if (!metadata?.summaryDraft)
-      return c.json({ error: 'Only completed runs can be promoted.' }, 400);
+    if (!metadata?.summaryDraft) throw SovereignError.conflict('RUN_NOT_READY_FOR_PROMOTION');
     const promoted = await queryDatabaseRows<any>(
       `select metadata from public.durable_agent_run_events where run_id = $1::uuid and event_type = 'durable_agent_promoted_to_teacher_note' limit 1`,
       [runId],
@@ -243,7 +303,7 @@ export function createDurableAgentRoutes(options: { includeInngest?: boolean } =
       });
     }
     if (metadata.mode !== 'demo' && actor.id !== metadata.teacherId)
-      return c.json({ error: 'Only the assigned teacher can promote this draft.' }, 403);
+      throw SovereignError.unauthorized('promote', 'teacher draft');
     if (metadata.mode === 'demo') {
       const teacherNoteId = `demo-note-${runId.slice(0, 8)}`;
       await queryDatabaseRows(
@@ -317,7 +377,7 @@ export function createDurableAgentRoutes(options: { includeInngest?: boolean } =
   return routes;
 }
 
-function materialize(rows: any[]) {
+function materialize(rows: any[], options: { includeSensitiveResult: boolean }) {
   const grouped = new Map<string, any[]>();
   for (const row of rows) grouped.set(row.entity_id, [...(grouped.get(row.entity_id) ?? []), row]);
   return [...grouped.values()].map((events) => {
@@ -328,7 +388,7 @@ function materialize(rows: any[]) {
     const failed = events.find((row) => row.action === 'durable_agent_failed')?.metadata ?? {};
     const promoted =
       events.find((row) => row.action === 'durable_agent_promoted_to_teacher_note')?.metadata ?? {};
-    return {
+    const run = {
       runId: events[0].entity_id,
       status: failed.error ? 'failed' : completed.summaryDraft ? 'completed' : 'running',
       createdAt: events[0].created_at,
@@ -338,19 +398,26 @@ function materialize(rows: any[]) {
       scenario: requested.demoScenario ?? null,
       classroomId: requested.classroomId ?? completed.classroomId ?? null,
       studentId: requested.studentId ?? completed.studentId ?? null,
-      studentName: requested.studentName ?? completed.studentName ?? null,
       teacherId: requested.teacherId ?? completed.teacherId ?? null,
       requestedBy: requested.requestedBy ?? null,
-      summaryDraft: completed.summaryDraft ?? null,
-      evidence: completed.evidence ?? null,
-      governor: completed.governor ?? null,
       promotedTeacherNoteId: promoted.teacherNoteId ?? null,
       promotionMode: promoted.promotionMode ?? null,
       promotedAt: promoted.teacherNoteId
         ? events.find((row) => row.action === 'durable_agent_promoted_to_teacher_note')?.created_at
         : null,
-      error: failed.error ?? null,
       timeline: events.map((row) => ({ action: row.action, createdAt: row.created_at })),
+    };
+    if (!options.includeSensitiveResult) return run;
+
+    return {
+      ...run,
+      studentName: requested.studentName ?? completed.studentName ?? null,
+      summaryDraft: completed.summaryDraft ?? null,
+      evidence: completed.evidence ?? null,
+      governor: completed.governor ?? null,
+      // Worker errors can include provider, query, or student details. Keep
+      // diagnostics in the audit store and expose only a stable client state.
+      error: failed.error ? 'The run did not complete.' : null,
     };
   });
 }

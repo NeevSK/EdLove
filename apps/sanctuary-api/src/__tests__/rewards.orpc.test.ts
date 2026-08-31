@@ -1,23 +1,21 @@
 import './setup';
+import { reinitializeCedar } from '@repo/policies/engine/evaluator';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createTestORPCClient } from './orpc-client';
-import { reinitializeCedar } from '@repo/policies/engine/evaluator';
-import { check } from '@repo/policies/engine/evaluator';
-console.log('[TEST DEBUG] reinitializeCedar:', typeof reinitializeCedar, 'check:', typeof check);
 import {
-  setMockZenStackDbAvailable,
   setMockActiveBond,
+  setMockQueryRowsQueue,
   setMockUserRewards,
   setMockUserRewardsVersions,
   setMockWhisperedMoments,
-  setMockQueryRowsQueue,
+  setMockZenStackDbAvailable,
 } from './setup';
 
 describe('rewards API', () => {
-const userId = '123e4567-e89b-12d3-a456-426614174000';
+  const userId = '123e4567-e89b-12d3-a456-426614174000';
   const headers = { Authorization: `Bearer ${userId}` };
 
-beforeEach(() => {
+  beforeEach(() => {
     reinitializeCedar();
     setMockZenStackDbAvailable(true);
     setMockActiveBond({
@@ -37,7 +35,7 @@ beforeEach(() => {
   describe('getRewards', () => {
     it('returns null when user has no rewards', async () => {
       setMockUserRewards(null);
-      const response = await createTestORPCClient(headers).rewards.getRewards({});
+      const response = await createTestORPCClient(headers).rewards.getRewards({ query: {} });
       expect(response).toBeNull();
     });
 
@@ -51,13 +49,21 @@ beforeEach(() => {
         updated_at: '2026-08-14T00:00:00.000Z',
       });
 
-      const response = await createTestORPCClient(headers).rewards.getRewards({});
+      const response = await createTestORPCClient(headers).rewards.getRewards({ query: {} });
 
       expect(response).toMatchObject({
         user_id: userId,
         points: 100,
         badges: ['Sanctuary Seeker'],
       });
+    });
+
+    it('rejects an attempt to read another user rewards through a query override', async () => {
+      await expect(
+        createTestORPCClient(headers).rewards.getRewards({
+          query: { userId: '223e4567-e89b-12d3-a456-426614174000' },
+        }),
+      ).rejects.toMatchObject({ status: 403 });
     });
   });
 
@@ -97,12 +103,35 @@ beforeEach(() => {
 
     it('respects limit parameter', async () => {
       setMockUserRewardsVersions([
-        { id: '823e4567-e89b-12d3-a456-426614174111', user_id: userId, operation: 'op1', recorded_at: '2026-08-14T10:00:00.000Z', recorded_by: userId, snapshot: {} },
-        { id: '823e4567-e89b-12d3-a456-426614174112', user_id: userId, operation: 'op2', recorded_at: '2026-08-13T10:00:00.000Z', recorded_by: userId, snapshot: {} },
-        { id: '823e4567-e89b-12d3-a456-426614174113', user_id: userId, operation: 'op3', recorded_at: '2026-08-12T10:00:00.000Z', recorded_by: userId, snapshot: {} },
+        {
+          id: '823e4567-e89b-12d3-a456-426614174111',
+          user_id: userId,
+          operation: 'op1',
+          recorded_at: '2026-08-14T10:00:00.000Z',
+          recorded_by: userId,
+          snapshot: {},
+        },
+        {
+          id: '823e4567-e89b-12d3-a456-426614174112',
+          user_id: userId,
+          operation: 'op2',
+          recorded_at: '2026-08-13T10:00:00.000Z',
+          recorded_by: userId,
+          snapshot: {},
+        },
+        {
+          id: '823e4567-e89b-12d3-a456-426614174113',
+          user_id: userId,
+          operation: 'op3',
+          recorded_at: '2026-08-12T10:00:00.000Z',
+          recorded_by: userId,
+          snapshot: {},
+        },
       ]);
 
-      const response = await createTestORPCClient(headers).rewards.getRewardsHistory({ query: { limit: 2 } });
+      const response = await createTestORPCClient(headers).rewards.getRewardsHistory({
+        query: { limit: 2 },
+      });
 
       expect(response).toHaveLength(2);
       expect(response[0].operation).toBe('op1');
@@ -251,7 +280,7 @@ beforeEach(() => {
   });
 
   describe('addPoints', () => {
-    it('adds points to existing rewards', async () => {
+    it('rejects self-service point grants', async () => {
       setMockUserRewards({
         id: '823e4567-e89b-12d3-a456-426614174000',
         user_id: userId,
@@ -261,15 +290,21 @@ beforeEach(() => {
         updated_at: '2026-08-14T00:00:00.000Z',
       });
 
-      const response = await createTestORPCClient(headers).rewards.addPoints({
-        body: { userId, points: 25 },
-      });
-
-      expect(response).toMatchObject({ user_id: userId, points: 75 });
+      await expect(
+        createTestORPCClient(headers).rewards.addPoints({ body: { userId, points: 25 } }),
+      ).rejects.toMatchObject({ status: 403 });
     });
 
-    it('creates new rewards with given points if none exist', async () => {
+    it('allows a platform administrator to apply a server-authorized points grant', async () => {
       setMockUserRewards(null);
+      setMockActiveBond({
+        id: 'bond-rewards-admin',
+        user_id: userId,
+        entity_id: 'PLATFORM',
+        entity_type: 'PLATFORM',
+        capacity: 'admin',
+        status: 'active',
+      });
 
       const response = await createTestORPCClient(headers).rewards.addPoints({
         body: { userId, points: 100 },
@@ -284,7 +319,7 @@ beforeEach(() => {
   });
 
   describe('awardBadge', () => {
-    it('awards new badge', async () => {
+    it('rejects self-service badge grants', async () => {
       setMockUserRewards({
         id: '823e4567-e89b-12d3-a456-426614174000',
         user_id: userId,
@@ -294,14 +329,14 @@ beforeEach(() => {
         updated_at: '2026-08-14T00:00:00.000Z',
       });
 
-      const response = await createTestORPCClient(headers).rewards.awardBadge({
-        body: { userId, badge: 'Sanctuary Seeker' },
-      });
-
-      expect(response.badges).toContain('Sanctuary Seeker');
+      await expect(
+        createTestORPCClient(headers).rewards.awardBadge({
+          body: { userId, badge: 'Sanctuary Seeker' },
+        }),
+      ).rejects.toMatchObject({ status: 403 });
     });
 
-    it('does not duplicate badges', async () => {
+    it('allows an administrator to make an idempotent badge grant', async () => {
       setMockUserRewards({
         id: '823e4567-e89b-12d3-a456-426614174000',
         user_id: userId,
@@ -309,6 +344,14 @@ beforeEach(() => {
         badges: ['Sanctuary Seeker'],
         created_at: '2026-08-01T00:00:00.000Z',
         updated_at: '2026-08-14T00:00:00.000Z',
+      });
+      setMockActiveBond({
+        id: 'bond-rewards-admin',
+        user_id: userId,
+        entity_id: 'PLATFORM',
+        entity_type: 'PLATFORM',
+        capacity: 'admin',
+        status: 'active',
       });
 
       const response = await createTestORPCClient(headers).rewards.awardBadge({
@@ -329,12 +372,14 @@ beforeEach(() => {
         created_at: '2026-08-01T00:00:00.000Z',
         updated_at: '2026-08-14T00:00:00.000Z',
       });
-      setMockQueryRowsQueue([[
-        { feature_name: 'section_self' },
-        { feature_name: 'section_community' },
-        { feature_name: 'section_library' },
-        { feature_name: 'section_profile' },
-      ]]);
+      setMockQueryRowsQueue([
+        [
+          { feature_name: 'section_self' },
+          { feature_name: 'section_community' },
+          { feature_name: 'section_library' },
+          { feature_name: 'section_profile' },
+        ],
+      ]);
 
       const response = await createTestORPCClient(headers).rewards.checkAndAwardAchievements({
         body: { userId },
@@ -353,12 +398,14 @@ beforeEach(() => {
         created_at: '2026-08-01T00:00:00.000Z',
         updated_at: '2026-08-14T00:00:00.000Z',
       });
-      setMockQueryRowsQueue([[
-        { feature_name: 'section_self' },
-        { feature_name: 'section_community' },
-        { feature_name: 'section_library' },
-        { feature_name: 'section_profile' },
-      ]]);
+      setMockQueryRowsQueue([
+        [
+          { feature_name: 'section_self' },
+          { feature_name: 'section_community' },
+          { feature_name: 'section_library' },
+          { feature_name: 'section_profile' },
+        ],
+      ]);
 
       const response = await createTestORPCClient(headers).rewards.checkAndAwardAchievements({
         body: { userId },
@@ -371,7 +418,9 @@ beforeEach(() => {
 
   describe('getWhisperedMoments', () => {
     it('returns empty array when no moments exist', async () => {
-      const response = await createTestORPCClient(headers).rewards.getWhisperedMoments({ query: {} });
+      const response = await createTestORPCClient(headers).rewards.getWhisperedMoments({
+        query: {},
+      });
       expect(response).toEqual([]);
     });
 
@@ -397,12 +446,13 @@ beforeEach(() => {
         },
       ]);
 
-      const response = await createTestORPCClient(headers).rewards.getWhisperedMoments({ query: {} });
+      const response = await createTestORPCClient(headers).rewards.getWhisperedMoments({
+        query: {},
+      });
 
       expect(response).toHaveLength(2);
-      expect(response[0].key).toBe('first_login');
-      expect(response[1].key).toBe('first_mood_log');
+      expect(response[0].key).toBe('first_mood_log');
+      expect(response[1].key).toBe('first_login');
     });
   });
 });
-

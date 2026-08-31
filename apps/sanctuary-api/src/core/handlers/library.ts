@@ -274,54 +274,58 @@ export const libraryRouter = impl.router({
         ?.split(',')
         .map((item) => item.trim())
         .filter(Boolean);
-    const subjects = csv(input.subjects);
-    const topics = csv(input.topics);
-    const grades = csv(input.grades)?.map(Number).filter(Number.isInteger);
-    const languages = csv(input.languages);
-    const tags = csv(input.tags);
+    const subjects = csv(input.query.subjects);
+    const topics = csv(input.query.topics);
+    const grades = csv(input.query.grades)?.map(Number).filter(Number.isInteger);
+    const languages = csv(input.query.languages);
+    const tags = csv(input.query.tags);
     const where = {
       AND: [
         { OR: [{ visibility: 'public' }, { creator_id: context.user.id }] },
-        ...(input.search
+        ...(input.query.search
           ? [
               {
                 OR: [
-                  { title: { contains: input.search, mode: 'insensitive' } },
-                  { description: { contains: input.search, mode: 'insensitive' } },
+                  { title: { contains: input.query.search, mode: 'insensitive' } },
+                  { description: { contains: input.query.search, mode: 'insensitive' } },
                 ],
               },
             ]
           : []),
-        ...(input.subject ? [{ subjects: { has: input.subject } }] : []),
+        ...(input.query.subject ? [{ subjects: { has: input.query.subject } }] : []),
         ...(subjects?.length ? [{ subjects: { hasSome: subjects } }] : []),
-        ...(input.topic ? [{ topics: { has: input.topic } }] : []),
+        ...(input.query.topic ? [{ topics: { has: input.query.topic } }] : []),
         ...(topics?.length ? [{ topics: { hasSome: topics } }] : []),
       ],
-      type: input.type,
+      type: input.query.type,
       grades: grades?.length ? { hasSome: grades } : undefined,
       language: languages?.length ? { hasSome: languages } : undefined,
       tags: tags?.length ? { hasSome: tags } : undefined,
-      difficulty: input.difficulty,
-      visibility: input.visibility,
+      difficulty: input.query.difficulty,
+      visibility: input.query.visibility,
       is_community:
-        input.source === 'core' ? false : input.source === 'community' ? true : undefined,
-      verified: input.verified_only ? true : undefined,
-      created_at: input.view_date ? { lte: new Date(input.view_date) } : undefined,
+        input.query.source === 'core'
+          ? false
+          : input.query.source === 'community'
+            ? true
+            : undefined,
+      verified: input.query.verified_only ? true : undefined,
+      created_at: input.query.view_date ? { lte: new Date(input.query.view_date) } : undefined,
     };
     const orderBy =
-      input.sort_by === 'popular'
+      input.query.sort_by === 'popular'
         ? { views: 'desc' }
-        : input.sort_by === 'most_used'
+        : input.query.sort_by === 'most_used'
           ? { uses_count: 'desc' }
-          : input.sort_by === 'most_endorsed'
+          : input.query.sort_by === 'most_endorsed'
             ? { endorsements: 'desc' }
-            : input.sort_by === 'most_bookmarked'
+            : input.query.sort_by === 'most_bookmarked'
               ? { bookmarks: 'desc' }
               : { created_at: 'desc' };
     const rows = await db.libraryResource.findMany({
       where,
-      take: input.limit ?? 20,
-      skip: input.offset ?? 0,
+      take: input.query.limit ?? 20,
+      skip: input.query.offset ?? 0,
       orderBy,
       include: { creator: { select: { full_name: true, avatar_url: true } } },
     });
@@ -331,7 +335,7 @@ export const libraryRouter = impl.router({
     assertDatabase(context);
     const db = context.db as any;
     const row = await db.libraryResource.findUnique({
-      where: { id: input.id },
+      where: { id: input.params.id },
       include: {
         creator: { select: { full_name: true, avatar_url: true } },
         _count: { select: { engagements: true } },
@@ -340,7 +344,7 @@ export const libraryRouter = impl.router({
     if (!row) throw new ORPCError('NOT_FOUND', { message: 'Resource not found' });
     const engagements = await db.resourceEngagement.findMany({
       where: {
-        resource_id: input.id,
+        resource_id: input.params.id,
         user_id: context.user.id,
         engagement_type: { in: ['endorse', 'bookmark'] },
       },
@@ -361,10 +365,10 @@ export const libraryRouter = impl.router({
         where: {
           user_id: context.user.id,
           engagement_type: 'bookmark',
-          created_at: input.view_date ? { lte: new Date(input.view_date) } : undefined,
+          created_at: input.query.view_date ? { lte: new Date(input.query.view_date) } : undefined,
         },
-        take: input.limit ?? 20,
-        skip: input.offset ?? 0,
+        take: input.query.limit ?? 20,
+        skip: input.query.offset ?? 0,
         orderBy: { created_at: 'desc' },
         include: {
           resource: { include: { creator: { select: { full_name: true, avatar_url: true } } } },
@@ -380,13 +384,13 @@ export const libraryRouter = impl.router({
       const rows = await db.libraryResource.findMany({
         where: {
           OR: [
-            { title: { contains: input.query, mode: 'insensitive' } },
-            { description: { contains: input.query, mode: 'insensitive' } },
+            { title: { contains: input.body.query, mode: 'insensitive' } },
+            { description: { contains: input.body.query, mode: 'insensitive' } },
           ],
-          type: input.type,
-          subjects: input.subject ? { has: input.subject } : undefined,
+          type: input.body.type,
+          subjects: input.body.subject ? { has: input.body.subject } : undefined,
         },
-        take: input.limit ?? 10,
+        take: input.body.limit ?? 10,
       });
       return rows.map(mapResource);
     }),
@@ -397,21 +401,21 @@ export const libraryRouter = impl.router({
       const db = context.db as any;
       const row = await db.libraryResource.create({
         data: {
-          title: input.title,
-          description: input.description ?? null,
-          type: input.type,
-          format: input.format,
-          url: input.url ?? null,
-          file_path: input.file_path ?? null,
-          subjects: input.subjects,
-          topics: input.topics,
-          grades: input.grades,
-          difficulty: input.difficulty ?? null,
-          language: input.language,
-          visibility: input.visibility,
+          title: input.body.title,
+          description: input.body.description ?? null,
+          type: input.body.type,
+          format: input.body.format,
+          url: input.body.url ?? null,
+          file_path: input.body.file_path ?? null,
+          subjects: input.body.subjects,
+          topics: input.body.topics,
+          grades: input.body.grades,
+          difficulty: input.body.difficulty ?? null,
+          language: input.body.language,
+          visibility: input.body.visibility,
           creator_id: context.user.id,
           creator_role: context.capacity ?? 'member',
-          is_community: input.is_community,
+          is_community: input.body.is_community,
         },
         include: { creator: { select: { full_name: true, avatar_url: true } } },
       });
@@ -420,7 +424,8 @@ export const libraryRouter = impl.router({
   updateResource: impl.updateResource
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      const { id, ...updates } = input;
+      const { id } = input.params;
+      const updates = input.body;
       if (Object.keys(updates).length === 0) {
         throw new ORPCError('BAD_REQUEST', { message: 'At least one resource field is required' });
       }
@@ -435,8 +440,8 @@ export const libraryRouter = impl.router({
   deleteResource: impl.deleteResource
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      const db = await requireResourceManager(context, input.id);
-      await db.libraryResource.delete({ where: { id: input.id } });
+      const db = await requireResourceManager(context, input.params.id);
+      await db.libraryResource.delete({ where: { id: input.params.id } });
       return { success: true };
     }),
   verifyResource: impl.verifyResource
@@ -445,7 +450,7 @@ export const libraryRouter = impl.router({
       await requirePlatformAdmin(context);
       const db = context.db as any;
       const row = await db.libraryResource.update({
-        where: { id: input.id },
+        where: { id: input.params.id },
         data: { verified: true, verified_by: context.user.id },
         include: { creator: { select: { full_name: true, avatar_url: true } } },
       });
@@ -458,13 +463,13 @@ export const libraryRouter = impl.router({
       assertDatabase(context);
       const db = context.db as any;
       const resource = await db.libraryResource.findUnique({
-        where: { id: input.id },
+        where: { id: input.params.id },
         select: { id: true, fail_count: true },
       });
       if (!resource) throw new ORPCError('NOT_FOUND', { message: 'Resource not found' });
       const failCount = Number(resource.fail_count ?? 0) + 1;
       await db.libraryResource.update({
-        where: { id: input.id },
+        where: { id: input.params.id },
         data: {
           fail_count: failCount,
           link_status: failCount >= 3 ? 'broken' : 'unknown',
@@ -475,60 +480,68 @@ export const libraryRouter = impl.router({
     }),
   engage: impl.engage.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     assertDatabase(context);
+    const classroomId = input.body.classroom_id;
+    const verifiedClassroomIds = context.principal.attributes.classroom_ids;
+    if (
+      classroomId &&
+      (!Array.isArray(verifiedClassroomIds) || !verifiedClassroomIds.includes(classroomId))
+    ) {
+      throw new ORPCError('FORBIDDEN', { message: 'Classroom scope is not authorized.' });
+    }
     const db = context.db as any;
     const row = await db.$transaction(async (tx: any) => {
-      const existing = input.toggle
+      const existing = input.body.toggle
         ? await tx.resourceEngagement.findFirst({
             where: {
-              resource_id: input.id,
+              resource_id: input.params.id,
               user_id: context.user.id,
-              engagement_type: input.engagement_type,
+              engagement_type: input.body.engagement_type,
             },
           })
         : null;
       if (existing) {
         await tx.resourceEngagement.delete({ where: { id: existing.id } });
         const counter =
-          input.engagement_type === 'endorse'
+          input.body.engagement_type === 'endorse'
             ? 'endorsements'
-            : input.engagement_type === 'bookmark'
+            : input.body.engagement_type === 'bookmark'
               ? 'bookmarks'
-              : input.engagement_type === 'use'
+              : input.body.engagement_type === 'use'
                 ? 'uses_count'
                 : null;
         if (counter)
           await tx.libraryResource.update({
-            where: { id: input.id },
+            where: { id: input.params.id },
             data: { [counter]: { decrement: 1 } },
           });
         return existing;
       }
       const created = await tx.resourceEngagement.create({
         data: {
-          resource_id: input.id,
+          resource_id: input.params.id,
           user_id: context.user.id,
-          engagement_type: input.engagement_type,
-          classroom_id: input.classroom_id ?? null,
+          engagement_type: input.body.engagement_type,
+          classroom_id: classroomId ?? null,
         },
       });
       const counter =
-        input.engagement_type === 'endorse'
+        input.body.engagement_type === 'endorse'
           ? 'endorsements'
-          : input.engagement_type === 'bookmark'
+          : input.body.engagement_type === 'bookmark'
             ? 'bookmarks'
-            : input.engagement_type === 'use'
+            : input.body.engagement_type === 'use'
               ? 'uses_count'
-              : input.engagement_type === 'view'
+              : input.body.engagement_type === 'view'
                 ? 'views'
                 : null;
       if (counter)
         await tx.libraryResource.update({
-          where: { id: input.id },
+          where: { id: input.params.id },
           data: { [counter]: { increment: 1 } },
         });
-      if (input.engagement_type === 'bookmark') {
+      if (input.body.engagement_type === 'bookmark') {
         const resource = await tx.libraryResource.findUnique({
-          where: { id: input.id },
+          where: { id: input.params.id },
           select: { creator_id: true },
         });
         if (resource?.creator_id && resource.creator_id !== context.user.id) {
@@ -536,7 +549,7 @@ export const libraryRouter = impl.router({
             data: {
               recipient_user_id: resource.creator_id,
               actor_user_id: context.user.id,
-              entity_id: input.id,
+              entity_id: input.params.id,
               ripple_type: 'resource_saved',
               warm_message_en: 'A resource you created was saved by another learner.',
               created_at: new Date(),
@@ -563,17 +576,17 @@ export const libraryRouter = impl.router({
       const db = context.db as any;
       const row = await db.libraryCollection.create({
         data: {
-          name: input.name,
-          description: input.description ?? null,
-          visibility: input.visibility,
-          subjects: input.subjects,
-          topics: input.topics,
-          grades: input.grades,
+          name: input.body.name,
+          description: input.body.description ?? null,
+          visibility: input.body.visibility,
+          subjects: input.body.subjects,
+          topics: input.body.topics,
+          grades: input.body.grades,
           creator_id: context.user.id,
-          ...(input.resource_ids.length > 0
+          ...(input.body.resource_ids.length > 0
             ? {
                 collection_nodes: {
-                  create: input.resource_ids.map((node_id: string, position: number) => ({
+                  create: input.body.resource_ids.map((node_id: string, position: number) => ({
                     node_id,
                     position,
                     added_by: context.user.id,
@@ -596,17 +609,16 @@ export const libraryRouter = impl.router({
   addToCollection: impl.addToCollection
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      assertDatabase(context);
-      const db = context.db as any;
+      const db = await requireCollectionManager(context, input.params.id);
       await db.$transaction(async (tx: any) => {
         const existing = await tx.collectionNode.findFirst({
-          where: { collection_id: input.id, node_id: input.resource_id },
+          where: { collection_id: input.params.id, node_id: input.body.resource_id },
         });
         if (existing) return;
         await tx.collectionNode.create({
           data: {
-            collection_id: input.id,
-            node_id: input.resource_id,
+            collection_id: input.params.id,
+            node_id: input.body.resource_id,
             added_by: context.user.id,
           },
         });
@@ -616,16 +628,17 @@ export const libraryRouter = impl.router({
   removeFromCollection: impl.removeFromCollection
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      const db = await requireCollectionManager(context, input.id);
+      const db = await requireCollectionManager(context, input.params.id);
       await db.collectionNode.deleteMany({
-        where: { collection_id: input.id, node_id: input.resourceId },
+        where: { collection_id: input.params.id, node_id: input.params.resourceId },
       });
       return { success: true };
     }),
   updateCollection: impl.updateCollection
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      const { id, ...updates } = input;
+      const { id } = input.params;
+      const updates = input.body;
       if (Object.keys(updates).length === 0) {
         throw new ORPCError('BAD_REQUEST', {
           message: 'At least one collection field is required',
@@ -645,8 +658,8 @@ export const libraryRouter = impl.router({
   deleteCollection: impl.deleteCollection
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
-      const db = await requireCollectionManager(context, input.id);
-      await db.libraryCollection.delete({ where: { id: input.id } });
+      const db = await requireCollectionManager(context, input.params.id);
+      await db.libraryCollection.delete({ where: { id: input.params.id } });
       return { success: true };
     }),
   forkCollection: impl.forkCollection
@@ -656,7 +669,7 @@ export const libraryRouter = impl.router({
       const db = context.db as any;
       const fork = await db.$transaction(async (tx: any) => {
         const original = await tx.libraryCollection.findUnique({
-          where: { id: input.id },
+          where: { id: input.params.id },
           include: { collection_nodes: { orderBy: { position: 'asc' }, include: { node: true } } },
         });
         if (!original) throw new ORPCError('NOT_FOUND', { message: 'Collection not found' });
@@ -715,17 +728,18 @@ export const libraryRouter = impl.router({
     .handler(async ({ input, context }) => {
       assertDatabase(context);
       const db = context.db as any;
-      const grades = (input.grades ?? '')
+      const grades = (input.query.grades ?? '')
         .split(',')
         .map((grade: string) => Number(grade.trim()))
         .filter((grade: number) => Number.isInteger(grade));
-      const requestedOtherCreator = input.creator_id && input.creator_id !== context.user.id;
+      const requestedOtherCreator =
+        input.query.creator_id && input.query.creator_id !== context.user.id;
       const privateAccess =
-        input.visibility && !['public', 'shared'].includes(input.visibility)
+        input.query.visibility && !['public', 'shared'].includes(input.query.visibility)
           ? { creator_id: context.user.id }
           : requestedOtherCreator
             ? { visibility: { in: ['public', 'shared'] } }
-            : !input.creator_id && !input.visibility
+            : !input.query.creator_id && !input.query.visibility
               ? {
                   OR: [
                     { visibility: { in: ['public', 'shared'] } },
@@ -733,25 +747,27 @@ export const libraryRouter = impl.router({
                   ],
                 }
               : {};
-      const pageLimit = input.limit ?? 20;
-      const pageOffset = input.offset ?? 0;
-      const explicitRows = input.only_virtual
+      const pageLimit = input.query.limit ?? 20;
+      const pageOffset = input.query.offset ?? 0;
+      const explicitRows = input.query.only_virtual
         ? []
         : await db.libraryCollection.findMany({
             where: {
-              creator_id: input.creator_id,
+              creator_id: input.query.creator_id,
               ...privateAccess,
-              ...(input.visibility ? { visibility: input.visibility } : {}),
-              OR: input.subject
-                ? [{ subjects: { has: input.subject } }, { subject: input.subject }]
-                : input.search
+              ...(input.query.visibility ? { visibility: input.query.visibility } : {}),
+              OR: input.query.subject
+                ? [{ subjects: { has: input.query.subject } }, { subject: input.query.subject }]
+                : input.query.search
                   ? [
-                      { name: { contains: input.search, mode: 'insensitive' } },
-                      { description: { contains: input.search, mode: 'insensitive' } },
+                      { name: { contains: input.query.search, mode: 'insensitive' } },
+                      { description: { contains: input.query.search, mode: 'insensitive' } },
                     ]
                   : undefined,
               grades: grades.length ? { hasSome: grades } : undefined,
-              created_at: input.view_date ? { lte: new Date(input.view_date) } : undefined,
+              created_at: input.query.view_date
+                ? { lte: new Date(input.query.view_date) }
+                : undefined,
             },
             take: pageLimit + pageOffset,
             skip: 0,
@@ -761,15 +777,15 @@ export const libraryRouter = impl.router({
               collection_nodes: { include: { node: true } },
             },
           });
-      const explicit = input.view_date
-        ? await hydrateCollectionsAtAsOf(db, explicitRows, input.view_date)
+      const explicit = input.query.view_date
+        ? await hydrateCollectionsAtAsOf(db, explicitRows, input.query.view_date)
         : explicitRows;
       const virtual =
-        input.exclude_virtual ||
-        input.creator_id ||
-        (input.visibility && input.visibility !== 'public')
+        input.query.exclude_virtual ||
+        input.query.creator_id ||
+        (input.query.visibility && input.query.visibility !== 'public')
           ? []
-          : await fetchVirtualCollections(db, input);
+          : await fetchVirtualCollections(db, input.query);
       const combined = [...explicit.map(mapCollection), ...virtual];
       return combined.slice(pageOffset, pageOffset + pageLimit);
     }),
@@ -778,14 +794,16 @@ export const libraryRouter = impl.router({
     .handler(async ({ input, context }) => {
       assertDatabase(context);
       const db = context.db as any;
-      if (input.id.startsWith('subject:') || input.id.startsWith('topic:')) {
-        const kind = input.id.startsWith('subject:') ? 'subject' : 'topic';
-        const term = input.id.slice(kind.length + 1);
+      if (input.params.id.startsWith('subject:') || input.params.id.startsWith('topic:')) {
+        const kind = input.params.id.startsWith('subject:') ? 'subject' : 'topic';
+        const term = input.params.id.slice(kind.length + 1);
         const rows = await db.libraryResource.findMany({
           where: {
             visibility: 'public',
             ...(kind === 'subject' ? { subjects: { has: term } } : { topics: { has: term } }),
-            created_at: input.view_date ? { lte: new Date(input.view_date) } : undefined,
+            created_at: input.query.view_date
+              ? { lte: new Date(input.query.view_date) }
+              : undefined,
           },
           take: 50,
           orderBy: { created_at: 'desc' },
@@ -793,7 +811,7 @@ export const libraryRouter = impl.router({
         return mapVirtualCollection(kind, term, rows.length, rows);
       }
       const row = await db.libraryCollection.findUnique({
-        where: { id: input.id },
+        where: { id: input.params.id },
         include: {
           creator: { select: { full_name: true, avatar_url: true } },
           collection_nodes: { include: { node: true } },
@@ -801,8 +819,12 @@ export const libraryRouter = impl.router({
       });
       if (!row) throw new ORPCError('NOT_FOUND', { message: 'Collection not found' });
 
-      if (input.view_date) {
-        const membership = await fetchCollectionMembershipAsOf(db, input.id, input.view_date);
+      if (input.query.view_date) {
+        const membership = await fetchCollectionMembershipAsOf(
+          db,
+          input.params.id,
+          input.query.view_date,
+        );
         const nodeIds = membership.map((event: any) => String(event.node_id));
         const resources = nodeIds.length
           ? await db.libraryResource.findMany({

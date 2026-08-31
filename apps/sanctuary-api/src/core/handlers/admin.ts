@@ -1,3 +1,4 @@
+import { ORPCError } from '@orpc/server';
 import { adminORPCContract } from '@repo/core/api/admin.orpc.contract';
 import { implement, type ORPCContext } from '../orpc';
 import { doubleGateMiddleware } from '../orpcMiddleware';
@@ -28,15 +29,20 @@ const mapCalendar = (row: any) => ({
   end_date: iso(row.end_date),
   is_public: row.is_public !== false,
 });
+const assertSchoolScope = (context: ORPCContext, schoolId: string) => {
+  if (context.schoolId !== schoolId)
+    throw new ORPCError('FORBIDDEN', { message: 'School scope is outside the active bond.' });
+};
 
 export const adminRouter = impl.router({
   getStaffPresence: impl.getStaffPresence
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
+      assertSchoolScope(context, input.params.schoolId);
       const rows = await (context.db as any).staffAttendance.findMany({
         where: {
-          school_id: input.schoolId,
-          date: input.viewDate || new Date().toISOString().slice(0, 10),
+          school_id: input.params.schoolId,
+          date: input.query.viewDate || new Date().toISOString().slice(0, 10),
         },
       });
       return {
@@ -49,11 +55,12 @@ export const adminRouter = impl.router({
   getTeacherCarousel: impl.getTeacherCarousel
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
+      assertSchoolScope(context, input.params.schoolId);
       const rows = await (context.db as any).user.findMany({
         where: {
           bonds: {
             some: {
-              entity_id: input.schoolId,
+              entity_id: input.params.schoolId,
               entity_type: 'SCHOOL',
               capacity: { in: ['teacher', 'grade_head', 'principal'] },
             },
@@ -61,10 +68,10 @@ export const adminRouter = impl.router({
         },
         include: {
           staff_attendance: {
-            where: { date: input.viewDate || new Date().toISOString().slice(0, 10) },
+            where: { date: input.query.viewDate || new Date().toISOString().slice(0, 10) },
             select: { status: true },
           },
-          _count: { select: { classrooms: { where: { school_id: input.schoolId } } } },
+          _count: { select: { classrooms: { where: { school_id: input.params.schoolId } } } },
         },
       });
       return rows.map((row: any) => ({
@@ -77,21 +84,23 @@ export const adminRouter = impl.router({
       }));
     }),
   submitLeave: impl.submitLeave.use(doubleGateMiddleware).handler(async ({ input, context }) => {
+    assertSchoolScope(context, input.body.schoolId);
     await (context.db as any).staffLeave.create({
       data: {
-        school_id: input.schoolId,
+        school_id: input.body.schoolId,
         user_id: context.user.id,
-        leave_type: input.leaveType,
-        start_date: input.startDate,
-        end_date: input.endDate,
-        reason: input.reason,
+        leave_type: input.body.leaveType,
+        start_date: input.body.startDate,
+        end_date: input.body.endDate,
+        reason: input.body.reason,
       },
     });
     return { success: true };
   }),
   getSchool: impl.getSchool.use(doubleGateMiddleware).handler(async ({ input, context }) => {
+    assertSchoolScope(context, input.params.id);
     const row = await (context.db as any).school.findUnique({
-      where: { id: input.id },
+      where: { id: input.params.id },
       include: { _count: { select: { classrooms: true, bonds: true } } },
     });
     return row
@@ -106,17 +115,18 @@ export const adminRouter = impl.router({
   getPendingLeaves: impl.getPendingLeaves
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
+      assertSchoolScope(context, input.params.schoolId);
       const rows = await (context.db as any).staffLeave.findMany({
-        where: { school_id: input.schoolId, status: 'pending' },
+        where: { school_id: input.params.schoolId, status: 'pending' },
         orderBy: { created_at: 'desc' },
       });
       return rows.map(mapLeave);
     }),
   approveLeave: impl.approveLeave.use(doubleGateMiddleware).handler(async ({ input, context }) => {
     const row = await (context.db as any).staffLeave.update({
-      where: { id: input.leaveId },
+      where: { id: input.params.leaveId },
       data: {
-        status: input.approved ? 'approved' : 'rejected',
+        status: input.body.approved ? 'approved' : 'rejected',
         reviewed_by: context.user.id,
         reviewed_at: new Date(),
       },
@@ -126,12 +136,13 @@ export const adminRouter = impl.router({
   getUpcomingCalendarEvents: impl.getUpcomingCalendarEvents
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
+      assertSchoolScope(context, input.params.schoolId);
       const rows = await (context.db as any).calendarEvent.findMany({
         where: {
-          school_id: input.schoolId,
-          start_date: { gte: input.viewDate || new Date().toISOString().slice(0, 10) },
+          school_id: input.params.schoolId,
+          start_date: { gte: input.query.viewDate || new Date().toISOString().slice(0, 10) },
         },
-        take: input.limit ?? 5,
+        take: input.query.limit ?? 5,
         orderBy: { start_date: 'asc' },
       });
       return rows.map(mapCalendar);
@@ -139,15 +150,16 @@ export const adminRouter = impl.router({
   createCalendarEvent: impl.createCalendarEvent
     .use(doubleGateMiddleware)
     .handler(async ({ input, context }) => {
+      assertSchoolScope(context, input.params.schoolId);
       await (context.db as any).calendarEvent.create({
         data: {
-          school_id: input.schoolId,
+          school_id: input.params.schoolId,
           created_by: context.user.id,
-          title: input.event.title,
-          type: input.event.type,
-          start_date: input.event.start_date,
-          end_date: input.event.end_date,
-          is_public: input.event.is_public ?? true,
+          title: input.body.event.title,
+          type: input.body.event.type,
+          start_date: input.body.event.start_date,
+          end_date: input.body.event.end_date,
+          is_public: input.body.event.is_public ?? true,
         },
       });
       return { success: true };

@@ -165,7 +165,7 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
       Authorization: 'Bearer fe889249-5929-431e-bdc9-2c1e81dd25b2',
       'x-capacity': 'teacher',
       'x-school-id': schoolId,
-    }).identity.resolveWorkspaceContext({ id: 'fe889249-5929-431e-bdc9-2c1e81dd25b2' });
+    }).identity.resolveWorkspaceContext({ params: { id: 'fe889249-5929-431e-bdc9-2c1e81dd25b2' } });
 
     expect(body).toHaveProperty('user_id', 'fe889249-5929-431e-bdc9-2c1e81dd25b2');
     expect(body).toHaveProperty('real_class_count');
@@ -179,7 +179,7 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
         Authorization: `Bearer ${tenantId}`,
         'x-capacity': 'teacher',
         'x-school-id': schoolId,
-      }).identity.resolveWorkspaceContext({ id: tenantId });
+      }).identity.resolveWorkspaceContext({ params: { id: tenantId } });
 
       expect(body).toHaveProperty('user_id', tenantId);
     });
@@ -198,7 +198,7 @@ describe('Sanctuary API Gateway: Cedar Server Gate Downstream Integration', () =
           'x-school-id': schoolId,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id: 'fe889249-5929-431e-bdc9-2c1e81dd25b2' }),
+        body: JSON.stringify({ params: { id: 'fe889249-5929-431e-bdc9-2c1e81dd25b2' } }),
       },
       {
         // Inject offline connection details to simulate DB outages

@@ -22,17 +22,21 @@ describe('Sanctuary API: Sacred Missions', () => {
 
   it('lists manifestos within the authenticated school scope', async () => {
     await expect(
-      createTestORPCClient(headers).sacredMissions.list({ school_id: schoolId, limit: 50 }),
+      createTestORPCClient(headers).sacredMissions.list({
+        query: { school_id: schoolId, limit: 50 },
+      }),
     ).resolves.toEqual([]);
   });
 
   it('creates a manifesto with server-derived creator and school scope', async () => {
     await expect(
       createTestORPCClient(headers).sacredMissions.create({
-        school_id: schoolId,
-        title: 'A shared intention',
-        content: 'Build a kinder school together.',
-        vibe: 'visionary',
+        body: {
+          school_id: schoolId,
+          title: 'A shared intention',
+          content: 'Build a kinder school together.',
+          vibe: 'visionary',
+        },
       }),
     ).resolves.toMatchObject({
       school_id: schoolId,
@@ -42,15 +46,27 @@ describe('Sanctuary API: Sacred Missions', () => {
   });
 
   it('rejects unauthenticated Sacred Missions access', async () => {
-    await expect(createTestORPCClient().sacredMissions.list({ limit: 50 })).rejects.toBeTruthy();
+    await expect(
+      createTestORPCClient().sacredMissions.list({ query: { limit: 50 } }),
+    ).rejects.toBeTruthy();
   });
 
   it('allows an authenticated user to endorse and remove an in-school manifesto', async () => {
     const client = createTestORPCClient(headers).sacredMissions;
     const manifestoId = 'd23e4567-e89b-12d3-a456-426614174000';
-    await expect(client.endorse({ manifestoId, commitment_text: 'I will help.' })).resolves.toEqual(
-      { success: true },
-    );
-    await expect(client.unendorse({ manifestoId })).resolves.toEqual({ success: true });
+    await expect(
+      client.endorse({ params: { manifestoId }, body: { commitment_text: 'I will help.' } }),
+    ).resolves.toEqual({ success: true });
+    await expect(client.unendorse({ params: { manifestoId } })).resolves.toEqual({ success: true });
+  });
+
+  it('rejects legacy flattened envelopes', async () => {
+    await expect(
+      createTestORPCClient(headers).sacredMissions.create({
+        school_id: schoolId,
+        title: 'Flattened',
+        content: 'Must not be accepted',
+      } as never),
+    ).rejects.toBeTruthy();
   });
 });

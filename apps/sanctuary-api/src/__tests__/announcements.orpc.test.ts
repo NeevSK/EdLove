@@ -22,13 +22,15 @@ describe('Sanctuary API: announcements via native oRPC', () => {
 
   it('reads and creates school-scoped announcements with server-derived authorship', async () => {
     const client = createTestORPCClient(headers).announcements;
-    expect(await client.getAnnouncements({ schoolId })).toEqual([]);
+    expect(await client.getAnnouncements({ query: { schoolId } })).toEqual([]);
     expect(
       await client.createAnnouncement({
-        schoolId,
-        title: 'Welcome',
-        content: 'Welcome to the new term',
-        isPinned: true,
+        body: {
+          schoolId,
+          title: 'Welcome',
+          content: 'Welcome to the new term',
+          isPinned: true,
+        },
       }),
     ).toMatchObject({
       school_id: schoolId,
@@ -41,9 +43,21 @@ describe('Sanctuary API: announcements via native oRPC', () => {
 
   it('rejects invalid school identifiers at the contract boundary', async () => {
     await expect(
-      (createTestORPCClient(headers).announcements.getAnnouncements as any)({
-        schoolId: 'not-a-uuid',
+      createTestORPCClient(headers).announcements.getAnnouncements({
+        query: { schoolId: 'not-a-uuid' },
       }),
     ).rejects.toBeTruthy();
+  });
+
+  it('denies a school outside the authenticated bond scope', async () => {
+    await expect(
+      createTestORPCClient(headers).announcements.createAnnouncement({
+        body: {
+          schoolId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+          title: 'Cross-tenant attempt',
+          content: 'must not be created',
+        },
+      }),
+    ).rejects.toMatchObject({ status: 403 });
   });
 });

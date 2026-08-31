@@ -4,6 +4,7 @@ import { createTestORPCClient } from './orpc-client';
 import {
   getMockLibraryCollectionFindManyArgs,
   setMockActiveBond,
+  setMockClassroomRelationships,
   setMockLibraryCollections,
   setMockLibraryTemporalRead,
   setMockZenStackDbAvailable,
@@ -24,20 +25,28 @@ describe('Sanctuary API: library via native oRPC', () => {
     });
     setMockLibraryTemporalRead({ collection: null, resources: [], events: [] });
     setMockLibraryCollections([]);
+    setMockClassroomRelationships({
+      classrooms: [
+        {
+          id: 'a23e4567-e89b-12d3-a456-426614174000',
+          school_id: 'school-123',
+          teacher_id: '123e4567-e89b-12d3-a456-426614174000',
+        },
+      ],
+    });
   });
 
   it('executes the native procedure and validates an explicit resource DTO list', async () => {
-    const body = await createTestORPCClient(headers).library.getResources({ limit: 10, offset: 0 });
+    const body = await createTestORPCClient(headers).library.getResources({
+      query: { limit: 10, offset: 0 },
+    });
 
     expect(body).toEqual([]);
   });
 
   it('executes server-owned library search with typed filters', async () => {
     const body = await createTestORPCClient(headers).library.searchLibrary({
-      query: 'fractions',
-      type: 'lesson',
-      subject: 'mathematics',
-      limit: 10,
+      body: { query: 'fractions', type: 'lesson', subject: 'mathematics', limit: 10 },
     });
 
     expect(body).toEqual([]);
@@ -45,16 +54,21 @@ describe('Sanctuary API: library via native oRPC', () => {
 
   it('rejects malformed resource identifiers through oRPC input validation', async () => {
     await expect(
-      createTestORPCClient(headers).library.getResource({ id: 'not-a-uuid' }),
+      createTestORPCClient(headers).library.getResource({ params: { id: 'not-a-uuid' } }),
     ).rejects.toMatchObject({
       status: 400,
     });
   });
 
+  it('rejects legacy flattened resource-search envelopes', async () => {
+    await expect(
+      createTestORPCClient(headers).library.searchLibrary({ query: 'fractions' } as never),
+    ).rejects.toBeTruthy();
+  });
+
   it('executes native collection reads with an explicit collection DTO', async () => {
     const body = await createTestORPCClient(headers).library.getCollections({
-      limit: 10,
-      offset: 0,
+      query: { limit: 10, offset: 0 },
     });
 
     expect(body).toEqual([]);
@@ -77,11 +91,7 @@ describe('Sanctuary API: library via native oRPC', () => {
       },
     ]);
     const body = await createTestORPCClient(headers).library.getCollections({
-      visibility: 'public',
-      grades: '5',
-      search: 'Mathematics',
-      limit: 1,
-      offset: 0,
+      query: { visibility: 'public', grades: '5', search: 'Mathematics', limit: 1, offset: 0 },
     });
 
     expect(body).toHaveLength(1);
@@ -137,7 +147,7 @@ describe('Sanctuary API: library via native oRPC', () => {
     });
 
     const body = await createTestORPCClient(headers).library.getCollections({
-      view_date: '2026-01-03T00:00:00.000Z',
+      query: { view_date: '2026-01-03T00:00:00.000Z' },
     });
 
     expect(body[0].resources?.map((item) => item.id)).toEqual([resource.id]);
@@ -145,7 +155,10 @@ describe('Sanctuary API: library via native oRPC', () => {
 
   it('rejects malformed collection identifiers through oRPC input validation', async () => {
     await expect(
-      createTestORPCClient(headers).library.getCollection({ id: 'not-a-uuid' }),
+      createTestORPCClient(headers).library.getCollection({
+        params: { id: 'not-a-uuid' },
+        query: {},
+      }),
     ).rejects.toMatchObject({
       status: 400,
     });
@@ -153,7 +166,8 @@ describe('Sanctuary API: library via native oRPC', () => {
 
   it('preserves dynamic subject collections as a server-owned read mode', async () => {
     const body = await createTestORPCClient(headers).library.getCollection({
-      id: 'subject:mathematics',
+      params: { id: 'subject:mathematics' },
+      query: {},
     });
 
     expect(body.id).toBe('subject:mathematics');
@@ -205,8 +219,8 @@ describe('Sanctuary API: library via native oRPC', () => {
     });
 
     const body = await createTestORPCClient(headers).library.getCollection({
-      id: 'a23e4567-e89b-12d3-a456-426614174000',
-      view_date: '2026-01-03T00:00:00.000Z',
+      params: { id: 'a23e4567-e89b-12d3-a456-426614174000' },
+      query: { view_date: '2026-01-03T00:00:00.000Z' },
     });
 
     expect(body.resources?.map((resource) => resource.id)).toEqual([firstResource.id]);
@@ -215,7 +229,8 @@ describe('Sanctuary API: library via native oRPC', () => {
   it('rejects empty resource lifecycle updates at the contract boundary', async () => {
     await expect(
       createTestORPCClient(headers).library.updateResource({
-        id: '923e4567-e89b-12d3-a456-426614174000',
+        params: { id: '923e4567-e89b-12d3-a456-426614174000' },
+        body: {},
       }),
     ).rejects.toMatchObject({ status: 400 });
   });
@@ -223,24 +238,26 @@ describe('Sanctuary API: library via native oRPC', () => {
   it('does not allow ordinary school capacity to verify resources', async () => {
     await expect(
       createTestORPCClient(headers).library.verifyResource({
-        id: '923e4567-e89b-12d3-a456-426614174000',
+        params: { id: '923e4567-e89b-12d3-a456-426614174000' },
       }),
     ).rejects.toMatchObject({ status: 403 });
   });
 
   it('derives library resource authorship from the authenticated context', async () => {
     const body = await createTestORPCClient(headers).library.createResource({
-      title: 'Native Resource',
-      description: 'Created through oRPC',
-      type: 'lesson',
-      format: 'text',
-      subjects: ['mathematics'],
-      topics: [],
-      grades: [5],
-      difficulty: 'beginner',
-      language: ['english'],
-      visibility: 'public',
-      is_community: true,
+      body: {
+        title: 'Native Resource',
+        description: 'Created through oRPC',
+        type: 'lesson',
+        format: 'text',
+        subjects: ['mathematics'],
+        topics: [],
+        grades: [5],
+        difficulty: 'beginner',
+        language: ['english'],
+        visibility: 'public',
+        is_community: true,
+      },
     });
 
     expect(body.title).toBe('Native Resource');
@@ -250,13 +267,15 @@ describe('Sanctuary API: library via native oRPC', () => {
 
   it('creates collections through the native contract', async () => {
     const body = await createTestORPCClient(headers).library.createCollection({
-      name: 'Native Collection',
-      description: 'Created through oRPC',
-      visibility: 'public',
-      subjects: ['mathematics'],
-      topics: [],
-      grades: [5],
-      resource_ids: [],
+      body: {
+        name: 'Native Collection',
+        description: 'Created through oRPC',
+        visibility: 'public',
+        subjects: ['mathematics'],
+        topics: [],
+        grades: [5],
+        resource_ids: [],
+      },
     });
 
     expect(body.name).toBe('Native Collection');
@@ -264,9 +283,17 @@ describe('Sanctuary API: library via native oRPC', () => {
   });
 
   it('makes collection membership writes retry-safe and actor-owned', async () => {
+    setMockLibraryTemporalRead({
+      collection: {
+        id: 'a23e4567-e89b-12d3-a456-426614174000',
+        creator_id: '123e4567-e89b-12d3-a456-426614174000',
+      },
+      resources: [],
+      events: [],
+    });
     const body = await createTestORPCClient(headers).library.addToCollection({
-      id: 'a23e4567-e89b-12d3-a456-426614174000',
-      resource_id: '923e4567-e89b-12d3-a456-426614174000',
+      params: { id: 'a23e4567-e89b-12d3-a456-426614174000' },
+      body: { resource_id: '923e4567-e89b-12d3-a456-426614174000' },
     });
 
     expect(body).toEqual({ success: true });
@@ -285,18 +312,22 @@ describe('Sanctuary API: library via native oRPC', () => {
 
     expect(
       await client.library.updateCollection({
-        id: 'a23e4567-e89b-12d3-a456-426614174000',
-        name: 'Renamed Collection',
+        params: { id: 'a23e4567-e89b-12d3-a456-426614174000' },
+        body: { name: 'Renamed Collection' },
       }),
     ).toMatchObject({ name: 'Renamed Collection' });
     expect(
       await client.library.removeFromCollection({
-        id: 'a23e4567-e89b-12d3-a456-426614174000',
-        resourceId: '923e4567-e89b-12d3-a456-426614174000',
+        params: {
+          id: 'a23e4567-e89b-12d3-a456-426614174000',
+          resourceId: '923e4567-e89b-12d3-a456-426614174000',
+        },
       }),
     ).toEqual({ success: true });
     await expect(
-      client.library.deleteCollection({ id: 'a23e4567-e89b-12d3-a456-426614174000' }),
+      client.library.deleteCollection({
+        params: { id: 'a23e4567-e89b-12d3-a456-426614174000' },
+      }),
     ).resolves.toEqual({ success: true });
   });
 
@@ -337,7 +368,7 @@ describe('Sanctuary API: library via native oRPC', () => {
     });
 
     const body = await createTestORPCClient(headers).library.forkCollection({
-      id: 'a23e4567-e89b-12d3-a456-426614174000',
+      params: { id: 'a23e4567-e89b-12d3-a456-426614174000' },
     });
 
     expect(body.name).toBe('Shared Collection (Fork)');
@@ -347,9 +378,8 @@ describe('Sanctuary API: library via native oRPC', () => {
 
   it('records engagement through one transactional native procedure', async () => {
     const body = await createTestORPCClient(headers).library.engage({
-      id: '923e4567-e89b-12d3-a456-426614174000',
-      engagement_type: 'bookmark',
-      toggle: true,
+      params: { id: '923e4567-e89b-12d3-a456-426614174000' },
+      body: { engagement_type: 'bookmark', toggle: true },
     });
 
     expect(body.resource_id).toBe('923e4567-e89b-12d3-a456-426614174000');
@@ -359,9 +389,11 @@ describe('Sanctuary API: library via native oRPC', () => {
 
   it('accepts server-owned use engagement without trusting a supplied actor', async () => {
     const body = await createTestORPCClient(headers).library.engage({
-      id: '923e4567-e89b-12d3-a456-426614174000',
-      engagement_type: 'use',
-      classroom_id: 'a23e4567-e89b-12d3-a456-426614174000',
+      params: { id: '923e4567-e89b-12d3-a456-426614174000' },
+      body: {
+        engagement_type: 'use',
+        classroom_id: 'a23e4567-e89b-12d3-a456-426614174000',
+      },
     });
 
     expect(body.user_id).toBe('123e4567-e89b-12d3-a456-426614174000');
@@ -369,17 +401,28 @@ describe('Sanctuary API: library via native oRPC', () => {
     expect(body.classroom_id).toBe('a23e4567-e89b-12d3-a456-426614174000');
   });
 
+  it('rejects engagement attributed to an unauthorized classroom', async () => {
+    await expect(
+      createTestORPCClient(headers).library.engage({
+        params: { id: '923e4567-e89b-12d3-a456-426614174000' },
+        body: {
+          engagement_type: 'use',
+          classroom_id: 'b23e4567-e89b-12d3-a456-426614174000',
+        },
+      }),
+    ).rejects.toMatchObject({ status: 403 });
+  });
+
   it('derives bookmarked-resource reads from the authenticated user', async () => {
     const body = await createTestORPCClient(headers).library.getBookmarkedResources({
-      limit: 10,
-      offset: 0,
+      query: { limit: 10, offset: 0 },
     });
 
     expect(body).toEqual([]);
   });
 
   it('returns the public Library topology through Sanctuary', async () => {
-    const body = await createTestORPCClient(headers).library.getMapTopology({});
+    const body = await createTestORPCClient(headers).library.getMapTopology({ query: {} });
 
     expect(body).toEqual({ nodes: [], links: [] });
   });

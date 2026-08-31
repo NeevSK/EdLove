@@ -140,7 +140,7 @@ async function getPublicKeyFromJwks(
           }
           const jwksUrl = `${supabaseUrl}/auth/v1/.well-known/jwks.json`;
 
-          console.log(`[JWT] 🌐 Fetching JWKS from authoritative gateway (Coalesced): ${jwksUrl}`);
+          console.info('[JWT] Refreshing verification keys from the configured identity provider.');
           const response = await fetchWithTrace(jwksUrl, {
             signal: AbortSignal.timeout(4000),
           });
@@ -165,18 +165,17 @@ async function getPublicKeyFromJwks(
                     ['verify'],
                   );
                   jwkCache.set(key.kid, pubKey);
-                } catch (err) {
-                  console.warn(`[JWT] ⚠️ Failed to import JWK key ${key.kid}:`, err);
+                } catch {
+                  console.warn(
+                    '[JWT] Ignored an unusable verification key from the identity provider.',
+                  );
                 }
               }
             }
             jwksLastFetched = Date.now();
           }
-        } catch (err) {
-          console.warn(
-            '[JWT] ⚠️ Could not fetch or parse JWKS from Supabase. Offline/mock mode may apply:',
-            err,
-          );
+        } catch {
+          console.warn('[JWT] Verification-key refresh failed.');
         }
       })();
     }
@@ -237,7 +236,7 @@ export async function verifySupabaseJwt(
       token === 'teacher-user-1' ||
       /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(token))
   ) {
-    console.log(`[JWT] 🧪 Bypassing cryptographic check for integration test identity: "${token}"`);
+    console.info('[JWT] Using an approved non-production test identity.');
     return { sub: token, role: 'authenticated' };
   }
 
@@ -259,7 +258,7 @@ export async function verifySupabaseJwt(
   try {
     const parts = token.split('.');
     if (parts.length !== 3) {
-      console.warn('[JWT] ❌ Invalid token format. Must contain 3 sections.');
+      console.warn('[JWT] Rejected a malformed authentication token.');
       return null;
     }
 
@@ -276,22 +275,20 @@ export async function verifySupabaseJwt(
 
     // Assert authentic cryptographic algorithms (RS256 or ES256)
     if (header.alg !== 'RS256' && header.alg !== 'ES256') {
-      console.warn(
-        `[JWT] ❌ Rejected non-asymmetric algorithm: "${header.alg}". Must be RS256 or ES256.`,
-      );
+      console.warn('[JWT] Rejected an authentication token with an unsupported algorithm.');
       return null;
     }
 
     // Assert token is not expired
     const now = Math.floor(Date.now() / 1000);
     if (payload.exp && payload.exp < now) {
-      console.warn(`[JWT] ❌ Expired token rejected. Exp: ${payload.exp}, Now: ${now}`);
+      console.warn('[JWT] Rejected an expired authentication token.');
       return null;
     }
 
     // Assert token activation
     if (payload.nbf && payload.nbf > now) {
-      console.warn(`[JWT] ❌ Pre-active token rejected. Nbf: ${payload.nbf}, Now: ${now}`);
+      console.warn('[JWT] Rejected an authentication token that is not active yet.');
       return null;
     }
 
@@ -357,11 +354,8 @@ export async function verifySupabaseJwt(
             }
           }
         }
-      } catch (err) {
-        console.error(
-          '[JWT] ❌ Failed to load static public key from SUPABASE_JWT_PUBLIC_KEY:',
-          err,
-        );
+      } catch {
+        console.error('[JWT] Failed to load the configured verification key.');
       }
     }
 
@@ -410,8 +404,8 @@ export async function verifySupabaseJwt(
     cleanExpiredVerificationCache();
 
     return verifiedPayload;
-  } catch (err) {
-    console.error('[JWT] ❌ Error occurred during token verification:', err);
+  } catch {
+    console.error('[JWT] Authentication token verification failed.');
     return null;
   }
 }
