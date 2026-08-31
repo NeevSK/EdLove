@@ -68,6 +68,75 @@ const permittedArchitectureTestExclusions = new Set([
   'src/__tests__/architecture/founder-stack-boundaries.test.ts',
 ]);
 
+const feedbackComponentContracts = [
+  {
+    file: 'packages/ui/src/components/BrandPulse.tsx',
+    required: /<Mascot\b/,
+    forbidden: /react-native-svg|<Svg\b/,
+    description: 'loading must use the configurable mascot rather than an embedded logo asset',
+  },
+  {
+    file: 'packages/ui/src/components/BrandedEmptyState.tsx',
+    required: /<FireflyFeedbackScene\b/,
+    forbidden: /FireflyMascot/,
+    description: 'empty states must use the shared feedback scene',
+  },
+  {
+    file: 'packages/ui/src/components/ErrorState.tsx',
+    required: /<FireflyFeedbackScene\b/,
+    forbidden: /FireflyMascot/,
+    description: 'error states must use the shared feedback scene',
+  },
+  {
+    file: 'packages/library/src/screens/ResourceHubScreen.tsx',
+    required: /if\s*\(!resourceId\)[\s\S]{0,800}<BrandedErrorState\b/,
+    forbidden: /if\s*\(!resourceId\)[\s\S]{0,800}<BrandedEmptyState\b/,
+    description: 'an invalid resource route must remain a recoverable error, not an empty library',
+  },
+  {
+    file: 'packages/library/src/screens/LibraryScreen.tsx',
+    required: /const handleBookmark[\s\S]{0,900}catch[\s\S]{0,240}hapticError\(\)[\s\S]{0,240}showToast\(/,
+    forbidden: /const handleBookmark[\s\S]{0,900}catch[\s\S]{0,240}console\.(?:error|warn)\(/,
+    description: 'native bookmark failures must remain visible and tactile rather than console-only',
+  },
+  {
+    file: 'packages/library/src/screens/LibraryScreen.tsx',
+    required: /const handleAddToCollection[\s\S]{0,900}catch[\s\S]{0,240}hapticError\(\)[\s\S]{0,240}showToast\(/,
+    forbidden: /const handleAddToCollection[\s\S]{0,900}catch[\s\S]{0,240}console\.(?:error|warn)\(/,
+    description: 'native collection failures must remain visible and tactile rather than console-only',
+  },
+  {
+    file: 'packages/library/src/screens/LibraryScreen.tsx',
+    required: /const onRefresh[\s\S]{0,1200}catch[\s\S]{0,240}hapticError\(\)[\s\S]{0,240}showToast\(/,
+    forbidden: /const onRefresh[\s\S]{0,1200}catch[\s\S]{0,240}console\.(?:error|warn)\(/,
+    description: 'native refresh failures must remain visible and tactile rather than console-only',
+  },
+  {
+    file: 'packages/library/src/screens/LibraryScreen.web.tsx',
+    required: /const handleOpenResource[\s\S]{0,1000}catch[\s\S]{0,240}showToast\(/,
+    forbidden: /const handleOpenResource[\s\S]{0,1000}catch[\s\S]{0,240}console\.(?:error|warn)\(/,
+    description: 'web external-link failures must remain visible rather than console-only',
+  },
+  {
+    file: 'packages/library/src/screens/LibraryScreen.tsx',
+    required: /SET_FALLBACK_ERROR[\s\S]{0,220}Public collections could not be loaded[\s\S]{0,16000}retryPublicCollectionsFallback/,
+    forbidden: /\.catch\(\(_err: any\) => \{[\s\S]{0,180}MARK_FALLBACK_ATTEMPTED[\s\S]{0,180}\}\)/,
+    description: 'native public-collection fallback failures must remain visible and retryable rather than masquerading as empty',
+  },
+  {
+    file: 'packages/library/src/screens/LibraryScreen.web.tsx',
+    required: /SET_FALLBACK_ERROR[\s\S]{0,220}Public collections could not be loaded[\s\S]{0,16000}retryPublicCollectionsFallback/,
+    forbidden: /\.catch\(\(_err: Error\) => \{[\s\S]{0,180}MARK_FALLBACK_ATTEMPTED[\s\S]{0,180}\}\)/,
+    description: 'web public-collection fallback failures must remain visible and retryable rather than masquerading as empty',
+  },
+  {
+    file: 'packages/self/src/components/SelfCanvas.web.tsx',
+    required: /function SortableSelfCanvasCard[\s\S]{0,1200}aria-label=\{`Reorder \$\{props\.feature\.label\}`\}/,
+    forbidden: /WebDraggableCanvasSurface|@ts-ignore.*dnd-kit/,
+    description: 'web Self cards must use a typed dedicated accessible drag handle, not a card-wide sensor',
+  },
+];
+
 function walk(relativeDirectory) {
   const absoluteDirectory = path.join(repositoryRoot, relativeDirectory);
   if (!fs.existsSync(absoluteDirectory)) return [];
@@ -106,6 +175,13 @@ for (const excludedTest of architectureTestExclusions) {
 for (const permittedExclusion of permittedArchitectureTestExclusions) {
   if (!architectureTestExclusions.has(permittedExclusion)) {
     violations.push(`${mobileVitestConfigPath}: expected exclusion missing from reviewed baseline (${permittedExclusion})`);
+  }
+}
+
+for (const contract of feedbackComponentContracts) {
+  const source = fs.readFileSync(path.join(repositoryRoot, contract.file), 'utf8');
+  if (!contract.required.test(source) || contract.forbidden.test(source)) {
+    violations.push(`${contract.file}: ${contract.description}`);
   }
 }
 

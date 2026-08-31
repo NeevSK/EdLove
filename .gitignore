@@ -139,3 +139,7 @@ scripts/*.js
 # Stray tool outputs
 /tsc-*.txt
 /style-stack-audit.txt
+
+# pnpm local store (never commit - use global auto-managed store)
+.pnpm-store/
+

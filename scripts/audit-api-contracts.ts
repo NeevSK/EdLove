@@ -373,7 +373,7 @@ const sources: ContractSource[] = [
     contractFile: 'rewards.orpc.contract.ts',
     handlerFile: 'rewards.ts',
     contract: rewardsORPCContract,
-    clientStatus: 'legacy-direct',
+    clientStatus: 'mapped',
     clientFiles: ['packages/core/src/api/rewards.ts'],
   },
   {
@@ -404,7 +404,7 @@ function protocolFor(source: ContractSource): string {
 function collectClientCalls(clientFiles: string[]): string[] {
   const calls = new Set<string>();
   const callPattern =
-    /client\.api(?:\s+as\s+any)?\)?(?:\.[A-Za-z0-9_$-]+|\[['"][^'"]+['"]\])+\.\$(get|post|put|patch|delete)/g;
+    /(?:client\.api(?:\s+as\s+any)?\)?(?:\.[A-Za-z0-9_$-]+|\[['"][^'"]+['"]\])+\.\$(get|post|put|patch|delete)|orpcClient(?:\.[A-Za-z0-9_$-]+|\[['"][^'"]+['"]\]){2,})/g;
   for (const clientFile of clientFiles) {
     const filePath = resolve(root, clientFile);
     if (!existsSync(filePath)) continue;

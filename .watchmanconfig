@@ -3,6 +3,7 @@
     "node_modules",
     ".git",
     ".expo",
+    ".tmp",
     "dist",
     "dist-*",
     "build",

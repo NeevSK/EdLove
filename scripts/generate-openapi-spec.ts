@@ -1,14 +1,21 @@
-import { OpenAPIGenerator } from '@orpc/openapi/dist/index.mjs';
 import { writeFileSync } from 'fs';
-import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 import { dirname, resolve } from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
+import { isReadOnlyOpenApiProcedure } from '../apps/sanctuary-api/src/core/openapiReadOnly.ts';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const sanctuaryRequire = createRequire(resolve(__dirname, '../apps/sanctuary-api/package.json'));
 
 async function generateOpenAPISpec() {
+  const { OpenAPIGenerator } = await import(
+    pathToFileURL(sanctuaryRequire.resolve('@orpc/openapi')).href
+  );
   // Import the router dynamically
-  const { router } = await import(resolve(__dirname, '../apps/sanctuary-api/src/core/router.ts'));
-  
+  const { router } = await import(
+    pathToFileURL(resolve(__dirname, '../apps/sanctuary-api/src/core/router.ts')).href
+  );
+
   const generator = new OpenAPIGenerator(router, {
     info: {
       title: 'Sanctuary API',
@@ -38,26 +45,20 @@ async function generateOpenAPISpec() {
       { name: 'tracking', description: 'Feature usage analytics' },
       { name: 'agent', description: 'Durable agents & system status' },
     ],
-    // Only include procedures that have explicit OpenAPI metadata
-    filter: ({ contract }) => {
-      const policy = (contract['~orpc']?.meta as any)?.policy;
-      return policy?.action === 'read' && [
-        'Classroom', 'Material', 'Assignment', 'AssignmentSubmission',
-        'Group', 'Post', 'School', 'User', 'Wellbeing', 'Library'
-      ].includes(policy?.subject);
-    },
   });
 
-  const spec = await generator.generate();
-  
+  const spec = await generator.generate(router, {
+    filter: isReadOnlyOpenApiProcedure,
+  });
+
   // Write to docs folder
   const outputPath = resolve(__dirname, '../apps/sanctuary-api/docs/api/openapi.json');
   writeFileSync(outputPath, JSON.stringify(spec, null, 2));
-  
+
   console.log(`✅ OpenAPI spec generated at: ${outputPath}`);
   console.log(`📊 Paths: ${Object.keys(spec.paths).length}`);
-  console.log(`🏷️  Tags: ${spec.tags?.map(t => t.name).join(', ')}`);
-  
+  console.log(`🏷️  Tags: ${spec.tags?.map((t) => t.name).join(', ')}`);
+
   return spec;
 }
 
