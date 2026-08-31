@@ -9,6 +9,7 @@ export * from '@repo/profile/hooks/usePrincipalGovernanceHistory';
 export * from '@repo/profile/hooks/useProfile';
 export * from '@repo/profile/hooks/useProfileCompletion';
 export * from '@repo/profile/hooks/useProfileHistory';
+export * from '@repo/profile/hooks/useRewardedAdHub';
 export * from '@repo/profile/hooks/useSchoolProfile';
 export * from '@repo/profile/hooks/useSchoolPulse';
 export * from '@repo/profile/hooks/useSocialLinks';

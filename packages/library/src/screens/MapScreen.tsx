@@ -18,7 +18,7 @@ import {
   VastuView,
   VatyaView,
 } from '@repo/ui/components/visualization';
-import { useReality } from '@repo/ui/context';
+import { useReality, useVisualCapabilities } from '@repo/ui/context';
 import { useResponsive } from '@repo/ui/hooks';
 import { ChartColumn, FileCheck, Globe, Network, Orbit, Route, Wind, X } from '@repo/ui/icons';
 import {
@@ -44,6 +44,21 @@ import { usePerspectiveLayout } from '@repo/library/hooks/usePerspectiveLayout';
 import type { KnowledgeNode, KnowledgeTopology } from '@repo/library/types/Library';
 
 const StyledBlurView = styled(BlurView as React.ComponentType<any>);
+
+function AdaptiveBlurView({
+  children,
+  className,
+  intensity,
+  tint,
+}: React.PropsWithChildren<{ className?: string; intensity: number; tint: 'dark' | 'light' }>) {
+  const { allowBlur } = useVisualCapabilities();
+  if (!allowBlur) return <Box className={className}>{children}</Box>;
+  return (
+    <StyledBlurView className={className} intensity={intensity} tint={tint}>
+      {children}
+    </StyledBlurView>
+  );
+}
 type PerspectiveId = 'astro' | 'terra' | 'dharma' | 'vastu' | 'jyoti' | 'vatya';
 interface Perspective {
   id: PerspectiveId;
@@ -282,7 +297,7 @@ export default function MapScreen() {
 
       <Box className="p-3 bg-phase-surface">
         <Box className="rounded-[20px] overflow-hidden border border-phase-border">
-          <StyledBlurView intensity={30} tint="dark" className="flex-row bg-phase-surface/80">
+          <AdaptiveBlurView intensity={30} tint="dark" className="flex-row bg-phase-surface/80">
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -321,7 +336,7 @@ export default function MapScreen() {
                 );
               })}
             </ScrollView>
-          </StyledBlurView>
+          </AdaptiveBlurView>
         </Box>
       </Box>
 
@@ -331,7 +346,7 @@ export default function MapScreen() {
 
           {selectedNode && (
             <Box className="absolute bottom-10 left-5 right-5 rounded-[32px] overflow-hidden border border-white/10 shadow-2xl">
-              <StyledBlurView intensity={25} tint="dark" className="p-5 bg-black/40">
+              <AdaptiveBlurView intensity={25} tint="dark" className="p-5 bg-black/40">
                 <VStack className="gap-3">
                   <HStack className="justify-between items-center">
                     <VStack className="flex-1 mr-4">
@@ -366,6 +381,8 @@ export default function MapScreen() {
                           pathname: '/library/resource/[resourceId]',
                           params: { resourceId: selectedNode.id },
                         });
+                      } else {
+                        router.push('/library');
                       }
                     }}
                     accessibilityRole="button"
@@ -376,7 +393,7 @@ export default function MapScreen() {
                     </Text>
                   </Pressable>
                 </VStack>
-              </StyledBlurView>
+              </AdaptiveBlurView>
             </Box>
           )}
         </Box>

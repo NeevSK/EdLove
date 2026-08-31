@@ -8,6 +8,7 @@ export { default as EditProfileModal } from '@repo/profile/components/EditProfil
 export { GiveThuthimalModal } from '@repo/profile/components/GiveThuthimalModal';
 export { InlineSocialLinkEditor } from '@repo/profile/components/InlineSocialLinkEditor';
 export { default as LivingJourneyPanel } from '@repo/profile/components/LivingJourneyPanel';
+export { default as NegentropyHubModal } from '@repo/profile/components/NegentropyHubModal';
 export { NotificationSettingsPanel } from '@repo/profile/components/NotificationSettingsPanel';
 export { default as ProfileListItem } from '@repo/profile/components/ProfileListItem';
 export { default as ProfileSkeleton } from '@repo/profile/components/ProfileSkeleton';

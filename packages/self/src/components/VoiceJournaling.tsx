@@ -4,7 +4,7 @@
  * Simple, focused, and intimate interface.
  */
 
-import { Check, Mic, Square, Volume2, X } from '@repo/ui/icons';
+import { Check, Mic, Play, Square, Volume2, X } from '@repo/ui/icons';
 import {
   AnimatedView,
   Box,
@@ -29,7 +29,7 @@ import {
   withTiming,
 } from 'react-native-reanimated';
 
-import { AudioModule } from 'expo-audio';
+import { AudioModule, useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Platform } from 'react-native';
 import { saveVoiceJournalRecord } from '@repo/self/api/selfFeatureRepository';
@@ -47,6 +47,8 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
   const [recordedUri, setRecordedUri] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const recorderRef = useRef<InstanceType<typeof AudioModule.AudioRecorder> | null>(null);
+  const audioPlayer = useAudioPlayer(recordedUri);
+  const audioStatus = useAudioPlayerStatus(audioPlayer);
 
   // Animation shared values
   const pulseScale = useSharedValue(1);
@@ -100,6 +102,16 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
     return;
   }, [recordingState, pulseScale, graph0, graph1, graph2, graph3, graph4]);
 
+  useEffect(() => {
+    return () => {
+      const recorder = recorderRef.current;
+      recorderRef.current = null;
+      if (recorder) {
+        void recorder.stop().catch((error) => console.warn('[voice] cleanup failed', error));
+      }
+    };
+  }, []);
+
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -147,6 +159,7 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
       }
       await rec.stop();
       const uri = (rec as unknown as { uri: string | null }).uri ?? null;
+      recorderRef.current = null;
       setRecordedUri(uri);
       setRecordingState('finished');
       if (uri) {
@@ -159,16 +172,28 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
       }
     } catch (e) {
       console.warn('[voice] stop failed', e);
+      recorderRef.current = null;
       setRecordingState('finished');
     }
   };
 
   const handleReset = () => {
     hapticLight();
+    audioPlayer.pause();
     setRecordingState('idle');
     setDuration(0);
     setRecordedUri(null);
     recorderRef.current = null;
+  };
+
+  const handlePlay = () => {
+    if (!recordedUri) return;
+    try {
+      audioPlayer.seekTo(0);
+      audioPlayer.play();
+    } catch (error) {
+      console.warn('[voice] playback failed', error);
+    }
   };
 
   const handleConfirm = async () => {
@@ -290,6 +315,16 @@ export const VoiceJournaling: React.FC<VoiceJournalingProps> = ({ userId, onFini
               className="w-14 h-14 rounded-full border-white/10 bg-white/5 p-0 items-center justify-center"
             >
               <Icon as={X} size={24} className="text-mistGray" />
+            </Button>
+
+            <Button
+              onPress={handlePlay}
+              disabled={!recordedUri || audioStatus.playing}
+              accessibilityLabel="Play recording"
+              variant="outline"
+              className="w-14 h-14 rounded-full border-sanctuarySaffron/30 bg-sanctuarySaffron/10 p-0 items-center justify-center"
+            >
+              <Icon as={Play} size={24} className="text-sanctuarySaffron" fill="currentColor" />
             </Button>
 
             <Button

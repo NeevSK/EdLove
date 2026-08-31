@@ -1,11 +1,18 @@
 
 
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useMemo } from 'react';
 import { supabaseClient as supabase } from '@repo/core/adapters/supabaseClient';
 import { libraryAPI } from '@repo/library/api/library';
 import { knowledgeSync } from '@repo/library/api/sync';
-import type { CollectionFilters, CreateCollectionInput, CreateResourceInput, LibraryCollection, ResourceFilters } from '@repo/library/types';
+import type {
+  CollectionFilters,
+  CreateCollectionInput,
+  CreateResourceInput,
+  LibraryCollection,
+  ResourceFilters,
+} from '@repo/library/types';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useMemo } from 'react';
+import { fetchResourcePage } from './resourcePageQuery';
 
 // Keys for React Query
 export const LIBRARY_KEYS = {
@@ -121,50 +128,12 @@ export const useLibrary = (
     queryFn: () => libraryAPI.getCollectionsCount(),
   });
 
-  // Fetch Resources with Infinite Scroll — offline-first: try server, fallback to local FTS (knowledge_search_fts)
+  // Fetch resources with infinite scroll. Request failures must reach React Query so
+  // screens can distinguish an unavailable library from a genuine empty result.
   const resourcesInfiniteQuery = useInfiniteQuery({
     queryKey: LIBRARY_KEYS.resources(temporalResourceFilters),
-    queryFn: async ({ pageParam = 0 }) => {
-      // Prefer Server-Side Search for reliability on web (Guest and Auth)
-      if (temporalResourceFilters.search || temporalResourceFilters.type) {
-        try {
-          return await libraryAPI.searchLibrary({
-            query: temporalResourceFilters.search || '',
-            type: temporalResourceFilters.type,
-            limit: 20,
-          });
-        } catch {
-          // Offline fallback via local FTS (expo-sqlite, <500ms) — still shows offline empty with FTS ids logged
-          try {
-            const { knowledgeDB } = await import('@repo/library/api/database');
-            const ids = await knowledgeDB.search(temporalResourceFilters.search || '');
-            if (ids.length > 0) {
-              // Best-effort: try to hydrate via getResources with ids if API supports, else return empty and let UI show offline state
-              try {
-                const local = await (libraryAPI as unknown as { getResourcesByIds?: (ids: string[]) => Promise<never> }).getResourcesByIds?.(ids as string[]);
-                if (local && (local as unknown[]).length > 0) return local as never;
-              } catch {}
-            }
-          } catch {}
-          return [];
-        }
-      }
-
-      try {
-        return await libraryAPI.getResources({
-          ...temporalResourceFilters,
-          limit: 10,
-          offset: pageParam,
-        });
-      } catch {
-        // Offline: try local FTS for browse (no search term) — return empty offline
-        try {
-          const { knowledgeDB } = await import('@repo/library/api/database');
-          await knowledgeDB.search('');
-        } catch {}
-        return [];
-      }
-    },
+    queryFn: ({ pageParam = 0 }) =>
+      fetchResourcePage(libraryAPI, temporalResourceFilters, pageParam),
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
       // For local search, we don't handle pagination yet in the same way (simple limit for now)

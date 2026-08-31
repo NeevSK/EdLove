@@ -253,8 +253,7 @@ export function SpiderChart({
         {points.map((point, index) => (
           <View
             key={`point-container-${index}`}
-            style={StyleSheet.absoluteFill}
-            pointerEvents="none"
+            style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
           >
             <View
               style={[

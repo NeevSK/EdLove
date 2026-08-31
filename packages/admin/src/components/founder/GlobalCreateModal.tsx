@@ -297,7 +297,7 @@ export default function GlobalCreateModal({
 
           <VStack className="gap-5">
             {state.type !== 'school' ? (
-              <FormControl isRequired>
+              <FormControl>
                 <FormControlLabel>
                   <FormControlLabelText className="text-phaseText-secondary text-xs font-bold uppercase tracking-wider">
                     Target Institution
@@ -322,7 +322,7 @@ export default function GlobalCreateModal({
               </FormControl>
             ) : null}
 
-            <FormControl isRequired>
+            <FormControl>
               <FormControlLabel>
                 <FormControlLabelText className="text-phaseText-secondary text-xs font-bold uppercase tracking-wider">
                   {state.type === 'school'

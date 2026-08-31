@@ -1,12 +1,10 @@
 import type { AccessibleFeature } from '@repo/self/features/accessPolicy';
 import { SelfFeatureRenderer } from '@repo/self/components/SelfFeatureRenderer';
 import { SettingsGroup } from '@repo/ui/components/SettingsGroup';
-import { WebDraggableCanvasSurface } from '@repo/ui/components/workspace/WebDraggableCanvasSurface';
 import { Box, Text, Pressable } from '@repo/ui/primitives';
-// @ts-ignore — dnd-kit web only
 import { DndContext, closestCenter, DragOverlay, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragCancelEvent, type DragEndEvent, type DragOverEvent, type DragStartEvent } from '@dnd-kit/core';
-// @ts-ignore
-import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
+import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, arrayMove, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { FocusRing } from '@repo/ui/components/FocusRing';
 import React, { useCallback, useState } from 'react';
 
@@ -14,7 +12,7 @@ export type SelfCanvasViewMode = 'carousel' | 'tiled';
 type ZoneId = 'today' | 'private' | 'shared';
 const ZONE_LABELS: Record<ZoneId, string> = { today: 'Today', private: 'Private', shared: 'Shared' };
 const ZONE_DESCRIPTIONS: Record<ZoneId, string> = {
-  today: 'What you use daily — drag to reorder, long-press to pin or hide.',
+  today: 'What you use daily — drag the reorder control, or pin and hide with the buttons.',
   private: 'Personal rhythms and reflections.',
   shared: 'Growth visible to your circles.',
 };
@@ -33,6 +31,17 @@ export interface SelfCanvasProps {
   onFeaturePress?: (feature: AccessibleFeature) => void;
 }
 
+type SelfCanvasCardProps = {
+  feature: AccessibleFeature;
+  isPinned: boolean;
+  isHidden: boolean;
+  userId?: string;
+  onTogglePin: (id: string) => void;
+  onToggleHidden: (id: string, hidden: boolean) => void;
+  onFeaturePress?: (f: AccessibleFeature) => void;
+  dragHandle?: React.ReactNode;
+};
+
 function Card({
   feature,
   isPinned,
@@ -41,15 +50,8 @@ function Card({
   onTogglePin,
   onToggleHidden,
   onFeaturePress,
-}: {
-  feature: AccessibleFeature;
-  isPinned: boolean;
-  isHidden: boolean;
-  userId?: string;
-  onTogglePin: (id: string) => void;
-  onToggleHidden: (id: string, hidden: boolean) => void;
-  onFeaturePress?: (f: AccessibleFeature) => void;
-}) {
+  dragHandle,
+}: SelfCanvasCardProps) {
   return (
     <Box className="rounded-2xl border border-border bg-phase-surface p-3 mb-3" accessibilityLabel={`${feature.emoji} ${feature.label}`}>
       <Box className="flex-row justify-between items-center mb-2">
@@ -64,14 +66,22 @@ function Card({
             </Box>
           ) : null}
         </Box>
-        <Box className="flex-row gap-1">
+        <Box className="flex-row gap-1 items-center">
+          {dragHandle}
           <Pressable
             onPress={() => onTogglePin(feature.id)}
             className={`px-3 py-1.5 rounded-full border ${isPinned ? 'bg-ink border-ink' : 'bg-white border-border'}`}
+            accessibilityRole="button"
+            accessibilityLabel={isPinned ? `Unpin ${feature.label}` : `Pin ${feature.label}`}
           >
             <Text className={`text-xs font-bold ${isPinned ? 'text-white' : 'text-ink'}`}>{isPinned ? 'Pinned' : 'Pin'}</Text>
           </Pressable>
-          <Pressable onPress={() => onToggleHidden(feature.id, !isHidden)} className="px-3 py-1.5 rounded-full bg-white border border-border">
+          <Pressable
+            onPress={() => onToggleHidden(feature.id, !isHidden)}
+            className="px-3 py-1.5 rounded-full bg-white border border-border"
+            accessibilityRole="button"
+            accessibilityLabel={isHidden ? `Show ${feature.label}` : `Hide ${feature.label}`}
+          >
             <Text className="text-xs font-bold text-ink">{isHidden ? 'Show' : 'Hide'}</Text>
           </Pressable>
         </Box>
@@ -80,11 +90,42 @@ function Card({
         <SelfFeatureRenderer componentId={feature.componentId} featureId={feature.id} userId={userId} compact />
       </Box>
       {onFeaturePress ? (
-        <Pressable onPress={() => onFeaturePress(feature)} className="mt-2 self-start">
+        <Pressable onPress={() => onFeaturePress(feature)} className="mt-2 self-start" accessibilityRole="button" accessibilityLabel={`Open ${feature.label} detail`}>
           <Text className="text-xs font-semibold text-phase-interactive">Open →</Text>
         </Pressable>
       ) : null}
     </Box>
+  );
+}
+
+function SortableSelfCanvasCard(props: Omit<SelfCanvasCardProps, 'dragHandle'>) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: props.feature.id,
+  });
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition: transition ?? undefined,
+    opacity: isDragging ? 0.6 : 1,
+    zIndex: isDragging ? 10 : 0,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <Card
+        {...props}
+        dragHandle={
+          <button
+            type="button"
+            className="h-7 w-7 cursor-grab rounded-full border border-border bg-white text-xs font-bold text-ink active:cursor-grabbing"
+            aria-label={`Reorder ${props.feature.label}`}
+            {...attributes}
+            {...listeners}
+          >
+            ↕
+          </button>
+        }
+      />
+    </div>
   );
 }
 
@@ -142,21 +183,19 @@ export function SelfCanvas({ features, byZone, viewMode, onViewModeToggle, onReo
             return (
               <SettingsGroup key={zoneId} title={ZONE_LABELS[zoneId]} subtitle={ZONE_DESCRIPTIONS[zoneId]}>
                 {zoneFeatures.map((feature) => (
-                  <WebDraggableCanvasSurface key={feature.id} id={feature.id}>
-                    <FocusRing>
-                      <Box style={{ opacity: activeId === feature.id ? 0.6 : 1 }}>
-                        <Card
-                          feature={feature}
-                          isPinned={pinnedIds.includes(feature.id)}
-                          isHidden={hiddenIds.includes(feature.id)}
-                          userId={userId}
-                          onTogglePin={onTogglePin}
-                          onToggleHidden={onToggleHidden}
-                          onFeaturePress={onFeaturePress}
-                        />
-                      </Box>
-                    </FocusRing>
-                  </WebDraggableCanvasSurface>
+                  <FocusRing key={feature.id}>
+                    <Box style={{ opacity: activeId === feature.id ? 0.6 : 1 }}>
+                      <SortableSelfCanvasCard
+                        feature={feature}
+                        isPinned={pinnedIds.includes(feature.id)}
+                        isHidden={hiddenIds.includes(feature.id)}
+                        userId={userId}
+                        onTogglePin={onTogglePin}
+                        onToggleHidden={onToggleHidden}
+                        onFeaturePress={onFeaturePress}
+                      />
+                    </Box>
+                  </FocusRing>
                 ))}
               </SettingsGroup>
             );

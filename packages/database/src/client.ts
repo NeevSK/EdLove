@@ -57,8 +57,9 @@ export const canUseZenStackDb = (databaseUrl?: string) => {
 export async function queryDatabaseRows<T>(
   query: string,
   parameters: readonly unknown[] = [],
+  databaseUrl?: string,
 ): Promise<T[]> {
-  const result = await getPool().query(query, parameters as unknown[]);
+  const result = await getPool(databaseUrl).query(query, parameters as unknown[]);
   return result.rows as T[];
 }
 
@@ -69,6 +70,7 @@ export async function queryDatabaseRows<T>(
 export async function executeDatabaseCommand(
   query: string,
   parameters: readonly unknown[] = [],
+  databaseUrl?: string,
 ): Promise<void> {
-  await getPool().query(query, parameters as unknown[]);
+  await getPool(databaseUrl).query(query, parameters as unknown[]);
 }

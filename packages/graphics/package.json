@@ -55,25 +55,25 @@
     "@repo/core": "workspace:*",
     "@repo/ui": "workspace:*",
     "@supabase/supabase-js": "2.102.1",
-    "@tanstack/react-query": "^5.101.0",
+    "@tanstack/react-query": "^5.102.8",
     "d3-force": "^3.0.0",
     "d3-hierarchy": "^3.1.2",
     "expo-haptics": "~57.0.2",
     "expo-location": "~57.0.14",
-    "react-native-gifted-charts": "^1.4.77"
+    "react-native-gifted-charts": "^1.4.78"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
     "@types/d3-force": "^3.0.10",
     "@types/d3-hierarchy": "^3.1.7",
-    "@types/react": "^19.2.17",
+    "@types/react": "^19.2.18",
     "@types/react-native": "0.83.2",
-    "eslint": "^10.4.1",
+    "eslint": "^10.9.1",
     "react-native-gesture-handler": "3.0.2",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.11"
   },
   "peerDependencies": {
     "@supabase/supabase-js": "*",

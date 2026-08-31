@@ -1,6 +1,7 @@
 import { useTracking } from '@repo/core/hooks';
 import { usePermissions } from '@repo/core/logic';
 import { useFeatureStore } from '@repo/core/store/useFeatureStore';
+import ErrorBoundary from '@repo/ui/components/ErrorBoundary';
 
 import { useEffect } from 'react';
 import {
@@ -21,6 +22,14 @@ import SelfScreenUnified from '@repo/self/screens/SelfScreen.unified';
  * Fallback preserves existing role views until rollout completes.
  */
 export default function SelfScreen() {
+  return (
+    <ErrorBoundary name="SelfScreen">
+      <SelfScreenContent />
+    </ErrorBoundary>
+  );
+}
+
+function SelfScreenContent() {
   const { discoverFeature } = useTracking();
   const { can, context } = usePermissions();
   const flags = useFeatureStore((s) => s.flags as unknown as Record<string, unknown>);

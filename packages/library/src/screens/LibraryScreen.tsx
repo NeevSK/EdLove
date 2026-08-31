@@ -54,6 +54,7 @@ import {
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme';
 import { openExternalURL, showExternalLinkOptions } from '@repo/ui/utils';
+import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
 import { useRouter } from 'expo-router';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -182,6 +183,7 @@ export default function LibraryScreen() {
     refreshing: boolean;
     isSyncing: boolean;
     fallbackAttempted: boolean;
+    fallbackError: string | null;
     isFetchingPublic: boolean;
     publicCollections: any[];
     selectedResource: LibraryResource | null;
@@ -201,6 +203,7 @@ export default function LibraryScreen() {
     refreshing: false,
     isSyncing: false,
     fallbackAttempted: false,
+    fallbackError: null,
     isFetchingPublic: false,
     publicCollections: [],
     selectedResource: null,
@@ -226,8 +229,10 @@ export default function LibraryScreen() {
     | { type: 'SET_REFRESHING'; refreshing: boolean }
     | { type: 'SET_FETCHING_PUBLIC'; isFetching: boolean }
     | { type: 'SET_PUBLIC_COLLECTIONS'; collections: any[] }
+    | { type: 'SET_FALLBACK_ERROR'; error: string | null }
     | { type: 'SET_SELECTED_RESOURCE'; resource: LibraryResource | null }
-    | { type: 'MARK_FALLBACK_ATTEMPTED' };
+    | { type: 'MARK_FALLBACK_ATTEMPTED' }
+    | { type: 'RETRY_PUBLIC_FALLBACK' };
 
   function libraryReducer(state: LibraryState, action: LibraryAction): LibraryState {
     switch (action.type) {
@@ -258,10 +263,14 @@ export default function LibraryScreen() {
         return { ...state, isFetchingPublic: action.isFetching };
       case 'SET_PUBLIC_COLLECTIONS':
         return { ...state, publicCollections: action.collections };
+      case 'SET_FALLBACK_ERROR':
+        return { ...state, fallbackError: action.error };
       case 'SET_SELECTED_RESOURCE':
         return { ...state, selectedResource: action.resource };
       case 'MARK_FALLBACK_ATTEMPTED':
         return { ...state, fallbackAttempted: true };
+      case 'RETRY_PUBLIC_FALLBACK':
+        return { ...state, fallbackAttempted: false, fallbackError: null };
       default:
         return state;
     }
@@ -280,6 +289,7 @@ export default function LibraryScreen() {
       refreshing,
       isSyncing,
       fallbackAttempted,
+      fallbackError,
       isFetchingPublic,
       publicCollections,
       selectedResource,
@@ -398,9 +408,14 @@ export default function LibraryScreen() {
         })
         .then((cols: any) => {
           dispatch({ type: 'SET_PUBLIC_COLLECTIONS', collections: cols });
+          dispatch({ type: 'SET_FALLBACK_ERROR', error: null });
           dispatch({ type: 'MARK_FALLBACK_ATTEMPTED' });
         })
-        .catch((_err: any) => {
+        .catch(() => {
+          dispatch({
+            type: 'SET_FALLBACK_ERROR',
+            error: 'Public collections could not be loaded. Your personal library is still available.',
+          });
           dispatch({ type: 'MARK_FALLBACK_ATTEMPTED' });
         })
         .finally(() => {
@@ -422,6 +437,10 @@ export default function LibraryScreen() {
     () => (rawCollections.length > 0 ? rawCollections : publicCollections),
     [rawCollections, publicCollections],
   );
+
+  const retryPublicCollectionsFallback = useCallback(() => {
+    dispatch({ type: 'RETRY_PUBLIC_FALLBACK' });
+  }, []);
 
   const trending = useMemo(
     () => [...resources].sort((a, b) => (b.endorsements ?? 0) - (a.endorsements ?? 0)).slice(0, 10),
@@ -585,26 +604,31 @@ export default function LibraryScreen() {
         });
         return;
       }
-      openExternalURL(resource.url, buildLibraryExternalLinkOptions(resource)).catch((err) =>
-        console.error("Couldn't load page", err),
-      );
+      openExternalURL(resource.url, buildLibraryExternalLinkOptions(resource)).catch(() => {
+        hapticError();
+        showToast('Could not open this resource. Please try again.', 'error');
+      });
     },
-    [router],
+    [router, showToast],
   );
 
-  const handleOpenResourceOptions = useCallback((resource: LibraryResource) => {
-    if (
-      !resource.url ||
-      resource.type === 'pdf' ||
-      resource.type === 'video' ||
-      resource.type === 'movie_trailer'
-    ) {
-      return;
-    }
-    showExternalLinkOptions(resource.url, buildLibraryExternalLinkOptions(resource)).catch((err) =>
-      console.error("Couldn't show external link options", err),
-    );
-  }, []);
+  const handleOpenResourceOptions = useCallback(
+    (resource: LibraryResource) => {
+      if (
+        !resource.url ||
+        resource.type === 'pdf' ||
+        resource.type === 'video' ||
+        resource.type === 'movie_trailer'
+      ) {
+        return;
+      }
+      showExternalLinkOptions(resource.url, buildLibraryExternalLinkOptions(resource)).catch(() => {
+        hapticError();
+        showToast('Could not show link options. Please try again.', 'error');
+      });
+    },
+    [showToast],
+  );
 
   const handleAddResource = useCallback(
     async (data: { title: string; url: string; description: string; tags: string[] }) => {
@@ -666,27 +690,33 @@ export default function LibraryScreen() {
         try {
           await bookmarkResource({ resourceId: resource.id, userId: user.id });
           await refetchBookmarks();
-        } catch (err) {
-          console.error('Failed to bookmark:', err);
+          hapticSuccess();
+        } catch {
+          hapticError();
+          showToast('Could not save your bookmark. Please try again.', 'error');
         }
       };
       void bookmark();
     },
-    [isPastView, user, bookmarkResource, refetchBookmarks],
+    [isPastView, user, bookmarkResource, refetchBookmarks, showToast],
   );
 
-  const handleShare = useCallback(async (resource: LibraryResource) => {
-    if (!resource.url) return;
-    try {
-      await coreRuntime.share.share({
-        message: `Check out this resource on Polymath: ${resource.title}\n${resource.url}`,
-        url: resource.url,
-        title: resource.title,
-      });
-    } catch (err) {
-      console.error('Failed to share:', err);
-    }
-  }, []);
+  const handleShare = useCallback(
+    async (resource: LibraryResource) => {
+      if (!resource.url) return;
+      try {
+        await coreRuntime.share.share({
+          message: `Check out this resource on Polymath: ${resource.title}\n${resource.url}`,
+          url: resource.url,
+          title: resource.title,
+        });
+      } catch {
+        hapticError();
+        showToast('Sharing could not start. Please try again.', 'error');
+      }
+    },
+    [showToast],
+  );
 
   const handleAddToCollection = useCallback(
     (collectionId: string) => {
@@ -698,40 +728,53 @@ export default function LibraryScreen() {
             resourceId: selectedResource.id,
           });
           dispatch({ type: 'SET_MODAL', name: 'picker', isOpen: false });
-        } catch (err) {
-          console.error('Failed to add to collection:', err);
+          hapticSuccess();
+          showToast('Added to collection.', 'success');
+        } catch {
+          hapticError();
+          showToast('Could not add this resource to the collection. Please try again.', 'error');
         }
       };
       void add();
     },
-    [isPastView, selectedResource, addToCollection],
+    [isPastView, selectedResource, addToCollection, showToast],
   );
 
   const onRefresh = useCallback(() => {
     const runRefresh = async () => {
       dispatch({ type: 'SET_REFRESHING', refreshing: true });
-      await fetchResources();
-      const userId = await identityAPI.getMyInternalId();
+      try {
+        await fetchResources();
+        const userId = await identityAPI.getMyInternalId();
 
-      if (resources.length === 0) {
-        const pub = await libraryAPI.getCollections({
-          limit: 10,
-          visibility: 'public',
-          userId: userId ?? undefined,
-        });
-        dispatch({ type: 'SET_PUBLIC_COLLECTIONS', collections: pub });
+        if (resources.length === 0) {
+          const pub = await libraryAPI.getCollections({
+            limit: 10,
+            visibility: 'public',
+            userId: userId ?? undefined,
+          });
+          dispatch({ type: 'SET_PUBLIC_COLLECTIONS', collections: pub });
+        }
+      } catch {
+        hapticError();
+        showToast('Could not refresh the library. Please try again.', 'error');
+      } finally {
+        dispatch({ type: 'SET_REFRESHING', refreshing: false });
       }
-      dispatch({ type: 'SET_REFRESHING', refreshing: false });
     };
-    void runRefresh().catch((err) => console.error('Refresh failed:', err));
-  }, [fetchResources, resources.length]);
+    void runRefresh();
+  }, [fetchResources, resources.length, showToast]);
 
   const handleCreateCollection = useCallback(
     async (data: { name: string; description: string }) => {
       if (isPastView) return;
       try {
         const userId = await identityAPI.getMyInternalId();
-        if (!userId) return;
+        if (!userId) {
+          hapticError();
+          showToast('Sign in before creating a collection.', 'error');
+          return;
+        }
 
         await createCollection({
           input: {
@@ -745,11 +788,14 @@ export default function LibraryScreen() {
         });
 
         dispatch({ type: 'SET_MODAL', name: 'collection', isOpen: false });
-      } catch (err) {
-        console.error('Failed to create collection:', err);
+        hapticSuccess();
+        showToast('Collection created.', 'success');
+      } catch {
+        hapticError();
+        showToast('Could not create this collection. Please try again.', 'error');
       }
     },
-    [fetchResources, isPastView],
+    [isPastView, showToast],
   );
 
   const chipData = useMemo(
@@ -1206,6 +1252,22 @@ export default function LibraryScreen() {
           })}
         </HStack>
       </VStack>
+
+      {fallbackError ? (
+        <HStack
+          className="mx-md mt-sm items-center justify-between gap-3 rounded-xl border border-phase-warning/30 bg-phase-warning/10 px-4 py-3"
+          accessibilityLiveRegion="polite"
+        >
+          <Text className="flex-1 text-sm leading-5 text-phaseText-primary">{fallbackError}</Text>
+          <Pressable
+            onPress={retryPublicCollectionsFallback}
+            accessibilityRole="button"
+            accessibilityLabel="Retry loading public collections"
+          >
+            <Text className="text-sm font-bold text-phase-interactive">Retry</Text>
+          </Pressable>
+        </HStack>
+      ) : null}
 
       {libraryError ? (
         <VStack className="p-md mt-lg items-center gap-3">

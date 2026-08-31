@@ -8,3 +8,5 @@ export type UserProfile = User;
  * We re-export it here for compatibility during migration.
  */
 export type OrientationSeeds = Required<User>['orientation_seeds'];
+export * from './negentropy';
+

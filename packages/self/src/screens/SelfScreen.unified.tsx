@@ -14,7 +14,9 @@ import GlobalHeader from '@repo/ui/components/GlobalHeader';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { Box, Pressable, Text } from '@repo/ui/primitives';
 import { BrandPulse } from '@repo/ui/components/BrandPulse';
+import { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 import { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
+import { describeSelfCanvasPersistence } from '@repo/self/features/selfCanvasPersistence';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 function getSubtitle(roles: string[]): string {
@@ -108,7 +110,14 @@ export default function SelfScreenUnified() {
         zoneOverrides: store.features.zoneOverrides,
         roleWeights: store.features.roleWeights as Record<string, number>,
       }),
-    [accessible, store.features.selectedIds, store.features.customOrder, store.features.hiddenIds, store.features.roleWeights],
+    [
+      accessible,
+      store.features.selectedIds,
+      store.features.customOrder,
+      store.features.hiddenIds,
+      store.features.roleWeights,
+      store.features.zoneOverrides,
+    ],
   );
 
   const { getPinnedFeatures, togglePin } = useFeatureActivity();
@@ -154,10 +163,27 @@ export default function SelfScreenUnified() {
     );
   }
 
-  const orderedFeatures =
-    store.features.customOrder.length > 0
-      ? (store.features.customOrder.map((id) => accessible.find((f) => f.id === id)).filter(Boolean) as typeof accessible)
-      : [...featureSet.selected, ...featureSet.discoverable];
+  if (accessible.length === 0) {
+    return (
+      <ScreenWrapper>
+        <BrandedEmptyState
+          title="Your sanctuary is waiting for its first space"
+          message="There are no spaces available to this account yet. If this seems unexpected, check again or ask your school administrator to review your access."
+        >
+          <Pressable
+            onPress={() => setPermissionRetryNonce((value) => value + 1)}
+            accessibilityRole="button"
+            accessibilityLabel="Check sanctuary access again"
+          >
+            <Text className="text-phase-interactive font-bold">Check again</Text>
+          </Pressable>
+        </BrandedEmptyState>
+      </ScreenWrapper>
+    );
+  }
+
+  const orderedFeatures = [...featureSet.selected, ...featureSet.discoverable];
+  const persistenceFeedback = describeSelfCanvasPersistence(store.persistenceState);
 
   return (
     <ScreenWrapper scroll>
@@ -165,9 +191,22 @@ export default function SelfScreenUnified() {
       <Box className="px-4 pt-2 pb-6 gap-4">
         <Box className="rounded-2xl bg-phase-surface border border-border p-3">
           <Text className="text-xs font-bold text-ink/60">
-            Roles: {roles.join(' + ') || 'student'} · {accessible.length} spaces · Pin to prioritize, hide to declutter, drag to reorder
+            Roles: {roles.join(' + ') || 'student'} · {accessible.length} spaces · Pin to prioritize and hide to declutter
           </Text>
         </Box>
+        {persistenceFeedback.label ? (
+          <Box
+            className={`flex-row items-center justify-between gap-3 rounded-xl border px-3 py-2 ${store.persistenceState === 'queued' ? 'border-phase-warning/30 bg-phase-warning/10' : 'border-border bg-phase-surface'}`}
+            accessibilityLiveRegion="polite"
+          >
+            <Text className="flex-1 text-xs font-semibold text-ink/70">{persistenceFeedback.label}</Text>
+            {persistenceFeedback.canRetry ? (
+              <Pressable onPress={store.retryPersist} className="rounded-full bg-phase-interactive px-3 py-1.5" accessibilityRole="button" accessibilityLabel="Retry syncing your sanctuary layout">
+                <Text className="text-xs font-bold text-white">Retry</Text>
+              </Pressable>
+            ) : null}
+          </Box>
+        ) : null}
         <SelfCanvas
           features={orderedFeatures}
           byZone={featureSet.byZone}

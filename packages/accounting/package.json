@@ -35,11 +35,11 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^25.9.2",
-    "eslint": "^10.4.1",
+    "@types/node": "^25.9.5",
+    "eslint": "^10.9.1",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.11"
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",

@@ -6,13 +6,18 @@ import ProfileListItem from '@repo/profile/components/ProfileListItem';
 import ProfileSkeleton from '@repo/profile/components/ProfileSkeleton';
 import ThuthimalBadge from '@repo/profile/components/ThuthimalBadge';
 import { useProfile } from '@repo/profile/hooks/useProfile';
-import { useProfileCompletion } from '@repo/profile/hooks/useProfileCompletion';
+import {
+  type ProfileCompletionResult,
+  useProfileCompletion,
+} from '@repo/profile/hooks/useProfileCompletion';
 import {
   type ProfileNavigationCapabilities,
   toFullProfileParams,
   useProfileNavigation,
 } from '@repo/profile/navigation';
 import type { UserProfile } from '@repo/profile/types';
+import { toProfileCapacity } from '@repo/profile/screens/profileCapacity';
+import NegentropyHubModal from '@repo/profile/components/NegentropyHubModal';
 import DeleteAccountModal from '@repo/ui/components/DeleteAccountModal';
 import DeviceSecurityCenter from '@repo/ui/components/DeviceSecurityCenter';
 import GlobalHeader from '@repo/ui/components/GlobalHeader';
@@ -33,6 +38,7 @@ import {
   LogOut,
   MessageSquare,
   Settings,
+  Sparkles,
   SquarePen,
   Trash2,
   UserPlus,
@@ -68,7 +74,7 @@ interface IdentitySectionProps {
   navigation: ProfileNavigationCapabilities;
   t: TFunction;
   onGuestAction?: () => void;
-  completionResult: any; // We'll refine this if we can, but it's better than unknown
+  completionResult: ProfileCompletionResult;
   cardWidth: number;
 }
 
@@ -90,7 +96,16 @@ const IdentitySection = ({
       <Box style={{ width: cardWidth }}>
         {profile?.id && (
           <IdentityCard
-            data={{ ...(profile as any), id: profile.id, capacity }}
+            data={{
+              id: profile.id,
+              display_name: profile.display_name,
+              username: profile.username ?? undefined,
+              capacity,
+              avatar_url: profile.avatar_url ?? undefined,
+              school_name: profile.school_name ?? undefined,
+              nic_number: profile.nic_number ?? undefined,
+              index_number: profile.index_number ?? undefined,
+            }}
             onViewFullProfile={() => {
               if (isWanderer) {
                 onGuestAction?.();
@@ -210,11 +225,12 @@ const SupportSection = ({ t, cardWidth }: SupportSectionProps) => {
 interface AppExperienceSectionProps {
   t: TFunction;
   cardWidth: number;
+  onOpenNegentropyHub?: () => void;
 }
 
-const AppExperienceSection = ({ t, cardWidth }: AppExperienceSectionProps) => {
+const AppExperienceSection = ({ t, cardWidth, onOpenNegentropyHub }: AppExperienceSectionProps) => {
   const showToast = useStore((state) => state.showToast);
-  const { scene } = useTheme();
+  const { scene, accent } = useTheme();
   return (
     <Center>
       <VStack
@@ -229,8 +245,16 @@ const AppExperienceSection = ({ t, cardWidth }: AppExperienceSectionProps) => {
         space="sm"
       >
         <Heading className="text-phase-text-secondary text-sm mt-1 mb-3 px-1">
-          {t('profile.account.support_app')}
+          {t('profile.account.support_app', 'Sponsorship & Support')}
         </Heading>
+        <ProfileListItem
+          icon={Sparkles}
+          label="Energy Reservoir (Sponsors & Negentropy)"
+          onPress={() => {
+            hapticLight();
+            onOpenNegentropyHub?.();
+          }}
+        />
         <ProfileListItem
           icon={Heart}
           label={t('profile.loveApp')}
@@ -329,8 +353,10 @@ export const ProfileScreen = () => {
 
   const { context } = usePermissions();
   const capacity = context.activeBond?.capacity || context.primaryCapacity || 'member';
-  const completionCapacity = (context.activeBond?.capacity || context.primaryCapacity) ?? null;
-  const completionResult = useProfileCompletion(profile, completionCapacity as any);
+  const completionCapacity = toProfileCapacity(
+    context.activeBond?.capacity || context.primaryCapacity,
+  );
+  const completionResult = useProfileCompletion(profile, completionCapacity);
   const bottomPadding = useBottomTabPadding();
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   const { accent, scene } = useTheme();
@@ -339,6 +365,7 @@ export const ProfileScreen = () => {
 
   const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
   const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);
+  const [isNegentropyModalVisible, setNegentropyModalVisible] = useState(false);
   const [isLoggingOut, setLoggingOut] = useState(false);
 
   const { deleteAccount, isDeleting } = useAccountDeletion();
@@ -667,7 +694,11 @@ export const ProfileScreen = () => {
                         <SupportSection t={t} cardWidth={cardWidth} />
                       </Animated.View>
                       <Animated.View entering={FadeInDown.delay(600).duration(500)}>
-                        <AppExperienceSection t={t} cardWidth={cardWidth} />
+                        <AppExperienceSection
+                          t={t}
+                          cardWidth={cardWidth}
+                          onOpenNegentropyHub={() => setNegentropyModalVisible(true)}
+                        />
                       </Animated.View>
                       <Animated.View entering={FadeInDown.delay(650).duration(500)}>
                         <NotificationSettingsPanel />
@@ -726,6 +757,10 @@ export const ProfileScreen = () => {
         </ScrollView>
       </Box>
 
+      <NegentropyHubModal
+        isOpen={isNegentropyModalVisible}
+        onClose={() => setNegentropyModalVisible(false)}
+      />
       <DeleteAccountModal
         isOpen={isDeleteModalVisible}
         onClose={() => setDeleteModalVisible(false)}

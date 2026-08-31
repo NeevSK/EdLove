@@ -24,6 +24,7 @@ const componentMap: Record<string, React.LazyExoticComponent<React.ComponentType
   GratitudeGlimmers: React.lazy(() => import('@repo/self/components/GratitudeGlimmers').then((m) => ({ default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps> }))),
   FireJournal: React.lazy(() => import('@repo/self/components/FireJournal').then((m) => ({ default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps> }))),
   VoiceJournaling: React.lazy(() => import('@repo/self/components/VoiceJournaling').then((m) => ({ default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps> }))),
+  ReframeWizard: React.lazy(() => import('@repo/self/components/ReframeWizard').then((m) => ({ default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps> }))),
   TomorrowPrep: React.lazy(() => import('@repo/self/components/TomorrowPrep').then((m) => ({ default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps> }))),
   RemindersManager: React.lazy(() => import('@repo/self/components/RemindersManager').then((m) => ({ default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps> }))),
   DecisionJournalSection: React.lazy(() => import('@repo/self/components/DecisionJournalSection').then((m) => ({ default: m.default as unknown as React.ComponentType<SelfFeatureRendererProps> }))),

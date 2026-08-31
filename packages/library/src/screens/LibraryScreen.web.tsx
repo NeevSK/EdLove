@@ -138,6 +138,7 @@ export default function LibraryScreenWeb() {
     refreshing: boolean;
     isSyncing: boolean;
     fallbackAttempted: boolean;
+    fallbackError: string | null;
     isFetchingPublic: boolean;
     publicCollections: LibraryCollection[];
     selectedResource: LibraryResource | null;
@@ -158,6 +159,7 @@ export default function LibraryScreenWeb() {
     refreshing: false,
     isSyncing: false,
     fallbackAttempted: false,
+    fallbackError: null,
     isFetchingPublic: false,
     publicCollections: [],
     selectedResource: null,
@@ -181,6 +183,8 @@ export default function LibraryScreenWeb() {
     | { type: 'SET_FETCHING_PUBLIC'; isFetching: boolean }
     | { type: 'SET_PUBLIC_COLLECTIONS'; collections: LibraryCollection[] }
     | { type: 'MARK_FALLBACK_ATTEMPTED' }
+    | { type: 'SET_FALLBACK_ERROR'; error: string | null }
+    | { type: 'RETRY_PUBLIC_FALLBACK' }
     | { type: 'SET_SELECTED_RESOURCE'; resource: LibraryResource | null }
     | { type: 'SET_ADDING_TO_COLLECTION'; isAdding: boolean }
     | {
@@ -213,6 +217,10 @@ export default function LibraryScreenWeb() {
         return { ...state, publicCollections: action.collections };
       case 'MARK_FALLBACK_ATTEMPTED':
         return { ...state, fallbackAttempted: true };
+      case 'SET_FALLBACK_ERROR':
+        return { ...state, fallbackError: action.error };
+      case 'RETRY_PUBLIC_FALLBACK':
+        return { ...state, fallbackAttempted: false, fallbackError: null };
       case 'SET_SELECTED_RESOURCE':
         return { ...state, selectedResource: action.resource };
       case 'SET_MODAL':
@@ -241,6 +249,7 @@ export default function LibraryScreenWeb() {
       isSyncing: _isSyncing,
       syncError,
       fallbackAttempted,
+      fallbackError,
       isFetchingPublic: _isFetchingPublic,
       publicCollections,
       selectedResource,
@@ -368,9 +377,14 @@ export default function LibraryScreenWeb() {
         })
         .then((cols: any) => {
           dispatch({ type: 'SET_PUBLIC_COLLECTIONS', collections: cols });
+          dispatch({ type: 'SET_FALLBACK_ERROR', error: null });
           dispatch({ type: 'MARK_FALLBACK_ATTEMPTED' });
         })
-        .catch((_err: Error) => {
+        .catch(() => {
+          dispatch({
+            type: 'SET_FALLBACK_ERROR',
+            error: 'Public collections could not be loaded. Your personal library is still available.',
+          });
           dispatch({ type: 'MARK_FALLBACK_ATTEMPTED' });
         })
         .finally(() => {
@@ -392,6 +406,9 @@ export default function LibraryScreenWeb() {
     () => (rawCollections.length > 0 ? rawCollections : publicCollections),
     [rawCollections, publicCollections],
   );
+  const retryPublicCollectionsFallback = useCallback(() => {
+    dispatch({ type: 'RETRY_PUBLIC_FALLBACK' });
+  }, []);
   const blockingScreenState = resolveBlockingScreenState({
     hasContent: resources.length > 0 || collections.length > 0,
     isLoading: loading,
@@ -490,27 +507,30 @@ export default function LibraryScreenWeb() {
         });
         return;
       }
-      openExternalURL(resource.url, buildLibraryExternalLinkOptions(resource)).catch((err: Error) =>
-        console.error("Couldn't load page", err),
-      );
+      openExternalURL(resource.url, buildLibraryExternalLinkOptions(resource)).catch(() => {
+        showToast(t('library.openFailed', 'Could not open this resource. Please try again.'), 'error');
+      });
     },
-    [router],
+    [router, showToast, t],
   );
 
-  const handleOpenResourceOptions = useCallback((resource: LibraryResource) => {
-    if (
-      !resource.url ||
-      resource.type === 'pdf' ||
-      resource.type === 'video' ||
-      resource.type === 'movie_trailer'
-    ) {
-      return;
-    }
+  const handleOpenResourceOptions = useCallback(
+    (resource: LibraryResource) => {
+      if (
+        !resource.url ||
+        resource.type === 'pdf' ||
+        resource.type === 'video' ||
+        resource.type === 'movie_trailer'
+      ) {
+        return;
+      }
 
-    showExternalLinkOptions(resource.url, buildLibraryExternalLinkOptions(resource)).catch(
-      (err: Error) => console.error("Couldn't show external link options", err),
-    );
-  }, []);
+      showExternalLinkOptions(resource.url, buildLibraryExternalLinkOptions(resource)).catch(() => {
+        showToast(t('library.linkOptionsFailed', 'Could not show link options. Please try again.'), 'error');
+      });
+    },
+    [showToast, t],
+  );
 
   const handleLongPressResource = useCallback((res: LibraryResource) => {
     dispatch({ type: 'SET_SELECTED_RESOURCE', resource: res });
@@ -1040,6 +1060,25 @@ export default function LibraryScreenWeb() {
                   )}
                 </span>
                 <button type="button" className="secondary-button" onClick={retryLibraryLoad}>
+                  {t('common.retry', 'Retry')}
+                </button>
+              </div>
+            ) : null}
+            {fallbackError ? (
+              <div
+                role="status"
+                aria-live="polite"
+                className="sanctuary-card"
+                style={{ padding: '14px 16px', display: 'flex', gap: '12px', alignItems: 'center' }}
+              >
+                <span style={{ flex: 1, color: 'var(--ink-soft)', fontSize: '14px' }}>
+                  {fallbackError}
+                </span>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={retryPublicCollectionsFallback}
+                >
                   {t('common.retry', 'Retry')}
                 </button>
               </div>

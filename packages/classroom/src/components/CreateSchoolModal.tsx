@@ -190,7 +190,7 @@ export default function CreateSchoolModal({
                   </Box>
                 )}
 
-                <FormControl isRequired isInvalid={!!error}>
+                <FormControl isInvalid={!!error}>
                   <FormControlLabel>
                     <FormControlLabelText className="text-sanctuary-text-secondary">
                       {t('school.labelName') || 'What shall we call your Sanctuary?'}
@@ -218,7 +218,7 @@ export default function CreateSchoolModal({
                   </Input>
                 </FormControl>
 
-                <FormControl isRequired isInvalid={!!error}>
+                <FormControl isInvalid={!!error}>
                   <FormControlLabel>
                     <FormControlLabelText className="text-sanctuary-text-secondary">
                       URL Handle (unique ID)

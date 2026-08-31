@@ -28,4 +28,4 @@ export {
   type TextNoteRow,
   type ReadingProgressRow,
   type BookmarkRow,
-} from '@repo/library/types/Library';
+} from './Library';

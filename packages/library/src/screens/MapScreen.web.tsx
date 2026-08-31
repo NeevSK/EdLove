@@ -335,6 +335,8 @@ export default function MapScreen() {
                       pathname: '/library/resource/[resourceId]',
                       params: { resourceId: selectedNode.id },
                     });
+                  } else {
+                    router.push('/library');
                   }
                 }}
               >

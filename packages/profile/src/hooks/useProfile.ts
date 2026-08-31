@@ -1,10 +1,10 @@
 import { authAPI, identityAPI, profileAPI } from '@repo/core/api/client';
 import { useRewards } from '@repo/core/hooks';
 import { handleAPIError, useMutationQueue, useTemporalStore } from '@repo/core/logic';
-
-import { useCallback, useEffect, useReducer } from 'react';
+import type { ProfileFieldUpdateResult } from '@repo/profile/hooks/profileFieldUpdateResult';
 import { ProfileValidator } from '@repo/profile/lib/validator';
 import type { UserProfile } from '@repo/profile/types';
+import { useCallback, useEffect, useReducer } from 'react';
 
 type ProfileState = {
   profile: UserProfile | null;
@@ -20,7 +20,7 @@ type ProfileAction =
   | { type: 'SET_ERROR'; payload: string }
   | { type: 'UPDATE_FIELD'; field: keyof UserProfile; value: unknown };
 
-function profileReducer(state: ProfileState, action: ProfileAction): ProfileState {
+export function profileReducer(state: ProfileState, action: ProfileAction): ProfileState {
   switch (action.type) {
     case 'FETCH_START':
       return {
@@ -43,7 +43,7 @@ function profileReducer(state: ProfileState, action: ProfileAction): ProfileStat
   }
 }
 
-const initialState: ProfileState = {
+export const initialProfileState: ProfileState = {
   profile: null,
   loading: true,
   refreshing: false,
@@ -51,7 +51,7 @@ const initialState: ProfileState = {
 };
 
 export function useProfile(userId?: string) {
-  const [state, dispatch] = useReducer(profileReducer, initialState);
+  const [state, dispatch] = useReducer(profileReducer, initialProfileState);
   const { profile, loading, refreshing, error } = state;
 
   const { rewards, isLoading: isRewardsLoading } = useRewards({ userId });
@@ -79,18 +79,18 @@ export function useProfile(userId?: string) {
           type: 'FETCH_SUCCESS',
           payload: {
             ...data,
-            school_name: (data as any).schools?.name || data.organization_name || null,
-          } as UserProfile,
+            school_name: data.school_name ?? data.organization_name ?? null,
+          },
         });
       } else {
         dispatch({ type: 'FETCH_SUCCESS', payload: null });
       }
     } catch (error) {
-      const errorMessage = (error as any)?.message;
-      if (errorMessage !== 'Expected HMRClient.setup() call at startup.') {
-        handleAPIError(error);
-        dispatch({ type: 'FETCH_FAILURE', payload: errorMessage || 'Failed to fetch profile' });
-      }
+      handleAPIError(error);
+      dispatch({
+        type: 'FETCH_FAILURE',
+        payload: error instanceof Error ? error.message : 'Failed to fetch profile',
+      });
     }
   }, [phase, userId, viewDate, refreshing]);
 
@@ -103,12 +103,15 @@ export function useProfile(userId?: string) {
     return fetchProfile();
   }, [fetchProfile]);
 
-  const updateField = async (field: keyof UserProfile, value: any) => {
-    if (!profile) return { success: false };
+  const updateField = async (
+    field: keyof UserProfile,
+    value: UserProfile[keyof UserProfile],
+  ): Promise<ProfileFieldUpdateResult> => {
+    if (!profile) return { status: 'failed', error: 'Profile is not available' };
 
     const validation = ProfileValidator.validate(String(field), value);
     if (!validation.isValid) {
-      return { success: false, error: validation.error };
+      return { status: 'failed', error: validation.error ?? 'Profile update is invalid' };
     }
 
     // Optimistic Update
@@ -123,11 +126,12 @@ export function useProfile(userId?: string) {
 
     try {
       await profileAPI.updateProfile(profile.id, { [field]: value });
-      return { success: true };
+      return { status: 'confirmed' };
     } catch (error) {
-      const errorMessage = (error as any)?.message || 'Profile update is waiting to sync';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Profile update is waiting to sync';
       dispatch({ type: 'SET_ERROR', payload: errorMessage });
-      return { success: true, pending: true, error: errorMessage };
+      return { status: 'queued', error: errorMessage };
     }
   };
 

@@ -308,7 +308,7 @@ export default function ResourceHubScreen() {
     return (
       <ScreenWrapper>
         <VStack className="flex-1 items-center justify-center gap-3.5 px-6">
-          <BrandedEmptyState
+          <BrandedErrorState
             title="Resource not found"
             message="This link does not include a valid Gurudevi resource id."
           >
@@ -318,7 +318,7 @@ export default function ResourceHubScreen() {
               onPress={handleBack}
               accent
             />
-          </BrandedEmptyState>
+          </BrandedErrorState>
         </VStack>
       </ScreenWrapper>
     );

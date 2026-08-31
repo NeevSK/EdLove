@@ -6,6 +6,7 @@ import { AvatarDisplay } from '@repo/profile/components/AvatarDisplay';
 import { ContactLinktree } from '@repo/profile/components/ContactLinktree';
 import { EditableItem } from '@repo/profile/components/EditableItem';
 import { GiveThuthimalModal } from '@repo/profile/components/GiveThuthimalModal';
+import { isConfirmedProfileFieldUpdate } from '@repo/profile/hooks/profileFieldUpdateResult';
 import { useProfile } from '@repo/profile/hooks/useProfile';
 import { useProfileCompletion } from '@repo/profile/hooks/useProfileCompletion';
 import { useSocialLinks } from '@repo/profile/hooks/useSocialLinks';
@@ -120,12 +121,11 @@ export default function FullProfileScreenWeb() {
     }
 
     const result = await updateField(field as keyof UserProfile, valueToSave);
-    const success = !!result?.success;
+    const success = isConfirmedProfileFieldUpdate(result);
     if (success) {
-      if (result.pending) setSaveError(result.error || 'Profile update is waiting to sync.');
       hapticSuccess();
       refresh?.();
-    } else if (result.error) {
+    } else {
       setSaveError(result.error);
     }
     return success;

@@ -26,19 +26,19 @@
     "@modelcontextprotocol/server": "^2.0.0",
     "@modelcontextprotocol/server-sequential-thinking": "2025.12.18",
     "@swmansion/argent": "^0.20.0",
-    "agent-device": "^0.20.8",
+    "agent-device": "^0.20.10",
     "dotenv": "^17.4.2",
     "zod": "4.4.3"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^25.9.2",
-    "eslint": "^10.4.1",
-    "mcp-remote": "^0.1.38",
+    "@types/node": "^25.9.5",
+    "eslint": "^10.9.1",
+    "mcp-remote": "^0.1.49",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.11"
   },
   "_originalScripts": {
     "build": "tsc",

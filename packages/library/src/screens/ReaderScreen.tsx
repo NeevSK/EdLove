@@ -1,4 +1,4 @@
-﻿import { usePermissions } from '@repo/core/logic';
+import { usePermissions } from '@repo/core/logic';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { annotationsAPI } from '@repo/library/api/annotations';
 import type {
@@ -372,7 +372,7 @@ export default function ReaderScreen() {
                         height:
                           Math.max(...h.pdfSelection.rects.map((r: any) => r.y + r.height)) -
                           Math.min(...h.pdfSelection.rects.map((r: any) => r.y)),
-                        backgroundColor: PDF_COLORS[h.color],
+                        backgroundColor: PDF_COLORS[h.color as keyof typeof PDF_COLORS] || '#FFEB3B',
                         opacity: 0.3,
                         borderRadius: 2,
                       }}

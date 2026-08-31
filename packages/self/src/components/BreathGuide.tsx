@@ -4,10 +4,10 @@
  * 1-minute breathing exercise with visual and haptic rhythm
  */
 
+import { useFeedbackOptional } from '@repo/ui/context';
 import { Wind } from '@repo/ui/icons';
 import { Box, Button, ButtonText, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
-import { Canvas, Circle, Blur } from '@shopify/react-native-skia';
-import * as Haptics from 'expo-haptics';
+import { Blur, Canvas, Circle } from '@shopify/react-native-skia';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
@@ -49,6 +49,7 @@ function getOpacityForPhase(phase: BreathPhase, active: boolean): number {
 
 export default function BreathGuide({ onComplete }: BreathGuideProps) {
   const { t } = useTranslation();
+  const { emit: emitFeedback } = useFeedbackOptional();
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isActive, setIsActive] = useState(false);
   const [currentCycle, setCurrentCycle] = useState(0);
@@ -72,24 +73,25 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
     }
   }, []);
 
-  const triggerHaptic = useCallback((phase: BreathPhase) => {
-    if (Platform.OS === 'web') return;
-
-    const feedback =
-      phase === 'hold' ? Haptics.ImpactFeedbackStyle.Medium : Haptics.ImpactFeedbackStyle.Light;
-    void Haptics.impactAsync(feedback);
-  }, []);
+  const triggerPhaseFeedback = useCallback(
+    (phase: BreathPhase) => {
+      if (phase === 'inhale') emitFeedback('breath-start');
+      else if (phase === 'exhale') emitFeedback('breath-end');
+      else emitFeedback('selection');
+    },
+    [emitFeedback],
+  );
 
   const finishSession = useCallback(() => {
     clearTimer();
     setIsActive(false);
     setCurrentCycle(0);
     setPhaseIndex(0);
-    if (Platform.OS !== 'web') {
-      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    }
+    emitFeedback('success');
     onComplete?.();
-  }, [clearTimer, onComplete]);
+  }, [clearTimer, emitFeedback, onComplete]);
+
+  useEffect(() => clearTimer, [clearTimer]);
 
   function stepForward(cycle: number, phase: number) {
     const nextPhase = (phase + 1) % sequence.length;
@@ -106,7 +108,7 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
       return;
     }
 
-    triggerHaptic(nextStep.phase);
+    triggerPhaseFeedback(nextStep.phase);
     setPhaseIndex(nextPhase);
     setCurrentCycle(nextCycle);
     timerRef.current = setTimeout(() => stepForward(nextCycle, nextPhase), nextStep.duration);
@@ -119,9 +121,9 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
     setPhaseIndex(0);
     const firstStep = sequence[0];
     if (!firstStep) return;
-    triggerHaptic(firstStep.phase);
+    triggerPhaseFeedback(firstStep.phase);
     timerRef.current = setTimeout(() => stepForward(0, 0), firstStep.duration);
-  }, [clearTimer, sequence, triggerHaptic, stepForward]);
+  }, [clearTimer, sequence, stepForward, triggerPhaseFeedback]);
 
   const stopSession = useCallback(() => {
     clearTimer();
@@ -142,7 +144,13 @@ export default function BreathGuide({ onComplete }: BreathGuideProps) {
       <Box className="items-center justify-center min-h-[250px]">
         {Platform.OS !== 'web' ? (
           <Canvas style={{ width: 170, height: 170, position: 'absolute' }}>
-            <Circle cx={85} cy={85} r={75 * scale} color={isActive ? '#8B5CF6' : '#7C3AED'} opacity={opacity * 0.3}>
+            <Circle
+              cx={85}
+              cy={85}
+              r={75 * scale}
+              color={isActive ? '#8B5CF6' : '#7C3AED'}
+              opacity={opacity * 0.3}
+            >
               <Blur blur={12} />
             </Circle>
             <Circle cx={85} cy={85} r={60 * scale} color="#8B5CF6" opacity={opacity * 0.15} />

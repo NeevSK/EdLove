@@ -111,9 +111,11 @@ export default function AttendanceSheet({
         }}
       >
         <Pressable
-          onPress={() => {}}
           onLongPress={() => handleUpdateStatus(item.id, 'late')}
           delayLongPress={500}
+          accessibilityRole="button"
+          accessibilityLabel={`Mark ${item.full_name} late`}
+          accessibilityHint="Swipe right for present, swipe left for absent, or hold to mark late."
         >
           <Box
             className={`bg-phase-surface rounded-comfortable p-4 my-1.5 border-l-4 ${config.borderClass} border border-phase-canvas/30`}

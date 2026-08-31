@@ -9,10 +9,26 @@
       "import": "./src/index.ts",
       "default": "./src/index.ts"
     },
-    "./wellbeing": { "types": "./src/wellbeing.ts", "import": "./src/wellbeing.ts", "default": "./src/wellbeing.ts" },
-    "./wisdom": { "types": "./src/wisdom.ts", "import": "./src/wisdom.ts", "default": "./src/wisdom.ts" },
-    "./progress": { "types": "./src/progress.ts", "import": "./src/progress.ts", "default": "./src/progress.ts" },
-    "./privacy": { "types": "./src/privacy.ts", "import": "./src/privacy.ts", "default": "./src/privacy.ts" },
+    "./wellbeing": {
+      "types": "./src/wellbeing.ts",
+      "import": "./src/wellbeing.ts",
+      "default": "./src/wellbeing.ts"
+    },
+    "./wisdom": {
+      "types": "./src/wisdom.ts",
+      "import": "./src/wisdom.ts",
+      "default": "./src/wisdom.ts"
+    },
+    "./progress": {
+      "types": "./src/progress.ts",
+      "import": "./src/progress.ts",
+      "default": "./src/progress.ts"
+    },
+    "./privacy": {
+      "types": "./src/privacy.ts",
+      "import": "./src/privacy.ts",
+      "default": "./src/privacy.ts"
+    },
     "./api": {
       "types": "./src/api/index.ts",
       "import": "./src/api/index.ts",
@@ -60,35 +76,35 @@
     "test:ui": "node ../../scripts/run-and-report.mjs --cmd \"vitest --ui\" --name \"packages_self-test_ui\""
   },
   "dependencies": {
-    "@repo/core": "workspace:*",
-    "@repo/profile": "workspace:*",
-    "@repo/ui": "workspace:*",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@repo/core": "workspace:*",
+    "@repo/profile": "workspace:*",
+    "@repo/ui": "workspace:*",
     "@supabase/postgrest-js": "2.102.1",
     "@supabase/supabase-js": "2.102.1",
-    "@tanstack/react-query": "^5.101.0",
+    "@tanstack/react-query": "^5.102.8",
     "date-fns": "^4.4.0",
     "drizzle-orm": "^0.45.2",
     "expo-audio": "~57.0.4",
-    "expo-file-system": "~57.0.5",
-    "expo-haptics": "~57.0.1",
-    "expo-notifications": "~57.0.13",
-    "expo-router": "~57.0.12",
-    "expo-sqlite": "~57.0.1",
-    "react-native-reanimated": "^4.4.1",
-    "zustand": "^5.0.8"
+    "expo-file-system": "~57.0.6",
+    "expo-haptics": "~57.0.2",
+    "expo-notifications": "~57.0.15",
+    "expo-router": "~57.0.17",
+    "expo-sqlite": "~57.0.2",
+    "react-native-reanimated": "^4.6.0",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "^19.2.17",
-    "eslint": "^10.4.1",
-    "react-i18next": "^17.0.8",
+    "@types/react": "^19.2.18",
+    "eslint": "^10.9.1",
+    "react-i18next": "^17.0.12",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.11"
   },
   "peerDependencies": {
     "@repo/ui": "*",

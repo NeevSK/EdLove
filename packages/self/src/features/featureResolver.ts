@@ -83,8 +83,10 @@ export function resolveFeatureSet(
 
   const selected: AccessibleFeature[] =
     customOrder.length > 0
-      ? (customOrder.map((id) => accessible.find((f) => f.id === id)).filter(Boolean) as AccessibleFeature[])
-      : visible.filter((f) => selectedIds.includes(f.id));
+      ? customOrder
+          .map((id) => visible.find((feature) => feature.id === id))
+          .filter((feature): feature is AccessibleFeature => feature !== undefined)
+      : visible.filter((feature) => selectedIds.includes(feature.id));
 
   const discoverableRaw = visible.filter((f) => !selected.some((s) => s.id === f.id));
   const discoverable = sortDiscoverable(discoverableRaw, roleWeights);

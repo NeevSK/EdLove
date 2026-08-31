@@ -14,10 +14,12 @@ import { ChatProvider } from '@repo/ui/context/ChatContext';
 import { MessageSquare } from '@repo/ui/icons';
 import { AnimatedView, Box, HStack, Icon, Pressable, Text, VStack } from '@repo/ui/primitives';
 import type React from 'react';
-import { useCallback, useEffect, useOptimistic, useState, useTransition } from 'react';
+import { useCallback, useEffect, useOptimistic, useRef, useState, useTransition } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 import { FadeInDown } from 'react-native-reanimated';
+
+import { deliverQueuedMessages } from './chatQueueDelivery';
 
 let optimisticId = 0;
 
@@ -71,26 +73,28 @@ export default function BaseChatScreen({
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [failedMessage, setFailedMessage] = useState<string | null>(null);
-  const [queuedMessage, setQueuedMessage] = useState<string | null>(null);
+  const [queuedMessageCount, setQueuedMessageCount] = useState(0);
+  const [isFlushingQueue, setIsFlushingQueue] = useState(false);
   const [queueError, setQueueError] = useState<string | null>(null);
   const [retryNonce, setRetryNonce] = useState(0);
   const [draft, setDraft] = useState('');
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
   const [isPending, startTransition] = useTransition();
+  const isFlushingQueueRef = useRef(false);
 
   const [optimisticMessages, addOptimisticMessage] = useOptimistic(
     messages,
     (state: ChatMessage[], newMessage: ChatMessage) => [...state, newMessage],
   );
 
-  const { mutate: sendMessage } = useSafeMutation(
+  const { mutate: sendMessage } = useSafeMutation<ChatMessage, string>(
     (content: string) => performSendMessage(content),
     {
       mutationKey: 'sendMessage',
       scope: 'chat',
       mutationType: 'CREATE',
-      onError: (_error, content) => setFailedMessage(content),
-      onSuccess: (data) => {
+      onError: (_error: unknown, content: string) => setFailedMessage(content),
+      onSuccess: (data: ChatMessage | null) => {
         if (data) {
           setMessages((prev) => [...prev, data]);
         }
@@ -188,6 +192,7 @@ export default function BaseChatScreen({
         const queued: string[] = raw ? JSON.parse(raw) : [];
         queued.push(content);
         storage.set(key, JSON.stringify(queued));
+        setQueuedMessageCount(queued.length);
         setQueueError(null);
         return true;
       } catch (error) {
@@ -201,39 +206,64 @@ export default function BaseChatScreen({
     [channelKey],
   );
 
-  // Offline queue: persist failed sends and retry when online
   useEffect(() => {
-    if (isOffline) return;
+    try {
+      const raw = storage.getString(`chat_queue:${channelKey}`);
+      const queued: string[] = raw ? JSON.parse(raw) : [];
+      setQueuedMessageCount(queued.length);
+    } catch (error) {
+      console.error('[BaseChatScreen] could not inspect queued messages', error);
+      setQueueError(
+        'Queued messages are temporarily unavailable. Your current draft is still safe.',
+      );
+    }
+  }, [channelKey]);
+
+  const flushQueuedMessages = useCallback(async () => {
+    if (isOffline || isFlushingQueueRef.current) return;
+
+    isFlushingQueueRef.current = true;
+    let startedVisualFeedback = false;
     try {
       const key = `chat_queue:${channelKey}`;
       const raw = storage.getString(key);
       if (!raw) return;
       const queued: string[] = JSON.parse(raw);
       if (queued.length === 0) return;
-      // send oldest first
-      const next = queued[0];
-      if (next) {
-        void sendMessage(next)
-          .then(() => {
-            const remaining = queued.slice(1);
-            if (remaining.length === 0) storage.delete(key);
-            else storage.set(key, JSON.stringify(remaining));
-            setQueuedMessage(null);
-          })
-          .catch((error: unknown) => {
-            console.error('[BaseChatScreen] queued send error', error);
-            setQueueError(
-              'A queued message could not send yet. It will be retried after reconnection.',
-            );
-          });
+      startedVisualFeedback = true;
+      setIsFlushingQueue(true);
+      setQueuedMessageCount(queued.length);
+
+      const result = await deliverQueuedMessages(queued, sendMessage);
+      if (result.status === 'delivered') {
+        storage.delete(key);
+        setQueuedMessageCount(0);
+        setQueueError(null);
+        return;
       }
+
+      storage.set(key, JSON.stringify(result.remainingMessages));
+      setQueuedMessageCount(result.remainingMessages.length);
+      console.error('[BaseChatScreen] queued send error', result.error);
+      setQueueError(
+        'Some queued messages could not send yet. They are still saved and ready to retry.',
+      );
     } catch (error) {
       console.error('[BaseChatScreen] could not read queued messages', error);
       setQueueError(
         'Queued messages are temporarily unavailable. Your current draft is still safe.',
       );
+    } finally {
+      isFlushingQueueRef.current = false;
+      if (startedVisualFeedback) setIsFlushingQueue(false);
     }
-  }, [isOffline, channelKey, sendMessage]);
+  }, [channelKey, isOffline, sendMessage]);
+
+  // Reconnection is an explicit delivery opportunity. The queue is drained in
+  // order and persisted after a failure so a later message cannot overtake it.
+  useEffect(() => {
+    if (!isOffline) void flushQueuedMessages();
+  }, [flushQueuedMessages, isOffline]);
 
   // Send — offline queue via MMKV + backgroundSync
   const handleSend = async () => {
@@ -257,9 +287,8 @@ export default function BaseChatScreen({
 
       // If offline, queue immediately and keep optimistic
       if (isOffline) {
-        if (queueMessage(content)) {
-          setQueuedMessage(content);
-        } else {
+        const wasQueued = queueMessage(content);
+        if (!wasQueued) {
           setDraft(content);
           setFailedMessage(content);
         }
@@ -270,9 +299,9 @@ export default function BaseChatScreen({
         await sendMessage(content);
       } catch (err) {
         console.error('[BaseChatScreen] send error', err);
-        if (queueMessage(content)) {
+        const wasQueued = queueMessage(content);
+        if (wasQueued) {
           setFailedMessage(null);
-          setQueuedMessage(content);
         } else {
           setDraft(content);
           setFailedMessage(content);
@@ -391,13 +420,15 @@ export default function BaseChatScreen({
                 </Text>
               </Box>
             ) : null}
-            {queuedMessage ? (
+            {queuedMessageCount > 0 ? (
               <Box
                 className="mb-3 rounded-xl border border-phase-warning/30 bg-phase-warning/10 px-3 py-2"
                 accessibilityLiveRegion="polite"
               >
                 <Text className="text-phase-warning text-[11px] font-semibold">
-                  Message queued securely. It will send when the connection returns.
+                  {isFlushingQueue
+                    ? `Sending ${queuedMessageCount} queued ${queuedMessageCount === 1 ? 'message' : 'messages'}…`
+                    : `${queuedMessageCount} ${queuedMessageCount === 1 ? 'message is' : 'messages are'} queued securely. ${isOffline ? 'They will send when the connection returns.' : 'They are ready to retry.'}`}
                 </Text>
               </Box>
             ) : null}
@@ -407,6 +438,18 @@ export default function BaseChatScreen({
                 accessibilityRole="alert"
               >
                 <Text className="text-phase-danger text-[11px] font-semibold">{queueError}</Text>
+                {!isOffline ? (
+                  <Pressable
+                    onPress={() => void flushQueuedMessages()}
+                    accessibilityRole="button"
+                    accessibilityLabel="Retry queued messages"
+                    className="mt-2 self-start"
+                  >
+                    <Text className="text-phase-interactive text-[11px] font-bold">
+                      Retry queued messages
+                    </Text>
+                  </Pressable>
+                ) : null}
               </Box>
             ) : null}
             {failedMessage ? (

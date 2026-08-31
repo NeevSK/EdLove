@@ -6,14 +6,18 @@ import { ContactLinktree } from '@repo/profile/components/ContactLinktree';
 import LivingJourneyPanel from '@repo/profile/components/LivingJourneyPanel';
 import { useProfile } from '@repo/profile/hooks/useProfile';
 import { useProfileCompletion } from '@repo/profile/hooks/useProfileCompletion';
+import { isConfirmedProfileFieldUpdate } from '@repo/profile/hooks/profileFieldUpdateResult';
 import { useSocialLinks } from '@repo/profile/hooks/useSocialLinks';
 import { toFullProfileParams, useProfileNavigation } from '@repo/profile/navigation';
 import { QRCodeGenerator } from '@repo/scanner-kit';
+import NegentropyHubModal from '@repo/profile/components/NegentropyHubModal';
 import { SignupPrompt } from '@repo/ui';
-import { Briefcase, CircleCheck, FileText, Globe, GraduationCap, SquarePen } from '@repo/ui/icons';
+import { Briefcase, CircleCheck, FileText, Globe, GraduationCap, Sparkles, SquarePen } from '@repo/ui/icons';
 import { GURUDEVI_APP } from '@repo/ui/utils';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+type EditableProfileField = 'display_name' | 'bio' | 'phone' | 'username';
 
 // Skeleton Component logic (mocked because it was used in corrupt code)
 const SkeletonCard = ({ height }: { height: number }) => (
@@ -48,8 +52,9 @@ export default function ProfileScreenWeb({
     refresh,
     uploadAvatar,
   } = useProfile(userId);
-  const completionResult = useProfileCompletion(profile, (authority as any) ?? null);
+  const completionResult = useProfileCompletion(profile, authority ?? null);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [isNegentropyModalOpen, setIsNegentropyModalOpen] = useState(false);
   const [editForm, setEditForm] = useState<{
     display_name: string;
     bio: string;
@@ -59,6 +64,7 @@ export default function ProfileScreenWeb({
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [copyError, setCopyError] = useState<string | null>(null);
+  const [queuedFields, setQueuedFields] = useState<Set<EditableProfileField>>(new Set());
 
   const isOwnProfile = !userId || userId === user?.id;
   const { links: socialLinks } = useSocialLinks(userId || user?.id);
@@ -98,22 +104,36 @@ export default function ProfileScreenWeb({
     let pendingMessage: string | null = null;
     let failureMessage: string | null = null;
     try {
-      const updates = [
+      const updates: ReadonlyArray<readonly [EditableProfileField, string, string]> = [
         ['display_name', editForm.display_name, profile.display_name],
         ['bio', editForm.bio, profile.bio ?? ''],
         ['phone', editForm.phone, profile.phone ?? ''],
         ['username', editForm.username, profile.username ?? ''],
-      ] as const;
+      ];
 
       for (const [field, value, previousValue] of updates) {
-        if (value === previousValue) continue;
+        if (value === previousValue && !queuedFields.has(field)) continue;
         const result = await updateField(field, value);
-        if (!result.success) {
-          failureMessage = result.error || t('profile.updateFailed', 'Profile update failed');
-          break;
+        if (isConfirmedProfileFieldUpdate(result)) {
+          savedFields.push(field.replace('_', ' '));
+          setQueuedFields((current) => {
+            if (!current.has(field)) return current;
+            const next = new Set(current);
+            next.delete(field);
+            return next;
+          });
+          continue;
         }
-        savedFields.push(field.replace('_', ' '));
-        if (result.pending) pendingMessage = result.error || 'Profile update is waiting to sync.';
+
+        if (result.status === 'queued') {
+          setQueuedFields((current) => new Set(current).add(field));
+          pendingMessage =
+            result.error || 'Profile update is waiting to sync and has not been confirmed yet.';
+          continue;
+        }
+
+        failureMessage = result.error || t('profile.updateFailed', 'Profile update failed');
+        break;
       }
 
       if (failureMessage) {
@@ -125,9 +145,13 @@ export default function ProfileScreenWeb({
         return;
       }
 
+      if (pendingMessage) {
+        setSaveError(pendingMessage);
+        return;
+      }
+
       setEditForm(null);
       refresh?.();
-      if (pendingMessage) setSaveError(pendingMessage);
     } catch (saveFailure) {
       setSaveError(
         saveFailure instanceof Error
@@ -282,7 +306,13 @@ export default function ProfileScreenWeb({
                     const result = await uploadAvatar(localUri);
                     if (result.success) {
                       refresh?.();
+                      return;
                     }
+                    setSaveError(
+                      result.error instanceof Error
+                        ? result.error.message
+                        : t('profile.avatarUploadFailed', 'Your profile photo could not be updated. Please try again.'),
+                    );
                   }}
                   peekable={!isOwnProfile || isPublic}
                   peekType="user"
@@ -1066,11 +1096,73 @@ export default function ProfileScreenWeb({
             )}
 
             <div style={{ width: '100%' }}>
-              <LivingJourneyPanel userId={profile.id} authority={authority as any} />
+              <LivingJourneyPanel userId={profile.id} authority={authority} />
             </div>
+
+            {isOwnProfile && (
+              <div
+                className="sanctuary-card"
+                style={{
+                  padding: '24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                  border: '1px solid var(--border)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      background: 'rgba(246, 191, 140, 0.2)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Sparkles size={18} color="var(--action, #F6BF8C)" />
+                  </div>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '700' }}>Energy Reservoir</h3>
+                    <p style={{ margin: 0, fontSize: '12px', color: 'var(--ink-soft)' }}>Sponsors & Negentropy</p>
+                  </div>
+                </div>
+                <p style={{ margin: 0, fontSize: '13px', color: 'var(--ink-soft)', lineHeight: 1.5 }}>
+                  Contribute voluntary attention to generate real-world compute energy and earn Sanctuary Energy tokens.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setIsNegentropyModalOpen(true)}
+                  style={{
+                    padding: '10px 16px',
+                    borderRadius: '12px',
+                    background: 'var(--action, #F6BF8C)',
+                    color: '#2A2318',
+                    border: 'none',
+                    fontWeight: '700',
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  <Sparkles size={16} color="#2A2318" />
+                  Open Energy Reservoir
+                </button>
+              </div>
+            )}
           </aside>
         </div>
         </main>
+
+        <NegentropyHubModal
+          isOpen={isNegentropyModalOpen}
+          onClose={() => setIsNegentropyModalOpen(false)}
+        />
         <style>{`
                     .profile-web-surface {
                         --profile-focus: var(--focus-ring, var(--action));

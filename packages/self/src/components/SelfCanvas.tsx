@@ -3,7 +3,7 @@ import { SelfFeatureRenderer } from '@repo/self/components/SelfFeatureRenderer';
 import { SettingsGroup } from '@repo/ui/components/SettingsGroup';
 import { Box, Text, Pressable } from '@repo/ui/primitives';
 import React, { useCallback } from 'react';
-import { Platform } from 'react-native';
+import { hapticLight } from '@repo/ui/utils/haptics';
 
 export type SelfCanvasViewMode = 'carousel' | 'tiled';
 
@@ -16,7 +16,7 @@ const ZONE_LABELS: Record<ZoneId, string> = {
 };
 
 const ZONE_DESCRIPTIONS: Record<ZoneId, string> = {
-  today: 'What you use daily — drag to reorder, long-press to pin or hide.',
+  today: 'What you use daily — use the controls to reorder, pin, or hide.',
   private: 'Personal rhythms and reflections.',
   shared: 'Growth visible to your circles.',
 };
@@ -67,7 +67,6 @@ function ZoneSection({
           <Box
             key={feature.id}
             className="rounded-2xl border border-border bg-phase-surface p-3 mb-3"
-            accessibilityRole="button"
             accessibilityLabel={`${feature.emoji} ${feature.label}${isPinned ? ', pinned' : ''}${isHidden ? ', hidden' : ''}`}
           >
             <Box className="flex-row justify-between items-center mb-2">
@@ -83,14 +82,14 @@ function ZoneSection({
                 ) : null}
               </Box>
               <Box className="flex-row gap-1 items-center">
-                <Pressable onPress={() => onMove(feature.id, -1)} className="w-7 h-7 rounded-full bg-white border border-border items-center justify-center" accessibilityLabel={`Move ${feature.label} up`}>
+                <Pressable onPress={() => { hapticLight(); onMove(feature.id, -1); }} className="w-7 h-7 rounded-full bg-white border border-border items-center justify-center" accessibilityLabel={`Move ${feature.label} up`}>
                   <Text className="text-xs font-bold text-ink">↑</Text>
                 </Pressable>
-                <Pressable onPress={() => onMove(feature.id, 1)} className="w-7 h-7 rounded-full bg-white border border-border items-center justify-center" accessibilityLabel={`Move ${feature.label} down`}>
+                <Pressable onPress={() => { hapticLight(); onMove(feature.id, 1); }} className="w-7 h-7 rounded-full bg-white border border-border items-center justify-center" accessibilityLabel={`Move ${feature.label} down`}>
                   <Text className="text-xs font-bold text-ink">↓</Text>
                 </Pressable>
                 <Pressable
-                  onPress={() => onTogglePin(feature.id)}
+                  onPress={() => { hapticLight(); onTogglePin(feature.id); }}
                   accessibilityRole="button"
                   accessibilityLabel={isPinned ? `Unpin ${feature.label}` : `Pin ${feature.label}`}
                   className={`px-3 py-1.5 rounded-full border ${isPinned ? 'bg-ink border-ink' : 'bg-white border-border'}`}
@@ -98,7 +97,7 @@ function ZoneSection({
                   <Text className={`text-xs font-bold ${isPinned ? 'text-white' : 'text-ink'}`}>{isPinned ? 'Pinned' : 'Pin'}</Text>
                 </Pressable>
                 <Pressable
-                  onPress={() => onToggleHidden(feature.id, !isHidden)}
+                  onPress={() => { hapticLight(); onToggleHidden(feature.id, !isHidden); }}
                   accessibilityRole="button"
                   accessibilityLabel={isHidden ? `Show ${feature.label}` : `Hide ${feature.label}`}
                   className="px-3 py-1.5 rounded-full bg-white border border-border"
@@ -112,7 +111,7 @@ function ZoneSection({
             </Box>
             {onFeaturePress ? (
               <Pressable
-                onPress={() => onFeaturePress(feature)}
+                onPress={() => { hapticLight(); onFeaturePress(feature); }}
                 className="mt-2 self-start"
                 accessibilityRole="button"
                 accessibilityLabel={`Open ${feature.label} detail`}
@@ -147,7 +146,7 @@ export function SelfCanvas({ features, byZone, viewMode, onViewModeToggle, onReo
   return (
     <Box className="gap-4">
       <Box className="flex-row gap-2">
-        <Pressable onPress={onViewModeToggle} className="px-3 py-1.5 rounded-full border bg-white border-border">
+        <Pressable onPress={() => { hapticLight(); onViewModeToggle(); }} className="px-3 py-1.5 rounded-full border bg-white border-border">
           <Text className="text-xs font-bold text-ink">{viewMode === 'tiled' ? 'Tiled' : 'Carousel'} — toggle</Text>
         </Pressable>
       </Box>

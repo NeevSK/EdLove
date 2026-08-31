@@ -516,7 +516,7 @@ export default function CreateClassroomModal({
           {state.step === 1 && (
             <VStack className="gap-6">
               {(mode === 'create' || mode === 'edit') && (
-                <FormControl isRequired isInvalid={!!error}>
+                <FormControl isInvalid={!!error}>
                   <FormControlLabel>
                     <FormControlLabelText className="text-sanctuary-text-tertiary uppercase text-[10px] font-bold tracking-widest">
                       {t('classroom.labelClassName') || 'Name of Sanctuary'}
@@ -616,7 +616,7 @@ export default function CreateClassroomModal({
 
                   {schoolId && (
                     <VStack className="gap-4">
-                      <FormControl isRequired>
+                      <FormControl>
                         <FormControlLabel>
                           <FormControlLabelText className="text-sanctuary-text-tertiary uppercase text-[10px] font-bold tracking-widest mb-2">
                             {t('classroom.selectSection') || 'Select Institutional Section'}
@@ -690,7 +690,7 @@ export default function CreateClassroomModal({
             <VStack className="gap-Containers-lg">
               {schoolId && (
                 <VStack className="gap-4">
-                  <FormControl isRequired>
+                  <FormControl>
                     <FormControlLabel>
                       <FormControlLabelText className="text-sanctuary-text-tertiary uppercase text-[10px] font-bold tracking-widest mb-2">
                         {t('classroom.selectGrade') || 'Target Grade Level'}

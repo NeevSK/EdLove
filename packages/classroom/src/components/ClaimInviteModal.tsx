@@ -91,7 +91,7 @@ export function ClaimInviteModal({ isOpen, onClose, onSuccess }: ClaimInviteModa
             </HStack>
           </Box>
 
-          <FormControl isRequired className="gap-3">
+          <FormControl className="gap-3">
             <FormControlLabel>
               <FormControlLabelText className="text-phaseText-secondary font-bold text-xs uppercase tracking-wider ml-1">
                 Invite Code

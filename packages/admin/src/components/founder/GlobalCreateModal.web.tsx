@@ -241,7 +241,7 @@ export default function GlobalCreateModal({
 
           <VStack className="gap-6">
             {type !== 'school' && (
-              <FormControl isRequired>
+              <FormControl>
                 <FormControlLabel>
                   <FormControlLabelText className="text-ink/40 font-bold text-xs uppercase tracking-wider">
                     Associated Institution
@@ -265,7 +265,7 @@ export default function GlobalCreateModal({
               </FormControl>
             )}
 
-            <FormControl isRequired>
+            <FormControl>
               <FormControlLabel>
                 <FormControlLabelText className="text-ink/40 font-bold text-xs uppercase tracking-wider">
                   {type === 'school'
