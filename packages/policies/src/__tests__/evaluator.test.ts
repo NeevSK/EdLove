@@ -6,6 +6,38 @@ const { privateKey: snapshotPrivateKey } = generateKeyPairSync('ed25519');
 const snapshotSigningKey = snapshotPrivateKey.export({ format: 'pem', type: 'pkcs8' }).toString();
 
 describe('Sovereign Authorization Engine', () => {
+  it('allows a non-wanderer contributor to submit only as themselves', () => {
+    const contributor = {
+      type: 'member',
+      id: 'author-1',
+      attributes: { capacity: 'member' },
+    };
+
+    expect(
+      check({
+        principal: contributor,
+        action: 'create',
+        resource: {
+          type: 'EditorialSubmission',
+          id: 'submission-1',
+          attributes: { submitter_id: 'author-1' },
+        },
+      }).permitted,
+    ).toBe(true);
+
+    expect(
+      check({
+        principal: contributor,
+        action: 'create',
+        resource: {
+          type: 'EditorialSubmission',
+          id: 'submission-2',
+          attributes: { submitter_id: 'someone-else' },
+        },
+      }).permitted,
+    ).toBe(false);
+  });
+
   it('should allow platform admin full CRUD on any resource', () => {
     const adminUser = {
       type: 'admin',

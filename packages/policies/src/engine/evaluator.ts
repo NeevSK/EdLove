@@ -29,6 +29,7 @@ try {
 
   const policyFiles = [
     'platform/admin.cedar',
+    'platform/editorial.cedar',
     'school/principal.cedar',
     'school/assistantPrincipal.cedar',
     'school/teacher.cedar',
@@ -87,6 +88,7 @@ export function reinitializeCedar(): void {
 
     const policyFiles = [
       'platform/admin.cedar',
+      'platform/editorial.cedar',
       'school/principal.cedar',
       'school/assistantPrincipal.cedar',
       'school/teacher.cedar',

@@ -29,14 +29,14 @@ export const config = [
     plugins: {
       turbo: turboPlugin,
       sonarjs: pluginSonarjs,
-      'polymath/ban-use-store': { rules: { 'ban-use-store': banUseStore } },
+      polymath: { rules: { 'ban-use-store': banUseStore } },
     },
     rules: {
       'turbo/no-undeclared-env-vars': 'warn',
       'no-unused-vars': 'off',
       'import-x/no-cycle': ['error', { maxDepth: 5 }],
       'sonarjs/cognitive-complexity': ['error', 15],
-      'polymath/ban-use-store/ban-use-store': 'warn',
+      'polymath/ban-use-store': 'warn',
     },
   },
   {

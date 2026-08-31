@@ -29,6 +29,7 @@ export function generateSnapshot(user: UserContext, secret?: string): Permission
       'graded_by',
     ],
     Assignment: ['school_id', 'classroom_id', 'teacher_id'],
+    AssignmentSubmission: ['school_id', 'classroom_id', 'student_id', 'assignment_id'],
     Lesson: ['school_id', 'classroom_id', 'teacher_id'],
     Material: ['school_id', 'classroom_id', 'teacher_id'],
     StaffLeave: ['school_id', 'user_id'],
@@ -62,6 +63,7 @@ export function generateSnapshot(user: UserContext, secret?: string): Permission
     classroom_id: user.classroom_ids?.[0] || 'dummy-classroom-id',
     grade_class_id: user.classroom_ids?.[0] || 'dummy-grade-class-id',
     graded_by: user.id,
+    assignment_id: user.classroom_ids?.[0] || 'dummy-assignment-id',
   };
 
   const actions = AUTHORIZATION_ACTIONS;

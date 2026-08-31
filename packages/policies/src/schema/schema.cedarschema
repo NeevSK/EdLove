@@ -143,6 +143,14 @@ entity FireJournal {
   user_id?: String
 };
 
+entity LearningReflection {
+  id: String,
+  school_id?: String,
+  user_id?: String,
+  classroom_id?: String,
+  assignment_id?: String
+};
+
 entity UserRewards {
   id: String,
   school_id?: String,
@@ -335,6 +343,24 @@ entity DirectMessage {
   school_id?: String
 };
 
+entity EditorialSubmission {
+  id: String,
+  submitter_id?: String
+};
+
+entity EditorialWork {
+  id: String,
+  school_id?: String
+};
+
+entity EditorialRightsAgreement {
+  id: String
+};
+
+entity EditorialAuthor {
+  id: String
+};
+
 entity AssignmentSubmission {
   id: String,
   school_id?: String,
@@ -352,12 +378,12 @@ action "read", "create", "update", "delete", "use_ai" appliesTo {
     principal: [User],
   resource: [
     User, Student, GratitudeGift, School, Classroom, AttendanceRecord, DailyAttendance, AttendanceSession, Grade, GradeMark, Assignment, Lesson, Material,
-    StaffLeave, MoodLog, FireJournal, InventoryItem, InventoryRequest, Group, Post, Ledger, Accounting, Payments, MappingTopology,
+    StaffLeave, MoodLog, FireJournal, LearningReflection, InventoryItem, InventoryRequest, Group, Post, Ledger, Accounting, Payments, MappingTopology,
     Guardian, SentinelAuditLog, JoyMoments, GratitudeEntries, EnergyForecasts,
     UserRewards, WhisperedMoment,
     PersonalClassroom, AIAssistant, ClassroomNote, Library, Wellbeing, Staff, DailyContent, DecisionJournal,
     Manifesto, ManifestoEndorsement, AssignmentSubmission, Calendar, Notification, PrincipalNote, Announcement,
-    UserBlock, DirectConversation, DirectMessage
+    UserBlock, DirectConversation, DirectMessage, EditorialSubmission, EditorialWork, EditorialRightsAgreement, EditorialAuthor
   ],
   context: SecurityContext
 };

@@ -94,3 +94,5 @@ export type FeatureFlag = $ModelResult<$Schema, "FeatureFlag">;
 export type PricingManifest = $ModelResult<$Schema, "PricingManifest">;
 export type SchoolRegistry = $ModelResult<$Schema, "SchoolRegistry">;
 export type EduSchool = $ModelResult<$Schema, "EduSchool">;
+export type UserEnergyBalance = $ModelResult<$Schema, "UserEnergyBalance">;
+export type AdRewardTransaction = $ModelResult<$Schema, "AdRewardTransaction">;

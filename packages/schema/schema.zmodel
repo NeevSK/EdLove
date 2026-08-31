@@ -123,6 +123,8 @@ model User {
   teacher_daily_attendance TeacherDailyAttendance[] @relation("TeacherDailyAttendanceTeacher")
   teacher_attendance_sessions TeacherAttendanceSession[] @relation("TeacherAttendanceSessionTeacher")
   grade_marks GradeMark[] @relation("StudentGradeMarks")
+  energy_balance UserEnergyBalance?
+  ad_reward_transactions AdRewardTransaction[]
 
   // Anonymous Supabase users are valid onboarding principals. They use the
   // same authenticated subject policy surface; no guest-only policy exists.
@@ -2174,3 +2176,53 @@ model EduSchool {
     @@index([province_id, district_id])
     @@map("edu_schools")
 }
+
+/**
+ * Negentropy & Rewarded Attention Economy
+ * ---------------------------------------
+ * Stores virtual energy tokens generated through voluntary ad sponsorship.
+ */
+model UserEnergyBalance {
+    id             String   @id @default(uuid())
+    user_id        String   @unique
+    balance        Int      @default(0)
+    total_earned   Int      @default(0)
+    total_spent    Int      @default(0)
+    daily_count    Int      @default(0)
+    last_reset_at  DateTime @default(now())
+    created_at     DateTime @default(now())
+    updated_at     DateTime @updatedAt
+
+    user           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+    // Policies: User can read their balance; modifications must be performed by the system/admin or user themselves for authorized client interactions
+    @@allow('read', auth() != null && user_id == auth().id)
+    @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+    @@allow('update', auth() != null && user_id == auth().id)
+    @@allow('create', auth() != null && user_id == auth().id)
+
+    @@map("user_energy_balances")
+}
+
+model AdRewardTransaction {
+    id              String   @id @default(uuid())
+    user_id         String
+    provider        String   @default("admob") // "admob", "test", etc.
+    transaction_id  String   @unique
+    ad_unit_id      String?
+    reward_amount   Int      @default(10)
+    verified        Boolean  @default(false)
+    signature       String?
+    metadata        Json?
+    created_at      DateTime @default(now())
+
+    user            User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+    @@allow('read', auth() != null && user_id == auth().id)
+    @@allow('all', auth() != null && auth().bonds?[capacity == 'admin' && entity_type == 'PLATFORM'])
+    @@allow('create', auth() != null && user_id == auth().id)
+
+    @@index([user_id])
+    @@map("ad_reward_transactions")
+}
+
