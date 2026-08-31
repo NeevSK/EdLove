@@ -3,7 +3,7 @@ import { Overlay } from '@repo/ui/components/ui/overlay';
 import { Portal } from '@repo/ui/components/ui/portal';
 import { AnimatedView, View } from '@repo/ui/components/ui/view';
 import type React from 'react';
-import { createContext, useContext, useEffect, useMemo } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { Platform, type ViewProps } from 'react-native';
 import { ZoomIn, ZoomOut } from 'react-native-reanimated';
 import { cn } from '@repo/ui/utils/classNames';
@@ -44,9 +44,20 @@ export const Modal = ({
   trapFocus?: boolean;
 } & ViewProps) => {
   const contextValue = useMemo(() => ({ onClose }), [onClose]);
+  const [isPresent, setIsPresent] = useState(isOpen);
   const enteringAnimation =
     Platform.OS === 'web' ? undefined : ZoomIn.duration(300).springify().damping(20);
   const exitingAnimation = Platform.OS === 'web' ? undefined : ZoomOut.duration(200);
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsPresent(true);
+      return;
+    }
+
+    const timeout = setTimeout(() => setIsPresent(false), 220);
+    return () => clearTimeout(timeout);
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen || Platform.OS !== 'web') return;
@@ -57,32 +68,31 @@ export const Modal = ({
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isPresent) return null;
 
   return (
     <ModalContext.Provider value={contextValue}>
       <Portal>
         <Overlay isOpen={isOpen} onPress={closeOnBackdropPress ? onClose : undefined} />
         {Platform.OS === 'web' ? (
-          <div
+          <View
             role="dialog"
-            aria-modal="true"
-            aria-label={accessibilityLabel}
+            aria-modal={true}
+            accessibilityLabel={accessibilityLabel}
             style={{
-              position: 'fixed',
+              position: 'fixed' as any,
               top: 0,
               left: 0,
               right: 0,
               bottom: 0,
               zIndex: 1001,
-              display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '1rem',
-              pointerEvents: 'none',
+              padding: 16,
+              pointerEvents: 'box-none',
             }}
           >
-            <div
+            <View
               style={{
                 width: '100%',
                 maxWidth: 500,
@@ -90,26 +100,27 @@ export const Modal = ({
               }}
             >
               {children}
-            </div>
-          </div>
+            </View>
+          </View>
         ) : (
           <View
             className="absolute inset-0 items-center justify-center p-4"
-            pointerEvents="box-none"
-            style={{ zIndex: 1001 }}
+            style={{ zIndex: 1001, pointerEvents: 'box-none' }}
             {...props}
           >
-            <AnimatedView
-              entering={enteringAnimation}
-              exiting={exitingAnimation}
-              className="w-full max-w-[500px]"
-              accessibilityRole="dialog"
-              accessibilityLabel={accessibilityLabel}
-              accessibilityViewIsModal={trapFocus}
-              accessible={true}
-            >
-              {children}
-            </AnimatedView>
+            {isOpen ? (
+              <AnimatedView
+                entering={enteringAnimation}
+                exiting={exitingAnimation}
+                className="w-full max-w-[500px]"
+                accessibilityRole="dialog"
+                accessibilityLabel={accessibilityLabel}
+                accessibilityViewIsModal={trapFocus}
+                accessible={true}
+              >
+                {children}
+              </AnimatedView>
+            ) : null}
           </View>
         )}
       </Portal>

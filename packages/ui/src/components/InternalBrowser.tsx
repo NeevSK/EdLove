@@ -104,6 +104,8 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
     }
   }, [currentUrl]);
 
+  const WebViewComponent = WebView as any;
+
   return (
     <View style={[styles.container, { backgroundColor: scene.canvas.bg }]}>
       {/* Header / App Bar */}
@@ -162,11 +164,11 @@ export const InternalBrowser: React.FC<InternalBrowserProps> = ({
       )}
 
       {/* WebView */}
-      <WebView
+      <WebViewComponent
         ref={webViewRef}
         source={{ uri: url }}
         onNavigationStateChange={handleNavigationStateChange}
-        onLoadProgress={({ nativeEvent }) => handleProgress(nativeEvent.progress)}
+        onLoadProgress={(e: any) => handleProgress(e.nativeEvent.progress)}
         onLoadStart={() => handleLoading(true)}
         onLoadEnd={() => handleLoading(false)}
         style={[styles.webView, { backgroundColor: scene.canvas.bg }]}

@@ -62,10 +62,10 @@ export function FocusRing({
     >
       {focused && enabled && (
         <Animated.View
-          pointerEvents="none"
           style={[
             {
               position: 'absolute',
+              pointerEvents: 'none',
               inset: -ringOffset,
               borderColor: ringColor,
               borderWidth: ringWidth,

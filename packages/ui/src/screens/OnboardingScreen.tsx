@@ -3,6 +3,8 @@ import { identityAPI, onboardingAPI } from '@repo/core/api/client';
 import { useStore } from '@repo/core/store';
 import type { Capacity } from '@repo/core/types';
 import { ProgressIndicator } from '@repo/ui/components/ProgressIndicator';
+import { FireflyFeedbackScene } from '@repo/ui/components/FireflyFeedbackScene';
+import type { MascotArtworkSource } from '@repo/ui/components/Mascot';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import {
   Box,
@@ -109,12 +111,14 @@ const StepShell = memo(
     step,
     title,
     subtitle,
+    artwork,
     children,
   }: {
     currentStep: number;
     step: string;
     title: string;
     subtitle: string;
+    artwork?: MascotArtworkSource;
     children: React.ReactNode;
   }) => (
     <VStack className="flex-1 px-5 pt-5 pb-6">
@@ -149,6 +153,7 @@ const StepShell = memo(
               </Heading>
               <Text className="text-phase-text-secondary">{subtitle}</Text>
             </VStack>
+            {artwork ? <FireflyFeedbackScene artwork={artwork} state="loading" /> : null}
           </VStack>
         </Box>
         <Box className="px-6 py-8">{children}</Box>
@@ -177,6 +182,7 @@ const NameStep = memo(
     canProceed,
     isLoading,
     onBackToWelcome,
+    artwork,
   }: {
     t: (key: string) => string;
     name: string;
@@ -185,6 +191,7 @@ const NameStep = memo(
     canProceed: boolean;
     isLoading?: boolean;
     onBackToWelcome: () => void;
+    artwork?: MascotArtworkSource;
   }) => {
     const inputRef = useRef<any>(null);
 
@@ -202,6 +209,7 @@ const NameStep = memo(
         step={getOnboardingStepLabel(0)}
         title={t('onboarding.nameTitle') || 'Welcome! What should we call you in Gurudevi?'}
         subtitle={t('onboarding.nameSubtitle') || "Let's start your journey with a name."}
+        artwork={artwork}
       >
         <VStack className="gap-6">
           <Input className="rounded-comfortable border-phase-text-tertiary">
@@ -592,12 +600,14 @@ interface OnboardingScreenProps {
   onComplete: (name: string, capacity: Capacity, isAnonymous?: boolean) => void;
   isAnonymous?: boolean;
   userId?: string | null;
+  onboardingArtwork?: MascotArtworkSource;
 }
 
 const OnboardingScreen = memo(function OnboardingScreen({
   onComplete,
   isAnonymous = false,
   userId = null,
+  onboardingArtwork,
 }: OnboardingScreenProps) {
   const { t } = useTranslation();
 
@@ -1056,6 +1066,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
                   canProceed={canProceed}
                   isLoading={isProcessing}
                   onBackToWelcome={handleBackToWelcome}
+                  artwork={onboardingArtwork}
                 />
               )}
               {currentPhase === 'identity' && (

@@ -27,7 +27,7 @@ export const GatewayHeader: React.FC = () => {
   );
 
   const toggleTheme = useCallback(() => {
-    setThemeMode(isDark ? 'light' : 'dark');
+    void setThemeMode(isDark ? 'light' : 'dark');
   }, [isDark, setThemeMode]);
 
   const handleThemeMouseEnter = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
@@ -44,7 +44,7 @@ export const GatewayHeader: React.FC = () => {
     <header
       style={{
         width: '100%',
-        padding: '16px 40px',
+        padding: '14px 20px',
         borderBottom: '1px solid var(--border, rgba(42,35,24,0.08))',
         display: 'flex',
         justifyContent: 'space-between',
@@ -52,8 +52,9 @@ export const GatewayHeader: React.FC = () => {
         background: 'rgba(255, 255, 255, 0.15)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        zIndex: 100,
+        zIndex: 10,
         position: 'relative',
+        boxSizing: 'border-box',
       }}
     >
       {/* Brand logo & title */}
@@ -106,6 +107,8 @@ export const GatewayHeader: React.FC = () => {
                 key={lang.code}
                 data-code={lang.code}
                 onClick={handleLanguageClick}
+                aria-label={`Switch language to ${lang.label}`}
+                aria-pressed={isActive}
                 style={{
                   padding: '6px 12px',
                   borderRadius: '16px',
@@ -130,6 +133,7 @@ export const GatewayHeader: React.FC = () => {
           type="button"
           onClick={toggleTheme}
           aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          aria-pressed={isDark}
           style={{
             width: '36px',
             height: '36px',

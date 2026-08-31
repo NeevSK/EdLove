@@ -43,8 +43,7 @@ export const TemporalGlass: React.FC<TemporalGlassProps> = ({
 
   return (
     <View style={[{ width, height }, style]}>
-      {/* Skia luminous border - phase-aware color */}
-      <Canvas style={StyleSheet.absoluteFill} pointerEvents="none">
+      <Canvas style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}>
         {cornerRadius > 0 ? (
           <>
             {/* Outer luminous edge - only for rounded cards */}

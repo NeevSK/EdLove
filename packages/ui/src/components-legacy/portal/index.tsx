@@ -33,7 +33,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   return (
     <PortalContext.Provider value={{ register, unregister }}>
       {children}
-      <View style={StyleSheet.absoluteFill} pointerEvents="box-none" collapsable={false}>
+      <View style={[StyleSheet.absoluteFill, { pointerEvents: 'box-none' }]} collapsable={false}>
         {Object.entries(portals).map(([id, node]) => (
           <React.Fragment key={id}>{node}</React.Fragment>
         ))}

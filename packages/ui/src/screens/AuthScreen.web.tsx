@@ -5,18 +5,14 @@ import { getSessionIdentityMode, isAnonymousIdentity } from '@repo/core/logic';
 import { storage } from '@repo/core/storage';
 import type { Capacity, User } from '@repo/core/types';
 import { validateForm, validators } from '@repo/core/utils';
-import { GatewayFooter } from '@repo/ui/components/GatewayFooter.web';
-import { GatewayHeader } from '@repo/ui/components/GatewayHeader.web';
+import { GatewayScreenShell } from '@repo/ui/components/GatewayScreenShell.web';
 import { LivingGlow } from '@repo/ui/components/LivingGlow';
 import { SanctuaryBackground } from '@repo/ui/components/SanctuaryBackground';
-import { Button } from '@repo/ui/components/ui/button';
-import { Input } from '@repo/ui/components/ui/input';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import { Key } from '@repo/ui/icons';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { memo, useCallback, useEffect, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useWindowDimensions } from 'react-native';
 
 interface AuthScreenProps {
   onContinueAsGuest?: () => void;
@@ -78,6 +74,85 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 }
 
 // ============================================================================
+// HERO PANEL SUB-COMPONENT
+// ============================================================================
+
+interface HeroPanelProps {
+  modeCopy: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+  };
+  renderedPillars: React.ReactNode;
+}
+
+const HeroPanel = memo(({ modeCopy, renderedPillars }: HeroPanelProps) => (
+  <div className="flex flex-col justify-between p-6 sm:p-8 md:p-10 rounded-[32px] md:rounded-[40px] border border-phase-border/80 bg-phase-surface/40 backdrop-blur-xl shadow-xl relative overflow-hidden w-full">
+    <div className="flex flex-col gap-5 md:gap-7">
+      <div className="inline-flex items-center gap-2 self-start px-3.5 py-1.5 rounded-full border border-phase-border bg-phase-surface/80 shadow-sm backdrop-blur-md">
+        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+        <span className="text-[11px] font-bold tracking-[0.08em] uppercase text-phase-secondary">
+          Gurudevi Sanctuary · Sovereign Education
+        </span>
+      </div>
+
+      <div className="flex flex-col gap-4 sm:gap-6">
+        <LivingGlow active size={88} className="items-start justify-start p-0">
+          <div className="w-[64px] h-[64px] rounded-[20px] bg-phase-surface/90 flex items-center justify-center shadow-lg border border-phase-border/80 backdrop-blur-md">
+            <span className="text-2xl text-phase-primary">🪷</span>
+          </div>
+        </LivingGlow>
+
+        <div className="flex flex-col gap-2.5">
+          <span className="text-[11px] font-extrabold tracking-[0.14em] uppercase text-phase-secondary">
+            {modeCopy.eyebrow}
+          </span>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-phase-primary leading-[1.08]">
+            {modeCopy.title}
+          </h1>
+          <p className="text-sm sm:text-base text-phase-secondary max-w-lg leading-relaxed mt-0.5 font-normal">
+            {modeCopy.subtitle}
+          </p>
+        </div>
+      </div>
+
+      {/* Pillars / Domains */}
+      <div className="flex flex-wrap gap-2 pt-1">{renderedPillars}</div>
+    </div>
+
+    {/* Educational Highlight Card */}
+    <div className="mt-6 rounded-2xl md:rounded-3xl border border-phase-border/60 bg-phase-surface/70 p-4 sm:p-5 backdrop-blur-md">
+      <div className="flex flex-col gap-3">
+        <div>
+          <span className="text-[10px] font-extrabold tracking-[0.14em] uppercase text-phase-muted">
+            Why this step matters
+          </span>
+          <p className="text-phase-primary leading-relaxed text-xs sm:text-sm mt-1">
+            Your account keeps lessons, achievements, and invitations synchronized across all devices in a quiet, distraction-free environment.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+          <div className="p-3 rounded-xl bg-phase-surface/60 border border-phase-border/60 flex flex-col gap-0.5">
+            <span className="text-xs font-bold text-phase-primary">Gentle entry</span>
+            <span className="text-[11px] text-phase-secondary leading-snug">
+              Use Google, Passkey, or email. Switch roles smoothly anytime.
+            </span>
+          </div>
+          <div className="p-3 rounded-xl bg-phase-surface/60 border border-phase-border/60 flex flex-col gap-0.5">
+            <span className="text-xs font-bold text-phase-primary">Guest safe</span>
+            <span className="text-[11px] text-phase-secondary leading-snug">
+              Sync progress automatically whenever you decide to sign in.
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+));
+HeroPanel.displayName = 'HeroPanel';
+
+// ============================================================================
 // MAIN COMPONENT
 // ============================================================================
 
@@ -87,8 +162,6 @@ export const AuthScreenWeb = memo(
     const { accent } = useTheme();
     const { showToast } = useSanctuaryToast();
     const { profile: myProfile } = useIdentity();
-    const { width } = useWindowDimensions();
-    const isNarrow = width < 1024;
 
     const [state, dispatch] = useReducer(authReducer, {
       mode: initialMode === 'login' ? 'login' : 'signup',
@@ -347,12 +420,9 @@ export const AuthScreenWeb = memo(
       [],
     );
 
-    return (
-      <div className="flex flex-col min-h-screen justify-between relative overflow-x-hidden bg-phase-world selection:bg-phase-accent/20">
-        <GatewayHeader />
+    const backgroundOrbs = (
+      <>
         <SanctuaryBackground />
-
-        {/* Ambient decorative glowing orbs */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -top-24 -left-24 w-[380px] h-[380px] rounded-full blur-3xl opacity-30 bg-amber-500/20"
@@ -365,274 +435,207 @@ export const AuthScreenWeb = memo(
           aria-hidden="true"
           className="pointer-events-none absolute -bottom-20 left-1/4 w-[360px] h-[360px] rounded-full blur-3xl opacity-25 bg-violet-500/20"
         />
+      </>
+    );
 
-        <main className="flex-1 z-10 w-full max-w-[1240px] mx-auto px-4 sm:px-6 md:px-8 py-6 md:py-10 lg:py-14 flex items-center justify-center">
-          <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
-            {/* Story / Hero Section */}
-            <div className="lg:col-span-6 xl:col-span-7 flex flex-col justify-between p-6 sm:p-8 md:p-10 lg:p-12 rounded-[32px] md:rounded-[40px] border border-phase-border/80 bg-phase-surface/40 backdrop-blur-xl shadow-xl relative overflow-hidden">
-              <div className="flex flex-col gap-6 md:gap-8">
-                <div className="inline-flex items-center gap-2 self-start px-4 py-1.5 rounded-full border border-phase-border bg-phase-surface/80 shadow-sm backdrop-blur-md">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[11px] font-bold tracking-[0.08em] uppercase text-phase-secondary">
-                    Gurudevi Sanctuary · Sovereign Education
+    return (
+      <GatewayScreenShell
+        backgroundElements={backgroundOrbs}
+        left={<HeroPanel modeCopy={modeCopy} renderedPillars={renderedPillars} />}
+        right={
+          <div className="flex flex-col justify-center p-6 sm:p-8 md:p-10 rounded-[32px] md:rounded-[40px] border border-phase-border/90 bg-phase-surface/85 backdrop-blur-2xl shadow-2xl relative overflow-hidden w-full max-w-md">
+            <div className="flex flex-col gap-5 w-full">
+              {onBack && (
+                <button
+                  type="button"
+                  onClick={onBack}
+                  className="self-start flex items-center gap-2 text-sm font-medium text-phase-secondary hover:text-phase-primary transition-colors cursor-pointer -ml-1 py-1"
+                >
+                  <span>←</span>
+                  <span>Back to Welcome</span>
+                </button>
+              )}
+
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-extrabold tracking-[0.14em] uppercase text-phase-secondary">
+                    {mode === 'signup' ? 'Create Account' : 'Returning User'}
                   </span>
-                </div>
 
-                <div className="flex flex-col gap-6">
-                  <LivingGlow active size={108} className="items-start justify-start p-0">
-                    <div className="w-[72px] h-[72px] rounded-[22px] bg-phase-surface/90 flex items-center justify-center shadow-lg border border-phase-border/80 backdrop-blur-md">
-                      <span className="text-3xl text-phase-primary">🪷</span>
-                    </div>
-                  </LivingGlow>
-
-                  <div className="flex flex-col gap-3">
-                    <span className="text-[11px] font-extrabold tracking-[0.14em] uppercase text-phase-secondary">
-                      {modeCopy.eyebrow}
-                    </span>
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-phase-primary leading-[1.05]">
-                      {modeCopy.title}
-                    </h1>
-                    <p className="text-base sm:text-lg text-phase-secondary max-w-lg leading-relaxed mt-1 font-normal">
-                      {modeCopy.subtitle}
-                    </p>
+                  {/* Mode Toggle Switch */}
+                  <div className="flex p-1 rounded-full bg-phase-surface/80 border border-phase-border shadow-inner">
+                    <button
+                      type="button"
+                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                        mode === 'signup'
+                          ? 'bg-phase-primary text-phase-world shadow-sm'
+                          : 'text-phase-secondary hover:text-phase-primary'
+                      }`}
+                      onClick={switchToSignup}
+                    >
+                      Sign Up
+                    </button>
+                    <button
+                      type="button"
+                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                        mode === 'login'
+                          ? 'bg-phase-primary text-phase-world shadow-sm'
+                          : 'text-phase-secondary hover:text-phase-primary'
+                      }`}
+                      onClick={switchToLogin}
+                    >
+                      Log In
+                    </button>
                   </div>
                 </div>
 
-                {/* Pillars / Domains */}
-                <div className="flex flex-wrap gap-2 pt-2">{renderedPillars}</div>
-              </div>
-
-              {/* Educational Highlight Card */}
-              <div className="mt-8 rounded-2xl md:rounded-3xl border border-phase-border/60 bg-phase-surface/70 p-5 sm:p-6 backdrop-blur-md">
-                <div className="flex flex-col gap-4">
-                  <div>
-                    <span className="text-[10px] font-extrabold tracking-[0.14em] uppercase text-phase-muted">
-                      Why this step matters
-                    </span>
-                    <p className="text-phase-primary leading-relaxed text-sm md:text-base mt-1">
-                      Your account keeps lessons, achievements, and invitations synchronized across
-                      all devices in a quiet, distraction-free environment.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                    <div className="p-3.5 rounded-xl bg-phase-surface/60 border border-phase-border/60 flex flex-col gap-1">
-                      <span className="text-xs font-bold text-phase-primary">Gentle entry</span>
-                      <span className="text-xs text-phase-secondary leading-snug">
-                        Use Google, Passkey, or email. Switch roles or classrooms smoothly anytime.
-                      </span>
-                    </div>
-                    <div className="p-3.5 rounded-xl bg-phase-surface/60 border border-phase-border/60 flex flex-col gap-1">
-                      <span className="text-xs font-bold text-phase-primary">
-                        Guest & Explorer safe
-                      </span>
-                      <span className="text-xs text-phase-secondary leading-snug">
-                        Explore as guest first; sync your progress automatically whenever you decide
-                        to sign in.
-                      </span>
-                    </div>
-                  </div>
+                <div>
+                  <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-phase-primary">
+                    {mode === 'signup' ? 'Choose your path in' : 'Reconnect with'} Gurudevi
+                  </h2>
+                  <p className="text-sm text-phase-secondary leading-relaxed mt-1.5">
+                    {mode === 'signup'
+                      ? 'Create a held, cross-device identity when you are ready.'
+                      : 'Use the credentials that belong to your sanctuary profile.'}
+                  </p>
                 </div>
               </div>
-            </div>
 
-            {/* Auth Form / Action Panel */}
-            <div className="lg:col-span-6 xl:col-span-5 flex flex-col justify-center p-6 sm:p-8 md:p-10 lg:p-12 rounded-[32px] md:rounded-[40px] border border-phase-border/90 bg-phase-surface/85 backdrop-blur-2xl shadow-2xl relative overflow-hidden">
-              <div className="flex flex-col gap-6 w-full max-w-md mx-auto">
-                {onBack && (
+              {/* Primary Action Buttons */}
+              <div className="flex flex-col gap-3.5 w-full pt-1">
+                <button
+                  type="button"
+                  onClick={handleGooglePress}
+                  disabled={loading}
+                  className="w-full h-[54px] px-5 rounded-2xl bg-phase-primary text-phase-world font-bold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:translate-y-[-1px] active:translate-y-[0px] transition-all cursor-pointer disabled:opacity-50"
+                >
+                  <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-sm">
+                    <span className="text-[#4285F4] font-black text-sm">G</span>
+                  </div>
+                  <span>{modeCopy.google}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handlePasskeyPress}
+                  disabled={loading}
+                  className="w-full h-[52px] px-5 rounded-2xl border border-phase-border bg-phase-surface/60 hover:bg-phase-surface text-phase-primary font-bold flex items-center justify-center gap-3 shadow-sm hover:border-phase-border/80 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  <div className="w-7 h-7 rounded-full bg-phase-primary/10 flex items-center justify-center">
+                    <Key size={15} color={accent.action} />
+                  </div>
+                  <span>Use Passkey (Fast & Phishing-resistant)</span>
+                </button>
+
+                {!showEmailForm && (
                   <button
                     type="button"
-                    onClick={onBack}
-                    className="self-start flex items-center gap-2 text-sm font-medium text-phase-secondary hover:text-phase-primary transition-colors cursor-pointer -ml-1 py-1"
+                    onClick={toggleEmailForm}
+                    className="w-full h-[52px] px-5 rounded-2xl border border-phase-border/80 bg-phase-surface/40 hover:bg-phase-surface/80 text-phase-primary font-medium flex items-center justify-center shadow-sm transition-all cursor-pointer"
                   >
-                    <span>←</span>
-                    <span>Back to Welcome</span>
+                    <span>{modeCopy.email}</span>
                   </button>
                 )}
 
-                <div className="flex flex-col gap-5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-extrabold tracking-[0.14em] uppercase text-phase-secondary">
-                      {mode === 'signup' ? 'Create Account' : 'Returning User'}
-                    </span>
-
-                    {/* Mode Toggle Switch */}
-                    <div className="flex p-1 rounded-full bg-phase-surface/80 border border-phase-border shadow-inner">
-                      <button
-                        type="button"
-                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                          mode === 'signup'
-                            ? 'bg-phase-primary text-phase-world shadow-sm'
-                            : 'text-phase-secondary hover:text-phase-primary'
-                        }`}
-                        onClick={switchToSignup}
-                      >
-                        Sign Up
-                      </button>
-                      <button
-                        type="button"
-                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                          mode === 'login'
-                            ? 'bg-phase-primary text-phase-world shadow-sm'
-                            : 'text-phase-secondary hover:text-phase-primary'
-                        }`}
-                        onClick={switchToLogin}
-                      >
-                        Log In
-                      </button>
+                {/* Email & Password Input Section */}
+                {showEmailForm && (
+                  <div className="animate-in fade-in slide-in-from-top-2 duration-200 mt-2 p-5 sm:p-6 rounded-3xl bg-phase-surface/70 border border-phase-border flex flex-col gap-4 shadow-sm">
+                    <div className="flex justify-between items-center pb-1 border-b border-phase-border/40">
+                      <span className="font-bold text-sm text-phase-primary">
+                        Email Authentication
+                      </span>
+                      <span className="text-xs text-phase-muted">
+                        {mode === 'signup' ? 'New Account' : 'Direct Login'}
+                      </span>
                     </div>
-                  </div>
 
-                  <div>
-                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-phase-primary">
-                      {mode === 'signup' ? 'Choose your path in' : 'Reconnect with'} Gurudevi
-                    </h2>
-                    <p className="text-sm text-phase-secondary leading-relaxed mt-1.5">
-                      {mode === 'signup'
-                        ? 'Create a held, cross-device identity when you are ready.'
-                        : 'Use the credentials that belong to your sanctuary profile.'}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Primary Action Buttons */}
-                <div className="flex flex-col gap-3.5 w-full pt-1">
-                  <button
-                    type="button"
-                    onClick={handleGooglePress}
-                    disabled={loading}
-                    className="w-full h-[56px] px-5 rounded-2xl bg-phase-primary text-phase-world font-bold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:translate-y-[-1px] active:translate-y-[0px] transition-all cursor-pointer disabled:opacity-50"
-                  >
-                    <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-sm">
-                      <span className="text-[#4285F4] font-black text-sm">G</span>
-                    </div>
-                    <span>{modeCopy.google}</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handlePasskeyPress}
-                    disabled={loading}
-                    className="w-full h-[54px] px-5 rounded-2xl border border-phase-border bg-phase-surface/60 hover:bg-phase-surface text-phase-primary font-bold flex items-center justify-center gap-3 shadow-sm hover:border-phase-border/80 transition-all cursor-pointer disabled:opacity-50"
-                  >
-                    <div className="w-7 h-7 rounded-full bg-phase-primary/10 flex items-center justify-center">
-                      <Key size={15} color={accent.action} />
-                    </div>
-                    <span>Use Passkey (Fast & Phishing-resistant)</span>
-                  </button>
-
-                  {!showEmailForm && (
-                    <button
-                      type="button"
-                      onClick={toggleEmailForm}
-                      className="w-full h-[54px] px-5 rounded-2xl border border-phase-border/80 bg-phase-surface/40 hover:bg-phase-surface/80 text-phase-primary font-medium flex items-center justify-center shadow-sm transition-all cursor-pointer"
-                    >
-                      <span>{modeCopy.email}</span>
-                    </button>
-                  )}
-
-                  {/* Email & Password Input Section */}
-                  {showEmailForm && (
-                    <div className="animate-in fade-in slide-in-from-top-2 duration-200 mt-2 p-5 sm:p-6 rounded-3xl bg-phase-surface/70 border border-phase-border flex flex-col gap-4 shadow-sm">
-                      <div className="flex justify-between items-center pb-1 border-b border-phase-border/40">
-                        <span className="font-bold text-sm text-phase-primary">
-                          Email Authentication
-                        </span>
-                        <span className="text-xs text-phase-muted">
-                          {mode === 'signup' ? 'New Account' : 'Direct Login'}
-                        </span>
+                    <div className="flex flex-col gap-3.5">
+                      <div className="flex flex-col gap-1.5">
+                        <label
+                          className="text-xs font-semibold text-phase-secondary ml-1"
+                          htmlFor="web-auth-email"
+                        >
+                          Email Address
+                        </label>
+                        <input
+                          id="web-auth-email"
+                          type="email"
+                          placeholder="you@school.edu.lk"
+                          value={email}
+                          onChange={(e) => handleEmailChange(e.target.value)}
+                          autoComplete="email"
+                          className="w-full h-[48px] px-4 rounded-xl border border-phase-border bg-phase-surface text-phase-primary text-sm focus:outline-none focus:ring-2 focus:ring-phase-accent transition-all"
+                        />
+                        {errors.email && (
+                          <span className="text-xs text-rose-500 font-medium ml-1">
+                            {errors.email}
+                          </span>
+                        )}
                       </div>
 
-                      <div className="flex flex-col gap-3.5">
-                        <div className="flex flex-col gap-1.5">
-                          <label
-                            className="text-xs font-semibold text-phase-secondary ml-1"
-                            htmlFor="web-auth-email"
-                          >
-                            Email Address
-                          </label>
-                          <input
-                            id="web-auth-email"
-                            type="email"
-                            placeholder="you@school.edu.lk"
-                            value={email}
-                            onChange={(e) => handleEmailChange(e.target.value)}
-                            autoComplete="email"
-                            className="w-full h-[48px] px-4 rounded-xl border border-phase-border bg-phase-surface text-phase-primary text-sm focus:outline-none focus:ring-2 focus:ring-phase-accent transition-all"
-                          />
-                          {errors.email && (
-                            <span className="text-xs text-rose-500 font-medium ml-1">
-                              {errors.email}
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="flex flex-col gap-1.5">
-                          <label
-                            className="text-xs font-semibold text-phase-secondary ml-1"
-                            htmlFor="web-auth-password"
-                          >
-                            Password
-                          </label>
-                          <input
-                            id="web-auth-password"
-                            type="password"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => handlePasswordChange(e.target.value)}
-                            autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                            className="w-full h-[48px] px-4 rounded-xl border border-phase-border bg-phase-surface text-phase-primary text-sm focus:outline-none focus:ring-2 focus:ring-phase-accent transition-all"
-                          />
-                          {errors.password && (
-                            <span className="text-xs text-rose-500 font-medium ml-1">
-                              {errors.password}
-                            </span>
-                          )}
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={handleEmailPress}
-                          disabled={loading}
-                          className="w-full h-[50px] mt-2 rounded-xl bg-phase-primary text-phase-world font-bold flex items-center justify-center shadow-md hover:bg-phase-primary/90 transition-all cursor-pointer disabled:opacity-50"
+                      <div className="flex flex-col gap-1.5">
+                        <label
+                          className="text-xs font-semibold text-phase-secondary ml-1"
+                          htmlFor="web-auth-password"
                         >
-                          {loading ? 'Processing...' : modeCopy.primary}
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={backToGoogle}
-                          className="text-xs text-phase-secondary hover:text-phase-primary text-center underline cursor-pointer py-1"
-                        >
-                          Cancel email form & return
-                        </button>
+                          Password
+                        </label>
+                        <input
+                          id="web-auth-password"
+                          type="password"
+                          placeholder="••••••••"
+                          value={password}
+                          onChange={(e) => handlePasswordChange(e.target.value)}
+                          autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                          className="w-full h-[48px] px-4 rounded-xl border border-phase-border bg-phase-surface text-phase-primary text-sm focus:outline-none focus:ring-2 focus:ring-phase-accent transition-all"
+                        />
+                        {errors.password && (
+                          <span className="text-xs text-rose-500 font-medium ml-1">
+                            {errors.password}
+                          </span>
+                        )}
                       </div>
+
+                      <button
+                        type="button"
+                        onClick={handleEmailPress}
+                        disabled={loading}
+                        className="w-full h-[50px] mt-2 rounded-xl bg-phase-primary text-phase-world font-bold flex items-center justify-center shadow-md hover:bg-phase-primary/90 transition-all cursor-pointer disabled:opacity-50"
+                      >
+                        {loading ? 'Processing...' : modeCopy.primary}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={backToGoogle}
+                        className="text-xs text-phase-secondary hover:text-phase-primary text-center underline cursor-pointer py-1"
+                      >
+                        Cancel email form & return
+                      </button>
                     </div>
-                  )}
-
-                  {mode === 'login' && !showEmailForm && (
-                    <button
-                      type="button"
-                      onClick={handleGuestPress}
-                      className="text-sm font-medium text-phase-secondary hover:text-phase-primary text-center py-2 transition-colors cursor-pointer"
-                    >
-                      Continue as Guest Explorer
-                    </button>
-                  )}
-                </div>
-
-                {errors._form && (
-                  <div className="p-3.5 rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-600 dark:text-rose-400 text-center text-xs font-medium">
-                    {errors._form}
                   </div>
                 )}
+
+                {mode === 'login' && !showEmailForm && (
+                  <button
+                    type="button"
+                    onClick={handleGuestPress}
+                    className="text-sm font-medium text-phase-secondary hover:text-phase-primary text-center py-2 transition-colors cursor-pointer"
+                  >
+                    Continue as Guest Explorer
+                  </button>
+                )}
               </div>
+
+              {errors._form && (
+                <div className="p-3.5 rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-600 dark:text-rose-400 text-center text-xs font-medium">
+                  {errors._form}
+                </div>
+              )}
             </div>
           </div>
-        </main>
-
-        <GatewayFooter />
-      </div>
+        }
+      />
     );
   },
 );

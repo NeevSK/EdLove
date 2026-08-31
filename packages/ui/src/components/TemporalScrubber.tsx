@@ -1,10 +1,10 @@
 import { useTemporalStore } from '@repo/core/logic';
 import React from 'react';
-import { Animated, Dimensions, PanResponder } from 'react-native';
+import { useWindowDimensions } from 'react-native';
+import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { runOnJS } from 'react-native-worklets';
 import { Box, Text } from '@repo/ui/primitives';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const SCRUBBER_WIDTH = SCREEN_WIDTH * 0.8;
 
 /**
  * TemporalScrubber
@@ -14,64 +14,73 @@ const SCRUBBER_WIDTH = SCREEN_WIDTH * 0.8;
  */
 export const TemporalScrubber: React.FC = () => {
   const { viewDate, setViewDate, intensity, phase } = useTemporalStore();
+  const { width } = useWindowDimensions();
+  const scrubberWidth = width * 0.8;
 
-  // Animation value for the scrubber handle
-  const pan = React.useRef(new Animated.Value(0)).current;
+  const pan = useSharedValue(0);
 
-  const panResponder = React.useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderMove: Animated.event([null, { dx: pan }], {
-        useNativeDriver: false,
-      }),
-      onPanResponderRelease: (_e, gestureState) => {
-        // Simple logic to change date based on swipe direction
-        const today = new Date();
-        if (gestureState.dx < -50) {
-          // Swipe Left -> Past
-          const currentDate = viewDate ? new Date(viewDate) : today;
-          const pastDate = new Date(currentDate);
-          pastDate.setDate(pastDate.getDate() - 1);
-          setViewDate(pastDate.toISOString().split('T')[0]!);
-        } else if (gestureState.dx > 50) {
-          // Swipe Right -> Reset to Present
-          setViewDate(today.toISOString().split('T')[0]!);
-        }
+  const commitSwipe = React.useCallback(
+    (translationX: number) => {
+      const today = new Date();
+      if (translationX < -50) {
+        const currentDate = viewDate ? new Date(viewDate) : today;
+        currentDate.setDate(currentDate.getDate() - 1);
+        setViewDate(currentDate.toISOString().split('T')[0]!);
+      } else if (translationX > 50) {
+        setViewDate(today.toISOString().split('T')[0]!);
+      }
+    },
+    [setViewDate, viewDate],
+  );
 
-        Animated.spring(pan, {
-          toValue: 0,
-          useNativeDriver: false,
-        }).start();
-      },
-    }),
-  ).current;
+  const panGesture = usePanGesture({
+    minDistance: 8,
+    maxPointers: 1,
+    onUpdate: (event) => {
+      'worklet';
+      pan.value = event.translationX;
+    },
+    onDeactivate: (event) => {
+      'worklet';
+      if (!event.canceled && Math.abs(pan.value) > 50) {
+        runOnJS(commitSwipe)(pan.value);
+      }
+      pan.value = withSpring(0);
+    },
+  });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: pan.value }],
+  }));
 
   const color = phase === 'past' ? '#968E80' : '#F6BF8C';
+  const todayKey = new Date().toISOString().split('T')[0];
 
   return (
     <Box className="p-6 items-center justify-center">
       <Box
         className="h-1 rounded-full justify-center mb-4"
-        style={{ width: SCRUBBER_WIDTH, backgroundColor: `${color}22` }}
+        style={{ width: scrubberWidth, backgroundColor: `${color}22` }}
       >
-        <Animated.View
-          {...panResponder.panHandlers}
-          className="w-8 h-8 rounded-full absolute items-center justify-center shadow-lg"
-          style={[
-            {
-              left: SCRUBBER_WIDTH / 2 - 16,
-              transform: [{ translateX: pan }],
-              backgroundColor: color,
-              shadowColor: color,
-              opacity: intensity,
-            },
-          ]}
-        >
-          <Box className="w-2 h-2 rounded-full bg-white/80" />
-        </Animated.View>
+        <GestureDetector gesture={panGesture}>
+          <Animated.View
+            className="w-8 h-8 rounded-full absolute items-center justify-center shadow-lg"
+            style={[
+              animatedStyle,
+              {
+                left: scrubberWidth / 2 - 16,
+                backgroundColor: color,
+                shadowColor: color,
+                opacity: intensity,
+              },
+            ]}
+          >
+            <Box className="w-2 h-2 rounded-full bg-white/80" />
+          </Animated.View>
+        </GestureDetector>
       </Box>
       <Text className="text-[10px] font-bold tracking-[2px] opacity-80" style={{ color }}>
-        {viewDate === new Date().toISOString().split('T')[0] ? 'LIVING PRESENT' : viewDate}
+        {viewDate === todayKey ? 'LIVING PRESENT' : viewDate}
       </Text>
     </Box>
   );

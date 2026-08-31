@@ -3,12 +3,8 @@
 'use no memo';
 import type React from 'react';
 import { StyleSheet } from 'react-native';
-import type {
-  LongPressGestureEvent,
-} from 'react-native-gesture-handler';
 import {
   GestureDetector,
-  GestureHandlerRootView,
   useLongPressGesture,
   usePanGesture,
   useSimultaneousGestures,
@@ -42,9 +38,6 @@ export { resolveDragTranslation } from './reorder';
  * Migrated to hook-based API for better TypeScript support and performance.
  */
 const styles = StyleSheet.create({
-  container: {
-    // We don't want the root view to block layout
-  },
   wrapper: {
     position: 'relative',
   },
@@ -64,6 +57,8 @@ export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
   const zIndex = useSharedValue(1);
+  const shadowOpacity = useSharedValue(0);
+  const shadowRadius = useSharedValue(0);
 
   const longPressGesture = useLongPressGesture({
     minDuration: 300,
@@ -72,6 +67,8 @@ export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
       isDragging.value = true;
       scale.value = withSpring(1.05);
       zIndex.value = 100;
+      shadowOpacity.value = withTiming(0.3);
+      shadowRadius.value = withTiming(20);
       runOnJS(hapticMedium)();
       if (onDragStart) runOnJS(onDragStart)();
     },
@@ -81,21 +78,18 @@ export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
     onUpdate: (event) => {
       'worklet';
       if (!isDragging.value) return;
-      // @ts-ignore - translationX/translationY exist in runtime but type definition is incomplete
       const translation = resolveDragTranslation(dragAxis, {
-        // @ts-ignore - translationX/translationY exist in runtime but type definition is incomplete
         x: event.translationX,
-        // @ts-ignore - translationX/translationY exist in runtime but type definition is incomplete
         y: event.translationY,
       });
       translateX.value = translation.x;
       translateY.value = translation.y;
     },
-    onDeactivate: () => {
+    onDeactivate: (event) => {
       'worklet';
       if (!isDragging.value) return;
 
-      if (onDragEnd) {
+      if (!event.canceled && onDragEnd) {
         runOnJS(onDragEnd)(id, { x: translateX.value, y: translateY.value });
       }
 
@@ -105,6 +99,8 @@ export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
       translateY.value = withSpring(0);
       scale.value = withSpring(1);
       zIndex.value = withTiming(1);
+      shadowOpacity.value = withTiming(0);
+      shadowRadius.value = withTiming(0);
     },
   });
 
@@ -118,21 +114,17 @@ export const DraggableCanvasSurface: React.FC<DraggableCanvasSurfaceProps> = ({
       { scale: scale.value },
     ],
     zIndex: zIndex.value,
-    shadowOpacity: withSpring(isDragging.value ? 0.3 : 0),
-    shadowRadius: withSpring(isDragging.value ? 20 : 0),
+    shadowOpacity: shadowOpacity.value,
+    shadowRadius: shadowRadius.value,
     elevation: isDragging.value ? 10 : 0,
   }));
 
+  if (!enabled) return children;
+
   return (
-    <GestureHandlerRootView style={styles.container}>
-      {enabled ? (
-        <GestureDetector gesture={composed}>
-          <Animated.View style={[styles.wrapper, animatedStyle]}>{children}</Animated.View>
-        </GestureDetector>
-      ) : (
-        children
-      )}
-    </GestureHandlerRootView>
+    <GestureDetector gesture={composed}>
+      <Animated.View style={[styles.wrapper, animatedStyle]}>{children}</Animated.View>
+    </GestureDetector>
   );
 };
 

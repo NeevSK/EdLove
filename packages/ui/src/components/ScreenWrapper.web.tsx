@@ -61,6 +61,7 @@ export default function ScreenWrapper({
             maxWidth: frame.maxWidth,
             paddingHorizontal: frame.gutter,
           }, style]}
+          keyboardShouldPersistTaps="handled"
           // High-fidelity fix: show scrollbars on web for better spatial awareness (System 2 resonance)
           showsVerticalScrollIndicator={true}
           refreshControl={refreshControl}

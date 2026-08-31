@@ -5,8 +5,9 @@
  * Philosophy: "The Mud Rule" - If it works on iPhone but lags on $100 Android, it's broken
  */
 
-import type { ReactNode } from 'react';
 import { useEnvironment } from '@repo/ui/context';
+import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
+import type { ReactNode } from 'react';
 
 interface EnvironmentGuardProps {
   children: ReactNode;
@@ -30,15 +31,15 @@ export function EnvironmentGuard({
   lowFidelityFallback = null,
   requiresHighFidelity = false,
 }: EnvironmentGuardProps) {
-  const { effectiveFidelity } = useEnvironment();
+  const { visualCapabilities } = useEnvironment();
 
   // If component requires high fidelity and we're in low fidelity mode
-  if (requiresHighFidelity && effectiveFidelity === 'low') {
+  if (requiresHighFidelity && visualCapabilities.effectiveFidelity === 'low') {
     return <>{lowFidelityFallback}</>;
   }
 
   // If we're in low fidelity mode and have a fallback
-  if (effectiveFidelity === 'low' && lowFidelityFallback !== null) {
+  if (visualCapabilities.effectiveFidelity === 'low' && lowFidelityFallback !== null) {
     return <>{lowFidelityFallback}</>;
   }
 
@@ -56,41 +57,19 @@ export function EnvironmentGuard({
  * ```
  */
 export function useHighFidelity(): boolean {
-  const { effectiveFidelity } = useEnvironment();
-  return effectiveFidelity === 'high';
+  return useVisualCapabilities().effectiveFidelity === 'high';
 }
 
 /**
  * Hook to check if we should render expensive animations
  */
 export function useShouldAnimate(): boolean {
-  const { effectiveFidelity, reality } = useEnvironment();
-
-  // Don't animate in low fidelity mode
-  if (effectiveFidelity === 'low') return false;
-
-  // Don't animate if battery saver is on
-  if (reality.isBatterySaverMode) return false;
-
-  return true;
+  return useVisualCapabilities().allowSubtleAnimation;
 }
 
 /**
  * Hook to check if we should load high-quality images
  */
 export function useShouldLoadHighQualityImages(): boolean {
-  const { effectiveFidelity, reality } = useEnvironment();
-
-  // Don't load high-quality images in low fidelity mode
-  if (effectiveFidelity === 'low') return false;
-
-  // Don't load high-quality images in data saver mode
-  if (reality.isDataSaverMode) return false;
-
-  // Don't load high-quality images on poor network
-  if (reality.networkQuality === 'poor' || reality.networkQuality === 'offline') {
-    return false;
-  }
-
-  return true;
+  return useVisualCapabilities().shouldPrefetchAssets;
 }

@@ -1,5 +1,6 @@
+import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { useEffect, useRef } from 'react';
-import { StyleSheet, View, Platform } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Confetti, type ConfettiMethods } from 'react-native-fast-confetti';
 import { useAccessibility } from '../hooks/useAccessibility';
 import { color } from './motion';
@@ -31,30 +32,16 @@ export interface CelebrationOverlayProps {
  *
  * Reduced-motion: renders SuccessCheck instead of confetti particles.
  *
- * Density tiers: 'low'=50, 'medium'=100, 'high'=200, 'auto'=detect device tier.
- * Auto-detection uses PixelRatio (low-end = < 2.5) and Platform.constants (if available).
+ * Density tiers remain an explicit product choice; auto is bounded by the resolved capability.
  */
-function getDensityCount(density: DensityTier): number {
+function getRequestedCount(density: DensityTier, maxCelebrationParticles: number): number {
   const presets: Record<Exclude<DensityTier, 'auto'>, number> = {
     low: 50,
     medium: 100,
     high: 200,
   };
 
-  if (density !== 'auto') return presets[density];
-
-  // Auto-detect: low-end devices get fewer particles
-  // This is a simple heuristic — for production, consider a device-tier service
-  if (Platform.OS === 'web') return presets.medium;
-
-  try {
-    // Use PixelRatio as a proxy for device tier
-    // @ts-ignore - PixelRatio may not be available in all RN versions
-    const pixelRatio = require('react-native').PixelRatio?.get?.() ?? 2;
-    return pixelRatio < 2.5 ? presets.low : presets.medium;
-  } catch {
-    return presets.medium;
-  }
+  return density === 'auto' ? maxCelebrationParticles : presets[density];
 }
 
 export function CelebrationOverlay({
@@ -67,6 +54,7 @@ export function CelebrationOverlay({
 }: CelebrationOverlayProps) {
   const confettiRef = useRef<ConfettiMethods>(null);
   const { isReduceMotionEnabled } = useAccessibility();
+  const { allowSubtleAnimation, maxCelebrationParticles } = useVisualCapabilities();
 
   // Clean up on unmount — reset any running animation to prevent ghost confetti
   useEffect(() => {
@@ -78,18 +66,21 @@ export function CelebrationOverlay({
   if (!trigger) return null;
 
   // Reduced motion: show static success instead of confetti
-  if (isReduceMotionEnabled) {
+  if (isReduceMotionEnabled || !allowSubtleAnimation) {
     return (
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+      <View style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}>
         <SuccessCheck size={64} />
       </View>
     );
   }
 
-  const effectiveCount = count ?? getDensityCount(density);
+  const effectiveCount = Math.min(
+    count ?? getRequestedCount(density, maxCelebrationParticles),
+    maxCelebrationParticles,
+  );
 
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
+    <View style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}>
       <Confetti
         ref={confettiRef}
         count={effectiveCount}

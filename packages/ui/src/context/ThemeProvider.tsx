@@ -10,8 +10,8 @@ import {
   useState,
 } from 'react';
 import { useColorScheme } from 'react-native';
-import type { TemporalPhase, ThemeMode } from '@repo/ui/context/types';
-import { getTemporalPhase, shouldUseDarkTheme } from '@repo/ui/context/utils';
+import type { TemporalPhase, ThemeMode } from './types';
+import { getTemporalPhase, shouldUseDarkTheme } from './utils';
 
 interface ThemeContextValue {
   themeMode: ThemeMode;
@@ -19,7 +19,7 @@ interface ThemeContextValue {
   isDark: boolean;
   isVeilActive: boolean;
   enableLivingTheme: boolean;
-  setThemeMode: (mode: ThemeMode) => void;
+  setThemeMode: (mode: ThemeMode) => Promise<void>;
   toggleVeil: () => Promise<void>;
   setEnableLivingTheme: (enabled: boolean) => Promise<void>;
 }
@@ -30,8 +30,6 @@ const STORAGE_KEYS = {
   IS_VEIL_ACTIVE: '@gurudevi/is_veil_active',
   ENABLE_LIVING_THEME: '@gurudevi/enable_living_theme',
 };
-
-const ENABLE_EXPERIMENTAL_DARK_MODE = typeof __DEV__ !== 'undefined' ? __DEV__ : false;
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const themeMode = useStore((state: any) => state.themeMode ?? state.theme ?? 'system');
@@ -45,10 +43,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // Derived
   const isDark = useMemo(
     () =>
-      ENABLE_EXPERIMENTAL_DARK_MODE &&
-      (themeMode === 'dark' ||
+      themeMode === 'dark' ||
         (themeMode === 'system' && systemColorScheme === 'dark') ||
-        (themeMode === 'auto' && shouldUseDarkTheme(temporalPhase))),
+        (themeMode === 'auto' && shouldUseDarkTheme(temporalPhase)),
     [themeMode, systemColorScheme, temporalPhase],
   );
 

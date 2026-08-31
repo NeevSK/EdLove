@@ -120,16 +120,17 @@ export function useBreakpoint(): Breakpoint {
 }
 
 /**
- * Web-safe version of useBreakpoint that works in browser environments.
- * Falls back to phone if window dimensions aren't available.
+ * Web-specific reactive helper referencing canvasBreakpoints with width-only semantics.
  */
-export function useBreakpointWeb(): Breakpoint {
-  if (typeof window !== 'undefined' && window.innerWidth) {
-    const width = window.innerWidth;
-    if (width >= breakpoints.desktop) return 'desktop';
-    if (width >= breakpoints.tablet) return 'tablet';
-  }
-  return 'phone';
+export function useResponsiveWeb() {
+  const { width } = useWindowDimensions();
+  return {
+    width,
+    isMobile: width <= canvasBreakpoints.mobileMax,
+    isTablet: width >= canvasBreakpoints.tabletMin && width < canvasBreakpoints.desktopMin,
+    isDesktop: width >= canvasBreakpoints.desktopMin,
+    isSplit: width >= canvasBreakpoints.tabletMin,
+  };
 }
 
 /** Convenience: the resolved column count + max width for the current window. */

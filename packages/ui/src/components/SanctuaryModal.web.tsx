@@ -85,10 +85,11 @@ export default function SanctuaryModal({
         {/* Body */}
         <ScrollView
           className="p-6"
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ flexGrow: 1 }}
           style={{
             backgroundColor: '#FDFAF3',
             maxHeight: Dimensions.get('window').height * 0.7,
-            overflow: 'scroll',
           }}
         >
           {children}

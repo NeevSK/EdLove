@@ -1,12 +1,10 @@
 import { authAPI } from '@repo/core/auth';
 import { LanguageUtils } from '@repo/core/logic';
-import { memo, useCallback, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Image } from 'react-native';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
-import { useTheme } from '@repo/ui/hooks/useTheme';
-import { SkiaGlowAura } from '@repo/ui/components/SkiaGlowAura';
+import { Mascot, type MascotArtworkSource } from '@repo/ui/components/Mascot';
 import { PressableScale } from '@repo/ui/components/PressableScale';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { SkiaGlowAura } from '@repo/ui/components/SkiaGlowAura';
+import { useTheme } from '@repo/ui/hooks/useTheme';
 import {
   Box,
   Button,
@@ -25,13 +23,12 @@ import {
   VStack,
 } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import { getGuestEntryErrorMessage } from '@repo/ui/screens/welcomeFlow';
 import { Theme } from '@repo/ui/theme/Theme';
 import { EXTERNAL_URLS } from '@repo/ui/utils';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-import { getGuestEntryErrorMessage } from '@repo/ui/screens/welcomeFlow';
-
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const LOGO = require('../../assets/icon.png');
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const LANGUAGES = [
   { code: 'en', label: 'English' },
@@ -74,11 +71,12 @@ const LanguagePill = memo(({ lang, isActive, onPress, t }: LanguagePillProps) =>
 interface WelcomeScreenProps {
   onLogin?: () => void;
   onGuest?: () => void;
+  exploreArtwork?: MascotArtworkSource;
 }
 
-const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
+const WelcomeScreen = memo(({ onLogin, onGuest, exploreArtwork }: WelcomeScreenProps) => {
   const { t, i18n } = useTranslation();
-  const { accent } = useTheme();
+  const { accent, animationsEnabled, blurEnabled } = useTheme();
   const [acceptedTerms, setAcceptedTerms] = useState(true);
   const [isConnecting, setIsConnecting] = useState(false);
   const guestEntryInFlightRef = useRef(false);
@@ -115,12 +113,11 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
     } catch (error) {
       console.error('Guest login failed:', error);
       showToast({
-        message:
-          getGuestEntryErrorMessage(
-            error,
-            t('auth.guestLoginFailed') ||
-              'We could not open the sanctuary doors for you right now. Please try again.',
-          ),
+        message: getGuestEntryErrorMessage(
+          error,
+          t('auth.guestLoginFailed') ||
+            'We could not open the sanctuary doors for you right now. Please try again.',
+        ),
         type: 'error',
       });
     } finally {
@@ -204,18 +201,27 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
             </Box>
 
             <VStack className="gap-4">
-              <SkiaGlowAura size={200} blurRadius={30} color={`${accent.action}55`}>
-                <Box className="w-[156px] h-[156px] rounded-[40px] self-center bg-phase-surface justify-center items-center border border-phase-border shadow-xl relative">
-                  <Box className="absolute inset-2.5 rounded-[32px] bg-phase-accent/5" />
-                  <Image
-                    source={LOGO}
-                    style={{ width: 96, height: 96, borderRadius: 18 }}
-                    accessible={true}
-                    accessibilityHint={t('accessibility.appLogoHint') || 'Gurudevi Sanctuary Icon'}
-                    accessibilityIgnoresInvertColors={true}
-                  />
-                </Box>
-              </SkiaGlowAura>
+              <Box className="w-[156px] h-[156px] self-center justify-center items-center relative">
+                {animationsEnabled && blurEnabled ? (
+                  <SkiaGlowAura
+                    active
+                    blurRadius={20}
+                    color={`${accent.action}B3`}
+                    secondaryColor={`${accent.reward}1A`}
+                    size={156}
+                  >
+                    <Box className="w-[156px] h-[156px] rounded-[40px] bg-phase-surface justify-center items-center border border-phase-border shadow-xl relative">
+                      <Box className="absolute inset-2.5 rounded-[32px] bg-phase-accent/5" />
+                      <Mascot artwork={exploreArtwork} mode="glowing" podVariant="halo" size={156} state="guiding" />
+                    </Box>
+                  </SkiaGlowAura>
+                ) : (
+                  <Box className="w-[156px] h-[156px] rounded-[40px] bg-phase-surface justify-center items-center border border-phase-border shadow-xl relative">
+                    <Box className="absolute inset-2.5 rounded-[32px] bg-phase-accent/5" />
+                    <Mascot artwork={exploreArtwork} mode="glowing" podVariant="halo" size={156} state="guiding" />
+                  </Box>
+                )}
+              </Box>
 
               <VStack className="gap-2 items-center">
                 <Heading className="text-phase-text-primary text-4xl text-center font-bold tracking-[-1.8px]">
@@ -284,33 +290,30 @@ const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
                 </HStack>
 
                 <VStack className="gap-3">
-                  <PressableScale onPress={handleStartExploringPress} disabled={isConnecting || !acceptedTerms}>
-                    <Button
-                      onPress={handleStartExploringPress}
-                      isDisabled={isConnecting || !acceptedTerms}
-                      className={`h-[64px] rounded-2xl shadow-md w-full ${acceptedTerms ? 'bg-phase-accent' : 'bg-phase-text-secondary opacity-50'}`}
-                    >
-                      {isConnecting ? (
-                        <Spinner color="white" />
-                      ) : (
-                        <ButtonText className="text-white font-bold text-lg">
-                          {t('welcome.exploreAsGuest')}
-                        </ButtonText>
-                      )}
-                    </Button>
-                  </PressableScale>
-
-                  <PressableScale onPress={handleLogin} disabled={!acceptedTerms}>
-                    <Button
-                      variant="outline"
-                      onPress={handleLogin}
-                      className="h-[54px] rounded-2xl border-phase-border bg-transparent w-full"
-                    >
-                      <ButtonText className="text-phase-text-secondary font-medium">
-                        {t('welcome.login')}
+                  <Button
+                    onPress={handleStartExploringPress}
+                    isDisabled={isConnecting || !acceptedTerms}
+                    className={`h-[64px] rounded-2xl shadow-md w-full ${acceptedTerms ? 'bg-phase-accent' : 'bg-phase-text-secondary opacity-50'}`}
+                  >
+                    {isConnecting ? (
+                      <Spinner color="white" />
+                    ) : (
+                      <ButtonText className="text-white font-bold text-lg">
+                        {t('welcome.exploreAsGuest')}
                       </ButtonText>
-                    </Button>
-                  </PressableScale>
+                    )}
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    onPress={handleLogin}
+                    isDisabled={!acceptedTerms}
+                    className="h-[54px] rounded-2xl border-phase-border bg-transparent w-full"
+                  >
+                    <ButtonText className="text-phase-text-secondary font-medium">
+                      {t('welcome.login')}
+                    </ButtonText>
+                  </Button>
                 </VStack>
               </VStack>
 

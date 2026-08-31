@@ -31,10 +31,16 @@ export type { CollapseProps } from './components/Collapse';
 export { Collapse } from './components/Collapse';
 export type { ErrorStateProps } from './components/ErrorState';
 export { ErrorState as BrandedErrorState } from './components/ErrorState';
+export type { FireflyFeedbackSceneProps } from './components/FireflyFeedbackScene';
+export { FireflyFeedbackScene } from './components/FireflyFeedbackScene';
 export type { FocusRingProps } from './components/FocusRing';
 export { FocusRing } from './components/FocusRing';
 export type { PageFrame } from './components/layout';
 export { useBreakpoint, usePageFrame, useResponsiveGrid } from './components/layout';
+export type { MascotArtworkSource, MascotConfig, MascotId } from './components/Mascot';
+export { Mascot, MascotProvider, useMascot } from './components/Mascot';
+export type { MascotPodProps, MascotPodVariant } from './components/MascotPod';
+export { MascotPod } from './components/MascotPod';
 export { color, duration, easing, scale } from './components/motion';
 export type { PressableScaleProps } from './components/PressableScale';
 // Delight Primitives
@@ -47,3 +53,4 @@ export {
 } from './components/Skeleton';
 export { SuccessCheck, SuccessGlow } from './components/Success';
 export { sharedTransitionTiming, softCrossfadeScale } from './components/screenTransitions';
+export { VisualCapabilityInspector } from './components/VisualCapabilityInspector';

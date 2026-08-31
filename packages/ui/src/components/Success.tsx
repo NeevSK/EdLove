@@ -10,6 +10,8 @@
  *
  * Platform note: Uses platform-specific animation implementations.
  */
+
+import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { useEffect, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
@@ -34,6 +36,7 @@ export function SuccessCheck({
   className?: string;
   style?: any;
 }) {
+  const { allowSubtleAnimation } = useVisualCapabilities();
   // Web implementation using CSS animations
   if (Platform.OS === 'web') {
     return (
@@ -44,7 +47,7 @@ export function SuccessCheck({
             100% { opacity: 1; transform: scale(${scaleTokens.rest}); }
           }
           .success-check-animated svg {
-            animation: success-check ${duration.micro}ms cubic-bezier(0.33, 1, 0.42, 0) forwards;
+            animation: ${allowSubtleAnimation ? `success-check ${duration.micro}ms cubic-bezier(0.33, 1, 0.42, 0) forwards` : 'none'};
           }
         `}</style>
         <div className="success-check-animated">
@@ -70,7 +73,7 @@ export function SuccessCheck({
       className={className}
       style={[
         { width: size, height: size },
-        ...(Animated
+        ...(Animated && allowSubtleAnimation
           ? ({
               animationName: {
                 '0%': { opacity: 0, transform: [{ scale: scaleTokens.enter }] },
@@ -174,6 +177,7 @@ export function SuccessGlow({
   className?: string;
   style?: any;
 }) {
+  const { allowAmbientEffects, allowSubtleAnimation } = useVisualCapabilities();
   // Re-mountable key lets a screen retrigger the moment (e.g. on repeated saves).
   const [playKey, setPlayKey] = useState(0);
   useEffect(() => setPlayKey((k) => k + 1), []);
@@ -193,7 +197,7 @@ export function SuccessGlow({
             100% { opacity: 1; transform: scale(1); }
           }
           .success-glow-animated svg {
-            animation: success-glow ${duration.meaningful}ms cubic-bezier(0.33, 1, 0.42, 0) forwards;
+                  animation: ${allowSubtleAnimation ? `success-glow ${duration.meaningful}ms cubic-bezier(0.33, 1, 0.42, 0) forwards` : 'none'};
           }
         `}</style>
         <div className="success-glow-animated" style={{ position: 'absolute', inset: 0 }}>
@@ -201,14 +205,16 @@ export function SuccessGlow({
             <Path d={HEART_PATH} fill={color.brand.peach} />
           </Svg>
         </div>
-        {MOTE_OFFSETS.map((m, i) => (
-          <Mote
-            key={i}
-            dx={m.dx}
-            dy={m.dy}
-            delayMs={duration.meaningful * 0.3 + m.delayFrac * duration.meaningful}
-          />
-        ))}
+        {allowAmbientEffects &&
+          allowSubtleAnimation &&
+          MOTE_OFFSETS.map((m, i) => (
+            <Mote
+              key={i}
+              dx={m.dx}
+              dy={m.dy}
+              delayMs={duration.meaningful * 0.3 + m.delayFrac * duration.meaningful}
+            />
+          ))}
       </div>
     );
   }
@@ -224,7 +230,7 @@ export function SuccessGlow({
         style={{
           position: 'absolute',
           inset: 0,
-          ...(Animated
+          ...(Animated && allowSubtleAnimation
             ? ({
                 animationName: {
                   '0%': { opacity: 0, transform: [{ scale: 0.7 }] },
@@ -242,14 +248,16 @@ export function SuccessGlow({
           <Path d={HEART_PATH} fill={color.brand.peach} />
         </Svg>
       </AnimatedView>
-      {MOTE_OFFSETS.map((m, i) => (
-        <Mote
-          key={i}
-          dx={m.dx}
-          dy={m.dy}
-          delayMs={duration.meaningful * 0.3 + m.delayFrac * duration.meaningful}
-        />
-      ))}
+      {allowAmbientEffects &&
+        allowSubtleAnimation &&
+        MOTE_OFFSETS.map((m, i) => (
+          <Mote
+            key={i}
+            dx={m.dx}
+            dy={m.dy}
+            delayMs={duration.meaningful * 0.3 + m.delayFrac * duration.meaningful}
+          />
+        ))}
     </View>
   );
 }

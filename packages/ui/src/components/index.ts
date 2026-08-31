@@ -1,21 +1,22 @@
+export type {
+  AccessibleIconButtonProps,
+  AccessibleTextLinkProps,
+  AccessibleTouchableProps,
+} from '@repo/ui/components/AccessibleTouchable';
+export {
+  AccessibleIconButton,
+  AccessibleTextLink,
+  AccessibleTouchable,
+} from '@repo/ui/components/AccessibleTouchable';
 export { default as AccountPinModal } from '@repo/ui/components/AccountPinModal';
 export { default as AchievementUnlockOverlay } from '@repo/ui/components/AchievementUnlockOverlay';
 export { AdaptiveLayout } from '@repo/ui/components/AdaptiveLayout';
-export * from '@repo/ui/components/BreathAnimation';
-export { BrandPulse } from '@repo/ui/components/BrandPulse';
-export type { BrandPulseProps } from '@repo/ui/components/BrandPulse';
-export { default as BreathingLoader } from '@repo/ui/components/BreathingLoader';
-// Motion system exports
-export * from '@repo/ui/components/motion';
-export * from '@repo/ui/components/layout';
-export * from '@repo/ui/components/screenTransitions';
-// New branded state components (renamed to avoid conflicts with existing components)
-export { ErrorState as BrandedErrorState } from '@repo/ui/components/ErrorState';
-export type { ErrorStateProps } from '@repo/ui/components/ErrorState';
-export { SuccessCheck, SuccessGlow } from '@repo/ui/components/Success';
-export { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
 export type { BrandedEmptyStateProps } from '@repo/ui/components/BrandedEmptyState';
-export { ShimmerBlock, SkeletonCard as BrandedSkeletonCard, SkeletonList as BrandedSkeletonList } from '@repo/ui/components/Skeleton';
+export { BrandedEmptyState } from '@repo/ui/components/BrandedEmptyState';
+export type { BrandPulseProps } from '@repo/ui/components/BrandPulse';
+export { BrandPulse } from '@repo/ui/components/BrandPulse';
+export * from '@repo/ui/components/BreathAnimation';
+export { default as BreathingLoader } from '@repo/ui/components/BreathingLoader';
 export type { ChatComposerProps } from '@repo/ui/components/ChatComposer';
 export { ChatComposer } from '@repo/ui/components/ChatComposer';
 export type { CollectionCardProps } from '@repo/ui/components/CollectionCard';
@@ -26,24 +27,43 @@ export type { CommentAuthor, CommentItem } from '@repo/ui/components/Conversatio
 export { ConversationSheet } from '@repo/ui/components/ConversationSheet';
 export * from '@repo/ui/components/DailyResonanceCard';
 export { default as DeleteAccountModal } from '@repo/ui/components/DeleteAccountModal';
+export type {
+  DerivedHistoryEntry,
+  DerivedHistoryMode,
+  DerivedHistoryPoint,
+  DerivedHistoryViewProps,
+} from '@repo/ui/components/DerivedHistoryView';
+export { DerivedHistoryView } from '@repo/ui/components/DerivedHistoryView';
 export { default as DeviceAccountManager } from '@repo/ui/components/DeviceAccountManager';
 export { default as EmptyState } from '@repo/ui/components/EmptyState';
-export { ErrorState } from '@repo/ui/components/ErrorState';
 export type { EntityModalProps } from '@repo/ui/components/EntityModal';
 export { default as EntityModal } from '@repo/ui/components/EntityModal';
 export type { EntityViewProps } from '@repo/ui/components/EntityView';
 export { default as EntityView } from '@repo/ui/components/EntityView';
 export * from '@repo/ui/components/EnvironmentGuard';
-export { default as ErrorBoundary } from '@repo/ui/components/ErrorBoundary';
+export { default as ErrorBoundary, RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 export { default as ErrorMessage } from '@repo/ui/components/ErrorMessage';
+export type { ErrorStateProps } from '@repo/ui/components/ErrorState';
+// New branded state components (renamed to avoid conflicts with existing components)
+export { ErrorState as BrandedErrorState, ErrorState } from '@repo/ui/components/ErrorState';
 export { default as FeatureDiscoveryModal } from '@repo/ui/components/FeatureDiscoveryModal';
 export { default as FeatureInfoIcon } from '@repo/ui/components/FeatureInfoIcon';
+export type { FireflyFeedbackSceneProps } from '@repo/ui/components/FireflyFeedbackScene';
+export { FireflyFeedbackScene } from '@repo/ui/components/FireflyFeedbackScene';
+export type {
+  FireflyProductMomentKind,
+  FireflyProductMomentProps,
+} from '@repo/ui/components/FireflyProductMoment';
+export { FireflyProductMoment } from '@repo/ui/components/FireflyProductMoment';
 export { FounderGlow } from '@repo/ui/components/FounderGlow';
 export { GatewayFooter } from '@repo/ui/components/GatewayFooter.web';
 export { GatewayHeader } from '@repo/ui/components/GatewayHeader.web';
+export { GatewayScreenShell } from '@repo/ui/components/GatewayScreenShell.web';
 export * from '@repo/ui/components/GlassCard';
 export { default as GlobalHeader } from '@repo/ui/components/GlobalHeader';
 export { default as GuestDataSyncModal } from '@repo/ui/components/GuestDataSyncModal';
+export type { HeroBannerProps } from '@repo/ui/components/HeroBanner';
+export { HeroBanner } from '@repo/ui/components/HeroBanner';
 export type { ChipItem, HorizontalChipRowProps } from '@repo/ui/components/HorizontalChipRow';
 export { HorizontalChipRow } from '@repo/ui/components/HorizontalChipRow';
 export type { IdentityData } from '@repo/ui/components/IdentityCard';
@@ -59,6 +79,7 @@ export { default as LogoutModal } from '@repo/ui/components/LogoutModal';
 export { default as LotusDropdown } from '@repo/ui/components/LotusDropdown';
 export { default as LotusLoader } from '@repo/ui/components/LotusLoader';
 export { default as LotusPetalFAB } from '@repo/ui/components/LotusPetalFAB';
+export * from '@repo/ui/components/layout';
 export type { MessageBubbleProps, MessageBubbleVariant } from '@repo/ui/components/MessageBubble';
 export { MessageBubble } from '@repo/ui/components/MessageBubble';
 export * from '@repo/ui/components/media/AssetCollectionPicker';
@@ -70,6 +91,8 @@ export * from '@repo/ui/components/media/ResourceCard';
 export * from '@repo/ui/components/media/UniversalDocumentPortal';
 export type { VideoPlayerProps } from '@repo/ui/components/media/VideoPlayer';
 export { VideoPlayer } from '@repo/ui/components/media/VideoPlayer';
+// Motion system exports
+export * from '@repo/ui/components/motion';
 export { default as NetworkStatusBanner } from '@repo/ui/components/NetworkStatusBanner';
 export { default as NotificationDrawer } from '@repo/ui/components/NotificationDrawer';
 export { NotificationSettingsPanel } from '@repo/ui/components/NotificationSettingsPanel';
@@ -93,16 +116,8 @@ export { SafeButton } from '@repo/ui/components/SafeButton';
 export { SanctuaryBackground } from '@repo/ui/components/SanctuaryBackground';
 export { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 export { SanctuaryCard, SanctuaryCard as Card } from '@repo/ui/components/SanctuaryCard';
-export { SanctuaryCarousel } from '@repo/ui/components/SanctuaryCarousel';
 export type { SanctuaryCarouselProps } from '@repo/ui/components/SanctuaryCarousel';
-export { HeroBanner } from '@repo/ui/components/HeroBanner';
-export type { HeroBannerProps } from '@repo/ui/components/HeroBanner';
-export { AccessibleTouchable } from '@repo/ui/components/AccessibleTouchable';
-export type { AccessibleTouchableProps } from '@repo/ui/components/AccessibleTouchable';
-export { AccessibleIconButton } from '@repo/ui/components/AccessibleTouchable';
-export type { AccessibleIconButtonProps } from '@repo/ui/components/AccessibleTouchable';
-export { AccessibleTextLink } from '@repo/ui/components/AccessibleTouchable';
-export type { AccessibleTextLinkProps } from '@repo/ui/components/AccessibleTouchable';
+export { SanctuaryCarousel } from '@repo/ui/components/SanctuaryCarousel';
 export type { SanctuaryChatScrollViewProps } from '@repo/ui/components/SanctuaryChatScrollView';
 export { SanctuaryChatScrollView } from '@repo/ui/components/SanctuaryChatScrollView';
 export type { SanctuaryChipProps } from '@repo/ui/components/SanctuaryChip';
@@ -125,8 +140,13 @@ export { SanctuarySignal } from '@repo/ui/components/SanctuarySignal';
 export { default as SanctuaryStatsCard } from '@repo/ui/components/SanctuaryStatsCard';
 export { default as SanctuaryToast } from '@repo/ui/components/SanctuaryToast';
 export { default as SandboxBanner } from '@repo/ui/components/SandboxBanner';
-export { default as ScreenWrapper, useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 export type { ScreenWrapperProps } from '@repo/ui/components/ScreenWrapper';
+export { default as ScreenWrapper, useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
+export {
+  ShimmerBlock,
+  SkeletonCard as BrandedSkeletonCard,
+  SkeletonList as BrandedSkeletonList,
+} from '@repo/ui/components/Skeleton';
 export {
   default as SkeletonLoader,
   SkeletonAvatar,
@@ -135,34 +155,29 @@ export {
 } from '@repo/ui/components/SkeletonLoader';
 export * from '@repo/ui/components/SmartShelf';
 export { default as StepIndicator } from '@repo/ui/components/StepIndicator';
+export { SuccessCheck, SuccessGlow } from '@repo/ui/components/Success';
+export type { SyncStatusCompactProps } from '@repo/ui/components/SyncStatusCompact';
+export { SyncStatusCompact } from '@repo/ui/components/SyncStatusCompact';
+export type { SyncStatusFullProps } from '@repo/ui/components/SyncStatusFull';
+export { SyncStatusFull } from '@repo/ui/components/SyncStatusFull';
+export type { SyncStatusIndicatorProps } from '@repo/ui/components/SyncStatusIndicator';
+export { SyncStatusIndicator } from '@repo/ui/components/SyncStatusIndicator';
+export type { SyncStatusRetryButtonProps } from '@repo/ui/components/SyncStatusRetryButton';
+export { SyncStatusRetryButton } from '@repo/ui/components/SyncStatusRetryButton';
+export type { SyncStatusStatsProps } from '@repo/ui/components/SyncStatusStats';
+export { SyncStatusStats } from '@repo/ui/components/SyncStatusStats';
+export * from '@repo/ui/components/screenTransitions';
 export * from '@repo/ui/components/social';
 export { TemporalNavigator } from '@repo/ui/components/TemporalNavigator';
-export type {
-  DerivedHistoryEntry,
-  DerivedHistoryMode,
-  DerivedHistoryPoint,
-  DerivedHistoryViewProps,
-} from '@repo/ui/components/DerivedHistoryView';
-export { DerivedHistoryView } from '@repo/ui/components/DerivedHistoryView';
 export { TemporalProvider, useTemporalAesthetics } from '@repo/ui/components/TemporalProvider';
 export { TemporalShield } from '@repo/ui/components/TemporalShield';
 export type { UniversalModalProps } from '@repo/ui/components/UniversalModal';
 export { UniversalModal } from '@repo/ui/components/UniversalModal';
 export type { UserAvatarProps } from '@repo/ui/components/UserAvatar';
 export { UserAvatar } from '@repo/ui/components/UserAvatar';
+export { VisualCapabilityInspector } from '@repo/ui/components/VisualCapabilityInspector';
 export * from '@repo/ui/components/visualization';
 export { WebScreenHeader } from '@repo/ui/components/WebScreenHeader.web';
 export * from '@repo/ui/components/workspace';
 export type { ActionItem, TabType } from '@repo/ui/context/FABContext';
 export * from '@repo/ui/qr';
-
-export { SyncStatusIndicator } from '@repo/ui/components/SyncStatusIndicator';
-export type { SyncStatusIndicatorProps } from '@repo/ui/components/SyncStatusIndicator';
-export { SyncStatusCompact } from '@repo/ui/components/SyncStatusCompact';
-export type { SyncStatusCompactProps } from '@repo/ui/components/SyncStatusCompact';
-export { SyncStatusFull } from '@repo/ui/components/SyncStatusFull';
-export type { SyncStatusFullProps } from '@repo/ui/components/SyncStatusFull';
-export { SyncStatusStats } from '@repo/ui/components/SyncStatusStats';
-export type { SyncStatusStatsProps } from '@repo/ui/components/SyncStatusStats';
-export { SyncStatusRetryButton } from '@repo/ui/components/SyncStatusRetryButton';
-export type { SyncStatusRetryButtonProps } from '@repo/ui/components/SyncStatusRetryButton';

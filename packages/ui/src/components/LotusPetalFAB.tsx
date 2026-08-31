@@ -1,6 +1,6 @@
 import { Wind } from '@repo/ui/icons';
 import type React from 'react';
-import { type FC, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 import Animated, {
   Easing,
   type SharedValue,
@@ -14,7 +14,14 @@ import Animated, {
 import { useFAB } from '@repo/ui/context/FABContext';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { useAccessibility } from '@repo/ui/hooks/useAccessibility';
-import { Dimensions, PanResponder, Platform } from '@repo/ui/primitives';
+import { Platform, useWindowDimensions } from 'react-native';
+import {
+  GestureDetector,
+  useExclusiveGestures,
+  usePanGesture,
+  useTapGesture,
+} from 'react-native-gesture-handler';
+import { runOnJS } from 'react-native-worklets';
 import { hapticLight } from '@repo/ui/utils/haptics';
 import { useBottomTabPadding } from '@repo/ui/components/ScreenWrapper';
 import { UniversalModal } from '@repo/ui/components/UniversalModal';
@@ -60,6 +67,26 @@ const fabConfig: Record<TabType, { emoji: string; label: string }> = {
   principal: { emoji: '👑', label: 'Management' },
   founder: { emoji: '🏛️', label: 'Founder' },
 };
+
+function clampGesturePosition(
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  bottomInset: number,
+  bottomTabPadding: number,
+) {
+  'worklet';
+  const maxX = Math.max(FAB_EDGE_MARGIN, width - FAB_SIZE - FAB_EDGE_MARGIN);
+  const maxY = Math.max(
+    FAB_EDGE_MARGIN,
+    height - FAB_SIZE - FAB_EDGE_MARGIN - (bottomInset + bottomTabPadding),
+  );
+  return {
+    x: Math.max(FAB_EDGE_MARGIN, Math.min(maxX, x)),
+    y: Math.max(FAB_EDGE_MARGIN, Math.min(maxY, y)),
+  };
+}
 
 // ============================================================================
 // ACTION ITEM COMPONENT (FOR MEMOIZATION)
@@ -107,6 +134,7 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
     const { state: globalState } = useFAB();
     const { isReduceMotionEnabled } = useAccessibility();
     const bottomTabPadding = useBottomTabPadding();
+    const { width: viewportWidth, height: viewportHeight } = useWindowDimensions();
 
     // Reconcile props with global state
     const currentTab = (propTab || globalState.tabType) as TabType;
@@ -127,25 +155,24 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
     // Position Shared Values for Draggability
     const positionX = useSharedValue(0);
     const positionY = useSharedValue(0);
-    const dragStartX = useRef(0);
-    const dragStartY = useRef(0);
+    const dragStartX = useSharedValue(0);
+    const dragStartY = useSharedValue(0);
 
     const [isDrawerVisible, setIsDrawerVisible] = useState(false);
 
     const clampFabToViewport = useCallback(
       (x: number, y: number) => {
-        const windowDims = Dimensions.get('window');
-        const maxX = Math.max(FAB_EDGE_MARGIN, windowDims.width - FAB_SIZE - FAB_EDGE_MARGIN);
+        const maxX = Math.max(FAB_EDGE_MARGIN, viewportWidth - FAB_SIZE - FAB_EDGE_MARGIN);
         const maxY = Math.max(
           FAB_EDGE_MARGIN,
-          windowDims.height - FAB_SIZE - FAB_EDGE_MARGIN - (bottomInset + bottomTabPadding),
+          viewportHeight - FAB_SIZE - FAB_EDGE_MARGIN - (bottomInset + bottomTabPadding),
         );
         return {
           x: Math.max(FAB_EDGE_MARGIN, Math.min(maxX, x)),
           y: Math.max(FAB_EDGE_MARGIN, Math.min(maxY, y)),
         };
       },
-      [bottomInset, bottomTabPadding],
+      [bottomInset, bottomTabPadding, viewportHeight, viewportWidth],
     );
 
     const persistWebPosition = useCallback((x: number, y: number) => {
@@ -159,14 +186,13 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
     }, []);
 
     const setDefaultPosition = useCallback(() => {
-      const windowDims = Dimensions.get('window');
-      const preferredX = windowDims.width - FAB_SIZE - FAB_EDGE_MARGIN;
+      const preferredX = viewportWidth - FAB_SIZE - FAB_EDGE_MARGIN;
       const preferredY =
-        windowDims.height - FAB_SIZE - FAB_EDGE_MARGIN - (bottomInset + bottomTabPadding);
+        viewportHeight - FAB_SIZE - FAB_EDGE_MARGIN - (bottomInset + bottomTabPadding);
       const next = clampFabToViewport(preferredX, preferredY);
       positionX.value = next.x;
       positionY.value = next.y;
-    }, [bottomInset, bottomTabPadding, clampFabToViewport, positionX, positionY]);
+    }, [bottomInset, bottomTabPadding, clampFabToViewport, positionX, positionY, viewportHeight, viewportWidth]);
 
     const handlePress = useCallback(() => {
       if (disabled) return;
@@ -210,57 +236,57 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
     }, [clampFabToViewport, positionX, positionY, setDefaultPosition]);
 
     useEffect(() => {
-      const sub = Dimensions.addEventListener('change', () => {
-        const next = clampFabToViewport(positionX.value, positionY.value);
-        positionX.value = next.x;
-        positionY.value = next.y;
-        persistWebPosition(next.x, next.y);
-      });
-      return () => sub.remove();
+      const next = clampFabToViewport(positionX.value, positionY.value);
+      positionX.value = next.x;
+      positionY.value = next.y;
+      persistWebPosition(next.x, next.y);
     }, [clampFabToViewport, persistWebPosition, positionX, positionY]);
 
-    // PanResponder for draggability
-    const panResponder = useRef(
-      PanResponder.create({
-        onStartShouldSetPanResponder: () => true,
-        onMoveShouldSetPanResponder: (_, gesture) => {
-          return (
-            Math.abs(gesture.dx) > FAB_DRAG_THRESHOLD || Math.abs(gesture.dy) > FAB_DRAG_THRESHOLD
-          );
-        },
-        onPanResponderGrant: () => {
-          dragStartX.current = positionX.value;
-          dragStartY.current = positionY.value;
-          pressScale.value = withSpring(1.1);
-          hapticLight();
-        },
-        onPanResponderMove: (_, gesture) => {
-          const next = clampFabToViewport(
-            dragStartX.current + gesture.dx,
-            dragStartY.current + gesture.dy,
-          );
-          positionX.value = next.x;
-          positionY.value = next.y;
-        },
-        onPanResponderRelease: (_, gesture) => {
-          pressScale.value = withSpring(1);
+    const dragGesture = usePanGesture({
+      enabled: !disabled,
+      minDistance: FAB_DRAG_THRESHOLD,
+      maxPointers: 1,
+      onActivate: () => {
+        'worklet';
+        dragStartX.value = positionX.value;
+        dragStartY.value = positionY.value;
+        pressScale.value = withSpring(1.1);
+        runOnJS(hapticLight)();
+      },
+      onUpdate: (event) => {
+        'worklet';
+        const next = clampGesturePosition(
+          dragStartX.value + event.translationX,
+          dragStartY.value + event.translationY,
+          viewportWidth,
+          viewportHeight,
+          bottomInset,
+          bottomTabPadding,
+        );
+        positionX.value = next.x;
+        positionY.value = next.y;
+      },
+      onDeactivate: (event) => {
+        'worklet';
+        pressScale.value = withSpring(1);
+        if (!event.canceled) {
+          runOnJS(persistWebPosition)(positionX.value, positionY.value);
+        }
+        positionX.value = withSpring(positionX.value, { damping: 15 });
+        positionY.value = withSpring(positionY.value, { damping: 15 });
+      },
+    });
 
-          // Tap
-          if (
-            Math.abs(gesture.dx) < FAB_DRAG_THRESHOLD &&
-            Math.abs(gesture.dy) < FAB_DRAG_THRESHOLD
-          ) {
-            handlePress();
-            return;
-          }
+    const tapGesture = useTapGesture({
+      enabled: !disabled,
+      maxDistance: FAB_DRAG_THRESHOLD,
+      onActivate: () => {
+        'worklet';
+        runOnJS(handlePress)();
+      },
+    });
 
-          const next = clampFabToViewport(positionX.value, positionY.value);
-          positionX.value = withSpring(next.x, { damping: 15 });
-          positionY.value = withSpring(next.y, { damping: 15 });
-          persistWebPosition(next.x, next.y);
-        },
-      }),
-    ).current;
+    const composedGesture = useExclusiveGestures(tapGesture, dragGesture);
 
     // Breathing Animation
     useEffect(() => {
@@ -305,11 +331,17 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
 
     return (
       <Box className="absolute inset-0 z-[1000] pointer-events-none">
-        <Animated.View
-          {...panResponder.panHandlers}
-          style={[containerStyle]}
-          className="absolute w-14 h-14 items-center justify-center pointer-events-auto"
-        >
+        <GestureDetector gesture={composedGesture}>
+          <Animated.View
+            style={[containerStyle]}
+            className="absolute w-14 h-14 items-center justify-center pointer-events-auto"
+            accessible
+            accessibilityRole="button"
+            accessibilityLabel={hasActiveGaps ? 'Open urgent actions' : `${config.label} actions`}
+            accessibilityHint="Tap to open actions. Drag to reposition."
+            accessibilityState={{ disabled }}
+            onAccessibilityTap={handlePress}
+          >
           {/* Breathing Glow */}
           <Animated.View
             style={breathingStyle}
@@ -335,10 +367,11 @@ export const LotusPetalFAB: FC<LotusPetalFABProps> = memo(
               <Text className="text-2xl">{config.emoji}</Text>
             )}
           </Box>
-        </Animated.View>
+          </Animated.View>
+        </GestureDetector>
 
         {/* Action Drawer */}
-        <UniversalModal isOpen={isDrawerVisible} onClose={closeDrawer}>
+        <UniversalModal isOpen={isDrawerVisible} onClose={closeDrawer} hasBackdrop={false}>
           <Pressable
             accessibilityRole="button"
             className="flex-1 bg-black/50 justify-end"

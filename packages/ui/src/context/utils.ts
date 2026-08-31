@@ -1,5 +1,13 @@
+import { memoryBytesToGB, normalizeNetworkConditions } from '@repo/core/efficiency';
 import { coreRuntime } from '@repo/core/logic';
-import type { DeviceTier, NetworkQuality, TemporalPhase } from '@repo/ui/context/types';
+import type { DeviceTier, NetworkQuality, TemporalPhase } from './types';
+import { classifyDeviceTier } from './visualPolicy';
+
+export {
+  classifyDeviceTier,
+  computeEffectiveFidelity,
+  resolveVisualCapabilities,
+} from './visualPolicy';
 
 /**
  * Determines the temporal phase based on current time
@@ -39,8 +47,10 @@ export async function detectDeviceTier(): Promise<{
   memoryGB: number;
 }> {
   try {
-    // Web and pre-registration paths should stay conservative.
-    if (typeof navigator === 'undefined' || !coreRuntime.isRegistered()) {
+    // Before the runtime is registered there is no reliable device adapter yet.
+    // Do not check navigator here: native React Native commonly has no navigator
+    // global, even though expo-device can provide totalMemory.
+    if (!coreRuntime.isRegistered()) {
       return { tier: 'medium', memoryGB: 4 };
     }
 
@@ -52,20 +62,13 @@ export async function detectDeviceTier(): Promise<{
       return { tier: 'medium', memoryGB: 4 };
     }
 
-    const memoryGB = totalMemory / (1024 * 1024 * 1024);
+    const memoryGB = memoryBytesToGB(totalMemory);
 
-    let tier: DeviceTier;
-    if (memoryGB < 3) {
-      tier = 'low';
-    } else if (memoryGB < 6) {
-      tier = 'medium';
-    } else {
-      tier = 'high';
-    }
+    const tier = classifyDeviceTier(totalMemory);
 
     return { tier, memoryGB };
-  } catch (error: any) {
-    if (error?.message?.includes('not registered')) {
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message.includes('not registered')) {
       return { tier: 'medium', memoryGB: 4 };
     }
     console.warn('Failed to detect device tier:', error);
@@ -78,7 +81,7 @@ export async function detectDeviceTier(): Promise<{
  */
 export async function detectNetworkQuality(): Promise<NetworkQuality> {
   try {
-    if (typeof navigator === 'undefined' || !coreRuntime.isRegistered()) {
+    if (!coreRuntime.isRegistered()) {
       return 'fair';
     }
 
@@ -88,34 +91,9 @@ export async function detectNetworkQuality(): Promise<NetworkQuality> {
       return 'offline';
     }
 
-    // Check connection type and effective type
-    const type = netInfo.type;
-    const details = netInfo.details as { cellularGeneration?: string } | undefined;
-
-    // If we have cellular connection, check the type
-    if (type === 'cellular') {
-      const cellularGeneration = details?.cellularGeneration;
-
-      if (cellularGeneration === '5g') {
-        return 'excellent';
-      } else if (cellularGeneration === '4g') {
-        return 'good';
-      } else if (cellularGeneration === '3g') {
-        return 'fair';
-      } else {
-        return 'poor';
-      }
-    }
-
-    // For WiFi, assume good quality unless we have more info
-    if (type === 'wifi') {
-      return 'good';
-    }
-
-    // Default to fair for other connection types
-    return 'fair';
-  } catch (error: any) {
-    if (error?.message?.includes('not registered')) {
+    return normalizeNetworkConditions(netInfo).quality;
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message.includes('not registered')) {
       return 'fair';
     }
     console.warn('Failed to detect network quality:', error);
@@ -133,14 +111,3 @@ export function shouldUseDataSaver(quality: NetworkQuality): boolean {
 /**
  * Determines effective fidelity level based on settings and reality
  */
-export function computeEffectiveFidelity(
-  fidelityLevel: 'auto' | 'low' | 'high',
-  deviceTier: DeviceTier,
-): 'low' | 'high' {
-  // If user explicitly chose, respect their choice
-  if (fidelityLevel === 'low') return 'low';
-  if (fidelityLevel === 'high') return 'high';
-
-  // Auto mode: base on device tier
-  return deviceTier === 'low' ? 'low' : 'high';
-}

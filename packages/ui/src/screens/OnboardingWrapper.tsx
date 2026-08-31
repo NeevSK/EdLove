@@ -1,10 +1,15 @@
 import { useAuth } from '@repo/core/providers';
 import { useStore } from '@repo/core/store';
-import { useCallback, useState } from 'react';
-import OnboardingScreen from '@repo/ui/screens/OnboardingScreen';
 import { CelebrationOverlay } from '@repo/ui/components/CelebrationOverlay';
+import type { MascotArtworkSource } from '@repo/ui/components/Mascot';
+import OnboardingScreen from '@repo/ui/screens/OnboardingScreen';
+import { useCallback, useState } from 'react';
 
-export function OnboardingWrapper() {
+export function OnboardingWrapper({
+  onboardingArtwork,
+}: {
+  onboardingArtwork?: MascotArtworkSource;
+}) {
   const { session, refreshProfile } = useAuth();
   const storeUser = useStore((state) => state.user);
   const showToast = useStore((state) => state.showToast);
@@ -40,11 +45,9 @@ export function OnboardingWrapper() {
     <>
       <OnboardingScreen
         userId={session?.user?.id}
-        isAnonymous={
-          storeUser?.is_anonymous === true ||
-          session?.user?.is_anonymous === true
-        }
+        isAnonymous={storeUser?.is_anonymous === true || session?.user?.is_anonymous === true}
         onComplete={handleComplete}
+        onboardingArtwork={onboardingArtwork}
       />
       <CelebrationOverlay
         trigger={celebrate}

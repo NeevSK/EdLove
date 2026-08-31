@@ -1,8 +1,7 @@
-import { Pressable } from '@repo/ui/components/ui/view';
 import { tokens } from '@repo/ui/tokens';
 import { cn } from '@repo/ui/utils/classNames';
 import React from 'react';
-import { Platform, type View } from 'react-native';
+import { Platform, Pressable, StyleSheet, type View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 /**
@@ -11,29 +10,36 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
  * A hardened primitive for backdrops.
  * Blocks interactions and provides a dimming layer.
  */
-export const Overlay = React.forwardRef<View, any>(({ className, isOpen, ...props }, ref) => {
+export const Overlay = React.forwardRef<View, any>(({ className, isOpen, onPress, onClick, ...props }, ref) => {
   if (!isOpen) return null;
+
+  const handlePress = (e: any) => {
+    onPress?.(e);
+    onClick?.(e);
+  };
 
   if (Platform.OS === 'web') {
     return (
-      <div
+      <Pressable
         {...props}
         ref={ref as any}
-        role="button"
-        aria-label="backdrop"
+        onPress={handlePress}
+        accessibilityRole="button"
+        accessibilityLabel="backdrop"
         className={className}
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 1000,
-          backgroundColor: tokens.colors.overlay,
-          backdropFilter: 'blur(4px) saturate(1.1)',
-          WebkitBackdropFilter: 'blur(4px) saturate(1.1)',
-          cursor: 'pointer',
-        }}
+        style={[
+          {
+            position: 'fixed' as any,
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1000,
+            backgroundColor: tokens.colors.overlay,
+            cursor: 'pointer',
+          },
+          props.style,
+        ]}
       />
     );
   }
@@ -54,6 +60,7 @@ export const Overlay = React.forwardRef<View, any>(({ className, isOpen, ...prop
       <Pressable
         {...props}
         ref={ref}
+        onPress={handlePress}
         accessibilityRole="button"
         accessibilityLabel="backdrop"
         accessibilityHint="Double tap to dismiss"

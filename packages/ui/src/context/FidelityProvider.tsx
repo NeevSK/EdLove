@@ -1,4 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useReality } from './RealityProvider';
+import type { FidelityLevel } from './types';
+import { computeEffectiveFidelity } from './visualPolicy';
 import {
   createContext,
   type ReactNode,
@@ -8,9 +11,6 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { useReality } from '@repo/ui/context/RealityProvider';
-import type { FidelityLevel } from '@repo/ui/context/types';
-import { computeEffectiveFidelity } from '@repo/ui/context/utils';
 
 interface FidelityContextValue {
   fidelityLevel: FidelityLevel;
@@ -22,16 +22,24 @@ const FidelityContext = createContext<FidelityContextValue | undefined>(undefine
 
 const FIDELITY_KEY = '@gurudevi/fidelity_level';
 
+function isFidelityLevel(value: string): value is FidelityLevel {
+  return value === 'auto' || value === 'low' || value === 'high';
+}
+
 export function FidelityProvider({ children }: { children: ReactNode }) {
   const { reality } = useReality();
   const [fidelityLevel, setFidelityLevelState] = useState<FidelityLevel>('auto');
 
   useEffect(() => {
     async function loadFidelity() {
-      const level = await AsyncStorage.getItem(FIDELITY_KEY);
-      if (level) setFidelityLevelState(level as FidelityLevel);
+      try {
+        const level = await AsyncStorage.getItem(FIDELITY_KEY);
+        if (level && isFidelityLevel(level)) setFidelityLevelState(level);
+      } catch (error) {
+        console.warn('[FidelityProvider] Load error:', error);
+      }
     }
-    loadFidelity();
+    void loadFidelity();
   }, []);
 
   const effectiveFidelity = useMemo(
@@ -40,6 +48,7 @@ export function FidelityProvider({ children }: { children: ReactNode }) {
   );
 
   const setFidelityLevel = useCallback(async (level: FidelityLevel) => {
+    if (!isFidelityLevel(level)) return;
     setFidelityLevelState(level);
     try {
       await AsyncStorage.setItem(FIDELITY_KEY, level);
@@ -64,4 +73,14 @@ export function useFidelity() {
   const context = useContext(FidelityContext);
   if (!context) throw new Error('useFidelity must be used within a FidelityProvider');
   return context;
+}
+
+export function useFidelityOptional(): FidelityContextValue {
+  return (
+    useContext(FidelityContext) ?? {
+      fidelityLevel: 'auto',
+      effectiveFidelity: 'high',
+      setFidelityLevel: async () => undefined,
+    }
+  );
 }

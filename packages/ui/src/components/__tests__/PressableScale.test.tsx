@@ -2,7 +2,7 @@ import { fireEvent, render } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
 jest.mock('../../utils/haptics', () => ({
-  hapticLight: jest.fn(),
+  hapticImpact: jest.fn(),
 }));
 
 jest.mock('@repo/ui/hooks/useAccessibility', () => ({
@@ -14,6 +14,13 @@ jest.mock('@repo/ui/hooks/useAccessibility', () => ({
 }));
 
 import { PressableScale } from '../PressableScale';
+import { hapticImpact } from '../../utils/haptics';
+
+const mockedHapticImpact = hapticImpact as jest.MockedFunction<typeof hapticImpact>;
+
+beforeEach(() => {
+  mockedHapticImpact.mockClear();
+});
 
 describe('PressableScale', () => {
   it('renders children', async () => {
@@ -63,5 +70,29 @@ describe('PressableScale', () => {
       </PressableScale>,
     );
     expect(getByText('Press me')).toBeTruthy();
+  });
+
+  it('uses the requested haptic impact on press in', async () => {
+    const { getByRole } = await render(
+      <PressableScale accessibilityLabel="Test button" haptic="medium">
+        <Text>Press me</Text>
+      </PressableScale>,
+    );
+
+    fireEvent(getByRole('button'), 'pressIn');
+
+    expect(mockedHapticImpact).toHaveBeenCalledWith('medium');
+  });
+
+  it('allows haptics to be disabled', async () => {
+    const { getByRole } = await render(
+      <PressableScale accessibilityLabel="Test button" haptic={false}>
+        <Text>Press me</Text>
+      </PressableScale>,
+    );
+
+    fireEvent(getByRole('button'), 'pressIn');
+
+    expect(mockedHapticImpact).not.toHaveBeenCalled();
   });
 });

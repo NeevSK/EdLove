@@ -1,7 +1,18 @@
 import type React from 'react';
-import { createContext, useContext, useMemo } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { type ViewProps } from 'react-native';
-import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
+import {
+  GestureDetector,
+  usePanGesture,
+} from 'react-native-gesture-handler';
+import Animated, {
+  SlideInDown,
+  SlideOutDown,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
+import { runOnJS } from 'react-native-worklets';
 import { Box } from '@repo/ui/components/ui/box';
 import { Overlay } from '@repo/ui/components/ui/overlay';
 import { Portal } from '@repo/ui/components/ui/portal';
@@ -19,6 +30,7 @@ import { cn } from '@repo/ui/utils/classNames';
 
 interface ActionsheetContextType {
   onClose: () => void;
+  isOpen: boolean;
 }
 
 const ActionsheetContext = createContext<ActionsheetContextType | undefined>(undefined);
@@ -39,9 +51,20 @@ export const Actionsheet = ({
   onClose: () => void;
   children: React.ReactNode;
 } & ViewProps) => {
-  const contextValue = useMemo(() => ({ onClose }), [onClose]);
+  const contextValue = useMemo(() => ({ onClose, isOpen }), [isOpen, onClose]);
+  const [isPresent, setIsPresent] = useState(isOpen);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (isOpen) {
+      setIsPresent(true);
+      return;
+    }
+
+    const timeout = setTimeout(() => setIsPresent(false), 220);
+    return () => clearTimeout(timeout);
+  }, [isOpen]);
+
+  if (!isPresent) return null;
 
   return (
     <ActionsheetContext.Provider value={contextValue}>
@@ -49,8 +72,7 @@ export const Actionsheet = ({
         <Overlay isOpen={isOpen} onPress={onClose} />
         <View
           className="absolute inset-0 justify-end"
-          pointerEvents="box-none"
-          style={{ zIndex: 1001 }}
+          style={{ zIndex: 1001, pointerEvents: 'box-none' }}
           {...props}
         >
           {children}
@@ -62,27 +84,54 @@ export const Actionsheet = ({
 
 export const ActionsheetBackdrop = Overlay;
 
-export const ActionsheetContent = ({ children, className }: any) => (
-  <Animated.View
-    entering={SlideInDown.duration(300).springify().damping(20)}
-    exiting={SlideOutDown.duration(200)}
-    className="w-full"
-    accessible
-    accessibilityRole="menu"
-  >
-    <Box
-      className={cn(
-        'bg-phase-modal-card rounded-t-[32px] overflow-hidden shadow-2xl border-t border-phase-modal-border pb-8',
-        className,
-      )}
-    >
-      <ActionsheetDragIndicatorWrapper>
-        <ActionsheetDragIndicator />
-      </ActionsheetDragIndicatorWrapper>
-      {children}
-    </Box>
-  </Animated.View>
-);
+export const ActionsheetContent = ({ children, className }: any) => {
+  const { isOpen, onClose } = useActionsheet();
+  const translateY = useSharedValue(0);
+  const panGesture = usePanGesture({
+    activeOffsetY: 8,
+    failOffsetX: [-24, 24],
+    onUpdate: (event) => {
+      'worklet';
+      translateY.value = Math.max(0, event.translationY);
+    },
+    onDeactivate: (event) => {
+      'worklet';
+      const shouldClose = !event.canceled && translateY.value > 120;
+      if (shouldClose) runOnJS(onClose)();
+      translateY.value = withSpring(0);
+    },
+  });
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
+
+  if (!isOpen) return null;
+
+  return (
+    <GestureDetector gesture={panGesture}>
+      <Animated.View
+        entering={SlideInDown.duration(300).springify().damping(20)}
+        exiting={SlideOutDown.duration(200)}
+        className="w-full"
+        style={animatedStyle}
+        accessible
+        accessibilityRole="menu"
+      >
+        <Box
+          className={cn(
+            'bg-phase-modal-card rounded-t-[32px] overflow-hidden shadow-2xl border-t border-phase-modal-border pb-8',
+            className,
+          )}
+        >
+          <ActionsheetDragIndicatorWrapper>
+            <ActionsheetDragIndicator />
+          </ActionsheetDragIndicatorWrapper>
+          {children}
+        </Box>
+      </Animated.View>
+    </GestureDetector>
+  );
+};
 
 export const ActionsheetItem = ({
   children,

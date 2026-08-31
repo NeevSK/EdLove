@@ -26,11 +26,13 @@ export const PortalProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <PortalContext.Provider value={{ register, unregister }}>
       {children}
-      <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-        {Object.entries(portals).map(([id, portal]) => (
-          <React.Fragment key={id}>{portal}</React.Fragment>
-        ))}
-      </View>
+      {Platform.OS !== 'web' && (
+        <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
+          {Object.entries(portals).map(([id, portal]) => (
+            <React.Fragment key={id}>{portal}</React.Fragment>
+          ))}
+        </View>
+      )}
     </PortalContext.Provider>
   );
 };

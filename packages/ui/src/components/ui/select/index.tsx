@@ -124,8 +124,7 @@ export const SelectPortal = ({ children }: { children: React.ReactNode }) => {
       <Overlay isOpen={isOpen} onPress={() => setIsOpen(false)} />
       <View
         className="absolute inset-0 justify-end"
-        pointerEvents="box-none"
-        style={{ zIndex: 1001 }}
+        style={{ zIndex: 1001, pointerEvents: 'box-none' }}
       >
         {children}
       </View>

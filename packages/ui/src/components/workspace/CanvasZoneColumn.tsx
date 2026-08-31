@@ -137,7 +137,8 @@ export function CanvasZoneColumn<
               dragAxis={dragAxis}
               enabled={canReorder && dragEnabled}
               onDragEnd={(id, translation) => {
-                const measured = cardHeightsRef.current[id as string] ?? 180;
+                const measured = cardHeightsRef.current[id as string];
+                if (!measured) return;
                 const shift = Math.round(translation.y / measured);
                 if (shift !== 0 && onReorder) {
                   const currentIndex = group.surfaces.findIndex((s) => s.surfaceId === id);

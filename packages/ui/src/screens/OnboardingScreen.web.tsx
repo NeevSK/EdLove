@@ -14,9 +14,9 @@ import {
   resolveOnboardingDevIntent,
 } from '@repo/ui/screens/onboardingDevFlow';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
+import { useGatewayLayout } from '@repo/ui/hooks/useGatewayLayout';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useWindowDimensions } from 'react-native';
 
 const PILLARS = [
   { name: 'Self', glyph: 'self' },
@@ -529,7 +529,8 @@ export default memo(function OnboardingScreenWeb({
   userId = null,
 }: OnboardingScreenProps) {
   const { t } = useTranslation();
-  const { width } = useWindowDimensions();
+  const { isSplit } = useGatewayLayout();
+  const isNarrow = !isSplit;
 
   const [state, dispatch] = useReducer(onboardingReducer, {
     currentStep: 0,
@@ -546,7 +547,6 @@ export default memo(function OnboardingScreenWeb({
   const { currentStep, name, selectedCapacity, isProcessing, error, showDevSandbox } = state;
   const isOnline = useStore((s) => s.isOnline);
   const showToast = useStore((s) => s.showToast);
-  const isNarrow = width < 900;
   const resolvedInternalIdRef = useRef<string | null>(null);
   const resolvedCitizenRef = useRef<Awaited<
     ReturnType<typeof identityAPI.identifyActiveCitizen>
@@ -1062,6 +1062,8 @@ export default memo(function OnboardingScreenWeb({
 
 const ONBOARDING_STYLES = `
     .ob-root {
+        container-type: inline-size;
+        container-name: onboarding;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -1138,18 +1140,18 @@ const ONBOARDING_STYLES = `
 
     /* Left Panel */
     .ob-left {
-        width: 340px;
+        width: clamp(280px, 30vw, 360px);
         flex-shrink: 0;
         background: linear-gradient(160deg, rgba(252,249,242,0.72) 0%, rgba(252,249,242,0.5) 100%);
         border-right: 1px solid var(--border, rgba(42,35,24,0.08));
         overflow-y: auto;
-        padding: 44px 36px;
+        padding: clamp(24px, 3.5vw, 44px) clamp(20px, 2.5vw, 36px);
         backdrop-filter: blur(18px);
     }
     .ob-left-inner {
         display: flex;
         flex-direction: column;
-        gap: 32px;
+        gap: clamp(20px, 2.5vw, 32px);
         min-height: 100%;
     }
     .ob-brand {
@@ -1165,7 +1167,7 @@ const ONBOARDING_STYLES = `
         letter-spacing: -0.3px;
     }
     .ob-left-headline {
-        font-size: 40px;
+        font-size: clamp(28px, 3.2vw, 40px);
         font-weight: 800;
         color: var(--ink, #2A2318);
         line-height: 1.1;
@@ -1269,7 +1271,7 @@ const ONBOARDING_STYLES = `
         align-items: center;
         justify-content: center;
         overflow-y: auto;
-        padding: 60px 40px;
+        padding: clamp(28px, 4vw, 60px) clamp(16px, 3vw, 40px);
     }
     .ob-right-inner {
         width: 100%;
@@ -1549,5 +1551,20 @@ const ONBOARDING_STYLES = `
         background: rgba(212, 132, 58, 0.1);
         border-color: var(--action, #D4843A);
         color: var(--action, #D4843A);
+    }
+
+    @container onboarding (max-width: 767px) {
+      .ob-split {
+        flex-direction: column;
+      }
+      .ob-left {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border, rgba(42,35,24,0.08));
+        padding: 24px 20px;
+      }
+      .ob-right {
+        padding: 28px 16px 40px;
+      }
     }
 `;

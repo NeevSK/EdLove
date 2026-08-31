@@ -1,3 +1,4 @@
+import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { Text, View } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 import { getInitialsFromName } from '@repo/ui/utils/stringUtils';
@@ -46,12 +47,14 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   borderRadius,
   style,
 }) => {
+  const visualCapabilities = useVisualCapabilities();
   const radius = borderRadius ?? size / 2;
   const bgColor = getAvatarColor(fullName);
   const initials = getInitialsFromName(fullName);
   const finalFallback = fallbackEmoji || DEFAULT_ICON;
 
   if (avatarUrl) {
+    // Disk caching avoids keeping decoded avatar bitmaps alive indefinitely.
     return (
       <Image
         source={{ uri: avatarUrl }}
@@ -64,7 +67,8 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
         accessibilityIgnoresInvertColors={true}
         style={[styles.base, { width: size, height: size, borderRadius: radius }, style as any]}
         contentFit="cover"
-        cachePolicy="memory-disk"
+        cachePolicy={visualCapabilities.imageCachePolicy}
+        decodeFormat={visualCapabilities.imageDecodeFormat}
         transition={250}
         recyclingKey={avatarUrl}
       />

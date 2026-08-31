@@ -199,7 +199,7 @@ export default memo(function NotificationsScreenWeb() {
         />
 
         {/* CONTENT */}
-        <div style={{ maxWidth: '800px' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%' }}>
           {isRealtimeConnected ? (
             <div
               style={{

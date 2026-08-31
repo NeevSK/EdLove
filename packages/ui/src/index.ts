@@ -31,17 +31,45 @@ export type { CelebrationOverlayProps } from './components/CelebrationOverlay';
 export { CelebrationOverlay } from './components/CelebrationOverlay';
 export type { CollapseProps } from './components/Collapse';
 export { Collapse } from './components/Collapse';
+export { default as ErrorBoundary, RouteErrorBoundary } from './components/ErrorBoundary';
 export type { ErrorStateProps } from './components/ErrorState';
 export { ErrorState as BrandedErrorState } from './components/ErrorState';
-export { JourneyErrorBoundary } from './components/JourneyErrorBoundary';
-export type { FocusRingProps } from './components/FocusRing';
-export { FocusRing } from './components/FocusRing';
+export type { FireflyFeedbackSceneProps } from './components/FireflyFeedbackScene';
+export { FireflyFeedbackScene } from './components/FireflyFeedbackScene';
 export type { FireflyMascotProps } from './components/FireflyMascot';
 export { FireflyMascot } from './components/FireflyMascot';
-export type { SkiaGlowAuraProps } from './components/SkiaGlowAura';
-export { SkiaGlowAura } from './components/SkiaGlowAura';
+export type {
+  FireflyProductMomentKind,
+  FireflyProductMomentProps,
+} from './components/FireflyProductMoment';
+export { FireflyProductMoment } from './components/FireflyProductMoment';
+export type { FocusRingProps } from './components/FocusRing';
+export { FocusRing } from './components/FocusRing';
+export { JourneyErrorBoundary } from './components/JourneyErrorBoundary';
 export type { PageFrame } from './components/layout';
 export { useBreakpoint, usePageFrame, useResponsiveGrid } from './components/layout';
+export type { MascotArtworkSource, MascotConfig, MascotId, MascotMode } from './components/Mascot';
+export { Mascot, MascotProvider, useMascot } from './components/Mascot';
+export type { MascotPodProps, MascotPodVariant } from './components/MascotPod';
+export { MascotPod } from './components/MascotPod';
+export type {
+  MascotAssetDescriptor,
+  MascotAssetFormat,
+  MascotAssetStatus,
+} from './components/mascotAssets';
+export {
+  mascotAssetContract,
+  mascotAssetExtension,
+  mascotAssetId,
+  mascotAssetPath,
+} from './components/mascotAssets';
+export type {
+  MascotAppearance,
+  MascotRole,
+  MascotScale,
+  MascotState,
+  MascotTheme,
+} from './components/mascotTypes';
 export { color, duration, easing, scale } from './components/motion';
 export type { PressableScaleProps } from './components/PressableScale';
 // Delight Primitives
@@ -52,7 +80,10 @@ export {
   SkeletonCard as BrandedSkeletonCard,
   SkeletonList as BrandedSkeletonList,
 } from './components/Skeleton';
+export type { SkiaGlowAuraProps } from './components/SkiaGlowAura';
+export { SkiaGlowAura } from './components/SkiaGlowAura';
 export { SuccessCheck, SuccessGlow } from './components/Success';
 export { sharedTransitionTiming, softCrossfadeScale } from './components/screenTransitions';
-export { NativeContextMenu, NativeDropdownMenu } from './native-menu';
+export { VisualCapabilityInspector } from './components/VisualCapabilityInspector';
 export { WorkspaceRenderer } from './components/workspace/WorkspaceRenderer';
+export { NativeContextMenu, NativeDropdownMenu } from './native-menu';

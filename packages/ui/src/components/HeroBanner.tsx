@@ -1,8 +1,10 @@
+import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { Box } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 import { tokens } from '@repo/ui/tokens';
+import { Image } from 'expo-image';
 import type React from 'react';
-import { Dimensions, Image, Pressable, Text, View } from 'react-native';
+import { Dimensions, Platform, Pressable, Text, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 export interface HeroBannerProps {
@@ -25,6 +27,7 @@ const NETFLIX_TOKENS = {
 } as const;
 
 export function HeroBanner({ title, subtitle, imageUri, onPress, badge }: HeroBannerProps) {
+  const visualCapabilities = useVisualCapabilities();
   return (
     <Animated.View
       entering={FadeIn.duration(600)}
@@ -43,6 +46,12 @@ export function HeroBanner({ title, subtitle, imageUri, onPress, badge }: HeroBa
       >
         <Image
           source={{ uri: imageUri }}
+          cachePolicy={visualCapabilities.imageCachePolicy}
+          allowDownscaling
+          decodeFormat={
+            Platform.OS === 'android' ? visualCapabilities.imageDecodeFormat : undefined
+          }
+          contentFit="cover"
           style={{
             position: 'absolute',
             top: 0,
@@ -51,7 +60,6 @@ export function HeroBanner({ title, subtitle, imageUri, onPress, badge }: HeroBa
             bottom: 0,
             width: screenWidth,
             height: 280,
-            resizeMode: 'cover',
           }}
         />
         <View

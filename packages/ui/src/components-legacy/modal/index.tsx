@@ -27,8 +27,7 @@ export const Modal = ({
       <Overlay isOpen={isOpen} onPress={onClose} />
       <View
         className="absolute inset-0 items-center justify-center p-4"
-        pointerEvents="box-none"
-        style={{ zIndex: 1001 }}
+        style={{ zIndex: 1001, pointerEvents: 'box-none' }}
       >
         <Animated.View
           entering={ZoomIn.duration(300).springify()}

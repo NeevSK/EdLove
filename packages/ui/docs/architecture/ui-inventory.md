@@ -271,7 +271,6 @@ This document is the package-local source of truth for `packages/ui`.
 | `src/utils/a11yUtils.ts` | utility | unknown-unverified | canonical | keep | Shared utility surface; keep unless import graph proves dead. |
 | `src/utils/colorUtils.ts` | utility | unknown-unverified | canonical | keep | Shared utility surface; keep unless import graph proves dead. |
 | `src/utils/dateTimeUtils.ts` | utility | unknown-unverified | canonical | keep | Shared utility surface; keep unless import graph proves dead. |
-| `src/utils/DeviceUtils.ts` | utility | unknown-unverified | canonical | keep | Shared utility surface; keep unless import graph proves dead. |
 | `src/utils/haptics.ts` | utility | unknown-unverified | canonical | keep | Shared utility surface; keep unless import graph proves dead. |
 | `src/utils/haptics.web.ts` | utility | unknown-unverified | canonical | keep | Shared utility surface; keep unless import graph proves dead. |
 | `src/utils/linking.ts` | utility | unknown-unverified | canonical | keep | Shared utility surface; keep unless import graph proves dead. |

@@ -57,7 +57,7 @@ const STATIC_CSS = `
       display: flex;
       flex-direction: row;
       flex: 1;
-      overflow: hidden;
+      overflow: auto;
       position: relative;
     }
 
@@ -1018,6 +1018,91 @@ const STATIC_CSS = `
       .sanctuary-screen { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
       @media (max-width: 767px) {
         .sanctuary-screen { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
+      }
+    }
+
+    /* ── GATEWAY FLUID RESPONSIVE SYSTEM (CSS-First, Zero-JS Shift) ── */
+    .gateway-viewport {
+      container-type: inline-size;
+      container-name: gateway;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      /* The app shell clips document scrolling. Gateway routes therefore need
+         a bounded internal viewport, not a content-sized min-height. */
+      height: 100%;
+      min-height: 0;
+      flex: 1;
+      width: 100%;
+      position: relative;
+      overflow-y: auto;
+      overflow-x: hidden;
+      pointer-events: auto;
+      --gateway-fluid-px: clamp(16px, 4vw, 48px);
+      --gateway-fluid-py: clamp(20px, 3.5vw, 44px);
+      --gateway-fluid-gap: clamp(16px, 3vw, 40px);
+      --gateway-headline: clamp(28px, 4vw, 50px);
+      --gateway-headline-lh: clamp(34px, 4.4vw, 56px);
+      --gateway-tagline: clamp(14px, 1.4vw, 17px);
+      --gateway-tagline-lh: clamp(20px, 2vw, 26px);
+      --gateway-card-max: min(440px, 100%);
+    }
+
+    .gateway-scroll-body {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      pointer-events: auto;
+    }
+
+    .gateway-track {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: center;
+      width: 100%;
+      max-width: 1240px;
+      margin-inline: auto;
+      padding: var(--gateway-fluid-py) var(--gateway-fluid-px);
+      gap: var(--gateway-fluid-gap);
+      box-sizing: border-box;
+      pointer-events: auto;
+    }
+
+    .gateway-panel-left {
+      flex: 1 1 360px;
+      min-width: min(100%, 300px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: clamp(12px, 2vw, 20px);
+      box-sizing: border-box;
+    }
+
+    .gateway-panel-right {
+      flex: 1 1 360px;
+      max-width: var(--gateway-card-max);
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-sizing: border-box;
+    }
+
+    /* Container query for compact/stacked view */
+    @container gateway (max-width: 767px) {
+      .gateway-panel-left {
+        align-items: center;
+        text-align: center;
+        max-width: 520px;
+        margin-inline: auto;
+      }
+      .gateway-panel-right {
+        max-width: 460px;
+        margin-inline: auto;
       }
     }
 `;

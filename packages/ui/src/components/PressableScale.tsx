@@ -6,7 +6,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useAccessibility } from '../hooks/useAccessibility';
 import { duration, easing, scale } from './motion';
-import { hapticLight } from '../utils/haptics';
+import { hapticImpact, type HapticImpact } from '../utils/haptics';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -19,7 +19,7 @@ export interface PressableScaleProps {
    *  Asymmetric (slower release) is the key to comfortable feel. */
   pressOutDuration?: number;
   /** Haptic on press. Default 'light'. Pass false to disable. */
-  haptic?: 'light' | 'medium' | 'heavy' | false;
+  haptic?: HapticImpact | false;
   onPress?: () => void;
   onLongPress?: () => void;
   disabled?: boolean;
@@ -75,7 +75,7 @@ export function PressableScale({
       });
     }
     if (haptic !== false) {
-      hapticLight();
+      hapticImpact(haptic);
     }
   };
 

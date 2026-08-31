@@ -1,6 +1,7 @@
 import { Bell, BookOpen, Check, CircleCheck, Info, Users, X } from '@repo/ui/icons';
 import { useStore } from '@repo/core/logic';
 import { useWindowDimensions } from 'react-native';
+import { useEffect, useState } from 'react';
 import Animated, { Easing, SlideInLeft, SlideOutLeft } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -81,8 +82,19 @@ export default function NotificationDrawer({
   const { width: windowWidth } = useWindowDimensions();
   const isOnline = useStore((state) => state.isOnline);
   const drawerWidth = Math.min(windowWidth * 0.82, 420);
+  const [isPresent, setIsPresent] = useState(isVisible);
 
-  if (!isVisible) return null;
+  useEffect(() => {
+    if (isVisible) {
+      setIsPresent(true);
+      return;
+    }
+
+    const timeout = setTimeout(() => setIsPresent(false), 500);
+    return () => clearTimeout(timeout);
+  }, [isVisible]);
+
+  if (!isPresent) return null;
 
   return (
     <Portal>
@@ -96,20 +108,21 @@ export default function NotificationDrawer({
           }}
         />
 
-        <Animated.View
-          entering={SlideInLeft.duration(800).easing(Easing.out(Easing.exp))}
-          exiting={SlideOutLeft.duration(500)}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            bottom: 0,
-            width: drawerWidth,
-            paddingTop: insets.top,
-            paddingBottom: insets.bottom,
-          }}
-          className="bg-phase-canvas border-r border-phase-surface shadow-2xl"
-        >
+        {isVisible ? (
+          <Animated.View
+            entering={SlideInLeft.duration(800).easing(Easing.out(Easing.exp))}
+            exiting={SlideOutLeft.duration(500)}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              bottom: 0,
+              width: drawerWidth,
+              paddingTop: insets.top,
+              paddingBottom: insets.bottom,
+            }}
+            className="bg-phase-canvas border-r border-phase-surface shadow-2xl"
+          >
           <VStack className="flex-1 p-6 gap-4">
             {/* Header */}
             <HStack className="justify-between items-center h-[60px]">
@@ -335,7 +348,8 @@ export default function NotificationDrawer({
               Your sanctuary stays updated.
             </Text>
           </VStack>
-        </Animated.View>
+          </Animated.View>
+        ) : null}
       </Box>
     </Portal>
   );

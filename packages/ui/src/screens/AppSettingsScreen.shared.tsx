@@ -1,4 +1,18 @@
 import { accountPin, cryptoManager, storage, useStore } from '@repo/core/logic';
+import AccountPinModal from '@repo/ui/components/AccountPinModal';
+import DeviceSecurityCenter from '@repo/ui/components/DeviceSecurityCenter';
+import { useResponsiveGrid } from '@repo/ui/components/layout';
+import { NotificationSettingsPanel } from '@repo/ui/components/NotificationSettingsPanel';
+import { Box } from '@repo/ui/components/ui/box';
+import { Button, ButtonText } from '@repo/ui/components/ui/button';
+import { HStack } from '@repo/ui/components/ui/hstack';
+import { Pressable } from '@repo/ui/components/ui/pressable';
+import { ScrollView } from '@repo/ui/components/ui/scroll-view';
+import { Switch } from '@repo/ui/components/ui/switch';
+import { Heading, Text } from '@repo/ui/components/ui/text';
+import { VStack } from '@repo/ui/components/ui/vstack';
+import { useEnvironment, useFeedbackOptional, useSensoryPreferences } from '@repo/ui/context';
+import { useTheme } from '@repo/ui/hooks/useTheme';
 import {
   Check,
   ChevronRight,
@@ -12,29 +26,15 @@ import {
   Sparkles,
   Zap,
 } from '@repo/ui/icons';
+import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
+import { GURUDEVI_SUPPORT_EMAIL } from '@repo/ui/utils';
+import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as ScreenCapture from 'expo-screen-capture';
 import type React from 'react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, TextInput, TouchableOpacity } from 'react-native';
-import AccountPinModal from '@repo/ui/components/AccountPinModal';
-import DeviceSecurityCenter from '@repo/ui/components/DeviceSecurityCenter';
-import { NotificationSettingsPanel } from '@repo/ui/components/NotificationSettingsPanel';
-import { Box } from '@repo/ui/components/ui/box';
-import { Button, ButtonText } from '@repo/ui/components/ui/button';
-import { HStack } from '@repo/ui/components/ui/hstack';
-import { Pressable } from '@repo/ui/components/ui/pressable';
-import { ScrollView } from '@repo/ui/components/ui/scroll-view';
-import { Switch } from '@repo/ui/components/ui/switch';
-import { Heading, Text } from '@repo/ui/components/ui/text';
-import { VStack } from '@repo/ui/components/ui/vstack';
-import { useEnvironment } from '@repo/ui/context';
-import { useResponsiveGrid } from '@repo/ui/components/layout';
-import { useTheme } from '@repo/ui/hooks/useTheme';
-import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
-import { hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-import { GURUDEVI_SUPPORT_EMAIL } from '@repo/ui/utils';
 
 interface SettingsOptionProps {
   icon: React.ReactNode;
@@ -211,7 +211,10 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
     reality,
     enableLivingTheme,
     setEnableLivingTheme,
+    visualCapabilities,
   } = useEnvironment();
+  const { preferences: sensoryPreferences, setPreference } = useSensoryPreferences();
+  const { emit: emitFeedback } = useFeedbackOptional();
   const _isDemoMode = useStore((state) => state.isDemoMode);
   const _setDemoMode = useStore((state) => state.setDemoMode);
   const user = useStore((state) => state.user);
@@ -501,10 +504,10 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
   const handleFidelityChange = useCallback(
     async (level: 'auto' | 'low' | 'high') => {
       await setFidelityLevel(level);
-      hapticSuccess();
+      emitFeedback('success');
       setShowFidelityModal(false);
     },
-    [setFidelityLevel],
+    [emitFeedback, setFidelityLevel],
   );
 
   const handleLanguageChange = useCallback(
@@ -529,6 +532,14 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
       hapticLight();
     },
     [setEnableLivingTheme],
+  );
+
+  const handleSensoryToggle = useCallback(
+    async (key: 'hapticsEnabled' | 'soundEnabled' | 'quietMode', value: boolean) => {
+      await setPreference(key, value);
+      emitFeedback('selection');
+    },
+    [emitFeedback, setPreference],
   );
 
   const handleProfileVisibilityToggle = useCallback(
@@ -779,6 +790,63 @@ const AppSettingsScreen = memo(function AppSettingsScreen({ navigation }: any) {
             />
           </HStack>
         </Box>
+
+        <SectionHeader
+          title={t('settings.sensory.title', 'Sensory feedback')}
+          description={t(
+            'settings.sensory.description',
+            `The app adapts motion and feedback to this device. Current profile: ${visualCapabilities.experience.motion}.`,
+          )}
+        />
+
+        {[
+          {
+            key: 'hapticsEnabled' as const,
+            title: t('settings.sensory.haptics', 'Haptic feedback'),
+            description: t(
+              'settings.sensory.haptics_desc',
+              'Gentle tactile confirmation for meaningful actions.',
+            ),
+          },
+          {
+            key: 'soundEnabled' as const,
+            title: t('settings.sensory.sound', 'Sound feedback'),
+            description: t(
+              'settings.sensory.sound_desc',
+              'Optional short sounds for meaningful moments.',
+            ),
+          },
+          {
+            key: 'quietMode' as const,
+            title: t('settings.sensory.quiet', 'Quiet mode'),
+            description: t(
+              'settings.sensory.quiet_desc',
+              'Silences sound and reduces sensory intensity.',
+            ),
+          },
+        ].map((option) => (
+          <Box
+            key={option.key}
+            className={`bg-phase-surface border border-phase-border p-4 mb-2 rounded-[20px] ${sensoryPreferences[option.key] ? 'border-phase-primary' : ''}`}
+          >
+            <HStack className="gap-4 items-center justify-between">
+              <VStack className="flex-1 gap-1">
+                <Text className="text-base font-semibold text-phase-primary">{option.title}</Text>
+                <Text className="text-sm text-phase-secondary">{option.description}</Text>
+              </VStack>
+              <Switch
+                value={sensoryPreferences[option.key]}
+                onValueChange={(value) => void handleSensoryToggle(option.key, value)}
+                trackColor={trackColor}
+                thumbColor="#FFFFFF"
+                accessible={true}
+                accessibilityRole="switch"
+                accessibilityLabel={option.title}
+                accessibilityState={{ checked: sensoryPreferences[option.key] }}
+              />
+            </HStack>
+          </Box>
+        ))}
 
         {/* Language & Localization */}
         <SectionHeader

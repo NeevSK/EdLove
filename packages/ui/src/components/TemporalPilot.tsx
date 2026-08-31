@@ -1,5 +1,5 @@
 import { useTemporalStore } from '@repo/core/logic';
-import { Calendar, PanelsTopLeft as LayoutIcon, Search, Wifi, WifiOff, Zap } from '@repo/ui/icons';
+import { Calendar, PanelsTopLeft as LayoutIcon, Wifi, WifiOff, Zap } from '@repo/ui/icons';
 import type React from 'react';
 import { useState } from 'react';
 import { Modal } from 'react-native';
@@ -13,7 +13,11 @@ import { TemporalScrubber } from '@repo/ui/components/TemporalScrubber';
  * The ultimate temporal command center.
  * Merges the intuitive flow of the Scrubber with the tactical precision of a Calendar.
  */
-export const TemporalPilot: React.FC = () => {
+export interface TemporalPilotProps {
+  onSearch?: () => void;
+}
+
+export const TemporalPilot: React.FC<TemporalPilotProps> = ({ onSearch }) => {
   const {
     viewScale,
     setScale,
@@ -77,12 +81,16 @@ export const TemporalPilot: React.FC = () => {
             <Calendar size={20} color="#F6BF8C" />
           </Pressable>
 
-          <Pressable
-            accessibilityRole="button"
-            className="w-9 h-9 rounded-full bg-white/5 items-center justify-center active:bg-white/10"
-          >
-            <Search size={20} color="#F6BF8C" />
-          </Pressable>
+          {onSearch ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Search temporal records"
+              onPress={onSearch}
+              className="w-9 h-9 rounded-full bg-white/5 items-center justify-center active:bg-white/10"
+            >
+              <LayoutIcon size={20} color="#F6BF8C" />
+            </Pressable>
+          ) : null}
         </HStack>
       </HStack>
 
@@ -111,7 +119,12 @@ export const TemporalPilot: React.FC = () => {
 
       {/* Tactical Calendar Modal */}
       <Modal visible={isCalendarVisible} transparent animationType="fade">
-        <Box className="flex-1 bg-black/80 justify-center items-center">
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Close temporal calendar"
+          onPress={() => setCalendarVisible(false)}
+          className="flex-1 bg-black/80 justify-center items-center"
+        >
           <Box className="w-[90%] bg-[#1A1A1A] rounded-[32px] p-6 border border-white/10">
             <Text className="text-white text-lg font-bold mb-6 text-center">
               Select Temporal Point
@@ -129,7 +142,7 @@ export const TemporalPilot: React.FC = () => {
               <Text className="text-black font-extrabold tracking-widest">LOCK TEMPORAL VIEW</Text>
             </Pressable>
           </Box>
-        </Box>
+        </Pressable>
       </Modal>
     </Box>
   );

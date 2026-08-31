@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="260" viewBox="0 0 240 260" fill="none">
+  <defs>
+    <radialGradient id="halo" cx="50%" cy="52%" r="52%"><stop offset="0" stop-color="#8A78B6" stop-opacity=".28"/><stop offset="1" stop-color="#8A78B6" stop-opacity="0"/></radialGradient>
+    <linearGradient id="wing" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFF9EE" stop-opacity=".96"/><stop offset="1" stop-color="#E8D9C6" stop-opacity=".70"/></linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#6B5548"/><stop offset="1" stop-color="#332A26"/></linearGradient>
+    <radialGradient id="light" cx="50%" cy="35%" r="70%"><stop stop-color="#FFF7C9"/><stop offset=".45" stop-color="#F6C56B"/><stop offset="1" stop-color="#D8873E"/></radialGradient>
+  </defs>
+  <ellipse cx="120" cy="223" rx="62" ry="10" fill="#6A4B37" opacity=".14"/><circle cx="120" cy="125" r="106" fill="url(#halo)"/>
+  <path d="M108 123C72 68 32 73 61 134C75 160 95 158 112 143Z" fill="url(#wing)" stroke="#C8B7A5" stroke-width="3"/><path d="M132 123C168 68 208 73 179 134C165 160 145 158 128 143Z" fill="url(#wing)" stroke="#C8B7A5" stroke-width="3"/>
+  <path d="M108 65Q96 36 77 42M132 65Q144 36 163 42" stroke="#5A4A3C" stroke-width="5" stroke-linecap="round"/><circle cx="77" cy="42" r="5" fill="#8A78B6"/><circle cx="163" cy="42" r="5" fill="#8A78B6"/>
+  <circle cx="120" cy="85" r="35" fill="url(#body)"/><ellipse cx="120" cy="133" rx="31" ry="54" fill="url(#body)"/><path d="M96 127Q120 113 144 127L139 180Q120 198 101 180Z" fill="url(#light)" stroke="#8C5B36" stroke-width="3"/>
+  <circle cx="109" cy="82" r="6" fill="#FFFDF8"/><circle cx="131" cy="82" r="6" fill="#FFFDF8"/><circle cx="110" cy="83" r="2.2" fill="#3C302A"/><circle cx="132" cy="83" r="2.2" fill="#3C302A"/><path d="M111 99Q120 106 129 99" stroke="#FFF1D2" stroke-width="3" stroke-linecap="round"/>
+  <path d="M91 137Q75 145 72 161M149 137Q165 145 168 161M105 185Q99 204 88 211M135 185Q141 204 152 211" stroke="#5A4A3C" stroke-width="5" stroke-linecap="round"/><circle cx="78" cy="161" r="5" fill="#8A78B6"/><circle cx="162" cy="161" r="5" fill="#8A78B6"/>
+  <path d="M91 171Q120 157 149 171L143 202Q120 216 97 202Z" fill="#F7E9D0" stroke="#5A4A3C" stroke-width="4"/><path d="M101 180Q120 169 139 180" stroke="#8A78B6" stroke-width="3"/>
+</svg>

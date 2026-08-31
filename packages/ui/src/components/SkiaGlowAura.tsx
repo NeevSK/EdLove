@@ -1,20 +1,16 @@
+import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
+import { Blur, Canvas, RadialGradient, Rect } from '@shopify/react-native-skia';
 import React, { useEffect } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
-import {
-  Canvas,
-  RadialGradient,
-  Rect,
-  Blur,
-} from '@shopify/react-native-skia';
-import { vec } from 'react-native-redash';
 import Animated, {
-  useSharedValue,
+  Easing,
   useAnimatedProps,
+  useSharedValue,
   withRepeat,
   withSequence,
   withTiming,
-  Easing,
 } from 'react-native-reanimated';
+import { vec } from 'react-native-redash';
 
 export interface SkiaGlowAuraProps {
   size?: number;
@@ -43,23 +39,30 @@ export function SkiaGlowAura({
   style,
   children,
 }: SkiaGlowAuraProps) {
+  const { allowAmbientEffects, allowBlur, allowSubtleAnimation } = useVisualCapabilities();
+  const effectsEnabled = active && allowAmbientEffects && allowBlur;
   const opacity = useSharedValue(0.4);
 
   useEffect(() => {
-    if (!active) {
+    if (!effectsEnabled) {
       opacity.value = 0;
+      return;
+    }
+
+    if (!allowSubtleAnimation) {
+      opacity.value = 0.4;
       return;
     }
 
     opacity.value = withRepeat(
       withSequence(
         withTiming(1, { duration: duration / 2, easing: Easing.inOut(Easing.ease) }),
-        withTiming(0.4, { duration: duration / 2, easing: Easing.inOut(Easing.ease) })
+        withTiming(0.4, { duration: duration / 2, easing: Easing.inOut(Easing.ease) }),
       ),
       -1,
-      true
+      true,
     );
-  }, [active, duration, opacity]);
+  }, [allowSubtleAnimation, duration, effectsEnabled, opacity]);
 
   const animatedStyle = useAnimatedProps(() => ({
     opacity: opacity.value,
@@ -69,13 +72,11 @@ export function SkiaGlowAura({
 
   return (
     <View style={[styles.container, { width: size, height: size }, style]}>
-      <AnimatedCanvas style={[{ width: size, height: size }, animatedStyle as any]}>
+      <AnimatedCanvas
+        style={[{ width: size, height: size, pointerEvents: 'none' }, animatedStyle as any]}
+      >
         <Rect x={0} y={0} width={size} height={size}>
-          <RadialGradient
-            c={center}
-            r={size / 2}
-            colors={[color, secondaryColor, 'transparent']}
-          />
+          <RadialGradient c={center} r={size / 2} colors={[color, secondaryColor, 'transparent']} />
           <Blur blur={blurRadius} />
         </Rect>
       </AnimatedCanvas>

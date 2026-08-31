@@ -1,8 +1,8 @@
 import type React from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { Button, ButtonIcon, ButtonSpinner, ButtonText } from '@repo/ui/components/ui/button';
-import { PressableScale } from '@repo/ui/components/PressableScale';
 import { cn } from '@repo/ui/utils/classNames';
+import type { HapticImpact } from '@repo/ui/utils/haptics';
 
 interface SanctuaryButtonProps {
   onPress?: () => void;
@@ -15,6 +15,7 @@ interface SanctuaryButtonProps {
   size?: 'xs' | 'sm' | 'md' | 'lg';
   fullWidth?: boolean;
   action?: 'primary' | 'secondary' | 'negative' | 'positive';
+  haptic?: HapticImpact | false;
   style?: StyleProp<ViewStyle>;
   accessibilityLabel?: string;
   accessibilityHint?: string;
@@ -33,6 +34,7 @@ export function SanctuaryButton({
   size = 'md',
   fullWidth = false,
   action = 'primary',
+  haptic = 'light',
   style,
   accessibilityLabel,
   accessibilityHint,
@@ -108,7 +110,7 @@ export function SanctuaryButton({
     lg: 'h-14 px-8',
   };
 
-  const buttonContent = (
+  return (
     <Button
       className={cn(
         fullWidth ? 'w-full' : 'w-auto',
@@ -122,6 +124,7 @@ export function SanctuaryButton({
       variant={variant === 'link' ? 'ghost' : variant}
       action={action === 'negative' ? 'negative' : action === 'positive' ? 'positive' : action}
       isDisabled={isDisabled || isLoading}
+      haptic={haptic}
       onPress={onPress}
       style={style}
       accessibilityLabel={
@@ -145,16 +148,5 @@ export function SanctuaryButton({
         <ButtonIcon as={rightIcon} className={`ml-2 ${getTextClass()}`} {...iconProps} />
       )}
     </Button>
-  );
-
-  return (
-    <PressableScale
-      onPress={onPress}
-      disabled={isDisabled || isLoading}
-      accessibilityLabel={accessibilityLabel || (typeof children === 'string' ? children : 'Button')}
-      accessibilityHint={accessibilityHint}
-    >
-      {buttonContent}
-    </PressableScale>
   );
 }

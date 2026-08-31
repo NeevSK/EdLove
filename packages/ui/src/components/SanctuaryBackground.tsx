@@ -54,7 +54,10 @@ export function SanctuaryBackground() {
   }));
 
   return (
-    <View style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}>
+    // pointerEvents must be a direct prop (not inside style) for react-native-web.
+    // When inside style={{}}, react-native-web silently drops it, leaving this
+    // full-screen absolute overlay blocking ALL click events on web.
+    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
       {/* Layer 0: Previous phase (fades out) */}
       <LinearGradient
         colors={colors.prev}
@@ -63,7 +66,7 @@ export function SanctuaryBackground() {
         style={StyleSheet.absoluteFill}
       />
       {/* Layer 1: Current phase (fades in) */}
-      <Reanimated.View style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }, animatedStyle]}>
+      <Reanimated.View pointerEvents="none" style={[StyleSheet.absoluteFill, animatedStyle]}>
         <LinearGradient
           colors={colors.current}
           start={{ x: 0.2, y: 0 }}

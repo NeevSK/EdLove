@@ -5,16 +5,57 @@
 
 import { coreRuntime } from '@repo/core/logic';
 
+export type HapticImpact = 'light' | 'medium' | 'heavy';
+
+let lastImpact: { kind: HapticImpact; at: number } | null = null;
+let hapticsEnabled = true;
+
+export function setHapticsEnabled(enabled: boolean) {
+  hapticsEnabled = enabled;
+}
+
+function runHaptic(label: string, callback: () => void) {
+  if (!hapticsEnabled) return;
+
+  try {
+    callback();
+  } catch (error) {
+    console.warn(`[Haptics] ${label} failed`, error);
+  }
+}
+
+/**
+ * Fires an impact haptic while coalescing the same impact emitted twice by a
+ * shared control and its existing action handler.
+ */
+export function hapticImpact(kind: HapticImpact) {
+  if (!hapticsEnabled) return;
+
+  const now = Date.now();
+  if (lastImpact?.kind === kind && now - lastImpact.at < 80) return;
+  lastImpact = { kind, at: now };
+
+  runHaptic(`impact.${kind}`, () => {
+    switch (kind) {
+      case 'light':
+        coreRuntime.haptics.impactLight();
+        break;
+      case 'medium':
+        coreRuntime.haptics.impactMedium();
+        break;
+      case 'heavy':
+        coreRuntime.haptics.impactHeavy();
+        break;
+    }
+  });
+}
+
 /**
  * Light haptic feedback
  * Use for: Button presses, taps, toggles
  */
 export function hapticLight() {
-  try {
-    coreRuntime.haptics.impactLight();
-  } catch {
-    // Fail silently if runtime not registered
-  }
+  hapticImpact('light');
 }
 
 /**
@@ -22,11 +63,7 @@ export function hapticLight() {
  * Use for: Important actions, confirmations, selection changes
  */
 export function hapticMedium() {
-  try {
-    coreRuntime.haptics.impactMedium();
-  } catch {
-    // Fail silently
-  }
+  hapticImpact('medium');
 }
 
 /**
@@ -34,11 +71,7 @@ export function hapticMedium() {
  * Use for: Destructive actions, warnings, errors
  */
 export function hapticHeavy() {
-  try {
-    coreRuntime.haptics.impactHeavy();
-  } catch {
-    // Fail silently
-  }
+  hapticImpact('heavy');
 }
 
 /**
@@ -46,11 +79,9 @@ export function hapticHeavy() {
  * Use for: Successful operations, achievements, completion
  */
 export function hapticSuccess() {
-  try {
+  runHaptic('notification.success', () => {
     coreRuntime.haptics.notificationSuccess();
-  } catch {
-    // Fail silently
-  }
+  });
 }
 
 /**
@@ -58,11 +89,9 @@ export function hapticSuccess() {
  * Use for: Warnings, attention needed
  */
 export function hapticWarning() {
-  try {
+  runHaptic('notification.warning', () => {
     coreRuntime.haptics.notificationWarning();
-  } catch {
-    // Fail silently
-  }
+  });
 }
 
 /**
@@ -70,11 +99,9 @@ export function hapticWarning() {
  * Use for: Errors, validation failures
  */
 export function hapticError() {
-  try {
+  runHaptic('notification.error', () => {
     coreRuntime.haptics.notificationError();
-  } catch {
-    // Fail silently
-  }
+  });
 }
 
 /**
@@ -82,11 +109,9 @@ export function hapticError() {
  * Use for: Scrolling through lists, picker changes
  */
 export function hapticSelection() {
-  try {
+  runHaptic('selection', () => {
     coreRuntime.haptics.selection();
-  } catch {
-    // Fail silently
-  }
+  });
 }
 
 /**
@@ -94,11 +119,7 @@ export function hapticSelection() {
  * Creates a gentle pulse pattern
  */
 export async function hapticBreathing() {
-  try {
-    coreRuntime.haptics.impactLight();
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    coreRuntime.haptics.impactLight();
-  } catch {
-    // Fail silently
-  }
+  hapticImpact('light');
+  await new Promise((resolve) => setTimeout(resolve, 200));
+  hapticImpact('light');
 }

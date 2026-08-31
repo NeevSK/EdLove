@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceOfTruth": "Figma mascot vector master",
+  "status": "awaiting-vector-master-approval",
+  "requiredThemes": ["light", "dark"],
+  "requiredScales": ["inline", "card", "scene"],
+  "staticFormats": ["svg", "png", "webp"],
+  "animatedFormats": ["lottie", "rive"],
+  "roles": ["guide", "student", "teacher", "guardian", "host", "librarian"],
+  "states": ["resting", "curious", "guiding", "interrupted", "complete"],
+  "entries": [
+    {
+      "id": "firefly-guide-guiding-light-card.svg",
+      "role": "guide",
+      "state": "guiding",
+      "theme": "light",
+      "scale": "card",
+      "format": "svg",
+      "status": "review",
+      "source": {
+        "fileKey": "ySLDA1pqD7dpn1bJk1UCUX",
+        "nodeId": "21:11"
+      }
+    },
+    {
+      "id": "firefly-student-curious-light-card.svg",
+      "role": "student",
+      "state": "curious",
+      "theme": "light",
+      "scale": "card",
+      "format": "svg",
+      "status": "review",
+      "source": {
+        "fileKey": "ySLDA1pqD7dpn1bJk1UCUX",
+        "nodeId": "21:39"
+      }
+    },
+    {
+      "id": "firefly-teacher-guiding-light-card.svg",
+      "role": "teacher",
+      "state": "guiding",
+      "theme": "light",
+      "scale": "card",
+      "format": "svg",
+      "status": "review",
+      "source": {
+        "fileKey": "ySLDA1pqD7dpn1bJk1UCUX",
+        "nodeId": "21:61"
+      }
+    },
+    {
+      "id": "firefly-guardian-resting-light-card.svg",
+      "role": "guardian",
+      "state": "resting",
+      "theme": "light",
+      "scale": "card",
+      "format": "svg",
+      "status": "review",
+      "source": {
+        "fileKey": "ySLDA1pqD7dpn1bJk1UCUX",
+        "nodeId": "21:83"
+      }
+    }
+  ]
+}

@@ -12,6 +12,7 @@ import { Spinner } from '@repo/ui/components/ui/spinner';
 import { Text } from '@repo/ui/components/ui/text';
 import { View as StyledView } from '@repo/ui/components/ui/view';
 import { cn } from '@repo/ui/utils/classNames';
+import { hapticImpact, type HapticImpact } from '@repo/ui/utils/haptics';
 
 interface ButtonContextType {
   variant?: 'solid' | 'outline' | 'ghost';
@@ -35,6 +36,7 @@ export interface IButtonProps extends PressableProps {
   action?: 'primary' | 'secondary' | 'positive' | 'negative' | 'default';
   isDisabled?: boolean;
   isLoading?: boolean;
+  haptic?: HapticImpact | false;
   sx?: StyleProp<ViewStyle>;
 }
 
@@ -49,6 +51,8 @@ const Button = React.forwardRef<View, IButtonProps>(
       isLoading,
       disabled,
       sx,
+      haptic = 'light',
+      onPressIn,
       children,
       onPress,
       style,
@@ -96,6 +100,10 @@ const Button = React.forwardRef<View, IButtonProps>(
           {...props}
           ref={ref as any}
           disabled={resolvedDisabled}
+          onPressIn={(event) => {
+            if (haptic !== false) hapticImpact(haptic);
+            onPressIn?.(event);
+          }}
           onPress={onPress}
           accessibilityRole="button"
           accessibilityState={{ disabled: !!resolvedDisabled, busy: !!isLoading }}

@@ -1,7 +1,12 @@
 import type { GraphLink, GraphNode, PerspectiveViewProps } from '@repo/core/types';
 import React, { useCallback, useMemo } from 'react';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import {
+  GestureDetector,
+  usePanGesture,
+  usePinchGesture,
+  useSimultaneousGestures,
+} from 'react-native-gesture-handler';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import Svg, { Circle, G, Line, Text as SvgText } from 'react-native-svg';
 import { useResponsive } from '@repo/ui/hooks/useResponsive';
 import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
@@ -17,7 +22,7 @@ const GraphLinkItem = React.memo(
     link: GraphLink;
     sourcePos: { x: number; y: number };
     targetPos: { x: number; y: number };
-    colors: any;
+      colors: ReturnType<typeof useThemedColors>;
   }) => {
     return (
       <Line
@@ -45,7 +50,7 @@ const GraphNodeItem = React.memo(
     node: GraphNode;
     pos: { x: number; y: number };
     isSelected: boolean;
-    colors: any;
+    colors: ReturnType<typeof useThemedColors>;
     onPress: (node: GraphNode) => void;
   }) => {
     const handlePress = useCallback(() => onPress(node), [onPress, node]);
@@ -91,34 +96,47 @@ export const AstroView: React.FC<PerspectiveViewProps> = ({
   const savedTranslateX = useSharedValue(0);
   const savedTranslateY = useSharedValue(100);
 
-  const combinedGesture = useMemo(() => {
-    const pinch = Gesture.Pinch()
-      .onUpdate((e: any) => {
-        scale.value = savedScale.value * e.scale;
-      })
-      .onEnd(() => {
-        savedScale.value = scale.value;
-      });
+  const pinchGesture = usePinchGesture({
+    onUpdate: (event) => {
+      'worklet';
+      scale.value = savedScale.value * event.scale;
+    },
+    onDeactivate: (event) => {
+      'worklet';
+      if (event.canceled) {
+        scale.value = withTiming(savedScale.value);
+        return;
+      }
+      savedScale.value = scale.value;
+    },
+  });
 
-    const pan = Gesture.Pan()
-      .onUpdate((e: any) => {
-        translateX.value = savedTranslateX.value + e.translationX;
-        translateY.value = savedTranslateY.value + e.translationY;
-      })
-      .onEnd(() => {
-        savedTranslateX.value = translateX.value;
-        savedTranslateY.value = translateY.value;
-      });
+  const panGesture = usePanGesture({
+    onUpdate: (event) => {
+      'worklet';
+      translateX.value = savedTranslateX.value + event.translationX;
+      translateY.value = savedTranslateY.value + event.translationY;
+    },
+    onDeactivate: (event) => {
+      'worklet';
+      if (event.canceled) {
+        translateX.value = withTiming(savedTranslateX.value);
+        translateY.value = withTiming(savedTranslateY.value);
+        return;
+      }
+      savedTranslateX.value = translateX.value;
+      savedTranslateY.value = translateY.value;
+    },
+  });
 
-    return Gesture.Simultaneous(pinch, pan);
-  }, [scale, savedScale, translateX, savedTranslateX, translateY, savedTranslateY]);
+  const combinedGesture = useSimultaneousGestures(pinchGesture, panGesture);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: translateX.value },
       { translateY: translateY.value },
       { scale: scale.value },
-    ] as any,
+    ],
   }));
 
   const handleNodePress = useCallback(

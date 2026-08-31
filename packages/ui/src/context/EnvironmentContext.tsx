@@ -4,13 +4,15 @@
  */
 
 import { identity, useStore } from '@repo/core/logic';
-import { type ReactNode, useCallback, useMemo } from 'react';
-import { FidelityProvider, useFidelity } from '@repo/ui/context/FidelityProvider';
-import { LanguageProvider, useLanguage } from '@repo/ui/context/LanguageProvider';
+import { FidelityProvider, useFidelity } from './FidelityProvider';
+import { LanguageProvider, useLanguage } from './LanguageProvider';
 // Atomic Providers
-import { RealityProvider, useReality } from '@repo/ui/context/RealityProvider';
-import { ThemeProvider, useThemeContext } from '@repo/ui/context/ThemeProvider';
-import type { EnvironmentContextValue } from '@repo/ui/context/types';
+import { RealityProvider, useReality } from './RealityProvider';
+import { SensoryProvider } from './SensoryProvider';
+import { ThemeProvider, useThemeContext } from './ThemeProvider';
+import type { EnvironmentContextValue } from './types';
+import { useVisualCapabilities } from './VisualCapabilities';
+import { type ReactNode, useCallback, useMemo } from 'react';
 
 /**
  * Environment Provider Component
@@ -20,9 +22,11 @@ export function EnvironmentProvider({ children }: { children: ReactNode }) {
   return (
     <LanguageProvider>
       <RealityProvider>
-        <ThemeProvider>
-          <FidelityProvider>{children}</FidelityProvider>
-        </ThemeProvider>
+        <SensoryProvider>
+          <ThemeProvider>
+            <FidelityProvider>{children}</FidelityProvider>
+          </ThemeProvider>
+        </SensoryProvider>
       </RealityProvider>
     </LanguageProvider>
   );
@@ -50,6 +54,7 @@ export function useEnvironment(): EnvironmentContextValue {
     setEnableLivingTheme,
   } = useThemeContext();
   const { fidelityLevel, effectiveFidelity, setFidelityLevel } = useFidelity();
+  const visualCapabilities = useVisualCapabilities();
 
   // ReBAC actions
   const switchPerspective = useCallback(async (entityId: string, capacity: string) => {
@@ -70,6 +75,7 @@ export function useEnvironment(): EnvironmentContextValue {
       reality,
       isVeilActive,
       enableLivingTheme,
+      visualCapabilities,
 
       // Actions
       setThemeMode,
@@ -91,6 +97,7 @@ export function useEnvironment(): EnvironmentContextValue {
       reality,
       isVeilActive,
       enableLivingTheme,
+      visualCapabilities,
       setThemeMode,
       setFidelityLevel,
       setLanguage,
@@ -105,19 +112,19 @@ export function useEnvironment(): EnvironmentContextValue {
 export {
   FidelityProvider,
   useFidelity,
-} from '@repo/ui/context/FidelityProvider';
+} from './FidelityProvider';
 export {
   LanguageProvider,
   useLanguage,
-} from '@repo/ui/context/LanguageProvider';
+} from './LanguageProvider';
 // Re-export utility functions and atomic hooks
 export {
   RealityProvider,
   useReality,
-} from '@repo/ui/context/RealityProvider';
+} from './RealityProvider';
 export {
   ThemeProvider,
   useThemeContext,
-} from '@repo/ui/context/ThemeProvider';
+} from './ThemeProvider';
 
-export { getTemporalPhase, shouldUseDarkTheme } from '@repo/ui/context/utils';
+export { getTemporalPhase, shouldUseDarkTheme } from './utils';

@@ -11,11 +11,13 @@
  * Philosophy: Engaging, visual, and curated — inspired by streaming services.
  */
 
+import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { BadgeCheck, Bookmark, BookOpen } from '@repo/ui/icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { ImageBackground } from 'react-native';
 import { Box, HStack, Pressable, Text, VStack } from '@repo/ui/primitives';
 import { cn } from '@repo/ui/utils/classNames';
+import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Platform, StyleSheet, View } from 'react-native';
 
 // ============================================================================
 // CONSTANTS
@@ -57,13 +59,24 @@ export function CollectionCard<T = any>({
   onPullToDesk,
   className,
 }: CollectionCardProps<T>) {
+  const visualCapabilities = useVisualCapabilities();
   const cardContent = (
     <Box
       style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}
       className={cn('rounded-3xl overflow-hidden bg-phase-surface shadow-md', className)}
     >
       {thumbnailUrl ? (
-        <ImageBackground source={{ uri: thumbnailUrl }} className="flex-1" resizeMode="cover">
+        <View className="flex-1">
+          <Image
+            source={{ uri: thumbnailUrl }}
+            style={StyleSheet.absoluteFill}
+            contentFit="cover"
+            cachePolicy={visualCapabilities.imageCachePolicy}
+            allowDownscaling
+            decodeFormat={
+              Platform.OS === 'android' ? visualCapabilities.imageDecodeFormat : undefined
+            }
+          />
           <CardOverlay
             title={title}
             creator={creator}
@@ -72,7 +85,7 @@ export function CollectionCard<T = any>({
             verified={verified}
             onPullToDesk={onPullToDesk ? () => onPullToDesk(contextData as T) : undefined}
           />
-        </ImageBackground>
+        </View>
       ) : (
         <VStack className="flex-1 items-center justify-center bg-phase-surface">
           <BookOpen className="text-phase-accent opacity-50" size={44} />

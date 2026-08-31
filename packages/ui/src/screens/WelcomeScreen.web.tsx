@@ -1,8 +1,8 @@
 /**
- * WelcomeScreen.web.tsx \u2014 Split-panel landing page (Pattern A)
+ * WelcomeScreen.web.tsx — Split-panel landing page
  *
  * On native, WelcomeScreen is a mobile-style centred card. On web Metro
- * resolves this file instead, rendering a two-column layout:
+ * resolves this file instead, rendering a fluid two-column or stacked layout:
  *
  *  ┌──────────────────────┬───────────────────────────┐
  *  │  LEFT PANEL          │  RIGHT PANEL              │
@@ -14,31 +14,33 @@
  * Auth logic is identical to the native screen (same handlers, same hooks).
  * AuthScreen renders on top of this layout when the user taps "I have an account".
  *
+ * The screen scrolls through ScreenWrapper (an RN ScrollView), which is the
+ * app's sanctioned web scroll container — the shell disables page/body
+ * scrolling (`body { overflow: hidden }`), so screens must scroll internally.
+ * The two-column / stacked switch is pure CSS flex-wrap (no JS on resize).
  * Design tokens: Vellum bg · Ink text · Saffron primary · Dalu Green secondary
  * Shadow rule: Shadow Violet only, never grey/black.
  */
 
 import { authAPI } from '@repo/core/auth';
 import { handleAPIError } from '@repo/core/logic';
-import { memo, useCallback, useMemo, useReducer, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 import { GatewayFooter } from '@repo/ui/components/GatewayFooter.web';
 import { GatewayHeader } from '@repo/ui/components/GatewayHeader.web';
+import { Mascot, type MascotArtworkSource } from '@repo/ui/components/Mascot';
+import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import {
   ActivityIndicator,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
-  useWindowDimensions,
   View,
-  VStack,
 } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
 import { EXTERNAL_URLS } from '@repo/ui/utils';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
-import { openExternalURL } from '@repo/ui/utils/linking';
+import { memo, useCallback, useMemo, useReducer, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // ──────────────────────────────────────────────────────────
 // Constants
@@ -52,7 +54,7 @@ const STATS = [
 
 const PILLARS = [
   { name: 'Self', emoji: '❤️', color: Theme.colors.sanctuarySaffron },
-      { name: 'Workspace', emoji: '🏫', color: Theme.colors.sageGreen },
+  { name: 'Workspace', emoji: '🏫', color: Theme.colors.sageGreen },
   {
     name: 'Community',
     emoji: '🤝',
@@ -98,66 +100,79 @@ function welcomeReducer(state: WelcomeState, action: WelcomeAction): WelcomeStat
 // SUB-COMPONENTS
 // ──────────────────────────────────────────────────────────
 
-const LeftPanel = memo(({ isNarrow }: { isNarrow: boolean }) => {
-  const { text, accent, isDark } = useTheme();
-  return (
-    <View style={[styles.leftPanel, isNarrow && styles.leftPanelNarrow]}>
-      {/* Logo */}
-      <View style={styles.logoRow}>
-        <View style={styles.logoCircle}>
-          <Text style={styles.logoGlyph}>🪷</Text>
+const LeftPanel = memo(
+  ({ exploreArtwork }: { exploreArtwork?: MascotArtworkSource }) => {
+    const { text, accent, isDark } = useTheme();
+    return (
+      <View style={styles.leftPanelInner}>
+        {/* Logo */}
+        <View style={styles.logoRow}>
+          <View style={styles.logoCircle}>
+            <Text style={styles.logoGlyph}>🪷</Text>
+          </View>
+          <Text style={[styles.logoName, { color: text.primary }]}>Gurudevi</Text>
         </View>
-        <Text style={[styles.logoName, { color: text.primary }]}>Gurudevi</Text>
-      </View>
-      {/* Headline */}
-      <Text style={[styles.headline, { color: text.primary }]}>A Sanctuary{'\n'}for Teachers</Text>
-      {/* Tagline */}
-      <Text
-        style={[styles.tagline, { color: isDark ? Theme.colors.starlightGray : Theme.colors.bark }]}
-      >
-        Mending the teaching-learning{'\n'}impedance match — through care, not surveillance.
-      </Text>
-      {/* Stats */}
-      <View style={styles.statsRow}>
-        {STATS.map((s) => (
-          <View key={s.label} style={[styles.statPill, { borderColor: `${accent.action}30` }]}>
-            <Text style={[styles.statValue, { color: accent.action }]}>{s.value}</Text>
-            <Text style={[styles.statLabel, { color: text.secondary }]}>{s.label}</Text>
-          </View>
-        ))}
-      </View>
-      {/* Five Pillars */}
-      <View style={styles.pillarsRow}>
-        {PILLARS.map((p) => (
-          <View
-            key={p.name}
-            style={[
-              styles.pillarChip,
-              { borderColor: `${p.color}30`, backgroundColor: `${p.color}10` },
-            ]}
-          >
-            <Text style={styles.pillarEmoji}>{p.emoji}</Text>
-            <Text style={[styles.pillarName, { color: p.color }]}>{p.name}</Text>
-          </View>
-        ))}
-      </View>
-      {/* Quote */}
-      <View
-        style={[
-          styles.quoteBox,
-          {
-            borderLeftColor: accent.action,
-            backgroundColor: `${accent.action}0A`,
-          },
-        ]}
-      >
-        <Text style={[styles.quoteText, { color: text.secondary }]}>
-          &quot;Education is a living ecology,{'\n'}not a linear process.&quot;
+        <View style={styles.mascotWelcome}>
+          <Mascot
+            artwork={exploreArtwork}
+            mode="glowing"
+            podVariant="halo"
+            size={180}
+            state="guiding"
+          />
+        </View>
+        {/* Headline */}
+        <Text style={[styles.headline, { color: text.primary }]}>
+          A Sanctuary{'\n'}for Teachers
         </Text>
+        {/* Tagline */}
+        <Text
+          style={[styles.tagline, { color: isDark ? Theme.colors.starlightGray : Theme.colors.bark }]}
+        >
+          Mending the teaching-learning{'\n'}impedance match — through care, not surveillance.
+        </Text>
+        {/* Stats */}
+        <View style={styles.statsRow}>
+          {STATS.map((s) => (
+            <View key={s.label} style={[styles.statPill, { borderColor: `${accent.action}30` }]}>
+              <Text style={[styles.statValue, { color: accent.action }]}>{s.value}</Text>
+              <Text style={[styles.statLabel, { color: text.secondary }]}>{s.label}</Text>
+            </View>
+          ))}
+        </View>
+        {/* Five Pillars */}
+        <View style={styles.pillarsRow}>
+          {PILLARS.map((p) => (
+            <View
+              key={p.name}
+              style={[
+                styles.pillarChip,
+                { borderColor: `${p.color}30`, backgroundColor: `${p.color}10` },
+              ]}
+            >
+              <Text style={styles.pillarEmoji}>{p.emoji}</Text>
+              <Text style={[styles.pillarName, { color: p.color }]}>{p.name}</Text>
+            </View>
+          ))}
+        </View>
+        {/* Quote */}
+        <View
+          style={[
+            styles.quoteBox,
+            {
+              borderLeftColor: accent.action,
+              backgroundColor: `${accent.action}0A`,
+            },
+          ]}
+        >
+          <Text style={[styles.quoteText, { color: text.secondary }]}>
+            &quot;Education is a living ecology,{'\n'}not a linear process.&quot;
+          </Text>
+        </View>
       </View>
-    </View>
-  );
-});
+    );
+  },
+);
 LeftPanel.displayName = 'LeftPanel';
 
 interface RightPanelProps {
@@ -185,26 +200,6 @@ const RightPanel = memo(
     footer,
   }: RightPanelProps) => {
     const { text, glass, accent } = useTheme();
-
-    const handlePrivacyPress = useCallback((e: { stopPropagation: () => void }) => {
-      e.stopPropagation();
-      void openExternalURL(EXTERNAL_URLS.privacy, {
-        title: 'Privacy Policy',
-        sourceLabel: 'Welcome',
-        sourceBadge: 'External policy',
-        trustLevel: 'verified',
-      });
-    }, []);
-
-    const handleTermsPress = useCallback((e: { stopPropagation: () => void }) => {
-      e.stopPropagation();
-      void openExternalURL(EXTERNAL_URLS.terms, {
-        title: 'Terms of Use',
-        sourceLabel: 'Welcome',
-        sourceBadge: 'External policy',
-        trustLevel: 'verified',
-      });
-    }, []);
 
     const handleExploreHoverIn = useCallback(() => {
       onBtnHoverIn('explore');
@@ -271,52 +266,60 @@ const RightPanel = memo(
             </Text>
           </Pressable>
           {/* Terms — accessible checkbox */}
-          <Pressable
-            onPress={onToggleTerms}
-            accessibilityRole="checkbox"
-            accessibilityState={{ checked: acceptedTerms }}
-            accessibilityLabel="Accept Terms of Use and Privacy Policy"
-            accessibilityHint="Toggle acceptance of terms and privacy policy to enable exploration"
-            style={styles.termsRow}
-          >
-            <View
-              style={[
-                styles.checkbox,
-                {
-                  backgroundColor: acceptedTerms ? accent.action : 'transparent',
-                  borderColor: acceptedTerms ? accent.action : text.muted,
-                },
-              ]}
+          <View style={styles.termsRow}>
+            <Pressable
+              onPress={onToggleTerms}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: acceptedTerms }}
+              accessibilityLabel="Accept Terms of Use and Privacy Policy"
+              accessibilityHint="Toggle acceptance of terms and privacy policy to enable exploration"
+              style={{ cursor: 'pointer' }}
             >
-              {acceptedTerms && <Text style={styles.checkmark}>✓</Text>}
-            </View>
+              <View
+                style={[
+                  styles.checkbox,
+                  {
+                    backgroundColor: acceptedTerms ? accent.action : 'transparent',
+                    borderColor: acceptedTerms ? accent.action : text.muted,
+                  },
+                ]}
+              >
+                {acceptedTerms && <Text style={styles.checkmark}>✓</Text>}
+              </View>
+            </Pressable>
             <Text style={[styles.termsText, { color: text.secondary }]}>
               I agree to the{' '}
-              <Pressable
-                onPress={handlePrivacyPress}
-                accessibilityRole="link"
-                accessibilityLabel="Read Privacy Policy"
-                accessibilityHint="Opens the privacy policy in a new window"
+              <a
+                href={EXTERNAL_URLS.privacy}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: accent.action,
+                  fontWeight: '600',
+                  textDecoration: 'underline',
+                  fontSize: 13,
+                  cursor: 'pointer',
+                }}
               >
-                <Text
-                  style={{
-                    color: accent.action,
-                    fontWeight: '600',
-                    textDecorationLine: 'underline',
-                    fontSize: 13,
-                  }}
-                >
-                  Privacy Policy
-                </Text>
-              </Pressable>
+                Privacy Policy
+              </a>
               {' '}and{' '}
-              <Pressable onPress={handleTermsPress} accessibilityRole="link" accessibilityLabel="Read Terms of Use">
-                <Text style={{ color: accent.action, fontWeight: '600', textDecorationLine: 'underline', fontSize: 13 }}>
-                  Terms of Use
-                </Text>
-              </Pressable>
+              <a
+                href={EXTERNAL_URLS.terms}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: accent.action,
+                  fontWeight: '600',
+                  textDecoration: 'underline',
+                  fontSize: 13,
+                  cursor: 'pointer',
+                }}
+              >
+                Terms of Use
+              </a>
             </Text>
-          </Pressable>
+          </View>
           {/* Footer note */}
           <Text style={[styles.cardFooter, { color: text.muted }]}>{footer}</Text>
         </View>
@@ -329,12 +332,11 @@ RightPanel.displayName = 'RightPanel';
 interface WelcomeScreenProps {
   onLogin?: () => void;
   onGuest?: () => void;
+  exploreArtwork?: MascotArtworkSource;
 }
 
-export const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => {
+export const WelcomeScreen = memo(({ onLogin, onGuest, exploreArtwork }: WelcomeScreenProps) => {
   const { t } = useTranslation();
-  const { gradientNodes } = useTheme();
-  const { width } = useWindowDimensions();
   const guestEntryInFlightRef = useRef(false);
 
   const [state, dispatch] = useReducer(welcomeReducer, {
@@ -344,9 +346,6 @@ export const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => 
   });
 
   const { acceptedTerms, isConnecting, btnHover } = state;
-
-  const isNarrow = width < 900;
-  const bgFrom = gradientNodes[0];
 
   const startExploring = useCallback(async () => {
     if (isConnecting || guestEntryInFlightRef.current) return;
@@ -399,19 +398,14 @@ export const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => 
   );
 
   return (
-    <View style={[styles.root, { backgroundColor: bgFrom }]}>
+    <View style={styles.root}>
       <GatewayHeader />
-      {/* Subtle ambient glow blobs */}
-      <View style={[styles.blob1, { backgroundColor: `${Theme.colors.sanctuarySaffron}12` }]} />
-      <View style={[styles.blob2, { backgroundColor: `${Theme.colors.sageGreen}0D` }]} />
-
-      <View style={{ flex: 1, width: '100%' }}>
-        {isNarrow ? (
-          <ScrollView
-            contentContainerStyle={styles.narrowContent}
-            showsVerticalScrollIndicator={false}
-          >
-            <LeftPanel isNarrow={isNarrow} />
+      <ScreenWrapper scroll>
+        <View style={styles.track}>
+          <View style={styles.panelLeft}>
+            <LeftPanel exploreArtwork={exploreArtwork} />
+          </View>
+          <View style={styles.panelRight}>
             <RightPanel
               acceptedTerms={acceptedTerms}
               isConnecting={isConnecting}
@@ -423,31 +417,14 @@ export const WelcomeScreen = memo(({ onLogin, onGuest }: WelcomeScreenProps) => 
               onBtnHoverOut={setBtnHoverOut}
               footer={footer}
             />
-          </ScrollView>
-        ) : (
-          <View style={styles.twoCol}>
-            <LeftPanel isNarrow={false} />
-            <VStack className="flex-1 justify-center items-center">
-              <RightPanel
-                acceptedTerms={acceptedTerms}
-                isConnecting={isConnecting}
-                btnHover={btnHover}
-                onStartExploring={handleStartExploring}
-                onLogin={handleLoginPress}
-                onToggleTerms={toggleTerms}
-                onBtnHoverIn={setBtnHoverIn}
-                onBtnHoverOut={setBtnHoverOut}
-                footer={footer}
-              />
-            </VStack>
           </View>
-        )}
-      </View>
-
+        </View>
+      </ScreenWrapper>
       <GatewayFooter />
     </View>
   );
 });
+
 WelcomeScreen.displayName = 'WelcomeScreen';
 
 export default WelcomeScreen;
@@ -456,60 +433,63 @@ export default WelcomeScreen;
 // Styles
 // ──────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
+  // The screen root fills the fixed-height shell (#root/body) and lays out
+  // header / scroll body / footer in a column. Scroll happens INSIDE
+  // ScreenWrapper's ScrollView, never on the page (body overflow is hidden).
+  // position relative + zIndex 1 lift the content above any stray
+  // full-viewport absolute overlay the navigation shell may leave (which
+  // would otherwise swallow pointer events) — matches how the gateway shell
+  // stayed clickable.
   root: {
-    minHeight: '100vh',
+    height: '100vh',
+    position: 'relative',
+    zIndex: 1,
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between',
-    overflowY: 'auto',
+    backgroundColor: 'transparent',
   } as Record<string, unknown>,
-  blob1: {
-    position: 'absolute',
-    width: 600,
-    height: 600,
-    borderRadius: 300,
-    top: -200,
-    left: -100,
-  },
-  blob2: {
-    position: 'absolute',
-    width: 400,
-    height: 400,
-    borderRadius: 200,
-    bottom: -100,
-    right: -50,
-  },
-  twoCol: {
-    flex: 1,
+  // Fluid auto-collapse track: side-by-side on wide, stacked on narrow.
+  track: {
     flexDirection: 'row',
-    alignItems: 'stretch',
-  },
-  narrowContent: {
-    flexGrow: 1,
-    paddingVertical: 24,
-    paddingHorizontal: 16,
-    gap: 16,
-    alignItems: 'stretch',
-  },
+    flexWrap: 'wrap',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    width: '100%',
+    maxWidth: 1240,
+    marginInline: 'auto',
+    paddingHorizontal: 48,
+    paddingVertical: 40,
+    gap: 40,
+    boxSizing: 'border-box',
+  } as Record<string, unknown>,
 
   // ── Left panel ──────────────────────────────────────────────────────────────────
-  leftPanel: {
+  panelLeft: {
     flex: 1,
+    minWidth: 360,
+    maxWidth: 680,
+    display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'center',
-    paddingHorizontal: 56,
-    paddingVertical: 48,
-    gap: 20,
-  },
-  leftPanelNarrow: {
-    paddingHorizontal: 24,
-    paddingVertical: 32,
-    alignItems: 'center',
-  },
+    gap: 16,
+  } as Record<string, unknown>,
+  leftPanelInner: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    gap: 16,
+    width: '100%',
+  } as Record<string, unknown>,
   logoRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    marginBottom: 8,
+    marginBottom: 4,
+  },
+  mascotWelcome: {
+    alignItems: 'flex-start',
+    marginLeft: -14,
+    marginBottom: -6,
   },
   logoCircle: {
     width: 44,
@@ -528,20 +508,21 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   headline: {
-    fontSize: 52,
+    fontSize: 'clamp(28px, 4vw, 50px)',
     fontWeight: '800',
     letterSpacing: -1.5,
-    lineHeight: 58,
-  },
+    lineHeight: 'clamp(34px, 4.4vw, 56px)',
+  } as Record<string, unknown>,
   tagline: {
-    fontSize: 17,
-    lineHeight: 26,
-    maxWidth: 400,
-  },
+    fontSize: 'clamp(14px, 1.4vw, 17px)',
+    lineHeight: 'clamp(20px, 2vw, 26px)',
+    maxWidth: 440,
+  } as Record<string, unknown>,
   statsRow: {
     flexDirection: 'row',
     gap: 10,
     flexWrap: 'wrap',
+    justifyContent: 'flex-start',
   },
   statPill: {
     paddingHorizontal: 14,
@@ -565,6 +546,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
     flexWrap: 'wrap',
+    justifyContent: 'flex-start',
   },
   pillarChip: {
     flexDirection: 'row',
@@ -586,7 +568,7 @@ const styles = StyleSheet.create({
     borderLeftWidth: 3,
     paddingLeft: 14,
     paddingVertical: 4,
-    maxWidth: 380,
+    maxWidth: 400,
   },
   quoteText: {
     fontSize: 14,
@@ -595,43 +577,35 @@ const styles = StyleSheet.create({
   },
 
   // ── Right panel ───────────────────────────────────────────────────────────
-  rightPanel: {
-    width: '100%',
-    maxWidth: 420,
+  panelRight: {
+    flex: 1,
+    minWidth: 360,
+    maxWidth: 460,
+    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 32,
-    paddingVertical: 48,
-  },
+  } as Record<string, unknown>,
+  rightPanel: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  } as Record<string, unknown>,
   authCard: {
     width: '100%',
     borderRadius: 28,
     borderWidth: 1,
-    padding: 32,
+    padding: 'clamp(20px, 2.5vw, 32px)',
     gap: 14,
     boxShadow: '0 8px 28px rgba(107, 100, 128, 0.16)',
     elevation: 12,
-  },
-  langRow: {
-    flexDirection: 'row',
-    gap: 4,
-    marginBottom: 6,
-  },
-  langPill: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 50,
-  },
-  langText: {
-    fontSize: 12,
-    letterSpacing: 0.3,
-  },
+  } as Record<string, unknown>,
   cardTitle: {
-    fontSize: 22,
+    fontSize: 'clamp(20px, 2vw, 24px)',
     fontWeight: '800',
     letterSpacing: -0.4,
     lineHeight: 28,
-  },
+  } as Record<string, unknown>,
   cardSubtitle: {
     fontSize: 14,
     lineHeight: 20,
@@ -644,7 +618,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: 54,
     boxShadow: '0 4px 14px rgba(107, 100, 128, 0.20)',
-  },
+    cursor: 'pointer',
+  } as Record<string, unknown>,
   primaryBtnText: {
     fontSize: 16,
     fontWeight: '700',
@@ -658,7 +633,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1.5,
     minHeight: 50,
-  },
+    cursor: 'pointer',
+  } as Record<string, unknown>,
   secondaryBtnText: {
     fontSize: 15,
     fontWeight: '500',

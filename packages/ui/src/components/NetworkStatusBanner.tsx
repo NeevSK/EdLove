@@ -1,11 +1,12 @@
 import { useMutationQueue, useStore } from '@repo/core/logic';
-import { BrandPulse } from './BrandPulse';
+import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
 import { WifiOff } from '@repo/ui/icons';
+import { Box, HStack, Text } from '@repo/ui/primitives';
+import { cn } from '@repo/ui/utils/classNames';
 import { Platform } from 'react-native';
 import Animated, { SlideInUp, SlideOutUp } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Box, HStack, Text } from '@repo/ui/primitives';
-import { cn } from '@repo/ui/utils/classNames';
+import { BrandPulse } from './BrandPulse';
 
 /**
  * NetworkStatusBanner
@@ -15,6 +16,7 @@ export default function NetworkStatusBanner() {
   const isOnline = useStore((state) => state.isOnline);
   const { isSyncing, queue } = useMutationQueue();
   const insets = useSafeAreaInsets();
+  const visualCapabilities = useVisualCapabilities();
 
   // If online and not syncing, show nothing
   if (isOnline && !isSyncing) return null;
@@ -23,8 +25,8 @@ export default function NetworkStatusBanner() {
 
   return (
     <Animated.View
-      entering={SlideInUp.duration(500)}
-      exiting={SlideOutUp.duration(500)}
+      entering={visualCapabilities.allowSubtleAnimation ? SlideInUp.duration(500) : undefined}
+      exiting={visualCapabilities.allowSubtleAnimation ? SlideOutUp.duration(500) : undefined}
       style={{
         position: 'absolute',
         top: 0,

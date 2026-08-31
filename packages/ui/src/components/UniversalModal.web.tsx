@@ -1,4 +1,5 @@
-import type React from 'react';
+import React from 'react';
+import { StyleSheet, View, Pressable, Modal } from 'react-native';
 
 export interface UniversalModalProps {
   isOpen: boolean;
@@ -10,8 +11,9 @@ export interface UniversalModalProps {
 }
 
 /**
- * UniversalModal.web - Web-optimized overlay.
- * Hardened v3 implementation with NativeWind.
+ * UniversalModal.web - Web-compatible overlay using React Native primitives.
+ * Keeps React Native Web's synthetic responder event chain intact so all clicks,
+ * touch gestures, and mouse interactions work seamlessly.
  */
 export const UniversalModal = ({
   isOpen,
@@ -22,55 +24,53 @@ export const UniversalModal = ({
   if (!isOpen) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center"
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 9999,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
+    <Modal
+      visible={isOpen}
+      transparent
+      onRequestClose={onClose}
+      animationType="fade"
     >
-      {hasBackdrop && (
-        <div
-          className="absolute inset-0"
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(20, 16, 11, 0.70)',
-          }}
-          onClick={onClose}
-          role="button"
-          aria-label="Close modal"
-        />
-      )}
-      <div
-        className="relative z-[10000] w-full h-full flex items-center justify-center pointer-events-none p-4"
-        style={{
-          position: 'relative',
-          zIndex: 10000,
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          pointerEvents: 'none',
-          padding: '1rem',
-        }}
-        role="presentation"
-      >
-        <div className="pointer-events-auto" style={{ pointerEvents: 'auto' }} role="dialog">
+      <View style={styles.modalRoot}>
+        {hasBackdrop && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Close modal"
+            style={styles.backdrop}
+            onPress={onClose}
+          />
+        )}
+        <View style={styles.contentContainer}>
           {children}
-        </div>
-      </div>
-    </div>
+        </View>
+      </View>
+    </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  modalRoot: {
+    position: 'fixed' as any,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 9999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+  },
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(20, 16, 11, 0.70)',
+  },
+  contentContainer: {
+    zIndex: 10000,
+    alignItems: 'center',
+    justifyContent: 'center',
+    maxWidth: '100%',
+  },
+});

@@ -1,4 +1,4 @@
-import { useEnvironment } from '@repo/ui/context/EnvironmentContext';
+import { useEnvironment } from './EnvironmentContext';
 import { View } from '@repo/ui/primitives';
 import { colors, phaseMatrix } from '@repo/ui/theme/Theme';
 import { getTextOnBackground } from '@repo/ui/utils/colorUtils';

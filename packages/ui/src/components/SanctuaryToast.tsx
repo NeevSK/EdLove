@@ -97,7 +97,6 @@ export default function SanctuaryToast({
 
   return (
     <Animated.View
-      pointerEvents="box-none"
       style={[
         {
           position: 'absolute',
@@ -106,6 +105,7 @@ export default function SanctuaryToast({
           right: 20,
           alignItems: 'center',
           zIndex: 999999,
+          pointerEvents: 'box-none',
         },
         animatedStyle,
       ]}

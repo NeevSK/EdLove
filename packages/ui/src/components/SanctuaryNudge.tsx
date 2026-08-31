@@ -1,11 +1,12 @@
+import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
+import { useVisualCapabilities } from '@repo/ui/context/VisualCapabilities';
+import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
+import { Text, View } from '@repo/ui/primitives';
+import { Theme } from '@repo/ui/theme/Theme';
 import { BlurView } from 'expo-blur';
 import type React from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
-import { useThemedColors } from '@repo/ui/hooks/useThemedColors';
-import { Text, View } from '@repo/ui/primitives';
-import { Theme } from '@repo/ui/theme/Theme';
-import { SanctuaryButton } from '@repo/ui/components/SanctuaryButton';
 
 interface SanctuaryNudgeProps {
   title: string;
@@ -23,6 +24,7 @@ export const SanctuaryNudge: React.FC<SanctuaryNudgeProps> = ({
   icon = '✨',
 }) => {
   const _colors = useThemedColors();
+  const visualCapabilities = useVisualCapabilities();
 
   const renderIcon = () => {
     if (!icon) return null;
@@ -35,18 +37,33 @@ export const SanctuaryNudge: React.FC<SanctuaryNudgeProps> = ({
 
   return (
     <Animated.View entering={FadeInUp.delay(300)} style={styles.container}>
-      <BlurView intensity={20} tint="light" style={styles.blur}>
-        <View style={styles.content}>
-          <View style={styles.iconContainer}>{renderIcon()}</View>
-          <View style={styles.textContainer}>
-            <Text style={styles.title}>{title}</Text>
-            <Text style={styles.description}>{description}</Text>
+      {visualCapabilities.allowBlur ? (
+        <BlurView intensity={20} tint="light" style={styles.blur}>
+          <View style={styles.content}>
+            <View style={styles.iconContainer}>{renderIcon()}</View>
+            <View style={styles.textContainer}>
+              <Text style={styles.title}>{title}</Text>
+              <Text style={styles.description}>{description}</Text>
+            </View>
+            <SanctuaryButton onPress={onAction} variant="solid" size="sm">
+              {actionLabel}
+            </SanctuaryButton>
           </View>
-          <SanctuaryButton onPress={onAction} variant="solid" size="sm">
-            {actionLabel}
-          </SanctuaryButton>
+        </BlurView>
+      ) : (
+        <View style={[styles.blur, styles.fallbackSurface]}>
+          <View style={styles.content}>
+            <View style={styles.iconContainer}>{renderIcon()}</View>
+            <View style={styles.textContainer}>
+              <Text style={styles.title}>{title}</Text>
+              <Text style={styles.description}>{description}</Text>
+            </View>
+            <SanctuaryButton onPress={onAction} variant="solid" size="sm">
+              {actionLabel}
+            </SanctuaryButton>
+          </View>
         </View>
-      </BlurView>
+      )}
     </Animated.View>
   );
 };
@@ -62,6 +79,9 @@ const styles = StyleSheet.create({
   },
   blur: {
     padding: Theme.spacing.md,
+  },
+  fallbackSurface: {
+    backgroundColor: Theme.colors.sacredWhite,
   },
   content: {
     flexDirection: 'row',

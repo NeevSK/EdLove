@@ -1,8 +1,18 @@
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import type { WorkspaceRendererConfig } from '@repo/core/types';
 import { StyleSheet } from 'react-native';
 import { ScrollView, View } from '@repo/ui/primitives';
 import { Theme } from '@repo/ui/theme/Theme';
-import { CanvasZoneColumn } from '@repo/ui/components/workspace/CanvasZoneColumn';
+import { WebCanvasZoneColumn } from '@repo/ui/components/workspace/WebCanvasZoneColumn';
 import { useWorkspaceCanvasData, WorkspaceCanvasEmptyState, WorkspaceCanvasHero } from '@repo/ui/components/workspace/shared';
 import type { WorkspaceCanvasProps } from '@repo/ui/components/workspace/types';
 import React from 'react';
@@ -25,10 +35,27 @@ export function WebWorkspaceCanvas<
   ...props
 }: WebWorkspaceCanvasProps<TSurfaceId, TCapabilityKey>) {
   const { groups, visibleCount, pinnedCount } = useWorkspaceCanvasData(props);
-  const zoneRectsRef = React.useRef<Record<string, { y: number; h: number }>>({});
-  const onMeasureZone = React.useCallback((zone: string, y: number, h: number) => {
-    zoneRectsRef.current[zone] = { y, h };
-  }, []);
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+  const handleDragEnd = React.useCallback(
+    ({ active, over }: DragEndEvent) => {
+      if (!over || active.id === over.id || !props.onReorder) return;
+      const activeId = String(active.id);
+      const overId = String(over.id);
+      const group = groups.find((candidate) =>
+        candidate.surfaces.some((surface) => String(surface.surfaceId) === activeId) &&
+        candidate.surfaces.some((surface) => String(surface.surfaceId) === overId),
+      );
+      if (!group) return;
+      const oldIndex = group.surfaces.findIndex((surface) => String(surface.surfaceId) === activeId);
+      const newIndex = group.surfaces.findIndex((surface) => String(surface.surfaceId) === overId);
+      if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) return;
+      props.onReorder(activeId as TSurfaceId, newIndex);
+    },
+    [groups, props.onReorder],
+  );
 
   return (
     <View style={styles.shell}>
@@ -43,31 +70,40 @@ export function WebWorkspaceCanvas<
       {visibleCount === 0 ? (
         <WorkspaceCanvasEmptyState emptyMessage={emptyMessage} />
       ) : (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.columns}>
-          {groups.map((group) => (
-            <CanvasZoneColumn
-              key={group.zone}
-              group={group}
-              renderSurfaceContent={props.renderSurfaceContent}
-              getSurfaceTitle={props.getSurfaceTitle}
-              getSurfaceSubtitle={props.getSurfaceSubtitle}
-              getSurfaceSummary={props.getSurfaceSummary}
-              getSurfaceSnapshot={props.getSurfaceSnapshot}
-              getSurfaceTemporalLabel={props.getSurfaceTemporalLabel}
-              getSurfaceTemporalTone={props.getSurfaceTemporalTone}
-              getSurfaceMetadata={props.getSurfaceMetadata}
-              renderSurfaceActions={props.renderSurfaceActions}
-              onSurfacePress={props.onSurfacePress}
-              onPressSurfaceInfo={props.onPressSurfaceInfo}
-              onToggleHidden={props.onToggleHidden}
-              onReorder={props.onReorder}
-              dragEnabled={Boolean(props.onReorder)}
-              reorderHint="Drag to reorder — or use move controls"
-              style={styles.webColumn}
-              onMeasureZone={onMeasureZone as never}
-            />
-          ))}
-        </ScrollView>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.columns}>
+            {groups.map((group) => (
+              <SortableContext
+                key={group.zone}
+                items={group.surfaces.map((surface) => surface.surfaceId)}
+                strategy={verticalListSortingStrategy}
+              >
+                <WebCanvasZoneColumn
+                  group={group}
+                  renderSurfaceContent={props.renderSurfaceContent}
+                  getSurfaceTitle={props.getSurfaceTitle}
+                  getSurfaceSubtitle={props.getSurfaceSubtitle}
+                  getSurfaceSummary={props.getSurfaceSummary}
+                  getSurfaceSnapshot={props.getSurfaceSnapshot}
+                  getSurfaceTemporalLabel={props.getSurfaceTemporalLabel}
+                  getSurfaceTemporalTone={props.getSurfaceTemporalTone}
+                  getSurfaceMetadata={props.getSurfaceMetadata}
+                  renderSurfaceActions={props.renderSurfaceActions}
+                  onSurfacePress={props.onSurfacePress}
+                  onPressSurfaceInfo={props.onPressSurfaceInfo}
+                  onToggleHidden={props.onToggleHidden}
+                  onReorder={props.onReorder}
+                  reorderHint="Drag to reorder — or use move controls"
+                  style={styles.webColumn}
+                />
+              </SortableContext>
+            ))}
+          </ScrollView>
+        </DndContext>
       )}
     </View>
   );

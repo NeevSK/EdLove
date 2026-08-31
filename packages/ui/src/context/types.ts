@@ -42,6 +42,39 @@ export type NetworkQuality = 'excellent' | 'good' | 'fair' | 'poor' | 'offline';
  */
 export type DeviceTier = 'high' | 'medium' | 'low';
 
+/** Three usable expression tiers plus an explicit disabled state. */
+export type ExperienceLevel = 'off' | 'essential' | 'refined' | 'rich';
+
+export interface ExperienceProfile {
+  motion: ExperienceLevel;
+  visualEffects: ExperienceLevel;
+  haptics: ExperienceLevel;
+  sound: ExperienceLevel;
+  celebration: ExperienceLevel;
+  maxParticles: number;
+  maxConcurrentSounds: number;
+  allowAssetPrefetch: boolean;
+}
+
+export type VisualImageCachePolicy = 'disk' | 'memory-disk';
+export type VisualImageDecodeFormat = 'argb' | 'rgb';
+export type VisualQuality = 'full' | 'reduced' | 'essential';
+
+export interface VisualCapabilities {
+  deviceTier: DeviceTier;
+  effectiveFidelity: 'low' | 'high';
+  quality: VisualQuality;
+  allowAmbientEffects: boolean;
+  allowBlur: boolean;
+  allowRichAnimation: boolean;
+  allowSubtleAnimation: boolean;
+  imageCachePolicy: VisualImageCachePolicy;
+  imageDecodeFormat: VisualImageDecodeFormat;
+  shouldPrefetchAssets: boolean;
+  maxCelebrationParticles: number;
+  experience: ExperienceProfile;
+}
+
 /**
  * Reality State - Hardware and network constraints
  */
@@ -51,6 +84,7 @@ export interface RealityState {
   networkQuality: NetworkQuality;
   isDataSaverMode: boolean;
   isBatterySaverMode: boolean;
+  isReducedMotionEnabled: boolean;
 }
 
 export interface EnvironmentState {
@@ -75,13 +109,14 @@ export interface EnvironmentState {
 
   /** Whether the Living Theme System is active (phase-aware tokens) or classic (static) */
   enableLivingTheme: boolean;
+  visualCapabilities: VisualCapabilities;
 }
 
 /**
  * Environment Actions
  */
 export interface EnvironmentActions {
-  setThemeMode: (mode: ThemeMode) => void;
+  setThemeMode: (mode: ThemeMode) => Promise<void>;
   setFidelityLevel: (level: FidelityLevel) => Promise<void>;
   setLanguage: (language: Language) => Promise<void>;
   toggleVeil: () => Promise<void>;

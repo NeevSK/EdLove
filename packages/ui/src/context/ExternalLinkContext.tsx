@@ -17,7 +17,7 @@ import {
   type ExternalOpenMethod,
   registerExternalLinkRuntime,
 } from '@repo/ui/utils/linking';
-import { useReality } from '@repo/ui/context/EnvironmentContext';
+import { useReality } from './EnvironmentContext';
 
 interface PendingRequest {
   url: string;

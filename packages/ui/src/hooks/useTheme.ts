@@ -64,15 +64,8 @@ export interface UseThemeReturn extends ResolvedThemeTokens, AdaptiveTokens {
 }
 
 export function useTheme(): UseThemeReturn {
-  const {
-    temporalPhase,
-    isDark,
-    reality,
-    effectiveFidelity,
-    enableLivingTheme,
-    themeMode,
-    setThemeMode,
-  } = useEnvironment();
+  const { temporalPhase, isDark, visualCapabilities, enableLivingTheme, themeMode, setThemeMode } =
+    useEnvironment();
 
   const tokens = useMemo(
     () =>
@@ -81,13 +74,10 @@ export function useTheme(): UseThemeReturn {
   );
 
   const animationsEnabled = useMemo(
-    () => enableLivingTheme && effectiveFidelity === 'high',
-    [enableLivingTheme, effectiveFidelity],
+    () => enableLivingTheme && visualCapabilities.allowRichAnimation,
+    [enableLivingTheme, visualCapabilities.allowRichAnimation],
   );
-  const blurEnabled = useMemo(
-    () => effectiveFidelity === 'high' && reality.deviceTier !== 'low',
-    [effectiveFidelity, reality.deviceTier],
-  );
+  const blurEnabled = visualCapabilities.allowBlur;
 
   const textOnAccent = useMemo(
     () => getTextOnBackground(tokens.accent.action),

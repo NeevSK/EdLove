@@ -71,6 +71,7 @@ export default function AchievementUnlockOverlay({
 
   return (
     <Animated.View
+      pointerEvents="none"
       style={[
         {
           position: 'absolute',

@@ -9,7 +9,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import type { Language } from '@repo/ui/context/types';
+import type { Language } from './types';
 
 interface LanguageContextValue {
   language: Language;

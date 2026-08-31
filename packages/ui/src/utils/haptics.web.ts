@@ -6,6 +6,8 @@
 export function hapticLight() {}
 export function hapticMedium() {}
 export function hapticHeavy() {}
+export function hapticImpact(_kind: 'light' | 'medium' | 'heavy') {}
+export function setHapticsEnabled(_enabled: boolean) {}
 export function hapticSuccess() {}
 export function hapticWarning() {}
 export function hapticError() {}
