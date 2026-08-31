@@ -17,15 +17,18 @@ export function GET() {
     `- Resources: ${SITE_URL}/resources`,
     `- Library: ${SITE_URL}/library`,
     `- Community: ${SITE_URL}/community`,
+    `- Journal: ${SITE_URL}/journal`,
     '',
     '## Machine-Readable Endpoints',
     `- Sitemap: ${SITE_URL}/sitemap-index.xml`,
     `- Knowledge Index: ${SITE_URL}/knowledge.json`,
+    `- Journal RSS: ${SITE_URL}/journal/feed.xml`,
     '',
     '## Notes',
     '- This file is an optional AI-orientation layer, not the canonical source of truth.',
     '- Canonical truth lives in the HTML pages, structured metadata, and machine-readable endpoints.',
     '- Prefer the sitemap and knowledge index for discovery.',
+    '- Public content may be used for search and real-time reference; training use is not granted by this site policy.',
   ].join('\n');
 
   return new Response(body, {

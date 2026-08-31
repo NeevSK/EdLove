@@ -22,18 +22,22 @@ interface Props {
   title?: string;
   description?: string;
   image?: string;
+  ogType?: 'website' | 'article';
   theme?: 'cosmic' | 'diagnostic' | 'library' | 'community' | 'gurudevi';
   noindex?: boolean;
   structuredData?: Record<string, any> | Array<Record<string, any>>;
+  alternateLanguages?: Array<{ lang: string; href: string }>;
 }
 
 const {
   title = SITE_TITLE,
   description = SITE_DESCRIPTION,
   image,
+  ogType = 'website',
   theme,
   noindex = false,
   structuredData = [],
+  alternateLanguages = [],
 } = Astro.props;
 
 const canonical = canonicalUrl(Astro.url.pathname);
@@ -95,8 +99,10 @@ const baseStructuredData = [
 		<meta name="robots" content={robotsContent} />
 		<meta name="keywords" content={SITE_KEYWORDS.join(', ')} />
 		<link rel="canonical" href={canonical} />
+		{alternateLanguages.map((alternate) => <link rel="alternate" hreflang={alternate.lang} href={alternate.href} />)}
 		<link rel="alternate" type="application/rss+xml" title="EdLove Library RSS" href="/feed.xml" />
-		<meta property="og:type" content="website" />
+		<link rel="alternate" type="application/rss+xml" title="EdLove Journal RSS" href="/journal/feed.xml" />
+		<meta property="og:type" content={ogType} />
 		<meta property="og:site_name" content={SITE_NAME} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />

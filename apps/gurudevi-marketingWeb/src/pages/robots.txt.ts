@@ -2,22 +2,9 @@ import { SITE_URL } from '../lib/site';
 
 export function GET() {
   const body = `User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
-
-User-agent: GPTBot
-Allow: /
-
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
+Disallow: /api/
 
 Sitemap: ${SITE_URL}/sitemap-index.xml
 `;

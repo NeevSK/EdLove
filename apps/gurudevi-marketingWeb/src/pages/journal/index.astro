@@ -1,0 +1,40 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { absoluteUrl } from '../../lib/site';
+
+const entries = (await getCollection('journal', ({ data }) => !data.draft && (data.contentKind !== 'translation' || data.translationStatus === 'approved')))
+  .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Gurudevi Journal',
+  description: 'Stories, practice notes, and reflections from Gurudevi.',
+  url: absoluteUrl('/journal'),
+};
+---
+
+<Layout title="Journal | Gurudevi" description="Stories, practice notes, and reflections from Gurudevi." structuredData={structuredData}>
+  <Header />
+  <main class="mx-auto max-w-5xl px-6 pb-24 pt-32 md:px-10">
+    <section class="max-w-3xl space-y-5">
+      <p class="eyebrow">Gurudevi Journal</p>
+      <h1 class="font-display text-5xl leading-tight text-charcoal-truth md:text-7xl">Notes from an education ecology.</h1>
+      <p class="max-w-2xl text-xl leading-relaxed text-charcoal-truth/70">Stories, practice notes, and reflections for the people who make learning possible.</p>
+    </section>
+    <section class="mt-16 grid gap-6 md:grid-cols-2" aria-label="Journal articles">
+      {entries.map((entry) => (
+        <a href={`/journal/${entry.id}`} class="group rounded-3xl border border-charcoal-truth/10 bg-white/50 p-7 transition hover:-translate-y-1 hover:border-saffron/50">
+          <div class="flex gap-3 text-xs uppercase tracking-[0.18em] text-saffron"><span>{entry.data.language}</span><time datetime={entry.data.publishDate.toISOString()}>{entry.data.publishDate.toLocaleDateString('en-GB')}</time></div>
+          <h2 class="mt-4 font-display text-3xl leading-tight text-charcoal-truth group-hover:text-saffron">{entry.data.title}</h2>
+          <p class="mt-3 leading-relaxed text-charcoal-truth/70">{entry.data.subtitle}</p>
+          <span class="mt-6 block text-sm font-semibold text-saffron">Read the journal entry ↗</span>
+        </a>
+      ))}
+    </section>
+  </main>
+  <Footer />
+</Layout>

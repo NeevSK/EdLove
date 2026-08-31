@@ -19,16 +19,20 @@ interface Props {
   title?: string;
   description?: string;
   image?: string;
+  ogType?: 'website' | 'article';
   noindex?: boolean;
   structuredData?: Record<string, any> | Array<Record<string, any>>;
+  alternateLanguages?: Array<{ lang: string; href: string }>;
 }
 
 const {
   title = SITE_TITLE,
   description = SITE_DESCRIPTION,
   image,
+  ogType = 'website',
   noindex = false,
   structuredData = [],
+  alternateLanguages = [],
 } = Astro.props;
 
 const canonical = canonicalUrl(Astro.url.pathname);
@@ -62,7 +66,8 @@ const baseStructuredData = [
 <!doctype html>
 <html lang="en">
 	<head>
-		<SEO title={title} description={description} image={ogImage} canonicalURL={new URL(canonical)} />
+		<SEO title={title} description={description} image={ogImage} ogType={ogType} canonicalURL={new URL(canonical)} />
+		{alternateLanguages.map((alternate) => <link rel="alternate" hreflang={alternate.lang} href={alternate.href} />)}
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -73,6 +78,7 @@ const baseStructuredData = [
 		<!-- Agentic Discovery -->
 		<link rel="alternate" type="application/json" href="/knowledge.json" title="Machine-Readable Knowledge Index" />
 		<link rel="author" type="text/plain" href="/llms.txt" title="LLM-Friendly Overview" />
+		<link rel="alternate" type="application/rss+xml" title="Gurudevi Journal RSS" href="/journal/feed.xml" />
 
 		<!-- Root Domain Cookie Setup -->
 		<script is:inline>

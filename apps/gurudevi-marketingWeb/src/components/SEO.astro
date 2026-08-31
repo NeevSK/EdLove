@@ -3,6 +3,7 @@ export interface Props {
   title: string;
   description: string;
   image?: string;
+  ogType?: 'website' | 'article';
   canonicalURL?: URL;
 }
 
@@ -10,6 +11,7 @@ const {
   title,
   description,
   image = '/og-image.png',
+  ogType = 'website',
   canonicalURL = Astro.site
     ? new URL(Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/+$/, ''), Astro.site)
     : new URL(Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/+$/, ''), Astro.url.origin),
@@ -32,7 +34,7 @@ const {
 <meta name="theme-color" content="#E67E22" />
 
 <!-- Open Graph / Facebook -->
-<meta property="og:type" content="website" />
+<meta property="og:type" content={ogType} />
 <meta property="og:url" content={canonicalURL} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />

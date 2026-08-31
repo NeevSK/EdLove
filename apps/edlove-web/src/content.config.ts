@@ -1,6 +1,9 @@
 import { defineCollection } from 'astro:content';
+import type { Language } from '@repo/editorial';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+
+const journalLanguages = ['en', 'si', 'ta'] as const satisfies ReadonlyArray<Language>;
 
 const cosmos = defineCollection({
   loader: glob({ base: './src/content/cosmos', pattern: '**/*.{md,mdx}' }),
@@ -23,7 +26,16 @@ const library = defineCollection({
     title: z.string(),
     subtitle: z.string(),
     icon: z.string().optional(),
-    category: z.enum(['thinker', 'framework', 'guide', 'story', 'article', 'research', 'essay', 'field-note']),
+    category: z.enum([
+      'thinker',
+      'framework',
+      'guide',
+      'story',
+      'article',
+      'research',
+      'essay',
+      'field-note',
+    ]),
     tags: z.array(z.string()).default([]),
     readingTime: z.number().optional(),
     author: z.string().default('EdLove'),
@@ -34,6 +46,58 @@ const library = defineCollection({
     canonicalUrl: z.string().url().optional(),
     related: z.array(z.string()).default([]),
     order: z.number().default(0),
+    draft: z.boolean().default(false),
+  }),
+});
+
+const journal = defineCollection({
+  loader: glob({ base: './src/content/journal', pattern: '**/*.{md,mdx}' }),
+  schema: z.object({
+    title: z.string(),
+    subtitle: z.string(),
+    workId: z.string(),
+    contentKind: z
+      .enum(['original', 'curated', 'licensed', 'guest', 'translation'])
+      .default('original'),
+    authorId: z.string().optional(),
+    author: z.string().default('EdLove'),
+    language: z.enum(journalLanguages).default('en'),
+    topics: z.array(z.string()).default([]),
+    publishDate: z.date(),
+    updatedDate: z.date().optional(),
+    readingTime: z.number().optional(),
+    heroImage: z.string().optional(),
+    canonicalUrl: z.string().url().optional(),
+    license: z.string().default('CC BY-SA 4.0'),
+    source: z.string().url().optional(),
+    rightsAgreementId: z.string().optional(),
+    translationOf: z.string().optional(),
+    translationStatus: z.enum(['not_applicable', 'draft', 'in_review', 'approved']).default('not_applicable'),
+    distribution: z
+      .object({
+        channels: z
+          .array(z.enum(['linkedin', 'medium', 'substack', 'meta', 'rss']))
+          .default(['rss']),
+        excerptOnly: z.array(z.enum(['linkedin', 'medium', 'substack', 'meta', 'rss'])).default([]),
+        utmCampaign: z.string().default('journal'),
+      })
+      .default({
+        channels: ['rss'],
+        excerptOnly: [],
+        utmCampaign: 'journal',
+      }),
+    draft: z.boolean().default(false),
+  }),
+});
+
+const authors = defineCollection({
+  loader: glob({ base: './src/content/authors', pattern: '**/*.md' }),
+  schema: z.object({
+    displayName: z.string(),
+    biography: z.string(),
+    websiteUrl: z.string().url().optional(),
+    socialLinks: z.record(z.string(), z.string().url()).default({}),
+    attributionName: z.string().optional(),
     draft: z.boolean().default(false),
   }),
 });
@@ -86,6 +150,8 @@ const resources = defineCollection({
 export const collections = {
   cosmos,
   library,
+  journal,
+  authors,
   'sri-lanka': sriLanka,
   community,
   gurudevi,

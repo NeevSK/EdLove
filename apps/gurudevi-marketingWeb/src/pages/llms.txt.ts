@@ -25,6 +25,7 @@ Gurudevi is not only an LMS or teacher dashboard. It supports the relationships 
 - About: ${SITE_URL}/about
 - FAQ: ${SITE_URL}/faq
 - Support: ${SITE_URL}/support
+- Journal: ${SITE_URL}/journal
 - Privacy: ${SITE_URL}/privacy
 - Terms: ${SITE_URL}/terms
 - Delete Account: ${SITE_URL}/delete-account
@@ -32,6 +33,7 @@ Gurudevi is not only an LMS or teacher dashboard. It supports the relationships 
 ## Machine-Readable Endpoints
 - Sitemap: ${SITE_URL}/sitemap-index.xml
 - Knowledge Index: ${SITE_URL}/knowledge.json
+- Journal RSS: ${SITE_URL}/journal/feed.xml
 - Agentic Context: See window.GURUDEVI_CONTEXT in HTML
 
 ## Notes
@@ -39,6 +41,7 @@ Gurudevi is not only an LMS or teacher dashboard. It supports the relationships 
 - Mobile applications are currently in development (coming soon).
 - The web platform is the primary interface for active educational support.
 - All web applications under edlove.org share a root-domain security and context boundary.
+- Public journal content may be used for search and real-time reference; training use is not granted by this site policy.
 `;
 
   return new Response(body, {
