@@ -1,7 +1,4 @@
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
-import { APIError } from '@repo/core/types/API';
-
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
+import { orpcClient } from '@repo/core/api/orpcClient';
 
 export const sacredMissionsAPI = {
   async getManifestos(schoolId: string, userId?: string) {
@@ -10,15 +7,13 @@ export const sacredMissionsAPI = {
   },
 
   async list(options: { school_id?: string; status?: string; limit?: number } = {}) {
-    const res = await (client.api as any).sacredMissions.list.$post({
-      json: {
+    return orpcClient.sacredMissions.list({
+      query: {
         school_id: options.school_id,
-        status: options.status,
+        status: options.status as 'active' | 'archived' | 'fulfilled' | undefined,
         limit: options.limit ?? 50,
       },
     });
-    if (!res.ok) throw new APIError('Failed to fetch sacred missions', res.status.toString());
-    return await res.json();
   },
 
   async create(input: {
@@ -28,9 +23,12 @@ export const sacredMissionsAPI = {
     vibe?: string;
     target_date?: string | null;
   }) {
-    const res = await (client.api as any).sacredMissions.create.$post({ json: input });
-    if (!res.ok) throw new APIError('Failed to create sacred mission', res.status.toString());
-    return await res.json();
+    return orpcClient.sacredMissions.create({
+      body: {
+        ...input,
+        vibe: input.vibe as 'visionary' | 'supportive' | 'academic' | 'wellbeing' | undefined,
+      },
+    });
   },
 
   async createManifesto(input: {
@@ -46,11 +44,10 @@ export const sacredMissionsAPI = {
   },
 
   async endorse(manifestoId: string, commitment_text?: string) {
-    const res = await (client.api as any).sacredMissions.endorse.$post({
-      json: { manifestoId, commitment_text },
+    return orpcClient.sacredMissions.endorse({
+      params: { manifestoId },
+      body: { commitment_text },
     });
-    if (!res.ok) throw new APIError('Failed to endorse sacred mission', res.status.toString());
-    return await res.json();
   },
 
   async endorseManifesto(manifestoId: string, userId: string, commitmentText?: string) {
@@ -59,10 +56,7 @@ export const sacredMissionsAPI = {
   },
 
   async unendorse(manifestoId: string) {
-    const res = await (client.api as any).sacredMissions.unendorse.$post({ json: { manifestoId } });
-    if (!res.ok)
-      throw new APIError('Failed to remove sacred mission endorsement', res.status.toString());
-    return await res.json();
+    return orpcClient.sacredMissions.unendorse({ params: { manifestoId } });
   },
 
   async unendorseManifesto(manifestoId: string, userId: string) {

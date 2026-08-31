@@ -1,9 +1,6 @@
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 import { identityAPI } from '@repo/core/api/identity';
-import { privacyContract, privacyLedgerEntry } from '@repo/core/api/privacy.contract';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import { APIError } from '@repo/core/types/API';
-
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export interface PrivacyLedgerEntry {
   id: string;
@@ -11,7 +8,7 @@ export interface PrivacyLedgerEntry {
   activity_type: string;
   resource_name: string;
   description: string;
-  metadata: any;
+  metadata: Record<string, unknown>;
   created_at: string;
 }
 
@@ -22,12 +19,7 @@ export const privacyAPI = {
   async getPrivacyLedger() {
     const identity = await identityAPI.identifyActiveCitizen();
     if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
-    const response = await (client.api as any).privacy.ledger.$get();
-    if (!response.ok)
-      throw new APIError('Failed to fetch privacy ledger', response.status.toString());
-    return (await response.json()).map((entry: unknown) =>
-      privacyLedgerEntry.parse(entry),
-    ) as PrivacyLedgerEntry[];
+    return orpcClient.privacy.getPrivacyLedger();
   },
 
   /**
@@ -37,15 +29,10 @@ export const privacyAPI = {
     activity_type: string;
     resource_name: string;
     description: string;
-    metadata?: any;
+    metadata?: Record<string, unknown>;
   }) {
     const identity = await identityAPI.identifyActiveCitizen();
     if (!identity) throw new APIError('Not authenticated', 'AUTH_REQUIRED');
-    const response = await (client.api as any).privacy.ledger.events.$post({ json: input });
-    if (!response.ok)
-      throw new APIError('Failed to record privacy event', response.status.toString());
-    return privacyLedgerEntry.parse(await response.json()) as PrivacyLedgerEntry;
+    return orpcClient.privacy.logPrivacyEvent({ body: input });
   },
 };
-
-void privacyContract;

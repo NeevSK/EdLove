@@ -5,7 +5,7 @@
  * Delegates to TelemetryManager via the Adapter pattern.
  */
 
-import { sanitizeTelemetryData } from '@repo/core/lib/monitoring/safeData';
+import { sanitizeTelemetryData } from './safeData';
 import { telemetry } from '@repo/core/logic/managers/TelemetryManager';
 
 export const initSentry = () => {

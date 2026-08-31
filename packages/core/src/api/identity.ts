@@ -1,9 +1,8 @@
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import { assertHighway } from '@repo/core/api/highways';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@repo/core/native/guestIdentity';
 import { setGuestScope } from '@repo/core/native/guestScope';
-import { APIError } from '@repo/core/types/API';
 
 /**
  * Simplified bond structure returned by the identity API
@@ -32,7 +31,6 @@ export interface ActiveCitizen {
   schoolId?: string;
 }
 
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 let inFlightIdentityRequest: Promise<ActiveCitizen | null> | null = null;
 
 export const identityAPI = {
@@ -50,11 +48,7 @@ export const identityAPI = {
     setGuestScope(null);
     if (!inFlightIdentityRequest) {
       inFlightIdentityRequest = (async () => {
-        const res = await (client.api as any).identity.resolveIdentity.$get();
-        if (!res.ok) {
-          throw new APIError('Failed to resolve identity', res.status.toString());
-        }
-        return await res.json();
+        return await orpcClient.identity.identifyActiveCitizen({});
       })().finally(() => {
         inFlightIdentityRequest = null;
       });
@@ -76,13 +70,7 @@ export const identityAPI = {
    */
   async fetchUserProfile(id: string) {
     assertHighway('profile_core', 'direct-api');
-    const res = await (client.api as any).identity.profile[':id'].$get({
-      param: { id },
-    });
-    if (!res.ok) {
-      throw new APIError('Failed to fetch profile', res.status.toString());
-    }
-    return await res.json();
+    return orpcClient.identity.fetchUserProfile({ params: { id } });
   },
 
   /**
@@ -98,14 +86,7 @@ export const identityAPI = {
         }),
       });
     }
-    const res = await (client.api as any).identity.profile[':id'].$patch({
-      param: { id },
-      json: updates,
-    });
-    if (!res.ok) {
-      throw new APIError('Failed to update profile', res.status.toString());
-    }
-    return await res.json();
+    return orpcClient.identity.modifyUserProfile({ params: { id }, body: updates as any });
   },
 
   /**
@@ -113,13 +94,7 @@ export const identityAPI = {
    */
   async resolveWorkspaceContext(id: string) {
     assertHighway('workspace_sync', 'direct-api');
-    const res = await (client.api as any).identity['classroom-capacity-summary'][':id'].$get({
-      param: { id },
-    });
-    if (!res.ok) {
-      throw new APIError('Failed to fetch workspace context', res.status.toString());
-    }
-    return await res.json();
+    return orpcClient.identity.resolveWorkspaceContext({ params: { id } });
   },
 
   async updateProfile(id: string, updates: Record<string, unknown>) {

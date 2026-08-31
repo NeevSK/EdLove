@@ -8,4 +8,4 @@ export {
   initSentry,
   logBreadcrumb,
   setSentryUser,
-} from '@repo/core/lib/monitoring/sentry';
+} from '@repo/core/monitoring';

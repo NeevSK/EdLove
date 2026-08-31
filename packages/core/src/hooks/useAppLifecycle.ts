@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AppState, InteractionManager, Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
 
 /**
  * App Lifecycle Manager
  *
- * Centralizes AppState handling, InteractionManager scheduling,
+ * Centralizes AppState handling and deferred scheduling,
  * and memory leak prevention patterns across the app.
  */
 
@@ -19,6 +19,21 @@ interface AppStateListener {
 const appStateListeners = new Set<AppStateListener>();
 let appStateSubscription: { remove: () => void } | null = null;
 let currentAppState: AppStateStatus = 'active';
+type IdleScheduler = (callback: () => void, options?: { timeout: number }) => number;
+
+function scheduleAfterInteractions(callback: () => void, deadline = 5000) {
+  if (Platform.OS === 'web') {
+    const idleScheduler = (
+      globalThis as typeof globalThis & { requestIdleCallback?: IdleScheduler }
+    ).requestIdleCallback;
+    if (idleScheduler) {
+      idleScheduler(callback, { timeout: deadline });
+      return;
+    }
+  }
+
+  setTimeout(callback, 0);
+}
 
 function normalizeAppStateStatus(status: RNAppStateStatus): AppStateStatus {
   switch (status) {
@@ -83,18 +98,10 @@ export const AppLifecycle = {
   isBackground: () => currentAppState === 'background',
 
   /**
-   * Schedule work after interactions complete.
+   * Schedule non-urgent work after the current frame.
    */
   runAfterInteractions: (callback: () => void) => {
-    if (Platform.OS === 'web') {
-      if ('requestIdleCallback' in window) {
-        (window as any).requestIdleCallback(callback);
-      } else {
-        setTimeout(callback, 0);
-      }
-      return;
-    }
-    InteractionManager.runAfterInteractions(callback);
+    scheduleAfterInteractions(callback);
   },
 
   /**
@@ -106,12 +113,10 @@ export const AppLifecycle = {
     return (...args: Parameters<T>) => {
       return new Promise((resolve) => {
         if (Platform.OS === 'web') {
-          setTimeout(() => resolve(fn(...args)), 0);
+          scheduleAfterInteractions(() => resolve(fn(...args)));
           return;
         }
-        InteractionManager.runAfterInteractions(() => {
-          resolve(fn(...args));
-        });
+        scheduleAfterInteractions(() => resolve(fn(...args)));
       });
     };
   },
@@ -129,7 +134,7 @@ export const AppLifecycle = {
 };
 
 /**
- * Schedule a callback to run after all interactions complete.
+ * Schedule a callback after the current frame.
  * Use for heavy renders, data processing, or non-urgent work.
  */
 export const runAfterInteractions = (
@@ -137,29 +142,10 @@ export const runAfterInteractions = (
   options?: { deadline?: number },
 ): Promise<void> => {
   return new Promise((resolve) => {
-    if (Platform.OS === 'web') {
-      // On web, use requestIdleCallback or setTimeout
-      if ('requestIdleCallback' in window) {
-        (window as any).requestIdleCallback(
-          () => {
-            callback();
-            resolve();
-          },
-          { timeout: options?.deadline ?? 5000 },
-        );
-      } else {
-        setTimeout(() => {
-          callback();
-          resolve();
-        }, 0);
-      }
-      return;
-    }
-
-    InteractionManager.runAfterInteractions(() => {
+    scheduleAfterInteractions(() => {
       callback();
       resolve();
-    });
+    }, options?.deadline ?? 5000);
   });
 };
 

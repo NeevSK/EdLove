@@ -187,7 +187,6 @@ export const educationalContract = {
     request: {
       params: z.strictObject({ id: z.uuid() }),
       body: z.strictObject({
-        id: z.uuid(),
         name: z.string().optional(),
         teacherId: z.uuid().optional().nullable(),
         schoolId: z.uuid().optional().nullable(),
@@ -485,7 +484,7 @@ export const educationalContract = {
       }),
     },
     responses: { 201: { schema: submission, description: 'Submitted assignment' } },
-    metadata: classroomAuthority('create'),
+    metadata: ({ policy: { action: 'create', subject: 'AssignmentSubmission' } }) as const,
   },
 
   gradeAssignmentSubmission: {

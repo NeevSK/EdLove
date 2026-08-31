@@ -1,6 +1,6 @@
 import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
-import { trackProductEvent } from '@repo/core/lib/monitoring/posthog';
+import { trackProductEvent } from '@repo/core/monitoring';
 import { community, educational, notification, profile } from '@repo/core/logic/managers/factory';
 import type { Capacity } from '@repo/core/logic/schemas/capacity.schema';
 import { getLocalGuestIdentity, updateLocalGuestIdentity } from '@repo/core/native/guestIdentity';

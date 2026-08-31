@@ -1,18 +1,13 @@
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
-import { APIError } from '@repo/core/types/API';
-
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
+import { orpcClient } from '@repo/core/api/orpcClient';
 
 export const decisionJournalAPI = {
   async list(options: { limit?: number; view_date?: string } = {}) {
-    const res = await (client.api as any).decisionJournal.logs.$get({
+    return orpcClient.decisionJournal.list({
       query: {
-        limit: String(options.limit ?? 20),
+        limit: options.limit ?? 20,
         view_date: options.view_date,
       },
     });
-    if (!res.ok) throw new APIError('Failed to fetch decision journal', res.status.toString());
-    return await res.json();
   },
 
   async create(input: {
@@ -20,11 +15,15 @@ export const decisionJournalAPI = {
     context?: string | null;
     idempotency_key?: string;
   }) {
-    const res = await (client.api as any).decisionJournal.logs.$post({
-      json: input,
+    return orpcClient.decisionJournal.create({
+      body: input,
     });
-    if (!res.ok)
-      throw new APIError('Failed to create decision journal entry', res.status.toString());
-    return await res.json();
+  },
+
+  async markReviewed(id: string, isReviewed: boolean) {
+    return orpcClient.decisionJournal.markReviewed({
+      params: { id },
+      body: { is_reviewed: isReviewed },
+    });
   },
 };

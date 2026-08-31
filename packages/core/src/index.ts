@@ -23,20 +23,18 @@ export {
   getMediaThumbnail,
   getMediaUrl,
 } from '@repo/core/lib/mediaUtils';
-export type { IPostHog } from '@repo/core/lib/monitoring/posthog';
+export type { IPostHog } from './monitoring';
 export {
   identifyUser,
   initPostHog,
   injectPostHog,
   trackEvent,
-} from '@repo/core/lib/monitoring/posthog';
-export {
   captureException,
   clearSentryUser,
   initSentry,
   logBreadcrumb,
   setSentryUser,
-} from '@repo/core/lib/monitoring/sentry';
+} from './monitoring';
 export {
   clearPendingGateAction,
   getPendingGateAction,
@@ -122,6 +120,7 @@ export {
 } from '@repo/core/offline/resilience';
 export { AssetsProvider } from '@repo/core/providers/AssetsProvider';
 export { AuthorityLifecycleProvider } from '@repo/core/providers/AuthorityLifecycleProvider';
+export * from '@repo/core/efficiency';
 // 3. Auth & Context
 export { AuthProvider, useAuth } from '@repo/core/providers/AuthProvider';
 export { GlobalProvider } from '@repo/core/providers/GlobalProvider';

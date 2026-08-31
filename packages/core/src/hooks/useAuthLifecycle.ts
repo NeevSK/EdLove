@@ -3,8 +3,12 @@ import { authAPI } from '@repo/core/api/auth';
 import { assertHighway } from '@repo/core/api/highways';
 import { identityAPI } from '@repo/core/api/identity';
 import type { SchoolType } from '@repo/core/constants/SriLankanSchools';
-import { identifyUser } from '@repo/core/lib/monitoring/posthog';
-import { clearSentryUser, initSentry, setSentryUser } from '@repo/core/lib/monitoring/sentry';
+import {
+  clearSentryUser,
+  identifyUser,
+  initSentry,
+  setSentryUser,
+} from '@repo/core/monitoring';
 import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
 import { useStore } from '@repo/core/store/useStore';
 import type { User } from '@repo/core/types';

@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { identityAPI } from '@repo/core/api/identity';
 import { rewardsAPI } from '@repo/core/api/rewards';
+import type { UserRewards } from '@repo/core/api/rewards.orpc.contract';
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 
 /**
@@ -88,13 +89,13 @@ export function useRewards(
 
   // Check achievements mutation
   const checkAchievementsMutation = useMutation({
-    mutationFn: () => {
+    mutationFn: async (): Promise<{ updatedRewards: UserRewards | null; newAchievements: string[] }> => {
       if (phase === 'past') {
-        return Promise.resolve({ updatedRewards: null, newAchievements: [] });
+        return { updatedRewards: null, newAchievements: [] };
       }
       return userId
         ? rewardsAPI.checkAndAwardAchievements(userId)
-        : Promise.resolve({ updatedRewards: null, newAchievements: [] });
+        : { updatedRewards: null, newAchievements: [] };
     },
     onSuccess: async (data) => {
       if (data.updatedRewards) {

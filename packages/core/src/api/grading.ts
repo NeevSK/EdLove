@@ -1,4 +1,4 @@
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import { GradeMarkSchema } from '@repo/core/logic/schemas/grade-domain.schema';
 import { APIError } from '@repo/core/types/API';
 import { z } from 'zod';
@@ -9,8 +9,6 @@ import { z } from 'zod';
  * This module siphons Grading requests to the Sanctuary API.
  * [BREAKING] Renamed methods to enforce Sovereign naming standards.
  */
-
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 type StudentGradeMarkScope = {
   studentId: string;
@@ -35,15 +33,7 @@ type GradeMarkSubmission = StudentGradeMarkScope & {
 const gradeMarkCollectionSchema = z.array(GradeMarkSchema);
 type GradebookLifecycleScope = Omit<StudentGradeMarkScope, 'studentId'> & { gradeClassId: string };
 
-async function parseGradeMarkResponse(response: Response, action: string) {
-  if (!response.ok) {
-    throw new APIError(
-      `${action}: ${response.statusText || 'request failed'}`,
-      response.status.toString(),
-    );
-  }
-
-  const payload: unknown = await response.json();
+function parseGradeMarkResponse(payload: unknown, action: string) {
   const parsed = GradeMarkSchema.safeParse(payload);
   if (!parsed.success) {
     throw new APIError(
@@ -63,7 +53,7 @@ export const gradingAPI = {
       );
     }
 
-    const response = await (client.api as any).grading.classroom.$get({
+    const gradeMarks = await orpcClient.grading.getClassroomGrades({
       query: {
         schoolId: scope.schoolId,
         academicCycleId: scope.academicCycleId,
@@ -72,19 +62,10 @@ export const gradingAPI = {
         ...(scope.subjectId ? { subjectId: scope.subjectId } : {}),
       },
     });
-    if (!response.ok) {
-      throw new APIError('Failed to fetch GradeMark snapshot', response.status.toString());
-    }
-    const gradeMarks = gradeMarkCollectionSchema.parse(await response.json());
 
-    const settingsResponse = await (client.api as any).grading.classrooms[
-      ':classroomId'
-    ].settings.$get({
-      param: { classroomId: scope.gradeClassId },
+    const gradingSettings = await orpcClient.grading.getGradingSettings({
+      params: { classroomId: scope.gradeClassId },
     });
-    if (!settingsResponse.ok)
-      throw new APIError('Failed to fetch grading settings', settingsResponse.status.toString());
-    const gradingSettings = await settingsResponse.json();
 
     return {
       gradeMarks,
@@ -93,13 +74,10 @@ export const gradingAPI = {
   },
 
   async updateGradingSettings(classroomId: string, settings: any) {
-    const response = await (client.api as any).grading.classrooms[':classroomId'].settings.$put({
-      param: { classroomId },
-      json: { grading_mode: settings.grading_mode, show_ranks: settings.show_ranks },
+    return orpcClient.grading.updateGradingSettings({
+      params: { classroomId },
+      body: { grading_mode: settings.grading_mode, show_ranks: settings.show_ranks },
     });
-    if (!response.ok)
-      throw new APIError('Failed to update grading settings', response.status.toString());
-    return await response.json();
   },
 
   async saveGradeDraft(input: GradeMarkSubmission, _auditCtx?: any) {
@@ -116,10 +94,10 @@ export const gradingAPI = {
       );
     }
 
-    const response = await (client.api as any).grading.$post({
-      json: input,
-    });
-    return parseGradeMarkResponse(response, 'Failed to save GradeMark draft');
+    return parseGradeMarkResponse(
+      await orpcClient.grading.submitGrade({ body: input }),
+      'Failed to save GradeMark draft',
+    );
   },
 
   async publishGrade(gradeId: string, _auditCtx?: any) {
@@ -127,10 +105,10 @@ export const gradingAPI = {
       throw new APIError('Publishing a GradeMark requires its id', 'MISSING_GRADEMARK_ID');
     }
 
-    const response = await (client.api as any).grading[':id'].publish.$post({
-      param: { id: gradeId },
-    });
-    return parseGradeMarkResponse(response, 'Failed to publish GradeMark');
+    return parseGradeMarkResponse(
+      await orpcClient.grading.publishGrade({ params: { id: gradeId } }),
+      'Failed to publish GradeMark',
+    );
   },
   /**
    * [LOUD-FAILURE] Renamed from getReportCard.
@@ -143,7 +121,7 @@ export const gradingAPI = {
       );
     }
 
-    const res = await (client.api as any).grading['report-card'].$get({
+    const payload = await orpcClient.grading.getReportCard({
       query: {
         studentId: scope.studentId,
         schoolId: scope.schoolId,
@@ -152,19 +130,14 @@ export const gradingAPI = {
         ...(scope.subjectId ? { subjectId: scope.subjectId } : {}),
       },
     });
-
-    if (!res.ok) {
-      throw new APIError('Failed to fetch report card', res.status.toString());
-    }
-
-    const payload = gradeMarkCollectionSchema.safeParse(await res.json());
-    if (!payload.success) {
+    const parsed = gradeMarkCollectionSchema.safeParse(payload);
+    if (!parsed.success) {
       throw new APIError(
         'Failed to fetch report card: Sanctuary returned invalid GradeMarks',
         'INVALID_GRADE_MARK_RESPONSE',
       );
     }
-    return payload.data;
+    return parsed.data;
   },
 
   /**
@@ -184,11 +157,10 @@ export const gradingAPI = {
       );
     }
 
-    const res = await (client.api as any).grading.$post({
-      json: params,
-    });
-
-    return parseGradeMarkResponse(res, 'Failed to submit GradeMark');
+    return parseGradeMarkResponse(
+      await orpcClient.grading.submitGrade({ body: params }),
+      'Failed to submit GradeMark',
+    );
   },
 
   /**
@@ -199,9 +171,9 @@ export const gradingAPI = {
       throw new APIError('Publishing a GradeMark requires its id', 'MISSING_GRADEMARK_ID');
     }
 
-    const res = await (client.api as any).grading[':id'].publish.$post({
-      param: { id },
-    });
-    return parseGradeMarkResponse(res, 'Failed to publish GradeMark');
+    return parseGradeMarkResponse(
+      await orpcClient.grading.publishGrade({ params: { id } }),
+      'Failed to publish GradeMark',
+    );
   },
 };

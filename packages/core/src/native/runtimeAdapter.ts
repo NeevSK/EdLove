@@ -1,15 +1,7 @@
 /// <reference path="../types/external-modules.d.ts" />
 
 import NetInfo from '@react-native-community/netinfo';
-import * as BackgroundTask from 'expo-background-task';
-import * as Device from 'expo-device';
-import * as Font from 'expo-font';
-import * as Haptics from 'expo-haptics';
-import * as Location from 'expo-location';
-import * as Notifications from 'expo-notifications';
-import * as SecureStore from 'expo-secure-store';
-import * as TaskManager from 'expo-task-manager';
-import { Linking, Platform, Share, StatusBar } from 'react-native';
+import { storage } from '@repo/core/native/storage';
 import type {
   BackgroundTaskOptions,
   BackgroundTaskProvider,
@@ -26,7 +18,16 @@ import type {
   UIProvider,
 } from '@repo/core/types/runtime';
 import { BackgroundTaskResult, BackgroundTaskStatus } from '@repo/core/types/runtime';
-import { storage } from '@repo/core/native/storage';
+import * as BackgroundTask from 'expo-background-task';
+import * as Battery from 'expo-battery';
+import * as Device from 'expo-device';
+import * as Font from 'expo-font';
+import * as Haptics from 'expo-haptics';
+import * as Location from 'expo-location';
+import * as Notifications from 'expo-notifications';
+import * as SecureStore from 'expo-secure-store';
+import * as TaskManager from 'expo-task-manager';
+import { Linking, Platform, Share, StatusBar } from 'react-native';
 
 export const nativeStorageProvider = {
   async getItem(key: string) {
@@ -54,29 +55,46 @@ export const nativeDeviceProvider = {
     };
   },
   getTotalMemory: () => Device.totalMemory,
+  getPowerState: async () => ({
+    lowPowerMode: await Battery.isLowPowerModeEnabledAsync(),
+  }),
+  addPowerStateListener: (listener: (lowPowerMode: boolean) => void) =>
+    Battery.addLowPowerModeListener(({ lowPowerMode }) => listener(lowPowerMode)),
 };
 
 export const nativeHapticsProvider: HapticsProvider = {
   impactLight: () => {
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch((error) =>
+      console.warn('[Haptics] impact.light failed', error),
+    );
   },
   impactMedium: () => {
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch((error) =>
+      console.warn('[Haptics] impact.medium failed', error),
+    );
   },
   impactHeavy: () => {
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch((error) =>
+      console.warn('[Haptics] impact.heavy failed', error),
+    );
   },
   notificationSuccess: () => {
-    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch((error) =>
+      console.warn('[Haptics] notification.success failed', error),
+    );
   },
   notificationWarning: () => {
-    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch((error) =>
+      console.warn('[Haptics] notification.warning failed', error),
+    );
   },
   notificationError: () => {
-    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch((error) =>
+      console.warn('[Haptics] notification.error failed', error),
+    );
   },
   selection: () => {
-    void Haptics.selectionAsync();
+    void Haptics.selectionAsync().catch((error) => console.warn('[Haptics] selection failed', error));
   },
 };
 
@@ -235,6 +253,8 @@ export const webRuntimeEnvironment: CoreRuntimeEnvironment = {
       };
     },
     getTotalMemory: () => null,
+    getPowerState: async () => ({ lowPowerMode: false }),
+    addPowerStateListener: () => ({ remove: () => undefined }),
   },
   haptics: {
     impactLight: () => undefined,

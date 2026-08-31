@@ -1,4 +1,4 @@
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import type { StudentAttendancePulse } from '@repo/core/api/staffManagement';
 import { APIError } from '@repo/core/types/API';
 import * as Data from 'effect/Data';
@@ -7,7 +7,6 @@ import * as Effect from 'effect/Effect';
 import { pipe } from 'effect/Function';
 import * as Schedule from 'effect/Schedule';
 
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 const retryPolicy = pipe(
   Schedule.exponential(Duration.millis(200)),
@@ -57,8 +56,8 @@ export const attendanceAPI = {
   ) {
     return toPromise(
       apiEffect(() =>
-        (client.api as any).attendance.$post({
-          json: { classroom_id, student_id, status, date },
+        orpcClient.attendance.record({
+          body: { gradeClassId: classroom_id, studentId: student_id, status: status as any, date },
         }),
       ),
     );
@@ -67,9 +66,7 @@ export const attendanceAPI = {
   async fetchClassroomAttendance(classroom_id: string, date?: string) {
     return toPromise(
       apiEffect(() =>
-        (client.api as any).attendance.$get({
-          query: { classroom_id, date },
-        }),
+        orpcClient.attendance.getByClassroom({ query: { gradeClassId: classroom_id, date } }),
       ),
     );
   },
@@ -81,12 +78,8 @@ export const attendanceAPI = {
   ): Promise<StudentAttendancePulse> {
     return toPromise(
       apiEffect(() =>
-        (client.api as any).attendance.pulse.$get({
-          query: {
-            school_id,
-            classroom_id: classroom_id ?? undefined,
-            view_date: view_date ?? undefined,
-          },
+        orpcClient.attendance.getSchoolPulse({
+          query: { schoolId: school_id, gradeClassId: classroom_id, viewDate: view_date },
         }),
       ) as Effect.Effect<StudentAttendancePulse, AttendanceHttpError, never>,
     );
@@ -100,13 +93,8 @@ export const attendanceAPI = {
   ) {
     return toPromise(
       apiEffect(() =>
-        (client.api as any).attendance.report.$get({
-          query: {
-            school_id,
-            start_date,
-            end_date,
-            classroom_id: classroom_id ?? undefined,
-          },
+        orpcClient.attendance.getReport({
+          query: { schoolId: school_id, startDate: start_date, endDate: end_date, gradeClassId: classroom_id },
         }),
       ),
     );
@@ -121,26 +109,20 @@ export const attendanceAPI$ = {
     date: string,
   ) =>
     apiEffect(() =>
-      (client.api as any).attendance.$post({
-        json: { classroom_id, student_id, status, date },
+      orpcClient.attendance.record({
+        body: { gradeClassId: classroom_id, studentId: student_id, status: status as any, date },
       }),
     ),
 
   fetchClassroomAttendance: (classroom_id: string, date?: string) =>
     apiEffect(() =>
-      (client.api as any).attendance.$get({
-        query: { classroom_id, date },
-      }),
+      orpcClient.attendance.getByClassroom({ query: { gradeClassId: classroom_id, date } }),
     ),
 
   getSchoolAttendancePulse: (school_id: string, classroom_id?: string, view_date?: string) =>
     apiEffect(() =>
-      (client.api as any).attendance.pulse.$get({
-        query: {
-          school_id,
-          classroom_id: classroom_id ?? undefined,
-          view_date: view_date ?? undefined,
-        },
+      orpcClient.attendance.getSchoolPulse({
+        query: { schoolId: school_id, gradeClassId: classroom_id, viewDate: view_date },
       }),
     ) as Effect.Effect<StudentAttendancePulse, AttendanceHttpError, never>,
 
@@ -151,13 +133,8 @@ export const attendanceAPI$ = {
     classroom_id?: string,
   ) =>
     apiEffect(() =>
-      (client.api as any).attendance.report.$get({
-        query: {
-          school_id,
-          start_date,
-          end_date,
-          classroom_id: classroom_id ?? undefined,
-        },
+      orpcClient.attendance.getReport({
+        query: { schoolId: school_id, startDate: start_date, endDate: end_date, gradeClassId: classroom_id },
       }),
     ),
 };

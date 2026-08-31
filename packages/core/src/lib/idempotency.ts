@@ -57,13 +57,6 @@ interface IdempotencyRecord {
  */
 class IdempotencyStore {
   private store = new Map<string, IdempotencyRecord>();
-  private cleanupInterval: NodeJS.Timeout | null = null;
-
-  constructor() {
-    // Periodic cleanup of expired entries
-    this.cleanupInterval = setInterval(() => this.cleanup(), 60 * 60 * 1000); // Hourly
-    this.cleanupInterval.unref();
-  }
 
   private cleanup(): void {
     const now = new Date();
@@ -85,6 +78,9 @@ class IdempotencyStore {
   }
 
   async set(key: string, record: IdempotencyRecord): Promise<void> {
+    if (this.store.size > 500) {
+      this.cleanup();
+    }
     this.store.set(key, record);
   }
 
@@ -93,10 +89,6 @@ class IdempotencyStore {
   }
 
   destroy(): void {
-    if (this.cleanupInterval) {
-      clearInterval(this.cleanupInterval);
-      this.cleanupInterval = null;
-    }
     this.store.clear();
   }
 }
@@ -249,7 +241,14 @@ export function idempotencyHeaderMiddleware(config: IdempotencyConfig = {}) {
  * Helper to generate idempotency key on client
  */
 export function generateIdempotencyKey(): string {
-  return crypto.randomUUID();
+  if (typeof globalThis !== 'undefined' && globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function') {
+    return globalThis.crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
 }
 
 /**

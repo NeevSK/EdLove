@@ -1,5 +1,5 @@
 import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
-import { trackProductEvent } from '@repo/core/lib/monitoring/posthog';
+import { trackProductEvent } from '@repo/core/monitoring';
 import type { AuthSession, AuthUser, IAuthPort } from '@repo/core/logic/ports/auth.port';
 import type { IIdentityPort } from '@repo/core/logic/ports/identity.port';
 import type { Capacity } from '@repo/core/types';

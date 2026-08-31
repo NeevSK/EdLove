@@ -1,13 +1,10 @@
 /**
- * Monitoring Module - Public API
- * 
- * Breadcrumbs for error context.
+ * Monitoring & Telemetry Module - Public API
+ *
+ * Unified interfaces for Sentry, PostHog, Safe Telemetry, and State Breadcrumbs.
  */
 
-// Breadcrumbs
-export {
-  leaveBreadcrumb,
-  getBreadcrumbs,
-  clearBreadcrumbs,
-  type Breadcrumb,
-} from './breadcrumbs';
+export * from './posthog';
+export * from './sentry';
+export * from './safeData';
+export * from './breadcrumbs';

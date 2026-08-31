@@ -81,18 +81,15 @@ export async function applyPowerSyncBatch(
 
   const payloadHash = hashCrud(crud);
   const scopedKey = `${principalId}:${idempotencyKey ?? ''}`;
-  const useDurableLedger = Boolean(idempotencyKey && typeof db?.$queryRaw === 'function');
+  let usedDurableLedger = false;
 
   console.log(`[Sync] Processing transactional upload batch of ${crud.length} mutations.`);
 
   try {
     await db.$transaction(async (tx: any) => {
       if (idempotencyKey) {
-        if (
-          useDurableLedger &&
-          typeof tx.$executeRaw === 'function' &&
-          typeof tx.$queryRaw === 'function'
-        ) {
+        if (typeof tx.$executeRaw === 'function' && typeof tx.$queryRaw === 'function') {
+          usedDurableLedger = true;
           await tx.$executeRaw`
             INSERT INTO powersync_idempotency_keys (principal_id, idempotency_key, payload_hash, status, processed_count)
             VALUES (${principalId}, ${idempotencyKey}, ${payloadHash}, 'processing', 0)
@@ -163,7 +160,7 @@ export async function applyPowerSyncBatch(
         }
       }
 
-      if (idempotencyKey && useDurableLedger) {
+      if (idempotencyKey && usedDurableLedger) {
         await tx.$executeRaw`
           UPDATE powersync_idempotency_keys
           SET status = 'completed', processed_count = ${crud.length}, completed_at = NOW()

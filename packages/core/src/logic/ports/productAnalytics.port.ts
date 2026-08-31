@@ -11,6 +11,7 @@ export const PRODUCT_ANALYTICS_EVENTS = [
   'feature_opened',
   'feature_action_completed',
   'feature_action_failed',
+  'efficiency_policy_decision',
 ] as const;
 
 export type ProductAnalyticsEventName = (typeof PRODUCT_ANALYTICS_EVENTS)[number];
@@ -61,4 +62,9 @@ export interface ProductAnalyticsEventProperties {
     duration_seconds?: number;
   };
   feature_action_failed: { feature_id: string; action: string; error_code?: string };
+  efficiency_policy_decision: {
+    operation: string;
+    action: 'defer' | 'reduce';
+    reason: string;
+  };
 }

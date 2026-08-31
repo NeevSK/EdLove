@@ -10,7 +10,7 @@
 
 declare const __DEV__: boolean | undefined;
 
-import { sanitizeTelemetryData } from '@repo/core/lib/monitoring/safeData';
+import { sanitizeTelemetryData } from './safeData';
 import type { IAnalyticsPort } from '@repo/core/logic/ports/analytics.port';
 import type {
   ProductAnalyticsContext,

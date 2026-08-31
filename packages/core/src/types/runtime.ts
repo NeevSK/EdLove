@@ -13,6 +13,8 @@ export interface DeviceMetadata {
 export interface DeviceProvider {
   getMetadata(): DeviceMetadata;
   getTotalMemory?(): number | null;
+  getPowerState?(): Promise<{ lowPowerMode: boolean }>;
+  addPowerStateListener?(listener: (lowPowerMode: boolean) => void): { remove: () => void };
 }
 
 export interface HapticsProvider {

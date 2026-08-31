@@ -7,8 +7,12 @@ import { assertHighway } from '@repo/core/api/highways';
 import { identityAPI } from '@repo/core/api/identity';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import type { SchoolType } from '@repo/core/constants/SriLankanSchools';
-import { identifyUser } from '@repo/core/lib/monitoring/posthog';
-import { clearSentryUser, initSentry, setSentryUser } from '@repo/core/lib/monitoring/sentry';
+import {
+  clearSentryUser,
+  identifyUser,
+  initSentry,
+  setSentryUser,
+} from '@repo/core/monitoring';
 import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';

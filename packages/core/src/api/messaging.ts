@@ -6,20 +6,8 @@
  * authorization and participant checks that belong in Sanctuary.
  */
 
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
-import { assertHighway } from '@repo/core/api/highways';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import type { TemporalScale } from '@repo/core/store/useTemporalStore';
-import { APIError } from '@repo/core/types/API';
-
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
-
-function assertMessagingHighway() {
-  assertHighway('messaging_core', 'direct-api');
-}
-
-async function throwApiError(res: Response, operation: string): Promise<never> {
-  throw new APIError(operation, res.status.toString());
-}
 
 function mapMessage(message: any) {
   return {
@@ -37,19 +25,11 @@ function mapMessage(message: any) {
 
 export const messagingAPI = {
   async getDirectConversations() {
-    assertMessagingHighway();
-    const res = await (client.api as any).messaging.conversations.$get();
-    if (!res.ok) await throwApiError(res, 'Failed to fetch direct conversations');
-    return await res.json();
+    return orpcClient.messaging.getConversations({});
   },
 
   async getOrCreateDirectConversation(targetUserId: string): Promise<string> {
-    assertMessagingHighway();
-    const res = await (client.api as any).messaging.conversations.$post({
-      json: { targetUserId },
-    });
-    if (!res.ok) await throwApiError(res, 'Failed to create direct conversation');
-    return String(await res.json());
+    return orpcClient.messaging.getOrCreateConversation({ body: { targetUserId } });
   },
 
   async getDirectMessages(
@@ -58,24 +38,20 @@ export const messagingAPI = {
     viewDate?: string,
     _viewScale?: TemporalScale,
   ) {
-    assertMessagingHighway();
-    const res = await (client.api as any).messaging.messages.$get({
+    return (await orpcClient.messaging.getMessages({
       query: {
         conversationId,
         limit,
         viewDate: viewDate ?? undefined,
       },
-    });
-    if (!res.ok) await throwApiError(res, 'Failed to fetch direct messages');
-    return ((await res.json()) as any[]).map(mapMessage);
+    })).map(mapMessage);
   },
 
   async sendDirectMessage(conversationId: string, content: string) {
-    assertMessagingHighway();
-    const res = await (client.api as any).messaging.messages.$post({
-      json: { conversationId, content: content.trim() },
-    });
-    if (!res.ok) await throwApiError(res, 'Failed to send direct message');
-    return mapMessage(await res.json());
+    return mapMessage(
+      await orpcClient.messaging.sendMessage({
+        body: { conversationId, content: content.trim() },
+      }),
+    );
   },
 };

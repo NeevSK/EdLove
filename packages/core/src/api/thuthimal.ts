@@ -8,12 +8,9 @@
  * See: apps/gurudevi-mobile/docs/Support/THUTHIMAL_README.md
  */
 
-import type { ThuthimalGift } from '@repo/core/types';
 import { growthSignalsAPI } from '@repo/core/api/growthSignals';
-import { APIError } from '@repo/core/types/API';
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
-
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
+import { orpcClient } from '@repo/core/api/orpcClient';
+import type { ThuthimalGift } from '@repo/core/types';
 
 export interface CreateGiftInput {
   gifterName: string;
@@ -42,8 +39,8 @@ export const thuthimalAPI = {
   async createGift(
     input: CreateGiftInput & { gifter_id: string },
   ): Promise<{ gift_token: string }> {
-    const res = await (client.api as any).thuthimal.gifts.$post({
-      json: {
+    return orpcClient.thuthimal.createGift({
+      body: {
         gifterName: input.gifterName,
         recipientTier: input.recipientTier,
         recipientId: input.recipientId ?? null,
@@ -51,9 +48,6 @@ export const thuthimalAPI = {
         message: input.message ?? null,
       },
     });
-    const data = await res.json().catch(() => null);
-    if (!res.ok) throw new APIError('Failed to create thuthimal gift', res.status.toString());
-    return data as { gift_token: string };
   },
 
   /**
@@ -61,11 +55,9 @@ export const thuthimalAPI = {
    * Uses server-side RPC with row-lock to prevent double-claim.
    */
   async claimGift(input: { gift_token: string; recipient_id: string }): Promise<ClaimResult> {
-    const res = await (client.api as any).thuthimal.gifts.claim.$post({
-      json: { giftToken: input.gift_token },
+    const result = await orpcClient.thuthimal.claimGift({
+      body: { giftToken: input.gift_token },
     });
-    const result = (await res.json().catch(() => null)) as ClaimResult | null;
-    if (!res.ok || !result) throw new APIError('Claim request failed', res.status.toString());
 
     // Growth signal: receiving a Thuthimal is the apex Blooming event \u2014
     // a past student honoring their teacher years later.
@@ -90,9 +82,7 @@ export const thuthimalAPI = {
    */
   async getMyGifts(gifterId: string): Promise<ThuthimalGift[]> {
     void gifterId;
-    const res = await (client.api as any).thuthimal.gifts.$get();
-    if (!res.ok) throw new APIError('Failed to fetch gifts', res.status.toString());
-    return (await res.json()) as ThuthimalGift[];
+    return orpcClient.thuthimal.getMyGifts();
   },
 
   /**
@@ -102,10 +92,8 @@ export const thuthimalAPI = {
   async previewGift(
     giftToken: string,
   ): Promise<Pick<ThuthimalGift, 'gifter_name' | 'recipient_tier'> | null> {
-    const res = await (client.api as any).thuthimal.gifts[':giftToken'].preview.$get({
-      param: { giftToken },
+    return orpcClient.thuthimal.previewGift({
+      params: { giftToken },
     });
-    if (!res.ok) return null;
-    return (await res.json()) as Pick<ThuthimalGift, 'gifter_name' | 'recipient_tier'> | null;
   },
 };

@@ -1,5 +1,4 @@
-import { describe, expect, it } from 'vitest';
-import { sanitizeTelemetryData } from '@repo/core/lib/monitoring/safeData';
+import { sanitizeTelemetryData } from '@repo/core/monitoring';
 
 describe('sanitizeTelemetryData', () => {
   it('keeps intentional scalar dimensions', () => {

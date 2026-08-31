@@ -1,17 +1,10 @@
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
 import { communityAPI } from '@repo/core/api/community';
 import { assertHighway } from '@repo/core/api/highways';
-import { APIError } from '@repo/core/types/API';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import type { TemporalScale } from '@repo/core/store/useTemporalStore';
-
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 function assertSocialHighway() {
   assertHighway('social_core', 'direct-api');
-}
-
-async function throwApiError(res: Response, operation: string): Promise<never> {
-  throw new APIError(operation, res.status.toString());
 }
 
 /**
@@ -41,11 +34,10 @@ export const socialAPI = {
     options: { viewDate?: string; viewScale?: TemporalScale } = {},
   ) {
     assertSocialHighway();
-    const res = await (client.api as any).social.notifications.$get({
+    const notifications = await orpcClient.social.getNotifications({
       query: { limit, viewDate: options.viewDate ?? undefined },
     });
-    if (!res.ok) await throwApiError(res, 'Failed to fetch notifications');
-    return ((await res.json()) as any[]).map((notification) => ({
+    return (notifications as any[]).map((notification: any) => ({
       ...notification,
       body: notification.message,
     }));
@@ -56,9 +48,7 @@ export const socialAPI = {
    */
   async getUnreadNotificationCount() {
     assertSocialHighway();
-    const res = await (client.api as any).social.notifications['unread-count'].$get();
-    if (!res.ok) await throwApiError(res, 'Failed to fetch unread notification count');
-    return Number(await res.json());
+    return orpcClient.social.getUnreadNotificationCount();
   },
 
   /**
@@ -66,10 +56,7 @@ export const socialAPI = {
    */
   async markNotificationRead(notificationId: string) {
     assertSocialHighway();
-    const res = await (client.api as any).social.notifications.read.$post({
-      json: { notificationId },
-    });
-    if (!res.ok) await throwApiError(res, 'Failed to mark notification read');
+    await orpcClient.social.markNotificationRead({ body: { notificationId } });
   },
 
   /**
@@ -77,8 +64,7 @@ export const socialAPI = {
    */
   async markAllNotificationsRead() {
     assertSocialHighway();
-    const res = await (client.api as any).social.notifications['read-all'].$post();
-    if (!res.ok) await throwApiError(res, 'Failed to mark notifications read');
+    await orpcClient.social.markAllNotificationsRead();
   },
 
   // --- Safety & Moderation ---
@@ -88,10 +74,7 @@ export const socialAPI = {
    */
   async blockUser(targetUserId: string): Promise<void> {
     assertSocialHighway();
-    const res = await (client.api as any).social.block.$post({
-      json: { targetUserId },
-    });
-    if (!res.ok) await throwApiError(res, 'Failed to block user');
+    await orpcClient.social.blockUser({ body: { targetUserId } });
   },
 
   /**
@@ -99,10 +82,7 @@ export const socialAPI = {
    */
   async unblockUser(targetUserId: string): Promise<void> {
     assertSocialHighway();
-    const res = await (client.api as any).social.unblock.$post({
-      json: { targetUserId },
-    });
-    if (!res.ok) await throwApiError(res, 'Failed to unblock user');
+    await orpcClient.social.unblockUser({ body: { targetUserId } });
   },
 
   /**
@@ -110,11 +90,7 @@ export const socialAPI = {
    */
   async isBlockingActive(targetUserId: string): Promise<boolean> {
     assertSocialHighway();
-    const res = await (client.api as any).social.block.active.$get({
-      query: { targetUserId },
-    });
-    if (!res.ok) await throwApiError(res, 'Failed to check block status');
-    return Boolean(await res.json());
+    return orpcClient.social.isBlockingActive({ query: { targetUserId } });
   },
 
   /**
@@ -122,9 +98,7 @@ export const socialAPI = {
    */
   async getMutedUsers() {
     assertSocialHighway();
-    const res = await (client.api as any).social.block.list.$get();
-    if (!res.ok) await throwApiError(res, 'Failed to fetch blocked users');
-    return await res.json();
+    return orpcClient.social.getBlockedUsers();
   },
 
   /**

@@ -1,5 +1,5 @@
 import { GrowthBook, setPolyfills } from '@growthbook/growthbook';
-import { trackProductEvent } from '@repo/core/lib/monitoring/posthog';
+import { trackProductEvent } from '@repo/core/monitoring';
 import { storage } from '@repo/core/lib/storage';
 import type {
   FeatureRolloutSnapshot,

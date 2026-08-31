@@ -108,7 +108,9 @@ async function getOrCreateEncryptionKey(accountId: string): Promise<string> {
     return key;
   } catch (error) {
     console.error('[PowerSync] Unable to access the device encryption key.', error);
-    throw new Error('PowerSync encryption key unavailable', { cause: error });
+    const err = new Error('PowerSync encryption key unavailable');
+    (err as any).cause = error;
+    throw err;
   }
 }
 

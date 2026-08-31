@@ -1,5 +1,5 @@
 import { useStore } from '@repo/core/store/useStore';
-import { captureException } from '@repo/core/lib/monitoring/sentry';
+import { captureException } from '@repo/core/monitoring';
 import { APIError } from '@repo/core/types/API';
 
 /**

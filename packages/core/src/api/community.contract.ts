@@ -75,11 +75,6 @@ export const communityContract = {
     path: '/community/groups/:groupId/join',
     request: {
       params: z.strictObject({ groupId: z.uuid() }),
-      body: z.strictObject({
-        // Membership ownership is derived from the authenticated context.
-        user_id: z.uuid().optional(),
-        capacity: z.string(),
-      }),
     },
     responses: {
       201: { schema: GroupMemberSchema, description: 'Joined group' },

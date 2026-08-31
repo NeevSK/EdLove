@@ -4,9 +4,9 @@ import { useRef, useState, useEffect } from 'react';
 
 // Simple debounce utility
 function debounce<T extends (...args: any[]) => any>(fn: T, wait: number): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout;
+  let timeout: ReturnType<typeof setTimeout> | undefined;
   return (...args: Parameters<T>) => {
-    clearTimeout(timeout);
+    if (timeout) clearTimeout(timeout);
     timeout = setTimeout(() => fn(...args), wait);
   };
 }
@@ -17,7 +17,7 @@ export function useResponsiveRenderer() {
   const [isResizing, setIsResizing] = useState(false);
 
   // Debounced resize handler to prevent UI jank
-  const resizeTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
+  const resizeTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const handleResize = () => {
     setIsResizing(true);
     clearTimeout(resizeTimeout.current);

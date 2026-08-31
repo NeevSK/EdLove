@@ -1,4 +1,4 @@
-import { sanitizeTelemetryData } from '@repo/core/lib/monitoring/safeData';
+import { sanitizeTelemetryData } from '@repo/core/monitoring';
 import type { ITelemetry } from '@repo/core/logic/interfaces/telemetry.port';
 import * as NativeSentry from '@sentry/react-native';
 

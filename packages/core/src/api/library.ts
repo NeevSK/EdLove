@@ -1,4 +1,5 @@
 import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import { APIError } from '@repo/core/types/API';
 
 /**
@@ -12,9 +13,7 @@ const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
 
 export const libraryAPI = {
   async fetchLibraryCounts() {
-    const res = await (client.api as any).library.counts.$get({ query: {} });
-    if (!res.ok) throw new APIError('Failed to fetch Library counts', res.status.toString());
-    return await res.json();
+    return orpcClient.library.getCounts({ query: {} });
   },
 
   /**
@@ -39,7 +38,7 @@ export const libraryAPI = {
     offset?: number;
     search?: string;
   }) {
-    const res = await (client.api as any).library.resources.$get({
+    return orpcClient.library.getResources({
       query: {
         type: filters.type,
         subject: filters.subject,
@@ -51,36 +50,24 @@ export const libraryAPI = {
         languages: filters.languages?.join(','),
         visibility: filters.visibility,
         source: filters.source,
-        verified_only: filters.verified_only?.toString(),
+        verified_only: filters.verified_only,
         tags: filters.tags?.join(','),
         sort_by: filters.sort_by,
         view_date: filters.view_date,
-        limit: filters.limit?.toString(),
-        offset: filters.offset?.toString(),
+        limit: filters.limit,
+        offset: filters.offset,
         search: filters.search,
       },
     });
-
-    if (!res.ok) {
-      throw new APIError('Failed to fetch library resources', res.status.toString());
-    }
-
-    return await res.json();
   },
 
   /**
    * Fetches a single resource by ID.
    */
   async identifyResource(id: string) {
-    const res = await (client.api as any).library.resources[':id'].$get({
-      param: { id },
+    return orpcClient.library.getResource({
+      params: { id },
     });
-
-    if (!res.ok) {
-      throw new APIError('Resource not found', res.status.toString());
-    }
-
-    return await res.json();
   },
 
   async searchLibrary(params: {
@@ -90,23 +77,19 @@ export const libraryAPI = {
     subject?: string;
     limit?: number;
   }) {
-    const res = await (client.api as any).library.resources.search.$post({ json: params });
-    if (!res.ok) throw new APIError('Failed to search library resources', res.status.toString());
-    return await res.json();
+    return orpcClient.library.searchLibrary({ body: params });
   },
 
   async fetchBookmarkedResources(
     filters: { limit?: number; offset?: number; view_date?: string } = {},
   ) {
-    const res = await (client.api as any).library.resources.bookmarked.$get({
+    return orpcClient.library.getBookmarkedResources({
       query: {
-        limit: filters.limit?.toString(),
-        offset: filters.offset?.toString(),
+        limit: filters.limit,
+        offset: filters.offset,
         view_date: filters.view_date,
       },
     });
-    if (!res.ok) throw new APIError('Failed to fetch bookmarked resources', res.status.toString());
-    return await res.json();
   },
 
   async createResource(input: {
@@ -124,9 +107,7 @@ export const libraryAPI = {
     visibility: string;
     is_community: boolean;
   }) {
-    const res = await (client.api as any).library.resources.$post({ json: input });
-    if (!res.ok) throw new APIError('Failed to create library resource', res.status.toString());
-    return await res.json();
+    return orpcClient.library.createResource({ body: input });
   },
 
   async createCollection(input: {
@@ -138,32 +119,22 @@ export const libraryAPI = {
     grades: number[];
     resource_ids: string[];
   }) {
-    const res = await (client.api as any).library.collections.$post({ json: input });
-    if (!res.ok) throw new APIError('Failed to create library collection', res.status.toString());
-    return await res.json();
+    return orpcClient.library.createCollection({ body: input });
   },
 
   async updateResource(id: string, updates: Record<string, unknown>) {
-    const res = await (client.api as any).library.resources[':id'].$put({
-      param: { id },
-      json: updates,
+    return orpcClient.library.updateResource({
+      params: { id },
+      body: updates,
     });
-    if (!res.ok) throw new APIError('Failed to update library resource', res.status.toString());
-    return await res.json();
   },
 
   async deleteResource(id: string) {
-    const res = await (client.api as any).library.resources[':id'].$delete({ param: { id } });
-    if (!res.ok) throw new APIError('Failed to delete library resource', res.status.toString());
-    return await res.json();
+    return orpcClient.library.deleteResource({ params: { id } });
   },
 
   async verifyResource(id: string) {
-    const res = await (client.api as any).library.resources[':id'].verify.$post({
-      param: { id },
-    });
-    if (!res.ok) throw new APIError('Failed to verify library resource', res.status.toString());
-    return await res.json();
+    return orpcClient.library.verifyResource({ params: { id } });
   },
 
   async reportBrokenLink(id: string) {
@@ -175,46 +146,28 @@ export const libraryAPI = {
   },
 
   async addToCollection(collectionId: string, resourceId: string) {
-    const res = await (client.api as any).library.collections[':id'].resources.$post({
-      param: { id: collectionId },
-      json: { resource_id: resourceId },
+    return orpcClient.library.addToCollection({
+      params: { id: collectionId },
+      body: { resource_id: resourceId },
     });
-    if (!res.ok) throw new APIError('Failed to add resource to collection', res.status.toString());
-    return await res.json();
   },
 
   async removeFromCollection(collectionId: string, resourceId: string) {
-    const res = await (client.api as any).library.collections[':id'].resources[
-      ':resourceId'
-    ].$delete({
-      param: { id: collectionId, resourceId },
+    return orpcClient.library.removeFromCollection({
+      params: { id: collectionId, resourceId },
     });
-    if (!res.ok)
-      throw new APIError('Failed to remove resource from collection', res.status.toString());
-    return await res.json();
   },
 
   async updateCollection(id: string, updates: Record<string, unknown>) {
-    const res = await (client.api as any).library.collections[':id'].$put({
-      param: { id },
-      json: updates,
-    });
-    if (!res.ok) throw new APIError('Failed to update library collection', res.status.toString());
-    return await res.json();
+    return orpcClient.library.updateCollection({ params: { id }, body: updates });
   },
 
   async deleteCollection(id: string) {
-    const res = await (client.api as any).library.collections[':id'].$delete({ param: { id } });
-    if (!res.ok) throw new APIError('Failed to delete library collection', res.status.toString());
-    return await res.json();
+    return orpcClient.library.deleteCollection({ params: { id } });
   },
 
   async forkCollection(id: string) {
-    const res = await (client.api as any).library.collections[':id'].fork.$post({
-      param: { id },
-    });
-    if (!res.ok) throw new APIError('Failed to fork library collection', res.status.toString());
-    return await res.json();
+    return orpcClient.library.forkCollection({ params: { id } });
   },
 
   /**
@@ -226,20 +179,14 @@ export const libraryAPI = {
     classroomId?: string,
     toggle = false,
   ) {
-    const res = await (client.api as any).library.resources[':id'].engage.$post({
-      param: { id: resourceId },
-      json: {
+    return orpcClient.library.engage({
+      params: { id: resourceId },
+      body: {
         engagement_type: engagementType,
         classroom_id: classroomId,
         toggle,
       },
     });
-
-    if (!res.ok) {
-      throw new APIError('Failed to record engagement', res.status.toString());
-    }
-
-    return await res.json();
   },
 
   /**
@@ -257,38 +204,19 @@ export const libraryAPI = {
     exclude_virtual?: boolean;
     view_date?: string;
   }) {
-    const res = await (client.api as any).library.collections.$get({
-      query: {
-        ...filters,
-        limit: filters.limit?.toString(),
-        offset: filters.offset?.toString(),
-        only_virtual: filters.only_virtual?.toString(),
-        exclude_virtual: filters.exclude_virtual?.toString(),
-        visibility: filters.visibility,
-        grades: filters.grades?.join(','),
-        view_date: filters.view_date,
-      },
+    return orpcClient.library.getCollections({
+      query: { ...filters, grades: filters.grades?.join(',') },
     });
-
-    if (!res.ok) {
-      throw new APIError('Failed to fetch collections', res.status.toString());
-    }
-
-    return await res.json();
   },
 
   async identifyCollection(id: string, viewDate?: string) {
-    const res = await (client.api as any).library.collections[':id'].$get({
-      param: { id },
+    return orpcClient.library.getCollection({
+      params: { id },
       query: { view_date: viewDate },
     });
-    if (!res.ok) throw new APIError('Collection not found', res.status.toString());
-    return await res.json();
   },
 
   async fetchMapTopology() {
-    const res = await (client.api as any).library.map.topology.$get({ query: {} });
-    if (!res.ok) throw new APIError('Failed to fetch Library map topology', res.status.toString());
-    return await res.json();
+    return orpcClient.library.getMapTopology({ query: {} });
   },
 };

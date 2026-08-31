@@ -1,6 +1,7 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { identityAPI } from '@repo/core/api/identity';
-import { trackProductEvent } from '@repo/core/lib/monitoring/posthog';
+import { orpcClient } from '@repo/core/api/orpcClient';
+import { trackProductEvent } from '@repo/core/monitoring';
 // Note: We'll use dynamic imports or passing refs for communityAPI to avoid circular deps if necessary,
 // but for now let's assume core is the base.
 import type { Capacity, QRPayload } from '@repo/core/types';
@@ -45,7 +46,7 @@ export class FlowResolver {
           return await FlowResolver.executeJoinClass(payload.classroom_id, userId, payload.handle);
 
         case 'join_group':
-          return await FlowResolver.executeJoinGroup(payload.group_id, userId, payload.handle);
+          return await FlowResolver.executeJoinGroup(payload.group_id, payload.handle);
 
         case 'claim_invite':
           return await FlowResolver.executeClaimInvite(
@@ -190,7 +191,6 @@ export class FlowResolver {
 
   private static async executeJoinGroup(
     groupId: string,
-    userId: string,
     handle?: string,
   ): Promise<FlowResult> {
     let finalGroupId = groupId;
@@ -204,13 +204,9 @@ export class FlowResolver {
       if (group) finalGroupId = group.id;
     }
 
-    const { error } = await supabaseClient.from('group_members').upsert({
-      group_id: finalGroupId,
-      user_id: userId,
-      status: 'active',
+    await orpcClient.community.joinGroup({
+      params: { groupId: finalGroupId },
     });
-
-    if (error) throw error;
 
     return {
       outcome: 'success',

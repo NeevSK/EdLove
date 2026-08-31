@@ -10,10 +10,8 @@ import type {
 } from '@repo/core/logic/schemas/guardian.schema';
 import { guardianContract } from '@repo/core/api/guardian.contract';
 import { guardianServices } from '@repo/core/api/runtimes/guardian.runtime';
-import { supabaseClient } from '@repo/core/adapters/supabaseClient';
 import { GuardianPublishedAssessmentSummarySchema } from '@repo/core/api/guardian-assessment.contract';
-import { SOVEREIGN_API_URL } from '@repo/core/api/base';
-import { APIError } from '@repo/core/types/API';
+import { orpcClient } from '@repo/core/api/orpcClient';
 
 export type GuardianAssessmentPage = {
   limit?: number;
@@ -70,34 +68,15 @@ export const guardianAPI = {
    * Published assessment results are intentionally read through Sanctuary.
    * This method must not be replaced with a Supabase table or RPC read.
    */
-  async getPublishedAssessmentSummary(
-    studentId: string,
-    page: GuardianAssessmentPage = {},
-  ) {
-    const { data } = await supabaseClient.auth.getSession();
-    const token = data.session?.access_token;
-    if (!token) throw new APIError('Guardian session required', 'UNAUTHENTICATED');
-
-    const response = await fetch(`${SOVEREIGN_API_URL}/api/guardianAssessment/getPublishedAssessmentSummary`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
+  async getPublishedAssessmentSummary(studentId: string, page: GuardianAssessmentPage = {}) {
+    const response = await orpcClient.guardianAssessment.getPublishedAssessmentSummary({
+      params: { studentId },
+      query: {
+        limit: page.limit ?? 25,
+        ...(page.cursor ? { cursor: page.cursor } : {}),
       },
-      body: JSON.stringify({
-        json: {
-          studentId,
-          limit: page.limit ?? 25,
-          cursor: page.cursor,
-        },
-      }),
     });
-
-    if (!response.ok) {
-      throw new APIError('Failed to fetch guardian assessment results', String(response.status));
-    }
-
-    return GuardianPublishedAssessmentSummarySchema.parse(await response.json());
+    return GuardianPublishedAssessmentSummarySchema.parse(response);
   },
 
   /**

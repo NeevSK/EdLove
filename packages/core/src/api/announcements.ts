@@ -6,28 +6,11 @@
  * deliberately ignored so callers cannot impersonate another author.
  */
 
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
-import { assertHighway } from '@repo/core/api/highways';
-import { APIError } from '@repo/core/types/API';
-
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
-
-function assertAnnouncementsHighway() {
-  assertHighway('announcements_core', 'direct-api');
-}
-
-async function throwApiError(res: Response, operation: string): Promise<never> {
-  throw new APIError(operation, res.status.toString());
-}
+import { orpcClient } from '@repo/core/api/orpcClient';
 
 export const announcementAPI = {
   async getAnnouncements(schoolId: string) {
-    assertAnnouncementsHighway();
-    const res = await (client.api as any).announcements.$get({
-      query: { schoolId },
-    });
-    if (!res.ok) await throwApiError(res, 'Failed to fetch announcements');
-    return await res.json();
+    return orpcClient.announcements.getAnnouncements({ query: { schoolId } });
   },
 
   async createAnnouncement(
@@ -36,16 +19,13 @@ export const announcementAPI = {
     content: string,
     isPinned = false,
   ) {
-    assertAnnouncementsHighway();
-    const res = await (client.api as any).announcements.$post({
-      json: {
+    return orpcClient.announcements.createAnnouncement({
+      body: {
         schoolId,
         title: '',
         content,
         isPinned,
       },
     });
-    if (!res.ok) await throwApiError(res, 'Failed to create announcement');
-    return await res.json();
   },
 };

@@ -204,9 +204,14 @@
       "default": "./src/api/supabase.ts"
     },
     "./monitoring": {
-      "types": "./src/lib/monitoring/index.ts",
-      "import": "./src/lib/monitoring/index.ts",
-      "default": "./src/lib/monitoring/index.ts"
+      "types": "./src/monitoring/index.ts",
+      "import": "./src/monitoring/index.ts",
+      "default": "./src/monitoring/index.ts"
+    },
+    "./monitoring/*": {
+      "types": "./src/monitoring/*.ts",
+      "import": "./src/monitoring/*.ts",
+      "default": "./src/monitoring/*.ts"
     },
     "./sync": {
       "types": "./src/lib/sync/index.ts",
@@ -247,6 +252,11 @@
       "types": "./src/offline/resilience.ts",
       "import": "./src/offline/resilience.ts",
       "default": "./src/offline/resilience.ts"
+    },
+    "./efficiency": {
+      "types": "./src/efficiency/index.ts",
+      "import": "./src/efficiency/index.ts",
+      "default": "./src/efficiency/index.ts"
     },
     "./storage-wrapper": {
       "types": "./src/lib/storageWrapper.ts",
@@ -319,6 +329,7 @@
     "@supabase/postgrest-js": "2.102.1",
     "@supabase/supabase-js": "2.102.1",
     "expo-background-task": "~57.0.9",
+    "expo-battery": "~57.0.2",
     "expo-constants": "~57.0.10",
     "expo-device": "~57.0.1",
     "expo-font": "~57.0.1",

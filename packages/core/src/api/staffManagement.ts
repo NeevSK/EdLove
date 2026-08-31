@@ -1,7 +1,6 @@
-import type { CalendarEvent } from '@repo/schema/contracts';
+import { orpcClient } from '@repo/core/api/orpcClient';
 import type { Capacity } from '@repo/core/types';
-import { APIError } from '@repo/core/types/API';
-import { type AppType, createSovereignClient, SOVEREIGN_API_URL } from '@repo/core/api/base';
+import type { CalendarEvent } from '@repo/schema/contracts';
 
 /**
  * STAFF MANAGEMENT API (Sovereign RPC Proxy)
@@ -47,36 +46,22 @@ export interface StaffLeaveDTO {
   created_at: Date;
 }
 
-const client = createSovereignClient<AppType>(SOVEREIGN_API_URL);
-
 export const staffManagementAPI = {
   async getStaffPresenceSummary(
     schoolId: string,
     viewDate?: string,
   ): Promise<StaffPresenceSummary> {
-    const res = await (client.api as any).admin.schools[':schoolId']['staff-presence'].$get({
-      param: { schoolId },
-      query: { viewDate: viewDate ?? undefined },
+    return orpcClient.admin.getStaffPresence({
+      params: { schoolId },
+      query: { viewDate },
     });
-
-    if (!res.ok) {
-      throw new APIError('Failed to fetch staff presence', res.status.toString());
-    }
-
-    return (await res.json()) as StaffPresenceSummary;
   },
 
   async getTeacherCarousel(schoolId: string, viewDate?: string): Promise<TeacherCarouselItem[]> {
-    const res = await (client.api as any).admin.schools[':schoolId']['teacher-carousel'].$get({
-      param: { schoolId },
-      query: { viewDate: viewDate ?? undefined },
+    return orpcClient.admin.getTeacherCarousel({
+      params: { schoolId },
+      query: { viewDate },
     });
-
-    if (!res.ok) {
-      throw new APIError('Failed to fetch teacher carousel', res.status.toString());
-    }
-
-    return (await res.json()) as TeacherCarouselItem[];
   },
 
   async submitLeaveRequest(
@@ -87,49 +72,30 @@ export const staffManagementAPI = {
     endDate: string,
     reason?: string,
   ): Promise<boolean> {
-    const res = await (client.api as any).admin.leaves.$post({
-      json: {
+    const result = await orpcClient.admin.submitLeave({
+      body: {
         schoolId,
-        userId,
         leaveType,
         startDate,
         endDate,
         reason,
       },
     });
-
-    if (!res.ok) {
-      throw new APIError('Failed to submit leave request', res.status.toString());
-    }
-
-    const data = (await res.json()) as any;
-    return data.success;
+    void userId;
+    return result.success;
   },
 
   async getPendingLeaves(schoolId: string): Promise<StaffLeaveDTO[]> {
-    const res = await (client.api as any).admin.schools[':schoolId']['pending-leaves'].$get({
-      param: { schoolId },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to fetch pending leaves', res.status.toString());
-    }
-
-    return (await res.json()) as StaffLeaveDTO[];
+    return orpcClient.admin.getPendingLeaves({ params: { schoolId } }) as Promise<StaffLeaveDTO[]>;
   },
 
   async approveLeave(leaveId: string, reviewedBy: string, approved: boolean): Promise<boolean> {
-    const res = await (client.api as any).admin.leaves[':leaveId'].approve.$post({
-      param: { leaveId },
-      json: { reviewedBy, approved },
+    const result = await orpcClient.admin.approveLeave({
+      params: { leaveId },
+      body: { reviewedBy, approved },
     });
-
-    if (!res.ok) {
-      throw new APIError('Failed to update leave status', res.status.toString());
-    }
-
-    const data = (await res.json()) as any;
-    return data.success;
+    void reviewedBy;
+    return result.success;
   },
 
   async getUpcomingCalendarEvents(
@@ -137,19 +103,10 @@ export const staffManagementAPI = {
     limit?: number,
     viewDate?: string,
   ): Promise<CalendarEvent[]> {
-    const res = await (client.api as any).admin.schools[':schoolId']['calendar-events'].$get({
-      param: { schoolId },
-      query: {
-        limit: limit !== undefined ? limit.toString() : undefined,
-        viewDate: viewDate ?? undefined,
-      },
-    });
-
-    if (!res.ok) {
-      throw new APIError('Failed to fetch calendar events', res.status.toString());
-    }
-
-    return (await res.json()) as CalendarEvent[];
+    return orpcClient.admin.getUpcomingCalendarEvents({
+      params: { schoolId },
+      query: { limit, viewDate },
+    }) as Promise<CalendarEvent[]>;
   },
 
   async createCalendarEvent(
@@ -163,16 +120,11 @@ export const staffManagementAPI = {
       is_public?: boolean;
     },
   ): Promise<boolean> {
-    const res = await (client.api as any).admin.schools[':schoolId']['calendar-events'].$post({
-      param: { schoolId },
-      json: { principalId, event },
+    const result = await orpcClient.admin.createCalendarEvent({
+      params: { schoolId },
+      body: { principalId, event },
     });
-
-    if (!res.ok) {
-      throw new APIError('Failed to create calendar event', res.status.toString());
-    }
-
-    const data = (await res.json()) as any;
-    return data.success;
+    void principalId;
+    return result.success;
   },
 };

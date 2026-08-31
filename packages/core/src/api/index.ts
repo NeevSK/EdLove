@@ -85,6 +85,7 @@ export * from '@repo/core/api/contracts';
 export * from '@repo/core/api/decisionJournal.contract';
 export * from '@repo/core/api/durableAgents.contract';
 export * from '@repo/core/api/educational.contract';
+export * from '@repo/core/api/editorial.contract';
 export * from '@repo/core/api/erp';
 export * from '@repo/core/api/erp.contract';
 export * from '@repo/core/api/forms.contract';

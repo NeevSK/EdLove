@@ -15,6 +15,7 @@ describe('product analytics contract', () => {
       'feature_opened',
       'feature_action_completed',
       'feature_action_failed',
+      'efficiency_policy_decision',
     ]);
   });
 
