@@ -1,0 +1,266 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CinematicBackground from '../components/CinematicBackground.astro';
+import ProvenanceColophon from '../components/ProvenanceColophon.astro';
+import { absoluteUrl } from '../lib/site';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'Our Focus | EdLove',
+  description:
+    'Explore EdLove’s core focus areas: Philosophy of Education, EdTech & Digital Sanctuaries, Education Research, Education Interventions, and Donations & Educational Support.',
+  url: absoluteUrl('/focus'),
+};
+
+const focusPillars = [
+  {
+    id: 'philosophy',
+    number: '01',
+    badge: 'Epistemic Foundation',
+    title: 'Philosophy of Education',
+    subtitle: 'Education as Care, Sovereignty, and Relational Resonance',
+    icon: '🌱',
+    summary:
+      'We challenge the industrialized paradigm of education as a commodity. Learning is fundamentally relational care work that honors the dignity of teachers and sovereignty of learners.',
+    keyPoints: [
+      'Moving from the factory model of standardization to the organic model of the sanctuary.',
+      'Integrating contemplative traditions, decolonial pedagogy, and ecological consciousness.',
+      'The concept of "Teaning": dissolving the binary of teaching and learning into shared flow.',
+    ],
+    actionLink: {
+      text: 'Explore the Epistemic Core & Library',
+      href: '/library',
+    },
+  },
+  {
+    id: 'edtech',
+    number: '02',
+    badge: 'Soulful Technology',
+    title: 'EdTech & Digital Sanctuaries',
+    subtitle: 'Calm, Non-Extractive Tools Built for Human Dignity',
+    icon: '✨',
+    summary:
+      'Most educational technology is designed for surveillance, gamification, and compliance. We build digital sanctuaries designed for stillness, craft, and empowerment.',
+    keyPoints: [
+      'Gurudevi: A dedicated mobile sanctuary built specifically for Sri Lankan educators.',
+      'Zero-surveillance, offline-first architectures prioritizing learner privacy and peace of mind.',
+      'High-aesthetic, tactile user experiences that treat technology as a sacred instrument rather than an addictive feed.',
+    ],
+    actionLink: {
+      text: 'Discover Gurudevi Mobile',
+      href: '/gurudevi',
+    },
+  },
+  {
+    id: 'research',
+    number: '03',
+    badge: 'Ground Diagnostics',
+    title: 'Education Research',
+    subtitle: 'Rigorous Field Studies & Unveiling Structural Realities',
+    icon: '🔍',
+    summary:
+      'Meaningful transformation begins with honest diagnostics. We conduct deep-dive research into ground realities, resource disparities, and systemic friction points.',
+    keyPoints: [
+      'The Sri Lanka Dual-System Diagnostic: Mapping the split between official schooling and the Rs. 210Bn shadow tuition economy.',
+      'Teacher workload, compensation structures, and professional well-being studies.',
+      'Open-source datasets, policy briefs, and pattern-language analyses for public benefit.',
+    ],
+    actionLink: {
+      text: 'Read the Sri Lanka Diagnostic',
+      href: '/sri-lanka',
+    },
+  },
+  {
+    id: 'interventions',
+    number: '04',
+    badge: 'Transformative Practice',
+    title: 'Education Interventions',
+    subtitle: 'Field-Tested Pedagogical Labs & Community Spaces',
+    icon: '⚡',
+    summary:
+      'Theory without action remains academic. We design, test, and incubate ground interventions that pilot new learning models in real-world classrooms and communities.',
+    keyPoints: [
+      'Decentralized learning circles and teacher sanghas fostering peer support.',
+      'Micro-grants and localized pedagogical experiments adapted to regional needs.',
+      'Curriculum prototypes bridging formal national curricula with holistic life capabilities.',
+    ],
+    actionLink: {
+      text: 'Join The Sangha Community',
+      href: '/community',
+    },
+  },
+  {
+    id: 'support',
+    number: '05',
+    badge: 'Care Flow & Capital',
+    title: 'Donations & Education Support',
+    subtitle: 'Direct-to-Need Resource Flow Without Administrative Waste',
+    icon: '🤝',
+    summary:
+      'Resources should flow directly to where learning happens. We provide transparent channels for sustaining teachers, outfitting underserved classrooms, and nurturing grassroots educational projects.',
+    keyPoints: [
+      'Direct teacher sustenance programs helping educators focus on their vocation with dignity.',
+      'Classroom materials, books, and essential infrastructure for provincial & estate schools.',
+      '100% transparent tracking of all donor contributions with zero corporate rent-seeking.',
+    ],
+    actionLink: {
+      text: 'Explore Resource Flows & Support',
+      href: '/resources',
+    },
+  },
+];
+---
+
+<Layout
+  title="Our Focus | EdLove"
+  description="Discover EdLove's core focus: Philosophy of Education, EdTech, Education Research, Field Interventions, and Donations & Educational Support."
+  structuredData={structuredData}
+>
+  <CinematicBackground />
+
+  <div class="relative z-10 pb-32 sanctuary-container" style="padding-top: var(--spacing-nav-height);">
+    <!-- Header: Overview of Focus -->
+    <section class="text-center space-y-8 mb-24 animate-fade-in-up">
+      <div class="space-y-4">
+        <span class="font-heading text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--color-gold)] opacity-80">
+          Domains of Action & Inquiry
+        </span>
+        <h1 class="text-5xl md:text-7xl lg:text-8xl font-heading font-bold text-[var(--color-midnightInk)] leading-none tracking-tight">
+          Our Focus
+        </h1>
+      </div>
+
+      <div class="h-px w-24 bg-[var(--color-gold)]/40 mx-auto"></div>
+
+      <p class="font-body text-xl md:text-2xl text-[var(--color-midnightInk)]/60 max-w-3xl mx-auto leading-relaxed italic">
+        "Transforming education requires more than incremental fixes. It requires an epistemic foundation, soulful technology, unvarnished research, living interventions, and compassionate resource flows."
+      </p>
+
+      <!-- Upfront Epistemic Provenance -->
+      <div class="mt-8">
+        <ProvenanceColophon
+          cadence="living-document"
+          author="Naveen"
+          createdDate={new Date('2026-09-01')}
+          updatedDate={new Date('2026-09-02')}
+          version="v1.2"
+          canonicalUrl="https://edlove.org/focus"
+          readingTime={4}
+          customNote="Core operational and philanthropic focus domains of EdLove. Reviewed and refined as partnerships expand."
+        />
+      </div>
+    </section>
+
+    <!-- Quick Navigation Matrix -->
+    <section class="max-w-5xl mx-auto mb-20 animate-fade-in-up">
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        {focusPillars.map((pillar) => (
+          <a
+            href={`#${pillar.id}`}
+            class="group p-4 rounded-2xl bg-white/40 hover:bg-white/90 border border-black/5 hover:border-[var(--color-gold)]/50 transition-all duration-300 flex flex-col justify-between shadow-xs hover:shadow-md"
+          >
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-2xl group-hover:scale-110 transition-transform duration-300">{pillar.icon}</span>
+              <span class="font-mono text-[10px] font-bold text-[var(--color-gold)]">{pillar.number}</span>
+            </div>
+            <span class="font-heading text-xs font-bold text-[var(--color-midnightInk)] group-hover:text-[var(--color-gold)] transition-colors leading-snug">
+              {pillar.title}
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Detailed Focus Pillars -->
+    <section class="max-w-4xl mx-auto space-y-16 mb-32">
+      {focusPillars.map((pillar) => (
+        <article
+          id={pillar.id}
+          class="scroll-mt-32 p-8 md:p-12 rounded-3xl bg-white/60 backdrop-blur-md border border-black/5 hover:border-[var(--color-gold)]/30 transition-all duration-500 shadow-sm hover:shadow-xl space-y-8"
+        >
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-black/5 pb-6">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 rounded-2xl bg-[var(--color-gold)]/10 border border-[var(--color-gold)]/20 flex items-center justify-center text-3xl">
+                {pillar.icon}
+              </div>
+              <div>
+                <span class="font-mono text-[10px] uppercase tracking-widest font-bold text-[var(--color-gold)]">
+                  Pillar {pillar.number} • {pillar.badge}
+                </span>
+                <h2 class="font-heading text-2xl md:text-3xl font-bold text-[var(--color-midnightInk)]">
+                  {pillar.title}
+                </h2>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <h3 class="font-heading text-lg font-semibold text-[var(--color-midnightInk)]/80 italic">
+              {pillar.subtitle}
+            </h3>
+            <p class="font-body text-lg text-[var(--color-midnightInk)]/70 leading-relaxed">
+              {pillar.summary}
+            </p>
+          </div>
+
+          <div class="space-y-3 pt-2">
+            <h4 class="font-heading text-xs uppercase tracking-[0.2em] font-bold text-[var(--color-midnightInk)]/50">
+              Core Dimensions
+            </h4>
+            <ul class="space-y-2.5">
+              {pillar.keyPoints.map((point) => (
+                <li class="flex items-start gap-3 font-body text-base text-[var(--color-midnightInk)]/75">
+                  <span class="text-[var(--color-gold)] font-bold shrink-0 mt-0.5">✦</span>
+                  <span>{point}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="pt-4 border-t border-black/5 flex items-center justify-between">
+            <a
+              href={pillar.actionLink.href}
+              class="inline-flex items-center gap-2 font-heading text-xs font-bold uppercase tracking-widest text-[var(--color-midnightInk)] hover:text-[var(--color-gold)] transition-colors group"
+            >
+              <span>{pillar.actionLink.text}</span>
+              <span class="group-hover:translate-x-1 transition-transform duration-300">→</span>
+            </a>
+          </div>
+        </article>
+      ))}
+    </section>
+
+    <!-- Bottom Collaboration / Engagement Banner -->
+    <section class="max-w-4xl mx-auto rounded-3xl bg-[var(--color-midnightInk)] text-[var(--color-warmPaper)] p-10 md:p-16 text-center space-y-8 shadow-2xl relative overflow-hidden">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(231,203,22,0.15),transparent_60%)] pointer-events-none"></div>
+      
+      <div class="relative z-10 space-y-4">
+        <span class="font-heading text-xs uppercase tracking-[0.3em] font-bold text-[var(--color-gold)]">
+          Partner With Us
+        </span>
+        <h2 class="text-3xl md:text-5xl font-heading font-bold text-white leading-tight">
+          Let’s Build a Living Education Together
+        </h2>
+        <p class="font-body text-lg text-[var(--color-warmPaper)]/70 max-w-2xl mx-auto leading-relaxed">
+          Whether you are an educator, researcher, technologist, or donor seeking to create systemic impact, we invite you to participate in our mission.
+        </p>
+      </div>
+
+      <div class="relative z-10 flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+        <a
+          href="/community"
+          class="w-full sm:w-auto px-8 py-4 bg-[var(--color-gold)] text-[var(--color-midnightInk)] font-heading text-xs uppercase tracking-widest font-bold rounded-full shadow-lg hover:bg-yellow-400 hover:scale-105 transition-all duration-300"
+        >
+          Join The Sangha
+        </a>
+        <a
+          href="/resources"
+          class="w-full sm:w-auto px-8 py-4 bg-white/10 hover:bg-white/20 text-white border border-white/20 font-heading text-xs uppercase tracking-widest font-bold rounded-full transition-all duration-300"
+        >
+          Explore Support & Resources
+        </a>
+      </div>
+    </section>
+  </div>
+</Layout>

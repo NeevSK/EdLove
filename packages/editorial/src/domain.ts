@@ -111,7 +111,7 @@ export interface EditorialVersion {
   translationStatus: TranslationStatus;
 }
 
-export type DistributionChannel = 'linkedin' | 'medium' | 'substack' | 'meta' | 'rss';
+export type DistributionChannel = 'linkedin' | 'medium' | 'substack' | 'meta' | 'postiz' | 'rss';
 export type DeliveryStatus =
   | 'pending'
   | 'processing'

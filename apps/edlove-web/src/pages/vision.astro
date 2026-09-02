@@ -1,24 +1,34 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import CinematicBackground from '../components/CinematicBackground.astro';
+import ProvenanceColophon from '../components/ProvenanceColophon.astro';
 ---
 
-<Layout title="Our Vision | EdLove">
+<Layout title="Our Vision | EdLove" theme="default">
     <CinematicBackground />
-    <div class="relative z-10 pb-24 sanctuary-container" style="padding-top: var(--spacing-nav-height);">
-        <!-- Header: The unified narrative -->
-        <section class="text-center space-y-8 mb-24 animate-fade-in-up">
-            <div class="space-y-4">
-                <span class="font-heading text-[10px] uppercase tracking-[0.4em] font-bold text-[var(--color-gold)] opacity-60">The EdLove Narrative</span>
-                <h1 class="text-6xl md:text-8xl font-heading font-bold text-[var(--color-midnightInk)] leading-none">Our Vision</h1>
-            </div>
 
-            <div class="h-px w-24 bg-[var(--color-gold)]/30 mx-auto"></div>
-
-            <p class="font-body text-2xl text-[var(--color-midnightInk)]/50 max-w-2xl mx-auto leading-relaxed italic">
-                "Education is not a product to be consumed, but a relationship to be cultivated."
+    <main class="relative z-10 max-w-5xl mx-auto px-6 py-20">
+        <!-- Vision Header -->
+        <header class="text-center mb-16 space-y-4">
+            <h1 class="text-4xl md:text-6xl font-heading font-bold text-[var(--color-midnightInk)]">
+                The Architecture of Educational Sanctuary
+            </h1>
+            <p class="text-lg md:text-xl font-body italic text-[var(--color-midnightInk)]/70 max-w-2xl mx-auto">
+                Reimagining human learning from extraction to ecological resonance.
             </p>
-        </section>
+            <div class="pt-4 max-w-2xl mx-auto text-left">
+                <ProvenanceColophon
+                    cadence="perennial"
+                    author="Naveen"
+                    createdDate={new Date('2026-06-01')}
+                    updatedDate={new Date('2026-09-01')}
+                    version="Canon v1.0"
+                    canonicalUrl="https://edlove.org/vision"
+                    readingTime={5}
+                    customNote="Foundational philosophical canon of EdLove. Anchors the educational sanctuary paradigm."
+                />
+            </div>
+        </header>
 
         <!-- Narrative Flow -->
         <section class="max-w-4xl mx-auto space-y-24 mb-48">

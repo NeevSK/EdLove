@@ -63,7 +63,7 @@ function publicUrl(name: string, fallback: string): string {
 
 export const WEB_LINKS = {
   marketing: SITE_URL,
-  app: publicUrl('PUBLIC_GURUDEVI_APP_URL', 'https://app.gurudevi.edlove.org'),
+  app: publicUrl('PUBLIC_GURUDEVI_APP_URL', 'https://platform.gurudevi.edlove.org'),
   edlove: publicUrl('PUBLIC_EDLOVE_URL', 'https://edlove.org'),
   intuitui: publicUrl('PUBLIC_INTUITUI_URL', 'https://intuituilabs.edlove.org'),
   founder: publicUrl('PUBLIC_FOUNDER_URL', 'https://neevsk.edlove.org'),

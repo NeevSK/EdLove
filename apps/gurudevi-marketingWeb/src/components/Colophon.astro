@@ -1,0 +1,170 @@
+---
+export type ContentCadence = 'perennial' | 'living-document' | 'diagnostic' | 'field-report' | 'archival';
+
+export interface Props {
+  author: string;
+  publishDate: Date | string;
+  updatedDate?: Date | string;
+  cadence?: ContentCadence;
+  version?: string;
+  license?: string;
+  canonicalUrl: string;
+  readingTime?: number;
+  wordCount?: number;
+  customNote?: string;
+  class?: string;
+}
+
+const {
+  author,
+  publishDate,
+  updatedDate,
+  cadence = 'living-document',
+  version = 'v1.0',
+  license = 'CC BY-SA 4.0',
+  canonicalUrl,
+  readingTime = 3,
+  customNote,
+  class: className = '',
+} = Astro.props;
+
+const parsedPublished = publishDate instanceof Date ? publishDate : new Date(publishDate);
+const parsedUpdated = updatedDate ? (updatedDate instanceof Date ? updatedDate : new Date(updatedDate)) : null;
+
+const formattedPublished = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+}).format(parsedPublished);
+
+const formattedUpdated = parsedUpdated
+  ? new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    }).format(parsedUpdated)
+  : null;
+
+const cadenceMap: Record<
+  ContentCadence,
+  { label: string; badge: string; icon: string; explanation: string }
+> = {
+  perennial: {
+    label: 'Foundational Canon',
+    badge: 'bg-sage-green/15 text-sage-green border-sage-green/30',
+    icon: '🏛️',
+    explanation: 'Perennial philosophy & ecological manifesto. Maintained as stable, enduring canon.',
+  },
+  'living-document': {
+    label: 'Living Framework',
+    badge: 'bg-sanctuary-saffron/15 text-sanctuary-saffron border-sanctuary-saffron/30',
+    icon: '🌱',
+    explanation: 'Active sanctuary framework & operational guidance. Reviewed and refined as practice matures.',
+  },
+  diagnostic: {
+    label: 'Empirical Diagnostic',
+    badge: 'bg-peacock-blue/15 text-peacock-blue border-peacock-blue/30',
+    icon: '📊',
+    explanation: 'Time-sensitive field diagnostic assessing ground realities across classrooms.',
+  },
+  'field-report': {
+    label: 'Field Dispatch',
+    badge: 'bg-teal-water/15 text-teal-water border-teal-water/30',
+    icon: '🧭',
+    explanation: 'Classroom reflections and pedagogical field experiments.',
+  },
+  archival: {
+    label: 'Archival Record',
+    badge: 'bg-mud-brown/15 text-mud-brown border-mud-brown/30',
+    icon: '📜',
+    explanation: 'Preserved documentation of previous milestones and versions.',
+  },
+};
+
+const cadenceMeta = cadenceMap[cadence] || cadenceMap['living-document'];
+---
+
+<section class:list={["mt-20 rounded-3xl bg-temple-stone/40 border border-charcoal-truth/15 p-6 sm:p-10 text-charcoal-truth shadow-xs relative overflow-hidden", className]}>
+  <!-- Header Bar -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-charcoal-truth/10 pb-5 mb-8">
+    <div class="flex items-center gap-2.5">
+      <span class="text-lg text-sanctuary-saffron">✦</span>
+      <h3 class="font-content text-xs uppercase tracking-[0.25em] font-bold text-charcoal-truth">
+        Colophon & Editorial Provenance
+      </h3>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class:list={["inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border", cadenceMeta.badge]}>
+        <span>{cadenceMeta.icon}</span>
+        <span>{cadenceMeta.label}</span>
+      </span>
+      <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-charcoal-truth/5 text-charcoal-truth/70">
+        {version}
+      </span>
+    </div>
+  </div>
+
+  <!-- Detailed Rigor Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-xs leading-relaxed font-content">
+    <!-- Col 1: Custody & Authorship -->
+    <div class="space-y-2 border-b md:border-b-0 md:border-r border-charcoal-truth/10 pb-6 md:pb-0 md:pr-6">
+      <span class="block uppercase text-[10px] tracking-widest font-bold text-charcoal-truth/50">
+        Authorship & Stewardship
+      </span>
+      <p class="font-bold text-sm text-charcoal-truth">
+        {author}
+      </p>
+      <p class="text-[11px] text-charcoal-truth/70 leading-normal">
+        Gurudevi Contemplative Educational Sanctuary. Maintained under open community stewardship.
+      </p>
+    </div>
+
+    <!-- Col 2: Epistemic Chronology & Cadence -->
+    <div class="space-y-2 border-b md:border-b-0 md:border-r border-charcoal-truth/10 pb-6 md:pb-0 md:pr-6">
+      <span class="block uppercase text-[10px] tracking-widest font-bold text-charcoal-truth/50">
+        Rigor & Cadence
+      </span>
+      <div class="space-y-1 text-[11px]">
+        <div class="flex justify-between">
+          <span class="text-charcoal-truth/60">First Inscribed:</span>
+          <time datetime={parsedPublished.toISOString()} class="font-medium text-charcoal-truth">{formattedPublished}</time>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-charcoal-truth/60">Last Verified / Updated:</span>
+          <span class="font-medium text-charcoal-truth">{formattedUpdated ?? formattedPublished}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-charcoal-truth/60">Reading Pace:</span>
+          <span class="font-medium text-charcoal-truth">{readingTime} min contemplative pace</span>
+        </div>
+      </div>
+      <p class="text-[10px] text-charcoal-truth/60 italic mt-2 border-t border-charcoal-truth/10 pt-2 font-serif">
+        {customNote ?? cadenceMeta.explanation}
+      </p>
+    </div>
+
+    <!-- Col 3: Archival & License -->
+    <div class="space-y-2">
+      <span class="block uppercase text-[10px] tracking-widest font-bold text-charcoal-truth/50">
+        Open Access & Rights
+      </span>
+      <p class="font-bold text-charcoal-truth">
+        {license}
+      </p>
+      <p class="text-[11px] text-charcoal-truth/70">
+        Open Knowledge License. Free for attribution and non-commercial learning reproduction.
+      </p>
+      <div class="pt-2">
+        <a 
+          href={canonicalUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-1 text-[11px] text-charcoal-truth font-semibold hover:text-sanctuary-saffron underline underline-offset-2"
+        >
+          <span>Canonical Ledger & Source</span>
+          <span class="text-[10px]">↗</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

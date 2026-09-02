@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   createLinkedInAdapter,
   createMemoryDispatchLedger,
+  createPostizAdapter,
   dispatchArticlePublished,
   linkedinAdapter,
 } from './distribution';
@@ -116,6 +117,37 @@ describe('editorial distribution contracts', () => {
     expect(await request?.json()).toMatchObject({
       author: 'urn:li:organization:1',
       lifecycleState: 'PUBLISHED',
+    });
+  });
+
+  it('publishes a post via Postiz REST API contract', async () => {
+    let request: Request | undefined;
+    const adapter = createPostizAdapter({
+      baseUrl: 'https://postiz.example.com',
+      apiKey: 'test-api-key',
+      integrationIds: ['li-1', 'x-1'],
+      fetcher: async (input, init) => {
+        request = new Request(input, init);
+        return new Response(JSON.stringify({ id: 'post-123', url: 'https://postiz.example.com/posts/post-123' }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      },
+    });
+
+    const result = await adapter.publish(
+      createDelivery(event, 'postiz', 'postiz-main', event.occurredAt),
+      adapter.prepare(event, { title: 'Title', text: 'Body' }),
+    );
+
+    expect(result).toEqual({
+      status: 'published',
+      externalUrl: 'https://postiz.example.com/posts/post-123',
+    });
+    expect(request?.headers.get('Authorization')).toBe('Bearer test-api-key');
+    expect(await request?.json()).toMatchObject({
+      providers: ['li-1', 'x-1'],
+      type: 'now',
     });
   });
 });

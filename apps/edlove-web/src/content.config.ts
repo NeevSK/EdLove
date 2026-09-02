@@ -61,6 +61,8 @@ const journal = defineCollection({
       .default('original'),
     authorId: z.string().optional(),
     author: z.string().default('EdLove'),
+    scribe: z.string().default('Antigravity'),
+    scribeNote: z.string().optional(),
     language: z.enum(journalLanguages).default('en'),
     topics: z.array(z.string()).default([]),
     publishDate: z.date(),
@@ -147,6 +149,20 @@ const resources = defineCollection({
   }),
 });
 
+const innovations = defineCollection({
+  loader: glob({ base: './docs/ed-tech-and-world/innovations', pattern: '**/*.md' }),
+  schema: z.object({
+    title: z.string(),
+    status: z.string().default('active'),
+    created: z.coerce.date().optional(),
+    updated: z.coerce.date().optional(),
+    author: z.string().default('Naveen'),
+    scribe: z.string().default('Antigravity'),
+    tags: z.array(z.string()).default([]),
+    draft: z.boolean().default(false),
+  }),
+});
+
 export const collections = {
   cosmos,
   library,
@@ -156,4 +172,5 @@ export const collections = {
   community,
   gurudevi,
   resources,
+  innovations,
 };

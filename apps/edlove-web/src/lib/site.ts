@@ -21,7 +21,7 @@ export const ORGANIZATION = {
   description: SITE_DESCRIPTION,
   email: 'hello@edlove.org',
   foundingDate: '2026',
-  sameAs: [`${SITE_URL}/vision`, `${SITE_URL}/library`, `${SITE_URL}/resources`],
+  sameAs: [`${SITE_URL}/focus`, `${SITE_URL}/vision`, `${SITE_URL}/library`, `${SITE_URL}/resources`],
 };
 
 export function absoluteUrl(pathname: string) {

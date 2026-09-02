@@ -25,6 +25,7 @@ interface Props {
   ogType?: 'website' | 'article';
   theme?: 'cosmic' | 'diagnostic' | 'library' | 'community' | 'gurudevi';
   noindex?: boolean;
+  canonicalUrl?: string;
   structuredData?: Record<string, any> | Array<Record<string, any>>;
   alternateLanguages?: Array<{ lang: string; href: string }>;
 }
@@ -36,11 +37,12 @@ const {
   ogType = 'website',
   theme,
   noindex = false,
+  canonicalUrl: customCanonicalUrl,
   structuredData = [],
   alternateLanguages = [],
 } = Astro.props;
 
-const canonical = canonicalUrl(Astro.url.pathname);
+const canonical = customCanonicalUrl ?? canonicalUrl(Astro.url.pathname);
 const ogImage = image ?? defaultOgImage(Astro.url.pathname);
 const locale = Astro.currentLocale ?? 'en';
 const robotsContent = noindex ? 'noindex, nofollow' : 'index, follow';

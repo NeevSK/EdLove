@@ -16,6 +16,8 @@ const journal = defineCollection({
       .default('original'),
     authorId: z.string().optional(),
     author: z.string().default('Gurudevi'),
+    scribe: z.string().default('Antigravity'),
+    scribeNote: z.string().optional(),
     language: z.enum(journalLanguages).default('en'),
     topics: z.array(z.string()).default([]),
     publishDate: z.date(),

@@ -1,0 +1,71 @@
+---
+import type { ContentKind } from '@repo/editorial';
+
+interface Props {
+  sourcePublication?: string;
+  sourceUrl?: string;
+  contentKind?: ContentKind;
+  pedagogicalNote?: string;
+  author?: string;
+}
+
+const {
+  sourcePublication = 'EdLove Ecosystem',
+  sourceUrl,
+  contentKind = 'curated',
+  pedagogicalNote,
+  author,
+} = Astro.props;
+---
+
+<div class="my-8 rounded-2xl border border-sanctuary-saffron/30 bg-sanctuary-sand/40 p-6 backdrop-blur-sm transition-all duration-300 hover:border-sanctuary-saffron/60">
+  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-charcoal-truth/10 pb-4">
+    <div class="flex items-center gap-2">
+      <span class="inline-flex h-2.5 w-2.5 rounded-full bg-sanctuary-saffron animate-pulse"></span>
+      <span class="text-xs font-mono font-bold uppercase tracking-wider text-sanctuary-saffron">
+        Cross-Platform Curation • {contentKind.toUpperCase()}
+      </span>
+    </div>
+    {sourceUrl && (
+      <a
+        href={sourceUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-1 text-xs font-medium text-sanctuary-saffron hover:underline"
+      >
+        <span>Original Source</span>
+        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+          <polyline points="15 3 21 3 21 9" />
+          <line x1="10" y1="14" x2="21" y2="3" />
+        </svg>
+      </a>
+    )}
+  </div>
+
+  {pedagogicalNote && (
+    <div class="mt-4 text-sm leading-relaxed text-charcoal-truth/90 font-serif italic">
+      <strong class="font-sans font-semibold not-italic text-charcoal-truth block mb-1">
+        Why This Matters For Educators & Schools:
+      </strong>
+      "{pedagogicalNote}"
+    </div>
+  )}
+
+  <div class="mt-4 flex flex-wrap items-center justify-between gap-4 pt-2 text-xs text-charcoal-truth/70">
+    <div>
+      Published originally by <strong class="text-charcoal-truth">{sourcePublication}</strong>
+      {author && ` • Author: ${author}`}
+    </div>
+    {sourceUrl && (
+      <a
+        href={sourceUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-1.5 rounded-lg bg-sanctuary-saffron/10 px-3 py-1.5 font-medium text-sanctuary-saffron hover:bg-sanctuary-saffron/20 transition-colors"
+      >
+        Read Full Dossier on {sourcePublication} →
+      </a>
+    )}
+  </div>
+</div>

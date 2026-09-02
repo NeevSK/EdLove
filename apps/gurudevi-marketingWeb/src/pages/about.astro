@@ -1,10 +1,27 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ProvenanceColophon from '../components/ProvenanceColophon.astro';
 ---
 
 <Layout title="The Ecology">
   <Header />
   <main>
-    <section class="page-intro"><p class="eyebrow">The ecology</p><h1>Learning does not happen in isolation.</h1><p>Gurudevi is a sanctuary and education ecology support system for Sri Lanka—a connected way to support the relationships that make learning possible.</p></section>
+    <section class="page-intro">
+      <p class="eyebrow">The ecology</p>
+      <h1>Learning does not happen in isolation.</h1>
+      <p>Gurudevi is a sanctuary and education ecology support system for Sri Lanka—a connected way to support the relationships that make learning possible.</p>
+      <div class="pt-6 max-w-3xl mx-auto">
+        <ProvenanceColophon
+          cadence="perennial"
+          author="Gurudevi Epistemic Core"
+          createdDate={new Date('2026-08-01')}
+          version="Canonical Ecology"
+          customNote="Foundational ecology manifesto defining the philosophy of Teaning and sovereign educational spaces."
+        />
+      </div>
+    </section>
     <section class="section prose-section"><div><p class="eyebrow">A useful word</p></div><div><h2>Teaning is where teaching and learning meet.</h2><p>We use “teaning” to name the living relationship between the person who teaches, the person who learns, and the conditions around them. Technology should make that relationship easier to support—not harder to inhabit.</p><p>That is why Gurudevi is not only an LMS, not only a wellbeing app, and not only a school administration tool. It is a set of connected spaces with different views for the people inside the ecology.</p></div></section>
     <section class="section section--dark about-principles"><div class="section__heading section__heading--dark"><div><p class="eyebrow">What guides us</p><h2>One ecology. Many centers of practice.</h2></div><p>Shared reality does not require identical access. Good systems can coordinate and still leave room for privacy, agency, and care.</p></div><div class="principle-list"><div><span>01</span><h3>Support before extraction</h3><p>Every feature should return more energy than it takes from the people using it.</p></div><div><span>02</span><h3>Different views, shared dignity</h3><p>Teachers, students, leaders, and families need different tools—not different worth.</p></div><div><span>03</span><h3>Human review stays human</h3><p>Automation may help notice patterns, but it does not replace judgment, relationship, or consent.</p></div></div></section>
     <section class="section prose-section"><div><p class="eyebrow">A practical promise</p></div><div><h2>Built to make the next good action easier to see.</h2><p>Gurudevi brings together the everyday work of a classroom, the coordination of a school, the agency of a learner, and the support of a family. The aim is simple: less friction around learning, more attention for learning itself.</p><a class="text-link" href="/#launch">Follow the October 6 launch ↗</a></div></section>

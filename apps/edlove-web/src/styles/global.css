@@ -122,6 +122,36 @@ p {
   margin-bottom: var(--space-3);
 }
 
+/* Editorial Sanctuary Typography */
+.prose-drop-cap > p:first-of-type::first-letter {
+  font-family: var(--font-body);
+  font-size: 3.75rem;
+  line-height: 0.85;
+  float: left;
+  margin-top: 0.15em;
+  margin-right: 0.15em;
+  margin-bottom: -0.1em;
+  font-weight: 700;
+  color: var(--color-midnightInk);
+}
+
+.prose hr {
+  border: 0;
+  text-align: center;
+  margin: 3.5rem 0;
+  position: relative;
+}
+
+.prose hr::before {
+  content: "✦  ·  ✦  ·  ✦";
+  font-family: var(--font-heading);
+  letter-spacing: 0.4em;
+  font-size: 0.875rem;
+  color: var(--color-gold);
+  opacity: 0.8;
+  display: inline-block;
+}
+
 /* Contextual States (added to parent container or body) */
 
 /* Cosmic Context */

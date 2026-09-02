@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import CinematicBackground from '../../components/CinematicBackground.astro';
 import ExpandableContent from '../../components/ExpandableContent.astro';
+import ProvenanceColophon from '../../components/ProvenanceColophon.astro';
 
 const gurudeviEntries = await getCollection('gurudevi', ({ data }) => !data.draft);
 gurudeviEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
@@ -29,6 +30,19 @@ gurudeviEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
             <p class="font-body text-xl text-[var(--color-midnightInk)]/50 max-w-2xl mx-auto leading-relaxed">
                 A digital sanctuary built solely for the dignity and sovereignty of Sri Lankan teachers.
             </p>
+
+            <div class="pt-4">
+                <ProvenanceColophon
+                    cadence="living-document"
+                    author="Naveen"
+                    createdDate={new Date('2026-08-01')}
+                    updatedDate={new Date('2026-09-01')}
+                    version="Sanctuary Protocol v1.0"
+                    canonicalUrl="https://edlove.org/gurudevi"
+                    readingTime={3}
+                    customNote="Integration bridge between EdLove educational philosophy and the Gurudevi teacher ecosystem."
+                />
+            </div>
 
             <!-- Primary CTA -->
             <div class="pt-6 animate-fade-in-up delay-300">

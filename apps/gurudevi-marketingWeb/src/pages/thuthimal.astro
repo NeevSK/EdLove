@@ -1,21 +1,39 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ProvenanceColophon from '../components/ProvenanceColophon.astro';
+import GratitudeGarden from '../components/GratitudeGarden.svelte';
 import { CONTACT_EMAILS } from '../lib/site';
 ---
 
-<Layout title="Thuthimal (තුතිමල්)">
+<Layout title="Thuthimal (තුතිමල්) | Reciprocal Care for Teachers">
 	<Header />
 	
 	<main class="page-shell">
 		<div class="prose-section">
 			<div class="page-intro">
-				<p class="eyebrow">A flower of gratitude</p>
+				<p class="eyebrow text-sanctuary-saffron">Reciprocal Care Economy</p>
 				<div class="thuthimal-mark">
 					<svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.168.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18 18.246 18.477 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
 					</svg>
 				</div>
 				<h1>Thuthimal (තුතිමල්)</h1>
-				<p class="lede">The Flower of Gratitude</p>
+				<p class="lede">A gift economy protocol enabling students, alumni, and communities to sponsor sovereign tools for teachers.</p>
+
+				<div class="pt-4 max-w-2xl mx-auto">
+					<ProvenanceColophon
+						cadence="living-document"
+						author="Naveen"
+						createdDate={new Date('2026-07-01')}
+						updatedDate={new Date('2026-09-01')}
+						version="Alpha Protocol v1.0"
+						canonicalUrl="https://gurudevi.edlove.org/thuthimal"
+						readingTime={3}
+						customNote="Living specification defining the Thuthimal reciprocal patronage protocol for Sri Lankan teachers."
+					/>
+				</div>
 			</div>
 
 			<section class="prose-card">
@@ -44,6 +62,9 @@ import { CONTACT_EMAILS } from '../lib/site';
 					</p>
 				</div>
 			</section>
+
+			<!-- Interactive Thuthimal Gratitude Garden Island -->
+			<GratitudeGarden client:visible />
 
 			<section class="contact-strip">
 				<h2>Become a part of the economy</h2>

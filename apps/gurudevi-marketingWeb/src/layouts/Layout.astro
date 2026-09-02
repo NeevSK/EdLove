@@ -21,6 +21,7 @@ interface Props {
   image?: string;
   ogType?: 'website' | 'article';
   noindex?: boolean;
+  canonicalUrl?: string;
   structuredData?: Record<string, any> | Array<Record<string, any>>;
   alternateLanguages?: Array<{ lang: string; href: string }>;
 }
@@ -31,11 +32,12 @@ const {
   image,
   ogType = 'website',
   noindex = false,
+  canonicalUrl: customCanonicalUrl,
   structuredData = [],
   alternateLanguages = [],
 } = Astro.props;
 
-const canonical = canonicalUrl(Astro.url.pathname);
+const canonical = customCanonicalUrl ?? canonicalUrl(Astro.url.pathname);
 const ogImage = image ?? defaultOgImage(Astro.url.pathname);
 const robotsContent = noindex ? 'noindex, nofollow' : 'index, follow';
 const baseStructuredData = [

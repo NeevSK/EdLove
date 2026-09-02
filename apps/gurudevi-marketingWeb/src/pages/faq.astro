@@ -1,5 +1,10 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ProvenanceColophon from '../components/ProvenanceColophon.astro';
 import { CONTACT_EMAILS, WEB_LINKS } from '../lib/site';
+
 const questions = [
   ['What is Gurudevi?', 'Gurudevi is an education ecology support system for teachers, students, schools, families, and communities. It brings practical work and respectful support into connected spaces.'],
   ['Who is it for?', 'Teachers are our first design beneficiary, but the ecology includes students, principals and school leaders, families, and community partners.'],
@@ -12,5 +17,24 @@ const questions = [
 
 <Layout title="Questions">
   <Header />
-  <main><section class="page-intro"><p class="eyebrow">Questions</p><h1>Clear answers for a living system.</h1><p>We are early, so we will be direct about what Gurudevi is, what it is not, and where the work is heading.</p></section><section class="section faq-list">{questions.map(([question, answer]) => <details><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</section><section class="section contact-strip"><div><p class="eyebrow">Still wondering?</p><h2>Ask a human.</h2></div><div><p>We welcome practical questions from teachers, families, and school leaders.</p><a class="button button--dark" href={`mailto:${CONTACT_EMAILS.support}`}>Contact support ↗</a></div></section></main><Footer />
+  <main>
+    <section class="page-intro">
+      <p class="eyebrow">Questions</p>
+      <h1>Clear answers for a living system.</h1>
+      <p>We are early, so we will be direct about what Gurudevi is, what it is not, and where the work is heading.</p>
+      <div class="pt-6 max-w-3xl mx-auto">
+        <ProvenanceColophon
+          cadence="living-document"
+          author="Gurudevi Institutional Communications"
+          createdDate="2026-08-01"
+          updatedDate="2026-08-28"
+          version="v1.1"
+          customNote="Living FAQ updated periodically as new school inquiries and community feedback arrive."
+        />
+      </div>
+    </section>
+    <section class="section faq-list">{questions.map(([question, answer]) => <details><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</section>
+    <section class="section contact-strip"><div><p class="eyebrow">Still wondering?</p><h2>Ask a human.</h2></div><div><p>We welcome practical questions from teachers, families, and school leaders.</p><a class="button button--dark" href={`mailto:${CONTACT_EMAILS.support}`}>Contact support ↗</a></div></section>
+  </main>
+  <Footer />
 </Layout>

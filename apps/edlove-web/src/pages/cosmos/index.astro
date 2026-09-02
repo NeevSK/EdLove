@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import CosmicParticles from '../../components/CosmicParticles.astro';
 import ExpandableContent from '../../components/ExpandableContent.astro';
+import ProvenanceColophon from '../../components/ProvenanceColophon.astro';
 
 const cosmosEntries = await getCollection('cosmos', ({ data }) => !data.draft);
 cosmosEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
@@ -24,6 +25,16 @@ cosmosEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
             <p class="font-body text-xl md:text-2xl text-white/60 max-w-2xl mx-auto leading-relaxed italic">
                 "We map the constellations of how learning happens. From the factory floor to the forest floor."
             </p>
+
+            <div class="pt-4">
+                <ProvenanceColophon
+                    cadence="perennial"
+                    author="EdLove Philosophy & History Working Group"
+                    createdDate={new Date('2026-08-01')}
+                    version="Canonical Map"
+                    customNote="Perennial philosophy. Maps historical educational paradigms from antiquity to the future of cognition."
+                />
+            </div>
         </section>
 
         <!-- Journey Flow: The Timeline -->

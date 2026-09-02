@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import { absoluteUrl } from '../../lib/site';
 import Layout from '../../layouts/Layout.astro';
 import ExpandableContent from '../../components/ExpandableContent.astro';
+import ProvenanceColophon from '../../components/ProvenanceColophon.astro';
 
 const resourceEntries = await getCollection('resources', ({ data }) => !data.draft);
 resourceEntries.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
@@ -45,6 +46,19 @@ const structuredData = {
             <p class="font-body text-xl md:text-2xl text-slate-500 max-w-2xl mx-auto leading-relaxed italic">
                 "Resource flow determines reality. We propose a direct inversion: resources flow to where they are needed most."
             </p>
+
+            <div class="pt-4">
+                <ProvenanceColophon
+                    cadence="living-document"
+                    author="Naveen"
+                    createdDate={new Date('2026-08-01')}
+                    updatedDate={new Date('2026-09-01')}
+                    version="Resource Registry v1.2"
+                    canonicalUrl="https://edlove.org/resources"
+                    readingTime={3}
+                    customNote="Living resource catalogue. Curated open-source pedagogical tools and frameworks."
+                />
+            </div>
         </section>
 
         <!-- The Global Gallery Feature -->

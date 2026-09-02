@@ -1,52 +1,62 @@
 <script lang="ts">
-import { type FormConfig, FormManager } from '@repo/core/forms/form-manager';
-import { validators } from '@repo/core/utils/validators';
 import { CONTACT_EMAILS } from '../lib/site';
 
 const formAction = import.meta.env.PUBLIC_SUPPORT_FORM_ACTION as string | undefined;
 const SUPPORT_EMAIL = CONTACT_EMAILS.support;
 
-const config: FormConfig<{
-  issueType: 'support' | 'bug' | 'feature' | 'feedback';
-  name: string;
-  email: string;
-  message: string;
-}> = {
-  fields: {
-    issueType: {
-      label: 'Type',
-      type: 'select',
-      defaultValue: 'support',
-      options: [
-        { value: 'support', label: 'Support' },
-        { value: 'bug', label: 'Bug Report' },
-        { value: 'feature', label: 'Feature Request' },
-        { value: 'feedback', label: 'Feedback' },
-      ],
-    },
-    name: { label: 'Name', type: 'text', defaultValue: '' },
-    email: {
-      label: 'Email',
-      type: 'email',
-      defaultValue: '',
-      validators: [validators.email],
-    },
-    message: {
-      label: 'Message',
-      type: 'textarea',
-      defaultValue: '',
-      required: true,
-    },
-  },
-  onSubmit: async (values) => {
-    if (!formAction) return;
+type IssueType = 'support' | 'bug' | 'feature' | 'feedback';
 
+const issueTypeOptions: { value: IssueType; label: string }[] = [
+  { value: 'support', label: 'Support' },
+  { value: 'bug', label: 'Bug Report' },
+  { value: 'feature', label: 'Feature Request' },
+  { value: 'feedback', label: 'Feedback' },
+];
+
+let issueType = $state<IssueType>('support');
+let name = $state('');
+let email = $state('');
+let message = $state('');
+
+let errors = $state<{ email?: string; message?: string }>({});
+let isSubmitting = $state(false);
+let submitSuccess = $state(false);
+let submitError = $state<string | null>(null);
+
+function validateEmail(val: string): boolean {
+  if (!val) return true; // optional
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(val);
+}
+
+function validate(): boolean {
+  const newErrors: { email?: string; message?: string } = {};
+  if (email && !validateEmail(email)) {
+    newErrors.email = 'Invalid email format';
+  }
+  if (!message.trim()) {
+    newErrors.message = 'Message is required';
+  }
+  errors = newErrors;
+  return Object.keys(newErrors).length === 0;
+}
+
+async function handleSubmit(e: SubmitEvent) {
+  e.preventDefault();
+  submitError = null;
+  submitSuccess = false;
+
+  if (!validate()) return;
+  if (!formAction) return;
+
+  isSubmitting = true;
+  try {
     const formData = new FormData();
     formData.set('source', 'gurudevi-web');
-    formData.set('type', values.issueType);
-    formData.set('name', values.name);
-    formData.set('email', values.email);
-    formData.set('message', values.message);
+    formData.set('type', issueType);
+    formData.set('name', name);
+    formData.set('email', email);
+    formData.set('message', message);
     formData.set('page', window.location.href);
     formData.set('ts', new Date().toISOString());
 
@@ -57,18 +67,19 @@ const config: FormConfig<{
     });
 
     if (!res.ok) throw new Error(`Request failed (${res.status})`);
-  },
-};
 
-const manager = new FormManager(config);
-let state = $state(manager.getState());
+    submitSuccess = true;
+    name = '';
+    email = '';
+    message = '';
+  } catch (err: any) {
+    submitError = err.message || 'Something went wrong. Please use email instead.';
+  } finally {
+    isSubmitting = false;
+  }
+}
 
-manager.subscribe((s) => {
-  state = s;
-});
-
-function _mailtoHref() {
-  const { issueType, name, email, message } = state.values;
+function mailtoHref() {
   const subject = `Gurudevi (${issueType})`;
   const body = [
     `Type: ${issueType}`,
@@ -100,18 +111,17 @@ function _mailtoHref() {
   {:else}
     <form
       class="space-y-6"
-      onsubmit={(e) => { e.preventDefault(); manager.submit(); }}
+      onsubmit={handleSubmit}
     >
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <label class="space-y-2">
           <div class="text-sm font-semibold text-mud-brown">Type</div>
           <select
             class="w-full rounded-2xl border border-mud-brown/20 bg-temple-stone/30 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sanctuary-saffron/40"
-            bind:value={state.values.issueType}
-            onchange={() => manager.validateField('issueType')}
+            bind:value={issueType}
             aria-label="Issue type"
           >
-            {#each config.fields.issueType.options as t}
+            {#each issueTypeOptions as t}
               <option value={t.value}>{t.label}</option>
             {/each}
           </select>
@@ -122,8 +132,7 @@ function _mailtoHref() {
           <input
             class="w-full rounded-2xl border border-mud-brown/20 bg-temple-stone/30 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sanctuary-saffron/40 ph-no-capture"
             type="text"
-            bind:value={state.values.name}
-            onblur={() => manager.validateField('name')}
+            bind:value={name}
             autocomplete="name"
           />
         </label>
@@ -133,13 +142,12 @@ function _mailtoHref() {
           <input
             class="w-full rounded-2xl border border-mud-brown/20 bg-temple-stone/30 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sanctuary-saffron/40 ph-no-capture"
             type="email"
-            bind:value={state.values.email}
-            onblur={() => manager.validateField('email')}
+            bind:value={email}
             autocomplete="email"
             inputmode="email"
           />
-          {#if state.errors.email}
-            <p class="text-xs text-ember-red mt-1">{state.errors.email}</p>
+          {#if errors.email}
+            <p class="text-xs text-ember-red mt-1">{errors.email}</p>
           {/if}
         </label>
       </div>
@@ -148,14 +156,13 @@ function _mailtoHref() {
         <div class="text-sm font-semibold text-mud-brown">Message</div>
         <textarea
           class="w-full min-h-40 rounded-3xl border border-mud-brown/20 bg-temple-stone/30 px-5 py-4 focus:outline-none focus:ring-2 focus:ring-sanctuary-saffron/40"
-          bind:value={state.values.message}
-          onblur={() => manager.validateField('message')}
+          bind:value={message}
           required
           aria-label="Message"
           placeholder="Tell us what’s happening (and what you hoped would happen)."
         ></textarea>
-        {#if state.errors.message}
-          <p class="text-xs text-ember-red mt-1">{state.errors.message}</p>
+        {#if errors.message}
+          <p class="text-xs text-ember-red mt-1">{errors.message}</p>
         {/if}
       </label>
 
@@ -163,9 +170,9 @@ function _mailtoHref() {
         <button
           type="submit"
           class="px-10 py-4 bg-void-indigo text-sacred-white rounded-full font-bold shadow-xl hover:bg-peacock-blue transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={state.isSubmitting}
+          disabled={isSubmitting}
         >
-          {state.isSubmitting ? "Sending…" : "Send"}
+          {isSubmitting ? "Sending…" : "Send"}
         </button>
 
         <a class="text-sm text-mud-brown/70 hover:text-mud-brown transition-colors" href={mailtoHref()}>
@@ -173,15 +180,15 @@ function _mailtoHref() {
         </a>
       </div>
 
-      {#if state.submitSuccess}
+      {#if submitSuccess}
         <div class="mt-4 rounded-2xl bg-sage-green/10 border border-sage-green/20 p-4 text-sage-green font-semibold">
           Received. We’ll respond as soon as we can.
         </div>
       {/if}
 
-      {#if state.submitError}
+      {#if submitError}
         <div class="mt-4 rounded-2xl bg-ember-red/10 border border-ember-red/20 p-4 text-ember-red font-semibold">
-          {state.submitError || "Something went wrong. Please use email instead."}
+          {submitError}
         </div>
       {/if}
     </form>

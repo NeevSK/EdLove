@@ -1,0 +1,52 @@
+---
+export interface Props {
+  quote: string;
+  author?: string;
+  role?: string;
+  source?: string;
+  sourceUrl?: string;
+  class?: string;
+}
+
+const {
+  quote,
+  author,
+  role,
+  source,
+  sourceUrl,
+  class: className = '',
+} = Astro.props;
+---
+
+<figure
+  class:list={[
+    "my-10 p-8 sm:p-10 rounded-3xl bg-temple-stone/40 backdrop-blur-md border border-charcoal-truth/10 shadow-xs relative overflow-hidden transition-all duration-300 hover:shadow-md",
+    className
+  ]}
+>
+  <div class="absolute top-0 left-0 bottom-0 w-1.5 bg-sanctuary-saffron"></div>
+  
+  <blockquote class="pl-2">
+    <p class="font-display text-xl sm:text-2xl font-normal italic text-charcoal-truth leading-relaxed tracking-wide">
+      "{quote}"
+    </p>
+  </blockquote>
+
+  {(author || source) && (
+    <figcaption class="mt-5 pl-2 flex flex-wrap items-center gap-2 text-xs font-content uppercase tracking-widest text-charcoal-truth/60 font-semibold">
+      {author && <span class="text-charcoal-truth">{author}</span>}
+      {role && <span class="opacity-60">• {role}</span>}
+      {source && (
+        <span>
+          {sourceUrl ? (
+            <a href={sourceUrl} target="_blank" rel="noopener noreferrer" class="hover:text-sanctuary-saffron underline">
+              {source}
+            </a>
+          ) : (
+            <span class="opacity-70">— {source}</span>
+          )}
+        </span>
+      )}
+    </figcaption>
+  )}
+</figure>

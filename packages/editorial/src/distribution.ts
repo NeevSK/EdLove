@@ -107,10 +107,56 @@ function createDryRunAdapter(channel: DistributionChannel): DistributionAdapter 
   };
 }
 
+export interface PostizAdapterConfig {
+  baseUrl: string;
+  apiKey: string;
+  integrationIds?: ReadonlyArray<string>;
+  fetcher?: typeof fetch;
+}
+
+export function createPostizAdapter(config: PostizAdapterConfig): DistributionAdapter {
+  const fetcher = config.fetcher ?? fetch;
+  return {
+    channel: 'postiz',
+    mode: 'live',
+    prepare(event, article) {
+      return createDryRunAdapter('postiz').prepare(event, article);
+    },
+    async publish(_delivery, payload) {
+      const response = await fetcher(`${config.baseUrl.replace(/\/+$/, '')}/public/v1/posts`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${config.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: `${payload.title}\n\n${payload.text}\n\n${payload.url}`,
+          providers: config.integrationIds,
+          scheduleDate: new Date().toISOString(),
+          type: 'now',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Postiz publish failed with HTTP ${response.status}: ${await response.text()}`,
+        );
+      }
+
+      const data = (await response.json().catch(() => ({}))) as { id?: string; url?: string };
+      return {
+        status: 'published',
+        externalUrl: data.url ?? (data.id ? `${config.baseUrl}/posts/${data.id}` : undefined),
+      };
+    },
+  };
+}
+
 export const linkedinAdapter = createDryRunAdapter('linkedin');
 export const mediumAdapter = createDryRunAdapter('medium');
 export const substackAdapter = createDryRunAdapter('substack');
 export const metaAdapter = createDryRunAdapter('meta');
+export const postizAdapter = createDryRunAdapter('postiz');
 
 export const distributionAdapters: Readonly<
   Record<DistributionChannel, DistributionAdapter | undefined>
@@ -119,6 +165,7 @@ export const distributionAdapters: Readonly<
   medium: mediumAdapter,
   substack: substackAdapter,
   meta: metaAdapter,
+  postiz: postizAdapter,
   rss: undefined,
 };
 

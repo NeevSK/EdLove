@@ -1,4 +1,7 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 import { CONTACT_EMAILS } from '../lib/site';
 ---
 
@@ -11,13 +14,14 @@ import { CONTACT_EMAILS } from '../lib/site';
       <header>
         <h1>Delete your Gurudevi account</h1>
         <p class="lede">
-          We keep the process explicit and human. Request deletion by email, and we’ll confirm once it’s complete.
+          Request deletion here if you cannot access the app. We verify each request before changing an account or its data.
         </p>
       </header>
 
       <section class="prose-card">
         <h2>How to request deletion</h2>
         <ol>
+          <li>If you can sign in, use the account deletion option in Gurudevi. This is the fastest way to associate a request with your account.</li>
           <li>
             Email us at <a href={`mailto:${CONTACT_EMAILS.support}`}>{CONTACT_EMAILS.support}</a>.
           </li>
@@ -44,14 +48,16 @@ import { CONTACT_EMAILS } from '../lib/site';
       </section>
 
       <section class="prose-card prose-card--muted">
-        <h2>Timeline</h2>
+        <h2>What happens after a request</h2>
         <p>
-          We aim to process deletion requests within <span class="font-semibold">7–14 days</span>. If your request is urgent,
-          mention it in the email.
+          We acknowledge the request, verify that it comes from the account holder, and check whether a school, guardian, safety,
+          fraud-prevention, or legal retention obligation affects the request. Once verified, the account is soft-deactivated while
+          the deletion is scheduled; this stops normal access but is not presented as completed deletion.
         </p>
         <p class="text-sm opacity-80">
-          Note: some records may be retained where required for security, fraud prevention, or legal compliance — but we do not
-          sell your data and we do not build surveillance profiles.
+          When deletion is completed, we delete or anonymize account-associated data unless a specific security, fraud-prevention,
+          institutional recordkeeping, safeguarding, or legal obligation requires limited retention. If that applies, we will explain
+          the category and basis before completion. Read the <a href="/privacy#retention-and-deletion">retention and deletion policy</a>.
         </p>
       </section>
     </article>
@@ -59,4 +65,3 @@ import { CONTACT_EMAILS } from '../lib/site';
 
   <Footer />
 </Layout>
-

@@ -91,6 +91,36 @@
   .section-rule { border-top: 1px solid rgb(104 94 85 / 0.18); }
   .editorial-link { text-decoration: underline; text-decoration-color: rgb(200 111 61 / 0.45); text-underline-offset: 0.25em; transition: color 180ms ease, text-decoration-color 180ms ease; }
   .editorial-link:hover { color: var(--color-sanctuary-saffron); text-decoration-color: currentColor; }
+
+  /* Editorial Sanctuary Typography */
+  .prose-drop-cap > p:first-of-type::first-letter {
+    font-family: var(--font-display);
+    font-size: 3.75rem;
+    line-height: 0.85;
+    float: left;
+    margin-top: 0.12em;
+    margin-right: 0.18em;
+    margin-bottom: -0.1em;
+    font-weight: 600;
+    color: var(--color-sanctuary-saffron);
+  }
+
+  .prose hr {
+    border: 0;
+    text-align: center;
+    margin: 3.5rem 0;
+    position: relative;
+  }
+
+  .prose hr::before {
+    content: "✦  ·  ✦  ·  ✦";
+    font-family: var(--font-display);
+    letter-spacing: 0.4em;
+    font-size: 0.875rem;
+    color: var(--color-sanctuary-saffron);
+    opacity: 0.8;
+    display: inline-block;
+  }
 }
 
 @layer components {
