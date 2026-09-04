@@ -22,6 +22,8 @@ export default defineConfig({
         ],
     },
     test: {
+        fsModuleCache: true,
+        sharedViteServer: true,
         globals: true,
         environment: 'jsdom',
         include: ['src/__tests__/**/*.{test,spec}.{ts,tsx}'],

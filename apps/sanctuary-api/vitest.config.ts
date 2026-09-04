@@ -42,6 +42,8 @@ export default defineConfig({
     ],
   },
   test: {
+    fsModuleCache: true,
+    sharedViteServer: true,
     globals: true,
     environment: 'node',
     alias: [
@@ -115,6 +117,11 @@ export default defineConfig({
         statements: 50,
       },
     },
+    tags: [
+      { name: 'fast', description: 'Fast unit tests' },
+      { name: 'network', description: 'Network and external integration tests' },
+      { name: 'api', description: 'Sanctuary API endpoint suites' },
+    ],
     setupFiles: [path.resolve(configDirectory, './src/__tests__/setup.ts')],
   },
 });

@@ -1,4 +1,4 @@
-import { fileURLToPath, URL } from 'node:url';
+﻿import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
@@ -8,7 +8,14 @@ export default defineConfig({
     },
   },
   test: {
+    fsModuleCache: true,
+    sharedViteServer: true,
     environment: 'node',
     passWithNoTests: true,
+    tags: [
+      { name: 'policies', description: 'Authorization policy engine and snapshot signing' },
+      { name: 'security', description: 'Access control and sovereign security evaluations' },
+      { name: 'fast', description: 'Fast execution suite' },
+    ],
   },
 });

@@ -1,10 +1,9 @@
 import path from 'node:path';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  plugins: [tsconfigPaths()],
   resolve: {
+    tsconfigPaths: true,
     alias: {
       'expo-constants': path.resolve(import.meta.dirname, 'src/test-shims/expo-constants.ts'),
       'react-native': path.resolve(import.meta.dirname, 'src/test-shims/react-native.ts'),
@@ -16,6 +15,17 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    fsModuleCache: true,
+    sharedViteServer: true,
+    tags: [
+      { name: 'pure', description: 'Pure deterministic calculations without IO' },
+      { name: 'fast', description: 'Sub-millisecond execution' },
+      { name: 'wasm', description: 'Cedar WASM Policy Engine evaluation' },
+      { name: 'storage', description: 'Local storage, SQLite, and persistence mocks' },
+      { name: 'security', description: 'Device security, trust, and authorization' },
+      { name: 'guardian', description: 'Guardian domain services and assessment reads' },
+      { name: 'network', description: 'Network, synchronization, and external adapter calls' },
+    ],
     include: ['src/**/*.{test,spec}.ts', 'packages/core/src/**/*.{test,spec}.ts'],
     includeSource: ['src/logic/**/*.ts'],
     passWithNoTests: true,
@@ -36,6 +46,9 @@ export default defineConfig({
       ],
     },
     server: {
+      warmup: {
+        ssr: ['./src/index.ts', './src/logic/index.ts'],
+      },
       deps: {
         external: [
           'react-native',
