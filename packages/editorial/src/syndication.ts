@@ -1,4 +1,4 @@
-import type { ContentKind, Language, Publication, SubmissionStatus } from './domain';
+import type { ContentKind, Language, Publication } from './domain';
 
 export type SyndicationReviewStatus =
   | 'draft'
@@ -44,9 +44,18 @@ export interface SharedSyndicationManifest {
   updatedAt?: string;
 }
 
-const allowedSyndicationTransitions: Record<SyndicationReviewStatus, ReadonlyArray<SyndicationReviewStatus>> = {
+const allowedSyndicationTransitions: Record<
+  SyndicationReviewStatus,
+  ReadonlyArray<SyndicationReviewStatus>
+> = {
   draft: ['draft', 'pending_editorial_review', 'withdrawn'],
-  pending_editorial_review: ['pending_editorial_review', 'rights_approved', 'approved', 'rejected', 'withdrawn'],
+  pending_editorial_review: [
+    'pending_editorial_review',
+    'rights_approved',
+    'approved',
+    'rejected',
+    'withdrawn',
+  ],
   rights_approved: ['rights_approved', 'approved', 'rejected', 'withdrawn'],
   approved: ['approved', 'withdrawn'],
   rejected: ['rejected', 'pending_editorial_review'],

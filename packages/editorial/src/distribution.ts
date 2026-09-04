@@ -208,31 +208,51 @@ export async function dispatchArticlePublished({
     }
     const processing = transitionDelivery(delivery, 'processing', now);
     ledger.save(processing);
-    const adapter = adapters[channel];
-    if (!adapter) {
-      const published = transitionDelivery(processing, 'published', now, {
-        externalUrl: event.canonicalUrl,
-      });
-      ledger.save(published);
-      deliveries.push(published);
-      continue;
-    }
-    try {
-      const result = await adapter.publish(processing, adapter.prepare(event, article));
-      const finalStatus = result.status === 'dry-run' ? 'skipped' : 'published';
-      const completed = transitionDelivery(processing, finalStatus, now, {
-        externalUrl: result.externalUrl,
-      });
-      ledger.save(completed);
-      deliveries.push(completed);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown distribution failure';
-      const failed = transitionDelivery(processing, 'failed', now, { lastError: message });
-      ledger.save(failed);
-      deliveries.push(failed);
-    }
+    const delivered = await executeChannelPublish({
+      channel,
+      event,
+      article,
+      now,
+      processing,
+      adapter: adapters[channel],
+    });
+    ledger.save(delivered);
+    deliveries.push(delivered);
   }
   return deliveries;
+}
+
+interface ChannelPublishInput {
+  channel: DistributionChannel;
+  event: ArticlePublishedEvent;
+  article: EditorialArticle;
+  now: string;
+  processing: DistributionDelivery;
+  adapter?: DistributionAdapter;
+}
+
+async function executeChannelPublish({
+  event,
+  article,
+  now,
+  processing,
+  adapter,
+}: ChannelPublishInput): Promise<DistributionDelivery> {
+  if (!adapter) {
+    return transitionDelivery(processing, 'published', now, {
+      externalUrl: event.canonicalUrl,
+    });
+  }
+  try {
+    const result = await adapter.publish(processing, adapter.prepare(event, article));
+    const finalStatus = result.status === 'dry-run' ? 'skipped' : 'published';
+    return transitionDelivery(processing, finalStatus, now, {
+      externalUrl: result.externalUrl,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown distribution failure';
+    return transitionDelivery(processing, 'failed', now, { lastError: message });
+  }
 }
 
 export function createMemoryDispatchLedger() {

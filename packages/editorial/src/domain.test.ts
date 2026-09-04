@@ -105,9 +105,12 @@ describe('editorial distribution contracts', { tags: ['editorial', 'pure', 'fast
     { from: 'in_review', to: 'rights_review', allowed: true },
     { from: 'rights_review', to: 'approved', allowed: true },
     { from: 'approved', to: 'in_review', allowed: false },
-  ])('submission lifecycle: from $from -> to $to is allowed=$allowed (T17 test.for capability)', ({ from, to, allowed }) => {
-    expect(canTransitionSubmission(from as any, to as any)).toBe(allowed);
-  });
+  ])(
+    'submission lifecycle: from $from -> to $to is allowed=$allowed (T17 test.for capability)',
+    ({ from, to, allowed }) => {
+      expect(canTransitionSubmission(from as any, to as any)).toBe(allowed);
+    },
+  );
 
   it('publishes a LinkedIn post through the supported Posts API shape', async () => {
     let request: Request | undefined;
@@ -143,10 +146,13 @@ describe('editorial distribution contracts', { tags: ['editorial', 'pure', 'fast
       integrationIds: ['li-1', 'x-1'],
       fetcher: async (input, init) => {
         request = new Request(input, init);
-        return new Response(JSON.stringify({ id: 'post-123', url: 'https://postiz.example.com/posts/post-123' }), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        });
+        return new Response(
+          JSON.stringify({ id: 'post-123', url: 'https://postiz.example.com/posts/post-123' }),
+          {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          },
+        );
       },
     });
 

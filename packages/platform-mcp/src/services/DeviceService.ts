@@ -77,110 +77,56 @@ const AGENT_DEVICE_ACTIONS: Record<string, (params: DeviceParams) => string[]> =
 // ─── argent (SWM) ─────────────────────────────────────────────────────────
 // Maps sovereign_device action verbs → argv fragments for the `argent` CLI.
 // Capabilities expand significantly across 0.21–0.23 with gestures, visual
-// regression, network inspection, RN component tree, and video recording.
+const ARGENT_ACTIONS: Record<string, (params: DeviceParams) => string[]> = {
+  doctor: () => ['tools'],
+  screenshot: () => ['screenshot'],
+  'visual-diff': (p) => (p.baseline ? ['visual-diff', '--baseline', String(p.baseline)] : ['visual-diff']),
+  record: (p) => {
+    if (p.stop) {
+      const args = ['record', '--stop'];
+      if (p.output) args.push('--output', String(p.output));
+      return args;
+    }
+    return ['record'];
+  },
+  'component-tree': () => ['component-tree'],
+  swipe: (p) => {
+    const args = ['swipe', String(p.direction ?? 'up')];
+    if (p.element) args.push('--element', String(p.element));
+    return args;
+  },
+  pinch: (p) => {
+    const args = ['pinch', String(p.direction ?? 'in')];
+    if (p.scale !== undefined) args.push('--scale', String(p.scale));
+    return args;
+  },
+  'long-press': (p) => {
+    const args = ['long-press'];
+    if (p.element) args.push(String(p.element));
+    if (p.duration !== undefined) args.push('--duration', String(p.duration));
+    return args;
+  },
+  wait: (p) => {
+    const args = ['wait', String(p.element ?? '')];
+    if (p.timeout !== undefined) args.push('--timeout', String(p.timeout));
+    return args;
+  },
+  assert: (p) => {
+    const args = ['assert', String(p.element ?? '')];
+    if (p.text) args.push('--text', String(p.text));
+    return args;
+  },
+  network: () => ['network'],
+  logs: () => ['logs'],
+};
+
 function buildArgentArgs(action: string, params: DeviceParams): string[] {
-  switch (action) {
-    // ── Diagnostics ──────────────────────────────────────────────────────────
-    case 'doctor':
-      return ['tools'];
-
-    // ── Visuals ──────────────────────────────────────────────────────────────
-    case 'screenshot':
-      return ['screenshot'];
-    /**
-     * Visual regression diff against a baseline screenshot.
-     * params: { baseline?: string } — path to baseline image; omit to save new baseline.
-     */
-    case 'visual-diff': {
-      const args = ['visual-diff'];
-      if (params.baseline) args.push('--baseline', String(params.baseline));
-      return args;
-    }
-
-    // ── Video Recording (argent 0.23) ─────────────────────────────────────
-    /**
-     * Start or stop a screen recording session.
-     * params: { stop?: boolean, output?: string }
-     */
-    case 'record': {
-      if (params.stop) {
-        const args = ['record', '--stop'];
-        if (params.output) args.push('--output', String(params.output));
-        return args;
-      }
-      return ['record'];
-    }
-
-    // ── UI Inspection ────────────────────────────────────────────────────────
-    /** React Native component tree (live, 0.22+) */
-    case 'component-tree':
-      return ['component-tree'];
-
-    // ── Gestures (argent 0.21+) ──────────────────────────────────────────────
-    /**
-     * Swipe gesture.
-     * params: { direction: 'up' | 'down' | 'left' | 'right', element?: string }
-     */
-    case 'swipe': {
-      const args = ['swipe', String(params.direction ?? 'up')];
-      if (params.element) args.push('--element', String(params.element));
-      return args;
-    }
-    /**
-     * Pinch / zoom gesture.
-     * params: { direction: 'in' | 'out', scale?: number }
-     */
-    case 'pinch': {
-      const args = ['pinch', String(params.direction ?? 'in')];
-      if (params.scale !== undefined) args.push('--scale', String(params.scale));
-      return args;
-    }
-    /**
-     * Long press on an element.
-     * params: { element: string, duration?: number (ms) }
-     */
-    case 'long-press': {
-      const args = ['long-press'];
-      if (params.element) args.push(String(params.element));
-      if (params.duration !== undefined) args.push('--duration', String(params.duration));
-      return args;
-    }
-
-    // ── Element Waiting & Assertions (argent 0.21+) ───────────────────────
-    /**
-     * Wait until an element appears (or a timeout elapses).
-     * params: { element: string, timeout?: number (ms, default 5000) }
-     */
-    case 'wait': {
-      const args = ['wait', String(params.element ?? '')];
-      if (params.timeout !== undefined) args.push('--timeout', String(params.timeout));
-      return args;
-    }
-    /**
-     * Assert that an element exists / has specific text.
-     * params: { element: string, text?: string }
-     */
-    case 'assert': {
-      const args = ['assert', String(params.element ?? '')];
-      if (params.text) args.push('--text', String(params.text));
-      return args;
-    }
-
-    // ── Network Inspection (argent 0.21+) ─────────────────────────────────
-    /** Dump captured native-level network requests */
-    case 'network':
-      return ['network'];
-
-    // ── Logs ─────────────────────────────────────────────────────────────────
-    case 'logs':
-      return ['logs'];
-
-    // ── Fallback: pass-through ────────────────────────────────────────────
-    default: {
-      const extra = Array.isArray(params.args) ? (params.args as string[]) : [];
-      return ['run', action, ...extra];
-    }
+  const handler = ARGENT_ACTIONS[action];
+  if (handler) {
+    return handler(params);
   }
+  const extra = Array.isArray(params.args) ? (params.args as string[]) : [];
+  return ['run', action, ...extra];
 }
 
 export class DeviceService {
