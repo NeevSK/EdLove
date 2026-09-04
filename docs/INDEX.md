@@ -56,6 +56,8 @@ These files outline security models, data lifecycle policies, platform topologie
 | [architecture/architecture-deep-dive.md](architecture/architecture-deep-dive.md) | Philosophy of restraint, sovereignty rules |
 | [architecture/tech-stack-and-standards.md](architecture/tech-stack-and-standards.md) | Tech stack details, CORS configurations, environment conventions |
 | [architecture/zenstack-schema-architecture.md](architecture/zenstack-schema-architecture.md) | ZenStack v3 patterns, schema/database split, runtime Zod validation |
+| [architecture/zod-4-5-capabilities.md](architecture/zod-4-5-capabilities.md) | Zod 4.5 capabilities, AOT schema compilation (`z.compile()`), `@zod/mini`, and ZenStack integration |
+| [architecture/vite-vitest-capabilities-matrix.md](architecture/vite-vitest-capabilities-matrix.md) | Vite 7/8 (Rolldown, Environment API) & Vitest 4/5 (benchmarks, vi.when, AST cache) capabilities matrix & integration blueprints |
 | [architecture/gurudevi-data-state-lifecycle.md](architecture/gurudevi-data-state-lifecycle.md) | State management lifecycle, offline-first syncing, caching flow |
 | [architecture/gurudevi-registry-architecture.md](architecture/gurudevi-registry-architecture.md) | Technical architecture of the Gurudevi package registry |
 | [architecture/gurudevi-repository-registry-boundary.md](architecture/gurudevi-repository-registry-boundary.md) | Canonical distinction between implementation repositories and capability registries |

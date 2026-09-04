@@ -175,7 +175,15 @@ if (noReport) {
           msg = lintMatch[5];
           isMatch = true;
         }
-        // 3. Generic error format (extract specific JS errors or Unhandled Rejections)
+        // 3. Astro / Vite / Compiler error format (e.g. 22:09:38 [ERROR] [CompilerError] Expected corresponding...)
+        else if (trimmed.match(/^(?:\d{2}:\d{2}:\d{2}\s+)?\[(?:ERROR|error)\]\s+\[([a-zA-Z0-9_]+)\]\s*(.*)$/i)) {
+          const astroMatch = trimmed.match(/^(?:\d{2}:\d{2}:\d{2}\s+)?\[(?:ERROR|error)\]\s+\[([a-zA-Z0-9_]+)\]\s*(.*)$/i);
+          severity = 'error';
+          code = astroMatch[1].toUpperCase();
+          msg = astroMatch[2];
+          isMatch = true;
+        }
+        // 4. Generic error format (extract specific JS errors or Unhandled Rejections)
         else {
           const genMatch = trimmed.match(/^(?:Web\s+|\[)?(Error|TypeError|RangeError|ReferenceError|SyntaxError|DataCloneError|UnhandledPromiseRejection|FATAL|ERR_[A-Z_]+)\b\s*[:\s\]]+(.*)$/i);
           if (genMatch) {

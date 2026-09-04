@@ -35,7 +35,8 @@ title: "Clean Document Title"
 status: "active" | "draft" | "superseded" | "deprecated"
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
-author: "Name"
+author: "Name of the person requesting the document"
+scribe: "Name of the AI Assistant"
 tags: [reorganized, architecture]
 superseded_by: "relative/path/to/newer-doc.md" # Optional
 ---

@@ -75,6 +75,7 @@ Creates a Kysely client wrapped with ZenStack's policy enforcement layer. The `u
 
 | Date | ZenStack | Zod | Changes |
 |---|---|---|---|
+| 2026-09-01 | 3.8.3 | 4.5.4 | Upgraded to Zod 4.5 (`z.compile()`, `@zod/mini`, `z.validate()`, ~9x memory reduction). |
 | 2026-06-26 | 3.8.0 | 4.3.6 | Upgraded from 3.6.4. Removed dead `plugin zod` codegen. Cleaned stale database scripts. |
 
 ## ReBAC Policy Architecture

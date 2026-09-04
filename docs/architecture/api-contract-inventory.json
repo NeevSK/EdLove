@@ -1087,8 +1087,8 @@
         "packages/core/src/api/presence.ts"
       ],
       "clientCalls": [
-        "client.api as any).presence.seen.$post",
-        "client.api as any).presence['fallback-count'].$get"
+        "orpcClient.presence.getFallbackCount",
+        "orpcClient.presence.markSeen"
       ],
       "hasResponses": true
     },
@@ -1107,8 +1107,8 @@
         "packages/core/src/api/presence.ts"
       ],
       "clientCalls": [
-        "client.api as any).presence.seen.$post",
-        "client.api as any).presence['fallback-count'].$get"
+        "orpcClient.presence.getFallbackCount",
+        "orpcClient.presence.markSeen"
       ],
       "hasResponses": true
     },
@@ -1127,9 +1127,9 @@
         "packages/core/src/api/dailyContent.ts"
       ],
       "clientCalls": [
-        "client.api as any)['daily-content'].recent[':days'].$get",
-        "client.api as any)['daily-content'].today.$get",
-        "client.api as any)['daily-content'][':date'].$get"
+        "orpcClient.dailyContent.getForDate",
+        "orpcClient.dailyContent.getRecent",
+        "orpcClient.dailyContent.getToday"
       ],
       "hasResponses": true
     },
@@ -1148,9 +1148,9 @@
         "packages/core/src/api/dailyContent.ts"
       ],
       "clientCalls": [
-        "client.api as any)['daily-content'].recent[':days'].$get",
-        "client.api as any)['daily-content'].today.$get",
-        "client.api as any)['daily-content'][':date'].$get"
+        "orpcClient.dailyContent.getForDate",
+        "orpcClient.dailyContent.getRecent",
+        "orpcClient.dailyContent.getToday"
       ],
       "hasResponses": true
     },
@@ -1169,9 +1169,9 @@
         "packages/core/src/api/dailyContent.ts"
       ],
       "clientCalls": [
-        "client.api as any)['daily-content'].recent[':days'].$get",
-        "client.api as any)['daily-content'].today.$get",
-        "client.api as any)['daily-content'][':date'].$get"
+        "orpcClient.dailyContent.getForDate",
+        "orpcClient.dailyContent.getRecent",
+        "orpcClient.dailyContent.getToday"
       ],
       "hasResponses": true
     },
@@ -6950,8 +6950,8 @@
         "packages/core/src/api/privacy.ts"
       ],
       "clientCalls": [
-        "client.api as any).privacy.ledger.$get",
-        "client.api as any).privacy.ledger.events.$post"
+        "orpcClient.privacy.getPrivacyLedger",
+        "orpcClient.privacy.logPrivacyEvent"
       ],
       "hasResponses": true
     },
@@ -6970,8 +6970,8 @@
         "packages/core/src/api/privacy.ts"
       ],
       "clientCalls": [
-        "client.api as any).privacy.ledger.$get",
-        "client.api as any).privacy.ledger.events.$post"
+        "orpcClient.privacy.getPrivacyLedger",
+        "orpcClient.privacy.logPrivacyEvent"
       ],
       "hasResponses": true
     },

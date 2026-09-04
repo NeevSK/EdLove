@@ -55,6 +55,23 @@ All native configuration must go through:
 
 The `expo.install.exclude` and `expo.doctor.reactNativeDirectoryCheck.exclude` arrays contain packages that are intentionally pinned to newer versions. Removing these exclusions causes `expo doctor` to flag them, and agents may try to "fix" them.
 
+### 5. ALWAYS build standalone Release APK with Doppler for Physical Device Testing
+
+Debug builds do not bundle offline standalone JS/Hermes assets (they require an active Metro dev server). To test the real app on a physical device, always run a standalone `assembleRelease` build wrapped with `doppler run --no-fallback --` so that public environment variables (`EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, etc.) are injected into Metro during asset bundling.
+
+```bash
+# In Ubuntu (WSL) / Linux:
+export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
+export ANDROID_HOME="$ANDROID_SDK_ROOT"
+export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk/27.1.12297006"
+export CMAKE_BUILD_PARALLEL_LEVEL=2
+export GRADLE_OPTS='-Xmx1536m -XX:MaxMetaspaceSize=256m -XX:+UseSerialGC'
+
+cd apps/gurudevi-mobile/android
+doppler run --no-fallback -- ./gradlew :app:assembleRelease --no-daemon --max-workers=2 \
+  -PreactNativeArchitectures=arm64-v8a --console=plain
+```
+
 ---
 
 ## Sacred Versions (do NOT change without explicit approval)
