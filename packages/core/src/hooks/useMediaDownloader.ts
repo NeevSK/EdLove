@@ -96,7 +96,9 @@ export function useMediaDownloader({ resourceId, url, mimeType }: UseMediaDownlo
       try {
         const info = file.info();
         size = (info as { size?: number })?.size ?? 0;
-      } catch {}
+      } catch {
+        // Ignore stat inspection failures and fallback to zero size
+      }
       if (!isSafeCacheFileName(fileName)) return;
       index[fileName] = { lastAccess: Date.now(), size };
       // LRU eviction: keep total <500MB, 2GB-aware cap via availableDiskSpace
@@ -113,16 +115,19 @@ export function useMediaDownloader({ resourceId, url, mimeType }: UseMediaDownlo
               if (f.exists) f.delete();
               delete index[name];
               if (Object.values(index).reduce((a, b) => a + b.size, 0) < 400 * 1024 * 1024) break;
-            } catch {}
+            } catch {
+              // Best-effort eviction failure; continue to next entry
+            }
           }
         }
-      } catch {}
+      } catch {
+        // Disk capacity check failed; proceed without eviction
+      }
       await writeAsStringAsync(indexFile.uri, JSON.stringify(index));
     } catch (error) {
       console.warn('[MediaDownloader] Cache index update failed', error);
     }
   }, []);
-
   const checkCached = useCallback(async () => {
     if (isWeb) return;
     try {

@@ -63,7 +63,7 @@ export class SupabasePowerSyncConnector implements PowerSyncBackendConnector {
 
   async uploadData(database: CommonPowerSyncDatabase): Promise<void> {
     const accountId = this.accountId;
-    let startTime = 0;
+    const startTime = 0;
     
     return runEffect(
       Effect.gen(function* () {

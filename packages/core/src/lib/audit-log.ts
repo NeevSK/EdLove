@@ -74,6 +74,7 @@ function getUserAgent(context: ORPCContext): string {
 let posthog: any = null;
 if (typeof process !== 'undefined' && process.env.POSTHOG_API_KEY && process.env.POSTHOG_HOST) {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { PostHog } = require('posthog-node');
     posthog = new PostHog(process.env.POSTHOG_API_KEY, {
       host: process.env.POSTHOG_HOST,
@@ -146,7 +147,7 @@ export function createAuditMiddleware() {
     const traceId = context.traceId || 'unknown';
     
     let result: any;
-    let statusCode = 200;
+    const statusCode = 200;
     
     try {
       result = await next();
