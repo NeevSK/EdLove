@@ -24,15 +24,7 @@ export {
   SyncTableError,
   UnauthorizedError,
 } from './Errors';
-// ─── 3. DI Layers ────────────────────────────────────────────────────
-export {
-  GrowthLayer,
-  GrowthManagerLive,
-  GrowthManagerTag,
-  GrowthPort,
-  GrowthPortLive,
-} from './Layers';
-// ─── 4. Runtime Boundaries & Adapters ────────────────────────────────
+// ─── 3. Runtime Boundaries & Adapters ────────────────────────────────
 export { reportBestEffort, runForkBestEffort, runToPromise } from './Runtime';
 // ─── 1. Canonical Schedules ──────────────────────────────────────────
 export { defaultRetryPolicy, retryPolicy, strictRetryPolicy } from './Schedules';
