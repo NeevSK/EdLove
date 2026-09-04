@@ -92,7 +92,15 @@ export const authAPI = {
     return auth.signOut();
   },
 
-  async deleteAccount() {
-    return auth.deleteAccount();
+  async requestAccountDeletion() {
+    return auth.requestAccountDeletion();
+  },
+
+  async getAccountDeletionRequestStatus() {
+    return auth.getAccountDeletionRequestStatus();
+  },
+
+  async getAccountLifecycleStatus() {
+    return auth.getAccountLifecycleStatus();
   },
 };

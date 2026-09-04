@@ -50,7 +50,7 @@ if (
   typeof globalThis !== 'undefined' &&
   !(globalThis as any).__powerSyncIdempotencyCleanupInterval
 ) {
-  (globalThis as any).__powerSyncIdempotencyCleanupInterval = setInterval(
+  const interval = setInterval(
     () => {
       const now = Date.now();
       for (const [key, val] of localIdempotencyCache.entries()) {
@@ -61,6 +61,10 @@ if (
     },
     5 * 60 * 1000,
   );
+  if (typeof interval === 'object' && typeof (interval as any).unref === 'function') {
+    (interval as any).unref();
+  }
+  (globalThis as any).__powerSyncIdempotencyCleanupInterval = interval;
 }
 
 class IdempotencyConflictError extends Error {

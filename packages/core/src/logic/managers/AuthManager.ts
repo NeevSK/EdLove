@@ -1,7 +1,13 @@
 import { deviceTrustAPI } from '@repo/core/api/deviceTrust';
-import { trackProductEvent } from '@repo/core/monitoring';
-import type { AuthSession, AuthUser, IAuthPort } from '@repo/core/logic/ports/auth.port';
+import type {
+  AccountDeletionRequest,
+  AccountLifecycleStatus,
+  AuthSession,
+  AuthUser,
+  IAuthPort,
+} from '@repo/core/logic/ports/auth.port';
 import type { IIdentityPort } from '@repo/core/logic/ports/identity.port';
+import { trackProductEvent } from '@repo/core/monitoring';
 import type { Capacity } from '@repo/core/types';
 import { APIError } from '@repo/core/types/API';
 
@@ -377,8 +383,82 @@ export class AuthManager {
     return result;
   }
 
-  async deleteAccount() {
-    await this.authPort.executeRpc('delete_user_account');
-    await this.signOut();
+  async requestAccountDeletion(): Promise<AccountDeletionRequest> {
+    const response = getAccountDeletionRequestResponse(
+      await this.authPort.executeRpc('request_account_deletion'),
+    );
+
+    if (!isAccountDeletionRequest(response)) {
+      throw new APIError('Account deletion request returned an invalid response.');
+    }
+
+    return response;
   }
+
+  async getAccountDeletionRequestStatus(): Promise<AccountDeletionRequest | null> {
+    const response = getAccountDeletionRequestResponse(
+      await this.authPort.executeRpc('get_account_deletion_request_status'),
+    );
+
+    if (response === undefined) return null;
+    if (!isAccountDeletionRequest(response)) {
+      throw new APIError('Account deletion status returned an invalid response.');
+    }
+
+    return response;
+  }
+
+  async getAccountLifecycleStatus(): Promise<AccountLifecycleStatus> {
+    const response = getAccountLifecycleStatusResponse(
+      await this.authPort.executeRpc('get_account_lifecycle_status'),
+    );
+
+    if (!isAccountLifecycleStatus(response)) {
+      throw new APIError('Account lifecycle status returned an invalid response.');
+    }
+
+    return response;
+  }
+}
+
+function getAccountDeletionRequestResponse(value: unknown): unknown {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function isAccountDeletionRequest(value: unknown): value is AccountDeletionRequest {
+  if (!value || typeof value !== 'object') return false;
+
+  const request = value as Record<string, unknown>;
+  return (
+    typeof request.status === 'string' &&
+    isAccountDeletionRequestStatus(request.status) &&
+    (typeof request.request_id === 'string' || request.request_id === null) &&
+    (typeof request.requested_at === 'string' || request.requested_at === null) &&
+    (request.scheduled_for === undefined ||
+      typeof request.scheduled_for === 'string' ||
+      request.scheduled_for === null) &&
+    typeof request.reason === 'string'
+  );
+}
+
+function isAccountDeletionRequestStatus(value: string): boolean {
+  return ['pending_verification', 'scheduled', 'cancelled', 'completed', 'blocked'].includes(value);
+}
+
+function getAccountLifecycleStatusResponse(value: unknown): unknown {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function isAccountLifecycleStatus(value: unknown): value is AccountLifecycleStatus {
+  if (!value || typeof value !== 'object') return false;
+
+  const status = value as Record<string, unknown>;
+  return (
+    typeof status.status === 'string' &&
+    ['active', 'pending_verification', 'scheduled', 'deactivated', 'cancelled', 'completed', 'blocked'].includes(status.status) &&
+    (typeof status.deactivated_at === 'string' || status.deactivated_at === null) &&
+    (typeof status.request_id === 'string' || status.request_id === null) &&
+    (typeof status.scheduled_for === 'string' || status.scheduled_for === null) &&
+    typeof status.reason === 'string'
+  );
 }

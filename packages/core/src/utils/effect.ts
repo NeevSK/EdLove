@@ -1,9 +1,11 @@
 import { captureException } from '@repo/core/monitoring';
 import { APIError } from '@repo/core/types/API';
-import * as Duration from 'effect/Duration';
 import * as Effect from 'effect/Effect';
 import { pipe } from 'effect/Function';
-import * as Schedule from 'effect/Schedule';
+
+// Re-export canonical retry schedules. All callers continue to use:
+//   import { defaultRetryPolicy, strictRetryPolicy, retryPolicy } from '@repo/core/utils/effect'
+export { defaultRetryPolicy, strictRetryPolicy, retryPolicy } from '@repo/core/effect/Schedules';
 
 function normalizeError(error: unknown): Error {
   return error instanceof Error ? error : new Error(String(error));
@@ -15,34 +17,6 @@ function normalizeError(error: unknown): Error {
  */
 export function tryPromise<T>(fn: () => PromiseLike<T>): Effect.Effect<T, Error, never> {
   return Effect.tryPromise({ try: fn, catch: normalizeError });
-}
-
-/**
- * Default retry: exponential backoff starting at 200ms, max 3 attempts (4 total).
- * Use for network calls and Supabase queries.
- */
-export const defaultRetryPolicy = pipe(
-  Schedule.exponential(Duration.millis(200)),
-  Schedule.intersect(Schedule.recurs(3)),
-);
-
-/**
- * Strict retry: exponential backoff starting at 200ms, max 2 attempts (3 total).
- * Use for non-critical operations where a single retry is sufficient.
- */
-export const strictRetryPolicy = pipe(
-  Schedule.exponential(Duration.millis(200)),
-  Schedule.intersect(Schedule.recurs(2)),
-);
-
-/**
- * Convenience retry: exponential backoff with a configurable count.
- */
-export function retryPolicy(maxRetries: number = 3) {
-  return pipe(
-    Schedule.exponential(Duration.millis(200)),
-    Schedule.intersect(Schedule.recurs(maxRetries)),
-  );
 }
 
 /**

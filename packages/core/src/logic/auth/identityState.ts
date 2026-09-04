@@ -1,5 +1,11 @@
 export type IdentityMode = 'unauthenticated' | 'anonymous' | 'authenticated' | 'sandbox' | 'demo';
 
+/**
+ * An inactive identity is established only by the server lifecycle contract.
+ * A profile lookup failure must stay unknown rather than redirecting to recovery.
+ */
+export type IdentityAvailability = 'unknown' | 'active' | 'inactive';
+
 type SessionLike =
   | {
       user?: {
@@ -52,4 +58,11 @@ export function isAnonymousIdentity(
   if (value.identity_state === 'anonymous') return true;
   if (value.is_anonymous === true) return true;
   return false;
+}
+
+/** Soft-deactivated profiles remain in storage but must not enter the app shell. */
+export function isActiveIdentityProfile(
+  value: { deleted_at?: string | null } | null | undefined,
+): boolean {
+  return value !== null && value !== undefined && value.deleted_at == null;
 }

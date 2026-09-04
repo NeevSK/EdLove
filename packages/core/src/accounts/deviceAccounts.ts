@@ -15,6 +15,11 @@ import {
   setStoredSessionForAccount,
 } from '@repo/core/lib/supabaseAuthStorage';
 import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
+import {
+  completeAccountLifecycleCommand,
+  type AccountLifecycleAvailableCapability,
+  type AccountLifecycleCommand,
+} from '@repo/core/logic/accountLifecycle';
 import { rehydrateScopedStores, resetScopedStores } from '@repo/core/store/resetScopedStores';
 
 const ACCOUNTS_REGISTRY_KEY = 'gurudevi-device-accounts';
@@ -86,46 +91,58 @@ function toSessionTokens(session: Session) {
   };
 }
 
-/**
- * Serial queue for fire-and-forget audit/security operations.
- * Prevents thundering herd on deviceTrustAPI when multiple account
- * actions fire audit ops concurrently.
- */
-const auditQueue = Effect.runSync(Queue.unbounded<() => Promise<unknown>>());
+function completeLocalAccountLifecycle<C extends AccountLifecycleCommand>(
+  command: C,
+  effects: Parameters<typeof completeAccountLifecycleCommand<C>>[2],
+) {
+  const capability: AccountLifecycleAvailableCapability<C> = {
+    command: command.kind,
+    availability: 'supported',
+  };
 
-Effect.runFork(
-  Queue.take(auditQueue).pipe(
-    Effect.flatMap((task) =>
-      Effect.tryPromise({ try: task, catch: normalizeDeviceAccountError }).pipe(
-        Effect.catchAll((e) =>
-          Effect.sync(() => console.warn('[deviceAccounts] Audit op failed', e)),
-        ),
-      ),
-    ),
-    Effect.forever,
-  ),
-);
-
-function queueAuditOp(fn: () => Promise<unknown>) {
-  Effect.runFork(Queue.offer(auditQueue, fn));
+  return completeAccountLifecycleCommand(capability, command, effects);
 }
 
-function queueAccountSignOutAudit(
-  scope: 'all',
-  installId: string | null,
-  accountId: string,
-): void {
-  queueAuditOp(() =>
-    Promise.all([
-      deviceTrustAPI.logAuditEvent(
-        'ACCOUNT_SIGNED_OUT_FROM_DEVICE',
-        { scope, installId },
-        accountId,
+async function clearActivePowerSyncAccount() {
+  const { clearPowerSyncAccount } = await import('../adapters/powersync/database');
+  await clearPowerSyncAccount();
+}
+
+/**
+ * Lazy singleton for the serial audit queue.
+ *
+ * v4 note: Effect.runSync at module evaluation time is explicitly warned against
+ * in v4's owned-runtime model. Using a lazy initializer defers execution until
+ * deviceAccounts.initialize() is called by the app shell — safe in all runtimes.
+ */
+let _auditQueue: Queue.Queue<() => Promise<unknown>> | null = null;
+
+function getAuditQueue(): Queue.Queue<() => Promise<unknown>> {
+  if (!_auditQueue) {
+    _auditQueue = Effect.runSync(Queue.unbounded<() => Promise<unknown>>());
+    Effect.runFork(
+      Queue.take(_auditQueue).pipe(
+        Effect.flatMap((task) =>
+          Effect.tryPromise({ try: task, catch: normalizeDeviceAccountError }).pipe(
+            Effect.catchAll((e) =>
+              Effect.sync(() => console.warn('[deviceAccounts] Audit op failed', e)),
+            ),
+          ),
+        ),
+        Effect.forever,
       ),
-      ...(installId
-        ? [deviceTrustAPI.revokeMyInstallSecuritySessions(installId, 'signed_out_all_locally')]
-        : []),
-    ]),
+    );
+  }
+  return _auditQueue;
+}
+
+function queueAuditOp(fn: () => Promise<unknown>) {
+  Effect.runFork(Queue.offer(getAuditQueue(), fn));
+}
+
+function queueAccountSignOutAudit(accountId: string): void {
+  queueAuditOp(() =>
+    deviceTrustAPI.logAuditEvent('ACCOUNT_SIGNED_OUT_FROM_DEVICE', { scope: 'all' }, accountId),
   );
 }
 
@@ -276,8 +293,7 @@ export const deviceAccounts = {
     if (isActiveAccount) {
       // Account removal is destructive: close and clear only the removed
       // account's active PowerSync database before another account is opened.
-      const { clearPowerSyncAccount } = await import('../adapters/powersync/database');
-      await clearPowerSyncAccount();
+      await clearActivePowerSyncAccount();
 
       void deviceTrustAPI.getInstallId().then((installId) => {
         if (installId) {
@@ -298,20 +314,29 @@ export const deviceAccounts = {
     await writeRegistry(nextAccounts);
 
     if (!isActiveAccount) {
-      return nextAccounts;
+      return completeLocalAccountLifecycle(
+        { kind: 'remove-remembered-account', accountId },
+        [{ kind: 'remove-remembered-account', accountId }],
+      );
     }
 
     const fallback = nextAccounts[0]?.accountId ?? null;
     if (fallback) {
       await this.switchTo(fallback);
-      return nextAccounts;
+      return completeLocalAccountLifecycle(
+        { kind: 'remove-remembered-account', accountId },
+        [{ kind: 'remove-remembered-account', accountId }],
+      );
     }
 
     await setActiveAccount(null);
     resetScopedStores();
     await rehydrateScopedStores();
     await supabaseClient.auth.signOut({ scope: 'local' });
-    return nextAccounts;
+    return completeLocalAccountLifecycle(
+      { kind: 'remove-remembered-account', accountId },
+      [{ kind: 'remove-remembered-account', accountId }],
+    );
   },
 
   async signOutCurrentAccount() {
@@ -320,7 +345,10 @@ export const deviceAccounts = {
       await supabaseClient.auth.signOut({ scope: 'local' });
       resetScopedStores();
       await rehydrateScopedStores();
-      return [];
+      return completeLocalAccountLifecycle(
+        { kind: 'sign-out-current-device' },
+        [{ kind: 'clear-current-session' }],
+      );
     }
 
     const installId = await deviceTrustAPI.getInstallId();
@@ -339,7 +367,11 @@ export const deviceAccounts = {
       );
     }
 
-    return this.removeAccount(activeAccountId);
+    await this.removeAccount(activeAccountId);
+    return completeLocalAccountLifecycle(
+      { kind: 'sign-out-current-device' },
+      [{ kind: 'clear-current-session' }],
+    );
   },
 
   async signOutAllAccounts() {
@@ -348,11 +380,16 @@ export const deviceAccounts = {
       deviceTrustAPI.getInstallId(),
     ]);
     const activeAccountId = getActiveAccountId();
+    if (activeAccountId) {
+      await clearActivePowerSyncAccount();
+    }
     for (const entry of accounts) {
-      if (!activeAccountId || entry.accountId !== activeAccountId) {
-        continue;
-      }
-      queueAccountSignOutAudit('all', installId, entry.accountId);
+      queueAccountSignOutAudit(entry.accountId);
+    }
+    if (installId) {
+      queueAuditOp(() =>
+        deviceTrustAPI.revokeMyInstallSecuritySessions(installId, 'signed_out_all_locally'),
+      );
     }
     await Promise.all(
       accounts.map((entry) =>
@@ -368,5 +405,9 @@ export const deviceAccounts = {
     resetScopedStores();
     await rehydrateScopedStores();
     await supabaseClient.auth.signOut({ scope: 'local' });
+    return completeLocalAccountLifecycle(
+      { kind: 'sign-out-all-local-accounts' },
+      [{ kind: 'clear-all-remembered-accounts' }],
+    );
   },
 };

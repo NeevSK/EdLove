@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+﻿import { describe, expect, it, vi } from 'vitest';
 import {
   createGuardianAssessmentReadService,
   type GuardianAssessmentReadAuditEvent,
@@ -49,7 +49,7 @@ function createDependencies(overrides: Record<string, unknown> = {}) {
   return { dependencies, auditEvents };
 }
 
-describe('guardian assessment read contract', () => {
+describe('guardian assessment read contract', { tags: ['guardian', 'security', 'fast'] }, () => {
   it('allows a permitted guardian to read published results only', async () => {
     const { dependencies } = createDependencies();
     const read = createGuardianAssessmentReadService(dependencies);

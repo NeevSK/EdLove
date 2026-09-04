@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, expectTypeOf, it, test, vi } from 'vitest';
 import { checkLocalPermission, getLocalResourceAttributes } from '../localEvaluator';
 
 // Mock database wrapper
@@ -37,7 +37,7 @@ vi.mock('@cedar-policy/cedar-wasm/web', () => ({
   evaluate: (...args: any[]) => mockEvaluate(...args),
 }));
 
-describe('localEvaluator (WASM PDP)', () => {
+describe('localEvaluator (WASM PDP)', { tags: ['wasm', 'security'] }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -76,6 +76,22 @@ describe('localEvaluator (WASM PDP)', () => {
     it('returns empty object for unknown resource types', async () => {
       const attrs = await getLocalResourceAttributes('UnknownResource', 'id-123');
       expect(attrs).toEqual({});
+    });
+
+    it('statically enforces evaluator contract signatures using expectTypeOf (T16)', () => {
+      expectTypeOf(checkLocalPermission).toBeFunction();
+      expectTypeOf(checkLocalPermission).returns.resolves.toBeBoolean();
+      expectTypeOf(getLocalResourceAttributes).toBeFunction();
+      expectTypeOf(getLocalResourceAttributes).returns.resolves.toBeObject();
+    });
+
+    test.for([
+      { resourceType: 'NonExistentA', id: 'id-a' },
+      { resourceType: 'NonExistentB', id: 'id-b' },
+      { resourceType: 'RandomEntity', id: 'id-c' },
+    ])('returns empty record for unknown entity $resourceType (T17 test.for)', async ({ resourceType, id }) => {
+      const res = await getLocalResourceAttributes(resourceType as any, id);
+      expect(res).toEqual({});
     });
   });
 

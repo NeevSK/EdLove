@@ -1,17 +1,11 @@
 import { orpcClient } from '@repo/core/api/orpcClient';
 import type { StudentAttendancePulse } from '@repo/core/api/staffManagement';
 import { APIError } from '@repo/core/types/API';
+import { defaultRetryPolicy } from '@repo/core/utils/effect';
 import * as Data from 'effect/Data';
 import * as Duration from 'effect/Duration';
 import * as Effect from 'effect/Effect';
 import { pipe } from 'effect/Function';
-import * as Schedule from 'effect/Schedule';
-
-
-const retryPolicy = pipe(
-  Schedule.exponential(Duration.millis(200)),
-  Schedule.intersect(Schedule.recurs(3)),
-);
 
 class AttendanceHttpError extends Data.TaggedError('AttendanceHttpError')<{
   readonly message: string;
@@ -28,7 +22,7 @@ function apiEffect<T>(fn: () => Promise<T>): Effect.Effect<T, AttendanceHttpErro
           status: String((e as any)?.status ?? '0'),
         }),
     }),
-    Effect.retry(retryPolicy),
+    Effect.retry(defaultRetryPolicy),
     Effect.timeout(Duration.seconds(15)),
     Effect.catchTag('TimeoutException', () =>
       Effect.fail(

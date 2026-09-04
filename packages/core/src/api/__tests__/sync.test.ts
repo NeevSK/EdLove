@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it, test } from 'vitest';
 import { applyPowerSyncBatch } from '../handlers/sync';
 
 const makeDb = (writes: any[]) => ({
@@ -7,10 +7,33 @@ const makeDb = (writes: any[]) => ({
       bond: {
         upsert: async (input: any) => writes.push(input),
       },
+      classroom: {
+        upsert: async (input: any) => writes.push(input),
+      },
     }),
 });
 
-describe('PowerSync upload idempotency', () => {
+describe('PowerSync upload idempotency', { tags: ['storage', 'fast'] }, () => {
+  it('enforces static handler output types with expectTypeOf (T16)', () => {
+    type HandlerReturn = ReturnType<typeof applyPowerSyncBatch>;
+    expectTypeOf<HandlerReturn>().toEqualTypeOf<
+      Promise<{ success: true; processedCount: number; idempotent?: boolean }>
+    >();
+  });
+
+  test.for([
+    { table: 'bonds', expectedWrites: 1 },
+    { table: 'classroom', expectedWrites: 1 },
+  ])('parametric sync batch for table $table (T17 test.for)', async ({ table, expectedWrites }) => {
+    const writes: any[] = [];
+    const db = makeDb(writes);
+    const crud = [{ id: 'row-1', op: 'PUT', table, opData: { name: 'Test' } }];
+
+    const res = await applyPowerSyncBatch(db, crud, `key-${table}`, `user-${table}`);
+    expect(res.success).toBe(true);
+    expect(res.processedCount).toBe(expectedWrites);
+    expect(writes).toHaveLength(expectedWrites);
+  });
   it('replays a completed batch without applying the writes again', async () => {
     const writes: any[] = [];
     const db = makeDb(writes);

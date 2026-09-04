@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+﻿import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mockLogAuditEvent = vi.hoisted(() => vi.fn());
 
@@ -10,7 +10,7 @@ vi.mock('../../../api/deviceTrust', () => ({
 
 import { AuthManager } from '../AuthManager';
 
-describe('AuthManager', () => {
+describe('AuthManager', { tags: ['security', 'fast'] }, () => {
   const authPort = {
     getSession: vi.fn(),
     getUser: vi.fn(),
@@ -140,9 +140,15 @@ describe('AuthManager', () => {
     );
   });
 
-  it('continues account deletion by signing out after remote removal', async () => {
-    authPort.executeRpc.mockResolvedValue(undefined);
-    authPort.signOut.mockResolvedValue(undefined);
+  it('requests account deletion without deleting the account or signing out', async () => {
+    vi.when(authPort.executeRpc).calledWith('request_account_deletion').thenResolve([
+      {
+        status: 'pending_verification',
+        request_id: 'request-1',
+        requested_at: '2026-09-01T00:00:00.000Z',
+        reason: 'fresh_authentication_required',
+      },
+    ]);
 
     const managerWithHooks = new AuthManager(authPort as any, identityPort as any, {
       storage: {
@@ -150,9 +156,82 @@ describe('AuthManager', () => {
       },
     });
 
-    await managerWithHooks.deleteAccount();
+    const result = await managerWithHooks.requestAccountDeletion();
 
-    expect(authPort.executeRpc).toHaveBeenCalledWith('delete_user_account');
-    expect(authPort.signOut).toHaveBeenCalledTimes(1);
+    expect(authPort.executeRpc).toHaveBeenCalledWith('request_account_deletion');
+    expect(authPort.signOut).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      status: 'pending_verification',
+      request_id: 'request-1',
+      requested_at: '2026-09-01T00:00:00.000Z',
+      reason: 'fresh_authentication_required',
+    });
+  });
+
+  it('rejects an invalid deletion-request response instead of treating it as success', async () => {
+    authPort.executeRpc.mockResolvedValue([]);
+
+    await expect(manager.requestAccountDeletion()).rejects.toThrow(
+      'Account deletion request returned an invalid response.',
+    );
+    expect(authPort.signOut).not.toHaveBeenCalled();
+  });
+
+  it('reads no deletion request as an empty status instead of an invalid response', async () => {
+    authPort.executeRpc.mockResolvedValue([]);
+
+    await expect(manager.getAccountDeletionRequestStatus()).resolves.toBeNull();
+    expect(authPort.executeRpc).toHaveBeenCalledWith('get_account_deletion_request_status');
+  });
+
+  it('reads the latest deletion request status from the table-function response', async () => {
+    authPort.executeRpc.mockResolvedValue([
+      {
+        status: 'scheduled',
+        request_id: 'request-1',
+        requested_at: '2026-09-01T00:00:00.000Z',
+        scheduled_for: '2026-10-01T00:00:00.000Z',
+        reason: '',
+      },
+    ]);
+
+    await expect(manager.getAccountDeletionRequestStatus()).resolves.toEqual({
+      status: 'scheduled',
+      request_id: 'request-1',
+      requested_at: '2026-09-01T00:00:00.000Z',
+      scheduled_for: '2026-10-01T00:00:00.000Z',
+      reason: '',
+    });
+  });
+
+  it('reads the server-owned account lifecycle status without mutating state', async () => {
+    authPort.executeRpc.mockResolvedValue([
+      {
+        status: 'deactivated',
+        deactivated_at: '2026-09-01T00:00:00.000Z',
+        request_id: 'request-1',
+        scheduled_for: '2026-10-01T00:00:00.000Z',
+        reason: 'account_deletion_requested',
+      },
+    ]);
+
+    await expect(manager.getAccountLifecycleStatus()).resolves.toEqual({
+      status: 'deactivated',
+      deactivated_at: '2026-09-01T00:00:00.000Z',
+      request_id: 'request-1',
+      scheduled_for: '2026-10-01T00:00:00.000Z',
+      reason: 'account_deletion_requested',
+    });
+    expect(authPort.executeRpc).toHaveBeenCalledWith('get_account_lifecycle_status');
+    expect(authPort.signOut).not.toHaveBeenCalled();
+  });
+
+  it('rejects an empty lifecycle-status response instead of inventing an active account', async () => {
+    authPort.executeRpc.mockResolvedValue([]);
+
+    await expect(manager.getAccountLifecycleStatus()).rejects.toThrow(
+      'Account lifecycle status returned an invalid response.',
+    );
+    expect(authPort.signOut).not.toHaveBeenCalled();
   });
 });

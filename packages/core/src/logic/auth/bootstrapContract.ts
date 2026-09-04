@@ -1,18 +1,26 @@
-import type { IdentityMode } from '@repo/core/logic/auth/identityState';
+import type { IdentityAvailability, IdentityMode } from '@repo/core/logic/auth/identityState';
 
 export type BootstrapSessionState =
   | 'booting'
   | 'public'
+  | 'inactive-account'
   | 'authenticated'
   | 'onboarding-needed'
   | 'ready';
 
-export type BootstrapEntryPoint = 'welcome' | 'auth' | 'onboarding' | 'app' | 'public-form';
+export type BootstrapEntryPoint =
+  | 'welcome'
+  | 'auth'
+  | 'onboarding'
+  | 'app'
+  | 'public-form'
+  | 'account-recovery';
 
 export type BootstrapRouteReason =
   | 'loading'
   | 'no-session'
   | 'already-public'
+  | 'account-inactive'
   | 'needs-onboarding'
   | 'ready-for-app';
 
@@ -27,6 +35,7 @@ export type BootstrapRoutePolicy = {
 export function getBootstrapSessionState(params: {
   bootstrapReady: boolean;
   sessionMode: IdentityMode | null;
+  identityAvailability?: IdentityAvailability;
   onboardingCompleted: boolean;
   hasActiveCapacity?: boolean;
   hasSession?: boolean;
@@ -34,6 +43,7 @@ export function getBootstrapSessionState(params: {
   const {
     bootstrapReady,
     sessionMode,
+    identityAvailability = 'unknown',
     onboardingCompleted,
     hasActiveCapacity = true,
     hasSession,
@@ -41,6 +51,9 @@ export function getBootstrapSessionState(params: {
 
   if (!bootstrapReady) return 'booting';
   if (!hasSession || sessionMode === 'unauthenticated') return 'public';
+  if (sessionMode === 'authenticated' && identityAvailability === 'inactive') {
+    return 'inactive-account';
+  }
   if (!onboardingCompleted || !hasActiveCapacity) return 'onboarding-needed';
   return 'ready';
 }

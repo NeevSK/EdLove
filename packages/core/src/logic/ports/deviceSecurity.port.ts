@@ -26,20 +26,25 @@ export interface IDeviceSecurityPort {
   /**
    * Revokes a specific session.
    */
-  revokeSession(sessionId: string): Promise<void>;
+  revokeSession(sessionId: string): Promise<DeviceSecurityMutationResult<unknown>>;
 
   /**
    * Unlinks (untrusts) a specific device.
    */
-  unlinkDevice(deviceId: string): Promise<void>;
+  unlinkDevice(deviceId: string): Promise<DeviceSecurityMutationResult<unknown>>;
 
   /**
    * Revokes all active sessions for the user.
    */
-  revokeAllSessions(): Promise<void>;
+  revokeAllSessions(): Promise<DeviceSecurityMutationResult<unknown>>;
 
   /**
    * Marks a device as trusted (elevation).
    */
-  trustDevice(deviceId: string): Promise<void>;
+  trustDevice(deviceId: string): Promise<DeviceSecurityMutationResult<unknown>>;
+}
+
+export interface DeviceSecurityMutationResult<T> {
+  queued: boolean;
+  data: T;
 }

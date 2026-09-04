@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { type DeviceAccountRecord, deviceAccounts } from '@repo/core/accounts/deviceAccounts';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
 
 export type { DeviceAccountRecord };
 
@@ -123,8 +123,9 @@ export function useDeviceAccounts() {
     const currentId = state.activeAccountId;
     dispatch({ type: 'SET_BUSY', payload: currentId });
     try {
-      await deviceAccounts.signOutCurrentAccount();
+      const result = await deviceAccounts.signOutCurrentAccount();
       await refresh();
+      return result;
     } finally {
       dispatch({ type: 'SET_BUSY', payload: null });
     }

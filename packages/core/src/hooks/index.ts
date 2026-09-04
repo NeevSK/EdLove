@@ -1,4 +1,11 @@
 export { useAccountDeletion } from '@repo/core/hooks/useAccountDeletion';
+export {
+  accountLifecycleReducer,
+  initialAccountLifecycleState,
+  useAccountLifecycle,
+  type AccountLifecycleExecutor,
+  type AccountLifecycleState,
+} from '@repo/core/hooks/useAccountLifecycle';
 export { useBanyanGrowth } from '@repo/core/hooks/useBanyanGrowth';
 export { useClassroomCreation } from '@repo/core/hooks/useClassroomCreation';
 export { useDeviceAccounts } from '@repo/core/hooks/useDeviceAccounts';

@@ -678,6 +678,7 @@ export const deviceTrustAPI = {
 
   async trustDevice(deviceId: string) {
     await rpcSingle('trust_my_device', { p_device_id: deviceId });
+    return { queued: false, data: null };
   },
 
   async revokeAllSessions() {

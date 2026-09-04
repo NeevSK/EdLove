@@ -25,6 +25,10 @@ export {
 } from '@repo/core/lib/pendingGateAction';
 export { StorageKeys, storage } from '@repo/core/lib/storage';
 export { useMutationQueue } from '@repo/core/lib/sync/useMutationQueue';
+export type {
+  AccountLifecycleCommand,
+  AccountLifecycleResult,
+} from '@repo/core/logic/accountLifecycle';
 export * from '@repo/core/logic/apiInterceptor';
 export {
   getAuthRouteDecision,
@@ -33,6 +37,7 @@ export {
 } from '@repo/core/logic/auth/bootstrapRoutes';
 export {
   getSessionIdentityMode,
+  isActiveIdentityProfile,
   isAnonymousIdentity,
   isAnonymousSession,
   isDemoSession,

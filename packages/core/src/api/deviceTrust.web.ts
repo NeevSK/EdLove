@@ -33,15 +33,10 @@ function safeWrite(key: string, value: string): void {
   }
 }
 
-function safeRemove(key: string): void {
-  const storage = getStorage();
-  if (!storage) return;
-
-  try {
-    storage.removeItem(key);
-  } catch {
-    // Best effort only.
-  }
+function remoteSecurityUnavailable(): APIError {
+  return new APIError(
+    'Remote device and session security controls are not available in the browser yet.',
+  );
 }
 
 function randomId() {
@@ -185,19 +180,21 @@ export const deviceTrustAPI = {
   },
 
   async revokeSession(sessionId: string) {
-    safeRemove(`gurudevi-web-session:${sessionId}`);
+    void sessionId;
+    throw remoteSecurityUnavailable();
   },
 
   async unlinkDevice(deviceId: string) {
-    safeRemove(`gurudevi-web-device:${deviceId}`);
+    void deviceId;
+    throw remoteSecurityUnavailable();
   },
 
   async revokeAllSessions() {
-    // Web sessions are browser-scoped and cleared on sign-out / storage reset.
+    throw remoteSecurityUnavailable();
   },
 
   async trustDevice(_deviceId: string) {
-    // Browser trust is derived from the authenticated session plus origin-bound storage.
+    throw remoteSecurityUnavailable();
   },
 
   async logAuditEvent(action: string, metadata: Record<string, unknown>, accountId?: string) {
@@ -219,15 +216,31 @@ export const deviceTrustAPI = {
     return this.unlinkDevice(String(vars.deviceId ?? ''));
   },
 
+  async unlinkMyDevice(deviceId: string) {
+    return this.unlinkDevice(deviceId);
+  },
+
   async performRevokeMySecuritySessionIntent(vars: Record<string, unknown>) {
     return this.revokeSession(String(vars.sessionId ?? ''));
+  },
+
+  async revokeMySecuritySession(sessionId: string) {
+    return this.revokeSession(sessionId);
   },
 
   async performRevokeMyOtherSecuritySessionsIntent(_vars: Record<string, unknown>) {
     return this.revokeAllSessions();
   },
 
+  async revokeMyOtherSecuritySessions() {
+    return this.revokeAllSessions();
+  },
+
   async performRevokeMyInstallSecuritySessionsIntent(_vars: Record<string, unknown>) {
+    return this.revokeAllSessions();
+  },
+
+  async revokeMyInstallSecuritySessions(_installId: string, _reason?: string) {
     return this.revokeAllSessions();
   },
 };

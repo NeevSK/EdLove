@@ -64,8 +64,8 @@ export function useDeviceSecurity() {
     async (sessionId: string) => {
       startTransition(() => {
         addOptimisticSession({ type: 'revoke', sessionId });
-        void revokeSession(sessionId);
       });
+      return revokeSession(sessionId);
     },
     [revokeSession, addOptimisticSession],
   );
@@ -74,8 +74,8 @@ export function useDeviceSecurity() {
     async (deviceId: string) => {
       startTransition(() => {
         addOptimisticDevice({ type: 'unlink', deviceId });
-        void unlinkDevice(deviceId);
       });
+      return unlinkDevice(deviceId);
     },
     [unlinkDevice, addOptimisticDevice],
   );

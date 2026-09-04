@@ -3,6 +3,7 @@ import type {
   AuthEvent,
   DeviceSecurityEvent,
   DeviceSecuritySession,
+  DeviceSecurityMutationResult,
   DeviceTrustSummary,
 } from '@repo/core/api/deviceTrust';
 import { deviceSecurity } from '@repo/core/logic/managers/factory';
@@ -19,10 +20,10 @@ interface DeviceSecurityState {
 
   // Actions
   fetchSecuritySummary: () => Promise<void>;
-  revokeSession: (sessionId: string) => Promise<void>;
-  unlinkDevice: (deviceId: string) => Promise<void>;
-  revokeAllSessions: () => Promise<void>;
-  trustDevice: (deviceId: string) => Promise<void>;
+  revokeSession: (sessionId: string) => Promise<DeviceSecurityMutationResult<unknown>>;
+  unlinkDevice: (deviceId: string) => Promise<DeviceSecurityMutationResult<unknown>>;
+  revokeAllSessions: () => Promise<DeviceSecurityMutationResult<unknown>>;
+  trustDevice: (deviceId: string) => Promise<DeviceSecurityMutationResult<unknown>>;
 }
 
 export const useDeviceSecurityStore = create<DeviceSecurityState>((set, get) => ({
@@ -58,54 +59,74 @@ export const useDeviceSecurityStore = create<DeviceSecurityState>((set, get) => 
   revokeSession: async (sessionId) => {
     set({ loading: true });
     try {
-      await deviceSecurity.revokeSession(sessionId);
-      // Optimistic update
-      set((state) => ({
-        sessions: state.sessions.map((s) =>
-          s.sessionId === sessionId ? { ...s, status: 'revoked' } : s,
-        ),
-        loading: false,
-      }));
-      // Actual refresh
-      await get().fetchSecuritySummary();
+      const result = await deviceSecurity.revokeSession(sessionId);
+      if (result.queued) {
+        set({ loading: false });
+      } else {
+        set((state) => ({
+          sessions: state.sessions.map((s) =>
+            s.sessionId === sessionId ? { ...s, status: 'revoked' } : s,
+          ),
+          loading: false,
+        }));
+        await get().fetchSecuritySummary();
+      }
+      return result;
     } catch (err: any) {
       set({ error: err.message, loading: false });
+      throw err;
     }
   },
 
   unlinkDevice: async (deviceId) => {
     set({ loading: true });
     try {
-      await deviceSecurity.unlinkDevice(deviceId);
-      // Optimistic remove
-      set((state) => ({
-        devices: state.devices.filter((d) => d.deviceId !== deviceId),
-        loading: false,
-      }));
-      // Actual refresh
-      await get().fetchSecuritySummary();
+      const result = await deviceSecurity.unlinkDevice(deviceId);
+      if (result.queued) {
+        set({ loading: false });
+      } else {
+        set((state) => ({
+          devices: state.devices.filter((d) => d.deviceId !== deviceId),
+          loading: false,
+        }));
+        await get().fetchSecuritySummary();
+      }
+      return result;
     } catch (err: any) {
       set({ error: err.message, loading: false });
+      throw err;
     }
   },
 
   revokeAllSessions: async () => {
     set({ loading: true });
     try {
-      await deviceSecurity.revokeAllSessions();
-      await get().fetchSecuritySummary();
+      const result = await deviceSecurity.revokeAllSessions();
+      if (result.queued) {
+        set({ loading: false });
+      } else {
+        await get().fetchSecuritySummary();
+      }
+      return result;
     } catch (err: any) {
       set({ error: err.message, loading: false });
+      throw err;
     }
   },
 
   trustDevice: async (deviceId) => {
     set({ loading: true });
     try {
-      await deviceSecurity.trustDevice(deviceId);
-      await get().fetchSecuritySummary();
+      const result = await deviceSecurity.trustDevice(deviceId);
+      if (result.queued) {
+        set({ loading: false });
+      } else {
+        await get().fetchSecuritySummary();
+      }
+      return result;
     } catch (err: any) {
       set({ error: err.message, loading: false });
+      throw err;
     }
   },
 }));

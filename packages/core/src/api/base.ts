@@ -21,6 +21,15 @@ export const SOVEREIGN_API_PUBLIC_URL =
 export const SOVEREIGN_API_URL = SOVEREIGN_API_PUBLIC_URL || 'http://localhost:3000';
 
 /**
+ * ORPC procedures are mounted under the API prefix, whereas Hono clients use
+ * the origin and include their own `api` path segment. Keep both contracts
+ * explicit so one transport cannot silently address the other's routes.
+ */
+export const SOVEREIGN_ORPC_URL = SOVEREIGN_API_URL.replace(/\/+$/, '').endsWith('/api')
+  ? SOVEREIGN_API_URL.replace(/\/+$/, '')
+  : `${SOVEREIGN_API_URL.replace(/\/+$/, '')}/api`;
+
+/**
  * createSovereignClient - Factory for type-safe Hono RPC clients.
  * Cast to any to bypass complex nested generic resolution issues in TS 5.9.
  */

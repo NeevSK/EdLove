@@ -1,7 +1,7 @@
 import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 import { applyTemporalFilter, getTemporalRange } from '@repo/core/logic/utils/temporalUtils';
 
-describe('temporalUtils', () => {
+describe('temporalUtils', { tags: ['pure', 'fast'] }, () => {
   afterEach(() => {
     useTemporalStore.getState().resetToToday();
     useTemporalStore.setState({ viewScale: 'day' });

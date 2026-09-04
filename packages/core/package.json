@@ -1,6 +1,6 @@
 {
   "name": "@repo/core",
-  "version": "0.1.0",
+  "version": "1.5.0",
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -89,21 +89,21 @@
       "import": "./src/logic/schemas/*.ts",
       "default": "./src/logic/schemas/*.ts"
     },
-"./logic/events/*": {
-                               "types": "./src/logic/events/*.ts",
-                               "import": "./src/logic/events/*.ts",
-                               "default": "./src/logic/events/*.ts"
-                           },
+    "./logic/events/*": {
+      "types": "./src/logic/events/*.ts",
+      "import": "./src/logic/events/*.ts",
+      "default": "./src/logic/events/*.ts"
+    },
     "./logic/reflection": {
-                               "types": "./src/logic/reflection/index.ts",
-                               "import": "./src/logic/reflection/index.ts",
-                               "default": "./src/logic/reflection/index.ts"
-                           },
+      "types": "./src/logic/reflection/index.ts",
+      "import": "./src/logic/reflection/index.ts",
+      "default": "./src/logic/reflection/index.ts"
+    },
     "./logic/reflection/*": {
-                               "types": "./src/logic/reflection/*.ts",
-                               "import": "./src/logic/reflection/*.ts",
-                               "default": "./src/logic/reflection/*.ts"
-                           },
+      "types": "./src/logic/reflection/*.ts",
+      "import": "./src/logic/reflection/*.ts",
+      "default": "./src/logic/reflection/*.ts"
+    },
     "./zen": {
       "types": "./src/logic/generated/index.ts",
       "import": "./src/logic/generated/index.ts",
@@ -172,6 +172,16 @@
       "types": "./src/adapters/*.ts",
       "import": "./src/adapters/*.ts",
       "default": "./src/adapters/*.ts"
+    },
+    "./effect/schedules": {
+      "types": "./src/effect/Schedules.ts",
+      "import": "./src/effect/Schedules.ts",
+      "default": "./src/effect/Schedules.ts"
+    },
+    "./effect/*": {
+      "types": "./src/effect/*.ts",
+      "import": "./src/effect/*.ts",
+      "default": "./src/effect/*.ts"
     },
     "./types": {
       "types": "./src/types/index.ts",
@@ -325,27 +335,27 @@
   },
   "peerDependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-community/netinfo": ">=12.0.1",
     "@sentry/react-native": "*",
     "@supabase/postgrest-js": "2.102.1",
     "@supabase/supabase-js": "2.102.1",
     "expo-background-task": "~57.0.9",
     "expo-battery": "~57.0.2",
+    "expo-clipboard": ">=57.0.0",
     "expo-constants": "~57.0.10",
+    "expo-crypto": ">=57.0.0",
     "expo-device": "~57.0.1",
+    "expo-file-system": ">=57.0.0",
     "expo-font": "~57.0.1",
     "expo-haptics": "~57.0.1",
     "expo-location": "~57.0.9",
     "expo-notifications": "~57.0.10",
     "expo-secure-store": "~57.0.1",
+    "expo-sharing": ">=57.0.0",
     "expo-task-manager": "~57.0.9",
     "react": "*",
     "react-native": "*",
     "react-native-keychain": "*",
-    "@react-native-community/netinfo": ">=12.0.1",
-    "expo-clipboard": ">=57.0.0",
-    "expo-crypto": ">=57.0.0",
-    "expo-file-system": ">=57.0.0",
-    "expo-sharing": ">=57.0.0",
     "react-native-mmkv": "^4.3.2",
     "react-native-url-polyfill": "*",
     "zustand": "^4.5.0"
@@ -361,7 +371,7 @@
     "@types/react": "^19.2.17",
     "@types/react-native": "workspace:*",
     "@types/uuid": "^10.0.0",
-    "@vitest/ui": "^4.1.8",
+    "@vitest/ui": "^5.0.0",
     "decimal.js": "^10.6.0",
     "eslint": "^10.4.1",
     "jest": "^29.7.0",
@@ -369,7 +379,7 @@
     "tailwindcss": "^4.3.0",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.8",
+    "vitest": "^5.0.0",
     "zustand": "^5.0.14"
   },
   "dependencies": {
@@ -405,7 +415,7 @@
     "pino": "^10.3.1",
     "react-i18next": "^17.0.8",
     "uuid": "^14.0.1",
-    "zod": "4.4.3"
+    "zod": "4.5.4"
   },
   "_originalScripts": {
     "lint": "pnpm run lint:biome && pnpm run lint:eslint",

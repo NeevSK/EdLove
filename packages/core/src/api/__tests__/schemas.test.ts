@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+import { describe, expect, expectTypeOf, test } from 'vitest';
+import type { z } from 'zod';
 import { AttendanceSchema } from '../../logic/schemas/attendance.schema';
 import { ClassroomSchema } from '../../logic/schemas/classroom.schema';
 import { LessonSchema } from '../../logic/schemas/lesson.schema';
@@ -111,6 +113,22 @@ describe('API Schema Validation (Zero-Trust)', () => {
       const invalid = { ...validAttendance, status: 'sleeping' };
       const result = AttendanceSchema.safeParse(invalid);
       expect(result.success).toBe(false);
+    });
+  });
+
+  describe('Static Type Invariants (T16 expectTypeOf)', () => {
+    test('enforces infer shape matches expected model contracts without type regression', () => {
+      type Classroom = z.infer<typeof ClassroomSchema>;
+      type Attendance = z.infer<typeof AttendanceSchema>;
+      type Student = z.infer<typeof StudentSchema>;
+      type Lesson = z.infer<typeof LessonSchema>;
+
+      expectTypeOf<Classroom>().toHaveProperty('id');
+      expectTypeOf<Classroom['id']>().toBeString();
+      expectTypeOf<Classroom['name']>().toBeString();
+      expectTypeOf<Attendance['status']>().toBeString();
+      expectTypeOf<Student['full_name']>().toBeString();
+      expectTypeOf<Student['classroom_id']>().toBeString();
     });
   });
 });

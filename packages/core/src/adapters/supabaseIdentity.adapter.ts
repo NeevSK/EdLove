@@ -2,7 +2,7 @@ import * as Data from 'effect/Data';
 import * as Duration from 'effect/Duration';
 import * as Effect from 'effect/Effect';
 import { pipe } from 'effect/Function';
-import * as Schedule from 'effect/Schedule';
+import { strictRetryPolicy } from '@repo/core/utils/effect';
 import { registerActiveBondIdResolver, registerTokenResolver } from '@repo/core/api/clientRuntime';
 import type { Identity } from '@repo/core/api/identity.generated';
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
@@ -43,10 +43,6 @@ class SupabaseQueryError extends Data.TaggedError('SupabaseQueryError')<{
   readonly message: string;
 }> {}
 
-const retryPolicy = pipe(
-  Schedule.exponential(Duration.millis(200)),
-  Schedule.intersect(Schedule.recurs(2)),
-);
 
 function supabaseCall<T>(
   fn: () => PromiseLike<{ data: T; error: any }>,
@@ -61,7 +57,7 @@ function supabaseCall<T>(
         ? Effect.fail(new SupabaseQueryError({ message: error.message ?? String(error) }))
         : Effect.succeed(data as T),
     ),
-    Effect.retry(retryPolicy),
+    Effect.retry(strictRetryPolicy),
     Effect.timeout(Duration.seconds(15)),
     Effect.catchTag('TimeoutException', () =>
       Effect.fail(new SupabaseQueryError({ message: 'Supabase query timed out' })),

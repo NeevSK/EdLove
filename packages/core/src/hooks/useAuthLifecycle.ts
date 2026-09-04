@@ -1,7 +1,11 @@
 import { supabaseClient } from '@repo/core/adapters/supabaseClient';
+import {
+  type DeviceAccountProfile,
+  deviceAccounts,
+} from '@repo/core/accounts/deviceAccounts';
 import { authAPI } from '@repo/core/api/auth';
 import { assertHighway } from '@repo/core/api/highways';
-import { identityAPI } from '@repo/core/api/identity';
+import { type ActiveCitizen, identityAPI } from '@repo/core/api/identity';
 import type { SchoolType } from '@repo/core/constants/SriLankanSchools';
 import {
   clearSentryUser,
@@ -9,13 +13,46 @@ import {
   initSentry,
   setSentryUser,
 } from '@repo/core/monitoring';
-import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
+import {
+  type IdentityAvailability,
+  getSessionIdentityMode,
+} from '@repo/core/logic/auth/identityState';
+import type { AccountLifecycleStatus } from '@repo/core/logic/ports/auth.port';
 import { useStore } from '@repo/core/store/useStore';
 import type { User } from '@repo/core/types';
 import { APIError } from '@repo/core/types/API';
 import type { Bond } from '@repo/core/types/Identity';
 import type { Session } from '@supabase/supabase-js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+/**
+ * A device account is only durable after the authenticated Supabase session
+ * and the resolved Gurudevi identity agree on the same principal. This keeps
+ * anonymous, sandbox, stale, and partially-resolved sessions out of the
+ * shared-device registry.
+ */
+export function getVerifiedDeviceAccountProfile(
+  session: Session | null,
+  identity: ActiveCitizen | null,
+): DeviceAccountProfile | null {
+  if (
+    !session?.user ||
+    getSessionIdentityMode(session) !== 'authenticated' ||
+    !identity ||
+    identity.id !== session.user.id
+  ) {
+    return null;
+  }
+
+  return {
+    id: identity.id,
+    email: identity.email,
+    display_name: identity.display_name,
+    avatar_url: null,
+    capacity: identity.activeBond?.capacity ?? null,
+    school_id: identity.schoolId ?? null,
+  };
+}
 
 /**
  * useAuthLifecycle
@@ -29,8 +66,13 @@ export function useAuthLifecycle() {
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [isProfileResolving, setIsProfileResolving] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
+  const [identityAvailability, setIdentityAvailability] = useState<IdentityAvailability>('unknown');
+  const [accountLifecycleStatus, setAccountLifecycleStatus] =
+    useState<AccountLifecycleStatus | null>(null);
 
   const hasBootstrappedRef = useRef(false);
+  const capturedSessionKeysRef = useRef(new Set<string>());
+  const capturingSessionKeysRef = useRef(new Set<string>());
 
   const setUser = useStore((state) => state.setUser);
   const setPerspective = useStore((state) => state.setPerspective);
@@ -41,7 +83,7 @@ export function useAuthLifecycle() {
   const setAuthSessionResolved = useStore((state) => state.setAuthSessionResolved);
   const setDemoMode = useStore((state) => state.setDemoMode);
 
-  const fetchAndSetUserProfile = useCallback(async () => {
+  const fetchAndSetUserProfile = useCallback(async (sessionToCapture?: Session | null) => {
     // Only block the UI with a loading spinner on the very first boot fetch.
     // All subsequent fetches (tab focus, token refresh) run silently.
     const isFirstLoad = !hasBootstrappedRef.current;
@@ -57,6 +99,8 @@ export function useAuthLifecycle() {
       const identity = await identityAPI.identifyActiveCitizen();
 
       if (identity) {
+        setIdentityAvailability('active');
+        setAccountLifecycleStatus(null);
         // 2. Update Store with ReBAC data
         // Cast simplified bonds to full Bond type - the store layer fills in additional fields
         setUser(identity as unknown as User);
@@ -67,6 +111,30 @@ export function useAuthLifecycle() {
           activeBond: identity.activeBond as unknown as Bond | undefined,
           availableBonds: identity.availableBonds as unknown as Bond[],
         });
+
+        const deviceAccountProfile = getVerifiedDeviceAccountProfile(sessionToCapture ?? null, identity);
+        const captureKey = sessionToCapture
+          ? `${sessionToCapture.user.id}:${sessionToCapture.access_token}`
+          : null;
+        if (
+          deviceAccountProfile &&
+          captureKey &&
+          !capturedSessionKeysRef.current.has(captureKey) &&
+          !capturingSessionKeysRef.current.has(captureKey)
+        ) {
+          capturingSessionKeysRef.current.add(captureKey);
+          try {
+            await deviceAccounts.captureCurrentAccount(sessionToCapture ?? null, deviceAccountProfile);
+            capturedSessionKeysRef.current.add(captureKey);
+          } catch (error) {
+            // A registry failure must not invalidate an otherwise verified
+            // session. Leaving the key uncaptured permits a later auth refresh
+            // to retry without duplicating successful captures.
+            console.warn('[auth] Device account capture deferred:', error);
+          } finally {
+            capturingSessionKeysRef.current.delete(captureKey);
+          }
+        }
 
         // 3. Handle Onboarding & School Logic
         const isEffectivelyOnboarded = !!identity.onboarding_completed;
@@ -97,6 +165,28 @@ export function useAuthLifecycle() {
         });
 
         identifyUser(identity.id);
+      } else {
+        // A soft-deactivated profile is intentionally not an active identity.
+        // Clear derived state so stale local data cannot keep rendering the app
+        // shell while the auth session is still present.
+        setUser(null);
+        setPerspective(null);
+        setAvailableBonds([]);
+        setSchoolType(null);
+        setOnboardingCompleted(false);
+        setAccountLifecycleStatus(null);
+        if (getSessionIdentityMode(sessionToCapture) === 'authenticated') {
+          const lifecycleStatus = await authAPI.getAccountLifecycleStatus();
+          setAccountLifecycleStatus(lifecycleStatus);
+          if (lifecycleStatus.status === 'deactivated') {
+            setIdentityAvailability('inactive');
+          } else {
+            setIdentityAvailability('unknown');
+            setProfileError('Unable to restore your account profile.');
+          }
+        } else {
+          setIdentityAvailability('unknown');
+        }
       }
     } catch (error) {
       console.warn('❌ Profile: Fetching encountered an error:', error);
@@ -113,7 +203,8 @@ export function useAuthLifecycle() {
   }, [setUser, setPerspective, setAvailableBonds, setSchoolType, setOnboardingCompleted]);
 
   const refreshProfile = useCallback(async () => {
-    await fetchAndSetUserProfile();
+    const currentSession = (await authAPI.getAuthSession()) as Session | null;
+    await fetchAndSetUserProfile(currentSession);
   }, [fetchAndSetUserProfile]);
 
   useEffect(() => {
@@ -130,13 +221,15 @@ export function useAuthLifecycle() {
 
         const sessionMode = getSessionIdentityMode(initialSession);
         if (sessionMode === 'authenticated' || sessionMode === 'anonymous') {
-          await fetchAndSetUserProfile();
+          await fetchAndSetUserProfile(initialSession);
         } else if (initialSession?.user) {
           setUser(null);
           setPerspective(null);
           setAvailableBonds([]);
           setSchoolType(null);
           setOnboardingCompleted(false);
+          setIdentityAvailability('unknown');
+          setAccountLifecycleStatus(null);
         }
       } catch (error) {
         if (error instanceof APIError) {
@@ -169,13 +262,15 @@ export function useAuthLifecycle() {
 
       const currentMode = getSessionIdentityMode(currentSession);
       if (currentMode === 'authenticated' || currentMode === 'anonymous') {
-        await fetchAndSetUserProfile();
+        await fetchAndSetUserProfile(currentSession);
       } else if (currentSession?.user) {
         setUser(null);
         setPerspective(null);
         setAvailableBonds([]);
         setSchoolType(null);
         setOnboardingCompleted(false);
+        setIdentityAvailability('unknown');
+        setAccountLifecycleStatus(null);
       } else if (event === 'SIGNED_OUT') {
         clearSentryUser();
         setUser(null);
@@ -183,6 +278,8 @@ export function useAuthLifecycle() {
         setAvailableBonds([]);
         setSchoolType(null);
         setOnboardingCompleted(false);
+        setIdentityAvailability('unknown');
+        setAccountLifecycleStatus(null);
         setDemoMode(false);
       } else if (currentSession) {
         setDemoMode(false);
@@ -198,6 +295,8 @@ export function useAuthLifecycle() {
     setAvailableBonds,
     setSchoolType,
     setOnboardingCompleted,
+    setIdentityAvailability,
+    setAccountLifecycleStatus,
     fetchAndSetUserProfile,
     setDemoMode,
   ]);
@@ -239,8 +338,19 @@ export function useAuthLifecycle() {
       isProfileLoading,
       isProfileResolving,
       profileError,
+      identityAvailability,
+      accountLifecycleStatus,
       refreshProfile,
     }),
-    [session, loading, isProfileLoading, isProfileResolving, profileError, refreshProfile],
+    [
+      session,
+      loading,
+      isProfileLoading,
+      isProfileResolving,
+      profileError,
+      identityAvailability,
+      accountLifecycleStatus,
+      refreshProfile,
+    ],
   );
 }

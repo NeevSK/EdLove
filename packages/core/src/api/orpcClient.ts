@@ -3,7 +3,7 @@ import { RPCLink } from '@orpc/client/fetch';
 import { BatchLinkPlugin, ClientRetryPlugin, DedupeRequestsPlugin } from '@orpc/client/plugins';
 import type { RouterClient } from '@orpc/server';
 import { createTanstackQueryUtils } from '@orpc/tanstack-query';
-import { SOVEREIGN_API_URL } from './base';
+import { SOVEREIGN_ORPC_URL } from './base';
 import { authenticatedSovereignFetch } from './clientRuntime';
 
 export interface ClientContext {
@@ -27,7 +27,7 @@ export interface ClientContext {
 }
 
 const link = new RPCLink<ClientContext>({
-  url: SOVEREIGN_API_URL,
+  url: SOVEREIGN_ORPC_URL,
   method: ({ context }) => {
     if (context?.cache) {
       return 'GET';

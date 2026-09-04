@@ -14,7 +14,7 @@ const studentId = '00000000-0000-4000-8000-000000000001';
 
 describe('student longitudinal cross-classroom authorization boundary', () => {
   it('surfaces a Sanctuary authorization failure instead of querying Supabase directly', async () => {
-    get.mockResolvedValueOnce(new Response('forbidden', { status: 403 }));
+    get.mockResolvedValueOnce({ ok: false, status: 403, json: () => Promise.resolve({ error: 'forbidden' }) });
     const read = longitudinalAPI.getStudentTimeline(studentId, '2026-03-28T23:59:59.000Z');
 
     await expect(read).rejects.toThrow();

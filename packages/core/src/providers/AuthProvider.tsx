@@ -2,6 +2,8 @@ import type { Session } from '@supabase/supabase-js';
 import type React from 'react';
 import { createContext, type ReactNode, useContext } from 'react';
 import { useAuthLifecycle } from '@repo/core/hooks/useAuthLifecycle';
+import type { IdentityAvailability } from '@repo/core/logic/auth/identityState';
+import type { AccountLifecycleStatus } from '@repo/core/logic/ports/auth.port';
 
 interface AuthContextType {
   session: Session | null;
@@ -9,6 +11,8 @@ interface AuthContextType {
   isProfileLoading: boolean;
   isProfileResolving: boolean;
   profileError: string | null;
+  identityAvailability: IdentityAvailability;
+  accountLifecycleStatus: AccountLifecycleStatus | null;
   refreshProfile: () => Promise<void>;
 }
 

@@ -4,7 +4,10 @@ import type {
   DeviceSecuritySession,
   DeviceTrustSummary,
 } from '@repo/core/api/deviceTrust';
-import type { IDeviceSecurityPort } from '@repo/core/logic/ports/deviceSecurity.port';
+import type {
+  DeviceSecurityMutationResult,
+  IDeviceSecurityPort,
+} from '@repo/core/logic/ports/deviceSecurity.port';
 
 export class DeviceSecurityManager implements IDeviceSecurityPort {
   constructor(private adapter: IDeviceSecurityPort) {}
@@ -19,19 +22,19 @@ export class DeviceSecurityManager implements IDeviceSecurityPort {
     return this.adapter.getSecuritySummary();
   }
 
-  async revokeSession(sessionId: string): Promise<void> {
+  async revokeSession(sessionId: string): Promise<DeviceSecurityMutationResult<unknown>> {
     return this.adapter.revokeSession(sessionId);
   }
 
-  async unlinkDevice(deviceId: string): Promise<void> {
+  async unlinkDevice(deviceId: string): Promise<DeviceSecurityMutationResult<unknown>> {
     return this.adapter.unlinkDevice(deviceId);
   }
 
-  async revokeAllSessions(): Promise<void> {
+  async revokeAllSessions(): Promise<DeviceSecurityMutationResult<unknown>> {
     return this.adapter.revokeAllSessions();
   }
 
-  async trustDevice(deviceId: string): Promise<void> {
+  async trustDevice(deviceId: string): Promise<DeviceSecurityMutationResult<unknown>> {
     return this.adapter.trustDevice(deviceId);
   }
 }

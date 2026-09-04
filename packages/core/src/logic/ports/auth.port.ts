@@ -20,6 +20,22 @@ export interface AuthMfaFactor {
   last_challenged_at?: string;
 }
 
+export interface AccountDeletionRequest {
+  status: 'pending_verification' | 'scheduled' | 'cancelled' | 'completed' | 'blocked';
+  request_id: string | null;
+  requested_at: string | null;
+  scheduled_for?: string | null;
+  reason: string;
+}
+
+export interface AccountLifecycleStatus {
+  status: 'active' | 'pending_verification' | 'scheduled' | 'deactivated' | 'cancelled' | 'completed' | 'blocked';
+  deactivated_at: string | null;
+  request_id: string | null;
+  scheduled_for: string | null;
+  reason: string;
+}
+
 export interface IAuthPort {
   getSession(): Promise<AuthSession | null>;
   getUser(): Promise<AuthUser | null>;

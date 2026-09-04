@@ -3,9 +3,9 @@ import {
   type BootstrapSessionState,
   getBootstrapSessionState,
 } from '@repo/core/logic/auth/bootstrapContract';
-import type { IdentityMode } from '@repo/core/logic/auth/identityState';
+import type { IdentityAvailability, IdentityMode } from '@repo/core/logic/auth/identityState';
 
-export type RouteDecision = 'booting' | 'public' | 'onboarding' | 'app';
+export type RouteDecision = 'booting' | 'public' | 'inactive-account' | 'onboarding' | 'app';
 
 export type RouteTarget = {
   decision: RouteDecision;
@@ -17,6 +17,7 @@ export function getAuthRouteDecision(params: {
   pathname: string;
   bootstrapReady: boolean;
   sessionMode: IdentityMode | null;
+  identityAvailability?: IdentityAvailability;
   onboardingCompleted: boolean;
   hasActiveCapacity?: boolean;
   hasSession?: boolean;
@@ -28,6 +29,7 @@ export function getAuthRouteTarget(params: {
   pathname: string;
   bootstrapReady: boolean;
   sessionMode: IdentityMode | null;
+  identityAvailability?: IdentityAvailability;
   onboardingCompleted: boolean;
   hasActiveCapacity?: boolean;
   hasSession?: boolean;
@@ -38,6 +40,7 @@ export function getAuthRouteTarget(params: {
     pathname === '/welcome' || pathname === '/auth' || pathname.startsWith('/public-form');
   const isAppEntryPath = pathname === '/' || pathname === '/welcome' || pathname === '/auth';
   const isOnboardingPath = pathname === '/onboarding';
+  const isAccountRecoveryPath = pathname === '/account-recovery';
 
   if (state === 'booting') {
     return {
@@ -67,6 +70,20 @@ export function getAuthRouteTarget(params: {
         reason: isPublicPath ? 'already-public' : 'no-session',
         redirectTo: isPublicPath ? null : '/welcome',
         canRenderCurrentPath: isPublicPath,
+      },
+    };
+  }
+
+  if (state === 'inactive-account') {
+    return {
+      decision: 'inactive-account',
+      redirectTo: isAccountRecoveryPath ? null : '/account-recovery',
+      policy: {
+        state,
+        entryPoint: 'account-recovery',
+        reason: 'account-inactive',
+        redirectTo: isAccountRecoveryPath ? null : '/account-recovery',
+        canRenderCurrentPath: isAccountRecoveryPath,
       },
     };
   }

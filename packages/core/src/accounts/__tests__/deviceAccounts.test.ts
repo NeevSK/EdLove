@@ -1,3 +1,4 @@
+import type { Session } from '@supabase/supabase-js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mockGetString = vi.fn();
@@ -17,6 +18,7 @@ const mockIdentifyActiveCitizen = vi.fn();
 const mockUpsertCurrentSecuritySession = vi.fn();
 const mockGetProfile = vi.fn();
 const mockGetStoredSessionForAccount = vi.fn();
+const mockClearPowerSyncAccount = vi.fn();
 
 vi.mock('../../lib/storage', () => ({
   storage: {
@@ -82,6 +84,10 @@ vi.mock('../../lib/accountPin', () => ({
   },
 }));
 
+vi.mock('../../adapters/powersync/database', () => ({
+  clearPowerSyncAccount: (...args: unknown[]) => mockClearPowerSyncAccount(...args),
+}));
+
 import { deviceAccounts } from '../deviceAccounts';
 import { setActiveAccountId } from '../../lib/accountScope';
 
@@ -120,6 +126,46 @@ describe('deviceAccounts', () => {
         expect.objectContaining({ accountId: 'account-1', authStrength: 'session' }),
       ),
     );
+  });
+
+  it('does not retain anonymous or sandbox sessions on a shared device', async () => {
+    mockGetString.mockReturnValue(null);
+
+    const anonymousSession = {
+      access_token: 'anonymous-access-token',
+      refresh_token: 'anonymous-refresh-token',
+      expires_in: 3600,
+      token_type: 'bearer',
+      user: {
+        id: 'anonymous-1',
+        aud: 'authenticated',
+        role: 'authenticated',
+        app_metadata: {},
+        user_metadata: {},
+        created_at: '2026-09-01T00:00:00.000Z',
+        is_anonymous: true,
+      },
+    } as Session;
+    const sandboxSession = {
+      access_token: 'sandbox-access-token',
+      refresh_token: 'sandbox-refresh-token',
+      expires_in: 3600,
+      token_type: 'bearer',
+      user: {
+        id: 'sandbox-1',
+        aud: 'authenticated',
+        role: 'authenticated',
+        app_metadata: {},
+        user_metadata: { experience_mode: 'sandbox' },
+        created_at: '2026-09-01T00:00:00.000Z',
+      },
+    } as Session;
+
+    await expect(deviceAccounts.captureCurrentAccount(anonymousSession, null)).resolves.toBeNull();
+    await expect(deviceAccounts.captureCurrentAccount(sandboxSession, null)).resolves.toBeNull();
+
+    expect(mockIdentifyActiveCitizen).not.toHaveBeenCalled();
+    expect(mockSet).not.toHaveBeenCalled();
   });
 
   it('switches to a stored account session', async () => {
@@ -211,5 +257,12 @@ describe('deviceAccounts', () => {
 
     expect(mockSignOut).toHaveBeenCalledWith({ scope: 'local' });
     expect(mockDelete).toHaveBeenCalled();
+    expect(mockClearPowerSyncAccount).toHaveBeenCalledTimes(1);
+    await vi.waitFor(() =>
+      expect(mockRevokeMyInstallSecuritySessions).toHaveBeenCalledWith(
+        'install-1',
+        'signed_out_all_locally',
+      ),
+    );
   });
 });

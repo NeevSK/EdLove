@@ -30,6 +30,7 @@ export interface User extends ProfileStats {
   updated_at?: string | Date; // ISO timestamp or Date object (optional)
   avatar_url?: string | null; // Profile picture URL (optional)
   is_anonymous?: boolean | null; // Flag for anonymous/guest users
+  deleted_at?: string | null; // Server-owned soft-deactivation marker
   capacity?: string | null;
   identity_state?: 'anonymous' | 'onboarded' | 'verified' | string | null;
   profile_completed?: boolean; // Flag for "No Trust" barrier

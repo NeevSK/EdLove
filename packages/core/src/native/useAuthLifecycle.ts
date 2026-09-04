@@ -13,7 +13,11 @@ import {
   initSentry,
   setSentryUser,
 } from '@repo/core/monitoring';
-import { getSessionIdentityMode } from '@repo/core/logic/auth/identityState';
+import {
+  type IdentityAvailability,
+  getSessionIdentityMode,
+} from '@repo/core/logic/auth/identityState';
+import type { AccountLifecycleStatus } from '@repo/core/logic/ports/auth.port';
 import { useAuthStore } from '@repo/core/store/useAuthStore';
 import { useCedarDecisionStore } from '@repo/core/store/useCedarDecisionStore';
 import { useStore } from '@repo/core/store/useStore';
@@ -33,6 +37,9 @@ export function useAuthLifecycle() {
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [isProfileResolving, setIsProfileResolving] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
+  const [identityAvailability, setIdentityAvailability] = useState<IdentityAvailability>('unknown');
+  const [accountLifecycleStatus, setAccountLifecycleStatus] =
+    useState<AccountLifecycleStatus | null>(null);
 
   const setUser = useStore((state) => state.setUser);
   const setPerspective = useStore((state) => state.setPerspective);
@@ -42,7 +49,7 @@ export function useAuthLifecycle() {
   const setAuthSession = useStore((state) => state.setAuthSession);
   const setAuthSessionResolved = useStore((state) => state.setAuthSessionResolved);
 
-  const fetchAndSetUserProfile = useCallback(async () => {
+  const fetchAndSetUserProfile = useCallback(async (sessionToInspect?: Session | null) => {
     setIsProfileResolving(true);
     setProfileError(null);
     setIsProfileLoading(true);
@@ -53,6 +60,8 @@ export function useAuthLifecycle() {
       const identity = await identityAPI.identifyActiveCitizen();
 
       if (identity) {
+        setIdentityAvailability('active');
+        setAccountLifecycleStatus(null);
         // 2. Update store
         // Cast simplified bonds to full Bond type - the store layer fills in additional fields
         setUser(identity as unknown as Parameters<typeof setUser>[0]);
@@ -90,6 +99,27 @@ export function useAuthLifecycle() {
         });
 
         identifyUser(identity.id);
+      } else {
+        // A soft-deactivated profile is not an active app identity. Clear
+        // derived state while leaving the auth session available for policy UX.
+        setUser(null);
+        setPerspective(null);
+        setAvailableBonds([]);
+        setSchoolType(null);
+        setOnboardingCompleted(false);
+        setAccountLifecycleStatus(null);
+        if (getSessionIdentityMode(sessionToInspect) === 'authenticated') {
+          const lifecycleStatus = await authAPI.getAccountLifecycleStatus();
+          setAccountLifecycleStatus(lifecycleStatus);
+          if (lifecycleStatus.status === 'deactivated') {
+            setIdentityAvailability('inactive');
+          } else {
+            setIdentityAvailability('unknown');
+            setProfileError('Unable to restore your account profile.');
+          }
+        } else {
+          setIdentityAvailability('unknown');
+        }
       }
     } catch (error) {
       console.warn('❌ Profile: Fetching encountered an error:', error);
@@ -101,7 +131,8 @@ export function useAuthLifecycle() {
   }, [setUser, setPerspective, setAvailableBonds, setSchoolType, setOnboardingCompleted]);
 
   const refreshProfile = useCallback(async () => {
-    await fetchAndSetUserProfile();
+    const currentSession = (await authAPI.getAuthSession()) as Session | null;
+    await fetchAndSetUserProfile(currentSession);
   }, [fetchAndSetUserProfile]);
 
   useEffect(() => {
@@ -118,13 +149,15 @@ export function useAuthLifecycle() {
 
         const sessionMode = getSessionIdentityMode(initialSession);
         if (sessionMode === 'authenticated' || sessionMode === 'anonymous') {
-          await fetchAndSetUserProfile();
+          await fetchAndSetUserProfile(initialSession);
         } else if (initialSession?.user) {
           setUser(null);
           setPerspective(null);
           setAvailableBonds([]);
           setSchoolType(null);
           setOnboardingCompleted(false);
+          setIdentityAvailability('unknown');
+          setAccountLifecycleStatus(null);
           useCedarDecisionStore.getState().clearDecisions();
           setActiveCapabilityToken(null);
         }
@@ -162,13 +195,15 @@ export function useAuthLifecycle() {
 
         const currentMode = getSessionIdentityMode(currentSession);
         if (currentMode === 'authenticated' || currentMode === 'anonymous') {
-          await fetchAndSetUserProfile();
+          await fetchAndSetUserProfile(currentSession);
         } else if (currentSession?.user) {
           setUser(null);
           setPerspective(null);
           setAvailableBonds([]);
           setSchoolType(null);
           setOnboardingCompleted(false);
+          setIdentityAvailability('unknown');
+          setAccountLifecycleStatus(null);
           useCedarDecisionStore.getState().clearDecisions();
           setActiveCapabilityToken(null);
         } else if (event === 'SIGNED_OUT') {
@@ -178,6 +213,8 @@ export function useAuthLifecycle() {
           setAvailableBonds([]);
           setSchoolType(null);
           setOnboardingCompleted(false);
+          setIdentityAvailability('unknown');
+          setAccountLifecycleStatus(null);
           useCedarDecisionStore.getState().clearDecisions();
           setActiveCapabilityToken(null);
         }
@@ -193,6 +230,8 @@ export function useAuthLifecycle() {
     setAvailableBonds,
     setSchoolType,
     setOnboardingCompleted,
+    setIdentityAvailability,
+    setAccountLifecycleStatus,
     fetchAndSetUserProfile,
   ]);
 
@@ -261,8 +300,19 @@ export function useAuthLifecycle() {
       isProfileLoading,
       isProfileResolving,
       profileError,
+      identityAvailability,
+      accountLifecycleStatus,
       refreshProfile,
     }),
-    [session, loading, isProfileLoading, isProfileResolving, profileError, refreshProfile],
+    [
+      session,
+      loading,
+      isProfileLoading,
+      isProfileResolving,
+      profileError,
+      identityAvailability,
+      accountLifecycleStatus,
+      refreshProfile,
+    ],
   );
 }

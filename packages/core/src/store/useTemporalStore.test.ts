@@ -1,9 +1,15 @@
-import { useTemporalStore } from '@repo/core/store/useTemporalStore';
+﻿import { useTemporalStore } from '@repo/core/store/useTemporalStore';
 
-describe('useTemporalStore', () => {
+describe('useTemporalStore', { tags: ['pure', 'fast'] }, () => {
   const today = new Date().toISOString().split('T')[0] || '';
 
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date', 'setTimeout', 'clearTimeout'] });
+  });
+
   afterEach(() => {
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
     useTemporalStore.getState().resetToToday();
     useTemporalStore.setState({
       intensity: 1,
