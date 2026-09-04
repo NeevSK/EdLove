@@ -1,6 +1,5 @@
 import { WorkspaceRendererContext } from '@repo/ui/components/workspace/shared';
-import { useWorkspaceRendererContext } from '@repo/ui/components/workspace/shared';
-import { ReactNode } from 'react';
+import { ReactNode, useContext } from 'react';
 import { Platform } from 'react-native';
 
 export interface WorkspaceRendererProps {
@@ -16,7 +15,7 @@ export function WorkspaceRenderer({
   isResizing,
   children
 }: WorkspaceRendererProps) {
-  const context = useWorkspaceRendererContext();
+  const context = useContext(WorkspaceRendererContext);
   
   // Use context values if provided, otherwise use props (for backwards compatibility)
   const runtimePlatform = platform || context?.runtimePlatform || (

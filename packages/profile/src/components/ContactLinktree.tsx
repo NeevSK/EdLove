@@ -173,7 +173,7 @@ export function ContactLinktree({
 
   const handleCopyProfileLink = useCallback(async () => {
     const url =
-      typeof window !== 'undefined' ? window.location.href : `https://app.gurudevi.edlove.org`;
+      typeof window !== 'undefined' ? window.location.href : `https://platform.gurudevi.edlove.org`;
     if (Platform.OS === 'web' && typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share({

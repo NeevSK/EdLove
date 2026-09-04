@@ -1,6 +1,6 @@
 {
   "name": "@repo/community",
-  "version": "1.0.0",
+  "version": "1.5.0",
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -180,7 +180,7 @@
     "react-i18next": "^17.0.8",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.8"
+    "vitest": "^5.0.0"
   },
   "peerDependencies": {
     "@repo/ui": "*",

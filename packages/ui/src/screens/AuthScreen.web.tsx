@@ -110,7 +110,10 @@ const HeroPanel = memo(({ modeCopy, renderedPillars }: HeroPanelProps) => (
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-phase-primary leading-[1.08]">
             {modeCopy.title}
           </h1>
-          <p className="text-sm sm:text-base text-phase-secondary max-w-lg leading-relaxed mt-0.5 font-normal">
+          <p
+            className="text-sm sm:text-base text-phase-secondary max-w-lg leading-relaxed mt-0.5 font-normal"
+            style={{ maxWidth: 512 }}
+          >
             {modeCopy.subtitle}
           </p>
         </div>
@@ -443,7 +446,10 @@ export const AuthScreenWeb = memo(
         backgroundElements={backgroundOrbs}
         left={<HeroPanel modeCopy={modeCopy} renderedPillars={renderedPillars} />}
         right={
-          <div className="flex flex-col justify-center p-6 sm:p-8 md:p-10 rounded-[32px] md:rounded-[40px] border border-phase-border/90 bg-phase-surface/85 backdrop-blur-2xl shadow-2xl relative overflow-hidden w-full max-w-md">
+          <div
+            className="flex flex-col justify-center p-6 sm:p-8 md:p-10 rounded-[32px] md:rounded-[40px] border border-phase-border/90 bg-phase-surface/85 backdrop-blur-2xl shadow-2xl relative overflow-hidden w-full max-w-md"
+            style={{ maxWidth: 448, boxSizing: 'border-box' }}
+          >
             <div className="flex flex-col gap-5 w-full">
               {onBack && (
                 <button
@@ -466,6 +472,7 @@ export const AuthScreenWeb = memo(
                   <div className="flex p-1 rounded-full bg-phase-surface/80 border border-phase-border shadow-inner">
                     <button
                       type="button"
+                      aria-pressed={mode === 'signup'}
                       className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                         mode === 'signup'
                           ? 'bg-phase-primary text-phase-world shadow-sm'
@@ -477,6 +484,7 @@ export const AuthScreenWeb = memo(
                     </button>
                     <button
                       type="button"
+                      aria-pressed={mode === 'login'}
                       className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                         mode === 'login'
                           ? 'bg-phase-primary text-phase-world shadow-sm'

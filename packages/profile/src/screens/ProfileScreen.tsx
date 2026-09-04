@@ -1,5 +1,5 @@
-import { useAccountDeletion, useTracking } from '@repo/core/hooks';
-import { usePermissions, useStore } from '@repo/core/logic';
+import { useAccountDeletion, useAccountLifecycle, useTracking } from '@repo/core/hooks';
+import { type AccountLifecycleCommand, usePermissions, useStore } from '@repo/core/logic';
 import LivingJourneyPanel from '@repo/profile/components/LivingJourneyPanel';
 import ProfileListItem from '@repo/profile/components/ProfileListItem';
 // Local Package Imports
@@ -57,7 +57,7 @@ import {
 } from '@repo/ui/primitives';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import type { TFunction } from 'i18next';
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Platform, RefreshControl, ScrollView, useWindowDimensions } from 'react-native';
 import Animated, {
@@ -366,9 +366,23 @@ export const ProfileScreen = () => {
   const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
   const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);
   const [isNegentropyModalVisible, setNegentropyModalVisible] = useState(false);
-  const [isLoggingOut, setLoggingOut] = useState(false);
+  const executeLogout = useCallback(
+    async (command: AccountLifecycleCommand) => {
+      if (command.kind !== 'sign-out-current-device') {
+        throw new Error(`Profile cannot execute lifecycle command "${command.kind}".`);
+      }
+      return logout();
+    },
+    [logout],
+  );
+  const logoutLifecycle = useAccountLifecycle(executeLogout);
 
-  const { deleteAccount, isDeleting } = useAccountDeletion();
+  const {
+    deleteAccount,
+    isDeleting,
+    request: deletionRequest,
+    unavailableReason: deletionUnavailableReason,
+  } = useAccountDeletion();
   const { discoverFeature } = useTracking();
   const showToast = useStore((state) => state.showToast);
 
@@ -396,29 +410,45 @@ export const ProfileScreen = () => {
   };
 
   const confirmLogout = async () => {
-    setLoggingOut(true);
-    try {
-      await logout();
+    const result = await logoutLifecycle.run({ kind: 'sign-out-current-device' });
+    if (result?.phase === 'completed') {
       setLogoutModalVisible(false);
-    } catch (error) {
-      console.error('[ProfileScreen] logout failed', error);
-      hapticError();
-      showToast(t('profile.logoutFailed', 'Could not log out. Please try again.'), 'error');
-    } finally {
-      setLoggingOut(false);
+      return;
     }
+
+    hapticError();
+    showToast(t('profile.logoutFailed', 'Could not log out. Please try again.'), 'error');
   };
 
   const handleDeleteAccount = () => {
+    if (deletionUnavailableReason) {
+      showToast(deletionUnavailableReason, 'info');
+      return;
+    }
+    if (deletionRequest?.status === 'pending_verification' || deletionRequest?.status === 'scheduled') {
+      showToast(
+        deletionRequest.status === 'scheduled'
+          ? 'Your deletion request is already scheduled.'
+          : 'Your deletion request is already pending verification.',
+        'info',
+      );
+      return;
+    }
     hapticLight();
     setDeleteModalVisible(true);
   };
 
   const confirmDeleteAccount = async () => {
     try {
-      await deleteAccount();
+      const request = await deleteAccount();
       hapticSuccess();
       setDeleteModalVisible(false);
+      showToast(
+        request.status === 'pending_verification'
+          ? 'Deletion request submitted. It is pending verification.'
+          : `Deletion request status: ${request.status}.`,
+        'success',
+      );
     } catch (error) {
       console.error('[ProfileScreen] account deletion failed', error);
       hapticError();
@@ -771,7 +801,7 @@ export const ProfileScreen = () => {
         isOpen={isLogoutModalVisible}
         onClose={() => setLogoutModalVisible(false)}
         onLogout={confirmLogout}
-        isLoading={isLoggingOut}
+        isLoading={logoutLifecycle.isPending}
       />
     </ScreenWrapper>
   );

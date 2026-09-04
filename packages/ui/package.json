@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package",
   "name": "@repo/ui",
-  "version": "1.1.0",
+  "version": "1.5.0",
   "main": "src/index.ts",
   "license": "MIT",
   "sideEffects": false,
@@ -18,6 +18,11 @@
       "types": "./src/brand.ts",
       "import": "./src/brand.ts",
       "default": "./src/brand.ts"
+    },
+    "./theme": {
+      "types": "./src/theme/Theme.ts",
+      "import": "./src/theme/Theme.ts",
+      "default": "./src/theme/Theme.ts"
     },
     "./feedback": {
       "types": "./src/feedback.ts",
@@ -837,6 +842,7 @@
     "lint:eslint": "node ../../scripts/run-and-report.mjs --cmd \"eslint .\" --name \"packages_ui-lint_eslint\"",
     "format": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/scoped-biome.mjs --write\" --name \"packages_ui-format\"",
     "check-cycles": "node ../../scripts/run-and-report.mjs --cmd \"node ../../scripts/refactor/sovereign-cycle-checker.mjs\" --name \"packages_ui-check-cycles\"",
+    "validate-icons": "node scripts/check-icons.mjs",
     "validate-mascot-assets": "node ../../scripts/validate-mascot-assets.mjs",
     "test": "node ../../scripts/run-and-report.mjs --cmd \"jest\" --name \"packages_ui-test\"",
     "test:watch": "node ../../scripts/run-and-report.mjs --cmd \"jest --watch\" --name \"packages_ui-test_watch\"",
@@ -874,8 +880,7 @@
     "sonner-native": "^0.27.0",
     "tailwindcss": "4.3.0",
     "victory-native": "^42.0.0",
-    "xstate": "^5.32.6",
-    "zeego": "^3.0.6"
+    "xstate": "^5.32.6"
   },
   "peerDependencies": {
     "@legendapp/list": "3.3.3",
@@ -900,7 +905,7 @@
     "react-i18next": "*",
     "react-native": "~0.86.0",
     "react-native-enriched-markdown": "^1.0.1",
-    "react-native-keyboard-controller": "1.21.9",
+    "react-native-keyboard-controller": "1.22.4",
     "react-native-safe-area-context": ">=5.8.0",
     "react-native-webview": ">=13.16.0",
     "react-native-worklets": ">=0.12.1",
@@ -920,12 +925,12 @@
     "eslint": "^10.9.1",
     "i18next": "^26.4.0",
     "react-i18next": "^17.0.12",
-    "react-native-enriched-markdown": "^1.0.2",
-    "react-native-keyboard-controller": "1.21.9",
+    "react-native-enriched-markdown": "^1.0.1",
+    "react-native-keyboard-controller": "1.22.4",
     "tailwindcss": "4.3.0",
     "typescript": "rc",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.0"
   },
   "_originalScripts": {
     "build": "node --max-old-space-size=4096 ../../node_modules/typescript/bin/tsc",

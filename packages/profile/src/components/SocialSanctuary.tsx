@@ -83,7 +83,7 @@ export const SocialSanctuary: React.FC<SocialSanctuaryProps> = ({ userId, isOwnP
   };
 
   const shareProfile = async () => {
-    const profileUrl = `https://app.gurudevi.edlove.org/app`;
+    const profileUrl = `https://platform.gurudevi.edlove.org/app`;
     if (Platform.OS === 'web') {
       if (typeof navigator !== 'undefined' && navigator.share) {
         try {

@@ -67,7 +67,7 @@ export const PostCard = React.memo(function PostCard(props: PostCardProps) {
   };
 
   const handleNativeShare = React.useCallback(async () => {
-    const shareUrl = `https://app.gurudevi.edlove.org/app?post=${post.id}`;
+    const shareUrl = `https://platform.gurudevi.edlove.org/app?post=${post.id}`;
     await shareAction({
       title: `Post by ${post.is_anonymous ? 'Anonymous' : post.author_name}`,
       url: shareUrl,

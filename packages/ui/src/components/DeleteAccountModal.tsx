@@ -29,7 +29,7 @@ export default function DeleteAccountModal({
       </Box>
       <Box className="flex-[1.5]">
         <SanctuaryButton action="negative" onPress={onDelete} isLoading={isLoading}>
-          {isLoading ? 'Processing...' : 'Delete Permanently'}
+          {isLoading ? 'Submitting...' : 'Request account deletion'}
         </SanctuaryButton>
       </Box>
     </HStack>
@@ -46,20 +46,19 @@ export default function DeleteAccountModal({
     >
       <VStack className="py-2 gap-4">
         <Text className="text-phase-text-secondary text-base">
-          This action is <Text className="font-bold text-phase-text-primary">irreversible</Text>.
-          Your personal profile, settings, and private data will be permanently removed from the
-          Gurudevi sanctuary.
+          This sends a protected request to delete your account. Your account will not be deleted
+          immediately; we will verify the request and apply the published retention policy.
         </Text>
         {/* Data scope clarification */}
         <Box className="bg-phase-surface p-4 rounded-xl border border-phase-surface">
           <Text className="text-phase-text-secondary text-sm">
-            School records (attendance, grades, community posts) are retained for institutional
-            integrity and cannot be removed by individuals.
+            Some school, safeguarding, financial, or audit records may be retained when required by
+            law or institutional policy. See the deletion policy for details.
           </Text>
         </Box>
         <Box className="bg-phase-danger/10 p-4 rounded-xl border border-phase-danger/20">
           <Text className="text-phase-danger font-bold text-sm">
-            Just need a break? You can sign out instead - your sanctuary will be waiting for you.
+            Need a break? You can sign out instead—your sanctuary will be waiting for you.
           </Text>
         </Box>
       </VStack>

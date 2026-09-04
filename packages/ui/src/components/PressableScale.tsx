@@ -25,6 +25,8 @@ export interface PressableScaleProps {
   disabled?: boolean;
   accessibilityLabel?: string;
   accessibilityHint?: string;
+  accessibilityRole?: import('react-native').AccessibilityRole;
+  accessibilityState?: import('react-native').AccessibilityState;
   style?: StyleProp<ViewStyle>;
   children: React.ReactNode;
   testID?: string;
@@ -49,6 +51,8 @@ export function PressableScale({
   disabled = false,
   accessibilityLabel,
   accessibilityHint,
+  accessibilityRole = 'button',
+  accessibilityState,
   style,
   children,
   testID,
@@ -102,8 +106,8 @@ export function PressableScale({
       disabled={disabled}
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
-      accessibilityRole="button"
-      accessibilityState={{ disabled }}
+      accessibilityRole={accessibilityRole}
+      accessibilityState={{ disabled, ...accessibilityState }}
       testID={testID}
       style={[{ opacity: disabled ? 0.5 : 1 }, animatedStyle, style]}
     >

@@ -2,10 +2,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { identityAPI, onboardingAPI } from '@repo/core/api/client';
 import { useStore } from '@repo/core/store';
 import type { Capacity } from '@repo/core/types';
-import { ProgressIndicator } from '@repo/ui/components/ProgressIndicator';
 import { FireflyFeedbackScene } from '@repo/ui/components/FireflyFeedbackScene';
 import type { MascotArtworkSource } from '@repo/ui/components/Mascot';
+import { ProgressIndicator } from '@repo/ui/components/ProgressIndicator';
 import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
+import { BookOpen, Compass, Flower2, GraduationCap, Lock, School, Sprout } from '@repo/ui/icons';
 import {
   Box,
   Button,
@@ -19,17 +20,25 @@ import {
   Text,
   VStack,
 } from '@repo/ui/primitives';
-import { BookOpen, Compass, Flower2, GraduationCap, Lock, School, Sprout } from '@repo/ui/icons';
 import {} from '@repo/ui/screens/devOnboardingFastTrack';
 import {
   getDevOnboardingTemplateLabel,
   resolveOnboardingDevIntent,
 } from '@repo/ui/screens/onboardingDevFlow';
 import {
+  getOnboardingProgressKey,
+  parseOnboardingDraft,
+  serializeOnboardingDraft,
+} from '@repo/ui/screens/onboardingDraft';
+import {
   canProceedOnboardingStep,
   getOnboardingPhase,
   getOnboardingStepLabel,
 } from '@repo/ui/screens/onboardingFlow';
+import {
+  initialOnboardingJourneyState,
+  onboardingJourneyReducer,
+} from '@repo/ui/screens/onboardingJourney';
 import { hapticError, hapticLight, hapticSuccess } from '@repo/ui/utils/haptics';
 import { safeBack } from '@repo/ui/utils/navigation';
 import type React from 'react';
@@ -47,63 +56,6 @@ const CAPACITY_OPTIONS = [
     descKey: 'onboarding.roleDesc.principal',
   },
 ] as const;
-
-interface OnboardingUIState {
-  currentStep: number;
-  name: string;
-  selectedCapacity: Capacity;
-  schoolId: string | null;
-  isProcessing: boolean;
-  error: string | null;
-  showDevSandbox: boolean;
-  pricingTier: string;
-  citizenship: string;
-}
-
-type OnboardingAction =
-  | { type: 'SET_STEP'; step: number }
-  | { type: 'SET_NAME'; name: string }
-  | { type: 'SET_CAPACITY'; capacity: Capacity }
-  | { type: 'SET_SCHOOL_ID'; schoolId: string | null }
-  | { type: 'SET_PROCESSING'; isProcessing: boolean }
-  | { type: 'SET_ERROR'; error: string | null }
-  | { type: 'NEXT_STEP' }
-  | { type: 'PREV_STEP' }
-  | { type: 'RESTORE_PROGRESS'; progress: Partial<OnboardingUIState> }
-  | { type: 'SHOW_DEV_SANDBOX'; visible: boolean }
-  | { type: 'SET_PRICING'; pricing: string }
-  | { type: 'SET_CITIZENSHIP'; citizenship: string };
-
-function onboardingReducer(state: OnboardingUIState, action: OnboardingAction): OnboardingUIState {
-  switch (action.type) {
-    case 'SET_STEP':
-      return { ...state, currentStep: action.step };
-    case 'SET_NAME':
-      return { ...state, name: action.name, error: null };
-    case 'SET_CAPACITY':
-      return { ...state, selectedCapacity: action.capacity, error: null };
-    case 'SET_SCHOOL_ID':
-      return { ...state, schoolId: action.schoolId };
-    case 'SET_PROCESSING':
-      return { ...state, isProcessing: action.isProcessing };
-    case 'SET_ERROR':
-      return { ...state, error: action.error, isProcessing: false };
-    case 'NEXT_STEP':
-      return { ...state, currentStep: Math.min(6, state.currentStep + 1), error: null };
-    case 'PREV_STEP':
-      return { ...state, currentStep: Math.max(0, state.currentStep - 1), error: null };
-    case 'RESTORE_PROGRESS':
-      return { ...state, ...action.progress };
-    case 'SHOW_DEV_SANDBOX':
-      return { ...state, showDevSandbox: action.visible };
-    case 'SET_PRICING':
-      return { ...state, pricingTier: action.pricing };
-    case 'SET_CITIZENSHIP':
-      return { ...state, citizenship: action.citizenship };
-    default:
-      return state;
-  }
-}
 
 const StepShell = memo(
   ({
@@ -125,10 +77,7 @@ const StepShell = memo(
       <Box
         className="rounded-generous border border-phase-border bg-phase-secondary overflow-hidden elevation-4"
         style={{
-          shadowColor: '#6B6480', // shadowViolet
-          shadowOffset: { width: 0, height: 14 },
-          shadowOpacity: 0.1,
-          shadowRadius: 24,
+          boxShadow: '0px 14px 24px rgba(107, 100, 128, 0.1)',
         }}
       >
         <Box className="px-6 py-6 bg-phase-surface border-b border-phase-border">
@@ -447,10 +396,7 @@ const DevSandboxConsoleInner = memo(
         <Box
           className="rounded-generous border border-phase-border bg-phase-secondary overflow-hidden elevation-4"
           style={{
-            shadowColor: '#6B6480',
-            shadowOffset: { width: 0, height: 14 },
-            shadowOpacity: 0.1,
-            shadowRadius: 24,
+            boxShadow: '0px 14px 24px rgba(107, 100, 128, 0.1)',
           }}
         >
           <Box className="px-6 py-6 bg-phase-surface border-b border-phase-border">
@@ -611,17 +557,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
 }: OnboardingScreenProps) {
   const { t } = useTranslation();
 
-  const [state, dispatch] = useReducer(onboardingReducer, {
-    currentStep: 0,
-    name: '',
-    selectedCapacity: 'teacher' as Capacity,
-    schoolId: null,
-    isProcessing: false,
-    error: null,
-    showDevSandbox: false,
-    pricingTier: 'FREE',
-    citizenship: 'WANDERER',
-  });
+  const [state, dispatch] = useReducer(onboardingJourneyReducer, initialOnboardingJourneyState);
 
   const { currentStep, name, selectedCapacity, isProcessing, error, showDevSandbox } = state;
   const currentPhase = getOnboardingPhase(currentStep);
@@ -652,21 +588,18 @@ const OnboardingScreen = memo(function OnboardingScreen({
 
       try {
         // Saved progress recovery logic
-        const savedProgress = await AsyncStorage.getItem('onboarding_progress');
+        const savedProgress = await AsyncStorage.getItem(getOnboardingProgressKey(internalId));
         if (savedProgress) {
-          const progress = JSON.parse(savedProgress);
-          if (progress.user_id === internalId || !progress.user_id || isAnonymous) {
+          const progress = parseOnboardingDraft(savedProgress, internalId);
+          if (progress) {
             console.log('📦 OnboardingScreen: Restoring progress for:', internalId);
             dispatch({
               type: 'RESTORE_PROGRESS',
               progress: {
-                name: progress.name || '',
-                selectedCapacity: (progress.capacity as Capacity) || 'teacher',
-                currentStep:
-                  typeof progress.step === 'number' && progress.step >= 0 && progress.step < 7
-                    ? progress.step
-                    : 0,
-                schoolId: progress.schoolId || null,
+                name: progress.name,
+                selectedCapacity: progress.selectedCapacity,
+                currentStep: progress.step,
+                schoolId: progress.schoolId,
               },
             });
             return;
@@ -678,16 +611,35 @@ const OnboardingScreen = memo(function OnboardingScreen({
 
       try {
         // USE NEW DOMAIN STATE API
-        const capacitySummary = await identityAPI.resolveWorkspaceContext(internalId);
-        const initialDomainState = capacitySummary.onboarding_state;
-        const profile = capacitySummary.profile as {
+        let capacitySummary: any = null;
+        try {
+          capacitySummary = await identityAPI.resolveWorkspaceContext(internalId);
+        } catch (e) {
+          console.warn('[Onboarding] Could not resolve workspace context from server:', e);
+        }
+
+        const initialDomainState = capacitySummary?.onboarding_state ?? 'ARRIVAL';
+        const profile = capacitySummary?.profile as {
           display_name?: string;
           full_name?: string;
           school_id?: string | null;
         } | null;
-        const activePerspective = await onboardingAPI.getActivePerspective();
 
-        if (!profile) return;
+        let activePerspective: any = null;
+        try {
+          activePerspective = await onboardingAPI.getActivePerspective();
+        } catch {
+          activePerspective = null;
+        }
+
+        if (!profile || !profile.full_name) {
+          // Uninitialized or uncreated user account -> wipe draft cache and start cleanly at Welcome Step 0
+          try {
+            await AsyncStorage.removeItem(getOnboardingProgressKey(internalId));
+          } catch {}
+          dispatch({ type: 'SET_STEP', step: 0 });
+          return;
+        }
 
         // If already onboarded in DB, just finish locally
         if (initialDomainState === 'COMPLETED') {
@@ -713,10 +665,6 @@ const OnboardingScreen = memo(function OnboardingScreen({
         }
       } catch (err) {
         console.error('[Onboarding] Initialization failure:', err);
-        showToast(
-          `Initialization Error: ${(err as Error)?.message || 'Something went wrong'}. Please check your connection or sign out and try again.`,
-          'error',
-        );
       }
     };
     void initOnboarding();
@@ -775,22 +723,23 @@ const OnboardingScreen = memo(function OnboardingScreen({
     if (!userId) return;
 
     void AsyncStorage.setItem(
-      'onboarding_progress',
-      JSON.stringify({
-        user_id: userId,
-        step: currentStep,
-        name,
-        capacity: selectedCapacity,
-        schoolId: state.schoolId,
-      }),
+      getOnboardingProgressKey(userId),
+      serializeOnboardingDraft({ userId, state }),
     ).catch((err) => {
       console.warn('[Onboarding] Failed to save progress:', err);
     });
   }, [currentStep, name, selectedCapacity, state.schoolId]);
 
+  const clearSavedProgress = useCallback(async () => {
+    const progressUserId = resolvedInternalIdRef.current;
+    if (!progressUserId) return;
+
+    await AsyncStorage.removeItem(getOnboardingProgressKey(progressUserId));
+  }, []);
+
   const handleCompleteOnboarding = useCallback(async () => {
     if (isProcessing) return;
-    dispatch({ type: 'SET_PROCESSING', isProcessing: true });
+    dispatch({ type: 'BEGIN_COMPLETION' });
     showToast('Finalizing your sanctuary journey...', 'info', 2000);
     try {
       const citizen = resolvedCitizenRef.current ?? (await identityAPI.identifyActiveCitizen());
@@ -802,7 +751,8 @@ const OnboardingScreen = memo(function OnboardingScreen({
       await onboardingAPI.completeOnboarding(internalId);
 
       // 2. Finalize persistence
-      await AsyncStorage.removeItem('onboarding_progress');
+      await clearSavedProgress();
+      dispatch({ type: 'COMPLETE' });
       hapticSuccess();
       showToast('Sanctuary entry granted! Welcome home.', 'success', 3000);
       onComplete(name, selectedCapacity, isAnonymous);
@@ -811,10 +761,18 @@ const OnboardingScreen = memo(function OnboardingScreen({
       hapticError();
       const baseMsg = err instanceof Error ? err.message : 'Failed to finalize onboarding.';
       const guidedMsg = `${baseMsg} Please check your connection and try again to enter the sanctuary.`;
-      dispatch({ type: 'SET_ERROR', error: guidedMsg });
+      dispatch({ type: 'FAIL_COMPLETION', error: guidedMsg });
       showToast(guidedMsg, 'error', 5000);
     }
-  }, [name, selectedCapacity, onComplete, showToast, isAnonymous, isProcessing]);
+  }, [
+    name,
+    selectedCapacity,
+    onComplete,
+    showToast,
+    isAnonymous,
+    isProcessing,
+    clearSavedProgress,
+  ]);
 
   const handleDevFastTrack = useCallback(
     async (
@@ -848,7 +806,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
         });
 
         await onboardingAPI.completeOnboarding(internalId);
-        await AsyncStorage.removeItem('onboarding_progress');
+        await clearSavedProgress();
 
         hapticSuccess();
         showToast(`Sandbox Profile Ready (${devRole})!`, 'success', 3000);
@@ -863,7 +821,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
         dispatch({ type: 'SET_PROCESSING', isProcessing: false });
       }
     },
-    [onComplete, showToast, isAnonymous],
+    [onComplete, showToast, isAnonymous, clearSavedProgress],
   );
 
   const handleNext = useCallback(async () => {
@@ -919,7 +877,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
           });
 
           await onboardingAPI.completeOnboarding(internalId);
-          await AsyncStorage.removeItem('onboarding_progress');
+          await clearSavedProgress();
 
           hapticSuccess();
           showToast(getDevOnboardingTemplateLabel(template), 'success', 3000);
@@ -984,6 +942,7 @@ const OnboardingScreen = memo(function OnboardingScreen({
     state.schoolId,
     onComplete,
     isAnonymous,
+    clearSavedProgress,
   ]);
 
   const handleBack = useCallback(() => {

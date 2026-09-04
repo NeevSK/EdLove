@@ -14,20 +14,16 @@
  * Auth logic is identical to the native screen (same handlers, same hooks).
  * AuthScreen renders on top of this layout when the user taps "I have an account".
  *
- * The screen scrolls through ScreenWrapper (an RN ScrollView), which is the
- * app's sanctioned web scroll container — the shell disables page/body
- * scrolling (`body { overflow: hidden }`), so screens must scroll internally.
- * The two-column / stacked switch is pure CSS flex-wrap (no JS on resize).
+ * The gateway shell owns the route's single bounded web scroll surface. The
+ * two-column / stacked switch is pure CSS flex-wrap (no JS on resize).
  * Design tokens: Vellum bg · Ink text · Saffron primary · Dalu Green secondary
  * Shadow rule: Shadow Violet only, never grey/black.
  */
 
 import { authAPI } from '@repo/core/auth';
 import { handleAPIError } from '@repo/core/logic';
-import { GatewayFooter } from '@repo/ui/components/GatewayFooter.web';
-import { GatewayHeader } from '@repo/ui/components/GatewayHeader.web';
+import { GatewayScreenShell } from '@repo/ui/components/GatewayScreenShell.web';
 import { Mascot, type MascotArtworkSource } from '@repo/ui/components/Mascot';
-import ScreenWrapper from '@repo/ui/components/ScreenWrapper';
 import { useTheme } from '@repo/ui/hooks/useTheme';
 import {
   ActivityIndicator,
@@ -253,11 +249,13 @@ const RightPanel = memo(
             onHoverIn={handleLoginHoverIn}
             onHoverOut={onBtnHoverOut}
             accessibilityRole="button"
+            disabled={!acceptedTerms || isConnecting}
             style={[
               styles.secondaryBtn,
               {
                 borderColor: glass.interact.border,
                 backgroundColor: btnHover === 'login' ? glass.interact.bg : 'transparent',
+                opacity: acceptedTerms && !isConnecting ? 1 : 0.55,
               },
             ]}
           >
@@ -273,7 +271,7 @@ const RightPanel = memo(
               accessibilityState={{ checked: acceptedTerms }}
               accessibilityLabel="Accept Terms of Use and Privacy Policy"
               accessibilityHint="Toggle acceptance of terms and privacy policy to enable exploration"
-              style={{ cursor: 'pointer' }}
+              style={styles.termsToggle}
             >
               <View
                 style={[
@@ -398,30 +396,23 @@ export const WelcomeScreen = memo(({ onLogin, onGuest, exploreArtwork }: Welcome
   );
 
   return (
-    <View style={styles.root}>
-      <GatewayHeader />
-      <ScreenWrapper scroll>
-        <View style={styles.track}>
-          <View style={styles.panelLeft}>
-            <LeftPanel exploreArtwork={exploreArtwork} />
-          </View>
-          <View style={styles.panelRight}>
-            <RightPanel
-              acceptedTerms={acceptedTerms}
-              isConnecting={isConnecting}
-              btnHover={btnHover}
-              onStartExploring={handleStartExploring}
-              onLogin={handleLoginPress}
-              onToggleTerms={toggleTerms}
-              onBtnHoverIn={setBtnHoverIn}
-              onBtnHoverOut={setBtnHoverOut}
-              footer={footer}
-            />
-          </View>
-        </View>
-      </ScreenWrapper>
-      <GatewayFooter />
-    </View>
+    <GatewayScreenShell
+      backgroundColor="transparent"
+      left={<LeftPanel exploreArtwork={exploreArtwork} />}
+      right={
+        <RightPanel
+          acceptedTerms={acceptedTerms}
+          isConnecting={isConnecting}
+          btnHover={btnHover}
+          onStartExploring={handleStartExploring}
+          onLogin={handleLoginPress}
+          onToggleTerms={toggleTerms}
+          onBtnHoverIn={setBtnHoverIn}
+          onBtnHoverOut={setBtnHoverOut}
+          footer={footer}
+        />
+      }
+    />
   );
 });
 
@@ -433,46 +424,7 @@ export default WelcomeScreen;
 // Styles
 // ──────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  // The screen root fills the fixed-height shell (#root/body) and lays out
-  // header / scroll body / footer in a column. Scroll happens INSIDE
-  // ScreenWrapper's ScrollView, never on the page (body overflow is hidden).
-  // position relative + zIndex 1 lift the content above any stray
-  // full-viewport absolute overlay the navigation shell may leave (which
-  // would otherwise swallow pointer events) — matches how the gateway shell
-  // stayed clickable.
-  root: {
-    height: '100vh',
-    position: 'relative',
-    zIndex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    backgroundColor: 'transparent',
-  } as Record<string, unknown>,
-  // Fluid auto-collapse track: side-by-side on wide, stacked on narrow.
-  track: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    width: '100%',
-    maxWidth: 1240,
-    marginInline: 'auto',
-    paddingHorizontal: 48,
-    paddingVertical: 40,
-    gap: 40,
-    boxSizing: 'border-box',
-  } as Record<string, unknown>,
-
   // ── Left panel ──────────────────────────────────────────────────────────────────
-  panelLeft: {
-    flex: 1,
-    minWidth: 360,
-    maxWidth: 680,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    gap: 16,
-  } as Record<string, unknown>,
   leftPanelInner: {
     display: 'flex',
     flexDirection: 'column',
@@ -577,14 +529,6 @@ const styles = StyleSheet.create({
   },
 
   // ── Right panel ───────────────────────────────────────────────────────────
-  panelRight: {
-    flex: 1,
-    minWidth: 360,
-    maxWidth: 460,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  } as Record<string, unknown>,
   rightPanel: {
     width: '100%',
     display: 'flex',
@@ -646,6 +590,14 @@ const styles = StyleSheet.create({
     gap: 10,
     marginTop: 2,
   },
+  termsToggle: {
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: -10,
+    cursor: 'pointer',
+  } as Record<string, unknown>,
   checkbox: {
     width: 20,
     height: 20,

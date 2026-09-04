@@ -192,11 +192,13 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
       });
 
       try {
-        await unlinkDevice(deviceId);
+        const result = await unlinkDevice(deviceId);
         hapticSuccess();
         showToast?.({
           message:
-            syncPending || isCurrent ? 'Removal queued for sync.' : 'Device removed successfully.',
+            result.queued || syncPending
+              ? 'Removal queued for sync; it is not complete yet.'
+              : 'Device removed successfully.',
           type: 'success',
         });
         await refresh();
@@ -218,10 +220,14 @@ export default function DeviceSecurityCenter({ compact = false }: { compact?: bo
       });
 
       try {
-        await revokeSession(sessionId);
+        const result = await revokeSession(sessionId);
         hapticSuccess();
         showToast?.({
-          message: isCurrent ? 'Current session revoked.' : 'Session revoked.',
+          message: result.queued
+            ? 'Revocation queued for sync; it is not complete yet.'
+            : isCurrent
+              ? 'Current session revoked.'
+              : 'Session revoked.',
           type: 'success',
         });
         await refresh();

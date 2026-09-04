@@ -112,7 +112,7 @@ export { default as Hammer } from 'lucide-react-native/icons/hammer';
 export { default as Hash } from 'lucide-react-native/icons/hash';
 export { default as Heart } from 'lucide-react-native/icons/heart';
 export { default as HeartPulse } from 'lucide-react-native/icons/heart-pulse';
-export { default as History } from 'lucide-react-native/icons/history';
+export { default as History } from 'lucide-react-native/icons/rotate-ccw-clock';
 export { default as Image } from 'lucide-react-native/icons/image';
 export { default as Inbox } from 'lucide-react-native/icons/inbox';
 export { default as Info } from 'lucide-react-native/icons/info';

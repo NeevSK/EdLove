@@ -1,3 +1,4 @@
+import { deviceAccounts } from '@repo/core';
 import { authAPI, identityAPI, profileAPI } from '@repo/core/api/client';
 import { useRewards } from '@repo/core/hooks';
 import { handleAPIError, useMutationQueue, useTemporalStore } from '@repo/core/logic';
@@ -136,7 +137,7 @@ export function useProfile(userId?: string) {
   };
 
   const logout = useCallback(async () => {
-    await authAPI.signOut();
+    return deviceAccounts.signOutCurrentAccount();
   }, []);
 
   const uploadAvatar = useCallback(

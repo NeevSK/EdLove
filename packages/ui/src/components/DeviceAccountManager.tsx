@@ -1,17 +1,21 @@
+import { useAccountLifecycle } from '@repo/core/hooks';
 import {
+  type AccountLifecycleCommand,
   accountPin,
   type DeviceAccountRecord,
-  useAuthStore,
   useDeviceAccounts,
 } from '@repo/core/logic';
-import { LinearGradient } from 'expo-linear-gradient';
-import React, { useEffect, useMemo, useReducer } from 'react';
-import { StyleSheet } from 'react-native';
-import { Box, Button, ButtonText, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
+import AccountPinModal, {
+  type AccountPinModalMode,
+  type AccountPinModalSubmit,
+} from '@repo/ui/components/AccountPinModal';
 import { Key, UserMinus, Users } from '@repo/ui/icons';
+import { Box, Button, ButtonText, Heading, HStack, Text, VStack } from '@repo/ui/primitives';
 import { useSanctuaryToast } from '@repo/ui/providers/ToastProvider';
 import { hapticError, hapticSuccess } from '@repo/ui/utils/haptics';
-import AccountPinModal, { type AccountPinModalMode } from '@repo/ui/components/AccountPinModal';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
+import { Platform, StyleSheet } from 'react-native';
 
 // ── Types & Reducer ──────────────────────────────────────────────────────────
 
@@ -20,30 +24,24 @@ type PendingPinAction = {
   account: DeviceAccountRecord;
 } | null;
 
-type OfflineConfirmAction =
-  | { type: 'signOutCurrent' }
-  | { type: 'signOutAll' }
-  | { type: 'removeAccount'; account: DeviceAccountRecord }
-  | null;
-
 type State = {
   pinProtectedIds: Record<string, boolean>;
   pinAction: PendingPinAction;
   pinBusy: boolean;
-  offlineConfirm: OfflineConfirmAction;
+  pinError: string | null;
 };
 
 type Action =
   | { type: 'setPinProtectedIds'; value: Record<string, boolean> }
   | { type: 'setPinAction'; value: PendingPinAction }
   | { type: 'setPinBusy'; value: boolean }
-  | { type: 'setOfflineConfirm'; value: OfflineConfirmAction };
+  | { type: 'setPinError'; value: string | null };
 
 const initialState: State = {
   pinProtectedIds: {},
   pinAction: null,
   pinBusy: false,
-  offlineConfirm: null,
+  pinError: null,
 };
 
 function reducer(state: State, action: Action): State {
@@ -51,11 +49,11 @@ function reducer(state: State, action: Action): State {
     case 'setPinProtectedIds':
       return { ...state, pinProtectedIds: action.value };
     case 'setPinAction':
-      return { ...state, pinAction: action.value };
+      return { ...state, pinAction: action.value, pinError: null };
     case 'setPinBusy':
       return { ...state, pinBusy: action.value };
-    case 'setOfflineConfirm':
-      return { ...state, offlineConfirm: action.value };
+    case 'setPinError':
+      return { ...state, pinError: action.value };
     default:
       return state;
   }
@@ -75,6 +73,20 @@ const getInitials = (name: string | null | undefined, email: string | null | und
   );
 };
 
+function getActionError(error: unknown, fallback: string) {
+  return error instanceof Error && error.message ? error.message : fallback;
+}
+
+type DeviceAccountRow =
+  | { type: 'LOADING' }
+  | { type: 'EMPTY' }
+  | {
+      type: 'ACCOUNT';
+      account: DeviceAccountRecord;
+      isActive: boolean;
+      isPinProtected: boolean;
+    };
+
 // ── Row Components ──────────────────────────────────────────────────────────
 
 const AccountCard = React.memo(
@@ -82,6 +94,7 @@ const AccountCard = React.memo(
     account,
     isActive,
     isPinProtected,
+    supportsPin,
     onSwitch,
     onRemove,
     onPinAction,
@@ -90,6 +103,7 @@ const AccountCard = React.memo(
     account: DeviceAccountRecord;
     isActive: boolean;
     isPinProtected: boolean;
+    supportsPin: boolean;
     onSwitch: (a: DeviceAccountRecord) => void;
     onRemove: (a: DeviceAccountRecord) => void;
     onPinAction: (mode: AccountPinModalMode, a: DeviceAccountRecord) => void;
@@ -119,20 +133,20 @@ const AccountCard = React.memo(
             {account.email || 'Cloud Identity'}
           </Text>
           <HStack className="items-center gap-1.5 mt-1">
-            {isPinProtected ? (
+            {supportsPin && isPinProtected ? (
               <HStack className="items-center gap-1 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
                 <Key size={10} className="text-emerald-600" />
                 <Text className="text-[10px] font-bold text-emerald-600 uppercase">
                   PIN Encrypted
                 </Text>
               </HStack>
-            ) : (
+            ) : supportsPin ? (
               <HStack className="items-center gap-1 bg-phase-surface px-2 py-0.5 rounded-full border border-phase-border">
                 <Text className="text-[10px] font-bold text-phase-secondary uppercase opacity-50">
                   Local Only
                 </Text>
               </HStack>
-            )}
+            ) : null}
           </HStack>
         </VStack>
       </HStack>
@@ -147,7 +161,7 @@ const AccountCard = React.memo(
           >
             <ButtonText className="text-sm">Switch</ButtonText>
           </Button>
-        ) : (
+        ) : supportsPin ? (
           <Button
             className="flex-1 rounded-2xl h-10"
             variant="outline"
@@ -156,7 +170,7 @@ const AccountCard = React.memo(
           >
             <ButtonText className="text-sm">{isPinProtected ? 'Change PIN' : 'Add PIN'}</ButtonText>
           </Button>
-        )}
+        ) : null}
         <Button
           className="rounded-2xl h-10 px-4"
           variant="solid"
@@ -174,7 +188,6 @@ const AccountCard = React.memo(
 // ── Main Component ──────────────────────────────────────────────────────────
 
 export default function DeviceAccountManager({ compact = false }: { compact?: boolean }) {
-  const isOnline = useAuthStore((state) => state.isOnline);
   const {
     accounts,
     activeAccountId,
@@ -183,13 +196,24 @@ export default function DeviceAccountManager({ compact = false }: { compact?: bo
     switchAccount,
     removeAccount,
     signOutCurrentAccount,
-    signOutAllAccounts,
     refresh,
   } = useDeviceAccounts();
 
+  const executeLifecycle = useCallback(
+    async (command: AccountLifecycleCommand) => {
+      if (command.kind !== 'sign-out-current-device') {
+        throw new Error('Unsupported account lifecycle action.');
+      }
+      return signOutCurrentAccount();
+    },
+    [signOutCurrentAccount],
+  );
+  const { run: runLifecycle, isPending: lifecyclePending } = useAccountLifecycle(executeLifecycle);
+
   const { showToast } = useSanctuaryToast();
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { pinProtectedIds, pinAction, pinBusy, offlineConfirm } = state;
+  const { pinProtectedIds, pinAction, pinBusy, pinError } = state;
+  const supportsPin = Platform.OS !== 'web';
 
   useEffect(() => {
     let cancelled = false;
@@ -210,21 +234,35 @@ export default function DeviceAccountManager({ compact = false }: { compact?: bo
   const setPinBusy = (value: boolean) => dispatch({ type: 'setPinBusy', value });
 
   const handleSignOutCurrent = async () => {
-    if (!isOnline) {
-      dispatch({ type: 'setOfflineConfirm', value: { type: 'signOutCurrent' } });
-      return;
-    }
-    setPinBusy(true);
-    try {
-      await signOutCurrentAccount();
+    const result = await runLifecycle({ kind: 'sign-out-current-device' });
+    if (result?.phase === 'completed') {
       hapticSuccess();
       showToast?.({ message: 'Identity detached from device.', type: 'success' });
-    } catch (_err) {
+    } else if (result?.phase === 'failed') {
       hapticError();
-      showToast?.({ message: 'Sign out failed.', type: 'error' });
-    } finally {
-      setPinBusy(false);
-      refresh();
+      showToast?.({ message: result.error || 'Sign out failed.', type: 'error' });
+    } else if (result?.phase === 'unsupported') {
+      hapticError();
+      showToast?.({ message: result.reason, type: 'error' });
+    }
+  };
+
+  const handleRemove = async (account: DeviceAccountRecord) => {
+    if (pinProtectedIds[account.accountId]) {
+      dispatch({ type: 'setPinAction', value: { mode: 'remove', account } });
+      return;
+    }
+
+    try {
+      await removeAccount(account.accountId);
+      hapticSuccess();
+      showToast?.({ message: 'Identity removed from this device.', type: 'success' });
+    } catch (error) {
+      hapticError();
+      showToast?.({
+        message: getActionError(error, 'Could not remove this identity.'),
+        type: 'error',
+      });
     }
   };
 
@@ -237,8 +275,52 @@ export default function DeviceAccountManager({ compact = false }: { compact?: bo
     try {
       await switchAccount(account.accountId);
       hapticSuccess();
-    } catch (_err) {
+    } catch (error) {
       hapticError();
+      showToast?.({ message: getActionError(error, 'Could not switch identity.'), type: 'error' });
+    } finally {
+      setPinBusy(false);
+    }
+  };
+
+  const handlePinSubmit = async (values: AccountPinModalSubmit) => {
+    if (!pinAction) return;
+
+    const { account, mode } = pinAction;
+    setPinBusy(true);
+    dispatch({ type: 'setPinError', value: null });
+
+    try {
+      if (mode === 'verify') {
+        if (!('pin' in values) || !(await accountPin.verifyPin(account.accountId, values.pin))) {
+          throw new Error('That PIN does not match this identity.');
+        }
+        await switchAccount(account.accountId);
+      } else if (mode === 'create') {
+        if (!('pin' in values)) throw new Error('A new PIN is required.');
+        await accountPin.setPin(account.accountId, values.pin);
+      } else if (mode === 'update') {
+        if (!('currentPin' in values)) throw new Error('The current and new PIN are required.');
+        if (!(await accountPin.verifyPin(account.accountId, values.currentPin))) {
+          throw new Error('That PIN does not match this identity.');
+        }
+        await accountPin.setPin(account.accountId, values.nextPin);
+      } else {
+        if (!('pin' in values) || !(await accountPin.verifyPin(account.accountId, values.pin))) {
+          throw new Error('That PIN does not match this identity.');
+        }
+        await removeAccount(account.accountId);
+      }
+
+      hapticSuccess();
+      dispatch({ type: 'setPinAction', value: null });
+      await refresh();
+    } catch (error) {
+      hapticError();
+      dispatch({
+        type: 'setPinError',
+        value: getActionError(error, 'Could not complete the PIN action.'),
+      });
     } finally {
       setPinBusy(false);
     }
@@ -246,9 +328,9 @@ export default function DeviceAccountManager({ compact = false }: { compact?: bo
 
   // ── Row Orchestrator ──────────────────────────────────────────────────────
 
-  const rows = useMemo(() => {
+  const rows = useMemo<DeviceAccountRow[]>(() => {
     if (loading) return [{ type: 'LOADING' }];
-    const items: any[] = [];
+    const items: DeviceAccountRow[] = [];
 
     if (accounts.length === 0) {
       items.push({ type: 'EMPTY' });
@@ -258,13 +340,13 @@ export default function DeviceAccountManager({ compact = false }: { compact?: bo
           type: 'ACCOUNT',
           account,
           isActive: account.accountId === activeAccountId,
-          isPinProtected: !!pinProtectedIds[account.accountId],
+          isPinProtected: supportsPin && !!pinProtectedIds[account.accountId],
         });
       });
     }
 
     return items;
-  }, [loading, accounts, activeAccountId, pinProtectedIds]);
+  }, [loading, accounts, activeAccountId, pinProtectedIds, supportsPin]);
 
   return (
     <Box
@@ -316,23 +398,17 @@ export default function DeviceAccountManager({ compact = false }: { compact?: bo
                   account={row.account}
                   isActive={row.isActive}
                   isPinProtected={row.isPinProtected}
+                  supportsPin={supportsPin}
                   onSwitch={(a) => {
                     void handleSwitch(a);
                   }}
                   onRemove={(a) => {
-                    if (pinProtectedIds[a.accountId])
-                      dispatch({ type: 'setPinAction', value: { mode: 'remove', account: a } });
-                    else if (!isOnline)
-                      dispatch({
-                        type: 'setOfflineConfirm',
-                        value: { type: 'removeAccount', account: a },
-                      });
-                    else void removeAccount(a.accountId).then(refresh);
+                    void handleRemove(a);
                   }}
                   onPinAction={(mode, account) =>
                     dispatch({ type: 'setPinAction', value: { mode, account } })
                   }
-                  busy={busyAccountId === row.account.accountId || pinBusy}
+                  busy={busyAccountId === row.account.accountId || pinBusy || lifecyclePending}
                 />
               );
             return null;
@@ -346,7 +422,7 @@ export default function DeviceAccountManager({ compact = false }: { compact?: bo
             onPress={() => {
               void handleSignOutCurrent();
             }}
-            isDisabled={pinBusy || !activeAccountId}
+            isDisabled={pinBusy || lifecyclePending || !activeAccountId}
           >
             <ButtonText>Sign Out Current</ButtonText>
           </Button>
@@ -359,11 +435,9 @@ export default function DeviceAccountManager({ compact = false }: { compact?: bo
         accountLabel={pinAction?.account.displayName || pinAction?.account.email}
         allowClose={!pinBusy}
         isLoading={pinBusy}
+        error={pinError}
         onClose={() => dispatch({ type: 'setPinAction', value: null })}
-        onSubmit={async (_v) => {
-          // PIN Submission Logic (Same as before, just cleaner invocation)
-          // Simplified for brevity in this masterpiece pass
-        }}
+        onSubmit={handlePinSubmit}
       />
     </Box>
   );
