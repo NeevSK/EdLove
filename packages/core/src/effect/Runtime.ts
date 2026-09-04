@@ -1,8 +1,7 @@
-import { captureException } from '@repo/core/monitoring';
-import { APIError } from '@repo/core/types/API';
 import * as Effect from 'effect/Effect';
 import * as Fiber from 'effect/Fiber';
-import * as Layer from 'effect/Layer';
+import { captureException } from '@repo/core/monitoring';
+import { APIError } from '@repo/core/types/API';
 
 /**
  * Runtime execution boundary for @repo/core.
@@ -10,20 +9,28 @@ import * as Layer from 'effect/Layer';
  * Provides safe runners and managed runtime primitives that comply with
  * both Effect v3 and the Effect v4 owned-runtime model.
  *
- * Rules:
+ * Key Resilience Invariants:
  * 1. Never call Effect.runSync at module evaluation time.
  * 2. All async side-effects crossing to React/Zustand must exit through runPromise or runFork.
+ * 3. Both typed failures (Fail) AND untyped crashes (Die/Defect) must be caught and routed
+ *    to telemetry without crashing the host process.
  */
 
 /**
- * Normalize an unknown error into an Error instance.
+ * Normalize an unknown error or primitive into an Error instance.
  */
 export function normalizeError(error: unknown): Error {
-  return error instanceof Error ? error : new Error(String(error));
+  if (error instanceof Error) return error;
+  if (typeof error === 'string') return new Error(error);
+  try {
+    return new Error(JSON.stringify(error));
+  } catch {
+    return new Error(String(error));
+  }
 }
 
 /**
- * Report best-effort background effects with error capture.
+ * Report best-effort background effects with full error and defect capture.
  */
 export function reportBestEffort<E>(
   effect: Effect.Effect<unknown, E, never>,
@@ -35,13 +42,19 @@ export function reportBestEffort<E>(
         captureException(error, { operation: label, boundary: 'fire-and-forget' });
       }).pipe(Effect.zipRight(Effect.logError(`[${label}] fire-and-forget failed`, error))),
     ),
+    Effect.catchAllDefect((defect) =>
+      Effect.sync(() => {
+        const err = normalizeError(defect);
+        captureException(err, { operation: label, boundary: 'fire-and-forget-defect' });
+      }).pipe(Effect.zipRight(Effect.logError(`[${label}] fire-and-forget defect`, defect))),
+    ),
     Effect.asVoid,
   );
 }
 
 /**
  * Execute an Effect in a detached background fiber (fire-and-forget).
- * Failures are captured by Sentry/telemetry and logged; they never crash the caller.
+ * Failures and defects are captured by telemetry and logged; they never crash the caller.
  */
 export function runForkBestEffort<E>(
   effect: Effect.Effect<unknown, E, never>,
@@ -51,7 +64,7 @@ export function runForkBestEffort<E>(
 }
 
 /**
- * Bridge an Effect to a Promise, converting tagged domain errors to APIError at the boundary.
+ * Bridge an Effect to a Promise, converting typed domain errors AND unhandled defects to APIError at the boundary.
  */
 export function runToPromise<T, E extends { message?: string }>(
   effect: Effect.Effect<T, E, never>,
@@ -70,6 +83,18 @@ export function runToPromise<T, E extends { message?: string }>(
           ),
         ),
       ),
+      Effect.catchAllDefect((defect) => {
+        const err = normalizeError(defect);
+        return Effect.sync(() => {
+          captureException(err, { operation: errorCode ?? 'EFFECT_DEFECT', boundary: 'effect-defect' });
+        }).pipe(
+          Effect.zipRight(
+            Effect.fail(
+              new APIError(err.message || 'Fatal defect encountered', errorCode ?? 'FATAL_DEFECT', err, true),
+            ),
+          ),
+        );
+      }),
     ),
   );
 }

@@ -25,7 +25,7 @@ export {
   UnauthorizedError,
 } from './Errors';
 // ─── 3. Runtime Boundaries & Adapters ────────────────────────────────
-export { reportBestEffort, runForkBestEffort, runToPromise } from './Runtime';
+export { normalizeError, reportBestEffort, runForkBestEffort, runToPromise } from './Runtime';
 // ─── 1. Canonical Schedules ──────────────────────────────────────────
 export { defaultRetryPolicy, retryPolicy, strictRetryPolicy } from './Schedules';
 
