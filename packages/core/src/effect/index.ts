@@ -86,11 +86,15 @@ export function fromSupabase<T>(
     Effect.flatMap(({ data, error }) =>
       error
         ? Effect.fail(
-            new Error(`[${label ?? 'Supabase'}] ${String((error as any)?.message ?? error)}`),
+            new Error(
+              typeof error === 'object' && error !== null && 'message' in error
+                ? String(error.message)
+                : String(error),
+            ),
           )
         : data !== null
           ? Effect.succeed(data)
-          : Effect.fail(new Error(`[${label ?? 'Supabase'}] returned null data`)),
+          : Effect.fail(new Error(`${label ?? 'Supabase'} returned null`)),
     ),
   );
 }
