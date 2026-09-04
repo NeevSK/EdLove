@@ -138,6 +138,8 @@ debuggability, error reporting, and interoperability with existing Effect 3 code
 release and a green mobile/backend matrix. Otherwise launch on Effect 3.22.0 and keep
 the adapter boundaries ready for a post-launch conversion.
 
+> **Readiness Asset**: The Effect v3 architecture audit, boundary mapping, canonical retry consolidation, and v4 migration checklist are documented in [`docs/architecture/effect-ts-architecture.md`](../../../../docs/architecture/effect-ts-architecture.md).
+
 ## Stage 4 — Launch hardening and freeze
 
 **Window: September 15–October 6, 2026**

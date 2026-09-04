@@ -143,3 +143,6 @@ scripts/*.js
 # pnpm local store (never commit - use global auto-managed store)
 .pnpm-store/
 
+
+# Local VSCode / Cursor multi-root workspace
+*.code-workspace
