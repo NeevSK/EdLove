@@ -56,9 +56,16 @@ ALTER TABLE public.academic_cycles
   ALTER COLUMN updated_at SET NOT NULL,
   ALTER COLUMN updated_at SET DEFAULT now();
 
-ALTER TABLE public.academic_cycles
-  ADD CONSTRAINT academic_cycles_lifecycle_status_check
-    CHECK (status IN ('planned', 'active', 'completed', 'archived'));
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'academic_cycles_lifecycle_status_check'
+  ) THEN
+    ALTER TABLE public.academic_cycles
+      ADD CONSTRAINT academic_cycles_lifecycle_status_check
+        CHECK (status IN ('planned', 'active', 'completed', 'archived'));
+  END IF;
+END $$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS academic_cycles_school_name_lifecycle_key
   ON public.academic_cycles (school_id, name);
@@ -295,28 +302,39 @@ CREATE TABLE IF NOT EXISTS public.grade_marks (
 -- Scope constraints that can be enforced without changing legacy tables.
 -- Cross-table cycle/level/subject/term alignment that depends on multiple
 -- rows remains a service-level validation gap and must be checked by writes.
-ALTER TABLE public.academic_cycles
-  ADD CONSTRAINT academic_cycles_id_school_key UNIQUE (id, school_id);
-ALTER TABLE public.academic_terms
-  ADD CONSTRAINT academic_terms_id_cycle_key UNIQUE (id, academic_cycle_id);
-ALTER TABLE public.academic_subjects
-  ADD CONSTRAINT academic_subjects_id_school_key UNIQUE (id, school_id);
-ALTER TABLE public.academic_grade_levels
-  ADD CONSTRAINT academic_grade_levels_id_school_key UNIQUE (id, school_id);
-ALTER TABLE public.grade_classes
-  ADD CONSTRAINT grade_classes_id_school_key UNIQUE (id, school_id),
-  ADD CONSTRAINT grade_classes_id_cycle_key UNIQUE (id, academic_cycle_id);
-ALTER TABLE public.grade_classes
-  ADD CONSTRAINT grade_classes_grade_level_school_fkey
-    FOREIGN KEY (grade_level_id, school_id)
-    REFERENCES public.academic_grade_levels (id, school_id),
-  ADD CONSTRAINT grade_classes_cycle_school_fkey
-    FOREIGN KEY (academic_cycle_id, school_id)
-    REFERENCES public.academic_cycles (id, school_id);
-ALTER TABLE public.grade_class_teacher_assignments
-  ADD CONSTRAINT grade_class_teacher_assignments_class_cycle_fkey
-    FOREIGN KEY (grade_class_id, academic_cycle_id)
-    REFERENCES public.grade_classes (id, academic_cycle_id);
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'academic_cycles_id_school_key') THEN
+    ALTER TABLE public.academic_cycles ADD CONSTRAINT academic_cycles_id_school_key UNIQUE (id, school_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'academic_terms_id_cycle_key') THEN
+    ALTER TABLE public.academic_terms ADD CONSTRAINT academic_terms_id_cycle_key UNIQUE (id, academic_cycle_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'academic_subjects_id_school_key') THEN
+    ALTER TABLE public.academic_subjects ADD CONSTRAINT academic_subjects_id_school_key UNIQUE (id, school_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'academic_grade_levels_id_school_key') THEN
+    ALTER TABLE public.academic_grade_levels ADD CONSTRAINT academic_grade_levels_id_school_key UNIQUE (id, school_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'grade_classes_id_school_key') THEN
+    ALTER TABLE public.grade_classes ADD CONSTRAINT grade_classes_id_school_key UNIQUE (id, school_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'grade_classes_id_cycle_key') THEN
+    ALTER TABLE public.grade_classes ADD CONSTRAINT grade_classes_id_cycle_key UNIQUE (id, academic_cycle_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'grade_classes_grade_level_school_fkey') THEN
+    ALTER TABLE public.grade_classes ADD CONSTRAINT grade_classes_grade_level_school_fkey
+      FOREIGN KEY (grade_level_id, school_id) REFERENCES public.academic_grade_levels (id, school_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'grade_classes_cycle_school_fkey') THEN
+    ALTER TABLE public.grade_classes ADD CONSTRAINT grade_classes_cycle_school_fkey
+      FOREIGN KEY (academic_cycle_id, school_id) REFERENCES public.academic_cycles (id, school_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'grade_class_teacher_assignments_class_cycle_fkey') THEN
+    ALTER TABLE public.grade_class_teacher_assignments ADD CONSTRAINT grade_class_teacher_assignments_class_cycle_fkey
+      FOREIGN KEY (grade_class_id, academic_cycle_id) REFERENCES public.grade_classes (id, academic_cycle_id);
+  END IF;
+END $$;
 
 -- RLS/ReBAC helpers. These are SECURITY DEFINER and do not query the new
 -- lifecycle tables, avoiding policy recursion.
@@ -401,84 +419,110 @@ ALTER TABLE public.teacher_attendance_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.grade_marks ENABLE ROW LEVEL SECURITY;
 
 -- Cycle/catalog/structure: school members read; school leadership writes.
+DROP POLICY IF EXISTS academic_cycles_member_read ON public.academic_cycles;
 CREATE POLICY academic_cycles_member_read ON public.academic_cycles FOR SELECT TO authenticated
   USING (public.academic_lifecycle_is_school_member(school_id));
+DROP POLICY IF EXISTS academic_cycles_leader_write ON public.academic_cycles;
 CREATE POLICY academic_cycles_leader_write ON public.academic_cycles FOR ALL TO authenticated
   USING (public.academic_lifecycle_is_leader(school_id))
   WITH CHECK (public.academic_lifecycle_is_leader(school_id));
 
+DROP POLICY IF EXISTS academic_terms_member_read ON public.academic_terms;
 CREATE POLICY academic_terms_member_read ON public.academic_terms FOR SELECT TO authenticated
   USING (EXISTS (SELECT 1 FROM public.academic_cycles c WHERE c.id = academic_cycle_id AND public.academic_lifecycle_is_school_member(c.school_id)));
+DROP POLICY IF EXISTS academic_terms_leader_write ON public.academic_terms;
 CREATE POLICY academic_terms_leader_write ON public.academic_terms FOR ALL TO authenticated
   USING (EXISTS (SELECT 1 FROM public.academic_cycles c WHERE c.id = academic_cycle_id AND public.academic_lifecycle_is_leader(c.school_id)))
   WITH CHECK (EXISTS (SELECT 1 FROM public.academic_cycles c WHERE c.id = academic_cycle_id AND public.academic_lifecycle_is_leader(c.school_id)));
 
+DROP POLICY IF EXISTS academic_subjects_member_read ON public.academic_subjects;
 CREATE POLICY academic_subjects_member_read ON public.academic_subjects FOR SELECT TO authenticated
   USING (public.academic_lifecycle_is_school_member(school_id));
+DROP POLICY IF EXISTS academic_subjects_leader_write ON public.academic_subjects;
 CREATE POLICY academic_subjects_leader_write ON public.academic_subjects FOR ALL TO authenticated
   USING (public.academic_lifecycle_is_leader(school_id))
   WITH CHECK (public.academic_lifecycle_is_leader(school_id));
 
+DROP POLICY IF EXISTS academic_grade_levels_member_read ON public.academic_grade_levels;
 CREATE POLICY academic_grade_levels_member_read ON public.academic_grade_levels FOR SELECT TO authenticated
   USING (public.academic_lifecycle_is_school_member(school_id));
+DROP POLICY IF EXISTS academic_grade_levels_leader_write ON public.academic_grade_levels;
 CREATE POLICY academic_grade_levels_leader_write ON public.academic_grade_levels FOR ALL TO authenticated
   USING (public.academic_lifecycle_is_leader(school_id))
   WITH CHECK (public.academic_lifecycle_is_leader(school_id));
 
+DROP POLICY IF EXISTS academic_cycle_leadership_member_read ON public.academic_cycle_leadership_assignments;
 CREATE POLICY academic_cycle_leadership_member_read ON public.academic_cycle_leadership_assignments FOR SELECT TO authenticated
   USING (public.academic_lifecycle_is_school_member(school_id));
+DROP POLICY IF EXISTS academic_cycle_leadership_leader_write ON public.academic_cycle_leadership_assignments;
 CREATE POLICY academic_cycle_leadership_leader_write ON public.academic_cycle_leadership_assignments FOR ALL TO authenticated
   USING (public.academic_lifecycle_is_leader(school_id))
   WITH CHECK (public.academic_lifecycle_is_leader(school_id));
 
+DROP POLICY IF EXISTS grade_classes_member_read ON public.grade_classes;
 CREATE POLICY grade_classes_member_read ON public.grade_classes FOR SELECT TO authenticated
   USING (public.academic_lifecycle_is_school_member(school_id));
+DROP POLICY IF EXISTS grade_classes_leader_write ON public.grade_classes;
 CREATE POLICY grade_classes_leader_write ON public.grade_classes FOR ALL TO authenticated
   USING (public.academic_lifecycle_is_leader(school_id))
   WITH CHECK (public.academic_lifecycle_is_leader(school_id));
 
+DROP POLICY IF EXISTS grade_class_subjects_member_read ON public.grade_class_subjects;
 CREATE POLICY grade_class_subjects_member_read ON public.grade_class_subjects FOR SELECT TO authenticated
   USING (EXISTS (SELECT 1 FROM public.grade_classes c WHERE c.id = grade_class_id AND public.academic_lifecycle_is_school_member(c.school_id)));
+DROP POLICY IF EXISTS grade_class_subjects_authorized_write ON public.grade_class_subjects;
 CREATE POLICY grade_class_subjects_authorized_write ON public.grade_class_subjects FOR ALL TO authenticated
   USING (EXISTS (SELECT 1 FROM public.grade_classes c WHERE c.id = grade_class_id AND (public.academic_lifecycle_is_leader(c.school_id) OR public.academic_lifecycle_is_assigned_teacher(c.id, subject_id))))
   WITH CHECK (EXISTS (SELECT 1 FROM public.grade_classes c WHERE c.id = grade_class_id AND (public.academic_lifecycle_is_leader(c.school_id) OR public.academic_lifecycle_is_assigned_teacher(c.id, subject_id))));
 
+DROP POLICY IF EXISTS grade_class_teacher_assignments_member_read ON public.grade_class_teacher_assignments;
 CREATE POLICY grade_class_teacher_assignments_member_read ON public.grade_class_teacher_assignments FOR SELECT TO authenticated
   USING (EXISTS (SELECT 1 FROM public.grade_classes c WHERE c.id = grade_class_id AND public.academic_lifecycle_is_school_member(c.school_id)));
+DROP POLICY IF EXISTS grade_class_teacher_assignments_leader_write ON public.grade_class_teacher_assignments;
 CREATE POLICY grade_class_teacher_assignments_leader_write ON public.grade_class_teacher_assignments FOR ALL TO authenticated
   USING (EXISTS (SELECT 1 FROM public.grade_classes c WHERE c.id = grade_class_id AND public.academic_lifecycle_is_leader(c.school_id)))
   WITH CHECK (EXISTS (SELECT 1 FROM public.grade_classes c WHERE c.id = grade_class_id AND public.academic_lifecycle_is_leader(c.school_id)));
 
 -- Student enrollment and attendance: students read their own rows; school
 -- leaders and assigned teachers manage relevant class rows.
+DROP POLICY IF EXISTS student_grade_class_enrollments_self_or_school_read ON public.student_grade_class_enrollments;
 CREATE POLICY student_grade_class_enrollments_self_or_school_read ON public.student_grade_class_enrollments FOR SELECT TO authenticated
   USING (student_id = auth.uid() OR public.academic_lifecycle_is_school_member(school_id));
+DROP POLICY IF EXISTS student_grade_class_enrollments_authorized_write ON public.student_grade_class_enrollments;
 CREATE POLICY student_grade_class_enrollments_authorized_write ON public.student_grade_class_enrollments FOR ALL TO authenticated
   USING (public.academic_lifecycle_is_leader(school_id) OR public.academic_lifecycle_is_assigned_teacher(grade_class_id))
   WITH CHECK (public.academic_lifecycle_is_leader(school_id) OR public.academic_lifecycle_is_assigned_teacher(grade_class_id));
 
+DROP POLICY IF EXISTS daily_attendance_self_or_school_read ON public.daily_attendance;
 CREATE POLICY daily_attendance_self_or_school_read ON public.daily_attendance FOR SELECT TO authenticated
   USING (student_id = auth.uid() OR public.academic_lifecycle_is_school_member(school_id));
+DROP POLICY IF EXISTS daily_attendance_authorized_write ON public.daily_attendance;
 CREATE POLICY daily_attendance_authorized_write ON public.daily_attendance FOR ALL TO authenticated
   USING (public.academic_lifecycle_is_leader(school_id) OR public.academic_lifecycle_is_assigned_teacher(grade_class_id))
   WITH CHECK (public.academic_lifecycle_is_leader(school_id) OR public.academic_lifecycle_is_assigned_teacher(grade_class_id));
 
+DROP POLICY IF EXISTS attendance_sessions_self_or_school_read ON public.attendance_sessions;
 CREATE POLICY attendance_sessions_self_or_school_read ON public.attendance_sessions FOR SELECT TO authenticated
   USING (student_id = auth.uid() OR public.academic_lifecycle_is_school_member(school_id));
+DROP POLICY IF EXISTS attendance_sessions_authorized_write ON public.attendance_sessions;
 CREATE POLICY attendance_sessions_authorized_write ON public.attendance_sessions FOR ALL TO authenticated
   USING (public.academic_lifecycle_is_leader(school_id) OR public.academic_lifecycle_is_assigned_teacher(grade_class_id, subject_id))
   WITH CHECK (public.academic_lifecycle_is_leader(school_id) OR public.academic_lifecycle_is_assigned_teacher(grade_class_id, subject_id));
 
 -- Teacher attendance: teachers can read/write their own records; leaders can
 -- administer school records. No student or guardian policy is granted.
+DROP POLICY IF EXISTS teacher_daily_attendance_self_or_leader_read ON public.teacher_daily_attendance;
 CREATE POLICY teacher_daily_attendance_self_or_leader_read ON public.teacher_daily_attendance FOR SELECT TO authenticated
   USING (teacher_id = auth.uid() OR public.academic_lifecycle_is_leader(school_id));
+DROP POLICY IF EXISTS teacher_daily_attendance_self_or_leader_write ON public.teacher_daily_attendance;
 CREATE POLICY teacher_daily_attendance_self_or_leader_write ON public.teacher_daily_attendance FOR ALL TO authenticated
   USING (teacher_id = auth.uid() OR public.academic_lifecycle_is_leader(school_id))
   WITH CHECK (teacher_id = auth.uid() OR public.academic_lifecycle_is_leader(school_id));
 
+DROP POLICY IF EXISTS teacher_attendance_sessions_self_or_leader_read ON public.teacher_attendance_sessions;
 CREATE POLICY teacher_attendance_sessions_self_or_leader_read ON public.teacher_attendance_sessions FOR SELECT TO authenticated
   USING (teacher_id = auth.uid() OR public.academic_lifecycle_is_leader(school_id));
+DROP POLICY IF EXISTS teacher_attendance_sessions_self_or_leader_write ON public.teacher_attendance_sessions;
 CREATE POLICY teacher_attendance_sessions_self_or_leader_write ON public.teacher_attendance_sessions FOR ALL TO authenticated
   USING (teacher_id = auth.uid() OR public.academic_lifecycle_is_leader(school_id))
   WITH CHECK (teacher_id = auth.uid() OR public.academic_lifecycle_is_leader(school_id));
@@ -487,12 +531,14 @@ CREATE POLICY teacher_attendance_sessions_self_or_leader_write ON public.teacher
 -- authorized school leadership. There is intentionally NO guardian policy;
 -- TODO: add a dedicated guardian read path after guardian permissions define
 -- published-mark visibility. Anon receives no access through these policies.
+DROP POLICY IF EXISTS grade_marks_student_or_authorized_read ON public.grade_marks;
 CREATE POLICY grade_marks_student_or_authorized_read ON public.grade_marks FOR SELECT TO authenticated
   USING (
     student_id = auth.uid()
     OR public.academic_lifecycle_is_leader(school_id)
     OR public.academic_lifecycle_is_assigned_teacher(grade_class_id, subject_id)
   );
+DROP POLICY IF EXISTS grade_marks_authorized_write ON public.grade_marks;
 CREATE POLICY grade_marks_authorized_write ON public.grade_marks FOR ALL TO authenticated
   USING (
     public.academic_lifecycle_is_leader(school_id)

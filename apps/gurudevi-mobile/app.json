@@ -2,7 +2,7 @@
   "expo": {
     "name": "gurudevi-mobile",
     "slug": "gurudevi-mobile",
-    "version": "1.0.2",
+    "version": "1.5.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -14,7 +14,7 @@
     },
     "android": {
       "package": "org.edlove.gurudevi",
-      "versionCode": 23,
+      "versionCode": 24,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -124,6 +124,7 @@
         "expo-build-properties",
         {
           "android": {
+            "minSdkVersion": 28,
             "extraMavenRepos": []
           }
         }

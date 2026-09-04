@@ -36,6 +36,43 @@ describe('route flow decision helper', () => {
     ).toMatchObject({ decision: 'onboarding', redirectTo: '/onboarding' });
   });
 
+  it('keeps a server-confirmed inactive account out of onboarding and app routes', () => {
+    expect(
+      getAuthRouteTarget({
+        pathname: '/onboarding',
+        bootstrapReady: true,
+        sessionMode: 'authenticated',
+        identityAvailability: 'inactive',
+        onboardingCompleted: false,
+        hasSession: true,
+      }),
+    ).toMatchObject({ decision: 'inactive-account', redirectTo: '/account-recovery' });
+
+    expect(
+      getAuthRouteTarget({
+        pathname: '/account-recovery',
+        bootstrapReady: true,
+        sessionMode: 'authenticated',
+        identityAvailability: 'inactive',
+        onboardingCompleted: false,
+        hasSession: true,
+      }),
+    ).toMatchObject({ decision: 'inactive-account', redirectTo: null });
+  });
+
+  it('does not infer inactivity from an unknown identity resolution', () => {
+    expect(
+      getAuthRouteTarget({
+        pathname: '/self',
+        bootstrapReady: true,
+        sessionMode: 'authenticated',
+        identityAvailability: 'unknown',
+        onboardingCompleted: false,
+        hasSession: true,
+      }),
+    ).toMatchObject({ decision: 'onboarding', redirectTo: '/onboarding' });
+  });
+
   it('routes onboarded authenticated users away from public entry points', () => {
     expect(
       getAuthRouteTarget({

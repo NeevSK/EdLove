@@ -10,11 +10,11 @@
 -- First, create the partitioned table structure
 CREATE TABLE sentinel_audit_logs_partitioned (
   id UUID NOT NULL DEFAULT gen_random_uuid(),
-  user_id UUID,
+  actor_id UUID NOT NULL,
   action TEXT NOT NULL,
   resource_type TEXT NOT NULL,
   resource_id TEXT,
-  metadata JSONB DEFAULT '{}',
+  details JSONB,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   PRIMARY KEY (id, created_at)
 ) PARTITION BY RANGE (created_at);
@@ -38,8 +38,8 @@ BEGIN
     );
     -- Create index on each partition
     EXECUTE format(
-      'CREATE INDEX %I ON %I (user_id, created_at)',
-      partition_name || '_user_created_idx', partition_name
+      'CREATE INDEX %I ON %I (actor_id, created_at)',
+      partition_name || '_actor_created_idx', partition_name
     );
     EXECUTE format(
       'CREATE INDEX %I ON %I (action, created_at)',
@@ -53,8 +53,8 @@ END $$;
 CREATE TABLE sentinel_audit_logs_default PARTITION OF sentinel_audit_logs_partitioned DEFAULT;
 
 -- Migrate data from old table to partitioned table
-INSERT INTO sentinel_audit_logs_partitioned (id, user_id, action, resource_type, resource_id, metadata, created_at)
-SELECT id, user_id, action, resource_type, resource_id, metadata, created_at
+INSERT INTO sentinel_audit_logs_partitioned (id, actor_id, action, resource_type, resource_id, details, created_at)
+SELECT id, actor_id, action, resource_type, resource_id, details, created_at
 FROM sentinel_audit_logs;
 
 -- Drop old table and rename
@@ -62,17 +62,8 @@ DROP TABLE sentinel_audit_logs;
 ALTER TABLE sentinel_audit_logs_partitioned RENAME TO sentinel_audit_logs;
 
 -- Create partitioned index on parent (auto-propagates to new partitions)
-CREATE INDEX sentinel_audit_logs_user_created_idx ON sentinel_audit_logs (user_id, created_at);
+CREATE INDEX sentinel_audit_logs_actor_created_idx ON sentinel_audit_logs (actor_id, created_at);
 CREATE INDEX sentinel_audit_logs_action_created_idx ON sentinel_audit_logs (action, created_at);
-
--- Set autovacuum tuning for high-churn table
-ALTER TABLE sentinel_audit_logs SET (
-  autovacuum_vacuum_scale_factor = 0.05,
-  autovacuum_analyze_scale_factor = 0.02,
-  autovacuum_vacuum_threshold = 5000,
-  autovacuum_vacuum_cost_delay = 10,
-  autovacuum_max_workers = 2
-);
 
 -- ============================================================
 -- 2. SECURITY_AUDIT_LOGS
@@ -80,10 +71,9 @@ ALTER TABLE sentinel_audit_logs SET (
 
 CREATE TABLE security_audit_logs_partitioned (
   id UUID NOT NULL DEFAULT gen_random_uuid(),
-  user_id UUID,
-  event_type TEXT NOT NULL,
-  ip_address INET,
-  user_agent TEXT,
+  account_id UUID,
+  device_id UUID,
+  action TEXT NOT NULL,
   metadata JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   PRIMARY KEY (id, created_at)
@@ -105,12 +95,12 @@ BEGIN
       partition_name, current_month, current_month + interval '1 month'
     );
     EXECUTE format(
-      'CREATE INDEX %I ON %I (user_id, created_at)',
-      partition_name || '_user_created_idx', partition_name
+      'CREATE INDEX %I ON %I (account_id, created_at)',
+      partition_name || '_account_created_idx', partition_name
     );
     EXECUTE format(
-      'CREATE INDEX %I ON %I (event_type, created_at)',
-      partition_name || '_event_created_idx', partition_name
+      'CREATE INDEX %I ON %I (action, created_at)',
+      partition_name || '_action_created_idx', partition_name
     );
     current_month := current_month + interval '1 month';
   END LOOP;
@@ -118,23 +108,15 @@ END $$;
 
 CREATE TABLE security_audit_logs_default PARTITION OF security_audit_logs_partitioned DEFAULT;
 
-INSERT INTO security_audit_logs_partitioned (id, user_id, event_type, ip_address, user_agent, metadata, created_at)
-SELECT id, user_id, event_type, ip_address, user_agent, metadata, created_at
+INSERT INTO security_audit_logs_partitioned (id, account_id, device_id, action, metadata, created_at)
+SELECT id, account_id, device_id, action, metadata, created_at
 FROM security_audit_logs;
 
 DROP TABLE security_audit_logs;
 ALTER TABLE security_audit_logs_partitioned RENAME TO security_audit_logs;
 
-CREATE INDEX security_audit_logs_user_created_idx ON security_audit_logs (user_id, created_at);
-CREATE INDEX security_audit_logs_event_created_idx ON security_audit_logs (event_type, created_at);
-
-ALTER TABLE security_audit_logs SET (
-  autovacuum_vacuum_scale_factor = 0.05,
-  autovacuum_analyze_scale_factor = 0.02,
-  autovacuum_vacuum_threshold = 5000,
-  autovacuum_vacuum_cost_delay = 10,
-  autovacuum_max_workers = 2
-);
+CREATE INDEX security_audit_logs_account_created_idx ON security_audit_logs (account_id, created_at);
+CREATE INDEX security_audit_logs_action_created_idx ON security_audit_logs (action, created_at);
 
 -- ============================================================
 -- 3. PRIVACY_LEDGER_ENTRIES
@@ -143,10 +125,9 @@ ALTER TABLE security_audit_logs SET (
 CREATE TABLE privacy_ledger_entries_partitioned (
   id UUID NOT NULL DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
-  action TEXT NOT NULL,
-  resource_type TEXT,
-  resource_id TEXT,
-  consent_version TEXT,
+  activity_type TEXT NOT NULL,
+  resource_name TEXT NOT NULL,
+  description TEXT NOT NULL,
   metadata JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   PRIMARY KEY (id, created_at)
@@ -177,19 +158,14 @@ END $$;
 
 CREATE TABLE privacy_ledger_entries_default PARTITION OF privacy_ledger_entries_partitioned DEFAULT;
 
-INSERT INTO privacy_ledger_entries_partitioned (id, user_id, action, resource_type, resource_id, consent_version, metadata, created_at)
-SELECT id, user_id, action, resource_type, resource_id, consent_version, metadata, created_at
+INSERT INTO privacy_ledger_entries_partitioned (id, user_id, activity_type, resource_name, description, metadata, created_at)
+SELECT id, user_id, activity_type, resource_name, description, metadata, created_at
 FROM privacy_ledger_entries;
 
 DROP TABLE privacy_ledger_entries;
 ALTER TABLE privacy_ledger_entries_partitioned RENAME TO privacy_ledger_entries;
 
 CREATE INDEX privacy_ledger_entries_user_created_idx ON privacy_ledger_entries (user_id, created_at);
-
-ALTER TABLE privacy_ledger_entries SET (
-  autovacuum_vacuum_scale_factor = 0.1,
-  autovacuum_analyze_scale_factor = 0.05
-);
 
 -- ============================================================
 -- 4. STUDENT_LONGITUDINAL_EVENTS
@@ -198,12 +174,21 @@ ALTER TABLE privacy_ledger_entries SET (
 CREATE TABLE student_longitudinal_events_partitioned (
   id UUID NOT NULL DEFAULT gen_random_uuid(),
   student_id UUID NOT NULL,
-  event_type TEXT NOT NULL,
-  event_data JSONB DEFAULT '{}',
+  school_id UUID,
+  grade_id UUID,
+  classroom_id UUID,
+  entity_type TEXT NOT NULL,
+  entity_id TEXT NOT NULL,
+  operation TEXT NOT NULL,
+  source_table TEXT NOT NULL,
+  snapshot JSONB NOT NULL,
+  occurred_at TIMESTAMPTZ NOT NULL,
+  recorded_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  effective_from TIMESTAMPTZ,
+  effective_to TIMESTAMPTZ,
   recorded_by UUID,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  PRIMARY KEY (id, created_at)
-) PARTITION BY RANGE (created_at);
+  PRIMARY KEY (id, occurred_at)
+) PARTITION BY RANGE (occurred_at);
 
 DO $$
 DECLARE
@@ -221,8 +206,8 @@ BEGIN
       partition_name, current_month, current_month + interval '1 month'
     );
     EXECUTE format(
-      'CREATE INDEX %I ON %I (student_id, created_at)',
-      partition_name || '_student_created_idx', partition_name
+      'CREATE INDEX %I ON %I (student_id, occurred_at DESC, recorded_at DESC)',
+      partition_name || '_student_occurred_idx', partition_name
     );
     current_month := current_month + interval '1 month';
   END LOOP;
@@ -230,19 +215,21 @@ END $$;
 
 CREATE TABLE student_longitudinal_events_default PARTITION OF student_longitudinal_events_partitioned DEFAULT;
 
-INSERT INTO student_longitudinal_events_partitioned (id, student_id, event_type, event_data, recorded_by, created_at)
-SELECT id, student_id, event_type, event_data, recorded_by, created_at
+INSERT INTO student_longitudinal_events_partitioned (
+  id, student_id, school_id, grade_id, classroom_id, entity_type, entity_id, operation,
+  source_table, snapshot, occurred_at, recorded_at, effective_from, effective_to, recorded_by
+)
+SELECT
+  id, student_id, school_id, grade_id, classroom_id, entity_type, entity_id, operation,
+  source_table, snapshot, occurred_at, recorded_at, effective_from, effective_to, recorded_by
 FROM student_longitudinal_events;
 
 DROP TABLE student_longitudinal_events;
 ALTER TABLE student_longitudinal_events_partitioned RENAME TO student_longitudinal_events;
 
-CREATE INDEX student_longitudinal_events_student_created_idx ON student_longitudinal_events (student_id, created_at);
-
-ALTER TABLE student_longitudinal_events SET (
-  autovacuum_vacuum_scale_factor = 0.1,
-  autovacuum_analyze_scale_factor = 0.05
-);
+CREATE INDEX student_longitudinal_events_student_occurred_idx ON student_longitudinal_events (student_id, occurred_at DESC, recorded_at DESC);
+CREATE INDEX student_longitudinal_events_school_entity_idx ON student_longitudinal_events (school_id, entity_type, occurred_at DESC);
+CREATE INDEX student_longitudinal_events_classroom_occurred_idx ON student_longitudinal_events (classroom_id, occurred_at DESC);
 
 -- ============================================================
 -- PARTITION MAINTENANCE FUNCTION
@@ -250,7 +237,8 @@ ALTER TABLE student_longitudinal_events SET (
 
 -- Function to create next month's partition for all partitioned tables
 CREATE OR REPLACE FUNCTION create_next_month_partitions()
-RETURNS void AS $$
+RETURNS void
+LANGUAGE plpgsql AS $$
 DECLARE
   next_month_start DATE := date_trunc('month', now() + interval '1 month');
   next_month_end DATE := next_month_start + interval '1 month';
@@ -263,8 +251,8 @@ BEGIN
      FOR VALUES FROM (%L) TO (%L)',
     partition_name, next_month_start, next_month_end
   );
-  EXECUTE format('CREATE INDEX %I ON %I (user_id, created_at)',
-    partition_name || '_user_created_idx', partition_name);
+  EXECUTE format('CREATE INDEX %I ON %I (actor_id, created_at)',
+    partition_name || '_actor_created_idx', partition_name);
   EXECUTE format('CREATE INDEX %I ON %I (action, created_at)',
     partition_name || '_action_created_idx', partition_name);
 
@@ -275,10 +263,10 @@ BEGIN
      FOR VALUES FROM (%L) TO (%L)',
     partition_name, next_month_start, next_month_end
   );
-  EXECUTE format('CREATE INDEX %I ON %I (user_id, created_at)',
-    partition_name || '_user_created_idx', partition_name);
-  EXECUTE format('CREATE INDEX %I ON %I (event_type, created_at)',
-    partition_name || '_event_created_idx', partition_name);
+  EXECUTE format('CREATE INDEX %I ON %I (account_id, created_at)',
+    partition_name || '_account_created_idx', partition_name);
+  EXECUTE format('CREATE INDEX %I ON %I (action, created_at)',
+    partition_name || '_action_created_idx', partition_name);
 
   -- privacy_ledger_entries
   partition_name := 'privacy_ledger_entries_' || to_char(next_month_start, 'YYYY_"m"MM');
@@ -297,8 +285,8 @@ BEGIN
      FOR VALUES FROM (%L) TO (%L)',
     partition_name, next_month_start, next_month_end
   );
-  EXECUTE format('CREATE INDEX %I ON %I (student_id, created_at)',
-    partition_name || '_student_created_idx', partition_name);
+  EXECUTE format('CREATE INDEX %I ON %I (student_id, occurred_at DESC, recorded_at DESC)',
+    partition_name || '_student_occurred_idx', partition_name);
 END $$;
 
 -- ============================================================
@@ -306,7 +294,8 @@ END $$;
 -- ============================================================
 
 CREATE OR REPLACE FUNCTION archive_old_partitions(retention_months INT DEFAULT 36)
-RETURNS TABLE(partition_name TEXT, status TEXT) AS $$
+RETURNS TABLE(partition_name TEXT, status TEXT)
+LANGUAGE plpgsql AS $$
 DECLARE
   cutoff DATE := date_trunc('month', now() - interval '1 month' * retention_months);
   r RECORD;

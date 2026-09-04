@@ -50,6 +50,7 @@ ALTER TABLE public.guardian_assessment_read_audit_events ENABLE ROW LEVEL SECURI
 
 -- A guardian may inspect only their own normalized permission rows. There are
 -- intentionally no INSERT/UPDATE/DELETE policies; grants are service-managed.
+DROP POLICY IF EXISTS guardian_assessment_permissions_self_read ON public.guardian_assessment_permissions;
 CREATE POLICY guardian_assessment_permissions_self_read
   ON public.guardian_assessment_permissions
   FOR SELECT TO authenticated

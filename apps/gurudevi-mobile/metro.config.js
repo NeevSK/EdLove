@@ -42,9 +42,6 @@ const { exp: resolvedExpoConfig } = getExpoConfig(projectRoot, {
 const publicRuntime = resolvedExpoConfig.extra?.publicRuntime;
 const publicRuntimePath = path.join(projectRoot, '.expo', 'gurudevi-public-runtime.json');
 // Never let a previous interrupted build supply configuration to a new one.
-if (fs.existsSync(publicRuntimePath)) {
-  fs.rmSync(publicRuntimePath, { force: true });
-}
 if (!publicRuntime?.supabaseUrl || !publicRuntime?.supabasePublishableKey) {
   // expo-doctor evaluates this config statically without Doppler env vars.
   // Only block actual Metro bundle/serve runs, not the doctor health check.
@@ -58,18 +55,18 @@ if (!publicRuntime?.supabaseUrl || !publicRuntime?.supabasePublishableKey) {
       'Missing public Supabase runtime config during Metro setup. Run the app/export through Doppler with EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY.',
     );
   }
-}
-process.env.EXPO_PUBLIC_SUPABASE_URL = publicRuntime.supabaseUrl;
-process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY = publicRuntime.supabasePublishableKey;
-fs.mkdirSync(path.dirname(publicRuntimePath), { recursive: true });
-fs.writeFileSync(
-  publicRuntimePath,
-  JSON.stringify({
+} else {
+  process.env.EXPO_PUBLIC_SUPABASE_URL = publicRuntime.supabaseUrl;
+  process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY = publicRuntime.supabasePublishableKey;
+  fs.mkdirSync(path.dirname(publicRuntimePath), { recursive: true });
+  const publicRuntimeContents = JSON.stringify({
     supabaseUrl: publicRuntime.supabaseUrl,
     supabasePublishableKey: publicRuntime.supabasePublishableKey,
-  }),
-  'utf8',
-);
+  });
+  if (!fs.existsSync(publicRuntimePath) || fs.readFileSync(publicRuntimePath, 'utf8') !== publicRuntimeContents) {
+    fs.writeFileSync(publicRuntimePath, publicRuntimeContents, 'utf8');
+  }
+}
 process.once('exit', () => {
   try {
     fs.rmSync(publicRuntimePath, { force: true });
@@ -87,7 +84,7 @@ config.resolver.assetExts.push('wasm');
 //    (see `watchman watch-list`); Metro fell back to Node's fs.watch() here,
 //    which is unreliable on Windows + Node 22 and silently dropped package
 //    file changes — that is why containers had to be rebuilt from scratch.
-config.watchman = true;
+config.useWatchman = true;
 // Watch every internal workspace package. The app project root is already a
 // watch root by default; this adds the shared packages dir on top.
 config.watchFolders = [path.resolve(workspaceRoot, 'packages')];
@@ -170,90 +167,9 @@ const SINGLETON_OVERRIDES = {
   'react-is': path.resolve(projectRoot, 'node_modules/react-is'),
 };
 
-// 5. Dynamic Package Discovery (Internal & Pnpm Transitives)
-// We scan the packages/ directory and the pnpm virtual store to proactively
-// map all dependencies to their physical paths. This eliminates the need for
-// manual elevation of transitive dependencies in package.json.
-const INTERNAL_PACKAGE_MAPPINGS = {};
-const packagesDir = path.resolve(workspaceRoot, 'packages');
-if (fs.existsSync(packagesDir)) {
-  fs.readdirSync(packagesDir).forEach((dir) => {
-    const pkgJsonPath = path.join(packagesDir, dir, 'package.json');
-    if (fs.existsSync(pkgJsonPath)) {
-      try {
-        const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
-        if (pkgJson.name) {
-          INTERNAL_PACKAGE_MAPPINGS[pkgJson.name] = path.resolve(packagesDir, dir);
-        }
-      } catch (e) {
-        console.warn(`[Metro-Config] ⚠️ Failed to parse package.json in ${dir}:`, e.message);
-      }
-    }
-  });
-}
-
-const PNPM_FALLBACK_MAPPINGS = {};
-const MAPPED_VERSIONS = {};
-
-function getVersionFromDir(dir) {
-  const parts = dir.split('@');
-  const versionPart = dir.startsWith('@') ? parts[2] : parts[1];
-  if (!versionPart) return '0.0.0';
-  return versionPart.split('_')[0];
-}
-
-function isVersionGreater(v1, v2) {
-  const parts1 = v1.split('.').map(Number);
-  const parts2 = v2.split('.').map(Number);
-  for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {
-    const num1 = parts1[i] || 0;
-    const num2 = parts2[i] || 0;
-    if (num1 !== num2) {
-      return num1 > num2;
-    }
-  }
-  return false;
-}
-
-const pnpmRoot = path.resolve(workspaceRoot, 'node_modules/.pnpm');
-if (fs.existsSync(pnpmRoot)) {
-  // We scan the virtual store for every package it contains.
-  // This is the "Sovereign Proactive Resolver": it handles truncated directory names
-  // and ensures Metro can find every transitive dependency without hierarchical lookup.
-  fs.readdirSync(pnpmRoot).forEach((dir) => {
-    const virtualNodeModules = path.resolve(pnpmRoot, dir, 'node_modules');
-    if (fs.existsSync(virtualNodeModules)) {
-      try {
-        const version = getVersionFromDir(dir);
-        fs.readdirSync(virtualNodeModules).forEach((pkgName) => {
-          if (pkgName.startsWith('@')) {
-            const scopePath = path.resolve(virtualNodeModules, pkgName);
-            fs.readdirSync(scopePath).forEach((subPkg) => {
-              const fullName = `${pkgName}/${subPkg}`;
-              if (!SINGLETON_OVERRIDES[fullName] && !INTERNAL_PACKAGE_MAPPINGS[fullName]) {
-                const existingVersion = MAPPED_VERSIONS[fullName];
-                if (!existingVersion || isVersionGreater(version, existingVersion)) {
-                  PNPM_FALLBACK_MAPPINGS[fullName] = path.resolve(scopePath, subPkg);
-                  MAPPED_VERSIONS[fullName] = version;
-                }
-              }
-            });
-          } else {
-            if (!SINGLETON_OVERRIDES[pkgName] && !INTERNAL_PACKAGE_MAPPINGS[pkgName]) {
-              const existingVersion = MAPPED_VERSIONS[pkgName];
-              if (!existingVersion || isVersionGreater(version, existingVersion)) {
-                PNPM_FALLBACK_MAPPINGS[pkgName] = path.resolve(virtualNodeModules, pkgName);
-                MAPPED_VERSIONS[pkgName] = version;
-              }
-            }
-          }
-        });
-      } catch (_e) {
-        // Skip inaccessible or non-directory entries
-      }
-    }
-  });
-}
+// 5. Resolution is limited to the declared app graph. Scanning the entire
+// pnpm store and choosing its highest version created competing runtime
+// singletons and made startup depend on store history.
 
 // Ensure react-native is a singleton on native platforms
 // Expo invokes web builds as either `-p web`, `--platform web`, or
@@ -277,9 +193,7 @@ if (isWeb) {
 }
 
 config.resolver.extraNodeModules = {
-  ...PNPM_FALLBACK_MAPPINGS,
   ...SINGLETON_OVERRIDES,
-  ...INTERNAL_PACKAGE_MAPPINGS,
 };
 
 // 6. Platform Firewall & Deterministic Resolver

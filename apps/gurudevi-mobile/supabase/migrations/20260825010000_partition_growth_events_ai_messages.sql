@@ -6,7 +6,7 @@
 -- ============================================================
 
 -- Create partitioned table
-CREATE TABLE growth_events_partitioned (
+CREATE TABLE IF NOT EXISTS growth_events_partitioned (
   id UUID NOT NULL DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
   dimension TEXT NOT NULL,
@@ -30,23 +30,27 @@ BEGIN
   WHILE current_month < end_month LOOP
     partition_name := 'growth_events_' || to_char(current_month, 'YYYY_"m"MM');
     -- Create monthly range partition with list sub-partitioning
-    EXECUTE format(
-      'CREATE TABLE %I PARTITION OF growth_events_partitioned
-       FOR VALUES FROM (%L) TO (%L)
-       PARTITION BY LIST (dimension)',
-      partition_name, current_month, current_month + interval '1 month'
-    );
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = partition_name) THEN
+      EXECUTE format(
+        'CREATE TABLE %I PARTITION OF growth_events_partitioned
+         FOR VALUES FROM (%L) TO (%L)
+         PARTITION BY LIST (dimension)',
+        partition_name, current_month, current_month + interval '1 month'
+      );
+    END IF;
     
     -- Create sub-partitions for each dimension
     FOREACH dim IN ARRAY dimensions LOOP
-      EXECUTE format(
-        'CREATE TABLE %I PARTITION OF %I FOR VALUES IN (%L)',
-        partition_name || '_' || dim, partition_name, dim
-      );
-      EXECUTE format(
-        'CREATE INDEX %I ON %I (user_id, created_at)',
-        partition_name || '_' || dim || '_user_created_idx', partition_name || '_' || dim
-      );
+      IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = partition_name || '_' || dim) THEN
+        EXECUTE format(
+          'CREATE TABLE %I PARTITION OF %I FOR VALUES IN (%L)',
+          partition_name || '_' || dim, partition_name, dim
+        );
+        EXECUTE format(
+          'CREATE INDEX IF NOT EXISTS %I ON %I (user_id, created_at)',
+          partition_name || '_' || dim || '_user_created_idx', partition_name || '_' || dim
+        );
+      END IF;
     END LOOP;
     
     current_month := current_month + interval '1 month';
@@ -54,7 +58,7 @@ BEGIN
 END $$;
 
 -- Default partition for out-of-range
-CREATE TABLE growth_events_default PARTITION OF growth_events_partitioned DEFAULT;
+CREATE TABLE IF NOT EXISTS growth_events_default PARTITION OF growth_events_partitioned DEFAULT;
 
 -- Migrate data
 INSERT INTO growth_events_partitioned (id, user_id, dimension, event_type, event_metadata, created_at)
@@ -62,12 +66,12 @@ SELECT id, user_id, dimension, event_type, event_metadata, created_at
 FROM growth_events;
 
 -- Drop old table and rename
-DROP TABLE growth_events;
+DROP TABLE IF EXISTS growth_events;
 ALTER TABLE growth_events_partitioned RENAME TO growth_events;
 
 -- Parent-level indexes (auto-propagate to new partitions via ATTACH)
-CREATE INDEX CONCURRENTLY growth_events_user_created_idx ON ONLY growth_events (user_id, created_at);
-CREATE INDEX CONCURRENTLY growth_events_dimension_created_idx ON ONLY growth_events (dimension, created_at);
+CREATE INDEX IF NOT EXISTS growth_events_user_created_idx ON ONLY growth_events (user_id, created_at);
+CREATE INDEX IF NOT EXISTS growth_events_dimension_created_idx ON ONLY growth_events (dimension, created_at);
 
 -- Attach indexes to existing partitions
 DO $$
@@ -85,26 +89,17 @@ BEGIN
   END LOOP;
 END $$;
 
--- Autovacuum tuning for very high insert rate
-ALTER TABLE growth_events SET (
-  autovacuum_vacuum_scale_factor = 0.02,
-  autovacuum_analyze_scale_factor = 0.01,
-  autovacuum_max_workers = 3
-);
-
 -- ============================================================
 -- 2. AI_MESSAGES - Range by created_at (90-day retention)
 -- ============================================================
 
--- ai_messages already has retention_days column; create partitioned table
-CREATE TABLE ai_messages_partitioned (
+CREATE TABLE IF NOT EXISTS ai_messages_partitioned (
   id UUID NOT NULL DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL,
-  thread_id UUID,
+  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  thread_id TEXT NOT NULL,
   role TEXT NOT NULL,
   content TEXT NOT NULL,
-  privacy_mode TEXT DEFAULT 'private',
-  retention_days INT DEFAULT 90,
+  privacy_mode TEXT NOT NULL DEFAULT 'saved',
   expires_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   PRIMARY KEY (id, created_at)
@@ -121,34 +116,36 @@ BEGIN
   current_month := start_month;
   WHILE current_month < end_month LOOP
     partition_name := 'ai_messages_' || to_char(current_month, 'YYYY_"m"MM');
-    EXECUTE format(
-      'CREATE TABLE %I PARTITION OF ai_messages_partitioned
-       FOR VALUES FROM (%L) TO (%L)',
-      partition_name, current_month, current_month + interval '1 month'
-    );
-    EXECUTE format(
-      'CREATE INDEX %I ON %I (user_id, created_at)',
-      partition_name || '_user_created_idx', partition_name
-    );
-    EXECUTE format(
-      'CREATE INDEX %I ON %I (thread_id, created_at)',
-      partition_name || '_thread_created_idx', partition_name
-    );
+    IF NOT EXISTS (SELECT 1 FROM pg_class WHERE relname = partition_name) THEN
+      EXECUTE format(
+        'CREATE TABLE %I PARTITION OF ai_messages_partitioned
+         FOR VALUES FROM (%L) TO (%L)',
+        partition_name, current_month, current_month + interval '1 month'
+      );
+      EXECUTE format(
+        'CREATE INDEX IF NOT EXISTS %I ON %I (user_id, created_at)',
+        partition_name || '_user_created_idx', partition_name
+      );
+      EXECUTE format(
+        'CREATE INDEX IF NOT EXISTS %I ON %I (thread_id, created_at)',
+        partition_name || '_thread_created_idx', partition_name
+      );
+    END IF;
     current_month := current_month + interval '1 month';
   END LOOP;
 END $$;
 
-CREATE TABLE ai_messages_default PARTITION OF ai_messages_partitioned DEFAULT;
+CREATE TABLE IF NOT EXISTS ai_messages_default PARTITION OF ai_messages_partitioned DEFAULT;
 
-INSERT INTO ai_messages_partitioned (id, user_id, thread_id, role, content, privacy_mode, retention_days, expires_at, created_at)
-SELECT id, user_id, thread_id, role, content, privacy_mode, retention_days, expires_at, created_at
+INSERT INTO ai_messages_partitioned (id, user_id, thread_id, role, content, privacy_mode, expires_at, created_at)
+SELECT id, user_id, thread_id, role, content, privacy_mode, expires_at, created_at
 FROM ai_messages;
 
-DROP TABLE ai_messages;
+DROP TABLE IF EXISTS ai_messages;
 ALTER TABLE ai_messages_partitioned RENAME TO ai_messages;
 
-CREATE INDEX CONCURRENTLY ai_messages_user_created_idx ON ONLY ai_messages (user_id, created_at);
-CREATE INDEX CONCURRENTLY ai_messages_thread_created_idx ON ONLY ai_messages (thread_id, created_at);
+CREATE INDEX IF NOT EXISTS ai_messages_user_created_idx ON ONLY ai_messages (user_id, created_at);
+CREATE INDEX IF NOT EXISTS ai_messages_thread_created_idx ON ONLY ai_messages (thread_id, created_at);
 
 -- Attach indexes to existing partitions
 DO $$
@@ -166,19 +163,13 @@ BEGIN
   END LOOP;
 END $$;
 
--- Autovacuum tuning
-ALTER TABLE ai_messages SET (
-  autovacuum_vacuum_scale_factor = 0.05,
-  autovacuum_analyze_scale_factor = 0.02,
-  autovacuum_vacuum_threshold = 1000
-);
-
 -- ============================================================
 -- PARTITION MAINTENANCE FOR GROWTH_EVENTS + AI_MESSAGES
 -- ============================================================
 
 CREATE OR REPLACE FUNCTION create_next_month_partitions_growth_ai()
-RETURNS void AS $$
+RETURNS void
+LANGUAGE plpgsql AS $$
 DECLARE
   next_month_start DATE := date_trunc('month', now() + interval '1 month');
   next_month_end DATE := next_month_start + interval '1 month';
@@ -224,7 +215,8 @@ END $$;
 -- ============================================================
 
 CREATE OR REPLACE FUNCTION archive_old_partitions_growth_ai()
-RETURNS TABLE(partition_name TEXT, status TEXT) AS $$
+RETURNS TABLE(partition_name TEXT, status TEXT)
+LANGUAGE plpgsql AS $$
 DECLARE
   growth_cutoff DATE := date_trunc('month', now() - interval '24 months'); -- 2 years
   ai_cutoff DATE := date_trunc('month', now() - interval '4 months'); -- ~120 days buffer for 90-day retention

@@ -1,10 +1,8 @@
 import { authAPI } from '@repo/core/api/client';
-import { identityAPI } from '@repo/core/api/identity';
 import { BrandPulse } from '@repo/ui';
 import ErrorBoundary, { RouteErrorBoundary } from '@repo/ui/components/ErrorBoundary';
 import { Center } from '@repo/ui/primitives';
 import { safeBack } from '@repo/ui/utils/navigation';
-import { useRouter } from 'expo-router';
 import { Suspense, useCallback } from 'react';
 import AuthScreen from '../src/screens/AuthScreen';
 
@@ -19,21 +17,9 @@ function Fallback() {
 }
 
 export default function AuthRoute() {
-  const router = useRouter();
-
   const handleSuccess = useCallback(async () => {
-    try {
-      const citizen = await identityAPI.identifyActiveCitizen();
-      if (citizen?.onboarding_completed) {
-        router.replace('/self');
-        return;
-      }
-    } catch (error) {
-      console.warn('[auth route] unable to resolve onboarding completion after login', error);
-    }
-
-    router.replace('/onboarding');
-  }, [router]);
+    // The session gate owns post-auth navigation.
+  }, []);
 
   const handleBack = useCallback(() => {
     safeBack('/welcome');
@@ -41,8 +27,7 @@ export default function AuthRoute() {
 
   const handleGuest = useCallback(async () => {
     await authAPI.signInAnonymously();
-    router.replace('/onboarding');
-  }, [router]);
+  }, []);
 
   return (
     <ErrorBoundary name="AuthRoute">

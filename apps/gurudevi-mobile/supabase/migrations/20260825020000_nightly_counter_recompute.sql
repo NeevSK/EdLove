@@ -35,35 +35,35 @@ HAVING sm.endorsement_count != COUNT(me.id);
 CREATE OR REPLACE VIEW counter_drift_nodes AS
 SELECT
   n.id,
-  n.title_en,
-  n.view_count AS stored_views,
-  COALESCE(SUM(re.views), 0) AS actual_views,
-  n.use_count AS stored_uses,
-  COALESCE(SUM(re.uses), 0) AS actual_uses,
-  n.endorsement_count AS stored_endorsements,
-  COALESCE(SUM(re.endorsements), 0) AS actual_endorsements,
-  n.bookmark_count AS stored_bookmarks,
-  COALESCE(SUM(re.bookmarks), 0) AS actual_bookmarks
+  COALESCE(n.title_en, n.title) AS title_en,
+  n.views AS stored_views,
+  COUNT(re.id) FILTER (WHERE re.engagement_type = 'view') AS actual_views,
+  n.uses_count AS stored_uses,
+  COUNT(re.id) FILTER (WHERE re.engagement_type = 'use') AS actual_uses,
+  n.endorsements AS stored_endorsements,
+  COUNT(re.id) FILTER (WHERE re.engagement_type = 'endorse') AS actual_endorsements,
+  n.bookmarks AS stored_bookmarks,
+  COUNT(re.id) FILTER (WHERE re.engagement_type = 'bookmark') AS actual_bookmarks
 FROM nodes n
-LEFT JOIN resource_engagements re ON re.node_id = n.id
-GROUP BY n.id, n.title_en, n.view_count, n.use_count, n.endorsement_count, n.bookmark_count
+LEFT JOIN resource_engagements re ON re.resource_id = n.id
+GROUP BY n.id, n.title_en, n.title, n.views, n.uses_count, n.endorsements, n.bookmarks
 HAVING 
-  n.view_count != COALESCE(SUM(re.views), 0)
-  OR n.use_count != COALESCE(SUM(re.uses), 0)
-  OR n.endorsement_count != COALESCE(SUM(re.endorsements), 0)
-  OR n.bookmark_count != COALESCE(SUM(re.bookmarks), 0);
+  n.views != COUNT(re.id) FILTER (WHERE re.engagement_type = 'view')
+  OR n.uses_count != COUNT(re.id) FILTER (WHERE re.engagement_type = 'use')
+  OR n.endorsements != COUNT(re.id) FILTER (WHERE re.engagement_type = 'endorse')
+  OR n.bookmarks != COUNT(re.id) FILTER (WHERE re.engagement_type = 'bookmark');
 
 -- View to check collections.used_by_count drift
 CREATE OR REPLACE VIEW counter_drift_collections AS
 SELECT
   c.id,
-  c.title,
+  c.name AS title,
   c.used_by_count AS stored_count,
   COUNT(cn.id) AS actual_count,
   (c.used_by_count - COUNT(cn.id)) AS drift
 FROM collections c
 LEFT JOIN collection_nodes cn ON cn.collection_id = c.id
-GROUP BY c.id, c.title, c.used_by_count
+GROUP BY c.id, c.name, c.used_by_count
 HAVING c.used_by_count != COUNT(cn.id);
 
 -- ============================================================
@@ -72,7 +72,9 @@ HAVING c.used_by_count != COUNT(cn.id);
 
 -- Recompute community_groups.member_count
 CREATE OR REPLACE FUNCTION recompute_community_group_members()
-RETURNS TABLE(group_id UUID, group_name TEXT, old_count INT, new_count INT, updated BOOLEAN) AS $$
+RETURNS TABLE(group_id UUID, group_name TEXT, old_count INT, new_count INT, updated BOOLEAN) 
+LANGUAGE plpgsql
+AS $$
 DECLARE
   r RECORD;
 BEGIN
@@ -99,7 +101,9 @@ END $$;
 
 -- Recompute sanctuary_manifestos.endorsement_count
 CREATE OR REPLACE FUNCTION recompute_manifesto_endorsements()
-RETURNS TABLE(manifesto_id UUID, title TEXT, old_count INT, new_count INT, updated BOOLEAN) AS $$
+RETURNS TABLE(manifesto_id UUID, title TEXT, old_count INT, new_count INT, updated BOOLEAN) 
+LANGUAGE plpgsql
+AS $$
 DECLARE
   r RECORD;
 BEGIN
@@ -123,70 +127,74 @@ BEGIN
   END IF;
 END $$;
 
--- Recompute nodes counters (view_count, use_count, endorsement_count, bookmark_count)
+-- Recompute nodes counters (views, uses_count, endorsements, bookmarks)
 CREATE OR REPLACE FUNCTION recompute_nodes_counters()
-RETURNS TABLE(node_id UUID, title TEXT, counter TEXT, old_val BIGINT, new_val BIGINT, updated BOOLEAN) AS $$
+RETURNS TABLE(node_id UUID, title TEXT, counter TEXT, old_val BIGINT, new_val BIGINT, updated BOOLEAN) 
+LANGUAGE plpgsql
+AS $$
 DECLARE
   r RECORD;
 BEGIN
   FOR r IN
     SELECT
       n.id,
-      n.title_en,
-      n.view_count,
-      COALESCE(SUM(re.views), 0) AS actual_views,
-      n.use_count,
-      COALESCE(SUM(re.uses), 0) AS actual_uses,
-      n.endorsement_count,
-      COALESCE(SUM(re.endorsements), 0) AS actual_endorsements,
-      n.bookmark_count,
-      COALESCE(SUM(re.bookmarks), 0) AS actual_bookmarks
+      COALESCE(n.title_en, n.title) AS title_en,
+      n.views,
+      COUNT(re.id) FILTER (WHERE re.engagement_type = 'view') AS actual_views,
+      n.uses_count,
+      COUNT(re.id) FILTER (WHERE re.engagement_type = 'use') AS actual_uses,
+      n.endorsements,
+      COUNT(re.id) FILTER (WHERE re.engagement_type = 'endorse') AS actual_endorsements,
+      n.bookmarks,
+      COUNT(re.id) FILTER (WHERE re.engagement_type = 'bookmark') AS actual_bookmarks
     FROM nodes n
-    LEFT JOIN resource_engagements re ON re.node_id = n.id
-    GROUP BY n.id, n.title_en, n.view_count, n.use_count, n.endorsement_count, n.bookmark_count
+    LEFT JOIN resource_engagements re ON re.resource_id = n.id
+    GROUP BY n.id, n.title_en, n.title, n.views, n.uses_count, n.endorsements, n.bookmarks
     HAVING 
-      n.view_count != COALESCE(SUM(re.views), 0)
-      OR n.use_count != COALESCE(SUM(re.uses), 0)
-      OR n.endorsement_count != COALESCE(SUM(re.endorsements), 0)
-      OR n.bookmark_count != COALESCE(SUM(re.bookmarks), 0)
+      n.views != COUNT(re.id) FILTER (WHERE re.engagement_type = 'view')
+      OR n.uses_count != COUNT(re.id) FILTER (WHERE re.engagement_type = 'use')
+      OR n.endorsements != COUNT(re.id) FILTER (WHERE re.engagement_type = 'endorse')
+      OR n.bookmarks != COUNT(re.id) FILTER (WHERE re.engagement_type = 'bookmark')
   LOOP
-    IF r.view_count != r.actual_views THEN
-      UPDATE nodes SET view_count = r.actual_views, updated_at = now() WHERE id = r.id;
-      RETURN QUERY SELECT r.id, r.title_en, 'view_count', r.view_count, r.actual_views, TRUE;
+    IF r.views != r.actual_views THEN
+      UPDATE nodes SET views = r.actual_views, updated_at = now() WHERE id = r.id;
+      RETURN QUERY SELECT r.id, r.title_en, 'views'::TEXT, r.views::BIGINT, r.actual_views::BIGINT, TRUE;
     END IF;
     
-    IF r.use_count != r.actual_uses THEN
-      UPDATE nodes SET use_count = r.actual_uses, updated_at = now() WHERE id = r.id;
-      RETURN QUERY SELECT r.id, r.title_en, 'use_count', r.use_count, r.actual_uses, TRUE;
+    IF r.uses_count != r.actual_uses THEN
+      UPDATE nodes SET uses_count = r.actual_uses, updated_at = now() WHERE id = r.id;
+      RETURN QUERY SELECT r.id, r.title_en, 'uses_count'::TEXT, r.uses_count::BIGINT, r.actual_uses::BIGINT, TRUE;
     END IF;
     
-    IF r.endorsement_count != r.actual_endorsements THEN
-      UPDATE nodes SET endorsement_count = r.actual_endorsements, updated_at = now() WHERE id = r.id;
-      RETURN QUERY SELECT r.id, r.title_en, 'endorsement_count', r.endorsement_count, r.actual_endorsements, TRUE;
+    IF r.endorsements != r.actual_endorsements THEN
+      UPDATE nodes SET endorsements = r.actual_endorsements, updated_at = now() WHERE id = r.id;
+      RETURN QUERY SELECT r.id, r.title_en, 'endorsements'::TEXT, r.endorsements::BIGINT, r.actual_endorsements::BIGINT, TRUE;
     END IF;
     
-    IF r.bookmark_count != r.actual_bookmarks THEN
-      UPDATE nodes SET bookmark_count = r.actual_bookmarks, updated_at = now() WHERE id = r.id;
-      RETURN QUERY SELECT r.id, r.title_en, 'bookmark_count', r.bookmark_count, r.actual_bookmarks, TRUE;
+    IF r.bookmarks != r.actual_bookmarks THEN
+      UPDATE nodes SET bookmarks = r.actual_bookmarks, updated_at = now() WHERE id = r.id;
+      RETURN QUERY SELECT r.id, r.title_en, 'bookmarks'::TEXT, r.bookmarks::BIGINT, r.actual_bookmarks::BIGINT, TRUE;
     END IF;
   END LOOP;
   
   IF NOT FOUND THEN
-    RETURN QUERY SELECT NULL::UUID, NULL::TEXT, NULL::TEXT, 0, 0, FALSE;
+    RETURN QUERY SELECT NULL::UUID, NULL::TEXT, NULL::TEXT, 0::BIGINT, 0::BIGINT, FALSE;
   END IF;
 END $$;
 
 -- Recompute collections.used_by_count
 CREATE OR REPLACE FUNCTION recompute_collections_used_by()
-RETURNS TABLE(collection_id UUID, title TEXT, old_count INT, new_count INT, updated BOOLEAN) AS $$
+RETURNS TABLE(collection_id UUID, title TEXT, old_count INT, new_count INT, updated BOOLEAN) 
+LANGUAGE plpgsql
+AS $$
 DECLARE
   r RECORD;
 BEGIN
   FOR r IN
-    SELECT c.id, c.title, c.used_by_count, COUNT(cn.id) AS actual_count
+    SELECT c.id, c.name AS title, c.used_by_count, COUNT(cn.id) AS actual_count
     FROM collections c
     LEFT JOIN collection_nodes cn ON cn.collection_id = c.id
-    GROUP BY c.id, c.title, c.used_by_count
+    GROUP BY c.id, c.name, c.used_by_count
     HAVING c.used_by_count != COUNT(cn.id)
   LOOP
     UPDATE collections
@@ -207,7 +215,9 @@ END $$;
 -- ============================================================
 
 CREATE OR REPLACE FUNCTION nightly_counter_recompute()
-RETURNS TABLE(task TEXT, details JSONB) AS $$
+RETURNS TABLE(task TEXT, details JSONB) 
+LANGUAGE plpgsql
+AS $$
 BEGIN
   -- community_groups.member_count
   PERFORM recompute_community_group_members();

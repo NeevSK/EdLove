@@ -15,6 +15,24 @@ if (typeof g.SharedArrayBuffer === 'undefined') {
   g.SharedArrayBuffer = ArrayBuffer;
 }
 
+if (typeof g.FinalizationRegistry === 'undefined') {
+  g.FinalizationRegistry = class FinalizationRegistry {
+    register() {}
+    unregister() { return false; }
+  };
+}
+
+if (typeof g.WeakRef === 'undefined') {
+  g.WeakRef = class WeakRef {
+    constructor(target) {
+      this._target = target;
+    }
+    deref() {
+      return this._target;
+    }
+  };
+}
+
 // webidl-conversions@8 reads these modern getters at module evaluation time.
 // Hermes on older Android devices has neither, and calling `.get` on the
 // missing property crashes the route loader before the app can render.
@@ -58,3 +76,14 @@ if (typeof g.process === 'undefined') {
   if (typeof g.process.nextTick === 'undefined') g.process.nextTick = (fn) => setTimeout(fn, 0);
   if (typeof window !== 'undefined') g.process.browser = true;
 }
+
+if (typeof g.HMRClient === 'undefined') {
+  g.HMRClient = {
+    setup: () => {},
+    enable: () => {},
+    disable: () => {},
+    registerBundle: () => {},
+    log: () => {},
+  };
+}
+

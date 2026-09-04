@@ -27,7 +27,7 @@ tags: [infra, android, gradle, expo, build]
 | Node | 22.23.2 | `.nvmrc`; required by eas.json + engines |
 | Kotlin | managed | Set by Expo version catalog |
 | Android compileSdk | managed | Set by Expo version catalog |
-| Android minSdk | 24 | Set by Expo version catalog |
+| Android minSdk | 28 (Android 9) | Set in `app.json` via `expo-build-properties` |
 
 ## 2. Generated Gradle State (post-prebuild)
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
+import { describe, expect, it } from 'vitest';
 
 const FONT_SCALES = [1, 1.5, 2] as const;
 
@@ -19,7 +20,7 @@ function ScaledFixture({ fontScale }: { fontScale: number }) {
   );
 }
 
-describe('font scaling audit', () => {
+describe('font scaling audit', { tags: ['a11y', 'theme', 'fast'] }, () => {
   it.each(FONT_SCALES)('renders the core text hierarchy at %sx', (fontScale) => {
     const fixture = ScaledFixture({ fontScale });
     const textNodes = fixture.props.children;

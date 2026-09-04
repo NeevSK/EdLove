@@ -1,3 +1,4 @@
+import { describe, expect, expectTypeOf, it, test } from 'vitest';
 import { getContrastRatio, meetsWCAG } from '../../../../packages/core/src/hooks/useAccessibility';
 import { Theme } from '../../../../packages/ui/src/theme/Theme';
 
@@ -23,7 +24,7 @@ function extractColors(value: unknown, prefix = ''): ColorToken[] {
   return colors;
 }
 
-describe('theme contrast audit', () => {
+describe('theme contrast audit', { tags: ['a11y', 'theme', 'fast'] }, () => {
   const colors = extractColors(Theme.colors);
   const textColors = colors.filter((color) => color.category === 'text');
   const backgroundColors = colors.filter((color) => color.category === 'background');
@@ -33,55 +34,22 @@ describe('theme contrast audit', () => {
     expect(backgroundColors.length).toBeGreaterThan(0);
   });
 
-  it('keeps supported semantic foreground/background pairs WCAG AA readable', () => {
-    const pairs = [
-      [
-        'textPrimary',
-        Theme.colors.textPrimary,
-        'backgroundLight',
-        Theme.colors.backgroundLight,
-        'normal',
-      ],
-      [
-        'textSecondary',
-        Theme.colors.textSecondary,
-        'backgroundLight',
-        Theme.colors.backgroundLight,
-        'normal',
-      ],
-      [
-        'textTertiary',
-        Theme.colors.textTertiary,
-        'backgroundLight',
-        Theme.colors.backgroundLight,
-        'large',
-      ],
-      [
-        'sacredWhite',
-        Theme.colors.sacredWhite,
-        'backgroundDark',
-        Theme.colors.backgroundDark,
-        'normal',
-      ],
-      [
-        'errorText',
-        Theme.colors.errorText,
-        'errorBackground',
-        Theme.colors.errorBackground,
-        'normal',
-      ],
-    ] as const;
-    const failures = pairs.flatMap(
-      ([foregroundName, foreground, backgroundName, background, size]) => {
-        const ratio = getContrastRatio(foreground, background);
-        return meetsWCAG(foreground, background, 'AA', size)
-          ? []
-          : [`${foregroundName} on ${backgroundName}: ${ratio.toFixed(2)}:1`];
-      },
-    );
+  it('enforces static color token types using expectTypeOf (T16)', () => {
+    expectTypeOf(Theme.colors.textPrimary).toBeString();
+    expectTypeOf(Theme.colors.backgroundLight).toBeString();
+    expectTypeOf(getContrastRatio).toBeFunction();
+    expectTypeOf(getContrastRatio).returns.toBeNumber();
+  });
 
-    if (failures.length > 0) {
-      throw new Error(`Contrast failures (${failures.length}):\n${failures.join('\n')}`);
-    }
+  test.for([
+    { fg: 'textPrimary', fgVal: Theme.colors.textPrimary, bg: 'backgroundLight', bgVal: Theme.colors.backgroundLight, size: 'normal' },
+    { fg: 'textSecondary', fgVal: Theme.colors.textSecondary, bg: 'backgroundLight', bgVal: Theme.colors.backgroundLight, size: 'normal' },
+    { fg: 'textTertiary', fgVal: Theme.colors.textTertiary, bg: 'backgroundLight', bgVal: Theme.colors.backgroundLight, size: 'large' },
+    { fg: 'sacredWhite', fgVal: Theme.colors.sacredWhite, bg: 'backgroundDark', bgVal: Theme.colors.backgroundDark, size: 'normal' },
+    { fg: 'errorText', fgVal: Theme.colors.errorText, bg: 'errorBackground', bgVal: Theme.colors.errorBackground, size: 'normal' },
+  ] as const)('WCAG AA contrast: $fg on $bg ($size) (T17 test.for)', ({ fgVal, bgVal, size }) => {
+    const ratio = getContrastRatio(fgVal, bgVal);
+    expect(ratio).toBeGreaterThan(1);
+    expect(meetsWCAG(fgVal, bgVal, 'AA', size as any)).toBe(true);
   });
 });
