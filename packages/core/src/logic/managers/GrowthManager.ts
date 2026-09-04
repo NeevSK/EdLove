@@ -20,7 +20,7 @@ import {
   reportBestEffort,
   runEffect,
   tryPromise,
-} from '@repo/core/utils/effect';
+} from '@repo/core/effect';
 import * as Effect from 'effect/Effect';
 
 export * from '@repo/core/types/Growth';
