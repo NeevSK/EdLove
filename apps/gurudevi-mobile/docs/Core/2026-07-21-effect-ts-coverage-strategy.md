@@ -69,6 +69,15 @@ The codebase endures real pain daily from the gaps Effect fills:
 | Layer/DI usage | GrowthManager has an experimental `Context.Tag`/`Layer` composition module; no broad migration is claimed |
 | Stream usage | None |
 
+### September 2026 Consolidation Update
+
+In September 2026, a focused consolidation sprint hardened the Effect v3 architecture and established migration readiness for v4:
+- **Canonical Retry Policies**: All retry schedules unified into [`packages/core/src/effect/Schedules.ts`](../../../../packages/core/src/effect/Schedules.ts), exporting `defaultRetryPolicy`, `strictRetryPolicy`, and `retryPolicy(n)`.
+- **Eliminated Duplicate Policies**: Removed ad-hoc `Schedule.exponential` redeclarations from `api/attendance.ts` and `adapters/supabaseIdentity.adapter.ts`.
+- **Lazy Runtime Initialization**: Swapped module top-level `Effect.runSync` in `accounts/deviceAccounts.ts` with a lazy `getAuditQueue()` singleton, satisfying the v4 owned-runtime constraint.
+- **Subpath Package Exports**: Added `./effect/schedules` and `./effect/*` subpath exports in `packages/core/package.json`.
+- **Canonical Repo-Wide Guide**: Created [`docs/architecture/effect-ts-architecture.md`](../../../../docs/architecture/effect-ts-architecture.md) covering file maps, boundary rules, and v4 migration readiness.
+
 ---
 
 ## 2. How Effect + SovereignError Fit Together
@@ -188,7 +197,7 @@ Effect catches errors **before** they leave the domain layer. SovereignError wra
 | @effect/ai packages | ❌ Not available | ✅ Available in v4 beta | v4 wins for AI features |
 | Durable workflows | ❌ Not available | ✅ `@effect/workflow` alpha | v4 wins for long-term |
 
-**Migration to v4 is planned when v4.0.0 stable is released** (estimated Q4 2026-Q1 2027). Given current usage (2 files), migration effort is ~2 days. The coding guide has the full v3→v4 rename map ready.
+**Migration to v4 is planned when v4.0.0 stable is released** (estimated Q4 2026-Q1 2027). All Effect usage (13 files in `@repo/core`) has been pre-audited and consolidated to minimize v4 blast radius. For the complete risk breakdown by subsystem, estimated migration effort, and pre-migration checklist, see [`docs/architecture/effect-ts-architecture.md#8-effect-v4-migration-readiness`](../../../../docs/architecture/effect-ts-architecture.md#8-effect-v4-migration-readiness).
 
 ### v4 Blockers to track
 
